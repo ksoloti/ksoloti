@@ -5,7 +5,7 @@ set -e
 if [ ! -d "../chibios" ]; 
 then
     CH_VERSION=2.6.9
-    ARDIR=ChibiOS_${CH_VERSION}
+    ARDIR=ChibiOS-ver${CH_VERSION}
     ARCHIVE=${ARDIR}.zip
     if [ ! -f ${ARCHIVE} ]; 
     then
