@@ -45,9 +45,9 @@ int codec_interrupt_timestamp;
 void codec_ADAU1961_hw_reset(void) {
 }
 
-/* I2C interface #3 */
-/* SDA : PH8
- * SCL : PH7
+/* I2C interface #3 */ // seb I2CD2 not 3
+/* SDA : PH8 // seb remapped to PB11
+ * SCL : PH7 // seb remapped to PB10
  */
 static const I2CConfig i2cfg2 = {OPMODE_I2C, 100000, STD_DUTY_CYCLE, };
 
@@ -59,7 +59,7 @@ static systime_t tmo;
 
 void CheckI2CErrors(void) {
   volatile i2cflags_t errors;
-  errors = i2cGetErrors(&I2CD3);
+  errors = i2cGetErrors(&I2CD2);
   if (errors != 0){
     setErrorFlag(ERROR_CODEC_I2C);
   }
@@ -68,20 +68,18 @@ void CheckI2CErrors(void) {
 
 void ADAU1961_I2CStart(void) {
   palSetPadMode(
-      GPIOH,
-      7,
-      PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN
-          | PAL_STM32_PUDR_PULLUP);
+      GPIOB, 10,
+      PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
   palSetPadMode(
-      GPIOH,
-      8,
-      PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN
-          | PAL_STM32_PUDR_PULLUP);
-  i2cStart(&I2CD3, &i2cfg2);
+      GPIOB, 11,
+      PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
+  chMtxLock(&Mutex_DMAStream_1_7); // seb added due to DMA stream 1_7 shared with SPI3, not sure if necessary
+  i2cStart(&I2CD2, &i2cfg2);
 }
 
 void ADAU1961_I2CStop(void) {
-  i2cStop(&I2CD3);
+  i2cStop(&I2CD2);
+  chMtxUnlock();  // seb added due to DMA stream 1_7 shared with SPI3, not sure if necessary
 }
 
 uint8_t ADAU1961_ReadRegister(uint16_t RegisterAddr) {
@@ -89,18 +87,18 @@ uint8_t ADAU1961_ReadRegister(uint16_t RegisterAddr) {
   i2ctxbuf[0] = RegisterAddr >> 8;
   i2ctxbuf[1] = RegisterAddr;
   ADAU1961_I2CStart();
-  i2cAcquireBus(&I2CD3);
-  status = i2cMasterTransmitTimeout(&I2CD3, ADAU1961_I2C_ADDR, i2ctxbuf, 2,
+  i2cAcquireBus(&I2CD2);
+  status = i2cMasterTransmitTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2ctxbuf, 2,
                                     i2crxbuf, 0, tmo);
   if (status != RDY_OK) {
     CheckI2CErrors();
   }
-  status = i2cMasterReceiveTimeout(&I2CD3, ADAU1961_I2C_ADDR,
+  status = i2cMasterReceiveTimeout(&I2CD2, ADAU1961_I2C_ADDR,
                                     i2crxbuf, 1, tmo);
   if (status != RDY_OK) {
     CheckI2CErrors();
   }
-  i2cReleaseBus(&I2CD3);
+  i2cReleaseBus(&I2CD2);
   ADAU1961_I2CStop();
   chThdSleepMilliseconds(1);
   return i2crxbuf[0];
@@ -111,17 +109,17 @@ void ADAU1961_ReadRegister6(uint16_t RegisterAddr) {
   i2ctxbuf[0] = RegisterAddr >> 8;
   i2ctxbuf[1] = RegisterAddr;
   ADAU1961_I2CStart();
-  i2cAcquireBus(&I2CD3);
-  status = i2cMasterTransmitTimeout(&I2CD3, ADAU1961_I2C_ADDR, i2ctxbuf, 2,
+  i2cAcquireBus(&I2CD2);
+  status = i2cMasterTransmitTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2ctxbuf, 2,
                                     i2crxbuf, 0, tmo);
   if (status != RDY_OK) {
     CheckI2CErrors();
   }
-  status = i2cMasterReceiveTimeout(&I2CD3, ADAU1961_I2C_ADDR, i2crxbuf, 6, tmo);
+  status = i2cMasterReceiveTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2crxbuf, 6, tmo);
   if (status != RDY_OK) {
     CheckI2CErrors();
   }
-  i2cReleaseBus(&I2CD3);
+  i2cReleaseBus(&I2CD2);
   ADAU1961_I2CStop();
   chThdSleepMilliseconds(1);
 }
@@ -133,16 +131,16 @@ void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue) {
   i2ctxbuf[2] = RegisterValue;
 
   ADAU1961_I2CStart();
-  i2cAcquireBus(&I2CD3);
-  status = i2cMasterTransmitTimeout(&I2CD3, ADAU1961_I2C_ADDR, i2ctxbuf, 3,
+  i2cAcquireBus(&I2CD2);
+  status = i2cMasterTransmitTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2ctxbuf, 3,
                                     i2crxbuf, 0, tmo);
   if (status != RDY_OK) {
     CheckI2CErrors();
-    status = i2cMasterTransmitTimeout(&I2CD3, ADAU1961_I2C_ADDR, i2ctxbuf, 3,
+    status = i2cMasterTransmitTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2ctxbuf, 3,
                                       i2crxbuf, 0, tmo);
     chThdSleepMilliseconds(1);
   }
-  i2cReleaseBus(&I2CD3);
+  i2cReleaseBus(&I2CD2);
   ADAU1961_I2CStop();
   chThdSleepMilliseconds(1);
 
@@ -166,10 +164,10 @@ void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
   i2ctxbuf[6] = RegisterValues[4];
   i2ctxbuf[7] = RegisterValues[5];
   ADAU1961_I2CStart();
-  i2cAcquireBus(&I2CD3);
-  status = i2cMasterTransmitTimeout(&I2CD3, ADAU1961_I2C_ADDR, i2ctxbuf, 8,
+  i2cAcquireBus(&I2CD2);
+  status = i2cMasterTransmitTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2ctxbuf, 8,
                                     i2crxbuf, 0, TIME_INFINITE);
-  i2cReleaseBus(&I2CD3);
+  i2cReleaseBus(&I2CD2);
   ADAU1961_I2CStop();
   if (status != RDY_OK) {
     CheckI2CErrors();
