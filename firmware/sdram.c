@@ -65,22 +65,25 @@ void SDRAM_Init(void) {
   /* Enable FMC clock */
   rccEnableAHB3(RCC_AHB3ENR_FMCEN, FALSE);
 
+
+  // seb todo: can tweak below values a bit faster for Micron MT48LC16M16A2P?
+  // because the 11.90ns stated below are actuall for 168mhz clock but we're at 180mhz now, so: 11.11ns
   /* FMC Configuration ---------------------------------------------------------*/
   /* FMC SDRAM Bank configuration */
   /* Timing configuration for 84 Mhz of SD clock frequency (168Mhz/2) */
-  /* TMRD: 2 Clock cycles */
+  /* TMRD: 2 Clock cycles */ // seb 2 clock cycles, so seems good
   FMC_SDRAMTimingInitStructure.FMC_LoadToActiveDelay = 2;
-  /* TXSR: min=70ns (6x11.90ns) */
+  /* TXSR: min=70ns (6x11.90ns) */ // seb min 67 ns
   FMC_SDRAMTimingInitStructure.FMC_ExitSelfRefreshDelay = 7;
-  /* TRAS: min=42ns (4x11.90ns) max=120k (ns) */
+  /* TRAS: min=42ns (4x11.90ns) max=120k (ns) */ // seb same
   FMC_SDRAMTimingInitStructure.FMC_SelfRefreshTime = 4;
-  /* TRC:  min=63 (6x11.90ns) */
-  FMC_SDRAMTimingInitStructure.FMC_RowCycleDelay = 7;
-  /* TWR:  2 Clock cycles */
+  /* TRC:  min=63 (6x11.90ns) */ // seb min 60 ns; set to 6 * 11.11ns = 66.66ns
+  FMC_SDRAMTimingInitStructure.FMC_RowCycleDelay = 6;// orig 7
+  /* TWR:  2 Clock cycles */ // seb 1 clock cycle + 6 ns, or 12 ns. TWR has to be >= TRAS-TRCD => 4-2 = 2
   FMC_SDRAMTimingInitStructure.FMC_WriteRecoveryTime = 2;
-  /* TRP:  15ns => 2x11.90ns */
+  /* TRP:  15ns => 2x11.90ns */ // seb 18 ns
   FMC_SDRAMTimingInitStructure.FMC_RPDelay = 2;
-  /* TRCD: 15ns => 2x11.90ns */
+  /* TRCD: 15ns => 2x11.90ns */ // seb 18 ns
   FMC_SDRAMTimingInitStructure.FMC_RCDDelay = 2;
 
   /* FMC SDRAM control configuration */
@@ -89,12 +92,12 @@ void SDRAM_Init(void) {
   FMC_SDRAMInitStructure.FMC_ColumnBitsNumber = FMC_ColumnBits_Number_8b;
   /* Column addressing: [11:0] */
   FMC_SDRAMInitStructure.FMC_RowBitsNumber = FMC_RowBits_Number_12b;
-  FMC_SDRAMInitStructure.FMC_SDMemoryDataWidth = SDRAM_MEMORY_WIDTH;
+  FMC_SDRAMInitStructure.FMC_SDMemoryDataWidth = SDRAM_MEMORY_WIDTH; // 16bit
   FMC_SDRAMInitStructure.FMC_InternalBankNumber = FMC_InternalBank_Number_4;
-  FMC_SDRAMInitStructure.FMC_CASLatency = SDRAM_CAS_LATENCY;
+  FMC_SDRAMInitStructure.FMC_CASLatency = SDRAM_CAS_LATENCY; // 2
   FMC_SDRAMInitStructure.FMC_WriteProtection = FMC_Write_Protection_Disable;
-  FMC_SDRAMInitStructure.FMC_SDClockPeriod = SDCLOCK_PERIOD;
-  FMC_SDRAMInitStructure.FMC_ReadBurst = SDRAM_READBURST;
+  FMC_SDRAMInitStructure.FMC_SDClockPeriod = SDCLOCK_PERIOD; // 2
+  FMC_SDRAMInitStructure.FMC_ReadBurst = SDRAM_READBURST; // enabled
   FMC_SDRAMInitStructure.FMC_ReadPipeDelay = FMC_ReadPipe_Delay_1;
   FMC_SDRAMInitStructure.FMC_SDRAMTimingStruct = &FMC_SDRAMTimingInitStructure;
 
@@ -331,4 +334,3 @@ void SDRAM_ReadBuffer(uint32_t* pBuffer, uint32_t uwReadAddress,
     write_pointer += 4;
   }
 }
-
