@@ -69,7 +69,7 @@
 #define STM32_ADC_ADCPRE                    ADC_CCR_ADCPRE_DIV4
 #define STM32_ADC_USE_ADC1                  TRUE
 #define STM32_ADC_USE_ADC2                  FALSE
-#define STM32_ADC_USE_ADC3                  FALSE
+#define STM32_ADC_USE_ADC3                  TRUE // seb turned TRUE here, hope to utilize PF6 to PF9 for additional ADC inputs
 #ifdef BOARD_AXOLOTI_V05
 #define STM32_ADC_ADC1_DMA_STREAM           STM32_DMA_STREAM_ID(2, 0)
 #else
@@ -132,8 +132,8 @@
  */
 #ifdef BOARD_AXOLOTI_V05
 #define STM32_I2C_USE_I2C1                  TRUE
-#define STM32_I2C_USE_I2C2                  FALSE
-#define STM32_I2C_USE_I2C3                  TRUE
+#define STM32_I2C_USE_I2C2                  TRUE // seb using I2C2 to talk to audio codec
+#define STM32_I2C_USE_I2C3                  FALSE
 #else
 #define STM32_I2C_USE_I2C1                  TRUE
 #define STM32_I2C_USE_I2C2                  TRUE
