@@ -23,7 +23,9 @@ CMSIS = ${axoloti_release}/CMSIS
 
 SPACE := 
 SPACE += 
-BDIR=$(subst $(SPACE),\ ,${axoloti_home}/build)
+# seb still had problems with spaces on Debian linux ... just make sure there are no spaces in the path
+# BDIR=$(subst $(SPACE),\ ,${axoloti_home}/build)
+BDIR=${axoloti_home}/build
 # theoretically should be this...., but CSRC expansion cannot cope with escape spaces
 #FIRMWARE=$(subst $(SPACE),\ ,${axoloti_firmware})
 FIRMWARE=.
