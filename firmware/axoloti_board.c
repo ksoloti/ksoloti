@@ -36,11 +36,7 @@ void axoloti_board_init(void) {
   chMtxInit(&Mutex_DMAStream_1_7);
 }
 
-/* Total number of channels to be sampled by a single ADC operation.*/
-#define ADC_GRP1_NUM_CHANNELS   16
 
-/* Depth of the conversion buffer, channels are sampled four times each.*/
-#define ADC_GRP1_BUF_DEPTH      1
 
 void adc_init(void) {
   adc_configpads();
@@ -71,6 +67,11 @@ void adc_configpads(void) {
   palSetPadMode(GPIOC, 4, PAL_MODE_INPUT_ANALOG);
   palSetPadMode(GPIOC, 5, PAL_MODE_INPUT_ANALOG);
 
+  palSetPadMode(GPIOF, 6, PAL_MODE_INPUT_ANALOG); // 4 additional inputs sampled at low speed via ADC3
+  palSetPadMode(GPIOF, 7, PAL_MODE_INPUT_ANALOG);
+  palSetPadMode(GPIOF, 8, PAL_MODE_INPUT_ANALOG);
+  palSetPadMode(GPIOF, 9, PAL_MODE_INPUT_ANALOG);
+
 #elif (BOARD_STM32F4DISCOVERY)
 
   palSetPadMode(GPIOA, 0, PAL_MODE_INPUT_ANALOG);
@@ -98,7 +99,8 @@ void adc_configpads(void) {
 /*
  * ADC samples buffer.
  */
-unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH] __attribute__ ((section (".sram2")));
+unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH + ADC_GRP2_NUM_CHANNELS * ADC_GRP2_BUF_DEPTH] __attribute__ ((section (".sram2")));
+// unsigned short adc3values[5] __attribute__ ((section (".sram2")));
 
 /*
  * ADC conversion group.
@@ -120,12 +122,11 @@ static const ADCConversionGroup adcgrpcfg1 = {FALSE,      //circular buffer mode
         | ADC_SMPR2_SMP_AN4(ADC_SAMPLE_84) | ADC_SMPR2_SMP_AN5(ADC_SAMPLE_84)
         | ADC_SMPR2_SMP_AN6(ADC_SAMPLE_84) | ADC_SMPR2_SMP_AN7(ADC_SAMPLE_84)
         | ADC_SMPR2_SMP_AN8(ADC_SAMPLE_84) | ADC_SMPR2_SMP_AN9(ADC_SAMPLE_84), //sample times ch0-9
-    ADC_SQR1_SQ13_N(ADC_CHANNEL_IN12) | ADC_SQR1_SQ14_N(ADC_CHANNEL_IN13)
-        | ADC_SQR1_SQ15_N(ADC_CHANNEL_IN14) | ADC_SQR1_SQ16_N(ADC_CHANNEL_VREFINT)
+    ADC_SQR1_SQ13_N(ADC_CHANNEL_IN15) | ADC_SQR1_SQ14_N(ADC_CHANNEL_VREFINT)
         | ADC_SQR1_NUM_CH(ADC_GRP1_NUM_CHANNELS), //SQR1: Conversion group sequence 13...16 + sequence length
     ADC_SQR2_SQ7_N(ADC_CHANNEL_IN6) | ADC_SQR2_SQ8_N(ADC_CHANNEL_IN7)
         | ADC_SQR2_SQ9_N(ADC_CHANNEL_IN8) | ADC_SQR2_SQ10_N(ADC_CHANNEL_IN9)
-        | ADC_SQR2_SQ11_N(ADC_CHANNEL_IN10) | ADC_SQR2_SQ12_N(ADC_CHANNEL_IN11), //SQR2: Conversion group sequence 7...12
+        | ADC_SQR2_SQ11_N(ADC_CHANNEL_IN11) | ADC_SQR2_SQ12_N(ADC_CHANNEL_IN14), //SQR2: Conversion group sequence 7...12, skip IN10 (PC0), IN12 (PC2), IN13 (PC3)
     ADC_SQR3_SQ1_N(ADC_CHANNEL_IN0) | ADC_SQR3_SQ2_N(ADC_CHANNEL_IN1)
         | ADC_SQR3_SQ3_N(ADC_CHANNEL_IN2) | ADC_SQR3_SQ4_N(ADC_CHANNEL_IN3)
         | ADC_SQR3_SQ5_N(ADC_CHANNEL_IN4) | ADC_SQR3_SQ6_N(ADC_CHANNEL_IN5) //SQR3: Conversion group sequence 1...6
@@ -135,4 +136,3 @@ void adc_convert(void) {
   adcStopConversion(&ADCD1);
   adcStartConversion(&ADCD1, &adcgrpcfg1, adcvalues, ADC_GRP1_BUF_DEPTH);
 }
-

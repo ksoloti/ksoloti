@@ -20,8 +20,19 @@
 
 #include "axoloti_defines.h"
 
-#define ADC_CHANNELS 16
-extern unsigned short adcvalues[ADC_CHANNELS];
+/* Total number of channels to be sampled by a single ADC operation.*/
+#define ADC_GRP1_NUM_CHANNELS   14
+
+/* Depth of the conversion buffer, channels are sampled four times each.*/
+#define ADC_GRP1_BUF_DEPTH      1
+
+/* Total number of additional channels to be sampled via ADC3 currently without DMA.*/
+#define ADC_GRP2_NUM_CHANNELS   5
+
+/* Depth of the ADC3 conversion buffer, channels are sampled four times each.*/
+#define ADC_GRP2_BUF_DEPTH      1
+
+extern unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS+ADC_GRP2_NUM_CHANNELS];
 
 extern Mutex Mutex_DMAStream_1_7;
 

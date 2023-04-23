@@ -44,7 +44,7 @@
 /*
  * IO pins assignments.
  */
-#define GPIOA_BUTTON                0
+#define GPIOA_PIN0                  0
 #define GPIOA_PIN1                  1
 #define GPIOA_PIN2                  2
 #define GPIOA_PIN3                  3
@@ -239,7 +239,7 @@
  * PA14 - SWCLK                     (alternate 0).
  * PA15 - PIN15                     (input pullup).
  */
-#define VAL_GPIOA_MODER             (PIN_MODE_INPUT(GPIOA_BUTTON) |         \
+#define VAL_GPIOA_MODER             (PIN_MODE_INPUT(GPIOA_PIN0) |         \
                                      PIN_MODE_INPUT(GPIOA_PIN1) |           \
                                      PIN_MODE_INPUT(GPIOA_PIN2) |           \
                                      PIN_MODE_INPUT(GPIOA_PIN3) |           \
@@ -255,7 +255,7 @@
                                      PIN_MODE_ALTERNATE(GPIOA_SWDIO) |      \
                                      PIN_MODE_ALTERNATE(GPIOA_SWCLK) |      \
                                      PIN_MODE_INPUT(GPIOA_PIN15))
-#define VAL_GPIOA_OTYPER            (PIN_OTYPE_PUSHPULL(GPIOA_BUTTON) |     \
+#define VAL_GPIOA_OTYPER            (PIN_OTYPE_PUSHPULL(GPIOA_PIN0) |     \
                                      PIN_OTYPE_PUSHPULL(GPIOA_PIN1) |       \
                                      PIN_OTYPE_PUSHPULL(GPIOA_PIN2) |       \
                                      PIN_OTYPE_PUSHPULL(GPIOA_PIN3) |       \
@@ -271,7 +271,7 @@
                                      PIN_OTYPE_PUSHPULL(GPIOA_SWDIO) |      \
                                      PIN_OTYPE_PUSHPULL(GPIOA_SWCLK) |      \
                                      PIN_OTYPE_PUSHPULL(GPIOA_PIN15))
-#define VAL_GPIOA_OSPEEDR           (PIN_OSPEED_100M(GPIOA_BUTTON) |        \
+#define VAL_GPIOA_OSPEEDR           (PIN_OSPEED_100M(GPIOA_PIN0) |        \
                                      PIN_OSPEED_100M(GPIOA_PIN1) |          \
                                      PIN_OSPEED_100M(GPIOA_PIN2) |          \
                                      PIN_OSPEED_100M(GPIOA_PIN3) |          \
@@ -287,7 +287,7 @@
                                      PIN_OSPEED_100M(GPIOA_SWDIO) |         \
                                      PIN_OSPEED_100M(GPIOA_SWCLK) |         \
                                      PIN_OSPEED_100M(GPIOA_PIN15))
-#define VAL_GPIOA_PUPDR             (PIN_PUPDR_FLOATING(GPIOA_BUTTON) |     \
+#define VAL_GPIOA_PUPDR             (PIN_PUPDR_FLOATING(GPIOA_PIN0) |     \
                                      PIN_PUPDR_PULLUP(GPIOA_PIN1) |         \
                                      PIN_PUPDR_PULLUP(GPIOA_PIN2) |         \
                                      PIN_PUPDR_PULLUP(GPIOA_PIN3) |         \
@@ -303,7 +303,7 @@
                                      PIN_PUPDR_FLOATING(GPIOA_SWDIO) |      \
                                      PIN_PUPDR_FLOATING(GPIOA_SWCLK) |      \
                                      PIN_PUPDR_PULLUP(GPIOA_PIN15))
-#define VAL_GPIOA_ODR               (PIN_ODR_HIGH(GPIOA_BUTTON) |           \
+#define VAL_GPIOA_ODR               (PIN_ODR_HIGH(GPIOA_PIN0) |           \
                                      PIN_ODR_HIGH(GPIOA_PIN1) |             \
                                      PIN_ODR_HIGH(GPIOA_PIN2) |             \
                                      PIN_ODR_HIGH(GPIOA_PIN3) |             \
@@ -319,7 +319,7 @@
                                      PIN_ODR_HIGH(GPIOA_SWDIO) |            \
                                      PIN_ODR_HIGH(GPIOA_SWCLK) |            \
                                      PIN_ODR_HIGH(GPIOA_PIN15))
-#define VAL_GPIOA_AFRL              (PIN_AFIO_AF(GPIOA_BUTTON, 0) |         \
+#define VAL_GPIOA_AFRL              (PIN_AFIO_AF(GPIOA_PIN0, 0) |         \
                                      PIN_AFIO_AF(GPIOA_PIN1, 0) |           \
                                      PIN_AFIO_AF(GPIOA_PIN2, 0) |           \
                                      PIN_AFIO_AF(GPIOA_PIN3, 0) |           \
