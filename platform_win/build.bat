@@ -4,7 +4,7 @@ setlocal
 
 cd %~sdp0
 
-set MSYS32=d:\msys32
+set MSYS32=c:\msys32
 set PACMAN=%MSYS32%\usr\bin\pacman.exe
 
 if not exist %PACMAN% (

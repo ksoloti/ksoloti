@@ -11,6 +11,8 @@ control_firmware/.dep/*
 portaudio-r1891-build/*
 portaudio/*
 win32tools/
+chibios/
+chibios_2.6.5/
 patch/xpatch.c
 patch/xpatch.cpp
 patch/xpatch.elf
@@ -20,6 +22,7 @@ patch/xpatch.bin
 patch/xpatch.lst
 patch/xpatch.map
 .preferences.xml
+/chibios
 /target/
 /build/
 /nbproject/private/
