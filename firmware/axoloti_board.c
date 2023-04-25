@@ -36,8 +36,6 @@ void axoloti_board_init(void) {
   chMtxInit(&Mutex_DMAStream_1_7);
 }
 
-
-
 void adc_init(void) {
   adc_configpads();
   adcStart(&ADCD1, NULL);
@@ -60,14 +58,15 @@ void adc_configpads(void) {
   palSetPadMode(GPIOB, 0, PAL_MODE_INPUT_ANALOG);
   palSetPadMode(GPIOB, 1, PAL_MODE_INPUT_ANALOG);
 
-  // palSetPadMode(GPIOC, 0, PAL_MODE_INPUT_ANALOG); // pin remapped to FMC
+  /* palSetPadMode(GPIOC, 0, PAL_MODE_INPUT_ANALOG); // pin remapped to FMC */
   palSetPadMode(GPIOC, 1, PAL_MODE_INPUT_ANALOG);
-  // palSetPadMode(GPIOC, 2, PAL_MODE_INPUT_ANALOG); // pin remapped to FMC
-  // palSetPadMode(GPIOC, 3, PAL_MODE_INPUT_ANALOG); // pin remapped to FMC
+  /* palSetPadMode(GPIOC, 2, PAL_MODE_INPUT_ANALOG); // pin remapped to FMC */
+  /* palSetPadMode(GPIOC, 3, PAL_MODE_INPUT_ANALOG); // pin remapped to FMC */
   palSetPadMode(GPIOC, 4, PAL_MODE_INPUT_ANALOG);
   palSetPadMode(GPIOC, 5, PAL_MODE_INPUT_ANALOG);
 
-  palSetPadMode(GPIOF, 6, PAL_MODE_INPUT_ANALOG); // 4 additional inputs sampled at low speed via ADC3
+  /* Four additional ADC inputs sampled at low speed via ADC3 */
+  palSetPadMode(GPIOF, 6, PAL_MODE_INPUT_ANALOG);
   palSetPadMode(GPIOF, 7, PAL_MODE_INPUT_ANALOG);
   palSetPadMode(GPIOF, 8, PAL_MODE_INPUT_ANALOG);
   palSetPadMode(GPIOF, 9, PAL_MODE_INPUT_ANALOG);
@@ -97,10 +96,9 @@ void adc_configpads(void) {
 }
 
 /*
- * ADC samples buffer.
+ * ADC samples buffer. Increased size to hold data of 5V supervisor and PF6..9 inputs.
  */
 unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH + ADC_GRP2_NUM_CHANNELS * ADC_GRP2_BUF_DEPTH] __attribute__ ((section (".sram2")));
-// unsigned short adc3values[5] __attribute__ ((section (".sram2")));
 
 /*
  * ADC conversion group.
