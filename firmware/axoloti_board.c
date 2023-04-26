@@ -24,6 +24,8 @@
 
 Mutex Mutex_DMAStream_1_7; // shared: SPI3 (axoloti control) and I2C2 (codec)
 
+uint8_t adc_ch = 8; // we can first pick up the first conversion of channel 8 started during initialization
+
 void axoloti_board_init(void) {
 
 #ifdef BOARD_AXOLOTI_V05
@@ -133,4 +135,9 @@ static const ADCConversionGroup adcgrpcfg1 = {FALSE,      //circular buffer mode
 void adc_convert(void) {
   adcStopConversion(&ADCD1);
   adcStartConversion(&ADCD1, &adcgrpcfg1, adcvalues, ADC_GRP1_BUF_DEPTH);
+  // Sample ADC3
+  adcvalues[10 + adc_ch] = (ADC3->DR); // store results in indexes 14 to 18 of adcvalues[] then increment channel
+  if (++adc_ch > 8) adc_ch = 4; // wrap channel from 4 to 8
+  ADC3->SQR3 = adc_ch; // prepare next channel for conversion
+  ADC3->CR2 |= ADC_CR2_SWSTART; // start next conversion
 }

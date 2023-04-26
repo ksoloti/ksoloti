@@ -51,7 +51,7 @@ static msg_t ThreadSysmon(void *arg) {
 #endif
 
   pattern_index = 0;
-  uint16_t flt_supervis = adcvalues[18]; // crude filter so 5V supervisor value will not get jumpy
+  // uint16_t flt_supervis = 0xC6B; // crude filter so 5V supervisor value will not get jumpy. Initialize to value around 5V
 
   while (1) {
     uint8_t pi = pattern_index;
@@ -82,12 +82,17 @@ static msg_t ThreadSysmon(void *arg) {
         pattern_index = pi;
     }
 
-    flt_supervis = 0.9*flt_supervis + 0.1*adcvalues[18];
-    if (flt_supervis > v50_max) // flt_supervis contains filtered PF10 = 5V supervisor data
-      v50_max = flt_supervis;
-    if (flt_supervis < v50_min)
-      v50_min = flt_supervis;
-    voltage_50 = flt_supervis;
+    // flt_supervis = 0.9*flt_supervis + 0.1*adcvalues[18];
+    // if (flt_supervis > v50_max) // flt_supervis contains filtered PF10 = 5V supervisor data
+    //   v50_max = flt_supervis;
+    // if (flt_supervis < v50_min)
+    //   v50_min = flt_supervis;
+    // voltage_50 = flt_supervis;
+    if (adcvalues[18] > v50_max) // adcvalues[18] contains filtered PF10 = 5V supervisor data
+      v50_max = adcvalues[18];
+    if (adcvalues[18] < v50_min)
+      v50_min = adcvalues[18];
+    voltage_50 = adcvalues[18];
 
 // sdcard switch monitor
 #ifdef SDCSW_PIN
@@ -117,7 +122,7 @@ __attribute__((noreturn))
 static msg_t ThreadSysmonAdc3(void *arg) {
     // 5V Voltage supervisor and PF6 to 9 ADC sampling get their own little thread.
     (void)arg;
-    uint8_t adc_ch = 8; // we can first pick up the first conversion of channel 8 started during initialization
+    // uint8_t adc_ch = 8; // we can first pick up the first conversion of channel 8 started during initialization
 
     #if CH_USE_REGISTRY
     chRegSetThreadName("sysmonadc3");
@@ -126,10 +131,10 @@ static msg_t ThreadSysmonAdc3(void *arg) {
     while(1)
     {
         chThdSleepMilliseconds(2); // each ADC3 input is sampled at around 1000ms / 2ms / 5 = 100 Hz
-        adcvalues[10 + adc_ch] = (ADC3->DR); // store results in indexes 14 to 18 of adcvalues[] then increment channel
-        if (++adc_ch > 8) adc_ch = 4; // wrap channel around 4 to 8
-        ADC3->SQR3 = adc_ch; // prepare next channel for conversion
-        ADC3->CR2 |= ADC_CR2_SWSTART; // start next conversion
+        // adcvalues[10 + adc_ch] = (ADC3->DR); // store results in indexes 14 to 18 of adcvalues[] then increment channel
+        // if (++adc_ch > 8) adc_ch = 4; // wrap channel around 4 to 8
+        // ADC3->SQR3 = adc_ch; // prepare next channel for conversion
+        // ADC3->CR2 |= ADC_CR2_SWSTART; // start next conversion
     }
 }
 
