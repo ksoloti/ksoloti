@@ -39,16 +39,20 @@ bool sdcsw_prev = FALSE;
 volatile uint8_t pattern_index;
 
 static WORKING_AREA(waThreadSysmon, 256);
-/* Separating ADC3 sampling process from Sysmon thread in order to "abuse" ADC3 to get 4 additional ADC inputs at PF6, PF7, PF8, and PF9 but only if the gpio/in/analog2 object is used in the running patch. */
+/* Separating ADC3 sampling process from Sysmon thread in order to "abuse" ADC3 to get 4 additional ADC inputs at PF6, PF7, PF8, and PF9. */
 static WORKING_AREA(waThreadSysmonAdc3, 16);
 
 __attribute__((noreturn))
 static msg_t ThreadSysmon(void *arg) {
   (void)arg;
+
 #if CH_USE_REGISTRY
   chRegSetThreadName("sysmon");
 #endif
+
   pattern_index = 0;
+  uint16_t flt_supervis = adcvalues[18]; // crude filter so 5V supervisor value will not get jumpy
+
   while (1) {
     uint8_t pi = pattern_index;
 
@@ -78,11 +82,12 @@ static msg_t ThreadSysmon(void *arg) {
         pattern_index = pi;
     }
 
-    if (adcvalues[18] > v50_max) // adcvalues[18] contains PF10 = 5V supervisor data
-      v50_max = adcvalues[18];
-    if (adcvalues[18] < v50_min)
-      v50_min = adcvalues[18];
-    voltage_50 = adcvalues[18];
+    flt_supervis = 0.9*flt_supervis + 0.1*adcvalues[18];
+    if (flt_supervis > v50_max) // flt_supervis contains filtered PF10 = 5V supervisor data
+      v50_max = flt_supervis;
+    if (flt_supervis < v50_min)
+      v50_min = flt_supervis;
+    voltage_50 = flt_supervis;
 
 // sdcard switch monitor
 #ifdef SDCSW_PIN
@@ -173,10 +178,8 @@ void sysmon_blink_pattern(uint32_t pat) {
   pattern_index = 0;
 }
 
+
 uint32_t errorflags = 0;
-
-
-
 
 void setErrorFlag(error_flag_t error) {
   errorflags |= 1 << error;
