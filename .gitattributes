@@ -1,7 +1,7 @@
-Makefile eol=lf
+eol=lf
 
 * text=auto
-*.c text 
+*.c text
 *.cpp text
 *.h text
 *.xml text
@@ -15,4 +15,3 @@ Makefile eol=lf
 
 *.axp   text diff=html
 *.axo   text diff=html
- 

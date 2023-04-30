@@ -330,7 +330,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
 
                     // factory library force and upgrade
-                    // Im stashing changes here, just in case, but in reality users should not be altering factory 
+                    // Im stashing changes here, just in case, but in reality users should not be altering factory
                     ulib = prefs.getLibrary(AxolotiLibrary.FACTORY_ID);
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
@@ -486,7 +486,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Axoloti");
         setMinimumSize(new java.awt.Dimension(200, 200));
-        setPreferredSize(new java.awt.Dimension(355, 325));
+        setPreferredSize(new java.awt.Dimension(800, 600)); // seb increased default size
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);

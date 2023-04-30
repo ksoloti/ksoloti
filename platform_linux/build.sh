@@ -22,7 +22,7 @@ elif [ -f /etc/debian_version ]; then
     if [ -n "`grep 8.6 /etc/debian_version`" ] && [ -z "`uname -m | grep x86_64`" ]; then
       OS=DebianJessie32bit
     fi
-    
+
 elif [ -f /etc/arch-release ]; then
     OS=Archlinux
 elif [ -f /etc/gentoo-release ]; then
@@ -45,16 +45,19 @@ case $OS in
       fi
 
         # On more recent versions of Ubuntu
-        # the libbz2 package is multi-arch
+        # the libbz2 and libncurses5 packages are multi-arch
         install_lib_bz2() {
             sudo apt-get install -y lib32bz2-1.0
+            sudo apt-get install -y lib32ncurses5
         }
         set +e
         if ! install_lib_bz2; then
             set -e
-            sudo apt-get install -y libbz2-1.0:i386
+            sudo apt-get install -y libbz2-1.0:i386 libncurses5:i386
         fi
         ;;
+
+
     Archlinux|Arch)
         echo "pacman -Syy"
         sudo pacman -Syy
@@ -182,7 +185,7 @@ fi
 case $OS in
     Ubuntu|Debian)
         echo "apt-get install openjdk-7-jdk"
-        sudo apt-get install openjdk-7-jdk
+        # sudo apt-get install openjdk-7-jdk
         ;;
     Archlinux)
         echo "pacman -Syy jdk7-openjdk"
@@ -200,6 +203,7 @@ cd "${PLATFORM_ROOT}"
 ./compile_firmware.sh
 
 echo "##### building GUI... #####"
+export ANT_HOME=~/.local/ant/
 cd "${PLATFORM_ROOT}"/..
 ant
 

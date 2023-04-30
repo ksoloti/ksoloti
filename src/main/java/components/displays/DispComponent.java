@@ -46,8 +46,8 @@ public class DispComponent extends ADispComponent {
         setMaximumSize(dim);
         setMinimumSize(dim);
     }
-    private static final Stroke strokeThin = new BasicStroke(0.5f);
-    private static final Stroke strokeThick = new BasicStroke(1);
+    private static final Stroke strokeThin = new BasicStroke(1.f);
+    private static final Stroke strokeThick = new BasicStroke(1.5f);
 
     @Override
     public void paintComponent(Graphics g) {

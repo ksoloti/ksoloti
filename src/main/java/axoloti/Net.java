@@ -174,8 +174,8 @@ public class Net extends JComponent {
         return c;
     }
     final static float[] dash = {2.f, 4.f};
-    final static Stroke strokeValidSelected = new BasicStroke(1.75f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    final static Stroke strokeValidDeselected = new BasicStroke(0.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    final static Stroke strokeValidSelected = new BasicStroke(3.75f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    final static Stroke strokeValidDeselected = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     final static Stroke strokeBrokenSelected = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
     final static Stroke strokeBrokenDeselected = new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
     final QuadCurve2D.Float curve = new QuadCurve2D.Float();
@@ -329,7 +329,7 @@ public class Net extends JComponent {
         DataType t = source.get(0).GetDataType();
         return t;
     }
-    
+
     public ArrayList<OutletInstance> GetSource() {
         return source;
     }

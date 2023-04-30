@@ -26,7 +26,8 @@ import java.awt.Font;
  */
 public class Constants {
 
-    public static final Font FONT = Font.decode("Lucida Sans Regular 9");
+    // public static final Font FONT = Font.decode("Lucida Sans Regular 9");
+    public static final Font FONT = Font.decode("Courier New Bold 10");
     public static final int X_GRID = 14;
     public static final int Y_GRID = 14;
 

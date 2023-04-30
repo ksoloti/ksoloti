@@ -279,7 +279,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     AxoObjectAbstract previewObj;
     int patchLocX;
     int patchLocY;
-    
+
     private Point snapToGrid(Point p) {
         p.x = Constants.X_GRID * (p.x / Constants.X_GRID);
         p.y = Constants.Y_GRID * (p.y / Constants.Y_GRID);
@@ -362,7 +362,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         }
         else {
             accepted = true;
-            jButtonAccept.setEnabled(true);            
+            jButtonAccept.setEnabled(true);
         }
         if (o != previewObj) {
             previewObj = o;
@@ -565,7 +565,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jPanel3.setLayout(new java.awt.BorderLayout());
 
         jSplitPane1.setDividerLocation(186);
-        jSplitPane1.setMinimumSize(new java.awt.Dimension(83, 50));
+        jSplitPane1.setMinimumSize(new java.awt.Dimension(1200, 50));
         jSplitPane1.setPreferredSize(new java.awt.Dimension(600, 365));
 
         jPanel2.setAlignmentX(0.0F);
@@ -577,7 +577,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jTextFieldObjName.setAlignmentX(0.0F);
         jTextFieldObjName.setMaximumSize(new java.awt.Dimension(2147483647, 26));
-        jTextFieldObjName.setMinimumSize(new java.awt.Dimension(40, 26));
+        jTextFieldObjName.setMinimumSize(new java.awt.Dimension(80, 26));
         jTextFieldObjName.setPreferredSize(new java.awt.Dimension(800, 20));
         jTextFieldObjName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -620,23 +620,23 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jSplitPane3.setResizeWeight(0.5);
         jSplitPane3.setAlignmentX(0.5F);
         jSplitPane3.setAlignmentY(1.0F);
-        jSplitPane3.setMinimumSize(new java.awt.Dimension(126, 95));
+        jSplitPane3.setMinimumSize(new java.awt.Dimension(180, 95));
 
         jScrollPane3.setMinimumSize(new java.awt.Dimension(24, 64));
 
         jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jList1.setAlignmentX(0.0F);
-        jList1.setMinimumSize(new java.awt.Dimension(100, 50));
+        jList1.setMinimumSize(new java.awt.Dimension(140, 50));
         jList1.setVisibleRowCount(6);
         jScrollPane3.setViewportView(jList1);
 
         jSplitPane3.setTopComponent(jScrollPane3);
 
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(76, 224));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(96, 224));
 
         jTree1.setAlignmentX(0.0F);
         jTree1.setDragEnabled(true);
-        jTree1.setMinimumSize(new java.awt.Dimension(100, 50));
+        jTree1.setMinimumSize(new java.awt.Dimension(140, 50));
         jTree1.setRootVisible(false);
         jTree1.setShowsRootHandles(true);
         jScrollPane1.setViewportView(jTree1);
@@ -650,7 +650,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jSplitPane2.setDividerLocation(120);
         jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPane2.setResizeWeight(0.5);
-        jSplitPane2.setPreferredSize(new java.awt.Dimension(350, 271));
+        jSplitPane2.setPreferredSize(new java.awt.Dimension(360, 240));
 
         jScrollPane4.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane4.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
