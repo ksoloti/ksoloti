@@ -3,7 +3,8 @@
 #################
 
 *.log
-firmware/build/*
+firmware/build/lst/
+firmware/build/obj/
 firmware/flasher/flasher_build/*
 firmware/.dep/*
 control_firmware/build/*
