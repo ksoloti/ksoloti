@@ -5,6 +5,8 @@
 *.log
 firmware/build/lst/
 firmware/build/obj/
+firmware/build/*.dmp
+firmware/build/*.map
 firmware/flasher/flasher_build/*
 firmware/.dep/*
 control_firmware/build/*
