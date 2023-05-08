@@ -73,25 +73,6 @@ void adc_configpads(void) {
   palSetPadMode(GPIOF, 8, PAL_MODE_INPUT_ANALOG);
   palSetPadMode(GPIOF, 9, PAL_MODE_INPUT_ANALOG);
 
-#elif (BOARD_STM32F4DISCOVERY)
-
-  palSetPadMode(GPIOA, 0, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOA, 1, PAL_MODE_INPUT_ANALOG);
-#ifdef ENABLE_SERIAL_DEBUG
-  palSetPadMode(GPIOA, 2, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOA, 3, PAL_MODE_INPUT_ANALOG);
-#endif
-  // skip GPIOA4: LRCLK
-  // skip GPIOA5,GPIOA6,GPIOA7: accelerometer
-  palSetPadMode(GPIOB, 0, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOB, 1, PAL_MODE_INPUT_ANALOG);
-  //skip GPIOPC0: USB PowerOn
-  palSetPadMode(GPIOC, 1, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOC, 2, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOC, 3, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOC, 4, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOC, 5, PAL_MODE_INPUT_ANALOG);
-  adcStart(&ADCD1, NULL);
 #else
 #error "ADC: No board defined?"
 #endif
@@ -107,7 +88,8 @@ unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH + ADC_GRP2_N
  * Mode:        Linear buffer, 8 samples of 1 channel, SW triggered.
  * Channels:    IN11.
  */
-static const ADCConversionGroup adcgrpcfg1 = {FALSE,      //circular buffer mode
+static const ADCConversionGroup adcgrpcfg1 = {
+    FALSE,      //circular buffer mode
     ADC_GRP1_NUM_CHANNELS,        //Number of the analog channels
     NULL,                         //Callback function (not needed here)
     0,             //Error callback
@@ -136,8 +118,8 @@ void adc_convert(void) {
   adcStopConversion(&ADCD1);
   adcStartConversion(&ADCD1, &adcgrpcfg1, adcvalues, ADC_GRP1_BUF_DEPTH);
   
-  // Sample ADC3
-  adcvalues[10 + adc_ch] = (ADC3->DR); // store results in indexes 14 to 18 of adcvalues[] then increment channel
+  // Sample ADC3 (slower than ADC1 but still adequate)
+  adcvalues[10 + adc_ch] = (ADC3->DR); // store results in indexes 14 to 18 of adcvalues[]
   if (++adc_ch > 8) adc_ch = 4; // wrap channel from 4 to 8
   ADC3->SQR3 = adc_ch; // prepare next channel for conversion
   ADC3->CR2 |= ADC_CR2_SWSTART; // start next conversion

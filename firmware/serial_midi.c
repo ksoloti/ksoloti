@@ -156,7 +156,9 @@ void serial_midi_init(void) {
   // RX
   palSetPadMode(GPIOG, 9, PAL_MODE_ALTERNATE(8) | PAL_MODE_INPUT_PULLUP);
   // TX
-  palSetPadMode(GPIOG, 14, PAL_MODE_ALTERNATE(8) | PAL_STM32_OTYPE_OPENDRAIN);
+  // palSetPadMode(GPIOG, 14, PAL_MODE_ALTERNATE(8) | PAL_STM32_OTYPE_OPENDRAIN); // seb don't know why TX didn't work in open drain
+  // palSetPadMode(GPIOG, 14, PAL_MODE_ALTERNATE(8) | PAL_STM32_PUDR_PULLUP); // seb works but push pull should be better
+  palSetPadMode(GPIOG, 14, PAL_MODE_ALTERNATE(8) | PAL_MODE_OUTPUT_PUSHPULL);
 #else
   // RX
   palSetPadMode(GPIOB, 7, PAL_MODE_ALTERNATE(7)|PAL_MODE_INPUT_PULLUP);

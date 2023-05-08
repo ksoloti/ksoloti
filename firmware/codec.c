@@ -20,9 +20,7 @@
 
 #include "axoloti_defines.h"
 
-#if (BOARD_STM32F4DISCOVERY)
-#include "codec_CS43L22.h"
-#elif (BOARD_AXOLOTI_V05)
+#if (BOARD_AXOLOTI_V05)
 #include "codec_ADAU1961.h"
 #elif (BOARD_AXOLOTI_V03)
 #include "codec_ADAU1961.h"
@@ -36,18 +34,7 @@ int32_t rbuf[BUFSIZE*2] __attribute__ ((section (".sram2")));
 int32_t rbuf2[BUFSIZE*2] __attribute__ ((section (".sram2")));
 
 void codec_init(void) {
-#if (BOARD_STM32F4DISCOVERY)
-  codec_CS43L22_i2s_init_48k();
-  codec_CS43L22_hw_init();
-  codec_CS43L22_pwrCtl(1);
-/*
-  while(1){
-//    chThdSleepMilliseconds(100);
-    codec_CS43L22_sendBeep();
-    chThdSleepMilliseconds(100);
-  }
-*/
-#elif ((BOARD_AXOLOTI_V03)||(BOARD_AXOLOTI_V05))
+#if ((BOARD_AXOLOTI_V03)||(BOARD_AXOLOTI_V05))
   codec_ADAU1961_i2s_init(SAMPLERATE);
   codec_ADAU1961_hw_init(SAMPLERATE);
 #else
@@ -69,9 +56,7 @@ void codec_clearbuffer(void) {
   }
 }
 
-#if (BOARD_STM32F4DISCOVERY)
-#include "codec_CS43L22.c"
-#elif (BOARD_AXOLOTI_V03)
+#if (BOARD_AXOLOTI_V03)
 #include "codec_ADAU1961.c"
 #elif (BOARD_AXOLOTI_V05)
 #include "codec_ADAU1961_SAI.c"

@@ -182,7 +182,7 @@ static msg_t ThreadDSP(void *arg) {
       tStart = hal_lld_get_counter_value();
       watchdog_feed();
       if (patchStatus == RUNNING) { // running
-#if (BOARD_STM32F4DISCOVERY)||(BOARD_AXOLOTI_V03)
+#if (BOARD_AXOLOTI_V03)
           // swap halfwords...
           int i;
           int32_t *p = inbuf;
@@ -193,7 +193,7 @@ static msg_t ThreadDSP(void *arg) {
           }
 #endif
         (patchMeta.fptr_dsp_process)(inbuf, outbuf);
-#if (BOARD_STM32F4DISCOVERY)||(BOARD_AXOLOTI_V03)
+#if (BOARD_AXOLOTI_V03)
         p = outbuf;
         for (i = 0; i < 32; i++) {
           __ASM

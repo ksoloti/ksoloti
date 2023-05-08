@@ -65,20 +65,6 @@
 extern void MY_USBH_Init(void);
 #endif
 
-#if (BOARD_STM32F4DISCOVERY)
-void ToggleGreen(void) {
-  palSetPadMode(GPIOD, 12, PAL_MODE_OUTPUT_PUSHPULL); palTogglePad(GPIOD, 12);
-}
-void ToggleOrange(void) {
-  palSetPadMode(GPIOD, 13, PAL_MODE_OUTPUT_PUSHPULL); palTogglePad(GPIOD, 13);
-}
-void ToggleRed(void) {
-  palSetPadMode(GPIOD, 14, PAL_MODE_OUTPUT_PUSHPULL); palTogglePad(GPIOD, 14);
-}
-void ToggleBlue(void) {
-  palSetPadMode(GPIOD, 15, PAL_MODE_OUTPUT_PUSHPULL); palTogglePad(GPIOD, 15);
-}
-#endif
 
 int main(void) {
   // copy vector table to SRAM1!
