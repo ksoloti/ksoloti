@@ -93,7 +93,7 @@ void CheckStackOverflow(void) {
       nfree++;
       stk++;
       if (nfree>=STACKSPACE_MARGIN) break;
-    }    
+    }
     if (nfree<STACKSPACE_MARGIN) {
        critical = 1;
        break;
@@ -182,25 +182,7 @@ static msg_t ThreadDSP(void *arg) {
       tStart = hal_lld_get_counter_value();
       watchdog_feed();
       if (patchStatus == RUNNING) { // running
-#if (BOARD_AXOLOTI_V03)
-          // swap halfwords...
-          int i;
-          int32_t *p = inbuf;
-          for (i = 0; i < 32; i++) {
-            __ASM
-            volatile ("ror %0, %1, #16" : "=r" (*p) : "r" (*p));
-            p++;
-          }
-#endif
         (patchMeta.fptr_dsp_process)(inbuf, outbuf);
-#if (BOARD_AXOLOTI_V03)
-        p = outbuf;
-        for (i = 0; i < 32; i++) {
-          __ASM
-          volatile ("ror %0, %1, #16" : "=r" (*p) : "r" (*p));
-          p++;
-        }
-#endif
       }
       else if (patchStatus == STOPPING){
         codec_clearbuffer();

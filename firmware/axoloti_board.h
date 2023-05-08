@@ -42,7 +42,7 @@ void adc_configpads(void);
 void adc_convert(void);
 
 
-#if (BOARD_AXOLOTI_V05)
+#ifdef BOARD_AXOLOTI_V05
 #define LED1_PORT GPIOG
 #define LED1_PIN 6
 #define LED2_PORT GPIOC
@@ -56,12 +56,6 @@ void adc_convert(void);
 #define OCFLAG_PIN 13
 #define SDCSW_PORT GPIOD
 #define SDCSW_PIN 13
-
-#elif (BOARD_AXOLOTI_V03)
-#define LED1_PORT GPIOA
-#define LED1_PIN 8
-#define SW2_PORT GPIOB
-#define SW2_PIN 2
 #endif
 
 

@@ -26,7 +26,6 @@
 #define BUFSIZE_POW 4
 typedef int32_t int32buffer[BUFSIZE];
 
-//#define BOARD_AXOLOTI_V03 1
 #define BOARD_AXOLOTI_V05 1
 
 // firmware version 1.0.0.1
@@ -35,8 +34,7 @@ typedef int32_t int32buffer[BUFSIZE];
 #define FWVERSION3 0
 #define FWVERSION4 1
 
-#if (BOARD_AXOLOTI_V03)
-#elif (BOARD_AXOLOTI_V05)
+#if (BOARD_AXOLOTI_V05)
 #else
 #error Must define board!
 #endif

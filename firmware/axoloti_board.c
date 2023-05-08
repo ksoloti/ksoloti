@@ -45,7 +45,7 @@ void adc_init(void) {
 }
 
 void adc_configpads(void) {
-#if ((BOARD_AXOLOTI_V03)||(BOARD_AXOLOTI_V05))
+#if (BOARD_AXOLOTI_V05)
   palSetPadMode(GPIOA, 0, PAL_MODE_INPUT_ANALOG);
   palSetPadMode(GPIOA, 1, PAL_MODE_INPUT_ANALOG);
 #ifndef ENABLE_SERIAL_DEBUG
@@ -117,7 +117,7 @@ static const ADCConversionGroup adcgrpcfg1 = {
 void adc_convert(void) {
   adcStopConversion(&ADCD1);
   adcStartConversion(&ADCD1, &adcgrpcfg1, adcvalues, ADC_GRP1_BUF_DEPTH);
-  
+
   // Sample ADC3 (slower than ADC1 but still adequate)
   adcvalues[10 + adc_ch] = (ADC3->DR); // store results in indexes 14 to 18 of adcvalues[]
   if (++adc_ch > 8) adc_ch = 4; // wrap channel from 4 to 8

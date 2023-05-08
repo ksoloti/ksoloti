@@ -28,7 +28,6 @@ extern int32_t rbuf[BUFSIZE * 2];
 extern int32_t rbuf2[BUFSIZE * 2];
 
 extern void codec_init(void);
-extern void codecStop(void);
 
 extern void computebufI(int32_t *inp, int32_t *outp);
 

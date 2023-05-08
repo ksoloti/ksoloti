@@ -59,9 +59,6 @@
 //#define ENABLE_SERIAL_DEBUG 1
 
 #ifdef ENABLE_USB_HOST
-#if (BOARD_AXOLOTI_V03)
-#error conflicting pins: USB_OTG_HS and I2S
-#endif
 extern void MY_USBH_Init(void);
 #endif
 
@@ -118,7 +115,7 @@ int main(void) {
     chThdSleepMilliseconds(1);
   }
 
-#if ((BOARD_AXOLOTI_V03)||(BOARD_AXOLOTI_V05))
+#if (BOARD_AXOLOTI_V05)
   axoloti_control_init();
 #endif
   ui_init();
@@ -135,7 +132,7 @@ int main(void) {
   if (!exception_check()) {
     // only try booting a patch when no exception is to be reported
 
-#if ((BOARD_AXOLOTI_V03)||(BOARD_AXOLOTI_V05))
+#if (BOARD_AXOLOTI_V05)
     sdcard_attemptMountIfUnmounted();
     if (fs_ready && !palReadPad(SW2_PORT, SW2_PIN)){
       // button S2 not pressed
@@ -156,9 +153,11 @@ int main(void) {
   }
 }
 
+
 void HAL_Delay(unsigned int n) {
   chThdSleepMilliseconds(n);
 }
+
 
 void _sbrk(void) {
   while (1) {
