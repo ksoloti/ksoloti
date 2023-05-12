@@ -39,8 +39,20 @@ void axoloti_board_init(void) {
 }
 
 void adc_init(void) {
+
   adc_configpads();
   adcStart(&ADCD1, NULL);
+
+  // initialize ADC3
+  rccEnableADC3(FALSE);
+  ADC3->CR2 = ADC_CR2_ADON;
+  ADC3->SMPR1 = 0x07FFFFFF; // 0b 0000 0111 1111 1111 1111 1111 1111 1111
+  ADC3->SMPR2 = 0x24924924; // 0b 0010 0100 1001 0010 0100 1001 0010 0100 sampling time 84 cycles for channels 0 to 9
+  ADC3->SQR1 = 0;
+  ADC3->SQR2 = 0;
+  ADC3->SQR3 = 8; // start with ADC3_IN_8 (the 5V supervisor).
+  ADC3->CR2 |= ADC_CR2_SWSTART;
+
   adcSTM32EnableTSVREFE();
 }
 

@@ -184,8 +184,12 @@ fi
 
 case $OS in
     Ubuntu|Debian)
-        echo "apt-get install openjdk-7-jdk"
+        # echo "apt-get install openjdk-7-jdk"
         # sudo apt-get install openjdk-7-jdk
+        echo "openjdk-7 not available on debian. Installing sdkman..."
+        curl -s "https://get.sdkman.io" | bash 
+        echo "installing java TODO..."
+        # sdk install java x.y.z-zulu # TODO
         ;;
     Archlinux)
         echo "pacman -Syy jdk7-openjdk"

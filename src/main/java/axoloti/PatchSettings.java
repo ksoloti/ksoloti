@@ -49,7 +49,7 @@ public class PatchSettings {
     @Element(required = false)
     private Boolean Saturate;
     PatchSettingsFrame editor;
-    
+
     public int GetMidiChannel() {
         if (MidiChannel != null) {
             SetMidiChannel(MidiChannel);
@@ -88,7 +88,7 @@ public class PatchSettings {
         if (NPresets != null) {
             return NPresets;
         } else {
-            return 8;
+            return 0;
         }
     }
 
@@ -104,7 +104,7 @@ public class PatchSettings {
         if (NPresetEntries != null) {
             return NPresetEntries;
         } else {
-            return 32;
+            return 0;
         }
     }
 
@@ -112,7 +112,7 @@ public class PatchSettings {
         if (NModulationSources != null) {
             return NModulationSources;
         } else {
-            return 8;
+            return 0;
         }
     }
 
@@ -124,7 +124,7 @@ public class PatchSettings {
         if (NModulationTargetsPerSource != null) {
             return NModulationTargetsPerSource;
         } else {
-            return 8;
+            return 0;
         }
     }
 
