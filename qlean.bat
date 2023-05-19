@@ -1,0 +1,9 @@
+del /q firmware\.dep\
+del /q firmware\build\lst\
+del /q firmware\build\obj\
+del /q firmware\flasher\.dep\
+del /q firmware\flasher\flasher_build\lst\
+del /q firmware\flasher\flasher_build\obj\
+del /q firmware\mounter\.dep\
+del /q firmware\mounter\mounter_build\lst\
+del /q firmware\mounter\mounter_build\obj\

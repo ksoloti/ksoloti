@@ -122,6 +122,7 @@ CSRC = $(PORTSRC) \
        ${FIRMWARE}/parameters.c \
        ${FIRMWARE}/main.c \
        ${FIRMWARE}/patch.c \
+       ${FIRMWARE}/pdm.c \
        ${FIRMWARE}/flash.c \
        ${FIRMWARE}/virtual_control.c \
        ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_bitreversal.c \

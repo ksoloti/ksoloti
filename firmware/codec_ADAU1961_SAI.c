@@ -24,7 +24,7 @@
 #include "axoloti_board.h"
 #include "sysmon.h"
 
-//#define STM_IS_I2S_MASTER 1
+// #define STM_IS_I2S_MASTER 1
 
 extern void computebufI(int32_t *inp, int32_t *outp);
 

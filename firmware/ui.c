@@ -393,7 +393,7 @@ static void UIUpdateLCD(void);
 static void UIPollButtons2(void);
 
 void AxolotiControlUpdate(void) {
-#if (BOARD_AXOLOTI_V05)
+#if ((BOARD_AXOLOTI_V05)&&(AXOLOTICONTROL))
     do_axoloti_control();
     UIPollButtons2();
     UIUpdateLCD();

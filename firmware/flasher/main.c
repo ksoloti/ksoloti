@@ -33,7 +33,7 @@
 
 extern int _vectors;
 
-#define AXOLOTICONTROL FALSE
+// #define AXOLOTICONTROL
 #define SERIALDEBUG TRUE
 
 #if SERIALDEBUG
@@ -62,7 +62,7 @@ void dbgPrintHexDigit(uint8_t b) {
     dbgPrintHexDigit((x)&0x0f); \
     DBGPRINTCHAR('\r'); \
     DBGPRINTCHAR('\n');
-#else 
+#else
 #define DBGPRINTCHAR(x)
 #define DBGPRINTHEX(x)
 #endif
@@ -78,7 +78,7 @@ Btn_Nav_States_struct Btn_Nav_And;
 int8_t EncBuffer[4];
 
 void refresh_LCD(void) {
-#if AXOLOTICONTROL
+#ifdef AXOLOTICONTROL
   int i;
   for(i=0;i<9;i++) {
     do_axoloti_control();
@@ -89,7 +89,7 @@ void refresh_LCD(void) {
 
 void DispayAbortErr(int err) {
   DBGPRINTCHAR('0' + err);
-#if AXOLOTICONTROL
+#ifdef AXOLOTICONTROL
   LCD_drawStringN(0, 5, "error code:", 128);
   LCD_drawNumber3D(0, 6, (int)err);
   refresh_LCD();
@@ -261,4 +261,3 @@ int main(void) {
   NVIC_SystemReset();
   return 0;
 }
-

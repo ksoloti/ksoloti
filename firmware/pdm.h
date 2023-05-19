@@ -16,24 +16,28 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CODEC_H
-#define __CODEC_H
-#include <stdint.h>
-#include "axoloti_defines.h"
+/*
+ * Adapted from pdm.h
+ * Created on: Jun 7, 2012
+ * Author: Kumar Abhishek
+ */
 
-// double buffers for DMA, interleaved stereo
-extern int32_t buf[BUFSIZE * 2]; // *2 for stereo
-extern int32_t buf2[BUFSIZE * 2];
-extern int32_t rbuf[BUFSIZE * 2];
-extern int32_t rbuf2[BUFSIZE * 2];
+#ifndef __PDM_H
+#define __PDM_H
 
-extern int32_t pdm_rbuf[BUFSIZE * 2];
-extern int32_t pdm_rbuf2[BUFSIZE * 2];
+#include "hal.h"
 
-extern void codec_init(void);
+#define PDM_I2S_ENABLE rccEnableSPI3(FALSE)
+#define PDM_I2S_DISABLE rccDisableSPI3(FALSE)
+#define PDM_I2S SPI3
+#define PDM_I2Sext I2S3ext
 
-extern void computebufI(int32_t *inp, int32_t *outp);
+#define I2S3_TX_DMA_CHANNEL STM32_DMA_GETCHANNEL(STM32_SPI_SPI3_TX_DMA_STREAM, STM32_SPI3_TX_DMA_CHN)
 
-void codec_clearbuffer(void);
+// #define I2S3ext_RX_DMA_CHANNEL STM32_DMA_GETCHANNEL(STM32_SPI_SPI3_RX_DMA_STREAM, STM32_SPI3_RX_DMA_CHN
 
-#endif /* __CODEC_H */
+#define I2S3ext_RX_DMA_CHANNEL STM32_DMA_GETCHANNEL(STM32_DMA_STREAM_ID(1, 0), 3)
+
+extern void pdm_i2s_init_48k(void);
+
+#endif /* PDM_H_ */

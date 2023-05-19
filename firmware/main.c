@@ -115,7 +115,7 @@ int main(void) {
     chThdSleepMilliseconds(1);
   }
 
-#if (BOARD_AXOLOTI_V05)
+#if ((BOARD_AXOLOTI_V05) && (AXOLOTICONTROL))
   axoloti_control_init();
 #endif
   ui_init();
