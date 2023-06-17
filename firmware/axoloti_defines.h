@@ -27,6 +27,7 @@
 typedef int32_t int32buffer[BUFSIZE];
 
 #define BOARD_AXOLOTI_V05 1
+#define USING_ADAU1761 /* If using ADAU1761 instead of ADAU1961/ADAU1361 */
 
 // firmware version 1.0.0.1
 #define FWVERSION1 1

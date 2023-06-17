@@ -199,21 +199,24 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
     if (samplerate == 48000) {
       // reg setting 0x007D 0012 3101
       pllreg[0] = 0x00;
-      pllreg[1] = 0x7D;
+      pllreg[1] = 0x7D; /* PLL denominator M = 125 */
+
       pllreg[2] = 0x00;
-      pllreg[3] = 0x12;
-      pllreg[4] = 0x31;
-      pllreg[5] = 0x01;
+      pllreg[3] = 0x12; /* PLL numerator N = 18 */
+
+      pllreg[4] = 0x31; /* 0b 0 0110 00 1; PLL integer R = 6, PLL in clock div X = 1, PLL type = fractional */
+
+      pllreg[5] = 0x01; /* PLL unlocked (read-only), PLL enabled */
     }
-    else if (samplerate == 44100) {
-      // reg setting 0x0271 0193 2901
-      pllreg[0] = 0x02;
-      pllreg[1] = 0x71;
-      pllreg[2] = 0x01;
-      pllreg[3] = 0x93;
-      pllreg[4] = 0x29;
-      pllreg[5] = 0x01;
-    }
+    // else if (samplerate == 44100) {
+    //   // reg setting 0x0271 0193 2901
+    //   pllreg[0] = 0x02;
+    //   pllreg[1] = 0x71;
+    //   pllreg[2] = 0x01;
+    //   pllreg[3] = 0x93;
+    //   pllreg[4] = 0x29;
+    //   pllreg[5] = 0x01;
+    // }
     else
       while (1) {
       }
@@ -224,7 +227,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
     while(i) {
       // wait for PLL
       ADAU1961_ReadRegister6(ADAU1961_REG_R1_PLLC);
-      if (i2crxbuf[5] & 0x02)
+      if (i2crxbuf[5] & 0x02) /*wait until PLL signals locked state  */
         break;
       chThdSleepMilliseconds(1);
       i--;
@@ -233,12 +236,12 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
       setErrorFlag(ERROR_CODEC_I2C);
     }
 
-    ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC, 0x09); // PLL = clksrc
+    ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC, 0x09); /* PLL = clksrc */
 
 #endif
     // i2s2_sd (dac) is a confirmed connection, i2s2_ext_sd (adc) is not however
     // bclk and lrclk are ok too
-    ADAU1961_WriteRegister(ADAU1961_REG_R2_DMICJ, 0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R2_DMICJ, 0x20); // enable digital mic function on pin JACKDET/MICIN
     ADAU1961_WriteRegister(ADAU1961_REG_R3_RES, 0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R4_RMIXL0, 0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R5_RMIXL1, 0x00);
@@ -286,6 +289,14 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
     ADAU1961_WriteRegister(ADAU1961_REG_R41_CPORTP1, 0xAA);
     ADAU1961_WriteRegister(ADAU1961_REG_R42_JACKDETP, 0x00);
 
+    #ifdef USING_ADAU1761
+    ADAU1961_WriteRegister(ADAU1761_REG_R58_SERINRT, 0x01);
+    ADAU1961_WriteRegister(ADAU1761_REG_R59_SEROUTRT, 0x01);
+    ADAU1961_WriteRegister(ADAU1761_REG_R64_SERSR, 0x00);
+    ADAU1961_WriteRegister(ADAU1761_REG_R65_CKEN0, 0x7F);
+    ADAU1961_WriteRegister(ADAU1761_REG_R66_CKEN1, 0x03);
+    #endif
+
     chThdSleepMilliseconds(10);
 
 
@@ -306,7 +317,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
 //  ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1, 0x20); // 32 bits per frame
     ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1, 0x00);// 32 bits per frame
 #endif
-    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC, 0x03); // ADC enable
+    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC, 0x13); // ADC enable
     ADAU1961_WriteRegister(ADAU1961_REG_R36_DACC0, 0x03); // DAC enable
 
     ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL, 0xE7); // Playback Line Output Left Volume

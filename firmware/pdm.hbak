@@ -17,7 +17,7 @@
  */
 
 /*
- * Adapted from pdm.h
+ * Adapted from codec.h
  * Created on: Jun 7, 2012
  * Author: Kumar Abhishek
  */
@@ -34,9 +34,7 @@
 
 #define I2S3_TX_DMA_CHANNEL STM32_DMA_GETCHANNEL(STM32_SPI_SPI3_TX_DMA_STREAM, STM32_SPI3_TX_DMA_CHN)
 
-// #define I2S3ext_RX_DMA_CHANNEL STM32_DMA_GETCHANNEL(STM32_SPI_SPI3_RX_DMA_STREAM, STM32_SPI3_RX_DMA_CHN
-
-#define I2S3ext_RX_DMA_CHANNEL STM32_DMA_GETCHANNEL(STM32_DMA_STREAM_ID(1, 0), 3)
+#define I2S3ext_RX_DMA_CHANNEL STM32_DMA_GETCHANNEL(STM32_SPI_SPI3_RX_DMA_STREAM, 3)
 
 extern void pdm_i2s_init_48k(void);
 

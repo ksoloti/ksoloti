@@ -57,7 +57,7 @@ loadPatchIndex_t loadPatchIndex = UNINITIALIZED;
 static int32_t inbuf[32];
 static int32_t *outbuf;
 
-int32_t pdm_inbuf[32];
+// uint32_t pdm_inbuf[16];
 
 static int nThreadsBeforePatch;
 #define STACKSPACE_MARGIN 32
@@ -359,12 +359,12 @@ void computebufI(int32_t *inp, int32_t *outp) {
   chSysUnlockFromIsr();
 }
 
-void computebuf_PDM_I(uint32_t *inp) {
-  int i;
-  for (i = 0; i < 32; i++) {
-    pdm_inbuf[i] = inp[i];
-  }
-}
+// void computebuf_PDM_I(uint32_t *inp) {
+//   int i;
+//   for (i = 0; i < 16; i++) {
+//     pdm_inbuf[i] = inp[i];
+//   }
+// }
 
 void MidiInMsgHandler(midi_device_t dev, uint8_t port, uint8_t status,
                       uint8_t data1, uint8_t data2) {

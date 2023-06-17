@@ -213,15 +213,15 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
       pllreg[4] = 0x31;
       pllreg[5] = 0x01;
     }
-    else if (samplerate == 44100) {
-      // reg setting 0x0271 0193 2901
-      pllreg[0] = 0x02;
-      pllreg[1] = 0x71;
-      pllreg[2] = 0x01;
-      pllreg[3] = 0x93;
-      pllreg[4] = 0x29;
-      pllreg[5] = 0x01;
-    }
+    // else if (samplerate == 44100) {
+    //   // reg setting 0x0271 0193 2901
+    //   pllreg[0] = 0x02;
+    //   pllreg[1] = 0x71;
+    //   pllreg[2] = 0x01;
+    //   pllreg[3] = 0x93;
+    //   pllreg[4] = 0x29;
+    //   pllreg[5] = 0x01;
+    // }
     else
       while (1) {
       }
@@ -243,7 +243,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
 #endif
     // i2s2_sd (dac) is a confirmed connection, i2s2_ext_sd (adc) is not however
     // bclk and lrclk are ok too
-    ADAU1961_WriteRegister(ADAU1961_REG_R2_DMICJ, 0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R2_DMICJ, 0x20); // enable digital mic function on pin JACKDET/MICIN
     ADAU1961_WriteRegister(ADAU1961_REG_R3_RES, 0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R4_RMIXL0, 0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R5_RMIXL1, 0x00);
@@ -313,7 +313,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
 //  ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1, 0x20); // 32 bits per frame
     ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1, 0x00);// 32 bits per frame
 #endif
-    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC, 0x03); // ADC enable
+    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC, 0x13); // ADC enable
     ADAU1961_WriteRegister(ADAU1961_REG_R36_DACC0, 0x03); // DAC enable
 
     ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL, 0xE7); // Playback Line Output Left Volume

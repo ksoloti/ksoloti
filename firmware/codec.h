@@ -27,8 +27,8 @@ extern int32_t buf2[BUFSIZE * 2];
 extern int32_t rbuf[BUFSIZE * 2];
 extern int32_t rbuf2[BUFSIZE * 2];
 
-extern int32_t pdm_rbuf[BUFSIZE * 2];
-extern int32_t pdm_rbuf2[BUFSIZE * 2];
+// extern uint32_t pdm_rbuf[BUFSIZE];
+// extern uint32_t pdm_rbuf2[BUFSIZE];
 
 extern void codec_init(void);
 

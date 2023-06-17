@@ -24,7 +24,7 @@
 
 Mutex Mutex_DMAStream_1_7; // shared: SPI3 (axoloti control) and I2C2 (codec)
 
-uint8_t adc_ch = 8; // we can first pick up the first conversion of channel 8 started during initialization
+uint8_t adc_ch = 8; // we can first pick up the conversion of channel 8 (supervisor)
 
 void axoloti_board_init(void) {
 
@@ -47,7 +47,19 @@ void adc_init(void) {
   rccEnableADC3(FALSE);
   ADC3->CR2 = ADC_CR2_ADON;
   ADC3->SMPR1 = 0x07FFFFFF; // 0b 0000 0111 1111 1111 1111 1111 1111 1111
-  ADC3->SMPR2 = 0x24924924; // 0b 0010 0100 1001 0010 0100 1001 0010 0100 sampling time 84 cycles for channels 0 to 9
+
+  ADC3->SMPR2 =
+  ADC_SMPR2_SMP_AN0(ADC_SAMPLE_56)
+  | ADC_SMPR2_SMP_AN1(ADC_SAMPLE_56)
+  | ADC_SMPR2_SMP_AN2(ADC_SAMPLE_56)
+  | ADC_SMPR2_SMP_AN3(ADC_SAMPLE_56)
+  | ADC_SMPR2_SMP_AN4(ADC_SAMPLE_56)
+  | ADC_SMPR2_SMP_AN5(ADC_SAMPLE_56)
+  | ADC_SMPR2_SMP_AN6(ADC_SAMPLE_56)
+  | ADC_SMPR2_SMP_AN7(ADC_SAMPLE_56)
+  | ADC_SMPR2_SMP_AN8(ADC_SAMPLE_56)
+  | ADC_SMPR2_SMP_AN9(ADC_SAMPLE_56); // sampling time 56 cycles for channels 0 to 9
+
   ADC3->SQR1 = 0;
   ADC3->SQR2 = 0;
   ADC3->SQR3 = 8; // start with ADC3_IN_8 (the 5V supervisor).
@@ -127,12 +139,14 @@ static const ADCConversionGroup adcgrpcfg1 = {
 };
 
 void adc_convert(void) {
-  adcStopConversion(&ADCD1);
-  adcStartConversion(&ADCD1, &adcgrpcfg1, adcvalues, ADC_GRP1_BUF_DEPTH);
 
   // Sample ADC3 (slower than ADC1 but still adequate)
   adcvalues[10 + adc_ch] = (ADC3->DR); // store results in indexes 14 to 18 of adcvalues[]
-  if (++adc_ch > 8) adc_ch = 4; // wrap channel from 4 to 8
+
+  adcStopConversion(&ADCD1); // restart ADC1 sampling sequence
+  adcStartConversion(&ADCD1, &adcgrpcfg1, adcvalues, ADC_GRP1_BUF_DEPTH);
+
+  if (++adc_ch > 8) adc_ch = 4; // wrap ADC3 channel from 4 to 8
   ADC3->SQR3 = adc_ch; // prepare next channel for conversion
   ADC3->CR2 |= ADC_CR2_SWSTART; // start next conversion
 }
