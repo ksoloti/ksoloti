@@ -82,7 +82,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         presetPanel = new PresetPanel(patch);
         visibleCablePanel = new VisibleCablePanel(patch);
-        
+
         jToolbarPanel.add(presetPanel);
         jToolbarPanel.add(new javax.swing.Box.Filler(new Dimension(0, 0), new Dimension(0, 0), new Dimension(32767, 32767)));
         jToolbarPanel.add(visibleCablePanel);
@@ -93,7 +93,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         JMenuItem menuItem = new JMenuItem(new DefaultEditorKit.CutAction());
         menuItem.setText("Cut");
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, 
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
                 KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuEdit.add(menuItem);
         menuItem.addActionListener(new ActionListener() {
@@ -120,7 +120,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
         menuItem.setText("Copy");
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, 
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
                 KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuEdit.add(menuItem);
         menuItem.addActionListener(new ActionListener() {
@@ -146,7 +146,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
         menuItem.setText("Paste");
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, 
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
                 KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuEdit.add(menuItem);
         menuItem.addActionListener(new ActionListener() {
@@ -186,10 +186,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         if (USBBulkConnection.GetConnection().isConnected()) {
             ShowConnect();
         }
-        
-        this.undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, 
+
+        this.undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,
                 KeyUtils.CONTROL_OR_CMD_MASK));
-        this.redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, 
+        this.redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,
                 KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
 
         createBufferStrategy(2);
@@ -222,7 +222,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuItemUploadSD.setEnabled(status);
         jMenuItemUploadSDStart.setEnabled(status);
     }
-    
+
     @Override
     public void ShowDisconnect() {
         if (patch.IsLocked()) {
@@ -427,6 +427,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         fileMenu1.add(jMenuSave);
 
+        jMenuSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+                KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK)); // seb: Save As shortcut: CTRL+SHIFT+S, untested
         jMenuSaveAs.setText("Save As...");
         jMenuSaveAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -897,7 +899,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 }
             }
         }
-        
+
         if(selObj!=null) {
             ((AxoObjectInstance) selObj).OpenEditor();
         } else {
@@ -1112,7 +1114,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     public ArrayList<DocumentWindow> GetChildDocuments() {
         return dwl;
     }
-    
+
     public void updateUndoRedoEnabled() {
         redoItem.setEnabled(patch.canRedo());
         undoItem.setEnabled(patch.canUndo());
