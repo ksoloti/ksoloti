@@ -80,11 +80,13 @@ static msg_t ThreadSysmon(void *arg) {
         pattern_index = pi;
     }
 
-    if (adcvalues[18] > v50_max) // adcvalues[18] contains filtered PF10 = 5V supervisor data
-      v50_max = adcvalues[18];
-    if (adcvalues[18] < v50_min)
-      v50_min = adcvalues[18];
-    voltage_50 = adcvalues[18];
+    // v50 monitor
+    int v = adcvalues[18];  // adcvalues[18] contains filtered 5V supervisor data via PF10
+    if (v > v50_max)
+      v50_max = v;
+    if (v < v50_min)
+      v50_min = v;
+    voltage_50 = v;
 
 // sdcard switch monitor
 #ifdef SDCSW_PIN

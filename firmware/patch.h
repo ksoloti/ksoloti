@@ -26,7 +26,6 @@
 #include "midi.h"
 #include "crc32.h"
 #include "exceptions.h"
-// #include "pdm.h"
 
 typedef void (*fptr_patch_init_t)(int32_t fwID);
 typedef void (*fptr_patch_dispose_t)(void);
@@ -83,7 +82,6 @@ extern volatile patchStatus_t patchStatus;
 extern int8_t hid_buttons[8];
 extern int8_t hid_mouse_x;
 extern int8_t hid_mouse_y;
-
 
 void InitPatch0(void);
 int StartPatch(void);

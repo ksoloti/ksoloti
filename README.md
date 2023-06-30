@@ -4,7 +4,7 @@ by Johannes Taelman
 
 johannes.taelman@gmail.com
 
-Fork for the Noloti board with minor firmware edits by sebiik
+Fork for the Ksoloti board with minor firmware edits by sebiik
 
 Axoloti is a platform for sketching music-DSP algorithms running on standalone hardware.
 
