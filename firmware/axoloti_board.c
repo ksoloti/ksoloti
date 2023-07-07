@@ -140,13 +140,13 @@ static const ADCConversionGroup adcgrpcfg1 = {
 
 void adc_convert(void) {
 
-  // Sample ADC3 (slower than ADC1 but still adequate)
-  adcvalues[10 + adc_ch] = (ADC3->DR); // store results in indexes 14 to 18 of adcvalues[]
-
   adcStopConversion(&ADCD1); // restart ADC1 sampling sequence
-  adcStartConversion(&ADCD1, &adcgrpcfg1, adcvalues, ADC_GRP1_BUF_DEPTH);
-
+  // Retrieve sample from ADC3 (slower than ADC1 but still adequate)
+  adcvalues[10 + adc_ch] = (ADC3->DR); // store results in indexes 14 to 18 of adcvalues[]
   if (++adc_ch > 8) adc_ch = 4; // wrap ADC3 channel from 4 to 8
   ADC3->SQR3 = adc_ch; // prepare next channel for conversion
   ADC3->CR2 |= ADC_CR2_SWSTART; // start next conversion
+
+  adcStartConversion(&ADCD1, &adcgrpcfg1, adcvalues, ADC_GRP1_BUF_DEPTH);
+
 }

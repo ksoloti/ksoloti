@@ -66,8 +66,7 @@ void SDRAM_Init(void) {
   rccEnableAHB3(RCC_AHB3ENR_FMCEN, FALSE);
 
 
-  // seb todo: can tweak below values a bit faster for Micron MT48LC16M16A2P?
-  // because the 11.90ns stated below are actuall for 168mhz clock but we're at 180mhz now, so: 11.11ns
+  // seb tweaked below values a bit faster for Micron MT48LC16M16A2P
   /* FMC Configuration ---------------------------------------------------------*/
   /* FMC SDRAM Bank configuration */
   /* Timing configuration for 84 Mhz of SD clock frequency (168Mhz/2) */
