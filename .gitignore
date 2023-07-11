@@ -94,3 +94,6 @@ $RECYCLE.BIN/
 
 # Xcode project
 xcode/
+
+# VSCode tags
+./tags
