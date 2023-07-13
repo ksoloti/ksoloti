@@ -222,21 +222,21 @@
 /*
  * GPIOA setup:
  *
- * PA0  - BUTTON                    (input floating).
+ * PA0  - PIN0                      (input floating).
  * PA1  - PIN1                      (input pullup).
  * PA2  - PIN2                      (input pullup).
  * PA3  - PIN3                      (input pullup).
- * PA4  - LRCK                      (alternate 6).
- * PA5  - SPC                       (alternate 5).
- * PA6  - SDO                       (alternate 5).
- * PA7  - SDI                       (alternate 5).
+ * PA4  - PIN4                      (input pullup).
+ * PA5  - PIN5                      (input pullup).
+ * PA6  - PIN6                      (input pullup).
+ * PA7  - PIN7                      (input pullup).
  * PA8  - PIN8                      (input pullup).
- * PA9  - VBUS_FS                   (input floating).
- * PA10 - OTG_FS_ID                 (alternate 10).
- * PA11 - OTG_FS_DM                 (alternate 10).
- * PA12 - OTG_FS_DP                 (alternate 10).
- * PA13 - SWDIO                     (alternate 0).
- * PA14 - SWCLK                     (alternate 0).
+ * PA9  - PIN9                      (input floating).
+ * PA10 - PIN10                     (alternate 10).
+ * PA11 - PIN11                     (alternate 10).
+ * PA12 - PIN12                     (alternate 10).
+ * PA13 - PIN13                     (alternate 0).
+ * PA14 - PIN14                     (alternate 0).
  * PA15 - PIN15                     (input pullup).
  */
 #define VAL_GPIOA_MODER             (PIN_MODE_INPUT(GPIOA_PIN0) |         \
