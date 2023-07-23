@@ -120,13 +120,15 @@ void sysmon_init(void) {
 #ifdef LED2_PORT
   palSetPadMode(LED2_PORT, LED2_PIN, PAL_MODE_OUTPUT_PUSHPULL);
 #endif
+
 #ifdef SDCSW_PIN
   palSetPadMode(SDCSW_PORT, SDCSW_PIN, PAL_MODE_INPUT_PULLUP);
+#else
+  palSetPadMode(GPIOD, 13, PAL_MODE_INPUT_PULLDOWN); // seb experimental: override SD card detect for use with external SD card sockets
 #endif
 
   v50_max = 0;
   v50_min = 0xFFFF;
-
   isEnabled = true;
 
   chThdCreateStatic(waThreadSysmon, sizeof(waThreadSysmon), NORMALPRIO,
