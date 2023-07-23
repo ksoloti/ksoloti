@@ -54,8 +54,12 @@ void adc_convert(void);
 #define SW2_PIN 10
 #define OCFLAG_PORT GPIOG
 #define OCFLAG_PIN 13
+
+#ifdef HAS_SD_CARD_DETECT
 #define SDCSW_PORT GPIOD
 #define SDCSW_PIN 13
+#endif
+
 #endif
 
 

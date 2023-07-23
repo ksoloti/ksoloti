@@ -89,7 +89,8 @@ static msg_t ThreadSysmon(void *arg) {
     voltage_50 = v;
 
 // sdcard switch monitor
-#ifdef SDCSW_PIN
+// #ifdef SDCSW_PIN
+#ifdef HAS_SD_CARD_DETECT
     bool sdcsw = palReadPad(SDCSW_PORT, SDCSW_PIN);
     if (sdcsw && !sdcsw_prev) {
 //      LogTextMessage("sdcard ejected");
@@ -121,7 +122,7 @@ void sysmon_init(void) {
   palSetPadMode(LED2_PORT, LED2_PIN, PAL_MODE_OUTPUT_PUSHPULL);
 #endif
 
-#ifdef SDCSW_PIN
+#ifdef HAS_SD_CARD_DETECT
   palSetPadMode(SDCSW_PORT, SDCSW_PIN, PAL_MODE_INPUT_PULLUP);
 #else
   palSetPadMode(GPIOD, 13, PAL_MODE_INPUT_PULLDOWN); // seb experimental: override SD card detect for use with external SD card sockets
