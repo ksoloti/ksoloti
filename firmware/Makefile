@@ -10,7 +10,7 @@ endif
 
 # C specific options here (added to USE_OPT).
 ifeq ($(USE_COPT),)
-  USE_COPT =
+  USE_COPT = 
 endif
 
 # C++ specific options here (added to USE_OPT).
@@ -76,7 +76,10 @@ CHIBIOS = ${axoloti_release}/chibios
 #SPACE :=
 #SPACE +=
 #FIRMWARE=$(subst $(SPACE),\ ,${axoloti_firmware})
-FIRMWARE=.
+#FIRMWARE=.
+EMPTY := 
+SPACE := $(EMPTY) $(EMPTY)
+FIRMWARE=$(subst $(SPACE),\ ,${axoloti_firmware})
 
 MUTABLE_INSTRUMENTS = ${FIRMWARE}/mutable_instruments
 
@@ -213,7 +216,7 @@ BRAIDS_SRC = \
        ${MUTABLE_INSTRUMENTS}/braids/braids_resources.cpp \
        ${MUTABLE_INSTRUMENTS}/braids/analog_oscillator.cpp \
        ${MUTABLE_INSTRUMENTS}/braids/digital_oscillator.cpp \
-       ${MUTABLE_INSTRUMENTS}/braids/macro_oscillator.cpp
+       ${MUTABLE_INSTRUMENTS}/braids/macro_oscillator.cpp 
 endif
 
 ifneq (,$(findstring WARPS,$(AXO_OPT_MODULES)))
@@ -223,7 +226,7 @@ WARPS_SRC = \
        ${MUTABLE_INSTRUMENTS}/warps/dsp/filter_bank.cpp \
        ${MUTABLE_INSTRUMENTS}/warps/dsp/modulator.cpp \
        ${MUTABLE_INSTRUMENTS}/warps/dsp/oscillator.cpp \
-       ${MUTABLE_INSTRUMENTS}/warps/dsp/vocoder.cpp
+       ${MUTABLE_INSTRUMENTS}/warps/dsp/vocoder.cpp 
 endif
 
 ifneq (,$(findstring ELEMENTS,$(AXO_OPT_MODULES)))
@@ -238,7 +241,7 @@ ELEMENTS_SRC = \
        ${MUTABLE_INSTRUMENTS}/elements/dsp/exciter.cpp \
        ${MUTABLE_INSTRUMENTS}/elements/elements_resources.cpp \
        ${MUTABLE_INSTRUMENTS}/elements/part.cpp \
-       ${MUTABLE_INSTRUMENTS}/elements/voice.cpp
+       ${MUTABLE_INSTRUMENTS}/elements/voice.cpp 
 endif
 
 ifneq (,$(findstring CLOUDS,$(AXO_OPT_MODULES)))
@@ -250,13 +253,13 @@ CLOUDS_SRC = \
        ${MUTABLE_INSTRUMENTS}/clouds/dsp/granular_processor.cpp \
        ${MUTABLE_INSTRUMENTS}/clouds/dsp/pvoc/frame_transformation.cpp \
        ${MUTABLE_INSTRUMENTS}/clouds/dsp/pvoc/phase_vocoder.cpp \
-       ${MUTABLE_INSTRUMENTS}/clouds/dsp/pvoc/stft.cpp
+       ${MUTABLE_INSTRUMENTS}/clouds/dsp/pvoc/stft.cpp 
 endif
 
 ifneq (,$(findstring RINGS,$(AXO_OPT_MODULES)))
 #$(info  including RINGS)
 RINGS_SRC = \
-       ${MUTABLE_INSTRUMENTS}/rings/rings_resources.cpp
+       ${MUTABLE_INSTRUMENTS}/rings/rings_resources.cpp 
 endif
 
 ifneq (,$(findstring STREAMS,$(AXO_OPT_MODULES)))
@@ -269,7 +272,7 @@ STREAMS_SRC = \
        ${MUTABLE_INSTRUMENTS}/streams/lorenz_generator.cpp \
        ${MUTABLE_INSTRUMENTS}/streams/processor.cpp \
        ${MUTABLE_INSTRUMENTS}/streams/svf.cpp \
-       ${MUTABLE_INSTRUMENTS}/streams/vactrol.cpp
+       ${MUTABLE_INSTRUMENTS}/streams/vactrol.cpp 
 endif
 
 #$(info including base MI)
@@ -342,8 +345,8 @@ MCU  = cortex-m4
 
 #TRGT = arm-elf-
 TRGT = arm-none-eabi-
-CC   = $(TRGT)gcc
-CPPC = $(TRGT)g++
+CC   = $(TRGT)gcc 
+CPPC = $(TRGT)g++ 
 # Enable loading with g++ only if you need C++ runtime support.
 # NOTE: You can use C++ even without C++ support if you are careful. C++
 #       runtime support makes code size explode.
@@ -389,7 +392,7 @@ DINCDIR =
 DLIBDIR =
 
 # List all default libraries here
-DLIBS =
+DLIBS = 
 
 #
 # End of default section
@@ -406,13 +409,13 @@ UDEFS = -DARM_MATH_CM4 -D__FPU_PRESENT
 UADEFS =
 
 # List all user directories here
-UINCDIR =
+UINCDIR = 
 
 # List the user directory to look for the libraries here
 ULIBDIR = .
 
 # List all user libraries here
-ULIBS = -lm
+ULIBS = -lm 
 
 #
 # End of user defines
