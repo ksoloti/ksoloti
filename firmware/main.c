@@ -98,8 +98,9 @@ int main(void) {
   InitPConnection();
 
   // display SPI CS?
-  palSetPadMode(GPIOC, 1, PAL_MODE_OUTPUT_PUSHPULL);
-  palSetPad(GPIOC, 1);
+  // SEB not sure what this is for
+  // palSetPadMode(GPIOC, 1, PAL_MODE_OUTPUT_PUSHPULL);
+  // palSetPad(GPIOC, 1);
 
   chThdSleepMilliseconds(10);
 

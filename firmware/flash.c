@@ -21,6 +21,7 @@
 
 
 __attribute__ ((section (".data"))) int flash_WaitForLastOperation(void) {
+// __attribute__ ((section (".ramtext"))) int flash_WaitForLastOperation(void) {
   while (FLASH->SR == FLASH_SR_BSY) {
     WWDG->CR = WWDG_CR_T;
   }
@@ -28,6 +29,7 @@ __attribute__ ((section (".data"))) int flash_WaitForLastOperation(void) {
 }
 
 __attribute__ ((section (".data"))) void flash_Erase_sector1(int sector) {
+// __attribute__ ((section (".ramtext"))) void flash_Erase_sector1(int sector) {
   // assume VDD>2.7V
   FLASH->CR &= ~FLASH_CR_PSIZE;
   FLASH->CR |= FLASH_CR_PSIZE_1;

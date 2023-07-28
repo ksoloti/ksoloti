@@ -63,6 +63,13 @@
 #define STM32_PLS                           STM32_PLS_LEV0
 #define STM32_BKPRAM_ENABLE                 FALSE
 
+/* SEB If we ever go to 216 MHz (STM32F767)
+#define STM32_PLLM_VALUE                    8
+#define STM32_PLLN_VALUE                    432
+#define STM32_PLLP_VALUE                    2
+#define STM32_PLLQ_VALUE                    9
+*/
+
 /*
  * ADC driver system settings.
  */

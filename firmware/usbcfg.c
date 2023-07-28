@@ -482,4 +482,3 @@ const BulkUSBConfig bulkusbcfg = {
   USBD2_DATA_REQUEST_EP,
   USBD2_DATA_AVAILABLE_EP
 };
-

@@ -22,13 +22,11 @@ axoloti_firmware ?= ../firmware
 CHIBIOS = ${axoloti_release}/chibios
 CMSIS = ${axoloti_release}/CMSIS
 
-SPACE :=
-SPACE +=
+EMPTY := 
+SPACE := $(EMPTY) $(EMPTY)
 BDIR=$(subst $(SPACE),\ ,${axoloti_home}/build)
-BDIR=${axoloti_home}/build
-# theoretically should be this...., but CSRC expansion cannot cope with escape spaces
-FIRMWARE=${axoloti_firmware}
-# FIRMWARE=$(subst $(SPACE),\ ,${axoloti_firmware})
+FIRMWARE=$(subst $(SPACE),\ ,${axoloti_firmware})
+
 
 $(info BDIR = ${BDIR})
 $(info FIRMWARE = ${FIRMWARE})
