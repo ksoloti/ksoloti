@@ -507,7 +507,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
         jLabel1.setText("Not (fully) implemented yet!");
 
-        jUploadAll.setText("Upload Patch Bank");
+        jUploadAll.setText("Upload All");
         jUploadAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jUploadAllActionPerformed(evt);
@@ -605,7 +605,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             }
         });
 
-        jButtonUpload.setText("Upload");
+        jButtonUpload.setText("Upload Patch");
         jButtonUpload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonUploadActionPerformed(evt);

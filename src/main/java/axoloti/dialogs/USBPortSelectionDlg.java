@@ -111,21 +111,21 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         if (result < 0) {
             if (getOS() == OSDetect.OS.WIN) {
                 if (result == LibUsb.ERROR_NOT_FOUND) {
-                    return "not accesseable : driver not installed";
+                    return "not accessible : driver not installed";
                 } else if (result == LibUsb.ERROR_ACCESS) {
-                    return "not accesseable : busy?";
+                    return "not accessible : busy?";
                 } else {
-                    return "not accesseable : " + result;
+                    return "not accessible : " + result;
                 }
             } else if (getOS() == OSDetect.OS.LINUX) {
                 if (result == LibUsb.ERROR_ACCESS) {
                     return "insufficient permissions";
                     // log message:  - install udev rules by running axoloti/platform/linux/add_udev_rules.sh"
                 } else {
-                    return "not accesseable : " + result;
+                    return "not accessible : " + result;
                 }
             } else {
-                return "not accesseable : " + result;
+                return "not accessible : " + result;
             }
         } else {
             return null;
@@ -154,14 +154,14 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             if (result < 0) {
                                 if (getOS() == OSDetect.OS.WIN) {
                                     if (result == LibUsb.ERROR_NOT_SUPPORTED) {
-                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accesseable : wrong driver installed"});
+                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accessible : wrong driver installed"});
                                     } else if (result == LibUsb.ERROR_ACCESS) {
-                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accesseable : busy?"});
+                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accessible : busy?"});
                                     } else {
-                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accesseable : " + result});
+                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accessible : " + result});
                                     }
                                 } else {
-                                    model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accesseable : " + result});
+                                    model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accessible : " + result});
                                 }
                             } else {
                                 model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "driver OK, CPU ID indeterminate"});

@@ -931,10 +931,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         String sysFirmwareDir = System.getProperty(Axoloti.RELEASE_DIR) + "/firmware";
 
         if (!curFirmwareDir.equals(sysFirmwareDir)) {
+            // SEB TODO: trying to understand ... need to fix unwanted firmware dir reset 
             // if we are using the factory firmware, then we must switch back the firmware dir
             // as this is where we pick up axoloti.elf from when building a patch
-            prefs.SetFirmwareDir(sysFirmwareDir);
-            prefs.SavePrefs();
+            // prefs.SetFirmwareDir(sysFirmwareDir);
+            // prefs.SavePrefs();
         }
 
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/flasher/flasher_build/flasher.bin";
@@ -1091,7 +1092,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             if (name == null) {
                 jLabelCPUID.setText("Cpu ID = " + cpuId);
             } else {
-                jLabelCPUID.setText("Cpu ID = " + cpuId + " ( " + name + " ) ");
+                // jLabelCPUID.setText("Cpu ID = " + cpuId + " ( " + name + " ) ");
+                jLabelCPUID.setText("Board ID = " + name);
             }
         }
     }
