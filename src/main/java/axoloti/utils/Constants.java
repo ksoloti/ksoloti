@@ -16,6 +16,7 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 package axoloti.utils;
+import axoloti.utils.Preferences;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -27,7 +28,8 @@ import java.awt.Font;
 public class Constants {
 
     // public static final Font FONT = Font.decode("Lucida Sans Regular 9");
-    public static final Font FONT = Font.decode("Courier New Bold 10");
+    // public static final Font FONT = Font.decode("Courier New Regular 10");
+    public static final Font FONT = new Font("Courier New",  Font.PLAIN, axoloti.utils.Preferences.getFontSize());
     public static final int X_GRID = 14;
     public static final int Y_GRID = 14;
 

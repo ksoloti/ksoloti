@@ -53,6 +53,8 @@ public class Preferences {
     @Element(required = false)
     Integer PollInterval;
     @Element(required = false)
+    Integer FontSize;
+    @Element(required = false)
     Boolean MouseDialAngular;
     @Element(required = false)
     Boolean MouseDoNotRecenterWhenAdjustingControls;
@@ -95,6 +97,8 @@ public class Preferences {
     final int nRecentFiles = 16;
 
     final int minimumPollInterval = 20;
+    final int minimumFontSize = 4;
+    final int maximumFontSize = 48;
 
     protected Preferences() {
         if (CurrentFileDirectory == null) {
@@ -104,6 +108,9 @@ public class Preferences {
 
         if (PollInterval == null) {
             PollInterval = 50;
+        }
+        if (FontSize == null) {
+            FontSize = 10;
         }
         if (MouseDialAngular == null) {
             MouseDialAngular = false;
@@ -211,12 +218,33 @@ public class Preferences {
         }
         return minimumPollInterval;
     }
+    
+    public int getFontSize() {
+        if (FontSize >= minimumFontSize && FontSize <= maximumFontSize) {
+            return FontSize;
+        }
+        else if (FontSize > maximumFontSize) {
+            return maximumFontSize;
+        }
+        return minimumFontSize;
+    }
 
     public void setPollInterval(int i) {
         if (i < minimumPollInterval) {
             i = minimumPollInterval;
         }
         PollInterval = i;
+        SetDirty();
+    }
+
+    public void setFontSize(int i) {
+        if (i < minimumFontSize) {
+            i = minimumFontSize;
+        }
+        if (i > maximumFontSize) {
+            i = maximumFontSize;
+        }
+        FontSize = i;
         SetDirty();
     }
 
