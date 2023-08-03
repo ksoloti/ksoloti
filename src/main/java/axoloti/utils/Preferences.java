@@ -29,6 +29,8 @@ import org.simpleframework.xml.*;
 import org.simpleframework.xml.core.Persist;
 import org.simpleframework.xml.core.Persister;
 
+import java.awt.Font;
+
 /**
  *
  * @author Johannes Taelman
