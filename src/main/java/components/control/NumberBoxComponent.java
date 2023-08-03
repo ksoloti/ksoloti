@@ -21,7 +21,8 @@ import axoloti.MainFrame;
 import axoloti.Theme;
 import axoloti.datatypes.ValueFrac32;
 import axoloti.realunits.NativeToReal;
-import axoloti.utils.Constants;
+// import axoloti.utils.Constants;
+import axoloti.utils.Preferences;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import java.awt.AWTException;
@@ -318,11 +319,11 @@ public class NumberBoxComponent extends ACtrlComponent {
             v = 2;
         }
         if (keybBuffer.isEmpty()) {
-            g2.setFont(Constants.FONT);
+            g2.setFont(Preferences.FONT);
             g2.drawString(s, h, getSize().height - v);
         } else {
             g2.setColor(Theme.getCurrentTheme().Error_Text);
-            g2.setFont(Constants.FONT);
+            g2.setFont(Preferences.FONT);
             g2.drawString(keybBuffer, h, getSize().height - v);
         }
 

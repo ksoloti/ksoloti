@@ -20,7 +20,8 @@ package axoloti.attribute;
 import axoloti.SDFileReference;
 import axoloti.attributedefinition.AxoAttributeSDFile;
 import axoloti.object.AxoObjectInstance;
-import axoloti.utils.Constants;
+// import axoloti.utils.Constants;
+import axoloti.utils.Preferences;
 import components.ButtonComponent;
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
@@ -69,7 +70,7 @@ public class AttributeInstanceSDFile extends AttributeInstanceString<AxoAttribut
         Dimension d = TFFileName.getSize();
         d.width = 128;
         d.height = 22;
-        TFFileName.setFont(Constants.FONT);
+        TFFileName.setFont(Preferences.FONT);
         TFFileName.setMaximumSize(d);
         TFFileName.setMinimumSize(d);
         TFFileName.setPreferredSize(d);

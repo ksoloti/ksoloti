@@ -19,7 +19,8 @@ package components;
 
 import axoloti.Theme;
 import axoloti.parameters.ParameterInstanceFrac32UMap;
-import axoloti.utils.Constants;
+// import axoloti.utils.Constants;
+import axoloti.utils.Preferences;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -85,7 +86,7 @@ public class AssignMidiCCComponent extends JComponent {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setFont(Constants.FONT);
+            g2.setFont(Preferences.FONT);
             g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
             g2.fillRect(1, 1, getWidth(), getHeight());
             if (param.getMidiCC() >= 0) {

@@ -18,7 +18,8 @@
 package components;
 
 import axoloti.Theme;
-import axoloti.utils.Constants;
+// import axoloti.utils.Constants;
+import axoloti.utils.Preferences;
 import javax.swing.JLabel;
 
 /**
@@ -29,7 +30,7 @@ public class LabelComponent extends JLabel {
 
     public LabelComponent(String text) {
         super(text);
-        setFont(Constants.FONT);
+        setFont(Preferences.FONT);
         setBackground(Theme.getCurrentTheme().Object_Default_Background);
         setForeground(Theme.getCurrentTheme().Label_Text);
     }

@@ -21,7 +21,8 @@ import axoloti.SubPatchMode;
 import axoloti.attributedefinition.AxoAttributeObjRef;
 import axoloti.object.AxoObjectInstance;
 import axoloti.utils.CharEscape;
-import axoloti.utils.Constants;
+// import axoloti.utils.Constants;
+import axoloti.utils.Preferences;
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -64,7 +65,7 @@ public class AttributeInstanceObjRef extends AttributeInstanceString<AxoAttribut
         Dimension d = TFObjName.getSize();
         d.width = 92;
         d.height = 22;
-        TFObjName.setFont(Constants.FONT);
+        TFObjName.setFont(Preferences.FONT);
         TFObjName.setMaximumSize(d);
         TFObjName.setMinimumSize(d);
         TFObjName.setPreferredSize(d);

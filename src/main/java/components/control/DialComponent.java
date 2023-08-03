@@ -21,7 +21,8 @@ import axoloti.MainFrame;
 import axoloti.Theme;
 import axoloti.datatypes.ValueFrac32;
 import axoloti.realunits.NativeToReal;
-import axoloti.utils.Constants;
+// import axoloti.utils.Constants;
+import axoloti.utils.Preferences;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import java.awt.AWTException;
@@ -373,11 +374,11 @@ public class DialComponent extends ACtrlComponent {
             g2.drawLine(radius, radius, radius + x, radius + y);
             if (keybBuffer.isEmpty()) {
                 String s = String.format("%5.2f", value);
-                g2.setFont(Constants.FONT);
+                g2.setFont(Preferences.FONT);
                 g2.drawString(s, 0, getSize().height);
             } else {
                 g2.setColor(Theme.getCurrentTheme().Error_Text);
-                g2.setFont(Constants.FONT);
+                g2.setFont(Preferences.FONT);
                 g2.drawString(keybBuffer, 0, getSize().height);
             }
         }

@@ -18,7 +18,8 @@
 package components.displays;
 
 import axoloti.Theme;
-import axoloti.utils.Constants;
+// import axoloti.utils.Constants;
+import axoloti.utils.Preferences;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -73,7 +74,7 @@ public class DispComponent extends ADispComponent {
         g2.setStroke(strokeThick);
         g2.drawLine(radius, radius, radius + x, radius + y);
         String s = String.format("%5.2f", value);
-        g2.setFont(Constants.FONT);
+        g2.setFont(Preferences.FONT);
         g2.drawString(s, 0, getSize().height);
     }
 
