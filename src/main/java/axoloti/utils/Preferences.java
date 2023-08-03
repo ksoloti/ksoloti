@@ -249,6 +249,7 @@ public class Preferences {
             i = maximumFontSize;
         }
         FontSize = i;
+        FONT.size = FontSize;
         SetDirty();
     }
 
