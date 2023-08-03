@@ -57,7 +57,7 @@ public class Preferences {
     @Element(required = false)
     Integer FontSize;
     @Element(required = false)
-    public static Font FONT = new Font("Courier New",  Font.PLAIN, 12); // SEB UNTESTED, WILL BREAK BUILD
+    public static Font FONT = new Font("SansSerif",  Font.BOLD, 12);
     @Element(required = false)
     Boolean MouseDialAngular;
     @Element(required = false)

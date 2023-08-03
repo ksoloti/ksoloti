@@ -34,8 +34,8 @@ else
 fi
 
 case $OS in
-    Ubuntu|Debian|DebianJessie32bit)
-        echo "apt-get install -y libtool libudev-dev automake autoconf ant curl lib32z1 lib32ncurses5 lib32bz2-1.0"
+    Ubuntu|Debian|DebianJessie32bit|MX)
+        echo "apt-get install -y libtool libudev-dev automake autoconf curl lib32z1 lib32ncurses5 lib32bz2-1.0 build-essential"
       if [ $OS==DebianJessie32bit ]; then
             sudo apt-get install -y libtool libudev-dev automake autoconf \
                ant curl
@@ -183,13 +183,15 @@ else
 fi
 
 case $OS in
-    Ubuntu|Debian)
+    Ubuntu|Debian|MX)
         # echo "apt-get install openjdk-7-jdk"
-        # sudo apt-get install openjdk-7-jdk
+        # sudo apt-get install openjdk-8-jdk
         echo "openjdk-7 not available on debian. Installing sdkman..."
         curl -s "https://get.sdkman.io" | bash 
+	. ~/.sdkman/bin/sdkman-init.sh
         echo "installing java TODO..."
-        # sdk install java x.y.z-zulu # TODO
+        sdk install java 8.0.382-zulu
+	sdk default java 8.0.382-zulu
         ;;
     Archlinux)
         echo "pacman -Syy jdk7-openjdk"
