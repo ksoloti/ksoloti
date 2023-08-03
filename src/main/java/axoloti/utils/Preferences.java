@@ -110,7 +110,7 @@ public class Preferences {
             PollInterval = 50;
         }
         if (FontSize == null) {
-            FontSize = 10;
+            FontSize = 12;
         }
         if (MouseDialAngular == null) {
             MouseDialAngular = false;

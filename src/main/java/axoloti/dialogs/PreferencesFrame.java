@@ -57,7 +57,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         initComponents();
         Preferences prefs = Preferences.LoadPreferences();
         jTextFieldPollInterval.setText(Integer.toString(prefs.getPollInterval()));
-        jTextFieldFontSize.setText(Integer.toString(prefs.getPollInterval()));
+        jTextFieldFontSize.setText(Integer.toString(prefs.getFontSize()));
 
         txtFavDir.setText(prefs.getFavouriteDir());
         txtFirmwareDir.setText(System.getProperty(axoloti.Axoloti.FIRMWARE_DIR));
@@ -191,7 +191,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         });
 
         jTextFieldPollInterval.setText("jTextField1");
-        jTextFieldPollInterval.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));        jTextFieldFontSize.setText("jTextField1");
+        jTextFieldPollInterval.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR)); jTextFieldFontSize.setText("jTextField1");
         jTextFieldFontSize.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
 
         jLabel1.setText("Libraries");

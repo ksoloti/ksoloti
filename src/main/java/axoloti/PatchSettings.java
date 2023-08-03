@@ -88,7 +88,7 @@ public class PatchSettings {
         if (NPresets != null) {
             return NPresets;
         } else {
-            return 0;
+            return 0; // SEB disable presets and modulation by default
         }
     }
 

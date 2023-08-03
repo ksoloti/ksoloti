@@ -428,7 +428,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         fileMenu1.add(jMenuSave);
 
         jMenuSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
-                KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK)); // seb: Save As shortcut: CTRL+SHIFT+S, untested
+                KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK)); // seb: Save As shortcut: CTRL+SHIFT+S, UNTESTED
         jMenuSaveAs.setText("Save As...");
         jMenuSaveAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
