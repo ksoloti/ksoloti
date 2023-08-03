@@ -57,7 +57,7 @@ public class Preferences {
     @Element(required = false)
     Integer FontSize;
     @Element(required = false)
-    public static Font FONT = new Font("Courier New",  Font.PLAIN, 12); // SEB UNTESTED, WILL BREAK BUILD
+    public static Font FONT = new Font("Courier New",  Font.PLAIN, this.getFontSize()); // SEB UNTESTED, WILL BREAK BUILD
     @Element(required = false)
     Boolean MouseDialAngular;
     @Element(required = false)
@@ -223,7 +223,7 @@ public class Preferences {
         return minimumPollInterval;
     }
     
-    public int getFontSize() {
+    public static int getFontSize() {
         if (FontSize >= minimumFontSize && FontSize <= maximumFontSize) {
             return FontSize;
         }
@@ -249,7 +249,6 @@ public class Preferences {
             i = maximumFontSize;
         }
         FontSize = i;
-        FONT.size = FontSize;
         SetDirty();
     }
 
