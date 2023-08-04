@@ -36,11 +36,6 @@ public class Usb {
     static final public short PID_AXOLOTI = (short) 0x0442;
     static final public short PID_AXOLOTI_SDCARD = (short) 0x0443;
 
-    // SEB prepare to give Ksoloti an own ID 
-    static final public short VID_KSOLOTI = (short) 0x16C0;
-    static final public short PID_KSOLOTI = (short) 0x0444;
-    static final public short PID_KSOLOTI_SDCARD = (short) 0x0445;
-
     public Usb() {
     }
 

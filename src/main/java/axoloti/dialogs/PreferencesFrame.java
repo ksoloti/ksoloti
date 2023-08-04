@@ -57,7 +57,6 @@ public class PreferencesFrame extends javax.swing.JFrame {
         initComponents();
         Preferences prefs = Preferences.LoadPreferences();
         jTextFieldPollInterval.setText(Integer.toString(prefs.getPollInterval()));
-        jTextFieldFontSize.setText(Integer.toString(prefs.getFontSize()));
 
         txtFavDir.setText(prefs.getFavouriteDir());
         txtFirmwareDir.setText(System.getProperty(axoloti.Axoloti.FIRMWARE_DIR));
@@ -122,7 +121,6 @@ public class PreferencesFrame extends javax.swing.JFrame {
     void Apply() {
         Preferences prefs = Preferences.LoadPreferences();
         prefs.setPollInterval(Integer.parseInt(jTextFieldPollInterval.getText()));
-        prefs.setFontSize(Integer.parseInt(jTextFieldFontSize.getText()));
         prefs.setMouseDialAngular(jComboBox1.getSelectedItem().equals("Angular"));
         prefs.setFavouriteDir(txtFavDir.getText());
         prefs.setControllerObject(jTextFieldController.getText().trim());
@@ -153,10 +151,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jTextFieldPollInterval = new javax.swing.JTextField();
-        jTextFieldFontSize = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
         jButtonSave = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox();
@@ -191,13 +187,11 @@ public class PreferencesFrame extends javax.swing.JFrame {
         });
 
         jTextFieldPollInterval.setText("jTextField1");
-        jTextFieldPollInterval.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR)); jTextFieldFontSize.setText("jTextField1");
-        jTextFieldFontSize.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        jTextFieldPollInterval.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
 
         jLabel1.setText("Libraries");
 
         jLabel2.setText("PollInterval (milliseconds)");
-        jLabel20.setText("Global font size (needs restart)");
 
         jButtonSave.setText("OK");
         jButtonSave.addActionListener(new java.awt.event.ActionListener() {
@@ -415,10 +409,6 @@ public class PreferencesFrame extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jTextFieldPollInterval, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextFieldFontSize, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel3)
                                 .addGap(130, 130, 130)
                                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -461,14 +451,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
-                            .addComponent(jTextFieldPollInterval, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel20)
-                            .addComponent(jTextFieldFontSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            )
+                            .addComponent(jTextFieldPollInterval, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -665,7 +648,6 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JButton jEditLib;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -678,7 +660,6 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField jTextFieldController;
     private javax.swing.JTextField jTextFieldPollInterval;
-    private javax.swing.JTextField jTextFieldFontSize;
     private javax.swing.JButton themeEditButton;
     private javax.swing.JLabel txtFavDir;
     private javax.swing.JLabel txtFirmwareDir;

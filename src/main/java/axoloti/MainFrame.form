@@ -91,7 +91,7 @@
               <SubComponents>
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItemFlashDefault">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Flash Firmware"/>
+                    <Property name="text" type="java.lang.String" value="Flash"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemFlashDefaultActionPerformed"/>
@@ -99,7 +99,7 @@
                 </MenuItem>
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItemFlashDFU">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Flash Firmware (Rescue)"/>
+                    <Property name="text" type="java.lang.String" value="Flash (Rescue)"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemFlashDFUActionPerformed"/>
@@ -131,12 +131,12 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemEnterDFUActionPerformed"/>
                   </Events>
                 </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="jMenuItemFlashUserDir">
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItemFlashSDR">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Flash User Firmware"/>
+                    <Property name="text" type="java.lang.String" value="Flash (User)"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemFlashUserDirActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemFlashSDRActionPerformed"/>
                   </Events>
                 </MenuItem>
               </SubComponents>

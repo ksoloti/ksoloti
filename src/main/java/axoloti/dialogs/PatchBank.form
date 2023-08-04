@@ -114,7 +114,7 @@
         </Component>
         <Component class="javax.swing.JButton" name="jUploadAll">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Upload All"/>
+            <Property name="text" type="java.lang.String" value="Upload Patch Bank"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jUploadAllActionPerformed"/>
@@ -239,7 +239,7 @@
         </Component>
         <Component class="javax.swing.JButton" name="jButtonUpload">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Upload Patch"/>
+            <Property name="text" type="java.lang.String" value="Upload"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonUploadActionPerformed"/>

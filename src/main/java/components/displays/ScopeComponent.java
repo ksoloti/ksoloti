@@ -50,8 +50,8 @@ public class ScopeComponent extends ADispComponent {
         setMaximumSize(d);
         setPreferredSize(d);
     }
-    private static final Stroke strokeThin = new BasicStroke(1.f);
-    private static final Stroke strokeThick = new BasicStroke(1.5f);
+    private static final Stroke strokeThin = new BasicStroke(0.75f);
+    private static final Stroke strokeThick = new BasicStroke(1.f);
 
     @Override
     public void paintComponent(Graphics g) {

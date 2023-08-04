@@ -17,8 +17,7 @@
  */
 package components;
 
-// import axoloti.utils.Constants;
-import axoloti.utils.Preferences;
+import axoloti.utils.Constants;
 import javax.swing.JTextField;
 
 /**
@@ -29,11 +28,11 @@ public class TextFieldComponent extends JTextField {
 
     public TextFieldComponent() {
         super();
-        setFont(Preferences.FONT);
+        setFont(Constants.FONT);
     }
 
     public TextFieldComponent(String text) {
         super(text);
-        setFont(Preferences.FONT);
+        setFont(Constants.FONT);
     }
 }

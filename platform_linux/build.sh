@@ -38,10 +38,10 @@ case $OS in
         echo "apt-get install -y libtool libudev-dev automake autoconf curl lib32z1 lib32ncurses5 lib32bz2-1.0 build-essential"
       if [ $OS==DebianJessie32bit ]; then
             sudo apt-get install -y libtool libudev-dev automake autoconf \
-               ant curl
+               ant curl build-essential
       else
             sudo apt-get install -y libtool libudev-dev automake autoconf \
-               ant curl lib32z1 lib32ncurses5
+               ant curl lib32z1 lib32ncurses5 build-essential
       fi
 
         # On more recent versions of Ubuntu
@@ -186,12 +186,12 @@ case $OS in
     Ubuntu|Debian|MX)
         # echo "apt-get install openjdk-7-jdk"
         # sudo apt-get install openjdk-8-jdk
-        echo "openjdk-7 not available on debian. Installing sdkman..."
-        curl -s "https://get.sdkman.io" | bash 
-	. ~/.sdkman/bin/sdkman-init.sh
-        echo "installing java TODO..."
+        echo "Installing sdkman using which we get openjdk-8..."
+        curl -s "https://get.sdkman.io" | bash
+	    . ~/.sdkman/bin/sdkman-init.sh
+        echo "installing java openjdk-8..."
         sdk install java 8.0.382-zulu
-	sdk default java 8.0.382-zulu
+        sdk default java 8.0.382-zulu
         ;;
     Archlinux)
         echo "pacman -Syy jdk7-openjdk"
@@ -209,7 +209,6 @@ cd "${PLATFORM_ROOT}"
 ./compile_firmware.sh
 
 echo "##### building GUI... #####"
-export ANT_HOME=~/.local/ant/
 cd "${PLATFORM_ROOT}"/..
 ant
 

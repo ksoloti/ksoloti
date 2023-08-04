@@ -272,7 +272,7 @@ public class USBBulkConnection extends Connection {
             } catch (InterruptedException ex) {
                 Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
-            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "connected"); // SEB changed color to blue? UNTESTED
+            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "connected");
 
             try {
                 Thread.sleep(100);

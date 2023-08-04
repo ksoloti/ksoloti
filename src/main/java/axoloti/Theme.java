@@ -30,9 +30,9 @@ public class Theme {
         Color labelForeground = (new JLabel()).getForeground();
         Color panelBackground = (new JPanel()).getBackground();
         // ensure we don't have ColorUIResource instances
-        labelForeground = new Color(labelForeground.getRed(), labelForeground.getGreen(),
+        labelForeground = new Color(labelForeground.getRed(), labelForeground.getGreen(), 
                 labelForeground.getBlue(), labelForeground.getAlpha());
-        panelBackground= new Color(panelBackground.getRed(), panelBackground.getGreen(),
+        panelBackground= new Color(panelBackground.getRed(), panelBackground.getGreen(), 
                 panelBackground.getBlue(), panelBackground.getAlpha());
         this.Label_Text = labelForeground;
         this.Object_TitleBar_Foreground = labelForeground;
@@ -63,7 +63,7 @@ public class Theme {
     @Element
     public Color Patch_Locked_Background = Color.DARK_GRAY;
 
-// text
+// text    
     @Element
     public Color Error_Text = Color.RED;
     @Element
@@ -109,8 +109,7 @@ public class Theme {
     @Element
     public Color Object_Border_Unselected = Color.WHITE;
     @Element
-    // public Color Object_Border_Selected = Color.BLACK;
-    public Color Object_Border_Selected = Color.ORANGE; // seb
+    public Color Object_Border_Selected = Color.BLACK;
     @Element
     public Color Object_Zombie_Background = Color.RED;
 

@@ -529,8 +529,8 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         return Selected;
     }
 
-    static Border borderSelected = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Selected, 2); // seb border thickness 2
-    static Border borderUnselected = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Unselected,2);
+    static Border borderSelected = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Selected);
+    static Border borderUnselected = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Unselected);
 
     public void SetSelected(boolean Selected) {
         if (this.Selected != Selected) {

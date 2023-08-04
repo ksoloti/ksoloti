@@ -910,8 +910,8 @@ public class PatchGUI extends Patch {
     }
 
     Dimension GetInitialSize() {
-        int mx = 400; // min size // seb increased
-        int my = 300;
+        int mx = 100; // min size
+        int my = 100;
         for (AxoObjectInstanceAbstract i : objectinstances) {
 
             Dimension s = i.getPreferredSize();
@@ -928,7 +928,7 @@ public class PatchGUI extends Patch {
         }
         // adding more, as getPreferredSize is not returning true dimension of
         // object
-        return new Dimension(mx + 400, my + 300); // seb increased
+        return new Dimension(mx + 300, my + 300);
     }
 
     public void clampLayerSize(Dimension s) {

@@ -217,7 +217,7 @@ public class FileMenu extends JMenu {
     }
 
     private void jMenuAutoTestActionPerformed(java.awt.event.ActionEvent evt) {
-        if (JOptionPane.showConfirmDialog(MainFrame.mainframe, "Running these tests will take a long time and freeze UI with no output, until complete. Do you wish to continue?") == JOptionPane.YES_OPTION) {
+        if (JOptionPane.showConfirmDialog(MainFrame.mainframe, "Running these tests, takes a long time and will freeze UI, with no output, until complete, do you wish to continue?") == JOptionPane.YES_OPTION) {
             MainFrame.mainframe.runAllTests();
         }
     }

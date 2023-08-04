@@ -18,8 +18,7 @@
 package components.displays;
 
 import axoloti.Theme;
-// import axoloti.utils.Constants;
-import axoloti.utils.Preferences;
+import axoloti.utils.Constants;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -47,8 +46,8 @@ public class DispComponent extends ADispComponent {
         setMaximumSize(dim);
         setMinimumSize(dim);
     }
-    private static final Stroke strokeThin = new BasicStroke(1.f);
-    private static final Stroke strokeThick = new BasicStroke(1.5f);
+    private static final Stroke strokeThin = new BasicStroke(0.5f);
+    private static final Stroke strokeThick = new BasicStroke(1);
 
     @Override
     public void paintComponent(Graphics g) {
@@ -74,7 +73,7 @@ public class DispComponent extends ADispComponent {
         g2.setStroke(strokeThick);
         g2.drawLine(radius, radius, radius + x, radius + y);
         String s = String.format("%5.2f", value);
-        g2.setFont(Preferences.FONT);
+        g2.setFont(Constants.FONT);
         g2.drawString(s, 0, getSize().height);
     }
 

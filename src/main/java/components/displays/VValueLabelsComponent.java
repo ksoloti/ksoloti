@@ -17,8 +17,7 @@
  */
 package components.displays;
 
-// import axoloti.utils.Constants;
-import axoloti.utils.Preferences;
+import axoloti.utils.Constants;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -74,7 +73,7 @@ public class VValueLabelsComponent extends JComponent {
             } else {
                 s = String.format("%4.1f", v);
             }
-            g2.setFont(Preferences.FONT);
+            g2.setFont(Constants.FONT);
             g2.drawString(s, 0, y + 4);
         }
     }

@@ -19,8 +19,7 @@ package axoloti.attribute;
 
 import axoloti.attributedefinition.AxoAttributeComboBox;
 import axoloti.object.AxoObjectInstance;
-// import axoloti.utils.Constants;
-import axoloti.utils.Preferences;
+import axoloti.utils.Constants;
 import components.DropDownComponent;
 import java.util.logging.Level;
 import org.simpleframework.xml.Attribute;
@@ -46,7 +45,7 @@ public class AttributeInstanceComboBox extends AttributeInstanceString<AxoAttrib
     public void PostConstructor() {
         super.PostConstructor();
         comboBox = new DropDownComponent(GetDefinition().getMenuEntries(), this);
-        comboBox.setFont(Preferences.FONT);
+        comboBox.setFont(Constants.FONT);
         setString(selection);
         comboBox.addItemListener(new DropDownComponent.DDCListener() {
             @Override

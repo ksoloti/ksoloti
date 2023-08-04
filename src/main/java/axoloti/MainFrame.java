@@ -258,8 +258,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
 
         jMenuItemEnterDFU.setVisible(Axoloti.isDeveloper());
-        jMenuItemFlashDefault.setVisible(!Axoloti.isDeveloper()); // SEB make "Flash standard" option invisible to avoid confusion UNTESTED
-        jMenuItemFlashUserDir.setVisible(Axoloti.isDeveloper());
+        jMenuItemFlashSDR.setVisible(Axoloti.isDeveloper());
         jMenuItemFCompile.setVisible(Axoloti.isDeveloper());
         jDevSeparator.setVisible(Axoloti.isDeveloper());
 
@@ -331,7 +330,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
 
                     // factory library force and upgrade
-                    // Im stashing changes here, just in case, but in reality users should not be altering factory
+                    // Im stashing changes here, just in case, but in reality users should not be altering factory 
                     ulib = prefs.getLibrary(AxolotiLibrary.FACTORY_ID);
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
@@ -478,7 +477,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jDevSeparator = new javax.swing.JPopupMenu.Separator();
         jMenuItemFCompile = new javax.swing.JMenuItem();
         jMenuItemEnterDFU = new javax.swing.JMenuItem();
-        jMenuItemFlashUserDir = new javax.swing.JMenuItem();
+        jMenuItemFlashSDR = new javax.swing.JMenuItem();
         windowMenu1 = new axoloti.menus.WindowMenu();
         helpMenu1 = new axoloti.menus.HelpMenu();
 
@@ -487,7 +486,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Axoloti");
         setMinimumSize(new java.awt.Dimension(200, 200));
-        setPreferredSize(new java.awt.Dimension(800, 600)); // seb increased default size
+        setPreferredSize(new java.awt.Dimension(355, 325));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -590,8 +589,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuBoard.add(jMenuItemSelectCom);
 
-        jMenuItemFConnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
-                KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK)); // seb: add CTRL+SHIFT+K shortcut to connect or disconnect hardware, UNTESTED
         jMenuItemFConnect.setText("Connect");
         jMenuItemFConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -600,8 +597,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuBoard.add(jMenuItemFConnect);
 
-        jMenuItemFDisconnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
-                KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK)); // seb: add CTRL+SHIFT+K shortcut to connect or disconnect hardware, UNTESTED
         jMenuItemFDisconnect.setText("Disconnect");
         jMenuItemFDisconnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -638,7 +633,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         jMenuFirmware.setText("Firmware");
 
-        jMenuItemFlashDefault.setText("Flash Firmware");
+        jMenuItemFlashDefault.setText("Flash");
         jMenuItemFlashDefault.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemFlashDefaultActionPerformed(evt);
@@ -646,7 +641,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuFirmware.add(jMenuItemFlashDefault);
 
-        jMenuItemFlashDFU.setText("Flash Firmware (Rescue)");
+        jMenuItemFlashDFU.setText("Flash (Rescue)");
         jMenuItemFlashDFU.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemFlashDFUActionPerformed(evt);
@@ -679,13 +674,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuFirmware.add(jMenuItemEnterDFU);
 
-        jMenuItemFlashUserDir.setText("Flash User Firmware");
-        jMenuItemFlashUserDir.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItemFlashSDR.setText("Flash (User)");
+        jMenuItemFlashSDR.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemFlashUserDirActionPerformed(evt);
+                jMenuItemFlashSDRActionPerformed(evt);
             }
         });
-        jMenuFirmware.add(jMenuItemFlashUserDir);
+        jMenuFirmware.add(jMenuItemFlashSDR);
 
         jMenuBoard.add(jMenuFirmware);
 
@@ -909,15 +904,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.AppendToQueue(new qcmds.QCmdDisconnect());
             qcmdprocessor.AppendToQueue(new qcmds.QCmdFlashDFU());
         } else {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "No devices in DFU mode detected. To bring Axoloti Core in DFU mode, remove power from Axoloti Core, and then connect the USB port to your computer while holding button S1. The LEDs will stay off when in DFU mode.");
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "No devices in DFU mode detected. To bring Axoloti Core in DFU mode, remove power from Axoloti Core, and then connect the micro-USB port to your computer while holding button S1. The LEDs will stay off when in DFU mode.");
         }
     }//GEN-LAST:event_jMenuItemFlashDFUActionPerformed
 
-    private void jMenuItemFlashUserDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemFlashUserDirActionPerformed
+    private void jMenuItemFlashSDRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemFlashSDRActionPerformed
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/flasher/flasher_build/flasher.bin";
         String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/build/axoloti.bin";
         flashUsingSDRam(fname, pname);
-    }//GEN-LAST:event_jMenuItemFlashUserDirActionPerformed
+    }//GEN-LAST:event_jMenuItemFlashSDRActionPerformed
 
     private void jMenuItemFCompileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemFCompileActionPerformed
         qcmdprocessor.AppendToQueue(new qcmds.QCmdCompileFirmware());
@@ -931,8 +926,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         String curFirmwareDir = System.getProperty(Axoloti.FIRMWARE_DIR);
         String sysFirmwareDir = System.getProperty(Axoloti.RELEASE_DIR) + "/firmware";
 
-        // SEB fixed unintuitive behaviour: "Flash" option would revert Firmware Dir setting to stock, save prefs, and flash the board which we do not want. This option is now invisible in Developer Mode.
         if (!curFirmwareDir.equals(sysFirmwareDir)) {
+            // if we are using the factory firmware, then we must switch back the firmware dir
+            // as this is where we pick up axoloti.elf from when building a patch
             prefs.SetFirmwareDir(sysFirmwareDir);
             prefs.SavePrefs();
         }
@@ -1013,7 +1009,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JMenuItem jMenuItemFDisconnect;
     private javax.swing.JMenuItem jMenuItemFlashDFU;
     private javax.swing.JMenuItem jMenuItemFlashDefault;
-    private javax.swing.JMenuItem jMenuItemFlashUserDir;
+    private javax.swing.JMenuItem jMenuItemFlashSDR;
     private javax.swing.JMenuItem jMenuItemMount;
     private javax.swing.JMenuItem jMenuItemPanic;
     private javax.swing.JMenuItem jMenuItemPing;
@@ -1057,7 +1053,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemEnterDFU.setEnabled(connect);
         jMenuItemMount.setEnabled(connect);
         jMenuItemFlashDefault.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
-        jMenuItemFlashUserDir.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
+        jMenuItemFlashSDR.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
 
         if (!connect) {
             setCpuID(null);
@@ -1089,10 +1085,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             String name = MainFrame.prefs.getBoardName(cpuId);
             String txt;
             if (name == null) {
-                jLabelCPUID.setText("CPU ID = " + cpuId);
+                jLabelCPUID.setText("Cpu ID = " + cpuId);
             } else {
-                // jLabelCPUID.setText("Board ID = " + cpuId + " ( " + name + " ) ");
-                jLabelCPUID.setText("Board Name = " + name);
+                jLabelCPUID.setText("Cpu ID = " + cpuId + " ( " + name + " ) ");
             }
         }
     }

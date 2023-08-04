@@ -19,8 +19,7 @@ package axoloti.attribute;
 
 import axoloti.attributedefinition.AxoAttributeTablename;
 import axoloti.object.AxoObjectInstance;
-// import axoloti.utils.Constants;
-import axoloti.utils.Preferences;
+import axoloti.utils.Constants;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -63,7 +62,7 @@ public class AttributeInstanceTablename extends AttributeInstanceString<AxoAttri
         Dimension d = TFtableName.getSize();
         d.width = 128;
         d.height = 22;
-        TFtableName.setFont(Preferences.FONT);
+        TFtableName.setFont(Constants.FONT);
         TFtableName.setMaximumSize(d);
         TFtableName.setMinimumSize(d);
         TFtableName.setPreferredSize(d);

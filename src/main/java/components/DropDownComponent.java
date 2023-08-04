@@ -19,8 +19,7 @@ package components;
 
 import axoloti.Theme;
 import axoloti.attribute.AttributeInstanceComboBox;
-// import axoloti.utils.Constants;
-import axoloti.utils.Preferences;
+import axoloti.utils.Constants;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -61,7 +60,7 @@ public class DropDownComponent extends JComponent implements MouseListener {
         FontRenderContext frc = new FontRenderContext(null, true, true);
         int maxWidth = 0;
         for (String s : Items) {
-            TextLayout tl = new TextLayout(s, Preferences.FONT, frc);
+            TextLayout tl = new TextLayout(s, Constants.FONT, frc);
             Rectangle2D r = tl.getBounds();
             if (maxWidth < r.getWidth()) {
                 maxWidth = (int) r.getWidth();
@@ -97,7 +96,7 @@ public class DropDownComponent extends JComponent implements MouseListener {
         final int vmargin = 5;
         int[] yp = new int[]{vmargin, vmargin, vmargin + htick * 2};
         g2.fillPolygon(xp, yp, 3);
-        setFont(Preferences.FONT);
+        setFont(Constants.FONT);
         if (Items.size() > 0) {
             g2.drawString(Items.get(SelectedIndex), 4, 12);
         }
