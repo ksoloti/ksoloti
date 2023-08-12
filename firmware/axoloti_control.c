@@ -41,7 +41,7 @@ void do_axoloti_control(void) {
     row_update_index = 0;
     k++;
   }
-  chMtxLock(&Mutex_DMAStream_1_7);
+  // chMtxLock(&Mutex_DMAStream_1_7);
   spiAcquireBus(&SPID3); /* Acquire ownership of the bus.    */
   spiStart(&SPID3, &ls_spicfg); /* Setup transfer parameters.       */
   spiSelect(&SPID3); /* Slave Select assertion.          */

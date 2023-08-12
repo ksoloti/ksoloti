@@ -140,7 +140,7 @@
  */
 #ifdef BOARD_AXOLOTI_V05
 #define STM32_I2C_USE_I2C1                  TRUE
-#define STM32_I2C_USE_I2C2                  TRUE // seb using I2C2 to talk to audio codec
+#define STM32_I2C_USE_I2C2                  FALSE // seb using I2C2 to talk to audio codec but using HAL drivers
 #define STM32_I2C_USE_I2C3                  FALSE
 #else
 #define STM32_I2C_USE_I2C1                  TRUE

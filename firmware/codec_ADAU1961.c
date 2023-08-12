@@ -77,7 +77,7 @@ void CheckI2CErrors(void) {
 void ADAU1961_I2CStart(void) {
   palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN);
   palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN);
-  chMtxLock(&Mutex_DMAStream_1_7);
+  // chMtxLock(&Mutex_DMAStream_1_7);
   i2cStart(&I2CD2, &i2cfg2);
 }
 

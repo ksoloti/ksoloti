@@ -197,6 +197,7 @@ CSRC = $(PORTSRC) \
        ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c \
        ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
        ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c \
+       ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c \
        ${FIRMWARE}/usbh_midi_core.c \
        ${FIRMWARE}/usbh_vendor.c \
        ${FIRMWARE}/usbh_conf.c \

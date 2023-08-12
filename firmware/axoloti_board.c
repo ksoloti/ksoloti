@@ -22,7 +22,7 @@
 
 //#define ENABLE_SERIAL_DEBUG 1
 
-Mutex Mutex_DMAStream_1_7; // shared: SPI3 (axoloti control) and I2C2 (codec)
+// Mutex Mutex_DMAStream_1_7; // shared: SPI3 (axoloti control) and I2C2 (codec)
 
 uint8_t adc_ch = 8; // we can first pick up the conversion of channel 8 (supervisor)
 
@@ -35,7 +35,7 @@ void axoloti_board_init(void) {
   RCC->AHB1RSTR &= ~RCC_AHB1RSTR_DMA2DRST;
 #endif
 
-  chMtxInit(&Mutex_DMAStream_1_7);
+  // chMtxInit(&Mutex_DMAStream_1_7);
 }
 
 void adc_init(void) {
