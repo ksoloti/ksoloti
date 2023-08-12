@@ -415,6 +415,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jScrollPane1.setAutoscrolls(true);
         getContentPane().add(jScrollPane1);
 
+        fileMenu1.setMnemonic('F');
         fileMenu1.setText("File");
         fileMenu1.add(jSeparator1);
 
@@ -427,6 +428,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         fileMenu1.add(jMenuSave);
 
+        jMenuSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuSaveAs.setText("Save As...");
         jMenuSaveAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -465,6 +467,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuEdit.setMnemonic('E');
         jMenuEdit.setText("Edit");
 
+        undoItem.setMnemonic('U');
         undoItem.setText("Undo");
         undoItem.addAncestorListener(new javax.swing.event.AncestorListener() {
             public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
@@ -482,6 +485,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuEdit.add(undoItem);
 
+        redoItem.setMnemonic('R');
         redoItem.setText("Redo");
         redoItem.addAncestorListener(new javax.swing.event.AncestorListener() {
             public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
@@ -499,6 +503,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuEdit.add(redoItem);
 
+        jMenuItemDelete.setMnemonic('D');
         jMenuItemDelete.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
         jMenuItemDelete.setText("Delete");
         jMenuItemDelete.addActionListener(new java.awt.event.ActionListener() {
@@ -508,6 +513,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuEdit.add(jMenuItemDelete);
 
+        jMenuItemSelectAll.setMnemonic('A');
         jMenuItemSelectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuItemSelectAll.setText("Select All");
         jMenuItemSelectAll.addActionListener(new java.awt.event.ActionListener() {
@@ -517,6 +523,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuEdit.add(jMenuItemSelectAll);
 
+        jMenuItemAddObj.setMnemonic('N');
         jMenuItemAddObj.setText("New Object...");
         jMenuItemAddObj.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -531,6 +538,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuView.setMnemonic('V');
         jMenuView.setText("View");
 
+        jMenuItemNotes.setMnemonic('N');
         jMenuItemNotes.setText("Notes");
         jMenuItemNotes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -539,6 +547,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuView.add(jMenuItemNotes);
 
+        jMenuItemSettings.setMnemonic('S');
         jMenuItemSettings.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuItemSettings.setText("Settings");
         jMenuItemSettings.addActionListener(new java.awt.event.ActionListener() {
@@ -549,6 +558,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuView.add(jMenuItemSettings);
         jMenuView.add(jSeparator2);
 
+        jCheckBoxMenuItemCordsInBackground.setMnemonic('B');
         jCheckBoxMenuItemCordsInBackground.setText("Patch Cords In Background");
         jCheckBoxMenuItemCordsInBackground.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -557,6 +567,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuView.add(jCheckBoxMenuItemCordsInBackground);
 
+        jMenuItemAdjScroll.setMnemonic('S');
         jMenuItemAdjScroll.setText("Adjust Scroll");
         jMenuItemAdjScroll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -571,6 +582,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuPatch.setMnemonic('P');
         jMenuPatch.setText("Patch");
 
+        jCheckBoxMenuItemLive.setMnemonic('L');
         jCheckBoxMenuItemLive.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyUtils.CONTROL_OR_CMD_MASK));
         jCheckBoxMenuItemLive.setText("Live");
         jCheckBoxMenuItemLive.addActionListener(new java.awt.event.ActionListener() {
@@ -580,7 +592,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuPatch.add(jCheckBoxMenuItemLive);
 
-        jMenuItemUploadSD.setText("Upload to SDCard");
+        jMenuItemUploadSD.setMnemonic('C');
+        jMenuItemUploadSD.setText("Upload to SD Card");
         jMenuItemUploadSD.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemUploadSDActionPerformed(evt);
@@ -588,7 +601,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuPatch.add(jMenuItemUploadSD);
 
-        jMenuItemUploadSDStart.setText("Upload to SDCard as startup");
+        jMenuItemUploadSDStart.setMnemonic('S');
+        jMenuItemUploadSDStart.setText("Upload to SD Card as startup");
         jMenuItemUploadSDStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemUploadSDStartActionPerformed(evt);
@@ -596,6 +610,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuPatch.add(jMenuItemUploadSDStart);
 
+        jMenuItemUploadInternalFlash.setMnemonic('F');
         jMenuItemUploadInternalFlash.setText("Upload to internal flash");
         jMenuItemUploadInternalFlash.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

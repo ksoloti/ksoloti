@@ -78,6 +78,7 @@ public class FileMenu extends JMenu {
         jMenuItemPreferences = new JMenuItem();
         jMenuAutoTest = new JMenuItem();
 
+        jMenuNewPatch.setMnemonic('N');
         jMenuNewPatch.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
                 KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuNewPatch.setText("New patch");
@@ -89,6 +90,9 @@ public class FileMenu extends JMenu {
         });
         insert(jMenuNewPatch, pos++);
 
+        jMenuNewBank.setMnemonic('B');
+        jMenuNewBank.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
+                KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuNewBank.setText("New patch bank");
         jMenuNewBank.addActionListener(new java.awt.event.ActionListener() {
             @Override
@@ -98,6 +102,7 @@ public class FileMenu extends JMenu {
         });
         insert(jMenuNewBank, pos++);
 
+        jMenuOpen.setMnemonic('O');
         jMenuOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
                 KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuOpen.setText("Open...");
@@ -109,6 +114,9 @@ public class FileMenu extends JMenu {
         });
         insert(jMenuOpen, pos++);
 
+        jMenuOpenURL.setMnemonic('U');
+        jMenuOpenURL.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
+                KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuOpenURL.setText("Open from URL...");
         jMenuOpenURL.addActionListener(new java.awt.event.ActionListener() {
             @Override
@@ -118,15 +126,21 @@ public class FileMenu extends JMenu {
         });
         insert(jMenuOpenURL, pos++);
 
+        recentFileMenu1.setMnemonic('R');
         recentFileMenu1.setText("Open Recent");
         insert(recentFileMenu1, pos++);
 
+        libraryMenu1.setMnemonic('L');
         libraryMenu1.setText("Library");
         insert(libraryMenu1, pos++);
 
+        favouriteMenu1.setMnemonic('V');
         favouriteMenu1.setText("Favorites");
         insert(favouriteMenu1, pos++);
 
+        add(jSeparator1);
+
+        jMenuSync.setMnemonic('Y');
         jMenuSync.setText("Sync Libraries");
         jMenuSync.addActionListener(new java.awt.event.ActionListener() {
             @Override
@@ -136,8 +150,7 @@ public class FileMenu extends JMenu {
         });
         insert(jMenuSync, pos++);
 
-        add(jSeparator2);
-
+        jMenuReloadObjects.setMnemonic('J');
         jMenuReloadObjects.setText("Reload Objects");
         jMenuReloadObjects.addActionListener(new java.awt.event.ActionListener() {
             @Override
@@ -164,9 +177,12 @@ public class FileMenu extends JMenu {
             }
         });
         add(jMenuAutoTest);
-        add(jSeparator3);
+        add(jSeparator2);
 
+        jMenuItemPreferences.setMnemonic('P');
         jMenuItemPreferences.setText("Preferences...");
+        jMenuItemPreferences.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA,
+                KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuItemPreferences.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -174,8 +190,9 @@ public class FileMenu extends JMenu {
             }
         });
         add(jMenuItemPreferences);
-        add(jSeparator1);
+        add(jSeparator3);
 
+        jMenuQuit.setMnemonic('Q');
         jMenuQuit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
                 KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuQuit.setText("Quit");
@@ -217,7 +234,7 @@ public class FileMenu extends JMenu {
     }
 
     private void jMenuAutoTestActionPerformed(java.awt.event.ActionEvent evt) {
-        if (JOptionPane.showConfirmDialog(MainFrame.mainframe, "Running these tests, takes a long time and will freeze UI, with no output, until complete, do you wish to continue?") == JOptionPane.YES_OPTION) {
+        if (JOptionPane.showConfirmDialog(MainFrame.mainframe, "Running these tests will take a long time and freeze the UI with no output until complete. Do you wish to continue?") == JOptionPane.YES_OPTION) {
             MainFrame.mainframe.runAllTests();
         }
     }

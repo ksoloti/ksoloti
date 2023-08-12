@@ -40,6 +40,7 @@ public class WindowMenu extends JMenu {
 
     private void initComponents() {
         setText("Window");
+        setMnemonic('W');
         addMenuListener(new javax.swing.event.MenuListener() {
             @Override
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
@@ -112,19 +113,23 @@ public class WindowMenu extends JMenu {
     static void PopulateWindowMenu(JMenu jMenuWindow) {
         jMenuWindow.removeAll();
         {
-            WindowMenuItem a = new WindowMenuItem(MainFrame.mainframe, "Axoloti");
+            WindowMenuItem a = new WindowMenuItem(MainFrame.mainframe, "Main Window");
+            a.setMnemonic('M');
             jMenuWindow.add(a);
         }
         {
             WindowMenuItem a = new WindowMenuItem(MainFrame.mainframe.getKeyboard(), "Keyboard");
+            a.setMnemonic('K');
             jMenuWindow.add(a);
         }
         {
             WindowMenuItem a = new WindowMenuItem(MainFrame.mainframe.getFilemanager(), "File Manager");
+            a.setMnemonic('F');
             jMenuWindow.add(a);
         }
         if (false) {
             WindowMenuItem a = new WindowMenuItem(MainFrame.mainframe.getRemote(), "Remote");
+            a.setMnemonic('R');
             jMenuWindow.add(a);
         }
 

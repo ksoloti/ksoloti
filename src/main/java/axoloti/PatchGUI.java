@@ -910,8 +910,8 @@ public class PatchGUI extends Patch {
     }
 
     Dimension GetInitialSize() {
-        int mx = 100; // min size
-        int my = 100;
+        int mx = 400; // min size
+        int my = 300;
         for (AxoObjectInstanceAbstract i : objectinstances) {
 
             Dimension s = i.getPreferredSize();
