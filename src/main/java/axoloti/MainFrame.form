@@ -265,7 +265,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="jLabelSDCardPresent">
               <Properties>
-                <Property name="text" type="java.lang.String" value="no SDCard"/>
+                <Property name="text" type="java.lang.String" value="No SD card"/>
               </Properties>
             </Component>
           </SubComponents>

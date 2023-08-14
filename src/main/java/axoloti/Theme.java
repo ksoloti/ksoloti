@@ -69,6 +69,8 @@ public class Theme {
     @Element
     public Color Normal_Text = Color.BLACK;
     @Element
+    public Color Inverted_Text = Color.WHITE;
+    @Element
     public Color Warning_Text = Color.BLUE;
     @Element
     public Color Console_Background = Color.WHITE;

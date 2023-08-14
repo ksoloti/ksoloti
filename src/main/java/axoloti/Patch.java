@@ -312,7 +312,7 @@ public class Patch {
             // issue warning when there are dependent files
             ArrayList<SDFileReference> files = GetDependendSDFiles();
             if (files.size() > 0) {
-                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Patch requires file {0} on SDCard, but no SDCard mounted", files.get(0).targetPath);
+                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Patch requires file {0} on SD card, but no SD card mounted", files.get(0).targetPath);
             }
         }
         ShowPreset(0);

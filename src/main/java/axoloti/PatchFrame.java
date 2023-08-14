@@ -593,7 +593,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuPatch.add(jCheckBoxMenuItemLive);
 
         jMenuItemUploadSD.setMnemonic('C');
-        jMenuItemUploadSD.setText("Upload to SD Card");
+        jMenuItemUploadSD.setText("Upload to SD card");
         jMenuItemUploadSD.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemUploadSDActionPerformed(evt);
@@ -602,7 +602,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuPatch.add(jMenuItemUploadSD);
 
         jMenuItemUploadSDStart.setMnemonic('S');
-        jMenuItemUploadSDStart.setText("Upload to SD Card as startup");
+        jMenuItemUploadSDStart.setText("Upload to SD card as startup");
         jMenuItemUploadSDStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemUploadSDStartActionPerformed(evt);
@@ -620,7 +620,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuPatch.add(jMenuItemUploadInternalFlash);
         jMenuPatch.add(jSeparator3);
 
-        jMenuGenerateAndCompileCode.setText("Generate & Compile code");
+        jMenuGenerateAndCompileCode.setText("Generate & compile code");
         jMenuGenerateAndCompileCode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuGenerateAndCompileCodeActionPerformed(evt);

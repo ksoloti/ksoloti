@@ -49,7 +49,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
     public void reportStatus() {
         File f = new File(getLocalLocation());
         if (!f.exists()) {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Status : {0} : local directory missing ", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Status: {0} - Local directory missing ", logDetails());
         }
 
         Git git = getGit();
@@ -57,7 +57,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             reportStatus(git);
             git.getRepository().close();
         } else {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "status FAILED cannot find submodule : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Status FAILED - cannot find submodule: {0}", logDetails());
         }
     }
 
@@ -73,7 +73,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             }
             boolean isDirty = isDirty(git);
             if (isDirty) {
-                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Modifications detected : {0}", logDetails());
+                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Modifications detected: {0}", logDetails());
             }
             if (isDirty && isAuth()) {
                 if (!add(git)) {
@@ -88,17 +88,17 @@ public class AxoGitLibrary extends AxolotiLibrary {
                     git.getRepository().close();
                     return;
                 }
-                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Modifications uploaded : {0}", logDetails());
+                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Modifications uploaded: {0}", logDetails());
                 reportStatus(git);
             }
             if (!checkout(git, false)) {
                 git.getRepository().close();
                 return;
             }
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Sync Successful : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Sync successful: {0}", logDetails());
             git.getRepository().close();
         } else {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "sync repo FAILED cannot find submodule : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync repo FAILED - Cannot find submodule: {0}", logDetails());
         }
     }
 
@@ -108,7 +108,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
 
         if (!usingSubmodule()) {
             if (getRemoteLocation() == null || getRemoteLocation().length() == 0) {
-                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "init FAILED - no remote specified : {0}", logDetails());
+                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Init FAILED - no remote specified: {0}", logDetails());
                 return;
             }
 
@@ -135,14 +135,14 @@ public class AxoGitLibrary extends AxolotiLibrary {
             try {
                 Git git = cmd.call();
                 git.getRepository().close();
-                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Repo initialised Successfully : {0}", logDetails());
+                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Repo initialised successfully: {0}", logDetails());
             } catch (Exception ex) {
-                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "init repo FAILED : {0}", getId());
+                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Repo initialisation FAILED: {0}", getId());
                 Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
                 return;
             }
         } else {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Developer mode do NOT clone repo : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Developer mode - do NOT clone repo: {0}", logDetails());
         }
         // sync afterwards to ensure on correct branch
         sync();
@@ -156,7 +156,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             git.getRepository().close();
             return ret;
         }
-        Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, "stashChanges cannot find repo FAILED : {0}", getId());
+        Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, "stashChanges FAILED - could not find repo: {0}", getId());
         return false;
     }
 
@@ -172,7 +172,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             git.getRepository().close();
             return ret;
         }
-        Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, "applyStashedChanges cannot find repo FAILED : {0}", getId());
+        Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, "applyStashedChanges FAILED - could not find repo: {0}", getId());
         return false;
     }
 
@@ -187,7 +187,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
                 return getBranch();
             }
         }
-        Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, "getCurrentBranch cannot find repo FAILED : {0}", getId());
+        Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, "getCurrentBranch FAILED - could not find repo: {0}", getId());
         return getBranch();
     }
 
@@ -210,7 +210,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             git.getRepository().close();
             return;
         }
-        Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, "upgrade cannot find repo FAILED : {0}", getId());
+        Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, "Upgrade FAILED - could not find repo: {0}", getId());
     }
 
     private Git getGit() {
@@ -225,7 +225,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
                 String ldirstr = ldir.getName();
                 repository = SubmoduleWalk.getSubmoduleRepository(parent.getRepository(), ldirstr);
                 if (repository == null) {
-                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "getGit FAILED cannot find submodule : {0}", logDetails());
+                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "getGit FAILED - could not find submodule: {0}", logDetails());
                     return null;
                 }
             } else {
@@ -249,7 +249,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
 
             return true;
         } catch (GitAPIException ex) {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Stash (stash) FAILED : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Stash (stash) FAILED: {0}", logDetails());
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
@@ -273,7 +273,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             }
             return -1;
         } catch (GitAPIException ex) {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "applyStash (findStash) FAILED : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "applyStash (findStash) FAILED: {0}", logDetails());
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
         }
         return -1;
@@ -295,7 +295,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Changes applied successfully: {0}", new Object[]{logDetails(), ref});
             return true;
         } catch (GitAPIException ex) {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "applyStash (stashApply) FAILED : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "applyStash (stashApply) FAILED: {0}", logDetails());
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -315,7 +315,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Drop stash successfully: {0}", new Object[]{logDetails(), ref});
             return true;
         } catch (GitAPIException ex) {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "applyStash (dropStash) FAILED : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "applyStash (dropStash) FAILED: {0}", logDetails());
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -330,13 +330,13 @@ public class AxoGitLibrary extends AxolotiLibrary {
         try {
             PullResult res = cmd.call();
             if (!res.isSuccessful()) {
-                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (pull) FAILED : {0}", logDetails());
+                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (pull) FAILED: {0}", logDetails());
                 return false;
             }
             return true;
 
         } catch (GitAPIException ex) {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (pull) FAILED : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (pull) FAILED: {0}", logDetails());
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
@@ -351,7 +351,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
                 // has the user changed a brannch, that they are not authorised to change
                 boolean isDirty = isDirty(git);
                 if (isDirty && !isAuth()) {
-                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "unauthorised changes, resetting : {0}", logDetails());
+                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Unauthorised changes, resetting: {0}", logDetails());
                     CheckoutCommand cmd = git.checkout();
                     cmd.setForce(force);
                     cmd.setAllPaths(true);
@@ -360,19 +360,19 @@ public class AxoGitLibrary extends AxolotiLibrary {
                         cmd.call();
                         CheckoutResult res = cmd.getResult();
                         if (!res.getStatus().equals(CheckoutResult.Status.OK)) {
-                            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (checkout) FAILED : {0}", logDetails());
+                            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (checkout) FAILED: {0}", logDetails());
                             return false;
                         }
                         return true;
                     } catch (GitAPIException ex) {
-                        Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (checkout) FAILED : {0}", logDetails());
+                        Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (checkout) FAILED: {0}", logDetails());
                         Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
                 return true;
             }
         } catch (IOException ex) {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (check local branch) FAILED : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (check local branch) FAILED: {0}", logDetails());
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -388,7 +388,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
                 }
             }
         } catch (GitAPIException ex) {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (branch list) FAILED : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (branch list) FAILED: {0}", logDetails());
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -404,12 +404,12 @@ public class AxoGitLibrary extends AxolotiLibrary {
             cmd.call();
             CheckoutResult res = cmd.getResult();
             if (!res.getStatus().equals(CheckoutResult.Status.OK)) {
-                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (checkout) FAILED : {0}", logDetails());
+                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (checkout) FAILED: {0}", logDetails());
                 return false;
             }
             return true;
         } catch (GitAPIException ex) {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (checkout) FAILED : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (checkout) FAILED: {0}", logDetails());
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
@@ -429,7 +429,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             cmd.call();
             return true;
         } catch (GitAPIException ex) {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (add) FAILED : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (add) FAILED: {0}", logDetails());
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
@@ -441,7 +441,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
         try {
             cmd.call();
         } catch (GitAPIException ex) {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "upgrade (fetch) FAILED : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Upgrade (fetch) FAILED: {0}", logDetails());
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -455,7 +455,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             RevCommit rev = cmd.call();
             return true;
         } catch (GitAPIException ex) {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (commit) FAILED : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (commit) FAILED: {0}", logDetails());
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
@@ -481,44 +481,44 @@ public class AxoGitLibrary extends AxolotiLibrary {
                 details.append("dirty");
             }
 
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Status: {0} : {1}  ( {2} )", new Object[]{logDetails(), overallStatus, details.toString()});
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Status: {0} - {1}  ({2})", new Object[]{logDetails(), overallStatus, details.toString()});
             if (!status.isClean()) {
                 Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Changes for: {0}", logDetails());
                 for (String f : status.getAdded()) {
-                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "added: {0} ", f);
+                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Added: {0}", f);
                 }
                 for (String f : status.getChanged()) {
-                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "changed: {0} ", f);
+                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Changed: {0}", f);
                 }
                 for (String f : status.getConflicting()) {
-                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "conflicting: {0} ", f);
+                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Conflicting: {0}", f);
                 }
                 for (String f : status.getMissing()) {
-                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "missing: {0} ", f);
+                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Missing: {0}", f);
                 }
                 for (String f : status.getModified()) {
-                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "modified: {0} ", f);
+                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Modified: {0}", f);
                 }
                 for (String f : status.getRemoved()) {
-                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "removed: {0} ", f);
+                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Removed: {0}", f);
                 }
                 for (String f : status.getUntracked()) {
-                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "untracked: {0} ", f);
+                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Untracked: {0}", f);
                 }
                 for (String f : status.getUntrackedFolders()) {
-                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "untracked folders: {0} ", f);
+                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Untracked folder(s): {0}", f);
                 }
                 for (String f : status.getUncommittedChanges()) {
-                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "uncommited: {0} ", f);
+                    Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Uncommited: {0}", f);
                 }
             }
             return true;
         } catch (GitAPIException ex) {
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Status: exception  {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Status: exception {0}", logDetails());
         } catch (NoWorkTreeException ex) {
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Status: exception  {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Status: exception {0}", logDetails());
         }
         return false;
     }
@@ -533,7 +533,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             Iterable<PushResult> res = cmd.call();
             return true;
         } catch (GitAPIException ex) {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (push) FAILED : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (push) FAILED: {0}", logDetails());
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
@@ -553,7 +553,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
         } catch (GitAPIException ex) {
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NoWorkTreeException ex) {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (isdirty) FAILED : {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (isdirty) FAILED: {0}", logDetails());
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;

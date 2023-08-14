@@ -231,34 +231,34 @@ void exception_checkandreport(void) {
   if (exception_check()) {
     bool report_registers = 0;
     if (exceptiondump->type == fault) {
-      LogTextMessage("exception report:");
+      LogTextMessage("Exception report:");
       report_registers = 1;
     }
     else if (exceptiondump->type == watchdog_soft) {
-      LogTextMessage("exception: soft watchdog");
+      LogTextMessage("Exception: soft watchdog");
       report_registers = 1;
     }
     else if (exceptiondump->type == watchdog_hard) {
-      LogTextMessage("exception: hard watchdog i=0x%x", exceptiondump->i);
+      LogTextMessage("Exception: hard watchdog i=0x%x", exceptiondump->i);
     }
     else if (exceptiondump->type == brownout) {
-      LogTextMessage("exception: brownout");
+      LogTextMessage("Exception: brownout");
     }
     else if (exceptiondump->type == fatfs_error) {
-      LogTextMessage("file error: %s, filename:\"%s\"",fs_err_name[exceptiondump->r0],(char *)(BKPSRAM_BASE)+12);
+      LogTextMessage("File error: %s, filename:\"%s\"",fs_err_name[exceptiondump->r0],(char *)(BKPSRAM_BASE)+12);
     }
     else if (exceptiondump->type == patch_load_crc_fail) {
-      LogTextMessage("failed to load patch, firmware version mismatch? filename:\"%s\"",(char *)(BKPSRAM_BASE)+12);
+      LogTextMessage("Failed to load patch, firmware version mismatch? Filename:\"%s\"",(char *)(BKPSRAM_BASE)+12);
     }
     else if (exceptiondump->type == patch_load_sdram_overflow) {
-      LogTextMessage("sdram overflow by %d bytes",exceptiondump->r0);
+      LogTextMessage("SDRAM overflow by %d bytes",exceptiondump->r0);
     }
     else if (exceptiondump->type == usbh_midi_ringbuffer_overflow) {
-      LogTextMessage("usb host midi output ringbuffer overflow");
+      LogTextMessage("USB host MIDI output ringbuffer overflow");
     }
     else
     {
-      LogTextMessage("unknown exception?");
+      LogTextMessage("Unknown exception...");
     }
 
     if (report_registers) {

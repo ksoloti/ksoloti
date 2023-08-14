@@ -183,7 +183,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemUploadSD">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Upload to SDCard"/>
+                <Property name="text" type="java.lang.String" value="Upload to SD card"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemUploadSDActionPerformed"/>
@@ -191,7 +191,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemUploadSDStart">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Upload to SDCard as startup"/>
+                <Property name="text" type="java.lang.String" value="Upload to SD card as startup"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemUploadSDStartActionPerformed"/>

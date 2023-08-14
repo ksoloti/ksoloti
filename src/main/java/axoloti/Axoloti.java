@@ -35,7 +35,8 @@ import javax.swing.UnsupportedLookAndFeelException;
  *
  * @author Johannes Taelman
  */
-public class Axoloti {
+public class Axoloti
+{
 
     public final static String RUNTIME_DIR = "axoloti_runtime";
     public final static String HOME_DIR = "axoloti_home";
@@ -45,43 +46,62 @@ public class Axoloti {
     /**
      * @param args the command line arguments
      */
-    public static void main(final String[] args) {
-        try {
+    public static void main(final String[] args)
+    {
+        try
+        {
             initProperties();
 
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            if (System.getProperty("os.name").contains("OS X")) {
+            if (System.getProperty("os.name").contains("OS X"))
+            {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
             }
-        } catch (URISyntaxException e) {
-            throw new Error(e);
-        } catch (IOException e) {
-            throw new Error(e);
-        } catch (ClassNotFoundException e) {
-            throw new Error(e);
-        } catch (InstantiationException e) {
-            throw new Error(e);
-        } catch (IllegalAccessException e) {
-            throw new Error(e);
-        } catch (UnsupportedLookAndFeelException e) {
+        }
+        catch (URISyntaxException e)
+        {
             throw new Error(e);
         }
+        catch (IOException e)
+        {
+            throw new Error(e);
+        }
+        catch (ClassNotFoundException e)
+        {
+            throw new Error(e);
+        }
+        catch (InstantiationException e)
+        {
+            throw new Error(e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new Error(e);
+        }
+        catch (UnsupportedLookAndFeelException e)
+        {
+            throw new Error(e);
+        }
+
         System.setProperty("line.separator", "\n");
 
         Synonyms.instance(); // prime it
         handleCommandLine(args);
     }
 
-    static void BuildEnv(String var, String def) {
+    static void BuildEnv(String var, String def)
+    {
         String ev = System.getProperty(var);
-        if (ev == null) {
+        if (ev == null)
+        {
             ev = System.getenv(var);
             if (ev == null) {
                 ev = def;
             }
         }
         File f = new File(ev);
-        if (f.exists()) {
+        if (f.exists())
+        {
             try {
                 ev = f.getCanonicalPath();
             } catch (IOException ex) {
@@ -91,7 +111,8 @@ public class Axoloti {
         System.setProperty(var, ev);
     }
 
-    static boolean TestDir(String var) {
+    static boolean TestDir(String var)
+    {
         String ev = System.getProperty(var);
         File f = new File(ev);
         if (!f.exists()) {
@@ -109,7 +130,8 @@ public class Axoloti {
     private static String cacheFWDir = null;
     private static boolean cacheDeveloper = false;
 
-    public static boolean isDeveloper() {
+    public static boolean isDeveloper()
+    {
         String fwEnv = System.getProperty(FIRMWARE_DIR);
         if (cacheFWDir != null && fwEnv.equals(cacheFWDir)) {
             return cacheDeveloper;
@@ -138,7 +160,8 @@ public class Axoloti {
 
     static boolean failSafeMode = false;
 
-    static void checkFailSafeModeActive() {
+    static void checkFailSafeModeActive()
+    {
         failSafeMode = false;
         String homedir = System.getProperty(HOME_DIR);
         if (homedir == null) {
@@ -154,11 +177,13 @@ public class Axoloti {
         }
     }
 
-    public static boolean isFailSafeMode() {
+    public static boolean isFailSafeMode()
+    {
         return failSafeMode;
     }
 
-    private static void initProperties() throws URISyntaxException, IOException {
+    private static void initProperties() throws URISyntaxException, IOException
+    {
         String curDir = System.getProperty("user.dir");
         File jarFile = new File(Axoloti.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         String jarDir = jarFile.getParentFile().getCanonicalPath();
@@ -264,7 +289,8 @@ public class Axoloti {
         );
     }
 
-    private static void handleCommandLine(final String args[]) {
+    private static void handleCommandLine(final String args[])
+    {
         boolean cmdLineOnly = false;
         boolean cmdRunAllTest = false;
         boolean cmdRunPatchTest = false;

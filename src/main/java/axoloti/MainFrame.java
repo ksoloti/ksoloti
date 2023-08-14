@@ -300,7 +300,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (tsuf.length() > 0) {
                         MainFrame.this.setTitle(MainFrame.this.getTitle() + " (" + tsuf + ")");
                     }
-                    Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Axoloti version {0} build time {1}", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
+                    Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Axoloti version {0} | Build time {1}", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
 
                     updateLinkFirmwareID();
 
@@ -319,10 +319,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
                             Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current user library does not match specified version: {0} -> {1}", new Object[]{cb, ulib.getBranch()});
                             int s = JOptionPane.showConfirmDialog(MainFrame.this,
-                                    "User Library version mismatch, do you want to upgrade?\n"
-                                    + "this will stash any changes, and then reapply to new version\n"
-                                    + "if not, then you will need to manually backup changes, and then sync libraries",
-                                    "User Library mismatch",
+                                    "User library version mismatch detected. Do you want to upgrade now?\n"
+                                    + "This will stash any local changes and reapply them to the new version.\n"
+                                    + "If you choose no, you will need to manually backup your changes and then sync libraries.",
+                                    "User Library Mismatch",
                                     JOptionPane.YES_NO_OPTION);
                             if (s == JOptionPane.YES_OPTION) {
                                 ulib.upgrade();
@@ -536,7 +536,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jLabelPatch.setText("patch");
         jPanel1.add(jLabelPatch);
 
-        jLabelSDCardPresent.setText("no SDCard");
+        jLabelSDCardPresent.setText("No SD card");
         jPanel1.add(jLabelSDCardPresent);
 
         jPanel2.add(jPanel1);
@@ -1091,9 +1091,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             String name = MainFrame.prefs.getBoardName(cpuId);
             String txt;
             if (name == null) {
-                jLabelCPUID.setText("Cpu ID = " + cpuId);
+                jLabelCPUID.setText("CPU ID: " + cpuId);
             } else {
-                jLabelCPUID.setText("Cpu ID = " + cpuId + " ( " + name + " ) ");
+                jLabelCPUID.setText("Board Name: " + name);
             }
         }
     }
@@ -1101,7 +1101,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     public void updateLinkFirmwareID() {
         LinkFirmwareID = FirmwareID.getFirmwareID();
         //TargetFirmwareID = LinkFirmwareID;
-        jLabelFirmwareID.setText("Firmware ID = " + LinkFirmwareID);
+        jLabelFirmwareID.setText("Firmware ID: " + LinkFirmwareID);
         Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Link to firmware CRC {0}", LinkFirmwareID);
         WarnedAboutFWCRCMismatch = false;
     }
@@ -1112,7 +1112,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         TargetFirmwareID = firmwareId;
         if (!firmwareId.equals(this.LinkFirmwareID)) {
             if (!WarnedAboutFWCRCMismatch) {
-                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Firmware CRC mismatch! Please flash the firmware first! " + "Hardware firmware CRC = {0} <> Software CRC = {1}", new Object[]{firmwareId, this.LinkFirmwareID});
+                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Firmware CRC mismatch! Please flash the firmware first! " + "Hardware firmware CRC {0} <> Software CRC {1}", new Object[]{firmwareId, this.LinkFirmwareID});
                 WarnedAboutFWCRCMismatch = true;
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
@@ -1169,25 +1169,25 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             upd = true;
         }
         if (upd) {
-            jLabelVoltages.setText(String.format("5V: %.2fV VDD: %.2fV", v5000c / 100.0f, vdd00c / 100.0f));
+            jLabelVoltages.setText(String.format("Voltage Monitor:   %.2fV   %.2fV", v5000c / 100.0f, vdd00c / 100.0f));
         }
 
         if (warning) {
             jLabelVoltages.setForeground(Theme.getCurrentTheme().Error_Text);
         } else {
-            jLabelVoltages.setForeground(Theme.getCurrentTheme().Normal_Text);
+            jLabelVoltages.setForeground(Theme.getCurrentTheme().Inverted_Text);
         }
     }
 
     public void interactiveFirmwareUpdate() {
         int s = JOptionPane.showConfirmDialog(this,
-                "Firmware CRC mismatch detected!\n"
-                + "Do you want to update the firmware?\n"
-                + "This process will cause a disconnect, "
-                + "the leds will blink for a minute, "
-                + "do not interrupt until the leds "
+                "Firmware mismatch detected!\n"
+                + "Do you want to update the firmware now?\n"
+                + "This process will cause a disconnect "
+                + " and the LEDs will blink for a while. "
+                + "Do not interrupt until the LEDs "
                 + "stop blinking.\n"
-                + "When the leds stop blinking, you can connect again.\n",
+                + "When the green LED lights up steady you can connect again.\n",
                 "Firmware update...",
                 JOptionPane.YES_NO_OPTION);
         if (s == 0) {
@@ -1236,13 +1236,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     @Override
     public void ShowSDCardMounted() {
-        jLabelSDCardPresent.setText("SDCard mounted");
+        jLabelSDCardPresent.setText("SD card mounted");
         jMenuItemMount.setEnabled(true);
     }
 
     @Override
     public void ShowSDCardUnmounted() {
-        jLabelSDCardPresent.setText("no SDCard");
+        jLabelSDCardPresent.setText("No SD card");
         jMenuItemMount.setEnabled(false);
     }
 }
