@@ -87,9 +87,9 @@ public class Usb {
                             DeviceHandle handle = new DeviceHandle();
                             result = LibUsb.open(device, handle);
                             if (result < 0) {
-                                Logger.getLogger(Usb.class.getName()).log(Level.INFO, "  but can''t get access : {0}", LibUsb.strError(result));
+                                Logger.getLogger(Usb.class.getName()).log(Level.INFO, " but can''t access: {0}", LibUsb.strError(result));
                             } else {
-                                Logger.getLogger(Usb.class.getName()).log(Level.INFO, "  driver ok");
+                                Logger.getLogger(Usb.class.getName()).log(Level.INFO, " driver OK");
                                 LibUsb.close(handle);
                             }
                         } else if (descriptor.idProduct() == PID_STM_STLINK) {
@@ -104,7 +104,7 @@ public class Usb {
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);
                         if (result < 0) {
-                            Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* Axoloti USB device, but can''t get access : {0}", LibUsb.strError(result));
+                            Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* Axoloti USB device, but can''t get access: {0}", LibUsb.strError(result));
                         } else {
                             Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* Axoloti USB device, serial #{0}", LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
                             LibUsb.close(handle);
@@ -116,7 +116,7 @@ public class Usb {
                 }
             }
             if (!hasOne) {
-                Logger.getLogger(Usb.class.getName()).log(Level.INFO, "none found...");
+                Logger.getLogger(Usb.class.getName()).log(Level.INFO, "None found...");
             }
         } finally {
             // Ensure the allocated device list is freed
@@ -146,7 +146,7 @@ public class Usb {
                     DeviceHandle handle = new DeviceHandle();
                     result = LibUsb.open(device, handle);
                     if (result < 0) {
-                        Logger.getLogger(Usb.class.getName()).log(Level.SEVERE, "DFU device found, but can''t get access : {0}", LibUsb.strError(result));
+                        Logger.getLogger(Usb.class.getName()).log(Level.SEVERE, "DFU device found but can''t access: {0}", LibUsb.strError(result));
                         switch (axoloti.utils.OSDetect.getOS()) {
                             case WIN:
                                 Logger.getLogger(Usb.class.getName()).log(Level.SEVERE, "Please install the WinUSB driver for the \"STM32 Bootloader\":");

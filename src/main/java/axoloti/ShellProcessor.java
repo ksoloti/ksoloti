@@ -52,7 +52,7 @@ public class ShellProcessor extends SwingWorker<Integer, String> {
             //          Logger.getLogger(ShellProcessor.class.getName()).log(Level.INFO, "ShellProcessor Waiting");
             try {
                 QCmdShellTask qc = queueShellTasks.take();
-//                Logger.getLogger(ShellProcessor.class.getName()).log(Level.INFO, "ShellProcessor : "+ qc.GetStartMessage());
+//                Logger.getLogger(ShellProcessor.class.getName()).log(Level.INFO, "ShellProcessor: "+ qc.GetStartMessage());
 //                queueResponse.add(qc.Do(this));
             } catch (InterruptedException ex) {
                 Logger.getLogger(ShellProcessor.class.getName()).log(Level.SEVERE, null, ex);

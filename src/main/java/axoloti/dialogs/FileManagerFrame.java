@@ -164,7 +164,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         for (File f : droppedFiles) {
                             System.out.println(f.getName());
                             if (!f.canRead()) {
-                                Logger.getLogger(FileManagerFrame.class.getName()).log(Level.SEVERE, "Can't read file");
+                                Logger.getLogger(FileManagerFrame.class.getName()).log(Level.SEVERE, "Can''t read file");
                             } else {
                                 processor.AppendToQueue(new QCmdUploadFile(f, f.getName()));
                             }
@@ -379,7 +379,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 File f = fc.getSelectedFile();
                 if (f != null) {
                     if (!f.canRead()) {
-                        Logger.getLogger(FileManagerFrame.class.getName()).log(Level.SEVERE, "Can't read file");
+                        Logger.getLogger(FileManagerFrame.class.getName()).log(Level.SEVERE, "Can''t read file");
                         return;
                     }
                     processor.AppendToQueue(new QCmdUploadFile(f, dir + f.getName()));
@@ -445,7 +445,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             int clusters = SDCardInfo.getInstance().getClusters();
             int clustersize = SDCardInfo.getInstance().getClustersize();
             int sectorsize = SDCardInfo.getInstance().getSectorsize();
-            jLabelSDInfo.setText("Free : " + ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)) + "MB, Cluster size = " + clustersize * sectorsize);
+            jLabelSDInfo.setText("Free: " + ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)) + "MB, Cluster size = " + clustersize * sectorsize);
             jFileTable.revalidate();
             jFileTable.repaint();
         }

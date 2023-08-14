@@ -364,7 +364,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
                 settings.subpatchmode = SubPatchMode.polyexpression;
                 break;
             default:
-                Logger.getLogger(PatchSettingsFrame.class.getName()).severe("undefined subpatchmode");
+                Logger.getLogger(PatchSettingsFrame.class.getName()).severe("Undefined subpatch mode");
         }
     }//GEN-LAST:event_jComboBoxModeActionPerformed
 

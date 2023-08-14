@@ -108,7 +108,7 @@ public class SDCardInfo {
         }
         sdf = new SDFileInfo(fname, date, size);
         files.add(sdf);
-//        Logger.getLogger(SDCardInfo.class.getName()).log(Level.SEVERE, "file added " + files.size() + ":" + fname);
+//        Logger.getLogger(SDCardInfo.class.getName()).log(Level.SEVERE, "File added " + files.size() + ":" + fname);
         MainFrame.mainframe.filemanager.refresh();
     }
 
@@ -140,12 +140,12 @@ public class SDCardInfo {
     }
 
     public synchronized boolean exists(String name, long timestampEpoch, long size) {
-        //Logger.getLogger(SDCardInfo.class.getName()).log(Level.SEVERE, "exists? " + name);
+        //Logger.getLogger(SDCardInfo.class.getName()).log(Level.SEVERE, "Does " + name + " exist?");
         if (!name.startsWith("/")) {
             name = "/" + name;
         }
         for (SDFileInfo f : files) {
-            //Logger.getLogger(SDCardInfo.class.getName()).log(Level.SEVERE, "file compare " + name + ":" + f.filename);
+            //Logger.getLogger(SDCardInfo.class.getName()).log(Level.SEVERE, "File compare " + name + ":" + f.filename);
             if (f.filename.equalsIgnoreCase(name) && f.size == size && (Math.abs(f.timestamp.getTimeInMillis() - timestampEpoch) < 3000)) {
                 return true;
             }

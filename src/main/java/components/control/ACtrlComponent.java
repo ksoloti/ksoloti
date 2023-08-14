@@ -182,9 +182,9 @@ public abstract class ACtrlComponent extends JComponent {
                         System.out.println("paste on control: " + s);
                         setValue(Double.parseDouble(s));
                     } catch (UnsupportedFlavorException ex) {
-                        Logger.getLogger(NumberBoxComponent.class.getName()).log(Level.SEVERE, "paste", ex);
+                        Logger.getLogger(NumberBoxComponent.class.getName()).log(Level.SEVERE, "Paste", ex);
                     } catch (IOException ex) {
-                        Logger.getLogger(NumberBoxComponent.class.getName()).log(Level.SEVERE, "paste", ex);
+                        Logger.getLogger(NumberBoxComponent.class.getName()).log(Level.SEVERE, "Paste", ex);
                     }
                     return true;
                 }

@@ -45,7 +45,7 @@ public class Synonyms {
             if(lib != null) {
                 instance = serializer.read(Synonyms.class, new File(lib.getLocalLocation() + filename));
             } else {
-                Logger.getLogger(Synonyms.class.getName()).log(Level.WARNING,"not loading synonyms cannot find factory library");
+                Logger.getLogger(Synonyms.class.getName()).log(Level.WARNING,"Not loading synonyms: cannot find factory library");
             }
 
             

@@ -202,9 +202,9 @@ public class PatchGUI extends Patch {
                         }
                     }
                 } catch (UnsupportedFlavorException ex) {
-                    Logger.getLogger(PatchGUI.class.getName()).log(Level.SEVERE, "paste", ex);
+                    Logger.getLogger(PatchGUI.class.getName()).log(Level.SEVERE, "Paste", ex);
                 } catch (IOException ex) {
-                    Logger.getLogger(PatchGUI.class.getName()).log(Level.SEVERE, "paste", ex);
+                    Logger.getLogger(PatchGUI.class.getName()).log(Level.SEVERE, "Paste", ex);
                 }
                 return true;
             }
@@ -762,7 +762,7 @@ public class PatchGUI extends Patch {
                 SetDirty();
             }
         } else {
-            Logger.getLogger(PatchGUI.class.getName()).log(Level.INFO, "can't move: locked");
+            Logger.getLogger(PatchGUI.class.getName()).log(Level.INFO, "Can''t move: locked");
         }
     }
 

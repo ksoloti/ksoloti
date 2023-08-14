@@ -76,13 +76,13 @@ public class Net extends JComponent {
             String outletname = i.getOutletname();
             AxoObjectInstanceAbstract o = patch.GetObjectInstance(objname);
             if (o == null) {
-                Logger.getLogger(Net.class.getName()).log(Level.SEVERE, "could not resolve net source obj : {0}::{1}", new Object[]{i.getObjname(), i.getOutletname()});
+                Logger.getLogger(Net.class.getName()).log(Level.SEVERE, "Could not resolve net source object: {0}::{1}", new Object[]{i.getObjname(), i.getOutletname()});
                 patch.nets.remove(this);
                 return;
             }
             OutletInstance r = o.GetOutletInstance(outletname);
             if (r == null) {
-                Logger.getLogger(Net.class.getName()).log(Level.SEVERE, "could not resolve net source outlet : {0}::{1}", new Object[]{i.getObjname(), i.getOutletname()});
+                Logger.getLogger(Net.class.getName()).log(Level.SEVERE, "Could not resolve net source outlet: {0}::{1}", new Object[]{i.getObjname(), i.getOutletname()});
                 patch.nets.remove(this);
                 return;
             }
@@ -94,13 +94,13 @@ public class Net extends JComponent {
             String inletname = i.getInletname();
             AxoObjectInstanceAbstract o = patch.GetObjectInstance(objname);
             if (o == null) {
-                Logger.getLogger(Net.class.getName()).log(Level.SEVERE, "could not resolve net dest obj :{0}::{1}", new Object[]{i.getObjname(), i.getInletname()});
+                Logger.getLogger(Net.class.getName()).log(Level.SEVERE, "Could not resolve net dest obj :{0}::{1}", new Object[]{i.getObjname(), i.getInletname()});
                 patch.nets.remove(this);
                 return;
             }
             InletInstance r = o.GetInletInstance(inletname);
             if (r == null) {
-                Logger.getLogger(Net.class.getName()).log(Level.SEVERE, "could not resolve net dest inlet :{0}::{1}", new Object[]{i.getObjname(), i.getInletname()});
+                Logger.getLogger(Net.class.getName()).log(Level.SEVERE, "Could not resolve net dest inlet :{0}::{1}", new Object[]{i.getObjname(), i.getInletname()});
                 patch.nets.remove(this);
                 return;
             }

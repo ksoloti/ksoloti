@@ -249,7 +249,7 @@ public class USBBulkConnection extends Connection {
             }
 
             GoIdleState();
-            //Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "creating rx and tx thread...");
+            //Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Creating rx and tx thread...");
             transmitterThread = new Thread(new Transmitter());
             transmitterThread.setName("Transmitter");
             transmitterThread.start();
@@ -272,7 +272,7 @@ public class USBBulkConnection extends Connection {
             } catch (InterruptedException ex) {
                 Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
-            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "connected");
+            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.WARNING, "Connected");
 
             try {
                 Thread.sleep(100);
@@ -468,9 +468,9 @@ public class USBBulkConnection extends Connection {
         cpuid = spsDlg.getCPUID();
         String name = MainFrame.prefs.getBoardName(cpuid);
         if (name == null) {
-            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "port: {0}", cpuid);
+            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Port: {0}", cpuid);
         } else {
-            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "port: {0} name: {1}", new Object[]{cpuid, name});
+            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Name: {0}", new Object[]{name});
         }
     }
 
@@ -618,7 +618,7 @@ public class USBBulkConnection extends Connection {
         writeBytes(data);
         writeBytes(buffer);
         WaitSync();
-        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "block uploaded @ 0x{0} length {1}", new Object[]{Integer.toHexString(offset).toUpperCase(), Integer.toString(buffer.length)});
+        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Block uploaded @ 0x{0} length {1}", new Object[]{Integer.toHexString(offset).toUpperCase(), Integer.toString(buffer.length)});
     }
 
     @Override
@@ -789,7 +789,7 @@ public class USBBulkConnection extends Connection {
         data[2] = 'o';
         data[3] = 'A';
         int size = buffer.length;
-//        Logger.getLogger(SerialConnection.class.getName()).log(Level.INFO, "append size: " + buffer.length);
+//        Logger.getLogger(SerialConnection.class.getName()).log(Level.INFO, "Append size: " + buffer.length);
         data[4] = (byte) size;
         data[5] = (byte) (size >> 8);
         data[6] = (byte) (size >> 16);
@@ -857,19 +857,19 @@ public class USBBulkConnection extends Connection {
             while (!disconnectRequested) {
                 int result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 1000);
                 if (result != LibUsb.SUCCESS) {
-                    //Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "receive: " + result);
+                    //Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Receive: " + result);
                 }
                 {
                     int sz = transfered.get(0);
                     if (sz != 0) {
-//                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "receive sz: " + sz);
+//                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Receive sz: " + sz);
                     }
                     for (int i = 0; i < sz; i++) {
                         processByte(recvbuffer.get(i));
                     }
                 }
             }
-            //Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "receiver: thread stopped");
+            //Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Receiver: thread stopped");
             MainFrame.mainframe.qcmdprocessor.Abort();
             MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdShowDisconnect());
         }
@@ -890,7 +890,7 @@ public class USBBulkConnection extends Connection {
                     Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            //Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "transmitter: thread stopped");
+            //Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Transmitter: thread stopped");
             MainFrame.mainframe.qcmdprocessor.Abort();
             MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdShowDisconnect());
         }
@@ -1200,7 +1200,7 @@ public class USBBulkConnection extends Connection {
                         }
                         break;
                     default:
-                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "receiver: invalid header");
+                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "Receiver: invalid header");
                         GoIdleState();
 
                         break;

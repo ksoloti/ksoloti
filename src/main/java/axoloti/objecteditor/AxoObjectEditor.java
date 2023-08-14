@@ -395,7 +395,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
                         return true;
                 }
             } else {
-                Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, "changed but readonly: should not happen");
+                Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, "Changed but readonly: should not happen");
                 return true;
             }
         } else {

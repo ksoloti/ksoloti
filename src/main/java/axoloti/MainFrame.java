@@ -126,12 +126,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         StyleConstants.setFontFamily(styleParent, Font.MONOSPACED);
 
         final Style styleSevere = jTextPaneLog.addStyle("severe", styleParent);
-        final Style styleInfo = jTextPaneLog.addStyle("info", styleParent);
         final Style styleWarning = jTextPaneLog.addStyle("warning", styleParent);
+        final Style styleInfo = jTextPaneLog.addStyle("info", styleParent);
         jTextPaneLog.setBackground(Theme.getCurrentTheme().Console_Background);
         StyleConstants.setForeground(styleSevere, Theme.getCurrentTheme().Error_Text);
-        StyleConstants.setForeground(styleInfo, Theme.getCurrentTheme().Normal_Text);
         StyleConstants.setForeground(styleWarning, Theme.getCurrentTheme().Warning_Text);
+        StyleConstants.setForeground(styleInfo, Theme.getCurrentTheme().Normal_Text);
 
         DefaultCaret caret = (DefaultCaret) jTextPaneLog.getCaret();
         caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
@@ -300,7 +300,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (tsuf.length() > 0) {
                         MainFrame.this.setTitle(MainFrame.this.getTitle() + " (" + tsuf + ")");
                     }
-                    Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Axoloti version : {0}  build time : {1}", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
+                    Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Axoloti version {0} build time {1}", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
 
                     updateLinkFirmwareID();
 
@@ -317,7 +317,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
-                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current user library does not match correct version {0} -> {1}", new Object[]{cb, ulib.getBranch()});
+                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current user library does not match specified version: {0} -> {1}", new Object[]{cb, ulib.getBranch()});
                             int s = JOptionPane.showConfirmDialog(MainFrame.this,
                                     "User Library version mismatch, do you want to upgrade?\n"
                                     + "this will stash any changes, and then reapply to new version\n"
@@ -336,7 +336,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
-                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current factory library does not match correct version, upgrading {0} -> {1}", new Object[]{cb, ulib.getBranch()});
+                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current factory library does not match specified version, upgrading... ({0} -> {1})", new Object[]{cb, ulib.getBranch()});
                             ulib.upgrade();
                         }
                     }
@@ -425,10 +425,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
                 qcmdprocessor.AppendToQueue(new QCmdStartFlasher());
             } else {
-                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "can''t read firmware, please compile firmware! (file: {0} )", pname);
+                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Can''t read firmware, please compile firmware! (file: {0} )", pname);
             }
         } else {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "can''t read flasher, please compile firmware! (file: {0} )", fname_flasher);
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Can''t read flasher, please compile firmware! (file: {0} )", fname_flasher);
         }
     }
 
@@ -807,7 +807,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private boolean runTestCompile(File f) {
-        Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "testing {0}", f.getPath());
+        Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Testing {0}", f.getPath());
 
         Strategy strategy = new AnnotationStrategy();
         Serializer serializer = new Persister(strategy);
@@ -873,7 +873,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private boolean runUpgradeFile(File f) {
-        Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "upgrading {0}", f.getPath());
+        Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Upgrading {0}", f.getPath());
 
         Strategy strategy = new AnnotationStrategy();
         Serializer serializer = new Persister(strategy);
@@ -951,9 +951,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.AppendToQueue(new QCmdStop());
             qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
             qcmdprocessor.AppendToQueue(new QCmdStartMounter());
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "will disconnect, unmount sdcard to go back to normal mode (required to connect)");
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Will disconnect, unmount SD card to go back to normal mode (required to connect)");
         } else {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "can''t read mounter firmware, please compile mounter firmware! (file: {0} )", fname);
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Can''t read mounter firmware, please compile mounter firmware! (file: {0})", fname);
         }
 
     }//GEN-LAST:event_jMenuItemMountActionPerformed

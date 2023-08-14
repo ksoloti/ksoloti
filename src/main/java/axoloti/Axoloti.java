@@ -95,7 +95,7 @@ public class Axoloti {
         String ev = System.getProperty(var);
         File f = new File(ev);
         if (!f.exists()) {
-            System.err.println(var + " Directory does not exist " + ev);
+            System.err.println(var + " directory does not exist " + ev);
             return false;
         }
         if (!f.isDirectory()) {
@@ -294,7 +294,7 @@ public class Axoloti {
                 if (i + 1 < args.length) {
                     cmdFile = args[i + 1];
                 } else {
-                    System.err.println("-runTest patchname/directory : missing file/dir");
+                    System.err.println("-runTest patchname/directory: missing file/dir");
                     System.exit(-1);
                 }
             } else if (arg.equalsIgnoreCase("-runUpgrade")) {
@@ -303,7 +303,7 @@ public class Axoloti {
                 if (i + 1 < args.length) {
                     cmdFile = args[i + 1];
                 } else {
-                    System.err.println("-runUpgrade patchname/directory : missing file/dir");
+                    System.err.println("-runUpgrade patchname/directory: missing file/dir");
                     System.exit(-1);
                 }
             } else if (arg.equalsIgnoreCase("-help")) {

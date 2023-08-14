@@ -840,7 +840,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
             return;
         }
         if (candidates.isEmpty()) {
-            Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.SEVERE, "could not resolve any candidates {0}", id);
+            Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.SEVERE, "Could not resolve any candidates {0}", id);
         }
         if (candidates.size() == 1) {
             return;
@@ -892,15 +892,15 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
         }
 
         if (selected == null) {
-            //Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO,"no promotion to null" + this + " to " + selected);            
+            //Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO,"No promotion to null" + this + " to " + selected);            
             return;
         }
         if (selected != getType()) {
-            Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.FINE, "promoting " + this + " to " + selected);
+            Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.FINE, "Promoting " + this + " to " + selected);
             patch.ChangeObjectInstanceType(this, selected);
             patch.cleanUpIntermediateChangeStates(4);
         } else {
-//            Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "no promotion for {0}", typeName);
+//            Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "No promotion for {0}", typeName);
         }
     }
 

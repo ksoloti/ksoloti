@@ -12,7 +12,7 @@ case "$unamestr" in
 		rootdir="$(cd $(dirname $0); pwd -P)"
 	;;
         *)
-                echo "unknown OS : $unamestr, aborting..."
+                echo "Unknown OS: $unamestr - aborting..."
                 exit
         ;;
 esac
@@ -22,7 +22,7 @@ export axoloti_runtime=${axoloti_runtime:="$rootdir"}
 export axoloti_firmware=${axoloti_firmware:="$axoloti_release/firmware"}
 export axoloti_home=${axoloti_home:="$rootdir"}
 
-which java >/dev/null || echo "java not found in path" 
+which java >/dev/null || echo "Java not found in path" 
 
 if [ -f $rootdir/dist/Axoloti.jar ]
 then

@@ -123,7 +123,7 @@ public abstract class QCmdShellTask implements QCmd {
             if (p1.exitValue() == 0) {
                 success = true;
             } else {
-                Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "shell task failed, exit value: {0}", p1.exitValue());
+                Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "Shell task failed, exit value: {0}", p1.exitValue());
                 success = false;
                 return err();
             }

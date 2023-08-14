@@ -25,9 +25,9 @@ public class AxoFileLibrary
     public void reportStatus() {
         File f = new File(getLocalLocation()); 
         if(!f.exists()) {
-           Logger.getLogger(AxoFileLibrary.class.getName()).log(Level.WARNING, "Status : {0} : local directory missing", getId());
+           Logger.getLogger(AxoFileLibrary.class.getName()).log(Level.WARNING, "Status: {0} - Local directory missing", getId());
         }
-        Logger.getLogger(AxoFileLibrary.class.getName()).log(Level.INFO, "Status : {0} : OK", getId());
+        Logger.getLogger(AxoFileLibrary.class.getName()).log(Level.INFO, "Status: {0} - OK", getId());
     }
     
     @Override

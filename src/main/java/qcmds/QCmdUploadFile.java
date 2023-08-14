@@ -81,18 +81,18 @@ public class QCmdUploadFile implements QCmdSerialTask {
         try {
             if (inputStream == null) {
                 if (!file.isFile()) {
-                    Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.INFO, "file does not exist: {0}", filename);
+                    Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.INFO, "File does not exist: {0}", filename);
                     success = false;
                     return this;
                 }
                 if (!file.canRead()) {
-                    Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.INFO, "can''t read file: {0}", filename);
+                    Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.INFO, "Can''t read file: {0}", filename);
                     success = false;
                     return this;
                 }
                 inputStream = new FileInputStream(file);
             }
-            Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.INFO, "uploading: {0}", filename);
+            Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.INFO, "Uploading: {0}", filename);
             Calendar ts;
             if (cal != null) {
                 ts = cal;
@@ -120,12 +120,12 @@ public class QCmdUploadFile implements QCmdSerialTask {
                 byte[] buffer = new byte[l];
                 int nRead = inputStream.read(buffer, 0, l);
                 if (nRead != l) {
-                    Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.SEVERE, "file size wrong?{0}", nRead);
+                    Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.SEVERE, "File size wrong?{0}", nRead);
                 }
                 connection.TransmitAppendFile(buffer);
                 int newpct = (100 * (tlength - remLength) / tlength);
                 if (newpct != pct) {
-                    Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.INFO, "uploading : {0}%", newpct);
+                    Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.INFO, "Uploading: {0}%", newpct);
                 }
                 pct = newpct;
                 remLength = inputStream.available();

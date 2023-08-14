@@ -48,7 +48,7 @@ public class QCmdDeleteFile implements QCmdSerialTask {
     @Override
     public QCmd Do(Connection connection) {
         connection.ClearSync();
-        Logger.getLogger(QCmdDeleteFile.class.getName()).log(Level.INFO, "deleting: {0}", filename);
+        Logger.getLogger(QCmdDeleteFile.class.getName()).log(Level.INFO, "Deleting: {0}", filename);
         connection.TransmitDeleteFile(filename);
         return this;
     }

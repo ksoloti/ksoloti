@@ -793,7 +793,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         }
 
         for (File f : files) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Compiling and uploading : {0}", f.getName());
+            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Compiling and uploading: {0}", f.getName());
             UploadOneFile(f);
         }
         Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Patch bank uploaded");
