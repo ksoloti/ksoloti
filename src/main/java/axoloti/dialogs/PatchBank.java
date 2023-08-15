@@ -366,8 +366,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 Object[] options = {"Yes",
                     "No"};
                 int n = JOptionPane.showOptionDialog(this,
-                        "File does not match filter, do you want to change extension to " + filterext + " ?",
-                        "Axoloti asks:",
+                        "File does not match filter, do you want to change extension to " + filterext + "?",
+                        "File Extension",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
                         null,
@@ -386,8 +386,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 Object[] options = {"Yes",
                     "No"};
                 int n = JOptionPane.showOptionDialog(this,
-                        "File exists, do you want to overwrite ?",
-                        "Axoloti asks:",
+                        "File exists, do you want to overwrite?",
+                        "File Exists",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
                         null,
@@ -433,8 +433,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 "Don't save",
                 "Cancel"};
             int n = JOptionPane.showOptionDialog(this,
-                    "Do you want to save changes to " + FilenamePath + " ?",
-                    "Axoloti asks:",
+                    "Do you want to save changes to " + FilenamePath + "?",
+                    "Unsaved Changes",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
                     null,

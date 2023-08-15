@@ -260,7 +260,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         jMenuItemEnterDFU.setVisible(Axoloti.isDeveloper());
         jMenuItemFlashDefault.setVisible(!(Axoloti.isDeveloper())); // When in Developer mode, make default Flash option invisible avoid confusion
-        jMenuItemFlashSDR.setVisible(Axoloti.isDeveloper());
+        jMenuItemFlashUser.setVisible(Axoloti.isDeveloper());
         jMenuItemFCompile.setVisible(Axoloti.isDeveloper());
         jDevSeparator.setVisible(Axoloti.isDeveloper());
 
@@ -481,7 +481,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jDevSeparator = new javax.swing.JPopupMenu.Separator();
         jMenuItemFCompile = new javax.swing.JMenuItem();
         jMenuItemEnterDFU = new javax.swing.JMenuItem();
-        jMenuItemFlashSDR = new javax.swing.JMenuItem();
+        jMenuItemFlashUser = new javax.swing.JMenuItem();
         windowMenu1 = new axoloti.menus.WindowMenu();
         helpMenu1 = new axoloti.menus.HelpMenu();
 
@@ -588,6 +588,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuEdit.setMnemonic('E');
         jMenuEdit.setText("Edit");
 
+        jMenuItemCopy.setMnemonic('C');
         jMenuItemCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuItemCopy.setText("Copy");
         jMenuEdit.add(jMenuItemCopy);
@@ -597,6 +598,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuBoard.setMnemonic('B');
         jMenuBoard.setText("Board");
 
+        jMenuItemSelectCom.setMnemonic('S');
         jMenuItemSelectCom.setText("Select Device...");
         jMenuItemSelectCom.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -605,6 +607,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuBoard.add(jMenuItemSelectCom);
 
+        jMenuItemFConnect.setMnemonic('C');
         jMenuItemFConnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
             KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuItemFConnect.setText("Connect");
@@ -615,6 +618,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuBoard.add(jMenuItemFConnect);
 
+        jMenuItemFDisconnect.setMnemonic('D');
         jMenuItemFDisconnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
             KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuItemFDisconnect.setText("Disconnect");
@@ -643,6 +647,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuBoard.add(jMenuItemPanic);
 
+        jMenuItemMount.setMnemonic('R');
         jMenuItemMount.setText("Enter card reader mode (disconnects editor)");
         jMenuItemMount.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -651,8 +656,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuBoard.add(jMenuItemMount);
 
+        jMenuFirmware.setMnemonic('F');
         jMenuFirmware.setText("Firmware");
 
+        jMenuItemFlashDefault.setMnemonic('F');
         jMenuItemFlashDefault.setText("Flash");
         jMenuItemFlashDefault.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -661,14 +668,16 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuFirmware.add(jMenuItemFlashDefault);
 
-        jMenuItemFlashSDR.setText("Flash (User)");
-        jMenuItemFlashSDR.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItemFlashUser.setMnemonic('F');
+        jMenuItemFlashUser.setText("Flash (User)");
+        jMenuItemFlashUser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemFlashSDRActionPerformed(evt);
+                jMenuItemFlashUserActionPerformed(evt);
             }
         });
-        jMenuFirmware.add(jMenuItemFlashSDR);
+        jMenuFirmware.add(jMenuItemFlashUser);
 
+        jMenuItemFlashDFU.setMnemonic('R');
         jMenuItemFlashDFU.setText("Flash (Rescue)");
         jMenuItemFlashDFU.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -686,6 +695,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuFirmware.add(jMenuItemRefreshFWID);
         jMenuFirmware.add(jDevSeparator);
 
+        jMenuItemFCompile.setMnemonic('C');
         jMenuItemFCompile.setText("Compile");
         jMenuItemFCompile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -694,7 +704,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuFirmware.add(jMenuItemFCompile);
 
-        jMenuItemEnterDFU.setText("Enter Rescue mode");
+        jMenuItemEnterDFU.setMnemonic('E');
+        jMenuItemEnterDFU.setText("Enter Rescue Mode");
         jMenuItemEnterDFU.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemEnterDFUActionPerformed(evt);
@@ -932,11 +943,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }//GEN-LAST:event_jMenuItemFlashDFUActionPerformed
 
-    private void jMenuItemFlashSDRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemFlashSDRActionPerformed
+    private void jMenuItemFlashUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemFlashUserActionPerformed
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/flasher/flasher_build/flasher.bin";
         String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/build/axoloti.bin";
         flashUsingSDRam(fname, pname);
-    }//GEN-LAST:event_jMenuItemFlashSDRActionPerformed
+    }//GEN-LAST:event_jMenuItemFlashUserActionPerformed
 
     private void jMenuItemFCompileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemFCompileActionPerformed
         qcmdprocessor.AppendToQueue(new qcmds.QCmdCompileFirmware());
@@ -1034,7 +1045,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JMenuItem jMenuItemFDisconnect;
     private javax.swing.JMenuItem jMenuItemFlashDFU;
     private javax.swing.JMenuItem jMenuItemFlashDefault;
-    private javax.swing.JMenuItem jMenuItemFlashSDR;
+    private javax.swing.JMenuItem jMenuItemFlashUser;
     private javax.swing.JMenuItem jMenuItemMount;
     private javax.swing.JMenuItem jMenuItemPanic;
     private javax.swing.JMenuItem jMenuItemPing;
@@ -1091,7 +1102,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemEnterDFU.setEnabled(connect);
         jMenuItemMount.setEnabled(connect);
         jMenuItemFlashDefault.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
-        jMenuItemFlashSDR.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
+        jMenuItemFlashUser.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
 
         if (!connect) {
             setCpuID(null);
@@ -1208,7 +1219,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (warning) {
             jLabelVoltages.setForeground(Theme.getCurrentTheme().Error_Text);
         } else {
-            // jLabelVoltages.setForeground(null);
+            jLabelVoltages.setForeground(null);
         }
     }
 

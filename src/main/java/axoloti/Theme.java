@@ -107,11 +107,15 @@ public class Theme {
     @Element
     public Color Object_TitleBar_Background = Color.getHSBColor(0.f, 0.0f, 0.6f);
     @Element
+    public Color Object_TitleBar_Subpatch_Background = new Color(0.3f, 0.4f, 0.8f);
+    @Element
+    public Color Object_TitleBar_Embedded_Background = new Color(0.8f, 0.4f, 0.3f);
+    @Element
     public Color Object_TitleBar_Foreground;
     @Element
     public Color Object_Border_Unselected = Color.WHITE;
     @Element
-    public Color Object_Border_Selected = Color.BLACK;
+    public Color Object_Border_Selected = Color.ORANGE;
     @Element
     public Color Object_Zombie_Background = Color.RED;
 
@@ -203,8 +207,8 @@ public class Theme {
                 Object[] options = {"Yes",
                     "No"};
                 int n = JOptionPane.showOptionDialog(frame,
-                        "File does not match filter, do you want to change extension to " + filterext + " ?",
-                        "Axoloti asks:",
+                        "File does not match filter, do you want to change extension to " + filterext + "?",
+                        "File Extension",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
                         null,
@@ -223,8 +227,8 @@ public class Theme {
                 Object[] options = {"Yes",
                     "No"};
                 int n = JOptionPane.showOptionDialog(frame,
-                        "File exists, do you want to overwrite ?",
-                        "Axoloti asks:",
+                        "File exists, do you want to overwrite?",
+                        "File Exists",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
                         null,

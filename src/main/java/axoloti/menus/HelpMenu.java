@@ -69,6 +69,7 @@ public class HelpMenu extends JMenu {
         jMenuCommunity = new javax.swing.JMenuItem();
         helpLibraryMenu1 = new axoloti.menus.HelpLibraryMenu();
 
+        jMenuHelpContents.setMnemonic('H');
         jMenuHelpContents.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
         jMenuHelpContents.setText("Help Contents");
         jMenuHelpContents.addActionListener(new java.awt.event.ActionListener() {
@@ -79,6 +80,7 @@ public class HelpMenu extends JMenu {
         });
         add(jMenuHelpContents);
 
+        jMenuAbout.setMnemonic('A');
         jMenuAbout.setText("About");
         jMenuAbout.addActionListener(new java.awt.event.ActionListener() {
             @Override
@@ -88,6 +90,7 @@ public class HelpMenu extends JMenu {
         });
         add(jMenuAbout);
 
+        jMenuCommunity.setMnemonic('W');
         jMenuCommunity.setText("Community Website");
         jMenuCommunity.addActionListener(new java.awt.event.ActionListener() {
             @Override
@@ -97,7 +100,8 @@ public class HelpMenu extends JMenu {
         });
         add(jMenuCommunity);
 
-        jMenuUpdates.setText("Check for updates...");
+        jMenuUpdates.setMnemonic('U');
+        jMenuUpdates.setText("Check for Updates...");
         jMenuUpdates.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -106,6 +110,7 @@ public class HelpMenu extends JMenu {
         });
         add(jMenuUpdates);
 
+        helpLibraryMenu1.setMnemonic('L');
         helpLibraryMenu1.setText("Library");
         add(helpLibraryMenu1);
 

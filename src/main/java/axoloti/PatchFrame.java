@@ -92,9 +92,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jScrollPane1.getHorizontalScrollBar().setUnitIncrement(Constants.X_GRID / 2);
 
         JMenuItem menuItem = new JMenuItem(new DefaultEditorKit.CutAction());
-        menuItem.setText("Cut");
+        menuItem.setMnemonic('T');
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, 
                 KeyUtils.CONTROL_OR_CMD_MASK));
+        menuItem.setText("Cut");
         jMenuEdit.add(menuItem);
         menuItem.addActionListener(new ActionListener() {
             @Override
@@ -118,11 +119,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 }
             }
         });
+
         menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
-        menuItem.setText("Copy");
+        menuItem.setMnemonic('C');
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, 
                 KeyUtils.CONTROL_OR_CMD_MASK));
+        menuItem.setText("Copy");
         jMenuEdit.add(menuItem);
+
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -145,9 +149,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
         });
         menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
-        menuItem.setText("Paste");
+        menuItem.setMnemonic('T');
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, 
                 KeyUtils.CONTROL_OR_CMD_MASK));
+        menuItem.setText("Paste");
         jMenuEdit.add(menuItem);
         menuItem.addActionListener(new ActionListener() {
             @Override
@@ -261,7 +266,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 "Don't save",
                 "Cancel"};
             int n = JOptionPane.showOptionDialog(this,
-                    "Do you want to save changes to " + patch.getFileNamePath() + " ?",
+                    "Do you want to save changes to " + patch.getFileNamePath() + "?",
                     "Axoloti asks:",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
@@ -592,7 +597,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuPatch.add(jCheckBoxMenuItemLive);
 
-        jMenuItemUploadSD.setMnemonic('S');
+        jMenuItemUploadSD.setMnemonic('U');
         jMenuItemUploadSD.setText("Upload to SD card");
         jMenuItemUploadSD.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -792,7 +797,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 Object[] options = {"Yes",
                     "No"};
                 int n = JOptionPane.showOptionDialog(this,
-                        "File does not match filter, do you want to change extension to " + filterext + " ?",
+                        "File does not match filter, do you want to change extension to " + filterext + "?",
                         "Axoloti asks:",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
@@ -812,7 +817,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 Object[] options = {"Yes",
                     "No"};
                 int n = JOptionPane.showOptionDialog(this,
-                        "File exists, do you want to overwrite ?",
+                        "File exists, do you want to overwrite?",
                         "Axoloti asks:",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,

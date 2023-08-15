@@ -78,7 +78,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemMount">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Enter card reader mode (disconnects editor)"/>
+                <Property name="text" type="java.lang.String" value="Enter Card Reader Mode (disconnects editor)"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemMountActionPerformed"/>
@@ -125,18 +125,18 @@
                 </MenuItem>
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItemEnterDFU">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Enter Rescue mode"/>
+                    <Property name="text" type="java.lang.String" value="Enter Rescue Mode"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemEnterDFUActionPerformed"/>
                   </Events>
                 </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="jMenuItemFlashSDR">
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItemFlashUser">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Flash (User)"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemFlashSDRActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemFlashUserActionPerformed"/>
                   </Events>
                 </MenuItem>
               </SubComponents>

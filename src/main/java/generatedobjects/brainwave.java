@@ -129,7 +129,7 @@ public class brainwave extends gentools {
                 + "			rawValue = ((int)packetData[++i] << 8) | packetData[++i];\n"
                 + "			break;\n"
                 + "		default:\n"
-                + "			// Broken packet ?\n"
+                + "			// Broken packet?\n"
                 + "			/*\n"
                 + "			Serial.print(F(\"parsePacket UNMATCHED data 0x\"));\n"
                 + "			Serial.print(packetData[i], HEX);\n"
