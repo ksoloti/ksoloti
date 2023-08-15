@@ -592,7 +592,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuPatch.add(jCheckBoxMenuItemLive);
 
-        jMenuItemUploadSD.setMnemonic('C');
+        jMenuItemUploadSD.setMnemonic('S');
         jMenuItemUploadSD.setText("Upload to SD card");
         jMenuItemUploadSD.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -601,7 +601,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuPatch.add(jMenuItemUploadSD);
 
-        jMenuItemUploadSDStart.setMnemonic('S');
+        jMenuItemUploadSDStart.setMnemonic('P');
         jMenuItemUploadSDStart.setText("Upload to SD card as startup");
         jMenuItemUploadSDStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

@@ -318,12 +318,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
-                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current user library does not match specified version: {0} -> {1}", new Object[]{cb, ulib.getBranch()});
+                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current community library does not match specified version: {0} -> {1}", new Object[]{cb, ulib.getBranch()});
                             int s = JOptionPane.showConfirmDialog(MainFrame.this,
-                                    "User library version mismatch detected. Do you want to upgrade now?\n"
+                                    "Community library version mismatch detected. Do you want to upgrade now?\n"
                                     + "This will stash any local changes and reapply them to the new version.\n"
                                     + "If you choose no, you will need to manually backup your changes and then sync libraries.",
-                                    "User Library Mismatch",
+                                    "Community Library Mismatch",
                                     JOptionPane.YES_NO_OPTION);
                             if (s == JOptionPane.YES_OPTION) {
                                 ulib.upgrade();
@@ -605,6 +605,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuBoard.add(jMenuItemSelectCom);
 
+        jMenuItemFConnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
+            KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuItemFConnect.setText("Connect");
         jMenuItemFConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -613,6 +615,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuBoard.add(jMenuItemFConnect);
 
+        jMenuItemFDisconnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
+            KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuItemFDisconnect.setText("Disconnect");
         jMenuItemFDisconnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1160,13 +1164,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             String s;
             switch (patchIndex) {
                 case -1:
-                    s = "Running /start.bin";
+                    s = "Running SD card startup patch";
                     break;
                 case -2:
                     s = "Running flash patch";
                     break;
                 case -3:
-                    s = "Running sdcard .bin file";
+                    s = "Running SD card patch";
                     break;
                 case -4:
                     s = "Running live patch";
@@ -1204,7 +1208,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (warning) {
             jLabelVoltages.setForeground(Theme.getCurrentTheme().Error_Text);
         } else {
-            jLabelVoltages.setForeground(null);
+            // jLabelVoltages.setForeground(null);
         }
     }
 
