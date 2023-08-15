@@ -33,6 +33,7 @@ import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.FirmwareID;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -447,7 +448,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jLabelIcon = new javax.swing.JLabel();
         jButtonClear = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        jCheckBoxConnect = new javax.swing.JCheckBox();
+        // jCheckBoxConnect = new javax.swing.JCheckBox();
+        jButtonConnect = new javax.swing.JToggleButton();
         jLabelCPUID = new javax.swing.JLabel();
         jLabelFirmwareID = new javax.swing.JLabel();
         jLabelVoltages = new javax.swing.JLabel();
@@ -516,13 +518,17 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 3, 3, 3));
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jCheckBoxConnect.setText("Connect");
-        jCheckBoxConnect.addActionListener(new java.awt.event.ActionListener() {
+        // jCheckBoxConnect.setText("Connect");
+        jButtonConnect.setText("   Connect   ");
+        // jCheckBoxConnect.addActionListener(new java.awt.event.ActionListener() {
+        jButtonConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxConnectActionPerformed(evt);
+                // jCheckBoxConnectActionPerformed(evt);
+                jButtonConnectActionPerformed(evt);
             }
         });
-        jPanel1.add(jCheckBoxConnect);
+        // jPanel1.add(jCheckBoxConnect);
+        jPanel1.add(jButtonConnect);
 
         jLabelCPUID.setText("CPUID");
         jPanel1.add(jLabelCPUID);
@@ -725,8 +731,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         USBBulkConnection.GetConnection().SelectPort();
     }//GEN-LAST:event_jMenuItemSelectComActionPerformed
 
-    private void jCheckBoxConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxConnectActionPerformed
-        if (!jCheckBoxConnect.isSelected()) {
+    // private void jCheckBoxConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxConnectActionPerformed
+    private void jButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxConnectActionPerformed
+        // if (!jCheckBoxConnect.isSelected()) {
+        if (!jButtonConnect.isSelected()) {
             USBBulkConnection.GetConnection().disconnect();
         } else {
             qcmdprocessor.Panic();
@@ -994,7 +1002,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.Box.Filler filler3;
     private axoloti.menus.HelpMenu helpMenu1;
     private javax.swing.JButton jButtonClear;
-    private javax.swing.JCheckBox jCheckBoxConnect;
+    // private javax.swing.JCheckBox jCheckBoxConnect;
+    private javax.swing.JToggleButton jButtonConnect;
     private javax.swing.JPopupMenu.Separator jDevSeparator;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelCPUID;
@@ -1050,7 +1059,19 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void ShowConnectDisconnect(boolean connect) {
-        jCheckBoxConnect.setSelected(connect);
+        // jCheckBoxConnect.setSelected(connect);
+        if (connect)
+        {
+            jButtonConnect.setForeground(Color.GREEN);
+            jButtonConnect.setText("Connected");
+        }
+        else
+        {
+            jButtonConnect.setForeground(null);
+            jButtonConnect.setText("   Connect   ");
+        }
+
+        jButtonConnect.setSelected(connect);
         jMenuItemFDisconnect.setEnabled(connect);
 
         jMenuItemFConnect.setEnabled(!connect);
@@ -1175,7 +1196,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (warning) {
             jLabelVoltages.setForeground(Theme.getCurrentTheme().Error_Text);
         } else {
-            jLabelVoltages.setForeground(Theme.getCurrentTheme().Inverted_Text);
+            jLabelVoltages.setForeground(null);
         }
     }
 
