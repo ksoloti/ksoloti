@@ -443,11 +443,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
+        jPanelHeader = new javax.swing.JPanel();
+        jPanelColumn1 = new javax.swing.JPanel();
+        jPanelColumn2 = new javax.swing.JPanel();
+        jPanelColumn3 = new javax.swing.JPanel();
         jLabelIcon = new javax.swing.JLabel();
         jButtonClear = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
         // jCheckBoxConnect = new javax.swing.JCheckBox();
         jButtonConnect = new javax.swing.JToggleButton();
         jLabelCPUID = new javax.swing.JLabel();
@@ -497,26 +498,19 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
 
-        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
+        jPanelHeader.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
+        jPanelHeader.setLayout(new javax.swing.BoxLayout(jPanelHeader, javax.swing.BoxLayout.LINE_AXIS));
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 3, 3, 3));
-        jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.PAGE_AXIS));
+        jPanelColumn1.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
+        jPanelColumn1.setLayout(new javax.swing.BoxLayout(jPanelColumn1, javax.swing.BoxLayout.PAGE_AXIS));
 
         jLabelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/axoloti_icon.png"))); // NOI18N
-        jPanel3.add(jLabelIcon);
+        jPanelColumn1.add(jLabelIcon);
 
-        jButtonClear.setText("Clear");
-        jButtonClear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonClearActionPerformed(evt);
-            }
-        });
-        jPanel3.add(jButtonClear);
+        jPanelHeader.add(jPanelColumn1);
 
-        jPanel2.add(jPanel3);
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 3, 3, 3));
-        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.PAGE_AXIS));
+        jPanelColumn2.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
+        jPanelColumn2.setLayout(new javax.swing.BoxLayout(jPanelColumn2, javax.swing.BoxLayout.PAGE_AXIS));
 
         // jCheckBoxConnect.setText("Connect");
         jButtonConnect.setText("   Connect   ");
@@ -527,28 +521,40 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 jButtonConnectActionPerformed(evt);
             }
         });
-        // jPanel1.add(jCheckBoxConnect);
-        jPanel1.add(jButtonConnect);
+        // jPanelColumn2.add(jCheckBoxConnect);
+        jPanelColumn2.add(jButtonConnect);
+
+        jButtonClear.setText("  Clear Log  ");
+        jButtonClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonClearActionPerformed(evt);
+            }
+        });
+        jPanelColumn2.add(jButtonClear);
+        jPanelHeader.add(jPanelColumn2);
+
+        jPanelColumn3.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
+        jPanelColumn3.setLayout(new javax.swing.BoxLayout(jPanelColumn3, javax.swing.BoxLayout.PAGE_AXIS));
 
         jLabelCPUID.setText("CPUID");
-        jPanel1.add(jLabelCPUID);
+        jPanelColumn3.add(jLabelCPUID);
 
-        jLabelFirmwareID.setText("FirmwareID");
-        jPanel1.add(jLabelFirmwareID);
+        jLabelFirmwareID.setText("Firmware ID");
+        jPanelColumn3.add(jLabelFirmwareID);
 
-        jLabelVoltages.setText("volt");
-        jPanel1.add(jLabelVoltages);
-
-        jLabelPatch.setText("patch");
-        jPanel1.add(jLabelPatch);
+        jLabelVoltages.setText("Voltage Monitor");
+        jPanelColumn3.add(jLabelVoltages);
 
         jLabelSDCardPresent.setText("No SD card");
-        jPanel1.add(jLabelSDCardPresent);
+        jPanelColumn3.add(jLabelSDCardPresent);
 
-        jPanel2.add(jPanel1);
-        jPanel2.add(filler3);
+        jLabelPatch.setText("Patch");
+        jPanelColumn3.add(jLabelPatch);
 
-        getContentPane().add(jPanel2);
+        jPanelHeader.add(jPanelColumn3);
+        jPanelHeader.add(filler3);
+
+        getContentPane().add(jPanelHeader);
 
         jScrollPaneLog.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         jScrollPaneLog.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -1030,9 +1036,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JMenuItem jMenuItemPing;
     private javax.swing.JMenuItem jMenuItemRefreshFWID;
     private javax.swing.JMenuItem jMenuItemSelectCom;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanelHeader;
+    private javax.swing.JPanel jPanelColumn1;
+    private javax.swing.JPanel jPanelColumn2;
+    private javax.swing.JPanel jPanelColumn3;
     private javax.swing.JPanel jPanelProgress;
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPaneLog;
@@ -1153,22 +1160,22 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             String s;
             switch (patchIndex) {
                 case -1:
-                    s = "running /start.bin";
+                    s = "Running /start.bin";
                     break;
                 case -2:
-                    s = "running flash patch";
+                    s = "Running flash patch";
                     break;
                 case -3:
-                    s = "running sdcard .bin file";
+                    s = "Running sdcard .bin file";
                     break;
                 case -4:
-                    s = "running live patch";
+                    s = "Running live patch";
                     break;
                 case -5:
                     s = " ";
                     break;
                 default:
-                    s = "running #" + patchIndex;
+                    s = "Running #" + patchIndex;
             }
             jLabelPatch.setText(s);
         }
@@ -1190,7 +1197,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             upd = true;
         }
         if (upd) {
-            jLabelVoltages.setText(String.format("Voltage Monitor:   %.2fV   %.2fV", v5000c / 100.0f, vdd00c / 100.0f));
+            jLabelVoltages.setText(String.format(
+                "Voltage Monitor:   %.2fV   %.2fV", v5000c / 100.0f, vdd00c / 100.0f));
         }
 
         if (warning) {

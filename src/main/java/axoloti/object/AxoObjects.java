@@ -231,8 +231,8 @@ public class AxoObjects {
                     } catch (java.lang.reflect.InvocationTargetException ite) {
                         if(ite.getTargetException() instanceof AxoObjectFile.ObjectVersionException) {
                             AxoObjectFile.ObjectVersionException ove = (AxoObjectFile.ObjectVersionException) ite.getTargetException();
-                            Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, "Object produced with newer version of Axoloti {0} {1}", 
-                                                                            new Object[]{fileEntry.getAbsoluteFile(), ove.getMessage()});
+                            Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, "Object \"{0}\" produced with newer version of Axoloti: {1}", 
+                            new Object[]{fileEntry.getAbsoluteFile(), ove.getMessage()});
                         } else {
                             Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, fileEntry.getAbsolutePath(), ite);
                             try {

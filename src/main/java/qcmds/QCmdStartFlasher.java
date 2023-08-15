@@ -34,7 +34,7 @@ public class QCmdStartFlasher extends QCmdStart {
 
     @Override
     public String GetDoneMessage() {
-        return "flashing... (ready when the green LED is steady on)";
+        return "Flashing... (ready when the green LED is steady on)";
     }
 
     @Override

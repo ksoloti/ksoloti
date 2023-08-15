@@ -1009,7 +1009,7 @@ public class PatchGUI extends Patch {
         } catch (java.lang.reflect.InvocationTargetException ite) {
             if (ite.getTargetException() instanceof Patch.PatchVersionException) {
                 Patch.PatchVersionException pve = (Patch.PatchVersionException) ite.getTargetException();
-                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Patch produced with newer version of Axoloti {0} {1}",
+                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Patch \"{0}\" produced with newer version of Axoloti: {1}",
                         new Object[]{f.getAbsoluteFile(), pve.getMessage()});
             } else {
                 Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ite);
