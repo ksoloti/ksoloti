@@ -201,8 +201,8 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         return type;
     }
 
-    private final Dimension TitleBarMinimumSize = new Dimension(40, 12);
-    private final Dimension TitleBarMaximumSize = new Dimension(32768, 12);
+    private final Dimension TitleBarMinimumSize = new Dimension(40, 14);
+    private final Dimension TitleBarMaximumSize = new Dimension(32768, 14);
 
     public void PostConstructor() {
         removeAll();

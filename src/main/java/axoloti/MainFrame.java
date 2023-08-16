@@ -450,7 +450,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jLabelIcon = new javax.swing.JLabel();
         jButtonClear = new javax.swing.JButton();
         // jCheckBoxConnect = new javax.swing.JCheckBox();
-        jButtonConnect = new javax.swing.JToggleButton();
+        jToggleButtonConnect = new javax.swing.JToggleButton();
         jLabelCPUID = new javax.swing.JLabel();
         jLabelFirmwareID = new javax.swing.JLabel();
         jLabelVoltages = new javax.swing.JLabel();
@@ -488,9 +488,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jLabel1.setText("jLabel1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Axoloti");
+        setTitle("Ksooloti");
         setMinimumSize(new java.awt.Dimension(200, 200));
-        setPreferredSize(new java.awt.Dimension(800, 600)); // Make default size bigger
+        setPreferredSize(new java.awt.Dimension(640, 480)); // Make default size bigger
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -513,16 +513,16 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelColumn2.setLayout(new javax.swing.BoxLayout(jPanelColumn2, javax.swing.BoxLayout.PAGE_AXIS));
 
         // jCheckBoxConnect.setText("Connect");
-        jButtonConnect.setText("   Connect   ");
+        jToggleButtonConnect.setText("   Connect   ");
         // jCheckBoxConnect.addActionListener(new java.awt.event.ActionListener() {
-        jButtonConnect.addActionListener(new java.awt.event.ActionListener() {
+        jToggleButtonConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 // jCheckBoxConnectActionPerformed(evt);
-                jButtonConnectActionPerformed(evt);
+                jToggleButtonConnectActionPerformed(evt);
             }
         });
         // jPanelColumn2.add(jCheckBoxConnect);
-        jPanelColumn2.add(jButtonConnect);
+        jPanelColumn2.add(jToggleButtonConnect);
 
         jButtonClear.setText("  Clear Log  ");
         jButtonClear.addActionListener(new java.awt.event.ActionListener() {
@@ -753,9 +753,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }//GEN-LAST:event_jMenuItemSelectComActionPerformed
 
     // private void jCheckBoxConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxConnectActionPerformed
-    private void jButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxConnectActionPerformed
+    private void jToggleButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxConnectActionPerformed
         // if (!jCheckBoxConnect.isSelected()) {
-        if (!jButtonConnect.isSelected()) {
+        if (!jToggleButtonConnect.isSelected()) {
             USBBulkConnection.GetConnection().disconnect();
         } else {
             qcmdprocessor.Panic();
@@ -1024,7 +1024,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private axoloti.menus.HelpMenu helpMenu1;
     private javax.swing.JButton jButtonClear;
     // private javax.swing.JCheckBox jCheckBoxConnect;
-    private javax.swing.JToggleButton jButtonConnect;
+    private javax.swing.JToggleButton jToggleButtonConnect;
     private javax.swing.JPopupMenu.Separator jDevSeparator;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelCPUID;
@@ -1084,16 +1084,16 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         // jCheckBoxConnect.setSelected(connect);
         if (connect)
         {
-            jButtonConnect.setForeground(Color.GREEN);
-            jButtonConnect.setText("Connected");
+            jToggleButtonConnect.setForeground(Color.GREEN);
+            jToggleButtonConnect.setText("Connected");
         }
         else
         {
-            jButtonConnect.setForeground(null);
-            jButtonConnect.setText("   Connect   ");
+            jToggleButtonConnect.setForeground(null);
+            jToggleButtonConnect.setText("   Connect   ");
         }
 
-        jButtonConnect.setSelected(connect);
+        jToggleButtonConnect.setSelected(connect);
         jMenuItemFDisconnect.setEnabled(connect);
 
         jMenuItemFConnect.setEnabled(!connect);

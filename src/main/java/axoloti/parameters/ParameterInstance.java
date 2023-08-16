@@ -66,7 +66,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     LabelComponent valuelbl = new LabelComponent("123456789");
     NativeToReal convs[];
     int selectedConv = 0;
-    int presetEditActive = 0;
+    public int presetEditActive = 0;
     ACtrlComponent ctrl;
     @Attribute(required = false)
     Integer MidiCC = null;
@@ -358,7 +358,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 
     void SetPresetState(boolean b) { // OBSOLETE
         if (b) {
-            setBackground(Theme.getCurrentTheme().Paramete_Preset_Highlight);
+            setBackground(Theme.getCurrentTheme().Parameter_Preset_Highlight);
         } else {
             setBackground(Theme.getCurrentTheme().Parameter_Default_Background);
         }

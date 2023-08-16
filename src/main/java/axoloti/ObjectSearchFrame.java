@@ -102,18 +102,18 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         this.objectTree = MainFrame.axoObjects.ObjectTree;
         this.root = PopulateJTree(MainFrame.axoObjects.ObjectTree, root1);
         tm = new DefaultTreeModel(this.root);
-        jTree1.setModel(tm);
-        jTree1.addTreeSelectionListener(new TreeSelectionListener() {
+        jObjectTree.setModel(tm);
+        jObjectTree.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent e) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) jObjectTree.getLastSelectedPathComponent();
                 if (node == null) {
                     return;
                 }
                 if (node.getUserObject() instanceof AxoObjectTreeNode) {
                     AxoObjectTreeNode anode = (AxoObjectTreeNode) node.getUserObject();
-                    jPanel1.removeAll();
-                    jPanel1.repaint();
+                    jObjectPreviewPanel.removeAll();
+                    jObjectPreviewPanel.repaint();
                     jTextPane1.setText(anode.description);
                     jTextPane1.setCaretPosition(0);
                     previewObj = null;
@@ -127,17 +127,17 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 }
             }
         });
-        jTree1.addKeyListener(new KeyListener() {
+        jObjectTree.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) jObjectTree.getLastSelectedPathComponent();
                     if (node != null) {
                         if (node.isLeaf()) {
                             Accept();
                             e.consume();
                         } else {
-                            jTree1.expandPath(jTree1.getLeadSelectionPath());
+                            jObjectTree.expandPath(jObjectTree.getLeadSelectionPath());
                         }
                     }
                 } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
@@ -154,7 +154,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             public void keyReleased(KeyEvent e) {
             }
         });
-        jTree1.addMouseListener(new MouseListener() {
+        jObjectTree.addMouseListener(new MouseListener() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -179,13 +179,13 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             public void mouseExited(MouseEvent e) {
             }
         });
-        jList1.addListSelectionListener(new ListSelectionListener() {
+        jResultList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                Object o = ObjectSearchFrame.this.jList1.getSelectedValue();
+                Object o = ObjectSearchFrame.this.jResultList.getSelectedValue();
                 if (o instanceof AxoObjectAbstract) {
                     SetPreview((AxoObjectAbstract) o);
-                    if (!jTree1.hasFocus()) {
+                    if (!jObjectTree.hasFocus()) {
                         ExpandJTreeToEl((AxoObjectAbstract) o);
                     }
                     if (!jTextFieldObjName.hasFocus()) {
@@ -193,11 +193,11 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                     }
                 } else if (o == null) {
                 } else {
-                    System.out.println("different obj?" + o.toString());
+                    System.out.println("Different obj?" + o.toString());
                 }
             }
         });
-        jList1.addKeyListener(new KeyListener() {
+        jResultList.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -208,17 +208,20 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                     Cancel();
                     e.consume();
                 }
+                else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_LEFT)
+                {
+                    jTextFieldObjName.grabFocus();
+                }
             }
 
             @Override
-            public void keyTyped(KeyEvent e) {
-            }
+            public void keyTyped(KeyEvent e) { }
 
             @Override
-            public void keyReleased(KeyEvent e) {
-            }
+            public void keyReleased(KeyEvent e) { }
         });
-        jList1.addMouseListener(new MouseListener() {
+
+        jResultList.addMouseListener(new MouseListener() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -228,12 +231,10 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
 
             @Override
-            public void mousePressed(MouseEvent e) {
-            }
+            public void mousePressed(MouseEvent e) { }
 
             @Override
-            public void mouseReleased(MouseEvent e) {
-            }
+            public void mouseReleased(MouseEvent e) { }
 
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -244,7 +245,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         });
 
-        jPanel1.setVisible(true);
+        jObjectPreviewPanel.setVisible(true);
         jScrollPane1.setVisible(true);
         jScrollPane4.setVisible(true);
         jSplitPane1.setVisible(true);
@@ -254,23 +255,33 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jTextFieldObjName.addKeyListener(new KeyListener() {
             @Override
-            public void keyTyped(KeyEvent e) {
-            }
+            public void keyTyped(KeyEvent e) { }
 
             @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            public void keyPressed(KeyEvent e)
+            {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER)
+                {
                     Accept();
                     e.consume();
-                } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                }
+                else if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+                {
                     type = null;
                     Cancel();
                     e.consume();
                 }
+                else if (e.getKeyCode() == KeyEvent.VK_DOWN)
+                {
+                    jResultList.grabFocus();
+                    jResultList.setSelectedIndex(0);
+                    jResultList.ensureIndexIsVisible(0);
+                }
             }
 
             @Override
-            public void keyReleased(KeyEvent e) {
+            public void keyReleased(KeyEvent e)
+            {
                 Search(jTextFieldObjName.getText());
             }
         });
@@ -320,7 +331,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             this.objectTree = MainFrame.axoObjects.ObjectTree;
             this.root = PopulateJTree(MainFrame.axoObjects.ObjectTree, root1);
             tm = new DefaultTreeModel(this.root);
-            jTree1.setModel(tm);
+            jObjectTree.setModel(tm);
         }
 
         MainFrame.mainframe.SetGrabFocusOnSevereErrors(false);
@@ -355,8 +366,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         if (o == null) {
             previewObj = null;
             type = null;
-            jPanel1.removeAll();
-            jPanel1.repaint();
+            jObjectPreviewPanel.removeAll();
+            jObjectPreviewPanel.repaint();
             jButtonAccept.setEnabled(false);
             return;
         }
@@ -368,17 +379,17 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             previewObj = o;
             type = o;
             ExpandJTreeToEl(o);
-            jList1.setSelectedValue(o, true);
-            if (jList1.getSelectedValue() != o) {
+            jResultList.setSelectedValue(o, true);
+            if (jResultList.getSelectedValue() != o) {
             }
             AxoObjectInstanceAbstract inst = o.CreateInstance(null, "dummy", new Point(5, 5));
-            jPanel1.removeAll();
-            jPanel1.add(inst);
+            jObjectPreviewPanel.removeAll();
+            jObjectPreviewPanel.add(inst);
             inst.invalidate();
             inst.repaint();
             inst.revalidate();
-            jPanel1.revalidate();
-            jPanel1.repaint();
+            jObjectPreviewPanel.revalidate();
+            jObjectPreviewPanel.repaint();
             AxoObjectAbstract t = inst.getType();
             if (t != null) {
                 String description = t.sDescription == null || t.sDescription.isEmpty() ? o.sDescription : t.sDescription;
@@ -425,65 +436,85 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         }
         if (n != null) {
-            if ((jTree1.getSelectionPath() != null) && (jTree1.getSelectionPath().getLastPathComponent() != n)) {
-                jTree1.scrollPathToVisible(new TreePath(n.getPath()));
-                jTree1.setSelectionPath(new TreePath(n.getPath()));
+            if ((jObjectTree.getSelectionPath() != null) && (jObjectTree.getSelectionPath().getLastPathComponent() != n)) {
+                jObjectTree.scrollPathToVisible(new TreePath(n.getPath()));
+                jObjectTree.setSelectionPath(new TreePath(n.getPath()));
             }
         } else {
-            jTree1.clearSelection();
+            jObjectTree.clearSelection();
         }
     }
 
-    public void Search(String s) {
+
+    public void Search(String s)
+    {
         ArrayList<AxoObjectAbstract> listData = new ArrayList<AxoObjectAbstract>();
-        if ((s == null) || s.isEmpty()) {
-            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+
+        if ((s == null) || s.isEmpty())
+        {
+            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList)
+            {
                 listData.add(o);
             }
-            jList1.setListData(listData.toArray());
-//            jList1.doLayout();
-//            jList1.revalidate();
-        } else {
+            jResultList.setListData(listData.toArray());
+            // jResultList.doLayout();
+            // jResultList.revalidate();
+        }
+        else
+        {
             // exact match first
-            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList)
+            {
                 if (o.id.equals(s)) {
                     listData.add(o);
                 }
             }
-            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                if (o.id.startsWith(s)) {
-                    if (!listData.contains(o)) {
+            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList)
+            {
+                if (o.id.startsWith(s))
+                {
+                    if (!listData.contains(o))
+                    {
                         listData.add(o);
                     }
                 }
             }
             for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                if (o.id.contains(s)) {
-                    if (!listData.contains(o)) {
+                if (o.id.contains(s))
+                {
+                    if (!listData.contains(o))
+                    {
                         listData.add(o);
                     }
                 }
             }
-            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                if (o.sDescription != null && o.sDescription.contains(s)) {
-                    if (!listData.contains(o)) {
+            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList)
+            {
+                if (o.sDescription != null && o.sDescription.contains(s))
+                {
+                    if (!listData.contains(o))
+                    {
                         listData.add(o);
                     }
                 }
             }
-            jList1.setListData(listData.toArray());
-//            jList1.doLayout();
-//            jList1.revalidate();
-            if (!listData.isEmpty()) {
+            jResultList.setListData(listData.toArray());
+            // jResultList.doLayout();
+            // jResultList.revalidate();
+            if (!listData.isEmpty())
+            {
                 type = listData.get(0);
-                jList1.setSelectedIndex(0);
-                jList1.ensureIndexIsVisible(0);
+                jResultList.setSelectedIndex(0);
+                jResultList.ensureIndexIsVisible(0);
                 ExpandJTreeToEl(listData.get(0));
                 SetPreview(type);
-            } else {
+            }
+            else
+            {
                 ArrayList<AxoObjectAbstract> objs = MainFrame.axoObjects.GetAxoObjectFromName(s, p.GetCurrentWorkingDirectory());
-                if ((objs != null) && (objs.size() > 0)) {
-                    jList1.setListData(objs.toArray());
+                if ((objs != null) && (objs.size() > 0))
+                {
+                    jResultList.setListData(objs.toArray());
                     SetPreview(objs.get(0));
                 }
             }
@@ -541,13 +572,13 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jButtonAccept = new javax.swing.JButton();
         jSplitPane3 = new javax.swing.JSplitPane();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
+        jResultList = new javax.swing.JList();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTree1 = new javax.swing.JTree();
+        jObjectTree = new javax.swing.JTree();
         jSplitPane2 = new javax.swing.JSplitPane();
         jScrollPane4 = new javax.swing.JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
-        jPanel1 = new javax.swing.JPanel();
+        jObjectPreviewPanel = new javax.swing.JPanel();
 
         setForeground(java.awt.SystemColor.control);
         setIconImages(null);
@@ -591,8 +622,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jButtonCancel.setActionCommand("");
         jButtonCancel.setDefaultCapable(false);
         jButtonCancel.setFocusable(false);
-        jButtonCancel.setMargin(new java.awt.Insets(1, 1, 1, 1));
-        jButtonCancel.setMinimumSize(new java.awt.Dimension(24, 24));
+        jButtonCancel.setMargin(new java.awt.Insets(-2, -2, -2, -2));
+        jButtonCancel.setMinimumSize(new java.awt.Dimension(26, 26));
         jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonCancelActionPerformed(evt);
@@ -605,8 +636,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jButtonAccept.setActionCommand("");
         jButtonAccept.setDefaultCapable(false);
         jButtonAccept.setFocusable(false);
-        jButtonAccept.setMargin(new java.awt.Insets(1, 1, 1, 1));
-        jButtonAccept.setMinimumSize(new java.awt.Dimension(24, 24));
+        jButtonAccept.setMargin(new java.awt.Insets(-2, -2, -2, -2));
+        jButtonAccept.setMinimumSize(new java.awt.Dimension(26, 26));
         jButtonAccept.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonAcceptActionPerformed(evt);
@@ -624,22 +655,22 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jScrollPane3.setMinimumSize(new java.awt.Dimension(24, 64));
 
-        jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jList1.setAlignmentX(0.0F);
-        jList1.setMinimumSize(new java.awt.Dimension(100, 50));
-        jList1.setVisibleRowCount(6);
-        jScrollPane3.setViewportView(jList1);
+        jResultList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jResultList.setAlignmentX(0.0F);
+        jResultList.setMinimumSize(new java.awt.Dimension(100, 50));
+        jResultList.setVisibleRowCount(6);
+        jScrollPane3.setViewportView(jResultList);
 
         jSplitPane3.setTopComponent(jScrollPane3);
 
         jScrollPane1.setPreferredSize(new java.awt.Dimension(76, 224));
 
-        jTree1.setAlignmentX(0.0F);
-        jTree1.setDragEnabled(true);
-        jTree1.setMinimumSize(new java.awt.Dimension(100, 50));
-        jTree1.setRootVisible(false);
-        jTree1.setShowsRootHandles(true);
-        jScrollPane1.setViewportView(jTree1);
+        jObjectTree.setAlignmentX(0.0F);
+        jObjectTree.setDragEnabled(true);
+        jObjectTree.setMinimumSize(new java.awt.Dimension(100, 50));
+        jObjectTree.setRootVisible(false);
+        jObjectTree.setShowsRootHandles(true);
+        jScrollPane1.setViewportView(jObjectTree);
 
         jSplitPane3.setBottomComponent(jScrollPane1);
 
@@ -664,22 +695,22 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jSplitPane2.setTopComponent(jScrollPane4);
 
-        jPanel1.setBackground(new java.awt.Color(153, 153, 153));
-        jPanel1.setEnabled(false);
-        jPanel1.setFocusable(false);
+        jObjectPreviewPanel.setBackground(new java.awt.Color(153, 153, 153));
+        jObjectPreviewPanel.setEnabled(false);
+        jObjectPreviewPanel.setFocusable(false);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout jObjectPreviewPanelLayout = new javax.swing.GroupLayout(jObjectPreviewPanel);
+        jObjectPreviewPanel.setLayout(jObjectPreviewPanelLayout);
+        jObjectPreviewPanelLayout.setHorizontalGroup(
+            jObjectPreviewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        jObjectPreviewPanelLayout.setVerticalGroup(
+            jObjectPreviewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        jSplitPane2.setRightComponent(jPanel1);
+        jSplitPane2.setRightComponent(jObjectPreviewPanel);
 
         jSplitPane1.setRightComponent(jSplitPane2);
 
@@ -719,8 +750,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAccept;
     private javax.swing.JButton jButtonCancel;
-    private javax.swing.JList jList1;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JList jResultList;
+    private javax.swing.JPanel jObjectPreviewPanel;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -732,7 +763,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     private javax.swing.JSplitPane jSplitPane3;
     private javax.swing.JTextField jTextFieldObjName;
     private javax.swing.JTextPane jTextPane1;
-    private javax.swing.JTree jTree1;
+    private javax.swing.JTree jObjectTree;
     // End of variables declaration//GEN-END:variables
 
 

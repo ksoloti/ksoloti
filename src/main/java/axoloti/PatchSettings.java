@@ -88,7 +88,7 @@ public class PatchSettings {
         if (NPresets != null) {
             return NPresets;
         } else {
-            return 0; // default to 0
+            return 8;
         }
     }
 
@@ -104,7 +104,7 @@ public class PatchSettings {
         if (NPresetEntries != null) {
             return NPresetEntries;
         } else {
-            return 0; // default to 0
+            return 32;
         }
     }
 

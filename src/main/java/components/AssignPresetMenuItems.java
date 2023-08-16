@@ -37,9 +37,21 @@ public class AssignPresetMenuItems {
         this.param = param;
         this.parent = parent;
 
+        if (param.GetObjectInstance().getPatch().getSettings().GetNPresets() < 1)
+        {
+            JMenuItem mi = new JMenuItem("Presets set to 0 in patch settings");
+            mi.setEnabled(false);
+            parent.add(mi);
+            return;
+        }
+
         //sub2 = new JPopupMenu();
         {
-            JMenuItem mi = new JMenuItem("include in current preset");
+            JMenuItem mi = new JMenuItem("Include in current preset");
+            if (param.presetEditActive == 0)
+            {
+                mi.setEnabled(false);
+            }
             mi.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -49,7 +61,11 @@ public class AssignPresetMenuItems {
             parent.add(mi);
         }
         {
-            JMenuItem mi = new JMenuItem("exclude from current preset");
+            JMenuItem mi = new JMenuItem("Exclude from current preset");
+            if (param.presetEditActive == 0)
+            {
+                mi.setEnabled(false);
+            }
             mi.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -59,7 +75,7 @@ public class AssignPresetMenuItems {
             parent.add(mi);
         }
         {
-            JMenuItem mi = new JMenuItem("clear all presets");
+            JMenuItem mi = new JMenuItem("Clear all presets");
             mi.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

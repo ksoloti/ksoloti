@@ -77,7 +77,7 @@ public class ParameterInstanceFrac32UMapVSlider extends ParameterInstanceFrac32U
         if (i > 0) {
             Preset p = GetPreset(presetEditActive);
             if (p != null) {
-                setBackground(Theme.getCurrentTheme().Paramete_Preset_Highlight);
+                setBackground(Theme.getCurrentTheme().Parameter_Preset_Highlight);
                 ctrl.setValue(p.value.getDouble());
             } else {
                 setBackground(Theme.getCurrentTheme().Parameter_Default_Background);

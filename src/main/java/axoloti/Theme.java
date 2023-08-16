@@ -105,13 +105,13 @@ public class Theme {
     @Element
     public Color Object_Default_Background;
     @Element
-    public Color Object_TitleBar_Background = Color.getHSBColor(0.f, 0.0f, 0.6f);
+    public Color Object_TitleBar_Background = Color.getHSBColor(0.f, 0.0f, 0.5f);
     @Element
     public Color Object_TitleBar_Subpatch_Background = new Color(0.3f, 0.4f, 0.8f);
     @Element
     public Color Object_TitleBar_Embedded_Background = new Color(0.8f, 0.4f, 0.3f);
     @Element
-    public Color Object_TitleBar_Foreground;
+    public Color Object_TitleBar_Foreground = Color.BLACK;
     @Element
     public Color Object_Border_Unselected = Color.WHITE;
     @Element
@@ -126,7 +126,7 @@ public class Theme {
     @Element
     public Color Parameter_On_Parent_Highlight = Color.BLUE;
     @Element
-    public Color Paramete_Preset_Highlight = Color.YELLOW;
+    public Color Parameter_Preset_Highlight = new Color(0.5f, 0.5f, 0.0f);
 
     @Element
     public Color Component_Primary = Color.BLACK;

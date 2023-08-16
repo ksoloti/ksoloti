@@ -33,8 +33,8 @@ public class QCmdRecallPreset implements QCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return null;
-//        return "Start recalling preset";
+        // return null;
+        return "Recalling preset " + presetNo + "...";
     }
 
     @Override

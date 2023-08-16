@@ -206,6 +206,7 @@ public class CheckboxComponent extends ACtrlComponent {
         }
         g2.fillRect(0, 0, bsize * n, bsize + 1);
         g2.setPaint(getForeground());
+        g2.setPaint(Theme.getCurrentTheme().Component_Primary);
 
         if (isFocusOwner()) {
             g2.setStroke(strokeThick);
@@ -222,10 +223,10 @@ public class CheckboxComponent extends ACtrlComponent {
 
         if (isEnabled()) {
             int v = (int) value;
-            int inset = 2;
+            int inset = 3;
             for (int i = 0; i < n; i++) {
                 if ((v & 1) != 0) {
-                    g2.fillRect(i * bsize + inset, inset, bsize - inset - 1, bsize - inset);
+                    g2.fillRect(i * bsize + inset, inset, bsize - inset - 2, bsize - inset - 1);
                 }
                 v = v >> 1;
             }

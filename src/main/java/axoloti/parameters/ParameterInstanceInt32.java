@@ -85,7 +85,7 @@ public abstract class ParameterInstanceInt32<T extends Parameter> extends Parame
         if (i > 0) {
             Preset p = GetPreset(presetEditActive);
             if (p != null) {
-                setBackground(Theme.getCurrentTheme().Paramete_Preset_Highlight);
+                setBackground(Theme.getCurrentTheme().Parameter_Preset_Highlight);
                 getControlComponent().setValue(p.value.getDouble());
             } else {
                 setBackground(Theme.getCurrentTheme().Parameter_Default_Background);

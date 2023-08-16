@@ -18,6 +18,7 @@
 package components;
 
 import axoloti.Patch;
+import java.awt.Color;
 
 /**
  *
@@ -58,12 +59,12 @@ public class PresetPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buttonGroup1 = new javax.swing.ButtonGroup();
-        jLabel3 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
+        // buttonGroup1 = new javax.swing.ButtonGroup();
+        jPanelLabels = new javax.swing.JPanel();
+        jPanelPresetButtons = new javax.swing.JPanel();
+        jLabelRecall = new javax.swing.JLabel();
+        jLabelEdit = new javax.swing.JLabel();
+        jLabelTitle = new javax.swing.JLabel();
         jButtonRI = new javax.swing.JButton();
         jButtonR1 = new javax.swing.JButton();
         jButtonR2 = new javax.swing.JButton();
@@ -89,189 +90,199 @@ public class PresetPanel extends javax.swing.JPanel {
         setPreferredSize(new java.awt.Dimension(400, 40));
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
 
-        jLabel3.setText("Preset");
-        add(jLabel3);
+        jLabelTitle.setText("Presets");
+        add(jLabelTitle);
 
-        jPanel1.setLayout(new java.awt.GridLayout(2, 1));
+        jPanelLabels.setLayout(new java.awt.GridLayout(2, 1));
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        jLabel1.setText("Recall ");
-        jPanel1.add(jLabel1);
+        jLabelRecall.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabelRecall.setText("Recall ");
+        jPanelLabels.add(jLabelRecall);
 
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        jLabel2.setText("Edit ");
-        jPanel1.add(jLabel2);
+        jLabelEdit.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabelEdit.setText("Edit ");
+        jPanelLabels.add(jLabelEdit);
 
-        add(jPanel1);
+        add(jPanelLabels);
 
-        jPanel2.setMinimumSize(new java.awt.Dimension(275, 38));
-        jPanel2.setPreferredSize(new java.awt.Dimension(275, 38));
-        jPanel2.setLayout(new java.awt.GridLayout(2, 9));
+        jPanelPresetButtons.setMinimumSize(new java.awt.Dimension(275, 38));
+        jPanelPresetButtons.setPreferredSize(new java.awt.Dimension(275, 38));
+        jPanelPresetButtons.setLayout(new java.awt.GridLayout(2, 9));
 
         jButtonRI.setText("i");
         jButtonRI.setBorderPainted(false);
         jButtonRI.setDefaultCapable(false);
-        jButtonRI.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        jButtonRI.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jButtonRI.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonRIActionPerformed(evt);
             }
         });
-        jPanel2.add(jButtonRI);
+        jPanelPresetButtons.add(jButtonRI);
 
         jButtonR1.setText("1");
         jButtonR1.setDefaultCapable(false);
-        jButtonR1.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        jButtonR1.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jButtonR1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonR1ActionPerformed(evt);
             }
         });
-        jPanel2.add(jButtonR1);
+        jPanelPresetButtons.add(jButtonR1);
 
         jButtonR2.setText("2");
         jButtonR2.setDefaultCapable(false);
-        jButtonR2.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        jButtonR2.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jButtonR2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonR2ActionPerformed(evt);
             }
         });
-        jPanel2.add(jButtonR2);
+        jPanelPresetButtons.add(jButtonR2);
 
         jButtonR3.setText("3");
         jButtonR3.setDefaultCapable(false);
-        jButtonR3.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        jButtonR3.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jButtonR3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonR3ActionPerformed(evt);
             }
         });
-        jPanel2.add(jButtonR3);
+        jPanelPresetButtons.add(jButtonR3);
 
         jButtonR4.setText("4");
         jButtonR4.setDefaultCapable(false);
-        jButtonR4.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        jButtonR4.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jButtonR4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonR4ActionPerformed(evt);
             }
         });
-        jPanel2.add(jButtonR4);
+        jPanelPresetButtons.add(jButtonR4);
 
         jButtonR5.setText("5");
         jButtonR5.setDefaultCapable(false);
-        jButtonR5.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        jButtonR5.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jButtonR5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonR5ActionPerformed(evt);
             }
         });
-        jPanel2.add(jButtonR5);
+        jPanelPresetButtons.add(jButtonR5);
 
         jButtonR6.setText("6");
         jButtonR6.setDefaultCapable(false);
-        jButtonR6.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        jButtonR6.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jButtonR6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonR6ActionPerformed(evt);
             }
         });
-        jPanel2.add(jButtonR6);
+        jPanelPresetButtons.add(jButtonR6);
 
         jButtonR7.setText("7");
         jButtonR7.setDefaultCapable(false);
-        jButtonR7.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        jButtonR7.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jButtonR7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonR7ActionPerformed(evt);
             }
         });
-        jPanel2.add(jButtonR7);
+        jPanelPresetButtons.add(jButtonR7);
 
         jButtonR8.setText("8");
         jButtonR8.setDefaultCapable(false);
-        jButtonR8.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        jButtonR8.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jButtonR8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonR8ActionPerformed(evt);
             }
         });
-        jPanel2.add(jButtonR8);
+        jPanelPresetButtons.add(jButtonR8);
 
         jToggleButtonEI.setText("i");
+        jToggleButtonEI.setSelected(true);
+        jToggleButtonEI.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jToggleButtonEI.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButtonEIActionPerformed(evt);
             }
         });
-        jPanel2.add(jToggleButtonEI);
+        jPanelPresetButtons.add(jToggleButtonEI);
 
         jToggleButtonE1.setText("1");
+        jToggleButtonE1.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jToggleButtonE1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButtonE1ActionPerformed(evt);
             }
         });
-        jPanel2.add(jToggleButtonE1);
+        jPanelPresetButtons.add(jToggleButtonE1);
 
         jToggleButtonE2.setText("2");
+        jToggleButtonE2.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jToggleButtonE2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButtonE2ActionPerformed(evt);
             }
         });
-        jPanel2.add(jToggleButtonE2);
+        jPanelPresetButtons.add(jToggleButtonE2);
 
         jToggleButtonE3.setText("3");
+        jToggleButtonE3.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jToggleButtonE3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButtonE3ActionPerformed(evt);
             }
         });
-        jPanel2.add(jToggleButtonE3);
+        jPanelPresetButtons.add(jToggleButtonE3);
 
         jToggleButtonE4.setText("4");
+        jToggleButtonE4.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jToggleButtonE4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButtonE4ActionPerformed(evt);
             }
         });
-        jPanel2.add(jToggleButtonE4);
+        jPanelPresetButtons.add(jToggleButtonE4);
 
         jToggleButtonE5.setText("5");
+        jToggleButtonE5.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jToggleButtonE5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButtonE5ActionPerformed(evt);
             }
         });
-        jPanel2.add(jToggleButtonE5);
+        jPanelPresetButtons.add(jToggleButtonE5);
 
         jToggleButtonE6.setText("6");
+        jToggleButtonE6.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jToggleButtonE6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButtonE6ActionPerformed(evt);
             }
         });
-        jPanel2.add(jToggleButtonE6);
+        jPanelPresetButtons.add(jToggleButtonE6);
 
         jToggleButtonE7.setText("7");
+        jToggleButtonE7.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jToggleButtonE7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButtonE7ActionPerformed(evt);
             }
         });
-        jPanel2.add(jToggleButtonE7);
+        jPanelPresetButtons.add(jToggleButtonE7);
 
         jToggleButtonE8.setText("8");
+        jToggleButtonE8.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jToggleButtonE8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButtonE8ActionPerformed(evt);
             }
         });
-        jPanel2.add(jToggleButtonE8);
+        jPanelPresetButtons.add(jToggleButtonE8);
 
-        add(jPanel2);
+        add(jPanelPresetButtons);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonRIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRIActionPerformed
@@ -313,121 +324,193 @@ public class PresetPanel extends javax.swing.JPanel {
     private void jToggleButtonEIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonEIActionPerformed
         jToggleButtonEI.setSelected(true);
         jToggleButtonE1.setSelected(false);
+        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(false);
+        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(false);
+        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(false);
+        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(false);
+        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(false);
+        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(false);
+        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(false);
+        jToggleButtonE8.setForeground(null);
         p.ShowPreset(0);
     }//GEN-LAST:event_jToggleButtonEIActionPerformed
 
     private void jToggleButtonE1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE1ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(true);
+        jToggleButtonE1.setForeground(Color.ORANGE);
         jToggleButtonE2.setSelected(false);
+        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(false);
+        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(false);
+        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(false);
+        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(false);
+        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(false);
+        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(false);
+        jToggleButtonE8.setForeground(null);
         p.ShowPreset(1);
     }//GEN-LAST:event_jToggleButtonE1ActionPerformed
 
     private void jToggleButtonE2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE2ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
+        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(true);
+        jToggleButtonE2.setForeground(Color.ORANGE);
         jToggleButtonE3.setSelected(false);
+        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(false);
+        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(false);
+        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(false);
+        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(false);
+        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(false);
+        jToggleButtonE8.setForeground(null);
         p.ShowPreset(2);
     }//GEN-LAST:event_jToggleButtonE2ActionPerformed
 
     private void jToggleButtonE3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE3ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
+        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(false);
+        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(true);
+        jToggleButtonE3.setForeground(Color.ORANGE);
         jToggleButtonE4.setSelected(false);
+        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(false);
+        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(false);
+        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(false);
+        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(false);
+        jToggleButtonE8.setForeground(null);
         p.ShowPreset(3);
     }//GEN-LAST:event_jToggleButtonE3ActionPerformed
 
     private void jToggleButtonE4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE4ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
+        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(false);
+        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(false);
+        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(true);
+        jToggleButtonE4.setForeground(Color.ORANGE);
         jToggleButtonE5.setSelected(false);
+        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(false);
+        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(false);
+        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(false);
+        jToggleButtonE8.setForeground(null);
         p.ShowPreset(4);
     }//GEN-LAST:event_jToggleButtonE4ActionPerformed
 
     private void jToggleButtonE5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE5ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
+        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(false);
+        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(false);
+        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(false);
+        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(true);
+        jToggleButtonE5.setForeground(Color.ORANGE);
         jToggleButtonE6.setSelected(false);
+        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(false);
+        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(false);
+        jToggleButtonE8.setForeground(null);
         p.ShowPreset(5);
     }//GEN-LAST:event_jToggleButtonE5ActionPerformed
 
     private void jToggleButtonE6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE6ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
+        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(false);
+        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(false);
+        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(false);
+        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(false);
+        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(true);
+        jToggleButtonE6.setForeground(Color.ORANGE);
         jToggleButtonE7.setSelected(false);
+        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(false);
+        jToggleButtonE8.setForeground(null);
         p.ShowPreset(6);
     }//GEN-LAST:event_jToggleButtonE6ActionPerformed
 
     private void jToggleButtonE7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE7ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
+        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(false);
+        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(false);
+        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(false);
+        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(false);
+        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(false);
+        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(true);
+        jToggleButtonE7.setForeground(Color.ORANGE);
         jToggleButtonE8.setSelected(false);
+        jToggleButtonE8.setForeground(null);
         p.ShowPreset(7);
     }//GEN-LAST:event_jToggleButtonE7ActionPerformed
 
     private void jToggleButtonE8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE8ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
+        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(false);
+        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(false);
+        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(false);
+        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(false);
+        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(false);
+        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(false);
+        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(true);
+        jToggleButtonE8.setForeground(Color.ORANGE);
         p.ShowPreset(8);
     }//GEN-LAST:event_jToggleButtonE8ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup buttonGroup1;
+    // private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButtonR1;
     private javax.swing.JButton jButtonR2;
     private javax.swing.JButton jButtonR3;
@@ -437,11 +520,11 @@ public class PresetPanel extends javax.swing.JPanel {
     private javax.swing.JButton jButtonR7;
     private javax.swing.JButton jButtonR8;
     private javax.swing.JButton jButtonRI;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel jLabelRecall;
+    private javax.swing.JLabel jLabelEdit;
+    private javax.swing.JLabel jLabelTitle;
+    private javax.swing.JPanel jPanelLabels;
+    private javax.swing.JPanel jPanelPresetButtons;
     private javax.swing.JToggleButton jToggleButtonE1;
     private javax.swing.JToggleButton jToggleButtonE2;
     private javax.swing.JToggleButton jToggleButtonE3;

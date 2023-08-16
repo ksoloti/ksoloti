@@ -24,6 +24,7 @@ import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
 import components.PresetPanel;
 import components.VisibleCablePanel;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -83,8 +84,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         presetPanel = new PresetPanel(patch);
         visibleCablePanel = new VisibleCablePanel(patch);
         
+        jToolbarPanel.add(new javax.swing.Box.Filler(new Dimension(10, 0), new Dimension(10, 0), new Dimension(32767, 32767)));
         jToolbarPanel.add(presetPanel);
-        jToolbarPanel.add(new javax.swing.Box.Filler(new Dimension(0, 0), new Dimension(0, 0), new Dimension(32767, 32767)));
+        jToolbarPanel.add(new javax.swing.Box.Filler(new Dimension(10, 0), new Dimension(10, 0), new Dimension(32767, 32767)));
         jToolbarPanel.add(visibleCablePanel);
 
         jScrollPane1.setViewportView(patch.Layers);
@@ -206,14 +208,16 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     public void SetLive(boolean b) {
         if (b) {
-            jCheckBoxLive.setSelected(true);
-            jCheckBoxLive.setEnabled(true);
+            jToggleButtonLive.setForeground(Color.GREEN);
+            jToggleButtonLive.setSelected(true);
+            jToggleButtonLive.setEnabled(true);
             jCheckBoxMenuItemLive.setSelected(true);
             jCheckBoxMenuItemLive.setEnabled(true);
             presetPanel.ShowLive(true);
         } else {
-            jCheckBoxLive.setSelected(false);
-            jCheckBoxLive.setEnabled(true);
+            jToggleButtonLive.setForeground(null);
+            jToggleButtonLive.setSelected(false);
+            jToggleButtonLive.setEnabled(true);
             jCheckBoxMenuItemLive.setSelected(false);
             jCheckBoxMenuItemLive.setEnabled(true);
             presetPanel.ShowLive(false);
@@ -221,7 +225,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     void ShowConnect1(boolean status){
-        jCheckBoxLive.setEnabled(status);
+        jToggleButtonLive.setEnabled(status);
         jCheckBoxMenuItemLive.setEnabled(status);
         jMenuItemUploadInternalFlash.setEnabled(status);
         jMenuItemUploadSD.setEnabled(status);
@@ -233,7 +237,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         if (patch.IsLocked()) {
             patch.Unlock();
         }
-        jCheckBoxLive.setSelected(false);
+        jToggleButtonLive.setSelected(false);
+        jToggleButtonLive.setForeground(null);
         jCheckBoxMenuItemLive.setSelected(false);
         ShowConnect1(false);
     }
@@ -241,14 +246,16 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     @Override
     public void ShowConnect() {
         patch.Unlock();
-        jCheckBoxLive.setSelected(false);
+        jToggleButtonLive.setSelected(false);
+        jToggleButtonLive.setForeground(null);
         jCheckBoxMenuItemLive.setSelected(false);
         ShowConnect1(true);
     }
 
     public void ShowCompileFail() {
-        jCheckBoxLive.setSelected(false);
-        jCheckBoxLive.setEnabled(true);
+        jToggleButtonLive.setSelected(false);
+        jToggleButtonLive.setForeground(null);
+        jToggleButtonLive.setEnabled(true);
     }
 
     public void Close() {
@@ -306,11 +313,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private void initComponents() {
 
         jToolbarPanel = new javax.swing.JPanel();
-        jCheckBoxLive = new javax.swing.JCheckBox();
-        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0));
-        jLabel1 = new javax.swing.JLabel();
+        jToggleButtonLive = new javax.swing.JToggleButton();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0));
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0));
+        jLabelDSPLoad = new javax.swing.JLabel();
         jProgressBarDSPLoad = new javax.swing.JProgressBar();
-        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0));
         jScrollPane1 = new javax.swing.JScrollPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu1 = new axoloti.menus.FileMenu();
@@ -380,38 +387,39 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jToolbarPanel.setAlignmentY(0.0F);
         jToolbarPanel.setMaximumSize(new java.awt.Dimension(32767, 0));
         jToolbarPanel.setPreferredSize(new java.awt.Dimension(212, 49));
+        jToolbarPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jToolbarPanel.setLayout(new javax.swing.BoxLayout(jToolbarPanel, javax.swing.BoxLayout.LINE_AXIS));
 
-        jCheckBoxLive.setText("Live");
-        jCheckBoxLive.setEnabled(false);
-        jCheckBoxLive.setFocusable(false);
-        jCheckBoxLive.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jCheckBoxLive.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jCheckBoxLive.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jCheckBoxLive.addActionListener(new java.awt.event.ActionListener() {
+        jToggleButtonLive.setText("Live");
+        jToggleButtonLive.setEnabled(false);
+        jToggleButtonLive.setFocusable(false);
+        jToggleButtonLive.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jToggleButtonLive.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToggleButtonLive.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToggleButtonLive.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxLiveActionPerformed(evt);
+                jToggleButtonLiveActionPerformed(evt);
             }
         });
-        jToolbarPanel.add(jCheckBoxLive);
+        jToolbarPanel.add(jToggleButtonLive);
 
-        filler2.setAlignmentX(0.0F);
-        jToolbarPanel.add(filler2);
+        filler1.setAlignmentX(0.0F);
+        jToolbarPanel.add(filler1);
 
-        jLabel1.setText("DSP load ");
-        jToolbarPanel.add(jLabel1);
+        jLabelDSPLoad.setText("DSP Load ");
+        jToolbarPanel.add(jLabelDSPLoad);
 
         jProgressBarDSPLoad.setToolTipText("");
         jProgressBarDSPLoad.setAlignmentX(0.0F);
-        jProgressBarDSPLoad.setMaximumSize(new java.awt.Dimension(100, 16));
-        jProgressBarDSPLoad.setMinimumSize(new java.awt.Dimension(60, 16));
+        jProgressBarDSPLoad.setMaximumSize(new java.awt.Dimension(200, 20));
+        jProgressBarDSPLoad.setMinimumSize(new java.awt.Dimension(60, 20));
+        jProgressBarDSPLoad.setPreferredSize(new java.awt.Dimension(200, 20));
         jProgressBarDSPLoad.setName(""); // NOI18N
-        jProgressBarDSPLoad.setPreferredSize(new java.awt.Dimension(100, 16));
         jProgressBarDSPLoad.setStringPainted(true);
         jToolbarPanel.add(jProgressBarDSPLoad);
 
-        filler3.setAlignmentX(0.0F);
-        jToolbarPanel.add(filler3);
+        filler2.setAlignmentX(0.0F);
+        jToolbarPanel.add(filler2);
 
         getContentPane().add(jToolbarPanel);
 
@@ -552,7 +560,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuView.add(jMenuItemNotes);
 
-        jMenuItemSettings.setMnemonic('S');
+        jMenuItemSettings.setMnemonic('I');
         jMenuItemSettings.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuItemSettings.setText("Settings");
         jMenuItemSettings.addActionListener(new java.awt.event.ActionListener() {
@@ -716,18 +724,18 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jCheckBoxLiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxLiveActionPerformed
-        if (jCheckBoxLive.isSelected()) {
+    private void jToggleButtonLiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonLiveActionPerformed
+        if (jToggleButtonLive.isSelected()) {
             if (GoLive()) {
-                jCheckBoxLive.setEnabled(false);
+                jToggleButtonLive.setEnabled(false);
             } else {
-                jCheckBoxLive.setSelected(false);
+                jToggleButtonLive.setSelected(false);
             }
         } else {
             qcmdprocessor.AppendToQueue(new QCmdStop());
             patch.Unlock();
         }
-    }//GEN-LAST:event_jCheckBoxLiveActionPerformed
+    }//GEN-LAST:event_jToggleButtonLiveActionPerformed
 
     private void jMenuSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuSaveActionPerformed
         String fn = patch.getFileNamePath();
@@ -1049,13 +1057,13 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
      */
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private axoloti.menus.FileMenu fileMenu1;
+    private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
-    private javax.swing.Box.Filler filler3;
     private axoloti.menus.HelpMenu helpMenu1;
-    private javax.swing.JCheckBox jCheckBoxLive;
+    private javax.swing.JToggleButton jToggleButtonLive;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemCordsInBackground;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemLive;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabelDSPLoad;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuClose;
     private javax.swing.JMenuItem jMenuCompileCode;

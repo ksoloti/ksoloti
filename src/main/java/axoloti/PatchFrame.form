@@ -385,7 +385,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>
-            <Property name="text" type="java.lang.String" value="DSP load "/>
+            <Property name="text" type="java.lang.String" value="DSP Load "/>
           </Properties>
         </Component>
         <Component class="javax.swing.JProgressBar" name="jProgressBarDSPLoad">

@@ -205,8 +205,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     }
 
     void ButtonUploadDefaultName() {
-        jButtonUpload.setText("Upload ...");
-        jButtonCreateDir.setText("Create directory ...");
+        jButtonUpload.setText("Upload...");
+        jButtonCreateDir.setText("Create directory...");
     }
 
     /**
