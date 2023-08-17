@@ -292,7 +292,7 @@ void ReadDirectoryListing(void) {
  * "AxoP" (int value, int16 index) -> parameter set
  * "AxoR" (int length, data) -> preset data set
  * "AxoW" (int length, int addr, char[length] data) -> generic memory write
- * "Axow" (int length, int offset, char[12] filename, char[length] data) -> data write to sdcard
+ * "Axow" (int length, int offset, char[12] filename, char[length] data) -> data write to SD card
  * "Axor" (int offset, int length) -> generic memory read
  * "Axoy" (int offset) -> generic memory read, single 32bit aligned
  * "AxoS" -> start patch
@@ -303,9 +303,9 @@ void ReadDirectoryListing(void) {
  * "AxoV" reply FW version number (4 bytes)
  * "AxoF" copy patch code to flash (assumes patch is stopped)
  * "Axod" read directory listing
- * "AxoC (int length) (char[] filename)" create and open file on sdcard
- * "Axoc" close file on sdcard
- * "AxoA (int length) (byte[] data)" append data on open file on sdcard
+ * "AxoC (int length) (char[] filename)" create and open file on SD card
+ * "Axoc" close file on SD card
+ * "AxoA (int length) (byte[] data)" append data on open file on SD card
  * "AxoB (int or) (int and)" buttons for virtual Axoloti Control
  */
 

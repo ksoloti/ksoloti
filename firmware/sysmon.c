@@ -93,12 +93,12 @@ static msg_t ThreadSysmon(void *arg) {
 #ifdef HAS_SD_CARD_DETECT
     bool sdcsw = palReadPad(SDCSW_PORT, SDCSW_PIN);
     if (sdcsw && !sdcsw_prev) {
-//      LogTextMessage("sdcard ejected");
+//      LogTextMessage("SD card ejected");
       StopPatch();
       sdcard_unmount();
     }
     else if (!sdcsw && sdcsw_prev) {
-//      LogTextMessage("sdcard inserted");
+//      LogTextMessage("SD card inserted");
       sdcard_attemptMountIfUnmounted();
       if (!fs_ready) {
         pattern_index = 0;
