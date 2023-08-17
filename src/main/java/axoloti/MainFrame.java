@@ -129,10 +129,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         final Style styleSevere = jTextPaneLog.addStyle("severe", styleParent);
         final Style styleWarning = jTextPaneLog.addStyle("warning", styleParent);
         final Style styleInfo = jTextPaneLog.addStyle("info", styleParent);
-        jTextPaneLog.setBackground(Theme.getCurrentTheme().Console_Background);
+        // jTextPaneLog.setBackground(Theme.getCurrentTheme().Console_Background);
+        jTextPaneLog.setBackground(java.awt.SystemColor.window);
         StyleConstants.setForeground(styleSevere, Theme.getCurrentTheme().Error_Text);
         StyleConstants.setForeground(styleWarning, Theme.getCurrentTheme().Warning_Text);
-        StyleConstants.setForeground(styleInfo, Theme.getCurrentTheme().Normal_Text);
+        // StyleConstants.setForeground(styleInfo, java.awt.SystemColor.windowText);
+        StyleConstants.setForeground(styleInfo, java.awt.SystemColor.windowText);
 
         DefaultCaret caret = (DefaultCaret) jTextPaneLog.getCaret();
         caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
@@ -488,7 +490,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jLabel1.setText("jLabel1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Ksooloti");
+        setTitle("Ksoloti");
         setMinimumSize(new java.awt.Dimension(200, 200));
         setPreferredSize(new java.awt.Dimension(640, 480)); // Make default size bigger
         addWindowListener(new java.awt.event.WindowAdapter() {

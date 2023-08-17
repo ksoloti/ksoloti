@@ -72,7 +72,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         initComponents();
 
         if (OSDetect.getOS() == OSDetect.OS.MAC) {
-            // buttons w    ith a text label use huge margins on macos
+            // buttons with a text label use huge margins on macos
             // or when forced, will substitute the label with '...',
             // while buttons with just an icon can have a tight margin (want!)
             // We're using a single unicode character as a label
@@ -95,6 +95,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             jButtonCancel.putClientProperty("JButton.segmentPosition", "first");
             jButtonAccept.putClientProperty("JButton.segmentPosition", "last");
         }
+
         jButtonAccept.setEnabled(false);
 
         this.p = p;
@@ -112,10 +113,10 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 }
                 if (node.getUserObject() instanceof AxoObjectTreeNode) {
                     AxoObjectTreeNode anode = (AxoObjectTreeNode) node.getUserObject();
-                    jObjectPreviewPanel.removeAll();
-                    jObjectPreviewPanel.repaint();
-                    jTextPane1.setText(anode.description);
-                    jTextPane1.setCaretPosition(0);
+                    jPanelRight.removeAll();
+                    jPanelRight.repaint();
+                    jTextPaneObjectInfo.setText(anode.description);
+                    jTextPaneObjectInfo.setCaretPosition(0);
                     previewObj = null;
                 }
                 Object nodeInfo = node.getUserObject();
@@ -245,13 +246,13 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         });
 
-        jObjectPreviewPanel.setVisible(true);
-        jScrollPane1.setVisible(true);
-        jScrollPane4.setVisible(true);
-        jSplitPane1.setVisible(true);
-        jSplitPane2.setVisible(true);
-        jTextPane1.setVisible(true);
-        jTextPane1.setContentType("text/html");
+        jPanelRight.setVisible(true);
+        jScrollPaneObjectTree.setVisible(true);
+        jScrollPaneObjectInfo.setVisible(true);
+        jSplitPaneMain.setVisible(true);
+        jSplitPaneRight.setVisible(true);
+        jTextPaneObjectInfo.setVisible(true);
+        jTextPaneObjectInfo.setContentType("text/html");
 
         jTextFieldObjName.addKeyListener(new KeyListener() {
             @Override
@@ -366,8 +367,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         if (o == null) {
             previewObj = null;
             type = null;
-            jObjectPreviewPanel.removeAll();
-            jObjectPreviewPanel.repaint();
+            jPanelRight.removeAll();
+            jPanelRight.repaint();
             jButtonAccept.setEnabled(false);
             return;
         }
@@ -383,13 +384,13 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             if (jResultList.getSelectedValue() != o) {
             }
             AxoObjectInstanceAbstract inst = o.CreateInstance(null, "dummy", new Point(5, 5));
-            jObjectPreviewPanel.removeAll();
-            jObjectPreviewPanel.add(inst);
+            jPanelRight.removeAll();
+            jPanelRight.add(inst);
             inst.invalidate();
             inst.repaint();
             inst.revalidate();
-            jObjectPreviewPanel.revalidate();
-            jObjectPreviewPanel.repaint();
+            jPanelRight.revalidate();
+            jPanelRight.repaint();
             AxoObjectAbstract t = inst.getType();
             if (t != null) {
                 String description = t.sDescription == null || t.sDescription.isEmpty() ? o.sDescription : t.sDescription;
@@ -406,9 +407,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 if ((license != null) && (!license.isEmpty())) {
                     txt += "\n<p>\nLicense: " + license;
                 }
-                jTextPane1.setText(txt);
+                jTextPaneObjectInfo.setText(txt);
             }
-            jTextPane1.setCaretPosition(0);
+            jTextPaneObjectInfo.setCaretPosition(0);
         }
     }
 
@@ -563,24 +564,28 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel3 = new javax.swing.JPanel();
-        jSplitPane1 = new javax.swing.JSplitPane();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
+        jSplitPaneMain = new javax.swing.JSplitPane(javax.swing.JSplitPane.HORIZONTAL_SPLIT, true);
+        jSplitPaneLeft = new javax.swing.JSplitPane(javax.swing.JSplitPane.VERTICAL_SPLIT, true);
+        jSplitPaneRight = new javax.swing.JSplitPane(javax.swing.JSplitPane.VERTICAL_SPLIT, true);
+
+        jPanelLeft = new javax.swing.JPanel();
+        jPanelMain = new javax.swing.JPanel();
+        jPanelSearchField = new javax.swing.JPanel();
+
+        jTextPaneObjectInfo = new javax.swing.JTextPane();
         jTextFieldObjName = new javax.swing.JTextField();
         jButtonCancel = new javax.swing.JButton();
         jButtonAccept = new javax.swing.JButton();
-        jSplitPane3 = new javax.swing.JSplitPane();
-        jScrollPane3 = new javax.swing.JScrollPane();
         jResultList = new javax.swing.JList();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jObjectTree = new javax.swing.JTree();
-        jSplitPane2 = new javax.swing.JSplitPane();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
-        jObjectPreviewPanel = new javax.swing.JPanel();
 
-        setForeground(java.awt.SystemColor.control);
+        jObjectTree = new javax.swing.JTree();
+
+        jScrollPaneObjectTree = new javax.swing.JScrollPane();
+        jScrollPaneObjectSearch = new javax.swing.JScrollPane();
+        jScrollPaneObjectInfo = new javax.swing.JScrollPane();
+        jPanelRight = new javax.swing.JPanel();
+
+        setForeground(java.awt.SystemColor.controlText);
         setIconImages(null);
         setName(""); // NOI18N
         setUndecorated(true);
@@ -592,131 +597,131 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         });
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 3, 3, 3));
-        jPanel3.setLayout(new java.awt.BorderLayout());
+        jPanelMain.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 3, 3, 3));
+        jPanelMain.setLayout(new java.awt.BorderLayout());
 
-        jSplitPane1.setDividerLocation(186);
-        jSplitPane1.setMinimumSize(new java.awt.Dimension(83, 50));
-        jSplitPane1.setPreferredSize(new java.awt.Dimension(600, 365));
+        jSplitPaneMain.setDividerLocation(220);
+        jSplitPaneMain.setMinimumSize(new java.awt.Dimension(120, 60));
+        jSplitPaneMain.setPreferredSize(new java.awt.Dimension(640, 400));
 
-        jPanel2.setAlignmentX(0.0F);
-        jPanel2.setAlignmentY(0.0F);
-        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.PAGE_AXIS));
+        jPanelLeft.setAlignmentX(0.0F);
+        jPanelLeft.setAlignmentY(0.0F);
+        jPanelLeft.setLayout(new javax.swing.BoxLayout(jPanelLeft, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jPanel4.setAlignmentY(0.0F);
-        jPanel4.setLayout(new javax.swing.BoxLayout(jPanel4, javax.swing.BoxLayout.LINE_AXIS));
+        jPanelSearchField.setAlignmentY(0.0F);
+        jPanelSearchField.setLayout(new javax.swing.BoxLayout(jPanelSearchField, javax.swing.BoxLayout.LINE_AXIS));
 
         jTextFieldObjName.setAlignmentX(0.0F);
-        jTextFieldObjName.setMaximumSize(new java.awt.Dimension(2147483647, 26));
-        jTextFieldObjName.setMinimumSize(new java.awt.Dimension(40, 26));
-        jTextFieldObjName.setPreferredSize(new java.awt.Dimension(800, 20));
+        jTextFieldObjName.setMaximumSize(new java.awt.Dimension(2147483647, 20));
+        // jTextFieldObjName.setMinimumSize(new java.awt.Dimension(40, 20));
+        jTextFieldObjName.setPreferredSize(new java.awt.Dimension(600, 20));
         jTextFieldObjName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextFieldObjNameActionPerformed(evt);
             }
         });
-        jPanel4.add(jTextFieldObjName);
+        jPanelSearchField.add(jTextFieldObjName);
 
         jButtonCancel.setText("✗");
         jButtonCancel.setToolTipText("Cancel");
         jButtonCancel.setActionCommand("");
         jButtonCancel.setDefaultCapable(false);
         jButtonCancel.setFocusable(false);
-        jButtonCancel.setMargin(new java.awt.Insets(-2, -2, -2, -2));
-        jButtonCancel.setMinimumSize(new java.awt.Dimension(26, 26));
+        jButtonCancel.setMargin(new java.awt.Insets(-7, -7, -7, -7));
+        // jButtonCancel.setMinimumSize(new java.awt.Dimension(26, 26));
         jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonCancelActionPerformed(evt);
             }
         });
-        jPanel4.add(jButtonCancel);
+        jPanelSearchField.add(jButtonCancel);
 
         jButtonAccept.setText("✓");
         jButtonAccept.setToolTipText("Accept");
         jButtonAccept.setActionCommand("");
         jButtonAccept.setDefaultCapable(false);
         jButtonAccept.setFocusable(false);
-        jButtonAccept.setMargin(new java.awt.Insets(-2, -2, -2, -2));
-        jButtonAccept.setMinimumSize(new java.awt.Dimension(26, 26));
+        jButtonAccept.setMargin(new java.awt.Insets(-7, -7, -7, -7));
+        // jButtonAccept.setMinimumSize(new java.awt.Dimension(26, 26));
         jButtonAccept.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonAcceptActionPerformed(evt);
             }
         });
-        jPanel4.add(jButtonAccept);
+        jPanelSearchField.add(jButtonAccept);
 
-        jPanel2.add(jPanel4);
+        jPanelLeft.add(jPanelSearchField);
 
-        jSplitPane3.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        jSplitPane3.setResizeWeight(0.5);
-        jSplitPane3.setAlignmentX(0.5F);
-        jSplitPane3.setAlignmentY(1.0F);
-        jSplitPane3.setMinimumSize(new java.awt.Dimension(126, 95));
+        jSplitPaneLeft.setResizeWeight(0.5);
+        jSplitPaneLeft.setAlignmentX(0.5F);
+        jSplitPaneLeft.setAlignmentY(1.0F);
+        jSplitPaneLeft.setMinimumSize(new java.awt.Dimension(80, 120));
+        jSplitPaneLeft.setPreferredSize(new java.awt.Dimension(180, 160));
 
-        jScrollPane3.setMinimumSize(new java.awt.Dimension(24, 64));
+        jScrollPaneObjectSearch.setMinimumSize(new java.awt.Dimension(24, 64));
+        jScrollPaneObjectSearch.setPreferredSize(new java.awt.Dimension(180, 160));
 
         jResultList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jResultList.setAlignmentX(0.0F);
         jResultList.setMinimumSize(new java.awt.Dimension(100, 50));
         jResultList.setVisibleRowCount(6);
-        jScrollPane3.setViewportView(jResultList);
+        jScrollPaneObjectSearch.setViewportView(jResultList);
 
-        jSplitPane3.setTopComponent(jScrollPane3);
+        jSplitPaneLeft.setTopComponent(jScrollPaneObjectSearch);
 
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(76, 224));
+        jScrollPaneObjectTree.setPreferredSize(new java.awt.Dimension(180, 160));
 
         jObjectTree.setAlignmentX(0.0F);
         jObjectTree.setDragEnabled(true);
         jObjectTree.setMinimumSize(new java.awt.Dimension(100, 50));
         jObjectTree.setRootVisible(false);
         jObjectTree.setShowsRootHandles(true);
-        jScrollPane1.setViewportView(jObjectTree);
+        jScrollPaneObjectTree.setViewportView(jObjectTree);
 
-        jSplitPane3.setBottomComponent(jScrollPane1);
+        jSplitPaneLeft.setBottomComponent(jScrollPaneObjectTree);
 
-        jPanel2.add(jSplitPane3);
+        jPanelLeft.add(jSplitPaneLeft);
 
-        jSplitPane1.setLeftComponent(jPanel2);
+        jSplitPaneMain.setLeftComponent(jPanelLeft);
 
-        jSplitPane2.setDividerLocation(120);
-        jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        jSplitPane2.setResizeWeight(0.5);
-        jSplitPane2.setPreferredSize(new java.awt.Dimension(350, 271));
+        jSplitPaneRight.setDividerLocation(207);
+        jSplitPaneRight.setResizeWeight(0.5);
+        jSplitPaneRight.setPreferredSize(new java.awt.Dimension(300, 240));
 
-        jScrollPane4.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        jScrollPane4.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        jScrollPane4.setMinimumSize(new java.awt.Dimension(6, 63));
+        jScrollPaneObjectInfo.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        jScrollPaneObjectInfo.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        jScrollPaneObjectInfo.setMinimumSize(new java.awt.Dimension(6, 120));
 
-        jTextPane1.setEditable(false);
-        jTextPane1.setFocusCycleRoot(false);
-        jTextPane1.setFocusable(false);
-        jTextPane1.setRequestFocusEnabled(false);
-        jScrollPane4.setViewportView(jTextPane1);
+        jTextPaneObjectInfo.setEditable(false);
+        jTextPaneObjectInfo.setFocusCycleRoot(false);
+        jTextPaneObjectInfo.setFocusable(false);
+        jTextPaneObjectInfo.setRequestFocusEnabled(false);
+        jScrollPaneObjectInfo.setViewportView(jTextPaneObjectInfo);
 
-        jSplitPane2.setTopComponent(jScrollPane4);
+        jSplitPaneRight.setTopComponent(jScrollPaneObjectInfo);
 
-        jObjectPreviewPanel.setBackground(new java.awt.Color(153, 153, 153));
-        jObjectPreviewPanel.setEnabled(false);
-        jObjectPreviewPanel.setFocusable(false);
+        jPanelRight.setBackground(new java.awt.Color(153, 153, 153));
+        jPanelRight.setEnabled(false);
+        jPanelRight.setFocusable(false);
 
-        javax.swing.GroupLayout jObjectPreviewPanelLayout = new javax.swing.GroupLayout(jObjectPreviewPanel);
-        jObjectPreviewPanel.setLayout(jObjectPreviewPanelLayout);
-        jObjectPreviewPanelLayout.setHorizontalGroup(
-            jObjectPreviewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout jPanelRightLayout = new javax.swing.GroupLayout(jPanelRight);
+        jPanelRight.setLayout(jPanelRightLayout);
+        jPanelRightLayout.setHorizontalGroup(
+            jPanelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
-        jObjectPreviewPanelLayout.setVerticalGroup(
-            jObjectPreviewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        jPanelRightLayout.setVerticalGroup(
+            jPanelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        jSplitPane2.setRightComponent(jObjectPreviewPanel);
+        jSplitPaneRight.setRightComponent(jPanelRight);
 
-        jSplitPane1.setRightComponent(jSplitPane2);
+        jSplitPaneMain.setRightComponent(jSplitPaneRight);
 
-        jPanel3.add(jSplitPane1, java.awt.BorderLayout.CENTER);
+        jPanelMain.add(jSplitPaneMain, java.awt.BorderLayout.CENTER);
 
-        getContentPane().add(jPanel3, java.awt.BorderLayout.CENTER);
+        getContentPane().add(jPanelMain, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -748,22 +753,25 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     }//GEN-LAST:event_jButtonAcceptActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel jPanelMain;
+    private javax.swing.JPanel jPanelLeft;
+    private javax.swing.JPanel jPanelSearchField;
+    private javax.swing.JPanel jPanelRight;
+
+    private javax.swing.JSplitPane jSplitPaneMain;
+    private javax.swing.JSplitPane jSplitPaneLeft;
+    private javax.swing.JSplitPane jSplitPaneRight;
+
+    private javax.swing.JTextField jTextFieldObjName;
     private javax.swing.JButton jButtonAccept;
     private javax.swing.JButton jButtonCancel;
     private javax.swing.JList jResultList;
-    private javax.swing.JPanel jObjectPreviewPanel;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JSplitPane jSplitPane2;
-    private javax.swing.JSplitPane jSplitPane3;
-    private javax.swing.JTextField jTextFieldObjName;
-    private javax.swing.JTextPane jTextPane1;
     private javax.swing.JTree jObjectTree;
+    private javax.swing.JTextPane jTextPaneObjectInfo;
+
+    private javax.swing.JScrollPane jScrollPaneObjectSearch;
+    private javax.swing.JScrollPane jScrollPaneObjectTree;
+    private javax.swing.JScrollPane jScrollPaneObjectInfo;
     // End of variables declaration//GEN-END:variables
 
 
@@ -791,7 +799,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             int yc = (h / 2) + y;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.drawString(str, xc - (int) bounds.getCenterX(), yc - (int) bounds.getCenterY());
-//          g.fillOval(xm, ym, 1, 1);
+            // g.fillOval(xm, ym, 1, 1);
         }
 
         @Override
