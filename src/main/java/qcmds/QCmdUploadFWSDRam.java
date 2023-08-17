@@ -45,12 +45,12 @@ public class QCmdUploadFWSDRam implements QCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "Start uploading firmware";
+        return "Uploading firmware...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Done uploading firmware";
+        return "Done uploading firmware.\n";
     }
 
     @Override

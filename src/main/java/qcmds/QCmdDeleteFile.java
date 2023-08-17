@@ -36,13 +36,13 @@ public class QCmdDeleteFile implements QCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "Start deleting file on sdcard : " + filename;
+        return "Deleting file from SD card... " + filename;
     }
 
     @Override
     public String GetDoneMessage() {
         SDCardInfo.getInstance().Delete(filename);
-        return "Done deleting file";
+        return "Done deleting file.\n";
     }
 
     @Override

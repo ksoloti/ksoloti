@@ -27,12 +27,12 @@ public class QCmdBringToDFUMode implements QCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "Start enabling DFU";
+        return "Enabling DFU...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Done enabling DFU. Serial connection will now break, but firmware can be flashed with DFU.";
+        return "Done enabling DFU. Serial connection will now break, but firmware can be flashed with DFU.\n";
     }
 
     @Override

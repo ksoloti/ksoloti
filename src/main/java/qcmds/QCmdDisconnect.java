@@ -30,13 +30,13 @@ public class QCmdDisconnect implements QCmdGUITask {
     
     @Override
     public String GetStartMessage() {
-        return "Start disconnect";
+        return "Disconnecting...";
     }
 
     @Override
     public String GetDoneMessage() {
         MainFrame.mainframe.WarnedAboutFWCRCMismatch = false;
-        return "Done disconnect";
+        return "Done disconnecting.\n";
     }
 
     @Override

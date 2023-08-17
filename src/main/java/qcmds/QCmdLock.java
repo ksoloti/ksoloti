@@ -33,12 +33,12 @@ public class QCmdLock implements QCmdGUITask {
 
     @Override
     public String GetStartMessage() {
-        return "Start locking";
+        return "Locking...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Done locking";
+        return "Done locking.\n";
     }
 
     @Override

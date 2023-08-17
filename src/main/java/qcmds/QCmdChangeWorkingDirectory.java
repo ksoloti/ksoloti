@@ -35,12 +35,12 @@ public class QCmdChangeWorkingDirectory implements QCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "Changing working directory on sdcard : " + filename;
+        return "Changing working directory on SD card... " + filename;
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Done changing working directory";
+        return "Done changing working directory.\n";
     }
 
     @Override

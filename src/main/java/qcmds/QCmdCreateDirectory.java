@@ -44,12 +44,12 @@ public class QCmdCreateDirectory implements QCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "Creating directory on sdcard : " + filename;
+        return "Creating directory on SD card... " + filename;
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Done creating directory";
+        return "Done creating directory.\n";
     }
 
     @Override

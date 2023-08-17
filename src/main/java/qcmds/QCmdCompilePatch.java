@@ -37,15 +37,15 @@ public class QCmdCompilePatch extends QCmdShellTask {
 
     @Override
     public String GetStartMessage() {
-        return "Start compiling patch";
+        return "Compiling patch...";
     }
 
     @Override
     public String GetDoneMessage() {
         if (success) {
-            return "Done compiling patch";
+            return "Done compiling patch.\n";
         } else {
-            return "Compiling patch failed ( " + p.getFileNamePath() + " ) ";
+            return "Patch compilation failed: " + p.getFileNamePath() + "\n";
         }
     }
     

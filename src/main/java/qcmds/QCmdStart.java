@@ -43,11 +43,11 @@ public class QCmdStart implements QCmdSerialTask {
 
     @Override
     public String GetDoneMessage() {
-        return "Done starting patch";
+        return "Done starting patch.\n";
     }
 
     public String GetTimeOutMessage() {
-        return "patch start taking too long, disconnecting";
+        return "Patch start taking too long, disconnecting...\n";
     }
 
     @Override

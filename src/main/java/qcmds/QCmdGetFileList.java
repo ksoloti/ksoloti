@@ -35,9 +35,9 @@ public class QCmdGetFileList implements QCmdSerialTask {
     @Override
     public String GetDoneMessage() {
         if (done) {
-            return "Finished receiving sdcard file list";
+            return "Done receiving SD card file list.\n";
         } else {
-            return "Incomplete sdcard file list...";
+            return "Incomplete SD card file list...";
         }
     }
 

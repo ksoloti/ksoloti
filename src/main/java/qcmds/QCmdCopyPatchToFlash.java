@@ -41,12 +41,12 @@ public class QCmdCopyPatchToFlash implements QCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "Start writing patch to flash";
+        return "Writing patch to flash...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Done writing patch to flash";
+        return "Done writing patch to flash.\n";
     }
 
 }

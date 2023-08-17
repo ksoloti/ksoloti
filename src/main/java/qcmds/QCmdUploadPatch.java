@@ -44,12 +44,12 @@ public class QCmdUploadPatch implements QCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "Start uploading patch";
+        return "Uploading patch...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Done uploading patch";
+        return "Done uploading patch.\n";
     }
 
     @Override

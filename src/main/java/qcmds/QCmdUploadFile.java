@@ -63,15 +63,15 @@ public class QCmdUploadFile implements QCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "Start uploading file to SD card: " + filename;
+        return "Uploading file to SD card... " + filename;
     }
 
     @Override
     public String GetDoneMessage() {
         if (success) {
-            return "Done uploading file";
+            return "Done uploading file.\n";
         } else {
-            return "Failed uploading file";
+            return "Failed uploading file.\n";
         }
     }
 

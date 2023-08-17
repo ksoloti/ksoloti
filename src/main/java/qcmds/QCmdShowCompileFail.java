@@ -33,12 +33,12 @@ public class QCmdShowCompileFail implements QCmdGUITask {
 
     @Override
     public String GetStartMessage() {
-        return "Start reporting compile faillure";
+        return "Reporting compile failure...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Done reporting compile faillure";
+        return "Done reporting compile failure.\n";
     }
 
     @Override

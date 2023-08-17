@@ -31,14 +31,14 @@ public class QCmdCompileFirmware extends QCmdShellTask {
 
     @Override
     public String GetStartMessage() {
-        return "Start compiling firmware";
+        return "Compiling firmware...";
     }
 
     @Override
     public String GetDoneMessage() {
         MainFrame.mainframe.updateLinkFirmwareID();
         MainFrame.mainframe.WarnedAboutFWCRCMismatch = false;
-        return "Done compiling firmware";
+        return "Done compiling firmware.\n";
     }
     
     @Override
