@@ -240,7 +240,7 @@ public class VSliderComponent extends ACtrlComponent {
         if (isEnabled()) {
             g2.setPaint(Theme.getCurrentTheme().Component_Secondary);
             g2.fillRect(0, 0, getWidth(), height);
-            g2.setPaint(getForeground());
+            g2.setPaint(Theme.getCurrentTheme().Component_Primary);
             if (isFocusOwner()) {
                 g2.setStroke(strokeThick);
             } else {
@@ -249,8 +249,8 @@ public class VSliderComponent extends ACtrlComponent {
             g2.drawRect(0, 0, getWidth(), height);
             int p = ValToPos(value);
             int p1 = ValToPos(0);
-            //        g2.drawLine(1, p, 1, p1);
-            //        g2.drawLine(width -1, p, width -1, p1);
+            // g2.drawLine(1, p, 1, p1);
+            // g2.drawLine(width -1, p, width -1, p1);
             if (p1 - p > 0) {
                 g2.fillRect(3, p, width - 5, p1 - p + 1);
             } else {
@@ -258,7 +258,7 @@ public class VSliderComponent extends ACtrlComponent {
             }
 
             g2.setStroke(strokeThin);
-            g2.drawLine(0, p, getWidth(), p);
+            g2.drawLine(0, p1, getWidth(), p1);
             //String s = String.format("%5.2f", value);
             //Rectangle2D r = g2.getFontMetrics().getStringBounds(s, g);
             //g2.drawString(s, bwidth+(margin/2)-(int)(0.5 + r.getWidth()/2), getHeight());

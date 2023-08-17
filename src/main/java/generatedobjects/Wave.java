@@ -48,7 +48,7 @@ public class Wave extends gentools {
     }
 
     static AxoObject Create_playWaveMono() {
-        AxoObject o = new AxoObject("play", "streaming playback of a mono .wav file from sdcard (testing)");
+        AxoObject o = new AxoObject("play", "streaming playback of a mono .wav file from SD card (testing)");
         o.inlets.add(new InletFrac32("pos", "position"));
         o.inlets.add(new InletBool32Rising("start", "trigger"));
         o.inlets.add(new InletBool32Rising("stop", "trigger"));
@@ -99,7 +99,7 @@ public class Wave extends gentools {
     }
 
     static AxoObject Create_playWaveMono_fn() {
-        AxoObject o = new AxoObject("play fn", "streaming playback of a mono .wav file from sdcard (testing). Direct filename.");
+        AxoObject o = new AxoObject("play fn", "streaming playback of a mono .wav file from SD card (testing). Direct filename.");
         o.inlets.add(new InletFrac32("pos", "position"));
         o.inlets.add(new InletBool32Rising("start", "trigger"));
         o.inlets.add(new InletBool32Rising("stop", "trigger"));
@@ -152,7 +152,7 @@ public class Wave extends gentools {
     }
 
     static AxoObject Create_playWaveStereo() {
-        AxoObject o = new AxoObject("play stereo", "streaming playback of a stereo .wav file from sdcard (testing)");
+        AxoObject o = new AxoObject("play stereo", "streaming playback of a stereo .wav file from SD card (testing)");
         o.inlets.add(new InletFrac32("pos", "position"));
         o.inlets.add(new InletBool32Rising("start", "trigger"));
         o.inlets.add(new InletBool32Rising("stop", "trigger"));
@@ -210,7 +210,7 @@ public class Wave extends gentools {
     }
 
     static AxoObject Create_playWaveStereo_fn() {
-        AxoObject o = new AxoObject("play fn stereo", "streaming playback of a stereo .wav file from sdcard (testing)");
+        AxoObject o = new AxoObject("play fn stereo", "streaming playback of a stereo .wav file from SD card (testing)");
         o.inlets.add(new InletFrac32("pos", "position"));
         o.inlets.add(new InletBool32Rising("start", "trigger"));
         o.inlets.add(new InletBool32Rising("stop", "trigger"));
@@ -270,7 +270,7 @@ public class Wave extends gentools {
     }
 
     static AxoObject Create_playWaveStereo_fn_32() {
-        AxoObject o = new AxoObject("play fn stereo 32", "streaming playback of a stereo 32bit .wav file from sdcard (testing)");
+        AxoObject o = new AxoObject("play fn stereo 32", "streaming playback of a stereo 32bit .wav file from SD card (testing)");
         o.inlets.add(new InletFrac32("pos", "position"));
         o.inlets.add(new InletBool32Rising("start", "trigger"));
         o.inlets.add(new InletBool32Rising("stop", "trigger"));
@@ -342,7 +342,7 @@ public class Wave extends gentools {
     }
 
     static AxoObject Create_playWaveStereoPoly() {
-        AxoObject o = new AxoObject("play stereo poly", "streaming playback of a stereo .wav file from sdcard. Special version for polyphonic subpatches! (testing)");
+        AxoObject o = new AxoObject("play stereo poly", "streaming playback of a stereo .wav file from SD card. Special version for polyphonic subpatches! (testing)");
         o.inlets.add(new InletFrac32("pos", "position"));
         o.inlets.add(new InletBool32Rising("start", "trigger"));
         o.inlets.add(new InletBool32Rising("stop", "trigger"));
@@ -432,7 +432,7 @@ public class Wave extends gentools {
     }
 
     static AxoObject Create_recWave2() {
-        AxoObject o = new AxoObject("record", "streaming recording of a mono RAW audio file from sdcard (BROKEN: clicks)");
+        AxoObject o = new AxoObject("record", "streaming recording of a mono RAW audio file from SD card (BROKEN: clicks)");
         o.inlets.add(new InletBool32Rising("open", "open file for recording"));
         o.inlets.add(new InletBool32Rising("start", "start recording"));
         o.inlets.add(new InletBool32Rising("stop", "stop recording and close file"));
@@ -532,7 +532,7 @@ public class Wave extends gentools {
     }
 
     static AxoObject Create_Benchmark() {
-        AxoObject o = new AxoObject("sdbenchmark", "sdcard benchmark");
+        AxoObject o = new AxoObject("sdbenchmark", "SD card benchmark");
         o.includes.add("./sdbenchmark.h");
         o.sInitCode = "sdbenchmark();\n";
         return o;

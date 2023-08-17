@@ -364,7 +364,7 @@ public class DialComponent extends ACtrlComponent {
             g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
         }
         g2.fillOval(1, 1, radius * 2 - 2, radius * 2 - 2);
-        g2.setPaint(getForeground());
+        g2.setPaint(Theme.getCurrentTheme().Component_Primary);
         g2.drawOval(1, 1, radius * 2 - 2, radius * 2 - 2);
         if (isEnabled()) {
             double th = 0.75 * Math.PI + (value - min) * (1.5 * Math.PI) / (max - min);
@@ -373,6 +373,7 @@ public class DialComponent extends ACtrlComponent {
             g2.drawLine(radius, radius, radius + x, radius + y);
             if (keybBuffer.isEmpty()) {
                 String s = String.format("%5.2f", value);
+                g2.setPaint(getForeground());
                 g2.setFont(Constants.FONT);
                 g2.drawString(s, 0, getSize().height);
             } else {

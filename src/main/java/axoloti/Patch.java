@@ -2272,7 +2272,7 @@ public class Patch {
         } catch (IOException ex) {
             Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, ex.toString());
         }
-        Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Generate code complete");
+        Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Done generating code");
     }
 
     public void Compile() {

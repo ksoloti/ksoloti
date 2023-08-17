@@ -298,7 +298,7 @@ public class NumberBoxComponent extends ACtrlComponent {
         }
 
         g2.fillRect(0, 0, getWidth(), getHeight());
-        g2.setPaint(getForeground());
+        g2.setPaint(Theme.getCurrentTheme().Component_Primary);
         g2.drawRect(0, 0, getWidth(), getHeight());
 
         String s;

@@ -78,7 +78,7 @@ public class VGraphComponent extends JComponent {
         g2.fillRect(0, 0, length + 2, vsize + 2);
         g2.setPaint(Theme.getCurrentTheme().Patch_Unlocked_Background);
         g2.drawLine(0, y0, length, y0);
-        g2.setPaint(getForeground());
+        g2.setPaint(Theme.getCurrentTheme().Component_Primary);
         g2.drawRect(0, 0, length + 2, vsize + 2);
         g2.setStroke(strokeThin);
         //if (index > 1) {

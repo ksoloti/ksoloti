@@ -25,7 +25,7 @@
       </params>
       <attribs/>
    </obj>
-   <comment type="comment" name="file test.wav in root of sdcard" x="200" y="140"/>
+   <comment type="comment" name="file test.wav in root of SD card" x="200" y="140"/>
    <comment type="comment" name="sdcard must be inserted already before powering on the axoloti core!" x="200" y="160"/>
    <nets>
       <net>

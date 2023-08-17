@@ -520,7 +520,7 @@ public class Table extends gentools {
     }
 
     static AxoObject SaveTable() {
-        AxoObject o = new AxoObject("save", "save table to sdcard");
+        AxoObject o = new AxoObject("save", "save table to SD card");
         o.attributes.add(new AxoAttributeObjRef("table"));
         o.inlets.add(new InletCharPtr32("filename", "file name"));
         o.inlets.add(new InletBool32Rising("trig", "trigger"));
@@ -557,7 +557,7 @@ public class Table extends gentools {
     }
 
     static AxoObject LoadTable() {
-        AxoObject o = new AxoObject("load", "load table from sdcard");
+        AxoObject o = new AxoObject("load", "load table from SD card");
         o.attributes.add(new AxoAttributeObjRef("table"));
         o.inlets.add(new InletCharPtr32("filename", "file name"));
         o.inlets.add(new InletBool32Rising("trig", "trigger"));

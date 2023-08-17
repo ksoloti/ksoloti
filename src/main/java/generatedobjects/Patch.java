@@ -269,7 +269,7 @@ public class Patch extends gentools {
     }
 
     static AxoObject CreateLoadPatch() {
-        AxoObject o = new AxoObject("load", "load a patch from sdcard");
+        AxoObject o = new AxoObject("load", "load a patch from SD card");
         o.inlets.add(new InletBool32Rising("trig", "trigger"));
         o.attributes.add(new AxoAttributeTablename("filename"));
         o.sLocalData = "int ntrig;\n";
@@ -280,7 +280,7 @@ public class Patch extends gentools {
     }
 
     static AxoObject CreateLoadPatchIndexed() {
-        AxoObject o = new AxoObject("load i", "load a patch from sdcard, index in patch bank file");
+        AxoObject o = new AxoObject("load i", "load a patch from SD card, index in patch bank file");
         o.inlets.add(new InletInt32Pos("i", "index"));
         o.inlets.add(new InletBool32Rising("trig", "trigger"));
         o.sLocalData = "int ntrig;\n";
@@ -291,7 +291,7 @@ public class Patch extends gentools {
     }    
     
     static AxoObject CreateLoadPatchFn() {
-        AxoObject o = new AxoObject("load fn", "load a patch from sdcard");
+        AxoObject o = new AxoObject("load fn", "load a patch from SD card");
         o.inlets.add(new InletBool32Rising("trig", "trigger"));
         o.inlets.add(new InletCharPtr32("fn", "filename"));
         o.sLocalData = "int ntrig;\n";

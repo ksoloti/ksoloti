@@ -170,7 +170,7 @@ public class HRadioComponent extends ACtrlComponent {
             g2.fillOval(i * bsize, 0, bsize, bsize);
         }
 
-        g2.setPaint(getForeground());
+        g2.setPaint(Theme.getCurrentTheme().Component_Primary);
         if (isFocusOwner()) {
             g2.setStroke(strokeThick);
         }

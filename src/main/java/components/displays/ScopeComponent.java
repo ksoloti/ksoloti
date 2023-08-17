@@ -64,7 +64,7 @@ public class ScopeComponent extends ADispComponent {
         g2.setStroke(strokeThick);
         g2.setColor(Theme.getCurrentTheme().Component_Secondary);
         g2.fillRect(0, 0, length + 2, vsize + 2);
-        g2.setPaint(getForeground());
+        g2.setPaint(Theme.getCurrentTheme().Component_Primary);
         g2.drawRect(0, 0, length + 2, vsize + 2);
         g2.setStroke(strokeThin);
         if (index > 1) {
