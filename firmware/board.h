@@ -585,8 +585,8 @@
  * PD9  - PIN9                      fmc // seb floating
  * PD10 - PIN10                     fmc // seb floating
  * PD11 - PIN11                     (input pullup).
- * PD12 - LED4                      (output pushpull maximum).
- * PD13 - LED3                      (output pushpull maximum).
+ * PD12 - PIN12                     SPILINK detector.
+ * PD13 - PIN13                     (output pushpull maximum).
  * PD14 - PIN14                     fmc
  * PD15 - PIN15                     fmc
  */
@@ -602,7 +602,7 @@
                                      PIN_MODE_ALTERNATE(GPIOD_PIN9) |       \
                                      PIN_MODE_ALTERNATE(GPIOD_PIN10) |      \
                                      PIN_MODE_INPUT(GPIOD_PIN11) |          \
-                                     PIN_MODE_OUTPUT(GPIOD_PIN12) |          \
+                                     PIN_MODE_INPUT(GPIOD_PIN12) |          \
                                      PIN_MODE_OUTPUT(GPIOD_PIN13) |          \
                                      PIN_MODE_ALTERNATE(GPIOD_PIN14) |      \
                                      PIN_MODE_ALTERNATE(GPIOD_PIN15))
@@ -650,7 +650,7 @@
                                      PIN_PUPDR_FLOATING(GPIOD_PIN9) |         \
                                      PIN_PUPDR_FLOATING(GPIOD_PIN10) |        \
                                      PIN_PUPDR_PULLUP(GPIOD_PIN11) |        \
-                                     PIN_PUPDR_FLOATING(GPIOD_PIN12) |       \
+                                     PIN_PUPDR_PULLUP(GPIOD_PIN12) |       \
                                      PIN_PUPDR_FLOATING(GPIOD_PIN13) |       \
                                      PIN_PUPDR_FLOATING(GPIOD_PIN14) |      \
                                      PIN_PUPDR_FLOATING(GPIOD_PIN15))

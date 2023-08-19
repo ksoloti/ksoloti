@@ -97,14 +97,10 @@ int main(void) {
 
   InitPConnection();
 
-  // display SPI CS?
-  // SEB not sure what this is for
-  // palSetPadMode(GPIOC, 1, PAL_MODE_OUTPUT_PUSHPULL);
-  // palSetPad(GPIOC, 1);
-
   chThdSleepMilliseconds(10);
 
-  palSetPadMode(SW2_PORT, SW2_PIN, PAL_MODE_INPUT_PULLDOWN);
+  /* Pull up SPILINK detector (HIGH means MASTER i.e. regular operation) */
+  palSetPadMode(GPIOD, 12, PAL_MODE_INPUT_PULLUP);
 
   axoloti_board_init();
   adc_init();
