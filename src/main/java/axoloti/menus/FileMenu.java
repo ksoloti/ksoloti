@@ -81,7 +81,7 @@ public class FileMenu extends JMenu {
         jMenuNewPatch.setMnemonic('N');
         jMenuNewPatch.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
                 KeyUtils.CONTROL_OR_CMD_MASK));
-        jMenuNewPatch.setText("New patch");
+        jMenuNewPatch.setText("New Patch");
         jMenuNewPatch.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -93,7 +93,7 @@ public class FileMenu extends JMenu {
         jMenuNewBank.setMnemonic('B');
         jMenuNewBank.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
                 KeyUtils.CONTROL_OR_CMD_MASK));
-        jMenuNewBank.setText("New patch bank");
+        jMenuNewBank.setText("New Patch Bank");
         jMenuNewBank.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -291,6 +291,7 @@ public class FileMenu extends JMenu {
         PatchGUI patch1 = new PatchGUI();
         PatchFrame pf = new PatchFrame(patch1, QCmdProcessor.getQCmdProcessor());
         patch1.PostContructor();
+        pf.setLocation((int)pf.getLocation().getX() + 240 , (int)pf.getLocation().getY() + 160);
         patch1.setFileNamePath("untitled");
         pf.setVisible(true);
     }
