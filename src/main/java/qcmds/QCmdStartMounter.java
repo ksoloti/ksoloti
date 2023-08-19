@@ -39,7 +39,7 @@ public class QCmdStartMounter extends QCmdStart {
 
     @Override
     public String GetTimeOutMessage() {
-        return "SD card mounter active, editor connection not possible. Unmount/eject the SD card volume in Explorer or Finder to enable editor connection again.\n";
+        return "While SD card mounter is active, Patcher connection is not possible.\nUnmount/eject the SD card volume in your file manager to re-enable editor connection.";
     }
 
 }
