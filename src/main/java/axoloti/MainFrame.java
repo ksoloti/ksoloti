@@ -259,7 +259,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
 
         jMenuItemEnterDFU.setVisible(Axoloti.isDeveloper());
-        jMenuItemFlashDefault.setVisible(!(Axoloti.isDeveloper())); // When in Developer mode, make default Flash option invisible avoid confusion
+        /* When in Developer mode, make default
+           Flash option invisible to avoid confusion */
+        jMenuItemFlashDefault.setVisible(!(Axoloti.isDeveloper()));
         jMenuItemFlashUser.setVisible(Axoloti.isDeveloper());
         jMenuItemFCompile.setVisible(Axoloti.isDeveloper());
         jDevSeparator.setVisible(Axoloti.isDeveloper());
@@ -279,9 +281,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Firmware directory is invalid:{0}, does it exist?", System.getProperty(Axoloti.FIRMWARE_DIR));
         }
 
-        // do NOT do any serious initialisation in constructor
-        // as a stalling error could prevent event loop running and our logging
-        // console opening
+        /* Do NOT do any serious initialisation in constructor
+         * as a stalling error could prevent event loop running and our logging
+         * console opening
+         */
         Runnable initr;
         initr = new Runnable() {
             @Override
@@ -449,7 +452,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelColumn3 = new javax.swing.JPanel();
         jLabelIcon = new javax.swing.JLabel();
         jButtonClear = new javax.swing.JButton();
-        // jCheckBoxConnect = new javax.swing.JCheckBox();
         jToggleButtonConnect = new javax.swing.JToggleButton();
         jLabelCPUID = new javax.swing.JLabel();
         jLabelFirmwareID = new javax.swing.JLabel();
@@ -488,7 +490,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jLabel1.setText("jLabel1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Ksoloti");
+        setTitle("Axoloti");
         setMinimumSize(new java.awt.Dimension(300, 200));
         setPreferredSize(new java.awt.Dimension(600, 400));
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -512,18 +514,17 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelColumn2.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jPanelColumn2.setLayout(new javax.swing.BoxLayout(jPanelColumn2, javax.swing.BoxLayout.PAGE_AXIS));
 
-        // jCheckBoxConnect.setText("Connect");
+        jToggleButtonConnect.setFocusable(false);
         jToggleButtonConnect.setText("   Connect   ");
-        // jCheckBoxConnect.addActionListener(new java.awt.event.ActionListener() {
         jToggleButtonConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 // jCheckBoxConnectActionPerformed(evt);
                 jToggleButtonConnectActionPerformed(evt);
             }
         });
-        // jPanelColumn2.add(jCheckBoxConnect);
         jPanelColumn2.add(jToggleButtonConnect);
 
+        jButtonClear.setFocusable(false);
         jButtonClear.setText("  Clear Log  ");
         jButtonClear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -556,8 +557,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         getContentPane().add(jPanelHeader);
 
-        jScrollPaneLog.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-        jScrollPaneLog.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        jScrollPaneLog.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        jScrollPaneLog.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         jTextPaneLog.setEditable(false);
         jScrollPaneLog.setViewportView(jTextPaneLog);
@@ -608,8 +609,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuBoard.add(jMenuItemSelectCom);
 
         jMenuItemFConnect.setMnemonic('C');
-        jMenuItemFConnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
-            KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
+        // jMenuItemFConnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
+        // KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuItemFConnect.setText("Connect");
         jMenuItemFConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -619,8 +620,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuBoard.add(jMenuItemFConnect);
 
         jMenuItemFDisconnect.setMnemonic('D');
-        jMenuItemFDisconnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
-            KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
+        // jMenuItemFDisconnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
+        // KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuItemFDisconnect.setText("Disconnect");
         jMenuItemFDisconnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -767,8 +768,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }//GEN-LAST:event_jCheckBoxConnectActionPerformed
 
     PreferencesFrame pp;
-// usually we run all tests, as many may fail for same reason and you want
-// a list of all affected files, but if you want to stop on first failure, flip this flag
+    /* usually we run all tests, as many may fail for same reason and you want
+       a list of all affected files, but if you want to stop on first failure,
+       flip this flag */
     public static boolean stopOnFirstFail = false;
 
     public boolean runAllTests() {
@@ -1023,7 +1025,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.Box.Filler filler3;
     private axoloti.menus.HelpMenu helpMenu1;
     private javax.swing.JButton jButtonClear;
-    // private javax.swing.JCheckBox jCheckBoxConnect;
     private javax.swing.JToggleButton jToggleButtonConnect;
     private javax.swing.JPopupMenu.Separator jDevSeparator;
     private javax.swing.JLabel jLabel1;
@@ -1143,7 +1144,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     public void updateLinkFirmwareID() {
         LinkFirmwareID = FirmwareID.getFirmwareID();
-        //TargetFirmwareID = LinkFirmwareID;
+        // TargetFirmwareID = LinkFirmwareID;
         jLabelFirmwareID.setText("Firmware ID: " + LinkFirmwareID);
         Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Link to firmware CRC {0}", LinkFirmwareID);
         WarnedAboutFWCRCMismatch = false;
