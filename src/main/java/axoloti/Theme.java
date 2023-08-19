@@ -89,7 +89,7 @@ public class Theme {
     @Element
     public Color Cable_Zombie = Color.WHITE;
     @Element
-    public Color Cable_Frac32 = Color.BLUE;
+    public Color Cable_Frac32 = new Color(0.15f, 0.25f, 1.0f);
     @Element
     public Color Cable_Frac32Buffer = Color.RED;
     @Element
@@ -124,7 +124,7 @@ public class Theme {
     @Element
     public Color Parameter_Default_Foreground = Color.BLACK;
     @Element
-    public Color Parameter_On_Parent_Highlight = Color.BLUE;
+    public Color Parameter_On_Parent_Highlight = Cable_Frac32;
     @Element
     public Color Parameter_Preset_Highlight = new Color(0.5f, 0.5f, 0.0f);
 

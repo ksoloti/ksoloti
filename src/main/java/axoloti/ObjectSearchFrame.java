@@ -211,6 +211,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 }
                 else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_LEFT)
                 {
+                    jResultList.clearSelection();
                     jTextFieldObjName.grabFocus();
                 }
             }
