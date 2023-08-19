@@ -58,7 +58,7 @@ public class VisibleCablePanel extends javax.swing.JPanel {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
-        jLabel3 = new javax.swing.JLabel();
+        jLabelVisibleCables = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jCheckBox1 = new javax.swing.JCheckBox();
         jCheckBox2 = new javax.swing.JCheckBox();
@@ -70,12 +70,12 @@ public class VisibleCablePanel extends javax.swing.JPanel {
         setAlignmentX(0.0F);
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jLabel3.setText("Visible Cables");
-        jLabel3.setAlignmentX(0.5F);
-        jLabel3.setMaximumSize(null);
-        jLabel3.setMinimumSize(null);
-        jLabel3.setPreferredSize(null);
-        add(jLabel3);
+        jLabelVisibleCables.setText("Visible Cables");
+        jLabelVisibleCables.setAlignmentX(0.5F);
+        jLabelVisibleCables.setMaximumSize(null);
+        jLabelVisibleCables.setMinimumSize(null);
+        jLabelVisibleCables.setPreferredSize(null);
+        add(jLabelVisibleCables);
 
         jPanel2.setMaximumSize(null);
         jPanel2.setMinimumSize(null);
@@ -165,7 +165,7 @@ public class VisibleCablePanel extends javax.swing.JPanel {
     private javax.swing.JCheckBox jCheckBox5;
     private javax.swing.JCheckBox jCheckBox6;
     private javax.swing.JCheckBox jCheckBox7;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabelVisibleCables;
     private javax.swing.JPanel jPanel2;
     // End of variables declaration//GEN-END:variables
 }

@@ -20,9 +20,13 @@ package axoloti.menus;
 import axoloti.DocumentWindow;
 import axoloti.DocumentWindowList;
 import axoloti.MainFrame;
+import axoloti.utils.KeyUtils;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import javax.swing.KeyStroke;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -119,6 +123,8 @@ public class WindowMenu extends JMenu {
         }
         {
             WindowMenuItem a = new WindowMenuItem(MainFrame.mainframe.getKeyboard(), "Keyboard");
+            a.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
+            KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
             a.setMnemonic('K');
             jMenuWindow.add(a);
         }
