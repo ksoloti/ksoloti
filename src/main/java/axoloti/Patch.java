@@ -302,7 +302,7 @@ public class Patch {
         GetQCmdProcessor().AppendToQueue(new QCmdStop());
         if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
             String f = "/" + getSDCardPath();
-            //System.out.println("pathf" + f);
+            // System.out.println("pathf" + f);
             if (SDCardInfo.getInstance().find(f) == null) {
                 GetQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(f));
             }
@@ -382,9 +382,9 @@ public class Patch {
             if ((t != null) && (!t.providesModulationSource())) {
                 o.patch = this;
                 o.PostConstructor();
-                //System.out.println("Obj added " + o.getInstanceName());
+                // System.out.println("Obj added " + o.getInstanceName());
             } else if (t == null) {
-                //o.patch = this;
+                // o.patch = this;
                 objectinstances.remove(o);
                 AxoObjectInstanceZombie zombie = new AxoObjectInstanceZombie(new AxoObjectZombie(), this, o.getInstanceName(), new Point(o.getX(), o.getY()));
                 zombie.patch = this;

@@ -94,7 +94,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jScrollPane1.getHorizontalScrollBar().setUnitIncrement(Constants.X_GRID / 2);
 
         JMenuItem menuItem = new JMenuItem(new DefaultEditorKit.CutAction());
-        menuItem.setMnemonic('T');
+        menuItem.setMnemonic('X');
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, 
                 KeyUtils.CONTROL_OR_CMD_MASK));
         menuItem.setText("Cut");
@@ -151,7 +151,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
         });
         menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
-        menuItem.setMnemonic('T');
+        menuItem.setMnemonic('V');
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, 
                 KeyUtils.CONTROL_OR_CMD_MASK));
         menuItem.setText("Paste");
@@ -330,6 +330,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuEdit = new javax.swing.JMenu();
         undoItem = new javax.swing.JMenuItem();
         redoItem = new javax.swing.JMenuItem();
+        jMenuItemDuplicate = new javax.swing.JMenuItem();
         jMenuItemDelete = new javax.swing.JMenuItem();
         jMenuItemSelectAll = new javax.swing.JMenuItem();
         jMenuItemAddObj = new javax.swing.JMenuItem();
@@ -423,8 +424,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         getContentPane().add(jToolbarPanel);
 
-        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         jScrollPane1.setAutoscrolls(true);
         getContentPane().add(jScrollPane1);
 
@@ -516,7 +517,17 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuEdit.add(redoItem);
 
-        jMenuItemDelete.setMnemonic('D');
+        jMenuItemDuplicate.setMnemonic('D');
+        jMenuItemDuplicate.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, KeyUtils.CONTROL_OR_CMD_MASK));
+        jMenuItemDuplicate.setText("Duplicate");
+        jMenuEdit.add(jMenuItemDuplicate);
+        jMenuItemDuplicate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemDuplicateActionPerformed(evt);
+            }
+        });
+
+        jMenuItemDelete.setMnemonic('E');
         jMenuItemDelete.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
         jMenuItemDelete.setText("Delete");
         jMenuItemDelete.addActionListener(new java.awt.event.ActionListener() {
@@ -737,7 +748,49 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
     }//GEN-LAST:event_jToggleButtonLiveActionPerformed
 
-    private void jMenuSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuSaveActionPerformed
+    private void jMenuCopyActionPerformed(java.awt.event.ActionEvent evt)
+    {
+        Patch p = patch.GetSelectedObjects();
+        if (p.objectinstances.isEmpty())
+        {
+            getToolkit().getSystemClipboard().setContents(new StringSelection(""), null);
+            return;
+        }
+        p.PreSerialize();
+        Serializer serializer = new Persister();
+        try
+        {
+            Clipboard clip = getToolkit().getSystemClipboard();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            serializer.write(p, baos);
+            StringSelection s = new StringSelection(baos.toString());
+            clip.setContents(s, (ClipboardOwner)null);
+        }
+        catch (Exception ex)
+        {
+            Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void jMenuPasteActionPerformed(java.awt.event.ActionEvent evt)
+    {
+        Clipboard clip = getToolkit().getSystemClipboard();
+        try
+        {
+            patch.paste((String)clip.getData(DataFlavor.stringFlavor), null, false);
+        }
+        catch (UnsupportedFlavorException ex)
+        {
+            Logger.getLogger(PatchFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (IOException ex)
+        {
+            Logger.getLogger(PatchFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void jMenuSaveActionPerformed(java.awt.event.ActionEvent evt)
+    { //GEN-FIRST:event_jMenuSaveActionPerformed
         String fn = patch.getFileNamePath();
         if ((fn != null) && (!fn.equals("untitled"))) {
             File f = new File(fn);
@@ -903,7 +956,16 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         AskClose();
     }//GEN-LAST:event_formWindowClosing
 
-    private void jMenuItemDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemDeleteActionPerformed
+    private void jMenuItemDuplicateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemDuplicateActionPerformed
+        if (patch.IsLocked()) {
+            return;
+        }
+        jMenuCopyActionPerformed(evt);
+        jMenuPasteActionPerformed(evt);
+    }//GEN-LAST:event_jMenuItemDuplicateActionPerformed
+
+    private void jMenuItemDeleteActionPerformed(java.awt.event.ActionEvent evt)
+    { //GEN-FIRST:event_jMenuItemDeleteActionPerformed
         patch.deleteSelectedAxoObjInstances();
     }//GEN-LAST:event_jMenuItemDeleteActionPerformed
 
@@ -1036,7 +1098,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
             int n = JOptionPane.showOptionDialog(this,
                     "This is a subpatch intended to be used by a main patch and possibly has no output. \nDo you still want to take it live?",
-                    "Axoloti asks:",
+                    "File is Subpatch",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
                     null,
@@ -1073,6 +1135,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JMenuItem jMenuItemAddObj;
     private javax.swing.JMenuItem jMenuItemAdjScroll;
     private javax.swing.JMenuItem jMenuItemClearPreset;
+    private javax.swing.JMenuItem jMenuItemDuplicate;
     private javax.swing.JMenuItem jMenuItemDelete;
     private javax.swing.JMenuItem jMenuItemDifferenceToPreset;
     private javax.swing.JMenuItem jMenuItemLock;
