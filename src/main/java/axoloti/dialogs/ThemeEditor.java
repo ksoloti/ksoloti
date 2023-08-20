@@ -28,7 +28,7 @@ public class ThemeEditor extends JFrame {
     private JPanel p;
 
     public ThemeEditor() {
-        this.setPreferredSize(new Dimension(1000, 1000));
+        this.setPreferredSize(new Dimension(600, 600));
         theme = Theme.getCurrentTheme();
         p = new JPanel();
         JScrollPane s = new JScrollPane(p,
@@ -84,7 +84,7 @@ public class ThemeEditor extends JFrame {
             }
         });
 
-        final JButton revertToDefault = new JButton("Load Default");
+        final JButton revertToDefault = new JButton("Revert to Default");
         revertToDefault.addMouseListener(new MouseListener() {
             public void mouseClicked(MouseEvent e) {
                 Theme.loadDefaultTheme();
@@ -112,9 +112,7 @@ public class ThemeEditor extends JFrame {
         p.add(load);
         p.add(save);
         p.add(revertToDefault);
-        p.add(new JPanel());
-        p.add(new JLabel("Note: reload patch to see changes."));
-        p.add(new JPanel());
+        p.add(new JLabel("   Note: reload patch to see changes."));
         p.add(new JPanel());
         p.add(new JPanel());
 
@@ -141,6 +139,8 @@ public class ThemeEditor extends JFrame {
                             updateThemeName(e);
                         }
                     });
+                    p.add(new JPanel());
+                    p.add(new JPanel());
                 } else {
                     final JButton t = new JButton();
                     t.setBorder(BorderFactory.createLineBorder(getBackground(), 2));

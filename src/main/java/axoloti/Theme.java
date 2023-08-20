@@ -37,7 +37,7 @@ public class Theme {
                 panelBackground.getBlue(), panelBackground.getAlpha());
         panelForeground= new Color(panelForeground.getRed(), panelForeground.getGreen(), 
                 panelForeground.getBlue(), panelForeground.getAlpha());
-        this.Label_Text = labelForeground;
+        this.Object_Label_Text = labelForeground;
         // this.Object_TitleBar_Foreground = labelForeground;
         this.Object_Default_Background = panelBackground;
         this.Parameter_Default_Background = panelBackground;
@@ -73,11 +73,11 @@ public class Theme {
     @Element
     public Color Error_Text = Color.RED;
     @Element
-    public Color Normal_Text = Color.BLACK;
+    public Color Console_Normal_Text = Color.BLACK;
     @Element
-    public Color Warning_Text = Color.BLUE;
+    public Color Console_Warning_Text = Color.BLUE;
     @Element
-    public Color Label_Text;
+    public Color Object_Label_Text;
 
     /* Nets */
     @Element
