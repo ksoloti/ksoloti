@@ -74,6 +74,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private VisibleCablePanel visibleCablePanel;
 
     public PatchFrame(final PatchGUI patch, QCmdProcessor qcmdprocessor) {
+        setMinimumSize(new java.awt.Dimension(200,120));
         setIconImage(new ImageIcon(getClass().getResource("/resources/axoloti_icon.png")).getImage());
         this.qcmdprocessor = qcmdprocessor;
         initComponents();

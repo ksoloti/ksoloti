@@ -29,15 +29,19 @@ public class Theme {
         super();
         Color labelForeground = (new JLabel()).getForeground();
         Color panelBackground = (new JPanel()).getBackground();
+        Color panelForeground = (new JPanel()).getForeground();
         // ensure we don't have ColorUIResource instances
         labelForeground = new Color(labelForeground.getRed(), labelForeground.getGreen(), 
                 labelForeground.getBlue(), labelForeground.getAlpha());
         panelBackground= new Color(panelBackground.getRed(), panelBackground.getGreen(), 
                 panelBackground.getBlue(), panelBackground.getAlpha());
+        panelForeground= new Color(panelForeground.getRed(), panelForeground.getGreen(), 
+                panelForeground.getBlue(), panelForeground.getAlpha());
         this.Label_Text = labelForeground;
-        this.Object_TitleBar_Foreground = labelForeground;
+        // this.Object_TitleBar_Foreground = labelForeground;
         this.Object_Default_Background = panelBackground;
         this.Parameter_Default_Background = panelBackground;
+        this.Parameter_Default_Foreground = panelForeground;
     }
 
     private static final Registry REGISTRY = new Registry();
@@ -57,27 +61,25 @@ public class Theme {
     @Element
     public String Theme_Name = "Default";
 
-// backgrounds
+    /* Backgrounds */
+    @Element
+    public Color Console_Background = Color.WHITE;
     @Element
     public Color Patch_Unlocked_Background = Color.LIGHT_GRAY;
     @Element
     public Color Patch_Locked_Background = Color.DARK_GRAY;
 
-// text    
+    /* Text */
     @Element
     public Color Error_Text = Color.RED;
     @Element
     public Color Normal_Text = Color.BLACK;
     @Element
-    public Color Inverted_Text = Color.WHITE;
-    @Element
     public Color Warning_Text = Color.BLUE;
-    @Element
-    public Color Console_Background = Color.WHITE;
     @Element
     public Color Label_Text;
 
-// nets
+    /* Nets */
     @Element
     public Color Cable_Default = Color.DARK_GRAY;
     @Element
@@ -89,7 +91,7 @@ public class Theme {
     @Element
     public Color Cable_Zombie = Color.WHITE;
     @Element
-    public Color Cable_Frac32 = new Color(0.15f, 0.25f, 1.0f);
+    public Color Cable_Frac32 = new Color(0.15f, 0.25f, 1.0f); /* Medium light blue */
     @Element
     public Color Cable_Frac32Buffer = Color.RED;
     @Element
@@ -101,11 +103,11 @@ public class Theme {
     @Element
     public Color Cable_Int8Pointer = Color.MAGENTA;
 
-    // objects
+    /* Objects */
     @Element
     public Color Object_Default_Background;
     @Element
-    public Color Object_TitleBar_Background = Color.getHSBColor(0.f, 0.0f, 0.5f);
+    public Color Object_TitleBar_Background = Color.GRAY;
     @Element
     public Color Object_TitleBar_Subpatch_Background = new Color(0.3f, 0.4f, 0.8f);
     @Element
@@ -122,7 +124,7 @@ public class Theme {
     @Element
     public Color Parameter_Default_Background;
     @Element
-    public Color Parameter_Default_Foreground = Color.BLACK;
+    public Color Parameter_Default_Foreground;
     @Element
     public Color Parameter_On_Parent_Highlight = Cable_Frac32;
     @Element

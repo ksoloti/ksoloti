@@ -340,7 +340,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
     @Override
     JPopupMenu CreatePopupMenu() {
         JPopupMenu popup = super.CreatePopupMenu();
-        JMenuItem popm_edit = new JMenuItem("edit object definition");
+        JMenuItem popm_edit = new JMenuItem("Edit object definition");
         popm_edit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -348,7 +348,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
             }
         });
         popup.add(popm_edit);
-        JMenuItem popm_editInstanceName = new JMenuItem("edit instance name");
+        JMenuItem popm_editInstanceName = new JMenuItem("Edit instance name");
         popm_editInstanceName.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -356,7 +356,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
             }
         });
         popup.add(popm_editInstanceName);
-        JMenuItem popm_substitute = new JMenuItem("replace");
+        JMenuItem popm_substitute = new JMenuItem("Replace");
         popm_substitute.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -365,7 +365,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
         });
         popup.add(popm_substitute);
         if (getType().GetHelpPatchFile() != null) {
-            JMenuItem popm_help = new JMenuItem("help");
+            JMenuItem popm_help = new JMenuItem("Help patch");
             popm_help.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
@@ -375,7 +375,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
             popup.add(popm_help);
         }
         if (MainFrame.prefs.getExpertMode()) {
-            JMenuItem popm_adapt = new JMenuItem("adapt homonym");
+            JMenuItem popm_adapt = new JMenuItem("Adapt homonym");
             popm_adapt.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
@@ -386,7 +386,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
         }
 
         if (type instanceof AxoObjectFromPatch) {
-            JMenuItem popm_embed = new JMenuItem("embed as patch/patcher");
+            JMenuItem popm_embed = new JMenuItem("Embed as patch/patcher");
             popm_embed.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
@@ -395,7 +395,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
             });
             popup.add(popm_embed);
         } else if (!(this instanceof AxoObjectInstancePatcherObject)) {
-            JMenuItem popm_embed = new JMenuItem("embed as patch/object");
+            JMenuItem popm_embed = new JMenuItem("Embed as patch/object");
             popm_embed.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {

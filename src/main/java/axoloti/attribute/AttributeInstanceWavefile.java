@@ -132,7 +132,7 @@ public class AttributeInstanceWavefile extends AttributeInstance<AxoAttributeWav
         String s = " {";
         File fp = new File(GetObjectInstance().getPatch().getFileNamePath());
         File f = new File(fp.getParent() + "/" + waveFilename);
-        System.out.println("waveFilename : " + fp.getParent() + "/" + waveFilename + "\n");
+        System.out.println("waveFilename: " + fp.getParent() + "/" + waveFilename + "\n");
 
         try {
             AudioFileFormat af = AudioSystem.getAudioFileFormat(f);

@@ -267,18 +267,18 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jDevSeparator.setVisible(Axoloti.isDeveloper());
 
         if (!TestDir(HOME_DIR, true)) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Home directory is invalid:{0}, does it exist?, can it be written to?", System.getProperty(Axoloti.HOME_DIR));
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid home directory: {0} - Does it exist? Can it be written to?", System.getProperty(Axoloti.HOME_DIR));
         }
 
         if (!TestDir(RELEASE_DIR, false)) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Release directory is invalid:{0}, does it exist?", System.getProperty(Axoloti.RELEASE_DIR));
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid release directory: {0} - Does it exist?", System.getProperty(Axoloti.RELEASE_DIR));
         }
         if (!TestDir(RUNTIME_DIR, false)) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Runtime directory is invalid:{0}, is the runtime installed? correctly?", System.getProperty(Axoloti.RUNTIME_DIR));
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid runtime directory: {0} - Is the runtime installed correctly?", System.getProperty(Axoloti.RUNTIME_DIR));
         }
 
         if (!TestDir(FIRMWARE_DIR, false)) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Firmware directory is invalid:{0}, does it exist?", System.getProperty(Axoloti.FIRMWARE_DIR));
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid firmware directory: {0} - Does it exist?", System.getProperty(Axoloti.FIRMWARE_DIR));
         }
 
         /* Do NOT do any serious initialisation in constructor
@@ -321,7 +321,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
-                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current community library does not match specified version: {0} -> {1}", new Object[]{cb, ulib.getBranch()});
+                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current community library does not match specified version: {0} <-> {1}", new Object[]{cb, ulib.getBranch()});
                             int s = JOptionPane.showConfirmDialog(MainFrame.this,
                                     "Community library version mismatch detected. Do you want to upgrade now?\n"
                                     + "This will stash any local changes and reapply them to the new version.\n"
@@ -429,10 +429,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
                 qcmdprocessor.AppendToQueue(new QCmdStartFlasher());
             } else {
-                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Can''t read firmware, please compile firmware! (file: {0} )", pname);
+                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Can''t read firmware, please compile firmware! (File: {0})", pname);
             }
         } else {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Can''t read flasher, please compile firmware! (file: {0} )", fname_flasher);
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Can''t read flasher, please compile firmware! (File: {0})", fname_flasher);
         }
     }
 
@@ -491,7 +491,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Axoloti");
-        setMinimumSize(new java.awt.Dimension(300, 200));
+        setMinimumSize(new java.awt.Dimension(320, 180));
         setPreferredSize(new java.awt.Dimension(600, 400));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -537,7 +537,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelColumn3.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jPanelColumn3.setLayout(new javax.swing.BoxLayout(jPanelColumn3, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jLabelCPUID.setText("CPUID");
+        jLabelCPUID.setText("CPU ID");
         jPanelColumn3.add(jLabelCPUID);
 
         jLabelFirmwareID.setText("Firmware ID");
