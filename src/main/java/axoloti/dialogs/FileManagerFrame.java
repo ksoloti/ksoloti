@@ -265,7 +265,10 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         jFileTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jFileTable);
         if (jFileTable.getColumnModel().getColumnCount() > 0) {
-            jFileTable.getColumnModel().getColumn(2).setPreferredWidth(80);
+            jFileTable.getColumnModel().getColumn(0).setPreferredWidth(240);
+            jFileTable.getColumnModel().getColumn(1).setPreferredWidth(30);
+            jFileTable.getColumnModel().getColumn(2).setPreferredWidth(30);
+            jFileTable.getColumnModel().getColumn(3).setPreferredWidth(60);
         }
 
         jButton1Refresh.setText("Refresh");
@@ -315,12 +318,15 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jButton1Refresh)
                 .addGap(29, 29, 29)
                 .addComponent(jLabelSDInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 353, Short.MAX_VALUE)
+                .addContainerGap()
+            )
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
+
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButtonDelete)
@@ -328,21 +334,27 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 .addComponent(jButtonUpload)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonCreateDir)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            )
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1Refresh, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelSDInfo))
+                    .addComponent(jLabelSDInfo)
+                )
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonDelete)
                     .addComponent(jButtonUpload)
-                    .addComponent(jButtonCreateDir))
+                    .addComponent(jButtonCreateDir)
+                )
                 .addGap(5, 5, 5))
         );
 
@@ -399,20 +411,33 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
         int rowIndex = jFileTable.getSelectedRow();
-        QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
+
         if (rowIndex >= 0) {
+
             SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
-            if (!f.isDirectory()) {
-                processor.AppendToQueue(new QCmdDeleteFile(f.getFilename()));
-            } else {
-                String ff = f.getFilename();
-                if (ff.endsWith("/")) {
-                    ff = ff.substring(0, ff.length() - 1);
+            String ff = f.getFilename();
+
+            int n = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete \"" + ff + "\"?",
+                                                  "Warning", JOptionPane.YES_NO_OPTION);
+
+            switch (n) {
+                case JOptionPane.YES_OPTION: {
+                    QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
+                    if (!f.isDirectory()) {
+                        processor.AppendToQueue(new QCmdDeleteFile(f.getFilename()));
+                    } else {
+                        if (ff.endsWith("/")) {
+                            ff = ff.substring(0, ff.length() - 1);
+                        }
+                        processor.AppendToQueue(new QCmdDeleteFile(ff));
+                    }
+                        break;
                 }
-                processor.AppendToQueue(new QCmdDeleteFile(ff));
+                case JOptionPane.NO_OPTION: {
+                    break;
+                }
             }
         }
-        jFileTable.clearSelection();
     }//GEN-LAST:event_jButtonDeleteActionPerformed
 
     private void jButtonCreateDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCreateDirActionPerformed

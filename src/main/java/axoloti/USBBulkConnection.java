@@ -323,7 +323,7 @@ public class USBBulkConnection extends Connection {
                     }
                     Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Authentic {0}", s);
                 } else {
-                    Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "Can''t validate authenticity, signature invalid!");
+                    Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "Can''t validate authenticity, signature invalid.");
                 }
             }
 
@@ -1449,7 +1449,7 @@ public class USBBulkConnection extends Connection {
                     case 11:
                         patchentrypoint += (cc & 0xFF);
                         String sFwcrc = String.format("%08X", fwcrc);
-                        Logger.getLogger(USBBulkConnection.class.getName()).info(String.format("Firmware version: %d.%d.%d.%d, crc=0x%s, entrypoint=0x%08X",
+                        Logger.getLogger(USBBulkConnection.class.getName()).info(String.format("Firmware version: %d.%d.%d.%d, CRC: 0x%s, entry point: 0x%08X",
                                 fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc, patchentrypoint));
                         MainFrame.mainframe.setFirmwareID(sFwcrc);
                         GoIdleState();
