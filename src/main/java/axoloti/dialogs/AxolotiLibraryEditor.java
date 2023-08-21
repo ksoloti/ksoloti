@@ -90,18 +90,18 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
     private void initComponents() {
 
         jTypeCombo = new javax.swing.JComboBox();
-        jLabel1 = new javax.swing.JLabel();
+        jLabelType = new javax.swing.JLabel();
         jId = new javax.swing.JTextField();
         jLocalDir = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        jLabelId = new javax.swing.JLabel();
+        jLabelDirectory = new javax.swing.JLabel();
         jRemotePath = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        jLabelRemotePath = new javax.swing.JLabel();
+        jLabelRemoteLibrary = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         jUserId = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
+        jLabelUserId = new javax.swing.JLabel();
+        jLabelPassword = new javax.swing.JLabel();
         jEnabled = new javax.swing.JCheckBox();
         jPassword = new javax.swing.JPasswordField();
         jOK = new javax.swing.JButton();
@@ -110,11 +110,11 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
         jAutoSync = new javax.swing.JCheckBox();
         jSelectDirBtn = new javax.swing.JButton();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 3), new java.awt.Dimension(0, 3), new java.awt.Dimension(32767, 3));
-        jLabel8 = new javax.swing.JLabel();
+        jLabelRevision = new javax.swing.JLabel();
         jRevision = new javax.swing.JTextField();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
+        jLabelContributorsOnly = new javax.swing.JLabel();
+        jLabelTypeOptional = new javax.swing.JLabel();
+        jLabelTypeContributorPrefix = new javax.swing.JLabel();
         jPrefix = new javax.swing.JTextField();
         jSyncBtn = new javax.swing.JButton();
 
@@ -127,29 +127,30 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
             }
         });
 
-        jLabel1.setText("Type");
+        jLabelType.setText("Type");
 
         jId.setMinimumSize(new java.awt.Dimension(100, 28));
         jId.setPreferredSize(new java.awt.Dimension(100, 28));
 
         jLocalDir.setPreferredSize(new java.awt.Dimension(400, 28));
 
-        jLabel2.setText("Id");
+        jLabelId.setText("ID");
 
-        jLabel3.setText("Directory");
+        jLabelDirectory.setText("Directory");
 
         jRemotePath.setPreferredSize(new java.awt.Dimension(400, 28));
 
-        jLabel4.setText("Remote Path");
+        jLabelRemotePath.setMinimumSize(new java.awt.Dimension(100, 28));
+        jLabelRemotePath.setText("Remote Path");
 
-        jLabel5.setText("Remote Library");
+        jLabelRemoteLibrary.setText("Remote Library");
 
         jUserId.setMinimumSize(new java.awt.Dimension(14, 50));
         jUserId.setPreferredSize(new java.awt.Dimension(150, 28));
 
-        jLabel6.setText("User Id");
+        jLabelUserId.setText("User Id");
 
-        jLabel7.setText("Password");
+        jLabelPassword.setText("Password");
 
         jEnabled.setText("Enabled");
 
@@ -181,7 +182,7 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
 
         jAutoSync.setText("Auto Sync");
 
-        jSelectDirBtn.setText("Select");
+        jSelectDirBtn.setText("Browse...");
         jSelectDirBtn.setDefaultCapable(false);
         jSelectDirBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -189,16 +190,16 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
             }
         });
 
-        jLabel8.setText("Revision");
+        jLabelRevision.setText("Revision");
 
         jRevision.setMinimumSize(new java.awt.Dimension(100, 28));
         jRevision.setPreferredSize(new java.awt.Dimension(100, 28));
 
-        jLabel9.setText("Contributors only:");
+        jLabelContributorsOnly.setText("Contributors only:");
 
-        jLabel10.setText("(optional)");
+        jLabelTypeOptional.setText("(optional)");
 
-        jLabel11.setText("Contributor Prefix");
+        jLabelTypeContributorPrefix.setText("Contributor Prefix");
 
         jPrefix.setPreferredSize(new java.awt.Dimension(100, 28));
 
@@ -212,8 +213,11 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
+
         layout.setHorizontalGroup(
+
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+
             .addGroup(layout.createSequentialGroup()
                 .addGap(17, 17, 17)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -221,50 +225,58 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jCancel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jOK))
+                        .addComponent(jOK)
+                    )
+
                     .addComponent(jSeparator1)
+
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel8))
+                                    .addComponent(jLabelRemotePath, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabelRevision))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jRevision, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel10)
+                                        .addComponent(jLabelTypeOptional)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(jAutoSync))
                                     .addComponent(jRemotePath, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelContributorsOnly, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel11)
+                                        .addComponent(jLabelTypeContributorPrefix)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jPrefix, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel6)
+                                        .addComponent(jLabelUserId)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jUserId, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel7)
+                                .addComponent(jLabelPassword)
                                 .addGap(1, 1, 1)
-                                .addComponent(jPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        )
+
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jInitRepo, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jSyncBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jSyncBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        )
+                    )
                     .addGroup(layout.createSequentialGroup()
                         .addGap(1, 1, 1)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jLabelType)
+                                    .addComponent(jLabelId)
+                                    .addComponent(jLabelDirectory, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(layout.createSequentialGroup()
@@ -275,78 +287,154 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
                                         .addComponent(jEnabled))
                                     .addComponent(jLocalDir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jSelectDirBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jSelectDirBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
-                .addContainerGap())
+                                .addComponent(jLabelRemoteLibrary, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                )
+                .addContainerGap()
+            )
+
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 306, Short.MAX_VALUE)
                     .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 306, Short.MAX_VALUE)))
+                    .addGap(0, 306, Short.MAX_VALUE))
+            )
         );
+
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTypeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addComponent(jLabelType)
+                )
+
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2)
-                    .addComponent(jEnabled))
+                    .addComponent(jLabelId)
+                    .addComponent(jEnabled)
+                )
+
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLocalDir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3)
-                    .addComponent(jSelectDirBtn))
+                    .addComponent(jLabelDirectory)
+                    .addComponent(jSelectDirBtn)
+                )
+
                 .addGap(18, 18, 18)
+
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+
+                .addComponent(jLabelRemoteLibrary, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelRemotePath, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jRemotePath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jInitRepo))
+                    .addComponent(jInitRepo)
+                )
+
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
+                    .addComponent(jLabelRevision)
                     .addComponent(jRevision, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jAutoSync)
-                    .addComponent(jLabel10)
-                    .addComponent(jSyncBtn))
+                    .addComponent(jLabelTypeOptional)
+                    .addComponent(jSyncBtn)
+                )
+
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
-                .addComponent(jLabel9)
+                .addComponent(jLabelContributorsOnly)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11)
-                    .addComponent(jPrefix, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabelTypeContributorPrefix)
+                    .addComponent(jPrefix, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                )
+
                 .addGap(2, 2, 2)
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jUserId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
+                    .addComponent(jLabelUserId)
                     .addComponent(jPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7))
+                    .addComponent(jLabelPassword)
+                )
+
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jOK)
-                    .addComponent(jCancel))
-                .addGap(19, 19, 19))
+                    .addComponent(jCancel)
+                )
+
+                .addGap(19, 19, 19)
+            )
+
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 198, Short.MAX_VALUE)
                     .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 198, Short.MAX_VALUE)))
+                    .addGap(0, 198, Short.MAX_VALUE)
+                )
+            )
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTypeComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTypeComboActionPerformed
+
+        /* Lazy hack to make library edit screen a bit less overwhelming */
+        if ((String)jTypeCombo.getSelectedItem() == "local") {
+            /* Grey out Git part of settings window */
+            jLabelRemotePath.setVisible(false);
+            jRemotePath.setVisible(false);
+            jLabelRemoteLibrary.setVisible(false);
+            jLabelUserId.setVisible(false);
+            jUserId.setVisible(false);
+            jLabelUserId.setVisible(false);
+            jLabelPassword.setVisible(false);
+            jPassword.setVisible(false);
+            jLabelContributorsOnly.setVisible(false);
+            jLabelTypeOptional.setVisible(false);
+            jLabelTypeContributorPrefix.setVisible(false);
+            jPrefix.setVisible(false);
+            jRevision.setVisible(false);
+            jLabelRevision.setVisible(false);
+            jInitRepo.setVisible(false);
+            jAutoSync.setVisible(false);
+            jSyncBtn.setVisible(false);
+        } else {
+            jLabelRemotePath.setVisible(true);
+            jRemotePath.setVisible(true);
+            jLabelRemoteLibrary.setVisible(true);
+            jLabelUserId.setVisible(true);
+            jUserId.setVisible(true);
+            jLabelUserId.setVisible(true);
+            jLabelPassword.setVisible(true);
+            jPassword.setVisible(true);
+            jLabelContributorsOnly.setVisible(true);
+            jLabelTypeOptional.setVisible(true);
+            jLabelTypeContributorPrefix.setVisible(true);
+            jPrefix.setVisible(true);
+            jRevision.setVisible(true);
+            jLabelRevision.setVisible(true);
+            jInitRepo.setVisible(true);
+            jAutoSync.setVisible(true);
+            jSyncBtn.setVisible(true);
+        }
     }//GEN-LAST:event_jTypeComboActionPerformed
 
     private void jOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jOKActionPerformed
@@ -390,7 +478,7 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
     private void jInitRepoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jInitRepoActionPerformed
         boolean delete;
         int options = JOptionPane.OK_CANCEL_OPTION;
-        int res = JOptionPane.showConfirmDialog(this, "Init will delete existing directory\n Continue?", "Warning", options);
+        int res = JOptionPane.showConfirmDialog(this, "Init will delete/overwrite the existing directory.\nContinue?", "Warning", options);
         if (res == JOptionPane.CANCEL_OPTION) {
             return;
         }
@@ -409,6 +497,7 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
 
         File seldir = new File(dir).getParentFile();
         JFileChooser fc = new JFileChooser(seldir);
+        fc.setPreferredSize(new java.awt.Dimension(320, 480));
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fc.setFileFilter(new FileFilter() {
             @Override
@@ -461,17 +550,17 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
     private javax.swing.JCheckBox jEnabled;
     private javax.swing.JTextField jId;
     private javax.swing.JButton jInitRepo;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabelType;
+    private javax.swing.JLabel jLabelTypeOptional;
+    private javax.swing.JLabel jLabelTypeContributorPrefix;
+    private javax.swing.JLabel jLabelId;
+    private javax.swing.JLabel jLabelDirectory;
+    private javax.swing.JLabel jLabelRemotePath;
+    private javax.swing.JLabel jLabelRemoteLibrary;
+    private javax.swing.JLabel jLabelUserId;
+    private javax.swing.JLabel jLabelPassword;
+    private javax.swing.JLabel jLabelRevision;
+    private javax.swing.JLabel jLabelContributorsOnly;
     private javax.swing.JTextField jLocalDir;
     private javax.swing.JButton jOK;
     private javax.swing.JPasswordField jPassword;

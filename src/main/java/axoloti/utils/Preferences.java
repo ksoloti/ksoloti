@@ -42,7 +42,7 @@ public class Preferences {
     @Element(required = false)
     String CurrentFileDirectory;
 
-    // search path will be removed from persistance, 
+    // search path will be removed from persistence, 
     // here for compatibility only
     @Deprecated
     @Element(required = false)
@@ -248,7 +248,7 @@ public class Preferences {
                         Logger.getLogger(Preferences.class
                                 .getName()).log(Level.SEVERE, null, ex);
                         Logger.getLogger(Preferences.class
-                                .getName()).log(Level.INFO,"Attempt to load preferenced in relaxed mode");
+                                .getName()).log(Level.INFO,"Attempting to load preferences in relaxed mode");
                         prefs = serializer.read(Preferences.class, p,false);
                     } catch (Exception ex1) {
                         Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, ex1);
@@ -295,7 +295,7 @@ public class Preferences {
         File f = new File(GetPrefsFileLoc());
 
         Logger.getLogger(Preferences.class
-                .getName()).log(Level.INFO, "preferences path : {0}", f.getAbsolutePath());
+                .getName()).log(Level.INFO, "Preferences path: {0}", f.getAbsolutePath());
 
         try {
             serializer.write(this, f);

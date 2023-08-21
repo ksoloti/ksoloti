@@ -54,20 +54,26 @@ public class PreferencesFrame extends javax.swing.JFrame {
      *
      */
     private PreferencesFrame() {
-        initComponents();
-        Preferences prefs = Preferences.LoadPreferences();
-        jTextFieldPollInterval.setText(Integer.toString(prefs.getPollInterval()));
 
+        setTitle("Preferences");
+
+        initComponents();
+
+        Preferences prefs = Preferences.LoadPreferences();
+
+        jTextFieldPollInterval.setText(Integer.toString(prefs.getPollInterval()));
         txtFavDir.setText(prefs.getFavouriteDir());
         txtFirmwareDir.setText(System.getProperty(axoloti.Axoloti.FIRMWARE_DIR));
         txtRuntimeDir.setText(System.getProperty(axoloti.Axoloti.RUNTIME_DIR));
         jControllerEnabled.setSelected(prefs.isControllerEnabled());
         jTextFieldController.setText(prefs.getControllerObject());
         jTextFieldController.setEnabled(prefs.isControllerEnabled());
+
         PopulateLibrary();
 
-        //double click to edit library
+        /* Double click to edit library */
         jLibraryTable.addMouseListener(new MouseAdapter() {
+
             @Override
             public void mousePressed(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
@@ -80,46 +86,12 @@ public class PreferencesFrame extends javax.swing.JFrame {
                 }
             }
         });
-
-//        jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-//            @Override
-//            public void valueChanged(ListSelectionEvent e) {
-//                DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-//                int r = jTable1.getSelectedRow();
-//                if (r >= 0) {
-//                    String devName = (String) model.getValueAt(r, 1);
-//                    if (devName.equals(sAxolotiCore)) {
-//                        jButtonOK.setEnabled(true);
-//                        cpuid = (String) model.getValueAt(r, 3);
-//                    } else {
-//                        jButtonOK.setEnabled(false);
-//                    }
-//                } else {
-//                    cpuid = null;
-//                }
-//            }
-//        });
-//        
-//        jTable1.getModel().addTableModelListener(new TableModelListener() {
-//
-//            @Override
-//            public void tableChanged(TableModelEvent e) {
-//                int row = e.getFirstRow();
-//                int column = e.getColumn();
-//                if(column!=0) return;
-//                
-//                TableModel model = (TableModel)e.getSource();
-//                String name = (String) model.getValueAt(row, column);
-//                String cpuid = (String) ((DefaultTableModel) jTable1.getModel()).getValueAt(row, 3);
-//                Preferences prefs = MainFrame.mainframe.prefs;
-//                prefs.setBoardName(cpuid,name);
-//                prefs.SavePrefs();
-//            }
-//        });
     }
 
     void Apply() {
+
         Preferences prefs = Preferences.LoadPreferences();
+
         prefs.setPollInterval(Integer.parseInt(jTextFieldPollInterval.getText()));
         prefs.setMouseDialAngular(jComboBoxDialMouseBehaviour.getSelectedItem().equals("Angular"));
         prefs.setFavouriteDir(txtFavDir.getText());
@@ -128,7 +100,9 @@ public class PreferencesFrame extends javax.swing.JFrame {
     }
 
     final void PopulateLibrary() {
+
         DefaultTableModel model = (DefaultTableModel) jLibraryTable.getModel();
+
         model.setRowCount(0);
         while (model.getRowCount() > 0) {
             model.removeRow(0);
@@ -137,6 +111,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         for (AxolotiLibrary lib : Preferences.LoadPreferences().getLibraries()) {
             model.addRow(new Object[]{lib.getType(), lib.getId(), lib.getLocalLocation(), lib.getEnabled()});
         }
+
         jLibraryTable.setCellSelectionEnabled(false);
         jLibraryTable.setRowSelectionAllowed(true);
     }
@@ -168,7 +143,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jLabelController = new javax.swing.JLabel();
         jTextFieldController = new javax.swing.JTextField();
         jControllerEnabled = new javax.swing.JCheckBox();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        jScrollPaneLibraryTable = new javax.swing.JScrollPane();
         jLibraryTable = new javax.swing.JTable();
         jAddLibBtn = new javax.swing.JButton();
         jDelLibBtn = new javax.swing.JButton();
@@ -219,23 +194,24 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
         txtRuntimeDir.setText("test");
 
-        btnFirmwareDir.setText("Select");
+        txtFavDir.setText("test");
+
+        btnFirmwareDir.setText("Browse...");
         btnFirmwareDir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnFirmwareDirActionPerformed(evt);
             }
         });
 
-        btnRuntimeDir.setText("Select");
+        btnRuntimeDir.setText("Browse...");
         btnRuntimeDir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnRuntimeDirActionPerformed(evt);
             }
         });
 
-        txtFavDir.setText("test");
 
-        btnFavDir.setText("Select");
+        btnFavDir.setText("Browse...");
         btnFavDir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnFavDirActionPerformed(evt);
@@ -278,16 +254,16 @@ public class PreferencesFrame extends javax.swing.JFrame {
         });
         jLibraryTable.setColumnSelectionAllowed(true);
         jLibraryTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane2.setViewportView(jLibraryTable);
+        jScrollPaneLibraryTable.setViewportView(jLibraryTable);
         jLibraryTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         if (jLibraryTable.getColumnModel().getColumnCount() > 0) {
-            jLibraryTable.getColumnModel().getColumn(0).setResizable(false);
-            jLibraryTable.getColumnModel().getColumn(0).setPreferredWidth(20);
-            jLibraryTable.getColumnModel().getColumn(1).setResizable(false);
-            jLibraryTable.getColumnModel().getColumn(1).setPreferredWidth(50);
-            jLibraryTable.getColumnModel().getColumn(2).setPreferredWidth(200);
-            jLibraryTable.getColumnModel().getColumn(3).setResizable(false);
-            jLibraryTable.getColumnModel().getColumn(3).setPreferredWidth(5);
+            // jLibraryTable.getColumnModel().getColumn(0).setResizable(false);
+            jLibraryTable.getColumnModel().getColumn(0).setPreferredWidth(10);
+            // jLibraryTable.getColumnModel().getColumn(1).setResizable(false);
+            jLibraryTable.getColumnModel().getColumn(1).setPreferredWidth(10);
+            jLibraryTable.getColumnModel().getColumn(2).setPreferredWidth(280);
+            // jLibraryTable.getColumnModel().getColumn(3).setResizable(false);
+            jLibraryTable.getColumnModel().getColumn(3).setPreferredWidth(10);
         }
 
         jAddLibBtn.setText("+");
@@ -347,135 +323,209 @@ public class PreferencesFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
 
         layout.setHorizontalGroup(
+
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabelFirmwareDir)
                             .addComponent(jLabelRuntimeDir)
                             .addComponent(jLabelFavouritesDir)
-                            .addComponent(jLabelLibraries))
+                            .addComponent(jLabelLibraries)
+                        )
                         .addGap(34, 34, 34)
+
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(txtFirmwareDir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(288, 288, 288))
+                                .addComponent(txtFirmwareDir, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                // .addGap(288, 288, 288)
+                            )
+
                             .addGroup(layout.createSequentialGroup()
+
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtRuntimeDir, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                    .addComponent(txtRuntimeDir, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                )
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            )
+                        )
+
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnRuntimeDir, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnFirmwareDir, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnRuntimeDir, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnFirmwareDir, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        )
                         .addGap(16, 16, 16))
+
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 674, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPaneLibraryTable, javax.swing.GroupLayout.PREFERRED_SIZE, 674, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jResetLib, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jResetLib, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLibStatus))
+                                .addComponent(jLibStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            )
+
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jAddLibBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jAddLibBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jDelLibBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jEditLib, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(14, Short.MAX_VALUE))
+                                .addComponent(jDelLibBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            )
+                            .addComponent(jEditLib, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        )
+                        .addContainerGap(14, Short.MAX_VALUE)
+                    )
+
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelController, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jTextFieldController, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(28, 28, 28)
                                 .addComponent(jControllerEnabled)
-                                .addGap(0, 0, Short.MAX_VALUE))
+                                .addGap(0, 0, Short.MAX_VALUE)
+                            )
+
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelTheme)
                                 .addGap(191, 191, 191)
-                                .addComponent(themeEditButton, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(themeEditButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButtonSave, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jButtonSave, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            )
+                        )
                         .addContainerGap())
+
                     .addGroup(layout.createSequentialGroup()
+
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jCheckBoxNoMouseReCenter, javax.swing.GroupLayout.PREFERRED_SIZE, 453, javax.swing.GroupLayout.PREFERRED_SIZE)
+
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelPollInterval, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextFieldPollInterval, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jTextFieldPollInterval, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            )
+
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelDialMouseBehaviour)
                                 .addGap(130, 130, 130)
-                                .addComponent(jComboBoxDialMouseBehaviour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                                .addComponent(jComboBoxDialMouseBehaviour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            )
+                        )
+                        .addGap(0, 0, Short.MAX_VALUE)
+                    )
+                )
+            )
         );
 
         layout.setVerticalGroup(
+
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnRuntimeDir)
                     .addComponent(txtRuntimeDir)
-                    .addComponent(jLabelRuntimeDir))
+                    .addComponent(jLabelRuntimeDir)
+                )
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelFirmwareDir)
                     .addComponent(txtFirmwareDir)
-                    .addComponent(btnFirmwareDir))
+                    .addComponent(btnFirmwareDir)
+                )
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtFavDir)
                     .addComponent(jLabelFavouritesDir)
-                    .addComponent(btnFavDir))
+                    .addComponent(btnFavDir)
+                )
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabelLibraries)
                 .addGap(24, 24, 24)
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+
                     .addGroup(layout.createSequentialGroup()
+
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jAddLibBtn)
-                            .addComponent(jDelLibBtn))
+                            .addComponent(jDelLibBtn)
+                        )
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jEditLib)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jResetLib)
-                            .addComponent(jLibStatus)))
+                            .addComponent(jLibStatus)
+                        )
+                    )
+
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPaneLibraryTable, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabelPollInterval)
-                            .addComponent(jTextFieldPollInterval, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jTextFieldPollInterval, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        )
+                    )
+                )
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jComboBoxDialMouseBehaviour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabelDialMouseBehaviour))
+                            .addComponent(jLabelDialMouseBehaviour)
+                        )
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBoxNoMouseReCenter)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabelController)
                             .addComponent(jTextFieldController, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jControllerEnabled))
+                            .addComponent(jControllerEnabled)
+                        )
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(themeEditButton)
-                            .addComponent(jLabelTheme))
-                        .addContainerGap(28, Short.MAX_VALUE))
+                            .addComponent(jLabelTheme)
+                        )
+                        .addContainerGap(28, Short.MAX_VALUE)
+                    )
+
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButtonSave)
-                        .addContainerGap())))
+                        .addContainerGap()
+                    )
+                )
+            )
         );
 
         pack();
@@ -492,6 +542,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
     private void btnFirmwareDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFirmwareDirActionPerformed
         JFileChooser chooser = new JFileChooser(Preferences.LoadPreferences().getCurrentFileDirectory());
+        chooser.setPreferredSize(new java.awt.Dimension(320, 480));
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -508,6 +559,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
     private void btnRuntimeDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRuntimeDirActionPerformed
         JFileChooser chooser = new JFileChooser(Preferences.LoadPreferences().getCurrentFileDirectory());
+        chooser.setPreferredSize(new java.awt.Dimension(320, 480));
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -529,6 +581,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
     private void btnFavDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFavDirActionPerformed
         JFileChooser chooser = new JFileChooser(Preferences.LoadPreferences().getCurrentFileDirectory());
+        chooser.setPreferredSize(new java.awt.Dimension(320,480));
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -564,21 +617,35 @@ public class PreferencesFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jAddLibBtnActionPerformed
 
     private void jDelLibBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jDelLibBtnActionPerformed
-        DefaultTableModel model = (DefaultTableModel) jLibraryTable.getModel();
+
+        DefaultTableModel model = (DefaultTableModel)jLibraryTable.getModel();
         int idx = jLibraryTable.getSelectedRow();
-        if (idx >= 0) {
-            String id = (String) model.getValueAt(idx, 1);
-            Preferences.LoadPreferences().removeLibrary(id);
+        String id = (String)model.getValueAt(idx, 1);
+
+        int n = JOptionPane.showConfirmDialog(this, "Are you sure you want to remove the library \"" + id + "\"?",
+                                             "Warning", JOptionPane.YES_NO_OPTION);
+        switch (n)
+        {
+            case JOptionPane.YES_OPTION: {
+                if (idx >= 0)
+                {
+                    Preferences.LoadPreferences().removeLibrary(id);
+                }
+
+                PopulateLibrary();
+                break;
+            }
+            case JOptionPane.NO_OPTION:
+                break;
         }
 
-        PopulateLibrary();
-    }//GEN-LAST:event_jDelLibBtnActionPerformed
+    } //GEN-LAST:event_jDelLibBtnActionPerformed
 
     private void jResetLibActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jResetLibActionPerformed
         boolean delete = false;
 
         int options = JOptionPane.OK_CANCEL_OPTION;
-        int res = JOptionPane.showConfirmDialog(this, "Reset will delete existing factory and contrib directories\n Continue?", "Warning", options);
+        int res = JOptionPane.showConfirmDialog(this, "Reset will delete existing factory and contrib directories.\nContinue?", "Warning", options);
         if (res == JOptionPane.CANCEL_OPTION) {
             return;
         }
@@ -659,7 +726,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JButton jLibStatus;
     private javax.swing.JTable jLibraryTable;
     private javax.swing.JButton jResetLib;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPaneLibraryTable;
     private javax.swing.JTextField jTextFieldController;
     private javax.swing.JTextField jTextFieldPollInterval;
     private javax.swing.JButton themeEditButton;
