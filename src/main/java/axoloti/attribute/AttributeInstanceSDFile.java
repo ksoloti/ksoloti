@@ -113,6 +113,7 @@ public class AttributeInstanceSDFile extends AttributeInstanceString<AxoAttribut
             @Override
             public void OnPushed() {
                 JFileChooser fc = new JFileChooser(GetObjectInstance().getPatch().GetCurrentWorkingDirectory());
+                fc.setPreferredSize(new java.awt.Dimension(640, 480));
                 int returnVal = fc.showOpenDialog(GetObjectInstance().getPatch().getPatchframe());
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     String f = toRelative(fc.getSelectedFile());

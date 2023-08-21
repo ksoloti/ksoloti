@@ -310,6 +310,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
     void SaveAs() {
         final JFileChooser fc = new JFileChooser(MainFrame.prefs.getCurrentFileDirectory());
+        fc.setPreferredSize(new java.awt.Dimension(640, 480));
         fc.setAcceptAllFileFilterUsed(false);
         FileFilter axb = new FileFilter() {
             @Override
@@ -734,6 +735,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
         JFileChooser fc = new JFileChooser(prefs.getCurrentFileDirectory());
+        fc.setPreferredSize(new java.awt.Dimension(640, 480));
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(new FileNameExtensionFilter("Axoloti Files", "axp"));
         fc.addChoosableFileFilter(axpFileFilter);

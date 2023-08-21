@@ -271,11 +271,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     public boolean AskClose() {
         if (patch.isDirty() && patch.container() == null) {
             Object[] options = {"Save",
-                "Don't save",
+                "Discard",
                 "Cancel"};
             int n = JOptionPane.showOptionDialog(this,
                     "Do you want to save changes to " + patch.getFileNamePath() + "?",
-                    "Axoloti asks:",
+                    "Unsaved Changes",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
                     null,
@@ -804,6 +804,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     File FileChooserSave() {
         final JFileChooser fc = new JFileChooser(MainFrame.prefs.getCurrentFileDirectory());
+        fc.setPreferredSize(new java.awt.Dimension(640, 480));
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(FileUtils.axpFileFilter);
         fc.addChoosableFileFilter(FileUtils.axsFileFilter);

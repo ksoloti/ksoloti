@@ -292,14 +292,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 try {
                     String tsuf = "";
                     if (Axoloti.isFailSafeMode()) {
-                        Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Fail safe mode activated");
-                        tsuf = "fail safe";
+                        Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Failsafe mode activated");
+                        tsuf = "Failsafe";
                     }
                     if (Axoloti.isDeveloper()) {
                         if (tsuf.length() > 0) {
                             tsuf += ",";
                         }
-                        tsuf += "developer";
+                        tsuf += "Developer";
                     }
                     if (tsuf.length() > 0) {
                         MainFrame.this.setTitle(MainFrame.this.getTitle() + " (" + tsuf + ")");

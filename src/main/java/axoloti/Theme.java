@@ -171,6 +171,7 @@ public class Theme {
 
     private File FileChooserSave(JFrame frame) {
         final JFileChooser fc = new JFileChooser(MainFrame.prefs.getCurrentFileDirectory());
+        fc.setPreferredSize(new java.awt.Dimension(640, 480));
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(FileUtils.axtFileFilter);
 
@@ -251,6 +252,7 @@ public class Theme {
 
     public JFileChooser GetFileChooser() {
         JFileChooser fc = new JFileChooser(prefs.getCurrentFileDirectory());
+        fc.setPreferredSize(new java.awt.Dimension(640, 480));
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(axtFileFilter);
         return fc;
