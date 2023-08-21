@@ -57,7 +57,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             reportStatus(git);
             git.getRepository().close();
         } else {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Status FAILED - cannot find submodule: {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Status FAILED - Cannot find submodule: {0}", logDetails());
         }
     }
 
@@ -135,7 +135,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             try {
                 Git git = cmd.call();
                 git.getRepository().close();
-                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Repo initialised successfully: {0}", logDetails());
+                Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Repo initialisation successful: {0}", logDetails());
             } catch (Exception ex) {
                 Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Repo initialisation FAILED: {0}", getId());
                 Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
