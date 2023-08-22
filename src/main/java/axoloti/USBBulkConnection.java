@@ -394,7 +394,24 @@ public class USBBulkConnection extends Connection {
         IntBuffer transfered = IntBuffer.allocate(1);
         int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 1000);
         if (result != LibUsb.SUCCESS) {
-            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "Control transfer failed: {0}", result);
+            String errstr;
+            switch (result) {
+            case -1: errstr = "input/output error"; break;
+            case -2: errstr = "invalid parameter"; break;
+            case -3: errstr = "access denied (insufficient permissions?)"; break;
+            case -4: errstr = "no such device (it may have been disconnected)"; break;
+            case -5: errstr = "device/entity not found"; break;
+            case -6: errstr = "resource busy"; break;
+            case -7: errstr = "operation timed out"; break;
+            case -8: errstr = "overflow"; break;
+            case -9: errstr = "pipe error"; break;
+            case -10: errstr = "system call interrupted"; break;
+            case -11: errstr = "insufficient memory"; break;
+            case -12: errstr = "operation not supported or unimplemented on this platform"; break;
+            default: errstr = Integer.toString(result); break;
+
+            }
+            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "Control transfer failed: " + errstr);
         }
         //System.out.println(transfered.get() + " bytes sent");
     }
