@@ -310,7 +310,7 @@ public class USBBulkConnection extends Connection {
             if (signature == null) {
                 Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Can''t obtain signature, upgrade firmware?");
             } else if ((signature.getInt(0) == 0xFFFFFFFF) && (signature.getInt(1) == 0xFFFFFFFF)) {
-                Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Cannot validate authenticity, no signature present.");
+                Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Can''t validate authenticity, no signature present.");
             } else {
                 signaturevalid = HWSignature.Verify(targetProfile.getCPUSerial(), otpInfo, bb2ba(signature));
                 if (signaturevalid) {
@@ -339,7 +339,7 @@ public class USBBulkConnection extends Connection {
                 zcrc.update(bb2ba(writeotpinfo));
                 zcrc.update(sign);
                 int zcrcv = (int) zcrc.getValue();
-                System.out.println(String.format("key crc: %08X", zcrcv));
+                System.out.println(String.format("Key crc: %08X", zcrcv));
                 byte crc[] = new byte[4];
                 crc[0] = (byte) (zcrcv & 0xFF);
                 crc[1] = (byte) ((zcrcv >> 8) & 0xFF);
@@ -359,9 +359,9 @@ public class USBBulkConnection extends Connection {
 
                 boolean signaturevalid2 = HWSignature.Verify(targetProfile.getCPUSerial(), otpInfo2, bb2ba(signature2));
                 if (signaturevalid2) {
-                    System.out.println("bpksram signature valid");
+                    System.out.println("BPKSRAM signature valid");
                 } else {
-                    System.out.println("bpksram signature INvalid");
+                    System.out.println("BPKSRAM signature invalid");
                     return false;
                 }
                 System.out.println("<otpinfo>");
@@ -396,19 +396,19 @@ public class USBBulkConnection extends Connection {
         if (result != LibUsb.SUCCESS) {
             String errstr;
             switch (result) {
-            case -1: errstr = "input/output error"; break;
-            case -2: errstr = "invalid parameter"; break;
-            case -3: errstr = "access denied (insufficient permissions?)"; break;
-            case -4: errstr = "no such device (it may have been disconnected)"; break;
-            case -5: errstr = "device/entity not found"; break;
-            case -6: errstr = "resource busy"; break;
-            case -7: errstr = "operation timed out"; break;
-            case -8: errstr = "overflow"; break;
-            case -9: errstr = "pipe error"; break;
+            case -1:  errstr = "input/output error"; break;
+            case -2:  errstr = "invalid parameter"; break;
+            case -3:  errstr = "access denied (insufficient permissions?)"; break;
+            case -4:  errstr = "no such device (it may have been disconnected)"; break;
+            case -5:  errstr = "device/entity not found"; break;
+            case -6:  errstr = "resource busy"; break;
+            case -7:  errstr = "operation timed out"; break;
+            case -8:  errstr = "overflow"; break;
+            case -9:  errstr = "pipe error"; break;
             case -10: errstr = "system call interrupted"; break;
             case -11: errstr = "insufficient memory"; break;
             case -12: errstr = "operation not supported or unimplemented on this platform"; break;
-            default: errstr = Integer.toString(result); break;
+            default:  errstr = Integer.toString(result); break;
 
             }
             Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "USB connection failed: " + errstr);

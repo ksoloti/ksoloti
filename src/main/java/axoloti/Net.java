@@ -253,7 +253,7 @@ public class Net extends JComponent {
             } else if (!dest.isEmpty()) {
                 p0 = dest.get(0).getJackLocInCanvas();
             } else {
-                throw new Error("empty nets should not exist");
+                throw new Error("Empty nets should not exist");
             }
         }
 
