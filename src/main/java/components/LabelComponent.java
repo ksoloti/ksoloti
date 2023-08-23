@@ -31,6 +31,6 @@ public class LabelComponent extends JLabel {
         super(text);
         setFont(Constants.FONT);
         setBackground(Theme.getCurrentTheme().Object_Default_Background);
-        setForeground(Theme.getCurrentTheme().Label_Text);
+        setForeground(Theme.getCurrentTheme().Object_Label_Text);
     }
 }

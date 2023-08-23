@@ -38,7 +38,7 @@ import axoloti.outlets.OutletInstance;
 import axoloti.parameters.*;
 import components.LabelComponent;
 import components.PopupIcon;
-import static java.awt.Component.LEFT_ALIGNMENT;
+// import static java.awt.Component.LEFT_ALIGNMENT;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;

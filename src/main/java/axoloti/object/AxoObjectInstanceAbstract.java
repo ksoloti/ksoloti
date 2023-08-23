@@ -54,7 +54,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
+// import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 import org.simpleframework.xml.Attribute;

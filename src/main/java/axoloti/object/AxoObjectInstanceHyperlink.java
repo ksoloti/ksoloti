@@ -23,7 +23,7 @@ import components.LabelComponent;
 import components.control.ACtrlEvent;
 import components.control.ACtrlListener;
 import components.control.PulseButtonComponent;
-import static java.awt.Component.LEFT_ALIGNMENT;
+// import static java.awt.Component.LEFT_ALIGNMENT;
 import java.awt.Desktop;
 import java.awt.Point;
 import java.awt.event.MouseEvent;

@@ -26,7 +26,7 @@ import axoloti.outlets.OutletFrac32Bipolar;
 import axoloti.outlets.OutletFrac32Buffer;
 import axoloti.outlets.OutletFrac32BufferBipolar;
 import axoloti.parameters.ParameterFrac32UMap;
-import static generatedobjects.gentools.WriteAxoObject;
+// import static generatedobjects.gentools.WriteAxoObject;
 import java.util.HashSet;
 
 /**

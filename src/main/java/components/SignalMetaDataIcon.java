@@ -19,7 +19,7 @@ package components;
 
 import axoloti.Theme;
 import axoloti.datatypes.SignalMetaData;
-import static axoloti.datatypes.SignalMetaData.bipolar;
+// import static axoloti.datatypes.SignalMetaData.bipolar;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics;

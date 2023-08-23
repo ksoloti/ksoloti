@@ -29,7 +29,7 @@ import axoloti.outlets.OutletCharPtr32;
 import axoloti.outlets.OutletFrac32;
 import axoloti.outlets.OutletFrac32Buffer;
 import axoloti.outlets.OutletInt32;
-import static generatedobjects.gentools.WriteAxoObject;
+// import static generatedobjects.gentools.WriteAxoObject;
 
 /**
  *

@@ -10,7 +10,7 @@ import axoloti.outlets.OutletInstance;
 import java.awt.Component;
 import java.awt.IllegalComponentStateException;
 import java.awt.Point;
-import java.awt.dnd.DropTarget;
+// import java.awt.dnd.DropTarget;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;

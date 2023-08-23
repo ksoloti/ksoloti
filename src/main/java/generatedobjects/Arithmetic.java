@@ -30,7 +30,7 @@ import axoloti.outlets.OutletFrac32Buffer;
 import axoloti.outlets.OutletInt32;
 import axoloti.parameters.ParameterFrac32UMapGain;
 import axoloti.parameters.ParameterFrac32UMapGain16;
-import static generatedobjects.gentools.WriteAxoObject;
+// import static generatedobjects.gentools.WriteAxoObject;
 import java.util.ArrayList;
 
 /**

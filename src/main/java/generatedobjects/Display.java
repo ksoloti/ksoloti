@@ -45,7 +45,7 @@ import axoloti.object.AxoObject;
 import axoloti.object.AxoObjectAbstract;
 import axoloti.outlets.OutletInt32Pos;
 import axoloti.parameters.ParameterFrac32UMap;
-import static generatedobjects.gentools.WriteAxoObject;
+// import static generatedobjects.gentools.WriteAxoObject;
 import java.util.ArrayList;
 
 /**

@@ -26,7 +26,7 @@ import axoloti.outlets.OutletInstance;
 import axoloti.outlets.OutletInstanceZombie;
 import components.LabelComponent;
 import components.PopupIcon;
-import static java.awt.Component.LEFT_ALIGNMENT;
+// import static java.awt.Component.LEFT_ALIGNMENT;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

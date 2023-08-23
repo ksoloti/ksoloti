@@ -23,7 +23,7 @@ import axoloti.PatchFrame;
 import axoloti.PatchGUI;
 import components.ButtonComponent;
 import components.ButtonComponent.ActListener;
-import java.awt.Component;
+// import java.awt.Component;
 import java.awt.Point;
 import org.simpleframework.xml.Element;
 

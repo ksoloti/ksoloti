@@ -20,7 +20,7 @@ package components;
 import axoloti.Theme;
 import axoloti.outlets.OutletInstance;
 import java.awt.BasicStroke;
-import static java.awt.Component.CENTER_ALIGNMENT;
+// import static java.awt.Component.CENTER_ALIGNMENT;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;

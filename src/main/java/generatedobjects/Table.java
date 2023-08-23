@@ -35,7 +35,7 @@ import axoloti.outlets.OutletFrac32Buffer;
 import axoloti.parameters.ParameterFrac32SMapPitch;
 import axoloti.parameters.ParameterFrac32SMapVSlider;
 import axoloti.parameters.ParameterInt32Box;
-import static generatedobjects.gentools.WriteAxoObject;
+// import static generatedobjects.gentools.WriteAxoObject;
 
 /**
  *

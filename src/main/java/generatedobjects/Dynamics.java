@@ -21,7 +21,7 @@ import axoloti.inlets.InletFrac32;
 import axoloti.object.AxoObject;
 import axoloti.outlets.OutletFrac32;
 import axoloti.parameters.ParameterFrac32UMap;
-import static generatedobjects.gentools.WriteAxoObject;
+// import static generatedobjects.gentools.WriteAxoObject;
 
 /**
  *

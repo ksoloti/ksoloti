@@ -32,7 +32,7 @@ import axoloti.parameters.ParameterFrac32SMapKLineTimeExp;
 import axoloti.parameters.ParameterFrac32SMapKLineTimeExp2;
 import axoloti.parameters.ParameterFrac32UMap;
 import axoloti.parameters.ParameterFrac32UMapKDecayTime;
-import static generatedobjects.gentools.WriteAxoObject;
+// import static generatedobjects.gentools.WriteAxoObject;
 
 /**
  *

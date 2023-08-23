@@ -24,13 +24,13 @@ import axoloti.realunits.NativeToReal;
 import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
-import java.awt.AWTException;
+// import java.awt.AWTException;
 import java.awt.BasicStroke;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.MouseInfo;
+// import java.awt.MouseInfo;
 import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.Stroke;
@@ -38,8 +38,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+// import java.util.logging.Level;
+// import java.util.logging.Logger;
 import java.text.ParseException;
 
 /**

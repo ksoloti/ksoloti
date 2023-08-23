@@ -21,7 +21,7 @@ import axoloti.attributedefinition.AxoAttributeTablename;
 import axoloti.inlets.InletInt32;
 import axoloti.object.AxoObject;
 import axoloti.outlets.OutletCharPtr32;
-import static generatedobjects.gentools.WriteAxoObject;
+// import static generatedobjects.gentools.WriteAxoObject;
 
 /**
  *

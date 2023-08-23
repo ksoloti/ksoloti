@@ -271,7 +271,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     public boolean AskClose() {
         if (patch.isDirty() && patch.container() == null) {
             Object[] options = {"Save",
-                "Discard",
+                "Don't Save",
                 "Cancel"};
             int n = JOptionPane.showOptionDialog(this,
                     "Do you want to save changes to " + patch.getFileNamePath() + "?",
@@ -411,7 +411,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jLabelDSPLoad.setText("DSP Load ");
         jToolbarPanel.add(jLabelDSPLoad);
 
-        jProgressBarDSPLoad.setToolTipText("");
+        jProgressBarDSPLoad.setToolTipText("CPU load of currently running patch");
         jProgressBarDSPLoad.setAlignmentX(0.0F);
         jProgressBarDSPLoad.setMaximumSize(new java.awt.Dimension(200, 20));
         jProgressBarDSPLoad.setMinimumSize(new java.awt.Dimension(60, 20));

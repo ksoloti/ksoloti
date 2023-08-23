@@ -31,7 +31,7 @@ import axoloti.parameters.ParameterFrac32SMapPitch;
 import axoloti.parameters.ParameterFrac32UMap;
 import axoloti.parameters.ParameterFrac32UMapFilterQ;
 import axoloti.parameters.ParameterInt32Box;
-import static generatedobjects.gentools.WriteAxoObject;
+// import static generatedobjects.gentools.WriteAxoObject;
 import java.util.HashSet;
 
 /**

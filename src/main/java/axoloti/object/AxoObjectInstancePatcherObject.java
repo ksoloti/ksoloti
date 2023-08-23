@@ -21,7 +21,7 @@ import axoloti.Patch;
 import axoloti.objecteditor.AxoObjectEditor;
 import components.ButtonComponent;
 import components.ButtonComponent.ActListener;
-import java.awt.Component;
+// import java.awt.Component;
 import java.awt.Point;
 import javax.swing.SwingUtilities;
 import org.simpleframework.xml.Element;

@@ -47,7 +47,7 @@ import qcmds.QCmdProcessor;
 import qcmds.QCmdSerialTask;
 import qcmds.QCmdSerialTaskNull;
 import qcmds.QCmdShowDisconnect;
-import qcmds.QCmdStop;
+// import qcmds.QCmdStop;
 import qcmds.QCmdTransmitGetFWVersion;
 import qcmds.QCmdWriteMem;
 
@@ -411,7 +411,7 @@ public class USBBulkConnection extends Connection {
             default: errstr = Integer.toString(result); break;
 
             }
-            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "Control transfer failed: " + errstr);
+            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "USB connection failed: " + errstr);
         }
         //System.out.println(transfered.get() + " bytes sent");
     }

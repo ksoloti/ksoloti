@@ -26,7 +26,7 @@ import axoloti.inlets.InletFrac32Buffer;
 import axoloti.object.AxoObject;
 import axoloti.outlets.OutletFrac32Buffer;
 import axoloti.outlets.OutletInt32Bipolar;
-import static generatedobjects.gentools.WriteAxoObject;
+// import static generatedobjects.gentools.WriteAxoObject;
 
 /**
  *

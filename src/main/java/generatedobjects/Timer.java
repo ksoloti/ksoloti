@@ -24,7 +24,7 @@ import axoloti.outlets.OutletBool32;
 import axoloti.outlets.OutletBool32Pulse;
 import axoloti.outlets.OutletInt32;
 import axoloti.parameters.ParameterFrac32SMapKLineTimeExp;
-import static generatedobjects.gentools.WriteAxoObject;
+// import static generatedobjects.gentools.WriteAxoObject;
 
 /**
  *

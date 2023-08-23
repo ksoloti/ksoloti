@@ -20,8 +20,8 @@ package qcmds;
 import axoloti.Connection;
 import axoloti.SDCardInfo;
 import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+// import java.util.logging.Level;
+// import java.util.logging.Logger;
 
 /**
  *

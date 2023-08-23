@@ -23,7 +23,7 @@ import axoloti.object.AxoObject;
 import axoloti.outlets.OutletFrac32Buffer;
 import axoloti.parameters.ParameterFrac32SMapRatio;
 import axoloti.parameters.ParameterFrac32UMap;
-import static generatedobjects.gentools.WriteAxoObject;
+// import static generatedobjects.gentools.WriteAxoObject;
 
 /**
  *

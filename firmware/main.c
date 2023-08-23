@@ -118,9 +118,9 @@ int main(void) {
 #endif
   ui_init();
 
-#if (BOARD_AXOLOTI_V05)
+#ifdef BOARD_AXOLOTI_V05
   configSDRAM();
-  //memTest();
+//   memTest();
 #endif
 
 #ifdef ENABLE_USB_HOST

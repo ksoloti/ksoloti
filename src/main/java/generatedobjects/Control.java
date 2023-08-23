@@ -32,7 +32,7 @@ import axoloti.parameters.ParameterFrac32UMap;
 import axoloti.parameters.ParameterInt32Box;
 import axoloti.parameters.ParameterInt32HRadio;
 import axoloti.parameters.ParameterInt32VRadio;
-import static generatedobjects.gentools.WriteAxoObject;
+// import static generatedobjects.gentools.WriteAxoObject;
 
 /**
  *

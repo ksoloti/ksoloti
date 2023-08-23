@@ -21,7 +21,7 @@ import axoloti.attributedefinition.AxoAttributeSpinner;
 import axoloti.object.AxoObject;
 import axoloti.object.AxoObjectAbstract;
 import axoloti.outlets.OutletInt32;
-import static generatedobjects.gentools.WriteAxoObject;
+// import static generatedobjects.gentools.WriteAxoObject;
 
 /**
  *

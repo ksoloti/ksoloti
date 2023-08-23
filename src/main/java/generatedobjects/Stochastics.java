@@ -24,7 +24,7 @@ import axoloti.outlets.OutletFrac32Bipolar;
 import axoloti.outlets.OutletFrac32Buffer;
 import axoloti.outlets.OutletInt32;
 import axoloti.parameters.ParameterInt32Box;
-import static generatedobjects.gentools.WriteAxoObject;
+// import static generatedobjects.gentools.WriteAxoObject;
 
 /**
  *
