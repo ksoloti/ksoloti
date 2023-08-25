@@ -47,7 +47,6 @@ public class AssignMidiCCComponent extends JComponent {
         this.param = param;
 
         addMouseListener(new MouseListener() {
-
             @Override
             public void mouseClicked(MouseEvent e) {
                 doPopup();
@@ -55,20 +54,16 @@ public class AssignMidiCCComponent extends JComponent {
             }
 
             @Override
-            public void mousePressed(MouseEvent e) {
-            }
+            public void mousePressed(MouseEvent e) {}
 
             @Override
-            public void mouseReleased(MouseEvent e) {
-            }
+            public void mouseReleased(MouseEvent e) {}
 
             @Override
-            public void mouseEntered(MouseEvent e) {
-            }
+            public void mouseEntered(MouseEvent e) {}
 
             @Override
-            public void mouseExited(MouseEvent e) {
-            }
+            public void mouseExited(MouseEvent e) {}
         });
     }
 
@@ -82,12 +77,13 @@ public class AssignMidiCCComponent extends JComponent {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (param.getMidiCC() >= 0) {
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
+
+            Graphics2D g2 = (Graphics2D)g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setFont(Constants.FONT);
             g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
             g2.fillRect(1, 1, getWidth(), getHeight());
+
             if (param.getMidiCC() >= 0) {
                 g2.setColor(Theme.getCurrentTheme().Component_Primary);
                 g2.fillRect(1, 1, 8, getHeight());
@@ -95,18 +91,18 @@ public class AssignMidiCCComponent extends JComponent {
             } else {
                 g2.setColor(Theme.getCurrentTheme().Component_Primary);
             }
+
             g2.drawString("C", 1, getHeight() - 2);
             g2.setColor(Theme.getCurrentTheme().Component_Primary);
+
             final int rmargin = 2;
-            final int htick = 2;
-            int[] xp = new int[]{getWidth() - rmargin - htick * 2, getWidth() - rmargin, getWidth() - rmargin - htick};
             final int vmargin = 4;
-            int[] yp = new int[]{vmargin, vmargin, vmargin + htick * 2};
+            final int htick = 2;
+            int[] xp = new int[] {getWidth() - rmargin - htick * 2, getWidth() - rmargin, getWidth() - rmargin - htick};
+            int[] yp = new int[] {vmargin, vmargin, vmargin + htick * 2};
             g2.fillPolygon(xp, yp, 3);
         }
     }
 
-    public void setCC(int i) {
-        repaint();
-    }
+    public void setCC(int i) { repaint(); }
 }

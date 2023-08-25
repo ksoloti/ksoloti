@@ -43,16 +43,17 @@ public class AboutFrame extends javax.swing.JFrame {
         initComponents();
         setIconImage(new ImageIcon(getClass().getResource("/resources/axoloti_icon.png")).getImage());
         try {
-            jTextPane1.setPage(getClass().getResource("/resources/about.html"));
+            jTextPaneAboutHtml.setPage(getClass().getResource("/resources/about.html"));
         } catch (IOException ex) {
             Logger.getLogger(AboutFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         jVersionTxt.setText(Version.AXOLOTI_VERSION);
         jDateTxt.setText(Version.AXOLOTI_BUILD_TIME);
         jJavaVersion.setText(System.getProperty("java.version"));
-        jTextPane1.setOpaque(false);
-        jTextPane1.addHyperlinkListener(new HyperlinkListener() {
+        jTextPaneAboutHtml.setOpaque(false);
+
+        jTextPaneAboutHtml.addHyperlinkListener(new HyperlinkListener() {
             @Override
             public void hyperlinkUpdate(HyperlinkEvent hle) {
                 if (HyperlinkEvent.EventType.ACTIVATED.equals(hle.getEventType())) {
@@ -90,74 +91,89 @@ public class AboutFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
-        jLabel1 = new javax.swing.JLabel();
+        jScrollPaneAboutHtml = new javax.swing.JScrollPane();
+        jTextPaneAboutHtml = new javax.swing.JTextPane();
+        jLabelBuildVersion = new javax.swing.JLabel();
         jVersionTxt = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        jLabelBuildDate = new javax.swing.JLabel();
         jDateTxt = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        jLabelJavaVersion = new javax.swing.JLabel();
         jJavaVersion = new javax.swing.JLabel();
 
         setTitle("About Axoloti");
 
-        jTextPane1.setEditable(false);
-        jTextPane1.setContentType("text/html"); // NOI18N
-        jTextPane1.setText("");
-        jTextPane1.setRequestFocusEnabled(false);
-        jScrollPane1.setViewportView(jTextPane1);
+        jTextPaneAboutHtml.setEditable(false);
+        jTextPaneAboutHtml.setContentType("text/html"); // NOI18N
+        jTextPaneAboutHtml.setText("");
+        jTextPaneAboutHtml.setRequestFocusEnabled(false);
+        jScrollPaneAboutHtml.setViewportView(jTextPaneAboutHtml);
 
-        jLabel1.setText("Build Version:");
-
-        jVersionTxt.setText("version x.x.x");
-
-        jLabel2.setText("Build Date:");
-
-        jDateTxt.setText("build date");
-
-        jLabel3.setText("Java version:");
-
-        jJavaVersion.setText("jLabel4");
+        jLabelBuildVersion.setText("Build Version:");
+        jVersionTxt.setText("test");
+        jLabelBuildDate.setText("Build Date:");
+        jDateTxt.setText("test");
+        jLabelJavaVersion.setText("Java Version:");
+        jJavaVersion.setText("test");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
+
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(jScrollPaneAboutHtml, javax.swing.GroupLayout.Alignment.TRAILING)
+
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabelBuildVersion, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jVersionTxt, javax.swing.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE))
+
                     .addGroup(layout.createSequentialGroup()
+
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3))
+                            .addComponent(jLabelBuildDate, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelJavaVersion)
+                        )
                         .addGap(18, 18, 18)
+
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jDateTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jJavaVersion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                            .addComponent(jJavaVersion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        )
+                    )
+                )
+            )
         );
+
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jVersionTxt))
+                    .addComponent(jLabelBuildVersion)
+                    .addComponent(jVersionTxt)
+                )
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jDateTxt))
+                    .addComponent(jLabelBuildDate)
+                    .addComponent(jDateTxt)
+                )
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jJavaVersion)
-                    .addComponent(jLabel3))
+                    .addComponent(jLabelJavaVersion)
+                )
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jScrollPaneAboutHtml, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
+                .addContainerGap()
+            )
         );
 
         pack();
@@ -166,11 +182,11 @@ public class AboutFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jDateTxt;
     private javax.swing.JLabel jJavaVersion;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JLabel jLabelBuildVersion;
+    private javax.swing.JLabel jLabelBuildDate;
+    private javax.swing.JLabel jLabelJavaVersion;
+    private javax.swing.JScrollPane jScrollPaneAboutHtml;
+    private javax.swing.JTextPane jTextPaneAboutHtml;
     private javax.swing.JLabel jVersionTxt;
     // End of variables declaration//GEN-END:variables
 }
