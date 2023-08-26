@@ -88,22 +88,22 @@ static void tmrfunc(void *p) {
   chSysUnlockFromIsr();
 }
 
-/**
- * @brief   Polling monitor start.
- *
- * @param[in] p         pointer to an object implementing @p BaseBlockDevice
- *
- * @notapi
- */
-static void tmr_init(void *p) {
+// /**
+//  * @brief   Polling monitor start.
+//  *
+//  * @param[in] p         pointer to an object implementing @p BaseBlockDevice
+//  *
+//  * @notapi
+//  */
+// static void tmr_init(void *p) {
 
-  chEvtInit(&inserted_event);
-  chEvtInit(&removed_event);
-  chSysLock();
-  cnt = POLLING_INTERVAL;
-  chVTSetI(&tmr, MS2ST(POLLING_DELAY), tmrfunc, p);
-  chSysUnlock();
-}
+//   chEvtInit(&inserted_event);
+//   chEvtInit(&removed_event);
+//   chSysLock();
+//   cnt = POLLING_INTERVAL;
+//   chVTSetI(&tmr, MS2ST(POLLING_DELAY), tmrfunc, p);
+//   chSysUnlock();
+// }
 
 /*
  * Card insertion event.
