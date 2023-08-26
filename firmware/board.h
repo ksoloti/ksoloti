@@ -223,14 +223,14 @@
  * GPIOA setup:
  *
  * PA0  - PIN0                      (input floating).
- * PA1  - PIN1                      (input pullup).
- * PA2  - PIN2                      (input pullup).
- * PA3  - PIN3                      (input pullup).
- * PA4  - PIN4                      (input pullup).
- * PA5  - PIN5                      (input pullup).
- * PA6  - PIN6                      (input pullup).
- * PA7  - PIN7                      (input pullup).
- * PA8  - PIN8                      (input pullup).
+ * PA1  - PIN1                      (input floating).
+ * PA2  - PIN2                      (input floating).
+ * PA3  - PIN3                      (input floating).
+ * PA4  - PIN4                      (input floating).
+ * PA5  - PIN5                      (input floating).
+ * PA6  - PIN6                      (input floating).
+ * PA7  - PIN7                      (input floating).
+ * PA8  - PIN8                      (alternate ).
  * PA9  - PIN9                      (input floating).
  * PA10 - PIN10                     (alternate 10).
  * PA11 - PIN11                     (alternate 10).
@@ -243,13 +243,13 @@
                                      PIN_MODE_INPUT(GPIOA_PIN1) |           \
                                      PIN_MODE_INPUT(GPIOA_PIN2) |           \
                                      PIN_MODE_INPUT(GPIOA_PIN3) |           \
-                                     PIN_MODE_ALTERNATE(GPIOA_PIN4) |       \
-                                     PIN_MODE_ALTERNATE(GPIOA_PIN5) |        \
-                                     PIN_MODE_ALTERNATE(GPIOA_PIN6) |        \
-                                     PIN_MODE_ALTERNATE(GPIOA_PIN7) |        \
-                                     PIN_MODE_INPUT(GPIOA_PIN8) |           \
+                                     PIN_MODE_INPUT(GPIOA_PIN4) |       \
+                                     PIN_MODE_INPUT(GPIOA_PIN5) |        \
+                                     PIN_MODE_INPUT(GPIOA_PIN6) |        \
+                                     PIN_MODE_INPUT(GPIOA_PIN7) |        \
+                                     PIN_MODE_ALTERNATE(GPIOA_PIN8) |           \
                                      PIN_MODE_INPUT(GPIOA_PIN9) |        \
-                                     PIN_MODE_ALTERNATE(GPIOA_PIN10) |  \
+                                     PIN_MODE_INPUT(GPIOA_PIN10) |  \
                                      PIN_MODE_ALTERNATE(GPIOA_PIN11) |  \
                                      PIN_MODE_ALTERNATE(GPIOA_PIN12) |  \
                                      PIN_MODE_ALTERNATE(GPIOA_PIN13) |      \
@@ -288,9 +288,9 @@
                                      PIN_OSPEED_100M(GPIOA_PIN14) |         \
                                      PIN_OSPEED_100M(GPIOA_PIN15))
 #define VAL_GPIOA_PUPDR             (PIN_PUPDR_FLOATING(GPIOA_PIN0) |     \
-                                     PIN_PUPDR_PULLUP(GPIOA_PIN1) |         \
-                                     PIN_PUPDR_PULLUP(GPIOA_PIN2) |         \
-                                     PIN_PUPDR_PULLUP(GPIOA_PIN3) |         \
+                                     PIN_PUPDR_FLOATING(GPIOA_PIN1) |         \
+                                     PIN_PUPDR_FLOATING(GPIOA_PIN2) |         \
+                                     PIN_PUPDR_FLOATING(GPIOA_PIN3) |         \
                                      PIN_PUPDR_FLOATING(GPIOA_PIN4) |       \
                                      PIN_PUPDR_FLOATING(GPIOA_PIN5) |        \
                                      PIN_PUPDR_FLOATING(GPIOA_PIN6) |        \
@@ -323,13 +323,13 @@
                                      PIN_AFIO_AF(GPIOA_PIN1, 0) |           \
                                      PIN_AFIO_AF(GPIOA_PIN2, 0) |           \
                                      PIN_AFIO_AF(GPIOA_PIN3, 0) |           \
-                                     PIN_AFIO_AF(GPIOA_PIN4, 6) |           \
-                                     PIN_AFIO_AF(GPIOA_PIN5, 5) |            \
-                                     PIN_AFIO_AF(GPIOA_PIN6, 5) |            \
-                                     PIN_AFIO_AF(GPIOA_PIN7, 5))
+                                     PIN_AFIO_AF(GPIOA_PIN4, 0) |           \
+                                     PIN_AFIO_AF(GPIOA_PIN5, 0) |            \
+                                     PIN_AFIO_AF(GPIOA_PIN6, 0) |            \
+                                     PIN_AFIO_AF(GPIOA_PIN7, 0))
 #define VAL_GPIOA_AFRH              (PIN_AFIO_AF(GPIOA_PIN8, 0) |           \
                                      PIN_AFIO_AF(GPIOA_PIN9, 0) |        \
-                                     PIN_AFIO_AF(GPIOA_PIN10, 10) |     \
+                                     PIN_AFIO_AF(GPIOA_PIN10, 0) |     \
                                      PIN_AFIO_AF(GPIOA_PIN11, 10) |     \
                                      PIN_AFIO_AF(GPIOA_PIN12, 10) |     \
                                      PIN_AFIO_AF(GPIOA_PIN13, 0) |          \
@@ -342,7 +342,7 @@
  * PB0  - PIN0                      (input pullup).
  * PB1  - PIN1                      (input pullup).
  * PB2  - PIN2                      (input pullup).
- * PB3  - SWO                       (alternate 0).
+ * PB3  - SWO                       (input pullup).
  * PB4  - PIN4                      (input pullup).
  * PB5  - PIN5                      fmc
  * PB6  - PIN6                      fmc
@@ -359,10 +359,10 @@
 #define VAL_GPIOB_MODER             (PIN_MODE_INPUT(GPIOB_PIN0) |           \
                                      PIN_MODE_INPUT(GPIOB_PIN1) |           \
                                      PIN_MODE_INPUT(GPIOB_PIN2) |           \
-                                     PIN_MODE_ALTERNATE(GPIOB_PIN3) |        \
+                                     PIN_MODE_INPUT(GPIOB_PIN3) |        \
                                      PIN_MODE_INPUT(GPIOB_PIN4) |           \
-                                     PIN_MODE_ALTERNATE(GPIOB_PIN5) |       \
-                                     PIN_MODE_ALTERNATE(GPIOB_PIN6) |       \
+                                     PIN_MODE_INPUT(GPIOB_PIN5) |       \
+                                     PIN_MODE_INPUT(GPIOB_PIN6) |       \
                                      PIN_MODE_INPUT(GPIOB_PIN7) |           \
                                      PIN_MODE_INPUT(GPIOB_PIN8) |           \
                                      PIN_MODE_INPUT(GPIOB_PIN9) |        \
@@ -441,8 +441,8 @@
                                      PIN_AFIO_AF(GPIOB_PIN2, 0) |           \
                                      PIN_AFIO_AF(GPIOB_PIN3, 0) |            \
                                      PIN_AFIO_AF(GPIOB_PIN4, 0) |           \
-                                     PIN_AFIO_AF(GPIOB_PIN5, 12) |           \
-                                     PIN_AFIO_AF(GPIOB_PIN6, 12) |           \
+                                     PIN_AFIO_AF(GPIOB_PIN5, 0) |           \
+                                     PIN_AFIO_AF(GPIOB_PIN6, 0) |           \
                                      PIN_AFIO_AF(GPIOB_PIN7, 0))
 #define VAL_GPIOB_AFRH              (PIN_AFIO_AF(GPIOB_PIN8, 0) |           \
                                      PIN_AFIO_AF(GPIOB_PIN9, 0) |            \
