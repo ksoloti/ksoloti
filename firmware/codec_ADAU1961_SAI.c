@@ -55,39 +55,14 @@ void codec_ADAU1961_hw_reset(void) { }
 * SDA : PB11
 * SCL : PB10
 */
-static const I2CConfig i2cfg2 = { OPMODE_I2C, 100000, STD_DUTY_CYCLE, };
+// static const I2CConfig i2cfg2 = { OPMODE_I2C, 100000, STD_DUTY_CYCLE, };
+static const I2CConfig i2cfg2 = { OPMODE_I2C, 400000, FAST_DUTY_CYCLE_2, };
 
 static uint8_t i2crxbuf[8];
 static uint8_t i2ctxbuf[8];
-// static systime_t tmo;
 
 /* use STM32 HAL for I2C */
 static I2C_HandleTypeDef ADAU1961_i2c_handle;
-
-// void CheckI2CErrors(void) {
-//   volatile i2cflags_t errors;
-//   errors = i2cGetErrors(&I2CD2);
-//   if (errors != 0){
-//     setErrorFlag(ERROR_CODEC_I2C);
-//   }
-//   (void)errors;
-// }
-
-// void ADAU1961_I2CStart(void) {
-//   palSetPadMode(
-//       GPIOB, 10,
-//       PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
-//   palSetPadMode(
-//       GPIOB, 11,
-//       PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
-//   // chMtxLock(&Mutex_DMAStream_1_7); // seb added due to DMA stream 1_7 shared with SPI3, not sure if necessary
-//   i2cStart(&I2CD2, &i2cfg2);
-// }
-
-// void ADAU1961_I2CStop(void) {
-//   i2cStop(&I2CD2);
-//   // chMtxUnlock();  // seb added due to DMA stream 1_7 shared with SPI3, not sure if necessary
-// }
 
 /******************************* I2C Routines**********************************/
 /**
@@ -116,6 +91,7 @@ static void ADAU_I2C_Init(void)
     }
 }
 
+
 unsigned int HAL_GetTick(void)
 {
     return hal_lld_get_counter_value();
@@ -127,52 +103,9 @@ int HAL_RCC_GetPCLK1Freq(void)
 }
 
 
-
-// uint8_t ADAU1961_ReadRegister(uint16_t RegisterAddr) {
-//   msg_t status;
-//   i2ctxbuf[0] = RegisterAddr >> 8;
-//   i2ctxbuf[1] = RegisterAddr;
-//   ADAU1961_I2CStart();
-//   i2cAcquireBus(&I2CD2);
-//   status = i2cMasterTransmitTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2ctxbuf, 2,
-//                                     i2crxbuf, 0, tmo);
-//   if (status != RDY_OK) {
-//     CheckI2CErrors();
-//   }
-//   status = i2cMasterReceiveTimeout(&I2CD2, ADAU1961_I2C_ADDR,
-//                                     i2crxbuf, 1, tmo);
-//   if (status != RDY_OK) {
-//     CheckI2CErrors();
-//   }
-//   i2cReleaseBus(&I2CD2);
-//   ADAU1961_I2CStop();
-//   chThdSleepMilliseconds(1);
-//   return i2crxbuf[0];
-// }
-
-// void ADAU1961_ReadRegister6(uint16_t RegisterAddr) {
-//   msg_t status;
-//   i2ctxbuf[0] = RegisterAddr >> 8;
-//   i2ctxbuf[1] = RegisterAddr;
-//   ADAU1961_I2CStart();
-//   i2cAcquireBus(&I2CD2);
-//   status = i2cMasterTransmitTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2ctxbuf, 2,
-//                                     i2crxbuf, 0, tmo);
-//   if (status != RDY_OK) {
-//     CheckI2CErrors();
-//   }
-//   status = i2cMasterReceiveTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2crxbuf, 6, tmo);
-//   if (status != RDY_OK) {
-//     CheckI2CErrors();
-//   }
-//   i2cReleaseBus(&I2CD2);
-//   ADAU1961_I2CStop();
-//   chThdSleepMilliseconds(1);
-// }
-
 void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue)
 {
-    msg_t status;
+    // msg_t status;
     i2ctxbuf[0] = RegisterAddr >> 8;
     i2ctxbuf[1] = RegisterAddr;
     i2ctxbuf[2] = RegisterValue;
@@ -191,30 +124,6 @@ void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue)
     chThdSleepMilliseconds(10);
 }
 
-// void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue)
-// {
-//   ADAU1961_I2CStart();
-//   i2cAcquireBus(&I2CD2);
-//   status = i2cMasterTransmitTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2ctxbuf, 3,
-//                                     i2crxbuf, 0, tmo);
-//   if (status != RDY_OK) {
-//     CheckI2CErrors();
-//     status = i2cMasterTransmitTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2ctxbuf, 3,
-//                                       i2crxbuf, 0, tmo);
-//     chThdSleepMilliseconds(1);
-//   }
-//   i2cReleaseBus(&I2CD2);
-//   ADAU1961_I2CStop();
-//   chThdSleepMilliseconds(1);
-
-//   static uint8_t rd;
-//   rd = ADAU1961_ReadRegister(RegisterAddr);
-//   if (rd != RegisterValue) {
-// //    setErrorFlag(ERROR_CODEC_I2C);
-//   } else {
-//   }
-//   chThdSleepMilliseconds(1);
-// }
 
 void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
 
@@ -240,19 +149,6 @@ void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
     chThdSleepMilliseconds(10);
 }
 
-// void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
-  // ADAU1961_I2CStart();
-  // i2cAcquireBus(&I2CD2);
-  // status = i2cMasterTransmitTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2ctxbuf, 8,
-  //                                   i2crxbuf, 0, TIME_INFINITE);
-  // i2cReleaseBus(&I2CD2);
-  // ADAU1961_I2CStop();
-  // if (status != RDY_OK) {
-  //   CheckI2CErrors();
-  // }
-
-  // chThdSleepMilliseconds(1);
-// }
 
 void ADAU1961_ReadRegister6(uint16_t RegisterAddr)
 {
@@ -275,6 +171,7 @@ void ADAU1961_ReadRegister6(uint16_t RegisterAddr)
         while(1) { }
     }
 }
+
 
 void codec_ADAU1961_hw_init(uint16_t samplerate)
 {
@@ -453,7 +350,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate)
     ADAU1961_WriteRegister(ADAU1961_REG_R8_LDIVOL, 0x43);  /* 0dB gain */
     ADAU1961_WriteRegister(ADAU1961_REG_R9_RDIVOL, 0x43);  /* 0dB gain */
 
-    /* capless headphone config
+    /* capless headphone config */
     ADAU1961_WriteRegister(ADAU1961_REG_R33_PMONO, 0x03);  /* MONOM + MOMODE */
     ADAU1961_WriteRegister(ADAU1961_REG_R28_PLRMM, 0x01);  /* MX7EN, COMMON MODE OUT */
     ADAU1961_WriteRegister(ADAU1961_REG_R29_PHPLVOL, 0xC3);
@@ -461,6 +358,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate)
 
     chThdSleepMilliseconds(10);
 }
+
 
 static void dma_sai_a_interrupt(void* dat, uint32_t flags)
 {
@@ -479,6 +377,7 @@ static void dma_sai_a_interrupt(void* dat, uint32_t flags)
 
     dmaStreamClearInterrupt(sai_a_dma);
 }
+
 
 void codec_ADAU1961_i2s_init(uint16_t sampleRate)
 {
@@ -580,5 +479,6 @@ void codec_ADAU1961_i2s_init(uint16_t sampleRate)
     SAI1_Block_B->CR1 |= SAI_xCR1_SAIEN;
 
 }
+
 
 void codec_ADAU1961_Stop(void) { }
