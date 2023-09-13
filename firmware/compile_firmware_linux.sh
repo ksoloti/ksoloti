@@ -1,4 +1,6 @@
 #!/bin/sh
+set -e
+
 export PATH=${axoloti_runtime}/platform_linux/bin:$PATH
 
 cd "${axoloti_firmware}"
