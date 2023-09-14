@@ -30,7 +30,7 @@ endif
 
 # Enable this if you want to see the full log while compiling.
 ifeq ($(USE_VERBOSE_COMPILE),)
-  USE_VERBOSE_COMPILE = yes
+  USE_VERBOSE_COMPILE = no
 endif
 
 #
@@ -150,6 +150,7 @@ LD   = $(TRGT)gcc
 CP   = $(TRGT)objcopy
 AS   = $(TRGT)gcc -x assembler-with-cpp
 OD   = $(TRGT)objdump
+SZ   = $(TRGT)size
 HEX  = $(CP) -O ihex
 BIN  = $(CP) -O binary
 
