@@ -117,7 +117,7 @@ void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue)
 
     if (r != HAL_OK)
     {
-        volatile unsigned int i = r;
+        // volatile unsigned int i = r;
         while(1) { }
     }
 
@@ -142,7 +142,7 @@ void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
 
     if (r != HAL_OK)
     {
-        volatile unsigned int i = r;
+        // volatile unsigned int i = r;
         while(1) { }
     }
 
@@ -167,7 +167,7 @@ void ADAU1961_ReadRegister6(uint16_t RegisterAddr)
 
     if (r != HAL_OK)
     {
-        volatile unsigned int i = r;
+        // volatile unsigned int i = r;
         while(1) { }
     }
 }
