@@ -42,6 +42,14 @@ void __early_init(void) {
   rccResetAHB1(~0);
   rccResetAHB2(~0);
   rccResetAPB1(~0);
+  NVIC->ICER[0] = 0xFFFFFFFF;
+  NVIC->ICER[1] = 0xFFFFFFFF;
+  NVIC->ICER[2] = 0xFFFFFFFF;
+  NVIC->ICER[3] = 0xFFFFFFFF;
+  NVIC->ICER[4] = 0xFFFFFFFF;
+  NVIC->ICER[5] = 0xFFFFFFFF;
+  NVIC->ICER[6] = 0xFFFFFFFF;
+  NVIC->ICER[7] = 0xFFFFFFFF;
   rccResetAPB2(~0x10000000); //RCC_APB1RSTR_PWRRST
   OTG_HS->GINTMSK = 0; // disable OTG_HS interrupts!
   // copy vector table
