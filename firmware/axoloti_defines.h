@@ -36,6 +36,8 @@ typedef int32_t int32buffer[BUFSIZE];
 #define FWVERSION3 0
 #define FWVERSION4 4
 
+#define BOARD_OTG_NOVBUSSENS
+
 #if (BOARD_AXOLOTI_V05)
 #else
 #error Must define board!
