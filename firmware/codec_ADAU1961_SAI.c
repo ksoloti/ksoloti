@@ -26,7 +26,7 @@
 #include "sysmon.h"
 
 // #define STM_IS_I2S_MASTER 1
-#define ADAU1961_I2C_ADDR 0x38 /* (0x70>>1) */
+#define ADAU1961_I2C_ADDR 0x70 /* (0x38<<1) */
 #define TIMEOUT 1000000
 
 #define STM32_SAI_A_DMA_STREAM STM32_DMA_STREAM_ID(2, 1)
@@ -113,7 +113,7 @@ void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue)
     chThdSleepMilliseconds(10);
 
     HAL_StatusTypeDef r = HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle,
-        ADAU1961_I2C_ADDR<<1, i2ctxbuf, 3, TIMEOUT);
+        ADAU1961_I2C_ADDR, i2ctxbuf, 3, TIMEOUT);
 
     if (r != HAL_OK)
     {
@@ -138,7 +138,7 @@ void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
     i2ctxbuf[7] = RegisterValues[5];
 
     HAL_StatusTypeDef r = HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle,
-        ADAU1961_I2C_ADDR<<1, i2ctxbuf, 8, TIMEOUT);
+        ADAU1961_I2C_ADDR, i2ctxbuf, 8, TIMEOUT);
 
     if (r != HAL_OK)
     {
@@ -157,13 +157,13 @@ void ADAU1961_ReadRegister6(uint16_t RegisterAddr)
 
     chThdSleepMilliseconds(1);
 
-    HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR<<1,
+    HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR,
         i2ctxbuf, 2, TIMEOUT);
 
     chThdSleepMilliseconds(1);
 
     HAL_StatusTypeDef r = HAL_I2C_Master_Receive(&ADAU1961_i2c_handle,
-        (ADAU1961_I2C_ADDR<<1)+1, i2crxbuf, 6, TIMEOUT);
+        ADAU1961_I2C_ADDR+1, i2crxbuf, 6, TIMEOUT);
 
     if (r != HAL_OK)
     {
