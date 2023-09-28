@@ -29,6 +29,9 @@
 #define ADAU1961_I2C_ADDR 0x70 /* (0x38<<1) */
 #define TIMEOUT 1000000
 
+#define GYRO_I2C_ADDR 0xD4 /* (0x6A<<1) */
+#define GYRO_TIMEOUT 1
+
 #define STM32_SAI_A_DMA_STREAM STM32_DMA_STREAM_ID(2, 1)
 #define STM32_SAI_B_DMA_STREAM STM32_DMA_STREAM_ID(2, 4)
 #define SAI_A_DMA_CHANNEL 0
@@ -124,6 +127,19 @@ void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue)
     chThdSleepMilliseconds(10);
 }
 
+void Gyro_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue)
+{
+    i2ctxbuf[0] = RegisterAddr >> 8;
+    i2ctxbuf[1] = RegisterAddr;
+    i2ctxbuf[2] = RegisterValue;
+
+    HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle,
+        GYRO_I2C_ADDR, i2ctxbuf, 3, GYRO_TIMEOUT);
+
+    chThdSleepMilliseconds(1);
+
+}
+
 
 void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
 
@@ -170,6 +186,22 @@ void ADAU1961_ReadRegister6(uint16_t RegisterAddr)
         // volatile unsigned int i = r;
         while(1) { }
     }
+}
+
+
+void Gyro_ReadRegister2(uint16_t RegisterAddr)
+{
+    i2ctxbuf[0] = RegisterAddr >> 8;
+    i2ctxbuf[1] = RegisterAddr;
+
+    HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, GYRO_I2C_ADDR,
+        i2ctxbuf, 2, GYRO_TIMEOUT);
+
+    chThdSleepMilliseconds(1);
+
+    HAL_I2C_Master_Receive(&ADAU1961_i2c_handle,
+        GYRO_I2C_ADDR+1, i2crxbuf, 2, GYRO_TIMEOUT);
+
 }
 
 
