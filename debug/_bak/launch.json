@@ -1,0 +1,39 @@
+// Configure debug launch settings
+// Feel free to copy these and modify them for your debugger and MCU
+{
+    "version": "0.2.0",
+    "projectName": "ksoloti",
+    "configurations": [
+        {
+            "name": "STlink launch",
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceRoot}/firmware/build/axoloti.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "stlink",
+            "device": "STM32F429ZG",
+            "interface": "swd",
+            "runToEntryPoint": "main",
+            "preLaunchTask": "Build all", // configured in tasks.json
+            // "preLaunchCommands": ["Build all"], // you can execute command instead of task
+            "svdFile": "${workspaceRoot}/debug/STM32F429.svd", // Include svd to watch device peripherals
+            "swoConfig": {}, // currently (v1.7.0) not supported
+            // "showDevDebugOutput": "raw"
+        },
+        {
+            "name": "STlink attach",
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceRoot}/firmware/build/axoloti.elf",
+            "request": "attach",
+            "type": "cortex-debug",
+            "servertype": "stlink",
+            "device": "STM32F429ZG",
+            "interface": "swd",
+            "runToEntryPoint": "main",
+            // "preLaunchTask": "Build all", // configured in tasks.json
+            // "preLaunchCommands": ["Build all"], // you can execute command instead of task
+            "svdFile": "${workspaceRoot}/debug/STM32F429.svd", // Include svd to watch device peripherals
+            "swoConfig": {} // currently (v1.7.0) not supported
+        }
+    ]
+}
