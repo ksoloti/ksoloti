@@ -1,0 +1,8 @@
+{
+    "C_Cpp.errorSquiggles": "disabled",
+    // "cortex-debug.gdbPath": "/home/sbcm/Downloads/arm-gnu-toolchain-12.3.rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-gdb",
+    "cortex-debug.gdbPath": "/opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/arm-none-eabi-gdb",
+    // "cortex-debug.stutilPath": "/usr/bin/st-util",
+    // "cortex-debug.armToolchainPath": "/home/sbcm/Downloads/arm-gnu-toolchain-12.3.rel1-x86_64-arm-none-eabi/bin"
+    "cortex-debug.armToolchainPath": "/opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin"
+}
