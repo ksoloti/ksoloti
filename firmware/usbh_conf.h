@@ -62,7 +62,7 @@
 #define USBH_MAX_NUM_SUPPORTED_CLASS          3
 #define USBH_MAX_SIZE_CONFIGURATION           0x200
 #define USBH_MAX_DATA_BUFFER                  0x200
-#define USBH_DEBUG_LEVEL                      3 //seb test
+#define USBH_DEBUG_LEVEL                      2
 #define USBH_USE_OS                           1
 
 /** @defgroup USBH_Exported_Macros
@@ -82,7 +82,7 @@ extern void fakefree(void * p);
 
 #define osThreadDef(name, fn, prio, instances, stacksz) \
   static WORKING_AREA(wa##name, 640); \
-  Thread *name = chThdCreateStatic(wa##name, sizeof(wa##name), HIGHPRIO, fn, phost); \
+  Thread *name = chThdCreateStatic(wa##name, sizeof(wa##name), HIGHPRIO-5, fn, phost); \
   phost->os_event = name;
 #define osThreadCreate(x,y) x
 #define osThread(x) x
@@ -203,7 +203,7 @@ extern void LogTextMessage(const char* format, ...);
  *            @arg URB_STALL
  */
 
-static USBH_URBStateTypeDef USBH_LL_GetURBState(USBH_HandleTypeDef *phost,
+__STATIC_INLINE USBH_URBStateTypeDef USBH_LL_GetURBState(USBH_HandleTypeDef *phost,
                                         uint8_t pipe) {
   return (USBH_URBStateTypeDef)HAL_HCD_HC_GetURBState(phost->pData, pipe);
 }
@@ -238,7 +238,7 @@ static USBH_URBStateTypeDef USBH_LL_GetURBState(USBH_HandleTypeDef *phost,
  * @retval Status
  */
 
-static USBH_StatusTypeDef USBH_LL_SubmitURB(USBH_HandleTypeDef *phost, uint8_t pipe,
+__STATIC_INLINE USBH_StatusTypeDef USBH_LL_SubmitURB(USBH_HandleTypeDef *phost, uint8_t pipe,
                                         uint8_t direction, uint8_t ep_type,
                                         uint8_t token, uint8_t* pbuff,
                                         uint16_t length, uint8_t do_ping) {
