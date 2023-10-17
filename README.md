@@ -13,6 +13,6 @@ Axoloti is a platform for sketching music-DSP algorithms running on standalone h
 [Axoloti website](http://www.axoloti.com)
 
 
-[Ksoloti website](http://www.ksoloti.github.io)
+[Ksoloti website](http://ksoloti.github.io)
 
 (Outdated) documentation: in the folder doc/
