@@ -1,6 +1,6 @@
-# Axoloti
+# Ksooloti
 
-by Johannes Taelman
+based on Axoloti by Johannes Taelman
 
 johannes.taelman@gmail.com
 
