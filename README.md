@@ -1,4 +1,4 @@
-# Ksooloti
+# Ksoloti
 
 based on Axoloti by Johannes Taelman
 
