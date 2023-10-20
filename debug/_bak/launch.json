@@ -4,6 +4,7 @@
     "version": "0.2.0",
     "projectName": "ksoloti",
     "configurations": [
+
         {
             "name": "STlink launch",
             "cwd": "${workspaceRoot}",
@@ -13,7 +14,7 @@
             "servertype": "stlink",
             "device": "STM32F429ZG",
             "interface": "swd",
-            // "runToEntryPoint": "main",
+            "runToEntryPoint": "main",
             "preLaunchTask": "Build all", // configured in tasks.json
             // "preLaunchCommands": ["Build all"], // you can execute command instead of task
             "svdFile": "${workspaceRoot}/debug/STM32F429.svd", // Include svd to watch device peripherals
@@ -29,7 +30,7 @@
             "servertype": "stlink",
             "device": "STM32F429ZG",
             "interface": "swd",
-            // "runToEntryPoint": "main",
+            "runToEntryPoint": "main",
             // "preLaunchTask": "Build all", // configured in tasks.json
             // "preLaunchCommands": ["Build all"], // you can execute command instead of task
             "svdFile": "${workspaceRoot}/debug/STM32F429.svd", // Include svd to watch device peripherals
