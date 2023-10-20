@@ -188,8 +188,8 @@ public class Axoloti
         File jarFile = new File(Axoloti.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         String jarDir = jarFile.getParentFile().getCanonicalPath();
         String defaultHome = curDir;
-        String defaultRuntime = curDir;
-        String defaultRelease = curDir;
+        String defaultRuntime = ".";
+        String defaultRelease = ".";
         boolean versionedHome = false;
 
         File git = new File("." + File.separator + ".git");
@@ -205,20 +205,20 @@ public class Axoloti
                 case WIN:
                     // not sure which versions of windows this is valid for, good for 8!
                     docDir = System.getenv("HOMEPATH") + File.separator + "Documents" + File.separator;
-                    defaultRuntime = System.getenv("ProgramFiles") + File.separator + "axoloti_runtime";
+                    // defaultRuntime = System.getenv("ProgramFiles") + File.separator + "axoloti_runtime";
                     break;
                 case MAC:
                     docDir = System.getenv("HOME") + "/Documents/";
-                    defaultRuntime = "/Applications/axoloti_runtime";
+                    // defaultRuntime = "/Applications/axoloti_runtime";
                     break;
                 case LINUX:
                 default:
                     docDir = System.getenv("HOME") + "/";
-                    defaultRuntime = System.getenv("HOME") + "/axoloti_runtime";
+                    // defaultRuntime = System.getenv("HOME") + "/axoloti_runtime";
                     break;
             } else {
                     docDir = System.getenv("HOME") + "/";
-                    defaultRuntime = System.getenv("HOME") + "/axoloti_runtime";
+                    // defaultRuntime = System.getenv("HOME") + "/axoloti_runtime";
             }
             
             String ver = Version.AXOLOTI_SHORT_VERSION.replace(".", "_");

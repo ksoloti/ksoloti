@@ -61,6 +61,10 @@ public class Theme {
     @Element
     public String Theme_Name = "Default";
 
+    /* UI */
+    @Element
+    public Color Button_Live_Foreground = new Color(0.0f, 0.5f, 0.0f);
+
     /* Backgrounds */
     @Element
     public Color Console_Background = Color.WHITE;
@@ -107,7 +111,7 @@ public class Theme {
     @Element
     public Color Object_Default_Background;
     @Element
-    public Color Object_TitleBar_Background = Color.GRAY;
+    public Color Object_TitleBar_Background = new Color(0.7f, 0.7f, 0.7f);
     @Element
     public Color Object_TitleBar_Subpatch_Background = new Color(0.3f, 0.4f, 0.8f);
     @Element
@@ -115,9 +119,9 @@ public class Theme {
     @Element
     public Color Object_TitleBar_Foreground = Color.BLACK;
     @Element
-    public Color Object_Border_Unselected = Color.WHITE;
+    public Color Object_Border_Unselected = Color.BLACK;
     @Element
-    public Color Object_Border_Selected = Color.ORANGE;
+    public Color Object_Border_Selected = Color.RED;
     @Element
     public Color Object_Zombie_Background = Color.RED;
 

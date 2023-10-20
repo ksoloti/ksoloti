@@ -209,7 +209,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     public void SetLive(boolean b) {
         if (b) {
-            jToggleButtonLive.setForeground(Color.GREEN);
+            jToggleButtonLive.setForeground(Theme.getCurrentTheme().Button_Live_Foreground);
             jToggleButtonLive.setSelected(true);
             jToggleButtonLive.setEnabled(true);
             jCheckBoxMenuItemLive.setSelected(true);

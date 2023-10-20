@@ -525,7 +525,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelColumn2.add(jToggleButtonConnect);
 
         jButtonClear.setFocusable(false);
-        jButtonClear.setText("  Clear Log  ");
+        jButtonClear.setText(" Clear Log ");
         jButtonClear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonClearActionPerformed(evt);
@@ -1085,7 +1085,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         // jCheckBoxConnect.setSelected(connect);
         if (connect)
         {
-            jToggleButtonConnect.setForeground(Color.GREEN);
+            jToggleButtonConnect.setForeground(Theme.getCurrentTheme().Button_Live_Foreground);
             jToggleButtonConnect.setText("Connected");
         }
         else
