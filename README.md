@@ -1,6 +1,6 @@
-# Axoloti
+# Ksoloti
 
-by Johannes Taelman
+based on Axoloti by Johannes Taelman
 
 johannes.taelman@gmail.com
 
@@ -12,4 +12,7 @@ Axoloti is a platform for sketching music-DSP algorithms running on standalone h
 
 [Axoloti website](http://www.axoloti.com)
 
-documentation: in the folder doc/
+
+[Ksoloti website](http://ksoloti.github.io)
+
+(Outdated) documentation: in the folder doc/
