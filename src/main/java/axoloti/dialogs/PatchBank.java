@@ -82,7 +82,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         DocumentWindowList.RegisterWindow(this);
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
         jTable1.setModel(new AbstractTableModel() {
-            private final String[] columnNames = {"Index", "File", "on SD card"};
+            private final String[] columnNames = {"Index", "File", "Location"};
 
             @Override
             public int getColumnCount() {
@@ -163,14 +163,15 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                             SDFileInfo sdfi = SDCardInfo.getInstance().find("/" + fn + "/patch.bin");
                             if (sdfi != null) {
                                 if (en) {
-                                    returnValue = "resolved locally, and exists on SD card";
+                                    returnValue = "Found locally, found on SD card";
                                 } else {
-                                    returnValue = "UNresolved locally, but exists on SD card";
+                                    returnValue = "NOT found locally, found on SD card";
                                 }
-                            } else if (en) {
-                                returnValue = "resolved locally, not on SD card";
+                            }
+                            else if (en) {
+                                returnValue = "Found locally, NOT found on SD card";
                             } else {
-                                returnValue = "UNresolved locally, not on SD card";
+                                returnValue = "NOT found locally, NOT found on SD card";
                             }
                         }
                         break;
