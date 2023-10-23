@@ -37,9 +37,9 @@
             "swoConfig": {} // currently (v1.7.0) not supported
         },
         {
-            "name": "STlink flasher launch",
+            "name": "STlink memtest launch",
             "cwd": "${workspaceRoot}",
-            "executable": "${workspaceRoot}/firmware/flasher/flasher_build/flasher.elf",
+            "executable": "${workspaceRoot}/firmware/memtest/memtest.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "stlink",
@@ -51,21 +51,6 @@
             "svdFile": "${workspaceRoot}/debug/STM32F429.svd", // Include svd to watch device peripherals
             "swoConfig": {}, // currently (v1.7.0) not supported
             // "showDevDebugOutput": "raw"
-        },
-        {
-            "name": "STlink flasher attach",
-            "cwd": "${workspaceRoot}",
-            "executable": "${workspaceRoot}/firmware/flasher/flasher_build/flasher.elf",
-            "request": "attach",
-            "type": "cortex-debug",
-            "servertype": "stlink",
-            "device": "STM32F429ZG",
-            "interface": "swd",
-            // "runToEntryPoint": "main",
-            // "preLaunchTask": "Build all", // configured in tasks.json
-            // "preLaunchCommands": ["Build all"], // you can execute command instead of task
-            "svdFile": "${workspaceRoot}/debug/STM32F429.svd", // Include svd to watch device peripherals
-            "swoConfig": {} // currently (v1.7.0) not supported
         }
     ]
 }
