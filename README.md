@@ -4,7 +4,7 @@ based on Axoloti by Johannes Taelman
 
 johannes.taelman@gmail.com
 
-Fork for the Ksoloti board with firmware edits
+Fork  with firmware edits for the Ksoloti Core board
 
 ksoloti.axo@gmail.com
 
