@@ -18,6 +18,7 @@
 package components;
 
 import axoloti.Patch;
+import axoloti.Theme;
 import java.awt.Color;
 
 /**
@@ -345,7 +346,7 @@ public class PresetPanel extends javax.swing.JPanel {
     private void jToggleButtonE1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE1ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(true);
-        jToggleButtonE1.setForeground(Color.ORANGE);
+        jToggleButtonE1.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         jToggleButtonE2.setSelected(false);
         jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(false);
@@ -368,7 +369,7 @@ public class PresetPanel extends javax.swing.JPanel {
         jToggleButtonE1.setSelected(false);
         jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(true);
-        jToggleButtonE2.setForeground(Color.ORANGE);
+        jToggleButtonE2.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         jToggleButtonE3.setSelected(false);
         jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(false);
@@ -391,7 +392,7 @@ public class PresetPanel extends javax.swing.JPanel {
         jToggleButtonE2.setSelected(false);
         jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(true);
-        jToggleButtonE3.setForeground(Color.ORANGE);
+        jToggleButtonE3.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         jToggleButtonE4.setSelected(false);
         jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(false);
@@ -414,7 +415,7 @@ public class PresetPanel extends javax.swing.JPanel {
         jToggleButtonE3.setSelected(false);
         jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(true);
-        jToggleButtonE4.setForeground(Color.ORANGE);
+        jToggleButtonE4.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         jToggleButtonE5.setSelected(false);
         jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(false);
@@ -437,7 +438,7 @@ public class PresetPanel extends javax.swing.JPanel {
         jToggleButtonE4.setSelected(false);
         jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(true);
-        jToggleButtonE5.setForeground(Color.ORANGE);
+        jToggleButtonE5.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         jToggleButtonE6.setSelected(false);
         jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(false);
@@ -460,7 +461,7 @@ public class PresetPanel extends javax.swing.JPanel {
         jToggleButtonE5.setSelected(false);
         jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(true);
-        jToggleButtonE6.setForeground(Color.ORANGE);
+        jToggleButtonE6.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         jToggleButtonE7.setSelected(false);
         jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(false);
@@ -483,7 +484,7 @@ public class PresetPanel extends javax.swing.JPanel {
         jToggleButtonE6.setSelected(false);
         jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(true);
-        jToggleButtonE7.setForeground(Color.ORANGE);
+        jToggleButtonE7.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         jToggleButtonE8.setSelected(false);
         jToggleButtonE8.setForeground(null);
         p.ShowPreset(7);
@@ -506,7 +507,7 @@ public class PresetPanel extends javax.swing.JPanel {
         jToggleButtonE7.setSelected(false);
         jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(true);
-        jToggleButtonE8.setForeground(Color.ORANGE);
+        jToggleButtonE8.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         p.ShowPreset(8);
     }//GEN-LAST:event_jToggleButtonE8ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables

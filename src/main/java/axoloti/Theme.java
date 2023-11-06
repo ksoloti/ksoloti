@@ -27,21 +27,21 @@ public class Theme {
 
     public Theme() {
         super();
-        Color labelForeground = (new JLabel()).getForeground();
-        Color panelBackground = (new JPanel()).getBackground();
-        Color panelForeground = (new JPanel()).getForeground();
+        // Color labelForeground = (new JLabel()).getForeground();
+        // Color panelBackground = (new JPanel()).getBackground();
+        // Color panelForeground = (new JPanel()).getForeground();
         // ensure we don't have ColorUIResource instances
-        labelForeground = new Color(labelForeground.getRed(), labelForeground.getGreen(), 
-                labelForeground.getBlue(), labelForeground.getAlpha());
-        panelBackground= new Color(panelBackground.getRed(), panelBackground.getGreen(), 
-                panelBackground.getBlue(), panelBackground.getAlpha());
-        panelForeground= new Color(panelForeground.getRed(), panelForeground.getGreen(), 
-                panelForeground.getBlue(), panelForeground.getAlpha());
-        this.Object_Label_Text = labelForeground;
+        // labelForeground = new Color(labelForeground.getRed(), labelForeground.getGreen(), 
+                // labelForeground.getBlue(), labelForeground.getAlpha());
+        // panelBackground= new Color(panelBackground.getRed(), panelBackground.getGreen(), 
+                // panelBackground.getBlue(), panelBackground.getAlpha());
+        // panelForeground= new Color(panelForeground.getRed(), panelForeground.getGreen(), 
+                // panelForeground.getBlue(), panelForeground.getAlpha());
+        // this.Object_Label_Text = labelForeground;
         // this.Object_TitleBar_Foreground = labelForeground;
-        this.Object_Default_Background = panelBackground;
-        this.Parameter_Default_Background = panelBackground;
-        this.Parameter_Default_Foreground = panelForeground;
+        // this.Object_Default_Background = panelBackground;
+        // this.Parameter_Default_Background = panelBackground;
+        // this.Parameter_Default_Foreground = panelForeground;
     }
 
     private static final Registry REGISTRY = new Registry();
@@ -81,7 +81,7 @@ public class Theme {
     @Element
     public Color Console_Warning_Text = Color.BLUE;
     @Element
-    public Color Object_Label_Text;
+    public Color Object_Label_Text = Color.BLACK;
 
     /* Nets */
     @Element
@@ -109,9 +109,9 @@ public class Theme {
 
     /* Objects */
     @Element
-    public Color Object_Default_Background;
+    public Color Object_Default_Background = new Color(238,238,238);
     @Element
-    public Color Object_TitleBar_Background = new Color(0.7f, 0.7f, 0.7f);
+    public Color Object_TitleBar_Background = new Color(0.75f, 0.75f, 0.75f);
     @Element
     public Color Object_TitleBar_Subpatch_Background = new Color(0.3f, 0.4f, 0.8f);
     @Element
@@ -121,14 +121,14 @@ public class Theme {
     @Element
     public Color Object_Border_Unselected = Color.BLACK;
     @Element
-    public Color Object_Border_Selected = Color.RED;
+    public Color Object_Border_Selected = Color.CYAN;
     @Element
     public Color Object_Zombie_Background = Color.RED;
 
     @Element
-    public Color Parameter_Default_Background;
+    public Color Parameter_Default_Background = Object_Default_Background;
     @Element
-    public Color Parameter_Default_Foreground;
+    public Color Parameter_Default_Foreground = Color.BLACK;
     @Element
     public Color Parameter_On_Parent_Highlight = Cable_Frac32;
     @Element
@@ -172,6 +172,9 @@ public class Theme {
     public Color VU_Bright_Yellow = new Color(0.8f, 0.8f, 0.0f);
     @Element
     public Color VU_Bright_Red = new Color(0.8f, 0.0f, 0.0f);
+
+    @Element
+    public Color Preset_Edit_Active = new Color(0.7f, 0.7f, 0.0f);
 
     private File FileChooserSave(JFrame frame) {
         final JFileChooser fc = new JFileChooser(MainFrame.prefs.getCurrentFileDirectory());
