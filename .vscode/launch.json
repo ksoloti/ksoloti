@@ -46,7 +46,7 @@
             "device": "STM32F429ZG",
             "interface": "swd",
             // "runToEntryPoint": "main",
-            "preLaunchTask": "Build all", // configured in tasks.json
+            // "preLaunchTask": "Build all", // configured in tasks.json
             // "preLaunchCommands": ["Build all"], // you can execute command instead of task
             "svdFile": "${workspaceRoot}/debug/STM32F429.svd", // Include svd to watch device peripherals
             "swoConfig": {}, // currently (v1.7.0) not supported
