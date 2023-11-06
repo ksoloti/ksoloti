@@ -48,8 +48,8 @@ public class AboutFrame extends javax.swing.JFrame {
             Logger.getLogger(AboutFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        jVersionTxt.setText(Version.AXOLOTI_VERSION);
-        jDateTxt.setText(Version.AXOLOTI_BUILD_TIME);
+        jVersionTxt.setText(axoloti.Version.AXOLOTI_VERSION);
+        jDateTxt.setText(axoloti.Version.AXOLOTI_BUILD_TIME);
         jJavaVersion.setText(System.getProperty("java.version"));
         jTextPaneAboutHtml.setOpaque(false);
 
