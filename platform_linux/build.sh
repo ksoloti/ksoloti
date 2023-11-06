@@ -99,7 +99,6 @@ then
     then
         echo "##### downloading ${ARCHIVE} #####"
 		curl -L https://github.com/ChibiOS/ChibiOS/archive/ver${CH_VERSION}.zip > ${ARCHIVE}
-        # curl -L https://sourceforge.net/projects/chibios/files/ChibiOS%20GPL3/Version%20${CH_VERSION}/${ARCHIVE} > ${ARCHIVE}
     else
         echo "##### ${ARCHIVE} already downloaded #####"
     fi
