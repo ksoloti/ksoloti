@@ -39,7 +39,7 @@ include $(CHIBIOS)/os/kernel/kernel.mk
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 
 INCDIR = $(CMSIS)/Include $(CMSIS)/DSP_Lib/Include \
-		 $(PORTINC) $(KERNINC) $(TESTINC) \
+         $(PORTINC) $(KERNINC) $(TESTINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) \
          ${FIRMWARE} $(CHIBIOS) ${FIRMWARE}/mutable_instruments
 
@@ -47,12 +47,10 @@ INCDIR = $(CMSIS)/Include $(CMSIS)/DSP_Lib/Include \
 IINCDIR   = $(patsubst %,-I%,$(INCDIR) $(DINCDIR) $(UINCDIR))
 LLIBDIR   = $(patsubst %,-L%,$(DLIBDIR) $(ULIBDIR))
 
-# SIZE_STRING = $(shell arm-none-eabi-size ${BUILDDIR}/xpatch.elf)
-
 all: ${BUILDDIR}/xpatch.bin
 
 ${BUILDDIR}/xpatch.h.gch: ${FIRMWARE}/xpatch.h ${FIRMWARE}/patch.h ${FIRMWARE}/axoloti.h ${FIRMWARE}/parameter_functions.h ${FIRMWARE}/axoloti_math.h ${FIRMWARE}/axoloti_filters.h
-	@echo Building precompiled header
+#	@echo Building precompiled header
 	$(CPP) $(CCFLAGS) $(IINCDIR) -Winvalid-pch -MD -MP -c ${FIRMWARE}/xpatch.h  -o ${BUILDDIR}/xpatch.h.gch
 
 ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
@@ -68,7 +66,6 @@ ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
 	@$(CP) -O binary ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin
 #	@echo Displaying size statistic
 	@$(SIZ) --format=sysv ${BUILDDIR}/xpatch.elf
-#	@echo MY_VAR IS $(SIZE_STRING)
 
 clean:
 	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.lst ${BUILDDIR}/xpatch.h.gch

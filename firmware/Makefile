@@ -72,11 +72,6 @@ axoloti_firmware ?= ../firmware
 CHIBIOS = ${axoloti_release}/chibios
 
 
-# theoretically should be this...., but CSRC expansion cannot cope with escape spaces
-#SPACE :=
-#SPACE +=
-#FIRMWARE=$(subst $(SPACE),\ ,${axoloti_firmware})
-#FIRMWARE=.
 EMPTY := 
 SPACE := $(EMPTY) $(EMPTY)
 FIRMWARE=$(subst $(SPACE),\ ,${axoloti_firmware})
@@ -159,7 +154,7 @@ CSRC = $(PORTSRC) \
        ${CMSIS}/DSP_Lib/Source/BasicMathFunctions/arm_shift_q15.c \
        ${CMSIS}/DSP_Lib/Source/BasicMathFunctions/arm_scale_f32.c \
        ${CMSIS}/DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_q31.c \
-	   ${CMSIS}/DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_f32.c \
+       ${CMSIS}/DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_f32.c \
        ${CMSIS}/DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_q31.c \
        ${CMSIS}/DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_q15.c \
        ${CMSIS}/DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_q15.c \
@@ -320,7 +315,7 @@ ASMSRC = $(PORTASM) \
 
 INCDIR = ${CMSIS}/Include \
          ${CMSIS}/DSP_Lib/Include \
-		 $(PORTINC) $(KERNINC) $(TESTINC) \
+         $(PORTINC) $(KERNINC) $(TESTINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) \
          $(FATFSINC) \
          $(CHIBIOS)/os/various \
