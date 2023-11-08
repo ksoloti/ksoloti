@@ -101,7 +101,7 @@ static const uint8_t vendorDescriptorData[] =
 {
     USB_DESC_BYTE(16),
     USB_DESC_BYTE(USB_DESCRIPTOR_STRING),
-    'A', 0, 'x', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0
+    'K', 0, 's', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0
 };
 static const USBDescriptor vendorDescriptor =
 {

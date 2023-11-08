@@ -48,7 +48,7 @@ public class axoloti_core {
     ) {
         try {
             ByteBuffer bb = ByteBuffer.allocate(32);
-            String header = "Axoloti Core";
+            String header = "Ksoloti Core";
             bb.rewind();
             bb.put(header.getBytes("UTF8"));
             while (bb.position() < 16) {
