@@ -21,7 +21,6 @@ import axoloti.object.AxoObjects;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.OSDetect;
 import axoloti.utils.Preferences;
-import axoloti.Version;
 import java.awt.EventQueue;
 import java.awt.SplashScreen;
 import java.io.File;
@@ -222,7 +221,7 @@ public class Axoloti
                     // defaultRuntime = System.getenv("HOME") + "/axoloti_runtime";
             }
             
-            String ver = axoloti.Version.AXOLOTI_SHORT_VERSION.replace(".", "_");
+            String ver = Version.AXOLOTI_SHORT_VERSION.replace(".", "_");
             File versionHome= new File(docDir + "axoloti_"+ver);
             if(versionHome.exists()) {
                 defaultHome = docDir + "axoloti_"+ver;

@@ -133,7 +133,7 @@ public class Preferences {
     @Persist
     public void Persist() {
         // called prior to serialization
-        appVersion = axoloti.Version.AXOLOTI_SHORT_VERSION;
+        appVersion = Version.AXOLOTI_SHORT_VERSION;
     }
 
     void SetDirty() {

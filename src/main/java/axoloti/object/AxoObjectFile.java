@@ -51,9 +51,9 @@ public class AxoObjectFile {
         }
     }
 
-    private static final int AVX = getVersionX(axoloti.Version.AXOLOTI_SHORT_VERSION),
-            AVY = getVersionY(axoloti.Version.AXOLOTI_SHORT_VERSION),
-            AVZ = getVersionZ(axoloti.Version.AXOLOTI_SHORT_VERSION);
+    private static final int AVX = getVersionX(Version.AXOLOTI_SHORT_VERSION),
+            AVY = getVersionY(Version.AXOLOTI_SHORT_VERSION),
+            AVZ = getVersionZ(Version.AXOLOTI_SHORT_VERSION);
 
     private static int getVersionX(String vS) {
         if (vS != null) {
@@ -113,7 +113,7 @@ public class AxoObjectFile {
     public void Validate() {
         // called after deserialializtion, stops validation
         if (appVersion != null
-                && !appVersion.equals(axoloti.Version.AXOLOTI_SHORT_VERSION)) {
+                && !appVersion.equals(Version.AXOLOTI_SHORT_VERSION)) {
             int vX = getVersionX(appVersion);
             int vY = getVersionY(appVersion);
             int vZ = getVersionZ(appVersion);
@@ -143,6 +143,6 @@ public class AxoObjectFile {
     @Persist
     public void Persist() {
         // called prior to serialization
-        appVersion = axoloti.Version.AXOLOTI_SHORT_VERSION;
+        appVersion = Version.AXOLOTI_SHORT_VERSION;
     }
 }

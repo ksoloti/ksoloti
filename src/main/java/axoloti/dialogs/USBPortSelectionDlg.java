@@ -154,17 +154,17 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             if (result < 0) {
                                 if (getOS() == OSDetect.OS.WIN) {
                                     if (result == LibUsb.ERROR_NOT_SUPPORTED) {
-                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accesseable : wrong driver installed"});
+                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accessible : wrong driver installed"});
                                     } else if (result == LibUsb.ERROR_ACCESS) {
-                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accesseable : busy?"});
+                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accessible : busy?"});
                                     } else {
-                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accesseable : " + result});
+                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accessible : " + result});
                                     }
                                 } else {
-                                    model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accesseable : " + result});
+                                    model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accessible : " + result});
                                 }
                             } else {
-                                model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "driver OK, CPU ID indeterminate"});
+                                model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "driver OK"});
                                 LibUsb.close(handle);
                             }
                         }

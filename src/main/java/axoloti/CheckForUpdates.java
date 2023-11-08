@@ -39,12 +39,12 @@ import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 public class CheckForUpdates {
 
     static public void checkForUpdates() {
-        if (axoloti.Version.AXOLOTI_VERSION.equalsIgnoreCase("(git missing)")) {
+        if (Version.AXOLOTI_VERSION.equalsIgnoreCase("(git missing)")) {
             JOptionPane.showMessageDialog(null, "No version info found.", "Checking for updates", JOptionPane.ERROR_MESSAGE);
             return;
         }
         try {
-            URL url = new URL("http://www.axoloti.com/updates/" + axoloti.Version.AXOLOTI_SHORT_VERSION + "-2");
+            URL url = new URL("http://www.axoloti.com/updates/" + Version.AXOLOTI_SHORT_VERSION + "-2");
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(url.openStream()));
             in.close();

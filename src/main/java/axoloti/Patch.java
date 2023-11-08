@@ -48,7 +48,6 @@ import axoloti.outlets.OutletInstance;
 import axoloti.outlets.OutletInt32;
 import axoloti.parameters.ParameterInstance;
 import axoloti.utils.Preferences;
-import axoloti.Version;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -139,9 +138,9 @@ public class Patch {
         }
     }
 
-    private static final int AVX = getVersionX(axoloti.Version.AXOLOTI_SHORT_VERSION),
-            AVY = getVersionY(axoloti.Version.AXOLOTI_SHORT_VERSION),
-            AVZ = getVersionZ(axoloti.Version.AXOLOTI_SHORT_VERSION);
+    private static final int AVX = getVersionX(Version.AXOLOTI_SHORT_VERSION),
+            AVY = getVersionY(Version.AXOLOTI_SHORT_VERSION),
+            AVZ = getVersionZ(Version.AXOLOTI_SHORT_VERSION);
 
     private static int getVersionX(String vS) {
         if (vS != null) {
@@ -197,7 +196,7 @@ public class Patch {
     public void Validate() {
         // called after deserialializtion, stops validation
         if (appVersion != null
-                && !appVersion.equals(axoloti.Version.AXOLOTI_SHORT_VERSION)) {
+                && !appVersion.equals(Version.AXOLOTI_SHORT_VERSION)) {
             int vX = getVersionX(appVersion);
             int vY = getVersionY(appVersion);
             int vZ = getVersionZ(appVersion);
@@ -231,7 +230,7 @@ public class Patch {
     @Persist
     public void Persist() {
         // called prior to serialization
-        appVersion = axoloti.Version.AXOLOTI_SHORT_VERSION;
+        appVersion = Version.AXOLOTI_SHORT_VERSION;
     }
 
     MainFrame GetMainFrame() {
