@@ -101,26 +101,26 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        jLabelMIDIChannel = new javax.swing.JLabel();
         jSpinnerMidiChannel = new javax.swing.JSpinner();
         jSpinnerNumPresets = new javax.swing.JSpinner();
-        jLabel2 = new javax.swing.JLabel();
+        jLabelSubpatchMode = new javax.swing.JLabel();
         jComboBoxMode = new javax.swing.JComboBox();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        jLabelMonoWithBypass = new javax.swing.JLabel();
+        jLabelNumberOfPresets = new javax.swing.JLabel();
+        jLabelEntriesPerPreset = new javax.swing.JLabel();
         jSpinnerPresetEntries = new javax.swing.JSpinner();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
+        jLabelMaxModulationSources = new javax.swing.JLabel();
+        jLabelMaxModulationTargets = new javax.swing.JLabel();
         jSpinnerModulationSources = new javax.swing.JSpinner();
         jSpinnerModulationTargets = new javax.swing.JSpinner();
         jCheckBoxHasChannelAttrib = new javax.swing.JCheckBox();
         jTextFieldAuthor = new javax.swing.JTextField();
         jComboBoxLicense = new javax.swing.JComboBox();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        jLabelAuthor = new javax.swing.JLabel();
+        jLabelLicense = new javax.swing.JLabel();
         jCheckBoxSaturate = new javax.swing.JCheckBox();
-        jLabel10 = new javax.swing.JLabel();
+        jLabelAttributions = new javax.swing.JLabel();
         jTextFieldAttributions = new javax.swing.JTextField();
 
         addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -132,7 +132,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
             }
         });
 
-        jLabel1.setText("MIDI Channel");
+        jLabelMIDIChannel.setText("MIDI Channel");
 
         jSpinnerMidiChannel.setModel(new javax.swing.SpinnerNumberModel(0, 0, 15, 1));
         jSpinnerMidiChannel.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -148,7 +148,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
             }
         });
 
-        jLabel2.setText("Subpatch mode");
+        jLabelSubpatchMode.setText("Subpatch mode");
 
         jComboBoxMode.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "No", "Mono", "Mono with bypass", "Polyphonic", "Polyphonic Multichannel", "Polyphonic Expression" }));
         jComboBoxMode.addActionListener(new java.awt.event.ActionListener() {
@@ -157,11 +157,11 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
             }
         });
 
-        jLabel3.setText("Mono with bypass not implemented");
+        jLabelMonoWithBypass.setText("Mono with bypass not implemented");
 
-        jLabel4.setText("Number of presets");
+        jLabelNumberOfPresets.setText("Number of presets");
 
-        jLabel5.setText("Entries per preset");
+        jLabelEntriesPerPreset.setText("Entries per preset");
 
         jSpinnerPresetEntries.setModel(new javax.swing.SpinnerNumberModel(0, 0, 15, 1));
         jSpinnerPresetEntries.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -170,9 +170,9 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
             }
         });
 
-        jLabel6.setText("Maximum number of modulation sources");
+        jLabelMaxModulationSources.setText("Maximum number of modulation sources");
 
-        jLabel7.setText("Maximum number of modulation targets");
+        jLabelMaxModulationTargets.setText("Maximum number of modulation targets");
 
         jSpinnerModulationSources.setModel(new javax.swing.SpinnerNumberModel(0, 0, 15, 1));
         jSpinnerModulationSources.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -210,9 +210,9 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
             }
         });
 
-        jLabel8.setText("Author");
+        jLabelAuthor.setText("Author");
 
-        jLabel9.setText("License");
+        jLabelLicense.setText("License");
 
         jCheckBoxSaturate.setText("Saturate audio output");
         jCheckBoxSaturate.addActionListener(new java.awt.event.ActionListener() {
@@ -221,7 +221,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
             }
         });
 
-        jLabel10.setText("Attributions");
+        jLabelAttributions.setText("Attributions");
 
         jTextFieldAttributions.setText("jTextField1");
         jTextFieldAttributions.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -242,36 +242,36 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelAuthor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel9)
+                                .addComponent(jLabelLicense)
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jTextFieldAuthor, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
                             .addComponent(jComboBoxLicense, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
+                        .addComponent(jLabelSubpatchMode)
                         .addGap(22, 22, 22)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jComboBoxMode, 0, 1, Short.MAX_VALUE)
                             .addComponent(jCheckBoxHasChannelAttrib, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
+                                .addComponent(jLabelMonoWithBypass)
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabelAttributions, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(5, 5, 5)
                                 .addComponent(jTextFieldAttributions, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel6)
-                                    .addComponent(jLabel7))
+                                    .addComponent(jLabelMIDIChannel)
+                                    .addComponent(jLabelEntriesPerPreset)
+                                    .addComponent(jLabelNumberOfPresets)
+                                    .addComponent(jLabelMaxModulationSources)
+                                    .addComponent(jLabelMaxModulationTargets))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(18, 18, 18)
@@ -292,41 +292,41 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldAuthor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8))
+                    .addComponent(jLabelAuthor))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBoxLicense, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel9))
+                    .addComponent(jLabelLicense))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldAttributions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10))
+                    .addComponent(jLabelAttributions))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jSpinnerMidiChannel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addComponent(jLabelMIDIChannel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
+                    .addComponent(jLabelNumberOfPresets)
                     .addComponent(jSpinnerNumPresets, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jSpinnerPresetEntries, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5))
+                    .addComponent(jLabelEntriesPerPreset))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
+                    .addComponent(jLabelMaxModulationSources)
                     .addComponent(jSpinnerModulationSources, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
+                    .addComponent(jLabelMaxModulationTargets)
                     .addComponent(jSpinnerModulationTargets, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBoxMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
+                    .addComponent(jLabelSubpatchMode))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
+                .addComponent(jLabelMonoWithBypass)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jCheckBoxHasChannelAttrib)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -431,16 +431,16 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
     private javax.swing.JCheckBox jCheckBoxSaturate;
     private javax.swing.JComboBox jComboBoxLicense;
     private javax.swing.JComboBox jComboBoxMode;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabelMIDIChannel;
+    private javax.swing.JLabel jLabelAttributions;
+    private javax.swing.JLabel jLabelSubpatchMode;
+    private javax.swing.JLabel jLabelMonoWithBypass;
+    private javax.swing.JLabel jLabelNumberOfPresets;
+    private javax.swing.JLabel jLabelEntriesPerPreset;
+    private javax.swing.JLabel jLabelMaxModulationSources;
+    private javax.swing.JLabel jLabelMaxModulationTargets;
+    private javax.swing.JLabel jLabelAuthor;
+    private javax.swing.JLabel jLabelLicense;
     private javax.swing.JSpinner jSpinnerMidiChannel;
     private javax.swing.JSpinner jSpinnerModulationSources;
     private javax.swing.JSpinner jSpinnerModulationTargets;
