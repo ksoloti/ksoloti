@@ -15,7 +15,6 @@ portaudio-r1891-build/*
 portaudio/*
 win32tools/
 chibios/
-chibios_2.6.5/
 patch/xpatch.c
 patch/xpatch.cpp
 patch/xpatch.elf
@@ -29,7 +28,7 @@ patch/xpatch.map
 /target/
 /build/
 /nbproject/private/
-/dist/
+# /dist/
 hs_err_*.log
 axoloti_osx.zip
 private_key.*
@@ -40,6 +39,7 @@ patches
 objects
 axoloti-contrib
 axoloti-factory
+ksoloti-objects
 
 
 #Version file
