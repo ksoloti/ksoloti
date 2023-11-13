@@ -115,21 +115,21 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         if (result < 0) {
             if (getOS() == OSDetect.OS.WIN) {
                 if (result == LibUsb.ERROR_NOT_FOUND) {
-                    return "not accesseable : driver not installed";
+                    return "Not accessible: driver not installed";
                 } else if (result == LibUsb.ERROR_ACCESS) {
-                    return "not accesseable : busy?";
+                    return "Not accessible: busy?";
                 } else {
-                    return "not accesseable : " + result;
+                    return "Not accessible: " + result;
                 }
             } else if (getOS() == OSDetect.OS.LINUX) {
                 if (result == LibUsb.ERROR_ACCESS) {
                     return "insufficient permissions";
                     // log message:  - install udev rules by running axoloti/platform/linux/add_udev_rules.sh"
                 } else {
-                    return "not accesseable : " + result;
+                    return "Not accessible: " + result;
                 }
             } else {
-                return "not accesseable : " + result;
+                return "Not accessible: " + result;
             }
         } else {
             return null;
@@ -150,7 +150,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
         try
         {
-            // Iterate over all devices and scan for the right one
+            /* Iterate over all devices and scan for the right one */
             for (Device device : list)
             {
                 DeviceDescriptor descriptor = new DeviceDescriptor();
@@ -170,25 +170,25 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                                 {
                                     if (result == LibUsb.ERROR_NOT_SUPPORTED)
                                     {
-                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accessible : wrong driver installed"});
+                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Not accessible: wrong driver installed"});
                                     }
                                     else if (result == LibUsb.ERROR_ACCESS)
                                     {
-                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accessible : busy?"});
+                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Not accessible: busy?"});
                                     }
                                     else
                                     {
-                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accessible : " + result});
+                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Not accessible: " + result});
                                     }
                                 }
                                 else
                                 {
-                                    model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "not accessible : " + result});
+                                    model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Not accessible: " + result});
                                 }
                             }
                             else
                             {
-                                model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "driver OK"});
+                                model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Driver OK"});
                                 LibUsb.close(handle);
                             }
                         }
