@@ -230,7 +230,7 @@ public class Preferences {
     }
 
     static String GetPrefsFileLoc() {
-        return System.getProperty(axoloti.Axoloti.HOME_DIR) + File.separator + "axoloti.prefs";
+        return System.getProperty(axoloti.Axoloti.HOME_DIR) + File.separator + "ksoloti.prefs";
     }
 
     private static Preferences singleton;
@@ -431,12 +431,12 @@ public class Preferences {
             );
             libraries.add(factory);
 
-            libraries.add(new AxoFileLibrary(
-                    "home",
-                    "local",
-                    new File(System.getProperty(axoloti.Axoloti.HOME_DIR)).getCanonicalPath() + File.separator,
-                    true
-            ));
+            // libraries.add(new AxoFileLibrary(
+            //         "home",
+            //         "local",
+            //         new File(System.getProperty(axoloti.Axoloti.HOME_DIR)).getCanonicalPath() + File.separator,
+            //         true
+            // ));
 
             libraries.add(new AxoGitLibrary(
                     AxolotiLibrary.USER_LIBRARY_ID,
@@ -444,6 +444,15 @@ public class Preferences {
                     new File(System.getProperty(axoloti.Axoloti.HOME_DIR) + File.separator + "axoloti-contrib").getCanonicalPath() + File.separator,
                     true,
                     "https://github.com/axoloti/axoloti-contrib.git",
+                    false
+            ));
+
+            libraries.add(new AxoGitLibrary(
+                    AxolotiLibrary.KSOLOTI_LIBRARY_ID,
+                    "git",
+                    new File(System.getProperty(axoloti.Axoloti.HOME_DIR) + File.separator + "ksoloti-objects").getCanonicalPath() + File.separator,
+                    true,
+                    "https://github.com/ksoloti/ksoloti-objects.git",
                     false
             ));
         } catch(IOException ex) {
