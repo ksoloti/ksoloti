@@ -76,7 +76,8 @@ public class axoloti_core {
     }
 
     public int getSDRAMSize() {
-        return 8 * 1024 * 1024;
+        // return 8 * 1024 * 1024; /* 8MB  */
+        return  32 * 1024 * 1024;  /* 32MB */
     }
 
     public int getOTPAddr() {
