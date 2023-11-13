@@ -215,7 +215,7 @@ static const USBMassStorageConfig msdConfig =
     (BaseBlockDevice*)&SDCD1,
     USB_MS_DATA_EP,
     &usbActivity,
-    "Axoloti",
+    "Ksoloti",
     "Cardreader",
     "0.1"
 };
