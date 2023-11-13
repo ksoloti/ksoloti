@@ -280,6 +280,7 @@ public class FileMenu extends JMenu {
         for (AxolotiLibrary lib : Preferences.LoadPreferences().getLibraries()) {
             lib.sync();
         }
+        Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "");
         axoObjects.LoadAxoObjects();
     }
 

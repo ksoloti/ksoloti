@@ -64,10 +64,10 @@ public class Preferences {
     @Deprecated
     @Element(required = false)
     String MidiInputDevice;
-    @Element(required = false)
-    String RuntimeDir;
-    @Element(required = false)
-    String FirmwareDir;
+    // @Element(required = false)
+    // String RuntimeDir;
+    // @Element(required = false)
+    // String FirmwareDir;
     @Element(required = false)
     String FavouriteDir;
     @Element(required = false)
@@ -103,7 +103,7 @@ public class Preferences {
         ObjectSearchPath = null;
 
         if (PollInterval == null) {
-            PollInterval = 50;
+            PollInterval = 40;
         }
         if (MouseDialAngular == null) {
             MouseDialAngular = false;
@@ -258,20 +258,20 @@ public class Preferences {
                     prefs = new Preferences();
                 }
                 singleton = prefs;
-                if (prefs.RuntimeDir
-                        == null) {
-                    prefs.RuntimeDir = System.getProperty(axoloti.Axoloti.RUNTIME_DIR);
-                    prefs.SetDirty();
-                } else {
-                    System.setProperty(axoloti.Axoloti.RUNTIME_DIR, prefs.RuntimeDir);
-                }
-                if (prefs.FirmwareDir
-                        == null) {
-                    prefs.FirmwareDir = System.getProperty(axoloti.Axoloti.FIRMWARE_DIR);
-                    prefs.SetDirty();
-                } else {
-                    System.setProperty(axoloti.Axoloti.FIRMWARE_DIR, prefs.FirmwareDir);
-                }
+                // if (prefs.RuntimeDir
+                //         == null) {
+                //     prefs.RuntimeDir = System.getProperty(axoloti.Axoloti.RUNTIME_DIR);
+                //     prefs.SetDirty();
+                // } else {
+                //     System.setProperty(axoloti.Axoloti.RUNTIME_DIR, prefs.RuntimeDir);
+                // }
+                // if (prefs.FirmwareDir
+                //         == null) {
+                //     prefs.FirmwareDir = System.getProperty(axoloti.Axoloti.FIRMWARE_DIR);
+                //     prefs.SetDirty();
+                // } else {
+                //     System.setProperty(axoloti.Axoloti.FIRMWARE_DIR, prefs.FirmwareDir);
+                // }
 
                 if (prefs.libraries.isEmpty()) {
                     prefs.ResetLibraries(false);
@@ -372,15 +372,15 @@ public class Preferences {
         SetDirty();
     }
 
-    public void SetFirmwareDir(String dir) {
-        FirmwareDir = dir;
-        System.setProperty(axoloti.Axoloti.FIRMWARE_DIR, dir);
-    }
+    // public void SetFirmwareDir(String dir) {
+    //     FirmwareDir = dir;
+    //     System.setProperty(axoloti.Axoloti.FIRMWARE_DIR, dir);
+    // }
 
-    public void SetRuntimeDir(String dir) {
-        RuntimeDir = dir;
-        System.setProperty(axoloti.Axoloti.RUNTIME_DIR, dir);
-    }
+    // public void SetRuntimeDir(String dir) {
+    //     RuntimeDir = dir;
+    //     System.setProperty(axoloti.Axoloti.RUNTIME_DIR, dir);
+    // }
 
     public String getBoardName(String cpu) {
         if (cpu == null) {

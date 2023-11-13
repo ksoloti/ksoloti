@@ -63,8 +63,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
         jTextFieldPollInterval.setText(Integer.toString(prefs.getPollInterval()));
         txtFavDir.setText(prefs.getFavouriteDir());
-        txtFirmwareDir.setText(System.getProperty(axoloti.Axoloti.FIRMWARE_DIR));
-        txtRuntimeDir.setText(System.getProperty(axoloti.Axoloti.RUNTIME_DIR));
+        // txtFirmwareDir.setText(System.getProperty(axoloti.Axoloti.FIRMWARE_DIR));
+        // txtRuntimeDir.setText(System.getProperty(axoloti.Axoloti.RUNTIME_DIR));
         jControllerEnabled.setSelected(prefs.isControllerEnabled());
         jTextFieldController.setText(prefs.getControllerObject());
         jTextFieldController.setEnabled(prefs.isControllerEnabled());
@@ -132,12 +132,12 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jLabelDialMouseBehaviour = new javax.swing.JLabel();
         jComboBoxDialMouseBehaviour = new javax.swing.JComboBox();
         jLabelFavouritesDir = new javax.swing.JLabel();
-        jLabelFirmwareDir = new javax.swing.JLabel();
-        txtFirmwareDir = new javax.swing.JLabel();
-        jLabelRuntimeDir = new javax.swing.JLabel();
-        txtRuntimeDir = new javax.swing.JLabel();
-        btnFirmwareDir = new javax.swing.JButton();
-        btnRuntimeDir = new javax.swing.JButton();
+        // jLabelFirmwareDir = new javax.swing.JLabel();
+        // txtFirmwareDir = new javax.swing.JLabel();
+        // jLabelRuntimeDir = new javax.swing.JLabel();
+        // txtRuntimeDir = new javax.swing.JLabel();
+        // btnFirmwareDir = new javax.swing.JButton();
+        // btnRuntimeDir = new javax.swing.JButton();
         txtFavDir = new javax.swing.JLabel();
         btnFavDir = new javax.swing.JButton();
         jLabelController = new javax.swing.JLabel();
@@ -155,11 +155,11 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jCheckBoxNoMouseReCenter = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowActivated(java.awt.event.WindowEvent evt) {
-                formWindowActivated(evt);
-            }
-        });
+        // addWindowListener(new java.awt.event.WindowAdapter() {
+        //     public void windowActivated(java.awt.event.WindowEvent evt) {
+        //         formWindowActivated(evt);
+        //     }
+        // });
 
         jTextFieldPollInterval.setText("jTextField1");
         jTextFieldPollInterval.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
@@ -186,29 +186,29 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
         jLabelFavouritesDir.setText("Favourites Dir");
 
-        jLabelFirmwareDir.setText("Firmware Dir");
+        // jLabelFirmwareDir.setText("Firmware Dir");
 
-        txtFirmwareDir.setText("test");
+        // txtFirmwareDir.setText("test");
 
-        jLabelRuntimeDir.setText("Runtime Dir");
+        // jLabelRuntimeDir.setText("Runtime Dir");
 
-        txtRuntimeDir.setText("test");
+        // txtRuntimeDir.setText("test");
 
         txtFavDir.setText("test");
 
-        btnFirmwareDir.setText("Browse...");
-        btnFirmwareDir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnFirmwareDirActionPerformed(evt);
-            }
-        });
+        // btnFirmwareDir.setText("Browse...");
+        // btnFirmwareDir.addActionListener(new java.awt.event.ActionListener() {
+        //     public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //         btnFirmwareDirActionPerformed(evt);
+        //     }
+        // });
 
-        btnRuntimeDir.setText("Browse...");
-        btnRuntimeDir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRuntimeDirActionPerformed(evt);
-            }
-        });
+        // btnRuntimeDir.setText("Browse...");
+        // btnRuntimeDir.addActionListener(new java.awt.event.ActionListener() {
+        //     public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //         btnRuntimeDirActionPerformed(evt);
+        //     }
+        // });
 
 
         btnFavDir.setText("Browse...");
@@ -334,8 +334,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
 
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelFirmwareDir)
-                            .addComponent(jLabelRuntimeDir)
+                            // .addComponent(jLabelFirmwareDir)
+                            // .addComponent(jLabelRuntimeDir)
                             .addComponent(jLabelFavouritesDir)
                             .addComponent(jLabelLibraries)
                         )
@@ -343,15 +343,15 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(txtFirmwareDir, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                // .addGap(288, 288, 288)
-                            )
+                            // .addGroup(layout.createSequentialGroup()
+                            //     .addComponent(txtFirmwareDir, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            //     // .addGap(288, 288, 288)
+                            // )
 
                             .addGroup(layout.createSequentialGroup()
 
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtRuntimeDir, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    // .addComponent(txtRuntimeDir, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(txtFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 )
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -359,8 +359,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
                         )
 
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnRuntimeDir, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnFirmwareDir, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            // .addComponent(btnRuntimeDir, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            // .addComponent(btnFirmwareDir, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         )
                         .addGap(16, 16, 16))
@@ -440,19 +440,19 @@ public class PreferencesFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
 
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnRuntimeDir)
-                    .addComponent(txtRuntimeDir)
-                    .addComponent(jLabelRuntimeDir)
-                )
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                // .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                //     .addComponent(btnRuntimeDir)
+                //     .addComponent(txtRuntimeDir)
+                //     .addComponent(jLabelRuntimeDir)
+                // )
+                // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabelFirmwareDir)
-                    .addComponent(txtFirmwareDir)
-                    .addComponent(btnFirmwareDir)
-                )
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                // .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                //     .addComponent(jLabelFirmwareDir)
+                //     .addComponent(txtFirmwareDir)
+                //     .addComponent(btnFirmwareDir)
+                // )
+                // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtFavDir)
@@ -540,44 +540,44 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private void jComboBoxDialMouseBehaviourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxDialMouseBehaviourActionPerformed
     }//GEN-LAST:event_jComboBoxDialMouseBehaviourActionPerformed
 
-    private void btnFirmwareDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFirmwareDirActionPerformed
-        JFileChooser chooser = new JFileChooser(Preferences.LoadPreferences().getCurrentFileDirectory());
-        chooser.setPreferredSize(new java.awt.Dimension(320, 480));
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setAcceptAllFileFilterUsed(false);
-        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            String dir;
-            try {
-                dir = chooser.getSelectedFile().getCanonicalPath();
-                Preferences.LoadPreferences().SetFirmwareDir(dir);
-                txtFirmwareDir.setText(dir);
-            } catch (IOException ex) {
-                Logger.getLogger(PreferencesFrame.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }//GEN-LAST:event_btnFirmwareDirActionPerformed
+    // private void btnFirmwareDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFirmwareDirActionPerformed
+    //     JFileChooser chooser = new JFileChooser(Preferences.LoadPreferences().getCurrentFileDirectory());
+    //     chooser.setPreferredSize(new java.awt.Dimension(320, 480));
+    //     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    //     chooser.setAcceptAllFileFilterUsed(false);
+    //     if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+    //         String dir;
+    //         try {
+    //             dir = chooser.getSelectedFile().getCanonicalPath();
+    //             Preferences.LoadPreferences().SetFirmwareDir(dir);
+    //             txtFirmwareDir.setText(dir);
+    //         } catch (IOException ex) {
+    //             Logger.getLogger(PreferencesFrame.class.getName()).log(Level.SEVERE, null, ex);
+    //         }
+    //     }
+    // }//GEN-LAST:event_btnFirmwareDirActionPerformed
 
-    private void btnRuntimeDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRuntimeDirActionPerformed
-        JFileChooser chooser = new JFileChooser(Preferences.LoadPreferences().getCurrentFileDirectory());
-        chooser.setPreferredSize(new java.awt.Dimension(320, 480));
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setAcceptAllFileFilterUsed(false);
-        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            String dir;
-            try {
-                dir = chooser.getSelectedFile().getCanonicalPath();
-                Preferences.LoadPreferences().SetRuntimeDir(dir);
-                txtRuntimeDir.setText(dir);
-            } catch (IOException ex) {
-                Logger.getLogger(PreferencesFrame.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }//GEN-LAST:event_btnRuntimeDirActionPerformed
+    // private void btnRuntimeDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRuntimeDirActionPerformed
+    //     JFileChooser chooser = new JFileChooser(Preferences.LoadPreferences().getCurrentFileDirectory());
+    //     chooser.setPreferredSize(new java.awt.Dimension(320, 480));
+    //     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    //     chooser.setAcceptAllFileFilterUsed(false);
+    //     if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+    //         String dir;
+    //         try {
+    //             dir = chooser.getSelectedFile().getCanonicalPath();
+    //             Preferences.LoadPreferences().SetRuntimeDir(dir);
+    //             txtRuntimeDir.setText(dir);
+    //         } catch (IOException ex) {
+    //             Logger.getLogger(PreferencesFrame.class.getName()).log(Level.SEVERE, null, ex);
+    //         }
+    //     }
+    // }//GEN-LAST:event_btnRuntimeDirActionPerformed
 
-    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
-        txtFirmwareDir.setText(System.getProperty(axoloti.Axoloti.FIRMWARE_DIR));
-        txtRuntimeDir.setText(System.getProperty(axoloti.Axoloti.RUNTIME_DIR));
-    }//GEN-LAST:event_formWindowActivated
+    // private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+    //     txtFirmwareDir.setText(System.getProperty(axoloti.Axoloti.FIRMWARE_DIR));
+    //     txtRuntimeDir.setText(System.getProperty(axoloti.Axoloti.RUNTIME_DIR));
+    // }//GEN-LAST:event_formWindowActivated
 
     private void btnFavDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFavDirActionPerformed
         JFileChooser chooser = new JFileChooser(Preferences.LoadPreferences().getCurrentFileDirectory());

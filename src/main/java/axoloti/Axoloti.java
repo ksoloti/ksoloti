@@ -262,11 +262,11 @@ public class Axoloti
 
         Preferences prefs = Preferences.LoadPreferences();
         if (versionedHome) {
-            String fwDir = System.getProperty(axoloti.Axoloti.FIRMWARE_DIR);
-            if(! fwDir.startsWith(System.getProperty(RELEASE_DIR)) && !fwDir.startsWith(System.getProperty(HOME_DIR))) {
-                System.out.println("Using versioned home, will reset firmware");
-                prefs.SetFirmwareDir(System.getProperty(RELEASE_DIR) + File.separator + "firmware");
-            }
+            // String fwDir = System.getProperty(axoloti.Axoloti.FIRMWARE_DIR);
+            // if(! fwDir.startsWith(System.getProperty(RELEASE_DIR)) && !fwDir.startsWith(System.getProperty(HOME_DIR))) {
+            //     System.out.println("Using versioned home, will reset firmware");
+            //     prefs.SetFirmwareDir(System.getProperty(RELEASE_DIR) + File.separator + "firmware");
+            // }
 
             AxolotiLibrary lib = prefs.getLibrary(AxolotiLibrary.FACTORY_ID);
             if(lib != null) {
