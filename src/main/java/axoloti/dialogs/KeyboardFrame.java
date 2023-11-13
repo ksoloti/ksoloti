@@ -95,12 +95,13 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         jPanelKeyb = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0));
+        Dimension di = new java.awt.Dimension(5,0);
+        filler1 = new javax.swing.Box.Filler(di, di, di);
         jSpinner1 = new javax.swing.JSpinner();
-        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0));
+        filler2 = new javax.swing.Box.Filler(di, di, di);
         jLabel2 = new javax.swing.JLabel();
         jSliderVelocity = new javax.swing.JSlider();
-        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0));
+        filler4 = new javax.swing.Box.Filler(di, di, di);
         jButtonAllNotesOff = new javax.swing.JButton();
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0), new java.awt.Dimension(32767, 0));
 
@@ -130,9 +131,9 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         jPanel1.add(filler1);
 
         jSpinner1.setModel(new javax.swing.SpinnerNumberModel(1, 1, 16, 1));
-        jSpinner1.setMaximumSize(null);
-        jSpinner1.setMinimumSize(null);
-        jSpinner1.setPreferredSize(new java.awt.Dimension(0, 25));
+        jSpinner1.setMaximumSize(new java.awt.Dimension(40, 25));
+        jSpinner1.setMinimumSize(new java.awt.Dimension(40, 25));
+        jSpinner1.setPreferredSize(new java.awt.Dimension(40, 25));
         jPanel1.add(jSpinner1);
         jPanel1.add(filler2);
 
@@ -144,7 +145,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         jSliderVelocity.setMinimum(1);
         jSliderVelocity.setPaintTicks(true);
         jSliderVelocity.setValue(80);
-        jSliderVelocity.setMinimumSize(new java.awt.Dimension(64, 31));
+        jSliderVelocity.setMinimumSize(new java.awt.Dimension(128, 31));
         jPanel1.add(jSliderVelocity);
         jPanel1.add(filler4);
 

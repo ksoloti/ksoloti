@@ -55,7 +55,7 @@ public abstract class Connection {
         if (isConnected()) {
             csl.ShowConnect();
         } else {
-            csl.ShowDisconnect();            
+            csl.ShowDisconnect();
         }
         csls.add(csl);
     }

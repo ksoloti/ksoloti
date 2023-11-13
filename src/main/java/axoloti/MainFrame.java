@@ -295,12 +295,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Failsafe mode activated");
                         tsuf = "Failsafe";
                     }
-                    if (Axoloti.isDeveloper()) {
-                        if (tsuf.length() > 0) {
-                            tsuf += ",";
-                        }
-                        tsuf += "Developer";
-                    }
+                    // if (Axoloti.isDeveloper()) {
+                    //     if (tsuf.length() > 0) {
+                    //         tsuf += ",";
+                    //     }
+                    //     tsuf += "Developer";
+                    // }
                     if (tsuf.length() > 0) {
                         MainFrame.this.setTitle(MainFrame.this.getTitle() + " (" + tsuf + ")");
                     }
@@ -375,7 +375,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         EventQueue.invokeLater(initr);
 
-        for (String arg : args) {
+        for (String arg : args) { //TODO check why always opening new instance
             if (!arg.startsWith("-")) {
                 if (arg.endsWith(".axp") || arg.endsWith(".axs") || arg.endsWith(".axh")) {
                     final File f = new File(arg);
@@ -492,7 +492,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jLabel1.setText("jLabel1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Axoloti");
+        setTitle("Ksoloti");
         setMinimumSize(new java.awt.Dimension(320, 180));
         setPreferredSize(new java.awt.Dimension(600, 400));
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -517,7 +517,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelColumn2.setLayout(new javax.swing.BoxLayout(jPanelColumn2, javax.swing.BoxLayout.PAGE_AXIS));
 
         jToggleButtonConnect.setFocusable(false);
-        jToggleButtonConnect.setText("   Connect   ");
+        jToggleButtonConnect.setText("  Connect  ");
         jToggleButtonConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 // jCheckBoxConnectActionPerformed(evt);
@@ -539,11 +539,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelColumn3.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jPanelColumn3.setLayout(new javax.swing.BoxLayout(jPanelColumn3, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jLabelCPUID.setText("CPU ID");
+        jLabelCPUID.setText("Board ID");
         jPanelColumn3.add(jLabelCPUID);
 
-        jLabelFirmwareID.setText("Firmware ID");
-        jPanelColumn3.add(jLabelFirmwareID);
+        // jLabelFirmwareID.setText("Firmware ID");
+        // jPanelColumn3.add(jLabelFirmwareID);
 
         jLabelVoltages.setText("Voltage Monitor");
         jPanelColumn3.add(jLabelVoltages);
@@ -611,8 +611,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuBoard.add(jMenuItemSelectCom);
 
         jMenuItemFConnect.setMnemonic('C');
-        // jMenuItemFConnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
-        // KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
+        jMenuItemFConnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
+                                         KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuItemFConnect.setText("Connect");
         jMenuItemFConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -621,9 +621,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuBoard.add(jMenuItemFConnect);
 
-        jMenuItemFDisconnect.setMnemonic('D');
-        // jMenuItemFDisconnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
-        // KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
+        jMenuItemFDisconnect.setMnemonic('C');
+        jMenuItemFDisconnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
+                                            KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuItemFDisconnect.setText("Disconnect");
         jMenuItemFDisconnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1093,7 +1093,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         else
         {
             jToggleButtonConnect.setForeground(null);
-            jToggleButtonConnect.setText("   Connect   ");
+            jToggleButtonConnect.setText("  Connect  ");
         }
 
         jToggleButtonConnect.setSelected(connect);
@@ -1137,7 +1137,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             String name = MainFrame.prefs.getBoardName(cpuId);
             String txt;
             if (name == null) {
-                jLabelCPUID.setText("CPU ID: " + cpuId);
+                jLabelCPUID.setText("Board ID: " + cpuId);
             } else {
                 jLabelCPUID.setText("Board Name: " + name);
             }
