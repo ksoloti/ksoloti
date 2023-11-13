@@ -49,7 +49,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
     public void reportStatus() {
         File f = new File(getLocalLocation());
         if (!f.exists()) {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Status: {0} - Local directory missing ", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Library status: {0} - Local directory missing ", logDetails());
         }
 
         Git git = getGit();
@@ -57,7 +57,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             reportStatus(git);
             git.getRepository().close();
         } else {
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Status FAILED - Cannot find submodule: {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Library status FAILED - Cannot find submodule: {0}", logDetails());
         }
     }
 
@@ -481,7 +481,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
                 details.append("dirty");
             }
 
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Status: {0} - {1}  ({2})", new Object[]{logDetails(), overallStatus, details.toString()});
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Library status: {0} - {1}  ({2})", new Object[]{logDetails(), overallStatus, details.toString()});
             if (!status.isClean()) {
                 Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Changes for: {0}", logDetails());
                 for (String f : status.getAdded()) {
@@ -515,10 +515,10 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Status: exception {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Library status: exception {0}", logDetails());
         } catch (NoWorkTreeException ex) {
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Status: exception {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Library status: exception {0}", logDetails());
         }
         return false;
     }

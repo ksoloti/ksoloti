@@ -273,7 +273,7 @@ public class USBBulkConnection extends Connection {
             } catch (InterruptedException ex) {
                 Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
-            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.WARNING, "Connected");
+            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.WARNING, "Connected\n");
 
             try {
                 Thread.sleep(100);
@@ -311,7 +311,7 @@ public class USBBulkConnection extends Connection {
             if (signature == null) {
                 Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Can''t obtain signature, upgrade firmware?");
             } else if ((signature.getInt(0) == 0xFFFFFFFF) && (signature.getInt(1) == 0xFFFFFFFF)) {
-                Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Can''t validate authenticity, no signature present.");
+                // Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Can''t validate authenticity, no signature present.");
             } else {
                 signaturevalid = HWSignature.Verify(targetProfile.getCPUSerial(), otpInfo, bb2ba(signature));
                 if (signaturevalid) {

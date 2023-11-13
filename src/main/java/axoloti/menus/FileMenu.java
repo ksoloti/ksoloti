@@ -135,7 +135,7 @@ public class FileMenu extends JMenu {
         insert(libraryMenu1, pos++);
 
         favouriteMenu1.setMnemonic('V');
-        favouriteMenu1.setText("Favorites");
+        favouriteMenu1.setText("Favourites");
         insert(favouriteMenu1, pos++);
 
         add(jSeparator1);
