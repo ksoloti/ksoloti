@@ -37,7 +37,7 @@ static const uint8_t vcom_device_descriptor_data[18] = {
                          0x01,          /* bDeviceProtocol. (IAD)           */
                          0x40,          /* bMaxPacketSize.                  */
                          0x16C0,        /* idVendor (Voti).                 */
-                         0x0442,        /* idProduct.                       */
+                         0x0444,        /* idProduct.(Axoloti is 0x0442)*/
                          0x0200,        /* bcdDevice.                       */
                          1,             /* iManufacturer.                   */
                          5,             /* iProduct.                        */

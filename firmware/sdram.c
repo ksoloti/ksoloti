@@ -88,9 +88,9 @@ void SDRAM_Init(void) {
   /* FMC SDRAM control configuration */
   FMC_SDRAMInitStructure.FMC_Bank = FMC_Bank1_SDRAM;
   /* Row addressing: [7:0] */
-  FMC_SDRAMInitStructure.FMC_ColumnBitsNumber = FMC_ColumnBits_Number_8b;
+  FMC_SDRAMInitStructure.FMC_ColumnBitsNumber = FMC_ColumnBits_Number_9b;
   /* Column addressing: [11:0] */
-  FMC_SDRAMInitStructure.FMC_RowBitsNumber = FMC_RowBits_Number_12b;
+  FMC_SDRAMInitStructure.FMC_RowBitsNumber = FMC_RowBits_Number_13b;
   FMC_SDRAMInitStructure.FMC_SDMemoryDataWidth = SDRAM_MEMORY_WIDTH; // 16bit
   FMC_SDRAMInitStructure.FMC_InternalBankNumber = FMC_InternalBank_Number_4;
   FMC_SDRAMInitStructure.FMC_CASLatency = SDRAM_CAS_LATENCY; // 2
@@ -129,10 +129,10 @@ void configSDRAM(void) {
 }
 
 void memTest(void) {
-  int memSize = 8 * 1024 * 1024; // 8MB
+  uint32_t memSize = 32 * 1024 * 1024; // 32MB
   void *base;
   base = (void *)0xC0000000;
-  int i;
+  uint32_t i;
   // 4MB test
   const uint32_t a = 22695477;
   const uint32_t c = 1;
