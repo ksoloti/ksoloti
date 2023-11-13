@@ -670,7 +670,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuFirmware.add(jMenuItemFlashDefault);
 
         jMenuItemFlashUser.setMnemonic('F');
-        jMenuItemFlashUser.setText("Flash (User)");
+        jMenuItemFlashUser.setText("Flash");
         jMenuItemFlashUser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemFlashUserActionPerformed(evt);

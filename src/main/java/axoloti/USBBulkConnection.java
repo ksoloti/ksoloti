@@ -68,7 +68,8 @@ public class USBBulkConnection extends Connection {
     private final Context context;
     private DeviceHandle handle;
     private final short bulkVID = (short) 0x16C0;
-    private final short bulkPID = (short) 0x0442;
+    private final short bulkPIDAxoloti = (short) 0x0442;
+    private final short bulkPIDKsoloti = (short) 0x0444;
     private final int interfaceNumber = 2;
 
     protected USBBulkConnection() {
@@ -169,7 +170,7 @@ public class USBBulkConnection extends Connection {
                 if (result != LibUsb.SUCCESS) {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
-                if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPID) {
+                if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDKsoloti) {
                     Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "USB device found");
                     DeviceHandle h = new DeviceHandle();
                     result = LibUsb.open(d, h);
@@ -195,7 +196,7 @@ public class USBBulkConnection extends Connection {
                 if (result != LibUsb.SUCCESS) {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
-                if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPID) {
+                if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDKsoloti) {
                     Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "USB device found");
                     DeviceHandle h = new DeviceHandle();
                     result = LibUsb.open(d, h);
