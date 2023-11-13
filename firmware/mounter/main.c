@@ -19,7 +19,7 @@ static const uint8_t deviceDescriptorData[] =
         0x00,   /* device protocol (none, specified in interface)  */
         64,     /* max packet size of control end-point            */
         0x16C0, /* vendor ID (Voti)                                */
-        0x0443, /* product ID (lab use only!)                      */
+        0x0445, /* product ID (lab use only!)                      */
         0x0100, /* device release number                           */
         1,      /* index of manufacturer string descriptor         */
         2,      /* index of product string descriptor              */
