@@ -126,9 +126,10 @@ public class HelpMenu extends JMenu {
 
     private void jMenuHelpContentsActionPerformed(java.awt.event.ActionEvent evt) {
         try {
-            File f = new File("doc/user guide.html");
-            Desktop.getDesktop().browse(f.toURI());
+            Desktop.getDesktop().browse(new URI("https://sebiik.github.io/community.axoloti.com.backup/t/axoloti-user-guide/50.html"));
         } catch (IOException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (URISyntaxException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
