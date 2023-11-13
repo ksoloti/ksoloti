@@ -75,7 +75,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     public PatchFrame(final PatchGUI patch, QCmdProcessor qcmdprocessor) {
         setMinimumSize(new java.awt.Dimension(200,120));
-        setIconImage(new ImageIcon(getClass().getResource("/resources/axoloti_icon.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
         this.qcmdprocessor = qcmdprocessor;
         initComponents();
         fileMenu1.initComponents();
@@ -584,7 +584,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuView.add(jSeparator2);
 
         jCheckBoxMenuItemCordsInBackground.setMnemonic('B');
-        jCheckBoxMenuItemCordsInBackground.setText("Patch Cords In Background");
+        jCheckBoxMenuItemCordsInBackground.setText("Patch cords in background");
         jCheckBoxMenuItemCordsInBackground.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxMenuItemCordsInBackgroundActionPerformed(evt);

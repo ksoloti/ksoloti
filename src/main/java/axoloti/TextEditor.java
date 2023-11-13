@@ -53,7 +53,7 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
         textArea.setVisible(true);
         setContentPane(cp);
         textArea.setText(s.s);
-        setIconImage(new ImageIcon(getClass().getResource("/resources/axoloti_icon.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
     }
 
     public void SetText(String s) {

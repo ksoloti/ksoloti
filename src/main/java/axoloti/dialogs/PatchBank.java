@@ -78,7 +78,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         initComponents();
         fileMenu1.initComponents();
         files = new ArrayList<File>();
-        setIconImage(new ImageIcon(getClass().getResource("/resources/axoloti_icon.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
         DocumentWindowList.RegisterWindow(this);
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
         jTable1.setModel(new AbstractTableModel() {

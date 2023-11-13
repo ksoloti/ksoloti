@@ -64,7 +64,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         fileMenu1.initComponents();
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
         USBBulkConnection.GetConnection().addSDCardMountStatusListener(this);
-        setIconImage(new ImageIcon(getClass().getResource("/resources/axoloti_icon.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
         jLabelSDInfo.setText("");
 
         jFileTable.setModel(new AbstractTableModel() {

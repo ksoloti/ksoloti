@@ -52,7 +52,7 @@ public class AxolotiRemoteControl extends javax.swing.JFrame implements Connecti
     public AxolotiRemoteControl() {
         initComponents();
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
-        setIconImage(new ImageIcon(getClass().getResource("/resources/axoloti_icon.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
         jPanelLCD.setLayout(new FlowLayout());
         ImageIcon ii = new ImageIcon(bImageScaled) {
             @Override

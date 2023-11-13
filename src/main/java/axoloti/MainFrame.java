@@ -117,7 +117,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         this.args = args;
         initComponents();
         fileMenu.initComponents();
-        setIconImage(new ImageIcon(getClass().getResource("/resources/axoloti_icon.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
 
         transparentCursor = getToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(), null);
 
@@ -506,7 +506,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelColumn1.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jPanelColumn1.setLayout(new javax.swing.BoxLayout(jPanelColumn1, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jLabelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/axoloti_icon.png"))); // NOI18N
+        jLabelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/ksoloti_icon.png"))); // NOI18N
         jPanelColumn1.add(jLabelIcon);
 
         jPanelHeader.add(jPanelColumn1);
