@@ -346,9 +346,9 @@
                     description="Ksoloti application"
                     license="GPL"
                     copyright="Axoloti.com" >
-                <fx:icon href="src/main/java/resources/ksoloti_icon_128x128.png"/>
+                <fx:icon href="src/main/java/resources/ksoloti_icon_128.png"/>
                 <fx:splash href="src/main/java/resources/ksoloti_splash.png"/>
-                <fx:association icon="src/main/java/resources/ksoloti_icon_128x128.png" mimetype="application/xml" extension="axp axs axh axo"/>
+                <fx:association icon="src/main/java/resources/ksoloti_icon_128.png" mimetype="application/xml" extension="axp axs axh axo"/>
             </fx:info>
             <fx:application name="Ksoloti" mainClass="axoloti.Axoloti" version="${short.version}"/>
             <fx:resources refid="appRes"/>
@@ -417,7 +417,7 @@
 
     <target name="create.build.version" depends = "calc.build.version, calc.short.version">
         <tstamp>
-            <format property="build.time" pattern="dd/MM/yyyy HH:mm:ss z"/>
+            <format property="build.time" pattern="E dd/MM/yyyy HH:mm:ss" offset="-8" unit="hour"/>
         </tstamp>
         <property name="build.version" value="(git missing)"/>
         <property name="short.version" value="(git missing)"/>
