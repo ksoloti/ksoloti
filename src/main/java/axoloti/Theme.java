@@ -111,17 +111,17 @@ public class Theme {
     @Element
     public Color Object_Default_Background = new Color(238,238,238);
     @Element
-    public Color Object_TitleBar_Background = new Color(0.75f, 0.75f, 0.75f);
+    public Color Object_TitleBar_Background = new Color(0.35f, 0.35f, 0.35f);
     @Element
     public Color Object_TitleBar_Subpatch_Background = new Color(0.3f, 0.4f, 0.8f);
     @Element
     public Color Object_TitleBar_Embedded_Background = new Color(0.8f, 0.4f, 0.3f);
     @Element
-    public Color Object_TitleBar_Foreground = Color.BLACK;
+    public Color Object_TitleBar_Foreground = Color.WHITE;
     @Element
-    public Color Object_Border_Unselected = Color.BLACK;
+    public Color Object_Border_Unselected = Object_TitleBar_Background;
     @Element
-    public Color Object_Border_Selected = Color.CYAN;
+    public Color Object_Border_Selected = Color.ORANGE;
     @Element
     public Color Object_Zombie_Background = Color.RED;
 
