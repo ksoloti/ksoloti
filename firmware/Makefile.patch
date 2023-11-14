@@ -28,8 +28,8 @@ BUILDDIR=$(subst $(SPACE),\ ,${axoloti_home}/build)
 FIRMWARE=$(subst $(SPACE),\ ,${axoloti_firmware})
 
 
-$(info BUILDDIR = ${BUILDDIR})
-$(info FIRMWARE = ${FIRMWARE})
+# $(info BUILDDIR = ${BUILDDIR})
+# $(info FIRMWARE = ${FIRMWARE})
 
 include $(CHIBIOS)/boards/ST_STM32F4_DISCOVERY/board.mk
 include $(CHIBIOS)/os/hal/platforms/STM32F4xx/platform.mk
@@ -51,7 +51,7 @@ all: ${BUILDDIR}/xpatch.bin
 
 ${BUILDDIR}/xpatch.h.gch: ${FIRMWARE}/xpatch.h ${FIRMWARE}/patch.h ${FIRMWARE}/axoloti.h ${FIRMWARE}/parameter_functions.h ${FIRMWARE}/axoloti_math.h ${FIRMWARE}/axoloti_filters.h
 #	@echo Building precompiled header
-	$(CPP) $(CCFLAGS) $(IINCDIR) -Winvalid-pch -MD -MP -c ${FIRMWARE}/xpatch.h  -o ${BUILDDIR}/xpatch.h.gch
+	@$(CPP) $(CCFLAGS) $(IINCDIR) -Winvalid-pch -MD -MP -c ${FIRMWARE}/xpatch.h  -o ${BUILDDIR}/xpatch.h.gch
 
 ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
 #	@echo Removing previous build files
