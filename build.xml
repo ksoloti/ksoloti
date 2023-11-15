@@ -84,43 +84,41 @@
     </target> 
 
     <target name="-do-jar">
+        <!-- With included source files -->
+        <jar destfile="dist/Ksoloti.jar" filesetmanifest="mergewithoutmain" duplicate="preserve">
+            <manifest>
+                <attribute name="Main-Class" value="axoloti.Axoloti"/>
+                <attribute name="Built-By" value="${built_by}"/>
+                <attribute name="Created-By" value="${built_by}"/>
+                <attribute name="Built-Date" value="${TODAY}"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="SplashScreen-Image" value="resources/ksoloti_splash.png"/>
+            </manifest>
 
-    <!-- With included source files -->
-    <jar destfile="dist/Ksoloti.jar" filesetmanifest="mergewithoutmain" duplicate="preserve">
-        <manifest>
-            <attribute name="Main-Class" value="axoloti.Axoloti"/>
-            <attribute name="Built-By" value="${built_by}"/>
-            <attribute name="Created-By" value="${built_by}"/>
-            <attribute name="Built-Date" value="${TODAY}"/>
-            <attribute name="Implementation-Version" value="${build.version}"/>
-            <attribute name="SplashScreen-Image" value="resources/ksoloti_splash.png"/>
-        </manifest>
+            <!-- Compiled  class  -->
+            <fileset dir="build/classes"/>
 
-        <!-- Compiled  class  -->
-        <fileset dir="build/classes"/>
+            <!-- Include external library -->
+            <zipfileset excludes="META-INF/*.SF" src="lib/org.eclipse.jgit-4.2.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/jsch-0.1.53.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-api-1.7.13.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-simple-1.7.13.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/simple-xml-2.7.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/rsyntaxtextarea-2.5.8.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/usb4java-1.2.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-linux-arm.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-linux-x86.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-linux-x86_64.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-osx-x86.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-osx-x86_64.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-windows-x86.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-windows-x86_64.jar"/>
 
-        <!-- Include external library -->
-        <zipfileset excludes="META-INF/*.SF" src="lib/org.eclipse.jgit-4.2.0.jar"/>
-        <zipfileset excludes="META-INF/*.SF" src="lib/jsch-0.1.53.jar"/>
-        <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-api-1.7.13.jar"/>
-        <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-simple-1.7.13.jar"/>
-        <zipfileset excludes="META-INF/*.SF" src="lib/simple-xml-2.7.1.jar"/>
-        <zipfileset excludes="META-INF/*.SF" src="lib/rsyntaxtextarea-2.5.8.jar"/>
-        <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/usb4java-1.2.0.jar"/>
-        <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-linux-arm.jar"/>
-        <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-linux-x86.jar"/>
-        <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-linux-x86_64.jar"/>
-        <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-osx-x86.jar"/>
-        <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-osx-x86_64.jar"/>
-        <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-windows-x86.jar"/>
-        <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-windows-x86_64.jar"/>
-
-        <!-- include source files -->
-        <fileset dir="src">
-            <include name="**/*.java"/>
-        </fileset>
-    </jar>
-
+            <!-- include source files -->
+            <fileset dir="src">
+                <include name="**/*.java"/>
+            </fileset>
+        </jar>
     </target>
 
     <target name="-post-jar" depends="bundle, runtime">
@@ -267,9 +265,10 @@
         <exec dir="." executable="rm" >
             <arg line="-rf build/bundles/"/>
         </exec>
-        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"      
+
+        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
             uri="javafx:com.sun.javafx.tools.ant"
-            classpath=".:${java.home}/../lib/ant-javafx.jar"/>    
+            classpath="${JAVA_HOME}/lib/ant-javafx.jar"/>    
         <fx:resources id="appRes">
             <fx:fileset type="license" dir="." includes="license.txt"/>
             <fx:fileset dir="dist">

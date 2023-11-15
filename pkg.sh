@@ -32,6 +32,15 @@ rm -rf package/linux/ksoloti-${VERSION}/firmware/mounter/.dep
 rm -rf package/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/lst
 rm -rf package/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/obj
 
+rm -rf package/linux/ksoloti-${VERSION}/platform_linux/share
+rm -rf package/linux/ksoloti-${VERSION}/platform_linux/src
+rm -rf package/linux/ksoloti-${VERSION}/platform_linux/arm-none-eabi/lib/armv6-m
+rm -rf package/linux/ksoloti-${VERSION}/platform_linux/arm-none-eabi/lib/armv7-ar
+rm -rf package/linux/ksoloti-${VERSION}/platform_linux/arm-none-eabi/lib/armv7-m
+rm -rf package/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi/4.9.3/armv6-m
+rm -rf package/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi/4.9.3/armv7-ar
+rm -rf package/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi/4.9.3/armv7-m
+
 cd package/linux && tar -czvf ../ksoloti-linux-${VERSION}.tar.gz *
 cd ../..
 rm -rf package/linux
@@ -60,7 +69,7 @@ rm -rf package/mac/Ksoloti.app/Contents/Resources/firmware/mounter/mounter_build
 
 chmod +x package/mac/Ksoloti.app/Contents/Resources/jre/lib/jspawnhelper
 
-cd package/mac && zip -r ../ksoloti-mac-${VERSION}.zip *
+cd package/mac && tar -czvf ../ksoloti-mac-${VERSION}.tar.gz *
 cd ../..
 rm -rf package/mac
 
@@ -86,7 +95,16 @@ rm -rf package/win/ksoloti-${VERSION}/firmware/mounter/.dep
 rm -rf package/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/lst
 rm -rf package/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/obj
 
-cd package/win && zip -r ../ksoloti-win-${VERSION}.zip *
+rm -rf package/win/ksoloti-${VERSION}/platform_win/share
+rm -rf package/win/ksoloti-${VERSION}/platform_win/src
+rm -rf package/win/ksoloti-${VERSION}/platform_win/arm-none-eabi/lib/armv6-m
+rm -rf package/win/ksoloti-${VERSION}/platform_win/arm-none-eabi/lib/armv7-ar
+rm -rf package/win/ksoloti-${VERSION}/platform_win/arm-none-eabi/lib/armv7-m
+rm -rf package/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9.3/armv6-m
+rm -rf package/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9.3/armv7-ar
+rm -rf package/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9.3/armv7-mo
+
+cd package/win && zip -r ../ksoloti-windows-${VERSION}.zip *
 cd ../..
 rm -rf package/win
 

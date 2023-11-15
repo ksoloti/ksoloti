@@ -37,6 +37,7 @@ axoloti.prefs
 ksoloti.prefs
 
 #libraries
+home/
 patches
 objects
 axoloti-contrib
