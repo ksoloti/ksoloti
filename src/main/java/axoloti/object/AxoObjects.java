@@ -155,17 +155,17 @@ public class AxoObjects {
         String id = folder.getName();
         // is this objects in a library, if so use the library name
         if (prefix.length() == 0 && folder.getName().equals("objects")) {
-            try {
-                String libpath = folder.getParentFile().getCanonicalPath() + File.separator;
+            // try {
+                String libpath = folder.getParentFile() + File.separator;
                 for (AxolotiLibrary lib : MainFrame.prefs.getLibraries()) {
                     if (lib.getLocalLocation().equals(libpath)) {
                         id = lib.getId();
                         break;
                     }
                 }
-            } catch (IOException ex) {
-                Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            // } catch (IOException ex) {
+                // Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+            // }
         }
         AxoObjectTreeNode t = new AxoObjectTreeNode(id);
         File fdescription = new File(folder.getAbsolutePath() + "/index.html");
