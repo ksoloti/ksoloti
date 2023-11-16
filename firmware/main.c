@@ -120,7 +120,7 @@ int main(void) {
 
 #ifdef BOARD_AXOLOTI_V05
   configSDRAM();
-//   memTest();
+  // memTest();
 #endif
 
 #ifdef ENABLE_USB_HOST

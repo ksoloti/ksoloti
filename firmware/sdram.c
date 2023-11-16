@@ -87,9 +87,9 @@ void SDRAM_Init(void) {
 
   /* FMC SDRAM control configuration */
   FMC_SDRAMInitStructure.FMC_Bank = FMC_Bank1_SDRAM;
-  /* Row addressing: [7:0] */
+  /* Row addressing: [8:0] */
   FMC_SDRAMInitStructure.FMC_ColumnBitsNumber = FMC_ColumnBits_Number_9b;
-  /* Column addressing: [11:0] */
+  /* Column addressing: [12:0] */
   FMC_SDRAMInitStructure.FMC_RowBitsNumber = FMC_RowBits_Number_13b;
   FMC_SDRAMInitStructure.FMC_SDMemoryDataWidth = SDRAM_MEMORY_WIDTH; // 16bit
   FMC_SDRAMInitStructure.FMC_InternalBankNumber = FMC_InternalBank_Number_4;
@@ -128,33 +128,41 @@ void configSDRAM(void) {
 #endif
 }
 
-void memTest(void) {
-  uint32_t memSize = 32 * 1024 * 1024; // 32MB
+void memTest(void)
+{
+  palSetPad(LED2_PORT,LED2_PIN);
+  palClearPad(LED1_PORT,LED1_PIN);
+  int memSize = 0x2000000; // 32MB
   void *base;
   base = (void *)0xC0000000;
-  uint32_t i;
+  int i;
   // 4MB test
   const uint32_t a = 22695477;
   const uint32_t c = 1;
   //write
-  volatile int iter = 0;
-  volatile int niter = 16;
-  volatile int niter2 = 16;
+  volatile uint32_t iter = 0;
+  volatile uint32_t niter = 16;
+  volatile uint32_t niter2 = 16;
   // linear write with linear congruential generator values
   // 362 ms execution cycle at 8MB : 22MB/s read+write+compute
-  for (iter = 0; iter < niter; iter++) {
+  for (iter = 0; iter < niter; iter++)
+  {
+    palTogglePad(LED2_PORT,LED2_PIN);
     uint32_t x = iter;
     // write
-    for (i = 0; i < memSize / 4; i++) {
+    for (i = 0; i < memSize / 4; i++)
+    {
       x = (a * x) + c;
       //
       ((volatile uint32_t *)base)[i] = x;
     }
     // read/verify
     x = iter;
-    for (i = 0; i < memSize / 4; i++) {
+    for (i = 0; i < memSize / 4; i++)
+    {
       x = (a * x) + c;
-      if (((volatile uint32_t *)base)[i] != x) {
+      if (((volatile uint32_t *)base)[i] != x)
+      {
         setErrorFlag(ERROR_SDRAM);
         while (1) {
           chThdSleepMilliseconds(100);
@@ -165,18 +173,23 @@ void memTest(void) {
   // scattered byte write at linear congruential generator addresses
   // 300 ms execution time for one iteration: 3.3M scattered read+write per second
   // equals 68
-  for (iter = 0; iter < niter2; iter++) {
+  for (iter = 0; iter < niter2; iter++)
+  {
+    palTogglePad(LED2_PORT,LED2_PIN);
     uint32_t x = iter;
     // write
-    for (i = 0; i < 1024 * 1024; i++) {
+    for (i = 0; i < 1024 * 1024; i++)
+    {
       x = (a * x) + c;
       ((volatile uint8_t *)base)[x & (memSize - 1)] = (uint8_t)i;
     }
     // read/verify
     x = iter;
-    for (i = 0; i < 1024 * 1024; i++) {
+    for (i = 0; i < 1024 * 1024; i++)
+    {
       x = (a * x) + c;
-      if (((volatile uint8_t *)base)[x & (memSize - 1)] != (uint8_t)i) {
+      if (((volatile uint8_t *)base)[x & (memSize - 1)] != (uint8_t)i)
+      {
         setErrorFlag(ERROR_SDRAM);
         while (1) {
           chThdSleepMilliseconds(100);
@@ -184,6 +197,8 @@ void memTest(void) {
       }
     }
   }
+  palClearPad(LED2_PORT,LED2_PIN);
+  palSetPad(LED1_PORT,LED1_PIN);
 }
 
 /**

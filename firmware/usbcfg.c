@@ -184,7 +184,7 @@ static const USBDescriptor descriptor_serial = {
 static const uint8_t vcom_string4[] = {
   USB_DESC_BYTE(46),                    /* bLength.                         */
   USB_DESC_BYTE(USB_DESCRIPTOR_STRING), /* bDescriptorType.                 */
-  'K', 0, 'S', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0, ' ', 0,
+  'K', 0, 's', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0, ' ', 0,
   'B', 0, 'u', 0, 'l', 0, 'k', 0, ' ', 0,
   'I', 0, 'n', 0, 't', 0, 'e', 0, 'r', 0, 'f', 0, 'a', 0, 'c', 0,
   'e', 0
