@@ -19,6 +19,7 @@ package axoloti.dialogs;
 
 import axoloti.ConnectionStatusListener;
 import axoloti.USBBulkConnection;
+// import axoloti.utils.Preferences;
 import components.PianoComponent;
 import components.control.ACtrlEvent;
 import components.control.ACtrlListener;
@@ -41,6 +42,8 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
 
     DialComponent pbenddial;
 
+    // Preferences prefs = Preferences.LoadPreferences();
+
     public KeyboardFrame() {
         initComponents();
         setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_keyboard_icon.png")).getImage());
@@ -56,7 +59,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
             }
 
         };
-        Dimension d = new Dimension(910, 64);
+        Dimension d = new Dimension(910, 92);
         piano.setMinimumSize(d);
         piano.setSize(d);
         piano.setPreferredSize(d);
@@ -78,7 +81,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
             public void ACtrlAdjustmentFinished(ACtrlEvent e) {
             }
         });
-        jPanel1.add(new JLabel("bend"));
+        jPanel1.add(new JLabel("Pitch Bend "));
         jPanel1.add(pbenddial);
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);        
     }
@@ -109,21 +112,21 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         setMinimumSize(new java.awt.Dimension(200, 60));
         setModalExclusionType(java.awt.Dialog.ModalExclusionType.TOOLKIT_EXCLUDE);
         setName("Keyboard"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(917, 160));
+        setPreferredSize(new java.awt.Dimension(917, 144));
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.Y_AXIS));
-
+        
         jPanelKeyb.setAlignmentX(0.0F);
         jPanelKeyb.setAlignmentY(0.0F);
-        jPanelKeyb.setMaximumSize(new java.awt.Dimension(905, 64));
-        jPanelKeyb.setMinimumSize(new java.awt.Dimension(905, 64));
-        jPanelKeyb.setPreferredSize(new java.awt.Dimension(905, 64));
+        jPanelKeyb.setMaximumSize(new java.awt.Dimension(905, 72));
+        jPanelKeyb.setMinimumSize(new java.awt.Dimension(905, 72));
+        jPanelKeyb.setPreferredSize(new java.awt.Dimension(905, 72));
         jPanelKeyb.setLayout(new javax.swing.BoxLayout(jPanelKeyb, javax.swing.BoxLayout.LINE_AXIS));
         getContentPane().add(jPanelKeyb);
 
         jPanel1.setAlignmentX(0.0F);
         jPanel1.setAlignmentY(0.0F);
-        jPanel1.setMinimumSize(new java.awt.Dimension(500, 51));
-        jPanel1.setPreferredSize(new java.awt.Dimension(500, 51));
+        jPanel1.setMinimumSize(new java.awt.Dimension(500, 48));
+        jPanel1.setPreferredSize(new java.awt.Dimension(500, 48));
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));
 
         jLabel1.setText("Midi Channel");
@@ -131,9 +134,9 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         jPanel1.add(filler1);
 
         jSpinner1.setModel(new javax.swing.SpinnerNumberModel(1, 1, 16, 1));
-        jSpinner1.setMaximumSize(new java.awt.Dimension(40, 25));
-        jSpinner1.setMinimumSize(new java.awt.Dimension(40, 25));
-        jSpinner1.setPreferredSize(new java.awt.Dimension(40, 25));
+        jSpinner1.setMaximumSize(new java.awt.Dimension(60, 30));
+        jSpinner1.setMinimumSize(new java.awt.Dimension(60, 30));
+        jSpinner1.setPreferredSize(new java.awt.Dimension(60, 30));
         jPanel1.add(jSpinner1);
         jPanel1.add(filler2);
 
@@ -144,7 +147,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         jSliderVelocity.setMaximum(127);
         jSliderVelocity.setMinimum(1);
         jSliderVelocity.setPaintTicks(true);
-        jSliderVelocity.setValue(80);
+        jSliderVelocity.setValue(100);
         jSliderVelocity.setMinimumSize(new java.awt.Dimension(128, 31));
         jPanel1.add(jSliderVelocity);
         jPanel1.add(filler4);

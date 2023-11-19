@@ -32,7 +32,7 @@ import javax.swing.event.MouseInputAdapter;
  */
 public abstract class PianoComponent extends JComponent {
 
-    final int height = 31;
+    final int height = 47;
     final int blackKeyHeight = height / 2;
     final int width = 900;
     final int quarterKeyWidth = 3;
@@ -182,7 +182,7 @@ public abstract class PianoComponent extends JComponent {
                 g2.setFont(Constants.FONT);
                 AffineTransform t = g2.getTransform();
                 g2.rotate(-3.14159 / 2);
-                g2.drawString(String.format("%d", i - 64), -53, x + 9);
+                g2.drawString(String.format("%d", i - 64), -71, x + 9);
                 //            g2.drawString(String.format("%.1f", 440*Math.pow(2.0,(i-69.0)/12)), 33 ,-x-1);
                 g2.setTransform(t);
             }
