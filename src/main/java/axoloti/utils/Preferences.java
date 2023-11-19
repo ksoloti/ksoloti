@@ -56,6 +56,8 @@ public class Preferences {
     Boolean MouseDialAngular;
     @Element(required = false)
     Boolean MouseDoNotRecenterWhenAdjustingControls;
+    // @Element(required = false)
+    // Boolean KeyboardFrameAlwaysOnTop;
     @Element(required = false)
     Boolean ExpertMode;
     @ElementList(required = false)
@@ -103,7 +105,7 @@ public class Preferences {
         ObjectSearchPath = null;
 
         if (PollInterval == null) {
-            PollInterval = 40;
+            PollInterval = 50;
         }
         if (MouseDialAngular == null) {
             MouseDialAngular = false;
@@ -111,6 +113,9 @@ public class Preferences {
         if (MouseDoNotRecenterWhenAdjustingControls == null) {
             MouseDoNotRecenterWhenAdjustingControls = false;
         }
+        // if (KeyboardFrameAlwaysOnTop == null) {
+        //     KeyboardFrameAlwaysOnTop = false;
+        // }
         if (ExpertMode == null) {
             ExpertMode = false;
         }
@@ -289,13 +294,11 @@ public class Preferences {
     }
 
     public void SavePrefs() {
-        Logger.getLogger(Preferences.class
-                .getName()).log(Level.INFO, "Saving preferences...");
+        Logger.getLogger(Preferences.class .getName()).log(Level.INFO, "Saving preferences...");
         Serializer serializer = new Persister();
         File f = new File(GetPrefsFileLoc());
 
-        Logger.getLogger(Preferences.class
-                .getName()).log(Level.INFO, "Preferences path: {0}", f.getAbsolutePath());
+        Logger.getLogger(Preferences.class .getName()).log(Level.INFO, "{0}\n", f.getAbsolutePath());
 
         try {
             serializer.write(this, f);
@@ -338,6 +341,18 @@ public class Preferences {
         this.MouseDoNotRecenterWhenAdjustingControls = MouseDoNotRecenterWhenAdjustingControls;
         SetDirty();
     }
+
+    // public boolean getKeyboardFrameAlwaysOnTop() {
+    //     return KeyboardFrameAlwaysOnTop;
+    // }
+
+    // public void setKeyboardFrameAlwaysOnTop(boolean KeyboardFrameAlwaysOnTop) {
+    //     if (KeyboardFrameAlwaysOnTop == this.KeyboardFrameAlwaysOnTop) {
+    //         return;
+    //     }
+    //     this.KeyboardFrameAlwaysOnTop = KeyboardFrameAlwaysOnTop;
+    //     SetDirty();
+    // }
 
     public Boolean getExpertMode() {
         return ExpertMode;

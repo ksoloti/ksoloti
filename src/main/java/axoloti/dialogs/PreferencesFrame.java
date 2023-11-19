@@ -68,6 +68,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jControllerEnabled.setSelected(prefs.isControllerEnabled());
         jTextFieldController.setText(prefs.getControllerObject());
         jTextFieldController.setEnabled(prefs.isControllerEnabled());
+        // jCheckBoxKeyboardFrameAlwaysOnTop.setSelected(prefs.getKeyboardFrameAlwaysOnTop());
 
         PopulateLibrary();
 
@@ -153,6 +154,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jLabelTheme = new javax.swing.JLabel();
         themeEditButton = new javax.swing.JButton();
         jCheckBoxNoMouseReCenter = new javax.swing.JCheckBox();
+        // jCheckBoxKeyboardFrameAlwaysOnTop = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         // addWindowListener(new java.awt.event.WindowAdapter() {
@@ -255,15 +257,16 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jLibraryTable.setColumnSelectionAllowed(true);
         jLibraryTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPaneLibraryTable.setViewportView(jLibraryTable);
+        jLibraryTable.getTableHeader().setReorderingAllowed(false);
         jLibraryTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         if (jLibraryTable.getColumnModel().getColumnCount() > 0) {
             // jLibraryTable.getColumnModel().getColumn(0).setResizable(false);
-            jLibraryTable.getColumnModel().getColumn(0).setPreferredWidth(10);
+            jLibraryTable.getColumnModel().getColumn(0).setPreferredWidth(60);
             // jLibraryTable.getColumnModel().getColumn(1).setResizable(false);
-            jLibraryTable.getColumnModel().getColumn(1).setPreferredWidth(10);
+            jLibraryTable.getColumnModel().getColumn(1).setPreferredWidth(140);
             jLibraryTable.getColumnModel().getColumn(2).setPreferredWidth(280);
             // jLibraryTable.getColumnModel().getColumn(3).setResizable(false);
-            jLibraryTable.getColumnModel().getColumn(3).setPreferredWidth(10);
+            jLibraryTable.getColumnModel().getColumn(3).setPreferredWidth(60);
         }
 
         jAddLibBtn.setText("+");
@@ -318,6 +321,13 @@ public class PreferencesFrame extends javax.swing.JFrame {
                 jCheckBoxNoMouseReCenterActionPerformed(evt);
             }
         });
+
+        // jCheckBoxKeyboardFrameAlwaysOnTop.setText("Keyboard window always on top");
+        // jCheckBoxKeyboardFrameAlwaysOnTop.addActionListener(new java.awt.event.ActionListener() {
+        //     public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //         jCheckBoxKeyboardFrameAlwaysOnTopActionPerformed(evt);
+        //     }
+        // });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -415,6 +425,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jCheckBoxNoMouseReCenter, javax.swing.GroupLayout.PREFERRED_SIZE, 453, javax.swing.GroupLayout.PREFERRED_SIZE)
 
+                            // .addComponent(jCheckBoxKeyboardFrameAlwaysOnTop, javax.swing.GroupLayout.PREFERRED_SIZE, 453, javax.swing.GroupLayout.PREFERRED_SIZE)
+
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelPollInterval, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -504,6 +516,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBoxNoMouseReCenter)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        // .addComponent(jCheckBoxKeyboardFrameAlwaysOnTop)
+                        // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabelController)
@@ -680,6 +694,13 @@ public class PreferencesFrame extends javax.swing.JFrame {
         Preferences.LoadPreferences().setMouseDoNotRecenterWhenAdjustingControls(jCheckBoxNoMouseReCenter.isSelected());
     }//GEN-LAST:event_jCheckBoxNoMouseReCenterActionPerformed
 
+    // private void jCheckBoxKeyboardFrameAlwaysOnTopActionPerformed(java.awt.event.ActionEvent evt) {
+    //     Preferences prefs = Preferences.LoadPreferences();
+    //     prefs.setKeyboardFrameAlwaysOnTop(jCheckBoxKeyboardFrameAlwaysOnTop.isSelected());
+    //     JFrame keyb = MainFrame.mainframe.getKeyboard();
+    //     keyb.setAlwaysOnTop(prefs.getKeyboardFrameAlwaysOnTop());
+    // }
+
     private void editLibraryRow(int idx) {
         if (idx >= 0) {
             DefaultTableModel model = (DefaultTableModel) jLibraryTable.getModel();
@@ -711,6 +732,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JButton jAddLibBtn;
     private javax.swing.JButton jButtonSave;
     private javax.swing.JCheckBox jCheckBoxNoMouseReCenter;
+    // private javax.swing.JCheckBox jCheckBoxKeyboardFrameAlwaysOnTop;
     private javax.swing.JComboBox jComboBoxDialMouseBehaviour;
     private javax.swing.JCheckBox jControllerEnabled;
     private javax.swing.JButton jDelLibBtn;
