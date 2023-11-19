@@ -56,8 +56,8 @@ public class FileMenu extends JMenu {
     }
 
     public FileMenu() {
-        setDelay(350);
         super();
+        setDelay(350);
     }
 
     public void initComponents() {

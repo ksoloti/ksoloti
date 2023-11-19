@@ -593,9 +593,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         fileMenu.setMnemonic('F');
         fileMenu.setText("File");
+        fileMenu.setDelay(350);
         jMenuBar1.add(fileMenu);
 
         jMenuEdit.setMnemonic('E');
+        jMenuEdit.setDelay(350);
         jMenuEdit.setText("Edit");
 
         jMenuItemCopy.setMnemonic('C');
@@ -606,6 +608,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuBar1.add(jMenuEdit);
 
         jMenuBoard.setMnemonic('B');
+        jMenuBoard.setDelay(350);
         jMenuBoard.setText("Board");
 
         jMenuItemSelectCom.setMnemonic('S');
@@ -667,6 +670,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuBoard.add(jMenuItemMount);
 
         jMenuFirmware.setMnemonic('F');
+        jMenuFirmware.setDelay(350);
         jMenuFirmware.setText("Firmware");
 
         jMenuItemFlashDefault.setMnemonic('F');

@@ -44,6 +44,7 @@ public class HelpMenu extends JMenu {
     private axoloti.menus.HelpLibraryMenu helpLibraryMenu1;
 
     public HelpMenu() {
+        setDelay(350);
         addMenuListener(new MenuListener() {
             @Override
             public void menuSelected(MenuEvent e) {

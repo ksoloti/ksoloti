@@ -80,6 +80,7 @@ public class ParameterInstanceInt32HRadio extends ParameterInstanceInt32 {
     public void populatePopup(JPopupMenu m) {
         super.populatePopup(m);
         JMenu m1 = new JMenu("Midi CC");
+        m1.setDelay(350);
         new AssignMidiCCMenuItems(this, m1);
         m.add(m1);
     }
