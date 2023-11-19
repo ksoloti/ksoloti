@@ -480,6 +480,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuBar1.add(fileMenu1);
 
         jMenuEdit.setMnemonic('E');
+        jMenuEdit.setDelay(350);
         jMenuEdit.setText("Edit");
 
         undoItem.setMnemonic('U');
@@ -561,6 +562,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuBar1.add(jMenuEdit);
 
         jMenuView.setMnemonic('V');
+        jMenuView.setDelay(350);
         jMenuView.setText("View");
 
         jMenuItemNotes.setMnemonic('N');
@@ -605,6 +607,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuBar1.add(jMenuView);
 
         jMenuPatch.setMnemonic('P');
+        jMenuPatch.setDelay(350);
         jMenuPatch.setText("Patch");
 
         jCheckBoxMenuItemLive.setMnemonic('L');
@@ -699,6 +702,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuBar1.add(jMenuPatch);
 
         jMenuPreset.setText("Preset");
+        jMenuPreset.setDelay(350);
         jMenuPreset.setEnabled(false);
 
         jMenuItemClearPreset.setText("Clear current preset");
@@ -804,7 +808,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     File FileChooserSave() {
         final JFileChooser fc = new JFileChooser(MainFrame.prefs.getCurrentFileDirectory());
-        fc.setPreferredSize(new java.awt.Dimension(640, 480));
+        fc.setPreferredSize(new java.awt.Dimension(640, 640));
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(FileUtils.axpFileFilter);
         fc.addChoosableFileFilter(FileUtils.axsFileFilter);

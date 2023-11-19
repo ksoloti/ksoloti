@@ -52,9 +52,11 @@ public class FileMenu extends JMenu {
 
     public FileMenu(String s) {
         super(s);
+        setDelay(350);
     }
 
     public FileMenu() {
+        setDelay(350);
         super();
     }
 

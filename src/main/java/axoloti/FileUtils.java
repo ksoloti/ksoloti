@@ -135,7 +135,7 @@ public class FileUtils {
 
     public static JFileChooser GetFileChooser() {
         JFileChooser fc = new JFileChooser(prefs.getCurrentFileDirectory());
-        fc.setPreferredSize(new java.awt.Dimension(640, 480));
+        fc.setPreferredSize(new java.awt.Dimension(640, 640));
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(new FileNameExtensionFilter("Axoloti Files", "axp", "axh", "axs", "axb"));
         fc.addChoosableFileFilter(axpFileFilter);
@@ -147,7 +147,7 @@ public class FileUtils {
 
     public static void Open(JFrame frame) {
         JFileChooser fc = GetFileChooser();
-        fc.setPreferredSize(new java.awt.Dimension(640, 480));
+        fc.setPreferredSize(new java.awt.Dimension(640, 640));
         int returnVal = fc.showOpenDialog(frame);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             prefs.setCurrentFileDirectory(fc.getCurrentDirectory().getPath());

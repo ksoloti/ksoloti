@@ -30,11 +30,13 @@ import javax.swing.event.MenuListener;
 public class HelpLibraryMenu extends JMenu {
 
     public HelpLibraryMenu() {
+        setDelay(350);
         addMenuListener(new MenuListener() {
             @Override
             public void menuSelected(MenuEvent e) {
                 for (AxolotiLibrary lib : prefs.getLibraries()) {
                     JMenu mi = new JMenu(lib.getId());
+                    mi.setDelay(350);
                     String dir = lib.getLocalLocation() + "objects/";
                     PopulatePatchMenu.PopulatePatchMenu(mi, dir, ".axh");
                     HelpLibraryMenu.this.add(mi);

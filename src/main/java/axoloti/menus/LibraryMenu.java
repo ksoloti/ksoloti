@@ -31,12 +31,14 @@ import javax.swing.event.MenuListener;
 public class LibraryMenu extends JMenu {
 
     public LibraryMenu() {
+        setDelay(350);
 
         addMenuListener(new MenuListener() {
             @Override
             public void menuSelected(MenuEvent e) {
                 for (AxolotiLibrary lib1 : Preferences.LoadPreferences().getLibraries() ) {
                     JMenu plib = new JMenu(lib1.getId());
+                    plib.setDelay(350);
                     PopulatePatchMenu(plib, lib1.getLocalLocation() + "/patches/", ".axp");
                     add(plib);                    
                 }

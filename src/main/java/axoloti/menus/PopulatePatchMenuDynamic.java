@@ -36,6 +36,7 @@ public class PopulatePatchMenuDynamic extends JMenu implements MenuListener {
 
     PopulatePatchMenuDynamic(String name, File dir, String ext) {
         super(name);
+        setDelay(350);
         this.ext = ext;
         this.dir = dir;
         addMenuListener(this);
