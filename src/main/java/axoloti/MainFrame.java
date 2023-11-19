@@ -500,6 +500,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
+            // public void windowDeactivated(java.awt.event.WindowEvent evt) {
+            //     getKeyboard().setAlwaysOnTop(false);
+            // }
+            // public void windowActivated(java.awt.event.WindowEvent evt) {
+            //     getKeyboard().setAlwaysOnTop(true);
+            // }
         });
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
 
