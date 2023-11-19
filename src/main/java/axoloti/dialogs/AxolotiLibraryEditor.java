@@ -497,7 +497,7 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
 
         File seldir = new File(dir).getParentFile();
         JFileChooser fc = new JFileChooser(seldir);
-        fc.setPreferredSize(new java.awt.Dimension(320, 480));
+        fc.setPreferredSize(new java.awt.Dimension(640, 640));
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fc.setFileFilter(new FileFilter() {
             @Override

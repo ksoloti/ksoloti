@@ -600,7 +600,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
     private void btnFavDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFavDirActionPerformed
         JFileChooser chooser = new JFileChooser(Preferences.LoadPreferences().getCurrentFileDirectory());
-        chooser.setPreferredSize(new java.awt.Dimension(320,480));
+        chooser.setPreferredSize(new java.awt.Dimension(640, 640));
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
