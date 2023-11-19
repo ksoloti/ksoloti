@@ -75,7 +75,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         setOpaque(true);
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
         InstanceLabel = new LabelComponent(commentText);
-        InstanceLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+        InstanceLabel.setBorder(BorderFactory.createEmptyBorder(-1, 5, -1, 5));
         InstanceLabel.setAlignmentX(CENTER_ALIGNMENT);
         InstanceLabel.addMouseListener(new MouseListener() {
             @Override
