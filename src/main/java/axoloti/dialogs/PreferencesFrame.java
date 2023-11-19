@@ -68,7 +68,9 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jControllerEnabled.setSelected(prefs.isControllerEnabled());
         jTextFieldController.setText(prefs.getControllerObject());
         jTextFieldController.setEnabled(prefs.isControllerEnabled());
+        jCheckBoxNoMouseReCenter.setSelected(prefs.getMouseDoNotRecenterWhenAdjustingControls());
         // jCheckBoxKeyboardFrameAlwaysOnTop.setSelected(prefs.getKeyboardFrameAlwaysOnTop());
+        if (prefs.getMouseDialAngular()) jComboBoxDialMouseBehaviour.setSelectedItem("Angular"); 
 
         PopulateLibrary();
 
