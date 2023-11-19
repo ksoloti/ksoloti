@@ -68,7 +68,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         jLabelSDInfo.setText("");
 
         jFileTable.setModel(new AbstractTableModel() {
-            private String[] columnNames = {"Name", "Type", "Size", "Date"};
+            private String[] columnNames = {"Name", "Extension", "Size", "Modified"};
 
             @Override
             public int getColumnCount() {
@@ -197,7 +197,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             SDFileInfo f = SDCardInfo.getInstance().getFiles().get(row);
             if (f != null && f.isDirectory()) {
                 jButtonUpload.setText("Upload to " + f.getFilename() + " ...");
-                jButtonCreateDir.setText("Create directory in " + f.getFilename() + " ...");
+                jButtonCreateDir.setText("Create Folder in " + f.getFilename() + " ...");
             } else {
                 ButtonUploadDefaultName();
             }
@@ -206,7 +206,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
     void ButtonUploadDefaultName() {
         jButtonUpload.setText("Upload...");
-        jButtonCreateDir.setText("Create directory...");
+        jButtonCreateDir.setText("New Folder...");
     }
 
     /**
@@ -220,7 +220,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jFileTable = new javax.swing.JTable();
-        jButton1Refresh = new javax.swing.JButton();
+        jButtonSDRefresh = new javax.swing.JButton();
         jLabelSDInfo = new javax.swing.JLabel();
         jButtonUpload = new javax.swing.JButton();
         jButtonDelete = new javax.swing.JButton();
@@ -244,7 +244,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
             },
             new String [] {
-                "Name", "Type", "Size", "Date"
+                "Name", "Extension", "Size", "Modified"
             }
         ) {
             Class[] types = new Class [] {
@@ -265,21 +265,21 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         jFileTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jFileTable);
         if (jFileTable.getColumnModel().getColumnCount() > 0) {
-            jFileTable.getColumnModel().getColumn(0).setPreferredWidth(240);
+            jFileTable.getColumnModel().getColumn(0).setPreferredWidth(480);
             jFileTable.getColumnModel().getColumn(1).setPreferredWidth(30);
             jFileTable.getColumnModel().getColumn(2).setPreferredWidth(30);
             jFileTable.getColumnModel().getColumn(3).setPreferredWidth(60);
         }
 
-        jButton1Refresh.setText("Refresh");
-        jButton1Refresh.setEnabled(false);
-        jButton1Refresh.addActionListener(new java.awt.event.ActionListener() {
+        jButtonSDRefresh.setText("Refresh");
+        jButtonSDRefresh.setEnabled(false);
+        jButtonSDRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1RefreshActionPerformed(evt);
+                jButtonSDRefreshActionPerformed(evt);
             }
         });
 
-        jLabelSDInfo.setText("jLabel1");
+        jLabelSDInfo.setText("jLabelSDInfo");
 
         jButtonUpload.setText("Upload...");
         jButtonUpload.setEnabled(false);
@@ -297,7 +297,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
         });
 
-        jButtonCreateDir.setText("Create directory...");
+        jButtonCreateDir.setText("New Folder...");
         jButtonCreateDir.setEnabled(false);
         jButtonCreateDir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -320,7 +320,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jButton1Refresh)
+                .addComponent(jButtonSDRefresh)
                 .addGap(29, 29, 29)
                 .addComponent(jLabelSDInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap()
@@ -343,7 +343,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
 
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1Refresh, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonSDRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelSDInfo)
                 )
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -362,16 +362,16 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     }// </editor-fold>//GEN-END:initComponents
 
     void RequestRefresh() {
-        if (USBBulkConnection.GetConnection().isConnected()) {
+        if (USBBulkConnection.GetConnection().isConnected() && USBBulkConnection.GetConnection().GetSDCardPresent()) {
             USBBulkConnection.GetConnection().AppendToQueue(new QCmdStop());
             USBBulkConnection.GetConnection().WaitSync();
             USBBulkConnection.GetConnection().AppendToQueue(new QCmdGetFileList());
         }
     }
 
-    private void jButton1RefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1RefreshActionPerformed
+    private void jButtonSDRefreshActionPerformed(java.awt.event.ActionEvent evt) {
         RequestRefresh();
-    }//GEN-LAST:event_jButton1RefreshActionPerformed
+    }
 
     private void jButtonUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonUploadActionPerformed
         QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
@@ -401,7 +401,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     }//GEN-LAST:event_jButtonUploadActionPerformed
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
-        // RequestRefresh();
+        RequestRefresh();
     }//GEN-LAST:event_formWindowActivated
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -418,7 +418,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             String ff = f.getFilename();
 
             int n = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete \"" + ff + "\"?",
-                                                  "Warning", JOptionPane.YES_NO_OPTION);
+                                                  "Confirm Delete", JOptionPane.YES_NO_OPTION);
 
             switch (n) {
                 case JOptionPane.YES_OPTION: {
@@ -467,18 +467,19 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             });
         } else {
             jFileTable.clearSelection();
-            int clusters = SDCardInfo.getInstance().getClusters();
-            int clustersize = SDCardInfo.getInstance().getClustersize();
-            int sectorsize = SDCardInfo.getInstance().getSectorsize();
-            jLabelSDInfo.setText("Free: " + ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)) + "MB, Cluster size = " + clustersize * sectorsize);
             jFileTable.revalidate();
             jFileTable.repaint();
         }
+            int clusters = SDCardInfo.getInstance().getClusters();
+            int clustersize = SDCardInfo.getInstance().getClustersize();
+            int sectorsize = SDCardInfo.getInstance().getSectorsize();
+            jLabelSDInfo.setText("Free: " + ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)) + "MB");
+            System.out.println(String.format("SD free: %d MB, Cluster size: %d", ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)), (clustersize * sectorsize)));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private axoloti.menus.FileMenu fileMenu1;
-    private javax.swing.JButton jButton1Refresh;
+    private javax.swing.JButton jButtonSDRefresh;
     private javax.swing.JButton jButtonCreateDir;
     private javax.swing.JButton jButtonDelete;
     private javax.swing.JButton jButtonUpload;
@@ -491,7 +492,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     // End of variables declaration//GEN-END:variables
 
     void ShowConnect(boolean status) {
-        jButton1Refresh.setEnabled(status);
+        jButtonSDRefresh.setEnabled(status);
         jButtonUpload.setEnabled(status);
         jFileTable.setEnabled(status);
         jLabelSDInfo.setText("");
