@@ -22,6 +22,9 @@ import axoloti.utils.AxoFileLibrary;
 import axoloti.utils.AxoGitLibrary;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Preferences;
+
+// import static axoloti.MainFrame.mainframe;
+
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -153,8 +156,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jResetLib = new javax.swing.JButton();
         jEditLib = new javax.swing.JButton();
         jLibStatus = new javax.swing.JButton();
-        jLabelTheme = new javax.swing.JLabel();
-        themeEditButton = new javax.swing.JButton();
+        // jLabelTheme = new javax.swing.JLabel();
+        // themeEditButton = new javax.swing.JButton();
         jCheckBoxNoMouseReCenter = new javax.swing.JCheckBox();
         // jCheckBoxKeyboardFrameAlwaysOnTop = new javax.swing.JCheckBox();
 
@@ -306,16 +309,16 @@ public class PreferencesFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabelTheme.setText("Theme");
-        jLabelTheme.setEnabled(true);
+        // jLabelTheme.setText("Theme");
+        // jLabelTheme.setEnabled(true);
 
-        themeEditButton.setText("Edit");
-        themeEditButton.setEnabled(true);
-        themeEditButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                themeEditButtonActionPerformed(evt);
-            }
-        });
+        // themeEditButton.setText("Edit");
+        // themeEditButton.setEnabled(true);
+        // themeEditButton.addActionListener(new java.awt.event.ActionListener() {
+        //     public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //         themeEditButtonActionPerformed(evt);
+        //     }
+        // });
 
         jCheckBoxNoMouseReCenter.setText("Do not re-center cursor (for touchscreens)");
         jCheckBoxNoMouseReCenter.addActionListener(new java.awt.event.ActionListener() {
@@ -528,10 +531,10 @@ public class PreferencesFrame extends javax.swing.JFrame {
                         )
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(themeEditButton)
-                            .addComponent(jLabelTheme)
-                        )
+                        // .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            // .addComponent(themeEditButton)
+                            // .addComponent(jLabelTheme)
+                        // )
                         .addContainerGap(28, Short.MAX_VALUE)
                     )
 
@@ -685,12 +688,12 @@ public class PreferencesFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jLibStatusActionPerformed
 
-    private void themeEditButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_themeEditButtonActionPerformed
-        JFrame frame = MainFrame.mainframe.getThemeEditor();
-        frame.setVisible(true);
-        frame.setState(java.awt.Frame.NORMAL);
-        frame.toFront();
-    }//GEN-LAST:event_themeEditButtonActionPerformed
+    // private void themeEditButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_themeEditButtonActionPerformed
+    //     JFrame frame = MainFrame.mainframe.getThemeEditor();
+    //     frame.setVisible(true);
+    //     frame.setState(java.awt.Frame.NORMAL);
+    //     frame.toFront();
+    // }//GEN-LAST:event_themeEditButtonActionPerformed
 
     private void jCheckBoxNoMouseReCenterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxNoMouseReCenterActionPerformed
         Preferences.LoadPreferences().setMouseDoNotRecenterWhenAdjustingControls(jCheckBoxNoMouseReCenter.isSelected());
@@ -746,14 +749,14 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelFirmwareDir;
     private javax.swing.JLabel jLabelController;
     private javax.swing.JLabel jLabelRuntimeDir;
-    private javax.swing.JLabel jLabelTheme;
+    // private javax.swing.JLabel jLabelTheme;
     private javax.swing.JButton jLibStatus;
     private javax.swing.JTable jLibraryTable;
     private javax.swing.JButton jResetLib;
     private javax.swing.JScrollPane jScrollPaneLibraryTable;
     private javax.swing.JTextField jTextFieldController;
     private javax.swing.JTextField jTextFieldPollInterval;
-    private javax.swing.JButton themeEditButton;
+    // private javax.swing.JButton themeEditButton;
     private javax.swing.JLabel txtFavDir;
     private javax.swing.JLabel txtFirmwareDir;
     private javax.swing.JLabel txtRuntimeDir;
