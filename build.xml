@@ -76,7 +76,6 @@
     <!-- run the ant timestamp task -->
     <tstamp/>
 
-
     <target name="-post-init" depends="create.build.version">
     </target>  
     <!-- Overrides -do-jar-->
@@ -100,14 +99,14 @@
             <fileset dir="build/classes"/>
 
             <!-- Include external library -->
-            <zipfileset excludes="META-INF/*.SF" src="lib/org.eclipse.jgit-4.2.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/jsch-0.1.53.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/org.eclipse.jgit-6.7.0.202309050840-r.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/jsch-0.1.55.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/flatlaf-3.2.5.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/flatlaf-intellij-themes-3.2.5.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-api-1.7.13.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-simple-1.7.13.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-api-2.0.9.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-simple-2.0.9.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/simple-xml-2.7.1.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/rsyntaxtextarea-2.5.8.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/rsyntaxtextarea-3.3.4.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/usb4java-1.2.0.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-linux-arm.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.2.0/lib/libusb4java-1.2.0-linux-x86.jar"/>
@@ -278,14 +277,14 @@
                 <include name="ksoloti-app.jar"/>
             </fx:fileset>
             <fx:fileset dir="lib">
-                <include name="org.eclipse.jgit-4.2.0.jar"/>
-                <include name="jsch-0.1.53.jar"/>
+                <include name="org.eclipse.org.eclipse.jgit-6.7.0.202309050840-r.jar"/>
+                <include name="jsch-0.1.55.jar"/>
                 <include name="flatlaf-3.2.5.jar"/>
                 <include name="flatlaf-intellij-themes-3.2.5.jar"/>
-                <include name="slf4j-api-1.7.13.jar"/>
-                <include name="slf4j-simple-1.7.13.jar"/>
+                <include name="slf4j-api-2.0.9.jar"/>
+                <include name="slf4j-simple-2.0.9.jar"/>
                 <include name="simple-xml-2.7.1.jar"/>
-                <include name="rsyntaxtextarea-2.5.8.jar"/>
+                <include name="rsyntaxtextarea-3.3.4.jar"/>
                 <include name="usb4java-1.2.0/lib/usb4java-1.2.0.jar"/>
                 <include name="usb4java-1.2.0/lib/libusb4java-1.2.0-linux-arm.jar"/>
                 <include name="usb4java-1.2.0/lib/libusb4java-1.2.0-linux-x86.jar"/>
