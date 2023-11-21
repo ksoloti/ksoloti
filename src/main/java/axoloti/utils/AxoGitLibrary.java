@@ -481,7 +481,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
                 details.append("dirty");
             }
 
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Library status: {0} - {1}  ({2})", new Object[]{logDetails(), overallStatus, details.toString()});
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Library status: {0} - {1} ({2})", new Object[]{logDetails(), overallStatus, details.toString()});
             if (!status.isClean()) {
                 Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Changes for: {0}", logDetails());
                 for (String f : status.getAdded()) {
@@ -515,10 +515,10 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Library status: exception {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Library status: EXCEPTION {0}", logDetails());
         } catch (NoWorkTreeException ex) {
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.SEVERE, null, ex);
-            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Library status: exception {0}", logDetails());
+            Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Library status: EXCEPTION {0}", logDetails());
         }
         return false;
     }

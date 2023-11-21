@@ -31,7 +31,7 @@ import javax.swing.event.MenuListener;
 public class RecentFileMenu extends JMenu {
 
     public RecentFileMenu() {
-        setDelay(350);
+        setDelay(300);
 
         addMenuListener(new MenuListener() {
             @Override

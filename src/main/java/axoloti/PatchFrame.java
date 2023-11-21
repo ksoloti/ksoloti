@@ -274,7 +274,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 "Don't Save",
                 "Cancel"};
             int n = JOptionPane.showOptionDialog(this,
-                    "Do you want to save changes to " + patch.getFileNamePath() + "?",
+                    "Do you want to save changes to \"" + patch.getFileNamePath() + "\"?",
                     "Unsaved Changes",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
@@ -460,7 +460,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         fileMenu1.add(jMenuSaveCopy);
 
-        jMenuSaveClip.setText("Save To Clipboard");
+        jMenuSaveClip.setText("Save to Clipboard");
         jMenuSaveClip.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuSaveClipActionPerformed(evt);
@@ -480,7 +480,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuBar1.add(fileMenu1);
 
         jMenuEdit.setMnemonic('E');
-        jMenuEdit.setDelay(350);
+        jMenuEdit.setDelay(300);
         jMenuEdit.setText("Edit");
 
         undoItem.setMnemonic('U');
@@ -562,7 +562,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuBar1.add(jMenuEdit);
 
         jMenuView.setMnemonic('V');
-        jMenuView.setDelay(350);
+        jMenuView.setDelay(300);
         jMenuView.setText("View");
 
         jMenuItemNotes.setMnemonic('N');
@@ -586,7 +586,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuView.add(jSeparator2);
 
         jCheckBoxMenuItemCordsInBackground.setMnemonic('B');
-        jCheckBoxMenuItemCordsInBackground.setText("Patch cords in background");
+        jCheckBoxMenuItemCordsInBackground.setText("Patch Cords in Background");
         jCheckBoxMenuItemCordsInBackground.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxMenuItemCordsInBackgroundActionPerformed(evt);
@@ -607,7 +607,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuBar1.add(jMenuView);
 
         jMenuPatch.setMnemonic('P');
-        jMenuPatch.setDelay(350);
+        jMenuPatch.setDelay(300);
         jMenuPatch.setText("Patch");
 
         jCheckBoxMenuItemLive.setMnemonic('L');
@@ -702,7 +702,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuBar1.add(jMenuPatch);
 
         jMenuPreset.setText("Preset");
-        jMenuPreset.setDelay(350);
+        jMenuPreset.setDelay(300);
         jMenuPreset.setEnabled(false);
 
         jMenuItemClearPreset.setText("Clear current preset");

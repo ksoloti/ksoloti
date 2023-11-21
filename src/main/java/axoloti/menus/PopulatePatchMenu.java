@@ -49,7 +49,7 @@ public class PopulatePatchMenu {
         Arrays.sort(files);
         for (File subdir : files) {
             JMenu fm = new JMenu(subdir.getName());
-            fm.setDelay(350);
+            fm.setDelay(300);
             PopulatePatchMenu(fm, subdir.getPath(), extension);
             if (fm.getItemCount() > 0) {
                 parent.add(fm);

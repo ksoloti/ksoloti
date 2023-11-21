@@ -372,10 +372,10 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         // warn if changes, and its not an embedded object
         if (hasChanged()) {
             if (!readonly) {
-                Object[] options = {"Yes", "Revert changes", "Cancel"};
+                Object[] options = {"Save", "Revert Changes", "Cancel"};
                 int n = JOptionPane.showOptionDialog(this,
-                        "Unsaved changes, do you want to save?",
-                        "Axoloti asks:",
+                        "Save changes to \"" + editObj.getCName() + "\" ?",
+                        "Unsaved Changes",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
                         null,

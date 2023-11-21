@@ -39,7 +39,7 @@ import javax.swing.JSeparator;
 public class WindowMenu extends JMenu {
 
     public WindowMenu() {
-        setDelay(350);
+        setDelay(300);
         initComponents();
     }
 

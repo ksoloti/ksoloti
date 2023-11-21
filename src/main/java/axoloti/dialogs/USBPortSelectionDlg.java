@@ -290,7 +290,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Name", "Device", "Location", "Board ID"
+                "Name", "Device", "Port", "Board ID"
             }
         ) {
             Class[] types = new Class [] {

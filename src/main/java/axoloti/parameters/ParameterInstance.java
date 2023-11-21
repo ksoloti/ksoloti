@@ -465,7 +465,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         });
         if (GetObjectInstance().getPatch() != null) {
             JMenu m_preset = new JMenu("Preset");
-            m_preset.setDelay(350);
+            m_preset.setDelay(300);
             // AssignPresetMenuItems, does stuff in ctor
             AssignPresetMenuItems assignPresetMenuItems = new AssignPresetMenuItems(this, m_preset);
             m.add(m_preset);

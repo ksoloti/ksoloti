@@ -229,6 +229,7 @@ public class Net extends JComponent {
         if (isValidNet()) {
             if (selected) {
                 g2.setStroke(strokeValidSelected);
+                //TODO: on top if "patch cords in background is active"
             } else {
                 g2.setStroke(strokeValidDeselected);
             }

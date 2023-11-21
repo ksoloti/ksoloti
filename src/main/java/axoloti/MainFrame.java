@@ -593,11 +593,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         fileMenu.setMnemonic('F');
         fileMenu.setText("File");
-        fileMenu.setDelay(350);
+        fileMenu.setDelay(300);
         jMenuBar1.add(fileMenu);
 
         jMenuEdit.setMnemonic('E');
-        jMenuEdit.setDelay(350);
+        jMenuEdit.setDelay(300);
         jMenuEdit.setText("Edit");
 
         jMenuItemCopy.setMnemonic('C');
@@ -608,7 +608,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuBar1.add(jMenuEdit);
 
         jMenuBoard.setMnemonic('B');
-        jMenuBoard.setDelay(350);
+        jMenuBoard.setDelay(300);
         jMenuBoard.setText("Board");
 
         jMenuItemSelectCom.setMnemonic('S');
@@ -670,7 +670,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuBoard.add(jMenuItemMount);
 
         jMenuFirmware.setMnemonic('F');
-        jMenuFirmware.setDelay(350);
+        jMenuFirmware.setDelay(300);
         jMenuFirmware.setText("Firmware");
 
         jMenuItemFlashDefault.setMnemonic('F');
@@ -1241,12 +1241,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         int s = JOptionPane.showConfirmDialog(this,
                 "Firmware mismatch detected!\n"
                 + "Do you want to update the firmware now?\n"
-                + "This process will cause a disconnect "
-                + " and the LEDs will blink for a while. "
-                + "Do not interrupt until the LEDs "
-                + "stop blinking.\n"
+                + "This process will cause a disconnect and the LEDs will blink for a while.\n"
+                + "Do not interrupt until the LEDs stop blinking.\n"
                 + "When the green LED lights up steady you can connect again.\n",
-                "Firmware update...",
+                "Firmware Update",
                 JOptionPane.YES_NO_OPTION);
         if (s == 0) {
             String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/flasher/flasher_build/flasher.bin";

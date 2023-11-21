@@ -670,7 +670,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         jMenuBar1.add(fileMenu1);
 
         jMenu2.setText("Edit");
-        jMenu2.setDelay(350);
+        jMenu2.setDelay(300);
         jMenuBar1.add(jMenu2);
         jMenuBar1.add(windowMenu1);
 
