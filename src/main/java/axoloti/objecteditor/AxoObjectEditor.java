@@ -43,6 +43,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+// import org.fife.ui.autocomplete. //TODO
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
@@ -68,6 +69,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         RSyntaxTextArea rsta = new RSyntaxTextArea(20, 60);
         rsta.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
         rsta.setCodeFoldingEnabled(true);
+        rsta.setAntiAliasingEnabled(true);
         RTextScrollPane sp = new RTextScrollPane(rsta);
         p.setLayout(new BorderLayout());
         p.add(sp);
@@ -514,7 +516,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(540, 400));
+        setPreferredSize(new java.awt.Dimension(800, 480));
         addWindowFocusListener(new java.awt.event.WindowFocusListener() {
             public void windowGainedFocus(java.awt.event.WindowEvent evt) {
             }
