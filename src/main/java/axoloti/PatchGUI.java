@@ -132,10 +132,10 @@ public class PatchGUI extends Patch {
             c.validate();
         }
 
-        Layers.add(objectLayer, new Integer(1));
-        Layers.add(netLayer, new Integer(2));
-        Layers.add(draggedObjectLayer, new Integer(3));
-        Layers.add(selectionRectLayer, new Integer(4));
+        Layers.add(objectLayer, Integer.valueOf(1));
+        Layers.add(netLayer, Integer.valueOf(2));
+        Layers.add(draggedObjectLayer, Integer.valueOf(3));
+        Layers.add(selectionRectLayer, Integer.valueOf(4));
 
         objectLayer.setName("objectLayer");
         draggedObjectLayer.setName("draggedObjectLayer");
@@ -861,16 +861,16 @@ public class PatchGUI extends Patch {
     void SetCordsInBackground(boolean b) {
         if (b) {
             Layers.removeAll();
-            Layers.add(netLayer, new Integer(1));
-            Layers.add(objectLayer, new Integer(2));
-            Layers.add(draggedObjectLayer, new Integer(3));
-            Layers.add(selectionRectLayer, new Integer(4));
+            Layers.add(netLayer, Integer.valueOf(1));
+            Layers.add(objectLayer, Integer.valueOf(2));
+            Layers.add(draggedObjectLayer, Integer.valueOf(3));
+            Layers.add(selectionRectLayer, Integer.valueOf(4));
         } else {
             Layers.removeAll();
-            Layers.add(objectLayer, new Integer(1));
-            Layers.add(netLayer, new Integer(2));
-            Layers.add(draggedObjectLayer, new Integer(3));
-            Layers.add(selectionRectLayer, new Integer(4));
+            Layers.add(objectLayer, Integer.valueOf(1));
+            Layers.add(netLayer, Integer.valueOf(2));
+            Layers.add(draggedObjectLayer, Integer.valueOf(3));
+            Layers.add(selectionRectLayer, Integer.valueOf(4));
         }
     }
 
