@@ -83,6 +83,7 @@ public class AttributeInstanceSpinner extends AttributeInstanceInt<AxoAttributeS
     public void Lock() {
         if (spinner != null) {
             spinner.setEnabled(false);
+            spinner.setFocusable(false);
         }
     }
 
@@ -90,6 +91,7 @@ public class AttributeInstanceSpinner extends AttributeInstanceInt<AxoAttributeS
     public void UnLock() {
         if (spinner != null) {
             spinner.setEnabled(true);
+            spinner.setFocusable(true);
         }
     }
 
