@@ -289,10 +289,11 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         } catch (FileNotFoundException ex) {
             Logger.getLogger(PatchBank.class
                     .getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(PatchBank.class
-                    .getName()).log(Level.SEVERE, null, ex);
         }
+        //  catch (IOException ex) {
+        //     Logger.getLogger(PatchBank.class
+        //             .getName()).log(Level.SEVERE, null, ex);
+        // }
     }
 
     void Save() {
