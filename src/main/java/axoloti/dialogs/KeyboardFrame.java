@@ -112,7 +112,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         setMinimumSize(new java.awt.Dimension(200, 60));
         setModalExclusionType(java.awt.Dialog.ModalExclusionType.TOOLKIT_EXCLUDE);
         setName("Keyboard"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(917, 144));
+        setPreferredSize(new java.awt.Dimension(917, 150));
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.Y_AXIS));
         
         jPanelKeyb.setAlignmentX(0.0F);
@@ -125,8 +125,8 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
 
         jPanel1.setAlignmentX(0.0F);
         jPanel1.setAlignmentY(0.0F);
-        jPanel1.setMinimumSize(new java.awt.Dimension(500, 48));
-        jPanel1.setPreferredSize(new java.awt.Dimension(500, 48));
+        jPanel1.setMinimumSize(new java.awt.Dimension(500, 50));
+        jPanel1.setPreferredSize(new java.awt.Dimension(500, 50));
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));
 
         jLabel1.setText("Midi Channel");
@@ -143,7 +143,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         jLabel2.setText("Velocity");
         jPanel1.add(jLabel2);
 
-        jSliderVelocity.setMajorTickSpacing(32);
+        jSliderVelocity.setMajorTickSpacing(25);
         jSliderVelocity.setMaximum(127);
         jSliderVelocity.setMinimum(1);
         jSliderVelocity.setPaintTicks(true);
