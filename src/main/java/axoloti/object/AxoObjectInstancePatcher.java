@@ -21,6 +21,7 @@ import axoloti.MainFrame;
 import axoloti.Patch;
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
+import axoloti.Theme;
 import components.ButtonComponent;
 import components.ButtonComponent.ActListener;
 // import java.awt.Component;
@@ -110,7 +111,9 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
     public void PostConstructor() {
         super.PostConstructor();
         //updateObj();
-        ButtonComponent BtnEdit = new ButtonComponent("edit");
+        ButtonComponent BtnEdit = new ButtonComponent("Edit");
+        BtnEdit.setForeground(Theme.getCurrentTheme().Component_Foreground);
+        BtnEdit.setBackground(Theme.getCurrentTheme().Component_Background);
         BtnEdit.setAlignmentX(LEFT_ALIGNMENT);
         BtnEdit.setAlignmentY(TOP_ALIGNMENT);
         BtnEdit.addActListener(new ActListener() {
@@ -120,7 +123,10 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
             }
         });
         add(BtnEdit);
-        BtnUpdate = new ButtonComponent("update");
+
+        BtnUpdate = new ButtonComponent("Update");
+        BtnUpdate.setForeground(Theme.getCurrentTheme().Component_Foreground);
+        BtnUpdate.setBackground(Theme.getCurrentTheme().Component_Background);
         BtnUpdate.setAlignmentX(LEFT_ALIGNMENT);
         BtnUpdate.setAlignmentY(TOP_ALIGNMENT);
         BtnUpdate.addActListener(new ActListener() {
@@ -130,6 +136,7 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
             }
         });
         add(BtnUpdate);
+
         resizeToGrid();
     }
 

@@ -18,6 +18,7 @@
 package axoloti.object;
 
 import axoloti.Patch;
+import axoloti.Theme;
 import axoloti.objecteditor.AxoObjectEditor;
 import components.ButtonComponent;
 import components.ButtonComponent.ActListener;
@@ -104,7 +105,9 @@ public class AxoObjectInstancePatcherObject extends AxoObjectInstance {
     public void PostConstructor() {
         super.PostConstructor();
         //updateObj();
-        BtnEdit = new ButtonComponent("edit");
+        BtnEdit = new ButtonComponent("Edit");
+        BtnEdit.setForeground(Theme.getCurrentTheme().Component_Foreground);
+        BtnEdit.setBackground(Theme.getCurrentTheme().Component_Background);
         BtnEdit.setAlignmentX(LEFT_ALIGNMENT);
         BtnEdit.setAlignmentY(TOP_ALIGNMENT);
         BtnEdit.addActListener(new ActListener() {
