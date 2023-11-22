@@ -20,6 +20,8 @@ package axoloti.utils;
 import java.awt.Color;
 import java.awt.Font;
 
+import javax.swing.UIManager;
+
 // import java.io.InputStream;
 
 /**
@@ -28,7 +30,9 @@ import java.awt.Font;
  */
 public class Constants {
 
-    public static final Font FONT = new Font("SansSerif", Font.BOLD, 10);
+    // public static final Font FONT = new Font("SansSerif", Font.BOLD, 10);
+    // public static final Font FONT = UIManager.getFont("defaultFont");
+    public static final Font FONT = UIManager.getFont("miniminimini.font");
 
     public static final int X_GRID = 14;
     public static final int Y_GRID = 14;

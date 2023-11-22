@@ -115,12 +115,14 @@ public class Axoloti
     {
         String ev = System.getProperty(var);
         File f = new File(ev);
-        if (!f.exists()) {
+        if (!f.exists())
+        {
             System.err.println(var + " directory does not exist " + ev);
             return false;
         }
-        if (!f.isDirectory()) {
-            System.err.println(var + " should be a valid directory " + ev);
+        if (!f.isDirectory())
+        {
+            System.err.println(var + " must be a valid directory " + ev);
             return false;
         }
         return true;
@@ -133,25 +135,37 @@ public class Axoloti
     public static boolean isDeveloper()
     {
         String fwEnv = System.getProperty(FIRMWARE_DIR);
-        if (cacheFWDir != null && fwEnv.equals(cacheFWDir)) {
+        if (cacheFWDir != null && fwEnv.equals(cacheFWDir))
+        {
             return cacheDeveloper;
         }
+
         cacheFWDir = fwEnv;
         cacheDeveloper = false;
+
         String dirRelease = System.getProperty(RELEASE_DIR);
         String fwRelease = dirRelease + File.separator + "firmware";
-        if (!fwRelease.equals(cacheFWDir)) {
+
+        if (!fwRelease.equals(cacheFWDir))
+        {
             File fR = new File(fwRelease);
             File fE = new File(fwEnv);
-            try {
+
+            try
+            {
                 cacheDeveloper = !fR.getCanonicalPath().equals(fE.getCanonicalPath());
-            } catch (IOException ex) {
+            }
+            catch (IOException ex)
+            {
                 Logger.getLogger(Axoloti.class.getName()).log(Level.SEVERE, null, ex);
                 cacheDeveloper = false;
             }
-        } else {
+        }
+        else
+        {
             File f = new File(dirRelease + File.separator + ".git");
-            if (f.exists()) {
+            if (f.exists())
+            {
                 cacheDeveloper = true;
             }
         }
@@ -164,16 +178,21 @@ public class Axoloti
     {
         failSafeMode = false;
         String homedir = System.getProperty(HOME_DIR);
-        if (homedir == null) {
+        if (homedir == null)
+        {
             return;
         }
-        try {
+        try
+        {
             File f = new File(homedir + File.separator + "failsafe");
-            if (f.exists()) {
+            if (f.exists())
+            {
                 System.err.print("fail safe mode");
                 failSafeMode = true;
             }
-        } catch (Throwable e) {
+        }
+        catch (Throwable e)
+        {
         }
     }
 
@@ -241,6 +260,7 @@ public class Axoloti
         if (!buildir.exists()) {
             buildir.mkdir();
         }
+
         if (!TestDir(HOME_DIR)) {
             System.err.println("Home directory is invalid");
         }
@@ -250,6 +270,7 @@ public class Axoloti
         if (!TestDir(RELEASE_DIR)) {
             System.err.println("Release directory is invalid");
         }
+
         BuildEnv(RUNTIME_DIR, defaultRuntime);
         if (!TestDir(RUNTIME_DIR)) {
             System.err.println("Runtime directory is invalid");

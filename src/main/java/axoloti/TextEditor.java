@@ -47,6 +47,7 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
         textArea = new RSyntaxTextArea(20, 60);
         textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
         textArea.setCodeFoldingEnabled(true);
+        textArea.setAntiAliasingEnabled(true);
         RTextScrollPane sp = new RTextScrollPane(textArea);
         cp.setLayout(new BorderLayout());
         cp.add(sp);

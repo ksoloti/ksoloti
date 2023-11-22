@@ -36,7 +36,7 @@ import axoloti.utils.Preferences;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.EventQueue;
-import java.awt.Font;
+// import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -65,6 +65,7 @@ import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.Style;
@@ -73,6 +74,9 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.strategy.Strategy;
+
+import com.formdev.flatlaf.FlatClientProperties;
+
 import qcmds.QCmdBringToDFUMode;
 import qcmds.QCmdCompilePatch;
 import qcmds.QCmdPing;
@@ -124,7 +128,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         mainframe = this;
 
         final Style styleParent = jTextPaneLog.addStyle(null, null);
-        StyleConstants.setFontFamily(styleParent, Font.MONOSPACED);
+        jTextPaneLog.setFont(UIManager.getFont("monospaced.font"));
 
         final Style styleSevere = jTextPaneLog.addStyle("severe", styleParent);
         final Style styleWarning = jTextPaneLog.addStyle("warning", styleParent);
@@ -354,20 +358,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         }
                         Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "");
                     }
+
                     for (AxolotiLibrary lib : prefs.getLibraries()) {
                         lib.reportStatus();
                     }
                     Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "");
+
                     axoObjects = new AxoObjects();
                     axoObjects.LoadAxoObjects();
 
-                    ShowDisconnect();
-                    if (!Axoloti.isFailSafeMode()) {
-                        boolean success = USBBulkConnection.GetConnection().connect();
-                        if (success) {
-                            ShowConnect();
-                        }
-                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -524,6 +523,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelColumn2.setLayout(new javax.swing.BoxLayout(jPanelColumn2, javax.swing.BoxLayout.PAGE_AXIS));
 
         jToggleButtonConnect.setFocusable(false);
+        jToggleButtonConnect.putClientProperty(FlatClientProperties.STYLE, "selectedBackground:#008000");
         jToggleButtonConnect.setText("  Connect  ");
         jToggleButtonConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -553,6 +553,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         // jPanelColumn3.add(jLabelFirmwareID);
 
         jLabelVoltages.setText("Voltage Monitor");
+        jLabelVoltages.putClientProperty(FlatClientProperties.STYLE, "disabledForeground:#FF0000"); /* "disabledForeground" color here means voltage warning, red */
         jPanelColumn3.add(jLabelVoltages);
 
         jLabelSDCardPresent.setText("No SD card");
@@ -766,9 +767,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         USBBulkConnection.GetConnection().SelectPort();
     }//GEN-LAST:event_jMenuItemSelectComActionPerformed
 
-    // private void jCheckBoxConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxConnectActionPerformed
-    private void jToggleButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxConnectActionPerformed
-        // if (!jCheckBoxConnect.isSelected()) {
+    private void jToggleButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {
         if (!jToggleButtonConnect.isSelected()) {
             USBBulkConnection.GetConnection().disconnect();
         } else {
@@ -778,7 +777,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 ShowDisconnect();
             }
         }
-    }//GEN-LAST:event_jCheckBoxConnectActionPerformed
+    }
 
     PreferencesFrame pp;
     /* usually we run all tests, as many may fail for same reason and you want
@@ -1095,15 +1094,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void ShowConnectDisconnect(boolean connect) {
-        // jCheckBoxConnect.setSelected(connect);
         if (connect)
         {
-            jToggleButtonConnect.setForeground(Theme.getCurrentTheme().Button_Live_Foreground);
+            // jToggleButtonConnect.setForeground(Theme.getCurrentTheme().Button_Live_Foreground);
             jToggleButtonConnect.setText("Connected");
         }
         else
         {
-            jToggleButtonConnect.setForeground(null);
+            // jToggleButtonConnect.setForeground(null);
             jToggleButtonConnect.setText("  Connect  ");
         }
 
@@ -1231,9 +1229,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
 
         if (warning) {
-            jLabelVoltages.setForeground(Theme.getCurrentTheme().Error_Text);
+            jLabelVoltages.setEnabled(false);
         } else {
-            jLabelVoltages.setForeground(null);
+            jLabelVoltages.setEnabled(true);
         }
     }
 

@@ -53,6 +53,9 @@ import javax.swing.KeyStroke;
 import javax.swing.text.DefaultEditorKit;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
+
+import com.formdev.flatlaf.FlatClientProperties;
+
 import qcmds.QCmdLock;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdStart;
@@ -209,14 +212,12 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     public void SetLive(boolean b) {
         if (b) {
-            jToggleButtonLive.setForeground(Theme.getCurrentTheme().Button_Live_Foreground);
             jToggleButtonLive.setSelected(true);
             jToggleButtonLive.setEnabled(true);
             jCheckBoxMenuItemLive.setSelected(true);
             jCheckBoxMenuItemLive.setEnabled(true);
             presetPanel.ShowLive(true);
         } else {
-            jToggleButtonLive.setForeground(null);
             jToggleButtonLive.setSelected(false);
             jToggleButtonLive.setEnabled(true);
             jCheckBoxMenuItemLive.setSelected(false);
@@ -239,7 +240,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             patch.Unlock();
         }
         jToggleButtonLive.setSelected(false);
-        jToggleButtonLive.setForeground(null);
+        // jToggleButtonLive.setForeground(null);
         jCheckBoxMenuItemLive.setSelected(false);
         ShowConnect1(false);
     }
@@ -248,14 +249,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     public void ShowConnect() {
         patch.Unlock();
         jToggleButtonLive.setSelected(false);
-        jToggleButtonLive.setForeground(null);
+        // jToggleButtonLive.setForeground(null);
         jCheckBoxMenuItemLive.setSelected(false);
         ShowConnect1(true);
     }
 
     public void ShowCompileFail() {
         jToggleButtonLive.setSelected(false);
-        jToggleButtonLive.setForeground(null);
+        // jToggleButtonLive.setForeground(null);
         jToggleButtonLive.setEnabled(true);
     }
 
@@ -393,6 +394,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jToolbarPanel.setLayout(new javax.swing.BoxLayout(jToolbarPanel, javax.swing.BoxLayout.LINE_AXIS));
 
         jToggleButtonLive.setText("Live");
+        jToggleButtonLive.putClientProperty(FlatClientProperties.STYLE, "selectedBackground:#008000");
         jToggleButtonLive.setEnabled(false);
         jToggleButtonLive.setFocusable(false);
         jToggleButtonLive.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
