@@ -209,7 +209,6 @@ public class Axoloti
         String defaultHome = curDir;
         String defaultRuntime = ".";
         String defaultRelease = ".";
-        boolean versionedHome = false;
 
         File git = new File("." + File.separator + ".git");
         if (git.exists()) {
@@ -240,15 +239,13 @@ public class Axoloti
                     // defaultRuntime = System.getenv("HOME") + "/axoloti_runtime";
             }
             
-            String ver = Version.AXOLOTI_SHORT_VERSION.replace(".", "_");
-            File versionHome= new File(docDir + "axoloti_"+ver);
-            if(versionHome.exists()) {
-                defaultHome = docDir + "axoloti_"+ver;
-                versionedHome = true;
-            } else {
-                defaultHome = docDir + "axoloti";
-            }
-        }
+            // String ver = Version.AXOLOTI_SHORT_VERSION.replace(".", "_");
+            // File versionHome= new File(docDir + "axoloti_"+ver);
+            // if(versionHome.exists()) {
+                // defaultHome = docDir + "axoloti_"+ver;
+            // } else {
+                // defaultHome = docDir + "axoloti";
+            // }
 
         BuildEnv(HOME_DIR, defaultHome);
         File homedir = new File(System.getProperty(HOME_DIR));
@@ -281,24 +278,6 @@ public class Axoloti
             System.err.println("Firmware directory is invalid");
         }
 
-        Preferences prefs = Preferences.LoadPreferences();
-        if (versionedHome) {
-            // String fwDir = System.getProperty(axoloti.Axoloti.FIRMWARE_DIR);
-            // if(! fwDir.startsWith(System.getProperty(RELEASE_DIR)) && !fwDir.startsWith(System.getProperty(HOME_DIR))) {
-            //     System.out.println("Using versioned home, will reset firmware");
-            //     prefs.SetFirmwareDir(System.getProperty(RELEASE_DIR) + File.separator + "firmware");
-            // }
-
-            AxolotiLibrary lib = prefs.getLibrary(AxolotiLibrary.FACTORY_ID);
-            if(lib != null) {
-                File locdir = new File(lib.getLocalLocation());
-                File verdir = new File(System.getProperty(axoloti.Axoloti.HOME_DIR) + File.separator + "axoloti-factory"+File.separator);
-                if(! locdir.getCanonicalPath().equals(verdir.getCanonicalPath())) {
-                    System.out.println("Using versioned home, will reset libraries");
-                    prefs.ResetLibraries(true);
-                }
-            }
-        }
 
         System.out.println("Axoloti Directories:\n"
                 + "Current = " + curDir + "\n"

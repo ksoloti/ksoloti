@@ -664,7 +664,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         boolean delete = false;
 
         int options = JOptionPane.OK_CANCEL_OPTION;
-        int res = JOptionPane.showConfirmDialog(this, "Reset will delete existing factory and contrib directories.\nContinue?", "Warning", options);
+        int res = JOptionPane.showConfirmDialog(this, "Reset will overwrite existing factory and community directories.\nContinue?", "Warning", options);
         if (res == JOptionPane.CANCEL_OPTION) {
             return;
         }
@@ -732,8 +732,6 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnFavDir;
-    private javax.swing.JButton btnFirmwareDir;
-    private javax.swing.JButton btnRuntimeDir;
     private javax.swing.JButton jAddLibBtn;
     private javax.swing.JButton jButtonSave;
     private javax.swing.JCheckBox jCheckBoxNoMouseReCenter;
@@ -746,7 +744,6 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelPollInterval;
     private javax.swing.JLabel jLabelDialMouseBehaviour;
     private javax.swing.JLabel jLabelFavouritesDir;
-    private javax.swing.JLabel jLabelFirmwareDir;
     private javax.swing.JLabel jLabelController;
     private javax.swing.JLabel jLabelRuntimeDir;
     // private javax.swing.JLabel jLabelTheme;
@@ -758,7 +755,5 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTextFieldPollInterval;
     // private javax.swing.JButton themeEditButton;
     private javax.swing.JLabel txtFavDir;
-    private javax.swing.JLabel txtFirmwareDir;
-    private javax.swing.JLabel txtRuntimeDir;
     // End of variables declaration//GEN-END:variables
 }
