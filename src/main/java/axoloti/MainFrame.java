@@ -293,12 +293,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Failsafe mode activated");
                         tsuf = "Failsafe";
                     }
-                    // if (Axoloti.isDeveloper()) {
-                    //     if (tsuf.length() > 0) {
-                    //         tsuf += ",";
-                    //     }
-                    //     tsuf += "Developer";
-                    // }
+                    if (Axoloti.isDeveloper()) {
+                        if (tsuf.length() > 0) {
+                            tsuf += ",";
+                        }
+                        tsuf += "Developer";
+                    }
                     if (tsuf.length() > 0) {
                         MainFrame.this.setTitle(MainFrame.this.getTitle() + " (" + tsuf + ")");
                     }
@@ -312,6 +312,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     qcmdprocessorThread.start();
                     USBBulkConnection.GetConnection().addConnectionStatusListener(MainFrame.this);
                     USBBulkConnection.GetConnection().addSDCardMountStatusListener(MainFrame.this);
+
+                    ShowDisconnect();
+                    if (!Axoloti.isFailSafeMode()) {
+                        boolean success = USBBulkConnection.GetConnection().connect();
+                        if (success) {
+                            ShowConnect();
+                        }
+                    }
 
                     // user library, ask user if they wish to upgrade, or do manual
                     // this allows them the opportunity to manually backup their files!
@@ -964,15 +972,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }//GEN-LAST:event_jMenuItemEnterDFUActionPerformed
 
     private void jMenuItemFlashDefaultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemFlashDefaultActionPerformed
-        String curFirmwareDir = System.getProperty(Axoloti.FIRMWARE_DIR);
-        String sysFirmwareDir = System.getProperty(Axoloti.RELEASE_DIR) + "/firmware";
-
-        // if (!curFirmwareDir.equals(sysFirmwareDir)) {
-        //     // if we are using the factory firmware, then we must switch back the firmware dir
-        //     // as this is where we pick up axoloti.elf from when building a patch
-        //     prefs.SetFirmwareDir(sysFirmwareDir);
-        //     prefs.SavePrefs();
-        // }
 
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/flasher/flasher_build/flasher.bin";
         String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/build/axoloti.bin";

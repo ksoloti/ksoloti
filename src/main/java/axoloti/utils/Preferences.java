@@ -20,7 +20,6 @@ package axoloti.utils;
 import axoloti.Axoloti;
 import axoloti.Version;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -373,7 +372,6 @@ public class Preferences {
         } catch (Exception ex) {
             Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         ClearDirty();
     }
 
@@ -503,28 +501,21 @@ public class Preferences {
     public final void ResetLibraries(boolean delete) {
         libraries = new ArrayList<AxolotiLibrary>();
 
-        try {
+        // try {
             AxoGitLibrary factory = new AxoGitLibrary(
                     AxolotiLibrary.FACTORY_ID,
                     "git",
-                    new File(System.getProperty(axoloti.Axoloti.HOME_DIR) + File.separator + "axoloti-factory").getCanonicalPath() + File.separator,
+                    "axoloti-factory" + File.separator,
                     true,
                     "https://github.com/axoloti/axoloti-factory.git",
                     false
             );
             libraries.add(factory);
 
-            // libraries.add(new AxoFileLibrary(
-            //         "home",
-            //         "local",
-            //         new File(System.getProperty(axoloti.Axoloti.HOME_DIR)).getCanonicalPath() + File.separator,
-            //         true
-            // ));
-
             libraries.add(new AxoGitLibrary(
                     AxolotiLibrary.USER_LIBRARY_ID,
                     "git",
-                    new File(System.getProperty(axoloti.Axoloti.HOME_DIR) + File.separator + "axoloti-contrib").getCanonicalPath() + File.separator,
+                    "axoloti-contrib" + File.separator,
                     true,
                     "https://github.com/axoloti/axoloti-contrib.git",
                     false
@@ -533,14 +524,14 @@ public class Preferences {
             libraries.add(new AxoGitLibrary(
                     AxolotiLibrary.KSOLOTI_LIBRARY_ID,
                     "git",
-                    new File(System.getProperty(axoloti.Axoloti.HOME_DIR) + File.separator + "ksoloti-objects").getCanonicalPath() + File.separator,
+                    "ksoloti-objects" + File.separator,
                     true,
                     "https://github.com/ksoloti/ksoloti-objects.git",
                     false
             ));
-        } catch(IOException ex) {
-            Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        // } catch(IOException ex) {
+            // Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, ex);
+        // }
 
         if (!Axoloti.isFailSafeMode()) {
             // initialise the libraries
