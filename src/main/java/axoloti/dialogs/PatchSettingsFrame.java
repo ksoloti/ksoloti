@@ -47,7 +47,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
     public PatchSettingsFrame(PatchSettings settings, Patch patch) {
         initComponents();
         this.patch = patch;
-        setTitle("settings");
+        setTitle("Settings");
         setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
         this.settings = settings;
         ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setValue(settings.GetMidiChannel());

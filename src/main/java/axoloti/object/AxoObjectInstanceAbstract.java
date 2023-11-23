@@ -87,7 +87,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     protected boolean Selected = false;
     private boolean Locked = false;
     private boolean typeWasAmbiguous = false;
-    final JPanel Titlebar = new JPanel();
+    JPanel Titlebar = new JPanel();
     TextFieldComponent InstanceNameTF;
     LabelComponent InstanceLabel;
 

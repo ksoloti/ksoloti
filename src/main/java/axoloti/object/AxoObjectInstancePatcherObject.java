@@ -104,6 +104,7 @@ public class AxoObjectInstancePatcherObject extends AxoObjectInstance {
     @Override
     public void PostConstructor() {
         super.PostConstructor();
+        Titlebar.setBackground(Theme.getCurrentTheme().Object_TitleBar_Embedded_Background);
         //updateObj();
         BtnEdit = new ButtonComponent("Edit");
         BtnEdit.setForeground(Theme.getCurrentTheme().Component_Foreground);

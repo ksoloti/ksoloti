@@ -126,7 +126,7 @@ public class USBBulkConnection extends Connection {
             } catch (InterruptedException ex) {
                 Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
-            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.WARNING, "Ksoloti Core disconnected\n");
+            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Ksoloti Core disconnected\n");
             synchronized (sync) {
                 sync.Acked = false;
                 sync.notifyAll();
@@ -273,7 +273,7 @@ public class USBBulkConnection extends Connection {
             } catch (InterruptedException ex) {
                 Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
-            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.WARNING, "Ksoloti Core connected\n");
+            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Ksoloti Core connected\n");
 
             try {
                 Thread.sleep(100);
@@ -1469,8 +1469,7 @@ public class USBBulkConnection extends Connection {
                         String sFwcrc = String.format("%08X", fwcrc);
 
                         System.out.println(String.format("Firmware version: %d.%d.%d.%d, CRC: 0x%s, entry point: 0x%08X", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc, patchentrypoint));
-                        Logger.getLogger(USBBulkConnection.class.getName()).info(String.format("Firmware version %d.%d.%d.%d | CRC 0x%s\n",
-                                fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
+                        Logger.getLogger(USBBulkConnection.class.getName()).info(String.format("Firmware version %d.%d.%d.%d | CRC 0x%s\n", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
                         MainFrame.mainframe.setFirmwareID(sFwcrc);
                         GoIdleState();
                         break;

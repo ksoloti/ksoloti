@@ -113,9 +113,9 @@ public class Theme {
     @Element
     public Color Object_TitleBar_Background = new Color(0.35f, 0.35f, 0.35f);
     @Element
-    public Color Object_TitleBar_Subpatch_Background = new Color(0.3f, 0.4f, 0.8f);
+    public Color Object_TitleBar_Subpatch_Background = new Color(0.4f, 0.5f, 0.6f); /* Blueish titlebar for subpatches */
     @Element
-    public Color Object_TitleBar_Embedded_Background = new Color(0.8f, 0.4f, 0.3f);
+    public Color Object_TitleBar_Embedded_Background = new Color(0.6f, 0.4f, 0.5f); /* Purpleish titlebar for embedded objects */
     @Element
     public Color Object_TitleBar_Foreground = Color.WHITE;
     @Element
@@ -178,7 +178,7 @@ public class Theme {
 
     private File FileChooserSave(JFrame frame) {
         final JFileChooser fc = new JFileChooser(MainFrame.prefs.getCurrentFileDirectory());
-        fc.setPreferredSize(new java.awt.Dimension(640, 480));
+        fc.setPreferredSize(new java.awt.Dimension(640, 640));
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(FileUtils.axtFileFilter);
 
@@ -259,7 +259,7 @@ public class Theme {
 
     public JFileChooser GetFileChooser() {
         JFileChooser fc = new JFileChooser(prefs.getCurrentFileDirectory());
-        fc.setPreferredSize(new java.awt.Dimension(640, 480));
+        fc.setPreferredSize(new java.awt.Dimension(640, 640));
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(axtFileFilter);
         return fc;
