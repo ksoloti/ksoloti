@@ -78,6 +78,8 @@ public class Preferences {
     Boolean ControllerEnabled;
     @Element(required = false)
     String themePath;
+    @Element(required = false)
+    String Theme;
 
     @ElementMap(required = false, entry = "Boards", key = "cpuid", attribute = true, inline = true)
     HashMap<String, String> BoardNames;
@@ -97,6 +99,61 @@ public class Preferences {
     final int nRecentFiles = 16;
 
     final int minimumPollInterval = 20;
+
+    public static final String THEMELIST[] = {
+        // {"Arc", "FlatArcIJTheme"},
+        // {"Arc - Orange", "FlatArcOrangeIJTheme"},
+        // {"Arc Dark", "FlatArcDarkIJTheme"},
+        // {"Arc Dark - Orange", "FlatArcDarkOrangeIJTheme"},
+        // {"Carbon", "FlatCarbonIJTheme"},
+        // {"Cobalt 2", "FlatCobalt2IJTheme"},
+        // {"Cyan light", "FlatCyanLightIJTheme"},
+        // {"Dark purple", "FlatDarkPurpleIJTheme"},
+        // {"Dracula", "FlatDraculaIJTheme"},
+        "FlatLaf Light",
+        "FlatLaf Dark",
+        "FlatLaf Darcula",
+        "FlatLaf IntelliJ",
+        "FlatLaf macOS Light",
+        "FlatLaf macOS Dark",
+        // {"Gradianto Dark Fuchsia", "FlatGradiantoDarkFuchsiaIJTheme"},
+        // {"Gradianto Deep Ocean", "FlatGradiantoDeepOceanIJTheme"},
+        // {"Gradianto Midnight Blue", "FlatGradiantoMidnightBlueIJTheme"},
+        // {"Gradianto Nature Green", "FlatGradiantoNatureGreenIJTheme"},
+        // {"Gray", "FlatGrayIJTheme"},
+        // {"Gruvbox Dark Hard", "FlatGruvboxDarkHardIJTheme"},
+        // {"Gruvbox Dark Medium", "FlatGruvboxDarkMediumIJTheme"},
+        // {"Gruvbox Dark Soft", "FlatGruvboxDarkSoftIJTheme"},
+        // {"Hiberbee Dark", "FlatHiberbeeDarkIJTheme"},
+        // {"High contrast", "FlatHighContrastIJTheme"},
+        // {"Material Design Dark", "FlatMaterialDesignDarkIJTheme"},
+        // {"Monocai", "FlatMonocaiIJTheme"},
+        // {"Monokai Pro", "FlatMonokaiProIJTheme"},
+        // {"Nord", "FlatNordIJTheme"},
+        // {"One Dark", "FlatOneDarkIJTheme"},
+        // {"Solarized Dark", "FlatSolarizedDarkIJTheme"},
+        // {"Solarized Light", "FlatSolarizedLightIJTheme"},
+        // {"Spacegray", "FlatSpacegrayIJTheme"},
+        // {"Vuesion", "FlatVuesionIJTheme"},
+        // {"Xcode-Dark", "FlatXcodeDarkIJTheme"},
+        // {"Arc Dark (Material)", "materialthemeuilite.FlatArcDarkIJTheme"},
+        // {"Atom One Dark (Material)", "materialthemeuilite.FlatAtomOneDarkIJTheme"},
+        // {"Atom One Light (Material)", "materialthemeuilite.FlatAtomOneLightIJTheme"},
+        // {"Dracula (Material)", "materialthemeuilite.FlatDraculaIJTheme"},
+        // {"GitHub (Material)", "materialthemeuilite.FlatGitHubIJTheme"},
+        // {"GitHub Dark (Material)", "materialthemeuilite.FlatGitHubDarkIJTheme"},
+        // {"Light Owl (Material)", "materialthemeuilite.FlatLightOwlIJTheme"},
+        // {"Material Darker (Material)", "materialthemeuilite.FlatMaterialDarkerIJTheme"},
+        // {"Material Deep Ocean (Material)", "Material Deep Ocean (Material)", "materialthemeuilite.FlatMaterialDeepOceanIJTheme"},
+        // {"Material Lighter (Material)", "materialthemeuilite.FlatMaterialLighterIJTheme"},
+        // {"Material Oceanic (Material)", "materialthemeuilite.FlatMaterialOceanicIJTheme"},
+        // {"Material Palenight (Material)", "materialthemeuilite.FlatMaterialPalenightIJTheme"},
+        // {"Monokai Pro (Material)", "materialthemeuilite.FlatMonokaiProIJTheme"},
+        // {"Moonlight (Material)", "materialthemeuilite.FlatMoonlightIJTheme"},
+        // {"Night Owl (Material)", "materialthemeuilite.FlatNightOwlIJTheme"},
+        // {"Solarized Dark (Material)", "materialthemeuilite.FlatSolarizedDarkIJTheme"},
+        // {"Solarized Light (Material)", "materialthemeuilite.FlatSolarizedLightIJTheme"}
+    };
 
     protected Preferences() {
         if (CurrentFileDirectory == null) {
@@ -128,6 +185,9 @@ public class Preferences {
         if (ControllerObject == null) {
             ControllerObject = "";
             ControllerEnabled = false;
+        }
+        if (Theme == null) {
+            Theme = "";
         }
 
         if (libraries == null) {
@@ -234,6 +294,16 @@ public class Preferences {
         SetDirty();
     }
 
+    public String getTheme() {
+        return Theme;
+    }
+
+    public void setTheme(String Theme) {
+        if (Theme == this.Theme) return;
+        this.Theme = Theme;
+        SetDirty();
+    }
+
     static String GetPrefsFileLoc() {
         return System.getProperty(axoloti.Axoloti.HOME_DIR) + File.separator + "ksoloti.prefs";
     }
@@ -250,10 +320,8 @@ public class Preferences {
                     prefs = serializer.read(Preferences.class, p);
                 } catch (Exception ex) {
                     try {
-                        Logger.getLogger(Preferences.class
-                                .getName()).log(Level.SEVERE, null, ex);
-                        Logger.getLogger(Preferences.class
-                                .getName()).log(Level.INFO,"Attempting to load preferences in relaxed mode");
+                        Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(Preferences.class.getName()).log(Level.INFO,"Attempting to load preferences in relaxed mode");
                         prefs = serializer.read(Preferences.class, p,false);
                     } catch (Exception ex1) {
                         Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, ex1);
