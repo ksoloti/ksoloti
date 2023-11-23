@@ -26,7 +26,6 @@ import axoloti.dialogs.FileManagerFrame;
 import axoloti.dialogs.KeyboardFrame;
 import axoloti.dialogs.PatchBank;
 import axoloti.dialogs.PreferencesFrame;
-import axoloti.dialogs.ThemeEditor;
 import axoloti.object.AxoObjects;
 import axoloti.usb.Usb;
 import axoloti.utils.AxolotiLibrary;
@@ -101,7 +100,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     String TargetFirmwareID;
     KeyboardFrame keyboard;
     FileManagerFrame filemanager;
-    ThemeEditor themeEditor;
     AxolotiRemoteControl remote;
     QCmdProcessor qcmdprocessor;
     Thread qcmdprocessorThread;
@@ -251,10 +249,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         filemanager.setTitle("File Manager");
         filemanager.setVisible(false);
 
-        themeEditor = new ThemeEditor();
-        themeEditor.setTitle("Theme Editor");
-        themeEditor.setVisible(false);
-
         remote = new AxolotiRemoteControl();
         remote.setTitle("Remote");
         remote.setVisible(false);
@@ -320,7 +314,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     USBBulkConnection.GetConnection().addConnectionStatusListener(MainFrame.this);
                     USBBulkConnection.GetConnection().addSDCardMountStatusListener(MainFrame.this);
 
-                    // user library, ask user if they wish to upgrade, or do manuall
+                    // user library, ask user if they wish to upgrade, or do manual
                     // this allows them the opportunity to manually backup their files!
                     AxolotiLibrary ulib = prefs.getLibrary(AxolotiLibrary.USER_LIBRARY_ID);
                     if (ulib != null) {
@@ -527,7 +521,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jToggleButtonConnect.setText("  Connect  ");
         jToggleButtonConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                // jCheckBoxConnectActionPerformed(evt);
                 jToggleButtonConnectActionPerformed(evt);
             }
         });
@@ -1270,10 +1263,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     public FileManagerFrame getFilemanager() {
         return filemanager;
-    }
-
-    public ThemeEditor getThemeEditor() {
-        return themeEditor;
     }
 
     public AxolotiRemoteControl getRemote() {
