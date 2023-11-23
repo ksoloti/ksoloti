@@ -98,6 +98,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jButtonAccept.setEnabled(false);
 
+        this.setTitle("Object Finder");
+
         this.p = p;
         DefaultMutableTreeNode root1 = new DefaultMutableTreeNode();
         this.objectTree = MainFrame.axoObjects.ObjectTree;
@@ -613,9 +615,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jPanelSearchField.setLayout(new javax.swing.BoxLayout(jPanelSearchField, javax.swing.BoxLayout.LINE_AXIS));
 
         jTextFieldObjName.setAlignmentX(0.0F);
-        jTextFieldObjName.setMaximumSize(new java.awt.Dimension(2147483647, 20));
+        jTextFieldObjName.setMaximumSize(new java.awt.Dimension(2147483647, 30));
         // jTextFieldObjName.setMinimumSize(new java.awt.Dimension(40, 20));
-        jTextFieldObjName.setPreferredSize(new java.awt.Dimension(600, 20));
+        jTextFieldObjName.setPreferredSize(new java.awt.Dimension(600, 30));
         jTextFieldObjName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextFieldObjNameActionPerformed(evt);
@@ -623,13 +625,27 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         });
         jPanelSearchField.add(jTextFieldObjName);
 
-        jButtonCancel.setText("✗");
+        jButtonAccept.setText("☑");
+        jButtonAccept.setToolTipText("Accept");
+        jButtonAccept.setActionCommand("");
+        jButtonAccept.setDefaultCapable(false);
+        jButtonAccept.setFocusable(false);
+        // jButtonAccept.setMargin(new java.awt.Insets(-7, -7, -7, -7));
+        jButtonAccept.setMinimumSize(new java.awt.Dimension(30, 30));
+        jButtonAccept.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAcceptActionPerformed(evt);
+            }
+        });
+
+        jPanelSearchField.add(jButtonAccept);
+        jButtonCancel.setText("☒");
         jButtonCancel.setToolTipText("Cancel");
         jButtonCancel.setActionCommand("");
         jButtonCancel.setDefaultCapable(false);
         jButtonCancel.setFocusable(false);
-        jButtonCancel.setMargin(new java.awt.Insets(-7, -7, -7, -7));
-        // jButtonCancel.setMinimumSize(new java.awt.Dimension(26, 26));
+        // jButtonCancel.setMargin(new java.awt.Insets(-7, -7, -7, -7));
+        jButtonCancel.setMinimumSize(new java.awt.Dimension(30, 30));
         jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonCancelActionPerformed(evt);
@@ -637,19 +653,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         });
         jPanelSearchField.add(jButtonCancel);
 
-        jButtonAccept.setText("✓");
-        jButtonAccept.setToolTipText("Accept");
-        jButtonAccept.setActionCommand("");
-        jButtonAccept.setDefaultCapable(false);
-        jButtonAccept.setFocusable(false);
-        jButtonAccept.setMargin(new java.awt.Insets(-7, -7, -7, -7));
-        // jButtonAccept.setMinimumSize(new java.awt.Dimension(26, 26));
-        jButtonAccept.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonAcceptActionPerformed(evt);
-            }
-        });
-        jPanelSearchField.add(jButtonAccept);
 
         jPanelLeft.add(jPanelSearchField);
 
@@ -701,7 +704,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jSplitPaneRight.setTopComponent(jScrollPaneObjectInfo);
 
-        jPanelRight.setBackground(new java.awt.Color(153, 153, 153));
+        jPanelRight.setBackground(Theme.getCurrentTheme().Patch_Unlocked_Background);
         jPanelRight.setEnabled(false);
         jPanelRight.setFocusable(false);
 
