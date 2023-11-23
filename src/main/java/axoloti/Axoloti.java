@@ -28,8 +28,19 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.intellijthemes.FlatDarkFlatIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatLightFlatIJTheme;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 /**
  *
@@ -38,9 +49,9 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class Axoloti
 {
 
-    public final static String RUNTIME_DIR = "axoloti_runtime";
-    public final static String HOME_DIR = "axoloti_home";
-    public final static String RELEASE_DIR = "axoloti_release";
+    public final static String RUNTIME_DIR  = "axoloti_runtime";
+    public final static String HOME_DIR     = "axoloti_home";
+    public final static String RELEASE_DIR  = "axoloti_release";
     public final static String FIRMWARE_DIR = "axoloti_firmware";
     
     /**
@@ -52,10 +63,35 @@ public class Axoloti
         {
             initProperties();
 
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            if (System.getProperty("os.name").contains("OS X"))
+            /* Theme selection using a verbose if..else block! Ugly */
+            String selectedTheme = Preferences.LoadPreferences().getTheme().toString();
+
+            if      (selectedTheme.equals("FlatLaf Dark"))        FlatDarkLaf.setup();
+            else if (selectedTheme.equals("FlatLaf Darcula"))     FlatDarculaLaf.setup();
+            else if (selectedTheme.equals("FlatLaf IntelliJ"))    FlatIntelliJLaf.setup();
+            else if (selectedTheme.equals("FlatLaf macOS Light")) FlatMacLightLaf.setup();
+            else if (selectedTheme.equals("FlatLaf macOS Dark"))  FlatMacDarkLaf.setup();
+            else if (selectedTheme.equals("Light Flat"))          FlatLightFlatIJTheme.setup();
+            else if (selectedTheme.equals("Dark Flat"))           FlatDarkFlatIJTheme.setup();
+            /* Falling through - default to FlatLaf Light */
+            else                                                  FlatLightLaf.setup();
+
+            UIManager.put("Table.showHorizontalLines", true);
+            UIManager.put("Table.showVerticalLines", true);
+            UIManager.put("flatlaf.menuBarEmbedded", true);
+
+            System.setProperty("awt.useSystemAAFontSettings","lcd");
+
+            if (OSDetect.getOS() == OSDetect.OS.MAC)
             {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
+                System.setProperty("apple.awt.application.name", "Ksoloti");
+                System.setProperty("apple.awt.application.appearance", "system");
+            }
+            if (OSDetect.getOS() == OSDetect.OS.LINUX)
+            {
+                JFrame.setDefaultLookAndFeelDecorated(true);
+                JDialog.setDefaultLookAndFeelDecorated(true);
             }
         }
         catch (URISyntaxException e)
@@ -66,22 +102,22 @@ public class Axoloti
         {
             throw new Error(e);
         }
-        catch (ClassNotFoundException e)
-        {
-            throw new Error(e);
-        }
-        catch (InstantiationException e)
-        {
-            throw new Error(e);
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new Error(e);
-        }
-        catch (UnsupportedLookAndFeelException e)
-        {
-            throw new Error(e);
-        }
+        // catch (ClassNotFoundException e)
+        // {
+        //     throw new Error(e);
+        // }
+        // catch (InstantiationException e)
+        // {
+        //     throw new Error(e);
+        // }
+        // catch (IllegalAccessException e)
+        // {
+        //     throw new Error(e);
+        // }
+        // catch (UnsupportedLookAndFeelException e)
+        // {
+        //     throw new Error(e);
+        // }
 
         System.setProperty("line.separator", "\n");
 

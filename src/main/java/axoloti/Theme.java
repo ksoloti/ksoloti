@@ -11,9 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.UIManager;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Serializer;
@@ -61,27 +61,21 @@ public class Theme {
     @Element
     public String Theme_Name = "Default";
 
-    /* UI */
-    @Element
-    public Color Button_Live_Foreground = new Color(0.0f, 0.5f, 0.0f);
-
     /* Backgrounds */
     @Element
-    public Color Console_Background = Color.WHITE;
+    public Color Console_Background = UIManager.getColor("Viewport.background");
     @Element
-    public Color Patch_Unlocked_Background = Color.LIGHT_GRAY;
+    public Color Patch_Unlocked_Background = new Color(128,128,134); /* Medium grey with slight blue tint */
     @Element
-    public Color Patch_Locked_Background = Color.DARK_GRAY;
+    public Color Patch_Locked_Background = new Color(64,64,70); /* Dark grey with slight blue tint */
 
     /* Text */
     @Element
     public Color Error_Text = Color.RED;
     @Element
-    public Color Console_Normal_Text = Color.BLACK;
+    public Color Console_Normal_Text = UIManager.getColor("Viewport.foreground");
     @Element
-    public Color Console_Warning_Text = Color.BLUE;
-    @Element
-    public Color Object_Label_Text = Color.BLACK;
+    public Color Console_Warning_Text = UIManager.getColor("Component.accentColor");
 
     /* Nets */
     @Element
@@ -109,17 +103,21 @@ public class Theme {
 
     /* Objects */
     @Element
-    public Color Object_Default_Background = new Color(238,238,238);
+    public Color Object_Label_Text = UIManager.getColor("Panel.foreground");
     @Element
-    public Color Object_TitleBar_Background = new Color(0.35f, 0.35f, 0.35f);
+    public Color Object_Default_Background = UIManager.getColor("Panel.background");
+    @Element
+    public Color Object_Default_Foreground = UIManager.getColor("Panel.foreground");
+    @Element
+    public Color Object_TitleBar_Background = UIManager.getColor("Panel.foreground"); /* Titlebar Inverted */
     @Element
     public Color Object_TitleBar_Subpatch_Background = new Color(0.4f, 0.5f, 0.6f); /* Blueish titlebar for subpatches */
     @Element
     public Color Object_TitleBar_Embedded_Background = new Color(0.6f, 0.4f, 0.5f); /* Purpleish titlebar for embedded objects */
     @Element
-    public Color Object_TitleBar_Foreground = Color.WHITE;
+    public Color Object_TitleBar_Foreground = UIManager.getColor("Panel.background"); /* Titlebar Inverted */
     @Element
-    public Color Object_Border_Unselected = Object_TitleBar_Background;
+    public Color Object_Border_Unselected = UIManager.getColor("Panel.foreground");
     @Element
     public Color Object_Border_Selected = Color.ORANGE;
     @Element
@@ -128,14 +126,14 @@ public class Theme {
     @Element
     public Color Parameter_Default_Background = Object_Default_Background;
     @Element
-    public Color Parameter_Default_Foreground = Color.BLACK;
+    public Color Parameter_Default_Foreground = Object_Default_Foreground;
     @Element
     public Color Parameter_On_Parent_Highlight = Cable_Frac32;
     @Element
-    public Color Parameter_Preset_Highlight = new Color(0.5f, 0.5f, 0.0f);
+    public Color Parameter_Preset_Highlight = new Color(0.7f, 0.7f, 0.0f);
 
     @Element
-    public Color Component_Primary = Color.BLACK;
+    public Color Component_Foreground = Color.BLACK;
     @Element
     public Color Component_Mid_Dark = Color.getHSBColor(0.f, 0.0f, 0.66f);
     @Element
@@ -143,7 +141,7 @@ public class Theme {
     @Element
     public Color Component_Mid_Light = Color.getHSBColor(0.f, 0.0f, 0.33f);
     @Element
-    public Color Component_Secondary = Color.WHITE;
+    public Color Component_Background = Color.WHITE;
     @Element
     public Color Component_Illuminated = Color.ORANGE;
 
@@ -165,7 +163,6 @@ public class Theme {
     public Color VU_Dark_Yellow = new Color(0.4f, 0.4f, 0.0f);
     @Element
     public Color VU_Dark_Red = new Color(0.4f, 0.0f, 0.0f);
-
     @Element
     public Color VU_Bright_Green = new Color(0.0f, 0.8f, 0.0f);
     @Element

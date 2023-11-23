@@ -74,6 +74,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jCheckBoxNoMouseReCenter.setSelected(prefs.getMouseDoNotRecenterWhenAdjustingControls());
         // jCheckBoxKeyboardFrameAlwaysOnTop.setSelected(prefs.getKeyboardFrameAlwaysOnTop());
         if (prefs.getMouseDialAngular()) jComboBoxDialMouseBehaviour.setSelectedItem("Angular"); 
+        jComboBoxTheme.setSelectedItem(prefs.getTheme());
 
         PopulateLibrary();
 
@@ -103,6 +104,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         prefs.setFavouriteDir(txtFavDir.getText());
         prefs.setControllerObject(jTextFieldController.getText().trim());
         prefs.setControllerEnabled(jControllerEnabled.isSelected());
+        prefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
     }
 
     final void PopulateLibrary() {
@@ -156,8 +158,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jResetLib = new javax.swing.JButton();
         jEditLib = new javax.swing.JButton();
         jLibStatus = new javax.swing.JButton();
-        // jLabelTheme = new javax.swing.JLabel();
-        // themeEditButton = new javax.swing.JButton();
+        jLabelTheme = new javax.swing.JLabel();
+        jComboBoxTheme = new javax.swing.JComboBox();
         jCheckBoxNoMouseReCenter = new javax.swing.JCheckBox();
         // jCheckBoxKeyboardFrameAlwaysOnTop = new javax.swing.JCheckBox();
 
@@ -309,16 +311,20 @@ public class PreferencesFrame extends javax.swing.JFrame {
             }
         });
 
-        // jLabelTheme.setText("Theme");
-        // jLabelTheme.setEnabled(true);
+        jLabelTheme.setText("Theme (restart required)");
+        jLabelTheme.setEnabled(true);
 
-        // themeEditButton.setText("Edit");
-        // themeEditButton.setEnabled(true);
-        // themeEditButton.addActionListener(new java.awt.event.ActionListener() {
-        //     public void actionPerformed(java.awt.event.ActionEvent evt) {
-        //         themeEditButtonActionPerformed(evt);
-        //     }
-        // });
+
+        for (String i : Preferences.THEMELIST)
+        {
+            jComboBoxTheme.addItem(i);
+        }
+
+        jComboBoxTheme.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxThemeActionPerformed(evt);
+            }
+        });
 
         jCheckBoxNoMouseReCenter.setText("Do not re-center cursor (for touchscreens)");
         jCheckBoxNoMouseReCenter.addActionListener(new java.awt.event.ActionListener() {
@@ -374,30 +380,28 @@ public class PreferencesFrame extends javax.swing.JFrame {
                         )
 
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            // .addComponent(btnRuntimeDir, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            // .addComponent(btnFirmwareDir, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                         )
                         .addGap(16, 16, 16))
 
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPaneLibraryTable, javax.swing.GroupLayout.PREFERRED_SIZE, 674, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPaneLibraryTable, javax.swing.GroupLayout.PREFERRED_SIZE, 560, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jResetLib, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jResetLib, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLibStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLibStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                             )
 
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jAddLibBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jAddLibBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jDelLibBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jDelLibBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                             )
-                            .addComponent(jEditLib, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jEditLib, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                         )
                         .addContainerGap(14, Short.MAX_VALUE)
                     )
@@ -409,7 +413,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelController, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextFieldController, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jTextFieldController, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(28, 28, 28)
                                 .addComponent(jControllerEnabled)
                                 .addGap(0, 0, Short.MAX_VALUE)
@@ -417,8 +421,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelTheme)
-                                .addGap(191, 191, 191)
-                                .addComponent(themeEditButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(60, 60, 60)
+                                .addComponent(jComboBoxTheme, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jButtonSave, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                             )
@@ -433,14 +437,14 @@ public class PreferencesFrame extends javax.swing.JFrame {
                             // .addComponent(jCheckBoxKeyboardFrameAlwaysOnTop, javax.swing.GroupLayout.PREFERRED_SIZE, 453, javax.swing.GroupLayout.PREFERRED_SIZE)
 
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelPollInterval, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabelPollInterval, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jTextFieldPollInterval, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                             )
 
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelDialMouseBehaviour)
-                                .addGap(130, 130, 130)
+                                .addGap(75, 75, 75)
                                 .addComponent(jComboBoxDialMouseBehaviour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             )
                         )
@@ -531,11 +535,11 @@ public class PreferencesFrame extends javax.swing.JFrame {
                         )
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 
-                        // .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            // .addComponent(themeEditButton)
-                            // .addComponent(jLabelTheme)
-                        // )
-                        .addContainerGap(28, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabelTheme)
+                            .addComponent(jComboBoxTheme, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        )
+                        .addContainerGap(4, Short.MAX_VALUE)
                     )
 
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -688,12 +692,10 @@ public class PreferencesFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jLibStatusActionPerformed
 
-    // private void themeEditButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_themeEditButtonActionPerformed
-    //     JFrame frame = MainFrame.mainframe.getThemeEditor();
-    //     frame.setVisible(true);
-    //     frame.setState(java.awt.Frame.NORMAL);
-    //     frame.toFront();
-    // }//GEN-LAST:event_themeEditButtonActionPerformed
+    private void jComboBoxThemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_themeEditButtonActionPerformed
+        Preferences.LoadPreferences().setTheme(jComboBoxTheme.getSelectedItem().toString());
+
+    }//GEN-LAST:event_themeEditButtonActionPerformed
 
     private void jCheckBoxNoMouseReCenterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxNoMouseReCenterActionPerformed
         Preferences.LoadPreferences().setMouseDoNotRecenterWhenAdjustingControls(jCheckBoxNoMouseReCenter.isSelected());
@@ -745,8 +747,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelDialMouseBehaviour;
     private javax.swing.JLabel jLabelFavouritesDir;
     private javax.swing.JLabel jLabelController;
-    private javax.swing.JLabel jLabelRuntimeDir;
-    // private javax.swing.JLabel jLabelTheme;
+    private javax.swing.JLabel jLabelTheme;
+    private javax.swing.JComboBox jComboBoxTheme;
     private javax.swing.JButton jLibStatus;
     private javax.swing.JTable jLibraryTable;
     private javax.swing.JButton jResetLib;

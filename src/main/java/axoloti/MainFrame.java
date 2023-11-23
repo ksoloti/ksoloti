@@ -32,7 +32,6 @@ import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.FirmwareID;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.EventQueue;
 // import java.awt.Font;
