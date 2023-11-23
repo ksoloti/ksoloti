@@ -325,189 +325,117 @@ public class PresetPanel extends javax.swing.JPanel {
     private void jToggleButtonEIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonEIActionPerformed
         jToggleButtonEI.setSelected(true);
         jToggleButtonE1.setSelected(false);
-        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(false);
-        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(false);
-        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(false);
-        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(false);
-        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(false);
-        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(false);
-        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(false);
-        jToggleButtonE8.setForeground(null);
         p.ShowPreset(0);
     }//GEN-LAST:event_jToggleButtonEIActionPerformed
 
     private void jToggleButtonE1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE1ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(true);
-        jToggleButtonE1.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         jToggleButtonE2.setSelected(false);
-        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(false);
-        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(false);
-        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(false);
-        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(false);
-        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(false);
-        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(false);
-        jToggleButtonE8.setForeground(null);
         p.ShowPreset(1);
     }//GEN-LAST:event_jToggleButtonE1ActionPerformed
 
     private void jToggleButtonE2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE2ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
-        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(true);
-        jToggleButtonE2.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         jToggleButtonE3.setSelected(false);
-        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(false);
-        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(false);
-        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(false);
-        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(false);
-        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(false);
-        jToggleButtonE8.setForeground(null);
         p.ShowPreset(2);
     }//GEN-LAST:event_jToggleButtonE2ActionPerformed
 
     private void jToggleButtonE3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE3ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
-        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(false);
-        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(true);
-        jToggleButtonE3.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         jToggleButtonE4.setSelected(false);
-        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(false);
-        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(false);
-        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(false);
-        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(false);
-        jToggleButtonE8.setForeground(null);
         p.ShowPreset(3);
     }//GEN-LAST:event_jToggleButtonE3ActionPerformed
 
     private void jToggleButtonE4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE4ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
-        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(false);
-        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(false);
-        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(true);
-        jToggleButtonE4.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         jToggleButtonE5.setSelected(false);
-        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(false);
-        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(false);
-        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(false);
-        jToggleButtonE8.setForeground(null);
         p.ShowPreset(4);
     }//GEN-LAST:event_jToggleButtonE4ActionPerformed
 
     private void jToggleButtonE5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE5ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
-        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(false);
-        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(false);
-        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(false);
-        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(true);
-        jToggleButtonE5.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         jToggleButtonE6.setSelected(false);
-        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(false);
-        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(false);
-        jToggleButtonE8.setForeground(null);
         p.ShowPreset(5);
     }//GEN-LAST:event_jToggleButtonE5ActionPerformed
 
     private void jToggleButtonE6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE6ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
-        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(false);
-        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(false);
-        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(false);
-        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(false);
-        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(true);
-        jToggleButtonE6.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         jToggleButtonE7.setSelected(false);
-        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(false);
-        jToggleButtonE8.setForeground(null);
         p.ShowPreset(6);
     }//GEN-LAST:event_jToggleButtonE6ActionPerformed
 
     private void jToggleButtonE7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE7ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
-        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(false);
-        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(false);
-        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(false);
-        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(false);
-        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(false);
-        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(true);
-        jToggleButtonE7.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         jToggleButtonE8.setSelected(false);
-        jToggleButtonE8.setForeground(null);
         p.ShowPreset(7);
     }//GEN-LAST:event_jToggleButtonE7ActionPerformed
 
     private void jToggleButtonE8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE8ActionPerformed
         jToggleButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
-        jToggleButtonE1.setForeground(null);
         jToggleButtonE2.setSelected(false);
-        jToggleButtonE2.setForeground(null);
         jToggleButtonE3.setSelected(false);
-        jToggleButtonE3.setForeground(null);
         jToggleButtonE4.setSelected(false);
-        jToggleButtonE4.setForeground(null);
         jToggleButtonE5.setSelected(false);
-        jToggleButtonE5.setForeground(null);
         jToggleButtonE6.setSelected(false);
-        jToggleButtonE6.setForeground(null);
         jToggleButtonE7.setSelected(false);
-        jToggleButtonE7.setForeground(null);
         jToggleButtonE8.setSelected(true);
-        jToggleButtonE8.setForeground(Theme.getCurrentTheme().Preset_Edit_Active);
         p.ShowPreset(8);
     }//GEN-LAST:event_jToggleButtonE8ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
