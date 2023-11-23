@@ -60,7 +60,7 @@ public class PopupIcon extends JComponent implements MouseListener {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(Theme.getCurrentTheme().Object_Default_Background); /* Inverted because it is in the titlebar */
+        g2.setColor(Theme.getCurrentTheme().Object_TitleBar_Foreground);
         final int rmargin = 3;
         final int htick = 3;
         int[] xp = new int[]{getWidth() - rmargin - htick * 2, getWidth() - rmargin, getWidth() - rmargin - htick};

@@ -98,10 +98,10 @@ public class InletInstance<T extends Inlet> extends IoletAbstract implements Ato
         jack.setBackground(Theme.getCurrentTheme().Object_Default_Background);
         add(jack);
         add(new SignalMetaDataIcon(inlet.GetSignalMetaData()));
-        if (axoObj.getType().GetInlets().size() > 1) {
+        // if (axoObj.getType().GetInlets().size() > 1) {
             add(Box.createHorizontalStrut(3));
             add(new LabelComponent(inlet.name));
-        }
+        // }
         add(Box.createHorizontalGlue());
         setToolTipText(inlet.description);
 

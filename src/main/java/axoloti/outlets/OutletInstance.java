@@ -92,10 +92,10 @@ public class OutletInstance<T extends Outlet> extends IoletAbstract implements C
         setMaximumSize(new Dimension(32767, 14));
         setBackground(Theme.getCurrentTheme().Object_Default_Background);
         add(Box.createHorizontalGlue());
-        if (axoObj.getType().GetOutlets().size() > 1) {
+        // if (axoObj.getType().GetOutlets().size() > 1) {
             add(new LabelComponent(outlet.name));
             add(Box.createHorizontalStrut(2));
-        }
+        // }
         add(new SignalMetaDataIcon(outlet.GetSignalMetaData()));
         jack = new components.JackOutputComponent(this);
         jack.setForeground(outlet.getDatatype().GetColor());
