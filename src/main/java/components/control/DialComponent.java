@@ -67,7 +67,7 @@ public class DialComponent extends ACtrlComponent {
         this.min = min;
         this.max = max;
         this.tick = tick;
-        Dimension d = new Dimension(28, 32);
+        Dimension d = new Dimension(29, 33);
         setPreferredSize(d);
         setMaximumSize(d);
         setMinimumSize(d);
@@ -372,7 +372,7 @@ public class DialComponent extends ACtrlComponent {
                     y = (int) (Math.sin(th) * radius);
             g2.drawLine(radius, radius, radius + x, radius + y);
             if (keybBuffer.isEmpty()) {
-                String s = String.format("%5.2f", value);
+                String s = String.format("%6.2f", value);
                 g2.setPaint(getForeground());
                 g2.setFont(Constants.FONT);
                 g2.drawString(s, 0, getSize().height);
