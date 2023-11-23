@@ -54,7 +54,7 @@ public class VRadioComponent extends HRadioComponent {
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         if (isEnabled()) {
-            g2.setColor(Theme.getCurrentTheme().Component_Secondary);
+            g2.setColor(Theme.getCurrentTheme().Component_Background);
         } else {
             g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
         }
@@ -62,7 +62,7 @@ public class VRadioComponent extends HRadioComponent {
             g2.fillOval(0, i * bsize, bsize, bsize);
         }
 
-        g2.setPaint(Theme.getCurrentTheme().Component_Primary);
+        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         if (isFocusOwner()) {
             g2.setStroke(strokeThick);
         }

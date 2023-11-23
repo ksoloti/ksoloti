@@ -30,7 +30,7 @@ import javax.swing.JComponent;
  */
 public class RControlColorLed extends JComponent {
 
-    Color color = Theme.getCurrentTheme().Component_Secondary;
+    Color color = Theme.getCurrentTheme().Component_Background;
 
     public void setColor(Color color) {
         if (this.color != color) {
@@ -53,7 +53,7 @@ public class RControlColorLed extends JComponent {
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setPaint(Theme.getCurrentTheme().Object_Default_Background);
         g2.fillRect(0, 0, width, height);
-        g2.setPaint(Theme.getCurrentTheme().Component_Secondary);
+        g2.setPaint(Theme.getCurrentTheme().Component_Background);
         g2.drawOval(hoffset, voffset, diameter, diameter);
         g2.setPaint(color);
         g2.fillOval(hoffset, voffset, diameter, diameter);

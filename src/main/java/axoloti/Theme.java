@@ -113,7 +113,7 @@ public class Theme {
     @Element
     public Color Object_TitleBar_Subpatch_Background = new Color(0.4f, 0.5f, 0.6f); /* Blueish titlebar for subpatches */
     @Element
-    public Color Object_TitleBar_Embedded_Background = new Color(0.6f, 0.4f, 0.5f); /* Purpleish titlebar for embedded objects */
+    public Color Object_TitleBar_Embedded_Background = new Color(0.6f, 0.45f, 0.5f); /* Purpleish titlebar for embedded objects */
     @Element
     public Color Object_TitleBar_Foreground = UIManager.getColor("Panel.background"); /* Titlebar Inverted */
     @Element

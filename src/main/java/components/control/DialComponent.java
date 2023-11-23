@@ -345,7 +345,7 @@ public class DialComponent extends ACtrlComponent {
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         int radius = Math.min(getSize().width, getSize().height) / 2 - layoutTick;
-        g2.setPaint(getForeground());
+        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         g2.drawLine(radius, radius, 0, 2 * radius);
         g2.drawLine(radius, radius, 2 * radius, 2 * radius);
         if (isFocusOwner()) {
@@ -354,17 +354,12 @@ public class DialComponent extends ACtrlComponent {
             g2.setStroke(strokeThin);
         }
         if (isEnabled()) {
-            if (this.customBackgroundColor != null) {
-                g2.setColor(this.customBackgroundColor);
-            } else {
-                g2.setColor(Theme.getCurrentTheme().Component_Secondary);
-
-            }
+            g2.setColor(Theme.getCurrentTheme().Component_Background);
         } else {
             g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
         }
         g2.fillOval(1, 1, radius * 2 - 2, radius * 2 - 2);
-        g2.setPaint(Theme.getCurrentTheme().Component_Primary);
+        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         g2.drawOval(1, 1, radius * 2 - 2, radius * 2 - 2);
         if (isEnabled()) {
             double th = 0.75 * Math.PI + (value - min) * (1.5 * Math.PI) / (max - min);

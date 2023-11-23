@@ -71,9 +71,9 @@ public class VBarComponentDB extends ADispComponent {
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.setPaint(Theme.getCurrentTheme().Component_Secondary);
+        g2.setPaint(Theme.getCurrentTheme().Component_Background);
         g2.fillRect(0, 0, getWidth(), height);
-        g2.setPaint(Theme.getCurrentTheme().Component_Primary);
+        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         g2.drawRect(0, 0, getWidth(), height);
         int p = ValToPos(value);
         int p1 = ValToPos(0);

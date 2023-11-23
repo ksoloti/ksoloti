@@ -292,13 +292,13 @@ public class NumberBoxComponent extends ACtrlComponent {
             g2.setStroke(strokeThin);
         }
         if (isEnabled()) {
-            g2.setColor(Theme.getCurrentTheme().Component_Secondary);
+            g2.setColor(Theme.getCurrentTheme().Component_Background);
         } else {
             g2.setPaint(Theme.getCurrentTheme().Object_Default_Background);
         }
 
         g2.fillRect(0, 0, getWidth(), getHeight());
-        g2.setPaint(Theme.getCurrentTheme().Component_Primary);
+        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         g2.drawRect(0, 0, getWidth(), getHeight());
 
         String s;

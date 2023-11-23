@@ -58,7 +58,7 @@ public class JackOutputComponent extends JComponent {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setStroke(stroke);
-        g2.setPaint(Theme.getCurrentTheme().Component_Primary);
+        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         g2.drawRect(margin, margin + 1, sz - margin - margin, sz - margin - margin);
 
         if (outlet.isConnected()) {

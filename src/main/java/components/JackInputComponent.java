@@ -59,13 +59,13 @@ public class JackInputComponent extends JComponent {
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setStroke(stroke);
         if (inlet.isConnected()) {
-            g2.setPaint(Theme.getCurrentTheme().Component_Primary);
+            g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
             g2.drawOval(margin + 1, margin + 1, sz - margin - margin, sz - margin - margin);
             g2.setPaint(getForeground());
             g2.fillOval(margin, margin, sz - margin - margin, sz - margin - margin);
             g2.drawOval(margin, margin, sz - margin - margin, sz - margin - margin);
         } else {
-            g2.setPaint(Theme.getCurrentTheme().Component_Primary);
+            g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
             g2.drawOval(margin + 1, margin + 1, sz - margin - margin, sz - margin - margin);
             g2.setPaint(getForeground());
             g2.drawOval(margin, margin, sz - margin - margin, sz - margin - margin);

@@ -238,9 +238,9 @@ public class VSliderComponent extends ACtrlComponent {
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         if (isEnabled()) {
-            g2.setPaint(Theme.getCurrentTheme().Component_Secondary);
+            g2.setPaint(Theme.getCurrentTheme().Component_Background);
             g2.fillRect(0, 0, getWidth(), height);
-            g2.setPaint(Theme.getCurrentTheme().Component_Primary);
+            g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
             if (isFocusOwner()) {
                 g2.setStroke(strokeThick);
             } else {

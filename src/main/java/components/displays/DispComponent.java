@@ -60,7 +60,7 @@ public class DispComponent extends ADispComponent {
         int tick = 1;
         int radius = Math.min(getSize().width, getSize().height) / 2 - tick;
         g2.setStroke(strokeThin);
-        g2.setColor(Theme.getCurrentTheme().Component_Secondary);
+        g2.setColor(Theme.getCurrentTheme().Component_Background);
         g2.setPaint(getForeground());
         int b = radius / 2;
         g.drawArc(b, b, 2 * (radius - b), 2 * (radius - b), -45, 270);

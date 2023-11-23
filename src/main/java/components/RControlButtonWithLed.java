@@ -86,7 +86,7 @@ public class RControlButtonWithLed extends Component {
             g2.setPaint(Theme.getCurrentTheme().Component_Illuminated);
             g2.fillRoundRect(0, 0, width, height, arc, arc);
         }
-        g2.setPaint(Theme.getCurrentTheme().Component_Primary);
+        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         if (pressed) {
             g2.fillRoundRect(inset, inset, width - inset * 2, height - inset * 2, arc, arc);
         } else {
