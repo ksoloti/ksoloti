@@ -358,9 +358,9 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 
     void SetPresetState(boolean b) { // OBSOLETE
         if (b) {
-            setBackground(Theme.getCurrentTheme().Parameter_Preset_Highlight);
+            setForeground(Theme.getCurrentTheme().Parameter_Preset_Highlight_Foreground);
         } else {
-            setBackground(Theme.getCurrentTheme().Parameter_Default_Background);
+            setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
         }
     }
 
@@ -454,7 +454,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     }
 
     public void populatePopup(JPopupMenu m) {
-        final JCheckBoxMenuItem m_onParent = new JCheckBoxMenuItem("parameter on parent");
+        final JCheckBoxMenuItem m_onParent = new JCheckBoxMenuItem("Show parameter on parent");
         m_onParent.setSelected(isOnParent());
         m.add(m_onParent);
         m_onParent.addActionListener(new ActionListener() {

@@ -27,21 +27,6 @@ public class Theme {
 
     public Theme() {
         super();
-        // Color labelForeground = (new JLabel()).getForeground();
-        // Color panelBackground = (new JPanel()).getBackground();
-        // Color panelForeground = (new JPanel()).getForeground();
-        // ensure we don't have ColorUIResource instances
-        // labelForeground = new Color(labelForeground.getRed(), labelForeground.getGreen(), 
-                // labelForeground.getBlue(), labelForeground.getAlpha());
-        // panelBackground= new Color(panelBackground.getRed(), panelBackground.getGreen(), 
-                // panelBackground.getBlue(), panelBackground.getAlpha());
-        // panelForeground= new Color(panelForeground.getRed(), panelForeground.getGreen(), 
-                // panelForeground.getBlue(), panelForeground.getAlpha());
-        // this.Object_Label_Text = labelForeground;
-        // this.Object_TitleBar_Foreground = labelForeground;
-        // this.Object_Default_Background = panelBackground;
-        // this.Parameter_Default_Background = panelBackground;
-        // this.Parameter_Default_Foreground = panelForeground;
     }
 
     private static final Registry REGISTRY = new Registry();
@@ -214,7 +199,7 @@ public class Theme {
                 Object[] options = {"Yes",
                     "No"};
                 int n = JOptionPane.showOptionDialog(frame,
-                        "File does not match filter, do you want to change extension to " + filterext + "?",
+                        "File does not match filter. Change extension to " + filterext + "?",
                         "File Extension",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
@@ -234,7 +219,7 @@ public class Theme {
                 Object[] options = {"Yes",
                     "No"};
                 int n = JOptionPane.showOptionDialog(frame,
-                        "File exists, do you want to overwrite?",
+                        "File exists! Overwrite?",
                         "File Exists",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,

@@ -77,6 +77,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         InstanceLabel = new LabelComponent(commentText);
         InstanceLabel.setBorder(BorderFactory.createEmptyBorder(-1, 5, -1, 5));
         InstanceLabel.setAlignmentX(CENTER_ALIGNMENT);
+        InstanceLabel.setAlignmentY(CENTER_ALIGNMENT);
         InstanceLabel.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent me) {

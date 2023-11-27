@@ -359,7 +359,11 @@ public class DialComponent extends ACtrlComponent {
             g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
         }
         g2.fillOval(1, 1, radius * 2 - 2, radius * 2 - 2);
-        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+        if (isEnabled()) {
+            g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+        } else {
+            g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
+        }
         g2.drawOval(1, 1, radius * 2 - 2, radius * 2 - 2);
         if (isEnabled()) {
             double th = 0.75 * Math.PI + (value - min) * (1.5 * Math.PI) / (max - min);

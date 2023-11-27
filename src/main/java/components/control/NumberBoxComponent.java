@@ -70,7 +70,7 @@ public class NumberBoxComponent extends ACtrlComponent {
     }
 
     public NumberBoxComponent(double value, double min, double max, double tick) {
-        this(value, min, max, tick, 50, 16);
+        this(value, min, max, tick, 50, 15);
     }
 
     public NumberBoxComponent(double value, double min, double max, double tick, int hsize, int vsize) {
@@ -298,8 +298,12 @@ public class NumberBoxComponent extends ACtrlComponent {
         }
 
         g2.fillRect(0, 0, getWidth(), getHeight());
-        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
-        g2.drawRect(0, 0, getWidth(), getHeight());
+        if (isEnabled()) {
+            g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+        } else {
+            g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
+        }
+        g2.drawRect(0, 0, getWidth()-1, getHeight()-1);
 
         String s;
         int h = 3;

@@ -67,11 +67,11 @@ public class VisibleCablePanel extends javax.swing.JPanel {
         jCheckBox4 = new javax.swing.JCheckBox();
         jCheckBox5 = new javax.swing.JCheckBox();
 
-        setAlignmentX(0.0F);
+        setAlignmentX(LEFT_ALIGNMENT);
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
 
         jLabelVisibleCables.setText("Visible Cables");
-        jLabelVisibleCables.setAlignmentX(0.5F);
+        jLabelVisibleCables.setAlignmentX(CENTER_ALIGNMENT);
         jLabelVisibleCables.setMaximumSize(null);
         jLabelVisibleCables.setMinimumSize(null);
         jLabelVisibleCables.setPreferredSize(null);

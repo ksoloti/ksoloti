@@ -19,15 +19,38 @@ package axoloti.utils;
 
 import axoloti.Axoloti;
 import axoloti.Version;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.simpleframework.xml.*;
 import org.simpleframework.xml.core.Persist;
 import org.simpleframework.xml.core.Persister;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
+
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.intellijthemes.FlatDraculaIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatHighContrastIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatMaterialDesignDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatMonocaiIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatNordIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatSpacegrayIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatLightOwlIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDarkerIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDeepOceanIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialLighterIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialOceanicIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialPalenightIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatNightOwlIJTheme;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
 /**
  *
  * @author Johannes Taelman
@@ -123,33 +146,33 @@ public class Preferences {
         // {"Gruvbox Dark Hard", "FlatGruvboxDarkHardIJTheme"},
         // {"Gruvbox Dark Medium", "FlatGruvboxDarkMediumIJTheme"},
         // {"Gruvbox Dark Soft", "FlatGruvboxDarkSoftIJTheme"},
-        // {"Hiberbee Dark", "FlatHiberbeeDarkIJTheme"},
-        // {"High contrast", "FlatHighContrastIJTheme"},
-        // {"Material Design Dark", "FlatMaterialDesignDarkIJTheme"},
-        // {"Monocai", "FlatMonocaiIJTheme"},
+        "Hiberbee Dark",
+        "High Contrast",
+        "Monocai",
         // {"Monokai Pro", "FlatMonokaiProIJTheme"},
-        // {"Nord", "FlatNordIJTheme"},
+        "Nord",
         // {"One Dark", "FlatOneDarkIJTheme"},
         // {"Solarized Dark", "FlatSolarizedDarkIJTheme"},
         // {"Solarized Light", "FlatSolarizedLightIJTheme"},
-        // {"Spacegray", "FlatSpacegrayIJTheme"},
+        "Spacegray",
         // {"Vuesion", "FlatVuesionIJTheme"},
         // {"Xcode-Dark", "FlatXcodeDarkIJTheme"},
         // {"Arc Dark (Material)", "materialthemeuilite.FlatArcDarkIJTheme"},
         // {"Atom One Dark (Material)", "materialthemeuilite.FlatAtomOneDarkIJTheme"},
         // {"Atom One Light (Material)", "materialthemeuilite.FlatAtomOneLightIJTheme"},
-        // {"Dracula (Material)", "materialthemeuilite.FlatDraculaIJTheme"},
+        "Dracula (Material)",
         // {"GitHub (Material)", "materialthemeuilite.FlatGitHubIJTheme"},
         // {"GitHub Dark (Material)", "materialthemeuilite.FlatGitHubDarkIJTheme"},
-        // {"Light Owl (Material)", "materialthemeuilite.FlatLightOwlIJTheme"},
-        // {"Material Darker (Material)", "materialthemeuilite.FlatMaterialDarkerIJTheme"},
-        // {"Material Deep Ocean (Material)", "Material Deep Ocean (Material)", "materialthemeuilite.FlatMaterialDeepOceanIJTheme"},
-        // {"Material Lighter (Material)", "materialthemeuilite.FlatMaterialLighterIJTheme"},
-        // {"Material Oceanic (Material)", "materialthemeuilite.FlatMaterialOceanicIJTheme"},
-        // {"Material Palenight (Material)", "materialthemeuilite.FlatMaterialPalenightIJTheme"},
+        "Light Owl (Material)",
+        "Night Owl (Material)",
+        "Material Design Dark",
+        "Material Darker (Material)",
+        "Material Deep Ocean (Material)",
+        "Material Lighter (Material)",
+        "Material Oceanic (Material)",
+        "Material Palenight (Material)",
         // {"Monokai Pro (Material)", "materialthemeuilite.FlatMonokaiProIJTheme"},
         // {"Moonlight (Material)", "materialthemeuilite.FlatMoonlightIJTheme"},
-        // {"Night Owl (Material)", "materialthemeuilite.FlatNightOwlIJTheme"},
         // {"Solarized Dark (Material)", "materialthemeuilite.FlatSolarizedDarkIJTheme"},
         // {"Solarized Light (Material)", "materialthemeuilite.FlatSolarizedLightIJTheme"}
     };
@@ -186,7 +209,7 @@ public class Preferences {
             ControllerEnabled = false;
         }
         if (Theme == null) {
-            Theme = "";
+            Theme = "FlatLaf Light";
         }
 
         if (libraries == null) {
@@ -301,6 +324,32 @@ public class Preferences {
         if (Theme == this.Theme) return;
         this.Theme = Theme;
         SetDirty();
+    }
+
+    public void applyTheme()
+    {
+        /* Ugly and inefficient Theme switching ... */
+        if      (this.Theme.equals("FlatLaf Dark"))                   FlatDarkLaf.setup();
+        else if (this.Theme.equals("FlatLaf Darcula"))                FlatDarculaLaf.setup();
+        else if (this.Theme.equals("FlatLaf IntelliJ"))               FlatIntelliJLaf.setup();
+        else if (this.Theme.equals("FlatLaf macOS Light"))            FlatMacLightLaf.setup();
+        else if (this.Theme.equals("FlatLaf macOS Dark"))             FlatMacDarkLaf.setup();
+        else if (this.Theme.equals("Hiberbee Dark"))                  FlatHiberbeeDarkIJTheme.setup();
+        else if (this.Theme.equals("High Contrast"))                  FlatHighContrastIJTheme.setup();
+        else if (this.Theme.equals("Light Owl (Material)"))           FlatLightOwlIJTheme.setup();
+        else if (this.Theme.equals("Night Owl (Material)"))           FlatNightOwlIJTheme.setup();
+        else if (this.Theme.equals("Material Design Dark"))           FlatMaterialDesignDarkIJTheme.setup();
+        else if (this.Theme.equals("Monocai"))                        FlatMonocaiIJTheme.setup();
+        else if (this.Theme.equals("Nord"))                           FlatNordIJTheme.setup();
+        else if (this.Theme.equals("Spacegray"))                      FlatSpacegrayIJTheme.setup();
+        else if (this.Theme.equals("Dracula (Material)"))             FlatDraculaIJTheme.setup();
+        else if (this.Theme.equals("Material Darker (Material)"))     FlatMaterialDarkerIJTheme.setup();
+        else if (this.Theme.equals("Material Deep Ocean (Material)")) FlatMaterialDeepOceanIJTheme.setup();
+        else if (this.Theme.equals("Material Lighter (Material)"))    FlatMaterialLighterIJTheme.setup();
+        else if (this.Theme.equals("Material Oceanic (Material)"))    FlatMaterialOceanicIJTheme.setup();
+        else if (this.Theme.equals("Material Palenight (Material)"))  FlatMaterialPalenightIJTheme.setup();
+        /* Falling through - default to FlatLaf Light */
+        else                                                          FlatLightLaf.setup();
     }
 
     static String GetPrefsFileLoc() {

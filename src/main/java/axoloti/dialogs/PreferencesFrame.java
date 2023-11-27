@@ -694,6 +694,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
     private void jComboBoxThemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_themeEditButtonActionPerformed
         Preferences.LoadPreferences().setTheme(jComboBoxTheme.getSelectedItem().toString());
+        Preferences.LoadPreferences().applyTheme();
 
     }//GEN-LAST:event_themeEditButtonActionPerformed
 

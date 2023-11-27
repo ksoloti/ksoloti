@@ -32,14 +32,6 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.intellijthemes.FlatDarkFlatIJTheme;
-import com.formdev.flatlaf.intellijthemes.FlatLightFlatIJTheme;
-import com.formdev.flatlaf.themes.FlatMacDarkLaf;
-import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 /**
  *
@@ -62,24 +54,20 @@ public class Axoloti
         {
             initProperties();
 
-            /* Theme selection using a verbose if..else block! Ugly */
-            String selectedTheme = Preferences.LoadPreferences().getTheme().toString();
-
-            if      (selectedTheme.equals("FlatLaf Dark"))        FlatDarkLaf.setup();
-            else if (selectedTheme.equals("FlatLaf Darcula"))     FlatDarculaLaf.setup();
-            else if (selectedTheme.equals("FlatLaf IntelliJ"))    FlatIntelliJLaf.setup();
-            else if (selectedTheme.equals("FlatLaf macOS Light")) FlatMacLightLaf.setup();
-            else if (selectedTheme.equals("FlatLaf macOS Dark"))  FlatMacDarkLaf.setup();
-            else if (selectedTheme.equals("Light Flat"))          FlatLightFlatIJTheme.setup();
-            else if (selectedTheme.equals("Dark Flat"))           FlatDarkFlatIJTheme.setup();
-            /* Falling through - default to FlatLaf Light */
-            else                                                  FlatLightLaf.setup();
+            Preferences.LoadPreferences().applyTheme();
 
             UIManager.put("Table.showHorizontalLines", true);
             UIManager.put("Table.showVerticalLines", true);
             UIManager.put("flatlaf.menuBarEmbedded", true);
+            UIManager.put("Component.innerFocusWidth", 0);
+            UIManager.put("Component.focusWidth", 0);
+            UIManager.put("ToggleButton.selectedForeground", Theme.getCurrentTheme().Button_Accent_Foreground);
+            UIManager.put("ToggleButton.selectedBackground", Theme.getCurrentTheme().Button_Accent_Background);
 
-            System.setProperty("awt.useSystemAAFontSettings","lcd");
+
+            // System.setProperty("awt.useSystemAAFontSettings","lcd");
+            // System.setProperty("sun.java2d.dpiaware","true");
+            // System.setProperty("swing.aatext","true");
 
             if (OSDetect.getOS() == OSDetect.OS.MAC)
             {

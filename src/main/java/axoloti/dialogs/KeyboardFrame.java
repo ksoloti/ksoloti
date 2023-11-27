@@ -115,16 +115,16 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         setPreferredSize(new java.awt.Dimension(917, 150));
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.Y_AXIS));
         
-        jPanelKeyb.setAlignmentX(0.0F);
-        jPanelKeyb.setAlignmentY(0.0F);
+        jPanelKeyb.setAlignmentX(LEFT_ALIGNMENT);
+        jPanelKeyb.setAlignmentY(TOP_ALIGNMENT);
         jPanelKeyb.setMaximumSize(new java.awt.Dimension(905, 72));
         jPanelKeyb.setMinimumSize(new java.awt.Dimension(905, 72));
         jPanelKeyb.setPreferredSize(new java.awt.Dimension(905, 72));
         jPanelKeyb.setLayout(new javax.swing.BoxLayout(jPanelKeyb, javax.swing.BoxLayout.LINE_AXIS));
         getContentPane().add(jPanelKeyb);
 
-        jPanel1.setAlignmentX(0.0F);
-        jPanel1.setAlignmentY(0.0F);
+        jPanel1.setAlignmentX(LEFT_ALIGNMENT);
+        jPanel1.setAlignmentY(TOP_ALIGNMENT);
         jPanel1.setMinimumSize(new java.awt.Dimension(500, 50));
         jPanel1.setPreferredSize(new java.awt.Dimension(500, 50));
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));

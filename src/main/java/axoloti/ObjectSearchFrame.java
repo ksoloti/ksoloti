@@ -607,14 +607,14 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jSplitPaneMain.setMinimumSize(new java.awt.Dimension(120, 60));
         jSplitPaneMain.setPreferredSize(new java.awt.Dimension(640, 400));
 
-        jPanelLeft.setAlignmentX(0.0F);
-        jPanelLeft.setAlignmentY(0.0F);
+        jPanelLeft.setAlignmentX(LEFT_ALIGNMENT);
+        jPanelLeft.setAlignmentY(TOP_ALIGNMENT);
         jPanelLeft.setLayout(new javax.swing.BoxLayout(jPanelLeft, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jPanelSearchField.setAlignmentY(0.0F);
+        jPanelSearchField.setAlignmentY(TOP_ALIGNMENT);
         jPanelSearchField.setLayout(new javax.swing.BoxLayout(jPanelSearchField, javax.swing.BoxLayout.LINE_AXIS));
 
-        jTextFieldObjName.setAlignmentX(0.0F);
+        jTextFieldObjName.setAlignmentX(LEFT_ALIGNMENT);
         jTextFieldObjName.setMaximumSize(new java.awt.Dimension(2147483647, 30));
         // jTextFieldObjName.setMinimumSize(new java.awt.Dimension(40, 20));
         jTextFieldObjName.setPreferredSize(new java.awt.Dimension(600, 30));
@@ -657,8 +657,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jPanelLeft.add(jPanelSearchField);
 
         jSplitPaneLeft.setResizeWeight(0.5);
-        jSplitPaneLeft.setAlignmentX(0.5F);
-        jSplitPaneLeft.setAlignmentY(1.0F);
+        jSplitPaneLeft.setAlignmentX(CENTER_ALIGNMENT);
+        jSplitPaneLeft.setAlignmentY(BOTTOM_ALIGNMENT);
         jSplitPaneLeft.setMinimumSize(new java.awt.Dimension(80, 120));
         jSplitPaneLeft.setPreferredSize(new java.awt.Dimension(180, 160));
 
@@ -666,7 +666,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jScrollPaneObjectSearch.setPreferredSize(new java.awt.Dimension(180, 160));
 
         jResultList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jResultList.setAlignmentX(0.0F);
+        jResultList.setAlignmentX(LEFT_ALIGNMENT);
         jResultList.setMinimumSize(new java.awt.Dimension(100, 50));
         jResultList.setVisibleRowCount(6);
         jScrollPaneObjectSearch.setViewportView(jResultList);
@@ -675,7 +675,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jScrollPaneObjectTree.setPreferredSize(new java.awt.Dimension(180, 160));
 
-        jObjectTree.setAlignmentX(0.0F);
+        jObjectTree.setAlignmentX(LEFT_ALIGNMENT);
         jObjectTree.setDragEnabled(true);
         jObjectTree.setMinimumSize(new java.awt.Dimension(100, 50));
         jObjectTree.setRootVisible(false);

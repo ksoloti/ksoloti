@@ -61,8 +61,11 @@ public class VRadioComponent extends HRadioComponent {
         for (int i = 0; i < n; i++) {
             g2.fillOval(0, i * bsize, bsize, bsize);
         }
-
-        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+        if (isEnabled()) {
+            g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+        } else {
+            g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
+        }
         if (isFocusOwner()) {
             g2.setStroke(strokeThick);
         }

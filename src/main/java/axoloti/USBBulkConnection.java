@@ -211,7 +211,7 @@ public class USBBulkConnection extends Connection {
             // Ensure the allocated device list is freed
             //LibUsb.freeDeviceList(list, true);
         }
-        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "No matching USB device found\n");
+        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "No matching USB devices found.");
         // Device not found
         return null;
     }
@@ -273,7 +273,7 @@ public class USBBulkConnection extends Connection {
             } catch (InterruptedException ex) {
                 Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
-            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Ksoloti Core connected\n");
+            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.WARNING, "Connected\n");
 
             try {
                 Thread.sleep(100);

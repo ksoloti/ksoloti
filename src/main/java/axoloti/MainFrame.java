@@ -116,6 +116,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
      */
     public MainFrame(String args[]) {
         this.args = args;
+
         initComponents();
         fileMenu.initComponents();
         setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
@@ -329,7 +330,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
                             Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current community library does not match specified version: {0} <-> {1}", new Object[]{cb, ulib.getBranch()});
                             int s = JOptionPane.showConfirmDialog(MainFrame.this,
-                                    "Community library version mismatch detected. Do you want to upgrade now?\n"
+                                    "Community library version mismatch detected. Upgrade now?\n"
                                     + "This will stash any local changes and reapply them to the new version.\n"
                                     + "If you choose no, you will need to manually backup your changes and then sync libraries.",
                                     "Community Library Mismatch",
@@ -524,7 +525,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelColumn2.setLayout(new javax.swing.BoxLayout(jPanelColumn2, javax.swing.BoxLayout.PAGE_AXIS));
 
         jToggleButtonConnect.setFocusable(false);
-        jToggleButtonConnect.putClientProperty(FlatClientProperties.STYLE, "selectedBackground:#008000");
         jToggleButtonConnect.setText("  Connect  ");
         jToggleButtonConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -578,7 +578,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelProgress.setMaximumSize(new java.awt.Dimension(605, 16));
         jPanelProgress.setLayout(new javax.swing.BoxLayout(jPanelProgress, javax.swing.BoxLayout.LINE_AXIS));
 
-        jProgressBar1.setAlignmentX(0.0F);
+        jProgressBar1.setAlignmentX(LEFT_ALIGNMENT);
         jProgressBar1.setMaximumSize(new java.awt.Dimension(100, 16));
         jProgressBar1.setMinimumSize(new java.awt.Dimension(100, 16));
         jProgressBar1.setPreferredSize(new java.awt.Dimension(100, 16));
@@ -1087,13 +1087,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private void ShowConnectDisconnect(boolean connect) {
         if (connect)
         {
-            // jToggleButtonConnect.setForeground(Theme.getCurrentTheme().Button_Live_Foreground);
             jToggleButtonConnect.setText("Connected");
+            // jToggleButtonConnect.setBackground(Theme.getCurrentTheme().Button_Accent_Background);
+            // jToggleButtonConnect.setForeground(Theme.getCurrentTheme().Button_Accent_Foreground);
         }
         else
         {
-            // jToggleButtonConnect.setForeground(null);
             jToggleButtonConnect.setText("  Connect  ");
+            // jToggleButtonConnect.setBackground(Theme.getCurrentTheme().Button_Default_Background);
+            // jToggleButtonConnect.setForeground(Theme.getCurrentTheme().Button_Default_Foreground);
         }
 
         jToggleButtonConnect.setSelected(connect);
@@ -1193,7 +1195,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     s = " ";
                     break;
                 default:
-                    s = "Running #" + patchIndex;
+                    s = "Running patch #" + patchIndex;
             }
             jLabelPatch.setText(s);
         }
@@ -1229,7 +1231,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     public void interactiveFirmwareUpdate() {
         int s = JOptionPane.showConfirmDialog(this,
                 "Firmware mismatch detected!\n"
-                + "Do you want to update the firmware now?\n"
+                + "Update the firmware now?\n"
                 + "This process will cause a disconnect and the LEDs will blink for a while.\n"
                 + "Do not interrupt until the LEDs stop blinking.\n"
                 + "When the green LED lights up steady you can connect again.\n",

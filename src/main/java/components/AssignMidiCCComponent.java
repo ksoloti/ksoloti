@@ -85,15 +85,15 @@ public class AssignMidiCCComponent extends JComponent {
             g2.fillRect(1, 1, getWidth(), getHeight());
 
             if (param.getMidiCC() >= 0) {
-                g2.setColor(Theme.getCurrentTheme().Component_Foreground);
+                g2.setColor(Theme.getCurrentTheme().Object_Default_Foreground);
                 g2.fillRect(1, 1, 8, getHeight());
-                g2.setColor(Theme.getCurrentTheme().Component_Background);
+                g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
             } else {
-                g2.setColor(Theme.getCurrentTheme().Component_Foreground);
+                g2.setColor(Theme.getCurrentTheme().Object_Default_Foreground);
             }
 
             g2.drawString("C", 1, getHeight() - 2);
-            g2.setColor(Theme.getCurrentTheme().Component_Foreground);
+            g2.setColor(Theme.getCurrentTheme().Object_Default_Foreground);
 
             final int rmargin = 2;
             final int vmargin = 4;

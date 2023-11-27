@@ -106,7 +106,7 @@ public class Usb {
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);
                         if (result < 0) {
-                            Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* Ksoloti USB device, but can''t get access: {0}", LibUsb.strError(result));
+                            Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* Ksoloti USB device, but can''t access: {0}", LibUsb.strError(result));
                         } else {
                             Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* Ksoloti USB device, serial #{0}", LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
                             LibUsb.close(handle);

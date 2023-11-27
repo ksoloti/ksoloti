@@ -475,7 +475,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             int clustersize = SDCardInfo.getInstance().getClustersize();
             int sectorsize = SDCardInfo.getInstance().getSectorsize();
             jLabelSDInfo.setText("Free: " + ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)) + "MB");
-            System.out.println(String.format("SD free: %d MB, Cluster size: %d", ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)), (clustersize * sectorsize)));
+            // System.out.println(String.format("SD free: %d MB, Cluster size: %d", ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)), (clustersize * sectorsize)));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

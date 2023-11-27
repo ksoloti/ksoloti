@@ -87,9 +87,12 @@ public class DropDownComponent extends JComponent implements MouseListener {
             g2.setPaint(Theme.getCurrentTheme().Object_Default_Background);
         }
         g2.fillRect(1, 1, getWidth() - 2, getHeight() - 2);
-        g2.setColor(Theme.getCurrentTheme().Component_Foreground);
+        if (isEnabled()) {
+            g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+        } else {
+            g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
+        }
         g2.drawRect(1, 1, getWidth() - 2, getHeight() - 2);
-        g2.setColor(Theme.getCurrentTheme().Component_Foreground);
         final int rmargin = 5;
         final int htick = 3;
         int[] xp = new int[]{getWidth() - rmargin - htick * 2, getWidth() - rmargin, getWidth() - rmargin - htick};

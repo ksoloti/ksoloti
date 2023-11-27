@@ -85,7 +85,7 @@ public class PresetPanel extends javax.swing.JPanel {
         jToggleButtonE7 = new javax.swing.JToggleButton();
         jToggleButtonE8 = new javax.swing.JToggleButton();
 
-        setAlignmentX(0.0F);
+        setAlignmentX(LEFT_ALIGNMENT);
         setMaximumSize(new java.awt.Dimension(400, 40));
         setMinimumSize(new java.awt.Dimension(400, 40));
         setPreferredSize(new java.awt.Dimension(400, 40));

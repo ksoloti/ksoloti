@@ -80,6 +80,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         setMinimumSize(new java.awt.Dimension(200,120));
         setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
         this.qcmdprocessor = qcmdprocessor;
+
         initComponents();
         fileMenu1.initComponents();
         this.patch = patch;
@@ -275,7 +276,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 "Don't Save",
                 "Cancel"};
             int n = JOptionPane.showOptionDialog(this,
-                    "Do you want to save changes to \"" + patch.getFileNamePath() + "\"?",
+                    "Save changes to \"" + patch.getFileNamePath() + "\"?",
                     "Unsaved Changes",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
@@ -386,15 +387,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.Y_AXIS));
 
-        jToolbarPanel.setAlignmentX(1.0F);
-        jToolbarPanel.setAlignmentY(0.0F);
+        jToolbarPanel.setAlignmentX(RIGHT_ALIGNMENT);
+        jToolbarPanel.setAlignmentY(TOP_ALIGNMENT);
         jToolbarPanel.setMaximumSize(new java.awt.Dimension(32767, 0));
         jToolbarPanel.setPreferredSize(new java.awt.Dimension(212, 49));
         jToolbarPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jToolbarPanel.setLayout(new javax.swing.BoxLayout(jToolbarPanel, javax.swing.BoxLayout.LINE_AXIS));
 
         jToggleButtonLive.setText("Live");
-        jToggleButtonLive.putClientProperty(FlatClientProperties.STYLE, "selectedBackground:#008000");
         jToggleButtonLive.setEnabled(false);
         jToggleButtonLive.setFocusable(false);
         jToggleButtonLive.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -407,14 +407,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jToolbarPanel.add(jToggleButtonLive);
 
-        filler1.setAlignmentX(0.0F);
+        filler1.setAlignmentX(LEFT_ALIGNMENT);
         jToolbarPanel.add(filler1);
 
         jLabelDSPLoad.setText("DSP Load ");
         jToolbarPanel.add(jLabelDSPLoad);
 
         jProgressBarDSPLoad.setToolTipText("CPU load of currently running patch");
-        jProgressBarDSPLoad.setAlignmentX(0.0F);
+        jProgressBarDSPLoad.setAlignmentX(LEFT_ALIGNMENT);
         jProgressBarDSPLoad.setMaximumSize(new java.awt.Dimension(200, 20));
         jProgressBarDSPLoad.setMinimumSize(new java.awt.Dimension(60, 20));
         jProgressBarDSPLoad.setPreferredSize(new java.awt.Dimension(200, 20));
@@ -422,7 +422,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jProgressBarDSPLoad.setStringPainted(true);
         jToolbarPanel.add(jProgressBarDSPLoad);
 
-        filler2.setAlignmentX(0.0F);
+        filler2.setAlignmentX(LEFT_ALIGNMENT);
         jToolbarPanel.add(filler2);
 
         getContentPane().add(jToolbarPanel);
@@ -866,8 +866,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 Object[] options = {"Yes",
                     "No"};
                 int n = JOptionPane.showOptionDialog(this,
-                        "File does not match filter, do you want to change extension to " + filterext + "?",
-                        "Axoloti asks:",
+                        "File does not match filter. Change extension to " + filterext + "?",
+                        "File Extension",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
                         null,
@@ -886,8 +886,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 Object[] options = {"Yes",
                     "No"};
                 int n = JOptionPane.showOptionDialog(this,
-                        "File exists, do you want to overwrite?",
-                        "Axoloti asks:",
+                        "File exists! Overwrite?",
+                        "File Exists",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
                         null,

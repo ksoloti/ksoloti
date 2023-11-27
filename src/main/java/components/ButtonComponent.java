@@ -129,7 +129,7 @@ public class ButtonComponent extends JComponent implements MouseInputListener, K
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        final int radius = 12;
+        final int radius = 8;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
@@ -152,7 +152,11 @@ public class ButtonComponent extends JComponent implements MouseInputListener, K
                 g2.setPaint(Theme.getCurrentTheme().Object_Default_Background);
             }
             g2.fillRoundRect(2, 2, getWidth() - 4, getHeight() - 4, radius, radius);
-            g2.setPaint(getForeground());
+            if (isEnabled()) {
+                g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+            } else {
+                g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
+            }
             g2.drawRoundRect(2, 2, getWidth() - 4, getHeight() - 4, radius, radius);
             g2.setFont(Constants.FONT);
             g2.drawString(label, 8, getHeight() - 5);

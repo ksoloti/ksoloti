@@ -54,7 +54,6 @@ import javax.swing.TransferHandler;
 public abstract class ACtrlComponent extends JComponent {
 
     protected AxoObjectInstance axoObj;
-    // protected Color customBackgroundColor;
 
     public ACtrlComponent() {
         setFocusable(true);
@@ -179,7 +178,7 @@ public abstract class ACtrlComponent extends JComponent {
                 if (isEnabled()) {
                     try {
                         String s = (String) t.getTransferData(DataFlavor.stringFlavor);
-                        System.out.println("paste on control: " + s);
+                        System.out.println("Paste on control: " + s);
                         setValue(Double.parseDouble(s));
                     } catch (UnsupportedFlavorException ex) {
                         Logger.getLogger(NumberBoxComponent.class.getName()).log(Level.SEVERE, "Paste", ex);
@@ -237,7 +236,4 @@ public abstract class ACtrlComponent extends JComponent {
 
     }
 
-    // public void setCustomBackgroundColor(Color c) {
-    //     this.customBackgroundColor = c;
-    // }
 }

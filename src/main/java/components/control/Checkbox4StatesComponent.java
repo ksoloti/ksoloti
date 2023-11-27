@@ -215,8 +215,11 @@ public class Checkbox4StatesComponent extends ACtrlComponent {
             g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
         }
         g2.fillRect(0, 0, bsize * n, bsize + 1);
-        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
-
+        if (isEnabled()) {
+            g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+        } else {
+            g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
+        }
         if (isFocusOwner()) {
             g2.setStroke(strokeThick);
             g2.drawRect(0, 0, bsize * n + 0, bsize + 1);
