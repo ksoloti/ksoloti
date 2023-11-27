@@ -1,5 +1,9 @@
 #!/bin/bash
-VERSION="1.0.12"
+
+set -e # exit immediately if anything "goes wrong"
+
+VERSION="$(git describe --long --always --tags 2>&1)"
+echo $VERSION
 
 # Compile firmware and jar
 ./platform_linux/compile_firmware.sh
