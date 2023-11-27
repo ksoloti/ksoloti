@@ -103,6 +103,7 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/jsch-0.1.55.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/flatlaf-3.2.5.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/flatlaf-intellij-themes-3.2.5.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/commons-lang3-3.14.0.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-api-2.0.9.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-simple-2.0.9.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/simple-xml-2.7.1.jar"/>
@@ -281,6 +282,7 @@
                 <include name="jsch-0.1.55.jar"/>
                 <include name="flatlaf-3.2.5.jar"/>
                 <include name="flatlaf-intellij-themes-3.2.5.jar"/>
+                <include name="commons-lang3-3.14.0.jar"/>
                 <include name="slf4j-api-2.0.9.jar"/>
                 <include name="slf4j-simple-2.0.9.jar"/>
                 <include name="simple-xml-2.7.1.jar"/>
