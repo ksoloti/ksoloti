@@ -46,11 +46,10 @@ public class Theme {
     @Element
     public String Theme_Name = "Default";
 
-    /* Backgrounds */
+    /* UI */
     @Element
     public Color Console_Background = UIManager.getColor("Viewport.background");
     @Element
-    // public Color Patch_Unlocked_Background = new Color(128,128,134); /* Medium grey with slight blue tint */
     public Color Patch_Unlocked_Background = UIManager.getColor("Viewport.background").darker();
     @Element
     public Color Patch_Locked_Background = new Color(66,66,64); /* Dark grey with slight brown tint */
@@ -77,15 +76,15 @@ public class Theme {
     @Element
     public Color Cable_Shadow = Color.BLACK;
     @Element
-    public Color Cable_Bool32 = Color.YELLOW;
+    public Color Cable_Bool32 = new Color(0xFF, 0xFF, 0x40);
     @Element
     public Color Cable_CharPointer32 = Color.PINK;
     @Element
     public Color Cable_Zombie = Color.WHITE;
     @Element
-    public Color Cable_Frac32 = new Color(0.15f, 0.25f, 1.0f); /* Medium light blue */
+    public Color Cable_Frac32 = new Color(0x20, 0x40, 0xFF);
     @Element
-    public Color Cable_Frac32Buffer = Color.RED;
+    public Color Cable_Frac32Buffer = new Color(0xFF, 0x20, 0x40);
     @Element
     public Color Cable_Int32 = Color.GREEN;
     @Element
@@ -112,6 +111,8 @@ public class Theme {
     public Color Object_TitleBar_Foreground = UIManager.getColor("Panel.background"); /* Titlebar Inverted */
     @Element
     public Color Object_Border_Unselected = Patch_Unlocked_Background;
+    @Element
+    public Color Object_Border_Unselected_Locked = Patch_Locked_Background;
     @Element
     public Color Object_Border_Selected = Color.ORANGE;
     @Element
