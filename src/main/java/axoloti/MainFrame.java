@@ -34,7 +34,6 @@ import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import java.awt.Cursor;
 import java.awt.EventQueue;
-// import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -217,6 +217,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                     }
                     else if (descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD)
                     {
+                        model.addRow(new String[]{"",sKsolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
                     }
                 } else {
                     throw new LibUsbException("Unable to read device descriptor", result);

@@ -171,7 +171,7 @@ public class USBBulkConnection extends Connection {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
                 if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDKsoloti) {
-                    Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "USB device found");
+                    Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Ksoloti Core found.");
                     DeviceHandle h = new DeviceHandle();
                     result = LibUsb.open(d, h);
                     if (result < 0) {
@@ -197,7 +197,7 @@ public class USBBulkConnection extends Connection {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
                 if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDKsoloti) {
-                    Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "USB device found");
+                    Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Matching USB device found.");
                     DeviceHandle h = new DeviceHandle();
                     result = LibUsb.open(d, h);
                     if (result < 0) {
