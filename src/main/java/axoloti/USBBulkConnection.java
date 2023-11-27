@@ -126,7 +126,7 @@ public class USBBulkConnection extends Connection {
             } catch (InterruptedException ex) {
                 Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
-            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Ksoloti Core disconnected\n");
+            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Disconnected\n");
             synchronized (sync) {
                 sync.Acked = false;
                 sync.notifyAll();

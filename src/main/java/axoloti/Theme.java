@@ -50,9 +50,18 @@ public class Theme {
     @Element
     public Color Console_Background = UIManager.getColor("Viewport.background");
     @Element
-    public Color Patch_Unlocked_Background = new Color(128,128,134); /* Medium grey with slight blue tint */
+    // public Color Patch_Unlocked_Background = new Color(128,128,134); /* Medium grey with slight blue tint */
+    public Color Patch_Unlocked_Background = UIManager.getColor("Viewport.background").darker();
     @Element
-    public Color Patch_Locked_Background = new Color(64,64,70); /* Dark grey with slight blue tint */
+    public Color Patch_Locked_Background = new Color(66,66,64); /* Dark grey with slight brown tint */
+    @Element
+    public Color Button_Accent_Background = UIManager.getColor("Component.accentColor");
+    @Element
+    public Color Button_Accent_Foreground = UIManager.getColor("ProgressBar.selectionForeground");
+    @Element
+    public Color Button_Default_Background = UIManager.getColor("Button.background");
+    @Element
+    public Color Button_Default_Foreground = UIManager.getColor("Button.foreground");
 
     /* Text */
     @Element
@@ -96,13 +105,13 @@ public class Theme {
     @Element
     public Color Object_TitleBar_Background = UIManager.getColor("Panel.foreground"); /* Titlebar Inverted */
     @Element
-    public Color Object_TitleBar_Subpatch_Background = new Color(0.4f, 0.5f, 0.6f); /* Blueish titlebar for subpatches */
+    public Color Object_TitleBar_Subpatch_Background = new Color(0.45f, 0.5f, 0.6f); /* Blueish titlebar for subpatches */
     @Element
-    public Color Object_TitleBar_Embedded_Background = new Color(0.6f, 0.45f, 0.5f); /* Purpleish titlebar for embedded objects */
+    public Color Object_TitleBar_Embedded_Background = new Color(0.6f, 0.5f, 0.45f); /* Brownish titlebar for embedded objects */
     @Element
     public Color Object_TitleBar_Foreground = UIManager.getColor("Panel.background"); /* Titlebar Inverted */
     @Element
-    public Color Object_Border_Unselected = UIManager.getColor("Panel.foreground");
+    public Color Object_Border_Unselected = Patch_Unlocked_Background;
     @Element
     public Color Object_Border_Selected = Color.ORANGE;
     @Element
@@ -115,7 +124,7 @@ public class Theme {
     @Element
     public Color Parameter_On_Parent_Highlight = Cable_Frac32;
     @Element
-    public Color Parameter_Preset_Highlight = new Color(0.7f, 0.7f, 0.0f);
+    public Color Parameter_Preset_Highlight_Foreground = UIManager.getColor("Component.accentColor");
 
     @Element
     public Color Component_Foreground = Color.BLACK;
@@ -154,9 +163,6 @@ public class Theme {
     public Color VU_Bright_Yellow = new Color(0.8f, 0.8f, 0.0f);
     @Element
     public Color VU_Bright_Red = new Color(0.8f, 0.0f, 0.0f);
-
-    @Element
-    public Color Preset_Edit_Active = new Color(0.7f, 0.7f, 0.0f);
 
     private File FileChooserSave(JFrame frame) {
         final JFileChooser fc = new JFileChooser(MainFrame.prefs.getCurrentFileDirectory());

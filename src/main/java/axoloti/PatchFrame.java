@@ -54,8 +54,6 @@ import javax.swing.text.DefaultEditorKit;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
-import com.formdev.flatlaf.FlatClientProperties;
-
 import qcmds.QCmdLock;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdStart;
@@ -78,7 +76,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     public PatchFrame(final PatchGUI patch, QCmdProcessor qcmdprocessor) {
         setMinimumSize(new java.awt.Dimension(200,120));
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axp.png")).getImage());
         this.qcmdprocessor = qcmdprocessor;
 
         initComponents();

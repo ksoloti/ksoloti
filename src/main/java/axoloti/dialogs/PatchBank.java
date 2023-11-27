@@ -78,7 +78,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         initComponents();
         fileMenu1.initComponents();
         files = new ArrayList<File>();
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axb.png")).getImage());
         DocumentWindowList.RegisterWindow(this);
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
         jTable1.setModel(new AbstractTableModel() {
@@ -369,7 +369,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 Object[] options = {"Yes",
                     "No"};
                 int n = JOptionPane.showOptionDialog(this,
-                        "File does not match filter, do you want to change extension to " + filterext + "?",
+                        "File does not match filter. Change extension to " + filterext + "?",
                         "File Extension",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
@@ -389,7 +389,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 Object[] options = {"Yes",
                     "No"};
                 int n = JOptionPane.showOptionDialog(this,
-                        "File exists, do you want to overwrite?",
+                        "File exists! Overwrite?",
                         "File Exists",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
@@ -436,7 +436,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 "Don't save",
                 "Cancel"};
             int n = JOptionPane.showOptionDialog(this,
-                    "Do you want to save changes to " + FilenamePath + "?",
+                    "Save changes to " + FilenamePath + "?",
                     "Unsaved Changes",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
