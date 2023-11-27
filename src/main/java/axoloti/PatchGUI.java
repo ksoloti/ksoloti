@@ -257,15 +257,13 @@ public class PatchGUI extends Patch {
                     ysteps = Constants.Y_GRID;
                 }
                 if ((ke.getKeyCode() == KeyEvent.VK_SPACE)
-                        || ((ke.getKeyCode() == KeyEvent.VK_N) && !KeyUtils.isControlOrCommandDown(ke))
-                        || ((ke.getKeyCode() == KeyEvent.VK_1) && KeyUtils.isControlOrCommandDown(ke))) {
+                        || ((ke.getKeyCode() == KeyEvent.VK_N) && !KeyUtils.isControlOrCommandDown(ke))) {
                     Point p = Layers.getMousePosition();
                     ke.consume();
                     if (p != null) {
                         ShowClassSelector(p, null, null);
                     }
-                } else if (((ke.getKeyCode() == KeyEvent.VK_C) && !KeyUtils.isControlOrCommandDown(ke))
-                        || ((ke.getKeyCode() == KeyEvent.VK_5) && KeyUtils.isControlOrCommandDown(ke))) {
+                } else if (((ke.getKeyCode() == KeyEvent.VK_C) && !KeyUtils.isControlOrCommandDown(ke))) {
                     AxoObjectInstanceAbstract ao = AddObjectInstance(MainFrame.axoObjects.GetAxoObjectFromName(patchComment, null).get(0), Layers.getMousePosition());
                     ao.addInstanceNameEditor();
                     ke.consume();
