@@ -17,6 +17,7 @@
  */
 package axoloti.parameters;
 
+import axoloti.PatchSettings;
 import axoloti.Preset;
 import axoloti.Theme;
 import axoloti.atom.AtomInstance;
@@ -200,6 +201,23 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
                 presets = new ArrayList<Preset>();
             }
             p = new Preset(presetEditActive, getValue());
+            presets.add(p);
+        }
+        ShowPreset(presetEditActive);
+    }
+
+    public void IncludeInAllPresets() {
+        PatchSettings settings = new PatchSettings();
+        for (int i=1; i<settings.GetNPresets()+1; i++)
+        {
+            Preset p = GetPreset(i);
+            if (p != null) {
+                return;
+            }
+            if (presets == null) {
+                presets = new ArrayList<Preset>();
+            }
+            p = new Preset(i, getValue());
             presets.add(p);
         }
         ShowPreset(presetEditActive);
