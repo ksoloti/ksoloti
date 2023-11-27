@@ -47,7 +47,7 @@ public class AssignPresetMenuItems {
 
         //sub2 = new JPopupMenu();
         {
-            JMenuItem mi = new JMenuItem("Include in current preset");
+            JMenuItem mi = new JMenuItem("Track in current preset");
             if (param.presetEditActive == 0)
             {
                 mi.setEnabled(false);
@@ -61,7 +61,17 @@ public class AssignPresetMenuItems {
             parent.add(mi);
         }
         {
-            JMenuItem mi = new JMenuItem("Exclude from current preset");
+            JMenuItem mi = new JMenuItem("Track in all presets");
+            mi.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    AssignPresetMenuItems.this.param.IncludeInAllPresets();
+                }
+            });
+            parent.add(mi);
+        }
+        {
+            JMenuItem mi = new JMenuItem("Untrack from current preset");
             if (param.presetEditActive == 0)
             {
                 mi.setEnabled(false);
@@ -75,12 +85,13 @@ public class AssignPresetMenuItems {
             parent.add(mi);
         }
         {
-            JMenuItem mi = new JMenuItem("Clear all presets");
+            JMenuItem mi = new JMenuItem("Untrack from all presets");
             mi.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (AssignPresetMenuItems.this.param.getPresets() != null) {
                         AssignPresetMenuItems.this.param.getPresets().clear();
+                        AssignPresetMenuItems.this.param.ExcludeFromPreset(); //TODO improve this hack, e.g. ShowPreset(x)
                     }
                 }
             });

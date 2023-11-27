@@ -18,8 +18,6 @@
 package components;
 
 import axoloti.Patch;
-import axoloti.Theme;
-import java.awt.Color;
 
 /**
  *
@@ -75,7 +73,7 @@ public class PresetPanel extends javax.swing.JPanel {
         jButtonR6 = new javax.swing.JButton();
         jButtonR7 = new javax.swing.JButton();
         jButtonR8 = new javax.swing.JButton();
-        jToggleButtonEI = new javax.swing.JToggleButton();
+        jButtonEI = new javax.swing.JButton();
         jToggleButtonE1 = new javax.swing.JToggleButton();
         jToggleButtonE2 = new javax.swing.JToggleButton();
         jToggleButtonE3 = new javax.swing.JToggleButton();
@@ -111,7 +109,6 @@ public class PresetPanel extends javax.swing.JPanel {
         jPanelPresetButtons.setLayout(new java.awt.GridLayout(2, 9));
 
         jButtonRI.setText("i");
-        jButtonRI.setBorderPainted(false);
         jButtonRI.setDefaultCapable(false);
         jButtonRI.setMargin(new java.awt.Insets(-1, -1, -1, -1));
         jButtonRI.addActionListener(new java.awt.event.ActionListener() {
@@ -201,15 +198,15 @@ public class PresetPanel extends javax.swing.JPanel {
         });
         jPanelPresetButtons.add(jButtonR8);
 
-        jToggleButtonEI.setText("i");
-        jToggleButtonEI.setSelected(true);
-        jToggleButtonEI.setMargin(new java.awt.Insets(-1, -1, -1, -1));
-        jToggleButtonEI.addActionListener(new java.awt.event.ActionListener() {
+        jButtonEI.setText("i");
+        jButtonEI.setSelected(true);
+        jButtonEI.setMargin(new java.awt.Insets(-1, -1, -1, -1));
+        jButtonEI.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButtonEIActionPerformed(evt);
+                jButtonEIActionPerformed(evt);
             }
         });
-        jPanelPresetButtons.add(jToggleButtonEI);
+        jPanelPresetButtons.add(jButtonEI);
 
         jToggleButtonE1.setText("1");
         jToggleButtonE1.setMargin(new java.awt.Insets(-1, -1, -1, -1));
@@ -322,8 +319,8 @@ public class PresetPanel extends javax.swing.JPanel {
         p.RecallPreset(8);
     }//GEN-LAST:event_jButtonR8ActionPerformed
 
-    private void jToggleButtonEIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonEIActionPerformed
-        jToggleButtonEI.setSelected(true);
+    private void jButtonEIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonEIActionPerformed
+        jButtonEI.setSelected(true);
         jToggleButtonE1.setSelected(false);
         jToggleButtonE2.setSelected(false);
         jToggleButtonE3.setSelected(false);
@@ -336,7 +333,7 @@ public class PresetPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jToggleButtonEIActionPerformed
 
     private void jToggleButtonE1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE1ActionPerformed
-        jToggleButtonEI.setSelected(false);
+        jButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(true);
         jToggleButtonE2.setSelected(false);
         jToggleButtonE3.setSelected(false);
@@ -349,7 +346,7 @@ public class PresetPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jToggleButtonE1ActionPerformed
 
     private void jToggleButtonE2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE2ActionPerformed
-        jToggleButtonEI.setSelected(false);
+        jButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
         jToggleButtonE2.setSelected(true);
         jToggleButtonE3.setSelected(false);
@@ -362,7 +359,7 @@ public class PresetPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jToggleButtonE2ActionPerformed
 
     private void jToggleButtonE3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE3ActionPerformed
-        jToggleButtonEI.setSelected(false);
+        jButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
         jToggleButtonE2.setSelected(false);
         jToggleButtonE3.setSelected(true);
@@ -375,7 +372,7 @@ public class PresetPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jToggleButtonE3ActionPerformed
 
     private void jToggleButtonE4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE4ActionPerformed
-        jToggleButtonEI.setSelected(false);
+        jButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
         jToggleButtonE2.setSelected(false);
         jToggleButtonE3.setSelected(false);
@@ -388,7 +385,7 @@ public class PresetPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jToggleButtonE4ActionPerformed
 
     private void jToggleButtonE5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE5ActionPerformed
-        jToggleButtonEI.setSelected(false);
+        jButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
         jToggleButtonE2.setSelected(false);
         jToggleButtonE3.setSelected(false);
@@ -401,7 +398,7 @@ public class PresetPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jToggleButtonE5ActionPerformed
 
     private void jToggleButtonE6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE6ActionPerformed
-        jToggleButtonEI.setSelected(false);
+        jButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
         jToggleButtonE2.setSelected(false);
         jToggleButtonE3.setSelected(false);
@@ -414,7 +411,7 @@ public class PresetPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jToggleButtonE6ActionPerformed
 
     private void jToggleButtonE7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE7ActionPerformed
-        jToggleButtonEI.setSelected(false);
+        jButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
         jToggleButtonE2.setSelected(false);
         jToggleButtonE3.setSelected(false);
@@ -427,7 +424,7 @@ public class PresetPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jToggleButtonE7ActionPerformed
 
     private void jToggleButtonE8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonE8ActionPerformed
-        jToggleButtonEI.setSelected(false);
+        jButtonEI.setSelected(false);
         jToggleButtonE1.setSelected(false);
         jToggleButtonE2.setSelected(false);
         jToggleButtonE3.setSelected(false);
@@ -462,6 +459,6 @@ public class PresetPanel extends javax.swing.JPanel {
     private javax.swing.JToggleButton jToggleButtonE6;
     private javax.swing.JToggleButton jToggleButtonE7;
     private javax.swing.JToggleButton jToggleButtonE8;
-    private javax.swing.JToggleButton jToggleButtonEI;
+    private javax.swing.JButton jButtonEI;
     // End of variables declaration//GEN-END:variables
 }
