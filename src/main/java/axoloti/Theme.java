@@ -76,7 +76,7 @@ public class Theme {
     @Element
     public Color Cable_Shadow = Color.BLACK;
     @Element
-    public Color Cable_Bool32 = new Color(0xFF, 0xFF, 0x40);
+    public Color Cable_Bool32 = new Color(0xFF, 0xEF, 0x40);
     @Element
     public Color Cable_CharPointer32 = Color.PINK;
     @Element
