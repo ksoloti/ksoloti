@@ -588,8 +588,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuView.add(jMenuItemSettings);
         jMenuView.add(jSeparator2);
 
-        jCheckBoxMenuItemCordsInBackground.setMnemonic('P');
-        jCheckBoxMenuItemCordsInBackground.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyUtils.CONTROL_OR_CMD_MASK));
+        jCheckBoxMenuItemCordsInBackground.setMnemonic('B');
+        jCheckBoxMenuItemCordsInBackground.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyUtils.CONTROL_OR_CMD_MASK));
         jCheckBoxMenuItemCordsInBackground.setText("Patch Cords in Background");
         jCheckBoxMenuItemCordsInBackground.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
