@@ -271,7 +271,7 @@
 
         <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
             uri="javafx:com.sun.javafx.tools.ant"
-            classpath="${JAVA_HOME}/lib/ant-javafx.jar"/>    
+			classpath=".:${java.home}/../lib/ant-javafx.jar"/>    
         <fx:resources id="appRes">
             <fx:fileset type="license" dir="." includes="license.txt"/>
             <fx:fileset dir="dist">
