@@ -47,7 +47,7 @@ rm -rf package/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi/4.9
 rm -rf package/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi/4.9.3/armv7-ar
 rm -rf package/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi/4.9.3/armv7-m
 
-cd package/linux && tar -czvf ../ksoloti-linux-${VERSION_LONG}.tar.gz *
+cd package/linux && tar -czf ../ksoloti-linux-${VERSION_LONG}.tar.gz *
 cd ../..
 rm -rf package/linux
 
@@ -75,7 +75,7 @@ rm -rf package/mac/Ksoloti.app/Contents/Resources/firmware/mounter/mounter_build
 
 chmod +x package/mac/Ksoloti.app/Contents/Resources/jre/lib/jspawnhelper
 
-cd package/mac && zip -r ../ksoloti-mac-${VERSION_LONG}.zip *
+cd package/mac && zip -q -r ../ksoloti-mac-${VERSION_LONG}.zip *
 cd ../..
 rm -rf package/mac
 
@@ -110,7 +110,7 @@ rm -rf package/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9.3/a
 rm -rf package/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9.3/armv7-ar
 rm -rf package/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9.3/armv7-mo
 
-cd package/win && zip -r ../ksoloti-windows-${VERSION_LONG}.zip *
+cd package/win && zip -q -r ../ksoloti-windows-${VERSION_LONG}.zip *
 cd ../..
 rm -rf package/win
 
