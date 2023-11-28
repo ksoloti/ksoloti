@@ -201,6 +201,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 KeyUtils.CONTROL_OR_CMD_MASK));
         this.redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, 
                 KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
+        this.redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, 
+                KeyUtils.CONTROL_OR_CMD_MASK));
 
         createBufferStrategy(2);
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
@@ -565,7 +567,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuView.setDelay(300);
         jMenuView.setText("View");
 
-        jMenuItemNotes.setMnemonic('N');
+        jMenuItemNotes.setMnemonic('T');
+        jMenuItemSettings.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuItemNotes.setText("Notes");
         jMenuItemNotes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -585,7 +588,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuView.add(jMenuItemSettings);
         jMenuView.add(jSeparator2);
 
-        jCheckBoxMenuItemCordsInBackground.setMnemonic('B');
+        jCheckBoxMenuItemCordsInBackground.setMnemonic('P');
+        jCheckBoxMenuItemCordsInBackground.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyUtils.CONTROL_OR_CMD_MASK));
         jCheckBoxMenuItemCordsInBackground.setText("Patch Cords in Background");
         jCheckBoxMenuItemCordsInBackground.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
