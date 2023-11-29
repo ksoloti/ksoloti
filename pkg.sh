@@ -50,7 +50,7 @@ rm -rf packagetemp/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi
 rm -rf packagetemp/linux/ksoloti-${VERSION}/jre/jmods
 rm packagetemp/linux/ksoloti-${VERSION}/jre/lib/src.zip
 
-cd packagetemp/linux && tar -czf ../ksoloti-linux-${VERSION_LONG}.tar.gz *
+cd packagetemp/linux && tar -czf ../ksoloti_patcher-linux-${VERSION_LONG}.tar.gz *
 cd ../..
 rm -rf packagetemp/linux
 
@@ -81,7 +81,7 @@ rm packagetemp/mac/Ksoloti.app/Contents/Resources/jre/lib/src.zip
 
 chmod +x packagetemp/mac/Ksoloti.app/Contents/Resources/jre/lib/jspawnhelper
 
-cd packagetemp/mac && zip -q -r ../ksoloti-mac-${VERSION_LONG}.zip *
+cd packagetemp/mac && zip -q -r ../ksoloti_patcher-mac-${VERSION_LONG}.zip *
 cd ../..
 rm -rf packagetemp/mac
 
@@ -119,7 +119,7 @@ rm -rf packagetemp/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9
 rm -rf packagetemp/win/ksoloti-${VERSION}/jre/jmods
 rm packagetemp/win/ksoloti-${VERSION}/jre/lib/src.zip
 
-cd packagetemp/win && zip -q -r ../ksoloti-windows-${VERSION_LONG}.zip *
+cd packagetemp/win && zip -q -r ../ksoloti_patcher-windows-${VERSION_LONG}.zip *
 cd ../..
 rm -rf packagetemp/win
 
