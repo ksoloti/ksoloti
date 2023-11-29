@@ -16,6 +16,7 @@ portaudio/*
 win32tools/
 chibios/
 package/
+packagetemp/
 patch/xpatch.c
 patch/xpatch.cpp
 patch/xpatch.elf
