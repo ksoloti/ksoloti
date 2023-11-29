@@ -86,7 +86,7 @@ public class Theme {
     @Element
     public Color Cable_Frac32Buffer = new Color(0xFF, 0x20, 0x40);
     @Element
-    public Color Cable_Int32 = Color.GREEN;
+    public Color Cable_Int32 = new Color(0x20, 0xFF, 0x40);
     @Element
     public Color Cable_Int32Pointer = Color.MAGENTA;
     @Element

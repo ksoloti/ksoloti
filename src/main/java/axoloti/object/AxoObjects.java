@@ -353,7 +353,7 @@ public class AxoObjects {
                 } else {
                     Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, "Search path empty!\n");
                 }
-                Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Finished loading objects\n");
+                Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Finished loading objects.\n");
             }
         };
         LoaderThread = new Thread(objloader);
