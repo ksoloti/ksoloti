@@ -2263,7 +2263,7 @@ public class Patch {
         String c = GenerateCode3();
 
         try {
-            String buildDir = System.getProperty(Axoloti.HOME_DIR) + "/build";
+            String buildDir = System.getProperty(Axoloti.LIBRARIES_DIR) + "/build";
             FileOutputStream f = new FileOutputStream(buildDir + "/xpatch.cpp");
             f.write(c.getBytes());
             f.close();
@@ -2612,7 +2612,7 @@ public class Patch {
     }
 
     public File getBinFile() {
-        String buildDir = System.getProperty(Axoloti.HOME_DIR) + "/build";;
+        String buildDir = System.getProperty(Axoloti.LIBRARIES_DIR) + "/build";;
         return new File(buildDir + "/xpatch.bin");
 //            Logger.getLogger(QCmdWriteFile.class.getName()).log(Level.INFO, "bin path: {0}", f.getAbsolutePath());        
     }

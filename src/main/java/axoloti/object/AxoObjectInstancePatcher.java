@@ -113,7 +113,7 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
         Titlebar.setBackground(Theme.getCurrentTheme().Object_TitleBar_Subpatch_Background);
 
         //updateObj();
-        ButtonComponent BtnEdit = new ButtonComponent("Edit");
+        ButtonComponent BtnEdit = new ButtonComponent("Open");
         BtnEdit.setForeground(Theme.getCurrentTheme().Component_Foreground);
         BtnEdit.setBackground(Theme.getCurrentTheme().Component_Background);
         BtnEdit.setAlignmentX(LEFT_ALIGNMENT);

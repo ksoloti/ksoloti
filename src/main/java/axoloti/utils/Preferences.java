@@ -328,7 +328,7 @@ public class Preferences {
 
     public void applyTheme()
     {
-        /* Ugly and inefficient Theme switching ... */
+        /* Ugly and inefficient Theme switching ... but only doing this once during startup */
         if      (this.Theme.equals("FlatLaf Dark"))                   FlatDarkLaf.setup();
         else if (this.Theme.equals("FlatLaf Darcula"))                FlatDarculaLaf.setup();
         else if (this.Theme.equals("FlatLaf IntelliJ"))               FlatIntelliJLaf.setup();
@@ -554,7 +554,9 @@ public class Preferences {
             AxoGitLibrary factory = new AxoGitLibrary(
                     AxolotiLibrary.FACTORY_ID,
                     "git",
-                    "axoloti-factory" + File.separator,
+                    System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
+                        + Version.AXOLOTI_SHORT_VERSION + File.separator
+                        + "axoloti-factory" + File.separator,
                     true,
                     "https://github.com/axoloti/axoloti-factory.git",
                     false
@@ -564,7 +566,9 @@ public class Preferences {
             libraries.add(new AxoGitLibrary(
                     AxolotiLibrary.USER_LIBRARY_ID,
                     "git",
-                    "axoloti-contrib" + File.separator,
+                    System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
+                        + Version.AXOLOTI_SHORT_VERSION + File.separator
+                        + "axoloti-contrib" + File.separator,
                     true,
                     "https://github.com/axoloti/axoloti-contrib.git",
                     false
@@ -573,7 +577,9 @@ public class Preferences {
             libraries.add(new AxoGitLibrary(
                     AxolotiLibrary.KSOLOTI_LIBRARY_ID,
                     "git",
-                    "ksoloti-objects" + File.separator,
+                    System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
+                        + Version.AXOLOTI_SHORT_VERSION + File.separator
+                        + "ksoloti-objects" + File.separator,
                     true,
                     "https://github.com/ksoloti/ksoloti-objects.git",
                     false
@@ -582,14 +588,14 @@ public class Preferences {
             // Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, ex);
         // }
 
-        if (!Axoloti.isFailSafeMode()) {
+        // if (!Axoloti.isFailSafeMode()) {
             // initialise the libraries
             for (AxolotiLibrary lib : libraries) {
                 if (lib.getEnabled()) {
                     lib.init(delete);
                 }
             }
-        }
+        // }
         buildObjectSearchPatch();
     }
 

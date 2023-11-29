@@ -77,6 +77,10 @@ public abstract class QCmdShellTask implements QCmd {
     public String HomeDir() {
         return System.getProperty(axoloti.Axoloti.HOME_DIR);
     }
+
+    public String LibrariesDir() {
+        return System.getProperty(axoloti.Axoloti.LIBRARIES_DIR);
+    }
             
     public String ReleaseDir() {
         return System.getProperty(axoloti.Axoloti.RELEASE_DIR);
@@ -95,6 +99,7 @@ public abstract class QCmdShellTask implements QCmd {
         }
         list.add((axoloti.Axoloti.RUNTIME_DIR + "=" + RuntimeDir()));
         list.add((axoloti.Axoloti.HOME_DIR + "=" + HomeDir()));
+        list.add((axoloti.Axoloti.LIBRARIES_DIR + "=" + LibrariesDir()));
         list.add((axoloti.Axoloti.RELEASE_DIR + "=" + ReleaseDir()));
         list.add((axoloti.Axoloti.FIRMWARE_DIR + "=" + FirmwareDir()));
 

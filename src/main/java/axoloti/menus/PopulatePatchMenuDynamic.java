@@ -75,7 +75,7 @@ public class PopulatePatchMenuDynamic extends JMenu implements MenuListener {
             }
         }
         if (bEmpty) {
-            JMenuItem m = new JMenuItem("no patches here");
+            JMenuItem m = new JMenuItem("No patches found");
             m.setEnabled(false);
             add(m);
         }

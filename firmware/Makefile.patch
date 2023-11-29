@@ -16,6 +16,7 @@ SIZ=arm-none-eabi-size
 axoloti_runtime ?= ..
 axoloti_release ?= ..
 axoloti_home ?= ..
+axoloti_libraries ?= ..
 axoloti_firmware ?= ../firmware
 
 
@@ -24,7 +25,7 @@ CMSIS = ${axoloti_release}/CMSIS
 
 EMPTY := 
 SPACE := $(EMPTY) $(EMPTY)
-BUILDDIR=$(subst $(SPACE),\ ,${axoloti_home}/build)
+BUILDDIR=$(subst $(SPACE),\ ,${axoloti_libraries}/build)
 FIRMWARE=$(subst $(SPACE),\ ,${axoloti_firmware})
 
 

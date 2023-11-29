@@ -1107,7 +1107,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 "No"};
 
             int n = JOptionPane.showOptionDialog(this,
-                    "This is a subpatch intended to be used by a main patch and possibly has no output. \nDo you still want to take it live?",
+                    "This is a subpatch intended to be placed in a main patch and possibly has no output. \nDo you still want to take it live?",
                     "File is Subpatch",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE,

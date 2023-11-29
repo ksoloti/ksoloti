@@ -20,6 +20,8 @@ package axoloti;
 import axoloti.object.AxoObjects;
 import axoloti.utils.OSDetect;
 import axoloti.utils.Preferences;
+import axoloti.utils.OSDetect.OS;
+
 import java.awt.EventQueue;
 import java.awt.SplashScreen;
 import java.io.File;
@@ -40,10 +42,11 @@ import javax.swing.UIManager;
 public class Axoloti
 {
 
-    public final static String RUNTIME_DIR  = "axoloti_runtime";
-    public final static String HOME_DIR     = "axoloti_home";
-    public final static String RELEASE_DIR  = "axoloti_release";
-    public final static String FIRMWARE_DIR = "axoloti_firmware";
+    public final static String RUNTIME_DIR    = "axoloti_runtime";
+    public final static String HOME_DIR       = "axoloti_home";
+    public final static String LIBRARIES_DIR  = "axoloti_libraries";
+    public final static String RELEASE_DIR    = "axoloti_release";
+    public final static String FIRMWARE_DIR   = "axoloti_firmware";
     
     /**
      * @param args the command line arguments
@@ -195,34 +198,34 @@ public class Axoloti
         return cacheDeveloper;
     }
 
-    static boolean failSafeMode = false;
+    // static boolean failSafeMode = false;
 
-    static void checkFailSafeModeActive()
-    {
-        failSafeMode = false;
-        String homedir = System.getProperty(HOME_DIR);
-        if (homedir == null)
-        {
-            return;
-        }
-        try
-        {
-            File f = new File(homedir + File.separator + "failsafe");
-            if (f.exists())
-            {
-                System.err.print("fail safe mode");
-                failSafeMode = true;
-            }
-        }
-        catch (Throwable e)
-        {
-        }
-    }
+    // static void checkFailSafeModeActive()
+    // {
+    //     failSafeMode = false;
+    //     String homedir = System.getProperty(HOME_DIR);
+    //     if (homedir == null)
+    //     {
+    //         return;
+    //     }
+    //     try
+    //     {
+    //         File f = new File(homedir + File.separator + "failsafe");
+    //         if (f.exists())
+    //         {
+    //             System.err.print("fail safe mode");
+    //             failSafeMode = true;
+    //         }
+    //     }
+    //     catch (Throwable e)
+    //     {
+    //     }
+    // }
 
-    public static boolean isFailSafeMode()
-    {
-        return failSafeMode;
-    }
+    // public static boolean isFailSafeMode()
+    // {
+    //     return failSafeMode;
+    // }
 
     private static void initProperties() throws URISyntaxException, IOException
     {
@@ -230,25 +233,60 @@ public class Axoloti
         File jarFile = new File(Axoloti.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         String jarDir = jarFile.getParentFile().getCanonicalPath();
         String defaultHome = ".";
+        String defaultLibraries = "defaultLibraries";
         String defaultRuntime = ".";
         String defaultRelease = ".";
-
 
         BuildEnv(HOME_DIR, defaultHome);
         File homedir = new File(System.getProperty(HOME_DIR));
         if (!homedir.exists()) {
             homedir.mkdir();
         }
-
-        File buildir = new File(System.getProperty(HOME_DIR) + File.separator + "build");
-        if (!buildir.exists()) {
-            buildir.mkdir();
-        }
-
         if (!TestDir(HOME_DIR)) {
             System.err.println("Home directory is invalid");
         }
-        checkFailSafeModeActive(); // do this as as possible after home dir setup
+
+        String osHomeDir;
+        OS os = OSDetect.getOS();
+        if (os != null) 
+        {
+            switch (os)
+            {
+            case WIN:
+                // not sure which versions of Windows this is valid for, good for 10!
+                osHomeDir = System.getenv("HOMEDRIVE") + System.getenv("HOMEPATH") + File.separator;
+                break;
+            case MAC:
+                osHomeDir = System.getenv("HOME") + "/";
+                break;
+            case LINUX:
+            default:
+                osHomeDir = System.getenv("HOME") + "/";
+                break;
+            }
+        }
+        else
+        {
+            osHomeDir = System.getenv("HOME") + "/";
+        }
+
+        defaultLibraries = osHomeDir + "ksoloti";
+
+        BuildEnv(LIBRARIES_DIR, defaultLibraries);
+        File libdir = new File(System.getProperty(LIBRARIES_DIR));
+        if (!libdir.exists()) {
+            libdir.mkdir();
+        }
+        if (!TestDir(LIBRARIES_DIR)) {
+            System.err.println("Libraries directory is invalid");
+        }
+
+        File builddir = new File(System.getProperty(LIBRARIES_DIR) + File.separator + "build");
+        if (!builddir.exists()) {
+            builddir.mkdir();
+        }
+
+        // checkFailSafeModeActive(); // do this as as possible after home dir setup
 
         BuildEnv(RELEASE_DIR, defaultRelease);
         if (!TestDir(RELEASE_DIR)) {
@@ -265,14 +303,14 @@ public class Axoloti
             System.err.println("Firmware directory is invalid");
         }
 
-
-        System.out.println("Axoloti Directories:\n"
+        System.out.println("Directories:\n"
                 + "Current = " + curDir + "\n"
                 + "Jar = " + jarDir + "\n"
+                + "PatcherHome = " + System.getProperty(HOME_DIR) + "\n"
                 + "Release = " + System.getProperty(RELEASE_DIR) + "\n"
                 + "Runtime = " + System.getProperty(RUNTIME_DIR) + "\n"
                 + "Firmware = " + System.getProperty(FIRMWARE_DIR) + "\n"
-                + "AxolotiHome = " + System.getProperty(HOME_DIR)
+                + "Libraries = " + System.getProperty(LIBRARIES_DIR)
         );
     }
 

@@ -123,6 +123,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         transparentCursor = getToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(), null);
 
         mainframe = this;
+        setVisible(true);
 
         final Style styleParent = jTextPaneLog.addStyle(null, null);
         jTextPaneLog.setFont(UIManager.getFont("monospaced.font"));
@@ -289,10 +290,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             public void run() {
                 try {
                     String tsuf = "";
-                    if (Axoloti.isFailSafeMode()) {
-                        Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Failsafe mode activated");
-                        tsuf = "Failsafe";
-                    }
+                    // if (Axoloti.isFailSafeMode()) {
+                    //     Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Failsafe mode activated");
+                    //     tsuf = "Failsafe";
+                    // }
                     if (Axoloti.isDeveloper()) {
                         if (tsuf.length() > 0) {
                             tsuf += ",";
@@ -314,12 +315,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     USBBulkConnection.GetConnection().addSDCardMountStatusListener(MainFrame.this);
 
                     ShowDisconnect();
-                    if (!Axoloti.isFailSafeMode()) {
+                    // if (!Axoloti.isFailSafeMode()) {
                         boolean success = USBBulkConnection.GetConnection().connect();
                         if (success) {
                             ShowConnect();
                         }
-                    }
+                    // }
 
                     // user library, ask user if they wish to upgrade, or do manual
                     // this allows them the opportunity to manually backup their files!
@@ -351,14 +352,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         }
                     }
 
-                    if (!Axoloti.isFailSafeMode()) {
+                    // if (!Axoloti.isFailSafeMode()) {
                         for (AxolotiLibrary lib : prefs.getLibraries()) {
                             if (lib.isAutoSync() && lib.getEnabled()) {
                                 lib.sync();
                             }
                         }
                         Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "");
-                    }
+                    // }
 
                     for (AxolotiLibrary lib : prefs.getLibraries()) {
                         lib.reportStatus();

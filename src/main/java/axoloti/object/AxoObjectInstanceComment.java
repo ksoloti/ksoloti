@@ -168,7 +168,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         });
         getParent().add(InstanceNameTF, 0);
         InstanceNameTF.setLocation(getLocation().x, getLocation().y + InstanceLabel.getLocation().y);
-        InstanceNameTF.setSize(getWidth(), 18);
+        InstanceNameTF.setSize(getWidth(), 20);
         InstanceNameTF.setVisible(true);
         InstanceNameTF.requestFocus();
     }
