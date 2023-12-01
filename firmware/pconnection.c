@@ -42,6 +42,10 @@
 #include "watchdog.h"
 #include "sysmon.h"
 
+#ifdef SPILINK_TEST
+#include "spilink.h"
+#endif
+
 //#define DEBUG_SERIAL 1
 
 void BootLoaderInit(void);
@@ -50,78 +54,88 @@ uint32_t fwid;
 
 static WORKING_AREA(waThreadUSBDMidi, 256);
 
-__attribute__((noreturn))
-    static msg_t ThreadUSBDMidi(void *arg) {
-  (void)arg;
+__attribute__((noreturn)) static msg_t ThreadUSBDMidi(void *arg)
+{
+    (void)arg;
+
 #if CH_USE_REGISTRY
-  chRegSetThreadName("usbdmidi");
+    chRegSetThreadName("usbdmidi");
 #endif
-  uint8_t r[4];
-  while (1) {
-    chnReadTimeout(&MDU1, &r[0], 4, TIME_INFINITE);
-    MidiInMsgHandler(MIDI_DEVICE_USB_DEVICE, ((r[0] & 0xF0) >> 4) + 1, r[1],
-                     r[2], r[3]);
-  }
+
+    uint8_t r[4];
+
+    while (1)
+    {
+        chnReadTimeout(&MDU1, &r[0], 4, TIME_INFINITE);
+        MidiInMsgHandler(MIDI_DEVICE_USB_DEVICE, ((r[0] & 0xF0) >> 4) + 1, r[1],
+                         r[2], r[3]);
+    }
 }
 
-void InitPConnection(void) {
+void InitPConnection(void)
+{
 
-  extern int32_t _flash_end;
-  fwid = CalcCRC32((uint8_t *)(FLASH_BASE_ADDR),
-                   (uint32_t)(&_flash_end) & 0x07FFFFF);
+    extern int32_t _flash_end;
+    fwid = CalcCRC32((uint8_t *)(FLASH_BASE_ADDR),
+                     (uint32_t)(&_flash_end) & 0x07FFFFF);
 
-  /*
-   * Initializes a serial-over-USB CDC driver.
-   */
-  mduObjectInit(&MDU1);
-  mduStart(&MDU1, &midiusbcfg);
-  bduObjectInit(&BDU1);
-  bduStart(&BDU1, &bulkusbcfg);
+    /* Initializes a serial-over-USB CDC driver. */
+    mduObjectInit(&MDU1);
+    mduStart(&MDU1, &midiusbcfg);
+    bduObjectInit(&BDU1);
+    bduStart(&BDU1, &bulkusbcfg);
 
-  /*
-   * Activates the USB driver and then the USB bus pull-up on D+.
-   * Note, a delay is inserted in order to not have to disconnect the cable
-   * after a reset.
-   */
-  usbDisconnectBus(midiusbcfg.usbp);
-  chThdSleepMilliseconds(1000);
-  usbStart(midiusbcfg.usbp, &usbcfg);
-  usbConnectBus(midiusbcfg.usbp);
+    /*
+     * Activates the USB driver and then the USB bus pull-up on D+.
+     * Note, a delay is inserted in order to not have to disconnect the cable
+     * after a reset.
+     */
+    usbDisconnectBus(midiusbcfg.usbp);
+    chThdSleepMilliseconds(1000);
+    usbStart(midiusbcfg.usbp, &usbcfg);
+    usbConnectBus(midiusbcfg.usbp);
 
-  chThdCreateStatic(waThreadUSBDMidi, sizeof(waThreadUSBDMidi), NORMALPRIO,
-                    ThreadUSBDMidi, NULL);
+    chThdCreateStatic(waThreadUSBDMidi, sizeof(waThreadUSBDMidi), NORMALPRIO,
+                      ThreadUSBDMidi, NULL);
 }
 
 int AckPending = 0;
 bool connected = 0;
 
-int GetFirmwareID(void) {
-  return fwid;
+int GetFirmwareID(void)
+{
+    return fwid;
 }
 
-void TransmitDisplayPckt(void) {
-  if (patchMeta.pDisplayVector == 0)
-    return;
-  unsigned int length = 12 + (patchMeta.pDisplayVector[2] * 4);
-  if (length > 2048)
-    return; // FIXME
-  chSequentialStreamWrite((BaseSequentialStream * )&BDU1,
-                          (const unsigned char* )&patchMeta.pDisplayVector[0],
-                          length);
-}
+void TransmitDisplayPckt(void)
+{
+    if (patchMeta.pDisplayVector == 0)
+        return;
 
-void LogTextMessage(const char* format, ...) {
-  if ((usbGetDriverStateI(BDU1.config->usbp) == USB_ACTIVE) && (connected)) {
-    int h = 0x546F7841; // "AxoT"
+    unsigned int length = 12 + (patchMeta.pDisplayVector[2] * 4);
+    if (length > 2048)
+        return; // FIXME
+
     chSequentialStreamWrite((BaseSequentialStream * )&BDU1,
-                            (const unsigned char* )&h, 4);
+                            (const unsigned char* )&patchMeta.pDisplayVector[0],
+                            length);
+}
 
-    va_list ap;
-    va_start(ap, format);
-    chvprintf((BaseSequentialStream *)&BDU1, format, ap);
-    va_end(ap);
-    chSequentialStreamPut((BaseSequentialStream * )&BDU1, 0);
-  }
+void LogTextMessage(const char* format, ...)
+{
+    if ((usbGetDriverStateI(BDU1.config->usbp) == USB_ACTIVE) && (connected))
+    {
+        int h = 0x546F7841; // "AxoT"
+
+        chSequentialStreamWrite((BaseSequentialStream * )&BDU1,
+                                (const unsigned char* )&h, 4);
+
+        va_list ap;
+        va_start(ap, format);
+        chvprintf((BaseSequentialStream *)&BDU1, format, ap);
+        va_end(ap);
+        chSequentialStreamPut((BaseSequentialStream * )&BDU1, 0);
+    }
 }
 
 void PExTransmit(void) {
@@ -157,6 +171,7 @@ void PExTransmit(void) {
       exception_checkandreport();
       AckPending = 0;
     }
+    // TransmitLCDoverUSB(); // broken
     if (!patchStatus) {
       unsigned int i;
       for (i = 0; i < patchMeta.numPEx; i++) {
@@ -417,35 +432,41 @@ void CloseFile(void) {
   }
 }
 
-void CopyPatchToFlash(void) {
-  flash_unlock();
-  flash_Erase_sector(11);
-  int src_addr = PATCHMAINLOC;
-  int flash_addr = PATCHFLASHLOC;
-  int c;
-  for (c = 0; c < PATCHFLASHSIZE;) {
-    flash_ProgramWord(flash_addr, *(int32_t *)src_addr);
-    src_addr += 4;
-    flash_addr += 4;
-    c += 4;
-  }
-  // verify
-  src_addr = PATCHMAINLOC;
-  flash_addr = PATCHFLASHLOC;
-  int err = 0;
-  for (c = 0; c < PATCHFLASHSIZE;) {
-    if (*(int32_t *)flash_addr != *(int32_t *)src_addr)
-      err++;
-    src_addr += 4;
-    flash_addr += 4;
-    c += 4;
-  }
-  if (err) {
-    while (1) {
-      // flash verify fail
+void CopyPatchToFlash(void)
+{
+    flash_unlock();
+    flash_Erase_sector(11);
+
+    int src_addr = PATCHMAINLOC;
+    int flash_addr = PATCHFLASHLOC;
+    int c;
+
+    for (c = 0; c < PATCHFLASHSIZE;)
+    {
+        flash_ProgramWord(flash_addr, *(int32_t *)src_addr);
+        src_addr += 4;
+        flash_addr += 4;
+        c += 4;
     }
-  }
-  AckPending = 1;
+
+    /* verify */
+    src_addr = PATCHMAINLOC;
+    flash_addr = PATCHFLASHLOC;
+    int err = 0;
+
+    for (c = 0; c < PATCHFLASHSIZE;)
+    {
+        if (*(int32_t *)flash_addr != *(int32_t *)src_addr)
+        err++;
+        src_addr += 4;
+        flash_addr += 4;
+        c += 4;
+    }
+
+    if (err)
+        while (1); /* flash verify failed */
+
+    AckPending = 1;
 }
 
 void ReplyFWVersion(void) {

@@ -22,81 +22,87 @@
 
 //#define ENABLE_SERIAL_DEBUG 1
 
-// Mutex Mutex_DMAStream_1_7; // shared: SPI3 (axoloti control) and I2C2 (codec)
-
 uint8_t adc_ch = 8; // we can first pick up the conversion of channel 8 (supervisor)
 
-void axoloti_board_init(void) {
-
+void axoloti_board_init(void)
+{
 #ifdef BOARD_AXOLOTI_V05
-  // initialize DMA2D engine
-  RCC->AHB1ENR |= RCC_AHB1ENR_DMA2DEN;
-  RCC->AHB1RSTR |= RCC_AHB1RSTR_DMA2DRST;
-  RCC->AHB1RSTR &= ~RCC_AHB1RSTR_DMA2DRST;
+    // initialize DMA2D engine
+    RCC->AHB1ENR |= RCC_AHB1ENR_DMA2DEN;
+    RCC->AHB1RSTR |= RCC_AHB1RSTR_DMA2DRST;
+    RCC->AHB1RSTR &= ~RCC_AHB1RSTR_DMA2DRST;
 #endif
-
-  // chMtxInit(&Mutex_DMAStream_1_7);
 }
 
-void adc_init(void) {
+void adc3_init(void)
+{
+    /* initialize ADC3 */
+    rccEnableADC3(FALSE);
 
-  adc_configpads();
-  adcStart(&ADCD1, NULL);
+    ADC3->CR2 = ADC_CR2_ADON;
+    ADC3->SMPR1 = ADC_SMPR1_SMP_AN10(ADC_SAMPLE_28)
+    | ADC_SMPR1_SMP_AN11(ADC_SAMPLE_28)
+    | ADC_SMPR1_SMP_AN12(ADC_SAMPLE_28)
+    | ADC_SMPR1_SMP_AN13(ADC_SAMPLE_28)
+    | ADC_SMPR1_SMP_AN14(ADC_SAMPLE_28)
+    | ADC_SMPR1_SMP_AN15(ADC_SAMPLE_28);
 
-  // initialize ADC3
-  rccEnableADC3(FALSE);
-  ADC3->CR2 = ADC_CR2_ADON;
-  ADC3->SMPR1 = 0x07FFFFFF; // 0b 0000 0111 1111 1111 1111 1111 1111 1111
+    ADC3->SMPR2 = ADC_SMPR2_SMP_AN0(ADC_SAMPLE_28)
+    | ADC_SMPR2_SMP_AN1(ADC_SAMPLE_28)
+    | ADC_SMPR2_SMP_AN2(ADC_SAMPLE_28)
+    | ADC_SMPR2_SMP_AN3(ADC_SAMPLE_28)
+    | ADC_SMPR2_SMP_AN4(ADC_SAMPLE_28)
+    | ADC_SMPR2_SMP_AN5(ADC_SAMPLE_28)
+    | ADC_SMPR2_SMP_AN6(ADC_SAMPLE_28)
+    | ADC_SMPR2_SMP_AN7(ADC_SAMPLE_28)
+    | ADC_SMPR2_SMP_AN8(ADC_SAMPLE_28)
+    | ADC_SMPR2_SMP_AN9(ADC_SAMPLE_28); // 28 cycles sampling time?
 
-  ADC3->SMPR2 =
-  ADC_SMPR2_SMP_AN0(ADC_SAMPLE_28)
-  | ADC_SMPR2_SMP_AN1(ADC_SAMPLE_28)
-  | ADC_SMPR2_SMP_AN2(ADC_SAMPLE_28)
-  | ADC_SMPR2_SMP_AN3(ADC_SAMPLE_28)
-  | ADC_SMPR2_SMP_AN4(ADC_SAMPLE_28)
-  | ADC_SMPR2_SMP_AN5(ADC_SAMPLE_28)
-  | ADC_SMPR2_SMP_AN6(ADC_SAMPLE_28)
-  | ADC_SMPR2_SMP_AN7(ADC_SAMPLE_28)
-  | ADC_SMPR2_SMP_AN8(ADC_SAMPLE_28)
-  | ADC_SMPR2_SMP_AN9(ADC_SAMPLE_28); // 28 cycles sampling time?
-
-  ADC3->SQR1 = 0;
-  ADC3->SQR2 = 0;
-  ADC3->SQR3 = 8; // start with ADC3_IN_8 (the 5V supervisor).
-  ADC3->CR2 |= ADC_CR2_SWSTART;
-
-  adcSTM32EnableTSVREFE();
+    ADC3->SQR1 = 0;
+    ADC3->SQR2 = 0;
+    ADC3->SQR3 = 8; /* No DMA available! Bit-banging the channel to convert. Starting with ADC3_IN_8 (the 5V supervisor). */
+    ADC3->CR2 |= ADC_CR2_SWSTART;
 }
 
-void adc_configpads(void) {
+void adc_init(void)
+{
+    adc_configpads();
+    adc3_init();
+
+    adcStart(&ADCD1, NULL);
+
+    adcSTM32EnableTSVREFE();
+}
+
+void adc_configpads(void)
+{
 #if (BOARD_AXOLOTI_V05)
-  palSetPadMode(GPIOA, 0, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOA, 1, PAL_MODE_INPUT_ANALOG);
+    palSetPadMode(GPIOA, 0, PAL_MODE_INPUT_ANALOG);
+    palSetPadMode(GPIOA, 1, PAL_MODE_INPUT_ANALOG);
 #ifndef ENABLE_SERIAL_DEBUG
-  palSetPadMode(GPIOA, 2, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOA, 3, PAL_MODE_INPUT_ANALOG);
+    palSetPadMode(GPIOA, 2, PAL_MODE_INPUT_ANALOG);
+    palSetPadMode(GPIOA, 3, PAL_MODE_INPUT_ANALOG);
 #endif
-  palSetPadMode(GPIOA, 4, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOA, 5, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOA, 6, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOA, 7, PAL_MODE_INPUT_ANALOG);
+    palSetPadMode(GPIOA, 4, PAL_MODE_INPUT_ANALOG);
+    palSetPadMode(GPIOA, 5, PAL_MODE_INPUT_ANALOG);
+    palSetPadMode(GPIOA, 6, PAL_MODE_INPUT_ANALOG);
+    palSetPadMode(GPIOA, 7, PAL_MODE_INPUT_ANALOG);
 
-  palSetPadMode(GPIOB, 0, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOB, 1, PAL_MODE_INPUT_ANALOG);
+    palSetPadMode(GPIOB, 0, PAL_MODE_INPUT_ANALOG);
+    palSetPadMode(GPIOB, 1, PAL_MODE_INPUT_ANALOG);
 
-  /* palSetPadMode(GPIOC, 0, PAL_MODE_INPUT_ANALOG); // pin remapped to FMC */
-  palSetPadMode(GPIOC, 1, PAL_MODE_INPUT_ANALOG);
-  /* palSetPadMode(GPIOC, 2, PAL_MODE_INPUT_ANALOG); // pin remapped to FMC */
-  /* palSetPadMode(GPIOC, 3, PAL_MODE_INPUT_ANALOG); // pin remapped to FMC */
-  palSetPadMode(GPIOC, 4, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOC, 5, PAL_MODE_INPUT_ANALOG);
+    /* palSetPadMode(GPIOC, 0, PAL_MODE_INPUT_ANALOG); // pin remapped to FMC */
+    palSetPadMode(GPIOC, 1, PAL_MODE_INPUT_ANALOG);
+    /* palSetPadMode(GPIOC, 2, PAL_MODE_INPUT_ANALOG); // pin remapped to FMC */
+    /* palSetPadMode(GPIOC, 3, PAL_MODE_INPUT_ANALOG); // pin remapped to FMC */
+    palSetPadMode(GPIOC, 4, PAL_MODE_INPUT_ANALOG);
+    palSetPadMode(GPIOC, 5, PAL_MODE_INPUT_ANALOG);
 
-  /* Four additional ADC inputs sampled at low speed via ADC3 */
-  palSetPadMode(GPIOF, 6, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOF, 7, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOF, 8, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOF, 9, PAL_MODE_INPUT_ANALOG);
-
+    /* Four additional ADC inputs sampled at lower speed via ADC3 */
+    palSetPadMode(GPIOF, 6, PAL_MODE_INPUT_ANALOG);
+    palSetPadMode(GPIOF, 7, PAL_MODE_INPUT_ANALOG);
+    palSetPadMode(GPIOF, 8, PAL_MODE_INPUT_ANALOG);
+    palSetPadMode(GPIOF, 9, PAL_MODE_INPUT_ANALOG);
 #else
 #error "ADC: No board defined?"
 #endif
@@ -122,7 +128,7 @@ static const ADCConversionGroup adcgrpcfg1 = {
     ADC_SMPR1_SMP_AN10(ADC_SAMPLE_84) | ADC_SMPR1_SMP_AN11(ADC_SAMPLE_84)
         | ADC_SMPR1_SMP_AN12(ADC_SAMPLE_84) | ADC_SMPR1_SMP_AN13(ADC_SAMPLE_84)
         | ADC_SMPR1_SMP_AN14(ADC_SAMPLE_84) | ADC_SMPR1_SMP_AN15(ADC_SAMPLE_84)
-        | ADC_SMPR1_SMP_SENSOR(ADC_SAMPLE_144) | ADC_SMPR1_SMP_VREF(ADC_SAMPLE_144), //sample times ch10-18
+        | ADC_SMPR1_SMP_SENSOR(ADC_SAMPLE_84) | ADC_SMPR1_SMP_VREF(ADC_SAMPLE_84), //sample times ch10-18
     ADC_SMPR2_SMP_AN0(ADC_SAMPLE_84) | ADC_SMPR2_SMP_AN1(ADC_SAMPLE_84)
         | ADC_SMPR2_SMP_AN2(ADC_SAMPLE_84) | ADC_SMPR2_SMP_AN3(ADC_SAMPLE_84)
         | ADC_SMPR2_SMP_AN4(ADC_SAMPLE_84) | ADC_SMPR2_SMP_AN5(ADC_SAMPLE_84)
@@ -138,15 +144,20 @@ static const ADCConversionGroup adcgrpcfg1 = {
         | ADC_SQR3_SQ5_N(ADC_CHANNEL_IN4) | ADC_SQR3_SQ6_N(ADC_CHANNEL_IN5) //SQR3: Conversion group sequence 1...6
 };
 
-void adc_convert(void) {
+void adc3_convert(void)
+{
+    /* Retrieve sample from ADC3 (slower than ADC1 and no DMA available, but still adequate) */
+    adcvalues[10 + adc_ch] = (ADC3->DR); // Store ADC3 results in adcvalues[14...18]
 
-  adcStopConversion(&ADCD1); // restart ADC1 sampling sequence
-  // Retrieve sample from ADC3 (slower than ADC1 but still adequate)
-  adcvalues[10 + adc_ch] = (ADC3->DR); // store results in indexes 14 to 18 of adcvalues[]
-  if (++adc_ch > 8) adc_ch = 4; // wrap ADC3 channel from 4 to 8
-  ADC3->SQR3 = adc_ch; // prepare next channel for conversion
-  ADC3->CR2 |= ADC_CR2_SWSTART; // start next conversion
+    if (++adc_ch > 8) adc_ch = 4; // Wrap ADC3 channel from 4 to 8
 
-  adcStartConversion(&ADCD1, &adcgrpcfg1, adcvalues, ADC_GRP1_BUF_DEPTH);
+    ADC3->SQR3 = adc_ch; /* Set next channel for conversion */
+    ADC3->CR2 |= ADC_CR2_SWSTART; /* Start next conversion */
+}
 
+void adc_convert(void)
+{
+    adcStopConversion(&ADCD1); /* restart ADC1 sampling sequence */
+    adc3_convert();
+    adcStartConversion(&ADCD1, &adcgrpcfg1, adcvalues, ADC_GRP1_BUF_DEPTH);
 }

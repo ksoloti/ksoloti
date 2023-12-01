@@ -205,8 +205,7 @@ void bduStart(BulkUSBDriver *bdup, const BulkUSBConfig *config) {
 
   chSysLock();
   chDbgAssert((bdup->state == BDU_STOP) || (bdup->state == BDU_READY),
-              "bduStart(), #1",
-              "invalid state");
+              "bduStart(), #1", "invalid state");
   usbp->in_params[config->bulk_in - 1]   = bdup;
   usbp->out_params[config->bulk_out - 1] = bdup;
   bdup->config = config;
@@ -231,8 +230,7 @@ void bduStop(BulkUSBDriver *bdup) {
   chSysLock();
 
   chDbgAssert((bdup->state == BDU_STOP) || (bdup->state == BDU_READY),
-              "bduStop(), #1",
-              "invalid state");
+              "bduStop(), #1", "invalid state");
 
   /* Driver in stopped state.*/
   usbp->in_params[bdup->config->bulk_in - 1]   = NULL;

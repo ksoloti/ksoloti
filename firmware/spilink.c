@@ -26,9 +26,6 @@
 bool_t spilink_toggle;
 Thread *pThreadSpilink = 0;
 
-// spilink_data_t spilink_tx[2] __attribute__ ((section (".sram3")));
-// spilink_data_t spilink_rx[2] __attribute__ ((section (".sram3")));
-
 spilink_data_t spilink_tx[2] __attribute__ ((section (".sram2")));
 spilink_data_t spilink_rx[2] __attribute__ ((section (".sram2")));
 
@@ -37,8 +34,6 @@ spilink_channels_t *spilink_tx_samples;
 
 uint32_t frameno = 0;
 
-// #define SPILINK_NSS_PORT GPIOA
-// #define SPILINK_NSS_PIN 15
 #define SPILINK_NSS_PORT GPIOD
 #define SPILINK_NSS_PIN 5
 
@@ -52,11 +47,10 @@ bool_t spilink_master_active = 0;
 static const SPIDBConfig spidbcfg_master = {
     { 
         NULL, SPILINK_NSS_PORT, SPILINK_NSS_PIN,
-        SPI_CR1_BR_0 /* 10.5 MHz */
-        | SPI_CR1_DFF /* 16-bit frame */
-        | SPI_CR1_CPOL /* CPOL=1 */
-        | SPI_CR1_CPHA /* CPHA=1 */
-        | SPI_CR1_MSTR /* Master */
+        SPI_CR1_DFF /* 16-bit frame */
+        // | SPI_CR1_BR_0 /* 10.5 MHz */
+        // | SPI_CR1_CPOL /* CPOL=1 */
+        // | SPI_CR1_CPHA /* CPHA=1 */
     },
     (void *)&spilink_rx, (void *)&spilink_tx,
     sizeof(spilink_data_t) / 2
@@ -66,14 +60,14 @@ static const SPIDBConfig spidbcfg_slave = {
     {
         NULL, SPILINK_NSS_PORT, SPILINK_NSS_PIN,
         SPI_CR1_DFF /* 16-bit frame */
-        | SPI_CR1_CPOL /* CPOL=1 */
-        | SPI_CR1_CPHA /* CPHA=1 */
+        // | SPI_CR1_CPOL /* CPOL=1 */
+        // | SPI_CR1_CPHA /* CPHA=1 */
     },
     (void *)&spilink_rx, (void *)&spilink_tx,
     sizeof(spilink_data_t) / 2
 };
 
-static WORKING_AREA(waThreadSpilink, 128); // __attribute__ ((section (".ccmramend")));
+static WORKING_AREA(waThreadSpilink, 256); // __attribute__ ((section (".ccmramend")));
 
 
 static msg_t ThreadSpilinkSlave(void *arg)
@@ -110,13 +104,15 @@ static msg_t ThreadSpilinkSlave(void *arg)
         else if (m & half_transfer_complete)
         {
             spilink_toggle = 0;
-            if (spilink_rx[0].header != SPILINK_HEADER) {
+            if (spilink_rx[0].header != SPILINK_HEADER)
+            {
                 spidbSlaveResync(&SPILINKD);
                 // LogTextMessage("spislaveresync halftransfer");
             }
         }
         else if (m & full_transfer_complete)
         {
+            spilink_toggle = 1;
             if (spilink_rx[0].header != SPILINK_HEADER)
             {
                 spidbSlaveResync(&SPILINKD);
@@ -128,16 +124,16 @@ static msg_t ThreadSpilinkSlave(void *arg)
                    SAI1_Block_B->CR1 |= SAI_xCR1_SAIEN;
                    chSysUnlock();
             }*/
-            spilink_toggle = 1;
         }
         else if (m & other_transfer)
         {
             spidbSlaveResync(&SPILINKD);
-            // LogTextMessage("spislaveresync other transfer");
+            // LogTextMessage("spislaveresync other");
             continue;
         }
         else
         {
+            LogTextMessage("spislaveresync unknown state");
             //????
         }
     }
@@ -199,7 +195,7 @@ void spilink_init(bool_t isMaster)
     {
         /* Synced */
         Thread *_pThreadSpilink = chThdCreateStatic(waThreadSpilink,
-            sizeof(waThreadSpilink), HIGHPRIO - 2, ThreadSpilinkSlave, NULL);
+            sizeof(waThreadSpilink), HIGHPRIO - 1, ThreadSpilinkSlave, NULL);
 
         spidbSlaveStart(&SPILINKD, &spidbcfg_slave, _pThreadSpilink);
         pThreadSpilink = _pThreadSpilink;
@@ -207,11 +203,11 @@ void spilink_init(bool_t isMaster)
 }
 
 
-void spilink_disable(void)
-{
-    spidbStop(&SPILINKD);
-    palSetPadMode(SPILINK_NSS_PORT, SPILINK_NSS_PIN, PAL_MODE_INPUT); /* synced NSS */
-    palSetPadMode(GPIOB, 3, PAL_MODE_INPUT); /* SCK */
-    palSetPadMode(GPIOB, 4, PAL_MODE_INPUT); /* MISO */
-    palSetPadMode(GPIOD, 6, PAL_MODE_INPUT); /* MOSI */
-}
+// void spilink_disable(void)
+// {
+//     spidbStop(&SPILINKD);
+//     palSetPadMode(SPILINK_NSS_PORT, SPILINK_NSS_PIN, PAL_MODE_INPUT); /* synced NSS */
+//     palSetPadMode(GPIOB, 3, PAL_MODE_INPUT); /* SCK */
+//     palSetPadMode(GPIOB, 4, PAL_MODE_INPUT); /* MISO */
+//     palSetPadMode(GPIOD, 6, PAL_MODE_INPUT); /* MOSI */
+// }

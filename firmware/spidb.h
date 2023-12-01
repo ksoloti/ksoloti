@@ -44,10 +44,10 @@ extern uint32_t spidb_interrupt_timestamp;
 void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config);
 void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, Thread * thread);
 void spidbSlaveResync(SPIDriver *spip);
-void spidbStop(SPIDriver *spip);
+// void spidbStop(SPIDriver *spip);
+
 
 /* inline functions */
-
 __STATIC_INLINE void spidbMasterExchangeI(SPIDriver *spip, bool_t toggle)
 {
     SPIDBConfig *config = (SPIDBConfig *)spip->config;

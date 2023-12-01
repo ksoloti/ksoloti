@@ -184,6 +184,7 @@ static void dma_spidb_master_interrupt(void* dat, uint32_t flags)
 #endif
     /* assume it is a transfer ready interrupt */
     SPIDriver *spip = dat;
+    spidb_interrupt_timestamp = halGetCounterValue();
 
     dmaStreamDisable(spip->dmarx);
     dmaStreamDisable(spip->dmatx);
@@ -206,6 +207,7 @@ void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config)
     spip->spi->CR1 &= ~SPI_CR1_SPE;
     spip->spi->CR1 &= ~SPI_CR1_SSM;
     spip->spi->CR1 &= ~SPI_CR1_SSI;
+    spip->spi->CR1 |= SPI_CR1_MSTR;
     spip->spi->CR1 |= SPI_CR1_SPE;
 
     dmaStreamRelease(spip->dmarx);
@@ -250,19 +252,19 @@ void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config)
 }
 
 
-void spidbStop(SPIDriver *spip)
-{
-    dmaStreamDisable(spip->dmatx);
+// void spidbStop(SPIDriver *spip)
+// {
+//     dmaStreamDisable(spip->dmatx);
 
-    /* Wait till buffer is empty */
-    while (!(spip->spi->SR & SPI_SR_TXE));
+//     /* Wait till buffer is empty */
+//     while (!(spip->spi->SR & SPI_SR_TXE));
 
-    /* Wait till transfer is done */
-    while (spip->spi->SR & SPI_SR_BSY);
+//     /* Wait till transfer is done */
+//     while (spip->spi->SR & SPI_SR_BSY);
 
-    spip->spi->CR1 &= ~SPI_CR1_SPE;
+//     spip->spi->CR1 &= ~SPI_CR1_SPE;
 
-    dmaStreamDisable(spip->dmarx);
+//     dmaStreamDisable(spip->dmarx);
 
-    spiStop(spip);
-}
+//     spiStop(spip);
+// }

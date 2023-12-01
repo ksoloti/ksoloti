@@ -38,11 +38,11 @@ extern unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS+ADC_GRP2_NUM_CHANNELS];
 
 void axoloti_board_init(void);
 void adc_init(void);
+// void adc3_init(void);
 void adc_configpads(void);
 void adc_convert(void);
 
 
-#ifdef BOARD_AXOLOTI_V05
 #define LED1_PORT GPIOG
 #define LED1_PIN 6
 #define LED2_PORT GPIOC
@@ -60,14 +60,7 @@ void adc_convert(void);
 #define SDCSW_PIN 13
 #endif
 
-#endif
-
-
-#ifdef BOARD_AXOLOTI_V05
 #define SDMIDI SD6
-#else
-#define SDMIDI SD1
-#endif
 
 
 #endif

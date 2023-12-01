@@ -30,14 +30,15 @@
 #include "midi.h"
 #include "sdcard.h"
 #include "sysmon.h"
+#include "spilink.h"
 
 void axoloti_init(void);
 
 extern void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue);
-extern void Gyro_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue);
-extern void Gyro_ReadRegister2(uint16_t RegisterAddr);
-extern void ADAU1961_I2CStart();
-extern void ADAU1961_I2CStop();
+
+extern void spilink_init(bool_t isMaster);
+// extern void spilink_disable();
+
 void LogTextMessage(const char* format, ...);
 
 #endif

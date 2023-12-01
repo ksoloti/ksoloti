@@ -17,13 +17,10 @@
  */
 #include "hal.h"
 
-extern void codec_ADAU1961_i2s_init(uint16_t sampleRate);
-extern void codec_ADAU1961_SAI_init(uint16_t sampleRate);
-extern void codec_ADAU1961_hw_init(uint16_t samplerate);
-extern void codec_ADAU1961_hw_reset(void);
-extern void codec_ADAU1961_Stop(void);
+extern void codec_ADAU1961_SAI_init(uint16_t samplerate, bool_t isMaster);
+extern void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster);
 
-extern unsigned int codec_interrupt_timestamp;
+extern uint32_t codec_interrupt_timestamp;
 
 #define ADAU1961_REG_R0_CLKC     0x4000
 #define ADAU1961_REG_R1_PLLC     0x4002
@@ -71,10 +68,8 @@ extern unsigned int codec_interrupt_timestamp;
 #define ADAU1961_REG_R67_DJITTER 0x4036
 
 /* If using an ADAU1761 the following registers have to be configured: */
-#ifdef USING_ADAU1761
 #define ADAU1761_REG_R58_SERINRT 0x40F2 /* Set this to 0x01 */
 #define ADAU1761_REG_R59_SEROUTRT 0x40F3 /* Set this to 0x01 */
 #define ADAU1761_REG_R64_SERSR 0x40F8 /* Might have to change SPRS[2:0]. Usually default 0x00 is fine */
 #define ADAU1761_REG_R65_CKEN0 0x40F9 /* Set this to 0x7F */
 #define ADAU1761_REG_R66_CKEN1 0x40FA /* Set this to 0x03 */
-#endif

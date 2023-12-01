@@ -65,7 +65,7 @@ typedef enum {
   BY_FILENAME = -3,
   LIVE = -4,
   UNINITIALIZED = -5
-// and positive numbers are index in patch bank
+  /* and positive numbers are index in patch bank */
 } loadPatchIndex_t;
 extern loadPatchIndex_t loadPatchIndex;
 

@@ -22,10 +22,11 @@
 #include "ui.h"
 #include <string.h>
 
-uint8_t lcd_buffer[(LCDHEADER + LCDWIDTH) * LCDROWS] __attribute__ ((section (".sram2")));
-uint8_t led_buffer[LCDHEADER + LCDWIDTH] __attribute__ ((section (".sram2")));
-uint8_t control_rx_buffer[LCDHEADER + LCDWIDTH] __attribute__ ((section (".sram2")));
+uint8_t lcd_buffer[(AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) * AXOLOTI_CONTROL_LCDROWS] __attribute__ ((section (".sram2")));
+uint8_t led_buffer[AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH] __attribute__ ((section (".sram2")));
 
+
+#if 0
 /*
  * Low speed SPI configuration (328.125kHz, CPHA=0, CPOL=0, MSb first).
  */
@@ -37,7 +38,7 @@ uint8_t k;
 
 void do_axoloti_control(void) {
   row_update_index++;
-  if (row_update_index == ((LCDROWS) + 1)) {
+  if (row_update_index == ((AXOLOTI_CONTROL_LCDROWS) + 1)) {
     row_update_index = 0;
     k++;
   }
@@ -46,12 +47,12 @@ void do_axoloti_control(void) {
   spiStart(&SPID3, &ls_spicfg); /* Setup transfer parameters.       */
   spiSelect(&SPID3); /* Slave Select assertion.          */
   chThdSleepMilliseconds(2);
-  if (row_update_index != (LCDROWS))
-    spiExchange(&SPID3, LCDHEADER + LCDWIDTH,
-                &lcd_buffer[(LCDHEADER + LCDWIDTH) * row_update_index],
+  if (row_update_index != (AXOLOTI_CONTROL_LCDROWS))
+    spiExchange(&SPID3, AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH,
+                &lcd_buffer[(AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) * row_update_index],
                 control_rx_buffer);
   else
-    spiExchange(&SPID3, LCDHEADER + LCDWIDTH, &led_buffer[0],
+    spiExchange(&SPID3, AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH, &led_buffer[0],
                 control_rx_buffer);
   spiUnselect(&SPID3); /* Slave Select de-assertion.       */
   spiReleaseBus(&SPID3); /* Ownership release.               */
@@ -66,13 +67,13 @@ void do_axoloti_control(void) {
     EncBuffer[2] += control_rx_buffer[14];
     EncBuffer[3] += control_rx_buffer[15];
   }
-}
+  }
 
 void axoloti_control_init(void) {
   /*
    *  Commm to FP test...
    */
-  row_update_index = 0;
+  // row_update_index = 0;
   palSetPadMode(GPIOA, 15, PAL_MODE_OUTPUT_PUSHPULL);
   // NSS
   palSetPadMode(GPIOB, 5, PAL_MODE_ALTERNATE(6));
@@ -81,29 +82,19 @@ void axoloti_control_init(void) {
   // MISO
   palSetPadMode(GPIOB, 3, PAL_MODE_ALTERNATE(6));
   // SCK
+  palClearPad(GPIOB, 3);
+  // SCK idle/low
   int i;
   // clear
-  for (i = 0; i < (LCDHEADER + LCDWIDTH) * LCDROWS; i++)
+  for (i = 0; i < (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) * AXOLOTI_CONTROL_LCDROWS; i++)
     lcd_buffer[i] = 0;
-  // fill header
-  for (i = 0; i < LCDROWS; i++) {
-    lcd_buffer[i * (LCDHEADER + LCDWIDTH) + 0] = 'A';
-    lcd_buffer[i * (LCDHEADER + LCDWIDTH) + 1] = 'x';
-    lcd_buffer[i * (LCDHEADER + LCDWIDTH) + 2] = 'o';
-    lcd_buffer[i * (LCDHEADER + LCDWIDTH) + 3] = '0' + i;
-  }
-  led_buffer[0] = 'A';
-  led_buffer[1] = 'x';
-  led_buffer[2] = 'o';
-  led_buffer[3] = '0' + i;
 
-  for (i = 0; i < LCDWIDTH; i++)
-    led_buffer[LCDHEADER + i] = 0; //i;
-
-  for (i = 0; i < LCDWIDTH; i++)
-    control_rx_buffer[i] = 0;
+    led_buffer[0] = 'A';
+    led_buffer[1] = 'x';
+    led_buffer[2] = 'o';
+    led_buffer[3] = '0' + i;
 }
-
+#endif
 #define _BV(bit) (1 << (bit))
 
 void LCD_updateBoundingBox(int x, int y, int x2, int y2) {
@@ -115,46 +106,45 @@ void LCD_updateBoundingBox(int x, int y, int x2, int y2) {
 
 // the most basic function, set a single pixel
 void LCD_drawPixel(int x, int y, uint16_t color) {
-  if ((x < 0) || (x >= LCDWIDTH) || (y < 0) || (y >= LCDHEIGHT))
+  if ((x < 0) || (x >= AXOLOTI_CONTROL_LCDWIDTH) || (y < 0) || (y >= AXOLOTI_CONTROL_LCDHEIGHT))
     return;
 
   // x is which column
   if (color)
-    lcd_buffer[LCDHEADER + x + (y / 8) * LCDWIDTH] |= _BV(y%8);
+    lcd_buffer[AXOLOTI_CONTROL_LCDHEADER + x + (y / 8) * AXOLOTI_CONTROL_LCDWIDTH] |= _BV(y%8);
   else
-    lcd_buffer[LCDHEADER + x + (y / 8) * LCDWIDTH] &= ~_BV(y%8);
+    lcd_buffer[AXOLOTI_CONTROL_LCDHEADER + x + (y / 8) * AXOLOTI_CONTROL_LCDWIDTH] &= ~_BV(y%8);
 
   LCD_updateBoundingBox(x, y, x, y);
 }
 
 void LCD_setPixel(int x, int y) {
-  if ((x < 0) || (x >= LCDWIDTH) || (y < 0) || (y >= LCDHEIGHT))
+  if ((x < 0) || (x >= AXOLOTI_CONTROL_LCDWIDTH) || (y < 0) || (y >= AXOLOTI_CONTROL_LCDHEIGHT))
     return;
-  lcd_buffer[LCDHEADER + x + (y / 8) * (LCDWIDTH + LCDHEADER)] |= _BV(y%8);
+  lcd_buffer[AXOLOTI_CONTROL_LCDHEADER + x + (y / 8) * (AXOLOTI_CONTROL_LCDWIDTH + AXOLOTI_CONTROL_LCDHEADER)] |= _BV(y%8);
   LCD_updateBoundingBox(x, y, x, y);
 }
 
 void LCD_clearPixel(int x, int y) {
-  if ((x < 0) || (x >= LCDWIDTH) || (y < 0) || (y >= LCDHEIGHT))
+  if ((x < 0) || (x >= AXOLOTI_CONTROL_LCDWIDTH) || (y < 0) || (y >= AXOLOTI_CONTROL_LCDHEIGHT))
     return;
-  lcd_buffer[LCDHEADER + x + (y / 8) * (LCDWIDTH + LCDHEADER)] &= ~_BV(y%8);
+  lcd_buffer[AXOLOTI_CONTROL_LCDHEADER + x + (y / 8) * (AXOLOTI_CONTROL_LCDWIDTH + AXOLOTI_CONTROL_LCDHEADER)] &= ~_BV(y%8);
   LCD_updateBoundingBox(x, y, x, y);
 }
 
 uint8_t LCD_getPixel(int x, int y) {
-  if ((x < 0) || (x >= LCDWIDTH) || (y < 0) || (y >= LCDHEIGHT))
+  if ((x < 0) || (x >= AXOLOTI_CONTROL_LCDWIDTH) || (y < 0) || (y >= AXOLOTI_CONTROL_LCDHEIGHT))
     return 0;
 
-  return (lcd_buffer[LCDHEADER + x + (y / 8) * (LCDWIDTH + LCDHEADER)]
+  return (lcd_buffer[AXOLOTI_CONTROL_LCDHEADER + x + (y / 8) * (AXOLOTI_CONTROL_LCDWIDTH + AXOLOTI_CONTROL_LCDHEADER)]
       >> (y % 8)) & 0x1;
 }
 
 // clear everything
 void LCD_clearDisplay(void) {
-  int i;
-  for (i = 0; i < LCDROWS; i++)
-    memset(&lcd_buffer[LCDHEADER + i * LCDWIDTH], 0, LCDWIDTH);
-  LCD_updateBoundingBox(0, 0, LCDWIDTH - 1, LCDHEIGHT - 1);
+  int i; for (i = 0; i < AXOLOTI_CONTROL_LCDROWS; i++)
+    memset(&lcd_buffer[AXOLOTI_CONTROL_LCDHEADER + i * AXOLOTI_CONTROL_LCDWIDTH], 0, AXOLOTI_CONTROL_LCDWIDTH);
+  LCD_updateBoundingBox(0, 0, AXOLOTI_CONTROL_LCDWIDTH - 1, AXOLOTI_CONTROL_LCDHEIGHT - 1);
 //  cursor_y = cursor_x = 0;
 }
 
@@ -164,10 +154,10 @@ extern const unsigned char font[];
 void LCD_drawChar(int x, int y, unsigned char c) {
   // pixel x, line y
   //
-  if ((x < 0) || (x >= (LCDWIDTH - 5)) || (y < 0) || (y >= (LCDROWS)))
+  if ((x < 0) || (x >= (AXOLOTI_CONTROL_LCDWIDTH - 5)) || (y < 0) || (y >= (AXOLOTI_CONTROL_LCDROWS)))
     return;
   int i = c * 5;
-  int j = LCDHEADER + x + y * (LCDWIDTH + LCDHEADER);
+  int j = AXOLOTI_CONTROL_LCDHEADER + x + y * (AXOLOTI_CONTROL_LCDWIDTH + AXOLOTI_CONTROL_LCDHEADER);
   lcd_buffer[j++] = font[i++];
   lcd_buffer[j++] = font[i++];
   lcd_buffer[j++] = font[i++];
@@ -177,14 +167,14 @@ void LCD_drawChar(int x, int y, unsigned char c) {
 }
 
 void LCD_drawString(int x, int y, const char *str) {
-  if ((y < 0) || (y >= (LCDROWS))|| (x<0))return;
+  if ((y < 0) || (y >= (AXOLOTI_CONTROL_LCDROWS))|| (x<0))return;
   // pixel x, line y
       unsigned char c;
-      int j = LCDHEADER + x+ y*(LCDWIDTH+LCDHEADER);
+      int j = AXOLOTI_CONTROL_LCDHEADER + x+ y*(AXOLOTI_CONTROL_LCDWIDTH+AXOLOTI_CONTROL_LCDHEADER);
       lcd_buffer[j++] = 0x00;
       int x2 = x;
       while((c=*str++)) {
-        if (x2 >= LCDWIDTH)
+        if (x2 >= AXOLOTI_CONTROL_LCDWIDTH)
         return;
         x2 += 6;
         int i=c*5;
@@ -234,10 +224,10 @@ void LCD_drawNumber5D(int x, int y, int i) {
 void LCD_drawCharInv(int x, int y, unsigned char c) {
   // pixel x, line y
   //
-  if ((x < 0) || (x >= (LCDWIDTH - 5)) || (y < 0) || (y >= (LCDHEIGHT / 8)))
+  if ((x < 0) || (x >= (AXOLOTI_CONTROL_LCDWIDTH - 5)) || (y < 0) || (y >= (AXOLOTI_CONTROL_LCDHEIGHT / 8)))
     return;
   int i = c * 5;
-  int j = LCDHEADER + x + y * (LCDHEADER + LCDWIDTH);
+  int j = AXOLOTI_CONTROL_LCDHEADER + x + y * (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH);
   lcd_buffer[j++] = ~font[i++];
   lcd_buffer[j++] = ~font[i++];
   lcd_buffer[j++] = ~font[i++];
@@ -247,14 +237,14 @@ void LCD_drawCharInv(int x, int y, unsigned char c) {
 }
 
 void LCD_drawStringInv(int x, int y, const char *str) {
-  if ((y < 0) || (y >= (LCDROWS))|| (x<0))return;
+  if ((y < 0) || (y >= (AXOLOTI_CONTROL_LCDROWS))|| (x<0))return;
   // pixel x, line y
       unsigned char c;
-      int j = LCDHEADER + x+ y*(LCDHEADER+LCDWIDTH);
+      int j = AXOLOTI_CONTROL_LCDHEADER + x+ y*(AXOLOTI_CONTROL_LCDHEADER+AXOLOTI_CONTROL_LCDWIDTH);
       lcd_buffer[j++] = 0xFF;
       int x2 = x;
       while((c=*str++)) {
-        if (x2 >= LCDWIDTH)
+        if (x2 >= AXOLOTI_CONTROL_LCDWIDTH)
         return;
         x2 += 6;
         int i=c*5;
@@ -303,15 +293,15 @@ void LCD_drawNumber5DInv(int x, int y, int i) {
 
 void LCD_drawStringN(int x, int y, const char *str, int N) {
   (void)N;
-  if ((y < 0) || (y >= (LCDROWS))|| (x<0))return;
+  if ((y < 0) || (y >= (AXOLOTI_CONTROL_LCDROWS))|| (x<0))return;
   unsigned char c;
-  lcd_buffer[LCDHEADER + x + y * (LCDHEADER + LCDWIDTH)] = 0x00;
+  lcd_buffer[AXOLOTI_CONTROL_LCDHEADER + x + y * (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH)] = 0x00;
   x++;
   while ((c = *str++)) {
-    if (x >= (LCDWIDTH - 5))
+    if (x >= (AXOLOTI_CONTROL_LCDWIDTH - 5))
       break;
     int i = c * 5;
-    int j = LCDHEADER + x + y * (LCDHEADER + LCDWIDTH);
+    int j = AXOLOTI_CONTROL_LCDHEADER + x + y * (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH);
     lcd_buffer[j++] = font[i++];
     lcd_buffer[j++] = font[i++];
     lcd_buffer[j++] = font[i++];
@@ -320,8 +310,8 @@ void LCD_drawStringN(int x, int y, const char *str, int N) {
     lcd_buffer[j] = 0;
     x += 6;
   }
-  while (x < LCDWIDTH) {
-    int j = LCDHEADER + x + y * (LCDHEADER + LCDWIDTH);
+  while (x < AXOLOTI_CONTROL_LCDWIDTH) {
+    int j = AXOLOTI_CONTROL_LCDHEADER + x + y * (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH);
     lcd_buffer[j] = 0;
     x++;
   }
@@ -329,15 +319,15 @@ void LCD_drawStringN(int x, int y, const char *str, int N) {
 
 void LCD_drawStringInvN(int x, int y, const char *str, int N) {
   (void)N;
-  if ((y < 0) || (y >= (LCDROWS))|| (x<0))return;
+  if ((y < 0) || (y >= (AXOLOTI_CONTROL_LCDROWS))|| (x<0))return;
   unsigned char c;
-  lcd_buffer[LCDHEADER + x + y * (LCDHEADER + LCDWIDTH)] = 0xFF;
+  lcd_buffer[AXOLOTI_CONTROL_LCDHEADER + x + y * (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH)] = 0xFF;
   x++;
   while ((c = *str++)) {
-    if (x >= (LCDWIDTH - 5))
+    if (x >= (AXOLOTI_CONTROL_LCDWIDTH - 5))
       break;
     int i = c * 5;
-    int j = LCDHEADER + x + y * (LCDHEADER + LCDWIDTH);
+    int j = AXOLOTI_CONTROL_LCDHEADER + x + y * (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH);
     lcd_buffer[j++] = ~font[i++];
     lcd_buffer[j++] = ~font[i++];
     lcd_buffer[j++] = ~font[i++];
@@ -346,17 +336,17 @@ void LCD_drawStringInvN(int x, int y, const char *str, int N) {
     lcd_buffer[j] = 0xFF;
     x += 6;
   }
-  while (x < LCDWIDTH) {
-    int j = LCDHEADER + x + y * (LCDHEADER + LCDWIDTH);
+  while (x < AXOLOTI_CONTROL_LCDWIDTH) {
+    int j = AXOLOTI_CONTROL_LCDHEADER + x + y * (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH);
     lcd_buffer[j] = 0xFF;
     x++;
   }
 }
 
 void LCD_drawIBAR(int x, int y, int v, int N) {
-  if ((y < 0) || (y >= (LCDHEIGHT / 8)) || (x < 0))
+  if ((y < 0) || (y >= (AXOLOTI_CONTROL_LCDHEIGHT / 8)) || (x < 0))
     return;
-  int j = LCDHEADER + x + (y * LCDWIDTH);
+  int j = AXOLOTI_CONTROL_LCDHEADER + x + (y * AXOLOTI_CONTROL_LCDWIDTH);
   int k = 1;
   int i;
   if (v > 0) {
@@ -381,12 +371,12 @@ void LCD_drawIBAR(int x, int y, int v, int N) {
 }
 
 void LCD_drawIBARadd(int x, int y, int v) {
-  if ((y < 0) || (y >= (LCDHEIGHT)) || (x < 0))
+  if ((y < 0) || (y >= (AXOLOTI_CONTROL_LCDHEIGHT)) || (x < 0))
     return;
-  int j = LCDHEADER + x + (y * LCDWIDTH);
+  int j = AXOLOTI_CONTROL_LCDHEADER + x + (y * AXOLOTI_CONTROL_LCDWIDTH);
   int b = 1 << (y & 0x07);
-  if (v + x > LCDWIDTH) { // clip
-    v = LCDWIDTH - x;
+  if (v + x > AXOLOTI_CONTROL_LCDWIDTH) { // clip
+    v = AXOLOTI_CONTROL_LCDWIDTH - x;
   }
   int i;
   if (v > 0) {

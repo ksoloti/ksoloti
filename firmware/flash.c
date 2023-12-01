@@ -20,8 +20,8 @@
 #include "watchdog.h"
 
 
+
 __attribute__ ((section (".data"))) int flash_WaitForLastOperation(void) {
-// __attribute__ ((section (".ramtext"))) int flash_WaitForLastOperation(void) {
   while (FLASH->SR == FLASH_SR_BSY) {
     WWDG->CR = WWDG_CR_T;
   }
@@ -29,7 +29,6 @@ __attribute__ ((section (".data"))) int flash_WaitForLastOperation(void) {
 }
 
 __attribute__ ((section (".data"))) void flash_Erase_sector1(int sector) {
-// __attribute__ ((section (".ramtext"))) void flash_Erase_sector1(int sector) {
   // assume VDD>2.7V
   FLASH->CR &= ~FLASH_CR_PSIZE;
   FLASH->CR |= FLASH_CR_PSIZE_1;
@@ -43,13 +42,14 @@ __attribute__ ((section (".data"))) void flash_Erase_sector1(int sector) {
   flash_WaitForLastOperation();
 }
 
-int flash_Erase_sector(int sector) {
-  // interrupts would cause flash execution, stall
-  // and cause watchdog trigger
-  chSysLock();
-  flash_Erase_sector1(sector);
-  chSysUnlock();
-  return 0;
+int flash_Erase_sector(int sector)
+{
+    /* interrupts would cause flash execution, stall */
+    /* and cause watchdog trigger */
+    chSysLock();
+    flash_Erase_sector1(sector);
+    chSysUnlock();
+    return 0;
 }
 
 int flash_ProgramWord(uint32_t Address, uint32_t Data) {
@@ -76,8 +76,9 @@ int flash_ProgramWord(uint32_t Address, uint32_t Data) {
   return status;
 }
 
-void flash_unlock(void) {
-  // unlock sequence
-  FLASH->KEYR = 0x45670123;
-  FLASH->KEYR = 0xCDEF89AB;
+void flash_unlock(void)
+{
+    /* unlock sequence */
+    FLASH->KEYR = 0x45670123;
+    FLASH->KEYR = 0xCDEF89AB;
 }

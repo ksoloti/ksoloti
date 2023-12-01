@@ -18,17 +18,17 @@
 #ifndef __AXOLOTI_CONTROL_H
 #define __AXOLOTI_CONTROL_H
 
-#define LCDWIDTH 128
-#define LCDHEIGHT 64
-#define LCDHEADER 4
-#define LCDROWS (LCDHEIGHT/8)
+#define AXOLOTI_CONTROL_LCDWIDTH 128
+#define AXOLOTI_CONTROL_LCDHEIGHT 64
+#define AXOLOTI_CONTROL_LCDHEADER 0
+#define AXOLOTI_CONTROL_LCDROWS (AXOLOTI_CONTROL_LCDHEIGHT/8)
 
-extern uint8_t lcd_buffer[(LCDHEADER + LCDWIDTH) * LCDROWS];
-extern uint8_t led_buffer[LCDHEADER + LCDWIDTH];
-extern uint8_t control_rx_buffer[(LCDHEADER + LCDWIDTH)];
+extern uint8_t lcd_buffer[(AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) * AXOLOTI_CONTROL_LCDROWS];
+extern uint8_t led_buffer[AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH];
+extern uint8_t control_rx_buffer[(AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH)];
 
-extern void do_axoloti_control(void);
-void axoloti_control_init(void);
+// extern void do_axoloti_control(void);
+// void axoloti_control_init(void);
 
 void LCD_clearDisplay(void);
 void LCD_drawPixel(int x, int y, uint16_t color);
