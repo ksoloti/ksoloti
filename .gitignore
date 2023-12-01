@@ -31,6 +31,8 @@ patch/xpatch.map
 /build/
 /nbproject/private/
 /dist/
+/jdks/zulu*.tar.gz
+/jdks/zulu*.zip
 hs_err_*.log
 axoloti_osx.zip
 private_key.*
