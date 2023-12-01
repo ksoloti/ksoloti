@@ -41,10 +41,7 @@
 #include "midi_usb.h"
 #include "watchdog.h"
 #include "sysmon.h"
-
-#ifdef SPILINK_TEST
 #include "spilink.h"
-#endif
 
 //#define DEBUG_SERIAL 1
 
