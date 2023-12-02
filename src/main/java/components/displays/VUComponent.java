@@ -35,7 +35,7 @@ public class VUComponent extends ADispComponent {
     private double peakaccumvalue;
     private static final int w = 6;
     private static final int h = 16;
-    private static final Dimension dim = new Dimension(w, h);
+    private static final Dimension dim = new Dimension(w+3, h);
 
     public VUComponent() {
         value = 0;
