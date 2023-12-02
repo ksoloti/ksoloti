@@ -1371,7 +1371,6 @@ is divided into following sections:
         <delete includeemptydirs="true">
             <fileset dir="${build.dir}" includes="**/*"/>
         </delete>
-        <delete dir="${dist.dir}" followsymlinks="false" includeemptydirs="true"/>
     </target>
     <target name="-post-clean">
         <!-- Empty placeholder for easier customization. -->
