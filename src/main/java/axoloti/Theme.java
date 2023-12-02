@@ -104,9 +104,17 @@ public class Theme {
     @Element
     public Color Object_TitleBar_Background = UIManager.getColor("Panel.foreground"); /* Titlebar Inverted */
     @Element
-    public Color Object_TitleBar_Subpatch_Background = new Color(0.45f, 0.5f, 0.6f); /* Blueish titlebar for subpatches */
+    // public Color Object_TitleBar_Subpatch_Background = new Color(0.45f, 0.5f, 0.6f); /* Blueish titlebar for subpatches */
+    public Color Object_TitleBar_Subpatch_Background = new Color(
+        Object_TitleBar_Background.getRed(),
+        Object_TitleBar_Background.getGreen(),
+        Object_TitleBar_Background.getBlue()+0x50 > 0xFF ? 0xFF : Object_TitleBar_Background.getBlue()+0x50);
     @Element
-    public Color Object_TitleBar_Embedded_Background = new Color(0.6f, 0.5f, 0.45f); /* Brownish titlebar for embedded objects */
+    // public Color Object_TitleBar_Embedded_Background = new Color(0.6f, 0.5f, 0.45f); /* Yellowish titlebar for embedded objects */
+    public Color Object_TitleBar_Embedded_Background = new Color(
+        Object_TitleBar_Background.getRed()+0x30 > 0xFF ? 0xFF : Object_TitleBar_Background.getRed()+0x30,
+        Object_TitleBar_Background.getGreen()+0x20 > 0xFF ? 0xFF : Object_TitleBar_Background.getGreen()+0x20,
+        Object_TitleBar_Background.getBlue());
     @Element
     public Color Object_TitleBar_Foreground = UIManager.getColor("Panel.background"); /* Titlebar Inverted */
     @Element
@@ -114,7 +122,7 @@ public class Theme {
     @Element
     public Color Object_Border_Unselected_Locked = Patch_Locked_Background;
     @Element
-    public Color Object_Border_Selected = new Color(0xFF, 0x80, 0x00);
+    public Color Object_Border_Selected = new Color(0xFF, 0x80, 0x00); /* Juicy orange */
     @Element
     public Color Object_Zombie_Background = Color.RED;
 
