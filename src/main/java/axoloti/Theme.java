@@ -114,7 +114,7 @@ public class Theme {
     @Element
     public Color Object_Border_Unselected_Locked = Patch_Locked_Background;
     @Element
-    public Color Object_Border_Selected = Color.ORANGE;
+    public Color Object_Border_Selected = new Color(0xFF, 0x80, 0x00);
     @Element
     public Color Object_Zombie_Background = Color.RED;
 
