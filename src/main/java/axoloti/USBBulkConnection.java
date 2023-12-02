@@ -400,7 +400,7 @@ public class USBBulkConnection extends Connection {
             case -1:  errstr = "Input/output error"; break;
             case -2:  errstr = "Invalid parameter"; break;
             case -3:  errstr = "Access denied (insufficient permissions?)"; break;
-            case -4:  errstr = "No such device (it may have been disconnected)"; break;
+            case -4:  errstr = "Device may have been disconnected"; break;
             case -5:  errstr = "Device not found"; break;
             case -6:  errstr = "Device busy"; break;
             case -7:  errstr = "Operation timed out"; break;
