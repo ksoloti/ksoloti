@@ -14,6 +14,7 @@ echo $VERSION_LONG
 
 # Init
 mkdir -p packagetemp
+rm -rf packagetemp/*
 
 
 # Linux
@@ -47,6 +48,8 @@ rm -rf packagetemp/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi
 rm -rf packagetemp/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi/4.9.3/armv7-m
 
 rm -rf packagetemp/linux/ksoloti-${VERSION}/jre/jmods
+rm -rf packagetemp/linux/ksoloti-${VERSION}/jre/demo
+rm -rf packagetemp/linux/ksoloti-${VERSION}/jre/man
 rm packagetemp/linux/ksoloti-${VERSION}/jre/lib/src.zip
 
 cd packagetemp/linux && tar -czf ../ksoloti_patcher-linux-${VERSION_LONG}.tar.gz *
@@ -76,6 +79,8 @@ rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware/mounter/mounter_b
 rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware/mounter/mounter_build/obj
 
 rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/jre/jmods
+rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/jre/demo
+rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/jre/man
 rm packagetemp/mac/Ksoloti.app/Contents/Resources/jre/lib/src.zip
 
 chmod +x packagetemp/mac/Ksoloti.app/Contents/Resources/jre/lib/jspawnhelper
@@ -116,6 +121,8 @@ rm -rf packagetemp/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9
 rm -rf packagetemp/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9.3/armv7-mo
 
 rm -rf packagetemp/win/ksoloti-${VERSION}/jre/jmods
+rm -rf packagetemp/win/ksoloti-${VERSION}/jre/demo
+rm -rf packagetemp/win/ksoloti-${VERSION}/jre/man
 rm packagetemp/win/ksoloti-${VERSION}/jre/lib/src.zip
 
 cd packagetemp/win && zip -q -r ../ksoloti_patcher-windows-${VERSION_LONG}.zip *
