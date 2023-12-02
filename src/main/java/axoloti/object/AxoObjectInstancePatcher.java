@@ -26,6 +26,9 @@ import components.ButtonComponent;
 import components.ButtonComponent.ActListener;
 // import java.awt.Component;
 import java.awt.Point;
+
+import javax.swing.ImageIcon;
+
 import org.simpleframework.xml.Element;
 
 /**
@@ -103,6 +106,7 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
             pg.setFileNamePath(getInstanceName());
             pg.PostContructor();
         }
+        pf.setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axs.png")).getImage());
         pf.setState(java.awt.Frame.NORMAL);
         pf.setVisible(true);
     }
