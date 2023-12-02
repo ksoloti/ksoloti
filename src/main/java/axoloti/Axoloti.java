@@ -59,6 +59,24 @@ public class Axoloti
 
             Preferences.LoadPreferences().applyTheme();
 
+            if (OSDetect.getOS() == OSDetect.OS.MAC)
+            {
+                // System.setProperty("apple.laf.useScreenMenuBar", "true"); /* This option breaks menu functions */
+                System.setProperty("apple.awt.application.name", "Ksoloti");
+                System.setProperty("apple.awt.application.appearance", "system");
+                System.setProperty("apple.awt.transparentTitleBar", "true");
+            }
+
+            if (OSDetect.getOS() == OSDetect.OS.LINUX)
+            {
+                JFrame.setDefaultLookAndFeelDecorated(true);
+                JDialog.setDefaultLookAndFeelDecorated(true);
+            }
+
+            // System.setProperty("awt.useSystemAAFontSettings","lcd");
+            // System.setProperty("sun.java2d.dpiaware","true");
+            // System.setProperty("swing.aatext","true");
+
             UIManager.put("Table.showHorizontalLines", true);
             UIManager.put("Table.showVerticalLines", true);
             UIManager.put("flatlaf.menuBarEmbedded", true);
@@ -67,22 +85,6 @@ public class Axoloti
             UIManager.put("ToggleButton.selectedForeground", Theme.getCurrentTheme().Button_Accent_Foreground);
             UIManager.put("ToggleButton.selectedBackground", Theme.getCurrentTheme().Button_Accent_Background);
 
-
-            // System.setProperty("awt.useSystemAAFontSettings","lcd");
-            // System.setProperty("sun.java2d.dpiaware","true");
-            // System.setProperty("swing.aatext","true");
-
-            if (OSDetect.getOS() == OSDetect.OS.MAC)
-            {
-                System.setProperty("apple.laf.useScreenMenuBar", "true");
-                System.setProperty("apple.awt.application.name", "Ksoloti");
-                System.setProperty("apple.awt.application.appearance", "system");
-            }
-            if (OSDetect.getOS() == OSDetect.OS.LINUX)
-            {
-                JFrame.setDefaultLookAndFeelDecorated(true);
-                JDialog.setDefaultLookAndFeelDecorated(true);
-            }
         }
         catch (URISyntaxException e)
         {
