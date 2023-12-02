@@ -50,12 +50,12 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         piano = new PianoComponent() {
             @Override
             public void KeyDown(int key) {
-                USBBulkConnection.GetConnection().SendMidi(0x90 + ((SpinnerNumberModel) jSpinner1.getModel()).getNumber().intValue() - 1, key & 0x7F, jSliderVelocity.getValue());
+                USBBulkConnection.GetConnection().SendMidi(0x90 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, key & 0x7F, jSliderVelocity.getValue());
             }
 
             @Override
             public void KeyUp(int key) {
-                USBBulkConnection.GetConnection().SendMidi(0x80 + ((SpinnerNumberModel) jSpinner1.getModel()).getNumber().intValue() - 1, key & 0x7F, 80);
+                USBBulkConnection.GetConnection().SendMidi(0x80 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, key & 0x7F, 80);
             }
 
         };
@@ -65,12 +65,12 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         piano.setPreferredSize(d);
         piano.setMaximumSize(d);
         piano.setVisible(true);
-        jPanelKeyb.add(piano);
+        jPanelPiano.add(piano);
         pbenddial = new DialComponent(0.0, -64, 64, 1);
         pbenddial.addACtrlListener(new ACtrlListener() {
             @Override
             public void ACtrlAdjusted(ACtrlEvent e) {
-                USBBulkConnection.GetConnection().SendMidi(0xE0 + ((SpinnerNumberModel) jSpinner1.getModel()).getNumber().intValue() - 1, 0, 0x07F & (int) (pbenddial.getValue() - 64.0));
+                USBBulkConnection.GetConnection().SendMidi(0xE0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, 0, 0x07F & (int) (pbenddial.getValue() - 64.0));
             }
 
             @Override
@@ -81,8 +81,8 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
             public void ACtrlAdjustmentFinished(ACtrlEvent e) {
             }
         });
-        jPanel1.add(new JLabel("Pitch Bend "));
-        jPanel1.add(pbenddial);
+        jPanelMain.add(new JLabel("Pitch Bend "));
+        jPanelMain.add(pbenddial);
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);        
     }
 
@@ -95,14 +95,14 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanelKeyb = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        jPanelPiano = new javax.swing.JPanel();
+        jPanelMain = new javax.swing.JPanel();
+        jLabelMidiChannel = new javax.swing.JLabel();
         Dimension di = new java.awt.Dimension(5,0);
         filler1 = new javax.swing.Box.Filler(di, di, di);
-        jSpinner1 = new javax.swing.JSpinner();
+        jSpinnerMidiChannel = new javax.swing.JSpinner();
         filler2 = new javax.swing.Box.Filler(di, di, di);
-        jLabel2 = new javax.swing.JLabel();
+        jLabelVelocity = new javax.swing.JLabel();
         jSliderVelocity = new javax.swing.JSlider();
         filler4 = new javax.swing.Box.Filler(di, di, di);
         jButtonAllNotesOff = new javax.swing.JButton();
@@ -115,33 +115,33 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         setPreferredSize(new java.awt.Dimension(917, 150));
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.Y_AXIS));
         
-        jPanelKeyb.setAlignmentX(LEFT_ALIGNMENT);
-        jPanelKeyb.setAlignmentY(TOP_ALIGNMENT);
-        jPanelKeyb.setMaximumSize(new java.awt.Dimension(905, 72));
-        jPanelKeyb.setMinimumSize(new java.awt.Dimension(905, 72));
-        jPanelKeyb.setPreferredSize(new java.awt.Dimension(905, 72));
-        jPanelKeyb.setLayout(new javax.swing.BoxLayout(jPanelKeyb, javax.swing.BoxLayout.LINE_AXIS));
-        getContentPane().add(jPanelKeyb);
+        jPanelPiano.setAlignmentX(LEFT_ALIGNMENT);
+        jPanelPiano.setAlignmentY(TOP_ALIGNMENT);
+        jPanelPiano.setMaximumSize(new java.awt.Dimension(905, 72));
+        jPanelPiano.setMinimumSize(new java.awt.Dimension(905, 72));
+        jPanelPiano.setPreferredSize(new java.awt.Dimension(905, 72));
+        jPanelPiano.setLayout(new javax.swing.BoxLayout(jPanelPiano, javax.swing.BoxLayout.LINE_AXIS));
+        getContentPane().add(jPanelPiano);
 
-        jPanel1.setAlignmentX(LEFT_ALIGNMENT);
-        jPanel1.setAlignmentY(TOP_ALIGNMENT);
-        jPanel1.setMinimumSize(new java.awt.Dimension(500, 50));
-        jPanel1.setPreferredSize(new java.awt.Dimension(500, 50));
-        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));
+        jPanelMain.setAlignmentX(LEFT_ALIGNMENT);
+        jPanelMain.setAlignmentY(TOP_ALIGNMENT);
+        // jPanelMain.setMinimumSize(new java.awt.Dimension(500, 50));
+        // jPanelMain.setPreferredSize(new java.awt.Dimension(500, 50));
+        jPanelMain.setLayout(new javax.swing.BoxLayout(jPanelMain, javax.swing.BoxLayout.LINE_AXIS));
 
-        jLabel1.setText("Midi Channel");
-        jPanel1.add(jLabel1);
-        jPanel1.add(filler1);
+        jLabelMidiChannel.setText("MIDI Channel");
+        jPanelMain.add(jLabelMidiChannel);
+        jPanelMain.add(filler1);
 
-        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(1, 1, 16, 1));
-        jSpinner1.setMaximumSize(new java.awt.Dimension(60, 30));
-        jSpinner1.setMinimumSize(new java.awt.Dimension(60, 30));
-        jSpinner1.setPreferredSize(new java.awt.Dimension(60, 30));
-        jPanel1.add(jSpinner1);
-        jPanel1.add(filler2);
+        jSpinnerMidiChannel.setModel(new javax.swing.SpinnerNumberModel(1, 1, 16, 1));
+        jSpinnerMidiChannel.setMaximumSize(new java.awt.Dimension(60, 30));
+        jSpinnerMidiChannel.setMinimumSize(new java.awt.Dimension(60, 30));
+        jSpinnerMidiChannel.setPreferredSize(new java.awt.Dimension(60, 30));
+        jPanelMain.add(jSpinnerMidiChannel);
+        jPanelMain.add(filler2);
 
-        jLabel2.setText("Velocity");
-        jPanel1.add(jLabel2);
+        jLabelVelocity.setText("Velocity");
+        jPanelMain.add(jLabelVelocity);
 
         jSliderVelocity.setMajorTickSpacing(25);
         jSliderVelocity.setMaximum(127);
@@ -149,8 +149,8 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         jSliderVelocity.setPaintTicks(true);
         jSliderVelocity.setValue(100);
         jSliderVelocity.setMinimumSize(new java.awt.Dimension(128, 31));
-        jPanel1.add(jSliderVelocity);
-        jPanel1.add(filler4);
+        jPanelMain.add(jSliderVelocity);
+        jPanelMain.add(filler4);
 
         jButtonAllNotesOff.setText("All Notes Off");
         jButtonAllNotesOff.addActionListener(new java.awt.event.ActionListener() {
@@ -158,16 +158,16 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
                 jButtonAllNotesOffActionPerformed(evt);
             }
         });
-        jPanel1.add(jButtonAllNotesOff);
-        jPanel1.add(filler3);
+        jPanelMain.add(jButtonAllNotesOff);
+        jPanelMain.add(filler3);
 
-        getContentPane().add(jPanel1);
+        getContentPane().add(jPanelMain);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonAllNotesOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAllNotesOffActionPerformed
-        USBBulkConnection.GetConnection().SendMidi(0xB0 + ((SpinnerNumberModel) jSpinner1.getModel()).getNumber().intValue() - 1, 0x7B, 80);
+        USBBulkConnection.GetConnection().SendMidi(0xB0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, 0x7B, 80);
         piano.clear();
     }//GEN-LAST:event_jButtonAllNotesOffActionPerformed
 
@@ -177,12 +177,12 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
     private javax.swing.Box.Filler filler3;
     private javax.swing.Box.Filler filler4;
     private javax.swing.JButton jButtonAllNotesOff;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanelKeyb;
+    private javax.swing.JLabel jLabelMidiChannel;
+    private javax.swing.JLabel jLabelVelocity;
+    private javax.swing.JPanel jPanelMain;
+    private javax.swing.JPanel jPanelPiano;
     private javax.swing.JSlider jSliderVelocity;
-    private javax.swing.JSpinner jSpinner1;
+    private javax.swing.JSpinner jSpinnerMidiChannel;
     // End of variables declaration//GEN-END:variables
 
     @Override
