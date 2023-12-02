@@ -211,9 +211,9 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         for (int i=1; i<settings.GetNPresets()+1; i++)
         {
             Preset p = GetPreset(i);
-            if (p != null) {
-                return;
-            }
+            // if (p != null) {
+            //     return;
+            // }
             if (presets == null) {
                 presets = new ArrayList<Preset>();
             }
