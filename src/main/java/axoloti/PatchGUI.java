@@ -321,6 +321,9 @@ public class PatchGUI extends Patch {
                 } else if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
                     MoveSelectedAxoObjInstances(Direction.LEFT, xsteps, ysteps);
                     ke.consume();
+                } else if ((ke.getKeyCode() == KeyEvent.VK_Y) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
+                        MainFrame.mainframe.getKeyboard().setVisible(true);
+
                 }
             }
 
