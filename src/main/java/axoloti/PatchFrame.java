@@ -24,7 +24,6 @@ import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
 import components.PresetPanel;
 import components.VisibleCablePanel;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -598,7 +597,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuView.add(jCheckBoxMenuItemCordsInBackground);
 
-        jMenuItemAdjScroll.setMnemonic('S');
+        jMenuItemAdjScroll.setMnemonic('J');
         jMenuItemAdjScroll.setText("Adjust Scroll");
         jMenuItemAdjScroll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -625,7 +624,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuPatch.add(jCheckBoxMenuItemLive);
 
         jMenuItemUploadSD.setMnemonic('U');
-        jMenuItemUploadSD.setText("Upload to SD card");
+        jMenuItemUploadSD.setText("Upload to SD Card");
         jMenuItemUploadSD.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemUploadSDActionPerformed(evt);
@@ -633,8 +632,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuPatch.add(jMenuItemUploadSD);
 
-        jMenuItemUploadSDStart.setMnemonic('P');
-        jMenuItemUploadSDStart.setText("Upload to SD card as startup");
+        jMenuItemUploadSDStart.setText("Upload to SD Card as Startup");
+        jMenuItemUploadSDStart.setMnemonic('S');
+        jMenuItemUploadSDStart.setDisplayedMnemonicIndex(21);
         jMenuItemUploadSDStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemUploadSDStartActionPerformed(evt);
@@ -643,7 +643,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuPatch.add(jMenuItemUploadSDStart);
 
         jMenuItemUploadInternalFlash.setMnemonic('F');
-        jMenuItemUploadInternalFlash.setText("Upload to internal flash");
+        jMenuItemUploadInternalFlash.setText("Upload to Internal Flash");
         jMenuItemUploadInternalFlash.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemUploadInternalFlashActionPerformed(evt);
