@@ -13,7 +13,6 @@ echo $VERSION_LONG
 
 
 # Init
-rm -rf packagetemp
 mkdir -p packagetemp
 
 

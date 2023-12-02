@@ -1368,7 +1368,9 @@ is divided into following sections:
         </propertyfile>
     </target>
     <target depends="init" name="-do-clean">
-        <delete dir="${build.dir}"/>
+        <delete includeemptydirs="true">
+            <fileset dir="${build.dir}" includes="**/*"/>
+        </delete>
         <delete dir="${dist.dir}" followsymlinks="false" includeemptydirs="true"/>
     </target>
     <target name="-post-clean">
