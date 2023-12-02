@@ -48,7 +48,7 @@ static const SPIDBConfig spidbcfg_master = {
     { 
         NULL, SPILINK_NSS_PORT, SPILINK_NSS_PIN,
         SPI_CR1_DFF /* 16-bit frame */
-        // | SPI_CR1_BR_0 /* 10.5 MHz */
+        | SPI_CR1_BR_0 /* 10.5 MHz */
         // | SPI_CR1_CPOL /* CPOL=1 */
         // | SPI_CR1_CPHA /* CPHA=1 */
     },
