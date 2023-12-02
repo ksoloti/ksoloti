@@ -103,3 +103,5 @@ xcode/
 
 # VSCode tags
 tags
+tags.lock
+tags.temp
