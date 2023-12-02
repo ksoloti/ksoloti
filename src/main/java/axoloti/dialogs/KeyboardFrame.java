@@ -24,6 +24,8 @@ import components.control.ACtrlEvent;
 import components.control.ACtrlListener;
 import components.control.DialComponent;
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SpinnerNumberModel;
@@ -91,14 +93,19 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         jPanelPiano = new javax.swing.JPanel();
         jPanelMain = new javax.swing.JPanel();
         jLabelMidiChannel = new javax.swing.JLabel();
-        Dimension di = new java.awt.Dimension(5,0);
-        filler1 = new javax.swing.Box.Filler(di, di, di);
         jSpinnerMidiChannel = new javax.swing.JSpinner();
-        filler2 = new javax.swing.Box.Filler(di, di, di);
         jLabelVelocity = new javax.swing.JLabel();
         jSliderVelocity = new javax.swing.JSlider();
-        filler4 = new javax.swing.Box.Filler(di, di, di);
         jButtonAllNotesOff = new javax.swing.JButton();
+
+        Dimension di = new java.awt.Dimension(5,0);
+        filler1 = new javax.swing.Box.Filler(di, di, di);
+        filler2 = new javax.swing.Box.Filler(di, di, di);
+        filler4 = new javax.swing.Box.Filler(di, di, di);
+
+        Dimension dv = new java.awt.Dimension(0,50);
+        filler5 = new javax.swing.Box.Filler(dv, dv, dv);
+
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0), new java.awt.Dimension(32767, 0));
 
         setMaximumSize(null);
@@ -107,6 +114,11 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         setName("Keyboard"); // NOI18N
         setPreferredSize(new java.awt.Dimension(917, 150));
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.Y_AXIS));
+        addWindowListener(new WindowAdapter() {
+            public void windowOpened(WindowEvent e) {
+              jSliderVelocity.requestFocus();
+            }
+        });
         
         jPanelPiano.setAlignmentX(LEFT_ALIGNMENT);
         jPanelPiano.setAlignmentY(TOP_ALIGNMENT);
@@ -121,6 +133,8 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         // jPanelMain.setMinimumSize(new java.awt.Dimension(500, 50));
         // jPanelMain.setPreferredSize(new java.awt.Dimension(500, 50));
         jPanelMain.setLayout(new javax.swing.BoxLayout(jPanelMain, javax.swing.BoxLayout.LINE_AXIS));
+        // jPanelMain.add(Box.createRigidArea(new Dimension(500, 50)));
+        jPanelMain.add(filler5);
 
         jLabelMidiChannel.setText("MIDI Channel");
         jPanelMain.add(jLabelMidiChannel);
@@ -169,6 +183,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
     private javax.swing.Box.Filler filler2;
     private javax.swing.Box.Filler filler3;
     private javax.swing.Box.Filler filler4;
+    private javax.swing.Box.Filler filler5;
     private javax.swing.JButton jButtonAllNotesOff;
     private javax.swing.JLabel jLabelMidiChannel;
     private javax.swing.JLabel jLabelVelocity;
