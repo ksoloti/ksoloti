@@ -175,9 +175,9 @@ public class Net extends JComponent {
     }
     final static float[] dash = {3.f, 6.f};
     final static Stroke strokeValidSelected = new BasicStroke(4.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    final static Stroke strokeValidDeselected = new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    final static Stroke strokeValidDeselected = new BasicStroke(1.75f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     final static Stroke strokeBrokenSelected = new BasicStroke(4.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
-    final static Stroke strokeBrokenDeselected = new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
+    final static Stroke strokeBrokenDeselected = new BasicStroke(1.75f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
     final QuadCurve2D.Float curve = new QuadCurve2D.Float();
 
     float CtrlPointY(float x1, float y1, float x2, float y2) {
@@ -186,6 +186,7 @@ public class Net extends JComponent {
 
     void DrawWire(Graphics2D g2, float x1, float y1, float x2, float y2) {
         curve.setCurve(x1, y1, (x1 + x2) / 2, CtrlPointY(x1, y1, x2, y2), x2, y2);
+        // curve.setCurve(x1, y1, x2, y2, x2, y2); /* this would make straight lines */
         g2.draw(curve);
     }
 
