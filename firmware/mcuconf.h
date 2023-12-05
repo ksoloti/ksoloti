@@ -185,7 +185,7 @@
  */
 #define STM32_PWM_USE_ADVANCED              FALSE
 #define STM32_PWM_USE_TIM1                  TRUE
-#define STM32_PWM_USE_TIM2                  TRUE // seb use TIM2 for PWM
+#define STM32_PWM_USE_TIM2                  TRUE
 #define STM32_PWM_USE_TIM3                  TRUE
 #define STM32_PWM_USE_TIM4                  TRUE
 #define STM32_PWM_USE_TIM5                  TRUE

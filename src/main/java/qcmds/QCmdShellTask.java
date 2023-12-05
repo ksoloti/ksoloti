@@ -55,7 +55,11 @@ public abstract class QCmdShellTask implements QCmd {
                 while (line != null) {
                     if (line.contains("error")) {
                         Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "{0}",line);
-                    } else {
+                    }
+                    else if (line.contains("warning")) {
+                        Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.WARNING, "{0}",line);
+                    }
+                    else {
                         Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.INFO, "{0}",line);
                     }
                     line = br.readLine();
