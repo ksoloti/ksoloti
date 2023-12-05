@@ -108,13 +108,15 @@ public class Theme {
     public Color Object_TitleBar_Subpatch_Background = new Color(
         Object_TitleBar_Background.getRed(),
         Object_TitleBar_Background.getGreen(),
-        Object_TitleBar_Background.getBlue()+0x50 > 0xFF ? 0xFF : Object_TitleBar_Background.getBlue()+0x50);
+        Object_TitleBar_Background.getBlue()+0x50 > 0xFF ? 0xFF : Object_TitleBar_Background.getBlue()+0x50
+    );
     @Element
     // public Color Object_TitleBar_Embedded_Background = new Color(0.6f, 0.5f, 0.45f); /* Yellowish titlebar for embedded objects */
     public Color Object_TitleBar_Embedded_Background = new Color(
         Object_TitleBar_Background.getRed()+0x30 > 0xFF ? 0xFF : Object_TitleBar_Background.getRed()+0x30,
         Object_TitleBar_Background.getGreen()+0x20 > 0xFF ? 0xFF : Object_TitleBar_Background.getGreen()+0x20,
-        Object_TitleBar_Background.getBlue());
+        Object_TitleBar_Background.getBlue()
+    );
     @Element
     public Color Object_TitleBar_Foreground = UIManager.getColor("Panel.background"); /* Titlebar Inverted */
     @Element

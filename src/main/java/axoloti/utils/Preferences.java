@@ -31,10 +31,8 @@ import org.simpleframework.xml.core.Persist;
 import org.simpleframework.xml.core.Persister;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatDarkLaf;
 
 import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.intellijthemes.FlatDraculaIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatHighContrastIJTheme;
@@ -134,8 +132,8 @@ public class Preferences {
         // {"Dracula", "FlatDraculaIJTheme"},
         "FlatLaf Light",
         "FlatLaf Dark",
-        "FlatLaf Darcula",
-        "FlatLaf IntelliJ",
+        // "FlatLaf Darcula",
+        // "FlatLaf IntelliJ",
         "FlatLaf macOS Light",
         "FlatLaf macOS Dark",
         // {"Gradianto Dark Fuchsia", "FlatGradiantoDarkFuchsiaIJTheme"},
@@ -329,8 +327,7 @@ public class Preferences {
     public void applyTheme()
     {
         /* Ugly and inefficient Theme switching ... but only doing this once during startup */
-        if      (this.Theme.equals("FlatLaf Dark"))                   FlatDarkLaf.setup();
-        else if (this.Theme.equals("FlatLaf Darcula"))                FlatDarculaLaf.setup();
+        if      (this.Theme.equals("FlatLaf Dark"))                   FlatDarculaLaf.setup();
         else if (this.Theme.equals("FlatLaf IntelliJ"))               FlatIntelliJLaf.setup();
         else if (this.Theme.equals("FlatLaf macOS Light"))            FlatMacLightLaf.setup();
         else if (this.Theme.equals("FlatLaf macOS Dark"))             FlatMacDarkLaf.setup();
@@ -349,7 +346,7 @@ public class Preferences {
         else if (this.Theme.equals("Material Oceanic (Material)"))    FlatMaterialOceanicIJTheme.setup();
         else if (this.Theme.equals("Material Palenight (Material)"))  FlatMaterialPalenightIJTheme.setup();
         /* Falling through - default to FlatLaf Light */
-        else                                                          FlatLightLaf.setup();
+        else                                                          FlatIntelliJLaf.setup();
     }
 
     static String GetPrefsFileLoc() {
