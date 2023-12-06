@@ -35,6 +35,7 @@ import components.LabelComponent;
 import components.TextFieldComponent;
 
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -236,8 +237,8 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         return type;
     }
 
-    private final Dimension TitleBarMinimumSize = new Dimension(40, 14);
-    private final Dimension TitleBarMaximumSize = new Dimension(32768, 14);
+    private final Dimension TitleBarMinimumSize = new Dimension(40, 13);
+    private final Dimension TitleBarMaximumSize = new Dimension(32768, 13);
 
     public void PostConstructor()
     {
@@ -544,6 +545,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         getParent().add(InstanceNameTF, 0);
         InstanceNameTF.setLocation(getLocation().x, getLocation().y + InstanceLabel.getLocation().y);
         InstanceNameTF.setSize(getWidth(), 15);
+        InstanceNameTF.setMargin(new Insets(-2, 0, 0, 0));
         InstanceNameTF.setVisible(true);
         InstanceNameTF.requestFocus();
     }
@@ -786,7 +788,9 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         validate();
         Dimension d = getPreferredSize();
         d.width = ((d.width + Constants.X_GRID - 1) / Constants.X_GRID) * Constants.X_GRID;
-        d.height = ((d.height + Constants.Y_GRID - 1) / Constants.Y_GRID) * Constants.Y_GRID;
+        // d.width = ((d.width + Constants.X_GRID - 3) / Constants.X_GRID) * Constants.X_GRID;
+        // d.height = ((d.height + Constants.Y_GRID - 1) / Constants.Y_GRID) * Constants.Y_GRID;
+        d.height = ((d.height + Constants.Y_GRID - 3) / Constants.Y_GRID) * Constants.Y_GRID;
         setSize(d);
     }
 
