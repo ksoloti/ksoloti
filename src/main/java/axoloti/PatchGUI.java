@@ -56,6 +56,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -772,7 +773,12 @@ public class PatchGUI extends Patch {
         super.PostContructor();
         objectLayerPanel.removeAll();
         netLayerPanel.removeAll();
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+
+        /* Duplicate objectinstances then reverse it - achieving "top to bottom" layering so partly overlapped objects have visible titlebars */
+        ArrayList<AxoObjectInstanceAbstract> obj2 = (ArrayList<AxoObjectInstanceAbstract>) objectinstances.clone();
+        Collections.reverse(obj2);
+
+        for (AxoObjectInstanceAbstract o : obj2) {
             objectLayerPanel.add(o);
         }
         for (Net n : nets) {
