@@ -345,11 +345,11 @@ public class DialComponent extends ACtrlComponent {
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         int radius = Math.min(getSize().width, getSize().height) / 2 - layoutTick;
-        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+        g2.setPaint(Theme.getCurrentTheme().Object_Default_Foreground);
         g2.drawLine(radius, radius, 0, 2 * radius);
         g2.drawLine(radius, radius, 2 * radius, 2 * radius);
         if (isFocusOwner()) {
-            g2.setStroke(strokeThick);
+            g2.setStroke(strokeThick); //TODO: set accent color
         } else {
             g2.setStroke(strokeThin);
         }
@@ -369,7 +369,8 @@ public class DialComponent extends ACtrlComponent {
             double th = 0.75 * Math.PI + (value - min) * (1.5 * Math.PI) / (max - min);
             int x = (int) (Math.cos(th) * radius),
                     y = (int) (Math.sin(th) * radius);
-            g2.drawLine(radius, radius, radius + x, radius + y);
+            g2.setStroke(strokeThick);
+            g2.drawLine(radius + x/3, radius + y/3, radius + (int)(x*.9f), radius + (int)(y*.9f));
             if (keybBuffer.isEmpty()) {
                 String s = String.format("%6.2f", value);
                 g2.setPaint(getForeground());
