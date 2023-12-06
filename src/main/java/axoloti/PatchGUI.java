@@ -799,7 +799,13 @@ public class PatchGUI extends Patch {
     @Override
     public void setFileNamePath(String FileNamePath) {
         super.setFileNamePath(FileNamePath);
-        patchframe.setTitle(FileNamePath);
+        if (FileNamePath.length() > 40)
+        {
+            String[] pth = FileNamePath.split("\\/");
+            patchframe.setTitle(pth[pth.length-1]);
+
+        }
+        else patchframe.setTitle(FileNamePath);
     }
 
     @Override
