@@ -968,7 +968,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
         if (IsLocked()) {
             return;
         }
-        ArrayList<AxoObjectAbstract> ol = MainFrame.mainframe.axoObjects.GetAxoObjectFromName("patch/patcher", null);
+        // ArrayList<AxoObjectAbstract> ol = MainFrame.mainframe.axoObjects.GetAxoObjectFromName("patch/patcher", null);
+        ArrayList<AxoObjectAbstract> ol = MainFrame.axoObjects.GetAxoObjectFromName("patch/patcher", null);
         assert (!ol.isEmpty());
         AxoObjectAbstract o = ol.get(0);
         String iname = getInstanceName();
@@ -988,7 +989,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
             return;
         }
         try {
-            ArrayList<AxoObjectAbstract> ol = MainFrame.mainframe.axoObjects.GetAxoObjectFromName("patch/object", null);
+            // ArrayList<AxoObjectAbstract> ol = MainFrame.mainframe.axoObjects.GetAxoObjectFromName("patch/object", null);
+            ArrayList<AxoObjectAbstract> ol = MainFrame.axoObjects.GetAxoObjectFromName("patch/object", null);
             assert (!ol.isEmpty());
             AxoObjectAbstract o = ol.get(0);
             String iname = getInstanceName();
