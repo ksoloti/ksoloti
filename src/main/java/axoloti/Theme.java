@@ -106,16 +106,16 @@ public class Theme {
     @Element
     // public Color Object_TitleBar_Subpatch_Background = new Color(0.45f, 0.5f, 0.6f); /* Blueish titlebar for subpatches */
     public Color Object_TitleBar_Subpatch_Background = new Color(
-        Object_TitleBar_Background.getRed(),
-        Object_TitleBar_Background.getGreen(),
-        Object_TitleBar_Background.getBlue()+0x50 > 0xFF ? 0xFF : Object_TitleBar_Background.getBlue()+0x50
+        Math.max(Object_TitleBar_Background.getRed()-0x20, 0x20),
+        Math.max(Object_TitleBar_Background.getGreen()-0x20, 0x20),
+        Math.min(Object_TitleBar_Background.getBlue()+0x80, 0xFF)
     );
     @Element
     // public Color Object_TitleBar_Embedded_Background = new Color(0.6f, 0.5f, 0.45f); /* Yellowish titlebar for embedded objects */
     public Color Object_TitleBar_Embedded_Background = new Color(
-        Object_TitleBar_Background.getRed()+0x30 > 0xFF ? 0xFF : Object_TitleBar_Background.getRed()+0x30,
-        Object_TitleBar_Background.getGreen()+0x20 > 0xFF ? 0xFF : Object_TitleBar_Background.getGreen()+0x20,
-        Object_TitleBar_Background.getBlue()
+        Math.min(Object_TitleBar_Background.getRed()+0x60, 0xFF),
+        Math.min(Object_TitleBar_Background.getGreen()+0x40, 0xFF),
+        Math.max(Object_TitleBar_Background.getBlue()-0x20, 0x20) 
     );
     @Element
     public Color Object_TitleBar_Foreground = UIManager.getColor("Panel.background"); /* Titlebar Inverted */
