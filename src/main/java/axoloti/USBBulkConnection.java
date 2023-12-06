@@ -1254,7 +1254,7 @@ public class USBBulkConnection extends Connection {
                 }
                 if (dataIndex == dataLength) {
                     lcdRcvBuffer.rewind();
-                    MainFrame.mainframe.remote.updateRow(LCDPacketRow, lcdRcvBuffer);
+                    // MainFrame.mainframe.remote.updateRow(LCDPacketRow, lcdRcvBuffer);
                     GoIdleState();
                 }
                 break;

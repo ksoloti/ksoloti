@@ -21,7 +21,7 @@ import static axoloti.Axoloti.FIRMWARE_DIR;
 import static axoloti.Axoloti.HOME_DIR;
 import static axoloti.Axoloti.RELEASE_DIR;
 import static axoloti.Axoloti.RUNTIME_DIR;
-import axoloti.dialogs.AxolotiRemoteControl;
+// import axoloti.dialogs.AxolotiRemoteControl;
 import axoloti.dialogs.FileManagerFrame;
 import axoloti.dialogs.KeyboardFrame;
 import axoloti.dialogs.PatchBank;
@@ -98,7 +98,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     String TargetFirmwareID;
     KeyboardFrame keyboard;
     FileManagerFrame filemanager;
-    AxolotiRemoteControl remote;
+    // AxolotiRemoteControl remote;
     QCmdProcessor qcmdprocessor;
     Thread qcmdprocessorThread;
     static public Cursor transparentCursor;
@@ -248,9 +248,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         filemanager.setTitle("File Manager");
         filemanager.setVisible(false);
 
-        remote = new AxolotiRemoteControl();
-        remote.setTitle("Remote");
-        remote.setVisible(false);
+        // remote = new AxolotiRemoteControl();
+        // remote.setTitle("Remote");
+        // remote.setVisible(false);
 
         if (!prefs.getExpertMode()) {
             jMenuItemRefreshFWID.setVisible(false);
@@ -1266,9 +1266,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         return filemanager;
     }
 
-    public AxolotiRemoteControl getRemote() {
-        return remote;
-    }
+    // public AxolotiRemoteControl getRemote() {
+    //     return remote;
+    // }
 
     public KeyboardFrame getKeyboard() {
         return keyboard;
