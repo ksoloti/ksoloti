@@ -411,6 +411,9 @@ public class AxoObjects {
             if (c.contains("PWMD6")) {
                 oo.depends.add("PWMD6");
             }
+            if (c.contains("PWMD8")) {
+                oo.depends.add("PWMD8");
+            }
             if (c.contains("SD1")) {
                 oo.depends.add("SD1");
             }
@@ -422,6 +425,9 @@ public class AxoObjects {
             }
             if (c.contains("SPID2")) {
                 oo.depends.add("SPID2");
+            }
+            if (c.contains("SPID3")) {
+                oo.depends.add("SPID3");
             }
             if (c.contains("I2CD1")) {
                 oo.depends.add("I2CD1");
