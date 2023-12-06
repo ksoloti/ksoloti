@@ -62,7 +62,7 @@ public class NumberBoxComponent extends ACtrlComponent {
 
     private Robot robot;
 
-    int rmargin = 5;
+    int rmargin = 4;
     int htick = 3;
 
     public void setNative(NativeToReal convs[]) {
@@ -70,7 +70,7 @@ public class NumberBoxComponent extends ACtrlComponent {
     }
 
     public NumberBoxComponent(double value, double min, double max, double tick) {
-        this(value, min, max, tick, 50, 15);
+        this(value, min, max, tick, 50, 14);
     }
 
     public NumberBoxComponent(double value, double min, double max, double tick, int hsize, int vsize) {
@@ -297,13 +297,13 @@ public class NumberBoxComponent extends ACtrlComponent {
             g2.setPaint(Theme.getCurrentTheme().Object_Default_Background);
         }
 
-        g2.fillRect(0, 0, getWidth(), getHeight());
+        g2.fillRect(0, 0, getWidth()-1, getHeight()-1);
         if (isEnabled()) {
             g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         } else {
             g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
         }
-        g2.drawRect(0, 0, getWidth()-1, getHeight()-1);
+        g2.drawRect(0, 0, getWidth()-2, getHeight()-2);
 
         String s;
         int h = 3;
@@ -323,11 +323,11 @@ public class NumberBoxComponent extends ACtrlComponent {
         }
         if (keybBuffer.isEmpty()) {
             g2.setFont(Constants.FONT);
-            g2.drawString(s, h, getSize().height - v);
+            g2.drawString(s, h, getSize().height - v - 1);
         } else {
             g2.setColor(Theme.getCurrentTheme().Error_Text);
             g2.setFont(Constants.FONT);
-            g2.drawString(keybBuffer, h, getSize().height - v);
+            g2.drawString(keybBuffer, h, getSize().height - v - 1);
         }
 
         if (getWidth() < 20) {
@@ -347,7 +347,7 @@ public class NumberBoxComponent extends ACtrlComponent {
         }
         {
             int[] xp = new int[]{getWidth() - rmargin - htick * 2, getWidth() - rmargin, getWidth() - rmargin - htick};
-            final int vmargin = 4;
+            final int vmargin = 3;
             int[] yp = new int[]{vmargin + htick, vmargin + htick, vmargin};
             if (hiliteUp) {
                 g2.drawPolygon(xp, yp, 3);
