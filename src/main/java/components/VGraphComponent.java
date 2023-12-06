@@ -57,13 +57,13 @@ public class VGraphComponent extends JComponent {
             ypoints[i] = vsize;
         }
         y0 = valToPos(0);
-        Dimension d = new Dimension(length + 2, vsize + 2);
+        Dimension d = new Dimension(length + 4, vsize + 4);
         setMinimumSize(d);
         setMaximumSize(d);
         setPreferredSize(d);
     }
     private static final Stroke strokeThin = new BasicStroke(0.75f);
-    private static final Stroke strokeThick = new BasicStroke(1.f);
+    private static final Stroke strokeThick = new BasicStroke(1.0f);
 
     @Override
     public void paintComponent(Graphics g) {

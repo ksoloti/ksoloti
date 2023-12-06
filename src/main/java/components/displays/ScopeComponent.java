@@ -45,13 +45,13 @@ public class ScopeComponent extends ADispComponent {
         for (int i = 0; i < length; i++) {
             xvalue[i] = i + 1;
         }
-        Dimension d = new Dimension(length + 2, vsize + 2);
+        Dimension d = new Dimension(length + 4, vsize + 4);
         setMinimumSize(d);
         setMaximumSize(d);
         setPreferredSize(d);
     }
     private static final Stroke strokeThin = new BasicStroke(0.75f);
-    private static final Stroke strokeThick = new BasicStroke(1.f);
+    private static final Stroke strokeThick = new BasicStroke(1.0f);
 
     @Override
     public void paintComponent(Graphics g) {
