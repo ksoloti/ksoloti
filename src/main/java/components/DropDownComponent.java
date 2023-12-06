@@ -66,11 +66,11 @@ public class DropDownComponent extends JComponent implements MouseListener {
                 maxWidth = (int) r.getWidth();
             }
         }
-        Dimension d = new Dimension(maxWidth + 10, 15);
+        Dimension d = new Dimension(maxWidth + 10, 14);
         setSize(d);
         setPreferredSize(d);
         setMinimumSize(d);
-        setMaximumSize(new Dimension(5000, 15));
+        setMaximumSize(new Dimension(5000, 14));
         
         addMouseListener((MouseListener) this);
     }
@@ -86,22 +86,22 @@ public class DropDownComponent extends JComponent implements MouseListener {
         } else {
             g2.setPaint(Theme.getCurrentTheme().Object_Default_Background);
         }
-        g2.fillRect(1, 1, getWidth() - 2, getHeight() - 2);
+        g2.fillRect(0, 0, getWidth() - 1, getHeight() - 2);
         if (isEnabled()) {
             g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         } else {
             g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
         }
-        g2.drawRect(1, 1, getWidth() - 2, getHeight() - 2);
-        final int rmargin = 5;
+        g2.drawRect(0, 0, getWidth() - 1, getHeight() - 2);
+        final int rmargin = 3;
         final int htick = 3;
         int[] xp = new int[]{getWidth() - rmargin - htick * 2, getWidth() - rmargin, getWidth() - rmargin - htick};
-        final int vmargin = 5;
+        final int vmargin = 4;
         int[] yp = new int[]{vmargin, vmargin, vmargin + htick * 2};
         g2.fillPolygon(xp, yp, 3);
         setFont(Constants.FONT);
         if (Items.size() > 0) {
-            g2.drawString(Items.get(SelectedIndex), 4, 12);
+            g2.drawString(Items.get(SelectedIndex), 3, 11);
         }
     }
     
