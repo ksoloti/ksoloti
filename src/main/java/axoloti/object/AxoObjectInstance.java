@@ -36,6 +36,7 @@ import axoloti.inlets.InletInstance;
 import axoloti.outlets.Outlet;
 import axoloti.outlets.OutletInstance;
 import axoloti.parameters.*;
+import axoloti.utils.Constants;
 import components.LabelComponent;
 import components.PopupIcon;
 import java.awt.Point;
@@ -154,6 +155,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
         LabelComponent idlbl = new LabelComponent(typeName);
         idlbl.setForeground(Theme.getCurrentTheme().Object_TitleBar_Foreground);
         idlbl.setAlignmentX(LEFT_ALIGNMENT);
+        idlbl.setFont(Constants.FONT_BOLD);
         Titlebar.add(idlbl);
 
         String tooltiptxt = "<html>";
