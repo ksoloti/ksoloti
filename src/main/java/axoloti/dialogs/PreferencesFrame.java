@@ -77,6 +77,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
         PopulateLibrary();
 
+        setResizable(false);
+
         /* Double click to edit library */
         jLibraryTable.addMouseListener(new MouseAdapter() {
 

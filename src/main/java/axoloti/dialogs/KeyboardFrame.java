@@ -60,6 +60,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
             }
 
         };
+        setResizable(false);
         Dimension d = new Dimension(910, 92);
         piano.setMinimumSize(d);
         piano.setSize(d);
