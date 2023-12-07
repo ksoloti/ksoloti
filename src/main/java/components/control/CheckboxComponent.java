@@ -36,7 +36,7 @@ public class CheckboxComponent extends ACtrlComponent {
 
     private double value;
     private final int n;
-    private final int bsize = 12;
+    private final int bsize = 11;
     private int selIndex = -1;
 
     public CheckboxComponent(int value, int n) {
