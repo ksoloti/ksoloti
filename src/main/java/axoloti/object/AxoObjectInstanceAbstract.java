@@ -788,7 +788,6 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         validate();
         Dimension d = getPreferredSize();
         d.width = ((d.width + Constants.X_GRID - 1) / Constants.X_GRID) * Constants.X_GRID;
-        // d.width = ((d.width + Constants.X_GRID - 3) / Constants.X_GRID) * Constants.X_GRID;
         // d.height = ((d.height + Constants.Y_GRID - 1) / Constants.Y_GRID) * Constants.Y_GRID;
         d.height = ((d.height + Constants.Y_GRID - 3) / Constants.Y_GRID) * Constants.Y_GRID;
         setSize(d);

@@ -87,10 +87,10 @@ public class AssignPresetComponent extends JComponent {
                     RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setFont(Constants.FONT);
             g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
-            g2.fillRect(1, 1, getWidth(), getHeight());
+            g2.fillRect(0, 1, getWidth(), getHeight());
             if ((param.getPresets() != null) && (!param.getPresets().isEmpty())) {
                 g2.setColor(Theme.getCurrentTheme().Object_Default_Foreground);
-                g2.fillRect(1, 1, 8, getHeight());
+                g2.fillRect(0, 1, 9, getHeight());
                 g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
             } else {
                 g2.setColor(Theme.getCurrentTheme().Object_Default_Foreground);
