@@ -190,7 +190,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
         jLabelPollInterval.setText("Poll Interval (Milliseconds)");
 
-        jButtonSave.setText("OK");
+        jButtonSave.setText("Save All");
         jButtonSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSaveActionPerformed(evt);
@@ -386,8 +386,9 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     // .addComponent(txtRuntimeDir, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 429, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 )
+                            .addGap(16, 16, 16)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             )
                         )
@@ -395,7 +396,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                         )
-                        .addGap(16, 16, 16))
+                        .addGap(16, 16, 16)
+                    )
 
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPaneLibraryTable, javax.swing.GroupLayout.PREFERRED_SIZE, 560, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -403,11 +405,15 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 
-                            .addGroup(layout.createSequentialGroup()
+                            // .addGroup(layout.createSequentialGroup()
                                 .addComponent(jResetLib, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            // )
+
+                            // .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLibStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            )
+                                // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            // )
 
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jAddLibBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -436,8 +442,9 @@ public class PreferencesFrame extends javax.swing.JFrame {
                                 .addComponent(jLabelTheme)
                                 .addGap(60, 60, 60)
                                 .addComponent(jComboBoxTheme, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButtonSave, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(105, 105, 105)
+                                .addComponent(jButtonSave, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                             )
                         )
                         .addContainerGap())
@@ -506,13 +513,17 @@ public class PreferencesFrame extends javax.swing.JFrame {
                             .addComponent(jDelLibBtn)
                         )
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
                         .addComponent(jEditLib)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        // .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jResetLib)
+                        // )
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        // .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLibStatus)
-                        )
+                        // )
                     )
 
                     .addGroup(layout.createSequentialGroup()
@@ -551,16 +562,16 @@ public class PreferencesFrame extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabelTheme)
                             .addComponent(jComboBoxTheme, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonSave)
                         )
-                        .addContainerGap(4, Short.MAX_VALUE)
                     )
 
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonSave)
-                        .addContainerGap()
-                    )
+                    // .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    //     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    //     .addContainerGap()
+                    // )
                 )
+                .addGap(14,14,14)
             )
         );
 
@@ -658,8 +669,10 @@ public class PreferencesFrame extends javax.swing.JFrame {
         int idx = jLibraryTable.getSelectedRow();
         String id = (String)model.getValueAt(idx, 1);
 
-        int n = JOptionPane.showConfirmDialog(this, "Are you sure you want to remove the library \"" + id + "\"?",
-                                             "Warning", JOptionPane.YES_NO_OPTION);
+        int n = JOptionPane.showConfirmDialog(this,
+                                            "Are you sure you want to remove the library \"" + id + "\"?",
+                                             "Warning",
+                                             JOptionPane.YES_NO_OPTION);
         switch (n)
         {
             case JOptionPane.YES_OPTION: {
