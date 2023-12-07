@@ -99,7 +99,7 @@ public class InletInstance<T extends Inlet> extends IoletAbstract implements Ato
         add(jack);
         add(new SignalMetaDataIcon(inlet.GetSignalMetaData()));
         if (axoObj.getType().GetInlets().size() > 1) {
-            add(Box.createHorizontalStrut(3));
+            add(Box.createHorizontalStrut(2));
             add(new LabelComponent(inlet.name));
         }
         // else if (inlet.name.length()>1) {

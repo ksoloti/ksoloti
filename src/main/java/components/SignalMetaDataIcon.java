@@ -38,18 +38,18 @@ public class SignalMetaDataIcon extends JComponent {
 
     public SignalMetaDataIcon(SignalMetaData smd) {
         this.smd = smd;
-        Dimension d = new Dimension(12, 14);
+        Dimension d = new Dimension(11, 14);
         setMinimumSize(d);
         setMaximumSize(d);
         setPreferredSize(d);
         setBackground(Theme.getCurrentTheme().Object_Default_Background);
     }
     private final int x1 = 2;
-    private final int x2 = 5;
-    private final int x2_5 = 7;
-    private final int x3 = 9;
-    private final int x4 = 12;
-    private final int y1 = 12;
+    private final int x2 = 4;
+    private final int x2_5 = 6;
+    private final int x3 = 8;
+    private final int x4 = 11;
+    private final int y1 = 11;
     private final int y2 = 2;
     private static final Stroke stroke = new BasicStroke(1.0f);
 //    private static final Stroke strokeThick = new BasicStroke(2.5f);
@@ -89,10 +89,10 @@ public class SignalMetaDataIcon extends JComponent {
                 break;
             case bipolar:
                 g2.setColor(getForeground());
-                g2.drawLine(6, 2, 6, 8); // verti
-                g2.drawLine(3, 5, 9, 5); // hori
+                g2.drawLine(6, 3, 6, 9); // verti
+                g2.drawLine(3, 6, 9, 6); // hori
 
-                g2.drawLine(3, 10, 9, 10); // hori
+                g2.drawLine(3, 11, 9, 11); // hori
 /*
                  g2.drawLine(6, 3, 6, 7); // verti
                  g2.drawLine(4, 5, 8, 5); // hori

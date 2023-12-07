@@ -28,6 +28,8 @@ import java.awt.Dimension;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingConstants;
+
 import org.simpleframework.xml.*;
 
 /**
@@ -93,8 +95,10 @@ public class OutletInstance<T extends Outlet> extends IoletAbstract implements C
         setBackground(Theme.getCurrentTheme().Object_Default_Background);
         add(Box.createHorizontalGlue());
         if (axoObj.getType().GetOutlets().size() > 1) {
-            add(Box.createHorizontalStrut(2));
-            add(new LabelComponent(outlet.name));
+            LabelComponent olbl = new LabelComponent(outlet.name);
+            olbl.setHorizontalAlignment(SwingConstants.RIGHT);
+            add(olbl);
+            // add(Box.createHorizontalStrut(2));
         }
         // else if (outlet.name.length()>1) {
         //     /* show up to two-letter abbreviation */
