@@ -39,6 +39,7 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
     public AxolotiLibraryEditor(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        setTitle("Add Library");
         library = new AxolotiLibrary();
         populate();
         setVisible(true);
@@ -47,6 +48,7 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
     public AxolotiLibraryEditor(java.awt.Frame parent, boolean modal, AxolotiLibrary lib) {
         super(parent, modal);
         initComponents();
+        setTitle("Edit Library");
         library = lib;
         populate();
         jId.setEnabled(false);
