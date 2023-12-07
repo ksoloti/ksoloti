@@ -245,6 +245,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         keyboard.setVisible(false);
 
         filemanager = new FileManagerFrame();
+        filemanager.setLocation((int)getLocation().getX() + 60, (int)getLocation().getY() + 60);
         filemanager.setTitle("File Manager");
         filemanager.setVisible(false);
 

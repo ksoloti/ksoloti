@@ -17,6 +17,7 @@
  */
 package axoloti.dialogs;
 
+import axoloti.MainFrame;
 import axoloti.utils.AxoFileLibrary;
 import axoloti.utils.AxoGitLibrary;
 import axoloti.utils.AxolotiLibrary;
@@ -58,6 +59,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private PreferencesFrame() {
 
         setTitle("Preferences");
+
+        setLocation((int)MainFrame.mainframe.getLocation().getX() + 120, (int)MainFrame.mainframe.getLocation().getY() + 60);
 
         initComponents();
 
