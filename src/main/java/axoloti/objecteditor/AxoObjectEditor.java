@@ -39,6 +39,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -134,9 +135,9 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
     public AxoObjectEditor(final AxoObject origObj) {
         initComponents();
-        if (OSDetect.getOS() == OSDetect.OS.MAC) {
-            jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.TOP);
-        }
+        // if (OSDetect.getOS() == OSDetect.OS.MAC) {
+        //     jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.TOP);
+        // }
 
         fileMenu1.initComponents();
         DocumentWindowList.RegisterWindow(this);
@@ -537,6 +538,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.LEFT);
         jTabbedPane1.setPreferredSize(new java.awt.Dimension(640, 100));
+        jTabbedPane1.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
         jPanelOverview.setLayout(new javax.swing.BoxLayout(jPanelOverview, javax.swing.BoxLayout.Y_AXIS));
 
