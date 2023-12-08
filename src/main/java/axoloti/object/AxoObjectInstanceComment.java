@@ -170,7 +170,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         InstanceNameTF.setLocation(getLocation().x, getLocation().y + InstanceEditorPane.getLocation().y);
         InstanceNameTF.setSize(InstanceNameTF.getPreferredSize().width, 20);
         InstanceNameTF.setVisible(true);
-        getParent().add(InstanceNameTF);
+        getParent().add(InstanceNameTF, 0);
         InstanceNameTF.requestFocus();
     }
 
