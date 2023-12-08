@@ -54,6 +54,7 @@ import javax.swing.TransferHandler;
 public abstract class ACtrlComponent extends JComponent {
 
     protected AxoObjectInstance axoObj;
+    protected Color customBackgroundColor;
 
     public ACtrlComponent() {
         setFocusable(true);
@@ -234,6 +235,10 @@ public abstract class ACtrlComponent extends JComponent {
 
     public void robotMoveToCenter() {
 
+    }
+
+    public void setCustomBackgroundColor(Color c) {
+        this.customBackgroundColor = c;
     }
 
 }
