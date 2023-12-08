@@ -19,7 +19,7 @@ package axoloti.object;
 
 import axoloti.Patch;
 import axoloti.PatchGUI;
-import components.LabelComponent;
+import components.EditorPaneComponent;
 import components.TextFieldComponent;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -74,11 +74,11 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         }
         setOpaque(true);
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-        InstanceLabel = new LabelComponent(commentText);
-        InstanceLabel.setBorder(BorderFactory.createEmptyBorder(-1, 5, -1, 5));
-        InstanceLabel.setAlignmentX(CENTER_ALIGNMENT);
-        InstanceLabel.setAlignmentY(CENTER_ALIGNMENT);
-        InstanceLabel.addMouseListener(new MouseListener() {
+        InstanceEditorPane = new EditorPaneComponent(commentText);
+        InstanceEditorPane.setBorder(BorderFactory.createEmptyBorder(-1, 5, -1, 3));
+        InstanceEditorPane.setAlignmentX(CENTER_ALIGNMENT);
+        InstanceEditorPane.setAlignmentY(CENTER_ALIGNMENT);
+        InstanceEditorPane.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent me) {
                 if (me.getClickCount() == 2) {
@@ -114,12 +114,12 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
             public void mouseExited(MouseEvent e) {
             }
         });
-        InstanceLabel.addMouseMotionListener(this);
-        add(InstanceLabel);
+        InstanceEditorPane.addMouseMotionListener(this);
+        add(InstanceEditorPane);
         setLocation(x, y);
 
         resizeToGrid();
-            }
+    }
 
     @Override
     public void addInstanceNameEditor() {
@@ -166,18 +166,19 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
                 }
             }
         });
-        getParent().add(InstanceNameTF, 0);
-        InstanceNameTF.setLocation(getLocation().x, getLocation().y + InstanceLabel.getLocation().y);
-        InstanceNameTF.setSize(getWidth(), 20);
+
+        InstanceNameTF.setLocation(getLocation().x, getLocation().y + InstanceEditorPane.getLocation().y);
+        InstanceNameTF.setSize(InstanceNameTF.getPreferredSize().width, 20);
         InstanceNameTF.setVisible(true);
+        getParent().add(InstanceNameTF);
         InstanceNameTF.requestFocus();
     }
 
     @Override
     public void setInstanceName(String s) {
         this.commentText = s;
-        if (InstanceLabel != null) {
-            InstanceLabel.setText(commentText);
+        if (InstanceEditorPane != null) {
+            InstanceEditorPane.setText(commentText);
         }
         revalidate();
         if (getParent() != null) {
