@@ -27,10 +27,12 @@ import axoloti.object.ObjectModifiedListener;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.OSDetect;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,9 +42,11 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 // import org.fife.ui.autocomplete. //TODO
 import org.fife.ui.rtextarea.RTextScrollPane;
@@ -68,9 +72,20 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
     static RSyntaxTextArea initCodeEditor(JPanel p) {
         RSyntaxTextArea rsta = new RSyntaxTextArea(20, 60);
+        try {
+            Theme theme = Theme.load(Theme.class.getResourceAsStream(
+                "/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
+            theme.apply(rsta);
+        } catch (IOException ioe) { // Never happens
+            ioe.printStackTrace();
+        }
+        rsta.setFont(UIManager.getFont("monospaced.font"));
         rsta.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
         rsta.setCodeFoldingEnabled(true);
         rsta.setAntiAliasingEnabled(true);
+        rsta.setMarkOccurrences(true);
+        rsta.setMarkOccurrencesColor(new Color(0x00,0x00,0x00, 0x60));
+        rsta.setPaintTabLines(true);
         RTextScrollPane sp = new RTextScrollPane(rsta);
         p.setLayout(new BorderLayout());
         p.add(sp);

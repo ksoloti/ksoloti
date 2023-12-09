@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -74,7 +76,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private VisibleCablePanel visibleCablePanel;
 
     public PatchFrame(final PatchGUI patch, QCmdProcessor qcmdprocessor) {
-        setMinimumSize(new java.awt.Dimension(200,120));
+
+        setMinimumSize(new Dimension(200,120));
         setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axp.png")).getImage());
         this.qcmdprocessor = qcmdprocessor;
 
@@ -86,9 +89,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         presetPanel = new PresetPanel(patch);
         visibleCablePanel = new VisibleCablePanel(patch);
         
-        jToolbarPanel.add(new javax.swing.Box.Filler(new Dimension(10, 0), new Dimension(10, 0), new Dimension(32767, 32767)));
+        Dimension di = new Dimension(10,0);
+        jToolbarPanel.add(new Box.Filler(di, di, new Dimension(32767, 32767)));
         jToolbarPanel.add(presetPanel);
-        jToolbarPanel.add(new javax.swing.Box.Filler(new Dimension(10, 0), new Dimension(10, 0), new Dimension(32767, 32767)));
+        jToolbarPanel.add(new Box.Filler(di, di, new Dimension(32767, 32767)));
         jToolbarPanel.add(visibleCablePanel);
 
         jScrollPane1.setViewportView(patch.Layers);

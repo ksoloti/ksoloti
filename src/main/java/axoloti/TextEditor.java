@@ -18,11 +18,16 @@
 package axoloti;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import org.fife.ui.rsyntaxtextarea.*;
+import javax.swing.UIManager;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.*;
 
 /**
@@ -45,9 +50,21 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
         this.parent = parent;
         this.s = s;
         textArea = new RSyntaxTextArea(20, 60);
+        // textArea.setSyntaxScheme(new SyntaxScheme(UIManager.getFont("monospaced.font"), true));
+        try {
+            Theme theme = Theme.load(getClass().getResourceAsStream(
+                "/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
+            theme.apply(textArea);
+        } catch (IOException ioe) { // Never happens
+            ioe.printStackTrace();
+        }
+        textArea.setFont(UIManager.getFont("monospaced.font"));
         textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
         textArea.setCodeFoldingEnabled(true);
         textArea.setAntiAliasingEnabled(true);
+        textArea.setMarkOccurrences(true);
+        textArea.setPaintTabLines(true);
+        textArea.setMarkOccurrencesColor(new Color(0x00,0x00,0x00, 0x60));
         RTextScrollPane sp = new RTextScrollPane(textArea);
         cp.setLayout(new BorderLayout());
         cp.add(sp);
