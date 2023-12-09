@@ -295,7 +295,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
             }
             if (me.getClickCount() == 2)
             {
-                ((PatchGUI) patch).ShowClassSelector(AxoObjectInstanceAbstract.this.getLocation(), AxoObjectInstanceAbstract.this, null);
+                ((PatchGUI) patch).ShowClassSelector(AxoObjectInstanceAbstract.this.getLocation(), AxoObjectInstanceAbstract.this, null, true);
                 me.consume();
             }
         }

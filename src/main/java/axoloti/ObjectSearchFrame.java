@@ -331,7 +331,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         return patchLoc;
     }
 
-    void Launch(Point patchLoc, AxoObjectInstanceAbstract o, String searchString) {
+    void Launch(Point patchLoc, AxoObjectInstanceAbstract o, String searchString, boolean selectText) {
         if (this.objectTree != MainFrame.axoObjects.ObjectTree) {
             DefaultMutableTreeNode root1 = new DefaultMutableTreeNode();
             this.objectTree = MainFrame.axoObjects.ObjectTree;
@@ -363,7 +363,12 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             jTextFieldObjName.setText(searchString);
         }
         jTextFieldObjName.grabFocus();
-        jTextFieldObjName.setSelectionStart(0);
+        if (selectText) {
+            jTextFieldObjName.setSelectionStart(0);
+        }
+        else {
+            jTextFieldObjName.setSelectionStart(jTextFieldObjName.getText().length());
+        }
         jTextFieldObjName.setSelectionEnd(jTextFieldObjName.getText().length());
         setVisible(true);
     }

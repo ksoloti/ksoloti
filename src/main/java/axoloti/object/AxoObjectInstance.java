@@ -361,7 +361,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
         popm_substitute.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                ((PatchGUI) patch).ShowClassSelector(AxoObjectInstance.this.getLocation(), AxoObjectInstance.this, null);
+                ((PatchGUI) patch).ShowClassSelector(AxoObjectInstance.this.getLocation(), AxoObjectInstance.this, null, true);
             }
         });
         popup.add(popm_substitute);

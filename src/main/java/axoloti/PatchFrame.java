@@ -1055,7 +1055,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuItemAddObjActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.ShowClassSelector(new Point(20, 20), null, null);
+        patch.ShowClassSelector(new Point(20, 20), null, null, true);
     }
 
     private void jMenuCloseActionPerformed(java.awt.event.ActionEvent evt) {

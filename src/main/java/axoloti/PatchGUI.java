@@ -97,6 +97,8 @@ public class PatchGUI extends Patch {
     final static String patchMidi = "midi";
     final static String patchMidiKey = "midi/in/keyb";
     final static String patchDisplay = "disp/";
+    final static String patchKsoloti = "ksoloti/";
+    final static String patchKsolotiGills = "ksoloti/gills/";
 
     public JLayeredPane Layers = new JLayeredPane();
 
@@ -262,7 +264,7 @@ public class PatchGUI extends Patch {
                     Point p = Layers.getMousePosition();
                     ke.consume();
                     if (p != null) {
-                        ShowClassSelector(p, null, null);
+                        ShowClassSelector(p, null, null, true);
                     }
                 } else if (((ke.getKeyCode() == KeyEvent.VK_C) && !KeyUtils.isControlOrCommandDown(ke))) {
                     AxoObjectInstanceAbstract ao = AddObjectInstance(MainFrame.axoObjects.GetAxoObjectFromName(patchComment, null).get(0), Layers.getMousePosition());
@@ -272,28 +274,28 @@ public class PatchGUI extends Patch {
                     Point p = Layers.getMousePosition();
                     ke.consume();
                     if (p != null) {
-                        ShowClassSelector(p, null, patchInlet);
+                        ShowClassSelector(p, null, patchInlet, false);
                     }
                 } else if ((ke.getKeyCode() == KeyEvent.VK_O) && !KeyUtils.isControlOrCommandDown(ke)) {
                     Point p = Layers.getMousePosition();
                     ke.consume();
                     if (p != null) {
-                        ShowClassSelector(p, null, patchOutlet);
+                        ShowClassSelector(p, null, patchOutlet, false);
                     }
                 } else if ((ke.getKeyCode() == KeyEvent.VK_D) && !KeyUtils.isControlOrCommandDown(ke)) {
                     Point p = Layers.getMousePosition();
                     ke.consume();
                     if (p != null) {
-                        ShowClassSelector(p, null, patchDisplay);
+                        ShowClassSelector(p, null, patchDisplay, false);
                     }
                 } else if ((ke.getKeyCode() == KeyEvent.VK_M) && !KeyUtils.isControlOrCommandDown(ke)) {
                     Point p = Layers.getMousePosition();
                     ke.consume();
                     if (p != null) {
                         if (ke.isShiftDown()) {
-                            ShowClassSelector(p, null, patchMidiKey);
+                            ShowClassSelector(p, null, patchMidiKey, false);
                         } else {
-                            ShowClassSelector(p, null, patchMidi);
+                            ShowClassSelector(p, null, patchMidi, false);
                         }
                     }
                 } else if ((ke.getKeyCode() == KeyEvent.VK_A) && !KeyUtils.isControlOrCommandDown(ke)) {
@@ -301,10 +303,30 @@ public class PatchGUI extends Patch {
                     ke.consume();
                     if (p != null) {
                         if (ke.isShiftDown()) {
-                            ShowClassSelector(p, null, patchAudioOut);
+                            ShowClassSelector(p, null, patchAudioOut, false);
                         } else {
-                            ShowClassSelector(p, null, patchAudio);
+                            ShowClassSelector(p, null, patchAudio, false);
                         }
+                    }
+                } else if ((ke.getKeyCode() == KeyEvent.VK_K) && !KeyUtils.isControlOrCommandDown(ke)) {
+                    Point p = Layers.getMousePosition();
+                    ke.consume();
+                    if (p != null) {
+                        // if (ke.isShiftDown()) {
+                            // nothing yet
+                        // } else {
+                            ShowClassSelector(p, null, patchKsoloti, false);
+                        // }
+                    }
+                } else if ((ke.getKeyCode() == KeyEvent.VK_G) && !KeyUtils.isControlOrCommandDown(ke)) {
+                    Point p = Layers.getMousePosition();
+                    ke.consume();
+                    if (p != null) {
+                        // if (ke.isShiftDown()) {
+                            // nothing yet
+                        // } else {
+                            ShowClassSelector(p, null, patchKsolotiGills, false);
+                        // }
                     }
                 } else if ((ke.getKeyCode() == KeyEvent.VK_DELETE) || (ke.getKeyCode() == KeyEvent.VK_BACK_SPACE)) {
                     deleteSelectedAxoObjInstances();
@@ -341,7 +363,7 @@ public class PatchGUI extends Patch {
                         o.SetSelected(false);
                     }
                     if (me.getClickCount() == 2) {
-                        ShowClassSelector(me.getPoint(), null, null);
+                        ShowClassSelector(me.getPoint(), null, null, true);
                     } else {
                         if ((osf != null) && osf.isVisible()) {
                             osf.Accept();
@@ -646,14 +668,14 @@ public class PatchGUI extends Patch {
     }
     public ObjectSearchFrame osf;
 
-    public void ShowClassSelector(Point p, AxoObjectInstanceAbstract o, String searchString) {
+    public void ShowClassSelector(Point p, AxoObjectInstanceAbstract o, String searchString, boolean selectText) {
         if (IsLocked()) {
             return;
         }
         if (osf == null) {
             osf = new ObjectSearchFrame(this);
         }
-        osf.Launch(p, o, searchString);
+        osf.Launch(p, o, searchString, selectText);
     }
 
     void SelectAll() {
