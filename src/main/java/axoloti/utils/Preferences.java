@@ -17,7 +17,7 @@
  */
 package axoloti.utils;
 
-import axoloti.Axoloti;
+// import axoloti.Axoloti;
 import axoloti.Version;
 
 import java.io.File;
@@ -477,12 +477,14 @@ public class Preferences {
     public void addRecentFile(String filename) {
         for (String r : recentFiles) {
             if (r.equals(filename)) {
-                return;
+                /* Remove from current position, will be added to top */
+                recentFiles.remove(filename);
             }
         }
         if (recentFiles.size() == nRecentFiles) {
             recentFiles.remove(0);
         }
+        /* add to top */
         recentFiles.add(filename);
         SetDirty();
     }
