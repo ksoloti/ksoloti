@@ -31,10 +31,11 @@ import javax.swing.UIManager;
 public class Constants {
 
     // public static final Font FONT = new Font("SansSerif", Font.PLAIN, 10);
-    // public static final Font FONT = new Font("monospaced", Font.PLAIN, 9);
     // public static final Font FONT = UIManager.getFont("mini.font").deriveFont(Font.BOLD, 9.0f);
     public static final Font FONT = UIManager.getFont("mini.font").deriveFont(10.0f);
     public static final Font FONT_BOLD = FONT.deriveFont(Font.BOLD);
+    public static final Font FONT_MONO = UIManager.getFont("monospaced.font");
+    public static final Font FONT_MONO_BOLD = FONT_MONO.deriveFont(Font.BOLD);
 
     public static final int X_GRID = 14;
     public static final int Y_GRID = 14;

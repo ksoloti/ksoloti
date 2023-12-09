@@ -29,6 +29,7 @@ import axoloti.dialogs.PreferencesFrame;
 import axoloti.object.AxoObjects;
 import axoloti.usb.Usb;
 import axoloti.utils.AxolotiLibrary;
+import axoloti.utils.Constants;
 import axoloti.utils.FirmwareID;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
@@ -126,7 +127,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         setVisible(true);
 
         final Style styleParent = jTextPaneLog.addStyle(null, null);
-        jTextPaneLog.setFont(UIManager.getFont("monospaced.font"));
+        jTextPaneLog.setFont(Constants.FONT_MONO);
 
         final Style styleSevere = jTextPaneLog.addStyle("severe", styleParent);
         final Style styleWarning = jTextPaneLog.addStyle("warning", styleParent);

@@ -25,6 +25,7 @@ import axoloti.object.AxoObjectAbstract;
 import axoloti.object.AxoObjectInstance;
 import axoloti.object.ObjectModifiedListener;
 import axoloti.utils.AxolotiLibrary;
+import axoloti.utils.Constants;
 import axoloti.utils.OSDetect;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -79,10 +80,11 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         } catch (IOException ioe) { // Never happens
             ioe.printStackTrace();
         }
-        rsta.setFont(UIManager.getFont("monospaced.font"));
+        rsta.setFont(Constants.FONT_MONO);
         rsta.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
         rsta.setCodeFoldingEnabled(true);
         rsta.setAntiAliasingEnabled(true);
+        rsta.setAutoIndentEnabled(true);
         rsta.setMarkOccurrences(true);
         rsta.setMarkOccurrencesColor(new Color(0x00,0x00,0x00, 0x60));
         rsta.setPaintTabLines(true);

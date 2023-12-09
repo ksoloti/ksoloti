@@ -30,6 +30,8 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.*;
 
+import axoloti.utils.Constants;
+
 /**
  *
  * @author Johannes Taelman
@@ -50,7 +52,6 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
         this.parent = parent;
         this.s = s;
         textArea = new RSyntaxTextArea(20, 60);
-        // textArea.setSyntaxScheme(new SyntaxScheme(UIManager.getFont("monospaced.font"), true));
         try {
             Theme theme = Theme.load(getClass().getResourceAsStream(
                 "/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
@@ -58,10 +59,11 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
         } catch (IOException ioe) { // Never happens
             ioe.printStackTrace();
         }
-        textArea.setFont(UIManager.getFont("monospaced.font"));
+        textArea.setFont(Constants.FONT_MONO);
         textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
         textArea.setCodeFoldingEnabled(true);
         textArea.setAntiAliasingEnabled(true);
+        textArea.setAutoIndentEnabled(true);
         textArea.setMarkOccurrences(true);
         textArea.setPaintTabLines(true);
         textArea.setMarkOccurrencesColor(new Color(0x00,0x00,0x00, 0x60));
