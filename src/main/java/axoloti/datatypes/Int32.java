@@ -64,6 +64,11 @@ public class Int32 implements DataType {
     }
 
     @Override
+    public Color GetColorHighlighted() {
+        return Theme.getCurrentTheme().Cable_Int32_Highlighted;
+    }
+
+    @Override
     public boolean equals(Object o) {
         return (o instanceof Int32);
     }

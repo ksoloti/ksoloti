@@ -74,25 +74,57 @@ public class Theme {
     @Element
     public Color Cable_Default = Color.DARK_GRAY;
     @Element
+    public Color Cable_Default_Highlighted = Color.GRAY;
+
+    @Element
     public Color Cable_Shadow = Color.BLACK;
+    @Element
+    public Color Cable_Shadow_Highlighted = Color.DARK_GRAY;
+
     @Element
     public Color Cable_Bool32 = new Color(0xFF, 0xEF, 0x40);
     @Element
+    public Color Cable_Bool32_Highlighted = new Color(0xFF, 0xFF, 0x60);
+
+    @Element
     public Color Cable_CharPointer32 = Color.PINK;
+    @Element
+    public Color Cable_CharPointer32_Highlighted = new Color(0xFF, 0xEF, 0xEF);
+
     @Element
     public Color Cable_Zombie = Color.WHITE;
     @Element
+    public Color Cable_Zombie_Highlighted = new Color(0xAF, 0x00, 0x00);
+
+    @Element
     public Color Cable_Frac32 = new Color(0x20, 0x40, 0xFF);
+    @Element
+    public Color Cable_Frac32_Highlighted = new Color(0x20, 0xAF, 0xFF);
+
     @Element
     public Color Cable_Frac32Buffer = new Color(0xFF, 0x20, 0x40);
     @Element
+    public Color Cable_Frac32Buffer_Highlighted = new Color(0xFF, 0x20, 0xAF);
+
+    @Element
     public Color Cable_Int32 = new Color(0x20, 0xFF, 0x40);
+    @Element
+    public Color Cable_Int32_Highlighted = new Color(0x80, 0xFF, 0xAF);
+
     @Element
     public Color Cable_Int32Pointer = Color.MAGENTA;
     @Element
-    public Color Cable_Int8Array = Color.MAGENTA;
+    public Color Cable_Int32Pointer_Highlighted = new Color(0xFF, 0x80, 0xFF);
+
     @Element
-    public Color Cable_Int8Pointer = Color.MAGENTA;
+    public Color Cable_Int8Array = Cable_Int32Pointer;
+    @Element
+    public Color Cable_Int8Array_Highlighted = Cable_Int32Pointer_Highlighted;
+
+    @Element
+    public Color Cable_Int8Pointer = Cable_Int32Pointer;
+    @Element
+    public Color Cable_Int8Pointer_Highlighted = Cable_Int32Pointer_Highlighted;;
 
     /* Objects */
     @Element
@@ -104,14 +136,12 @@ public class Theme {
     @Element
     public Color Object_TitleBar_Background = UIManager.getColor("Panel.foreground"); /* Titlebar Inverted */
     @Element
-    // public Color Object_TitleBar_Subpatch_Background = new Color(0.45f, 0.5f, 0.6f); /* Blueish titlebar for subpatches */
     public Color Object_TitleBar_Subpatch_Background = new Color(
         Math.max(Object_TitleBar_Background.getRed()-0x20, 0x20),
         Math.max(Object_TitleBar_Background.getGreen()-0x20, 0x20),
         Math.min(Object_TitleBar_Background.getBlue()+0x80, 0xFF)
     );
     @Element
-    // public Color Object_TitleBar_Embedded_Background = new Color(0.6f, 0.5f, 0.45f); /* Yellowish titlebar for embedded objects */
     public Color Object_TitleBar_Embedded_Background = new Color(
         Math.min(Object_TitleBar_Background.getRed()+0x60, 0xFF),
         Math.min(Object_TitleBar_Background.getGreen()+0x40, 0xFF),

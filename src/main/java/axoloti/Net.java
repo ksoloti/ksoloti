@@ -173,6 +173,7 @@ public class Net extends JComponent {
         }
         return c;
     }
+
     final static float[] dash = {3.f, 6.f};
     final static Stroke strokeValidSelected = new BasicStroke(4.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     final static Stroke strokeValidDeselected = new BasicStroke(1.75f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -230,12 +231,13 @@ public class Net extends JComponent {
         if (isValidNet()) {
             if (selected) {
                 g2.setStroke(strokeValidSelected);
+                c = GetDataType().GetColorHighlighted();
                 //TODO: on top if "patch cords in background is active"
             } else {
                 g2.setStroke(strokeValidDeselected);
+                c = GetDataType().GetColor();
             }
 
-            c = GetDataType().GetColor();
             p0 = source.get(0).getJackLocInCanvas();
         } else {
             if (selected) {

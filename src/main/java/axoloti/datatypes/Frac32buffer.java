@@ -73,6 +73,11 @@ public class Frac32buffer extends DataTypeBuffer {
     }
 
     @Override
+    public Color GetColorHighlighted() {
+        return Theme.getCurrentTheme().Cable_Frac32Buffer_Highlighted;
+    }
+
+    @Override
     public boolean equals(Object o) {
         return (o instanceof Frac32buffer);
     }
