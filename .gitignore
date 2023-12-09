@@ -58,7 +58,7 @@ src/main/java/axoloti/Version.java
 *.pydevproject
 .project
 .metadata
-bin/
+platform_*/**/bin/
 tmp/
 *.tmp
 *.bak
