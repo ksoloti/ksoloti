@@ -16,8 +16,8 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 package components;
-
 import axoloti.utils.Constants;
+import java.awt.Dimension;
 import javax.swing.JTextField;
 
 /**
@@ -28,11 +28,15 @@ public class TextFieldComponent extends JTextField {
 
     public TextFieldComponent() {
         super();
+        setMaximumSize(new Dimension(5000,5000));
+        setMinimumSize(new Dimension(12,20));
         setFont(Constants.FONT);
     }
 
     public TextFieldComponent(String text) {
         super(text);
+        setMaximumSize(new Dimension(5000,5000));
+        setMinimumSize(new Dimension(12,20));
         setFont(Constants.FONT);
     }
 }

@@ -27,10 +27,10 @@ import javax.swing.JEditorPane;
  */
 public class EditorPaneComponent extends JEditorPane {
 
+
     public EditorPaneComponent() {
         setContentType("text/html");
-        setMaximumSize(new Dimension(5000,5000));
-        setMinimumSize(new Dimension(40,13));
+        setMinimumSize(new Dimension(12,13));
         setFont(Constants.FONT);
         setBackground(Theme.getCurrentTheme().Object_Default_Background);
         setForeground(Theme.getCurrentTheme().Object_Label_Text);
@@ -41,8 +41,7 @@ public class EditorPaneComponent extends JEditorPane {
     public EditorPaneComponent(String text) {
         setContentType("text/html");
         setText(text);
-        setMaximumSize(new Dimension(5000,5000));
-        setMinimumSize(new Dimension(40,13));
+        setMinimumSize(new Dimension(12,13));
         setFont(Constants.FONT);
         setBackground(Theme.getCurrentTheme().Object_Default_Background);
         setForeground(Theme.getCurrentTheme().Object_Label_Text);

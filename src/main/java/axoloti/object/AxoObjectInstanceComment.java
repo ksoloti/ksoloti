@@ -21,6 +21,8 @@ import axoloti.Patch;
 import axoloti.PatchGUI;
 import components.EditorPaneComponent;
 import components.TextFieldComponent;
+
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -72,6 +74,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
             commentText = InstanceName;
             InstanceName = null;
         }
+        setMinimumSize(new Dimension(12,13));
         setOpaque(true);
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
         InstanceEditorPane = new EditorPaneComponent(commentText);
