@@ -17,11 +17,12 @@
  */
 package axoloti.menus;
 
-import axoloti.CheckForUpdates;
+// import axoloti.CheckForUpdates;
 import axoloti.MainFrame;
 import axoloti.dialogs.AboutFrame;
+import axoloti.dialogs.ShortcutsFrame;
 import java.awt.Desktop;
-import java.io.File;
+// import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -39,6 +40,7 @@ public class HelpMenu extends JMenu {
 
     private javax.swing.JMenuItem jMenuHelpContents;
     private javax.swing.JMenuItem jMenuAbout;
+    private javax.swing.JMenuItem jMenuShortcuts;
     // private javax.swing.JMenuItem jMenuUpdates;
     private javax.swing.JMenuItem jMenuCommunity;
     private axoloti.menus.HelpLibraryMenu helpLibraryMenu1;
@@ -66,6 +68,7 @@ public class HelpMenu extends JMenu {
     private void Populate() {
         jMenuHelpContents = new javax.swing.JMenuItem();
         jMenuAbout = new javax.swing.JMenuItem();
+        jMenuShortcuts = new javax.swing.JMenuItem();
         // jMenuUpdates = new javax.swing.JMenuItem();
         jMenuCommunity = new javax.swing.JMenuItem();
         helpLibraryMenu1 = new axoloti.menus.HelpLibraryMenu();
@@ -90,6 +93,16 @@ public class HelpMenu extends JMenu {
             }
         });
         add(jMenuAbout);
+
+        jMenuShortcuts.setMnemonic('S');
+        jMenuShortcuts.setText("Keyboard Shortcuts");
+        jMenuShortcuts.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuShortcutsActionPerformed(evt);
+            }
+        });
+        add(jMenuShortcuts);
 
         jMenuCommunity.setMnemonic('C');
         jMenuCommunity.setText("Community Website");
@@ -120,6 +133,10 @@ public class HelpMenu extends JMenu {
 
     private void jMenuAboutActionPerformed(java.awt.event.ActionEvent evt) {
         AboutFrame.aboutFrame.setVisible(true);
+    }
+
+    private void jMenuShortcutsActionPerformed(java.awt.event.ActionEvent evt) {
+        ShortcutsFrame.shortcutsFrame.setVisible(true);
     }
 
     // private void jMenuUpdatesActionPerformed(java.awt.event.ActionEvent evt) {
