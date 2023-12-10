@@ -312,21 +312,21 @@ public class PatchGUI extends Patch {
                     Point p = Layers.getMousePosition();
                     ke.consume();
                     if (p != null) {
-                        // if (ke.isShiftDown()) {
+                        if (ke.isShiftDown()) {
                             // nothing yet
-                        // } else {
+                        } else {
                             ShowClassSelector(p, null, patchKsoloti, false);
-                        // }
+                        }
                     }
                 } else if ((ke.getKeyCode() == KeyEvent.VK_G) && !KeyUtils.isControlOrCommandDown(ke)) {
                     Point p = Layers.getMousePosition();
                     ke.consume();
                     if (p != null) {
-                        // if (ke.isShiftDown()) {
+                        if (ke.isShiftDown()) {
                             // nothing yet
-                        // } else {
+                        } else {
                             ShowClassSelector(p, null, patchKsolotiGills, false);
-                        // }
+                        }
                     }
                 } else if ((ke.getKeyCode() == KeyEvent.VK_DELETE) || (ke.getKeyCode() == KeyEvent.VK_BACK_SPACE)) {
                     deleteSelectedAxoObjInstances();
