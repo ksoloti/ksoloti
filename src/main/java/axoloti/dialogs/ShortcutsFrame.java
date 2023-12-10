@@ -97,6 +97,8 @@ public class ShortcutsFrame extends javax.swing.JFrame {
         jDateTxt = new javax.swing.JLabel();
 
         setTitle("Keyboard Shortcuts");
+        setMinimumSize(new java.awt.Dimension(320, 180));
+        setPreferredSize(new java.awt.Dimension(560, 360));
 
         jTextPaneShortcutsHtml.setEditable(false);
         jTextPaneShortcutsHtml.setContentType("text/html"); // NOI18N

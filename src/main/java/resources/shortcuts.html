@@ -5,52 +5,66 @@
         <meta charset="utf-8">
         <title>Untitled Document</title>
         <style>
-            body {
-                max-width: 100%;
-            }
-            table, td {
+
+            body { max-width: 100%; }
+
+            table {
+                border-collapse: collapse;
                 border: 1px solid;
             }
+
+            tr::after { border-bottom: 1px solid #DDD; }
+
+            tr:nth-child(even) { background-color: #F0F0F0; }
+
             td {
-                min-width: 100px;
+                min-width: 140px;
+                padding: 5px;
             }
-            .bold {
-                font-weight: bold;
+
+            .nobreak {
+                white-space: nowrap;
             }
+
         </style>
     </head>
 
     <body>
         <h2>Ksoloti Patcher Keyboard Shortcuts</h2>
 
-        <p>Note: for Mac use CMD key instead or CTRL key.</p>
+        <p>Note: on MacOS use CMD key instead of CTRL key.</p>
 
         <p>
-            <h3>Main Window</h3>
+            <h3>Patch Window</h3>
             <table>
-                <tr class="bold">
-                        <td>Key Combo</td>
-                        <td>Function</td>
-                        <td>Notes</td>
+                <tr class="nobreak">
+                        <td><h3>Key Combo</td>
+                        <td><h3>Function</td>
+                        <td><h3>Notes</td>
                 </tr>
                 <tr>
-                    <td>CTRL + X</td>
+                    <td class="nobreak">CTRL + X</td>
                     <td>Cut</td>
                     <td>cwblah blah blah blah blah blah blah blah blah blah</td>
                 </tr>
                 <tr>
-                    <td>CTRL + C</td>
+                    <td class="nobreak">CTRL + C</td>
                     <td>Copy</td>
                     <td>cwblah blah blah blah blah blah blah blah blah blah</td>
                 </tr>
                 <tr>
-                    <td>CTRL + V</td>
+                    <td class="nobreak">CTRL + V</td>
                     <td>Paste</td>
                     <td>cwblah blah blah blah blah blah blah blah blah blah</td>
                 </tr>
                 <tr>
-                    <td>CTRL + A</td>
+                    <td class="nobreak">CTRL + A</td>
                     <td>Select All</td>
+                    <td>cwblah blah blah blah blah blah blah blah blah blah</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + SHIFT + ARROW UP</td>
+                    <td>Stuff stuff stuff stuff stuff stuff stuff stuff stuff </td>
                     <td>cwblah blah blah blah blah blah blah blah blah blah</td>
                 </tr>
             </table>
