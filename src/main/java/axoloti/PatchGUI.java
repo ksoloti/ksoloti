@@ -1062,6 +1062,7 @@ public class PatchGUI extends Patch {
         pf.setVisible(true);
         pf.setState(java.awt.Frame.NORMAL);
         pf.toFront();
+        MainFrame.prefs.addRecentFile(f.getAbsolutePath());
         return pf;
     }
 

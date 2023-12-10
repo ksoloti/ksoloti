@@ -853,6 +853,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         PatchBank pb = new PatchBank();
         try {
             pb.Open(f);
+            MainFrame.prefs.addRecentFile(f.getAbsolutePath());
             pb.setVisible(true);
         } catch (IOException ex) {
             pb.Close();

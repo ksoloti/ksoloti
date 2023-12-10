@@ -166,10 +166,10 @@ public class FileUtils {
                     || axsFileFilter.accept(f)
                     || axhFileFilter.accept(f)) {
                 PatchGUI.OpenPatch(f);
-                MainFrame.prefs.addRecentFile(f.getAbsolutePath());
+                // MainFrame.prefs.addRecentFile(f.getAbsolutePath());
             } else if (axbFileFilter.accept(f)) {
                 PatchBank.OpenBank(f);
-                MainFrame.prefs.addRecentFile(f.getAbsolutePath());
+                // MainFrame.prefs.addRecentFile(f.getAbsolutePath());
             }
         }
     }

@@ -475,16 +475,21 @@ public class Preferences {
     }
 
     public void addRecentFile(String filename) {
+        boolean alreadyInMenu = false;
         for (String r : recentFiles) {
             if (r.equals(filename)) {
-                /* Remove from current position, will be added to top */
-                recentFiles.remove(filename);
+                /* Schedule to remove from current position, will be added to top */
+                /* Can't remove while iterating - will trigger ConcurrentModificationException */
+                alreadyInMenu = true;
             }
         }
-        if (recentFiles.size() == nRecentFiles) {
+        if (alreadyInMenu) {
+            recentFiles.remove(filename);
+        }
+        else if (recentFiles.size() == nRecentFiles) {
             recentFiles.remove(0);
         }
-        /* add to top */
+        /* Add to top */
         recentFiles.add(filename);
         SetDirty();
     }
