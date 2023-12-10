@@ -217,6 +217,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 {
                     jResultList.clearSelection();
                     jTextFieldObjName.grabFocus();
+                    e.consume();
                 }
             }
 
