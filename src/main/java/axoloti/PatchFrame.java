@@ -27,6 +27,7 @@ import components.VisibleCablePanel;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -35,6 +36,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -974,8 +976,24 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         if (patch.IsLocked()) {
             return;
         }
+        Patch p = patch.GetSelectedObjects();
+        if (p.objectinstances.isEmpty()) {
+            return;
+        }
         jMenuCopyActionPerformed(evt);
         jMenuPasteActionPerformed(evt);
+
+        /* emulate mouse dragging */
+        Robot robot;
+        try {
+            robot = new Robot();
+            // robot.setAutoDelay(10);
+            Point point = p.objectinstances.get(0).getLocationOnScreen();
+            robot.mouseMove(point.x + 40,point.y + 22);
+            robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
     }
 
     private void jMenuItemDeleteActionPerformed(java.awt.event.ActionEvent evt)
