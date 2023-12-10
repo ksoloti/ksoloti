@@ -19,28 +19,26 @@ package components;
 import axoloti.Theme;
 import axoloti.utils.Constants;
 import java.awt.Dimension;
-import javax.swing.JEditorPane;
+import javax.swing.JTextPane;
 
 /**
  *
  * @author Johannes Taelman, sebiik
  */
-public class EditorPaneComponent extends JEditorPane {
+public class TextPaneComponent extends JTextPane {
 
 
-    public EditorPaneComponent() {
-        setContentType("text/html");
-        setMinimumSize(new Dimension(12,13));
-        setFont(Constants.FONT);
-        setBackground(Theme.getCurrentTheme().Object_Default_Background);
-        setForeground(Theme.getCurrentTheme().Object_Label_Text);
-        setEditable(false);
-        setFocusable(false);
+    public TextPaneComponent() {
+        initComponents();
     }
 
-    public EditorPaneComponent(String text) {
-        setContentType("text/html");
+    public TextPaneComponent(String text) {
+        initComponents();
         setText(text);
+    }
+
+    private void initComponents() {
+        setContentType("text/plain");
         setMinimumSize(new Dimension(12,13));
         setFont(Constants.FONT);
         setBackground(Theme.getCurrentTheme().Object_Default_Background);

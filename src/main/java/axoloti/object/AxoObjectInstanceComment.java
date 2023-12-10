@@ -19,13 +19,12 @@ package axoloti.object;
 
 import axoloti.Patch;
 import axoloti.PatchGUI;
-import components.EditorPaneComponent;
+import components.TextPaneComponent;
 import components.TextFieldComponent;
 
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -77,11 +76,15 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         setMinimumSize(new Dimension(12,13));
         setOpaque(true);
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-        InstanceEditorPane = new EditorPaneComponent(commentText);
-        InstanceEditorPane.setBorder(BorderFactory.createEmptyBorder(-1, 5, -1, 3));
-        InstanceEditorPane.setAlignmentX(CENTER_ALIGNMENT);
-        InstanceEditorPane.setAlignmentY(CENTER_ALIGNMENT);
-        InstanceEditorPane.addMouseListener(new MouseListener() {
+        InstanceTextPane = new TextPaneComponent();
+        if (commentText.contains("<html>")) {
+            InstanceTextPane.setContentType("text/html");
+        }
+        InstanceTextPane.setText(commentText);
+        InstanceTextPane.setBorder(BorderFactory.createEmptyBorder(-1, 5, -1, 3));
+        InstanceTextPane.setAlignmentX(CENTER_ALIGNMENT);
+        InstanceTextPane.setAlignmentY(CENTER_ALIGNMENT);
+        InstanceTextPane.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent me) {
                 if (me.getClickCount() == 2) {
@@ -117,8 +120,8 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
             public void mouseExited(MouseEvent e) {
             }
         });
-        InstanceEditorPane.addMouseMotionListener(this);
-        add(InstanceEditorPane);
+        InstanceTextPane.addMouseMotionListener(this);
+        add(InstanceTextPane);
         setLocation(x, y);
 
         resizeToGrid();
@@ -127,16 +130,18 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
     @Override
     public void addInstanceNameEditor() {
         InstanceNameTF = new TextFieldComponent(commentText);
+        InstanceNameTF.setMargin(new Insets(-1,5,-1,0));
         InstanceNameTF.selectAll();
 //        InstanceNameTF.setInputVerifier(new AxoObjectInstanceNameVerifier());
-        InstanceNameTF.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                String s = InstanceNameTF.getText();
-                setInstanceName(s);
-                getParent().remove(InstanceNameTF);
-            }
-        });
+        // InstanceNameTF.addActionListener(new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(ActionEvent ae) {
+        //         String s = InstanceNameTF.getText();
+        //         setInstanceName(s);
+        //         getParent().remove(InstanceNameTF);
+        //         System.out.println("addinst-addactionlist");
+        //     }
+        // });
         InstanceNameTF.addFocusListener(new FocusListener() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -170,8 +175,8 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
             }
         });
 
-        InstanceNameTF.setLocation(getLocation().x, getLocation().y + InstanceEditorPane.getLocation().y);
-        InstanceNameTF.setSize(InstanceNameTF.getPreferredSize().width, 20);
+        InstanceNameTF.setLocation(getLocation().x, getLocation().y + InstanceTextPane.getLocation().y);
+        InstanceNameTF.setSize(getWidth(), 13);
         InstanceNameTF.setVisible(true);
         getParent().add(InstanceNameTF, 0);
         InstanceNameTF.requestFocus();
@@ -179,15 +184,24 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
 
     @Override
     public void setInstanceName(String s) {
+        if (s.equals(commentText)) return;
         this.commentText = s;
-        if (InstanceEditorPane != null) {
-            InstanceEditorPane.setText(commentText);
+
+        if (InstanceTextPane != null) {
+            if (commentText.contains("<html>")) {
+                InstanceTextPane.setContentType("text/html");
+            }
+            else {
+                InstanceTextPane.setContentType("text/plain");
+            }
+            InstanceTextPane.setText(commentText);
         }
         revalidate();
         if (getParent() != null) {
             getParent().repaint();
         }
         resizeToGrid();
+        patch.SetDirty();
     }
 
     @Override
