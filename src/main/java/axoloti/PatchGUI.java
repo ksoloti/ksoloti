@@ -90,10 +90,11 @@ public class PatchGUI extends Patch {
 
     // shortcut patch names
     final static String patchComment = "patch/comment";
+    final static String patchControl = "ctrl/";
     final static String patchInlet = "patch/inlet";
     final static String patchOutlet = "patch/outlet";
     final static String patchAudio = "audio/";
-    final static String patchAudioOut = "audio/out stereo";
+    final static String patchAudioOut = "audio/out";
     final static String patchMidi = "midi";
     final static String patchMidiKey = "midi/in/keyb";
     final static String patchDisplay = "disp/";
@@ -259,16 +260,30 @@ public class PatchGUI extends Patch {
                     xsteps = Constants.X_GRID;
                     ysteps = Constants.Y_GRID;
                 }
-                if ((ke.getKeyCode() == KeyEvent.VK_SPACE)
-                        || ((ke.getKeyCode() == KeyEvent.VK_N) && !KeyUtils.isControlOrCommandDown(ke))) {
-                    Point p = Layers.getMousePosition();
-                    ke.consume();
-                    if (p != null) {
-                        ShowClassSelector(p, null, null, true);
+                if ((ke.getKeyCode() == KeyEvent.VK_SPACE) && !KeyUtils.isControlOrCommandDown(ke)) {
+                    if (!ke.isShiftDown()) {
+                        Point p = Layers.getMousePosition();
+                        ke.consume();
+                        if (p != null) {
+                            ShowClassSelector(p, null, null, true);
+                        }
                     }
-                } else if (((ke.getKeyCode() == KeyEvent.VK_C) && !KeyUtils.isControlOrCommandDown(ke))) {
-                    AxoObjectInstanceAbstract ao = AddObjectInstance(MainFrame.axoObjects.GetAxoObjectFromName(patchComment, null).get(0), Layers.getMousePosition());
-                    ao.addInstanceNameEditor();
+                    else {
+                        // shift + space ...
+                    }
+                } else if ((ke.getKeyCode() == KeyEvent.VK_C) && !KeyUtils.isControlOrCommandDown(ke)) {
+                    if (!ke.isShiftDown()) {
+                        Point p = Layers.getMousePosition();
+                        ke.consume();
+                        if (p != null) {
+                            ShowClassSelector(p, null, patchControl, false);
+                        }
+                    }
+                    else {
+                        AxoObjectInstanceAbstract ao = AddObjectInstance(MainFrame.axoObjects.GetAxoObjectFromName(patchComment, null).get(0), Layers.getMousePosition());
+                        ao.addInstanceNameEditor();
+
+                    }
                     ke.consume();
                 } else if ((ke.getKeyCode() == KeyEvent.VK_I) && !KeyUtils.isControlOrCommandDown(ke)) {
                     Point p = Layers.getMousePosition();
@@ -344,9 +359,13 @@ public class PatchGUI extends Patch {
                 } else if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
                     MoveSelectedAxoObjInstances(Direction.LEFT, xsteps, ysteps);
                     ke.consume();
-                } else if ((ke.getKeyCode() == KeyEvent.VK_Y) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
-                        MainFrame.mainframe.getKeyboard().setVisible(true);
+                } else if ((ke.getKeyCode() == KeyEvent.VK_Y) && KeyUtils.isControlOrCommandDown(ke)) {
+                    if (!ke.isShiftDown()) {
 
+                    }
+                    else {
+                        MainFrame.mainframe.getKeyboard().setVisible(true);
+                    }
                 }
             }
 
