@@ -91,6 +91,8 @@ public class PatchGUI extends Patch {
     // shortcut patch names
     final static String patchComment = "patch/comment";
     final static String patchControl = "ctrl/";
+    final static String patchKsolotiGpioIn = "ksoloti/gpio/in";
+    final static String patchKsolotiGpioOut = "ksoloti/gpio/out";
     final static String patchInlet = "patch/inlet";
     final static String patchOutlet = "patch/outlet";
     final static String patchAudio = "audio/";
@@ -286,16 +288,38 @@ public class PatchGUI extends Patch {
                     }
                     ke.consume();
                 } else if ((ke.getKeyCode() == KeyEvent.VK_I) && !KeyUtils.isControlOrCommandDown(ke)) {
-                    Point p = Layers.getMousePosition();
-                    ke.consume();
-                    if (p != null) {
-                        ShowClassSelector(p, null, patchInlet, false);
+                    if (!ke.isShiftDown()) {
+                        // i
+                        Point p = Layers.getMousePosition();
+                        ke.consume();
+                        if (p != null) {
+                            ShowClassSelector(p, null, patchKsolotiGpioIn, false);
+                        }
+                    }
+                    else {
+                        // shift + i:
+                        Point p = Layers.getMousePosition();
+                        ke.consume();
+                        if (p != null) {
+                            ShowClassSelector(p, null, patchInlet, false);
+                        }
                     }
                 } else if ((ke.getKeyCode() == KeyEvent.VK_O) && !KeyUtils.isControlOrCommandDown(ke)) {
-                    Point p = Layers.getMousePosition();
-                    ke.consume();
-                    if (p != null) {
-                        ShowClassSelector(p, null, patchOutlet, false);
+                    if (!ke.isShiftDown()) {
+                        // o
+                        Point p = Layers.getMousePosition();
+                        ke.consume();
+                        if (p != null) {
+                            ShowClassSelector(p, null, patchKsolotiGpioOut, false);
+                        }
+                    }
+                    else {
+                        // shift + o
+                        Point p = Layers.getMousePosition();
+                        ke.consume();
+                        if (p != null) {
+                            ShowClassSelector(p, null, patchOutlet, false);
+                        }
                     }
                 } else if ((ke.getKeyCode() == KeyEvent.VK_D) && !KeyUtils.isControlOrCommandDown(ke)) {
                     Point p = Layers.getMousePosition();
