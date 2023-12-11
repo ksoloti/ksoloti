@@ -211,9 +211,33 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                     Cancel();
                     e.consume();
                 }
-                else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE ||
-                         e.getKeyCode() == KeyEvent.VK_LEFT ||
-                         (e.getKeyCode() == KeyEvent.VK_UP && jResultList.getSelectedIndex() == 0))
+                else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+                {
+                    jResultList.clearSelection();
+                    if (jTextFieldObjName != null) {
+                        String str = jTextFieldObjName.getText();
+                        if (str.length() > 0) {
+                            /* Emulate letter deletion */
+                            jTextFieldObjName.setText(str.substring(0, str.length()-1));
+                        }
+                    }
+                    jTextFieldObjName.grabFocus();
+                    e.consume();
+                }
+                else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    jResultList.clearSelection();
+                    if (jTextFieldObjName != null) {
+                        String str = jTextFieldObjName.getText();
+                        if (str.length() > 0) {
+                            /* Emulate arrow left */
+                            jTextFieldObjName.setCaretPosition(str.length()-1);
+                        }
+                    }
+                    jTextFieldObjName.grabFocus();
+                    e.consume();
+
+                }
+                else if (e.getKeyCode() == KeyEvent.VK_UP && jResultList.getSelectedIndex() == 0)
                 {
                     jResultList.clearSelection();
                     jTextFieldObjName.grabFocus();
