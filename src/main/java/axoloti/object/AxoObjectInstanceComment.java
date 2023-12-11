@@ -132,7 +132,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
     @Override
     public void addInstanceNameEditor() {
         InstanceNameTF = new TextFieldComponent(commentText);
-        InstanceNameTF.setMargin(new Insets(-1,5,-1,5));
+        InstanceNameTF.setMargin(new Insets(-2,5,-1,5));
         InstanceNameTF.selectAll();
 //        InstanceNameTF.setInputVerifier(new AxoObjectInstanceNameVerifier());
         // InstanceNameTF.addActionListener(new ActionListener() {
@@ -180,7 +180,6 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         InstanceNameTF.setLocation(getLocation().x, getLocation().y + InstanceTextPane.getLocation().y);
         InstanceNameTF.setSize(getWidth(), 13);
         InstanceNameTF.setVisible(true);
-        getParent().add(InstanceNameTF, 0);
         InstanceNameTF.requestFocus();
     }
 
