@@ -432,10 +432,11 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     @Override
     public boolean AskClose() {
         if (isDirty()) {
-            Object[] options = {"Save",
-                "Don't save",
+            Object[] options = {"Yes",
+                "No",
                 "Cancel"};
-            int n = JOptionPane.showOptionDialog(this,
+            int n = JOptionPane.showOptionDialog(
+                    this,
                     "Save changes to " + FilenamePath + "?",
                     "Unsaved Changes",
                     JOptionPane.YES_NO_CANCEL_OPTION,

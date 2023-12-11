@@ -26,7 +26,7 @@ import axoloti.object.AxoObjectInstance;
 import axoloti.object.ObjectModifiedListener;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
-import axoloti.utils.OSDetect;
+// import axoloti.utils.OSDetect;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Point;
@@ -43,7 +43,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -392,25 +391,26 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         // warn if changes, and its not an embedded object
         if (hasChanged()) {
             if (!readonly) {
-                Object[] options = {"Save", "Revert Changes", "Cancel"};
-                int n = JOptionPane.showOptionDialog(this,
+                Object[] options = {"Yes", "No", "Cancel"};
+                int n = JOptionPane.showOptionDialog(
+                        this,
                         "Save changes to \"" + editObj.getCName() + "\" ?",
                         "Unsaved Changes",
-                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.YES_NO_CANCEL_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
                         null,
                         options,
                         options[0]);
                 switch (n) {
-                    case 0: // yes
+                    case JOptionPane.YES_OPTION:
                         jMenuItemSaveActionPerformed(null);
                         Close();
                         return false;
-                    case 1: // revert
+                    case JOptionPane.NO_OPTION:
                         Revert();
                         Close();
                         return false;
-                    case 2: // cancel
+                    case JOptionPane.CANCEL_OPTION:
                     default: // closed
                         return true;
                 }
