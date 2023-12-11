@@ -25,6 +25,8 @@ import components.TextFieldComponent;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Point;
+// import java.awt.event.ActionEvent;
+// import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -81,7 +83,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
             InstanceTextPane.setContentType("text/html");
         }
         InstanceTextPane.setText(commentText);
-        InstanceTextPane.setBorder(BorderFactory.createEmptyBorder(-1, 5, -1, 3));
+        InstanceTextPane.setBorder(BorderFactory.createEmptyBorder(-1, 5, -1, 5));
         InstanceTextPane.setAlignmentX(CENTER_ALIGNMENT);
         InstanceTextPane.setAlignmentY(CENTER_ALIGNMENT);
         InstanceTextPane.addMouseListener(new MouseListener() {
@@ -130,7 +132,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
     @Override
     public void addInstanceNameEditor() {
         InstanceNameTF = new TextFieldComponent(commentText);
-        InstanceNameTF.setMargin(new Insets(-1,5,-1,0));
+        InstanceNameTF.setMargin(new Insets(-1,5,-1,5));
         InstanceNameTF.selectAll();
 //        InstanceNameTF.setInputVerifier(new AxoObjectInstanceNameVerifier());
         // InstanceNameTF.addActionListener(new ActionListener() {
@@ -139,7 +141,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         //         String s = InstanceNameTF.getText();
         //         setInstanceName(s);
         //         getParent().remove(InstanceNameTF);
-        //         System.out.println("addinst-addactionlist");
+        //         getParent().repaint();
         //     }
         // });
         InstanceNameTF.addFocusListener(new FocusListener() {
@@ -174,7 +176,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
                 }
             }
         });
-
+        getParent().add(InstanceNameTF, 0);
         InstanceNameTF.setLocation(getLocation().x, getLocation().y + InstanceTextPane.getLocation().y);
         InstanceNameTF.setSize(getWidth(), 13);
         InstanceNameTF.setVisible(true);
@@ -184,7 +186,8 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
 
     @Override
     public void setInstanceName(String s) {
-        if (s.equals(commentText)) return;
+        if (!s.equals(commentText))
+            patch.SetDirty();
         this.commentText = s;
 
         if (InstanceTextPane != null) {
@@ -201,7 +204,6 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
             getParent().repaint();
         }
         resizeToGrid();
-        patch.SetDirty();
     }
 
     @Override
