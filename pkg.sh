@@ -2,6 +2,8 @@
 
 set -e # exit immediately if anything "goes wrong"
 
+START=$(date +%s)
+
 VERSION="$(git describe --tags | grep -Po '\d*\.\d*\.\d*' 2>&1)"
 VERSION_LONG="$(git describe --long --always --tags 2>&1)"
 echo $VERSION
@@ -133,3 +135,6 @@ rm -rf packagetemp/win
 # Cleanup
 cd firmware && make clean
 cd .. && ant clean
+
+END=$(date +%s)
+echo "All done! Elapsed time: $(($END-$START)) seconds."
