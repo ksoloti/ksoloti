@@ -81,6 +81,7 @@ public class ButtonComponent extends JComponent implements MouseInputListener, K
     }
 
     public ButtonComponent(String label) {
+        setFont(Constants.FONT);
         this.label = label;
         FontRenderContext frc = new FontRenderContext(null, true, true);
         int width = 0;

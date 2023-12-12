@@ -80,7 +80,7 @@ public class VGraphComponent extends JComponent {
         g2.drawLine(0, y0, length, y0);
         g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         g2.drawRect(0, 0, length + 0, vsize + 1);
-        // g2.setStroke(strokeThin);
+        g2.setStroke(strokeThin);
         //if (index > 1) {
         g2.drawPolyline(xpoints, ypoints, length);
         //}

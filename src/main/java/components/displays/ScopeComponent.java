@@ -72,7 +72,7 @@ public class ScopeComponent extends ADispComponent {
 
         g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         g2.drawRect(0, 0, length + 2, vsize + 2);
-        // g2.setStroke(strokeThin);
+        g2.setStroke(strokeThin);
         if (index > 1) {
             g2.drawPolyline(xvalue, value, index - 1);
         }
