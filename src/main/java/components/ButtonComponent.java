@@ -155,7 +155,7 @@ public class ButtonComponent extends JComponent implements MouseInputListener, K
             if (isEnabled()) {
                 g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
             } else {
-                g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
+                g2.setPaint(Theme.getCurrentTheme().Component_Mid);
             }
             g2.drawRoundRect(2, 2, getWidth() - 4, getHeight() - 4, radius, radius);
             g2.setFont(Constants.FONT);

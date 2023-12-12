@@ -218,7 +218,7 @@ public class Checkbox4StatesComponent extends ACtrlComponent {
         if (isEnabled()) {
             g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         } else {
-            g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
+            g2.setPaint(Theme.getCurrentTheme().Component_Mid);
         }
         if (isFocusOwner()) {
             g2.setStroke(strokeThick);
@@ -242,10 +242,10 @@ public class Checkbox4StatesComponent extends ACtrlComponent {
                         g2.setColor(Theme.getCurrentTheme().Component_Background);
                         break;
                     case 1:
-                        g2.setColor(Theme.getCurrentTheme().Component_Mid_Dark);
+                        g2.setColor(Theme.getCurrentTheme().Component_Mid_Light);
                         break;
                     case 2:
-                        g2.setColor(Theme.getCurrentTheme().Component_Mid_Light);
+                        g2.setColor(Theme.getCurrentTheme().Component_Mid_Dark);
                         break;
                     case 3:
                         g2.setColor(Theme.getCurrentTheme().Component_Foreground);

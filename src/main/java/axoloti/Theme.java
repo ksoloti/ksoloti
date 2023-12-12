@@ -170,11 +170,11 @@ public class Theme {
     @Element
     public Color Component_Foreground = Color.BLACK;
     @Element
-    public Color Component_Mid_Dark = Color.getHSBColor(0.f, 0.0f, 0.66f);
+    public Color Component_Mid_Dark = Color.getHSBColor(0.0f, 0.0f, 0.25f);
     @Element
     public Color Component_Mid = Color.GRAY;
     @Element
-    public Color Component_Mid_Light = Color.getHSBColor(0.f, 0.0f, 0.33f);
+    public Color Component_Mid_Light = Color.getHSBColor(0.0f, 0.0f, 0.75f);
     @Element
     public Color Component_Background = Color.WHITE;
     @Element

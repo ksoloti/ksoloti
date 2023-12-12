@@ -61,22 +61,27 @@ public class ScopeComponent extends ADispComponent {
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
         g2.setStroke(strokeThick);
         g2.setColor(Theme.getCurrentTheme().Component_Background);
         g2.fillRect(0, 0, length + 2, vsize + 2);
+
+        g2.setColor(Theme.getCurrentTheme().Component_Mid_Light);
+        int v = (int) Project(0);
+        g2.drawLine(0, v, length, v);
+
         g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         g2.drawRect(0, 0, length + 2, vsize + 2);
-        g2.setStroke(strokeThin);
+        // g2.setStroke(strokeThin);
         if (index > 1) {
             g2.drawPolyline(xvalue, value, index - 1);
         }
+
         g2.setColor(Theme.getCurrentTheme().Component_Mid);
         if (index < length - 2) {
             g2.drawPolyline(java.util.Arrays.copyOfRange(xvalue, index, length - 1),
                     java.util.Arrays.copyOfRange(value, index, length - 1), length - index - 1);
         }
-        int v = (int) Project(0);
-        g2.drawLine(0, v, length, v);
     }
 
     @Override

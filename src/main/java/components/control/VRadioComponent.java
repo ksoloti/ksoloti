@@ -64,7 +64,7 @@ public class VRadioComponent extends HRadioComponent {
         if (isEnabled()) {
             g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         } else {
-            g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
+            g2.setPaint(Theme.getCurrentTheme().Component_Mid);
         }
         if (isFocusOwner()) {
             g2.setStroke(strokeThick);

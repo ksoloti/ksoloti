@@ -301,7 +301,7 @@ public class NumberBoxComponent extends ACtrlComponent {
         if (isEnabled()) {
             g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         } else {
-            g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
+            g2.setPaint(Theme.getCurrentTheme().Component_Mid);
         }
         g2.drawRect(0, 0, getWidth()-2, getHeight()-2);
 
