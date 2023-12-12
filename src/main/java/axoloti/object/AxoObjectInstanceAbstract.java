@@ -94,18 +94,15 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
 
     public AxoObjectInstanceAbstract() { }
 
-    public AxoObjectInstanceAbstract(AxoObjectAbstract type, Patch patch1, String InstanceName1, Point location)
-    {
+    public AxoObjectInstanceAbstract(AxoObjectAbstract type, Patch patch1, String InstanceName1, Point location) {
         super();
         this.type = type;
         typeName = type.id;
-        if (type.createdFromRelativePath && (patch1 != null))
-        {
+        if (type.createdFromRelativePath && (patch1 != null)) {
             String pPath = patch1.getFileNamePath();
             String oPath = type.sPath;
 
-            if (oPath.endsWith(".axp") || oPath.endsWith(".axo") || oPath.endsWith(".axs"))
-            {
+            if (oPath.endsWith(".axp") || oPath.endsWith(".axo") || oPath.endsWith(".axs")) {
                 oPath = oPath.substring(0, oPath.length() - 4);
             }
             pPath = pPath.replaceAll("\\\\", "/");
@@ -113,23 +110,19 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
             String[] pPathA = pPath.split("/");
             String[] oPathA = oPath.split("/");
             int i = 0;
-            while ((i < pPathA.length) && (i < oPathA.length) && (oPathA[i].equals(pPathA[i])))
-            {
+            while ((i < pPathA.length) && (i < oPathA.length) && (oPathA[i].equals(pPathA[i]))) {
                 i++;
             }
             String rPath = "";
-            for (int j = i; j < pPathA.length - 1; j++)
-            {
+            for (int j = i; j < pPathA.length - 1; j++) {
                 rPath += "../";
             }
-            if (rPath.isEmpty())
-            {
+            if (rPath.isEmpty()) {
                 rPath = ".";
             } else {
                 rPath = rPath.substring(0, rPath.length() - 1);
             }
-            for (int j = i; j < oPathA.length; j++)
-            {
+            for (int j = i; j < oPathA.length; j++) {
                 rPath += "/" + oPathA[j];
             }
 
@@ -144,90 +137,73 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         this.patch = patch1;
     }
 
-    public Patch getPatch()
-    {
+    public Patch getPatch() {
         return patch;
     }
 
-    public PatchGUI getPatchGUI()
-    {
+    public PatchGUI getPatchGUI() {
         return (PatchGUI) patch;
     }
 
-    public String getInstanceName()
-    {
+    public String getInstanceName() {
         return InstanceName;
     }
 
-    public void setType(AxoObjectAbstract type)
-    {
+    public void setType(AxoObjectAbstract type) {
         this.type = type;
         typeUUID = type.getUUID();
     }
 
-    public void setInstanceName(String InstanceName)
-    {
-        if (this.InstanceName.equals(InstanceName))
-        {
+    public void setInstanceName(String InstanceName) {
+        if (this.InstanceName.equals(InstanceName)) {
             return;
         }
-        if (patch != null)
-        {
+        if (patch != null) {
             AxoObjectInstanceAbstract o1 = patch.GetObjectInstance(InstanceName);
-            if ((o1 != null) && (o1 != this))
-            {
+            if ((o1 != null) && (o1 != this)) {
                 Logger.getLogger(AxoObjectInstanceAbstract.class.getName()).log(Level.SEVERE, "Object name {0} already exists!", InstanceName);
                 repaint();
                 return;
             }
         }
         this.InstanceName = InstanceName;
-        if (InstanceLabel != null)
-        {
+        if (InstanceLabel != null) {
             InstanceLabel.setText(InstanceName);
+            patch.SetDirty();
         }
     }
 
-    public AxoObjectAbstract getType()
-    {
+    public AxoObjectAbstract getType() {
         return type;
     }
 
-    public AxoObjectAbstract resolveType()
-    {
-        if (type != null)
-        {
+    public AxoObjectAbstract resolveType() {
+        if (type != null) {
             return type;
         }
 
-        if (typeUUID != null)
-        {
+        if (typeUUID != null) {
             type = MainFrame.axoObjects.GetAxoObjectFromUUID(typeUUID);
-            if (type != null)
-            {
+            if (type != null) {
                 System.out.println("Restored from UUID:" + type.id);
                 typeName = type.id;
             }
         }
 
-        if (type == null)
-        {
+        if (type == null) {
             ArrayList<AxoObjectAbstract> types = MainFrame.axoObjects.GetAxoObjectFromName(typeName, patch.GetCurrentWorkingDirectory());
-            if (types == null)
-            {
+            if (types == null) {
                 Logger.getLogger(AxoObjectInstanceAbstract.class.getName()).log(Level.SEVERE, "Object name \"{0}\" not found", typeName);
             }
             else
             { // pick first
-                if (types.size() > 1)
-                {
+                if (types.size() > 1) {
                     typeWasAmbiguous = true;
                 }
 
                 type = types.get(0);
 
-                if (type instanceof AxoObjectUnloaded)
-                {
+                if (type instanceof AxoObjectUnloaded) {
                     AxoObjectUnloaded aou = (AxoObjectUnloaded) type;
                     type = aou.Load();
                     return (AxoObject) type;
@@ -241,8 +217,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     private final Dimension TitleBarMinimumSize = new Dimension(40, 13);
     private final Dimension TitleBarMaximumSize = new Dimension(32768, 13);
 
-    public void PostConstructor()
-    {
+    public void PostConstructor() {
         removeAll();
         setMinimumSize(new Dimension(60, 40));
         //setMaximumSize(new Dimension(Short.MAX_VALUE,
@@ -269,32 +244,25 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         addMouseMotionListener(this);
     }
 
-    JPopupMenu CreatePopupMenu()
-    {
+    JPopupMenu CreatePopupMenu() {
         JPopupMenu popup = new JPopupMenu();
         return popup;
     }
 
     @Override
-    public void mouseClicked(MouseEvent me)
-    {
-        if (patch != null)
-        {
-            if (me.getClickCount() == 1)
-            {
-                if (me.isShiftDown())
-                {
+    public void mouseClicked(MouseEvent me) {
+        if (patch != null) {
+            if (me.getClickCount() == 1) {
+                if (me.isShiftDown()) {
                     SetSelected(!GetSelected());
                     me.consume();
-                } else if (Selected == false)
-                {
+                } else if (Selected == false) {
                     ((PatchGUI) patch).SelectNone();
                     SetSelected(true);
                     me.consume();
                 }
             }
-            if (me.getClickCount() == 2)
-            {
+            if (me.getClickCount() == 2) {
                 ((PatchGUI) patch).ShowClassSelector(AxoObjectInstanceAbstract.this.getLocation(), AxoObjectInstanceAbstract.this, null, true);
                 me.consume();
             }
@@ -302,46 +270,37 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     }
 
     @Override
-    public void mousePressed(MouseEvent me)
-    {
+    public void mousePressed(MouseEvent me) {
         handleMousePressed(me);
     }
 
     @Override
-    public void mouseReleased(MouseEvent me)
-    {
+    public void mouseReleased(MouseEvent me) {
         handleMouseReleased(me);
     }
 
     @Override
-    public void mouseEntered(MouseEvent me)
-    {
+    public void mouseEntered(MouseEvent me) {
     }
 
     @Override
-    public void mouseExited(MouseEvent me)
-    {
+    public void mouseExited(MouseEvent me) {
     }
 
     @Override
-    public void mouseDragged(MouseEvent me)
-    {
-        if ((patch != null) && (draggingObjects != null))
-        {
+    public void mouseDragged(MouseEvent me) {
+        if ((patch != null) && (draggingObjects != null)) {
             Point locOnScreen = me.getLocationOnScreen();
             int dx = locOnScreen.x - dragAnchor.x;
             int dy = locOnScreen.y - dragAnchor.y;
-            for (AxoObjectInstanceAbstract o : draggingObjects)
-            {
+            for (AxoObjectInstanceAbstract o : draggingObjects) {
                 int nx = o.dragLocation.x + dx;
                 int ny = o.dragLocation.y + dy;
-                if (!me.isShiftDown())
-                {
+                if (!me.isShiftDown()) {
                     nx = ((nx + (Constants.X_GRID / 2)) / Constants.X_GRID) * Constants.X_GRID;
                     ny = ((ny + (Constants.Y_GRID / 2)) / Constants.Y_GRID) * Constants.Y_GRID;
                 }
-                if (o.x != nx || o.y != ny)
-                {
+                if (o.x != nx || o.y != ny) {
                     o.setLocation(nx, ny);
                 }
             }
@@ -349,14 +308,11 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     }
 
     @Override
-    public void mouseMoved(MouseEvent me)
-    {
+    public void mouseMoved(MouseEvent me) {
     }
 
-    private void moveToDraggedLayer(AxoObjectInstanceAbstract o)
-    {
-        if (getPatchGUI().objectLayerPanel.isAncestorOf(o))
-        {
+    private void moveToDraggedLayer(AxoObjectInstanceAbstract o) {
+        if (getPatchGUI().objectLayerPanel.isAncestorOf(o)) {
             getPatchGUI().objectLayerPanel.remove(o);
             getPatchGUI().draggedObjectLayerPanel.add(o);
         }
@@ -364,28 +320,21 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
 
     ArrayList<AxoObjectInstanceAbstract> draggingObjects = null;
 
-    protected void handleMousePressed(MouseEvent me)
-    {
-        if (patch != null)
-        {
-            if (me.isPopupTrigger())
-            {
+    protected void handleMousePressed(MouseEvent me) {
+        if (patch != null) {
+            if (me.isPopupTrigger()) {
                 JPopupMenu p = CreatePopupMenu();
                 p.show(Titlebar, 0, Titlebar.getHeight());
                 me.consume();
-            } else if (!IsLocked())
-            {
+            } else if (!IsLocked()) {
                 draggingObjects = new ArrayList<AxoObjectInstanceAbstract>();
                 dragAnchor = me.getLocationOnScreen();
                 moveToDraggedLayer(this);
                 draggingObjects.add(this);
                 dragLocation = getLocation();
-                if (IsSelected())
-                {
-                    for (AxoObjectInstanceAbstract o : patch.objectinstances)
-                    {
-                        if (o.IsSelected())
-                        {
+                if (IsSelected()) {
+                    for (AxoObjectInstanceAbstract o : patch.objectinstances) {
+                        if (o.IsSelected()) {
                             moveToDraggedLayer(o);
                             draggingObjects.add(o);
                             o.dragLocation = o.getLocation();
@@ -397,47 +346,37 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         }
     }
 
-    private void moveToObjectLayer(AxoObjectInstanceAbstract o, int z)
-    {
-        if (getPatchGUI().draggedObjectLayerPanel.isAncestorOf(o))
-        {
+    private void moveToObjectLayer(AxoObjectInstanceAbstract o, int z) {
+        if (getPatchGUI().draggedObjectLayerPanel.isAncestorOf(o)) {
             getPatchGUI().draggedObjectLayerPanel.remove(o);
             getPatchGUI().objectLayerPanel.add(o);
             getPatchGUI().objectLayerPanel.setComponentZOrder(o, z);
         }
     }
 
-    protected void handleMouseReleased(MouseEvent me)
-    {
-        if (me.isPopupTrigger())
-        {
+    protected void handleMouseReleased(MouseEvent me) {
+        if (me.isPopupTrigger()) {
             JPopupMenu p = CreatePopupMenu();
             p.show(Titlebar, 0, Titlebar.getHeight());
             me.consume();
             return;
         }
         int maxZIndex = 0;
-        if (draggingObjects != null)
-        {
-            if (patch != null)
-            {
+        if (draggingObjects != null) {
+            if (patch != null) {
                 boolean dirtyOnRelease = false;
-                for (AxoObjectInstanceAbstract o : draggingObjects)
-                {
+                for (AxoObjectInstanceAbstract o : draggingObjects) {
                     moveToObjectLayer(o, 0);
-                    if (getPatchGUI().objectLayerPanel.getComponentZOrder(o) > maxZIndex)
-                    {
+                    if (getPatchGUI().objectLayerPanel.getComponentZOrder(o) > maxZIndex) {
                         maxZIndex = getPatchGUI().objectLayerPanel.getComponentZOrder(o);
                     }
-                    if (o.x != dragLocation.x || o.y != dragLocation.y)
-                    {
+                    if (o.x != dragLocation.x || o.y != dragLocation.y) {
                         dirtyOnRelease = true;
                     }
                     o.repaint();
                 }
                 draggingObjects = null;
-                if (dirtyOnRelease)
-                {
+                if (dirtyOnRelease) {
                     patch.SetDirty();
                 }
                 patch.AdjustSize();
@@ -447,28 +386,22 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     }
 
     @Override
-    public void setLocation(int x, int y)
-    {
+    public void setLocation(int x, int y) {
         super.setLocation(x, y);
         this.x = x;
         this.y = y;
-        if (patch != null)
-        {
+        if (patch != null) {
             repaint();
-            for (InletInstance i : GetInletInstances())
-            {
+            for (InletInstance i : GetInletInstances()) {
                 Net n = getPatch().GetNet(i);
-                if (n != null)
-                {
+                if (n != null) {
                     n.updateBounds();
                     n.repaint();
                 }
             }
-            for (OutletInstance i : GetOutletInstances())
-            {
+            for (OutletInstance i : GetOutletInstances()) {
                 Net n = getPatch().GetNet(i);
-                if (n != null)
-                {
+                if (n != null) {
                     n.updateBounds();
                     n.repaint();
                 }
@@ -477,36 +410,29 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     }
 
     @Override
-    public int getX()
-    {
+    public int getX() {
         return x;
     }
 
     @Override
-    public int getY()
-    {
+    public int getY() {
         return y;
     }
 
-    public void addInstanceNameEditor()
-    {
+    public void addInstanceNameEditor() {
         InstanceNameTF = new TextFieldComponent(InstanceName);
         InstanceNameTF.selectAll();
-        InstanceNameTF.addActionListener(new ActionListener()
-        {
+        InstanceNameTF.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent ae)
-            {
+            public void actionPerformed(ActionEvent ae) {
                 String s = InstanceNameTF.getText();
                 setInstanceName(s);
                 getParent().remove(InstanceNameTF);
             }
         });
-        InstanceNameTF.addFocusListener(new FocusListener()
-        {
+        InstanceNameTF.addFocusListener(new FocusListener() {
             @Override
-            public void focusLost(FocusEvent e)
-            {
+            public void focusLost(FocusEvent e) {
                 String s = InstanceNameTF.getText();
                 setInstanceName(s);
                 getParent().remove(InstanceNameTF);
@@ -514,27 +440,21 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
             }
 
             @Override
-            public void focusGained(FocusEvent e)
-            {
+            public void focusGained(FocusEvent e) {
             }
         });
-        InstanceNameTF.addKeyListener(new KeyListener()
-        {
+        InstanceNameTF.addKeyListener(new KeyListener() {
             @Override
-            public void keyTyped(KeyEvent ke)
-            {
+            public void keyTyped(KeyEvent ke) {
             }
 
             @Override
-            public void keyReleased(KeyEvent ke)
-            {
+            public void keyReleased(KeyEvent ke) {
             }
 
             @Override
-            public void keyPressed(KeyEvent ke)
-            {
-                if (ke.getKeyCode() == KeyEvent.VK_ENTER)
-                {
+            public void keyPressed(KeyEvent ke) {
+                if (ke.getKeyCode() == KeyEvent.VK_ENTER) {
                     String s = InstanceNameTF.getText();
                     setInstanceName(s);
                     getParent().remove(InstanceNameTF);
@@ -555,23 +475,18 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
      public class AxoObjectInstanceNameVerifier extends InputVerifier {
 
      @Override
-     public boolean verify(JComponent input)
-    {
+     public boolean verify(JComponent input) {
      String text = ((TextFieldComponent) input).getText();
      Pattern p = Pattern.compile("[^a-z0-9_]", Pattern.CASE_INSENSITIVE);
      Matcher m = p.matcher(text);
      boolean b = m.find();
-     if (b)
-    {
+     if (b) {
      System.out.println("reject instancename : special character found");
      return false;
      }
-     if (patch != null)
-    {
-     for (AxoObjectInstanceAbstract o : patch.objectinstances)
-    {
-     if (o.InstanceName.equalsIgnoreCase(text) && (AxoObjectInstanceAbstract.this != o))
-    {
+     if (patch != null) {
+     for (AxoObjectInstanceAbstract o : patch.objectinstances) {
+     if (o.InstanceName.equalsIgnoreCase(text) && (AxoObjectInstanceAbstract.this != o)) {
      System.out.println("reject instancename : exists");
      return false;
      }
@@ -581,62 +496,50 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
      }
      }
      */
-    public String GenerateInstanceDataDeclaration2()
-    {
+    public String GenerateInstanceDataDeclaration2() {
         return null;
     }
 
-    public String GenerateCodeMidiHandler(String vprefix)
-    {
+    public String GenerateCodeMidiHandler(String vprefix) {
         return "";
     }
 
-    public String GenerateCallMidiHandler()
-    {
+    public String GenerateCallMidiHandler() {
         return "";
     }
 
-    public ArrayList<InletInstance> GetInletInstances()
-    {
+    public ArrayList<InletInstance> GetInletInstances() {
         return new ArrayList<InletInstance>();
     }
 
-    public ArrayList<OutletInstance> GetOutletInstances()
-    {
+    public ArrayList<OutletInstance> GetOutletInstances() {
         return new ArrayList<OutletInstance>();
     }
 
-    public ArrayList<ParameterInstance> getParameterInstances()
-    {
+    public ArrayList<ParameterInstance> getParameterInstances() {
         return new ArrayList<ParameterInstance>();
     }
 
-    public ArrayList<AttributeInstance> getAttributeInstances()
-    {
+    public ArrayList<AttributeInstance> getAttributeInstances() {
         return new ArrayList<AttributeInstance>();
     }
 
-    public ArrayList<DisplayInstance> GetDisplayInstances()
-    {
+    public ArrayList<DisplayInstance> GetDisplayInstances() {
         return new ArrayList<DisplayInstance>();
     }
 
-    public InletInstance GetInletInstance(String n)
-    {
+    public InletInstance GetInletInstance(String n) {
         return null;
     }
 
-    public OutletInstance GetOutletInstance(String n)
-    {
+    public OutletInstance GetOutletInstance(String n) {
         return null;
     }
 
-    public void refreshIndex()
-    {
+    public void refreshIndex() {
     }
 
-    public boolean IsSelected()
-    {
+    public boolean IsSelected() {
         return Selected;
     }
 
@@ -644,12 +547,9 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     static Border borderUnselected = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Unselected);
     static Border borderUnselectedLocked = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Unselected_Locked);
 
-    public void SetSelected(boolean Selected)
-    {
-        if (this.Selected != Selected)
-        {
-            if (Selected)
-            {
+    public void SetSelected(boolean Selected) {
+        if (this.Selected != Selected) {
+            if (Selected) {
                 setBorder(borderSelected);
             } else {
                 if (Locked) setBorder(borderUnselectedLocked);
@@ -660,94 +560,76 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         this.Selected = Selected;
     }
 
-    public boolean GetSelected()
-    {
+    public boolean GetSelected() {
         return Selected;
     }
 
-    public void Lock()
-    {
+    public void Lock() {
         if (!this.Selected) setBorder(borderUnselectedLocked);
         Locked = true;
     }
 
-    public void Unlock()
-    {
+    public void Unlock() {
         if (!this.Selected) setBorder(borderUnselected);
         Locked = false;
     }
 
-    public boolean IsLocked()
-    {
+    public boolean IsLocked() {
         return Locked;
     }
 
-    public void SetLocation(int x1, int y1)
-    {
+    public void SetLocation(int x1, int y1) {
         super.setLocation(x1, y1);
         x = x1;
         y = y1;
 
-        if (patch != null)
-        {
-            for (Net n : patch.nets)
-            {
+        if (patch != null) {
+            for (Net n : patch.nets) {
                 n.updateBounds();
             }
         }
     }
 
-    public void moveToFront()
-    {
+    public void moveToFront() {
         getPatchGUI().objectLayerPanel.setComponentZOrder(this, 0);
     }
 
-    public boolean providesModulationSource()
-    {
+    public boolean providesModulationSource() {
         return false;
     }
 
     @Override
-    public int compareTo(AxoObjectInstanceAbstract o)
-    {
-        if (o.y == this.y)
-        {
-            if (o.x < x)
-            {
+    public int compareTo(AxoObjectInstanceAbstract o) {
+        if (o.y == this.y) {
+            if (o.x < x) {
                 return 1;
-            } else if (o.x == x)
-            {
+            } else if (o.x == x) {
                 return 0;
             } else {
                 return -1;
             }
         }
-        if (o.y < y)
-        {
+        if (o.y < y) {
             return 1;
         } else {
             return -1;
         }
     }
 
-    public String getLegalName()
-    {
+    public String getLegalName() {
         return CharEscape.CharEscape(InstanceName);
     }
 
-    public String getCInstanceName()
-    {
+    public String getCInstanceName() {
         String s = "instance" + getLegalName();
         return s;
     }
 
-    public void PromoteToOverloadedObj()
-    {
+    public void PromoteToOverloadedObj() {
     }
 
     /*
-     public String GenerateStructName()
-    {
+     public String GenerateStructName() {
      return "";
      }
 
@@ -759,33 +641,27 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
      return "";
      }
      */
-    public String GenerateInitCodePlusPlus(String vprefix, boolean enableOnParent)
-    {
+    public String GenerateInitCodePlusPlus(String vprefix, boolean enableOnParent) {
         return "";
     }
 
-    public String GenerateDisposeCodePlusPlus(String vprefix)
-    {
+    public String GenerateDisposeCodePlusPlus(String vprefix) {
         return "";
     }
 
-    public String GenerateClass(String ClassName, String OnParentAccess, Boolean enableOnParent)
-    {
+    public String GenerateClass(String ClassName, String OnParentAccess, Boolean enableOnParent) {
         return "";
     }
 
-    public boolean hasStruct()
-    {
+    public boolean hasStruct() {
         return false;
     }
 
-    public boolean hasInit()
-    {
+    public boolean hasInit() {
         return false;
     }
 
-    public void resizeToGrid()
-    {
+    public void resizeToGrid() {
         revalidate();
         Dimension d = getPreferredSize();
         d.width = ((d.width + Constants.X_GRID - 1) / Constants.X_GRID) * Constants.X_GRID;
@@ -795,25 +671,20 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     }
 
     @Override
-    public void ObjectModified(Object src)
-    {
+    public void ObjectModified(Object src) {
     }
 
-    public ArrayList<SDFileReference> GetDependendSDFiles()
-    {
+    public ArrayList<SDFileReference> GetDependendSDFiles() {
         return null;
     }
 
-    public boolean isTypeWasAmbiguous()
-    {
+    public boolean isTypeWasAmbiguous() {
         return typeWasAmbiguous;
     }
 
-    public void Close()
-    {
+    public void Close() {
         AxoObjectAbstract t = getType();
-        if (t != null)
-        {
+        if (t != null) {
             t.removeObjectModifiedListener(this);
         }
     }
