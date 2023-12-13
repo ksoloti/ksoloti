@@ -73,9 +73,9 @@ public class Axoloti
                 JDialog.setDefaultLookAndFeelDecorated(true);
             }
 
-            // System.setProperty("awt.useSystemAAFontSettings","lcd");
+            System.setProperty("awt.useSystemAAFontSettings","gasp");
             System.setProperty("sun.java2d.dpiaware","true");
-            // System.setProperty("swing.aatext","true");
+            System.setProperty("swing.aatext","true");
 
             UIManager.put("Table.showHorizontalLines", true);
             UIManager.put("Table.showVerticalLines", true);
@@ -94,22 +94,6 @@ public class Axoloti
         {
             throw new Error(e);
         }
-        // catch (ClassNotFoundException e)
-        // {
-        //     throw new Error(e);
-        // }
-        // catch (InstantiationException e)
-        // {
-        //     throw new Error(e);
-        // }
-        // catch (IllegalAccessException e)
-        // {
-        //     throw new Error(e);
-        // }
-        // catch (UnsupportedLookAndFeelException e)
-        // {
-        //     throw new Error(e);
-        // }
 
         System.setProperty("line.separator", "\n");
 
