@@ -35,11 +35,13 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.intellijthemes.FlatDraculaIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
-import com.formdev.flatlaf.intellijthemes.FlatHighContrastIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatMaterialDesignDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatMonocaiIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatNordIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatSpacegrayIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatXcodeDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneLightIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatLightOwlIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDarkerIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDeepOceanIJTheme;
@@ -140,24 +142,24 @@ public class Preferences {
         // {"Gradianto Deep Ocean", "FlatGradiantoDeepOceanIJTheme"},
         // {"Gradianto Midnight Blue", "FlatGradiantoMidnightBlueIJTheme"},
         // {"Gradianto Nature Green", "FlatGradiantoNatureGreenIJTheme"},
-        // {"Gray", "FlatGrayIJTheme"},
+        // "Flat Gray",
         // {"Gruvbox Dark Hard", "FlatGruvboxDarkHardIJTheme"},
         // {"Gruvbox Dark Medium", "FlatGruvboxDarkMediumIJTheme"},
         // {"Gruvbox Dark Soft", "FlatGruvboxDarkSoftIJTheme"},
         "Hiberbee Dark",
-        "High Contrast",
+        // "High Contrast",
         "Monocai",
         // {"Monokai Pro", "FlatMonokaiProIJTheme"},
         "Nord",
-        // {"One Dark", "FlatOneDarkIJTheme"},
+        // "One Dark",
         // {"Solarized Dark", "FlatSolarizedDarkIJTheme"},
         // {"Solarized Light", "FlatSolarizedLightIJTheme"},
         "Spacegray",
         // {"Vuesion", "FlatVuesionIJTheme"},
-        // {"Xcode-Dark", "FlatXcodeDarkIJTheme"},
+        "Xcode Dark",
         // {"Arc Dark (Material)", "materialthemeuilite.FlatArcDarkIJTheme"},
-        // {"Atom One Dark (Material)", "materialthemeuilite.FlatAtomOneDarkIJTheme"},
-        // {"Atom One Light (Material)", "materialthemeuilite.FlatAtomOneLightIJTheme"},
+        "Atom One Dark (Material)",
+        "Atom One Light (Material)",
         "Dracula (Material)",
         // {"GitHub (Material)", "materialthemeuilite.FlatGitHubIJTheme"},
         // {"GitHub Dark (Material)", "materialthemeuilite.FlatGitHubDarkIJTheme"},
@@ -327,25 +329,27 @@ public class Preferences {
     public void applyTheme()
     {
         /* Ugly and inefficient Theme switching ... but only doing this once during startup */
-        if      (this.Theme.equals("FlatLaf Dark"))                   FlatDarculaLaf.setup();
-        else if (this.Theme.equals("FlatLaf IntelliJ"))               FlatIntelliJLaf.setup();
+        if      (this.Theme.equals("FlatLaf IntelliJ"))               FlatIntelliJLaf.setup();
+        else if (this.Theme.equals("FlatLaf Dark"))                   FlatDarculaLaf.setup();
         else if (this.Theme.equals("FlatLaf macOS Light"))            FlatMacLightLaf.setup();
         else if (this.Theme.equals("FlatLaf macOS Dark"))             FlatMacDarkLaf.setup();
         else if (this.Theme.equals("Hiberbee Dark"))                  FlatHiberbeeDarkIJTheme.setup();
-        else if (this.Theme.equals("High Contrast"))                  FlatHighContrastIJTheme.setup();
         else if (this.Theme.equals("Light Owl (Material)"))           FlatLightOwlIJTheme.setup();
         else if (this.Theme.equals("Night Owl (Material)"))           FlatNightOwlIJTheme.setup();
         else if (this.Theme.equals("Material Design Dark"))           FlatMaterialDesignDarkIJTheme.setup();
         else if (this.Theme.equals("Monocai"))                        FlatMonocaiIJTheme.setup();
         else if (this.Theme.equals("Nord"))                           FlatNordIJTheme.setup();
         else if (this.Theme.equals("Spacegray"))                      FlatSpacegrayIJTheme.setup();
+        else if (this.Theme.equals("Xcode Dark"))                     FlatXcodeDarkIJTheme.setup();
+        else if (this.Theme.equals("Atom One Light (Material)"))      FlatAtomOneLightIJTheme.setup();
+        else if (this.Theme.equals("Atom One Dark (Material)"))       FlatAtomOneDarkIJTheme.setup();
         else if (this.Theme.equals("Dracula (Material)"))             FlatDraculaIJTheme.setup();
+        else if (this.Theme.equals("Material Lighter (Material)"))    FlatMaterialLighterIJTheme.setup();
         else if (this.Theme.equals("Material Darker (Material)"))     FlatMaterialDarkerIJTheme.setup();
         else if (this.Theme.equals("Material Deep Ocean (Material)")) FlatMaterialDeepOceanIJTheme.setup();
-        else if (this.Theme.equals("Material Lighter (Material)"))    FlatMaterialLighterIJTheme.setup();
         else if (this.Theme.equals("Material Oceanic (Material)"))    FlatMaterialOceanicIJTheme.setup();
         else if (this.Theme.equals("Material Palenight (Material)"))  FlatMaterialPalenightIJTheme.setup();
-        /* Falling through - default to FlatLaf Light */
+        /* Falling through - default to FlatLaf IntelliJ */
         else                                                          FlatIntelliJLaf.setup();
     }
 
