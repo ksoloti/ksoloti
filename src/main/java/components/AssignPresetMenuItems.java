@@ -47,7 +47,7 @@ public class AssignPresetMenuItems {
 
         //sub2 = new JPopupMenu();
         {
-            JMenuItem mi = new JMenuItem("Track in current preset");
+            JMenuItem mi = new JMenuItem("Track in Current Preset");
             if (param.presetEditActive == 0)
             {
                 mi.setEnabled(false);
@@ -61,7 +61,7 @@ public class AssignPresetMenuItems {
             parent.add(mi);
         }
         {
-            JMenuItem mi = new JMenuItem("Track in all presets");
+            JMenuItem mi = new JMenuItem("Track in All Presets");
             mi.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -71,7 +71,7 @@ public class AssignPresetMenuItems {
             parent.add(mi);
         }
         {
-            JMenuItem mi = new JMenuItem("Untrack from current preset");
+            JMenuItem mi = new JMenuItem("Untrack from Current Preset");
             if (param.presetEditActive == 0)
             {
                 mi.setEnabled(false);
@@ -80,18 +80,19 @@ public class AssignPresetMenuItems {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     AssignPresetMenuItems.this.param.ExcludeFromPreset();
+                    AssignPresetMenuItems.this.param.ShowPreset(AssignPresetMenuItems.this.param.presetEditActive);
                 }
             });
             parent.add(mi);
         }
         {
-            JMenuItem mi = new JMenuItem("Untrack from all presets");
+            JMenuItem mi = new JMenuItem("Untrack from All Presets");
             mi.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (AssignPresetMenuItems.this.param.getPresets() != null) {
                         AssignPresetMenuItems.this.param.getPresets().clear();
-                        AssignPresetMenuItems.this.param.ExcludeFromPreset(); //TODO improve this hack, e.g. ShowPreset(x)
+                        AssignPresetMenuItems.this.param.ShowPreset(AssignPresetMenuItems.this.param.presetEditActive);
                     }
                 }
             });
