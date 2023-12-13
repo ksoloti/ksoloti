@@ -46,13 +46,16 @@ public class Theme {
     @Element
     public String Theme_Name = "Default";
 
+    int bgRGB = UIManager.getColor("Viewport.background").getRGB();
+    boolean isBgDark = (((bgRGB & 0xFF0000) >> 16) + ((bgRGB & 0x00FF00) >> 8) + ((bgRGB & 0x0000FF))) / 3 < 0x80;
+
     /* UI */
     @Element
     public Color Console_Background = UIManager.getColor("Viewport.background");
     @Element
-    public Color Patch_Unlocked_Background = UIManager.getColor("Viewport.background").darker();
+    public Color Patch_Unlocked_Background = isBgDark ? UIManager.getColor("Viewport.background").brighter() : UIManager.getColor("Viewport.background").darker();
     @Element
-    public Color Patch_Locked_Background = new Color(66,66,64); /* Dark grey with slight brown tint */
+    public Color Patch_Locked_Background = isBgDark ? UIManager.getColor("Viewport.background").darker().darker() : UIManager.getColor("Viewport.background").darker().darker().darker();
     @Element
     public Color Button_Accent_Background = UIManager.getColor("Component.accentColor");
     @Element
@@ -89,7 +92,7 @@ public class Theme {
     @Element
     public Color Cable_CharPointer32 = Color.PINK;
     @Element
-    public Color Cable_CharPointer32_Highlighted = Cable_CharPointer32.brighter();
+    public Color Cable_CharPointer32_Highlighted = Cable_CharPointer32.brighter().brighter();
 
     @Element
     public Color Cable_Zombie = Color.WHITE;
@@ -114,7 +117,7 @@ public class Theme {
     @Element
     public Color Cable_Int32Pointer = Color.MAGENTA;
     @Element
-    public Color Cable_Int32Pointer_Highlighted = Cable_Int32Pointer.brighter().brighter();
+    public Color Cable_Int32Pointer_Highlighted = Cable_Int32Pointer.brighter().brighter().brighter();
 
     @Element
     public Color Cable_Int8Array = Cable_Int32Pointer;
@@ -168,7 +171,9 @@ public class Theme {
     public Color Parameter_Preset_Highlight_Foreground = UIManager.getColor("Component.accentColor");
 
     @Element
-    public Color Component_Foreground = Color.BLACK;
+    // public Color Component_Foreground = Color.BLACK;
+    public Color Component_Foreground = Object_Default_Foreground;
+    // public Color Component_Foreground = isBgDark ? Object_Default_Foreground.brighter() : Object_Default_Foreground.darker();
     @Element
     public Color Component_Mid_Dark = Color.getHSBColor(0.0f, 0.0f, 0.25f);
     @Element
@@ -176,7 +181,7 @@ public class Theme {
     @Element
     public Color Component_Mid_Light = Color.getHSBColor(0.0f, 0.0f, 0.75f);
     @Element
-    public Color Component_Background = Color.WHITE;
+    public Color Component_Background = isBgDark ? Object_Default_Background.darker() : Object_Default_Background.brighter();
     @Element
     public Color Component_Illuminated = Color.ORANGE;
 
