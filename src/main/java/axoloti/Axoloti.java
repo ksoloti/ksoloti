@@ -74,7 +74,7 @@ public class Axoloti
             }
 
             // System.setProperty("awt.useSystemAAFontSettings","lcd");
-            // System.setProperty("sun.java2d.dpiaware","true");
+            System.setProperty("sun.java2d.dpiaware","true");
             // System.setProperty("swing.aatext","true");
 
             UIManager.put("Table.showHorizontalLines", true);
