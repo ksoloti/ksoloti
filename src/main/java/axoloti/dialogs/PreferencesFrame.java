@@ -31,6 +31,8 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -59,6 +61,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private PreferencesFrame() {
 
         setTitle("Preferences");
+        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
 
         setLocation((int)MainFrame.mainframe.getLocation().getX() + 120, (int)MainFrame.mainframe.getLocation().getY() + 60);
 
