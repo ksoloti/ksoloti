@@ -84,12 +84,12 @@ public class Theme {
     @Element
     public Color Cable_Bool32 = new Color(0xFF, 0xEF, 0x40);
     @Element
-    public Color Cable_Bool32_Highlighted = new Color(0xFF, 0xFF, 0x60);
+    public Color Cable_Bool32_Highlighted = Cable_Bool32.brighter().brighter();
 
     @Element
     public Color Cable_CharPointer32 = Color.PINK;
     @Element
-    public Color Cable_CharPointer32_Highlighted = new Color(0xFF, 0xEF, 0xEF);
+    public Color Cable_CharPointer32_Highlighted = Cable_CharPointer32.brighter();
 
     @Element
     public Color Cable_Zombie = Color.WHITE;
@@ -99,22 +99,22 @@ public class Theme {
     @Element
     public Color Cable_Frac32 = new Color(0x20, 0x40, 0xFF);
     @Element
-    public Color Cable_Frac32_Highlighted = new Color(0x20, 0xAF, 0xFF);
+    public Color Cable_Frac32_Highlighted = Cable_Frac32.brighter().brighter();
 
     @Element
     public Color Cable_Frac32Buffer = new Color(0xFF, 0x20, 0x40);
     @Element
-    public Color Cable_Frac32Buffer_Highlighted = new Color(0xFF, 0x20, 0xAF);
+    public Color Cable_Frac32Buffer_Highlighted = new Color(0xFF, 0x60, 0x80);
 
     @Element
     public Color Cable_Int32 = new Color(0x20, 0xFF, 0x40);
     @Element
-    public Color Cable_Int32_Highlighted = new Color(0x80, 0xFF, 0xAF);
+    public Color Cable_Int32_Highlighted = Cable_Int32.brighter().brighter();
 
     @Element
     public Color Cable_Int32Pointer = Color.MAGENTA;
     @Element
-    public Color Cable_Int32Pointer_Highlighted = new Color(0xFF, 0x80, 0xFF);
+    public Color Cable_Int32Pointer_Highlighted = Cable_Int32Pointer.brighter().brighter();
 
     @Element
     public Color Cable_Int8Array = Cable_Int32Pointer;
@@ -144,7 +144,7 @@ public class Theme {
     @Element
     public Color Object_TitleBar_Embedded_Background = new Color(
         Math.min(Object_TitleBar_Background.getRed()+0x60, 0xFF),
-        Math.min(Object_TitleBar_Background.getGreen()+0x40, 0xFF),
+        Math.min(Object_TitleBar_Background.getGreen()+0x30, 0xFF),
         Math.max(Object_TitleBar_Background.getBlue()-0x20, 0x20) 
     );
     @Element
