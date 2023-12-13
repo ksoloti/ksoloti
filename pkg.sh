@@ -87,7 +87,7 @@ rm packagetemp/mac/Ksoloti.app/Contents/Resources/jre/lib/src.zip
 
 chmod +x packagetemp/mac/Ksoloti.app/Contents/Resources/jre/lib/jspawnhelper
 
-cd packagetemp/mac && zip -q -r ../ksoloti_patcher-mac-${VERSION_LONG}.zip *
+cd packagetemp/mac && tar -czf ../ksoloti_patcher-mac-${VERSION_LONG}.tar.gz *
 cd ../..
 rm -rf packagetemp/mac
 
