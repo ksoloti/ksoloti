@@ -472,7 +472,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     }
 
     public void populatePopup(JPopupMenu m) {
-        final JCheckBoxMenuItem m_onParent = new JCheckBoxMenuItem("Show parameter on parent");
+        final JCheckBoxMenuItem m_onParent = new JCheckBoxMenuItem("Show Parameter on Parent");
         m_onParent.setSelected(isOnParent());
         m.add(m_onParent);
         m_onParent.addActionListener(new ActionListener() {

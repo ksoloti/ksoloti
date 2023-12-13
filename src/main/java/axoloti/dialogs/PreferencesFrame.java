@@ -694,7 +694,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         boolean delete = false;
 
         int options = JOptionPane.OK_CANCEL_OPTION;
-        int res = JOptionPane.showConfirmDialog(this, "Reset will overwrite existing factory and community directories.\nContinue?", "Warning", options);
+        int res = JOptionPane.showConfirmDialog(this, "Reset will re-download the factory and community directories.\nContinue?", "Warning", options);
         if (res == JOptionPane.CANCEL_OPTION) {
             return;
         }

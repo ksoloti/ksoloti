@@ -262,6 +262,7 @@ public class Net extends JComponent {
         }
 
         Point from = SwingUtilities.convertPoint(getPatchGui().Layers, p0, this);
+        from.x -= 1; /* Compensate for outlet graphic shift */
         for (InletInstance i : dest) {
             Point p1 = i.getJackLocInCanvas();
 
