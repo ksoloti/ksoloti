@@ -29,8 +29,7 @@ import axoloti.object.AxoObjects;
 import axoloti.outlets.OutletInstance;
 import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
-// import java.awt.Component;
-// import java.awt.Cursor;
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -72,8 +71,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
-import static javax.swing.TransferHandler.COPY_OR_MOVE;
-import static javax.swing.TransferHandler.MOVE;
+
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.AnnotationStrategy;
@@ -126,6 +124,7 @@ public class PatchGUI extends Patch {
         Layers.setLayout(null);
         Layers.setSize(Constants.PATCH_SIZE, Constants.PATCH_SIZE);
         Layers.setLocation(0, 0);
+        Layers.setFont(Constants.FONT);
 
         JComponent[] layerComponents = {
             objectLayer, objectLayerPanel, draggedObjectLayerPanel, netLayerPanel,
@@ -135,6 +134,7 @@ public class PatchGUI extends Patch {
             c.setSize(Constants.PATCH_SIZE, Constants.PATCH_SIZE);
             c.setLocation(0, 0);
             c.setOpaque(false);
+            c.setFont(Constants.FONT);
             c.validate();
         }
 
@@ -863,15 +863,20 @@ public class PatchGUI extends Patch {
 
     @Override
     public void setFileNamePath(String FileNamePath) {
-        super.setFileNamePath(FileNamePath);
-        // if (FileNamePath.length() > 40)
-        // {
-            String[] pth = FileNamePath.split("\\/");
-            patchframe.setTitle(pth[pth.length-1]);
 
-        // }
-        // else patchframe.setTitle(FileNamePath);
-        // patchframe.setTitle(FileNamePath);
+        super.setFileNamePath(FileNamePath);
+
+        /* Get last occurrence of slash or backslash (separating path and filename) */
+        int brk = FileNamePath.lastIndexOf(File.separator) + 1;
+        if (brk != 0) {
+            /* Display filename first, then path in brackets */
+            String str = FileNamePath.substring(brk) + "   (" + FileNamePath.substring(0, brk) + ")";
+            patchframe.setTitle(str);
+        }
+        else {
+            /* Subpatch */
+            patchframe.setTitle(FileNamePath + "   (embedded subpatch)");
+        }
     }
 
     @Override
