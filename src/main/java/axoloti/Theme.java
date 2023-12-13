@@ -247,7 +247,8 @@ public class Theme {
 
             if (ext.equalsIgnoreCase(".axt")) {
                 fileToBeSaved = new File(fc.getSelectedFile().toString());
-            } else if (!ext.equals(filterext)) {
+            } 
+            else if (!ext.equals(filterext)) {
                 Object[] options = {"Yes",
                     "No"};
                 int n = JOptionPane.showOptionDialog(frame,
@@ -286,7 +287,8 @@ public class Theme {
                 }
             }
             return fileToBeSaved;
-        } else {
+        }
+        else {
             return null;
         }
     }

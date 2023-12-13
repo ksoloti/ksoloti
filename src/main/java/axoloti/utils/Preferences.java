@@ -33,11 +33,17 @@ import org.simpleframework.xml.core.Persister;
 import com.formdev.flatlaf.FlatDarculaLaf;
 
 import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.intellijthemes.FlatCobalt2IJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatCyanLightIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatDraculaIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatGruvboxDarkHardIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatGruvboxDarkSoftIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatMaterialDesignDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatMonocaiIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatNordIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatSolarizedDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatSolarizedLightIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatSpacegrayIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatXcodeDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneDarkIJTheme;
@@ -128,8 +134,6 @@ public class Preferences {
         // {"Arc Dark", "FlatArcDarkIJTheme"},
         // {"Arc Dark - Orange", "FlatArcDarkOrangeIJTheme"},
         // {"Carbon", "FlatCarbonIJTheme"},
-        // {"Cobalt 2", "FlatCobalt2IJTheme"},
-        // {"Cyan light", "FlatCyanLightIJTheme"},
         // {"Dark purple", "FlatDarkPurpleIJTheme"},
         // {"Dracula", "FlatDraculaIJTheme"},
         "FlatLaf Light",
@@ -138,14 +142,15 @@ public class Preferences {
         // "FlatLaf IntelliJ",
         "FlatLaf macOS Light",
         "FlatLaf macOS Dark",
+        "Cobalt 2",
+        "Cyan Light",
         // {"Gradianto Dark Fuchsia", "FlatGradiantoDarkFuchsiaIJTheme"},
         // {"Gradianto Deep Ocean", "FlatGradiantoDeepOceanIJTheme"},
         // {"Gradianto Midnight Blue", "FlatGradiantoMidnightBlueIJTheme"},
         // {"Gradianto Nature Green", "FlatGradiantoNatureGreenIJTheme"},
         // "Flat Gray",
-        // {"Gruvbox Dark Hard", "FlatGruvboxDarkHardIJTheme"},
-        // {"Gruvbox Dark Medium", "FlatGruvboxDarkMediumIJTheme"},
-        // {"Gruvbox Dark Soft", "FlatGruvboxDarkSoftIJTheme"},
+        "Gruvbox Dark Hard",
+        "Gruvbox Dark Soft",
         "Hiberbee Dark",
         // "High Contrast",
         "Monocai",
@@ -158,23 +163,23 @@ public class Preferences {
         // {"Vuesion", "FlatVuesionIJTheme"},
         "Xcode Dark",
         // {"Arc Dark (Material)", "materialthemeuilite.FlatArcDarkIJTheme"},
-        "Atom One Dark (Material)",
         "Atom One Light (Material)",
+        "Atom One Dark (Material)",
         "Dracula (Material)",
         // {"GitHub (Material)", "materialthemeuilite.FlatGitHubIJTheme"},
         // {"GitHub Dark (Material)", "materialthemeuilite.FlatGitHubDarkIJTheme"},
         "Light Owl (Material)",
         "Night Owl (Material)",
+        "Material Lighter (Material)",
         "Material Design Dark",
         "Material Darker (Material)",
         "Material Deep Ocean (Material)",
-        "Material Lighter (Material)",
         "Material Oceanic (Material)",
         "Material Palenight (Material)",
         // {"Monokai Pro (Material)", "materialthemeuilite.FlatMonokaiProIJTheme"},
         // {"Moonlight (Material)", "materialthemeuilite.FlatMoonlightIJTheme"},
-        // {"Solarized Dark (Material)", "materialthemeuilite.FlatSolarizedDarkIJTheme"},
-        // {"Solarized Light (Material)", "materialthemeuilite.FlatSolarizedLightIJTheme"}
+        "Solarized Light (Material)",
+        "Solarized Dark (Material)"
     };
 
     protected Preferences() {
@@ -192,9 +197,6 @@ public class Preferences {
         if (MouseDoNotRecenterWhenAdjustingControls == null) {
             MouseDoNotRecenterWhenAdjustingControls = false;
         }
-        // if (KeyboardFrameAlwaysOnTop == null) {
-        //     KeyboardFrameAlwaysOnTop = false;
-        // }
         if (ExpertMode == null) {
             ExpertMode = false;
         }
@@ -326,17 +328,19 @@ public class Preferences {
         SetDirty();
     }
 
-    public void applyTheme()
-    {
-        /* Ugly and inefficient Theme switching ... but only doing this once during startup */
+    public void applyTheme() {
+        /* Ugly and inefficient Theme switching ... only doing this once during startup */
         if      (this.Theme.equals("FlatLaf IntelliJ"))               FlatIntelliJLaf.setup();
         else if (this.Theme.equals("FlatLaf Dark"))                   FlatDarculaLaf.setup();
         else if (this.Theme.equals("FlatLaf macOS Light"))            FlatMacLightLaf.setup();
         else if (this.Theme.equals("FlatLaf macOS Dark"))             FlatMacDarkLaf.setup();
+        else if (this.Theme.equals("Cobalt 2"))                       FlatCobalt2IJTheme.setup();
+        else if (this.Theme.equals("Cyan Light"))                     FlatCyanLightIJTheme.setup();
+        else if (this.Theme.equals("Gruvbox Dark Hard"))              FlatGruvboxDarkHardIJTheme.setup();
+        else if (this.Theme.equals("Gruvbox Dark Soft"))              FlatGruvboxDarkSoftIJTheme.setup();
         else if (this.Theme.equals("Hiberbee Dark"))                  FlatHiberbeeDarkIJTheme.setup();
         else if (this.Theme.equals("Light Owl (Material)"))           FlatLightOwlIJTheme.setup();
         else if (this.Theme.equals("Night Owl (Material)"))           FlatNightOwlIJTheme.setup();
-        else if (this.Theme.equals("Material Design Dark"))           FlatMaterialDesignDarkIJTheme.setup();
         else if (this.Theme.equals("Monocai"))                        FlatMonocaiIJTheme.setup();
         else if (this.Theme.equals("Nord"))                           FlatNordIJTheme.setup();
         else if (this.Theme.equals("Spacegray"))                      FlatSpacegrayIJTheme.setup();
@@ -345,10 +349,13 @@ public class Preferences {
         else if (this.Theme.equals("Atom One Dark (Material)"))       FlatAtomOneDarkIJTheme.setup();
         else if (this.Theme.equals("Dracula (Material)"))             FlatDraculaIJTheme.setup();
         else if (this.Theme.equals("Material Lighter (Material)"))    FlatMaterialLighterIJTheme.setup();
+        else if (this.Theme.equals("Material Design Dark"))           FlatMaterialDesignDarkIJTheme.setup();
         else if (this.Theme.equals("Material Darker (Material)"))     FlatMaterialDarkerIJTheme.setup();
         else if (this.Theme.equals("Material Deep Ocean (Material)")) FlatMaterialDeepOceanIJTheme.setup();
         else if (this.Theme.equals("Material Oceanic (Material)"))    FlatMaterialOceanicIJTheme.setup();
         else if (this.Theme.equals("Material Palenight (Material)"))  FlatMaterialPalenightIJTheme.setup();
+        else if (this.Theme.equals("Solarized Dark (Material)"))      FlatSolarizedDarkIJTheme.setup();
+        else if (this.Theme.equals("Solarized Light (Material)"))     FlatSolarizedLightIJTheme.setup();
         /* Falling through - default to FlatLaf IntelliJ */
         else                                                          FlatIntelliJLaf.setup();
     }
@@ -380,20 +387,6 @@ public class Preferences {
                     prefs = new Preferences();
                 }
                 singleton = prefs;
-                // if (prefs.RuntimeDir
-                //         == null) {
-                //     prefs.RuntimeDir = System.getProperty(axoloti.Axoloti.RUNTIME_DIR);
-                //     prefs.SetDirty();
-                // } else {
-                //     System.setProperty(axoloti.Axoloti.RUNTIME_DIR, prefs.RuntimeDir);
-                // }
-                // if (prefs.FirmwareDir
-                //         == null) {
-                //     prefs.FirmwareDir = System.getProperty(axoloti.Axoloti.FIRMWARE_DIR);
-                //     prefs.SetDirty();
-                // } else {
-                //     System.setProperty(axoloti.Axoloti.FIRMWARE_DIR, prefs.FirmwareDir);
-                // }
 
                 if (prefs.libraries.isEmpty()) {
                     prefs.ResetLibraries(false);
@@ -402,7 +395,8 @@ public class Preferences {
                 prefs.buildObjectSearchPatch();
 
                 singleton.MidiInputDevice = null; // clear it out for the future
-            } else {
+            }
+            else {
                 singleton = new Preferences();
                 singleton.ResetLibraries(false);
             }
@@ -419,7 +413,8 @@ public class Preferences {
 
         try {
             serializer.write(this, f);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, ex);
         }
         ClearDirty();
@@ -457,18 +452,6 @@ public class Preferences {
         this.MouseDoNotRecenterWhenAdjustingControls = MouseDoNotRecenterWhenAdjustingControls;
         SetDirty();
     }
-
-    // public boolean getKeyboardFrameAlwaysOnTop() {
-    //     return KeyboardFrameAlwaysOnTop;
-    // }
-
-    // public void setKeyboardFrameAlwaysOnTop(boolean KeyboardFrameAlwaysOnTop) {
-    //     if (KeyboardFrameAlwaysOnTop == this.KeyboardFrameAlwaysOnTop) {
-    //         return;
-    //     }
-    //     this.KeyboardFrameAlwaysOnTop = KeyboardFrameAlwaysOnTop;
-    //     SetDirty();
-    // }
 
     public Boolean getExpertMode() {
         return ExpertMode;
@@ -510,16 +493,6 @@ public class Preferences {
         SetDirty();
     }
 
-    // public void SetFirmwareDir(String dir) {
-    //     FirmwareDir = dir;
-    //     System.setProperty(axoloti.Axoloti.FIRMWARE_DIR, dir);
-    // }
-
-    // public void SetRuntimeDir(String dir) {
-    //     RuntimeDir = dir;
-    //     System.setProperty(axoloti.Axoloti.RUNTIME_DIR, dir);
-    // }
-
     public String getBoardName(String cpu) {
         if (cpu == null) {
             return null;
@@ -558,52 +531,46 @@ public class Preferences {
     public final void ResetLibraries(boolean delete) {
         libraries = new ArrayList<AxolotiLibrary>();
 
-        // try {
-            AxoGitLibrary factory = new AxoGitLibrary(
-                    AxolotiLibrary.FACTORY_ID,
-                    "git",
-                    System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
-                        + Version.AXOLOTI_SHORT_VERSION + File.separator
-                        + "axoloti-factory" + File.separator,
-                    true,
-                    "https://github.com/axoloti/axoloti-factory.git",
-                    false
-            );
-            libraries.add(factory);
+        AxoGitLibrary factory = new AxoGitLibrary(
+                AxolotiLibrary.FACTORY_ID,
+                "git",
+                System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
+                    + Version.AXOLOTI_SHORT_VERSION + File.separator
+                    + "axoloti-factory" + File.separator,
+                true,
+                "https://github.com/axoloti/axoloti-factory.git",
+                false
+        );
+        libraries.add(factory);
 
-            libraries.add(new AxoGitLibrary(
-                    AxolotiLibrary.USER_LIBRARY_ID,
-                    "git",
-                    System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
-                        + Version.AXOLOTI_SHORT_VERSION + File.separator
-                        + "axoloti-contrib" + File.separator,
-                    true,
-                    "https://github.com/axoloti/axoloti-contrib.git",
-                    false
-            ));
+        libraries.add(new AxoGitLibrary(
+                AxolotiLibrary.USER_LIBRARY_ID,
+                "git",
+                System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
+                    + Version.AXOLOTI_SHORT_VERSION + File.separator
+                    + "axoloti-contrib" + File.separator,
+                true,
+                "https://github.com/axoloti/axoloti-contrib.git",
+                false
+        ));
 
-            libraries.add(new AxoGitLibrary(
-                    AxolotiLibrary.KSOLOTI_LIBRARY_ID,
-                    "git",
-                    System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
-                        + Version.AXOLOTI_SHORT_VERSION + File.separator
-                        + "ksoloti-objects" + File.separator,
-                    true,
-                    "https://github.com/ksoloti/ksoloti-objects.git",
-                    false
-            ));
-        // } catch(IOException ex) {
-            // Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, ex);
-        // }
+        libraries.add(new AxoGitLibrary(
+                AxolotiLibrary.KSOLOTI_LIBRARY_ID,
+                "git",
+                System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
+                    + Version.AXOLOTI_SHORT_VERSION + File.separator
+                    + "ksoloti-objects" + File.separator,
+                true,
+                "https://github.com/ksoloti/ksoloti-objects.git",
+                false
+        ));
 
-        // if (!Axoloti.isFailSafeMode()) {
-            // initialise the libraries
-            for (AxolotiLibrary lib : libraries) {
-                if (lib.getEnabled()) {
-                    lib.init(delete);
-                }
+        // initialise the libraries
+        for (AxolotiLibrary lib : libraries) {
+            if (lib.getEnabled()) {
+                lib.init(delete);
             }
-        // }
+        }
         buildObjectSearchPatch();
     }
 
