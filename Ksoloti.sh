@@ -28,12 +28,16 @@ if [ -f $rootdir/dist/Ksoloti.jar ]
 then
     case "$platform" in
         mac)
-                echo java -Xdock:name=Ksoloti -jar $rootdir/dist/Ksoloti.jar $* 
-                java -Xdock:name=Ksoloti -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
+                java -Xdock:name=Ksoloti \
+                        # --patch-module sun.java2d.marlin=$rootdir/lib/marlin-0.9.4.7-Unsafe.jar \
+                        # -Dsun.java2d.renderer=sun.java2d.marlin.DMarlinRenderingEngine \
+                        -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
         ;;
         linux)
-                echo java -jar $rootdir/dist/Ksoloti.jar $* 
-                java -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
+                java \
+                        # --patch-module sun.java2d.marlin=$rootdir/lib/marlin-0.9.4.7-Unsafe.jar \
+                        # -Dsun.java2d.renderer=sun.java2d.marlin.DMarlinRenderingEngine \
+                        -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
         ;;
     esac
 else
