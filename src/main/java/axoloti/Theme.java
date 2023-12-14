@@ -175,11 +175,11 @@ public class Theme {
     public Color Component_Foreground = Object_Default_Foreground;
     // public Color Component_Foreground = isBgDark ? Object_Default_Foreground.brighter() : Object_Default_Foreground.darker();
     @Element
-    public Color Component_Mid_Dark = Color.getHSBColor(0.0f, 0.0f, 0.25f);
+    public Color Component_Mid_Dark = Color.getHSBColor(0.0f, 0.0f, isBgDark ? 0.66f : 0.33f); /* Invert grey values when dark theme is active */
     @Element
     public Color Component_Mid = Color.GRAY;
     @Element
-    public Color Component_Mid_Light = Color.getHSBColor(0.0f, 0.0f, 0.75f);
+    public Color Component_Mid_Light = Color.getHSBColor(0.0f, 0.0f, isBgDark ? 0.33f : 0.66f);
     @Element
     public Color Component_Background = isBgDark ? Object_Default_Background.darker() : Object_Default_Background.brighter();
     @Element

@@ -183,7 +183,7 @@ public class HRadioComponent extends ACtrlComponent {
         }
 
         if (isEnabled()) {
-            g2.fillOval((int) value * bsize + 2, 2, bsize - 3, bsize - 3);
+            g2.fillOval((int) value * bsize + 3, 3, bsize - 5, bsize - 5);
         } else {
         }
     }

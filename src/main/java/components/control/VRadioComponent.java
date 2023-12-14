@@ -31,7 +31,7 @@ public class VRadioComponent extends HRadioComponent {
 
     public VRadioComponent(int value, int n) {
         super(value, n);
-        bsize = 14;
+        bsize = 12;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class VRadioComponent extends HRadioComponent {
         }
 
         if (isEnabled()) {
-            g2.fillOval(2, (int) value * bsize + 2, bsize - 3, bsize - 3);
+            g2.fillOval(3, (int) value * bsize + 3, bsize - 5, bsize - 5);
         } else {
         }
     }
