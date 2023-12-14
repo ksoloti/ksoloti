@@ -40,6 +40,8 @@ import java.awt.event.MouseListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.regex.Pattern;
+
 import javax.swing.Icon;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -389,7 +391,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         }
         jTextFieldObjName.grabFocus();
         if (selectText) {
-            jTextFieldObjName.setSelectionStart(0);
+            jTextFieldObjName.selectAll();
         }
         else {
             jTextFieldObjName.setSelectionStart(jTextFieldObjName.getText().length());
@@ -486,67 +488,72 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     {
         ArrayList<AxoObjectAbstract> listData = new ArrayList<AxoObjectAbstract>();
 
-        if ((s == null) || s.isEmpty())
-        {
-            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList)
-            {
+        if ((s == null) || s.isEmpty()) {
+            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+                /* add complete list */
                 listData.add(o);
             }
             jResultList.setListData(listData.toArray());
-            // jResultList.doLayout();
-            // jResultList.revalidate();
+
         }
-        else
-        {
-            // exact match first
-            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList)
-            {
-                if (o.id.equals(s)) {
+        else {
+            s = s.toLowerCase();
+
+            /* exact match first */
+            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+                if (o.id.toLowerCase().equals(s)) {
                     listData.add(o);
                 }
             }
-            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList)
-            {
-                if (o.id.startsWith(s))
-                {
-                    if (!listData.contains(o))
-                    {
-                        listData.add(o);
-                    }
-                }
-            }
+
+            /* if starts with */
             for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                if (o.id.contains(s))
-                {
-                    if (!listData.contains(o))
-                    {
+                if (o.id.toLowerCase().startsWith(s)) {
+                    if (!listData.contains(o)) {
                         listData.add(o);
                     }
                 }
             }
-            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList)
-            {
-                if (o.sDescription != null && o.sDescription.contains(s))
-                {
-                    if (!listData.contains(o))
-                    {
+
+            /* if contains full string */
+            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+                if (o.id.toLowerCase().contains(s)) {
+                    if (!listData.contains(o)) {
                         listData.add(o);
                     }
                 }
             }
+
+
+            /* if contains string with regex or '*' wildcard */
+            String rgx = ".*" + s.replace("*", ".*") + ".*";
+            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+                if (Pattern.matches(rgx, o.id.toLowerCase())) {
+                    if (!listData.contains(o)) {
+                        listData.add(o);
+                    }
+                }
+            }
+
+            /* if object description contains */
+            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+                if (o.sDescription != null && o.sDescription.toLowerCase().contains(s)) {
+                    if (!listData.contains(o)) {
+                        listData.add(o);
+                    }
+                }
+            }
+
             jResultList.setListData(listData.toArray());
-            // jResultList.doLayout();
-            // jResultList.revalidate();
-            if (!listData.isEmpty())
-            {
+
+            if (!listData.isEmpty()) {
                 type = listData.get(0);
                 jResultList.setSelectedIndex(0);
                 jResultList.ensureIndexIsVisible(0);
                 ExpandJTreeToEl(listData.get(0));
                 SetPreview(type);
             }
-            else
-            {
+            else {
                 ArrayList<AxoObjectAbstract> objs = MainFrame.axoObjects.GetAxoObjectFromName(s, p.GetCurrentWorkingDirectory());
                 if ((objs != null) && (objs.size() > 0))
                 {

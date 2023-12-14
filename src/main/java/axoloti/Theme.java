@@ -97,7 +97,7 @@ public class Theme {
     @Element
     public Color Cable_Zombie = Color.WHITE;
     @Element
-    public Color Cable_Zombie_Highlighted = new Color(0xAF, 0x00, 0x00);
+    public Color Cable_Zombie_Highlighted = new Color(0x9F, 0x00, 0x00);
 
     @Element
     public Color Cable_Frac32 = new Color(0x20, 0x40, 0xFF);
@@ -171,9 +171,7 @@ public class Theme {
     public Color Parameter_Preset_Highlight_Foreground = UIManager.getColor("Component.accentColor");
 
     @Element
-    // public Color Component_Foreground = Color.BLACK;
     public Color Component_Foreground = Object_Default_Foreground;
-    // public Color Component_Foreground = isBgDark ? Object_Default_Foreground.brighter() : Object_Default_Foreground.darker();
     @Element
     public Color Component_Mid_Dark = Color.getHSBColor(0.0f, 0.0f, isBgDark ? 0.66f : 0.33f); /* Invert grey values when dark theme is active */
     @Element
