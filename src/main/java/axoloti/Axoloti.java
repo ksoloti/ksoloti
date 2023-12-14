@@ -67,11 +67,11 @@ public class Axoloti
                 System.setProperty("apple.awt.transparentTitleBar", "true");
             }
 
-            if (OSDetect.getOS() == OSDetect.OS.LINUX)
-            {
+            // if (OSDetect.getOS() == OSDetect.OS.LINUX)
+            // {
                 JFrame.setDefaultLookAndFeelDecorated(true);
                 JDialog.setDefaultLookAndFeelDecorated(true);
-            }
+            // }
 
             System.setProperty("awt.useSystemAAFontSettings","gasp");
             System.setProperty("sun.java2d.dpiaware","true");
