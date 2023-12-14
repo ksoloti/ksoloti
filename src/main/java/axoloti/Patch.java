@@ -422,6 +422,7 @@ public class Patch {
 
     public void ClearDirty() {
         dirty = false;
+        patchframe.setSaveMenuEnabled(false);
     }
 
     public void SetDirty() {
@@ -430,6 +431,7 @@ public class Patch {
 
     public void SetDirty(boolean shouldSaveState) {
         dirty = true;
+        patchframe.setSaveMenuEnabled(true);
 
         if (container != null) {
             container.SetDirty(shouldSaveState);
@@ -784,6 +786,7 @@ public class Patch {
             Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
+        patchframe.setSaveMenuEnabled(false);
         return true;
 //        if (settings == null) {
 //            return;

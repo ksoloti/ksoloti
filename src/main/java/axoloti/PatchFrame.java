@@ -1230,6 +1230,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         return patch;
     }
 
+    public void setSaveMenuEnabled(boolean b) {
+        jMenuSave.setEnabled(b);
+    }
+
     ArrayList<DocumentWindow> dwl = new ArrayList<DocumentWindow>();
 
     @Override
