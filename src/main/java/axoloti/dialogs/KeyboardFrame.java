@@ -42,6 +42,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
     PianoComponent piano;
 
     DialComponent pbenddial;
+    DialComponent ccdial;
 
     // Preferences prefs = Preferences.LoadPreferences();
 
@@ -95,6 +96,8 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         jPanelMain = new javax.swing.JPanel();
         jLabelMidiChannel = new javax.swing.JLabel();
         jSpinnerMidiChannel = new javax.swing.JSpinner();
+        jLabelControlChange = new javax.swing.JLabel();
+        jSpinnerControlChange = new javax.swing.JSpinner();
         jLabelVelocity = new javax.swing.JLabel();
         jSliderVelocity = new javax.swing.JSlider();
         jButtonAllNotesOff = new javax.swing.JButton();
@@ -103,11 +106,14 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         filler1 = new javax.swing.Box.Filler(di, di, di);
         filler2 = new javax.swing.Box.Filler(di, di, di);
         filler4 = new javax.swing.Box.Filler(di, di, di);
+        filler6 = new javax.swing.Box.Filler(di, di, di);
+        filler8 = new javax.swing.Box.Filler(di, di, di);
 
         Dimension dv = new java.awt.Dimension(0,50);
         filler5 = new javax.swing.Box.Filler(dv, dv, dv);
 
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0), new java.awt.Dimension(32767, 0));
+        filler7 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0), new java.awt.Dimension(32767, 0));
 
         setMaximumSize(null);
         setMinimumSize(new java.awt.Dimension(200, 60));
@@ -169,6 +175,35 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         jPanelMain.add(jButtonAllNotesOff);
         jPanelMain.add(filler3);
 
+        jLabelControlChange.setText("CC#");
+        jPanelMain.add(jLabelControlChange);
+        jPanelMain.add(filler6);
+
+        jSpinnerControlChange.setModel(new javax.swing.SpinnerNumberModel(1, 0, 127, 1));
+        jSpinnerControlChange.setMaximumSize(new java.awt.Dimension(70, 30));
+        jSpinnerControlChange.setMinimumSize(new java.awt.Dimension(70, 30));
+        jSpinnerControlChange.setPreferredSize(new java.awt.Dimension(70, 30));
+        jPanelMain.add(jSpinnerControlChange);
+        jPanelMain.add(filler8);
+        ccdial = new DialComponent(0, 0, 127, 1);
+        ccdial.addACtrlListener(new ACtrlListener() {
+            @Override
+            public void ACtrlAdjusted(ACtrlEvent e) {
+                USBBulkConnection.GetConnection().SendMidi(0xB0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, ((SpinnerNumberModel) jSpinnerControlChange.getModel()).getNumber().intValue(), 0x07F & (int) (ccdial.getValue()));
+            }
+
+            @Override
+            public void ACtrlAdjustmentBegin(ACtrlEvent e) {
+            }
+
+            @Override
+            public void ACtrlAdjustmentFinished(ACtrlEvent e) {
+            }
+        });
+        jPanelMain.add(ccdial);
+        jPanelMain.add(filler7);
+
+
         getContentPane().add(jPanelMain);
 
         pack();
@@ -185,13 +220,18 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
     private javax.swing.Box.Filler filler3;
     private javax.swing.Box.Filler filler4;
     private javax.swing.Box.Filler filler5;
+    private javax.swing.Box.Filler filler6;
+    private javax.swing.Box.Filler filler7;
+    private javax.swing.Box.Filler filler8;
     private javax.swing.JButton jButtonAllNotesOff;
     private javax.swing.JLabel jLabelMidiChannel;
+    private javax.swing.JLabel jLabelControlChange;
     private javax.swing.JLabel jLabelVelocity;
     private javax.swing.JPanel jPanelMain;
     private javax.swing.JPanel jPanelPiano;
     private javax.swing.JSlider jSliderVelocity;
     private javax.swing.JSpinner jSpinnerMidiChannel;
+    private javax.swing.JSpinner jSpinnerControlChange;
     // End of variables declaration
 
     @Override
@@ -199,6 +239,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         piano.clear();
         piano.setEnabled(true);
         pbenddial.setEnabled(true);
+        ccdial.setEnabled(true);
     }
 
     @Override
@@ -206,5 +247,6 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         piano.clear();
         piano.setEnabled(false);
         pbenddial.setEnabled(false);
+        ccdial.setEnabled(false);
     }
 }
