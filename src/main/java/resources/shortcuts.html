@@ -32,10 +32,12 @@
     <body>
         <h2>Ksoloti Patcher Keyboard Shortcuts</h2>
 
-        <p>Note: on MacOS use the CMD key wherever the CTRL key is used in this document.</p>
+        <p>Note: Key combos are written in all capitals but you should only press SHIFT when it is explicitly shown in the combo.</p>
+
+        <p>On MacOS use the CMD key wherever the CTRL key is used in this document.</p>
 
         <p>
-            <h3>Patch Window</h3>
+            <h3>Patch Window: General</h3>
             <table>
                 <tr class="nobreak">
                         <td><h3>Key Combo</td>
@@ -45,17 +47,22 @@
                 <tr>
                     <td class="nobreak">CTRL + X</td>
                     <td>Cut</td>
-                    <td>Cuts the selected objects including their interconnections and places them in the clipboard.</td>
+                    <td>Cuts the selected objects, trying to keep their connections intact, and places them in the clipboard.</td>
                 </tr>
                 <tr>
                     <td class="nobreak">CTRL + C</td>
                     <td>Copy</td>
-                    <td>Copies the selected objects including their interconnections to the clipboard.</td>
+                    <td>Copies the selected objects to the clipboard, trying to keep their connections intact.</td>
                 </tr>
                 <tr>
                     <td class="nobreak">CTRL + V</td>
                     <td>Paste</td>
                     <td>Pastes the content of the clipboard.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + D</td>
+                    <td>Duplicate</td>
+                    <td>Creates a copy of the selected objects trying to keep their connections intact, pastes them directly to the canvas and activates mouse drag. Left-click to confirm placement of the objects. A copy of the duplicated content will remain in the clipboard so you could use the paste action to create more duplicates. This is essentially just a shortcut for the three actions [copy, paste, activate mouse drag].</td>
                 </tr>
                 <tr>
                     <td class="nobreak">DEL</td>
@@ -93,11 +100,6 @@
                     <td>Closes the current patch window.</td>
                 </tr>
                 <tr>
-                    <td>TAB, <nobr>SHIFT + TAB</nobr></td>
-                    <td>Cycle Focus</td>
-                    <td>Cycles through the currently selected attribute or parameter.</td>
-                </tr>
-                <tr>
                     <td class="nobreak">CTRL + E</td>
                     <td>Toggle Live Mode</td>
                     <td>Takes your patch live or brings it back to edit mode.</td>
@@ -118,9 +120,54 @@
                     <td>Toggles patch cord visibility either on top or hidden by the objects. Convenient in complex patches or when you're done editing and want to have a cleaner canvas.</td>
                 </tr>
                 <tr>
+                    <td class="nobreak">SHIFT</td>
+                    <td>Snap to Grid</td>
+                    <td>While dragging objects, hold down SHIFT to disable the snap to grid function.</td>
+                </tr>
+                <tr>
+                    <td>SHIFT, <nobr>CTRL + SHIFT</nobr></td>
+                    <td>Fine Tune</td>
+                    <td>While adjusting a parameter or attribute, hold down SHIFT to fine-tune it.<br/>Hold down CTRL + SHIFT to fine-tune it in the smallest steps possible.</td>
+                </tr>
+                <tr>
+                    <td>TAB, <nobr>SHIFT + TAB</nobr></td>
+                    <td>Cycle Focus</td>
+                    <td>Cycles through the available attributes or parameters in yoru patch.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + SHIFT + M</td>
+                    <td>Show Main Window</td>
+                    <td>Takes you to the main window. Useful if you want to jump there to check the console status or quick-connect/disconnect your board.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + SHIFT + Y</td>
+                    <td>Show Virtual Keyboard</td>
+                    <td>Takes you to the virtual keyboard window. The virtual keyboard simulates MIDI events as if they were received via DIN or USB so you can use it to test your patch.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + SHIFT + F</td>
+                    <td>Show File Manager</td>
+                    <td>Takes you to the file manager window. Here you can view, add, and delete files on your SD card.</td>
+                </tr>
+            </table>
+        </p>
+        <p>
+            <h3>Patch Window: Object Finder</h3>
+            <table>
+                <tr class="nobreak">
+                        <td><h3>Key Combo</td>
+                        <td><h3>Function</td>
+                        <td><h3>Notes</td>
+                </tr>
+                <tr>
                     <td class="nobreak">SPACE</td>
                     <td>Show Object Finder</td>
                     <td>Opens the Object Finder that lets you search for and add objects to your patch.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">A</td>
+                    <td>Show Object Finder, shortcut to "audio/"</td>
+                    <td>Opens the Object Finder with the text "audio/" already pasted in the search field.</td>
                 </tr>
             </table>
         </p>
@@ -135,7 +182,7 @@
                 <tr>
                     <td class="nobreak">CTRL + X</td>
                     <td>Cut</td>
-                    <td>Cuts the selected objects including their interconnections and places them in the clipboard.</td>
+                    <td>Cuts the selected objects, trying to keep their connections intact, and places them in the clipboard.</td>
                 </tr>
             </table>
         </p>
