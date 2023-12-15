@@ -146,27 +146,29 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
             public void ShowPopup() {
                 JPopupMenu popup = CreatePopupMenu();
                 popupIcon.add(popup);
-                popup.show(popupIcon,
-                        0, popupIcon.getHeight());
+                popup.show(popupIcon, 0, popupIcon.getHeight());
             }
         });
+
         popupIcon.setAlignmentX(LEFT_ALIGNMENT);
         Titlebar.add(popupIcon);
         LabelComponent idlbl = new LabelComponent(typeName);
+        if (typeName.length() > 20) {
+            String[] sbs = typeName.split("/");
+            idlbl.setText(".../" + sbs[sbs.length-1]);
+        }
         idlbl.setForeground(Theme.getCurrentTheme().Object_TitleBar_Foreground);
         idlbl.setAlignmentX(LEFT_ALIGNMENT);
         idlbl.setFont(Constants.FONT_BOLD);
         Titlebar.add(idlbl);
 
         String tooltiptxt = "<html>";
+        tooltiptxt += "<b>" + typeName + "</b>";
         if ((getType().sDescription != null) && (!getType().sDescription.isEmpty())) {
-            tooltiptxt += getType().sDescription;
+            tooltiptxt += "<p><br/>" + getType().sDescription.replace("\n", "<br/>");
         }
         if ((getType().sAuthor != null) && (!getType().sAuthor.isEmpty())) {
             tooltiptxt += "<p>Author: " + getType().sAuthor;
-        }
-        if ((getType().sLicense != null) && (!getType().sLicense.isEmpty())) {
-            tooltiptxt += "<p>License: " + getType().sLicense;
         }
         if ((getType().sPath != null) && (!getType().sPath.isEmpty())) {
             tooltiptxt += "<p>Path: " + getType().sPath;
@@ -186,6 +188,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
         //IndexLabel.setAlignmentX(RIGHT_ALIGNMENT);
         Titlebar.setAlignmentX(LEFT_ALIGNMENT);
         add(Titlebar);
+
         InstanceLabel = new LabelComponent(getInstanceName());
         InstanceLabel.setAlignmentX(LEFT_ALIGNMENT);
         InstanceLabel.addMouseListener(new MouseListener() {

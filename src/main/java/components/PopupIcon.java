@@ -39,8 +39,8 @@ public class PopupIcon extends JComponent implements MouseListener {
 
     private PopupIconListener pl;
 
-    private final Dimension minsize = new Dimension(10, 12);
-    private final Dimension maxsize = new Dimension(10, 12);
+    private final Dimension minsize = new Dimension(9, 12);
+    private final Dimension maxsize = new Dimension(9, 12);
 
     public PopupIcon() {
         setMinimumSize(minsize);
@@ -63,7 +63,8 @@ public class PopupIcon extends JComponent implements MouseListener {
         g2.setColor(Theme.getCurrentTheme().Object_TitleBar_Foreground);
         final int rmargin = 3;
         final int htick = 3;
-        int[] xp = new int[]{getWidth() - rmargin - htick * 2, getWidth() - rmargin, getWidth() - rmargin - htick};
+        final int xw = getWidth()+1;
+        int[] xp = new int[]{xw - rmargin - htick * 2, xw - rmargin, xw - rmargin - htick};
         final int vmargin = 3;
         int[] yp = new int[]{vmargin, vmargin, vmargin + htick * 2};
         if (isEnabled()) {

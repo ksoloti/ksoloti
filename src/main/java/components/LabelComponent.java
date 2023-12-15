@@ -33,7 +33,7 @@ public class LabelComponent extends JLabel {
     public LabelComponent(String text) {
         super(text);
         // setMaximumSize(new Dimension(32768,13));
-        setMinimumSize(new Dimension(40,13));
+        setMinimumSize(new Dimension(12,13));
         setFont(Constants.FONT);
         setBackground(Theme.getCurrentTheme().Object_Default_Background);
         setForeground(Theme.getCurrentTheme().Object_Label_Text);
