@@ -77,6 +77,10 @@ public class Axoloti
             System.setProperty("sun.java2d.dpiaware","true");
             System.setProperty("swing.aatext","true");
 
+            /* Set tooltip delay and duration */
+            javax.swing.ToolTipManager.sharedInstance().setDismissDelay(600000);
+            javax.swing.ToolTipManager.sharedInstance().setInitialDelay(900);
+
             UIManager.put("Table.showHorizontalLines", true);
             UIManager.put("Table.showVerticalLines", true);
             UIManager.put("flatlaf.menuBarEmbedded", true);
