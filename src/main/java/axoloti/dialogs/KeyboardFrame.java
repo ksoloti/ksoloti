@@ -43,6 +43,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
 
     DialComponent pbenddial;
     DialComponent ccdial;
+    DialComponent moddial;
 
     // Preferences prefs = Preferences.LoadPreferences();
 
@@ -84,8 +85,27 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
             public void ACtrlAdjustmentFinished(ACtrlEvent e) {
             }
         });
-        jPanelMain.add(new JLabel("Pitch Bend "));
+        jPanelMain.add(new JLabel("Pitchbend "));
         jPanelMain.add(pbenddial);
+
+        moddial = new DialComponent(0, 0, 127, 1);
+        moddial.addACtrlListener(new ACtrlListener() {
+            @Override
+            public void ACtrlAdjusted(ACtrlEvent e) {
+                USBBulkConnection.GetConnection().SendMidi(0xB0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, 1, 0x07F & (int) (moddial.getValue()));
+            }
+
+            @Override
+            public void ACtrlAdjustmentBegin(ACtrlEvent e) {
+            }
+
+            @Override
+            public void ACtrlAdjustmentFinished(ACtrlEvent e) {
+            }
+        });
+        jPanelMain.add(new JLabel("Modwheel "));
+        jPanelMain.add(moddial);
+
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
     }
 
@@ -179,7 +199,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         jPanelMain.add(jLabelControlChange);
         jPanelMain.add(filler6);
 
-        jSpinnerControlChange.setModel(new javax.swing.SpinnerNumberModel(1, 0, 127, 1));
+        jSpinnerControlChange.setModel(new javax.swing.SpinnerNumberModel(7, 0, 127, 1));
         jSpinnerControlChange.setMaximumSize(new java.awt.Dimension(70, 30));
         jSpinnerControlChange.setMinimumSize(new java.awt.Dimension(70, 30));
         jSpinnerControlChange.setPreferredSize(new java.awt.Dimension(70, 30));
