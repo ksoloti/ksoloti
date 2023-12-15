@@ -85,9 +85,9 @@ public class Theme {
     public Color Cable_Shadow_Highlighted = Color.DARK_GRAY;
 
     @Element
-    public Color Cable_Bool32 = new Color(0xFF, 0xEF, 0x40);
+    public Color Cable_Bool32 = new Color(0xEF, 0xDF, 0x40);
     @Element
-    public Color Cable_Bool32_Highlighted = Cable_Bool32.brighter().brighter();
+    public Color Cable_Bool32_Highlighted = Cable_Bool32.brighter();
 
     @Element
     public Color Cable_CharPointer32 = Color.PINK;
@@ -110,9 +110,9 @@ public class Theme {
     public Color Cable_Frac32Buffer_Highlighted = new Color(0xFF, 0x60, 0x80);
 
     @Element
-    public Color Cable_Int32 = new Color(0x20, 0xFF, 0x40);
+    public Color Cable_Int32 = new Color(0x20, 0xCF, 0x40);
     @Element
-    public Color Cable_Int32_Highlighted = Cable_Int32.brighter().brighter();
+    public Color Cable_Int32_Highlighted = Cable_Int32.brighter();
 
     @Element
     public Color Cable_Int32Pointer = Color.MAGENTA;
