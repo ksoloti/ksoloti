@@ -80,7 +80,7 @@ public class AxoObjectInstancePatcherObject extends AxoObjectInstance {
     public void edit() {
         if (ao == null) {
             ao = new AxoObjectPatcherObject();
-//            ao.id = "id";
+            // ao.id = "id";
             ao.sDescription = "";
         }
         if (aoe == null) {

@@ -76,8 +76,8 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             Theme theme = Theme.load(Theme.class.getResourceAsStream(
                 "/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
             theme.apply(rsta);
-        } catch (IOException ioe) { // Never happens
-            ioe.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         rsta.setFont(Constants.FONT_MONO);
         rsta.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
@@ -151,9 +151,6 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
     public AxoObjectEditor(final AxoObject origObj) {
         initComponents();
-        // if (OSDetect.getOS() == OSDetect.OS.MAC) {
-        //     jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.TOP);
-        // }
 
         fileMenu1.initComponents();
         DocumentWindowList.RegisterWindow(this);
@@ -244,6 +241,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
                 editObj.sMidiCode = CleanString(jTextAreaMidiCode.getText());
             }
         });
+        rSyntaxTextAreaXML.setFont(Constants.FONT_MONO);
         rSyntaxTextAreaXML.setEditable(false);
 
         // is it from the factory?
@@ -259,7 +257,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         if (IsEmbeddedObj()) {
             jMenuItemSave.setEnabled(false);
             jLabelLibrary.setText("embedded");
-            setTitle("embedded");
+            setTitle("");
             // embedded objects have no use for help patches
             jTextFieldHelp.setVisible(false);
             jLabelHelp.setVisible(false);
@@ -362,6 +360,9 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         ByteArrayOutputStream os = new ByteArrayOutputStream(2048);
         try {
             serializer.write(editObj, os);
+            Theme theme = Theme.load(Theme.class.getResourceAsStream(
+                "/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
+            theme.apply(rSyntaxTextAreaXML);
         } catch (Exception ex) {
             Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
