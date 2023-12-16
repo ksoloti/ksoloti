@@ -19,6 +19,7 @@ package axoloti;
 
 import axoloti.object.AxoObjectInstance;
 import axoloti.object.AxoObjectInstanceAbstract;
+import axoloti.object.AxoObjectInstancePatcher;
 import axoloti.object.AxoObjects;
 import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
@@ -1142,6 +1143,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     return false;
                 case JOptionPane.YES_OPTION:
                     ; // fall thru
+            }
+        }
+        for (AxoObjectInstanceAbstract aoi : patch.objectinstances) {
+            if (aoi instanceof AxoObjectInstancePatcher) {
+                ((AxoObjectInstancePatcher)aoi).updateObj();
             }
         }
         patch.GoLive();
