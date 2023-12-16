@@ -878,6 +878,7 @@ public class PatchGUI extends Patch {
         else {
             /* Subpatch */
             patchframe.setTitle(FileNamePath + "   (embedded subpatch)");
+            patchframe.setSaveMenuEnabled(false); /* parent has to be saved to preserve changes */
         }
     }
 
