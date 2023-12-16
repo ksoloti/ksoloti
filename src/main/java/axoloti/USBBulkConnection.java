@@ -485,6 +485,7 @@ public class USBBulkConnection extends Connection {
         spsDlg.setVisible(true);
         cpuid = spsDlg.getCPUID();
         String name = MainFrame.prefs.getBoardName(cpuid);
+        if (cpuid == null) return;
         if (name == null) {
             Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Selecting CPU ID: {0} for connection.", cpuid);
         } else {
