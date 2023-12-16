@@ -152,10 +152,19 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
 
         popupIcon.setAlignmentX(LEFT_ALIGNMENT);
         Titlebar.add(popupIcon);
-        LabelComponent idlbl = new LabelComponent(typeName);
-        if (typeName.length() > 20) {
-            String[] sbs = typeName.split("/");
-            idlbl.setText(".../" + sbs[sbs.length-1]);
+
+        LabelComponent idlbl = new LabelComponent("");
+        if (typeName.length() <= 20)
+            idlbl.setText(typeName); /* if not too long, use full object name */
+        else {
+            String[] ssubs = typeName.split("/"); /* else split path of full object name */
+            String slbl = ssubs[ssubs.length-1]; /* start with "most signinficant" part */
+
+            for (int i=ssubs.length-2; i>0; i--) {
+                if (slbl.length() >= 16) break; /* it object name is too long already, leave */
+                slbl = ssubs[i] + "/" + slbl; /* else keep adding subpaths until it is too long */
+            }
+            idlbl.setText("…/" + slbl);
         }
         idlbl.setForeground(Theme.getCurrentTheme().Object_TitleBar_Foreground);
         idlbl.setAlignmentX(LEFT_ALIGNMENT);
