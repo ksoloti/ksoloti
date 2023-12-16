@@ -1231,7 +1231,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     public void setSaveMenuEnabled(boolean b) {
-        jMenuSave.setEnabled(b);
+        if (b && !getTitle().startsWith("*"))
+            setTitle("*" + getTitle()); /* asterisk to indicate unsaved state */
+        else if (!b && getTitle().startsWith("*"))
+            setTitle(getTitle().substring(1)); /* else clear asterisk */
+        // jMenuSave.setEnabled(b);
     }
 
     ArrayList<DocumentWindow> dwl = new ArrayList<DocumentWindow>();
