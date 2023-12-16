@@ -17,10 +17,9 @@
  */
 package axoloti.utils;
 
-import java.awt.Color;
 import java.awt.Font;
-
-import javax.swing.UIManager;
+import java.awt.FontFormatException;
+import java.io.IOException;
 
 // import java.io.InputStream;
 
@@ -31,11 +30,13 @@ import javax.swing.UIManager;
 public class Constants {
 
     // public static final Font FONT = new Font("SansSerif", Font.PLAIN, 10);
-    // public static final Font FONT = UIManager.getFont("mini.font").deriveFont(Font.BOLD, 9.0f);
-    public static final Font FONT = UIManager.getFont("mini.font").deriveFont(10.0f);
-    public static final Font FONT_BOLD = FONT.deriveFont(Font.BOLD);
-    public static final Font FONT_MONO = UIManager.getFont("monospaced.font");
-    // public static final Font FONT_MONO_BOLD = FONT_MONO.deriveFont(Font.BOLD);
+    // public static final Font FONT = UIManager.getFont("mini.font").deriveFont(10.0f);
+    // public static final Font FONT_MONO = UIManager.getFont("monospaced.font");
+
+    public static Font FONT = createFontUI();
+    public static final Font FONT_BOLD = FONT.deriveFont(Font.BOLD); /* it actually saves UI space if we derive the bold font... */
+    // public static Font FONT_BOLD = createFontUIBold(); /* ...instead of loading it from a ttf */
+    public static Font FONT_MONO = createFontUIMono();
 
     public static final int X_GRID = 14;
     public static final int Y_GRID = 14;
@@ -48,4 +49,46 @@ public class Constants {
     public static final String DRAGGED_OBJECT_LAYER_PANEL = "DRAGGED_OBJECT_LAYER_PANEL";
 
     public static final int ANCESTOR_CACHE_SIZE = 1024;
+
+    public static Font createFontUI() {
+        try {
+            FONT= Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(
+                "/resources/fonts/NotoSans_SemiCondensed-Medium.ttf")).deriveFont(11f);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        catch (FontFormatException e) {
+            e.printStackTrace();
+        }
+        return FONT;
+    }
+
+    public static Font createFontUIMono() {
+        try {
+            FONT_MONO = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(
+                "/resources/fonts/NotoSansMono-Regular.ttf")).deriveFont(15f);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        catch (FontFormatException e) {
+            e.printStackTrace();
+        }
+        return FONT_MONO;
+    }
+
+    // public static Font createFontUIBold() {
+    //     try {
+    //         FONT_BOLD = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(
+    //             "/resources/fonts/NotoSans_SemiCondensed-Bold.ttf")).deriveFont(11f);
+    //     }
+    //     catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+    //     catch (FontFormatException e) {
+    //         e.printStackTrace();
+    //     }
+    //     return FONT_BOLD;
+    // }
 }
