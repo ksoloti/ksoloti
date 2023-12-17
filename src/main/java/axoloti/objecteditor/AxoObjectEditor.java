@@ -26,14 +26,12 @@ import axoloti.object.AxoObjectInstance;
 import axoloti.object.ObjectModifiedListener;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
-// import axoloti.utils.OSDetect;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -91,6 +89,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         p.setLayout(new BorderLayout());
         p.add(sp);
         rsta.setVisible(true);
+        rsta.setToolTipText(null);
         return rsta;
     }
 
@@ -366,6 +365,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         } catch (Exception ex) {
             Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
+        rSyntaxTextAreaXML.setFont(Constants.FONT_MONO);
         rSyntaxTextAreaXML.setText(os.toString());
         rSyntaxTextAreaXML.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
         rSyntaxTextAreaXML.setCodeFoldingEnabled(true);
