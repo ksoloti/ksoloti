@@ -299,7 +299,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
             }
         });
 
-        jDelLibBtn.setText("-");
+        jDelLibBtn.setText("🗑");
         jDelLibBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jDelLibBtnActionPerformed(evt);
@@ -436,7 +436,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
                                 .addComponent(jLabelController, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jTextFieldController, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(28, 28, 28)
+                                .addGap(10, 10, 10)
                                 .addComponent(jControllerEnabled)
                                 .addGap(0, 0, Short.MAX_VALUE)
                             )
