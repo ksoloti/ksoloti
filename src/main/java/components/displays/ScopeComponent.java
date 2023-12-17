@@ -31,17 +31,21 @@ import java.awt.Stroke;
  */
 public class ScopeComponent extends ADispComponent {
 
-    private final int length = 64;
-    private final int vsize = 64;
-    private final int[] value = new int[length];
-    private final int[] xvalue = new int[length];
+    private int length; /* = 64; */
+    private int vsize; /* = 64; */
+    private int[] value; /* = new int[length]; */
+    private int[] xvalue; /* = new int[length]; */
     private int index = 0;
     private final double max;
     private final double min;
 
-    public ScopeComponent(double min, double max) {
+    public ScopeComponent(int length, int vsize, double min, double max) {
+        this.length = length;
+        this.vsize = vsize;
         this.max = max;
         this.min = min;
+        this.xvalue = new int[length];
+        this.value = new int[length];
         for (int i = 0; i < length; i++) {
             xvalue[i] = i + 1;
         }
