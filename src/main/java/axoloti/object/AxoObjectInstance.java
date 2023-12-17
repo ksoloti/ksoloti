@@ -171,7 +171,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
         idlbl.setForeground(Theme.getCurrentTheme().Object_TitleBar_Foreground);
         idlbl.setAlignmentX(LEFT_ALIGNMENT);
         idlbl.setFont(Constants.FONT_BOLD);
-        idlbl.setBorder(new EmptyBorder(-2,1,-2,0));
+        idlbl.setBorder(new EmptyBorder(-2,0,-2,0));
         Titlebar.add(idlbl);
 
         String tooltiptxt = "<html>";
