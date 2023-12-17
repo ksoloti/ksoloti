@@ -466,7 +466,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         getParent().add(InstanceNameTF, 0);
         InstanceNameTF.setLocation(getLocation().x, getLocation().y + InstanceLabel.getLocation().y);
         InstanceNameTF.setSize(getWidth(), 15);
-        InstanceNameTF.setMargin(new Insets(-2, 0, 0, 0));
+        InstanceNameTF.setMargin(new Insets(-3, 1, 0, 0));
         InstanceNameTF.setVisible(true);
         InstanceNameTF.requestFocus();
     }

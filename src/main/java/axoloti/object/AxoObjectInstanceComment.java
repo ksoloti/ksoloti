@@ -83,7 +83,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
             InstanceTextPane.setContentType("text/html");
         }
         InstanceTextPane.setText(commentText);
-        InstanceTextPane.setBorder(BorderFactory.createEmptyBorder(-1, 5, -1, 5));
+        InstanceTextPane.setBorder(BorderFactory.createEmptyBorder(-2, 5, -1, 5));
         InstanceTextPane.setAlignmentX(CENTER_ALIGNMENT);
         InstanceTextPane.setAlignmentY(CENTER_ALIGNMENT);
         InstanceTextPane.addMouseListener(new MouseListener() {
@@ -187,6 +187,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
     public void setInstanceName(String s) {
         if (!s.equals(commentText))
             patch.SetDirty();
+
         this.commentText = s;
 
         if (InstanceTextPane != null) {
@@ -197,6 +198,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
                 InstanceTextPane.setContentType("text/plain");
             }
             InstanceTextPane.setText(commentText);
+            InstanceTextPane.setSize((int)InstanceTextPane.getPreferredSize().getWidth(), InstanceTextPane.getHeight());
         }
         revalidate();
         if (getParent() != null) {
