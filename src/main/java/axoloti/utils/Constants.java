@@ -19,7 +19,9 @@ package axoloti.utils;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
+// import axoloti.utils.OSDetect.OS;
 
 // import java.io.InputStream;
 
@@ -28,15 +30,14 @@ import java.io.IOException;
  * @author Johannes Taelman
  */
 public class Constants {
+    static Constants constants = new Constants();
 
     // public static final Font FONT = new Font("SansSerif", Font.PLAIN, 10);
     // public static final Font FONT = UIManager.getFont("mini.font").deriveFont(10.0f);
     // public static final Font FONT_MONO = UIManager.getFont("monospaced.font");
-
-    public static Font FONT = createFontUI();
-    public static final Font FONT_BOLD = FONT.deriveFont(Font.BOLD); /* it actually saves UI space if we derive the bold font... */
-    // public static Font FONT_BOLD = createFontUIBold(); /* ...instead of loading it from a ttf */
-    public static Font FONT_MONO = createFontUIMono();
+    public static Font FONT_MONO; 
+    public static Font FONT;
+    public static Font FONT_BOLD;
 
     public static final int X_GRID = 14;
     public static final int Y_GRID = 14;
@@ -50,10 +51,21 @@ public class Constants {
 
     public static final int ANCESTOR_CACHE_SIZE = 1024;
 
-    public static Font createFontUI() {
+    Constants() {
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        createFontUIMono();
+        createFontUI();
+        FONT_BOLD = FONT.deriveFont(Font.BOLD);
+        ge.registerFont(FONT_MONO);
+        ge.registerFont(FONT);
+        ge.registerFont(FONT_BOLD);
+    }
+
+    public static void createFontUI() {
         try {
-            FONT= Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(
-                "/resources/fonts/NotoSans_SemiCondensed-Medium.ttf")).deriveFont(11f);
+            String fstr = "/resources/fonts/NotoSans_SemiCondensed-Medium.ttf";
+            // if (OSDetect.getOS() == OS.WIN) fstr.replace("/", "\\");
+            FONT = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(fstr)).deriveFont(11f);
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -61,13 +73,13 @@ public class Constants {
         catch (FontFormatException e) {
             e.printStackTrace();
         }
-        return FONT;
     }
 
-    public static Font createFontUIMono() {
+    public static void createFontUIMono() {
         try {
-            FONT_MONO = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(
-                "/resources/fonts/NotoSansMono-Regular.ttf")).deriveFont(15f);
+            String fstr = "/resources/fonts/NotoSansMono-Regular.ttf";
+            // if (OSDetect.getOS() == OS.WIN) fstr.replace("/", "\\");
+            FONT_MONO = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(fstr)).deriveFont(15f);
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -75,20 +87,5 @@ public class Constants {
         catch (FontFormatException e) {
             e.printStackTrace();
         }
-        return FONT_MONO;
     }
-
-    // public static Font createFontUIBold() {
-    //     try {
-    //         FONT_BOLD = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(
-    //             "/resources/fonts/NotoSans_SemiCondensed-Bold.ttf")).deriveFont(11f);
-    //     }
-    //     catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
-    //     catch (FontFormatException e) {
-    //         e.printStackTrace();
-    //     }
-    //     return FONT_BOLD;
-    // }
 }
