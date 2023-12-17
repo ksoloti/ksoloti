@@ -150,6 +150,10 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         } else {
             ctrl.setToolTipText(parameter.name);
         }
+        if (isOnParent()) {
+            ctrl.setToolTipText("<html>" + ctrl.getToolTipText() + "<p>This parameter is being controlled from the parent patch.");
+        }
+
         add(getControlComponent());
         getControlComponent().addMouseListener(popupMouseListener);
         getControlComponent().addACtrlListener(new ACtrlListener() {

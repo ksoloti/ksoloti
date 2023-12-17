@@ -166,7 +166,11 @@ public class Theme {
     @Element
     public Color Parameter_Default_Foreground = Object_Default_Foreground;
     @Element
-    public Color Parameter_On_Parent_Highlight = Cable_Frac32;
+    public Color Parameter_On_Parent_Background = new Color(
+        Math.max(Object_TitleBar_Foreground.getRed()-0x20, 0x20),
+        Math.max(Object_TitleBar_Foreground.getGreen()-0x20, 0x20),
+        Math.min(Object_TitleBar_Foreground.getBlue()+0x80, 0xFF)
+    );
     @Element
     public Color Parameter_Preset_Highlight_Foreground = UIManager.getColor("Component.accentColor");
 
