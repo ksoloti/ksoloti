@@ -20,12 +20,18 @@ package axoloti.objecteditor;
 import axoloti.DocumentWindow;
 import axoloti.DocumentWindowList;
 import axoloti.MainFrame;
+import axoloti.attributedefinition.AxoAttribute;
+import axoloti.displays.Display;
+import axoloti.inlets.Inlet;
 import axoloti.object.AxoObject;
 import axoloti.object.AxoObjectAbstract;
 import axoloti.object.AxoObjectInstance;
 import axoloti.object.ObjectModifiedListener;
+import axoloti.outlets.Outlet;
+import axoloti.parameters.Parameter;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Point;
@@ -43,10 +49,14 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.Style;
 import org.fife.ui.rsyntaxtextarea.Theme;
+import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-// import org.fife.ui.autocomplete. //TODO
+import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
@@ -67,9 +77,11 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private final RSyntaxTextArea jTextAreaMidiCode;
 
     private boolean readonly = false;
+    private AxoCompletionProvider acProvider;
 
-    static RSyntaxTextArea initCodeEditor(JPanel p) {
+    static RSyntaxTextArea initCodeEditor(JPanel p, AxoCompletionProvider acpr) {
         RSyntaxTextArea rsta = new RSyntaxTextArea(20, 60);
+
         try {
             Theme theme = Theme.load(Theme.class.getResourceAsStream(
                 "/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
@@ -77,6 +89,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         rsta.setFont(Constants.FONT_MONO);
         rsta.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
         rsta.setCodeFoldingEnabled(true);
@@ -85,11 +98,20 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         rsta.setMarkOccurrences(true);
         rsta.setMarkOccurrencesColor(new Color(0x00,0x00,0x00, 0x60));
         rsta.setPaintTabLines(true);
+
         RTextScrollPane sp = new RTextScrollPane(rsta);
         p.setLayout(new BorderLayout());
         p.add(sp);
+
         rsta.setVisible(true);
         rsta.setToolTipText(null);
+
+        AutoCompletion ac = new AutoCompletion(acpr);
+        ac.setAutoCompleteEnabled(true);
+        ac.setAutoActivationEnabled(true);
+        ac.setAutoActivationDelay(500);
+        ac.setShowDescWindow(false);
+        ac.install(rsta);
         return rsta;
     }
 
@@ -151,16 +173,21 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     public AxoObjectEditor(final AxoObject origObj) {
         initComponents();
 
+        acProvider = new AxoCompletionProvider();
+
         fileMenu1.initComponents();
         DocumentWindowList.RegisterWindow(this);
-        jTextAreaLocalData = initCodeEditor(jPanelLocalData);
-        jTextAreaInitCode = initCodeEditor(jPanelInitCode);
-        jTextAreaKRateCode = initCodeEditor(jPanelKRateCode2);
-        jTextAreaSRateCode = initCodeEditor(jPanelSRateCode);
-        jTextAreaDisposeCode = initCodeEditor(jPanelDisposeCode);
-        jTextAreaMidiCode = initCodeEditor(jPanelMidiCode2);
+        jTextAreaLocalData = initCodeEditor(jPanelLocalData, acProvider);
+        jTextAreaInitCode = initCodeEditor(jPanelInitCode, acProvider);
+        jTextAreaKRateCode = initCodeEditor(jPanelKRateCode2, acProvider);
+        jTextAreaSRateCode = initCodeEditor(jPanelSRateCode, acProvider);
+        jTextAreaDisposeCode = initCodeEditor(jPanelDisposeCode, acProvider);
+        jTextAreaMidiCode = initCodeEditor(jPanelMidiCode2, acProvider);
         setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axo.png")).getImage());
         editObj = origObj;
+        updateAcProvider(editObj);
+
+
 
         initEditFromOrig();
         updateReferenceXML();
@@ -334,6 +361,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     }
 
     boolean hasChanged() {
+        updateAcProvider(editObj);
         Serializer serializer = new Persister();
 
         ByteArrayOutputStream editOS = new ByteArrayOutputStream(2048);
@@ -369,6 +397,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         rSyntaxTextAreaXML.setText(os.toString());
         rSyntaxTextAreaXML.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
         rSyntaxTextAreaXML.setCodeFoldingEnabled(true);
+        updateAcProvider(editObj);
 
         AxoObjectInstance obji = editObj.CreateInstance(null, "test", new Point(0, 0));
     }
@@ -457,6 +486,37 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             }
         }
         return (count > 1);
+    }
+
+    void updateAcProvider(AxoObject obj) {
+        /* add keywords to autocomplete list */
+        if (obj == null) return;
+
+        if (obj.inlets != null && obj.inlets.size() > 0) {
+            for (Inlet i : obj.inlets) {
+                acProvider.addACKeyword(i.GetCName());
+            }
+        }
+        if (obj.outlets != null && obj.outlets.size() > 0) {
+            for (Outlet o : obj.outlets) {
+                acProvider.addACKeyword(o.GetCName());
+            }
+        }
+        if (obj.attributes != null && obj.attributes.size() > 0) {
+            for (AxoAttribute a : obj.attributes) {
+                acProvider.addACKeyword(a.GetCName());
+            }
+        }
+        if (obj.params != null && obj.params.size() > 0) {
+            for (Parameter p : obj.params) {
+                acProvider.addACKeyword(p.GetCName());
+            }
+        }
+        if (obj.displays != null && obj.displays.size() > 0) {
+            for (Display d : obj.displays) {
+                acProvider.addACKeyword(d.GetCName());
+            }
+        }
     }
 
     /**
