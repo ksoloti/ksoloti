@@ -347,11 +347,11 @@ public class AxoObjects {
                 String spath[] = MainFrame.prefs.getObjectSearchPath();
                 if (spath != null) {
                     for (String path : spath) {
-                        Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Search path: {0}", path);
+                        Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Object search path: {0}", path);
                         LoadAxoObjects(path);
                     }
                 } else {
-                    Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, "Search path empty!\n");
+                    Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, "Object search path empty!\n");
                 }
                 Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Finished loading objects.\n");
             }
