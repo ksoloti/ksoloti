@@ -430,7 +430,7 @@ public class NumberBoxComponent extends ACtrlComponent {
     @Override
     public void robotMoveToCenter() {
         if (robot != null) {
-            getRootPane().setCursor(MainFrame.transparentCursor);
+            // getRootPane().setCursor(MainFrame.transparentCursor);
             robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
         }
     }
