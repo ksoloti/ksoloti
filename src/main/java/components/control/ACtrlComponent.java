@@ -225,7 +225,9 @@ public abstract class ACtrlComponent extends JComponent {
             if (Preferences.LoadPreferences().getMouseDoNotRecenterWhenAdjustingControls()) {
                 return null;
             } else {
-                return new Robot(MouseInfo.getPointerInfo().getDevice());
+                Robot r = new Robot(MouseInfo.getPointerInfo().getDevice());
+                r.setAutoDelay(10);
+                return r;
             }
         } catch (AWTException ex) {
             Logger.getLogger(NumberBoxComponent.class.getName()).log(Level.SEVERE, null, ex);
