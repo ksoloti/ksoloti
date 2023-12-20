@@ -1,0 +1,25 @@
+{
+    "platform": "windows64",
+    "jdk": "jdks/zulu21.30.15-ca-jdk21.0.1-win_x64.zip",
+    "executable": "Ksoloti",
+    "classpath": [
+        "dist/Ksoloti.jar"
+    ],
+    "removelibs": [
+        "dist/Ksoloti.jar"
+    ],
+    "mainclass": "axoloti.Axoloti",
+    "vmargs": [
+        "Xms1G",
+        "Xmx1G"
+    ],
+    "resources": [
+        "chibios",
+        "CMSIS",
+        "firmware",
+        "platform_win"
+    ],
+    "minimizejre": "soft",
+    "output": "packagetemp/win/ksoloti-1.0.12",
+    "verbose": true
+}
