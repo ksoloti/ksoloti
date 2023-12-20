@@ -19,12 +19,15 @@ package axoloti.dialogs;
 
 import axoloti.ConnectionStatusListener;
 import axoloti.USBBulkConnection;
-// import axoloti.utils.Preferences;
 import components.PianoComponent;
 import components.control.ACtrlEvent;
 import components.control.ACtrlListener;
 import components.control.DialComponent;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SpinnerNumberModel;
@@ -41,6 +44,9 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
     PianoComponent piano;
 
     DialComponent pbenddial;
+    DialComponent moddial;
+    DialComponent ccdial;
+    DialComponent velodial;
 
     // Preferences prefs = Preferences.LoadPreferences();
 
@@ -50,27 +56,119 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         piano = new PianoComponent() {
             @Override
             public void KeyDown(int key) {
-                USBBulkConnection.GetConnection().SendMidi(0x90 + ((SpinnerNumberModel) jSpinner1.getModel()).getNumber().intValue() - 1, key & 0x7F, jSliderVelocity.getValue());
+                USBBulkConnection.GetConnection().SendMidi(0x90 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, key & 0x7F, (int)velodial.getValue());
             }
 
             @Override
             public void KeyUp(int key) {
-                USBBulkConnection.GetConnection().SendMidi(0x80 + ((SpinnerNumberModel) jSpinner1.getModel()).getNumber().intValue() - 1, key & 0x7F, 80);
+                USBBulkConnection.GetConnection().SendMidi(0x80 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, key & 0x7F, 80);
             }
 
         };
+        setResizable(false);
         Dimension d = new Dimension(910, 92);
         piano.setMinimumSize(d);
         piano.setSize(d);
         piano.setPreferredSize(d);
         piano.setMaximumSize(d);
         piano.setVisible(true);
-        jPanelKeyb.add(piano);
-        pbenddial = new DialComponent(0.0, -64, 64, 1);
+        jPanelPiano.add(filler_x_fivepx1);
+        jPanelPiano.add(piano);
+
+        USBBulkConnection.GetConnection().addConnectionStatusListener(this);
+    }
+
+
+    private void initComponents() {
+
+        jPanelPiano = new javax.swing.JPanel();
+        jPanelMain = new javax.swing.JPanel();
+        jLabelMidiChannel = new javax.swing.JLabel();
+        jSpinnerMidiChannel = new javax.swing.JSpinner();
+        jLabelControlChange = new javax.swing.JLabel();
+        jSpinnerControlChange = new javax.swing.JSpinner();
+        jLabelVelocity = new javax.swing.JLabel();
+        jButtonAllNotesOff = new javax.swing.JButton();
+
+        Dimension di = new java.awt.Dimension(5,0);
+        filler_x_fivepx1 = new javax.swing.Box.Filler(di, di, di);
+        filler_x_fivepx2 = new javax.swing.Box.Filler(di, di, di);
+        filler_x_fivepx3 = new javax.swing.Box.Filler(di, di, di);
+        filler_x_fivepx4 = new javax.swing.Box.Filler(di, di, di);
+        filler_x_fivepx5 = new javax.swing.Box.Filler(di, di, di);
+        filler_x_fivepx6 = new javax.swing.Box.Filler(di, di, di);
+        filler_x_fivepx7 = new javax.swing.Box.Filler(di, di, di);
+        filler_x_fivepx8 = new javax.swing.Box.Filler(di, di, di);
+        filler_x_fivepx9 = new javax.swing.Box.Filler(di, di, di);
+        filler_x_fivepx10 = new javax.swing.Box.Filler(di, di, di);
+        filler_x_fivepx11 = new javax.swing.Box.Filler(di, di, di);
+        filler_x_fivepx12 = new javax.swing.Box.Filler(di, di, di);
+
+        Dimension dv = new java.awt.Dimension(0,50);
+        filler_y_fiftypx1 = new javax.swing.Box.Filler(dv, dv, dv);
+
+        filler_x_stretch1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0), new java.awt.Dimension(32767, 0));
+        filler_x_stretch2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0), new java.awt.Dimension(32767, 0));
+
+        setMaximumSize(null);
+        setModalExclusionType(java.awt.Dialog.ModalExclusionType.TOOLKIT_EXCLUDE);
+        setName("Keyboard"); // NOI18N
+        setPreferredSize(new java.awt.Dimension(914, 155));
+        getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.Y_AXIS));
+        addWindowListener(new WindowAdapter() {
+            public void windowOpened(WindowEvent e) {
+              velodial.requestFocus();
+            }
+        });
+        
+        jPanelPiano.setAlignmentX(LEFT_ALIGNMENT);
+        jPanelPiano.setAlignmentY(TOP_ALIGNMENT);
+        jPanelPiano.setMaximumSize(new java.awt.Dimension(910, 72));
+        jPanelPiano.setMinimumSize(new java.awt.Dimension(910, 72));
+        jPanelPiano.setPreferredSize(new java.awt.Dimension(910, 72));
+        jPanelPiano.setLayout(new javax.swing.BoxLayout(jPanelPiano, javax.swing.BoxLayout.LINE_AXIS));
+        getContentPane().add(jPanelPiano);
+
+        jPanelMain.setAlignmentX(LEFT_ALIGNMENT);
+        jPanelMain.setAlignmentY(TOP_ALIGNMENT);
+        // jPanelMain.setMinimumSize(new java.awt.Dimension(500, 50));
+        // jPanelMain.setPreferredSize(new java.awt.Dimension(500, 50));
+        jPanelMain.setLayout(new javax.swing.BoxLayout(jPanelMain, javax.swing.BoxLayout.LINE_AXIS));
+        // jPanelMain.add(Box.createRigidArea(new Dimension(500, 50)));
+
+        jPanelMain.add(filler_y_fiftypx1);
+
+        jPanelMain.add(filler_x_fivepx2);
+        pbenddial = new DialComponent(0.0, -64, 63, 1);
+        pbenddial.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if ((e.getClickCount() == 2) && (e.getButton() == MouseEvent.BUTTON1)) {
+                    pbenddial.setValue(0.0);
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
         pbenddial.addACtrlListener(new ACtrlListener() {
             @Override
             public void ACtrlAdjusted(ACtrlEvent e) {
-                USBBulkConnection.GetConnection().SendMidi(0xE0 + ((SpinnerNumberModel) jSpinner1.getModel()).getNumber().intValue() - 1, 0, 0x07F & (int) (pbenddial.getValue() - 64.0));
+                USBBulkConnection.GetConnection().SendMidi(0xE0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, 0, 0x07F & (int) (pbenddial.getValue() - 64.0));
             }
 
             @Override
@@ -81,76 +179,117 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
             public void ACtrlAdjustmentFinished(ACtrlEvent e) {
             }
         });
-        jPanel1.add(new JLabel("Pitch Bend "));
-        jPanel1.add(pbenddial);
-        USBBulkConnection.GetConnection().addConnectionStatusListener(this);        
-    }
+        jPanelMain.add(new JLabel("Pitchbend "));
+        jPanelMain.add(filler_x_fivepx3);
+        jPanelMain.add(pbenddial);
+        jPanelMain.add(filler_x_fivepx4);
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+        moddial = new DialComponent(0, 0, 127, 1);
+        moddial.addACtrlListener(new ACtrlListener() {
+            @Override
+            public void ACtrlAdjusted(ACtrlEvent e) {
+                USBBulkConnection.GetConnection().SendMidi(0xB0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, 1, 0x07F & (int) (moddial.getValue()));
+            }
 
-        jPanelKeyb = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        Dimension di = new java.awt.Dimension(5,0);
-        filler1 = new javax.swing.Box.Filler(di, di, di);
-        jSpinner1 = new javax.swing.JSpinner();
-        filler2 = new javax.swing.Box.Filler(di, di, di);
-        jLabel2 = new javax.swing.JLabel();
-        jSliderVelocity = new javax.swing.JSlider();
-        filler4 = new javax.swing.Box.Filler(di, di, di);
-        jButtonAllNotesOff = new javax.swing.JButton();
-        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0), new java.awt.Dimension(32767, 0));
+            @Override
+            public void ACtrlAdjustmentBegin(ACtrlEvent e) {
+            }
 
-        setMaximumSize(null);
-        setMinimumSize(new java.awt.Dimension(200, 60));
-        setModalExclusionType(java.awt.Dialog.ModalExclusionType.TOOLKIT_EXCLUDE);
-        setName("Keyboard"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(917, 150));
-        getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.Y_AXIS));
-        
-        jPanelKeyb.setAlignmentX(LEFT_ALIGNMENT);
-        jPanelKeyb.setAlignmentY(TOP_ALIGNMENT);
-        jPanelKeyb.setMaximumSize(new java.awt.Dimension(905, 72));
-        jPanelKeyb.setMinimumSize(new java.awt.Dimension(905, 72));
-        jPanelKeyb.setPreferredSize(new java.awt.Dimension(905, 72));
-        jPanelKeyb.setLayout(new javax.swing.BoxLayout(jPanelKeyb, javax.swing.BoxLayout.LINE_AXIS));
-        getContentPane().add(jPanelKeyb);
+            @Override
+            public void ACtrlAdjustmentFinished(ACtrlEvent e) {
+            }
+        });
+        jPanelMain.add(new JLabel("Modwheel "));
+        jPanelMain.add(filler_x_fivepx5);
+        jPanelMain.add(moddial);
+        jPanelMain.add(filler_x_stretch2);
 
-        jPanel1.setAlignmentX(LEFT_ALIGNMENT);
-        jPanel1.setAlignmentY(TOP_ALIGNMENT);
-        jPanel1.setMinimumSize(new java.awt.Dimension(500, 50));
-        jPanel1.setPreferredSize(new java.awt.Dimension(500, 50));
-        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));
+        jLabelControlChange.setText("CC#");
+        jPanelMain.add(jLabelControlChange);
+        jPanelMain.add(filler_x_fivepx6);
 
-        jLabel1.setText("Midi Channel");
-        jPanel1.add(jLabel1);
-        jPanel1.add(filler1);
+        jSpinnerControlChange.setModel(new javax.swing.SpinnerNumberModel(7, 0, 127, 1));
+        jSpinnerControlChange.setMaximumSize(new java.awt.Dimension(70, 30));
+        jSpinnerControlChange.setMinimumSize(new java.awt.Dimension(70, 30));
+        jSpinnerControlChange.setPreferredSize(new java.awt.Dimension(70, 30));
+        jPanelMain.add(jSpinnerControlChange);
+        jPanelMain.add(filler_x_fivepx7);
 
-        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(1, 1, 16, 1));
-        jSpinner1.setMaximumSize(new java.awt.Dimension(60, 30));
-        jSpinner1.setMinimumSize(new java.awt.Dimension(60, 30));
-        jSpinner1.setPreferredSize(new java.awt.Dimension(60, 30));
-        jPanel1.add(jSpinner1);
-        jPanel1.add(filler2);
+        ccdial = new DialComponent(0, 0, 127, 1);
+        ccdial.addACtrlListener(new ACtrlListener() {
+            @Override
+            public void ACtrlAdjusted(ACtrlEvent e) {
+                USBBulkConnection.GetConnection().SendMidi(0xB0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, ((SpinnerNumberModel) jSpinnerControlChange.getModel()).getNumber().intValue(), 0x07F & (int) (ccdial.getValue()));
+            }
 
-        jLabel2.setText("Velocity");
-        jPanel1.add(jLabel2);
+            @Override
+            public void ACtrlAdjustmentBegin(ACtrlEvent e) {
+            }
 
-        jSliderVelocity.setMajorTickSpacing(25);
-        jSliderVelocity.setMaximum(127);
-        jSliderVelocity.setMinimum(1);
-        jSliderVelocity.setPaintTicks(true);
-        jSliderVelocity.setValue(100);
-        jSliderVelocity.setMinimumSize(new java.awt.Dimension(128, 31));
-        jPanel1.add(jSliderVelocity);
-        jPanel1.add(filler4);
+            @Override
+            public void ACtrlAdjustmentFinished(ACtrlEvent e) {
+            }
+        });
+        jPanelMain.add(ccdial);
+        jPanelMain.add(filler_x_stretch1);
+
+        jLabelMidiChannel.setText("MIDI Channel");
+        jPanelMain.add(jLabelMidiChannel);
+        jPanelMain.add(filler_x_fivepx8);
+
+        jSpinnerMidiChannel.setModel(new javax.swing.SpinnerNumberModel(1, 1, 16, 1));
+        jSpinnerMidiChannel.setMaximumSize(new java.awt.Dimension(60, 30));
+        jSpinnerMidiChannel.setMinimumSize(new java.awt.Dimension(60, 30));
+        jSpinnerMidiChannel.setPreferredSize(new java.awt.Dimension(60, 30));
+        jPanelMain.add(jSpinnerMidiChannel);
+        jPanelMain.add(filler_x_fivepx9);
+
+        jLabelVelocity.setText("Velocity");
+        jPanelMain.add(jLabelVelocity);
+        jPanelMain.add(filler_x_fivepx10);
+
+        velodial = new DialComponent(100, 0, 127, 1);
+        velodial.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if ((e.getClickCount() == 2) && (e.getButton() == MouseEvent.BUTTON1)) {
+                    velodial.setValue(100.0);
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+        // velodial.addACtrlListener(new ACtrlListener() {
+        //     @Override
+        //     public void ACtrlAdjusted(ACtrlEvent e) {
+        //         USBBulkConnection.GetConnection().SendMidi(0xB0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, ((SpinnerNumberModel) jSpinnerControlChange.getModel()).getNumber().intValue(), 0x07F & (int) (ccdial.getValue()));
+        //     }
+
+        //     @Override
+        //     public void ACtrlAdjustmentBegin(ACtrlEvent e) {
+        //     }
+
+        //     @Override
+        //     public void ACtrlAdjustmentFinished(ACtrlEvent e) {
+        //     }
+        // });
+        jPanelMain.add(velodial);
+        jPanelMain.add(filler_x_fivepx11);
 
         jButtonAllNotesOff.setText("All Notes Off");
         jButtonAllNotesOff.addActionListener(new java.awt.event.ActionListener() {
@@ -158,38 +297,55 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
                 jButtonAllNotesOffActionPerformed(evt);
             }
         });
-        jPanel1.add(jButtonAllNotesOff);
-        jPanel1.add(filler3);
+        jPanelMain.add(jButtonAllNotesOff);
+        jPanelMain.add(filler_x_fivepx12);
 
-        getContentPane().add(jPanel1);
+        getContentPane().add(jPanelMain);
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
-    private void jButtonAllNotesOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAllNotesOffActionPerformed
-        USBBulkConnection.GetConnection().SendMidi(0xB0 + ((SpinnerNumberModel) jSpinner1.getModel()).getNumber().intValue() - 1, 0x7B, 80);
+    private void jButtonAllNotesOffActionPerformed(java.awt.event.ActionEvent evt) {
+        USBBulkConnection.GetConnection().SendMidi(0xB0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, 0x7B, 80);
         piano.clear();
-    }//GEN-LAST:event_jButtonAllNotesOffActionPerformed
+    }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.Box.Filler filler1;
-    private javax.swing.Box.Filler filler2;
-    private javax.swing.Box.Filler filler3;
-    private javax.swing.Box.Filler filler4;
+    // Variables declaration - do not modify
+    private javax.swing.Box.Filler filler_x_fivepx1;
+    private javax.swing.Box.Filler filler_x_fivepx2;
+    private javax.swing.Box.Filler filler_x_fivepx3;
+    private javax.swing.Box.Filler filler_x_fivepx4;
+    private javax.swing.Box.Filler filler_x_fivepx5;
+    private javax.swing.Box.Filler filler_x_fivepx6;
+    private javax.swing.Box.Filler filler_x_fivepx7;
+    private javax.swing.Box.Filler filler_x_fivepx8;
+    private javax.swing.Box.Filler filler_x_fivepx9;
+    private javax.swing.Box.Filler filler_x_fivepx10;
+    private javax.swing.Box.Filler filler_x_fivepx11;
+    private javax.swing.Box.Filler filler_x_fivepx12;
+
+    private javax.swing.Box.Filler filler_y_fiftypx1;
+
+    private javax.swing.Box.Filler filler_x_stretch1;
+    private javax.swing.Box.Filler filler_x_stretch2;
+
     private javax.swing.JButton jButtonAllNotesOff;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanelKeyb;
-    private javax.swing.JSlider jSliderVelocity;
-    private javax.swing.JSpinner jSpinner1;
-    // End of variables declaration//GEN-END:variables
+    private javax.swing.JLabel jLabelMidiChannel;
+    private javax.swing.JLabel jLabelControlChange;
+    private javax.swing.JLabel jLabelVelocity;
+    private javax.swing.JPanel jPanelMain;
+    private javax.swing.JPanel jPanelPiano;
+    private javax.swing.JSpinner jSpinnerMidiChannel;
+    private javax.swing.JSpinner jSpinnerControlChange;
+    // End of variables declaration
 
     @Override
     public void ShowConnect() {
         piano.clear();
         piano.setEnabled(true);
         pbenddial.setEnabled(true);
+        ccdial.setEnabled(true);
+        moddial.setEnabled(true);
     }
 
     @Override
@@ -197,5 +353,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         piano.clear();
         piano.setEnabled(false);
         pbenddial.setEnabled(false);
+        ccdial.setEnabled(false);
+        moddial.setEnabled(false);
     }
 }

@@ -34,7 +34,7 @@ public class DisplayInstanceFrac32SChart extends DisplayInstanceFrac32<DisplayFr
     public void PostConstructor() {
         super.PostConstructor();
 
-        scope = new ScopeComponent(-64.0, 64.0);
+        scope = new ScopeComponent(64, 64, -64.0, 64.0);
         scope.setValue(0);
         add(scope);
     }

@@ -48,6 +48,11 @@ public class Int32Ptr implements DataType {
     }
 
     @Override
+    public Color GetColorHighlighted() {
+        return Theme.getCurrentTheme().Cable_Int32Pointer_Highlighted;
+    }
+
+    @Override
     public boolean equals(Object o) {
         return (o instanceof Int32Ptr);
     }

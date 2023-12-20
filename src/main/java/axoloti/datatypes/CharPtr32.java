@@ -55,6 +55,11 @@ public class CharPtr32 implements DataType {
     }
 
     @Override
+    public Color GetColorHighlighted() {
+        return Theme.getCurrentTheme().Cable_CharPointer32_Highlighted;
+    }
+
+    @Override
     public boolean equals(Object o) {
         return (o instanceof CharPtr32);
     }

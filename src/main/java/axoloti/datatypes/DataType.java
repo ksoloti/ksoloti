@@ -37,6 +37,8 @@ public interface DataType {
 
     abstract Color GetColor();
 
+    abstract Color GetColorHighlighted();
+
     abstract String GenerateCopyCode(String dest, String source);
 
     abstract boolean isPointer();

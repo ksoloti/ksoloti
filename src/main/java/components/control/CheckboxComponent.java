@@ -36,7 +36,7 @@ public class CheckboxComponent extends ACtrlComponent {
 
     private double value;
     private final int n;
-    private final int bsize = 12;
+    private final int bsize = 11;
     private int selIndex = -1;
 
     public CheckboxComponent(int value, int n) {
@@ -208,7 +208,7 @@ public class CheckboxComponent extends ACtrlComponent {
         if (isEnabled()) {
             g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         } else {
-            g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
+            g2.setPaint(Theme.getCurrentTheme().Component_Mid);
         }
         if (isFocusOwner()) {
             g2.setStroke(strokeThick);
@@ -225,10 +225,10 @@ public class CheckboxComponent extends ACtrlComponent {
 
         if (isEnabled()) {
             int v = (int) value;
-            int inset = 2;
+            int inset = 3;
             for (int i = 0; i < n; i++) {
                 if ((v & 1) != 0) {
-                    g2.fillRect(i * bsize + inset, inset, bsize - inset - 1, bsize - inset);
+                    g2.fillRect(i * bsize + inset, inset, bsize - inset - 2, bsize - inset - 1);
                 }
                 v = v >> 1;
             }

@@ -20,13 +20,20 @@ package axoloti.objecteditor;
 import axoloti.DocumentWindow;
 import axoloti.DocumentWindowList;
 import axoloti.MainFrame;
+import axoloti.attributedefinition.AxoAttribute;
+import axoloti.displays.Display;
+import axoloti.inlets.Inlet;
 import axoloti.object.AxoObject;
 import axoloti.object.AxoObjectAbstract;
 import axoloti.object.AxoObjectInstance;
 import axoloti.object.ObjectModifiedListener;
+import axoloti.outlets.Outlet;
+import axoloti.parameters.Parameter;
 import axoloti.utils.AxolotiLibrary;
-import axoloti.utils.OSDetect;
+import axoloti.utils.Constants;
+
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.ByteArrayOutputStream;
@@ -39,11 +46,17 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.Style;
+import org.fife.ui.rsyntaxtextarea.Theme;
+import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-// import org.fife.ui.autocomplete. //TODO
+import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
@@ -64,16 +77,41 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private final RSyntaxTextArea jTextAreaMidiCode;
 
     private boolean readonly = false;
+    private AxoCompletionProvider acProvider;
 
-    static RSyntaxTextArea initCodeEditor(JPanel p) {
+    static RSyntaxTextArea initCodeEditor(JPanel p, AxoCompletionProvider acpr) {
         RSyntaxTextArea rsta = new RSyntaxTextArea(20, 60);
+
+        try {
+            Theme theme = Theme.load(Theme.class.getResourceAsStream(
+                "/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
+            theme.apply(rsta);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        rsta.setFont(Constants.FONT_MONO);
         rsta.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
         rsta.setCodeFoldingEnabled(true);
         rsta.setAntiAliasingEnabled(true);
+        rsta.setAutoIndentEnabled(true);
+        rsta.setMarkOccurrences(true);
+        rsta.setMarkOccurrencesColor(new Color(0x00,0x00,0x00, 0x60));
+        rsta.setPaintTabLines(true);
+
         RTextScrollPane sp = new RTextScrollPane(rsta);
         p.setLayout(new BorderLayout());
         p.add(sp);
+
         rsta.setVisible(true);
+        rsta.setToolTipText(null);
+
+        AutoCompletion ac = new AutoCompletion(acpr);
+        ac.setAutoCompleteEnabled(true);
+        ac.setAutoActivationEnabled(true);
+        ac.setAutoActivationDelay(500);
+        ac.setShowDescWindow(false);
+        ac.install(rsta);
         return rsta;
     }
 
@@ -134,20 +172,22 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
     public AxoObjectEditor(final AxoObject origObj) {
         initComponents();
-        if (OSDetect.getOS() == OSDetect.OS.MAC) {
-            jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.TOP);
-        }
+
+        acProvider = new AxoCompletionProvider();
 
         fileMenu1.initComponents();
         DocumentWindowList.RegisterWindow(this);
-        jTextAreaLocalData = initCodeEditor(jPanelLocalData);
-        jTextAreaInitCode = initCodeEditor(jPanelInitCode);
-        jTextAreaKRateCode = initCodeEditor(jPanelKRateCode2);
-        jTextAreaSRateCode = initCodeEditor(jPanelSRateCode);
-        jTextAreaDisposeCode = initCodeEditor(jPanelDisposeCode);
-        jTextAreaMidiCode = initCodeEditor(jPanelMidiCode2);
+        jTextAreaLocalData = initCodeEditor(jPanelLocalData, acProvider);
+        jTextAreaInitCode = initCodeEditor(jPanelInitCode, acProvider);
+        jTextAreaKRateCode = initCodeEditor(jPanelKRateCode2, acProvider);
+        jTextAreaSRateCode = initCodeEditor(jPanelSRateCode, acProvider);
+        jTextAreaDisposeCode = initCodeEditor(jPanelDisposeCode, acProvider);
+        jTextAreaMidiCode = initCodeEditor(jPanelMidiCode2, acProvider);
         setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axo.png")).getImage());
         editObj = origObj;
+        updateAcProvider(editObj);
+
+
 
         initEditFromOrig();
         updateReferenceXML();
@@ -227,6 +267,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
                 editObj.sMidiCode = CleanString(jTextAreaMidiCode.getText());
             }
         });
+        rSyntaxTextAreaXML.setFont(Constants.FONT_MONO);
         rSyntaxTextAreaXML.setEditable(false);
 
         // is it from the factory?
@@ -242,7 +283,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         if (IsEmbeddedObj()) {
             jMenuItemSave.setEnabled(false);
             jLabelLibrary.setText("embedded");
-            setTitle("embedded");
+            setTitle("");
             // embedded objects have no use for help patches
             jTextFieldHelp.setVisible(false);
             jLabelHelp.setVisible(false);
@@ -320,6 +361,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     }
 
     boolean hasChanged() {
+        updateAcProvider(editObj);
         Serializer serializer = new Persister();
 
         ByteArrayOutputStream editOS = new ByteArrayOutputStream(2048);
@@ -345,12 +387,17 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         ByteArrayOutputStream os = new ByteArrayOutputStream(2048);
         try {
             serializer.write(editObj, os);
+            Theme theme = Theme.load(Theme.class.getResourceAsStream(
+                "/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
+            theme.apply(rSyntaxTextAreaXML);
         } catch (Exception ex) {
             Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
+        rSyntaxTextAreaXML.setFont(Constants.FONT_MONO);
         rSyntaxTextAreaXML.setText(os.toString());
         rSyntaxTextAreaXML.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
         rSyntaxTextAreaXML.setCodeFoldingEnabled(true);
+        updateAcProvider(editObj);
 
         AxoObjectInstance obji = editObj.CreateInstance(null, "test", new Point(0, 0));
     }
@@ -374,25 +421,26 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         // warn if changes, and its not an embedded object
         if (hasChanged()) {
             if (!readonly) {
-                Object[] options = {"Save", "Revert Changes", "Cancel"};
-                int n = JOptionPane.showOptionDialog(this,
+                Object[] options = {"Yes", "No", "Cancel"};
+                int n = JOptionPane.showOptionDialog(
+                        this,
                         "Save changes to \"" + editObj.getCName() + "\" ?",
                         "Unsaved Changes",
-                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.YES_NO_CANCEL_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
                         null,
                         options,
                         options[0]);
                 switch (n) {
-                    case 0: // yes
+                    case JOptionPane.YES_OPTION:
                         jMenuItemSaveActionPerformed(null);
                         Close();
                         return false;
-                    case 1: // revert
+                    case JOptionPane.NO_OPTION:
                         Revert();
                         Close();
                         return false;
-                    case 2: // cancel
+                    case JOptionPane.CANCEL_OPTION:
                     default: // closed
                         return true;
                 }
@@ -438,6 +486,37 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             }
         }
         return (count > 1);
+    }
+
+    void updateAcProvider(AxoObject obj) {
+        /* add keywords to autocomplete list */
+        if (obj == null) return;
+
+        if (obj.inlets != null && obj.inlets.size() > 0) {
+            for (Inlet i : obj.inlets) {
+                acProvider.addACKeyword(i.GetCName());
+            }
+        }
+        if (obj.outlets != null && obj.outlets.size() > 0) {
+            for (Outlet o : obj.outlets) {
+                acProvider.addACKeyword(o.GetCName());
+            }
+        }
+        if (obj.attributes != null && obj.attributes.size() > 0) {
+            for (AxoAttribute a : obj.attributes) {
+                acProvider.addACKeyword(a.GetCName());
+            }
+        }
+        if (obj.params != null && obj.params.size() > 0) {
+            for (Parameter p : obj.params) {
+                acProvider.addACKeyword(p.GetCName());
+            }
+        }
+        if (obj.displays != null && obj.displays.size() > 0) {
+            for (Display d : obj.displays) {
+                acProvider.addACKeyword(d.GetCName());
+            }
+        }
     }
 
     /**
@@ -537,6 +616,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.LEFT);
         jTabbedPane1.setPreferredSize(new java.awt.Dimension(640, 100));
+        jTabbedPane1.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
         jPanelOverview.setLayout(new javax.swing.BoxLayout(jPanelOverview, javax.swing.BoxLayout.Y_AXIS));
 

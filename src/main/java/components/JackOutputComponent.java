@@ -17,9 +17,9 @@
  */
 package components;
 
-import axoloti.Theme;
 import axoloti.outlets.OutletInstance;
 import java.awt.BasicStroke;
+import java.awt.Color;
 // import static java.awt.Component.CENTER_ALIGNMENT;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -36,7 +36,6 @@ public class JackOutputComponent extends JComponent {
 
     private static final int sz = 10;
     private static final int margin = 2;
-    private static final int inset = 1;
     private static final Dimension dim = new Dimension(sz, sz);
     final OutletInstance outlet;
 
@@ -58,19 +57,17 @@ public class JackOutputComponent extends JComponent {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setStroke(stroke);
-        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+        g2.setPaint(Color.BLACK);
         g2.drawRect(margin, margin + 1, sz - margin - margin, sz - margin - margin);
 
         if (outlet.isConnected()) {
-            g2.fillOval(margin + inset, margin + inset + 1, sz - (margin + inset) * 2 + 1, sz - (margin + inset) * 2 + 1);
             g2.setPaint(getForeground());
-            g2.fillOval(margin + inset - 1, margin + inset, sz - (margin + inset) * 2 + 1, sz - (margin + inset) * 2 + 1);
+            g2.fillRect(margin - 1, margin, sz - margin - margin, sz - margin - margin);
         } else {
-            g2.drawOval(margin + inset, margin + inset + 1, sz - (margin + inset) * 2, sz - (margin + inset) * 2);
+            g2.drawOval(margin, margin + 1, sz - margin - margin, sz - margin - margin);
             g2.setPaint(getForeground());
-            g2.drawOval(margin + inset - 1, margin + inset, sz - (margin + inset) * 2, sz - (margin + inset) * 2);
+            g2.drawOval(margin - 1, margin, sz - margin - margin, sz - margin - margin);
         }
-
         g2.drawRect(margin - 1, margin, sz - margin - margin, sz - margin - margin);
     }
     

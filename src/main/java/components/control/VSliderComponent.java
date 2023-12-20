@@ -19,6 +19,7 @@ package components.control;
 
 import axoloti.MainFrame;
 import axoloti.Theme;
+import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 // import java.awt.AWTException;
 import java.awt.BasicStroke;
@@ -26,7 +27,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-// import java.awt.MouseInfo;
 import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.Stroke;
@@ -34,8 +34,11 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-// import java.util.logging.Level;
-// import java.util.logging.Logger;
+
+import javax.swing.JToolTip;
+import javax.swing.Popup;
+import javax.swing.PopupFactory;
+import javax.swing.border.EmptyBorder;
 
 /**
  *
@@ -54,11 +57,18 @@ public class VSliderComponent extends ACtrlComponent {
     private String keybBuffer = "";
     private Robot robot;
 
+    private PopupFactory popupFactory = PopupFactory.getSharedInstance();
+    private Popup popup;
+    private JToolTip popupTip = createToolTip();
+
     public VSliderComponent(double value, double min, double max, double tick) {
         this.max = max;
         this.min = min;
         this.value = value;
         this.tick = tick;
+
+        popupTip.setBorder(new EmptyBorder(0,3,0,0));
+        popupTip.setPreferredSize(new Dimension(52,20));
 
         setPreferredSize(dim);
         setMaximumSize(dim);
@@ -76,16 +86,23 @@ public class VSliderComponent extends ACtrlComponent {
         });
         SetupTransferHandler();
     }
-    private int px;
-    private int py;
+    private int MousePressedCoordX;
+    private int MousePressedCoordY;
 
     @Override
     protected void mouseDragged(MouseEvent e) {
         if (isEnabled()) {
-            double v = value + tick * ((int) Math.round((py - e.getYOnScreen())));
+            double t = tick;
+            if (KeyUtils.isControlOrCommandDown(e)) {
+                t = t * 0.1;
+            }
+            if (e.isShiftDown()) {
+                t = t * 0.1;
+            }
+            double v = value + t * ((int) Math.round((MousePressedCoordY - e.getYOnScreen())));
             robotMoveToCenter();
             if (robot == null) {
-                py = e.getYOnScreen();
+                MousePressedCoordY = e.getYOnScreen();
             }
             setValue(v);
         }
@@ -95,8 +112,10 @@ public class VSliderComponent extends ACtrlComponent {
     protected void mousePressed(MouseEvent e) {
         if (!e.isPopupTrigger()) {
             grabFocus();
-            px = e.getXOnScreen();
-            py = e.getYOnScreen();
+            MousePressedCoordX = e.getXOnScreen();
+            MousePressedCoordY = e.getYOnScreen();
+            popup = popupFactory.getPopup(this, popupTip, MousePressedCoordX+8, MousePressedCoordY);
+            popup.show();
             robot = createRobot();
             if (!Preferences.LoadPreferences().getMouseDoNotRecenterWhenAdjustingControls()) {
                 getRootPane().setCursor(MainFrame.transparentCursor);
@@ -110,6 +129,9 @@ public class VSliderComponent extends ACtrlComponent {
     protected void mouseReleased(MouseEvent e) {
         if (!e.isPopupTrigger()) {
             fireEventAdjustmentFinished();
+        }
+        if (popup != null) {
+            popup.hide();
         }
         getRootPane().setCursor(Cursor.getDefaultCursor());
         robot = null;
@@ -280,7 +302,9 @@ public class VSliderComponent extends ACtrlComponent {
             value = min;
         }
         this.value = value;
-        setToolTipText("" + value);
+        String str = String.format("%3.2f", value);
+        setToolTipText(str);
+        popupTip.setTipText(str);
         repaint();
         fireEvent();
     }
@@ -309,8 +333,8 @@ public class VSliderComponent extends ACtrlComponent {
     @Override
     public void robotMoveToCenter() {
         if (robot != null) {
-            getRootPane().setCursor(MainFrame.transparentCursor);
-            robot.mouseMove(px, py);
+            // getRootPane().setCursor(MainFrame.transparentCursor);
+            robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
         }
     }
 }

@@ -68,7 +68,7 @@ public class USBBulkConnection extends Connection {
     private final Context context;
     private DeviceHandle handle;
     private final short bulkVID = (short) 0x16C0;
-    private final short bulkPIDAxoloti = (short) 0x0442;
+    // private final short bulkPIDAxoloti = (short) 0x0442;
     private final short bulkPIDKsoloti = (short) 0x0444;
     private final int interfaceNumber = 2;
 
@@ -126,7 +126,7 @@ public class USBBulkConnection extends Connection {
             } catch (InterruptedException ex) {
                 Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
-            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Disconnected\n");
+            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.WARNING, "Disconnected\n");
             synchronized (sync) {
                 sync.Acked = false;
                 sync.notifyAll();
@@ -397,18 +397,18 @@ public class USBBulkConnection extends Connection {
         if (result != LibUsb.SUCCESS) {
             String errstr;
             switch (result) {
-            case -1:  errstr = "input/output error"; break;
-            case -2:  errstr = "invalid parameter"; break;
-            case -3:  errstr = "access denied (insufficient permissions?)"; break;
-            case -4:  errstr = "no such device (it may have been disconnected)"; break;
-            case -5:  errstr = "device/entity not found"; break;
-            case -6:  errstr = "resource busy"; break;
-            case -7:  errstr = "operation timed out"; break;
-            case -8:  errstr = "overflow"; break;
-            case -9:  errstr = "pipe error"; break;
-            case -10: errstr = "system call interrupted"; break;
-            case -11: errstr = "insufficient memory"; break;
-            case -12: errstr = "operation not supported or unimplemented on this platform"; break;
+            case -1:  errstr = "Input/output error"; break;
+            case -2:  errstr = "Invalid parameter"; break;
+            case -3:  errstr = "Access denied (insufficient permissions?)"; break;
+            case -4:  errstr = "Device may have been disconnected"; break;
+            case -5:  errstr = "Device not found"; break;
+            case -6:  errstr = "Device busy"; break;
+            case -7:  errstr = "Operation timed out"; break;
+            case -8:  errstr = "Overflow"; break;
+            case -9:  errstr = "Pipe error"; break;
+            case -10: errstr = "System call interrupted"; break;
+            case -11: errstr = "Insufficient memory"; break;
+            case -12: errstr = "Operation not supported or unimplemented"; break;
             default:  errstr = Integer.toString(result); break;
 
             }
@@ -485,6 +485,7 @@ public class USBBulkConnection extends Connection {
         spsDlg.setVisible(true);
         cpuid = spsDlg.getCPUID();
         String name = MainFrame.prefs.getBoardName(cpuid);
+        if (cpuid == null) return;
         if (name == null) {
             Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Selecting CPU ID: {0} for connection.", cpuid);
         } else {
@@ -1254,7 +1255,7 @@ public class USBBulkConnection extends Connection {
                 }
                 if (dataIndex == dataLength) {
                     lcdRcvBuffer.rewind();
-                    MainFrame.mainframe.remote.updateRow(LCDPacketRow, lcdRcvBuffer);
+                    // MainFrame.mainframe.remote.updateRow(LCDPacketRow, lcdRcvBuffer);
                     GoIdleState();
                 }
                 break;

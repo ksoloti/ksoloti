@@ -21,7 +21,7 @@ import static axoloti.Axoloti.FIRMWARE_DIR;
 import static axoloti.Axoloti.HOME_DIR;
 import static axoloti.Axoloti.RELEASE_DIR;
 import static axoloti.Axoloti.RUNTIME_DIR;
-import axoloti.dialogs.AxolotiRemoteControl;
+// import axoloti.dialogs.AxolotiRemoteControl;
 import axoloti.dialogs.FileManagerFrame;
 import axoloti.dialogs.KeyboardFrame;
 import axoloti.dialogs.PatchBank;
@@ -29,6 +29,7 @@ import axoloti.dialogs.PreferencesFrame;
 import axoloti.object.AxoObjects;
 import axoloti.usb.Usb;
 import axoloti.utils.AxolotiLibrary;
+import axoloti.utils.Constants;
 import axoloti.utils.FirmwareID;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
@@ -62,7 +63,6 @@ import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.Style;
@@ -98,7 +98,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     String TargetFirmwareID;
     KeyboardFrame keyboard;
     FileManagerFrame filemanager;
-    AxolotiRemoteControl remote;
+    // AxolotiRemoteControl remote;
     QCmdProcessor qcmdprocessor;
     Thread qcmdprocessorThread;
     static public Cursor transparentCursor;
@@ -126,7 +126,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         setVisible(true);
 
         final Style styleParent = jTextPaneLog.addStyle(null, null);
-        jTextPaneLog.setFont(UIManager.getFont("monospaced.font"));
+        jTextPaneLog.setFont(Constants.FONT_MONO);
 
         final Style styleSevere = jTextPaneLog.addStyle("severe", styleParent);
         final Style styleWarning = jTextPaneLog.addStyle("warning", styleParent);
@@ -242,16 +242,16 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         keyboard = new KeyboardFrame();
         // keyboard.setAlwaysOnTop(prefs.getKeyboardFrameAlwaysOnTop());
         keyboard.setTitle("Keyboard");
-        keyboard.setResizable(false);
         keyboard.setVisible(false);
 
         filemanager = new FileManagerFrame();
+        filemanager.setLocation((int)getLocation().getX() + 60, (int)getLocation().getY() + 60);
         filemanager.setTitle("File Manager");
         filemanager.setVisible(false);
 
-        remote = new AxolotiRemoteControl();
-        remote.setTitle("Remote");
-        remote.setVisible(false);
+        // remote = new AxolotiRemoteControl();
+        // remote.setTitle("Remote");
+        // remote.setVisible(false);
 
         if (!prefs.getExpertMode()) {
             jMenuItemRefreshFWID.setVisible(false);
@@ -661,8 +661,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuBoard.add(jMenuItemPanic);
 
+        jMenuItemMount.setText("Enter Card Reader Mode (disconnects editor)");
         jMenuItemMount.setMnemonic('R');
-        jMenuItemMount.setText("Enter card reader mode (disconnects editor)");
+        jMenuItemMount.setDisplayedMnemonicIndex(11);
         jMenuItemMount.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemMountActionPerformed(evt);
@@ -1266,9 +1267,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         return filemanager;
     }
 
-    public AxolotiRemoteControl getRemote() {
-        return remote;
-    }
+    // public AxolotiRemoteControl getRemote() {
+    //     return remote;
+    // }
 
     public KeyboardFrame getKeyboard() {
         return keyboard;

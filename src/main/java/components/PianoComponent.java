@@ -21,6 +21,7 @@ import axoloti.Theme;
 import axoloti.utils.Constants;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import javax.swing.JComponent;
@@ -32,7 +33,7 @@ import javax.swing.event.MouseInputAdapter;
  */
 public abstract class PianoComponent extends JComponent {
 
-    final int height = 47;
+    final int height = 50;
     final int blackKeyHeight = height / 2;
     final int width = 900;
     final int quarterKeyWidth = 3;
@@ -115,6 +116,10 @@ public abstract class PianoComponent extends JComponent {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         // white keys first
         for (int i = 0; i < 128; i++) {
             int y = keyToY(i);
@@ -172,7 +177,7 @@ public abstract class PianoComponent extends JComponent {
             if (i % 12 == 0) {
                 int x = keyToX(i);
                 g2.setFont(Constants.FONT);
-                g2.drawString("" + ((i / 12) - 1), x + 2, height - 2);
+                g2.drawString("" + ((i / 12) - 1), x + 3, height - 2);
             }
         }
         for (int i = 0; i < 128; i++) {
@@ -190,7 +195,7 @@ public abstract class PianoComponent extends JComponent {
         }
         int x = keyToX(64);
         g2.setColor(Theme.getCurrentTheme().Keyboard_Mid);
-        g2.fillOval(x + 2, height - (KeyWidth + 2), KeyWidth, KeyWidth);
+        g2.fillOval(x + 3, height - (KeyWidth + 2), KeyWidth, KeyWidth);
         g2.dispose();
     }
 

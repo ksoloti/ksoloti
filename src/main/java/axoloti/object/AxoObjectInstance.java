@@ -36,6 +36,7 @@ import axoloti.inlets.InletInstance;
 import axoloti.outlets.Outlet;
 import axoloti.outlets.OutletInstance;
 import axoloti.parameters.*;
+import axoloti.utils.Constants;
 import components.LabelComponent;
 import components.PopupIcon;
 import java.awt.Point;
@@ -53,6 +54,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.border.EmptyBorder;
+
 import org.simpleframework.xml.*;
 import org.simpleframework.xml.core.Persist;
 
@@ -145,26 +148,39 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
             public void ShowPopup() {
                 JPopupMenu popup = CreatePopupMenu();
                 popupIcon.add(popup);
-                popup.show(popupIcon,
-                        0, popupIcon.getHeight());
+                popup.show(popupIcon, 0, popupIcon.getHeight());
             }
         });
+
         popupIcon.setAlignmentX(LEFT_ALIGNMENT);
         Titlebar.add(popupIcon);
-        LabelComponent idlbl = new LabelComponent(typeName);
+
+        LabelComponent idlbl = new LabelComponent("");
+        if (typeName.length() <= 20)
+            idlbl.setText(typeName); /* if not too long, use full object name */
+        else {
+            String[] ssubs = typeName.split("/"); /* else split path of full object name */
+            String slbl = ssubs[ssubs.length-1]; /* start with "most signinficant" part */
+
+            for (int i=ssubs.length-2; i>0; i--) {
+                if (slbl.length() >= 16) break; /* it object name is too long already, leave */
+                slbl = ssubs[i] + "/" + slbl; /* else keep adding subpaths until it is too long */
+            }
+            idlbl.setText("…/" + slbl);
+        }
         idlbl.setForeground(Theme.getCurrentTheme().Object_TitleBar_Foreground);
         idlbl.setAlignmentX(LEFT_ALIGNMENT);
+        idlbl.setFont(Constants.FONT_BOLD);
+        idlbl.setBorder(new EmptyBorder(-2,0,-2,0));
         Titlebar.add(idlbl);
 
         String tooltiptxt = "<html>";
+        tooltiptxt += "<b>" + typeName + "</b>";
         if ((getType().sDescription != null) && (!getType().sDescription.isEmpty())) {
-            tooltiptxt += getType().sDescription;
+            tooltiptxt += "<p><br/>" + getType().sDescription.replace("\n", "<br/>");
         }
         if ((getType().sAuthor != null) && (!getType().sAuthor.isEmpty())) {
             tooltiptxt += "<p>Author: " + getType().sAuthor;
-        }
-        if ((getType().sLicense != null) && (!getType().sLicense.isEmpty())) {
-            tooltiptxt += "<p>License: " + getType().sLicense;
         }
         if ((getType().sPath != null) && (!getType().sPath.isEmpty())) {
             tooltiptxt += "<p>Path: " + getType().sPath;
@@ -184,7 +200,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
         //IndexLabel.setAlignmentX(RIGHT_ALIGNMENT);
         Titlebar.setAlignmentX(LEFT_ALIGNMENT);
         add(Titlebar);
+
         InstanceLabel = new LabelComponent(getInstanceName());
+        InstanceLabel.setBorder(new EmptyBorder(-2,1,-2,0));
         InstanceLabel.setAlignmentX(LEFT_ALIGNMENT);
         InstanceLabel.addMouseListener(new MouseListener() {
             @Override
@@ -359,7 +377,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
         popm_substitute.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                ((PatchGUI) patch).ShowClassSelector(AxoObjectInstance.this.getLocation(), AxoObjectInstance.this, null);
+                ((PatchGUI) patch).ShowClassSelector(AxoObjectInstance.this.getLocation(), AxoObjectInstance.this, null, true);
             }
         });
         popup.add(popm_substitute);
@@ -966,7 +984,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
         if (IsLocked()) {
             return;
         }
-        ArrayList<AxoObjectAbstract> ol = MainFrame.mainframe.axoObjects.GetAxoObjectFromName("patch/patcher", null);
+        // ArrayList<AxoObjectAbstract> ol = MainFrame.mainframe.axoObjects.GetAxoObjectFromName("patch/patcher", null);
+        ArrayList<AxoObjectAbstract> ol = MainFrame.axoObjects.GetAxoObjectFromName("patch/patcher", null);
         assert (!ol.isEmpty());
         AxoObjectAbstract o = ol.get(0);
         String iname = getInstanceName();
@@ -986,7 +1005,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
             return;
         }
         try {
-            ArrayList<AxoObjectAbstract> ol = MainFrame.mainframe.axoObjects.GetAxoObjectFromName("patch/object", null);
+            // ArrayList<AxoObjectAbstract> ol = MainFrame.mainframe.axoObjects.GetAxoObjectFromName("patch/object", null);
+            ArrayList<AxoObjectAbstract> ol = MainFrame.axoObjects.GetAxoObjectFromName("patch/object", null);
             assert (!ol.isEmpty());
             AxoObjectAbstract o = ol.get(0);
             String iname = getInstanceName();

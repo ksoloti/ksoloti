@@ -64,6 +64,11 @@ public class Bool32 implements DataType {
     }
 
     @Override
+    public Color GetColorHighlighted() {
+        return Theme.getCurrentTheme().Cable_Bool32_Highlighted;
+    }
+
+    @Override
     public boolean equals(Object o) {
         return (o instanceof Bool32);
     }

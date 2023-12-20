@@ -46,13 +46,16 @@ public class Theme {
     @Element
     public String Theme_Name = "Default";
 
+    int bgRGB = UIManager.getColor("Viewport.background").getRGB();
+    boolean isBgDark = (((bgRGB & 0xFF0000) >> 16) + ((bgRGB & 0x00FF00) >> 8) + ((bgRGB & 0x0000FF))) / 3 < 0x80;
+
     /* UI */
     @Element
     public Color Console_Background = UIManager.getColor("Viewport.background");
     @Element
-    public Color Patch_Unlocked_Background = UIManager.getColor("Viewport.background").darker();
+    public Color Patch_Unlocked_Background = isBgDark ? UIManager.getColor("Viewport.background").brighter() : UIManager.getColor("Viewport.background").darker();
     @Element
-    public Color Patch_Locked_Background = new Color(66,66,64); /* Dark grey with slight brown tint */
+    public Color Patch_Locked_Background = isBgDark ? UIManager.getColor("Viewport.background").darker().darker() : UIManager.getColor("Viewport.background").darker().darker().darker();
     @Element
     public Color Button_Accent_Background = UIManager.getColor("Component.accentColor");
     @Element
@@ -74,25 +77,57 @@ public class Theme {
     @Element
     public Color Cable_Default = Color.DARK_GRAY;
     @Element
+    public Color Cable_Default_Highlighted = Color.GRAY;
+
+    @Element
     public Color Cable_Shadow = Color.BLACK;
     @Element
-    public Color Cable_Bool32 = new Color(0xFF, 0xEF, 0x40);
+    public Color Cable_Shadow_Highlighted = Color.DARK_GRAY;
+
+    @Element
+    public Color Cable_Bool32 = new Color(0xEF, 0xDF, 0x40);
+    @Element
+    public Color Cable_Bool32_Highlighted = Cable_Bool32.brighter();
+
     @Element
     public Color Cable_CharPointer32 = Color.PINK;
     @Element
+    public Color Cable_CharPointer32_Highlighted = Cable_CharPointer32.brighter().brighter();
+
+    @Element
     public Color Cable_Zombie = Color.WHITE;
+    @Element
+    public Color Cable_Zombie_Highlighted = new Color(0x9F, 0x00, 0x00);
+
     @Element
     public Color Cable_Frac32 = new Color(0x20, 0x40, 0xFF);
     @Element
+    public Color Cable_Frac32_Highlighted = Cable_Frac32.brighter().brighter();
+
+    @Element
     public Color Cable_Frac32Buffer = new Color(0xFF, 0x20, 0x40);
     @Element
-    public Color Cable_Int32 = new Color(0x20, 0xFF, 0x40);
+    public Color Cable_Frac32Buffer_Highlighted = new Color(0xFF, 0x60, 0x80);
+
+    @Element
+    public Color Cable_Int32 = new Color(0x20, 0xEF, 0x40);
+    @Element
+    public Color Cable_Int32_Highlighted = Cable_Int32.brighter();
+
     @Element
     public Color Cable_Int32Pointer = Color.MAGENTA;
     @Element
-    public Color Cable_Int8Array = Color.MAGENTA;
+    public Color Cable_Int32Pointer_Highlighted = Cable_Int32Pointer.brighter().brighter().brighter();
+
     @Element
-    public Color Cable_Int8Pointer = Color.MAGENTA;
+    public Color Cable_Int8Array = Cable_Int32Pointer;
+    @Element
+    public Color Cable_Int8Array_Highlighted = Cable_Int32Pointer_Highlighted;
+
+    @Element
+    public Color Cable_Int8Pointer = Cable_Int32Pointer;
+    @Element
+    public Color Cable_Int8Pointer_Highlighted = Cable_Int32Pointer_Highlighted;;
 
     /* Objects */
     @Element
@@ -104,9 +139,17 @@ public class Theme {
     @Element
     public Color Object_TitleBar_Background = UIManager.getColor("Panel.foreground"); /* Titlebar Inverted */
     @Element
-    public Color Object_TitleBar_Subpatch_Background = new Color(0.45f, 0.5f, 0.6f); /* Blueish titlebar for subpatches */
+    public Color Object_TitleBar_Subpatch_Background = new Color(
+        Math.max(Object_TitleBar_Background.getRed()-0x20, 0x20),
+        Math.max(Object_TitleBar_Background.getGreen()-0x20, 0x20),
+        Math.min(Object_TitleBar_Background.getBlue()+0x80, 0xFF)
+    );
     @Element
-    public Color Object_TitleBar_Embedded_Background = new Color(0.6f, 0.5f, 0.45f); /* Brownish titlebar for embedded objects */
+    public Color Object_TitleBar_Embedded_Background = new Color(
+        Math.min(Object_TitleBar_Background.getRed()+0x60, 0xFF),
+        Math.min(Object_TitleBar_Background.getGreen()+0x30, 0xFF),
+        Math.max(Object_TitleBar_Background.getBlue()-0x20, 0x20) 
+    );
     @Element
     public Color Object_TitleBar_Foreground = UIManager.getColor("Panel.background"); /* Titlebar Inverted */
     @Element
@@ -114,7 +157,7 @@ public class Theme {
     @Element
     public Color Object_Border_Unselected_Locked = Patch_Locked_Background;
     @Element
-    public Color Object_Border_Selected = Color.ORANGE;
+    public Color Object_Border_Selected = new Color(0xFF, 0x80, 0x00); /* Juicy orange */
     @Element
     public Color Object_Zombie_Background = Color.RED;
 
@@ -123,20 +166,24 @@ public class Theme {
     @Element
     public Color Parameter_Default_Foreground = Object_Default_Foreground;
     @Element
-    public Color Parameter_On_Parent_Highlight = Cable_Frac32;
+    public Color Parameter_On_Parent_Background = new Color(
+        Math.max(Object_TitleBar_Foreground.getRed()-0x20, 0x20),
+        Math.max(Object_TitleBar_Foreground.getGreen()-0x20, 0x20),
+        Math.min(Object_TitleBar_Foreground.getBlue()+0x80, 0xFF)
+    );
     @Element
     public Color Parameter_Preset_Highlight_Foreground = UIManager.getColor("Component.accentColor");
 
     @Element
-    public Color Component_Foreground = Color.BLACK;
+    public Color Component_Foreground = Object_Default_Foreground;
     @Element
-    public Color Component_Mid_Dark = Color.getHSBColor(0.f, 0.0f, 0.66f);
+    public Color Component_Mid_Dark = Color.getHSBColor(0.0f, 0.0f, isBgDark ? 0.66f : 0.33f); /* Invert grey values when dark theme is active */
     @Element
     public Color Component_Mid = Color.GRAY;
     @Element
-    public Color Component_Mid_Light = Color.getHSBColor(0.f, 0.0f, 0.33f);
+    public Color Component_Mid_Light = Color.getHSBColor(0.0f, 0.0f, isBgDark ? 0.33f : 0.66f);
     @Element
-    public Color Component_Background = Color.WHITE;
+    public Color Component_Background = isBgDark ? Object_Default_Background.darker() : Object_Default_Background.brighter();
     @Element
     public Color Component_Illuminated = Color.ORANGE;
 
@@ -202,7 +249,8 @@ public class Theme {
 
             if (ext.equalsIgnoreCase(".axt")) {
                 fileToBeSaved = new File(fc.getSelectedFile().toString());
-            } else if (!ext.equals(filterext)) {
+            } 
+            else if (!ext.equals(filterext)) {
                 Object[] options = {"Yes",
                     "No"};
                 int n = JOptionPane.showOptionDialog(frame,
@@ -241,7 +289,8 @@ public class Theme {
                 }
             }
             return fileToBeSaved;
-        } else {
+        }
+        else {
             return null;
         }
     }

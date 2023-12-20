@@ -31,7 +31,7 @@ public class VRadioComponent extends HRadioComponent {
 
     public VRadioComponent(int value, int n) {
         super(value, n);
-        bsize = 14;
+        bsize = 12;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class VRadioComponent extends HRadioComponent {
         if (isEnabled()) {
             g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         } else {
-            g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
+            g2.setPaint(Theme.getCurrentTheme().Component_Mid);
         }
         if (isFocusOwner()) {
             g2.setStroke(strokeThick);
@@ -75,7 +75,7 @@ public class VRadioComponent extends HRadioComponent {
         }
 
         if (isEnabled()) {
-            g2.fillOval(2, (int) value * bsize + 2, bsize - 3, bsize - 3);
+            g2.fillOval(3, (int) value * bsize + 3, bsize - 5, bsize - 5);
         } else {
         }
     }

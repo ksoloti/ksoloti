@@ -26,7 +26,6 @@ public class OutletTypes {
     final static Outlet types[] = {
         new OutletBool32(),
         new OutletBool32Pulse(),
-        new OutletCharPtr32(),
         new OutletFrac32(),
         new OutletFrac32Bipolar(),
         new OutletFrac32Pos(),
@@ -35,7 +34,8 @@ public class OutletTypes {
         new OutletFrac32BufferPos(),
         new OutletInt32(),
         new OutletInt32Bipolar(),
-        new OutletInt32Pos()
+        new OutletInt32Pos(),
+        new OutletCharPtr32()
     };
 
     static public Outlet[] getTypes() {

@@ -67,15 +67,15 @@ public class Axoloti
                 System.setProperty("apple.awt.transparentTitleBar", "true");
             }
 
-            if (OSDetect.getOS() == OSDetect.OS.LINUX)
-            {
-                JFrame.setDefaultLookAndFeelDecorated(true);
-                JDialog.setDefaultLookAndFeelDecorated(true);
-            }
+            System.setProperty("awt.useSystemAAFontSettings","gasp");
+            System.setProperty("swing.aatext","true");
 
-            // System.setProperty("awt.useSystemAAFontSettings","lcd");
-            // System.setProperty("sun.java2d.dpiaware","true");
-            // System.setProperty("swing.aatext","true");
+            /* Set tooltip delay and duration */
+            javax.swing.ToolTipManager.sharedInstance().setDismissDelay(600000);
+            javax.swing.ToolTipManager.sharedInstance().setInitialDelay(900);
+
+            JFrame.setDefaultLookAndFeelDecorated(true);
+            JDialog.setDefaultLookAndFeelDecorated(true);
 
             UIManager.put("Table.showHorizontalLines", true);
             UIManager.put("Table.showVerticalLines", true);
@@ -94,22 +94,6 @@ public class Axoloti
         {
             throw new Error(e);
         }
-        // catch (ClassNotFoundException e)
-        // {
-        //     throw new Error(e);
-        // }
-        // catch (InstantiationException e)
-        // {
-        //     throw new Error(e);
-        // }
-        // catch (IllegalAccessException e)
-        // {
-        //     throw new Error(e);
-        // }
-        // catch (UnsupportedLookAndFeelException e)
-        // {
-        //     throw new Error(e);
-        // }
 
         System.setProperty("line.separator", "\n");
 
@@ -309,8 +293,8 @@ public class Axoloti
                 + "Current = " + curDir + "\n"
                 + "Jar = " + jarDir + "\n"
                 + "PatcherHome = " + System.getProperty(HOME_DIR) + "\n"
-                + "Release = " + System.getProperty(RELEASE_DIR) + "\n"
-                + "Runtime = " + System.getProperty(RUNTIME_DIR) + "\n"
+                // + "Release = " + System.getProperty(RELEASE_DIR) + "\n"
+                // + "Runtime = " + System.getProperty(RUNTIME_DIR) + "\n"
                 + "Firmware = " + System.getProperty(FIRMWARE_DIR) + "\n"
                 + "Libraries = " + System.getProperty(LIBRARIES_DIR)
         );

@@ -150,6 +150,10 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         } else {
             ctrl.setToolTipText(parameter.name);
         }
+        if (isOnParent()) {
+            ctrl.setToolTipText("<html>" + ctrl.getToolTipText() + "<p>This parameter is being controlled from the parent patch.");
+        }
+
         add(getControlComponent());
         getControlComponent().addMouseListener(popupMouseListener);
         getControlComponent().addACtrlListener(new ACtrlListener() {
@@ -211,9 +215,9 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         for (int i=1; i<settings.GetNPresets()+1; i++)
         {
             Preset p = GetPreset(i);
-            if (p != null) {
-                return;
-            }
+            // if (p != null) {
+            //     return;
+            // }
             if (presets == null) {
                 presets = new ArrayList<Preset>();
             }
@@ -472,7 +476,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     }
 
     public void populatePopup(JPopupMenu m) {
-        final JCheckBoxMenuItem m_onParent = new JCheckBoxMenuItem("Show parameter on parent");
+        final JCheckBoxMenuItem m_onParent = new JCheckBoxMenuItem("Show Parameter on Parent");
         m_onParent.setSelected(isOnParent());
         m.add(m_onParent);
         m_onParent.addActionListener(new ActionListener() {

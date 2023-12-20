@@ -31,27 +31,31 @@ import java.awt.Stroke;
  */
 public class ScopeComponent extends ADispComponent {
 
-    private final int length = 64;
-    private final int vsize = 64;
-    private final int[] value = new int[length];
-    private final int[] xvalue = new int[length];
+    private int length; /* = 64; */
+    private int vsize; /* = 64; */
+    private int[] value; /* = new int[length]; */
+    private int[] xvalue; /* = new int[length]; */
     private int index = 0;
     private final double max;
     private final double min;
 
-    public ScopeComponent(double min, double max) {
+    public ScopeComponent(int length, int vsize, double min, double max) {
+        this.length = length;
+        this.vsize = vsize;
         this.max = max;
         this.min = min;
+        this.xvalue = new int[length];
+        this.value = new int[length];
         for (int i = 0; i < length; i++) {
             xvalue[i] = i + 1;
         }
-        Dimension d = new Dimension(length + 2, vsize + 2);
+        Dimension d = new Dimension(length + 4, vsize + 4);
         setMinimumSize(d);
         setMaximumSize(d);
         setPreferredSize(d);
     }
     private static final Stroke strokeThin = new BasicStroke(0.75f);
-    private static final Stroke strokeThick = new BasicStroke(1.f);
+    private static final Stroke strokeThick = new BasicStroke(1.0f);
 
     @Override
     public void paintComponent(Graphics g) {
@@ -61,22 +65,27 @@ public class ScopeComponent extends ADispComponent {
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
         g2.setStroke(strokeThick);
         g2.setColor(Theme.getCurrentTheme().Component_Background);
         g2.fillRect(0, 0, length + 2, vsize + 2);
+
+        g2.setColor(Theme.getCurrentTheme().Component_Mid_Light);
+        int v = (int) Project(0);
+        g2.drawLine(0, v, length, v);
+
         g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         g2.drawRect(0, 0, length + 2, vsize + 2);
         g2.setStroke(strokeThin);
         if (index > 1) {
             g2.drawPolyline(xvalue, value, index - 1);
         }
+
         g2.setColor(Theme.getCurrentTheme().Component_Mid);
         if (index < length - 2) {
             g2.drawPolyline(java.util.Arrays.copyOfRange(xvalue, index, length - 1),
                     java.util.Arrays.copyOfRange(value, index, length - 1), length - index - 1);
         }
-        int v = (int) Project(0);
-        g2.drawLine(0, v, length, v);
     }
 
     @Override

@@ -119,6 +119,8 @@ public class WindowMenu extends JMenu {
         jMenuWindow.removeAll();
         {
             WindowMenuItem a = new WindowMenuItem(MainFrame.mainframe, "Main Window");
+            a.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M,
+            KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
             a.setMnemonic('M');
             jMenuWindow.add(a);
         }
@@ -131,14 +133,16 @@ public class WindowMenu extends JMenu {
         }
         {
             WindowMenuItem a = new WindowMenuItem(MainFrame.mainframe.getFilemanager(), "File Manager");
+            a.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,
+            KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
             a.setMnemonic('F');
             jMenuWindow.add(a);
         }
-        if (false) {
-            WindowMenuItem a = new WindowMenuItem(MainFrame.mainframe.getRemote(), "Remote");
-            a.setMnemonic('R');
-            jMenuWindow.add(a);
-        }
+        // if (false) {
+        //     WindowMenuItem a = new WindowMenuItem(MainFrame.mainframe.getRemote(), "Remote");
+        //     a.setMnemonic('R');
+        //     jMenuWindow.add(a);
+        // }
 
         jMenuWindow.add(new JSeparator());
         PopulateDocuments(jMenuWindow, "", DocumentWindowList.GetList());

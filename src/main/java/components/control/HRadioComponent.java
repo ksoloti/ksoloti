@@ -172,7 +172,7 @@ public class HRadioComponent extends ACtrlComponent {
         if (isEnabled()) {
             g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
         } else {
-            g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
+            g2.setPaint(Theme.getCurrentTheme().Component_Mid);
         }
         if (isFocusOwner()) {
             g2.setStroke(strokeThick);
@@ -183,7 +183,7 @@ public class HRadioComponent extends ACtrlComponent {
         }
 
         if (isEnabled()) {
-            g2.fillOval((int) value * bsize + 2, 2, bsize - 3, bsize - 3);
+            g2.fillOval((int) value * bsize + 3, 3, bsize - 5, bsize - 5);
         } else {
         }
     }

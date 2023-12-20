@@ -103,16 +103,16 @@ public abstract class ParameterInstanceFrac32<Tx extends ParameterFrac32> extend
     @Override
     public void populatePopup(JPopupMenu m) {
         super.populatePopup(m);
-        JMenuItem m_default = new JMenuItem("Reset to default value");
-        m_default.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                applyDefaultValue();
-                getControlComponent().setValue(value.getDouble());
-                handleAdjustment();
-            }
-        });
-        m.add(m_default);
+        // JMenuItem m_default = new JMenuItem("Reset to default value");
+        // m_default.addActionListener(new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(ActionEvent e) {
+        //         applyDefaultValue();
+        //         getControlComponent().setValue(value.getDouble());
+        //         handleAdjustment();
+        //     }
+        // });
+        // m.add(m_default);
     }
 
     public void updateModulation(int index, double amount) {
@@ -161,15 +161,17 @@ public abstract class ParameterInstanceFrac32<Tx extends ParameterFrac32> extend
                     modulator.Modulations.remove(n);
                 }
             }
-            for (int i = 0; i < modulators.size(); i++) {
-                Modulation n = modulators.get(i);
-                if (n.destination == this) {
-                    modulators.remove(n);
+            if (modulators != null) {
+                for (int i = 0; i < modulators.size(); i++) {
+                    Modulation n = modulators.get(i);
+                    if (n.destination == this) {
+                        modulators.remove(n);
+                    }
+                    axoObj.patch.updateModulation(n);
                 }
-                axoObj.patch.updateModulation(n);
-            }
-            if (modulators.isEmpty()) {
-                modulators = null;
+                if (modulators.isEmpty()) {
+                    modulators = null;
+                }
             }
         }
     }

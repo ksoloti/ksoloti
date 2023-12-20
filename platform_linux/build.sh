@@ -8,8 +8,8 @@ echo -e "Use at your own risk\n"
 echo -e "Some packages will be installed with apt-get,"
 echo -e "and all users will be granted permission to access some USB devices"
 echo -e "For this you'll require sudo rights and need to enter your password...\n"
-# echo -e "Press RETURN to continue\nCTRL-C if you are unsure!\n"
-# read
+echo -e "Press RETURN to continue\nCTRL-C if you are unsure!\n"
+read
 
 PLATFORM_ROOT="$(cd $(dirname $0); pwd -P)"
 
@@ -181,6 +181,35 @@ else
     echo "##### dfu-util already present, skipping... #####"
 fi
 
+cd "${PLATFORM_ROOT}/../jdks"
+
+JDK_ARCHIVE_LINUX="zulu21.30.15-ca-jdk21.0.1-linux_x64.tar.gz"
+if [ ! -f "${JDK_ARCHIVE_LINUX}" ];
+then
+    echo "##### downloading ${JDK_ARCHIVE_LINUX} #####"
+    curl -L https://cdn.azul.com/zulu/bin/$JDK_ARCHIVE_LINUX > $JDK_ARCHIVE_LINUX
+else
+    echo "##### ${JDK_ARCHIVE_LINUX} already downloaded #####"
+fi
+
+JDK_ARCHIVE_MAC="zulu21.30.15-ca-jdk21.0.1-macosx_x64.tar.gz"
+if [ ! -f "${JDK_ARCHIVE_MAC}" ];
+then
+    echo "##### downloading ${JDK_ARCHIVE_MAC} #####"
+    curl -L https://cdn.azul.com/zulu/bin/$JDK_ARCHIVE_MAC > $JDK_ARCHIVE_MAC
+else
+    echo "##### ${JDK_ARCHIVE_MAC} already downloaded #####"
+fi
+
+JDK_ARCHIVE_WINDOWS="zulu21.30.15-ca-jdk21.0.1-win_x64.zip"
+if [ ! -f "${JDK_ARCHIVE_WINDOWS}" ];
+then
+    echo "##### downloading ${JDK_ARCHIVE_WINDOWS} #####"
+    curl -L https://cdn.azul.com/zulu/bin/$JDK_ARCHIVE_WINDOWS > $JDK_ARCHIVE_WINDOWS
+else
+    echo "##### ${JDK_ARCHIVE_WINDOWS} already downloaded #####"
+fi
+
 case $OS in
     Ubuntu|Debian|MX)
         # echo "apt-get install openjdk-7-jdk"
@@ -209,6 +238,6 @@ cd "${PLATFORM_ROOT}"
 
 echo "##### building GUI... #####"
 cd "${PLATFORM_ROOT}"/..
-ant
+./byld_java.sh
 
 echo "DONE"

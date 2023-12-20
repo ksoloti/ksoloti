@@ -64,6 +64,11 @@ public class Frac32 implements DataType {
     }
 
     @Override
+    public Color GetColorHighlighted() {
+        return Theme.getCurrentTheme().Cable_Frac32_Highlighted;
+    }
+
+    @Override
     public boolean equals(Object o) {
         return (o instanceof Frac32);
     }

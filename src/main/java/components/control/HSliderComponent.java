@@ -18,6 +18,8 @@
 package components.control;
 
 import axoloti.Theme;
+import axoloti.utils.KeyUtils;
+
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -49,7 +51,14 @@ public class HSliderComponent extends ACtrlComponent {
 
     @Override
     protected void mouseDragged(MouseEvent e) {
-        setValue(value - px + e.getX());
+        double t = 1.0;
+        if (KeyUtils.isControlOrCommandDown(e)) {
+            t = t * 0.1;
+        }
+        if (e.isShiftDown()) {
+            t = t * 0.1;
+        }
+        setValue(value + t * (double)(e.getX() - px));
         px = e.getX();
     }
 

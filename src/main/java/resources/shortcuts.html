@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <title>Untitled Document</title>
+        <style>
+
+            body { max-width: 100%; }
+
+            h2 {
+                text-align: center;
+            }
+
+            table {
+                border-collapse: collapse;
+            }
+
+            tr {
+                border-collapse: collapse;
+                border-bottom: 1px solid;
+            }
+
+            tr::after { border-bottom: 1px solid #DDD; }
+
+            tr:nth-child(even) { background-color: #F0F0F0; }
+
+            td {
+                min-width: 140px;
+                padding: 5px;
+            }
+
+            .nobreak {
+                white-space: nowrap;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <h2>Ksoloti Patcher Keyboard Shortcuts</h2>
+
+        <p>Note: Key combos are written in all capitals but you should only press SHIFT when it is explicitly shown in the combo.</p>
+
+        <p>On MacOS use the CMD key wherever the CTRL key is used in this document.</p>
+
+        <p>
+            <h2>Patch Window: General</h3>
+            <table>
+                <tr class="nobreak">
+                        <td><h3>Key Combo</td>
+                        <td><h3>Function</td>
+                        <td><h3>Notes</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + N</td>
+                    <td>New Patch</td>
+                    <td>Creates a new, emtpy patch window.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + O</td>
+                    <td>Open...</td>
+                    <td>Opens a file selector to open an existing patch file. The path will default to wherever you last opened or saved a patch using this menu.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + S</td>
+                    <td>Save</td>
+                    <td>Reverts the last undo, in other words re-does the last operation. The path will default to wherever you last opened or saved a patch using this menu. (Currently not all operations are covered, e.g. changing object labels?)</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + SHIFT + S</td>
+                    <td>Save As...</td>
+                    <td>Opens a file selection dialog to save the current patch as a new file.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + W</td>
+                    <td>Close</td>
+                    <td>Closes the current patch window.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + E</td>
+                    <td>Toggle Live Mode</td>
+                    <td>Takes your patch live or brings it back to edit mode.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + X</td>
+                    <td>Cut</td>
+                    <td>Cuts the selected objects, trying to keep their connections intact, and places them in the clipboard.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + C</td>
+                    <td>Copy</td>
+                    <td>Copies the selected objects to the clipboard, trying to keep their connections intact.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + V</td>
+                    <td>Paste</td>
+                    <td>Pastes the content of the clipboard.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + D</td>
+                    <td>Duplicate</td>
+                    <td>Creates a copy of the selected objects trying to keep their connections intact, pastes them directly to the canvas and activates mouse drag. Left-click to confirm placement of the objects. A copy of the duplicated content will remain in the clipboard so you could use the paste action to create more duplicates. This is essentially just a shortcut for the three actions [copy, paste, activate mouse drag].</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">DEL</td>
+                    <td>Delete</td>
+                    <td>Deletes the currently selected objects.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + A</td>
+                    <td>Select All</td>
+                    <td>Selects all objects in the current patch. Useful if you want to copy everything to a subpatch or realign all objects in your patch window.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + Z</td>
+                    <td>Undo</td>
+                    <td>Reverts the last operation. (I believe currently not all operations are covered, e.g. comments or changing object labels?)</td>
+                </tr>
+                <tr>
+                    <td><nobr>CTRL + Y,</nobr> <nobr>CTRL + SHIFT + Z</nobr></td>
+                    <td>Redo</td>
+                    <td>Reverts the last undo, in other words re-does the last operation. (I believe currently not all operations are covered, e.g. comments or changing object labels?)</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + I</td>
+                    <td>Open Patch Settings</td>
+                    <td>Opens the current patch's Settings window where its receiving MIDI channel, subpatch mode and other options can be changed.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + T</td>
+                    <td>Open Patch Notes</td>
+                    <td>Opens the current patch's Notes where you can save notes about your patch.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + B</td>
+                    <td>Toggle Patch Cords in Background</td>
+                    <td>Toggles patch cord visibility either on top or hidden by the objects. Convenient in complex patches or when you're done editing and want to have a cleaner canvas.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">SHIFT</td>
+                    <td>Snap to Grid</td>
+                    <td>While dragging objects, hold down SHIFT to disable the snap to grid function.</td>
+                </tr>
+                <tr>
+                    <td>SHIFT, <nobr>CTRL + SHIFT</nobr></td>
+                    <td>Fine Tune</td>
+                    <td>While adjusting a parameter or attribute, hold down SHIFT to fine-tune it.<br/>Hold down CTRL + SHIFT to fine-tune it in the smallest steps possible.</td>
+                </tr>
+                <tr>
+                    <td>TAB, <nobr>SHIFT + TAB</nobr></td>
+                    <td>Cycle Focus</td>
+                    <td>Cycles through the available attributes or parameters in yoru patch.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + SHIFT + M</td>
+                    <td>Show Main Window</td>
+                    <td>Takes you to the main window. Useful if you want to jump there to check the console status or quick-connect/disconnect your board.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + SHIFT + Y</td>
+                    <td>Show Virtual Keyboard</td>
+                    <td>Takes you to the virtual keyboard window. The virtual keyboard simulates MIDI events as if they were received via DIN or USB so you can use it to test your patch.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + SHIFT + F</td>
+                    <td>Show File Manager</td>
+                    <td>Takes you to the file manager window. Here you can view, add, and delete files on your SD card.</td>
+                </tr>
+            </table>
+        </p>
+        <p>
+            <h2>Patch Window: Object Finder</h3>
+            <table>
+                <tr class="nobreak">
+                        <td><h3>Key Combo</td>
+                        <td><h3>Function</td>
+                        <td><h3>Notes</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">SPACE</td>
+                    <td>Show Object Finder</td>
+                    <td>Opens the Object Finder that lets you search for and add objects to your patch.</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">A</td>
+                    <td>Show Object Finder, shortcut to "audio/"</td>
+                    <td>Opens the Object Finder with the text "audio/" already pasted in the search field.</td>
+                </tr>
+            </table>
+        </p>
+        <p>
+            <h2>Object Finder Window</h3>
+            <table>
+                <tr class="nobreak">
+                        <td><h3>Key Combo</td>
+                        <td><h3>Function</td>
+                        <td><h3>Notes</td>
+                </tr>
+                <tr>
+                    <td class="nobreak">CTRL + X</td>
+                    <td>Cut</td>
+                    <td>Cuts the selected objects, trying to keep their connections intact, and places them in the clipboard.</td>
+                </tr>
+            </table>
+        </p>
+
+    </body>
+
+</html>
+

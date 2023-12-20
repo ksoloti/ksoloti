@@ -29,8 +29,7 @@ import axoloti.object.AxoObjects;
 import axoloti.outlets.OutletInstance;
 import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
-// import java.awt.Component;
-// import java.awt.Cursor;
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -56,6 +55,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,8 +71,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
-import static javax.swing.TransferHandler.COPY_OR_MOVE;
-import static javax.swing.TransferHandler.MOVE;
+
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.AnnotationStrategy;
@@ -89,13 +88,18 @@ public class PatchGUI extends Patch {
 
     // shortcut patch names
     final static String patchComment = "patch/comment";
+    final static String patchControl = "ctrl/";
+    final static String patchKsolotiGpioIn = "ksoloti/gpio/in";
+    final static String patchKsolotiGpioOut = "ksoloti/gpio/out";
     final static String patchInlet = "patch/inlet";
     final static String patchOutlet = "patch/outlet";
     final static String patchAudio = "audio/";
-    final static String patchAudioOut = "audio/out stereo";
+    final static String patchAudioOut = "audio/out";
     final static String patchMidi = "midi";
     final static String patchMidiKey = "midi/in/keyb";
     final static String patchDisplay = "disp/";
+    final static String patchKsoloti = "ksoloti/";
+    final static String patchKsolotiGills = "ksoloti/gills/";
 
     public JLayeredPane Layers = new JLayeredPane();
 
@@ -120,6 +124,7 @@ public class PatchGUI extends Patch {
         Layers.setLayout(null);
         Layers.setSize(Constants.PATCH_SIZE, Constants.PATCH_SIZE);
         Layers.setLocation(0, 0);
+        Layers.setFont(Constants.FONT);
 
         JComponent[] layerComponents = {
             objectLayer, objectLayerPanel, draggedObjectLayerPanel, netLayerPanel,
@@ -129,6 +134,7 @@ public class PatchGUI extends Patch {
             c.setSize(Constants.PATCH_SIZE, Constants.PATCH_SIZE);
             c.setLocation(0, 0);
             c.setOpaque(false);
+            c.setFont(Constants.FONT);
             c.validate();
         }
 
@@ -256,43 +262,79 @@ public class PatchGUI extends Patch {
                     xsteps = Constants.X_GRID;
                     ysteps = Constants.Y_GRID;
                 }
-                if ((ke.getKeyCode() == KeyEvent.VK_SPACE)
-                        || ((ke.getKeyCode() == KeyEvent.VK_N) && !KeyUtils.isControlOrCommandDown(ke))) {
-                    Point p = Layers.getMousePosition();
-                    ke.consume();
-                    if (p != null) {
-                        ShowClassSelector(p, null, null);
+                if ((ke.getKeyCode() == KeyEvent.VK_SPACE) && !KeyUtils.isControlOrCommandDown(ke)) {
+                    if (!ke.isShiftDown()) {
+                        Point p = Layers.getMousePosition();
+                        ke.consume();
+                        if (p != null) {
+                            ShowClassSelector(p, null, null, true);
+                        }
                     }
-                } else if (((ke.getKeyCode() == KeyEvent.VK_C) && !KeyUtils.isControlOrCommandDown(ke))) {
-                    AxoObjectInstanceAbstract ao = AddObjectInstance(MainFrame.axoObjects.GetAxoObjectFromName(patchComment, null).get(0), Layers.getMousePosition());
-                    ao.addInstanceNameEditor();
+                    else {
+                        // shift + space ...
+                    }
+                } else if ((ke.getKeyCode() == KeyEvent.VK_C) && !KeyUtils.isControlOrCommandDown(ke)) {
+                    if (!ke.isShiftDown()) {
+                        Point p = Layers.getMousePosition();
+                        ke.consume();
+                        if (p != null) {
+                            ShowClassSelector(p, null, patchControl, false);
+                        }
+                    }
+                    else {
+                        AxoObjectInstanceAbstract ao = AddObjectInstance(MainFrame.axoObjects.GetAxoObjectFromName(patchComment, null).get(0), Layers.getMousePosition());
+                        ao.addInstanceNameEditor();
+
+                    }
                     ke.consume();
                 } else if ((ke.getKeyCode() == KeyEvent.VK_I) && !KeyUtils.isControlOrCommandDown(ke)) {
-                    Point p = Layers.getMousePosition();
-                    ke.consume();
-                    if (p != null) {
-                        ShowClassSelector(p, null, patchInlet);
+                    if (!ke.isShiftDown()) {
+                        // i
+                        Point p = Layers.getMousePosition();
+                        ke.consume();
+                        if (p != null) {
+                            ShowClassSelector(p, null, patchKsolotiGpioIn, false);
+                        }
+                    }
+                    else {
+                        // shift + i:
+                        Point p = Layers.getMousePosition();
+                        ke.consume();
+                        if (p != null) {
+                            ShowClassSelector(p, null, patchInlet, false);
+                        }
                     }
                 } else if ((ke.getKeyCode() == KeyEvent.VK_O) && !KeyUtils.isControlOrCommandDown(ke)) {
-                    Point p = Layers.getMousePosition();
-                    ke.consume();
-                    if (p != null) {
-                        ShowClassSelector(p, null, patchOutlet);
+                    if (!ke.isShiftDown()) {
+                        // o
+                        Point p = Layers.getMousePosition();
+                        ke.consume();
+                        if (p != null) {
+                            ShowClassSelector(p, null, patchKsolotiGpioOut, false);
+                        }
+                    }
+                    else {
+                        // shift + o
+                        Point p = Layers.getMousePosition();
+                        ke.consume();
+                        if (p != null) {
+                            ShowClassSelector(p, null, patchOutlet, false);
+                        }
                     }
                 } else if ((ke.getKeyCode() == KeyEvent.VK_D) && !KeyUtils.isControlOrCommandDown(ke)) {
                     Point p = Layers.getMousePosition();
                     ke.consume();
                     if (p != null) {
-                        ShowClassSelector(p, null, patchDisplay);
+                        ShowClassSelector(p, null, patchDisplay, false);
                     }
                 } else if ((ke.getKeyCode() == KeyEvent.VK_M) && !KeyUtils.isControlOrCommandDown(ke)) {
                     Point p = Layers.getMousePosition();
                     ke.consume();
                     if (p != null) {
                         if (ke.isShiftDown()) {
-                            ShowClassSelector(p, null, patchMidiKey);
+                            ShowClassSelector(p, null, patchMidiKey, false);
                         } else {
-                            ShowClassSelector(p, null, patchMidi);
+                            ShowClassSelector(p, null, patchMidi, false);
                         }
                     }
                 } else if ((ke.getKeyCode() == KeyEvent.VK_A) && !KeyUtils.isControlOrCommandDown(ke)) {
@@ -300,9 +342,29 @@ public class PatchGUI extends Patch {
                     ke.consume();
                     if (p != null) {
                         if (ke.isShiftDown()) {
-                            ShowClassSelector(p, null, patchAudioOut);
+                            ShowClassSelector(p, null, patchAudioOut, false);
                         } else {
-                            ShowClassSelector(p, null, patchAudio);
+                            ShowClassSelector(p, null, patchAudio, false);
+                        }
+                    }
+                } else if ((ke.getKeyCode() == KeyEvent.VK_K) && !KeyUtils.isControlOrCommandDown(ke)) {
+                    Point p = Layers.getMousePosition();
+                    ke.consume();
+                    if (p != null) {
+                        if (ke.isShiftDown()) {
+                            // nothing yet
+                        } else {
+                            ShowClassSelector(p, null, patchKsoloti, false);
+                        }
+                    }
+                } else if ((ke.getKeyCode() == KeyEvent.VK_G) && !KeyUtils.isControlOrCommandDown(ke)) {
+                    Point p = Layers.getMousePosition();
+                    ke.consume();
+                    if (p != null) {
+                        if (ke.isShiftDown()) {
+                            // nothing yet
+                        } else {
+                            ShowClassSelector(p, null, patchKsolotiGills, false);
                         }
                     }
                 } else if ((ke.getKeyCode() == KeyEvent.VK_DELETE) || (ke.getKeyCode() == KeyEvent.VK_BACK_SPACE)) {
@@ -321,6 +383,15 @@ public class PatchGUI extends Patch {
                 } else if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
                     MoveSelectedAxoObjInstances(Direction.LEFT, xsteps, ysteps);
                     ke.consume();
+                } else if ((ke.getKeyCode() == KeyEvent.VK_M) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
+                    MainFrame.mainframe.setVisible(true);
+                    ke.consume();
+                } else if ((ke.getKeyCode() == KeyEvent.VK_Y) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
+                    MainFrame.mainframe.getKeyboard().setVisible(true);
+                    ke.consume();
+                } else if ((ke.getKeyCode() == KeyEvent.VK_F) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
+                    MainFrame.mainframe.getFilemanager().setVisible(true);
+                    ke.consume();
                 }
             }
 
@@ -337,7 +408,7 @@ public class PatchGUI extends Patch {
                         o.SetSelected(false);
                     }
                     if (me.getClickCount() == 2) {
-                        ShowClassSelector(me.getPoint(), null, null);
+                        ShowClassSelector(me.getPoint(), null, null, true);
                     } else {
                         if ((osf != null) && osf.isVisible()) {
                             osf.Accept();
@@ -642,14 +713,14 @@ public class PatchGUI extends Patch {
     }
     public ObjectSearchFrame osf;
 
-    public void ShowClassSelector(Point p, AxoObjectInstanceAbstract o, String searchString) {
+    public void ShowClassSelector(Point p, AxoObjectInstanceAbstract o, String searchString, boolean selectText) {
         if (IsLocked()) {
             return;
         }
         if (osf == null) {
             osf = new ObjectSearchFrame(this);
         }
-        osf.Launch(p, o, searchString);
+        osf.Launch(p, o, searchString, selectText);
     }
 
     void SelectAll() {
@@ -769,7 +840,12 @@ public class PatchGUI extends Patch {
         super.PostContructor();
         objectLayerPanel.removeAll();
         netLayerPanel.removeAll();
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+
+        /* Duplicate objectinstances then reverse it - achieving "top to bottom" layering so partly overlapped objects have visible titlebars */
+        ArrayList<AxoObjectInstanceAbstract> obj2 = (ArrayList<AxoObjectInstanceAbstract>) objectinstances.clone();
+        Collections.reverse(obj2);
+
+        for (AxoObjectInstanceAbstract o : obj2) {
             objectLayerPanel.add(o);
         }
         for (Net n : nets) {
@@ -789,8 +865,21 @@ public class PatchGUI extends Patch {
 
     @Override
     public void setFileNamePath(String FileNamePath) {
+
         super.setFileNamePath(FileNamePath);
-        patchframe.setTitle(FileNamePath);
+
+        /* Get last occurrence of slash or backslash (separating path and filename) */
+        int brk = FileNamePath.lastIndexOf(File.separator) + 1;
+        if (brk != 0) {
+            /* Display filename first, then path in brackets */
+            String str = FileNamePath.substring(brk) + "   (" + FileNamePath.substring(0, brk) + ")";
+            patchframe.setTitle(str);
+        }
+        else {
+            /* Subpatch */
+            patchframe.setTitle(FileNamePath + "   (embedded subpatch)");
+            patchframe.setSaveMenuEnabled(false); /* parent has to be saved to preserve changes */
+        }
     }
 
     @Override
@@ -1024,6 +1113,7 @@ public class PatchGUI extends Patch {
         pf.setVisible(true);
         pf.setState(java.awt.Frame.NORMAL);
         pf.toFront();
+        MainFrame.prefs.addRecentFile(f.getAbsolutePath());
         return pf;
     }
 

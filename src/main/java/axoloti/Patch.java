@@ -266,7 +266,7 @@ public class Patch {
             }
             String targetfn = fref.targetPath;
             if (targetfn.isEmpty()) {
-                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Target filename empty {0}", f.getName());
+                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Target filename is empty: {0}", f.getName());
                 continue;
             }
             if (targetfn.charAt(0) != '/') {
@@ -279,7 +279,7 @@ public class Patch {
                 GetQCmdProcessor().WaitQueueFinished();
                 if (!SDCardInfo.getInstance().exists(targetfn, f.lastModified(), f.length())) {
                     if (f.length() > 8 * 1024 * 1024) {
-                        Logger.getLogger(Patch.class.getName()).log(Level.INFO, "File {0} is larger than 8MB, skip uploading", f.getName());
+                        Logger.getLogger(Patch.class.getName()).log(Level.INFO, "File {0} is larger than 8MB, skipping upload.", f.getName());
                         continue;
                     }
                     for (int i = 1; i < targetfn.length(); i++) {
@@ -290,10 +290,10 @@ public class Patch {
                     }
                     GetQCmdProcessor().AppendToQueue(new QCmdUploadFile(f, targetfn));
                 } else {
-                    Logger.getLogger(Patch.class.getName()).log(Level.INFO, "File {0} matches timestamp and size, skip uploading", f.getName());
+                    Logger.getLogger(Patch.class.getName()).log(Level.INFO, "File {0} matches timestamp and size, skipping upload.", f.getName());
                 }
             } else {
-                Logger.getLogger(Patch.class.getName()).log(Level.INFO, "File {0} matches timestamp and size, skip uploading", f.getName());
+                Logger.getLogger(Patch.class.getName()).log(Level.INFO, "File {0} matches timestamp and size, skipping upload.", f.getName());
             }
         }
     }
@@ -312,7 +312,7 @@ public class Patch {
             // issue warning when there are dependent files
             ArrayList<SDFileReference> files = GetDependendSDFiles();
             if (files.size() > 0) {
-                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Patch requires file {0} on SD card, but no SD card mounted", files.get(0).targetPath);
+                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Patch requires file {0} on SD card, but no SD card mounted.", files.get(0).targetPath);
             }
         }
         ShowPreset(0);
@@ -422,14 +422,21 @@ public class Patch {
 
     public void ClearDirty() {
         dirty = false;
+        if (patchframe != null) {
+            patchframe.setUnsavedAsterisk(false);
+        }
     }
 
     public void SetDirty() {
-        SetDirty(true);
+        if (patchframe != null)
+            SetDirty(true);
     }
 
     public void SetDirty(boolean shouldSaveState) {
         dirty = true;
+        if (patchframe != null) {
+            patchframe.setUnsavedAsterisk(true);
+        }
 
         if (container != null) {
             container.SetDirty(shouldSaveState);
@@ -561,7 +568,7 @@ public class Patch {
                 return n2;
             }
         } else {
-            Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t add connection: locked");
+            Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t add connection: locked!");
         }
         return null;
     }
@@ -784,6 +791,11 @@ public class Patch {
             Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
+
+        if (patchframe != null) {
+            patchframe.setUnsavedAsterisk(false);
+        }
+
         return true;
 //        if (settings == null) {
 //            return;
@@ -1596,7 +1608,7 @@ public class Patch {
             if (x != null) {
                 controllerinstance = x.CreateInstance(null, "ctrl0x123", new Point(0, 0));
             } else {
-                Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Unable to created controller for: {0}", cobjstr);
+                Logger.getLogger(Patch.class.getName()).log(Level.WARNING, "Unable to create controller object for: {0}", cobjstr);
             }
         }
 
@@ -2272,7 +2284,7 @@ public class Patch {
         } catch (IOException ex) {
             Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, ex.toString());
         }
-        Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Done generating code");
+        Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Done generating code.\n");
     }
 
     public void Compile() {

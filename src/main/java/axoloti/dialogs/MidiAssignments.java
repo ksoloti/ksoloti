@@ -105,7 +105,7 @@ public class MidiAssignments extends javax.swing.JDialog {
 
             },
             new String [] {
-                "#", "Name", "Object", "Parameter"
+                "CC#", "GM Default", "-> Object", "-> Parameter"
             }
         ) {
             Class[] types = new Class [] {
@@ -124,6 +124,13 @@ public class MidiAssignments extends javax.swing.JDialog {
             }
         });
         jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(40);
+            jTable1.getColumnModel().getColumn(1).setPreferredWidth(140);
+            jTable1.getColumnModel().getColumn(2).setPreferredWidth(140);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(140);
+
+        }
         jScrollPane1.setViewportView(jTable1);
 
         jPanel1.add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -142,7 +149,7 @@ public class MidiAssignments extends javax.swing.JDialog {
         jPanel2.add(jButtonCancel, new java.awt.GridBagConstraints());
         jPanel2.add(filler3, new java.awt.GridBagConstraints());
 
-        jButtonDeassign.setText("De-assign");
+        jButtonDeassign.setText("Unassign");
         jButtonDeassign.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonDeassignActionPerformed(evt);

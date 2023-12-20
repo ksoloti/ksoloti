@@ -17,11 +17,13 @@
  */
 package components.control;
 
+// import axoloti.MainFrame;
 import axoloti.object.AxoObjectInstance;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import java.awt.AWTException;
 import java.awt.Color;
+// import java.awt.Cursor;
 import java.awt.MouseInfo;
 import java.awt.Robot;
 import java.awt.datatransfer.Clipboard;
@@ -37,6 +39,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,6 +58,7 @@ import javax.swing.TransferHandler;
 public abstract class ACtrlComponent extends JComponent {
 
     protected AxoObjectInstance axoObj;
+    protected Color customBackgroundColor;
 
     public ACtrlComponent() {
         setFocusable(true);
@@ -84,6 +89,29 @@ public abstract class ACtrlComponent extends JComponent {
             @Override
             public void mouseDragged(MouseEvent e) {
                 ACtrlComponent.this.mouseDragged(e);
+            }
+            // @Override
+            // public void mouseMoved(MouseEvent e) {
+            //     getRootPane().setCursor(Cursor.getDefaultCursor());
+            // }
+        });
+        addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                    // getRootPane().setCursor(MainFrame.transparentCursor);
+                    double t = 1.0;
+                    if (e.isShiftDown()) {
+                        t = t * 0.1;
+                    }
+                    if (KeyUtils.isControlOrCommandDown(e)) {
+                        t = t * 0.1;
+                    }
+                if (e.getWheelRotation() < 0) {
+                    setValue(getValue() + t);
+                }
+                else {
+                    setValue(getValue() - t);
+                }
             }
         });
         addKeyListener(new KeyListener() {
@@ -224,7 +252,9 @@ public abstract class ACtrlComponent extends JComponent {
             if (Preferences.LoadPreferences().getMouseDoNotRecenterWhenAdjustingControls()) {
                 return null;
             } else {
-                return new Robot(MouseInfo.getPointerInfo().getDevice());
+                Robot r = new Robot(MouseInfo.getPointerInfo().getDevice());
+                r.setAutoDelay(10);
+                return r;
             }
         } catch (AWTException ex) {
             Logger.getLogger(NumberBoxComponent.class.getName()).log(Level.SEVERE, null, ex);
@@ -234,6 +264,10 @@ public abstract class ACtrlComponent extends JComponent {
 
     public void robotMoveToCenter() {
 
+    }
+
+    public void setCustomBackgroundColor(Color c) {
+        this.customBackgroundColor = c;
     }
 
 }

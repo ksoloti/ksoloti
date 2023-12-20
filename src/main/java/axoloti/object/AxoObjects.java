@@ -347,11 +347,11 @@ public class AxoObjects {
                 String spath[] = MainFrame.prefs.getObjectSearchPath();
                 if (spath != null) {
                     for (String path : spath) {
-                        Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Search path: {0}", path);
+                        Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Object search path: {0}", path);
                         LoadAxoObjects(path);
                     }
                 } else {
-                    Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, "Search path empty!\n");
+                    Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, "Object search path empty!\n");
                 }
                 Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Finished loading objects.\n");
             }
@@ -411,6 +411,9 @@ public class AxoObjects {
             if (c.contains("PWMD6")) {
                 oo.depends.add("PWMD6");
             }
+            if (c.contains("PWMD8")) {
+                oo.depends.add("PWMD8");
+            }
             if (c.contains("SD1")) {
                 oo.depends.add("SD1");
             }
@@ -422,6 +425,9 @@ public class AxoObjects {
             }
             if (c.contains("SPID2")) {
                 oo.depends.add("SPID2");
+            }
+            if (c.contains("SPID3")) {
+                oo.depends.add("SPID3");
             }
             if (c.contains("I2CD1")) {
                 oo.depends.add("I2CD1");

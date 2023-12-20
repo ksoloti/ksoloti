@@ -144,7 +144,8 @@ public class DialComponent extends ACtrlComponent {
                 }
 
                 if (MousePressedBtn == MouseEvent.BUTTON1) {
-                    if (!Preferences.LoadPreferences().getMouseDoNotRecenterWhenAdjustingControls()) {
+                    if (!Preferences.LoadPreferences().getMouseDoNotRecenterWhenAdjustingControls()
+                        && !Preferences.LoadPreferences().getMouseDialAngular()) {
                         getRootPane().setCursor(MainFrame.transparentCursor);
                     }
                     fireEventAdjustmentBegin();
@@ -345,31 +346,38 @@ public class DialComponent extends ACtrlComponent {
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         int radius = Math.min(getSize().width, getSize().height) / 2 - layoutTick;
-        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+        g2.setPaint(getForeground());
         g2.drawLine(radius, radius, 0, 2 * radius);
         g2.drawLine(radius, radius, 2 * radius, 2 * radius);
         if (isFocusOwner()) {
-            g2.setStroke(strokeThick);
+            g2.setStroke(strokeThick); //TODO: set accent color
         } else {
             g2.setStroke(strokeThin);
         }
         if (isEnabled()) {
-            g2.setColor(Theme.getCurrentTheme().Component_Background);
-        } else {
+            if (this.customBackgroundColor != null) {
+                g2.setColor(this.customBackgroundColor);
+            }
+            else {
+                g2.setColor(Theme.getCurrentTheme().Component_Background);
+            }
+        }
+        else {
             g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
         }
         g2.fillOval(1, 1, radius * 2 - 2, radius * 2 - 2);
         if (isEnabled()) {
-            g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+            g2.setPaint(getForeground());
         } else {
-            g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
+            g2.setPaint(Theme.getCurrentTheme().Component_Mid);
         }
         g2.drawOval(1, 1, radius * 2 - 2, radius * 2 - 2);
         if (isEnabled()) {
             double th = 0.75 * Math.PI + (value - min) * (1.5 * Math.PI) / (max - min);
             int x = (int) (Math.cos(th) * radius),
                     y = (int) (Math.sin(th) * radius);
-            g2.drawLine(radius, radius, radius + x, radius + y);
+            g2.setStroke(strokeThick);
+            g2.drawLine(radius + x/3, radius + y/3, radius + (int)(x*.9f), radius + (int)(y*.9f));
             if (keybBuffer.isEmpty()) {
                 String s = String.format("%6.2f", value);
                 g2.setPaint(getForeground());
@@ -434,8 +442,8 @@ public class DialComponent extends ACtrlComponent {
     }
 
     public void robotMoveToCenter() {
-        //getRootPane().setCursor(MainFrame.transparentCursor);
         if (robot != null) {
+            // getRootPane().setCursor(MainFrame.transparentCursor);
             robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
         }
     }

@@ -93,8 +93,6 @@ public class FileMenu extends JMenu {
         insert(jMenuNewPatch, pos++);
 
         jMenuNewBank.setMnemonic('B');
-        // jMenuNewBank.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
-                // KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuNewBank.setText("New Patch Bank");
         jMenuNewBank.addActionListener(new java.awt.event.ActionListener() {
             @Override
@@ -117,8 +115,8 @@ public class FileMenu extends JMenu {
         insert(jMenuOpen, pos++);
 
         jMenuOpenURL.setMnemonic('U');
-        jMenuOpenURL.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
-                KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
+        // jMenuOpenURL.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
+                // KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuOpenURL.setText("Open from URL...");
         jMenuOpenURL.addActionListener(new java.awt.event.ActionListener() {
             @Override

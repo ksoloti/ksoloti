@@ -98,10 +98,15 @@ public class InletInstance<T extends Inlet> extends IoletAbstract implements Ato
         jack.setBackground(Theme.getCurrentTheme().Object_Default_Background);
         add(jack);
         add(new SignalMetaDataIcon(inlet.GetSignalMetaData()));
-        // if (axoObj.getType().GetInlets().size() > 1) {
-            add(Box.createHorizontalStrut(3));
+        if (axoObj.getType().GetInlets().size() > 1) {
+            add(Box.createHorizontalStrut(2));
             add(new LabelComponent(inlet.name));
+        }
+        // else if (inlet.name.length()>1) {
+        //     /* show upt to two-letter abbreviation */
+        //     add(new LabelComponent(inlet.name.substring(0, Math.min(inlet.name.length(), 2))));
         // }
+
         add(Box.createHorizontalGlue());
         setToolTipText(inlet.description);
 

@@ -79,12 +79,12 @@ public class ParameterInstanceFrac32UMap<T extends ParameterFrac32> extends Para
 
         //lblCC = new LabelComponent("C");
         //btns.add(lblCC);
+        presetAssign = new AssignPresetComponent(this); /* Reorder as to be consistent with right-click menu */
+        btns.add(presetAssign);
         midiAssign = new AssignMidiCCComponent(this);
         btns.add(midiAssign);
         modulationAssign = new AssignModulatorComponent(this);
         btns.add(modulationAssign);
-        presetAssign = new AssignPresetComponent(this);
-        btns.add(presetAssign);
         add(btns);
 
 //        setComponentPopupMenu(new ParameterInstanceUInt7MapPopupMenu3(this));
@@ -96,9 +96,9 @@ public class ParameterInstanceFrac32UMap<T extends ParameterFrac32> extends Para
     public void setOnParent(Boolean b) {
         super.setOnParent(b);
         if ((b != null) && b) {
-            setForeground(Theme.getCurrentTheme().Parameter_On_Parent_Highlight);
+            setBackground(Theme.getCurrentTheme().Parameter_On_Parent_Background);
         } else {
-            setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
+            setBackground(Theme.getCurrentTheme().Parameter_Default_Background);
         }
     }
 
