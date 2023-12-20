@@ -144,7 +144,8 @@ public class DialComponent extends ACtrlComponent {
                 }
 
                 if (MousePressedBtn == MouseEvent.BUTTON1) {
-                    if (!Preferences.LoadPreferences().getMouseDoNotRecenterWhenAdjustingControls()) {
+                    if (!Preferences.LoadPreferences().getMouseDoNotRecenterWhenAdjustingControls()
+                        && !Preferences.LoadPreferences().getMouseDialAngular()) {
                         getRootPane().setCursor(MainFrame.transparentCursor);
                     }
                     fireEventAdjustmentBegin();
@@ -441,8 +442,8 @@ public class DialComponent extends ACtrlComponent {
     }
 
     public void robotMoveToCenter() {
-        //getRootPane().setCursor(MainFrame.transparentCursor);
         if (robot != null) {
+            // getRootPane().setCursor(MainFrame.transparentCursor);
             robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
         }
     }
