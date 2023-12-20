@@ -161,15 +161,17 @@ public abstract class ParameterInstanceFrac32<Tx extends ParameterFrac32> extend
                     modulator.Modulations.remove(n);
                 }
             }
-            for (int i = 0; i < modulators.size(); i++) {
-                Modulation n = modulators.get(i);
-                if (n.destination == this) {
-                    modulators.remove(n);
+            if (modulators != null) {
+                for (int i = 0; i < modulators.size(); i++) {
+                    Modulation n = modulators.get(i);
+                    if (n.destination == this) {
+                        modulators.remove(n);
+                    }
+                    axoObj.patch.updateModulation(n);
                 }
-                axoObj.patch.updateModulation(n);
-            }
-            if (modulators.isEmpty()) {
-                modulators = null;
+                if (modulators.isEmpty()) {
+                    modulators = null;
+                }
             }
         }
     }
