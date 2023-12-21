@@ -406,6 +406,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
+    public void updateConsoleFont() {
+        jTextPaneLog.setFont(Constants.FONT_MONO);
+    }
+
     static boolean TestDir(String var, boolean write) {
         String ev = System.getProperty(var);
         File f = new File(ev);

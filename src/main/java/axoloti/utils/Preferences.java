@@ -108,6 +108,8 @@ public class Preferences {
     String themePath;
     @Element(required = false)
     String Theme;
+    @Element(required = false)
+    int codeFontSize = 14; /* default to 14pt */
 
     @ElementMap(required = false, entry = "Boards", key = "cpuid", attribute = true, inline = true)
     HashMap<String, String> BoardNames;
@@ -182,6 +184,7 @@ public class Preferences {
         "Solarized Dark (Material)"
     };
 
+
     protected Preferences() {
         if (CurrentFileDirectory == null) {
             CurrentFileDirectory = "";
@@ -213,7 +216,6 @@ public class Preferences {
         if (Theme == null) {
             Theme = "FlatLaf Light";
         }
-
         if (libraries == null) {
             libraries = new ArrayList<AxolotiLibrary>();
         }
@@ -358,6 +360,19 @@ public class Preferences {
         else if (this.Theme.equals("Solarized Light (Material)"))     FlatSolarizedLightIJTheme.setup();
         /* Falling through - default to FlatLaf IntelliJ */
         else                                                          FlatIntelliJLaf.setup();
+    }
+
+    public int getCodeFontSize() {
+        return codeFontSize;
+    }
+
+    public void setCodeFontSize(int codeFontSize) {
+        int sz = Math.clamp(codeFontSize, 4, 64);
+        if (this.codeFontSize == sz) {
+            return;
+        }
+        this.codeFontSize = sz;
+        SetDirty();
     }
 
     static String GetPrefsFileLoc() {

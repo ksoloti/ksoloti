@@ -79,7 +79,7 @@ public class Constants {
         try {
             String fstr = "/resources/fonts/NotoSansMono-Regular.ttf";
             // if (OSDetect.getOS() == OS.WIN) fstr.replace("/", "\\");
-            FONT_MONO = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(fstr)).deriveFont(15f);
+            FONT_MONO = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(fstr)).deriveFont((float)Preferences.LoadPreferences().getCodeFontSize());
         }
         catch (IOException e) {
             e.printStackTrace();
