@@ -562,6 +562,8 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
             }
         }
         ((AbstractTableModel) jTable2.getModel()).fireTableDataChanged();
+        jTable2.revalidate();
+        jTable1.revalidate();
     }
 
     void setEditable(boolean editable) {
