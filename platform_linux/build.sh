@@ -2,8 +2,8 @@
 
 set -e
 
-echo -e "\n\nAxoloti Install script for Linux"
-echo -e "This will install Axoloti"
+echo -e "\n\nKsoloti Install script for Linux"
+echo -e "This will install Ksoloti (I think)"
 echo -e "Use at your own risk\n"
 echo -e "Some packages will be installed with apt-get,"
 echo -e "and all users will be granted permission to access some USB devices"
@@ -212,23 +212,23 @@ fi
 
 case $OS in
     Ubuntu|Debian|MX)
-        # echo "apt-get install openjdk-7-jdk"
-        # sudo apt-get install openjdk-8-jdk
-        echo "Installing sdkman using which we get openjdk-8..."
+        echo "Installing sdkman using which we get jdk21..."
         curl -s "https://get.sdkman.io" | bash
 	    . ~/.sdkman/bin/sdkman-init.sh
-        echo "installing java openjdk-8..."
-        sdk install java 8.0.382-zulu
-        sdk default java 8.0.382-zulu
+        echo "installing java jdk21..."
+        sdk install java 21.0.1-zulu
+        sdk default java 21.0.1-zulu
         ;;
     Archlinux)
-        echo "pacman -Syy jdk7-openjdk"
-        sudo pacman -S --noconfirm jdk7-openjdk
+        #!! outdated
+        # echo "pacman -Syy jdk7-openjdk"
+        # sudo pacman -S --noconfirm jdk7-openjdk
         ;;
     Gentoo)
-	echo "emerge --update jdk:1.7 ant"
-	sudo emerge --update jdk:1.7 ant
-	;;
+        #!! outdated
+        # echo "emerge --update jdk:1.7 ant"
+        # sudo emerge --update jdk:1.7 ant
+        ;;
 esac
 
 
