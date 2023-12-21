@@ -100,6 +100,7 @@ public class MidiAssignments extends javax.swing.JDialog {
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
+        jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 

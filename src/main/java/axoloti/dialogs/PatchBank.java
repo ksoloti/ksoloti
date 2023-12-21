@@ -544,6 +544,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
         getContentPane().add(jPanel1);
 
+        jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 

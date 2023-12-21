@@ -254,6 +254,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
             }
         });
 
+        jLibraryTable.getTableHeader().setReorderingAllowed(false);
         jLibraryTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 

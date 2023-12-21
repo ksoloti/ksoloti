@@ -77,6 +77,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         cpuid = defCPUID;
         Populate();
         getRootPane().setDefaultButton(jButtonOK);
+        jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {

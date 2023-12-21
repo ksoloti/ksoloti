@@ -149,6 +149,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
         obj.addObjectModifiedListener(this);
         jScrollPane1 = new JScrollPane();
         jTable1 = new JTable();
+        jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         jTable1.setVisible(true);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -161,6 +162,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
 
         jScrollPane2 = new JScrollPane();
         jTable2 = new JTable();
+        jTable2.getTableHeader().setReorderingAllowed(false);
         jTable2.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         jTable2.setVisible(true);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
