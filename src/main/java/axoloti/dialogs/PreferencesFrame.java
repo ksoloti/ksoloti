@@ -24,8 +24,6 @@ import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
 import axoloti.utils.Preferences;
 
-// import static axoloti.MainFrame.mainframe;
-
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -71,15 +69,17 @@ public class PreferencesFrame extends javax.swing.JFrame {
         Preferences prefs = Preferences.LoadPreferences();
 
         jTextFieldPollInterval.setText(Integer.toString(prefs.getPollInterval()));
+
         jTextFieldCodeFontSize.setText(Integer.toString(prefs.getCodeFontSize()));
+
         txtFavDir.setText(prefs.getFavouriteDir());
-        // txtFirmwareDir.setText(System.getProperty(axoloti.Axoloti.FIRMWARE_DIR));
-        // txtRuntimeDir.setText(System.getProperty(axoloti.Axoloti.RUNTIME_DIR));
+
         jControllerEnabled.setSelected(prefs.isControllerEnabled());
         jTextFieldController.setText(prefs.getControllerObject());
         jTextFieldController.setEnabled(prefs.isControllerEnabled());
+
         jCheckBoxNoMouseReCenter.setSelected(prefs.getMouseDoNotRecenterWhenAdjustingControls());
-        // jCheckBoxKeyboardFrameAlwaysOnTop.setSelected(prefs.getKeyboardFrameAlwaysOnTop());
+
         if (prefs.getMouseDialAngular()) jComboBoxDialMouseBehaviour.setSelectedItem("Angular"); 
         jComboBoxTheme.setSelectedItem(prefs.getTheme());
 
@@ -193,16 +193,24 @@ public class PreferencesFrame extends javax.swing.JFrame {
         // });
 
         jTextFieldPollInterval.setText("jTextField1");
+        jTextFieldPollInterval.setToolTipText("Interval at which the Patcher displays the newest parameter data coming from the Core.");
         jTextFieldPollInterval.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+
+        jLabelPollInterval.setText("Poll Interval (Milliseconds)");
+        jLabelPollInterval.setToolTipText(jTextFieldPollInterval.getToolTipText());
+
         jTextFieldCodeFontSize.setText("jTextField2");
+        jTextFieldCodeFontSize.setToolTipText("Changes font size for all code text windows (object editor) and the main window console.");
         jTextFieldCodeFontSize.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+
+        jLabelCodeFontSize.setText("Code Font Size");
+        jLabelCodeFontSize.setToolTipText(jTextFieldCodeFontSize.getToolTipText());
 
         jLabelLibraries.setText("Libraries");
 
-        jLabelPollInterval.setText("Poll Interval (Milliseconds)");
-        jLabelCodeFontSize.setText("Code Font Size");
 
         jButtonSave.setText("Save All");
+        jButtonSave.setToolTipText("Save all settings.");
         jButtonSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSaveActionPerformed(evt);
@@ -229,34 +237,26 @@ public class PreferencesFrame extends javax.swing.JFrame {
         // txtRuntimeDir.setText("test");
 
         txtFavDir.setText("test");
-
-        // btnFirmwareDir.setText("Browse...");
-        // btnFirmwareDir.addActionListener(new java.awt.event.ActionListener() {
-        //     public void actionPerformed(java.awt.event.ActionEvent evt) {
-        //         btnFirmwareDirActionPerformed(evt);
-        //     }
-        // });
-
-        // btnRuntimeDir.setText("Browse...");
-        // btnRuntimeDir.addActionListener(new java.awt.event.ActionListener() {
-        //     public void actionPerformed(java.awt.event.ActionEvent evt) {
-        //         btnRuntimeDirActionPerformed(evt);
-        //     }
-        // });
-
+        txtFavDir.setToolTipText("Select a folder/subfolder with patch files to conveniently access them via the file menu.");
 
         btnFavDir.setText("Browse...");
+        btnFavDir.setToolTipText(txtFavDir.getToolTipText());
         btnFavDir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnFavDirActionPerformed(evt);
             }
         });
 
+        jLabelFavouritesDir.setToolTipText(txtFavDir.getToolTipText());
+
         jLabelController.setText("Controller Object");
+        jLabelController.setToolTipText("A controller object runs invisibly in the background on the Core, regardless of which patch is currently loaded. This is useful for implementing a patch change system.");
 
         jTextFieldController.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        jTextFieldController.setToolTipText(jLabelController.getToolTipText());
 
         jControllerEnabled.setText("Enabled");
+        jControllerEnabled.setToolTipText(jLabelController.getToolTipText());
         jControllerEnabled.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jControllerEnabledActionPerformed(evt);
@@ -303,6 +303,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         }
 
         jAddLibBtn.setText("+");
+        jAddLibBtn.setToolTipText("Add a library.");
         jAddLibBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jAddLibBtnActionPerformed(evt);
@@ -310,6 +311,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         });
 
         jDelLibBtn.setText("🗑");
+        jDelLibBtn.setToolTipText("Delete the selected library.");
         jDelLibBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jDelLibBtnActionPerformed(evt);
@@ -317,6 +319,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         });
 
         jResetLib.setText("Reset All");
+        jResetLib.setToolTipText("Reset the library table to factory settings.");
         jResetLib.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jResetLibActionPerformed(evt);
@@ -324,6 +327,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         });
 
         jEditLib.setText("Edit");
+        jEditLib.setToolTipText("Edit the selected library.");
         jEditLib.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jEditLibActionPerformed(evt);
@@ -331,6 +335,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         });
 
         jLibStatus.setText("Status");
+        jLibStatus.setToolTipText("Show in the console if libraries are up-to-date, have unsaved changes etc.");
         jLibStatus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jLibStatusActionPerformed(evt);
@@ -338,6 +343,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         });
 
         jLabelTheme.setText("Theme (restart required)");
+        jLabelTheme.setToolTipText("Change the color theme. The preferences window will reflect a preview of the selected theme but a restart is required for all windows to change.");
         jLabelTheme.setEnabled(true);
 
 
@@ -346,25 +352,20 @@ public class PreferencesFrame extends javax.swing.JFrame {
             jComboBoxTheme.addItem(i);
         }
 
+        jComboBoxTheme.setToolTipText(jLabelTheme.getToolTipText());
         jComboBoxTheme.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxThemeActionPerformed(evt);
             }
         });
 
-        jCheckBoxNoMouseReCenter.setText("Do not re-center cursor (for touchscreens)");
+        jCheckBoxNoMouseReCenter.setText("Touchscreen Mode");
+        jCheckBoxNoMouseReCenter.setToolTipText("Makes the patcher usable with touchscreens. Also fixes abnormal mouse behaviour on some systems when turning knobs.");
         jCheckBoxNoMouseReCenter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxNoMouseReCenterActionPerformed(evt);
             }
         });
-
-        // jCheckBoxKeyboardFrameAlwaysOnTop.setText("Keyboard window always on top");
-        // jCheckBoxKeyboardFrameAlwaysOnTop.addActionListener(new java.awt.event.ActionListener() {
-        //     public void actionPerformed(java.awt.event.ActionEvent evt) {
-        //         jCheckBoxKeyboardFrameAlwaysOnTopActionPerformed(evt);
-        //     }
-        // });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -399,9 +400,9 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     // .addComponent(txtRuntimeDir, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 429, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 )
-                            .addGap(16, 16, 16)
+                            // .addGap(15, 15, 15)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             )
                         )
@@ -443,7 +444,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelController, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabelController, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jTextFieldController, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(10, 10, 10)
@@ -452,8 +453,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
                             )
 
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelTheme)
-                                .addGap(60, 60, 60)
+                                .addComponent(jLabelTheme, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jComboBoxTheme, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(105, 105, 105)
@@ -465,26 +466,28 @@ public class PreferencesFrame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
 
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBoxNoMouseReCenter, javax.swing.GroupLayout.PREFERRED_SIZE, 453, javax.swing.GroupLayout.PREFERRED_SIZE)
 
                             // .addComponent(jCheckBoxKeyboardFrameAlwaysOnTop, javax.swing.GroupLayout.PREFERRED_SIZE, 453, javax.swing.GroupLayout.PREFERRED_SIZE)
 
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelPollInterval, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextFieldPollInterval, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jTextFieldPollInterval, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                             )
 
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelCodeFontSize, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextFieldCodeFontSize, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jTextFieldCodeFontSize, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                             )
 
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelDialMouseBehaviour)
                                 .addGap(75, 75, 75)
                                 .addComponent(jComboBoxDialMouseBehaviour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(10, 10, 10)
+                                .addComponent(jCheckBoxNoMouseReCenter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+
                             )
                         )
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -569,12 +572,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jComboBoxDialMouseBehaviour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabelDialMouseBehaviour)
+                            .addComponent(jCheckBoxNoMouseReCenter)
                         )
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBoxNoMouseReCenter)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        // .addComponent(jCheckBoxKeyboardFrameAlwaysOnTop)
-                        // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabelController)
