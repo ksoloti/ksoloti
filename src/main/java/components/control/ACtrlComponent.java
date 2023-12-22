@@ -99,13 +99,14 @@ public abstract class ACtrlComponent extends JComponent {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
                     // getRootPane().setCursor(MainFrame.transparentCursor);
-                    double t = 1.0;
+                    double t = 0.5;
                     if (e.isShiftDown()) {
                         t = t * 0.1;
                     }
                     if (KeyUtils.isControlOrCommandDown(e)) {
                         t = t * 0.1;
                     }
+                    t = Math.clamp(t, 0.01, 1.0);
                 if (e.getWheelRotation() < 0) {
                     setValue(getValue() + t);
                 }
