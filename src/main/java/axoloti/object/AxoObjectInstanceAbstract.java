@@ -220,8 +220,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     public void PostConstructor() {
         removeAll();
         setMinimumSize(new Dimension(44, 40));
-        //setMaximumSize(new Dimension(Short.MAX_VALUE,
-        //        Short.MAX_VALUE));
+        // setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
 
 //        setFocusable(true);
         Titlebar.removeAll();

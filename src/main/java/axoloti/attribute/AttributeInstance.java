@@ -27,6 +27,8 @@ import components.LabelComponent;
 import java.util.ArrayList;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
 import org.simpleframework.xml.Attribute;
 
 /**
@@ -55,7 +57,9 @@ public abstract class AttributeInstance<T extends AxoAttribute> extends JPanel i
     public void PostConstructor() {
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
         setBackground(Theme.getCurrentTheme().Object_Default_Background);
-        add(new LabelComponent(GetDefinition().getName()));
+        LabelComponent attrlbl = new LabelComponent(GetDefinition().getName());
+        attrlbl.setBorder(new EmptyBorder(0,1,0,0));
+        add(attrlbl);
         setSize(getPreferredSize());
         if (attr.getDescription() != null) {
             setToolTipText(attr.getDescription());

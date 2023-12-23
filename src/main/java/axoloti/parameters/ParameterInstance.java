@@ -42,6 +42,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputAdapter;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
@@ -112,10 +113,12 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         }
 
         if ((parameter.noLabel == null) || (parameter.noLabel == false)) {
+            LabelComponent paramlbl = new LabelComponent(GetDefinition().getName());
+            paramlbl.setBorder(new EmptyBorder(0,1,0,0));
             if (lbls != null) {
-                lbls.add(new LabelComponent(parameter.name));
+                lbls.add(paramlbl);
             } else {
-                add(new LabelComponent(parameter.name));
+                add(paramlbl);
             }
         }
         if (convs != null) {
