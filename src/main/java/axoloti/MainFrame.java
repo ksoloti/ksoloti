@@ -34,6 +34,7 @@ import axoloti.utils.FirmwareID;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -63,6 +64,7 @@ import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.Box.Filler;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.Style;
@@ -528,17 +530,26 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelColumn2.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jPanelColumn2.setLayout(new javax.swing.BoxLayout(jPanelColumn2, javax.swing.BoxLayout.PAGE_AXIS));
 
+        Dimension btndim = new Dimension(110,30);
         jToggleButtonConnect.setFocusable(false);
-        jToggleButtonConnect.setText("  Connect  ");
+        jToggleButtonConnect.setText("Connect");
+        jToggleButtonConnect.setMinimumSize(btndim);
+        jToggleButtonConnect.setMaximumSize(btndim);
+        jToggleButtonConnect.setPreferredSize(btndim);
         jToggleButtonConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButtonConnectActionPerformed(evt);
             }
         });
         jPanelColumn2.add(jToggleButtonConnect);
+        Dimension fll = new Dimension(0,4);
+        jPanelColumn2.add(new Filler(fll, fll, fll));
 
         jButtonClear.setFocusable(false);
-        jButtonClear.setText(" Clear Log ");
+        jButtonClear.setText("Clear Log");
+        jButtonClear.setMinimumSize(btndim);
+        jButtonClear.setMaximumSize(btndim);
+        jButtonClear.setPreferredSize(btndim);
         jButtonClear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonClearActionPerformed(evt);
@@ -1098,7 +1109,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         else
         {
-            jToggleButtonConnect.setText("  Connect  ");
+            jToggleButtonConnect.setText("Connect");
             // jToggleButtonConnect.setBackground(Theme.getCurrentTheme().Button_Default_Background);
             // jToggleButtonConnect.setForeground(Theme.getCurrentTheme().Button_Default_Foreground);
         }

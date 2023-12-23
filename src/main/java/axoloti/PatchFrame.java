@@ -401,12 +401,13 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jToolbarPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jToolbarPanel.setLayout(new javax.swing.BoxLayout(jToolbarPanel, javax.swing.BoxLayout.LINE_AXIS));
 
+        Dimension btndim = new Dimension(65,30);
         jToggleButtonLive.setText("Live");
+        jToggleButtonLive.setMinimumSize(btndim);
+        jToggleButtonLive.setMaximumSize(btndim);
+        jToggleButtonLive.setPreferredSize(btndim);
         jToggleButtonLive.setEnabled(false);
         jToggleButtonLive.setFocusable(false);
-        jToggleButtonLive.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jToggleButtonLive.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jToggleButtonLive.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToggleButtonLive.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButtonLiveActionPerformed(evt);
