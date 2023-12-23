@@ -55,7 +55,7 @@
                 <tr>
                     <td class="nobreak">CTRL + N</td>
                     <td>New Patch</td>
-                    <td>Creates a new, emtpy patch window.</td>
+                    <td>Creates a new, empty patch window.</td>
                 </tr>
                 <tr>
                     <td class="nobreak">CTRL + O</td>
@@ -65,12 +65,12 @@
                 <tr>
                     <td class="nobreak">CTRL + S</td>
                     <td>Save</td>
-                    <td>Reverts the last undo, in other words re-does the last operation. The path will default to wherever you last opened or saved a patch using this menu. (Currently not all operations are covered, e.g. changing object labels?)</td>
+                    <td>Saves the changes made to the patch.</td>
                 </tr>
                 <tr>
                     <td class="nobreak">CTRL + SHIFT + S</td>
                     <td>Save As...</td>
-                    <td>Opens a file selection dialog to save the current patch as a new file.</td>
+                    <td>Opens a file selection dialog to save the patch in its current state as a new file.</td>
                 </tr>
                 <tr>
                     <td class="nobreak">CTRL + W</td>
@@ -100,37 +100,37 @@
                 <tr>
                     <td class="nobreak">CTRL + D</td>
                     <td>Duplicate</td>
-                    <td>Creates a copy of the selected objects trying to keep their connections intact, pastes them directly to the canvas and activates mouse drag. Left-click to confirm placement of the objects. A copy of the duplicated content will remain in the clipboard so you could use the paste action to create more duplicates. This is essentially just a shortcut for the three actions [copy, paste, activate mouse drag].</td>
+                    <td>Creates a copy of the selected objects trying to keep their connections intact, pastes them directly to the canvas and activates mouse drag.<br/>Left-click to confirm placement of the objects.<br/>A copy of the duplicated content will remain in the clipboard so you can use the paste action to create more duplicates. This is essentially just a shortcut for the three actions [copy, paste, activate mouse drag].</td>
                 </tr>
                 <tr>
                     <td class="nobreak">DEL</td>
                     <td>Delete</td>
-                    <td>Deletes the currently selected objects.</td>
+                    <td>Deletes the currently selected objects and related connections.</td>
                 </tr>
                 <tr>
                     <td class="nobreak">CTRL + A</td>
                     <td>Select All</td>
-                    <td>Selects all objects in the current patch. Useful if you want to copy everything to a subpatch or realign all objects in your patch window.</td>
+                    <td>Selects all objects in the current patch. Useful if you want to copy everything to a subpatch, or realign all objects in your patch window.</td>
                 </tr>
                 <tr>
                     <td class="nobreak">CTRL + Z</td>
                     <td>Undo</td>
-                    <td>Reverts the last operation. (I believe currently not all operations are covered, e.g. comments or changing object labels?)</td>
+                    <td>Reverts the last operation. (Currently not all operations are covered, e.g. changing comment text or object instance names has no undo.)</td>
                 </tr>
                 <tr>
                     <td><nobr>CTRL + Y,</nobr> <nobr>CTRL + SHIFT + Z</nobr></td>
                     <td>Redo</td>
-                    <td>Reverts the last undo, in other words re-does the last operation. (I believe currently not all operations are covered, e.g. comments or changing object labels?)</td>
+                    <td>Re-does the last operation. In other words, it reverts the most recent undo. (Currently not all operations are covered, e.g. changing comment text or object instance names has no undo.)</td>
                 </tr>
                 <tr>
                     <td class="nobreak">CTRL + I</td>
                     <td>Open Patch Settings</td>
-                    <td>Opens the current patch's Settings window where its receiving MIDI channel, subpatch mode and other options can be changed.</td>
+                    <td>Opens the current patch's Settings window, where settings like the MIDI channel it listens on, subpatch mode (including polyphony) and other options can be changed.</td>
                 </tr>
                 <tr>
                     <td class="nobreak">CTRL + T</td>
                     <td>Open Patch Notes</td>
-                    <td>Opens the current patch's Notes where you can save notes about your patch.</td>
+                    <td>Opens the current patch's Notes where you can save free notes and comments about your patch.</td>
                 </tr>
                 <tr>
                     <td class="nobreak">CTRL + B</td>
@@ -160,7 +160,7 @@
                 <tr>
                     <td class="nobreak">CTRL + SHIFT + Y</td>
                     <td>Show Virtual Keyboard</td>
-                    <td>Takes you to the virtual keyboard window. The virtual keyboard simulates MIDI events as if they were received via DIN or USB so you can use it to test your patch.</td>
+                    <td>Takes you to the virtual keyboard window. The virtual keyboard simulates MIDI events as if they were received via DIN or USB. You can use it to test your patch.</td>
                 </tr>
                 <tr>
                     <td class="nobreak">CTRL + SHIFT + F</td>
@@ -180,12 +180,14 @@
                 <tr>
                     <td class="nobreak">SPACE</td>
                     <td>Show Object Finder</td>
-                    <td>Opens the Object Finder that lets you search for and add objects to your patch.</td>
+                    <td>Opens the Object Finder. Here you can search for and add objects to your patch.</td>
                 </tr>
+
                 <tr>
                     <td class="nobreak">A</td>
                     <td>Show Object Finder, shortcut to "audio/"</td>
-                    <td>Opens the Object Finder with the text "audio/" already pasted in the search field.</td>
+                    <td>Opens the Object Finder with the respective string already pasted in the search field.</td>
+                </tr>
                 </tr>
             </table>
         </p>
