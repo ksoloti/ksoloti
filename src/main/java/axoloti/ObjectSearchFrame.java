@@ -526,7 +526,18 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
 
             /* if contains string with regex or '*' wildcard */
-            String rgx = ".*" + s.replace("*", ".*") + ".*";
+
+            /* most users will expect "*" to act as wildcard, not as
+             * pure regex - replace "*" with ".*" to simulate this behaviour
+             */
+            String rgx = s.replace("*", ".*");
+
+            /* some regex conditioning: match anywhere within the string
+             * unless "at beginning" or "at end" symbols are used
+             */
+            if (!s.startsWith("^")) rgx = ".*" + rgx;
+            if (!s.endsWith("$")) rgx = rgx + ".*";
+
             for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
                 if (Pattern.matches(rgx, o.id.toLowerCase())) {
                     if (!listData.contains(o)) {
