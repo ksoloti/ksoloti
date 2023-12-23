@@ -98,6 +98,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         rsta.setMarkOccurrences(true);
         rsta.setMarkOccurrencesColor(new Color(0x00,0x00,0x00, 0x60));
         rsta.setPaintTabLines(true);
+        // rsta.setLineWrap(true);
 
         RTextScrollPane sp = new RTextScrollPane(rsta);
         p.setLayout(new BorderLayout());

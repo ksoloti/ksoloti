@@ -60,13 +60,17 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
             ioe.printStackTrace();
         }
         textArea.setFont(Constants.FONT_MONO);
+        textArea.setBackground(axoloti.Theme.getCurrentTheme().Object_Default_Background);
+        textArea.setForeground(axoloti.Theme.getCurrentTheme().Object_Default_Foreground);
         textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
+        textArea.setHighlightCurrentLine(false);
+        textArea.setLineWrap(true);
         textArea.setCodeFoldingEnabled(true);
         textArea.setAntiAliasingEnabled(true);
         textArea.setAutoIndentEnabled(true);
         textArea.setMarkOccurrences(true);
         textArea.setPaintTabLines(true);
-        textArea.setMarkOccurrencesColor(new Color(0x00,0x00,0x00, 0x60));
+        textArea.setMarkOccurrencesColor(new Color(0x00,0x00,0x00, 0x40));
         RTextScrollPane sp = new RTextScrollPane(textArea);
         cp.setLayout(new BorderLayout());
         cp.add(sp);
