@@ -36,7 +36,7 @@ public class DispComponent extends ADispComponent {
     private final double max;
     private final double min;
     boolean overflow = false;
-    private static final Dimension dim = new Dimension(28, 32);
+    private static final Dimension dim = new Dimension(30, 32);
 
     public DispComponent(double value, double min, double max) {
         this.value = value;
@@ -58,7 +58,7 @@ public class DispComponent extends ADispComponent {
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         int tick = 1;
-        int radius = Math.min(getSize().width, getSize().height) / 2 - tick;
+        int radius = Math.min(getSize().width - 2, getSize().height) / 2 - tick;
         g2.setStroke(strokeThin);
         g2.setColor(Theme.getCurrentTheme().Component_Background);
         g2.setPaint(getForeground());
