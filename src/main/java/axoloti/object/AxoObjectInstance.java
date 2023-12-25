@@ -201,7 +201,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
         add(Titlebar);
 
         InstanceLabel = new LabelComponent(getInstanceName());
-        InstanceLabel.setBorder(new EmptyBorder(-1,1,-3,0));
+        InstanceLabel.setBorder(new EmptyBorder(-3,1,-2,0));
         InstanceLabel.setAlignmentX(LEFT_ALIGNMENT);
         InstanceLabel.addMouseListener(new MouseListener() {
             @Override
