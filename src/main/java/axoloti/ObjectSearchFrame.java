@@ -41,6 +41,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.swing.Icon;
 import javax.swing.event.ListSelectionEvent;
@@ -119,7 +120,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                     AxoObjectTreeNode anode = (AxoObjectTreeNode) node.getUserObject();
                     jPanelRight.removeAll();
                     jPanelRight.repaint();
-                    jTextPaneObjectInfo.setText(anode.description);
+                    jTextPaneObjectInfo.setText(anode.description.replace("\n", "<br/>"));
                     jTextPaneObjectInfo.setCaretPosition(0);
                     previewObj = null;
                 }
@@ -127,7 +128,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 if (nodeInfo instanceof AxoObjectAbstract) {
                     SetPreview((AxoObjectAbstract) nodeInfo);
                     if (!jTextFieldObjName.hasFocus()) {
-                        jTextFieldObjName.setText(((AxoObjectAbstract) nodeInfo).id);
+                        jTextFieldObjName.setText(((AxoObjectAbstract) nodeInfo).id.replace("\n", "<br/>"));
+
                     }
                 }
             }
@@ -436,15 +438,15 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 String license = t.sLicense == null ? o.sLicense : t.sLicense;
                 String txt = description;
                 if ((path != null) && (!path.isEmpty())) {
-                    txt += "\n<p>\nPath: " + path;
+                    txt += "<p>Path: " + path;
                 }
                 if ((author != null) && (!author.isEmpty())) {
-                    txt += "\n<p>\nAuthor: " + author;
+                    txt += "<p>Author: " + author;
                 }
                 if ((license != null) && (!license.isEmpty())) {
-                    txt += "\n<p>\nLicense: " + license;
+                    txt += "<p>License: " + license;
                 }
-                jTextPaneObjectInfo.setText(txt);
+                jTextPaneObjectInfo.setText(txt.replace("\n", "<br/>"));
             }
             jTextPaneObjectInfo.setCaretPosition(0);
         }
@@ -515,7 +517,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 }
             }
 
-            /* if contains full string */
+            /* if contains full string (literally i.e. ignoring wildcards) */
             for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
                 if (o.id.toLowerCase().contains(s)) {
                     if (!listData.contains(o)) {
@@ -539,10 +541,14 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             if (!s.endsWith("$")) rgx = rgx + ".*";
 
             for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                if (Pattern.matches(rgx, o.id.toLowerCase())) {
-                    if (!listData.contains(o)) {
-                        listData.add(o);
+                try {
+                    if (Pattern.matches(rgx, o.id.toLowerCase())) {
+                        if (!listData.contains(o)) {
+                            listData.add(o);
+                        }
                     }
+                }
+                catch (PatternSyntaxException p) {
                 }
             }
 
@@ -573,6 +579,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 }
             }
         }
+        /* show number of results */
+        this.setTitle(String.format("%d found", listData.size()));
     }
 
     boolean accepted = false;
