@@ -118,8 +118,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 }
                 if (node.getUserObject() instanceof AxoObjectTreeNode) {
                     AxoObjectTreeNode anode = (AxoObjectTreeNode) node.getUserObject();
-                    jPanelRight.removeAll();
-                    jPanelRight.repaint();
+                    jPanelObjectPreview.removeAll(;
+                    jPanelObjectPreview.repaint();
                     jTextPaneObjectInfo.setText(anode.description.replace("\n", "<br/>"));
                     jTextPaneObjectInfo.setCaretPosition(0);
                     previewObj = null;
@@ -280,7 +280,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         });
 
-        jPanelRight.setVisible(true);
+        jPanelObjectPreview.setVisible(true);
         jScrollPaneObjectTree.setVisible(true);
         jScrollPaneObjectInfo.setVisible(true);
         jSplitPaneMain.setVisible(true);
@@ -360,7 +360,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         return patchLoc;
     }
 
-    void Launch(Point patchLoc, AxoObjectInstanceAbstract o, String searchString, boolean selectText) {
+    void Launch(Point patchLoc, AxoObjectInstanceAbstract o, String searchString, boolean selectSearchString) {
         if (this.objectTree != MainFrame.axoObjects.ObjectTree) {
             DefaultMutableTreeNode root1 = new DefaultMutableTreeNode();
             this.objectTree = MainFrame.axoObjects.ObjectTree;
@@ -392,7 +392,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             jTextFieldObjName.setText(searchString);
         }
         jTextFieldObjName.grabFocus();
-        if (selectText) {
+        if (selectSearchString) {
             jTextFieldObjName.selectAll();
         }
         else {
@@ -406,8 +406,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         if (o == null) {
             previewObj = null;
             type = null;
-            jPanelRight.removeAll();
-            jPanelRight.repaint();
+            jPanelObjectPreview.removeAll();
+            jPanelObjectPreview.repaint();
             jButtonAccept.setEnabled(false);
             return;
         }
@@ -423,13 +423,13 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             if (jResultList.getSelectedValue() != o) {
             }
             AxoObjectInstanceAbstract inst = o.CreateInstance(null, "dummy", new Point(5, 5));
-            jPanelRight.removeAll();
-            jPanelRight.add(inst);
+            jPanelObjectPreview.removeAll();
+            jPanelObjectPreview.add(inst);
             inst.invalidate();
             inst.repaint();
             inst.revalidate();
-            jPanelRight.revalidate();
-            jPanelRight.repaint();
+            jPanelObjectPreview.revalidate();
+            jPanelObjectPreview.repaint();
             AxoObjectAbstract t = inst.getType();
             if (t != null) {
                 String description = t.sDescription == null || t.sDescription.isEmpty() ? o.sDescription : t.sDescription;
@@ -525,7 +525,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                     }
                 }
             }
-
 
             /* if contains string with regex or '*' wildcard */
 
@@ -644,7 +643,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jScrollPaneObjectTree = new javax.swing.JScrollPane();
         jScrollPaneObjectSearch = new javax.swing.JScrollPane();
         jScrollPaneObjectInfo = new javax.swing.JScrollPane();
-        jPanelRight = new javax.swing.JPanel();
+        jPanelObjectPreview = new javax.swing.JPanel();
 
         setForeground(java.awt.SystemColor.controlText);
         setIconImages(null);
@@ -720,6 +719,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jSplitPaneLeft.setMinimumSize(new java.awt.Dimension(80, 120));
         jSplitPaneLeft.setPreferredSize(new java.awt.Dimension(180, 160));
 
+        jScrollPaneObjectSearch.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        jScrollPaneObjectSearch.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         jScrollPaneObjectSearch.setMinimumSize(new java.awt.Dimension(24, 64));
         jScrollPaneObjectSearch.setPreferredSize(new java.awt.Dimension(180, 160));
 
@@ -731,6 +732,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jSplitPaneLeft.setTopComponent(jScrollPaneObjectSearch);
 
+        jScrollPaneObjectTree.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        jScrollPaneObjectTree.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         jScrollPaneObjectTree.setPreferredSize(new java.awt.Dimension(180, 160));
 
         jObjectTree.setAlignmentX(LEFT_ALIGNMENT);
@@ -762,22 +765,22 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jSplitPaneRight.setTopComponent(jScrollPaneObjectInfo);
 
-        jPanelRight.setBackground(Theme.getCurrentTheme().Patch_Unlocked_Background);
-        jPanelRight.setEnabled(false);
-        jPanelRight.setFocusable(false);
+        jPanelObjectPreview.setBackground(Theme.getCurrentTheme().Patch_Unlocked_Background);
+        jPanelObjectPreview.setEnabled(false);
+        jPanelObjectPreview.setFocusable(false);
 
-        javax.swing.GroupLayout jPanelRightLayout = new javax.swing.GroupLayout(jPanelRight);
-        jPanelRight.setLayout(jPanelRightLayout);
-        jPanelRightLayout.setHorizontalGroup(
-            jPanelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout jPanelObjectPreviewLayout = new javax.swing.GroupLayout(jPanelObjectPreview);
+        jPanelObjectPreview.setLayout(jPanelObjectPreviewLayout);
+        jPanelObjectPreviewLayout.setHorizontalGroup(
+            jPanelObjectPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
-        jPanelRightLayout.setVerticalGroup(
-            jPanelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        jPanelObjectPreviewLayout.setVerticalGroup(
+            jPanelObjectPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        jSplitPaneRight.setRightComponent(jPanelRight);
+        jSplitPaneRight.setRightComponent(jPanelObjectPreview);
 
         jSplitPaneMain.setRightComponent(jSplitPaneRight);
 
@@ -818,7 +821,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     private javax.swing.JPanel jPanelMain;
     private javax.swing.JPanel jPanelLeft;
     private javax.swing.JPanel jPanelSearchField;
-    private javax.swing.JPanel jPanelRight;
+    private javax.swing.JPanel jPanelObjectPreview;
 
     private javax.swing.JSplitPane jSplitPaneMain;
     private javax.swing.JSplitPane jSplitPaneLeft;
