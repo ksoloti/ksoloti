@@ -33,6 +33,8 @@ import axoloti.utils.Constants;
 import axoloti.utils.FirmwareID;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
+import components.ScrollPaneComponent;
+
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -469,7 +471,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jLabelPatch = new javax.swing.JLabel();
         jLabelSDCardPresent = new javax.swing.JLabel();
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
-        jScrollPaneLog = new javax.swing.JScrollPane();
+        jScrollPaneLog = new ScrollPaneComponent();
         jTextPaneLog = new javax.swing.JTextPane();
         jPanelProgress = new javax.swing.JPanel();
         jProgressBar1 = new javax.swing.JProgressBar();
@@ -581,9 +583,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelHeader.add(filler3);
 
         getContentPane().add(jPanelHeader);
-
-        jScrollPaneLog.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        jScrollPaneLog.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         jTextPaneLog.setEditable(false);
         jScrollPaneLog.setViewportView(jTextPaneLog);
@@ -1077,7 +1076,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JPanel jPanelColumn3;
     private javax.swing.JPanel jPanelProgress;
     private javax.swing.JProgressBar jProgressBar1;
-    private javax.swing.JScrollPane jScrollPaneLog;
+    private ScrollPaneComponent jScrollPaneLog;
     private javax.swing.JTextPane jTextPaneLog;
     private axoloti.menus.WindowMenu windowMenu1;
     // End of variables declaration//GEN-END:variables

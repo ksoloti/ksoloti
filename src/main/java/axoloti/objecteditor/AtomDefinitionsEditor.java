@@ -22,6 +22,8 @@ import axoloti.datatypes.ValueFrac32;
 import axoloti.datatypes.ValueInt32;
 import axoloti.object.AxoObject;
 import axoloti.object.ObjectModifiedListener;
+import components.ScrollPaneComponent;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 // import java.lang.annotation.Annotation;
@@ -35,7 +37,6 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -147,7 +148,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
     void initComponents(AxoObject obj) {
         this.obj = obj;
         obj.addObjectModifiedListener(this);
-        jScrollPane1 = new JScrollPane();
+        jScrollPane1 = new ScrollPaneComponent();
         jTable1 = new JTable();
         jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -160,7 +161,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
         jPanel1.setLayout(new BoxLayout(jPanel1, BoxLayout.X_AXIS));
         add(jPanel1);
 
-        jScrollPane2 = new JScrollPane();
+        jScrollPane2 = new ScrollPaneComponent();
         jTable2 = new JTable();
         jTable2.getTableHeader().setReorderingAllowed(false);
         jTable2.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -575,8 +576,8 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
         jButtonAdd.setEnabled(editable);
     }
 
-    JScrollPane jScrollPane1;
-    JScrollPane jScrollPane2;
+    ScrollPaneComponent jScrollPane1;
+    ScrollPaneComponent jScrollPane2;
     JTable jTable1;
     JTable jTable2;
     JButton jButtonMoveUp;

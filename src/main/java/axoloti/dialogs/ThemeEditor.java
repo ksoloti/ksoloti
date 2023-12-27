@@ -1,6 +1,8 @@
 package axoloti.dialogs;
 
 import axoloti.Theme;
+import components.ScrollPaneComponent;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -16,7 +18,6 @@ import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -31,9 +32,7 @@ public class ThemeEditor extends JFrame {
         this.setPreferredSize(new Dimension(600, 600));
         theme = Theme.getCurrentTheme();
         p = new JPanel();
-        JScrollPane s = new JScrollPane(p,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        ScrollPaneComponent s = new ScrollPaneComponent(p);
         p.setLayout(
                 new GridLayout(theme.getClass().getFields().length + 8, 2)
         );

@@ -20,6 +20,8 @@ package axoloti.dialogs;
 import axoloti.Patch;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.parameters.ParameterInstance;
+import components.ScrollPaneComponent;
+
 import java.util.Collection;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
@@ -84,7 +86,7 @@ public class MidiAssignments extends javax.swing.JDialog {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPane1 = new ScrollPaneComponent();
         jTable1 = new javax.swing.JTable();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 10), new java.awt.Dimension(0, 0));
         jPanel2 = new javax.swing.JPanel();
@@ -199,7 +201,7 @@ public class MidiAssignments extends javax.swing.JDialog {
     private javax.swing.JButton jButtonDeassign;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
+    private ScrollPaneComponent jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 

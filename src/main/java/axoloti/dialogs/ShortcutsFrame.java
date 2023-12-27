@@ -18,6 +18,8 @@
 package axoloti.dialogs;
 
 import axoloti.Version;
+import components.ScrollPaneComponent;
+
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -89,7 +91,7 @@ public class ShortcutsFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPaneShortcutsHtml = new javax.swing.JScrollPane();
+        jScrollPaneShortcutsHtml = new ScrollPaneComponent();
         jTextPaneShortcutsHtml = new javax.swing.JTextPane();
         jLabelBuildVersion = new javax.swing.JLabel();
         jVersionTxt = new javax.swing.JLabel();
@@ -172,7 +174,7 @@ public class ShortcutsFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jDateTxt;
     private javax.swing.JLabel jLabelBuildVersion;
     private javax.swing.JLabel jLabelBuildDate;
-    private javax.swing.JScrollPane jScrollPaneShortcutsHtml;
+    private ScrollPaneComponent jScrollPaneShortcutsHtml;
     private javax.swing.JTextPane jTextPaneShortcutsHtml;
     private javax.swing.JLabel jVersionTxt;
     // End of variables declaration//GEN-END:variables

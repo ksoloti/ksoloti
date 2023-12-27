@@ -37,6 +37,8 @@ import static axoloti.utils.OSDetect.getOS;
 import java.awt.Dimension;
 
 import axoloti.utils.Preferences;
+import components.ScrollPaneComponent;
+
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -270,7 +272,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         // jLabel1 = new javax.swing.JLabel();
         jButtonCancel = new javax.swing.JButton();
         jButtonRefresh = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        jScrollPane2 = new ScrollPaneComponent();
         jTable1 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -408,7 +410,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     private javax.swing.JButton jButtonCancel;
     private javax.swing.JButton jButtonOK;
     // private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private ScrollPaneComponent jScrollPane2;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }

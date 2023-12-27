@@ -23,6 +23,7 @@ import static axoloti.MainFrame.prefs;
 import axoloti.SDCardInfo;
 import axoloti.SDFileInfo;
 import axoloti.USBBulkConnection;
+import components.ScrollPaneComponent;
 
 import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
@@ -190,6 +191,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
         });
         jFileTable.getTableHeader().setReorderingAllowed(false);
+
         jScrollPane1.setViewportView(jFileTable);
         if (jFileTable.getColumnModel().getColumnCount() > 0) {
             jFileTable.getColumnModel().getColumn(0).setPreferredWidth(360);
@@ -230,7 +232,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPane1 = new ScrollPaneComponent();
         jFileTable = new javax.swing.JTable();
         jButtonSDRefresh = new javax.swing.JButton();
         jLabelSDInfo = new javax.swing.JLabel();
@@ -492,7 +494,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     private javax.swing.JLabel jLabelSDInfo;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private ScrollPaneComponent jScrollPane1;
     private axoloti.menus.WindowMenu windowMenu1;
     // End of variables declaration//GEN-END:variables
 

@@ -23,6 +23,7 @@ import axoloti.utils.AxoGitLibrary;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
 import axoloti.utils.Preferences;
+import components.ScrollPaneComponent;
 
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
@@ -173,7 +174,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jLabelController = new javax.swing.JLabel();
         jTextFieldController = new javax.swing.JTextField();
         jControllerEnabled = new javax.swing.JCheckBox();
-        jScrollPaneLibraryTable = new javax.swing.JScrollPane();
+        jScrollPaneLibraryTable = new ScrollPaneComponent();
         jLibraryTable = new javax.swing.JTable();
         jAddLibBtn = new javax.swing.JButton();
         jDelLibBtn = new javax.swing.JButton();
@@ -803,7 +804,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JButton jLibStatus;
     private javax.swing.JTable jLibraryTable;
     private javax.swing.JButton jResetLib;
-    private javax.swing.JScrollPane jScrollPaneLibraryTable;
+    private ScrollPaneComponent jScrollPaneLibraryTable;
     private javax.swing.JTextField jTextFieldController;
     private javax.swing.JTextField jTextFieldPollInterval;
     private javax.swing.JTextField jTextFieldCodeFontSize;

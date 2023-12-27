@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.ScrollPaneConstants;
+
 // import javax.swing.UIManager;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -71,9 +73,16 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
         textArea.setMarkOccurrences(true);
         textArea.setPaintTabLines(true);
         textArea.setMarkOccurrencesColor(new Color(0x00,0x00,0x00, 0x40));
+
         RTextScrollPane sp = new RTextScrollPane(textArea);
+        sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        sp.getHorizontalScrollBar().setUnitIncrement(Constants.X_GRID/2);
+        sp.getVerticalScrollBar().setUnitIncrement(Constants.Y_GRID/2);
+
         cp.setLayout(new BorderLayout());
         cp.add(sp);
+
         textArea.setVisible(true);
         setContentPane(cp);
         textArea.setText(s.s);

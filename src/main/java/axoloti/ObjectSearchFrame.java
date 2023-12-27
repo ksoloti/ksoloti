@@ -22,6 +22,8 @@ import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectTreeNode;
 import axoloti.utils.Constants;
 import axoloti.utils.OSDetect;
+import components.ScrollPaneComponent;
+
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.FontMetrics;
@@ -283,6 +285,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jPanelObjectPreview.setVisible(true);
         jScrollPaneObjectTree.setVisible(true);
         jScrollPaneObjectInfo.setVisible(true);
+        jScrollPaneObjectPreview.setVisible(true);
         jSplitPaneMain.setVisible(true);
         jSplitPaneRight.setVisible(true);
         jTextPaneObjectInfo.setVisible(true);
@@ -428,6 +431,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             inst.invalidate();
             inst.repaint();
             inst.revalidate();
+            jPanelObjectPreview.setPreferredSize(inst.getPreferredSize());
             jPanelObjectPreview.revalidate();
             jPanelObjectPreview.repaint();
             AxoObjectAbstract t = inst.getType();
@@ -640,9 +644,10 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jObjectTree = new javax.swing.JTree();
 
-        jScrollPaneObjectTree = new javax.swing.JScrollPane();
-        jScrollPaneObjectSearch = new javax.swing.JScrollPane();
-        jScrollPaneObjectInfo = new javax.swing.JScrollPane();
+        jScrollPaneObjectTree = new ScrollPaneComponent();
+        jScrollPaneObjectSearch = new ScrollPaneComponent();
+        jScrollPaneObjectInfo = new ScrollPaneComponent();
+        jScrollPaneObjectPreview = new ScrollPaneComponent();
         jPanelObjectPreview = new javax.swing.JPanel();
 
         setForeground(java.awt.SystemColor.controlText);
@@ -719,8 +724,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jSplitPaneLeft.setMinimumSize(new java.awt.Dimension(80, 120));
         jSplitPaneLeft.setPreferredSize(new java.awt.Dimension(180, 160));
 
-        jScrollPaneObjectSearch.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        jScrollPaneObjectSearch.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         jScrollPaneObjectSearch.setMinimumSize(new java.awt.Dimension(24, 64));
         jScrollPaneObjectSearch.setPreferredSize(new java.awt.Dimension(180, 160));
 
@@ -732,8 +735,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jSplitPaneLeft.setTopComponent(jScrollPaneObjectSearch);
 
-        jScrollPaneObjectTree.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        jScrollPaneObjectTree.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         jScrollPaneObjectTree.setPreferredSize(new java.awt.Dimension(180, 160));
 
         jObjectTree.setAlignmentX(LEFT_ALIGNMENT);
@@ -753,8 +754,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jSplitPaneRight.setResizeWeight(0.5);
         jSplitPaneRight.setPreferredSize(new java.awt.Dimension(300, 240));
 
-        jScrollPaneObjectInfo.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        jScrollPaneObjectInfo.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         jScrollPaneObjectInfo.setMinimumSize(new java.awt.Dimension(6, 120));
 
         jTextPaneObjectInfo.setEditable(false);
@@ -769,6 +768,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jPanelObjectPreview.setEnabled(false);
         jPanelObjectPreview.setFocusable(false);
 
+        jScrollPaneObjectPreview.setMinimumSize(new java.awt.Dimension(6, 120));
+        jScrollPaneObjectPreview.setViewportView(jPanelObjectPreview);
+
         javax.swing.GroupLayout jPanelObjectPreviewLayout = new javax.swing.GroupLayout(jPanelObjectPreview);
         jPanelObjectPreview.setLayout(jPanelObjectPreviewLayout);
         jPanelObjectPreviewLayout.setHorizontalGroup(
@@ -780,7 +782,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        jSplitPaneRight.setRightComponent(jPanelObjectPreview);
+        jSplitPaneRight.setRightComponent(jScrollPaneObjectPreview);
 
         jSplitPaneMain.setRightComponent(jSplitPaneRight);
 
@@ -834,9 +836,10 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     private javax.swing.JTree jObjectTree;
     private javax.swing.JTextPane jTextPaneObjectInfo;
 
-    private javax.swing.JScrollPane jScrollPaneObjectSearch;
-    private javax.swing.JScrollPane jScrollPaneObjectTree;
-    private javax.swing.JScrollPane jScrollPaneObjectInfo;
+    private ScrollPaneComponent jScrollPaneObjectSearch;
+    private ScrollPaneComponent jScrollPaneObjectTree;
+    private ScrollPaneComponent jScrollPaneObjectInfo;
+    private ScrollPaneComponent jScrollPaneObjectPreview;
     // End of variables declaration//GEN-END:variables
 
 

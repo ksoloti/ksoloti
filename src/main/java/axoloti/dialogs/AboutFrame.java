@@ -18,6 +18,8 @@
 package axoloti.dialogs;
 
 import axoloti.Version;
+import components.ScrollPaneComponent;
+
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -91,7 +93,7 @@ public class AboutFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPaneAboutHtml = new javax.swing.JScrollPane();
+        jScrollPaneAboutHtml = new ScrollPaneComponent();
         jTextPaneAboutHtml = new javax.swing.JTextPane();
         jLabelBuildVersion = new javax.swing.JLabel();
         jVersionTxt = new javax.swing.JLabel();
@@ -185,7 +187,7 @@ public class AboutFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelBuildVersion;
     private javax.swing.JLabel jLabelBuildDate;
     private javax.swing.JLabel jLabelJavaVersion;
-    private javax.swing.JScrollPane jScrollPaneAboutHtml;
+    private ScrollPaneComponent jScrollPaneAboutHtml;
     private javax.swing.JTextPane jTextPaneAboutHtml;
     private javax.swing.JLabel jVersionTxt;
     // End of variables declaration//GEN-END:variables

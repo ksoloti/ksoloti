@@ -31,6 +31,7 @@ import axoloti.outlets.Outlet;
 import axoloti.parameters.Parameter;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
+import components.ScrollPaneComponent;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -47,16 +48,14 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.Style;
 import org.fife.ui.rsyntaxtextarea.Theme;
-import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
@@ -101,6 +100,10 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         // rsta.setLineWrap(true);
 
         RTextScrollPane sp = new RTextScrollPane(rsta);
+        sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        sp.getHorizontalScrollBar().setUnitIncrement(Constants.X_GRID/2);
+        sp.getVerticalScrollBar().setUnitIncrement(Constants.Y_GRID/2);
         p.setLayout(new BorderLayout());
         p.add(sp);
 
@@ -547,13 +550,13 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         jTextFieldHelp = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
-        jScrollPane13 = new javax.swing.JScrollPane();
+        jScrollPane13 = new ScrollPaneComponent();
         jTextDesc = new javax.swing.JTextArea();
         jLabel5 = new javax.swing.JLabel();
-        jScrollPane4 = new javax.swing.JScrollPane();
+        jScrollPane4 = new ScrollPaneComponent();
         jListIncludes = new javax.swing.JList();
         jLabel6 = new javax.swing.JLabel();
-        jScrollPane12 = new javax.swing.JScrollPane();
+        jScrollPane12 = new ScrollPaneComponent();
         jListDepends = new javax.swing.JList();
         inletDefinitionsEditor1 = new axoloti.objecteditor.InletDefinitionsEditorPanel();
         outletDefinitionsEditorPanel1 = new axoloti.objecteditor.OutletDefinitionsEditorPanel();
@@ -570,7 +573,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         jLabelMidiPrototype = new javax.swing.JLabel();
         jPanelMidiCode2 = new javax.swing.JPanel();
         jPanelXML = new javax.swing.JPanel();
-        jScrollPane6 = new javax.swing.JScrollPane();
+        jScrollPane6 = new ScrollPaneComponent();
         rSyntaxTextAreaXML = new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea();
         jLabel2 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -979,10 +982,10 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private javax.swing.JPanel jPanelOverview;
     private javax.swing.JPanel jPanelSRateCode;
     private javax.swing.JPanel jPanelXML;
-    private javax.swing.JScrollPane jScrollPane12;
-    private javax.swing.JScrollPane jScrollPane13;
-    private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JScrollPane jScrollPane6;
+    private ScrollPaneComponent jScrollPane12;
+    private ScrollPaneComponent jScrollPane13;
+    private ScrollPaneComponent jScrollPane4;
+    private ScrollPaneComponent jScrollPane6;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextArea jTextDesc;
