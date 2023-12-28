@@ -109,7 +109,7 @@ public class Preferences {
     @Element(required = false)
     String Theme;
     @Element(required = false)
-    int codeFontSize = 14; /* default to 14pt */
+    int codeFontSize = 12; /* default to 12pt */
 
     @ElementMap(required = false, entry = "Boards", key = "cpuid", attribute = true, inline = true)
     HashMap<String, String> BoardNames;
