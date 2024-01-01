@@ -109,7 +109,7 @@ public class Preferences {
     @Element(required = false)
     String Theme;
     @Element(required = false)
-    int codeFontSize = 12; /* default to 12pt */
+    int CodeFontSize = 12; /* default to 12pt */
 
     @ElementMap(required = false, entry = "Boards", key = "cpuid", attribute = true, inline = true)
     HashMap<String, String> BoardNames;
@@ -363,15 +363,15 @@ public class Preferences {
     }
 
     public int getCodeFontSize() {
-        return codeFontSize;
+        return CodeFontSize;
     }
 
-    public void setCodeFontSize(int codeFontSize) {
-        int sz = Math.clamp(codeFontSize, 4, 64);
-        if (this.codeFontSize == sz) {
+    public void setCodeFontSize(int CodeFontSize) {
+        int sz = Math.clamp(CodeFontSize, 4, 64);
+        if (this.CodeFontSize == sz) {
             return;
         }
-        this.codeFontSize = sz;
+        this.CodeFontSize = sz;
         SetDirty();
     }
 
