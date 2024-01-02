@@ -875,10 +875,14 @@ public class PatchGUI extends Patch {
             String str = FileNamePath.substring(brk) + "   (" + FileNamePath.substring(0, brk) + ")";
             patchframe.setTitle(str);
         }
-        else {
+        else if (!FileNamePath.equals("untitled")) {
             /* Subpatch */
-            patchframe.setTitle(FileNamePath + "   (embedded subpatch)");
+            patchframe.setTitle(FileNamePath + "   (subpatch)");
             patchframe.setSaveMenuEnabled(false); /* parent has to be saved to preserve changes */
+        }
+        else {
+            /* New patch */
+            patchframe.setTitle(FileNamePath);
         }
     }
 
