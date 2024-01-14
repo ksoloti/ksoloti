@@ -106,7 +106,7 @@ public abstract class ACtrlComponent extends JComponent {
                     if (KeyUtils.isControlOrCommandDown(e)) {
                         t = t * 0.1;
                     }
-                    t = Math.clamp(t, 0.01, 1.0);
+                    t = t < 0.01 ? 0.01 : t > 1.0 ? 1.0 : t;
                 if (e.getWheelRotation() < 0) {
                     setValue(getValue() + t);
                 }

@@ -367,7 +367,7 @@ public class Preferences {
     }
 
     public void setCodeFontSize(int CodeFontSize) {
-        int sz = Math.clamp(CodeFontSize, 4, 64);
+        int sz = CodeFontSize < 4 ? 4 : CodeFontSize > 64 ? 64 : CodeFontSize;
         if (this.CodeFontSize == sz) {
             return;
         }
