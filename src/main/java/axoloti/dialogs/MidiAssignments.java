@@ -191,7 +191,6 @@ public class MidiAssignments extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonAssignActionPerformed
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
     private javax.swing.Box.Filler filler3;
@@ -203,7 +202,6 @@ public class MidiAssignments extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel2;
     private ScrollPaneComponent jScrollPane1;
     private javax.swing.JTable jTable1;
-    // End of variables declaration//GEN-END:variables
 
     static String[] MidiCCToName = {
         "Bank Select",

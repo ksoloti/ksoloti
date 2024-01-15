@@ -170,9 +170,7 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
         parent.GetChildDocuments().add(this);
     }//GEN-LAST:event_formComponentShown
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel cp;
-    // End of variables declaration//GEN-END:variables
 
     @Override
     public JFrame GetFrame() {

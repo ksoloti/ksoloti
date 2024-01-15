@@ -809,7 +809,6 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     }//GEN-LAST:event_jUploadAllActionPerformed
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private axoloti.menus.FileMenu fileMenu1;
     private javax.swing.JButton jButtonAdd;
     private javax.swing.JButton jButtonDown;
@@ -830,7 +829,6 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     private javax.swing.JTable jTable1;
     private javax.swing.JButton jUploadAll;
     private axoloti.menus.WindowMenu windowMenu1;
-    // End of variables declaration//GEN-END:variables
 
     @Override
     public JFrame GetFrame() {

@@ -819,7 +819,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         Accept();
     }//GEN-LAST:event_jButtonAcceptActionPerformed
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanelMain;
     private javax.swing.JPanel jPanelLeft;
     private javax.swing.JPanel jPanelSearchField;
@@ -840,7 +839,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     private ScrollPaneComponent jScrollPaneObjectTree;
     private ScrollPaneComponent jScrollPaneObjectInfo;
     private ScrollPaneComponent jScrollPaneObjectPreview;
-    // End of variables declaration//GEN-END:variables
 
 
     class StringIcon implements Icon {

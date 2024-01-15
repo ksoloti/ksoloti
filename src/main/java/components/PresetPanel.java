@@ -435,8 +435,7 @@ public class PresetPanel extends javax.swing.JPanel {
         jToggleButtonE8.setSelected(true);
         p.ShowPreset(8);
     }//GEN-LAST:event_jToggleButtonE8ActionPerformed
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // private javax.swing.ButtonGroup buttonGroup1;
+
     private javax.swing.JButton jButtonR1;
     private javax.swing.JButton jButtonR2;
     private javax.swing.JButton jButtonR3;
@@ -460,5 +459,4 @@ public class PresetPanel extends javax.swing.JPanel {
     private javax.swing.JToggleButton jToggleButtonE7;
     private javax.swing.JToggleButton jToggleButtonE8;
     private javax.swing.JButton jButtonEI;
-    // End of variables declaration//GEN-END:variables
 }

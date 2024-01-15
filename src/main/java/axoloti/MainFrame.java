@@ -1037,7 +1037,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private axoloti.menus.FileMenu fileMenu;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler3;
@@ -1079,7 +1078,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private ScrollPaneComponent jScrollPaneLog;
     private javax.swing.JTextPane jTextPaneLog;
     private axoloti.menus.WindowMenu windowMenu1;
-    // End of variables declaration//GEN-END:variables
 
     public void SetProgressValue(int i) {
         jProgressBar1.setValue(i);

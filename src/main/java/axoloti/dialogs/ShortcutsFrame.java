@@ -170,12 +170,10 @@ public class ShortcutsFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jDateTxt;
     private javax.swing.JLabel jLabelBuildVersion;
     private javax.swing.JLabel jLabelBuildDate;
     private ScrollPaneComponent jScrollPaneShortcutsHtml;
     private javax.swing.JTextPane jTextPaneShortcutsHtml;
     private javax.swing.JLabel jVersionTxt;
-    // End of variables declaration//GEN-END:variables
 }

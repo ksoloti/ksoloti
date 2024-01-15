@@ -943,7 +943,6 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         // TODO add your handling code here:
     }//GEN-LAST:event_formWindowLostFocus
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private axoloti.objecteditor.AttributeDefinitionsEditorPanel attributeDefinitionsEditorPanel1;
     private axoloti.objecteditor.DisplayDefinitionsEditorPanel displayDefinitionsEditorPanel1;
     private axoloti.menus.FileMenu fileMenu1;
@@ -996,7 +995,6 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private axoloti.objecteditor.ParamDefinitionsEditorPanel paramDefinitionsEditorPanel1;
     private org.fife.ui.rsyntaxtextarea.RSyntaxTextArea rSyntaxTextAreaXML;
     private axoloti.menus.WindowMenu windowMenu1;
-    // End of variables declaration//GEN-END:variables
 
     @Override
     public JFrame GetFrame() {

@@ -545,7 +545,6 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
     }//GEN-LAST:event_jSyncBtnActionPerformed
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler1;
     private javax.swing.JCheckBox jAutoSync;
     private javax.swing.JButton jCancel;
@@ -574,7 +573,6 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
     private javax.swing.JButton jSyncBtn;
     private javax.swing.JComboBox jTypeCombo;
     private javax.swing.JTextField jUserId;
-    // End of variables declaration//GEN-END:variables
 
     public AxolotiLibrary getLibrary() {
         return library;

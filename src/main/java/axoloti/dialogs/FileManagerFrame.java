@@ -484,7 +484,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             // System.out.println(String.format("SD free: %d MB, Cluster size: %d", ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)), (clustersize * sectorsize)));
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private axoloti.menus.FileMenu fileMenu1;
     private javax.swing.JButton jButtonSDRefresh;
     private javax.swing.JButton jButtonCreateDir;
@@ -496,7 +495,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     private javax.swing.JMenuBar jMenuBar1;
     private ScrollPaneComponent jScrollPane1;
     private axoloti.menus.WindowMenu windowMenu1;
-    // End of variables declaration//GEN-END:variables
 
     void ShowConnect(boolean status) {
         jButtonSDRefresh.setEnabled(status);

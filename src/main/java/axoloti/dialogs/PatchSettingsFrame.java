@@ -426,7 +426,6 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         patch.getPatchframe().GetChildDocuments().add(this);
     }//GEN-LAST:event_formComponentShown
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox jCheckBoxHasChannelAttrib;
     private javax.swing.JCheckBox jCheckBoxSaturate;
     private javax.swing.JComboBox jComboBoxLicense;
@@ -448,7 +447,6 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
     private javax.swing.JSpinner jSpinnerPresetEntries;
     private javax.swing.JTextField jTextFieldAttributions;
     private javax.swing.JTextField jTextFieldAuthor;
-    // End of variables declaration//GEN-END:variables
 
     @Override
     public JFrame GetFrame() {

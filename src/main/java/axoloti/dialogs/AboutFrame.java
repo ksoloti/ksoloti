@@ -181,7 +181,6 @@ public class AboutFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jDateTxt;
     private javax.swing.JLabel jJavaVersion;
     private javax.swing.JLabel jLabelBuildVersion;
@@ -190,5 +189,4 @@ public class AboutFrame extends javax.swing.JFrame {
     private ScrollPaneComponent jScrollPaneAboutHtml;
     private javax.swing.JTextPane jTextPaneAboutHtml;
     private javax.swing.JLabel jVersionTxt;
-    // End of variables declaration//GEN-END:variables
 }

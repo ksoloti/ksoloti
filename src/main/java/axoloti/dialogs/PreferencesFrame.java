@@ -611,45 +611,6 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private void jComboBoxDialMouseBehaviourActionPerformed(java.awt.event.ActionEvent evt) {
     }
 
-    // private void btnFirmwareDirActionPerformed(java.awt.event.ActionEvent evt) {
-    //     JFileChooser chooser = new JFileChooser(Preferences.LoadPreferences().getCurrentFileDirectory());
-    //     chooser.setPreferredSize(new java.awt.Dimension(320, 480));
-    //     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    //     chooser.setAcceptAllFileFilterUsed(false);
-    //     if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-    //         String dir;
-    //         try {
-    //             dir = chooser.getSelectedFile().getCanonicalPath();
-    //             Preferences.LoadPreferences().SetFirmwareDir(dir);
-    //             txtFirmwareDir.setText(dir);
-    //         } catch (IOException ex) {
-    //             Logger.getLogger(PreferencesFrame.class.getName()).log(Level.SEVERE, null, ex);
-    //         }
-    //     }
-    // }
-
-    // private void btnRuntimeDirActionPerformed(java.awt.event.ActionEvent evt) {
-    //     JFileChooser chooser = new JFileChooser(Preferences.LoadPreferences().getCurrentFileDirectory());
-    //     chooser.setPreferredSize(new java.awt.Dimension(320, 480));
-    //     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    //     chooser.setAcceptAllFileFilterUsed(false);
-    //     if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-    //         String dir;
-    //         try {
-    //             dir = chooser.getSelectedFile().getCanonicalPath();
-    //             Preferences.LoadPreferences().SetRuntimeDir(dir);
-    //             txtRuntimeDir.setText(dir);
-    //         } catch (IOException ex) {
-    //             Logger.getLogger(PreferencesFrame.class.getName()).log(Level.SEVERE, null, ex);
-    //         }
-    //     }
-    // }
-
-    // private void formWindowActivated(java.awt.event.WindowEvent evt) {
-    //     txtFirmwareDir.setText(System.getProperty(axoloti.Axoloti.FIRMWARE_DIR));
-    //     txtRuntimeDir.setText(System.getProperty(axoloti.Axoloti.RUNTIME_DIR));
-    // }
-
     private void btnFavDirActionPerformed(java.awt.event.ActionEvent evt) {
         JFileChooser chooser = new JFileChooser(Preferences.LoadPreferences().getCurrentFileDirectory());
         chooser.setPreferredSize(new java.awt.Dimension(640, 640));
@@ -783,12 +744,10 @@ public class PreferencesFrame extends javax.swing.JFrame {
     }
 
 
-    // Variables declaration - do not modify
     private javax.swing.JButton btnFavDir;
     private javax.swing.JButton jAddLibBtn;
     private javax.swing.JButton jButtonSave;
     private javax.swing.JCheckBox jCheckBoxNoMouseReCenter;
-    // private javax.swing.JCheckBox jCheckBoxKeyboardFrameAlwaysOnTop;
     private javax.swing.JComboBox jComboBoxDialMouseBehaviour;
     private javax.swing.JCheckBox jControllerEnabled;
     private javax.swing.JButton jDelLibBtn;
@@ -808,7 +767,5 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTextFieldController;
     private javax.swing.JTextField jTextFieldPollInterval;
     private javax.swing.JTextField jTextFieldCodeFontSize;
-    // private javax.swing.JButton themeEditButton;
     private javax.swing.JLabel txtFavDir;
-    // End of variables declaration
 }

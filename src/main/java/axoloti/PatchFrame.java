@@ -1152,7 +1152,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     /* write to sdcard...
      */
-    // Variables declaration - do not modify
     private axoloti.menus.FileMenu fileMenu1;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
@@ -1201,7 +1200,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JMenuItem redoItem;
     private javax.swing.JMenuItem undoItem;
     private axoloti.menus.WindowMenu windowMenu1;
-    // End of variables declaration
 
     void ShowDSPLoad(int pct) {
         int pv = jProgressBarDSPLoad.getValue();

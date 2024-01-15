@@ -405,12 +405,9 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     }
     
     
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonRefresh;
     private javax.swing.JButton jButtonCancel;
     private javax.swing.JButton jButtonOK;
-    // private javax.swing.JLabel jLabel1;
     private ScrollPaneComponent jScrollPane2;
     private javax.swing.JTable jTable1;
-    // End of variables declaration//GEN-END:variables
 }

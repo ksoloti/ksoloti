@@ -456,7 +456,6 @@ public class AxolotiRemoteControl extends javax.swing.JFrame implements Connecti
         tx_pressed(K_SHIFT);
     }//GEN-LAST:event_jButtonShiftMouseReleased
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler10;
     private javax.swing.Box.Filler filler11;
@@ -484,7 +483,6 @@ public class AxolotiRemoteControl extends javax.swing.JFrame implements Connecti
     private javax.swing.JPanel jPanelLCD;
     private javax.swing.JPanel jPanelNav;
     private javax.swing.JPanel jPanelRight;
-    // End of variables declaration//GEN-END:variables
     private final BufferedImage bImage = new BufferedImage(128, 64, BufferedImage.TYPE_BYTE_BINARY);
     private final BufferedImage bImageScaled = new BufferedImage(256, 128, BufferedImage.TYPE_BYTE_BINARY);
     private final Graphics2D g2d = (Graphics2D) bImageScaled.createGraphics();
