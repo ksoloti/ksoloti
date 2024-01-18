@@ -1098,17 +1098,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void ShowConnectDisconnect(boolean connect) {
-        if (connect)
-        {
+        if (connect) {
             jToggleButtonConnect.setText("Connected");
-            // jToggleButtonConnect.setBackground(Theme.getCurrentTheme().Button_Accent_Background);
-            // jToggleButtonConnect.setForeground(Theme.getCurrentTheme().Button_Accent_Foreground);
         }
-        else
-        {
+        else {
             jToggleButtonConnect.setText("Connect");
-            // jToggleButtonConnect.setBackground(Theme.getCurrentTheme().Button_Default_Background);
-            // jToggleButtonConnect.setForeground(Theme.getCurrentTheme().Button_Default_Foreground);
         }
 
         jToggleButtonConnect.setSelected(connect);
