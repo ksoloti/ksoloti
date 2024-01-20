@@ -424,7 +424,7 @@ public class Preferences {
         Serializer serializer = new Persister();
         File f = new File(GetPrefsFileLoc());
 
-        Logger.getLogger(Preferences.class .getName()).log(Level.INFO, "{0}\n", f.getAbsolutePath());
+        System.out.println(f.getAbsolutePath());
 
         try {
             serializer.write(this, f);
