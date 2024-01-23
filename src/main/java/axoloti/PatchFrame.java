@@ -88,7 +88,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         this.qcmdprocessor = qcmdprocessor;
 
         initComponents();
-        fileMenu1.initComponents();
+        fileMenuP.initComponents();
         this.patch = patch;
         this.patch.patchframe = this;
 
@@ -331,7 +331,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jProgressBarDSPLoad = new javax.swing.JProgressBar();
         jScrollPane1 = new ScrollPaneComponent();
         jMenuBar1 = new javax.swing.JMenuBar();
-        fileMenu1 = new axoloti.menus.FileMenu();
+        fileMenuP = new axoloti.menus.FileMenu();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         jMenuSave = new javax.swing.JMenuItem();
         jMenuSaveAs = new javax.swing.JMenuItem();
@@ -439,9 +439,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jScrollPane1.setAutoscrolls(true);
         getContentPane().add(jScrollPane1);
 
-        fileMenu1.setMnemonic('F');
-        fileMenu1.setText("File");
-        fileMenu1.add(jSeparator1);
+        fileMenuP.setMnemonic('F');
+        fileMenuP.setText("File");
+        fileMenuP.add(jSeparator1);
 
         jMenuSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuSave.setText("Save");
@@ -450,7 +450,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 jMenuSaveActionPerformed(evt);
             }
         });
-        fileMenu1.add(jMenuSave);
+        fileMenuP.add(jMenuSave);
 
         jMenuSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuSaveAs.setText("Save As...");
@@ -459,7 +459,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 jMenuSaveAsActionPerformed(evt);
             }
         });
-        fileMenu1.add(jMenuSaveAs);
+        fileMenuP.add(jMenuSaveAs);
 
         jMenuSaveCopy.setText("Save Copy...");
         jMenuSaveCopy.addActionListener(new java.awt.event.ActionListener() {
@@ -467,7 +467,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 jMenuSaveCopyActionPerformed(evt);
             }
         });
-        fileMenu1.add(jMenuSaveCopy);
+        fileMenuP.add(jMenuSaveCopy);
 
         jMenuSaveClip.setText("Copy to Clipboard");
         jMenuSaveClip.addActionListener(new java.awt.event.ActionListener() {
@@ -475,7 +475,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 jMenuSaveClipActionPerformed(evt);
             }
         });
-        fileMenu1.add(jMenuSaveClip);
+        fileMenuP.add(jMenuSaveClip);
 
         jMenuClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuClose.setText("Close");
@@ -484,9 +484,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 jMenuCloseActionPerformed(evt);
             }
         });
-        fileMenu1.add(jMenuClose);
+        fileMenuP.add(jMenuClose);
 
-        jMenuBar1.add(fileMenu1);
+        jMenuBar1.add(fileMenuP);
 
         jMenuEdit.setMnemonic('E');
         jMenuEdit.setDelay(300);
@@ -819,8 +819,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     File FileChooserSave(String title) {
-        patch.getPatchframe().requestFocus();
-        patch.getPatchframe().toFront();
+
+        JFrame frame = new JFrame();
+        // frame.setAlwaysOnTop(true);
+        frame.setVisible(true);
+
         NativeJFileChooser fc = new NativeJFileChooser(prefs.getCurrentFileDirectory());
         fc.setDialogTitle(title);
         fc.setAcceptAllFileFilterUsed(false);
@@ -851,7 +854,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             fc.setFileFilter(FileUtils.axpFileFilter);
         }
 
-        int returnVal = fc.showSaveDialog(patch.getPatchframe());
+        int returnVal = fc.showSaveDialog(frame);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             String filterext = ".axp";
             if (fc.getFileFilter() == FileUtils.axpFileFilter) {
@@ -914,10 +917,13 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             //             return null;
             //     }
             // }
-            patch.getPatchframe().requestFocus();
+
+            // patch.getPatchframe().requestFocus();
+            frame.setVisible(false);
             return fileToBeSaved;
         } else {
-            patch.getPatchframe().requestFocus();
+            // patch.getPatchframe().requestFocus();
+            frame.setVisible(false);
             return null;
         }
     }
@@ -1164,7 +1170,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     /* write to sdcard...
      */
-    private axoloti.menus.FileMenu fileMenu1;
+    private axoloti.menus.FileMenu fileMenuP;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
     private axoloti.menus.HelpMenu helpMenu1;
@@ -1248,6 +1254,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     public boolean getSaveMenuEnabled() {
         return jMenuSave.isEnabled();
+    }
+
+    public boolean getPatchCordsInBackground() {
+        return jCheckBoxMenuItemCordsInBackground.isSelected();
     }
 
     public void setUnsavedAsterisk(boolean b) {

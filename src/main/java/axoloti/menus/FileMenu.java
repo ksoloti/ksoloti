@@ -37,13 +37,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 import qcmds.QCmdProcessor;
 
 /**
@@ -117,8 +115,6 @@ public class FileMenu extends JMenu {
         insert(jMenuOpen, pos++);
 
         jMenuOpenURL.setMnemonic('U');
-        // jMenuOpenURL.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
-                // KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuOpenURL.setText("Open from URL...");
         jMenuOpenURL.addActionListener(new java.awt.event.ActionListener() {
             @Override
@@ -236,8 +232,8 @@ public class FileMenu extends JMenu {
     }
 
     private void jMenuAutoTestActionPerformed(java.awt.event.ActionEvent evt) {
-        if (JOptionPane.showConfirmDialog(MainFrame.mainframe, "Running these tests will take a long time and freeze the UI with no output until complete. Do you wish to continue?") == JOptionPane.YES_OPTION) {
-            MainFrame.mainframe.runAllTests();
+        if (JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and freeze the UI with no output until complete. Do you wish to continue?") == JOptionPane.YES_OPTION) {
+            mainframe.runAllTests();
         }
     }
 
@@ -271,7 +267,7 @@ public class FileMenu extends JMenu {
     }
 
     private void jMenuOpenActionPerformed(java.awt.event.ActionEvent evt) {
-        FileUtils.Open(mainframe);
+        FileUtils.Open();
     }
 
     private void jMenuNewPatchActionPerformed(java.awt.event.ActionEvent evt) {
@@ -305,7 +301,7 @@ public class FileMenu extends JMenu {
     }
 
     private void jMenuQuitActionPerformed(java.awt.event.ActionEvent evt) {
-        MainFrame.mainframe.Quit();
+        mainframe.Quit();
     }
 
 }

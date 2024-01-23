@@ -949,7 +949,7 @@ public class PatchGUI extends Patch {
         return objinst;
     }
 
-    void SetCordsInBackground(boolean b) {
+    public void SetCordsInBackground(boolean b) {
         if (b) {
             Layers.removeAll();
             Layers.add(netLayer, Integer.valueOf(1));

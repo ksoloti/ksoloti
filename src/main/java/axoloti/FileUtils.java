@@ -17,10 +17,13 @@
  */
 package axoloti;
 
+import static axoloti.MainFrame.mainframe;
 import static axoloti.MainFrame.prefs;
 import axoloti.dialogs.PatchBank;
 import li.flor.nativejfilechooser.NativeJFileChooser;
 import java.io.File;
+
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -133,11 +136,11 @@ public class FileUtils {
         }
     };
 
-    public static void Open(JFrame frame) {
-        frame.getContentPane().requestFocus();
-        frame.toFront();
-        NativeJFileChooser fc = new NativeJFileChooser(prefs.getCurrentFileDirectory());
+    public static void Open() {
+        JFrame frame = new JFrame();
+        frame.setVisible(true);
 
+        NativeJFileChooser fc = new NativeJFileChooser(prefs.getCurrentFileDirectory());
         fc.setDialogTitle("Open...");
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(new FileNameExtensionFilter("Axoloti Files", "axp", "axh", "axs", "axb"));
@@ -174,5 +177,6 @@ public class FileUtils {
             /* little hack to fix focus loss/frame minimalize when canceling file selection */
             // frame.requestFocus();
         }
+        frame.setVisible(false);
     }
 }

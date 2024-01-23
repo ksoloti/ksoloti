@@ -84,8 +84,6 @@ public class Preferences {
     Boolean MouseDialAngular;
     @Element(required = false)
     Boolean MouseDoNotRecenterWhenAdjustingControls;
-    // @Element(required = false)
-    // Boolean KeyboardFrameAlwaysOnTop;
     @Element(required = false)
     Boolean ExpertMode;
     @ElementList(required = false)
@@ -94,10 +92,6 @@ public class Preferences {
     @Deprecated
     @Element(required = false)
     String MidiInputDevice;
-    // @Element(required = false)
-    // String RuntimeDir;
-    // @Element(required = false)
-    // String FirmwareDir;
     @Element(required = false)
     String FavouriteDir;
     @Element(required = false)
