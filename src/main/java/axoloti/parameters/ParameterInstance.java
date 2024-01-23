@@ -148,14 +148,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 //            ShowPreset(axoObj.patch.presetNo);
 
         ctrl = CreateControl();
-        if (parameter.description != null) {
-            ctrl.setToolTipText(parameter.description);
-        } else {
-            ctrl.setToolTipText(parameter.name);
-        }
-        if (isOnParent()) {
-            ctrl.setToolTipText("<html>" + ctrl.getToolTipText() + "<p>This parameter is being controlled from the parent patch.");
-        }
+        setCtrlToolTip();
 
         add(getControlComponent());
         getControlComponent().addMouseListener(popupMouseListener);
@@ -427,6 +420,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 
     public void setOnParent(Boolean b) {
         if (b == null) {
+            setCtrlToolTip();
             return;
         }
         if (isOnParent() == b) {
@@ -437,6 +431,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         } else {
             onParent = null;
         }
+        setCtrlToolTip();
     }
 
     public abstract ACtrlComponent CreateControl();
@@ -563,5 +558,20 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         if (axoObj.getPatch() != null) {
             axoObj.getPatch().SetDirty();
         }
+    }
+
+    private void setCtrlToolTip() {
+        if(ctrl == null) return;
+
+        if (parameter.description != null) {
+            ctrl.setToolTipText("<html>" + parameter.description);
+        } else {
+            ctrl.setToolTipText("<html>" + parameter.name);
+        }
+
+        if (isOnParent()) {
+            ctrl.setToolTipText(ctrl.getToolTipText() + "<p>This parameter is being controlled from the parent patch.");
+        }
+
     }
 }
