@@ -1608,7 +1608,7 @@ public class Patch {
             if (x != null) {
                 controllerinstance = x.CreateInstance(null, "ctrl0x123", new Point(0, 0));
             } else {
-                Logger.getLogger(Patch.class.getName()).log(Level.WARNING, "Unable to create controller object for: {0}", cobjstr);
+                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Unable to create controller object for: {0}", cobjstr);
             }
         }
 

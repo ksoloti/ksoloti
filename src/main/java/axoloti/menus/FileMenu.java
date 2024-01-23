@@ -20,6 +20,8 @@ package axoloti.menus;
 import axoloti.FileUtils;
 import axoloti.MainFrame;
 import static axoloti.MainFrame.axoObjects;
+import static axoloti.MainFrame.mainframe;
+
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
 import axoloti.dialogs.PatchBank;
@@ -269,7 +271,7 @@ public class FileMenu extends JMenu {
     }
 
     private void jMenuOpenActionPerformed(java.awt.event.ActionEvent evt) {
-        FileUtils.Open((JFrame) SwingUtilities.getWindowAncestor(this));
+        FileUtils.Open(mainframe);
     }
 
     private void jMenuNewPatchActionPerformed(java.awt.event.ActionEvent evt) {

@@ -244,7 +244,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         doLayout();
 
         keyboard = new KeyboardFrame();
-        // keyboard.setAlwaysOnTop(prefs.getKeyboardFrameAlwaysOnTop());
         keyboard.setTitle("Keyboard");
         keyboard.setVisible(false);
 

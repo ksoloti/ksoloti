@@ -308,7 +308,6 @@ public class Theme {
         int returnVal = fc.showOpenDialog(frame);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             prefs.setCurrentFileDirectory(fc.getCurrentDirectory().getPath());
-            prefs.SavePrefs();
             File f = fc.getSelectedFile();
             if (axtFileFilter.accept(f)) {
                 try {

@@ -24,6 +24,7 @@ import axoloti.SDCardInfo;
 import axoloti.SDFileInfo;
 import axoloti.USBBulkConnection;
 import components.ScrollPaneComponent;
+import li.flor.nativejfilechooser.NativeJFileChooser;
 
 import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
@@ -391,12 +392,12 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
         }
         if (USBBulkConnection.GetConnection().isConnected()) {
-            final JFileChooser fc = new JFileChooser(prefs.getCurrentFileDirectory());
+            final JFileChooser fc = new NativeJFileChooser(prefs.getCurrentFileDirectory());
             int returnVal = fc.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                prefs.setCurrentFileDirectory(fc.getCurrentDirectory().getPath());
                 File f = fc.getSelectedFile();
                 if (f != null) {
+                    prefs.setCurrentFileDirectory(f.getParentFile().toString());
                     if (!f.canRead()) {
                         Logger.getLogger(FileManagerFrame.class.getName()).log(Level.SEVERE, "Can''t read file");
                         return;

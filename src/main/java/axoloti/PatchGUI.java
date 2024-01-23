@@ -872,7 +872,7 @@ public class PatchGUI extends Patch {
         int brk = FileNamePath.lastIndexOf(File.separator) + 1;
         if (brk != 0) {
             /* Display filename first, then path in brackets */
-            String str = FileNamePath.substring(brk) + "   (" + FileNamePath.substring(0, brk) + ")";
+            String str = FileNamePath.substring(brk) + "   [" + FileNamePath.substring(0, brk) + "]";
             patchframe.setTitle(str);
         }
         else if (!FileNamePath.equals("untitled")) {

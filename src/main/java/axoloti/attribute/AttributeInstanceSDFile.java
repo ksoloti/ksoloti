@@ -22,6 +22,8 @@ import axoloti.attributedefinition.AxoAttributeSDFile;
 import axoloti.object.AxoObjectInstance;
 import axoloti.utils.Constants;
 import components.ButtonComponent;
+import li.flor.nativejfilechooser.NativeJFileChooser;
+
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -112,8 +114,9 @@ public class AttributeInstanceSDFile extends AttributeInstanceString<AxoAttribut
         ButtonChooseFile.addActListener(new ButtonComponent.ActListener() {
             @Override
             public void OnPushed() {
-                JFileChooser fc = new JFileChooser(GetObjectInstance().getPatch().GetCurrentWorkingDirectory());
-                fc.setPreferredSize(new java.awt.Dimension(640, 640));
+                GetObjectInstance().getPatch().getPatchframe().toFront();
+                JFileChooser fc = new NativeJFileChooser(GetObjectInstance().getPatch().GetCurrentWorkingDirectory());
+                // fc.setPreferredSize(new java.awt.Dimension(640, 640));
                 int returnVal = fc.showOpenDialog(GetObjectInstance().getPatch().getPatchframe());
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     String f = toRelative(fc.getSelectedFile());

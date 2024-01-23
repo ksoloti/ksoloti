@@ -25,6 +25,10 @@ import axoloti.utils.KeyUtils;
 import components.PresetPanel;
 import components.ScrollPaneComponent;
 import components.VisibleCablePanel;
+import li.flor.nativejfilechooser.NativeJFileChooser;
+
+import static axoloti.MainFrame.prefs;
+
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -183,7 +187,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             setSize(d);
         }
 
-        if (!MainFrame.prefs.getExpertMode()) {
+        if (!prefs.getExpertMode()) {
             jSeparator3.setVisible(false);
             jMenuItemLock.setVisible(false);
             jMenuGenerateAndCompileCode.setVisible(false);
@@ -814,13 +818,16 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
     }
 
-    File FileChooserSave() {
-        final JFileChooser fc = new JFileChooser(MainFrame.prefs.getCurrentFileDirectory());
-        fc.setPreferredSize(new java.awt.Dimension(640, 640));
+    File FileChooserSave(String title) {
+        patch.getPatchframe().requestFocus();
+        patch.getPatchframe().toFront();
+        NativeJFileChooser fc = new NativeJFileChooser(prefs.getCurrentFileDirectory());
+        fc.setDialogTitle(title);
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(FileUtils.axpFileFilter);
         fc.addChoosableFileFilter(FileUtils.axsFileFilter);
         fc.addChoosableFileFilter(FileUtils.axhFileFilter);
+
         String fn = patch.getFileNamePath();
         if (fn == null) {
             fn = "untitled";
@@ -833,6 +840,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         if (dot > 0 && fn.length() > dot + 3) {
             ext = fn.substring(dot);
         }
+
         if (ext.equalsIgnoreCase(".axp")) {
             fc.setFileFilter(FileUtils.axpFileFilter);
         } else if (ext.equalsIgnoreCase(".axs")) {
@@ -843,7 +851,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             fc.setFileFilter(FileUtils.axpFileFilter);
         }
 
-        int returnVal = fc.showSaveDialog(this);
+        int returnVal = fc.showSaveDialog(patch.getPatchframe());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             String filterext = ".axp";
             if (fc.getFileFilter() == FileUtils.axpFileFilter) {
@@ -888,36 +896,39 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 }
             }
 
-            if (fileToBeSaved.exists()) {
-                Object[] options = {"Yes",
-                    "No"};
-                int n = JOptionPane.showOptionDialog(this,
-                        "File exists! Overwrite?",
-                        "File Exists",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        options,
-                        options[1]);
-                switch (n) {
-                    case JOptionPane.YES_OPTION:
-                        break;
-                    case JOptionPane.NO_OPTION:
-                        return null;
-                }
-            }
+            // if (fileToBeSaved.exists()) {
+            //     Object[] options = {"Yes",
+            //         "No"};
+            //     int n = JOptionPane.showOptionDialog(this,
+            //             "File exists! Overwrite?",
+            //             "File Exists",
+            //             JOptionPane.YES_NO_OPTION,
+            //             JOptionPane.QUESTION_MESSAGE,
+            //             null,
+            //             options,
+            //             options[1]);
+            //     switch (n) {
+            //         case JOptionPane.YES_OPTION:
+            //             break;
+            //         case JOptionPane.NO_OPTION:
+            //             return null;
+            //     }
+            // }
+            patch.getPatchframe().requestFocus();
             return fileToBeSaved;
         } else {
+            patch.getPatchframe().requestFocus();
             return null;
         }
     }
 
     private void jMenuSaveAsActionPerformed(java.awt.event.ActionEvent evt) {
-        File fileToBeSaved = FileChooserSave();
+        File fileToBeSaved = FileChooserSave("Save As...");
+        patch.getPatchframe().requestFocus();
         if (fileToBeSaved != null) {
             patch.setFileNamePath(fileToBeSaved.getPath());
-            MainFrame.prefs.setCurrentFileDirectory(fileToBeSaved.getPath());
             patch.save(fileToBeSaved);
+            prefs.setCurrentFileDirectory(fileToBeSaved.getPath());
         }
     }
 
@@ -1087,10 +1098,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuSaveCopyActionPerformed(java.awt.event.ActionEvent evt) {
-        File fileToBeSaved = FileChooserSave();
+        File fileToBeSaved = FileChooserSave("Save Copy...");
+        patch.getPatchframe().requestFocus();
         if (fileToBeSaved != null) {
-            MainFrame.prefs.setCurrentFileDirectory(fileToBeSaved.getPath());
             patch.save(fileToBeSaved);
+            prefs.setCurrentFileDirectory(fileToBeSaved.getPath());
         }
     }
 
