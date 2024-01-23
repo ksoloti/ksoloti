@@ -1,5 +1,6 @@
 CCFLAGS = -nostdlib -fno-exceptions -fno-rtti -mcpu=cortex-m4 -O3 -fomit-frame-pointer -falign-functions=16 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wunused-parameter -DCORTEX_USE_FPU=TRUE -DTHUMB_PRESENT -mno-thumb-interwork -DTHUMB_NO_INTERWORKING -mthumb -DTHUMB -std=c++11 -DARM_MATH_CM4 -D__FPU_PRESENT -fno-math-errno -fno-threadsafe-statics -fno-use-cxa-atexit -Wno-unused-parameter
-LDFLAGS = -nostartfiles -Tramlink.ld -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mthumb  -mno-thumb-interwork
+
+LDFLAGS = -nostartfiles -Tramlink.ld -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mthumb -mno-thumb-interwork
 
 #-mcpu=cortex-m4
 #-mno-thumb-interwork
@@ -19,7 +20,6 @@ axoloti_home ?= ..
 axoloti_libraries ?= ..
 axoloti_firmware ?= ../firmware
 
-
 CHIBIOS = ${axoloti_release}/chibios
 CMSIS = ${axoloti_release}/CMSIS
 
@@ -27,7 +27,6 @@ EMPTY :=
 SPACE := $(EMPTY) $(EMPTY)
 BUILDDIR=$(subst $(SPACE),\ ,${axoloti_libraries}/build)
 FIRMWARE=$(subst $(SPACE),\ ,${axoloti_firmware})
-
 
 # $(info BUILDDIR = ${BUILDDIR})
 # $(info FIRMWARE = ${FIRMWARE})
@@ -66,7 +65,7 @@ ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
 #   -j .text.startup -j .text.memcpy
 	@$(CP) -O binary ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin
 #	@echo Displaying size statistic
-	@$(SIZ) --format=sysv ${BUILDDIR}/xpatch.elf
+	@$(SIZ) --format=berkeley ${BUILDDIR}/xpatch.elf
 
 clean:
 	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.lst ${BUILDDIR}/xpatch.h.gch
