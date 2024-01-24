@@ -3,12 +3,12 @@
 #################
 
 *.log
-firmware/.dep
-firmware/build
-firmware/flasher/.dep
-firmware/flasher/flasher_build
-firmware/mounter/.dep
-firmware/mounter/mounter_build
+firmware*/.dep
+firmware*/build
+firmware*/flasher/.dep
+firmware*/flasher/flasher_build
+firmware*/mounter/.dep
+firmware*/mounter/mounter_build
 control_firmware/build/*
 control_firmware/.dep
 portaudio-r1891-build/*
@@ -38,6 +38,8 @@ axoloti_osx.zip
 private_key.*
 axoloti.prefs
 ksoloti.prefs
+temp_*.cpp
+temp_*.h
 
 #libraries
 home/

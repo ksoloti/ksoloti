@@ -48,8 +48,6 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
     DialComponent ccdial;
     DialComponent velodial;
 
-    // Preferences prefs = Preferences.LoadPreferences();
-
     public KeyboardFrame() {
         initComponents();
         setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_keyboard_icon.png")).getImage());
@@ -310,7 +308,6 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         piano.clear();
     }
 
-    // Variables declaration - do not modify
     private javax.swing.Box.Filler filler_x_fivepx1;
     private javax.swing.Box.Filler filler_x_fivepx2;
     private javax.swing.Box.Filler filler_x_fivepx3;
@@ -337,7 +334,6 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
     private javax.swing.JPanel jPanelPiano;
     private javax.swing.JSpinner jSpinnerMidiChannel;
     private javax.swing.JSpinner jSpinnerControlChange;
-    // End of variables declaration
 
     @Override
     public void ShowConnect() {
@@ -346,6 +342,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         pbenddial.setEnabled(true);
         ccdial.setEnabled(true);
         moddial.setEnabled(true);
+        jButtonAllNotesOff.setEnabled(true);
     }
 
     @Override
@@ -355,5 +352,6 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         pbenddial.setEnabled(false);
         ccdial.setEnabled(false);
         moddial.setEnabled(false);
+        jButtonAllNotesOff.setEnabled(false);
     }
 }

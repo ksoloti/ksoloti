@@ -92,7 +92,7 @@ public class Theme {
     @Element
     public Color Cable_CharPointer32 = Color.PINK;
     @Element
-    public Color Cable_CharPointer32_Highlighted = Cable_CharPointer32.brighter().brighter();
+    public Color Cable_CharPointer32_Highlighted = new Color(0xFF, 0xCF, 0xCF);
 
     @Element
     public Color Cable_Zombie = Color.WHITE;
@@ -112,12 +112,12 @@ public class Theme {
     @Element
     public Color Cable_Int32 = new Color(0x20, 0xEF, 0x40);
     @Element
-    public Color Cable_Int32_Highlighted = Cable_Int32.brighter();
+    public Color Cable_Int32_Highlighted = Cable_Int32.brighter().brighter();
 
     @Element
     public Color Cable_Int32Pointer = Color.MAGENTA;
     @Element
-    public Color Cable_Int32Pointer_Highlighted = Cable_Int32Pointer.brighter().brighter().brighter();
+    public Color Cable_Int32Pointer_Highlighted = Cable_Int32Pointer.brighter().brighter();
 
     @Element
     public Color Cable_Int8Array = Cable_Int32Pointer;
@@ -308,7 +308,6 @@ public class Theme {
         int returnVal = fc.showOpenDialog(frame);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             prefs.setCurrentFileDirectory(fc.getCurrentDirectory().getPath());
-            prefs.SavePrefs();
             File f = fc.getSelectedFile();
             if (axtFileFilter.accept(f)) {
                 try {

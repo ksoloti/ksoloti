@@ -401,13 +401,13 @@ public class DialComponent extends ACtrlComponent {
         }
         this.value = value;
 
-        if (convs != null) {
-            String s = "<html>";
-            for (NativeToReal c : convs) {
-                s += c.ToReal(new ValueFrac32(value)) + "<br>";
-            }
-            this.setToolTipText(s);
-        }
+        // if (convs != null) {
+        //     String s = "<html>";
+        //     for (NativeToReal c : convs) {
+        //         s += c.ToReal(new ValueFrac32(value)) + "<br>";
+        //     }
+        //     this.setToolTipText(s);
+        // }
         repaint();
         fireEvent();
     }

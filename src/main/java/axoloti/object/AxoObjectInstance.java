@@ -171,7 +171,6 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
         idlbl.setForeground(Theme.getCurrentTheme().Object_TitleBar_Foreground);
         idlbl.setAlignmentX(LEFT_ALIGNMENT);
         idlbl.setFont(Constants.FONT_BOLD);
-        idlbl.setBorder(new EmptyBorder(-2,0,-2,0));
         Titlebar.add(idlbl);
 
         String tooltiptxt = "<html>";
@@ -202,7 +201,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
         add(Titlebar);
 
         InstanceLabel = new LabelComponent(getInstanceName());
-        InstanceLabel.setBorder(new EmptyBorder(-2,1,-2,0));
+        InstanceLabel.setBorder(new EmptyBorder(-3,1,-2,0));
         InstanceLabel.setAlignmentX(LEFT_ALIGNMENT);
         InstanceLabel.addMouseListener(new MouseListener() {
             @Override

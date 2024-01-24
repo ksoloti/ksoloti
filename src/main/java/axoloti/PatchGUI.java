@@ -872,13 +872,17 @@ public class PatchGUI extends Patch {
         int brk = FileNamePath.lastIndexOf(File.separator) + 1;
         if (brk != 0) {
             /* Display filename first, then path in brackets */
-            String str = FileNamePath.substring(brk) + "   (" + FileNamePath.substring(0, brk) + ")";
+            String str = FileNamePath.substring(brk) + "   [" + FileNamePath.substring(0, brk) + "]";
             patchframe.setTitle(str);
         }
-        else {
+        else if (!FileNamePath.equals("untitled")) {
             /* Subpatch */
-            patchframe.setTitle(FileNamePath + "   (embedded subpatch)");
+            patchframe.setTitle(FileNamePath + "   (subpatch)");
             patchframe.setSaveMenuEnabled(false); /* parent has to be saved to preserve changes */
+        }
+        else {
+            /* New patch */
+            patchframe.setTitle(FileNamePath);
         }
     }
 
@@ -945,7 +949,7 @@ public class PatchGUI extends Patch {
         return objinst;
     }
 
-    void SetCordsInBackground(boolean b) {
+    public void SetCordsInBackground(boolean b) {
         if (b) {
             Layers.removeAll();
             Layers.add(netLayer, Integer.valueOf(1));

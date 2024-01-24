@@ -310,7 +310,6 @@ public class AddToLibraryDlg extends javax.swing.JDialog {
     }//GEN-LAST:event_jLibraryFocusLost
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler1;
     private javax.swing.JTextField jAxoFile;
     private javax.swing.JLabel jAxoFileLabel;
@@ -324,7 +323,6 @@ public class AddToLibraryDlg extends javax.swing.JDialog {
     private javax.swing.JButton jOK;
     private javax.swing.JTextField jObjectName;
     private javax.swing.JSeparator jSeparator1;
-    // End of variables declaration//GEN-END:variables
 
     private void populateFields() {
        jObjectName.setText(obj.id);

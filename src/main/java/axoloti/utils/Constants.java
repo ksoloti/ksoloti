@@ -17,11 +17,15 @@
  */
 package axoloti.utils;
 
+import static axoloti.MainFrame.prefs;
+
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
-// import axoloti.utils.OSDetect.OS;
+
+import javax.swing.ImageIcon;
+import javax.swing.UIManager;
 
 // import java.io.InputStream;
 
@@ -38,6 +42,7 @@ public class Constants {
     public static Font FONT_MONO; 
     public static Font FONT;
     public static Font FONT_BOLD;
+    public static Font FONT_MENU;
 
     public static final int X_GRID = 14;
     public static final int Y_GRID = 14;
@@ -51,20 +56,29 @@ public class Constants {
 
     public static final int ANCESTOR_CACHE_SIZE = 1024;
 
+    public static ImageIcon APP_ICON;
+
     Constants() {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        createFontUIMono();
-        createFontUI();
+        createFontMenu();
+        createFontMono();
+        createFontPatchGUI();
         FONT_BOLD = FONT.deriveFont(Font.BOLD);
         ge.registerFont(FONT_MONO);
         ge.registerFont(FONT);
         ge.registerFont(FONT_BOLD);
+        ge.registerFont(FONT_MENU);
+        if (prefs.getAxolotiLegacyMode()) {
+            APP_ICON = new ImageIcon(Constants.class.getResource("/resources/axoloti_icon.png"));
+        }
+        else {
+            APP_ICON = new ImageIcon(Constants.class.getResource("/resources/ksoloti_icon.png"));
+        }
     }
 
-    public static void createFontUI() {
+    public static void createFontPatchGUI() {
         try {
             String fstr = "/resources/fonts/NotoSans_SemiCondensed-Medium.ttf";
-            // if (OSDetect.getOS() == OS.WIN) fstr.replace("/", "\\");
             FONT = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(fstr)).deriveFont(11f);
         }
         catch (IOException e) {
@@ -75,11 +89,10 @@ public class Constants {
         }
     }
 
-    public static void createFontUIMono() {
+    public static void createFontMono() {
         try {
             String fstr = "/resources/fonts/NotoSansMono-Regular.ttf";
-            // if (OSDetect.getOS() == OS.WIN) fstr.replace("/", "\\");
-            FONT_MONO = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(fstr)).deriveFont(15f);
+            FONT_MONO = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(fstr)).deriveFont((float)Preferences.LoadPreferences().getCodeFontSize());
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -87,5 +100,19 @@ public class Constants {
         catch (FontFormatException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void createFontMenu() {
+        // try {
+            // String fstr = "/resources/fonts/NotoSans-Regular.ttf";
+            // FONT_MENU = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(fstr)).deriveFont(14f);
+            FONT_MENU = UIManager.getFont("defaultFont");
+        // }
+        // catch (IOException e) {
+        //     e.printStackTrace();
+        // }
+        // catch (FontFormatException e) {
+        //     e.printStackTrace();
+        // }
     }
 }

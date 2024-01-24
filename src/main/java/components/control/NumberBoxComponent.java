@@ -367,14 +367,14 @@ public class NumberBoxComponent extends ACtrlComponent {
         }
         this.value = value;
 
-        if (convs != null) {
-            Point p = getParent().getLocationOnScreen();
-            String s = "<html>";
-            for (NativeToReal c : convs) {
-                s += c.ToReal(new ValueFrac32(value)) + "<br>";
-            }
-            this.setToolTipText(s);
-        }
+        // if (convs != null) {
+        //     Point p = getParent().getLocationOnScreen();
+        //     String s = "<html>";
+        //     for (NativeToReal c : convs) {
+        //         s += c.ToReal(new ValueFrac32(value)) + "<br>";
+        //     }
+        //     this.setToolTipText(s);
+        // }
 
         repaint();
         fireEvent();

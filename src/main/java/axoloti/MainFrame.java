@@ -33,7 +33,10 @@ import axoloti.utils.Constants;
 import axoloti.utils.FirmwareID;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
+import components.ScrollPaneComponent;
+
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -58,11 +61,11 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import javax.swing.BoundedRangeModel;
-import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.Box.Filler;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.Style;
@@ -118,7 +121,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         initComponents();
         fileMenu.initComponents();
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
+        setIconImage(Constants.APP_ICON.getImage());
 
         transparentCursor = getToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(), null);
 
@@ -240,7 +243,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         doLayout();
 
         keyboard = new KeyboardFrame();
-        // keyboard.setAlwaysOnTop(prefs.getKeyboardFrameAlwaysOnTop());
         keyboard.setTitle("Keyboard");
         keyboard.setVisible(false);
 
@@ -294,16 +296,25 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     //     Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Failsafe mode activated");
                     //     tsuf = "Failsafe";
                     // }
+                    if (prefs.getAxolotiLegacyMode()) {
+                        if (tsuf.length() > 0) {
+                            tsuf += ", ";
+                        }
+                        tsuf += "Axoloti Legacy Mode";
+                    }
                     if (Axoloti.isDeveloper()) {
                         if (tsuf.length() > 0) {
-                            tsuf += ",";
+                            tsuf += ", ";
                         }
                         tsuf += "Developer";
                     }
                     if (tsuf.length() > 0) {
                         MainFrame.this.setTitle(MainFrame.this.getTitle() + " (" + tsuf + ")");
                     }
-                    Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Ksoloti version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
+                    Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Patcher version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
+                    if (prefs.getAxolotiLegacyMode()) {
+                        Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, ">>> Axoloti Legacy Mode <<<\n");
+                    }
 
                     updateLinkFirmwareID();
 
@@ -348,6 +359,17 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
                             Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current factory library does not match specified version, upgrading... ({0} -> {1})", new Object[]{cb, ulib.getBranch()});
+                            ulib.upgrade();
+                        }
+                    }
+
+                    // ksoloti-objects library force and upgrade
+                    // Im stashing changes here, just in case, but in reality users should not be altering factory 
+                    ulib = prefs.getLibrary(AxolotiLibrary.KSOLOTI_LIBRARY_ID);
+                    if (ulib != null) {
+                        String cb = ulib.getCurrentBranch();
+                        if (!cb.equalsIgnoreCase(ulib.getBranch())) {
+                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current ksoloti-objects library does not match specified version, upgrading... ({0} -> {1})", new Object[]{cb, ulib.getBranch()});
                             ulib.upgrade();
                         }
                     }
@@ -400,10 +422,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         EventQueue.invokeLater(r);
                     }
                 } else if (arg.endsWith(".axo")) {
-                    // NOP for AXO at the moment
+                    // NewPatch();
+                    // NOP for AXO at the moment - new patch and paste object as embedded inside?
                 }
             }
         }
+    }
+
+    public void updateConsoleFont() {
+        jTextPaneLog.setFont(Constants.FONT_MONO);
     }
 
     static boolean TestDir(String var, boolean write) {
@@ -463,7 +490,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jLabelPatch = new javax.swing.JLabel();
         jLabelSDCardPresent = new javax.swing.JLabel();
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
-        jScrollPaneLog = new javax.swing.JScrollPane();
+        jScrollPaneLog = new ScrollPaneComponent();
         jTextPaneLog = new javax.swing.JTextPane();
         jPanelProgress = new javax.swing.JPanel();
         jProgressBar1 = new javax.swing.JProgressBar();
@@ -516,7 +543,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelColumn1.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jPanelColumn1.setLayout(new javax.swing.BoxLayout(jPanelColumn1, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jLabelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/ksoloti_icon.png"))); // NOI18N
+        jLabelIcon.setIcon(Constants.APP_ICON);
+
         jPanelColumn1.add(jLabelIcon);
 
         jPanelHeader.add(jPanelColumn1);
@@ -524,17 +552,26 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelColumn2.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jPanelColumn2.setLayout(new javax.swing.BoxLayout(jPanelColumn2, javax.swing.BoxLayout.PAGE_AXIS));
 
+        Dimension btndim = new Dimension(110,30);
         jToggleButtonConnect.setFocusable(false);
-        jToggleButtonConnect.setText("  Connect  ");
+        jToggleButtonConnect.setText("Connect");
+        jToggleButtonConnect.setMinimumSize(btndim);
+        jToggleButtonConnect.setMaximumSize(btndim);
+        jToggleButtonConnect.setPreferredSize(btndim);
         jToggleButtonConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButtonConnectActionPerformed(evt);
             }
         });
         jPanelColumn2.add(jToggleButtonConnect);
+        Dimension fll = new Dimension(0,4);
+        jPanelColumn2.add(new Filler(fll, fll, fll));
 
         jButtonClear.setFocusable(false);
-        jButtonClear.setText(" Clear Log ");
+        jButtonClear.setText("Clear Log");
+        jButtonClear.setMinimumSize(btndim);
+        jButtonClear.setMaximumSize(btndim);
+        jButtonClear.setPreferredSize(btndim);
         jButtonClear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonClearActionPerformed(evt);
@@ -566,9 +603,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelHeader.add(filler3);
 
         getContentPane().add(jPanelHeader);
-
-        jScrollPaneLog.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        jScrollPaneLog.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         jTextPaneLog.setEditable(false);
         jScrollPaneLog.setViewportView(jTextPaneLog);
@@ -954,13 +988,19 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.AppendToQueue(new qcmds.QCmdDisconnect());
             qcmdprocessor.AppendToQueue(new qcmds.QCmdFlashDFU());
         } else {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "No devices in DFU mode detected. To bring Axoloti Core in DFU mode, remove power from Axoloti Core, and then connect the micro-USB port to your computer while holding button S1. The LEDs will stay off when in DFU mode.");
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "No devices in Rescue Mode detected. To bring Ksoloti Core into Rescue Mode:\n1. Remove power.\n2. Hold down button S1 then connect the USB prog port to your computer.\nThe LEDs will stay off when in Rescue Mode.");
         }
     }//GEN-LAST:event_jMenuItemFlashDFUActionPerformed
 
     private void jMenuItemFlashUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemFlashUserActionPerformed
-        String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/flasher/flasher_build/flasher.bin";
-        String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/build/axoloti.bin";
+        String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
+        String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
+        if (prefs.getAxolotiLegacyMode()) {
+            fname += "_axoloti_legacy";
+            pname += "_axoloti_legacy";
+        }
+        fname += "/flasher/flasher_build/flasher.bin";
+        pname += "/build/axoloti.bin";
         flashUsingSDRam(fname, pname);
     }//GEN-LAST:event_jMenuItemFlashUserActionPerformed
 
@@ -974,13 +1014,23 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void jMenuItemFlashDefaultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemFlashDefaultActionPerformed
 
-        String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/flasher/flasher_build/flasher.bin";
-        String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/build/axoloti.bin";
+        String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
+        String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
+        if (prefs.getAxolotiLegacyMode()) {
+            fname += "_axoloti_legacy";
+            pname += "_axoloti_legacy";
+        }
+        fname += "/flasher/flasher_build/flasher.bin";
+        pname += "/build/axoloti.bin";
         flashUsingSDRam(fname, pname);
     }//GEN-LAST:event_jMenuItemFlashDefaultActionPerformed
 
     private void jMenuItemMountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMountActionPerformed
-        String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/mounter/mounter_build/mounter.bin";
+        String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
+        if (prefs.getAxolotiLegacyMode()) {
+            fname += "_axoloti_legacy";
+        }
+        fname += "/mounter/mounter_build/mounter.bin";
         File f = new File(fname);
         if (f.canRead()) {
             qcmdprocessor.AppendToQueue(new QCmdStop());
@@ -1023,7 +1073,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private axoloti.menus.FileMenu fileMenu;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler3;
@@ -1062,10 +1111,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JPanel jPanelColumn3;
     private javax.swing.JPanel jPanelProgress;
     private javax.swing.JProgressBar jProgressBar1;
-    private javax.swing.JScrollPane jScrollPaneLog;
+    private ScrollPaneComponent jScrollPaneLog;
     private javax.swing.JTextPane jTextPaneLog;
     private axoloti.menus.WindowMenu windowMenu1;
-    // End of variables declaration//GEN-END:variables
 
     public void SetProgressValue(int i) {
         jProgressBar1.setValue(i);
@@ -1086,17 +1134,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void ShowConnectDisconnect(boolean connect) {
-        if (connect)
-        {
+        if (connect) {
             jToggleButtonConnect.setText("Connected");
-            // jToggleButtonConnect.setBackground(Theme.getCurrentTheme().Button_Accent_Background);
-            // jToggleButtonConnect.setForeground(Theme.getCurrentTheme().Button_Accent_Foreground);
         }
-        else
-        {
-            jToggleButtonConnect.setText("  Connect  ");
-            // jToggleButtonConnect.setBackground(Theme.getCurrentTheme().Button_Default_Background);
-            // jToggleButtonConnect.setForeground(Theme.getCurrentTheme().Button_Default_Foreground);
+        else {
+            jToggleButtonConnect.setText("Connect");
         }
 
         jToggleButtonConnect.setSelected(connect);
@@ -1185,7 +1227,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     s = "Running SD card startup patch";
                     break;
                 case -2:
-                    s = "Running flash patch";
+                    s = "Running internal startup patch";
                     break;
                 case -3:
                     s = "Running SD card patch";
@@ -1240,8 +1282,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 "Firmware Update",
                 JOptionPane.YES_NO_OPTION);
         if (s == 0) {
-            String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/flasher/flasher_build/flasher.bin";
-            String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/build/axoloti.bin";
+            String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
+            String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
+            if (prefs.getAxolotiLegacyMode()) {
+                fname += "_axoloti_legacy";
+                pname += "_axoloti_legacy";
+            }
+            fname += "/flasher/flasher_build/flasher.bin";
+            pname += "/build/axoloti.bin";
             flashUsingSDRam(fname, pname);
         }
     }

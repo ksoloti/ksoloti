@@ -228,11 +228,11 @@ public class Net extends JComponent {
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         Point p0;
         Color c;
+
         if (isValidNet()) {
             if (selected) {
                 g2.setStroke(strokeValidSelected);
                 c = GetDataType().GetColorHighlighted();
-                //TODO: on top if "patch cords in background is active"
             } else {
                 g2.setStroke(strokeValidDeselected);
                 c = GetDataType().GetColor();

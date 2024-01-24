@@ -101,7 +101,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync repo FAILED - Cannot find submodule: {0}", logDetails());
         }
     }
-
+        
     @Override
     public void init(boolean delete) {
         File ldir = new File(getLocalLocation());

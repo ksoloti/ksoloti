@@ -29,6 +29,9 @@ import axoloti.SDCardInfo;
 import axoloti.SDCardMountStatusListener;
 import axoloti.SDFileInfo;
 import axoloti.USBBulkConnection;
+import components.ScrollPaneComponent;
+import li.flor.nativejfilechooser.NativeJFileChooser;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -311,8 +314,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     }
 
     void SaveAs() {
-        final JFileChooser fc = new JFileChooser(MainFrame.prefs.getCurrentFileDirectory());
-        fc.setPreferredSize(new java.awt.Dimension(640, 640));
+        final JFileChooser fc = new NativeJFileChooser(MainFrame.prefs.getCurrentFileDirectory());
+        // fc.setPreferredSize(new java.awt.Dimension(640, 640));
         fc.setAcceptAllFileFilterUsed(false);
         FileFilter axb = new FileFilter() {
             @Override
@@ -385,24 +388,23 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 }
             }
 
-            if (fileToBeSaved.exists()) {
-                Object[] options = {"Yes",
-                    "No"};
-                int n = JOptionPane.showOptionDialog(this,
-                        "File exists! Overwrite?",
-                        "File Exists",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        options,
-                        options[1]);
-                switch (n) {
-                    case JOptionPane.YES_OPTION:
-                        break;
-                    case JOptionPane.NO_OPTION:
-                        return;
-                }
-            }
+            // if (fileToBeSaved.exists()) {
+            //     Object[] options = {"Yes",
+            //         "No"};
+            //     int n = JOptionPane.showOptionDialog(this,
+            //             "File exists! Overwrite?",
+            //             "File Exists",
+            //             JOptionPane.YES_NO_OPTION,
+            //             JOptionPane.QUESTION_MESSAGE,
+            //             null,
+            //             options,
+            //             options[1]);
+            //     switch (n) {
+            //         case JOptionPane.YES_OPTION:
+            //             break;
+            //         case JOptionPane.NO_OPTION:
+            //             return;
+            //     }
 
             FilenamePath = fileToBeSaved.getPath();
             setTitle(FilenamePath);
@@ -476,7 +478,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         jButtonUploadBank = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jUploadAll = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPane1 = new ScrollPaneComponent();
         jTable1 = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jButtonUp = new javax.swing.JButton();
@@ -544,6 +546,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
         getContentPane().add(jPanel1);
 
+        jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -738,8 +741,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     }//GEN-LAST:event_jButtonRemoveActionPerformed
 
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
-        JFileChooser fc = new JFileChooser(prefs.getCurrentFileDirectory());
-        fc.setPreferredSize(new java.awt.Dimension(640, 640));
+        JFileChooser fc = new NativeJFileChooser(prefs.getCurrentFileDirectory());
+        // fc.setPreferredSize(new java.awt.Dimension(640, 640));
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(new FileNameExtensionFilter("Axoloti Files", "axp"));
         fc.addChoosableFileFilter(axpFileFilter);
@@ -806,7 +809,6 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     }//GEN-LAST:event_jUploadAllActionPerformed
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private axoloti.menus.FileMenu fileMenu1;
     private javax.swing.JButton jButtonAdd;
     private javax.swing.JButton jButtonDown;
@@ -822,12 +824,11 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     private javax.swing.JMenuItem jMenuItemSaveAs;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
+    private ScrollPaneComponent jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JTable jTable1;
     private javax.swing.JButton jUploadAll;
     private axoloti.menus.WindowMenu windowMenu1;
-    // End of variables declaration//GEN-END:variables
 
     @Override
     public JFrame GetFrame() {

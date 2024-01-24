@@ -17,6 +17,8 @@
  */
 package qcmds;
 
+import static axoloti.MainFrame.prefs;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +58,9 @@ public abstract class QCmdShellTask implements QCmd {
                     if (line.contains("error")) {
                         Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "{0}",line);
                     }
+                    else if (line.contains("overflowed by")) {
+                        Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.WARNING, "{0}\n>>> Patch is too complex to fit in internal RAM. <<<",line);
+                    }
                     else if (line.contains("warning")) {
                         Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.WARNING, "{0}",line);
                     }
@@ -91,7 +96,11 @@ public abstract class QCmdShellTask implements QCmd {
     }
 
     public String FirmwareDir() {
-        return System.getProperty(axoloti.Axoloti.FIRMWARE_DIR);
+        String str = System.getProperty(axoloti.Axoloti.FIRMWARE_DIR);
+        if (prefs.getAxolotiLegacyMode()) {
+            str += "_axoloti_legacy";
+        }
+        return str;
     }
     
     

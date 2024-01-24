@@ -22,6 +22,8 @@ import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectTreeNode;
 import axoloti.utils.Constants;
 import axoloti.utils.OSDetect;
+import components.ScrollPaneComponent;
+
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.FontMetrics;
@@ -41,6 +43,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.swing.Icon;
 import javax.swing.event.ListSelectionEvent;
@@ -117,9 +120,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 }
                 if (node.getUserObject() instanceof AxoObjectTreeNode) {
                     AxoObjectTreeNode anode = (AxoObjectTreeNode) node.getUserObject();
-                    jPanelRight.removeAll();
-                    jPanelRight.repaint();
-                    jTextPaneObjectInfo.setText(anode.description);
+                    jPanelObjectPreview.removeAll();
+                    jPanelObjectPreview.repaint();
+                    jTextPaneObjectInfo.setText(anode.description.replace("\n", "<br/>"));
                     jTextPaneObjectInfo.setCaretPosition(0);
                     previewObj = null;
                 }
@@ -127,7 +130,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 if (nodeInfo instanceof AxoObjectAbstract) {
                     SetPreview((AxoObjectAbstract) nodeInfo);
                     if (!jTextFieldObjName.hasFocus()) {
-                        jTextFieldObjName.setText(((AxoObjectAbstract) nodeInfo).id);
+                        jTextFieldObjName.setText(((AxoObjectAbstract) nodeInfo).id.replace("\n", "<br/>"));
+
                     }
                 }
             }
@@ -278,9 +282,10 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         });
 
-        jPanelRight.setVisible(true);
+        jPanelObjectPreview.setVisible(true);
         jScrollPaneObjectTree.setVisible(true);
         jScrollPaneObjectInfo.setVisible(true);
+        jScrollPaneObjectPreview.setVisible(true);
         jSplitPaneMain.setVisible(true);
         jSplitPaneRight.setVisible(true);
         jTextPaneObjectInfo.setVisible(true);
@@ -358,7 +363,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         return patchLoc;
     }
 
-    void Launch(Point patchLoc, AxoObjectInstanceAbstract o, String searchString, boolean selectText) {
+    void Launch(Point patchLoc, AxoObjectInstanceAbstract o, String searchString, boolean selectSearchString) {
         if (this.objectTree != MainFrame.axoObjects.ObjectTree) {
             DefaultMutableTreeNode root1 = new DefaultMutableTreeNode();
             this.objectTree = MainFrame.axoObjects.ObjectTree;
@@ -390,7 +395,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             jTextFieldObjName.setText(searchString);
         }
         jTextFieldObjName.grabFocus();
-        if (selectText) {
+        if (selectSearchString) {
             jTextFieldObjName.selectAll();
         }
         else {
@@ -404,8 +409,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         if (o == null) {
             previewObj = null;
             type = null;
-            jPanelRight.removeAll();
-            jPanelRight.repaint();
+            jPanelObjectPreview.removeAll();
+            jPanelObjectPreview.repaint();
             jButtonAccept.setEnabled(false);
             return;
         }
@@ -421,13 +426,14 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             if (jResultList.getSelectedValue() != o) {
             }
             AxoObjectInstanceAbstract inst = o.CreateInstance(null, "dummy", new Point(5, 5));
-            jPanelRight.removeAll();
-            jPanelRight.add(inst);
+            jPanelObjectPreview.removeAll();
+            jPanelObjectPreview.add(inst);
             inst.invalidate();
             inst.repaint();
             inst.revalidate();
-            jPanelRight.revalidate();
-            jPanelRight.repaint();
+            jPanelObjectPreview.setPreferredSize(inst.getPreferredSize());
+            jPanelObjectPreview.revalidate();
+            jPanelObjectPreview.repaint();
             AxoObjectAbstract t = inst.getType();
             if (t != null) {
                 String description = t.sDescription == null || t.sDescription.isEmpty() ? o.sDescription : t.sDescription;
@@ -436,15 +442,15 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 String license = t.sLicense == null ? o.sLicense : t.sLicense;
                 String txt = description;
                 if ((path != null) && (!path.isEmpty())) {
-                    txt += "\n<p>\nPath: " + path;
+                    txt += "<p>Path: " + path;
                 }
                 if ((author != null) && (!author.isEmpty())) {
-                    txt += "\n<p>\nAuthor: " + author;
+                    txt += "<p>Author: " + author;
                 }
                 if ((license != null) && (!license.isEmpty())) {
-                    txt += "\n<p>\nLicense: " + license;
+                    txt += "<p>License: " + license;
                 }
-                jTextPaneObjectInfo.setText(txt);
+                jTextPaneObjectInfo.setText(txt.replace("\n", "<br/>"));
             }
             jTextPaneObjectInfo.setCaretPosition(0);
         }
@@ -515,7 +521,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 }
             }
 
-            /* if contains full string */
+            /* if contains full string (literally i.e. ignoring wildcards) */
             for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
                 if (o.id.toLowerCase().contains(s)) {
                     if (!listData.contains(o)) {
@@ -524,14 +530,28 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 }
             }
 
-
             /* if contains string with regex or '*' wildcard */
-            String rgx = ".*" + s.replace("*", ".*") + ".*";
+
+            /* most users will expect "*" to act as wildcard, not as
+             * pure regex - replace "*" with ".*" to simulate this behaviour
+             */
+            String rgx = s.replace("*", ".*");
+
+            /* some regex conditioning: match anywhere within the string
+             * unless "at beginning" or "at end" symbols are used
+             */
+            if (!s.startsWith("^")) rgx = ".*" + rgx;
+            if (!s.endsWith("$")) rgx = rgx + ".*";
+
             for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                if (Pattern.matches(rgx, o.id.toLowerCase())) {
-                    if (!listData.contains(o)) {
-                        listData.add(o);
+                try {
+                    if (Pattern.matches(rgx, o.id.toLowerCase())) {
+                        if (!listData.contains(o)) {
+                            listData.add(o);
+                        }
                     }
+                }
+                catch (PatternSyntaxException p) {
                 }
             }
 
@@ -562,6 +582,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 }
             }
         }
+        /* show number of results */
+        this.setTitle(String.format("%d found", listData.size()));
     }
 
     boolean accepted = false;
@@ -622,10 +644,11 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jObjectTree = new javax.swing.JTree();
 
-        jScrollPaneObjectTree = new javax.swing.JScrollPane();
-        jScrollPaneObjectSearch = new javax.swing.JScrollPane();
-        jScrollPaneObjectInfo = new javax.swing.JScrollPane();
-        jPanelRight = new javax.swing.JPanel();
+        jScrollPaneObjectTree = new ScrollPaneComponent();
+        jScrollPaneObjectSearch = new ScrollPaneComponent();
+        jScrollPaneObjectInfo = new ScrollPaneComponent();
+        jScrollPaneObjectPreview = new ScrollPaneComponent();
+        jPanelObjectPreview = new javax.swing.JPanel();
 
         setForeground(java.awt.SystemColor.controlText);
         setIconImages(null);
@@ -731,8 +754,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jSplitPaneRight.setResizeWeight(0.5);
         jSplitPaneRight.setPreferredSize(new java.awt.Dimension(300, 240));
 
-        jScrollPaneObjectInfo.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        jScrollPaneObjectInfo.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         jScrollPaneObjectInfo.setMinimumSize(new java.awt.Dimension(6, 120));
 
         jTextPaneObjectInfo.setEditable(false);
@@ -743,22 +764,25 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jSplitPaneRight.setTopComponent(jScrollPaneObjectInfo);
 
-        jPanelRight.setBackground(Theme.getCurrentTheme().Patch_Unlocked_Background);
-        jPanelRight.setEnabled(false);
-        jPanelRight.setFocusable(false);
+        jPanelObjectPreview.setBackground(Theme.getCurrentTheme().Patch_Unlocked_Background);
+        jPanelObjectPreview.setEnabled(false);
+        jPanelObjectPreview.setFocusable(false);
 
-        javax.swing.GroupLayout jPanelRightLayout = new javax.swing.GroupLayout(jPanelRight);
-        jPanelRight.setLayout(jPanelRightLayout);
-        jPanelRightLayout.setHorizontalGroup(
-            jPanelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        jScrollPaneObjectPreview.setMinimumSize(new java.awt.Dimension(6, 120));
+        jScrollPaneObjectPreview.setViewportView(jPanelObjectPreview);
+
+        javax.swing.GroupLayout jPanelObjectPreviewLayout = new javax.swing.GroupLayout(jPanelObjectPreview);
+        jPanelObjectPreview.setLayout(jPanelObjectPreviewLayout);
+        jPanelObjectPreviewLayout.setHorizontalGroup(
+            jPanelObjectPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
-        jPanelRightLayout.setVerticalGroup(
-            jPanelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        jPanelObjectPreviewLayout.setVerticalGroup(
+            jPanelObjectPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        jSplitPaneRight.setRightComponent(jPanelRight);
+        jSplitPaneRight.setRightComponent(jScrollPaneObjectPreview);
 
         jSplitPaneMain.setRightComponent(jSplitPaneRight);
 
@@ -795,11 +819,10 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         Accept();
     }//GEN-LAST:event_jButtonAcceptActionPerformed
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanelMain;
     private javax.swing.JPanel jPanelLeft;
     private javax.swing.JPanel jPanelSearchField;
-    private javax.swing.JPanel jPanelRight;
+    private javax.swing.JPanel jPanelObjectPreview;
 
     private javax.swing.JSplitPane jSplitPaneMain;
     private javax.swing.JSplitPane jSplitPaneLeft;
@@ -812,10 +835,10 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     private javax.swing.JTree jObjectTree;
     private javax.swing.JTextPane jTextPaneObjectInfo;
 
-    private javax.swing.JScrollPane jScrollPaneObjectSearch;
-    private javax.swing.JScrollPane jScrollPaneObjectTree;
-    private javax.swing.JScrollPane jScrollPaneObjectInfo;
-    // End of variables declaration//GEN-END:variables
+    private ScrollPaneComponent jScrollPaneObjectSearch;
+    private ScrollPaneComponent jScrollPaneObjectTree;
+    private ScrollPaneComponent jScrollPaneObjectInfo;
+    private ScrollPaneComponent jScrollPaneObjectPreview;
 
 
     class StringIcon implements Icon {

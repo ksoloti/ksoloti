@@ -83,9 +83,9 @@ public class Preferences {
     @Element(required = false)
     Boolean MouseDialAngular;
     @Element(required = false)
+    Boolean AxolotiLegacyMode;
+    @Element(required = false)
     Boolean MouseDoNotRecenterWhenAdjustingControls;
-    // @Element(required = false)
-    // Boolean KeyboardFrameAlwaysOnTop;
     @Element(required = false)
     Boolean ExpertMode;
     @ElementList(required = false)
@@ -94,10 +94,6 @@ public class Preferences {
     @Deprecated
     @Element(required = false)
     String MidiInputDevice;
-    // @Element(required = false)
-    // String RuntimeDir;
-    // @Element(required = false)
-    // String FirmwareDir;
     @Element(required = false)
     String FavouriteDir;
     @Element(required = false)
@@ -108,6 +104,8 @@ public class Preferences {
     String themePath;
     @Element(required = false)
     String Theme;
+    @Element(required = false)
+    int CodeFontSize = 12; /* default to 12pt */
 
     @ElementMap(required = false, entry = "Boards", key = "cpuid", attribute = true, inline = true)
     HashMap<String, String> BoardNames;
@@ -123,6 +121,7 @@ public class Preferences {
     String[] ObjectPath;
 
     boolean isDirty = false;
+    boolean restartRequired = false;
 
     final int nRecentFiles = 16;
 
@@ -182,6 +181,7 @@ public class Preferences {
         "Solarized Dark (Material)"
     };
 
+
     protected Preferences() {
         if (CurrentFileDirectory == null) {
             CurrentFileDirectory = "";
@@ -193,6 +193,9 @@ public class Preferences {
         }
         if (MouseDialAngular == null) {
             MouseDialAngular = false;
+        }
+        if (AxolotiLegacyMode == null) {
+            AxolotiLegacyMode = false;
         }
         if (MouseDoNotRecenterWhenAdjustingControls == null) {
             MouseDoNotRecenterWhenAdjustingControls = false;
@@ -213,7 +216,6 @@ public class Preferences {
         if (Theme == null) {
             Theme = "FlatLaf Light";
         }
-
         if (libraries == null) {
             libraries = new ArrayList<AxolotiLibrary>();
         }
@@ -323,8 +325,11 @@ public class Preferences {
     }
 
     public void setTheme(String Theme) {
-        if (Theme == this.Theme) return;
+        if (Theme.equals(this.Theme)) {
+            return;
+        }
         this.Theme = Theme;
+        restartRequired = true;
         SetDirty();
     }
 
@@ -358,6 +363,19 @@ public class Preferences {
         else if (this.Theme.equals("Solarized Light (Material)"))     FlatSolarizedLightIJTheme.setup();
         /* Falling through - default to FlatLaf IntelliJ */
         else                                                          FlatIntelliJLaf.setup();
+    }
+
+    public int getCodeFontSize() {
+        return CodeFontSize;
+    }
+
+    public void setCodeFontSize(int CodeFontSize) {
+        int sz = CodeFontSize < 4 ? 4 : CodeFontSize > 64 ? 64 : CodeFontSize;
+        if (this.CodeFontSize == sz) {
+            return;
+        }
+        this.CodeFontSize = sz;
+        SetDirty();
     }
 
     static String GetPrefsFileLoc() {
@@ -406,10 +424,13 @@ public class Preferences {
 
     public void SavePrefs() {
         Logger.getLogger(Preferences.class .getName()).log(Level.INFO, "Saving preferences...");
+        if (restartRequired) {
+            Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, ">>> RESTART REQUIRED <<<");
+        }
         Serializer serializer = new Persister();
         File f = new File(GetPrefsFileLoc());
 
-        Logger.getLogger(Preferences.class .getName()).log(Level.INFO, "{0}\n", f.getAbsolutePath());
+        System.out.println(f.getAbsolutePath());
 
         try {
             serializer.write(this, f);
@@ -433,11 +454,24 @@ public class Preferences {
         return MouseDialAngular;
     }
 
+    public Boolean getAxolotiLegacyMode() {
+        return AxolotiLegacyMode;
+    }
+
     public void setMouseDialAngular(boolean MouseDialAngular) {
         if (this.MouseDialAngular == MouseDialAngular) {
             return;
         }
         this.MouseDialAngular = MouseDialAngular;
+        SetDirty();
+    }
+
+    public void setAxolotiLegacyMode(boolean AxolotiLegacyMode) {
+        if (this.AxolotiLegacyMode == AxolotiLegacyMode) {
+            return;
+        }
+        this.AxolotiLegacyMode = AxolotiLegacyMode;
+        restartRequired = true;
         SetDirty();
     }
 
@@ -490,6 +524,7 @@ public class Preferences {
             return;
         }
         this.FavouriteDir = favouriteDir;
+        restartRequired = true;
         SetDirty();
     }
 

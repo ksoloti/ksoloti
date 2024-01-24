@@ -22,10 +22,12 @@ package axoloti;
  * transport
  */
 import axoloti.dialogs.USBPortSelectionDlg;
+
+import static axoloti.MainFrame.prefs;
 import static axoloti.dialogs.USBPortSelectionDlg.ErrorString;
 import axoloti.displays.DisplayInstance;
 import axoloti.parameters.ParameterInstance;
-import axoloti.targetprofile.axoloti_core;
+import axoloti.targetprofile.ksoloti_core;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -64,11 +66,11 @@ public class USBBulkConnection extends Connection {
     private Thread receiverThread;
     private final BlockingQueue<QCmdSerialTask> queueSerialTask;
     private String cpuid;
-    private axoloti_core targetProfile;
+    private ksoloti_core targetProfile;
     private final Context context;
     private DeviceHandle handle;
     private final short bulkVID = (short) 0x16C0;
-    // private final short bulkPIDAxoloti = (short) 0x0442;
+    private final short bulkPIDAxoloti = (short) 0x0442;
     private final short bulkPIDKsoloti = (short) 0x0444;
     private final int interfaceNumber = 2;
 
@@ -170,41 +172,83 @@ public class USBBulkConnection extends Connection {
                 if (result != LibUsb.SUCCESS) {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
-                if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDKsoloti) {
-                    Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Ksoloti Core found.");
-                    DeviceHandle h = new DeviceHandle();
-                    result = LibUsb.open(d, h);
-                    if (result < 0) {
-                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, ErrorString(result));
-                    } else {
-                        String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
-                        if (cpuid != null) {
-                            if (serial.equals(cpuid)) {
+
+                if (prefs.getAxolotiLegacyMode()) {
+                    if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDAxoloti) {
+                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Axoloti Core found.");
+                        DeviceHandle h = new DeviceHandle();
+                        result = LibUsb.open(d, h);
+                        if (result < 0) {
+                            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, ErrorString(result));
+                        } else {
+                            String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
+                            if (cpuid != null) {
+                                if (serial.equals(cpuid)) {
+                                    return h;
+                                }
+                            } else {
                                 return h;
                             }
-                        } else {
-                            return h;
+                            LibUsb.close(h);
                         }
-                        LibUsb.close(h);
                     }
                 }
+                else {
+                    if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDKsoloti) {
+                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Ksoloti Core found.");
+                        DeviceHandle h = new DeviceHandle();
+                        result = LibUsb.open(d, h);
+                        if (result < 0) {
+                            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, ErrorString(result));
+                        } else {
+                            String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
+                            if (cpuid != null) {
+                                if (serial.equals(cpuid)) {
+                                    return h;
+                                }
+                            } else {
+                                return h;
+                            }
+                            LibUsb.close(h);
+                        }
+                    }
+                }
+
             }
+
             // or else pick the first one
             for (Device d : list) {
                 DeviceDescriptor descriptor = new DeviceDescriptor();
+
                 result = LibUsb.getDeviceDescriptor(d, descriptor);
                 if (result != LibUsb.SUCCESS) {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
-                if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDKsoloti) {
-                    Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Matching USB device found.");
-                    DeviceHandle h = new DeviceHandle();
-                    result = LibUsb.open(d, h);
-                    if (result < 0) {
-                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, ErrorString(result));
-                    } else {
-                        return h;
+
+                if (prefs.getAxolotiLegacyMode()) {
+                    if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDAxoloti) {
+                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Matching USB device found.");
+                        DeviceHandle h = new DeviceHandle();
+                        result = LibUsb.open(d, h);
+                        if (result < 0) {
+                            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, ErrorString(result));
+                        } else {
+                            return h;
+                        }
                     }
+                }
+                else {
+                    if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDKsoloti) {
+                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Matching USB device found.");
+                        DeviceHandle h = new DeviceHandle();
+                        result = LibUsb.open(d, h);
+                        if (result < 0) {
+                            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, ErrorString(result));
+                        } else {
+                            return h;
+                        }
+                    }
+
                 }
             }
         } finally {
@@ -235,7 +279,9 @@ public class USBBulkConnection extends Connection {
         if (cpuid == null) {
             cpuid = MainFrame.prefs.getComPortName();
         }
-        targetProfile = new axoloti_core();
+
+        targetProfile = new ksoloti_core();
+
         handle = OpenDeviceHandle();
         if (handle == null) {
             return false;
@@ -313,19 +359,19 @@ public class USBBulkConnection extends Connection {
             } else if ((signature.getInt(0) == 0xFFFFFFFF) && (signature.getInt(1) == 0xFFFFFFFF)) {
                 // Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Can''t validate authenticity, no signature present.");
             } else {
-                signaturevalid = HWSignature.Verify(targetProfile.getCPUSerial(), otpInfo, bb2ba(signature));
-                if (signaturevalid) {
-                    String s = "";
-                    otpInfo.rewind();
-                    byte c = otpInfo.get();
-                    while (c != 0) {
-                        s += (char) (c & 0xFF);
-                        c = otpInfo.get();
-                    }
-                    Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Authentic {0}", s);
-                } else {
-                    Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "Can''t validate authenticity, signature invalid.");
-                }
+                // signaturevalid = HWSignature.Verify(targetProfile.getCPUSerial(), otpInfo, bb2ba(signature));
+                // if (signaturevalid) {
+                //     String s = "";
+                //     otpInfo.rewind();
+                //     byte c = otpInfo.get();
+                //     while (c != 0) {
+                //         s += (char) (c & 0xFF);
+                //         c = otpInfo.get();
+                //     }
+                //     Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Authentic {0}", s);
+                // } else {
+                //     Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "Can''t validate authenticity, signature invalid.");
+                // }
             }
 
             boolean signing = false;
@@ -487,7 +533,7 @@ public class USBBulkConnection extends Connection {
         String name = MainFrame.prefs.getBoardName(cpuid);
         if (cpuid == null) return;
         if (name == null) {
-            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Selecting CPU ID: {0} for connection.", cpuid);
+            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Selecting CPUID: {0} for connection.", cpuid);
         } else {
             Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Selecting Board: {0} for connection.", new Object[]{name});
         }
@@ -1485,7 +1531,7 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public axoloti_core getTargetProfile() {
+    public ksoloti_core getTargetProfile() {
         return targetProfile;
     }
 

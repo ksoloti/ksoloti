@@ -20,6 +20,9 @@ package axoloti.dialogs;
 import axoloti.Patch;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.parameters.ParameterInstance;
+import axoloti.utils.Constants;
+import components.ScrollPaneComponent;
+
 import java.util.Collection;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
@@ -36,7 +39,7 @@ public class MidiAssignments extends javax.swing.JDialog {
     public MidiAssignments(java.awt.Frame parent, boolean modal, ParameterInstance param) {
         super(parent, modal);
         initComponents();
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
+        setIconImage(Constants.APP_ICON.getImage());
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         Patch patch = param.GetObjectInstance().patch;
         String CCObj[] = new String[128];
@@ -84,7 +87,7 @@ public class MidiAssignments extends javax.swing.JDialog {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPane1 = new ScrollPaneComponent();
         jTable1 = new javax.swing.JTable();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 10), new java.awt.Dimension(0, 0));
         jPanel2 = new javax.swing.JPanel();
@@ -100,6 +103,7 @@ public class MidiAssignments extends javax.swing.JDialog {
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
+        jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -188,7 +192,6 @@ public class MidiAssignments extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonAssignActionPerformed
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
     private javax.swing.Box.Filler filler3;
@@ -198,9 +201,8 @@ public class MidiAssignments extends javax.swing.JDialog {
     private javax.swing.JButton jButtonDeassign;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
+    private ScrollPaneComponent jScrollPane1;
     private javax.swing.JTable jTable1;
-    // End of variables declaration//GEN-END:variables
 
     static String[] MidiCCToName = {
         "Bank Select",

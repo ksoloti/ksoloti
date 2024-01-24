@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.ScrollPaneConstants;
+
 // import javax.swing.UIManager;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -60,20 +62,31 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
             ioe.printStackTrace();
         }
         textArea.setFont(Constants.FONT_MONO);
+        textArea.setBackground(axoloti.Theme.getCurrentTheme().Object_Default_Background);
+        textArea.setForeground(axoloti.Theme.getCurrentTheme().Object_Default_Foreground);
         textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
+        textArea.setHighlightCurrentLine(false);
+        textArea.setLineWrap(true);
         textArea.setCodeFoldingEnabled(true);
         textArea.setAntiAliasingEnabled(true);
         textArea.setAutoIndentEnabled(true);
         textArea.setMarkOccurrences(true);
         textArea.setPaintTabLines(true);
-        textArea.setMarkOccurrencesColor(new Color(0x00,0x00,0x00, 0x60));
+        textArea.setMarkOccurrencesColor(new Color(0x00,0x00,0x00, 0x40));
+
         RTextScrollPane sp = new RTextScrollPane(textArea);
+        sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        sp.getHorizontalScrollBar().setUnitIncrement(Constants.X_GRID/2);
+        sp.getVerticalScrollBar().setUnitIncrement(Constants.Y_GRID/2);
+
         cp.setLayout(new BorderLayout());
         cp.add(sp);
+
         textArea.setVisible(true);
         setContentPane(cp);
         textArea.setText(s.s);
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
+        setIconImage(Constants.APP_ICON.getImage());
     }
 
     public void SetText(String s) {
@@ -157,9 +170,7 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
         parent.GetChildDocuments().add(this);
     }//GEN-LAST:event_formComponentShown
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel cp;
-    // End of variables declaration//GEN-END:variables
 
     @Override
     public JFrame GetFrame() {

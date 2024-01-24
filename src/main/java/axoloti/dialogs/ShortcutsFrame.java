@@ -18,6 +18,9 @@
 package axoloti.dialogs;
 
 import axoloti.Version;
+import axoloti.utils.Constants;
+import components.ScrollPaneComponent;
+
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +44,7 @@ public class ShortcutsFrame extends javax.swing.JFrame {
      */
     public ShortcutsFrame() {
         initComponents();
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
+        setIconImage(Constants.APP_ICON.getImage());
         try {
             jTextPaneShortcutsHtml.setPage(getClass().getResource("/resources/shortcuts.html"));
         } catch (IOException ex) {
@@ -89,7 +92,7 @@ public class ShortcutsFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPaneShortcutsHtml = new javax.swing.JScrollPane();
+        jScrollPaneShortcutsHtml = new ScrollPaneComponent();
         jTextPaneShortcutsHtml = new javax.swing.JTextPane();
         jLabelBuildVersion = new javax.swing.JLabel();
         jVersionTxt = new javax.swing.JLabel();
@@ -168,12 +171,10 @@ public class ShortcutsFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jDateTxt;
     private javax.swing.JLabel jLabelBuildVersion;
     private javax.swing.JLabel jLabelBuildDate;
-    private javax.swing.JScrollPane jScrollPaneShortcutsHtml;
+    private ScrollPaneComponent jScrollPaneShortcutsHtml;
     private javax.swing.JTextPane jTextPaneShortcutsHtml;
     private javax.swing.JLabel jVersionTxt;
-    // End of variables declaration//GEN-END:variables
 }

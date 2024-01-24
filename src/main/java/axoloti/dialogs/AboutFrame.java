@@ -18,13 +18,15 @@
 package axoloti.dialogs;
 
 import axoloti.Version;
+import axoloti.utils.Constants;
+import components.ScrollPaneComponent;
+
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -41,7 +43,7 @@ public class AboutFrame extends javax.swing.JFrame {
      */
     public AboutFrame() {
         initComponents();
-        setIconImage(new ImageIcon(getClass().getResource("/resources/axoloti_icon.png")).getImage());
+        setIconImage(Constants.APP_ICON.getImage());
         try {
             jTextPaneAboutHtml.setPage(getClass().getResource("/resources/about.html"));
         } catch (IOException ex) {
@@ -91,7 +93,7 @@ public class AboutFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPaneAboutHtml = new javax.swing.JScrollPane();
+        jScrollPaneAboutHtml = new ScrollPaneComponent();
         jTextPaneAboutHtml = new javax.swing.JTextPane();
         jLabelBuildVersion = new javax.swing.JLabel();
         jVersionTxt = new javax.swing.JLabel();
@@ -179,14 +181,12 @@ public class AboutFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jDateTxt;
     private javax.swing.JLabel jJavaVersion;
     private javax.swing.JLabel jLabelBuildVersion;
     private javax.swing.JLabel jLabelBuildDate;
     private javax.swing.JLabel jLabelJavaVersion;
-    private javax.swing.JScrollPane jScrollPaneAboutHtml;
+    private ScrollPaneComponent jScrollPaneAboutHtml;
     private javax.swing.JTextPane jTextPaneAboutHtml;
     private javax.swing.JLabel jVersionTxt;
-    // End of variables declaration//GEN-END:variables
 }

@@ -7,4 +7,5 @@ JSCH - ssh security, used by JGIT
 flatlaf - more modern UI
 flatlaf-intellij-themes - for more modern UI
 marlin - for more efficient graphic rendering
+native-j-file-chooser - more native-looking file chooser
 rsyntaxtextarea, autocomplete - object editor code syntax

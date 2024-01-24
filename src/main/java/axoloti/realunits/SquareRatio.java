@@ -37,7 +37,7 @@ public class SquareRatio implements NativeToReal {
     @Override
     public String ToReal(Value v) {
         double d = v.getDouble();
-        return (String.format("x%.3f", d * d / 4096.0));
+        return (String.format("×%.3f", d * d / 4096.0));
     }
 
     @Override
@@ -56,7 +56,9 @@ public class SquareRatio implements NativeToReal {
 
             String units1 = matcher.group("unit1");
             String units2 = matcher.group("unit2");
-            if (!(units1.contains("x") || units1.contains("X") || units1.contains("*") || units2.contains("x") || units2.contains("X") || units2.contains("*")))
+            if (!(units1.toLowerCase().contains("x") || units1.contains("*") || units1.contains("×")
+               || units2.toLowerCase().contains("x") || units2.contains("*") || units2.contains("×"))
+            )
                 throw new ParseException("Not PitchToRatio", 0);
 
             return Math.sqrt(num * 4096.0);

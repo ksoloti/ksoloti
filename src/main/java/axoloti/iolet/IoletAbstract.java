@@ -228,9 +228,19 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
                 && axoObj != null
                 && axoObj.patch != null) {
             Net n = axoObj.patch.GetNet(this);
-            if (n != null
-                    && n.getSelected() != highlighted) {
+
+            if (n != null && n.getSelected() != highlighted) {
                 n.setSelected(highlighted);
+
+                if (axoObj.patch.getPatchframe().getPatchCordsInBackground()) {
+                    if (!axoObj.patch.IsLocked()) {
+                        /* temporarily raise cables to top */
+                        axoObj.getPatchGUI().SetCordsInBackground(!highlighted);
+                    }
+                    else {
+                        axoObj.getPatchGUI().SetCordsInBackground(true);
+                    }
+                }
             }
         }
     }

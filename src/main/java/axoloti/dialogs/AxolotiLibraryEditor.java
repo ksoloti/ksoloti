@@ -11,6 +11,8 @@ import static axoloti.MainFrame.prefs;
 import axoloti.utils.AxoFileLibrary;
 import axoloti.utils.AxoGitLibrary;
 import axoloti.utils.AxolotiLibrary;
+import li.flor.nativejfilechooser.NativeJFileChooser;
+
 import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
@@ -498,8 +500,8 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
         }
 
         File seldir = new File(dir).getParentFile();
-        JFileChooser fc = new JFileChooser(seldir);
-        fc.setPreferredSize(new java.awt.Dimension(640, 640));
+        JFileChooser fc = new NativeJFileChooser(seldir);
+        // fc.setPreferredSize(new java.awt.Dimension(640, 640));
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fc.setFileFilter(new FileFilter() {
             @Override
@@ -545,7 +547,6 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
     }//GEN-LAST:event_jSyncBtnActionPerformed
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler1;
     private javax.swing.JCheckBox jAutoSync;
     private javax.swing.JButton jCancel;
@@ -574,7 +575,6 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
     private javax.swing.JButton jSyncBtn;
     private javax.swing.JComboBox jTypeCombo;
     private javax.swing.JTextField jUserId;
-    // End of variables declaration//GEN-END:variables
 
     public AxolotiLibrary getLibrary() {
         return library;

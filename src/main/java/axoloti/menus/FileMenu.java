@@ -20,6 +20,8 @@ package axoloti.menus;
 import axoloti.FileUtils;
 import axoloti.MainFrame;
 import static axoloti.MainFrame.axoObjects;
+import static axoloti.MainFrame.mainframe;
+
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
 import axoloti.dialogs.PatchBank;
@@ -35,13 +37,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 import qcmds.QCmdProcessor;
 
 /**
@@ -115,8 +115,6 @@ public class FileMenu extends JMenu {
         insert(jMenuOpen, pos++);
 
         jMenuOpenURL.setMnemonic('U');
-        // jMenuOpenURL.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
-                // KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuOpenURL.setText("Open from URL...");
         jMenuOpenURL.addActionListener(new java.awt.event.ActionListener() {
             @Override
@@ -234,8 +232,8 @@ public class FileMenu extends JMenu {
     }
 
     private void jMenuAutoTestActionPerformed(java.awt.event.ActionEvent evt) {
-        if (JOptionPane.showConfirmDialog(MainFrame.mainframe, "Running these tests will take a long time and freeze the UI with no output until complete. Do you wish to continue?") == JOptionPane.YES_OPTION) {
-            MainFrame.mainframe.runAllTests();
+        if (JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and freeze the UI with no output until complete. Do you wish to continue?") == JOptionPane.YES_OPTION) {
+            mainframe.runAllTests();
         }
     }
 
@@ -269,7 +267,7 @@ public class FileMenu extends JMenu {
     }
 
     private void jMenuOpenActionPerformed(java.awt.event.ActionEvent evt) {
-        FileUtils.Open((JFrame) SwingUtilities.getWindowAncestor(this));
+        FileUtils.Open();
     }
 
     private void jMenuNewPatchActionPerformed(java.awt.event.ActionEvent evt) {
@@ -277,11 +275,18 @@ public class FileMenu extends JMenu {
     }
 
     private void jMenuSyncActionPerformed(java.awt.event.ActionEvent evt) {
-        for (AxolotiLibrary lib : Preferences.LoadPreferences().getLibraries()) {
-            lib.sync();
+        class Thd extends Thread {
+            public void run() {
+                Logger.getLogger(FileMenu.class.getName()).log(Level.INFO, "Syncing Libraries, please wait...");
+                for (AxolotiLibrary lib : Preferences.LoadPreferences().getLibraries()) {
+                    lib.sync();
+                }
+                Logger.getLogger(FileMenu.class.getName()).log(Level.INFO, "Finished syncing Libraries.\n");
+                axoObjects.LoadAxoObjects();
+            }
         }
-        Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "");
-        axoObjects.LoadAxoObjects();
+        Thd thread = new Thd();
+        thread.start();
     }
 
     private void jMenuNewBankActionPerformed(java.awt.event.ActionEvent evt) {
@@ -303,7 +308,7 @@ public class FileMenu extends JMenu {
     }
 
     private void jMenuQuitActionPerformed(java.awt.event.ActionEvent evt) {
-        MainFrame.mainframe.Quit();
+        mainframe.Quit();
     }
 
 }

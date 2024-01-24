@@ -17,10 +17,13 @@
  */
 package axoloti;
 
+import static axoloti.MainFrame.mainframe;
 import static axoloti.MainFrame.prefs;
 import axoloti.dialogs.PatchBank;
+import li.flor.nativejfilechooser.NativeJFileChooser;
 import java.io.File;
-import javax.swing.JFileChooser;
+
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -133,26 +136,26 @@ public class FileUtils {
         }
     };
 
-    public static JFileChooser GetFileChooser() {
-        JFileChooser fc = new JFileChooser(prefs.getCurrentFileDirectory());
-        fc.setPreferredSize(new java.awt.Dimension(640, 640));
+    public static void Open() {
+        JFrame frame = new JFrame();
+        frame.setSize(0,0);
+        frame.setUndecorated(true);
+        frame.setVisible(true);
+
+        NativeJFileChooser fc = new NativeJFileChooser(prefs.getCurrentFileDirectory());
+        fc.setDialogTitle("Open...");
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(new FileNameExtensionFilter("Axoloti Files", "axp", "axh", "axs", "axb"));
         fc.addChoosableFileFilter(axpFileFilter);
         fc.addChoosableFileFilter(axhFileFilter);
         fc.addChoosableFileFilter(axsFileFilter);
         fc.addChoosableFileFilter(axbFileFilter);
-        return fc;
-    }
 
-    public static void Open(JFrame frame) {
-        JFileChooser fc = GetFileChooser();
-        fc.setPreferredSize(new java.awt.Dimension(640, 640));
         int returnVal = fc.showOpenDialog(frame);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            prefs.setCurrentFileDirectory(fc.getCurrentDirectory().getPath());
-            prefs.SavePrefs();
+        if (returnVal == NativeJFileChooser.APPROVE_OPTION) {
             File f = fc.getSelectedFile();
+            prefs.setCurrentFileDirectory(f.getParentFile().toString());
+
             for (DocumentWindow dw : DocumentWindowList.GetList()) {
                 if (f.equals(dw.getFile())) {
                     JFrame frame1 = dw.GetFrame();
@@ -166,12 +169,10 @@ public class FileUtils {
                     || axsFileFilter.accept(f)
                     || axhFileFilter.accept(f)) {
                 PatchGUI.OpenPatch(f);
-                // MainFrame.prefs.addRecentFile(f.getAbsolutePath());
             } else if (axbFileFilter.accept(f)) {
                 PatchBank.OpenBank(f);
-                // MainFrame.prefs.addRecentFile(f.getAbsolutePath());
             }
         }
+        frame.setVisible(false);
     }
-
 }

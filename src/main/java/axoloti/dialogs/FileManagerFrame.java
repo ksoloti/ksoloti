@@ -23,6 +23,11 @@ import static axoloti.MainFrame.prefs;
 import axoloti.SDCardInfo;
 import axoloti.SDFileInfo;
 import axoloti.USBBulkConnection;
+import axoloti.utils.Constants;
+import components.ScrollPaneComponent;
+import li.flor.nativejfilechooser.NativeJFileChooser;
+
+import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
@@ -30,6 +35,7 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
@@ -60,15 +66,17 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
      * Creates new form FileManagerFrame
      */
     public FileManagerFrame() {
+        setPreferredSize(new Dimension(800,400));
         initComponents();
         fileMenu1.initComponents();
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
         USBBulkConnection.GetConnection().addSDCardMountStatusListener(this);
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
+        setIconImage(Constants.APP_ICON.getImage());
         jLabelSDInfo.setText("");
 
+        jFileTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         jFileTable.setModel(new AbstractTableModel() {
-            private String[] columnNames = {"Name", "Extension", "Size", "Modified"};
+            private String[] columnNames = {"Name", "Type", "Size", "Modified"};
 
             @Override
             public int getColumnCount() {
@@ -111,9 +119,9 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     case 1: {
                         SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
                         if (f.isDirectory()) {
-                            returnValue = "";
+                            returnValue = "🗀";
                         } else {
-                            returnValue = f.getExtension();
+                            returnValue = "." + f.getExtension();
                         }
                     }
                     break;
@@ -136,7 +144,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     case 3: {
                         Calendar c = SDCardInfo.getInstance().getFiles().get(rowIndex).getTimestamp();
                         if (c.get(Calendar.YEAR) > 1979) {
-                            returnValue = c.getTime().toString();
+                            returnValue = DateFormat.getDateTimeInstance().format(c.getTime());
                         } else {
                             returnValue = "";
                         }
@@ -178,13 +186,21 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 }
             }
         });
-        jFileTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         jFileTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 UpdateButtons();
             }
         });
+        jFileTable.getTableHeader().setReorderingAllowed(false);
+
+        jScrollPane1.setViewportView(jFileTable);
+        if (jFileTable.getColumnModel().getColumnCount() > 0) {
+            jFileTable.getColumnModel().getColumn(0).setPreferredWidth(360);
+            jFileTable.getColumnModel().getColumn(1).setPreferredWidth(30);
+            jFileTable.getColumnModel().getColumn(2).setPreferredWidth(90);
+            jFileTable.getColumnModel().getColumn(3).setPreferredWidth(120);
+        }
     }
     
     void UpdateButtons(){
@@ -218,7 +234,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPane1 = new ScrollPaneComponent();
         jFileTable = new javax.swing.JTable();
         jButtonSDRefresh = new javax.swing.JButton();
         jLabelSDInfo = new javax.swing.JLabel();
@@ -239,37 +255,29 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
         });
 
-        jFileTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+        // jFileTable.setModel(new javax.swing.table.DefaultTableModel(
+        //     new Object [][] {
 
-            },
-            new String [] {
-                "Name", "Extension", "Size", "Modified"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
-            };
+        //     },
+        //     new String [] {
+        //         "Name", "Extension", "Size", "Modified"
+        //     }
+        // ) {
+        //     Class[] types = new Class [] {
+        //         java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+        //     };
+        //     boolean[] canEdit = new boolean [] {
+        //         false, false, false, false
+        //     };
 
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
+        //     public Class getColumnClass(int columnIndex) {
+        //         return types [columnIndex];
+        //     }
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jFileTable.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(jFileTable);
-        if (jFileTable.getColumnModel().getColumnCount() > 0) {
-            jFileTable.getColumnModel().getColumn(0).setPreferredWidth(480);
-            jFileTable.getColumnModel().getColumn(1).setPreferredWidth(30);
-            jFileTable.getColumnModel().getColumn(2).setPreferredWidth(30);
-            jFileTable.getColumnModel().getColumn(3).setPreferredWidth(60);
-        }
+        //     public boolean isCellEditable(int rowIndex, int columnIndex) {
+        //         return canEdit [columnIndex];
+        //     }
+        // });
 
         jButtonSDRefresh.setText("Refresh");
         jButtonSDRefresh.setEnabled(false);
@@ -385,12 +393,12 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
         }
         if (USBBulkConnection.GetConnection().isConnected()) {
-            final JFileChooser fc = new JFileChooser(prefs.getCurrentFileDirectory());
+            final JFileChooser fc = new NativeJFileChooser(prefs.getCurrentFileDirectory());
             int returnVal = fc.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                prefs.setCurrentFileDirectory(fc.getCurrentDirectory().getPath());
                 File f = fc.getSelectedFile();
                 if (f != null) {
+                    prefs.setCurrentFileDirectory(f.getParentFile().toString());
                     if (!f.canRead()) {
                         Logger.getLogger(FileManagerFrame.class.getName()).log(Level.SEVERE, "Can''t read file");
                         return;
@@ -478,7 +486,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             // System.out.println(String.format("SD free: %d MB, Cluster size: %d", ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)), (clustersize * sectorsize)));
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private axoloti.menus.FileMenu fileMenu1;
     private javax.swing.JButton jButtonSDRefresh;
     private javax.swing.JButton jButtonCreateDir;
@@ -488,9 +495,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     private javax.swing.JLabel jLabelSDInfo;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private ScrollPaneComponent jScrollPane1;
     private axoloti.menus.WindowMenu windowMenu1;
-    // End of variables declaration//GEN-END:variables
 
     void ShowConnect(boolean status) {
         jButtonSDRefresh.setEnabled(status);

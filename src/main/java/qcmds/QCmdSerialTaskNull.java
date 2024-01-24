@@ -32,7 +32,7 @@ public class QCmdSerialTaskNull implements QCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "Start QCmdSerialTaskNull...";
+        return "Starting QCmdSerialTaskNull...";
     }
 
     @Override

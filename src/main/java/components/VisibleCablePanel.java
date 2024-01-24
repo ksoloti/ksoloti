@@ -57,7 +57,7 @@ public class VisibleCablePanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buttonGroup1 = new javax.swing.ButtonGroup();
+        // buttonGroup1 = new javax.swing.ButtonGroup();
         jLabelVisibleCables = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jCheckBox1 = new javax.swing.JCheckBox();
@@ -157,8 +157,7 @@ public class VisibleCablePanel extends javax.swing.JPanel {
         p.updateNetVisibility();
     }//GEN-LAST:event_jCheckBox5ActionPerformed
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup buttonGroup1;
+    // private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox4;
@@ -167,5 +166,4 @@ public class VisibleCablePanel extends javax.swing.JPanel {
     private javax.swing.JCheckBox jCheckBox7;
     private javax.swing.JLabel jLabelVisibleCables;
     private javax.swing.JPanel jPanel2;
-    // End of variables declaration//GEN-END:variables
 }

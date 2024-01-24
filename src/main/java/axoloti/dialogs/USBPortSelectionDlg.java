@@ -19,6 +19,8 @@ package axoloti.dialogs;
 
 import axoloti.MainFrame;
 
+import static axoloti.MainFrame.mainframe;
+import static axoloti.MainFrame.prefs;
 import static axoloti.usb.Usb.DeviceToPath;
 import static axoloti.usb.Usb.PID_AXOLOTI;
 import static axoloti.usb.Usb.PID_AXOLOTI_SDCARD;
@@ -32,7 +34,12 @@ import static axoloti.usb.Usb.VID_STM;
 
 import axoloti.utils.OSDetect;
 import static axoloti.utils.OSDetect.getOS;
+
+import java.awt.Dimension;
+
 import axoloti.utils.Preferences;
+import components.ScrollPaneComponent;
+
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -72,11 +79,15 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     public USBPortSelectionDlg(java.awt.Frame parent, boolean modal, String defCPUID) {
         super(parent, modal);
         initComponents();
+        setSize(new Dimension(480,200));
+        setTitle("Select Device");
+        setLocation((int)mainframe.getLocation().getX() + 60, (int)getLocation().getY() + 80);
         System.out.println("default cpuid: " + defCPUID);
         this.defCPUID = defCPUID;
         cpuid = defCPUID;
         Populate();
         getRootPane().setDefaultButton(jButtonOK);
+        jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -84,7 +95,11 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 int r = jTable1.getSelectedRow();
                 if (r >= 0) {
                     String devName = (String) model.getValueAt(r, 1);
-                    if (devName.equals(sKsolotiCore)) {
+                    if (!prefs.getAxolotiLegacyMode() && devName.equals(sKsolotiCore)) {
+                        jButtonOK.setEnabled(true);
+                        cpuid = (String) model.getValueAt(r, 3);
+                    }
+                    else if (prefs.getAxolotiLegacyMode() && devName.equals(sAxolotiCore)) {
                         jButtonOK.setEnabled(true);
                         cpuid = (String) model.getValueAt(r, 3);
                     } else {
@@ -112,6 +127,13 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 prefs.SavePrefs();
             }
         });
+
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(100);
+            jTable1.getColumnModel().getColumn(1).setPreferredWidth(100);
+            jTable1.getColumnModel().getColumn(2).setPreferredWidth(20);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(40);
+        }
         
         
     }
@@ -198,7 +220,8 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             }
                         }
                     }
-                    else if (descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI)
+
+                    else if (!prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI)
                     {
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);
@@ -215,10 +238,35 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             LibUsb.close(handle);
                         }
                     }
-                    else if (descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD)
+
+                    else if (!prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD)
                     {
                         model.addRow(new String[]{"",sKsolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
                     }
+
+                    else if (prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI)
+                    {
+                        DeviceHandle handle = new DeviceHandle();
+                        result = LibUsb.open(device, handle);
+                        if (result < 0)
+                        {
+                            model.addRow(new String[]{"",sAxolotiCore, DeviceToPath(device), ErrorString(result)});
+                        }
+                        else
+                        {
+                            String serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
+                            String name = MainFrame.prefs.getBoardName(serial);
+                            if(name==null) name = "";
+                            model.addRow(new String[]{name,sAxolotiCore, DeviceToPath(device), serial});
+                            LibUsb.close(handle);
+                        }
+                    }
+
+                    else if (prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI_SDCARD)
+                    {
+                        model.addRow(new String[]{"",sAxolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
+                    }
+
                 } else {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
@@ -252,10 +300,10 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     private void initComponents() {
 
         jButtonOK = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        // jLabel1 = new javax.swing.JLabel();
         jButtonCancel = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        jButtonRefresh = new javax.swing.JButton();
+        jScrollPane2 = new ScrollPaneComponent();
         jTable1 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -270,7 +318,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             }
         });
 
-        jLabel1.setText("Select device:");
+        // jLabel1.setText("Select device:");
 
         jButtonCancel.setText("Cancel");
         jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
@@ -279,8 +327,8 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             }
         });
 
-        jButton1.setText("refresh");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonRefresh.setText("Refresh");
+        jButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
@@ -325,14 +373,16 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButtonCancel)
+                        .addComponent(jButtonRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonOK, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jButtonCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(15, 15, 15)
+                        .addComponent(jButtonOK, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                        // .addComponent(jLabel1)
                         .addGap(146, 146, 146)
-                        .addComponent(jButton1)
+                        .addComponent(jButtonRefresh)
                         .addGap(0, 88, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -340,13 +390,14 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(1, 1, 1)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jButton1))
+                // .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    // .addComponent(jLabel1)
+                    // .addComponent(jButtonRefresh))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
                 .addGap(11, 11, 11)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonRefresh)
                     .addComponent(jButtonCancel)
                     .addComponent(jButtonOK))
                 .addContainerGap())
@@ -385,12 +436,9 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     }
     
     
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButtonRefresh;
     private javax.swing.JButton jButtonCancel;
     private javax.swing.JButton jButtonOK;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private ScrollPaneComponent jScrollPane2;
     private javax.swing.JTable jTable1;
-    // End of variables declaration//GEN-END:variables
 }

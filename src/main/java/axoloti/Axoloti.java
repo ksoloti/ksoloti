@@ -19,8 +19,9 @@ package axoloti;
 
 import axoloti.object.AxoObjects;
 import axoloti.utils.OSDetect;
-import axoloti.utils.Preferences;
 import axoloti.utils.OSDetect.OS;
+
+import static axoloti.MainFrame.prefs;
 
 import java.awt.EventQueue;
 import java.awt.SplashScreen;
@@ -57,7 +58,7 @@ public class Axoloti
         {
             initProperties();
 
-            Preferences.LoadPreferences().applyTheme();
+            prefs.applyTheme();
 
             if (OSDetect.getOS() == OSDetect.OS.MAC)
             {
@@ -146,7 +147,11 @@ public class Axoloti
 
     public static boolean isDeveloper()
     {
+        
         String fwEnv = System.getProperty(FIRMWARE_DIR);
+        if (prefs.getAxolotiLegacyMode()) {
+            fwEnv += "_axoloti_legacy";
+        }
         if (cacheFWDir != null && fwEnv.equals(cacheFWDir))
         {
             return cacheDeveloper;
@@ -156,7 +161,11 @@ public class Axoloti
         cacheDeveloper = false;
 
         String dirRelease = System.getProperty(RELEASE_DIR);
+
         String fwRelease = dirRelease + File.separator + "firmware";
+        if (prefs.getAxolotiLegacyMode()) {
+            fwRelease += "_axoloti_legacy";
+        }
 
         if (!fwRelease.equals(cacheFWDir))
         {
@@ -289,13 +298,16 @@ public class Axoloti
             System.err.println("Firmware directory is invalid");
         }
 
+        String fwdir = System.getProperty(FIRMWARE_DIR);
+        if (prefs.getAxolotiLegacyMode()) {
+            fwdir += "_axoloti_legacy";
+        }
+
         System.out.println("Directories:\n"
                 + "Current = " + curDir + "\n"
                 + "Jar = " + jarDir + "\n"
                 + "PatcherHome = " + System.getProperty(HOME_DIR) + "\n"
-                // + "Release = " + System.getProperty(RELEASE_DIR) + "\n"
-                // + "Runtime = " + System.getProperty(RUNTIME_DIR) + "\n"
-                + "Firmware = " + System.getProperty(FIRMWARE_DIR) + "\n"
+                + "Firmware = " + fwdir + "\n"
                 + "Libraries = " + System.getProperty(LIBRARIES_DIR)
         );
     }
