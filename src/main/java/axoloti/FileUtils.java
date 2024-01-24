@@ -138,6 +138,8 @@ public class FileUtils {
 
     public static void Open() {
         JFrame frame = new JFrame();
+        frame.setSize(0,0);
+        frame.setUndecorated(true);
         frame.setVisible(true);
 
         NativeJFileChooser fc = new NativeJFileChooser(prefs.getCurrentFileDirectory());
@@ -167,15 +169,9 @@ public class FileUtils {
                     || axsFileFilter.accept(f)
                     || axhFileFilter.accept(f)) {
                 PatchGUI.OpenPatch(f);
-                // MainFrame.prefs.addRecentFile(f.getAbsolutePath());
             } else if (axbFileFilter.accept(f)) {
                 PatchBank.OpenBank(f);
-                // MainFrame.prefs.addRecentFile(f.getAbsolutePath());
             }
-        }
-        else {
-            /* little hack to fix focus loss/frame minimalize when canceling file selection */
-            // frame.requestFocus();
         }
         frame.setVisible(false);
     }

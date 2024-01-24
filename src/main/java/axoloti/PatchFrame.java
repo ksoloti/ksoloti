@@ -821,8 +821,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     File FileChooserSave(String title) {
 
         JFrame frame = new JFrame();
-        // frame.setAlwaysOnTop(true);
+        frame.setSize(0,0);
+        frame.setUndecorated(true);
         frame.setVisible(true);
+
 
         NativeJFileChooser fc = new NativeJFileChooser(prefs.getCurrentFileDirectory());
         fc.setDialogTitle(title);
