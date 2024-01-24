@@ -75,7 +75,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
         jTextFieldCodeFontSize.setText(Integer.toString(prefs.getCodeFontSize()));
 
-        txtFavDir.setText(prefs.getFavouriteDir());
+        jTextFieldFavDir.setText(prefs.getFavouriteDir());
 
         jControllerEnabled.setSelected(prefs.isControllerEnabled());
         jTextFieldController.setText(prefs.getControllerObject());
@@ -120,6 +120,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         MainFrame.mainframe.updateConsoleFont();
         prefs.setMouseDialAngular(jComboBoxDialMouseBehaviour.getSelectedItem().equals("Angular"));
         prefs.setAxolotiLegacyMode(jComboBoxAxolotiLegacyMode.getSelectedItem().equals("Axoloti (Legacy)"));
+        prefs.setFavouriteDir(jTextFieldFavDir.getText());
         prefs.setControllerObject(jTextFieldController.getText().trim());
         prefs.setControllerEnabled(jControllerEnabled.isSelected());
         prefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
@@ -162,7 +163,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jComboBoxDialMouseBehaviour = new javax.swing.JComboBox();
         jComboBoxAxolotiLegacyMode = new javax.swing.JComboBox();
         jLabelFavouritesDir = new javax.swing.JLabel();
-        txtFavDir = new javax.swing.JLabel();
+        jTextFieldFavDir = new javax.swing.JTextField();
         btnFavDir = new javax.swing.JButton();
         jLabelController = new javax.swing.JLabel();
         jTextFieldController = new javax.swing.JTextField();
@@ -227,18 +228,19 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
         jLabelFavouritesDir.setText("Favourites Dir");
 
-        txtFavDir.setText("test");
-        txtFavDir.setToolTipText("Select a folder/subfolder with patch files to conveniently access them via the file menu.");
+        jTextFieldFavDir.setText("test");
+        jTextFieldFavDir.setToolTipText("Select a folder/subfolder with patch files to conveniently access them via the file menu.");
+        jTextFieldFavDir.setEditable(false);
 
         btnFavDir.setText("Browse...");
-        btnFavDir.setToolTipText(txtFavDir.getToolTipText());
+        btnFavDir.setToolTipText(jTextFieldFavDir.getToolTipText());
         btnFavDir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnFavDirActionPerformed(evt);
             }
         });
 
-        jLabelFavouritesDir.setToolTipText(txtFavDir.getToolTipText());
+        jLabelFavouritesDir.setToolTipText(jTextFieldFavDir.getToolTipText());
 
         jLabelController.setText("Controller Object");
         jLabelController.setToolTipText("A controller object runs invisibly in the background on the Core, regardless of which patch is currently loaded. This is useful for implementing a patch change system.");
@@ -380,7 +382,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
 
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextFieldFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 )
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             )
@@ -480,7 +482,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
                 .addContainerGap()
 
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtFavDir)
+                    .addComponent(jTextFieldFavDir)
                     .addComponent(jLabelFavouritesDir)
                     .addComponent(btnFavDir)
                 )
@@ -581,7 +583,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
             try {
                 dir = chooser.getSelectedFile().getCanonicalPath();
                 prefs.setFavouriteDir(dir);
-                txtFavDir.setText(dir);
+                jTextFieldFavDir.setText(dir);
             } catch (IOException ex) {
                 Logger.getLogger(PreferencesFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -631,7 +633,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
             case JOptionPane.NO_OPTION:
                 break;
         }
-    } 
+    }
 
     private void jResetLibActionPerformed(java.awt.event.ActionEvent evt) {
         boolean delete = false;
@@ -720,5 +722,5 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTextFieldController;
     private javax.swing.JTextField jTextFieldPollInterval;
     private javax.swing.JTextField jTextFieldCodeFontSize;
-    private javax.swing.JLabel txtFavDir;
+    private javax.swing.JTextField jTextFieldFavDir;
 }
