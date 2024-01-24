@@ -56,6 +56,9 @@ public abstract class QCmdShellTask implements QCmd {
                     if (line.contains("error")) {
                         Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "{0}",line);
                     }
+                    else if (line.contains("overflowed by")) {
+                        Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.WARNING, "{0}\n>>> Patch is too complex to fit in internal RAM. <<<",line);
+                    }
                     else if (line.contains("warning")) {
                         Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.WARNING, "{0}",line);
                     }
