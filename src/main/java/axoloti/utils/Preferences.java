@@ -119,6 +119,7 @@ public class Preferences {
     String[] ObjectPath;
 
     boolean isDirty = false;
+    boolean restartRequired = false;
 
     final int nRecentFiles = 16;
 
@@ -319,8 +320,11 @@ public class Preferences {
     }
 
     public void setTheme(String Theme) {
-        if (Theme == this.Theme) return;
+        if (Theme.equals(this.Theme)) {
+            return;
+        }
         this.Theme = Theme;
+        restartRequired = true;
         SetDirty();
     }
 
@@ -415,6 +419,9 @@ public class Preferences {
 
     public void SavePrefs() {
         Logger.getLogger(Preferences.class .getName()).log(Level.INFO, "Saving preferences...");
+        if (restartRequired) {
+            Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, ">>> RESTART REQUIRED <<<");
+        }
         Serializer serializer = new Persister();
         File f = new File(GetPrefsFileLoc());
 
@@ -499,6 +506,7 @@ public class Preferences {
             return;
         }
         this.FavouriteDir = favouriteDir;
+        restartRequired = true;
         SetDirty();
     }
 
