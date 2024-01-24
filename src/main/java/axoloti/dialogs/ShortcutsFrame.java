@@ -18,6 +18,7 @@
 package axoloti.dialogs;
 
 import axoloti.Version;
+import axoloti.utils.Constants;
 import components.ScrollPaneComponent;
 
 import java.awt.Desktop;
@@ -43,7 +44,7 @@ public class ShortcutsFrame extends javax.swing.JFrame {
      */
     public ShortcutsFrame() {
         initComponents();
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
+        setIconImage(Constants.APP_ICON.getImage());
         try {
             jTextPaneShortcutsHtml.setPage(getClass().getResource("/resources/shortcuts.html"));
         } catch (IOException ex) {

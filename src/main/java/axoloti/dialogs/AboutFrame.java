@@ -18,6 +18,7 @@
 package axoloti.dialogs;
 
 import axoloti.Version;
+import axoloti.utils.Constants;
 import components.ScrollPaneComponent;
 
 import java.awt.Desktop;
@@ -26,7 +27,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -43,7 +43,7 @@ public class AboutFrame extends javax.swing.JFrame {
      */
     public AboutFrame() {
         initComponents();
-        setIconImage(new ImageIcon(getClass().getResource("/resources/axoloti_icon.png")).getImage());
+        setIconImage(Constants.APP_ICON.getImage());
         try {
             jTextPaneAboutHtml.setPage(getClass().getResource("/resources/about.html"));
         } catch (IOException ex) {

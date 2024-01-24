@@ -20,6 +20,7 @@ package axoloti.dialogs;
 import axoloti.Patch;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.parameters.ParameterInstance;
+import axoloti.utils.Constants;
 import components.ScrollPaneComponent;
 
 import java.util.Collection;
@@ -38,7 +39,7 @@ public class MidiAssignments extends javax.swing.JDialog {
     public MidiAssignments(java.awt.Frame parent, boolean modal, ParameterInstance param) {
         super(parent, modal);
         initComponents();
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
+        setIconImage(Constants.APP_ICON.getImage());
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         Patch patch = param.GetObjectInstance().patch;
         String CCObj[] = new String[128];

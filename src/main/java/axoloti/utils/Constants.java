@@ -24,6 +24,7 @@ import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 
+import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
 // import java.io.InputStream;
@@ -54,6 +55,8 @@ public class Constants {
     public static final String DRAGGED_OBJECT_LAYER_PANEL = "DRAGGED_OBJECT_LAYER_PANEL";
 
     public static final int ANCESTOR_CACHE_SIZE = 1024;
+
+    public static ImageIcon APP_ICON;
 
     Constants() {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();

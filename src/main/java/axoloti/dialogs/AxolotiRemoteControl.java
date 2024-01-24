@@ -20,6 +20,7 @@ package axoloti.dialogs;
 import axoloti.ConnectionStatusListener;
 import axoloti.MainFrame;
 import axoloti.USBBulkConnection;
+import axoloti.utils.Constants;
 import components.RControlButtonWithLed;
 import components.RControlColorLed;
 import components.RControlEncoder;
@@ -52,7 +53,7 @@ public class AxolotiRemoteControl extends javax.swing.JFrame implements Connecti
     public AxolotiRemoteControl() {
         initComponents();
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
+        setIconImage(Constants.APP_ICON.getImage());
         jPanelLCD.setLayout(new FlowLayout());
         ImageIcon ii = new ImageIcon(bImageScaled) {
             @Override

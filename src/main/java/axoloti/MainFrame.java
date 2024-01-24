@@ -61,7 +61,6 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import javax.swing.BoundedRangeModel;
-import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
@@ -122,7 +121,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         initComponents();
         fileMenu.initComponents();
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
+        setIconImage(Constants.APP_ICON.getImage());
 
         transparentCursor = getToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(), null);
 
@@ -423,7 +422,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         EventQueue.invokeLater(r);
                     }
                 } else if (arg.endsWith(".axo")) {
-                    // NOP for AXO at the moment
+                    // NewPatch();
+                    // NOP for AXO at the moment - new patch and paste object as embedded inside?
                 }
             }
         }
@@ -543,7 +543,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelColumn1.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jPanelColumn1.setLayout(new javax.swing.BoxLayout(jPanelColumn1, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jLabelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/ksoloti_icon.png"))); // NOI18N
+        jLabelIcon.setIcon(Constants.APP_ICON);
+
         jPanelColumn1.add(jLabelIcon);
 
         jPanelHeader.add(jPanelColumn1);

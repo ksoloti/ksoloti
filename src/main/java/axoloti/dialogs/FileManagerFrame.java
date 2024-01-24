@@ -23,6 +23,7 @@ import static axoloti.MainFrame.prefs;
 import axoloti.SDCardInfo;
 import axoloti.SDFileInfo;
 import axoloti.USBBulkConnection;
+import axoloti.utils.Constants;
 import components.ScrollPaneComponent;
 import li.flor.nativejfilechooser.NativeJFileChooser;
 
@@ -70,7 +71,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         fileMenu1.initComponents();
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
         USBBulkConnection.GetConnection().addSDCardMountStatusListener(this);
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
+        setIconImage(Constants.APP_ICON.getImage());
         jLabelSDInfo.setText("");
 
         jFileTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

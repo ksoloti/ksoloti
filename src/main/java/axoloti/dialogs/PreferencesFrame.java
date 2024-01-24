@@ -64,7 +64,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private PreferencesFrame() {
 
         setTitle("Preferences");
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon.png")).getImage());
+        setIconImage(Constants.APP_ICON.getImage());
 
         setLocation((int)MainFrame.mainframe.getLocation().getX() + 120, (int)MainFrame.mainframe.getLocation().getY() + 60);
 
