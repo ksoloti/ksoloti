@@ -364,6 +364,17 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         }
                     }
 
+                    // ksoloti-objects library force and upgrade
+                    // Im stashing changes here, just in case, but in reality users should not be altering factory 
+                    ulib = prefs.getLibrary(AxolotiLibrary.KSOLOTI_LIBRARY_ID);
+                    if (ulib != null) {
+                        String cb = ulib.getCurrentBranch();
+                        if (!cb.equalsIgnoreCase(ulib.getBranch())) {
+                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current ksoloti-objects library does not match specified version, upgrading... ({0} -> {1})", new Object[]{cb, ulib.getBranch()});
+                            ulib.upgrade();
+                        }
+                    }
+
                     // if (!Axoloti.isFailSafeMode()) {
                         for (AxolotiLibrary lib : prefs.getLibraries()) {
                             if (lib.isAutoSync() && lib.getEnabled()) {
