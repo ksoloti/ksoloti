@@ -38,6 +38,8 @@ axoloti_osx.zip
 private_key.*
 axoloti.prefs
 ksoloti.prefs
+temp*.cpp
+temp*.h
 
 #libraries
 home/
