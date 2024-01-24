@@ -191,8 +191,12 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
         });
 
-        jTable1.getColumnModel().getColumn(0).setPreferredWidth(10);
-        jTable1.getColumnModel().getColumn(1).setPreferredWidth(90);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(10);
+            jTable1.getColumnModel().getColumn(1).setPreferredWidth(300);
+            jTable1.getColumnModel().getColumn(2).setPreferredWidth(200);
+        }
+
         jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -577,7 +581,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
         getContentPane().add(jScrollPane1);
 
-        jButtonUp.setText("Move up");
+        jButtonUp.setText(" Move up ");
         jButtonUp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonUpActionPerformed(evt);
@@ -598,7 +602,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             }
         });
 
-        jButtonAdd.setText("Add");
+        jButtonAdd.setText(" Add ");
         jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonAddActionPerformed(evt);
@@ -612,7 +616,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             }
         });
 
-        jButtonUpload.setText("Upload Patch");
+        jButtonUpload.setText("Upload Selected");
         jButtonUpload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonUploadActionPerformed(evt);
@@ -628,13 +632,13 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 .addComponent(jButtonUp)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonDown)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addComponent(jButtonAdd)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonRemove)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonAdd)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonOpen)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
                 .addComponent(jButtonUpload)
                 .addContainerGap())
         );
@@ -645,8 +649,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonUp)
                     .addComponent(jButtonDown)
-                    .addComponent(jButtonRemove)
                     .addComponent(jButtonAdd)
+                    .addComponent(jButtonRemove)
                     .addComponent(jButtonOpen)
                     .addComponent(jButtonUpload)))
         );
