@@ -275,11 +275,18 @@ public class FileMenu extends JMenu {
     }
 
     private void jMenuSyncActionPerformed(java.awt.event.ActionEvent evt) {
-        for (AxolotiLibrary lib : Preferences.LoadPreferences().getLibraries()) {
-            lib.sync();
+        class Thd extends Thread {
+            public void run() {
+                Logger.getLogger(FileMenu.class.getName()).log(Level.INFO, "Syncing Libraries, please wait...");
+                for (AxolotiLibrary lib : Preferences.LoadPreferences().getLibraries()) {
+                    lib.sync();
+                }
+                Logger.getLogger(FileMenu.class.getName()).log(Level.INFO, "Finished syncing Libraries.\n");
+                axoObjects.LoadAxoObjects();
+            }
         }
-        Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "");
-        axoObjects.LoadAxoObjects();
+        Thd thread = new Thd();
+        thread.start();
     }
 
     private void jMenuNewBankActionPerformed(java.awt.event.ActionEvent evt) {
