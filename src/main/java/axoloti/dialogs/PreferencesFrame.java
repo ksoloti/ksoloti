@@ -48,6 +48,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
     static PreferencesFrame singleton = null;
 
+    Preferences prefs = Preferences.LoadPreferences();
+
     public static PreferencesFrame GetPreferencesFrame() {
         if (singleton == null) {
             singleton = new PreferencesFrame();
@@ -68,7 +70,6 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
         initComponents();
 
-        Preferences prefs = Preferences.LoadPreferences();
 
         jTextFieldPollInterval.setText(Integer.toString(prefs.getPollInterval()));
 
@@ -83,6 +84,9 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jCheckBoxNoMouseReCenter.setSelected(prefs.getMouseDoNotRecenterWhenAdjustingControls());
 
         if (prefs.getMouseDialAngular()) jComboBoxDialMouseBehaviour.setSelectedItem("Angular"); 
+
+        if (prefs.getAxolotiLegacyMode()) jComboBoxAxolotiLegacyMode.setSelectedItem("Axoloti (Legacy)"); 
+
         jComboBoxTheme.setSelectedItem(prefs.getTheme());
 
         PopulateLibrary();
@@ -108,14 +112,14 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
     void Apply() {
 
-        Preferences prefs = Preferences.LoadPreferences();
+        // Preferences prefs = Preferences.LoadPreferences();
 
         prefs.setPollInterval(Integer.parseInt(jTextFieldPollInterval.getText()));
         prefs.setCodeFontSize(Integer.parseInt(jTextFieldCodeFontSize.getText()));
         Constants.FONT_MONO = Constants.FONT_MONO.deriveFont((float)prefs.getCodeFontSize());
         MainFrame.mainframe.updateConsoleFont();
         prefs.setMouseDialAngular(jComboBoxDialMouseBehaviour.getSelectedItem().equals("Angular"));
-        prefs.setFavouriteDir(txtFavDir.getText());
+        prefs.setAxolotiLegacyMode(jComboBoxAxolotiLegacyMode.getSelectedItem().equals("Axoloti (Legacy)"));
         prefs.setControllerObject(jTextFieldController.getText().trim());
         prefs.setControllerEnabled(jControllerEnabled.isSelected());
         prefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
@@ -131,7 +135,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
             model.removeRow(0);
         }
 
-        for (AxolotiLibrary lib : Preferences.LoadPreferences().getLibraries()) {
+        for (AxolotiLibrary lib : prefs.getLibraries()) {
             model.addRow(new Object[]{lib.getType(), lib.getId(), lib.getLocalLocation(), lib.getEnabled()});
         }
 
@@ -154,7 +158,9 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jLabelCodeFontSize = new javax.swing.JLabel();
         jButtonSave = new javax.swing.JButton();
         jLabelDialMouseBehaviour = new javax.swing.JLabel();
+        jLabelAxolotiLegacyMode = new javax.swing.JLabel();
         jComboBoxDialMouseBehaviour = new javax.swing.JComboBox();
+        jComboBoxAxolotiLegacyMode = new javax.swing.JComboBox();
         jLabelFavouritesDir = new javax.swing.JLabel();
         txtFavDir = new javax.swing.JLabel();
         btnFavDir = new javax.swing.JButton();
@@ -201,12 +207,23 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
         jLabelDialMouseBehaviour.setText("Dial Mouse Behaviour");
 
+        jLabelAxolotiLegacyMode.setText("Axoloti Legacy Mode (restart required)");
+        jLabelAxolotiLegacyMode.setToolTipText("<html>Legacy support of Axoloti Core.<p>Select \"Axoloti (Legacy)\" if you want this copy of the patcher to connect to Axoloti Cores instead of Ksoloti Cores.<p>FOR WHATEVER OPTION IS ACTIVE, THE PATCHER WILL ONLY DETECT THAT PARTICULAR BOARD TYPE.<p>You can run another copy of the patcher in \"Ksoloti (Default)\" mode to connect to both types of boards simultaneously.");
+
         jComboBoxDialMouseBehaviour.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Vertical", "Angular" }));
         jComboBoxDialMouseBehaviour.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxDialMouseBehaviourActionPerformed(evt);
             }
         });
+
+        jComboBoxAxolotiLegacyMode.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Ksoloti (Default)", "Axoloti (Legacy)" }));
+        jComboBoxAxolotiLegacyMode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxAxolotiLegacyModeActionPerformed(evt);
+            }
+        });
+        jComboBoxAxolotiLegacyMode.setToolTipText(jLabelAxolotiLegacyMode.getToolTipText());
 
         jLabelFavouritesDir.setText("Favourites Dir");
 
@@ -356,7 +373,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
                             .addComponent(jLabelFavouritesDir)
                             .addComponent(jLabelLibraries)
                         )
-                        .addGap(34, 34, 34)
+                        .addGap(15, 15, 15)
 
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 
@@ -412,8 +429,13 @@ public class PreferencesFrame extends javax.swing.JFrame {
                                 .addComponent(jLabelTheme, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jComboBoxTheme, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(105, 105, 105)
+                            )
+
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabelAxolotiLegacyMode)
+                                .addGap(5, 5, 5)
+                                .addComponent(jComboBoxAxolotiLegacyMode, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(166, 166, 166)
                                 .addComponent(jButtonSave, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                             )
                         )
@@ -437,7 +459,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelDialMouseBehaviour)
-                                .addGap(75, 75, 75)
+                                .addGap(101, 101, 101)
                                 .addComponent(jComboBoxDialMouseBehaviour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(10, 10, 10)
                                 .addComponent(jCheckBoxNoMouseReCenter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -521,6 +543,11 @@ public class PreferencesFrame extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabelTheme)
                             .addComponent(jComboBoxTheme, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        )
+
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabelAxolotiLegacyMode)
+                            .addComponent(jComboBoxAxolotiLegacyMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButtonSave)
                         )
                     )
@@ -535,22 +562,25 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
     private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {
         Apply();
-        Preferences.LoadPreferences().SavePrefs();
+        prefs.SavePrefs();
         setVisible(false);
     }
 
     private void jComboBoxDialMouseBehaviourActionPerformed(java.awt.event.ActionEvent evt) {
     }
 
+    private void jComboBoxAxolotiLegacyModeActionPerformed(java.awt.event.ActionEvent evt) {
+    }
+
     private void btnFavDirActionPerformed(java.awt.event.ActionEvent evt) {
-        JFileChooser chooser = new NativeJFileChooser(Preferences.LoadPreferences().getCurrentFileDirectory());
+        JFileChooser chooser = new NativeJFileChooser(prefs.getCurrentFileDirectory());
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             String dir;
             try {
                 dir = chooser.getSelectedFile().getCanonicalPath();
-                Preferences.LoadPreferences().setFavouriteDir(dir);
+                prefs.setFavouriteDir(dir);
                 txtFavDir.setText(dir);
             } catch (IOException ex) {
                 Logger.getLogger(PreferencesFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -574,7 +604,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
             newlib = new AxoFileLibrary();
         }
         newlib.clone(lib);
-        Preferences.LoadPreferences().updateLibrary(lib.getId(), newlib);
+        prefs.updateLibrary(lib.getId(), newlib);
         PopulateLibrary();
     }
 
@@ -592,7 +622,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
             case JOptionPane.YES_OPTION: {
                 if (idx >= 0)
                 {
-                    Preferences.LoadPreferences().removeLibrary(id);
+                    prefs.removeLibrary(id);
                 }
 
                 PopulateLibrary();
@@ -613,7 +643,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         }
         delete = (res == JOptionPane.OK_OPTION);
 
-        Preferences.LoadPreferences().ResetLibraries(delete);
+        prefs.ResetLibraries(delete);
         PopulateLibrary();
     }
 
@@ -626,26 +656,26 @@ public class PreferencesFrame extends javax.swing.JFrame {
     }
 
     private void jLibStatusActionPerformed(java.awt.event.ActionEvent evt) {
-        for (AxolotiLibrary lib : Preferences.LoadPreferences().getLibraries()) {
+        for (AxolotiLibrary lib : prefs.getLibraries()) {
             lib.reportStatus();
         }
     }
 
     private void jComboBoxThemeActionPerformed(java.awt.event.ActionEvent evt) {
-        Preferences.LoadPreferences().setTheme(jComboBoxTheme.getSelectedItem().toString());
-        Preferences.LoadPreferences().applyTheme();
+        prefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
+        prefs.applyTheme();
         SwingUtilities.updateComponentTreeUI(this); /* Preview theme via preferences window */
     }
 
     private void jCheckBoxNoMouseReCenterActionPerformed(java.awt.event.ActionEvent evt) {
-        Preferences.LoadPreferences().setMouseDoNotRecenterWhenAdjustingControls(jCheckBoxNoMouseReCenter.isSelected());
+        prefs.setMouseDoNotRecenterWhenAdjustingControls(jCheckBoxNoMouseReCenter.isSelected());
     }
 
     private void editLibraryRow(int idx) {
         if (idx >= 0) {
             DefaultTableModel model = (DefaultTableModel) jLibraryTable.getModel();
             String id = (String) model.getValueAt(idx, 1);
-            AxolotiLibrary lib = Preferences.LoadPreferences().getLibrary(id);
+            AxolotiLibrary lib = prefs.getLibrary(id);
             if (lib != null) {
                 String type = lib.getType();
                 AxolotiLibraryEditor d = new AxolotiLibraryEditor(this, true, lib);
@@ -658,7 +688,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
                    }
                   updlib.clone(lib);
                 }
-                Preferences.LoadPreferences().updateLibrary(lib.getId(), updlib);
+                prefs.updateLibrary(lib.getId(), updlib);
                 PopulateLibrary();
             }
         }
@@ -670,6 +700,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButtonSave;
     private javax.swing.JCheckBox jCheckBoxNoMouseReCenter;
     private javax.swing.JComboBox jComboBoxDialMouseBehaviour;
+    private javax.swing.JComboBox jComboBoxAxolotiLegacyMode;
     private javax.swing.JCheckBox jControllerEnabled;
     private javax.swing.JButton jDelLibBtn;
     private javax.swing.JButton jEditLib;
@@ -677,6 +708,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelPollInterval;
     private javax.swing.JLabel jLabelCodeFontSize;
     private javax.swing.JLabel jLabelDialMouseBehaviour;
+    private javax.swing.JLabel jLabelAxolotiLegacyMode;
     private javax.swing.JLabel jLabelFavouritesDir;
     private javax.swing.JLabel jLabelController;
     private javax.swing.JLabel jLabelTheme;

@@ -17,6 +17,8 @@
  */
 package axoloti.usb;
 
+import static axoloti.MainFrame.prefs;
+
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -101,7 +103,8 @@ public class Usb {
                             Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* other STM device:\n{0}", descriptor.dump());
                             hasOne = true;
                         }
-                    } else if (descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI) {
+
+                    } else if (!prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI) {
                         hasOne = true;
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);
@@ -112,7 +115,20 @@ public class Usb {
                             LibUsb.close(handle);
                         }
                         Logger.getLogger(Usb.class.getName()).log(Level.INFO, "  location: {0}", DeviceToPath(device));
+
+                    } else if (prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI) {
+                        hasOne = true;
+                        DeviceHandle handle = new DeviceHandle();
+                        result = LibUsb.open(device, handle);
+                        if (result < 0) {
+                            Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* Axoloti USB device, but can''t access: {0}", LibUsb.strError(result));
+                        } else {
+                            Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* Axoloti USB device, serial #{0}", LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
+                            LibUsb.close(handle);
+                        }
+                        Logger.getLogger(Usb.class.getName()).log(Level.INFO, "  location: {0}", DeviceToPath(device));
                     }
+
                 } else {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }

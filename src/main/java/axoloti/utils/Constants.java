@@ -17,11 +17,12 @@
  */
 package axoloti.utils;
 
+import static axoloti.MainFrame.prefs;
+
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
-// import axoloti.utils.OSDetect.OS;
 
 import javax.swing.UIManager;
 
@@ -64,6 +65,12 @@ public class Constants {
         ge.registerFont(FONT);
         ge.registerFont(FONT_BOLD);
         ge.registerFont(FONT_MENU);
+        if (prefs.getAxolotiLegacyMode()) {
+            APP_ICON = new ImageIcon(Constants.class.getResource("/resources/axoloti_icon.png"));
+        }
+        else {
+            APP_ICON = new ImageIcon(Constants.class.getResource("/resources/ksoloti_icon.png"));
+        }
     }
 
     public static void createFontPatchGUI() {

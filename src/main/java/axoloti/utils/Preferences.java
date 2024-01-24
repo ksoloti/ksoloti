@@ -83,6 +83,8 @@ public class Preferences {
     @Element(required = false)
     Boolean MouseDialAngular;
     @Element(required = false)
+    Boolean AxolotiLegacyMode;
+    @Element(required = false)
     Boolean MouseDoNotRecenterWhenAdjustingControls;
     @Element(required = false)
     Boolean ExpertMode;
@@ -191,6 +193,9 @@ public class Preferences {
         }
         if (MouseDialAngular == null) {
             MouseDialAngular = false;
+        }
+        if (AxolotiLegacyMode == null) {
+            AxolotiLegacyMode = false;
         }
         if (MouseDoNotRecenterWhenAdjustingControls == null) {
             MouseDoNotRecenterWhenAdjustingControls = false;
@@ -449,11 +454,24 @@ public class Preferences {
         return MouseDialAngular;
     }
 
+    public Boolean getAxolotiLegacyMode() {
+        return AxolotiLegacyMode;
+    }
+
     public void setMouseDialAngular(boolean MouseDialAngular) {
         if (this.MouseDialAngular == MouseDialAngular) {
             return;
         }
         this.MouseDialAngular = MouseDialAngular;
+        SetDirty();
+    }
+
+    public void setAxolotiLegacyMode(boolean AxolotiLegacyMode) {
+        if (this.AxolotiLegacyMode == AxolotiLegacyMode) {
+            return;
+        }
+        this.AxolotiLegacyMode = AxolotiLegacyMode;
+        restartRequired = true;
         SetDirty();
     }
 

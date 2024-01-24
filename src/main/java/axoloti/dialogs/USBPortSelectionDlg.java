@@ -20,6 +20,7 @@ package axoloti.dialogs;
 import axoloti.MainFrame;
 
 import static axoloti.MainFrame.mainframe;
+import static axoloti.MainFrame.prefs;
 import static axoloti.usb.Usb.DeviceToPath;
 import static axoloti.usb.Usb.PID_AXOLOTI;
 import static axoloti.usb.Usb.PID_AXOLOTI_SDCARD;
@@ -94,7 +95,11 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 int r = jTable1.getSelectedRow();
                 if (r >= 0) {
                     String devName = (String) model.getValueAt(r, 1);
-                    if (devName.equals(sKsolotiCore)) {
+                    if (!prefs.getAxolotiLegacyMode() && devName.equals(sKsolotiCore)) {
+                        jButtonOK.setEnabled(true);
+                        cpuid = (String) model.getValueAt(r, 3);
+                    }
+                    else if (prefs.getAxolotiLegacyMode() && devName.equals(sAxolotiCore)) {
                         jButtonOK.setEnabled(true);
                         cpuid = (String) model.getValueAt(r, 3);
                     } else {
@@ -215,7 +220,8 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             }
                         }
                     }
-                    else if (descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI)
+
+                    else if (!prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI)
                     {
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);
@@ -232,10 +238,35 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             LibUsb.close(handle);
                         }
                     }
-                    else if (descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD)
+
+                    else if (!prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD)
                     {
                         model.addRow(new String[]{"",sKsolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
                     }
+
+                    else if (prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI)
+                    {
+                        DeviceHandle handle = new DeviceHandle();
+                        result = LibUsb.open(device, handle);
+                        if (result < 0)
+                        {
+                            model.addRow(new String[]{"",sAxolotiCore, DeviceToPath(device), ErrorString(result)});
+                        }
+                        else
+                        {
+                            String serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
+                            String name = MainFrame.prefs.getBoardName(serial);
+                            if(name==null) name = "";
+                            model.addRow(new String[]{name,sAxolotiCore, DeviceToPath(device), serial});
+                            LibUsb.close(handle);
+                        }
+                    }
+
+                    else if (prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI_SDCARD)
+                    {
+                        model.addRow(new String[]{"",sAxolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
+                    }
+
                 } else {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }

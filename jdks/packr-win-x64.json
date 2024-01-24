@@ -11,7 +11,8 @@
     "mainclass": "axoloti.Axoloti",
     "vmargs": [
         "Xms1G",
-        "Xmx1G"
+        "Xmx1G",
+        "Dsun.java2d.dpiaware=true"
     ],
     "resources": [
         "chibios",

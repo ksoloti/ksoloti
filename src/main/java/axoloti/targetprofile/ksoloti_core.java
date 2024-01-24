@@ -17,7 +17,9 @@
  */
 package axoloti.targetprofile;
 
-import axoloti.MainFrame;
+import static axoloti.MainFrame.mainframe;
+import static axoloti.MainFrame.prefs;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
@@ -27,7 +29,7 @@ import java.util.logging.Logger;
  *
  * @author Johannes Taelman
  */
-public class axoloti_core {
+public class ksoloti_core {
 
     enum cputype_e {
         STM32F40xxx,
@@ -37,7 +39,12 @@ public class axoloti_core {
     cputype_e cputype;
 
     public ByteBuffer CreateOTPInfo() {
-        return CreateOTPInfo(1, 1, 0, 32);
+        if (prefs.getAxolotiLegacyMode()) {
+            return CreateOTPInfo(1, 1, 0, 8);
+        }
+        else {
+            return CreateOTPInfo(1, 1, 0, 32);
+        }
     }
 
     public ByteBuffer CreateOTPInfo(
@@ -48,7 +55,15 @@ public class axoloti_core {
     ) {
         try {
             ByteBuffer bb = ByteBuffer.allocate(32);
-            String header = "Ksoloti Core";
+
+            String header;
+            if (prefs.getAxolotiLegacyMode()) {
+                header = "Axoloti Core";
+            }
+            else {
+                header = "Ksoloti Core";
+            }
+
             bb.rewind();
             bb.put(header.getBytes("UTF8"));
             while (bb.position() < 16) {
@@ -61,7 +76,7 @@ public class axoloti_core {
 
             return bb;
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(axoloti_core.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ksoloti_core.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
@@ -76,7 +91,12 @@ public class axoloti_core {
     }
 
     public int getSDRAMSize() {
-        return  32 * 1024 * 1024;  /* 32MB */
+        if (prefs.getAxolotiLegacyMode()) {
+            return  8 * 1024 * 1024;  /* 8MB */
+        }
+        else {
+            return  32 * 1024 * 1024;  /* 32MB */
+        }
     }
 
     public int getOTPAddr() {
@@ -130,7 +150,7 @@ public class axoloti_core {
             if ((v50 > 5.5) || (v50 < 4.5)) {
                 alert = true;
             }
-            MainFrame.mainframe.setVoltages(v50, vdd, alert);
+            mainframe.setVoltages(v50, vdd, alert);
         }
     }
 
@@ -167,10 +187,10 @@ public class axoloti_core {
             while (b.remaining() > 0) {
                 s = s + String.format("%08X", b.getInt());
             }
-            MainFrame.mainframe.setCpuID(s);
+            mainframe.setCpuID(s);
         } else {
-            Logger.getLogger(axoloti_core.class.getName()).log(Level.SEVERE, "Invalid CPU serial number, invalid protocol?, update firmware",new Object());
-            MainFrame.mainframe.setCpuID("CFCFCFCF");
+            Logger.getLogger(ksoloti_core.class.getName()).log(Level.SEVERE, "Invalid CPU serial number, invalid protocol?, update firmware",new Object());
+            mainframe.setCpuID("CFCFCFCF");
         }
     }
 

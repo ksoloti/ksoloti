@@ -297,9 +297,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     //     Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Failsafe mode activated");
                     //     tsuf = "Failsafe";
                     // }
+                    if (prefs.getAxolotiLegacyMode()) {
+                        if (tsuf.length() > 0) {
+                            tsuf += ", ";
+                        }
+                        tsuf += "Axoloti Legacy Mode";
+                    }
                     if (Axoloti.isDeveloper()) {
                         if (tsuf.length() > 0) {
-                            tsuf += ",";
+                            tsuf += ", ";
                         }
                         tsuf += "Developer";
                     }
@@ -307,6 +313,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         MainFrame.this.setTitle(MainFrame.this.getTitle() + " (" + tsuf + ")");
                     }
                     Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Patcher version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
+                    if (prefs.getAxolotiLegacyMode()) {
+                        Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, ">>> Axoloti Legacy Mode <<<\n");
+                    }
 
                     updateLinkFirmwareID();
 
@@ -972,8 +981,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }//GEN-LAST:event_jMenuItemFlashDFUActionPerformed
 
     private void jMenuItemFlashUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemFlashUserActionPerformed
-        String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/flasher/flasher_build/flasher.bin";
-        String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/build/axoloti.bin";
+        String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
+        String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
+        if (prefs.getAxolotiLegacyMode()) {
+            fname += "_axoloti_legacy";
+            pname += "_axoloti_legacy";
+        }
+        fname += "/flasher/flasher_build/flasher.bin";
+        pname += "/build/axoloti.bin";
         flashUsingSDRam(fname, pname);
     }//GEN-LAST:event_jMenuItemFlashUserActionPerformed
 
@@ -987,13 +1002,23 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void jMenuItemFlashDefaultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemFlashDefaultActionPerformed
 
-        String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/flasher/flasher_build/flasher.bin";
-        String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/build/axoloti.bin";
+        String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
+        String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
+        if (prefs.getAxolotiLegacyMode()) {
+            fname += "_axoloti_legacy";
+            pname += "_axoloti_legacy";
+        }
+        fname += "/flasher/flasher_build/flasher.bin";
+        pname += "/build/axoloti.bin";
         flashUsingSDRam(fname, pname);
     }//GEN-LAST:event_jMenuItemFlashDefaultActionPerformed
 
     private void jMenuItemMountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMountActionPerformed
-        String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/mounter/mounter_build/mounter.bin";
+        String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
+        if (prefs.getAxolotiLegacyMode()) {
+            fname += "_axoloti_legacy";
+        }
+        fname += "/mounter/mounter_build/mounter.bin";
         File f = new File(fname);
         if (f.canRead()) {
             qcmdprocessor.AppendToQueue(new QCmdStop());
@@ -1190,7 +1215,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     s = "Running SD card startup patch";
                     break;
                 case -2:
-                    s = "Running flash patch";
+                    s = "Running internal startup patch";
                     break;
                 case -3:
                     s = "Running SD card patch";
@@ -1245,8 +1270,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 "Firmware Update",
                 JOptionPane.YES_NO_OPTION);
         if (s == 0) {
-            String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/flasher/flasher_build/flasher.bin";
-            String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + "/build/axoloti.bin";
+            String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
+            String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
+            if (prefs.getAxolotiLegacyMode()) {
+                fname += "_axoloti_legacy";
+                pname += "_axoloti_legacy";
+            }
+            fname += "/flasher/flasher_build/flasher.bin";
+            pname += "/build/axoloti.bin";
             flashUsingSDRam(fname, pname);
         }
     }

@@ -18,6 +18,9 @@
 package qcmds;
 
 import axoloti.utils.OSDetect;
+
+import static axoloti.MainFrame.prefs;
+
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,7 +47,11 @@ public class QCmdFlashDFU extends QCmdShellTask {
     
     @Override
     public File GetWorkingDir() {
-        return new File(System.getProperty(axoloti.Axoloti.FIRMWARE_DIR));
+        String fwdir = System.getProperty(axoloti.Axoloti.FIRMWARE_DIR);
+        if (prefs.getAxolotiLegacyMode()) {
+            fwdir += "_axoloti_legacy";
+        }
+        return new File(fwdir);
     }
     
     

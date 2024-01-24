@@ -1,6 +1,6 @@
 package axoloti;
 
-import axoloti.targetprofile.axoloti_core;
+import axoloti.targetprofile.ksoloti_core;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,7 +44,7 @@ public abstract class Connection {
     abstract public void ClearReadSync();
     abstract public boolean WaitReadSync();
     abstract public void setPatch(Patch patch);
-    abstract public axoloti_core getTargetProfile();
+    abstract public ksoloti_core getTargetProfile();
     abstract public ByteBuffer getMemReadBuffer();
     abstract public int getMemRead1Word();
     abstract public boolean GetSDCardPresent();

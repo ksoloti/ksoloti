@@ -17,6 +17,8 @@
  */
 package qcmds;
 
+import static axoloti.MainFrame.prefs;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -94,7 +96,11 @@ public abstract class QCmdShellTask implements QCmd {
     }
 
     public String FirmwareDir() {
-        return System.getProperty(axoloti.Axoloti.FIRMWARE_DIR);
+        String str = System.getProperty(axoloti.Axoloti.FIRMWARE_DIR);
+        if (prefs.getAxolotiLegacyMode()) {
+            str += "_axoloti_legacy";
+        }
+        return str;
     }
     
     
