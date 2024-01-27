@@ -262,4 +262,6 @@ void spidbStop(SPIDriver *spip) {
     spip->spi->CR1 &= ~SPI_CR1_SPE;
 
     dmaStreamDisable(spip->dmarx);
+
+    spiStop(spip);
 }
