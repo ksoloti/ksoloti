@@ -264,7 +264,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
            Flash option invisible to avoid confusion */
         jMenuItemFlashDefault.setVisible(!(Axoloti.isDeveloper()));
         jMenuItemFlashUser.setVisible(Axoloti.isDeveloper());
-        jMenuItemFCompile.setVisible(Axoloti.isDeveloper());
+        jMenuItemFCompile.setVisible(Axoloti.isDeveloper() || prefs.getExpertMode());
         jDevSeparator.setVisible(Axoloti.isDeveloper());
 
         if (!TestDir(HOME_DIR, true)) {
