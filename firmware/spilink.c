@@ -206,19 +206,19 @@ void spilink_init(bool_t isMaster)
 }
 
 
-// void spilink_start(void) {
-//     spidbStart(&SPILINKD);
-//     // palSetPadMode(SPILINK_NSS_PORT, SPILINK_NSS_PIN, PAL_MODE_INPUT); /* synced NSS */
-//     // palSetPadMode(GPIOB, 3, PAL_MODE_INPUT); /* SCK */
-//     // palSetPadMode(GPIOB, 4, PAL_MODE_INPUT); /* MISO */
-//     // palSetPadMode(GPIOD, 6, PAL_MODE_INPUT); /* MOSI */
-// }
+void spilink_start(void) {
+    spidbStart(&SPILINKD);
+    // palSetPadMode(SPILINK_NSS_PORT, SPILINK_NSS_PIN, PAL_MODE_INPUT); /* synced NSS */
+    // palSetPadMode(GPIOB, 3, PAL_MODE_INPUT); /* SCK */
+    // palSetPadMode(GPIOB, 4, PAL_MODE_INPUT); /* MISO */
+    // palSetPadMode(GPIOD, 6, PAL_MODE_INPUT); /* MOSI */
+}
 
 
-// void spilink_stop(void) {
-//     spidbStop(&SPILINKD);
-//     // palSetPadMode(SPILINK_NSS_PORT, SPILINK_NSS_PIN, PAL_MODE_INPUT); /* synced NSS */
-//     // palSetPadMode(GPIOB, 3, PAL_MODE_INPUT); /* SCK */
-//     // palSetPadMode(GPIOB, 4, PAL_MODE_INPUT); /* MISO */
-//     // palSetPadMode(GPIOD, 6, PAL_MODE_INPUT); /* MOSI */
-// }
+void spilink_stop(void) {
+    spidbStop(&SPILINKD);
+    // palSetPadMode(SPILINK_NSS_PORT, SPILINK_NSS_PIN, PAL_MODE_INPUT); /* synced NSS */
+    // palSetPadMode(GPIOB, 3, PAL_MODE_INPUT); /* SCK */
+    // palSetPadMode(GPIOB, 4, PAL_MODE_INPUT); /* MISO */
+    // palSetPadMode(GPIOD, 6, PAL_MODE_INPUT); /* MOSI */
+}

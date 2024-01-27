@@ -44,8 +44,8 @@ extern uint32_t spidb_interrupt_timestamp;
 void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config);
 void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, Thread * thread);
 void spidbSlaveResync(SPIDriver *spip);
-// void spidbStart(SPIDriver *spip);
-// void spidbStop(SPIDriver *spip);
+void spidbStart(SPIDriver *spip);
+void spidbStop(SPIDriver *spip);
 
 
 /* inline functions */

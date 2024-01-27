@@ -37,8 +37,8 @@ void axoloti_init(void);
 extern void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue);
 
 // extern void spilink_init(bool_t isMaster);
-// extern void spilink_start(void);
-// extern void spilink_stop(void);
+extern void spilink_start(void);
+extern void spilink_stop(void);
 
 void LogTextMessage(const char* format, ...);
 

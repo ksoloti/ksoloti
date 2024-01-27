@@ -243,25 +243,23 @@ void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config) {
 }
 
 
-// void spidbStart(SPIDriver *spip) {
-//     dmaStreamEnable(spip->dmatx);
-//     spip->spi->CR1 |= SPI_CR1_SPE;
-//     dmaStreamEnable(spip->dmarx);
-// }
+void spidbStart(SPIDriver *spip) {
+    dmaStreamEnable(spip->dmatx);
+    dmaStreamEnable(spip->dmarx);
+    spip->spi->CR1 |= SPI_CR1_SPE;
+}
 
 
-// void spidbStop(SPIDriver *spip) {
-//     dmaStreamDisable(spip->dmatx);
+void spidbStop(SPIDriver *spip) {
+    dmaStreamDisable(spip->dmatx);
 
-//     /* Wait till buffer is empty */
-//     while (!(spip->spi->SR & SPI_SR_TXE));
+    /* Wait till buffer is empty */
+    while (!(spip->spi->SR & SPI_SR_TXE));
 
-//     /* Wait till transfer is done */
-//     while (spip->spi->SR & SPI_SR_BSY);
+    /* Wait till transfer is done */
+    while (spip->spi->SR & SPI_SR_BSY);
 
-//     spip->spi->CR1 &= ~SPI_CR1_SPE;
+    spip->spi->CR1 &= ~SPI_CR1_SPE;
 
-//     dmaStreamDisable(spip->dmarx);
-
-//     // spiStop(spip);
-// }
+    dmaStreamDisable(spip->dmarx);
+}
