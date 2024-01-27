@@ -268,7 +268,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         jMenuItemFlashUser.setVisible(Axoloti.isDeveloper());
         jMenuItemFCompile.setVisible(Axoloti.isDeveloper() || prefs.getExpertMode());
-        jDevSeparator.setVisible(Axoloti.isDeveloper());
+        jDevSeparator.setVisible(true);
 
         if (!TestDir(HOME_DIR, true)) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid home directory: {0} - Does it exist? Can it be written to?", System.getProperty(Axoloti.HOME_DIR));
