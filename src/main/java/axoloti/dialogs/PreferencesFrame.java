@@ -26,6 +26,7 @@ import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 import li.flor.nativejfilechooser.NativeJFileChooser;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -231,6 +232,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jTextFieldFavDir.setText("test");
         jTextFieldFavDir.setToolTipText("Select a folder/subfolder with patch files to conveniently access them via the file menu.");
         jTextFieldFavDir.setEditable(false);
+        jTextFieldFavDir.setCaretColor(new Color(0,0,0,0));
 
         btnFavDir.setText("Browse...");
         btnFavDir.setToolTipText(jTextFieldFavDir.getToolTipText());
