@@ -259,10 +259,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             jMenuItemRefreshFWID.setVisible(false);
         }
 
-        jMenuItemEnterDFU.setVisible(Axoloti.isDeveloper());
-        /* When in Developer mode, make default
-           Flash option invisible to avoid confusion */
+        // jMenuItemEnterDFU.setVisible(Axoloti.isDeveloper());
+        /* Enter Rescue Mode option always available */
+        jMenuItemEnterDFU.setVisible(true);
+
+        /* When in Developer mode, make default Flash option invisible to avoid confusion */
         jMenuItemFlashDefault.setVisible(!(Axoloti.isDeveloper()));
+
         jMenuItemFlashUser.setVisible(Axoloti.isDeveloper());
         jMenuItemFCompile.setVisible(Axoloti.isDeveloper() || prefs.getExpertMode());
         jDevSeparator.setVisible(Axoloti.isDeveloper());
