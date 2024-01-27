@@ -48,8 +48,7 @@ void spidbSlaveResync(SPIDriver *spip);
 
 
 /* inline functions */
-__STATIC_INLINE void spidbMasterExchangeI(SPIDriver *spip, bool_t toggle)
-{
+__STATIC_INLINE void spidbMasterExchangeI(SPIDriver *spip, bool_t toggle) {
     SPIDBConfig *config = (SPIDBConfig *)spip->config;
 
     uint32_t offset = toggle ? 0 : 2 * config->size; /* assumes 16 bit xfer */

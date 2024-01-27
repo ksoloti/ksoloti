@@ -31,13 +31,11 @@ uint32_t spidb_interrupt_timestamp;
 // #define DEBUG_SPIDB_INT_ON_GPIO 1
 
 
-static void dma_spidb_slave_interrupt(void* dat, uint32_t flags)
-{
+static void dma_spidb_slave_interrupt(void* dat, uint32_t flags) {
     SPIDriver *spip = dat;
     spidb_interrupt_timestamp = halGetCounterValue();
 
-    if (flags & STM32_DMA_ISR_TCIF)
-    {
+    if (flags & STM32_DMA_ISR_TCIF) {
         chSysLockFromIsr();
 
 #ifdef DEBUG_SPIDB_INT_ON_GPIO
@@ -53,8 +51,7 @@ static void dma_spidb_slave_interrupt(void* dat, uint32_t flags)
 
         chSysUnlockFromIsr();
     }
-    else if (flags & STM32_DMA_ISR_HTIF)
-    {
+    else if (flags & STM32_DMA_ISR_HTIF) {
         chSysLockFromIsr();
 
 #ifdef DEBUG_SPIDB_INT_ON_GPIO
@@ -70,15 +67,13 @@ static void dma_spidb_slave_interrupt(void* dat, uint32_t flags)
 
         chSysUnlockFromIsr();
     }
-    else if (flags & STM32_DMA_ISR_TEIF)
-    {
+    else if (flags & STM32_DMA_ISR_TEIF) {
 //        chSysHalt("spidb:TEIF");
     }
 }
 
 
-void dmastream_slave_start(SPIDriver *spip)
-{
+void dmastream_slave_start(SPIDriver *spip) {
     dmaStreamSetMemory0(spip->dmarx, ((SPIDBConfig *) (spip->config))->rxbuf);
     dmaStreamSetTransactionSize(spip->dmarx, ((SPIDBConfig *) (spip->config))->size * 2);
     dmaStreamSetMode(spip->dmarx, spip->rxdmamode | STM32_DMA_CR_MINC | STM32_DMA_CR_CIRC | STM32_DMA_CR_HTIE);
@@ -102,8 +97,7 @@ void dmastream_slave_start(SPIDriver *spip)
 }
 
 
-void spidbSlaveResync(SPIDriver *spip)
-{
+void spidbSlaveResync(SPIDriver *spip) {
     palSetPad(LED2_PORT, LED2_PIN);
     dmaStreamDisable(spip->dmatx);
 
@@ -129,8 +123,7 @@ void spidbSlaveResync(SPIDriver *spip)
  * @param[in] config    pointer to the @p SPIDBConfig configuration
  *
  */
-void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, Thread * thread)
-{
+void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, Thread * thread) {
     spiStart(spip, &config->spiconfig);
 
     spip->thread = thread;
@@ -174,8 +167,7 @@ void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, Thread * thread
 }
 
 
-static void dma_spidb_master_interrupt(void* dat, uint32_t flags)
-{
+static void dma_spidb_master_interrupt(void* dat, uint32_t flags) {
     (void) flags;
 
 #ifdef DEBUG_SPIDB_INT_ON_GPIO
@@ -197,8 +189,7 @@ static void dma_spidb_master_interrupt(void* dat, uint32_t flags)
 }
 
 
-void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config)
-{
+void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config) {
     int i; for (i = 0; i < config->size * 2; i++)
         config->rxbuf[i] = 0;
 
@@ -252,8 +243,7 @@ void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config)
 }
 
 
-// void spidbStop(SPIDriver *spip)
-// {
+// void spidbStop(SPIDriver *spip) {
 //     dmaStreamDisable(spip->dmatx);
 
 //     /* Wait till buffer is empty */
