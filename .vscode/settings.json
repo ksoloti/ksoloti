@@ -13,6 +13,6 @@
         "*.axo": "xml",
         "*.axh": "xml",
         "*.axp": "xml",
-        "*.axs": "xml",
+        "*.axs": "xml"
     }
 }

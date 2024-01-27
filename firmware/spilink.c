@@ -22,6 +22,7 @@
 #include "axoloti.h"
 #include "spilink.h"
 #include "spidb.h"
+#include "sysmon.h"
 
 bool_t spilink_toggle;
 Thread *pThreadSpilink = 0;
@@ -96,7 +97,9 @@ static msg_t ThreadSpilinkSlave(void *arg)
                     }
                 }
             }
-            spidbSlaveResync(&SPILINKD);
+            sysmon_blink_pattern(SYNCED_ERROR);
+            chThdSleepMilliseconds(1000);
+            // spidbSlaveResync(&SPILINKD);
             // LogTextMessage("spislaveresync !m");
             continue;
 
@@ -133,7 +136,7 @@ static msg_t ThreadSpilinkSlave(void *arg)
         }
         else
         {
-            LogTextMessage("spislaveresync unknown state");
+            // LogTextMessage("spislaveresync unknown state");
             //????
         }
     }
@@ -203,11 +206,19 @@ void spilink_init(bool_t isMaster)
 }
 
 
-// void spilink_disable(void)
-// {
+// void spilink_start(void) {
+//     spidbStart(&SPILINKD);
+//     // palSetPadMode(SPILINK_NSS_PORT, SPILINK_NSS_PIN, PAL_MODE_INPUT); /* synced NSS */
+//     // palSetPadMode(GPIOB, 3, PAL_MODE_INPUT); /* SCK */
+//     // palSetPadMode(GPIOB, 4, PAL_MODE_INPUT); /* MISO */
+//     // palSetPadMode(GPIOD, 6, PAL_MODE_INPUT); /* MOSI */
+// }
+
+
+// void spilink_stop(void) {
 //     spidbStop(&SPILINKD);
-//     palSetPadMode(SPILINK_NSS_PORT, SPILINK_NSS_PIN, PAL_MODE_INPUT); /* synced NSS */
-//     palSetPadMode(GPIOB, 3, PAL_MODE_INPUT); /* SCK */
-//     palSetPadMode(GPIOB, 4, PAL_MODE_INPUT); /* MISO */
-//     palSetPadMode(GPIOD, 6, PAL_MODE_INPUT); /* MOSI */
+//     // palSetPadMode(SPILINK_NSS_PORT, SPILINK_NSS_PIN, PAL_MODE_INPUT); /* synced NSS */
+//     // palSetPadMode(GPIOB, 3, PAL_MODE_INPUT); /* SCK */
+//     // palSetPadMode(GPIOB, 4, PAL_MODE_INPUT); /* MISO */
+//     // palSetPadMode(GPIOD, 6, PAL_MODE_INPUT); /* MOSI */
 // }

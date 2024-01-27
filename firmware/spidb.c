@@ -243,6 +243,13 @@ void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config) {
 }
 
 
+// void spidbStart(SPIDriver *spip) {
+//     dmaStreamEnable(spip->dmatx);
+//     spip->spi->CR1 |= SPI_CR1_SPE;
+//     dmaStreamEnable(spip->dmarx);
+// }
+
+
 // void spidbStop(SPIDriver *spip) {
 //     dmaStreamDisable(spip->dmatx);
 
@@ -256,5 +263,5 @@ void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config) {
 
 //     dmaStreamDisable(spip->dmarx);
 
-//     spiStop(spip);
+//     // spiStop(spip);
 // }
