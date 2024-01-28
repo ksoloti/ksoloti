@@ -489,6 +489,17 @@ void ReplyFWVersion(void) {
                           (const unsigned char* )(&reply[0]), 16);
 }
 
+void ReplySpilinkSynced(void) {
+  uint8_t reply[5];
+  reply[0] = 'A';
+  reply[1] = 'x';
+  reply[2] = 'o';
+  reply[3] = 'Y';
+  reply[4] = !palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN); /* SPILINK jumper low means synced */
+  chSequentialStreamWrite((BaseSequentialStream * )&BDU1,
+                          (const unsigned char* )(&reply[0]), 5);
+}
+
 void PExReceiveByte(unsigned char c) {
   static char header = 0;
   static int state = 0;
@@ -589,6 +600,12 @@ void PExReceiveByte(unsigned char c) {
         state = 0;
         header = 0;
         ReplyFWVersion();
+        AckPending = 1;
+      }
+      else if (c == 'Y') { // is this Core SPILINK synced
+        state = 0;
+        header = 0;
+        ReplySpilinkSynced();
         AckPending = 1;
       }
       else if (c == 'p') { // ping

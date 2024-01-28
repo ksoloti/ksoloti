@@ -96,10 +96,8 @@ int main(void)
 
     chThdSleepMilliseconds(10);
 
-    bool_t is_master = 1;
-    /* (HIGH means MASTER i.e. regular operation) */
-    palSetPadMode(GPIOD, 12, PAL_MODE_INPUT_PULLUP);
-    is_master = palReadPad(GPIOD, 12);
+  /* Pull up SPILINK detector (HIGH means MASTER i.e. regular operation) */
+  palSetPadMode(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN, PAL_MODE_INPUT_PULLUP);
 
     axoloti_board_init();
     adc_init();
