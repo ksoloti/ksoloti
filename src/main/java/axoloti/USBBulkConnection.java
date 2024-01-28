@@ -495,6 +495,16 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
+    public void TransmitGetSpilinkSynced() {
+        byte[] data = new byte[4];
+        data[0] = 'A';
+        data[1] = 'x';
+        data[2] = 'o';
+        data[3] = 'Y';
+        writeBytes(data);
+    }
+
+    @Override
     public void SendMidi(int m0, int m1, int m2) {
         if (isConnected()) {
             byte[] data = new byte[7];
