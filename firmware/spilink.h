@@ -45,7 +45,7 @@ typedef struct {
 } spilink_channels_t;
 
 typedef struct {
-    uint32_t dummy1[32];
+    // uint32_t dummy1[32];
     uint32_t header;
     uint32_t frameno;
     spilink_channels_t audio_io;
