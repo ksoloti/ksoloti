@@ -79,9 +79,9 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     public USBPortSelectionDlg(java.awt.Frame parent, boolean modal, String defCPUID) {
         super(parent, modal);
         initComponents();
-        setSize(new Dimension(480,200));
+        setSize(480,200));
         setTitle("Select Device");
-        setLocation((int)mainframe.getLocation().getX() + 60, (int)getLocation().getY() + 80);
+        setLocation((int)mainframe.getLocation().getX() + 60, (int)mainframe.getLocation().getY() + 80);
         System.out.println("default cpuid: " + defCPUID);
         this.defCPUID = defCPUID;
         cpuid = defCPUID;
