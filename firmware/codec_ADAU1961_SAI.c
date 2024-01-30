@@ -475,7 +475,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster)
 
     ADAU1961_WriteRegister(ADAU1961_REG_R17_CON0,     0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R18_CON1,     0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC,     0x30); /* ADC highpass enabled */
+    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC,     0x10);
     ADAU1961_WriteRegister(ADAU1961_REG_R20_LDVOL,    0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R21_RDVOL,    0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R22_PMIXL0,   0x00);
@@ -502,7 +502,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster)
 
     chThdSleepMilliseconds(10);
 
-    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC,     0x33); /* ADC enable, highpass enabled */
+    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC,     0x13); /* ADC enable */
     ADAU1961_WriteRegister(ADAU1961_REG_R36_DACC0,    0x03); /* DAC enable */
 
     ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL,   0xE7); /* Playback Line Output Left Volume */
