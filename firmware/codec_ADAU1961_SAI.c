@@ -38,13 +38,23 @@
 #define STM32_SAI_A_IRQ_PRIORITY 2
 #define STM32_SAI_B_IRQ_PRIORITY 2
 
+#define SAI1_FS_PORT GPIOE
+#define SAI1_FS_PIN 4
+#define SAI1_SCK_PORT GPIOE
+#define SAI1_SCK_PIN 5
+#define SAI1_SD_A_PORT GPIOE
+#define SAI1_SD_A_PIN 6
+#define SAI1_SD_B_PORT GPIOE
+#define SAI1_SD_B_PIN 3
+
 extern void computebufI(int32_t *inp, int32_t *outp);
 
 
-volatile SAI_Block_TypeDef *sai_a;
-volatile SAI_Block_TypeDef *sai_b;
 const stm32_dma_stream_t* sai_a_dma;
 const stm32_dma_stream_t* sai_b_dma;
+
+volatile SAI_Block_TypeDef *sai_a;
+volatile SAI_Block_TypeDef *sai_b;
 
 unsigned int codec_interrupt_timestamp;
 
@@ -72,19 +82,19 @@ static void ADAU_I2C_Init(void)
     if(HAL_I2C_GetState(&ADAU1961_i2c_handle) == HAL_I2C_STATE_RESET)
     {
         /* DISCOVERY_I2Cx peripheral configuration */
-        ADAU1961_i2c_handle.Init.ClockSpeed = 100000;
-        ADAU1961_i2c_handle.Init.DutyCycle = I2C_DUTYCYCLE_2;
+        ADAU1961_i2c_handle.Init.ClockSpeed = 400000;
+        ADAU1961_i2c_handle.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
         ADAU1961_i2c_handle.Init.OwnAddress1 = 0x33;
         ADAU1961_i2c_handle.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
         ADAU1961_i2c_handle.Instance = I2C2;
 
-        /* Init the I2C */
-        palSetPadMode(GPIOB, 10,
-            PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
-        palSetPadMode(GPIOB, 11,
-            PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
+        /* SCL: PB10, SDA: PB11 */
+        palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
+        palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
 
         rccEnableI2C2(FALSE);
+        // nvicEnableVector(I2C2_EV_IRQn, STM32_I2C_I2C2_IRQ_PRIORITY);
+        // nvicEnableVector(I2C2_ER_IRQn, STM32_I2C_I2C2_IRQ_PRIORITY);
 
         HAL_I2C_Init(&ADAU1961_i2c_handle);
     }
@@ -96,7 +106,7 @@ unsigned int HAL_GetTick(void)
     return hal_lld_get_counter_value();
 }
 
-int HAL_RCC_GetPCLK1Freq(void)
+uint32_t HAL_RCC_GetPCLK1Freq(void)
 {
     return STM32_PCLK1;
 }
@@ -108,15 +118,14 @@ void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue)
     i2ctxbuf[1] = RegisterAddr;
     i2ctxbuf[2] = RegisterValue;
 
-    chThdSleepMilliseconds(10);
+    chThdSleepMilliseconds(2);
 
-    HAL_StatusTypeDef r = HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle,
-        ADAU1961_I2C_ADDR, i2ctxbuf, 3, TIMEOUT);
+    HAL_StatusTypeDef r = HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR, i2ctxbuf, 3, TIMEOUT);
 
     if (r != HAL_OK)
     {
         // volatile unsigned int i = r;
-        while(1) { }
+        while(1);
     }
 
     chThdSleepMilliseconds(10);
@@ -135,13 +144,16 @@ void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
     i2ctxbuf[6] = RegisterValues[4];
     i2ctxbuf[7] = RegisterValues[5];
 
+    chThdSleepMilliseconds(2);
+
     HAL_StatusTypeDef r = HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle,
         ADAU1961_I2C_ADDR, i2ctxbuf, 8, TIMEOUT);
 
     if (r != HAL_OK)
     {
         // volatile unsigned int i = r;
-        while(1) { }
+        setErrorFlag(ERROR_CODEC_I2C);
+        while(1);
     }
 
     chThdSleepMilliseconds(10);
@@ -169,22 +181,6 @@ void ADAU1961_ReadRegister6(uint16_t RegisterAddr)
         while(1) { }
     }
 }
-
-
-// void Gyro_ReadRegister2(uint16_t RegisterAddr)
-// {
-//     i2ctxbuf[0] = RegisterAddr >> 8;
-//     i2ctxbuf[1] = RegisterAddr;
-
-//     HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, GYRO_I2C_ADDR,
-//         i2ctxbuf, 2, GYRO_TIMEOUT);
-
-//     chThdSleepMilliseconds(1);
-
-//     HAL_I2C_Master_Receive(&ADAU1961_i2c_handle,
-//         GYRO_I2C_ADDR+1, i2crxbuf, 2, GYRO_TIMEOUT);
-
-// }
 
 
 void codec_ADAU1961_hw_init(uint16_t samplerate)
@@ -403,10 +399,10 @@ void codec_ADAU1961_i2s_init(uint16_t sampleRate)
     chThdSleepMilliseconds(10);
 
     /* release SAI */
-    palSetPadMode(GPIOE, 3, PAL_MODE_INPUT);
-    palSetPadMode(GPIOE, 4, PAL_MODE_INPUT);
-    palSetPadMode(GPIOE, 5, PAL_MODE_INPUT);
-    palSetPadMode(GPIOE, 6, PAL_MODE_INPUT);
+    palSetPadMode(SAI1_SD_B_PORT, SAI1_SD_B_PIN, PAL_MODE_INPUT);
+    palSetPadMode(SAI1_FS_PORT,   SAI1_FS_PIN,   PAL_MODE_INPUT);
+    palSetPadMode(SAI1_SCK_PORT,  SAI1_SCK_PIN,  PAL_MODE_INPUT);
+    palSetPadMode(SAI1_SD_A_PORT, SAI1_SD_A_PIN, PAL_MODE_INPUT);
 
     /* configure SAI */
     RCC->APB2ENR |= RCC_APB2ENR_SAI1EN;
