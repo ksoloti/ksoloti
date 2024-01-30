@@ -22,40 +22,33 @@
 #include "spidb.h"
 
 
-__STATIC_INLINE void spilink_master_process(void)
-{
-    if (spilink_master_active)
-    {
+__STATIC_INLINE void spilink_master_process(void) {
+
+    if (spilink_master_active) {
         spilink_toggle = !spilink_toggle;
 
         spidbMasterExchangeI(&SPID3, spilink_toggle);
 
-        if (spilink_toggle)
-        {
+        if (!spilink_toggle) {
             spilink_tx[0].frameno = frameno++;
 
             if ((spilink_rx[0].header == SPILINK_HEADER)
-                && (spilink_rx[0].footer == SPILINK_FOOTER))
-            {
+                && (spilink_rx[0].footer == SPILINK_FOOTER)) {
                 spilink_rx_samples = &spilink_rx[0].audio_io;
             }
-            else
-            {
+            else {
                 spilink_rx_samples = (spilink_channels_t *) 0x080F0000;
             }
             spilink_tx_samples = &spilink_tx[0].audio_io;
         }
-        else
-        {
+        else {
             spilink_tx[1].frameno = frameno++;
 
             if ((spilink_rx[1].header == SPILINK_HEADER) // TODO [1] here??
-                && (spilink_rx[1].footer == SPILINK_FOOTER)) // TODO [1] here??
-            {
+                && (spilink_rx[1].footer == SPILINK_FOOTER)) { //TODO [1] here??
                 spilink_rx_samples = &spilink_rx[1].audio_io;
             }
-            else
-            {
+            else {
                 spilink_rx_samples = (spilink_channels_t *) 0x080F0000;
             }
             spilink_tx_samples = &spilink_tx[1].audio_io;
