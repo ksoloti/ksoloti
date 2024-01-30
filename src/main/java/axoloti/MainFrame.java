@@ -259,13 +259,16 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             jMenuItemRefreshFWID.setVisible(false);
         }
 
-        jMenuItemEnterDFU.setVisible(Axoloti.isDeveloper());
-        /* When in Developer mode, make default
-           Flash option invisible to avoid confusion */
+        // jMenuItemEnterDFU.setVisible(Axoloti.isDeveloper());
+        /* Enter Rescue Mode option always available */
+        jMenuItemEnterDFU.setVisible(true);
+
+        /* When in Developer mode, make default Flash option invisible to avoid confusion */
         jMenuItemFlashDefault.setVisible(!(Axoloti.isDeveloper()));
+
         jMenuItemFlashUser.setVisible(Axoloti.isDeveloper());
         jMenuItemFCompile.setVisible(Axoloti.isDeveloper() || prefs.getExpertMode());
-        jDevSeparator.setVisible(Axoloti.isDeveloper());
+        jDevSeparator.setVisible(true);
 
         if (!TestDir(HOME_DIR, true)) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid home directory: {0} - Does it exist? Can it be written to?", System.getProperty(Axoloti.HOME_DIR));
