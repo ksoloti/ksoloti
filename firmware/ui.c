@@ -500,23 +500,23 @@ void KVP_DisplayInv(int x, int y, KeyValuePair_s *kvp) {
     LCD_drawNumber3DInv(LCD_COL_VAL, y, *kvp->ivp.value);
     break;
   case KVP_TYPE_FVP:
-    LCD_drawStringInvN(LCD_COL_EQ, y, "     F", LCDWIDTH);
+    LCD_drawStringInvN(LCD_COL_EQ, y, "     F", AXOLOTI_CONTROL_LCDWIDTH);
     break;
   case KVP_TYPE_AVP:
-    LCD_drawStringInvN(LCD_COL_EQ, y, "     *", LCDWIDTH);
+    LCD_drawStringInvN(LCD_COL_EQ, y, "     *", AXOLOTI_CONTROL_LCDWIDTH);
     break;
   case KVP_TYPE_IDVP:
-    LCD_drawIBAR(LCD_COL_EQ, y, *kvp->idvp.value, LCDWIDTH);
+    LCD_drawIBAR(LCD_COL_EQ, y, *kvp->idvp.value, AXOLOTI_CONTROL_LCDWIDTH);
     break;
   case KVP_TYPE_SVP:
     LCD_drawCharInv(LCD_COL_EQ, y, '=');
     LCD_drawNumber5DInv(LCD_COL_VAL, y, *kvp->svp.value);
     break;
   case KVP_TYPE_APVP:
-    LCD_drawStringInvN(LCD_COL_EQ, y, "     #", LCDWIDTH);
+    LCD_drawStringInvN(LCD_COL_EQ, y, "     #", AXOLOTI_CONTROL_LCDWIDTH);
     break;
   case KVP_TYPE_CUSTOM:
-    LCD_drawStringInvN(LCD_COL_EQ, y, "     @", LCDWIDTH);
+    LCD_drawStringInvN(LCD_COL_EQ, y, "     @", AXOLOTI_CONTROL_LCDWIDTH);
     break;
   case KVP_TYPE_IPVP:
     LCD_drawCharInv(LCD_COL_EQ, y, '=');
@@ -539,23 +539,23 @@ void KVP_Display(int x, int y, KeyValuePair_s *kvp) {
     LCD_drawNumber3D(LCD_COL_VAL, y, *kvp->ivp.value);
     break;
   case KVP_TYPE_FVP:
-    LCD_drawStringN(LCD_COL_EQ, y, "     F", LCDWIDTH);
+    LCD_drawStringN(LCD_COL_EQ, y, "     F", AXOLOTI_CONTROL_LCDWIDTH);
     break;
   case KVP_TYPE_AVP:
-    LCD_drawStringN(LCD_COL_EQ, y, "     *", LCDWIDTH);
+    LCD_drawStringN(LCD_COL_EQ, y, "     *", AXOLOTI_CONTROL_LCDWIDTH);
     break;
   case KVP_TYPE_IDVP:
-    LCD_drawIBAR(LCD_COL_EQ, y, *kvp->idvp.value, LCDWIDTH);
+    LCD_drawIBAR(LCD_COL_EQ, y, *kvp->idvp.value, AXOLOTI_CONTROL_LCDWIDTH);
     break;
   case KVP_TYPE_SVP:
     LCD_drawChar(LCD_COL_EQ, y, '=');
     LCD_drawNumber5D(LCD_COL_VAL, y, *kvp->svp.value);
     break;
   case KVP_TYPE_APVP:
-    LCD_drawStringN(LCD_COL_EQ, y, "     #", LCDWIDTH);
+    LCD_drawStringN(LCD_COL_EQ, y, "     #", AXOLOTI_CONTROL_LCDWIDTH);
     break;
   case KVP_TYPE_CUSTOM:
-    LCD_drawStringN(LCD_COL_EQ, y, "     @", LCDWIDTH);
+    LCD_drawStringN(LCD_COL_EQ, y, "     @", AXOLOTI_CONTROL_LCDWIDTH);
     break;
   case KVP_TYPE_IPVP:
     LCD_drawChar(LCD_COL_EQ, y, '=');
@@ -819,37 +819,37 @@ static void UIPollButtons2(void) {
 
 // test: toggle LED's
   IF_BTN_NAV_DOWN(btn_1)
-    led_buffer[LCDHEADER + 0] = led_buffer[LCDHEADER + 0] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 0] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 0] ? 0 : 255;
   IF_BTN_NAV_DOWN(btn_2)
-    led_buffer[LCDHEADER + 1] = led_buffer[LCDHEADER + 1] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 1] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 1] ? 0 : 255;
   IF_BTN_NAV_DOWN(btn_3)
-    led_buffer[LCDHEADER + 2] = led_buffer[LCDHEADER + 2] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 2] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 2] ? 0 : 255;
   IF_BTN_NAV_DOWN(btn_4)
-    led_buffer[LCDHEADER + 3] = led_buffer[LCDHEADER + 3] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 3] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 3] ? 0 : 255;
   IF_BTN_NAV_DOWN(btn_5)
-    led_buffer[LCDHEADER + 4] = led_buffer[LCDHEADER + 4] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 4] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 4] ? 0 : 255;
   IF_BTN_NAV_DOWN(btn_6)
-    led_buffer[LCDHEADER + 5] = led_buffer[LCDHEADER + 5] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 5] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 5] ? 0 : 255;
   IF_BTN_NAV_DOWN(btn_7)
-    led_buffer[LCDHEADER + 6] = led_buffer[LCDHEADER + 6] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 6] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 6] ? 0 : 255;
   IF_BTN_NAV_DOWN(btn_8)
-    led_buffer[LCDHEADER + 7] = led_buffer[LCDHEADER + 7] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 7] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 7] ? 0 : 255;
   IF_BTN_NAV_DOWN(btn_9)
-    led_buffer[LCDHEADER + 8] = led_buffer[LCDHEADER + 8] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 8] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 8] ? 0 : 255;
   IF_BTN_NAV_DOWN(btn_10)
-    led_buffer[LCDHEADER + 9] = led_buffer[LCDHEADER + 9] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 9] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 9] ? 0 : 255;
   IF_BTN_NAV_DOWN(btn_11)
-    led_buffer[LCDHEADER + 10] = led_buffer[LCDHEADER + 10] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 10] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 10] ? 0 : 255;
   IF_BTN_NAV_DOWN(btn_12)
-    led_buffer[LCDHEADER + 11] = led_buffer[LCDHEADER + 11] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 11] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 11] ? 0 : 255;
   IF_BTN_NAV_DOWN(btn_13)
-    led_buffer[LCDHEADER + 12] = led_buffer[LCDHEADER + 12] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 12] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 12] ? 0 : 255;
   IF_BTN_NAV_DOWN(btn_14)
-    led_buffer[LCDHEADER + 13] = led_buffer[LCDHEADER + 13] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 13] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 13] ? 0 : 255;
   IF_BTN_NAV_DOWN(btn_15)
-    led_buffer[LCDHEADER + 14] = led_buffer[LCDHEADER + 14] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 14] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 14] ? 0 : 255;
   IF_BTN_NAV_DOWN(btn_16)
-    led_buffer[LCDHEADER + 15] = led_buffer[LCDHEADER + 15] ? 0 : 255;
+    led_buffer[AXOLOTI_CONTROL_LCDHEADER + 15] = led_buffer[AXOLOTI_CONTROL_LCDHEADER + 15] ? 0 : 255;
 
 // process encoder // todo: more than just one encoder...
   if (KvpsDisplay->kvptype == KVP_TYPE_AVP) {
@@ -908,13 +908,13 @@ static void UIUpdateLCD(void) {
       if (c < l)
         KVP_DisplayInv(LCD_COL_INDENT, 1, &k[c++]);
       else
-        LCD_drawStringN(LCD_COL_INDENT, 1, " ", LCDWIDTH);
+        LCD_drawStringN(LCD_COL_INDENT, 1, " ", AXOLOTI_CONTROL_LCDWIDTH);
       int line;
       for (line = 2; line < STATUSROW; line++) {
         if (c < l)
           KVP_Display(LCD_COL_INDENT, line, &k[c++]);
         else
-          LCD_drawStringN(LCD_COL_INDENT, line, " ", LCDWIDTH);
+          LCD_drawStringN(LCD_COL_INDENT, line, " ", AXOLOTI_CONTROL_LCDWIDTH);
       }
     }
     else if (c == 1) {
@@ -922,17 +922,17 @@ static void UIUpdateLCD(void) {
       if (c < l)
         KVP_Display(LCD_COL_INDENT, 1, &k[c++]);
       else
-        LCD_drawStringN(LCD_COL_INDENT, 1, " ", LCDWIDTH);
+        LCD_drawStringN(LCD_COL_INDENT, 1, " ", AXOLOTI_CONTROL_LCDWIDTH);
       if (c < l)
         KVP_DisplayInv(LCD_COL_INDENT, 2, &k[c++]);
       else
-        LCD_drawStringN(LCD_COL_INDENT, 2, " ", LCDWIDTH);
+        LCD_drawStringN(LCD_COL_INDENT, 2, " ", AXOLOTI_CONTROL_LCDWIDTH);
       int line;
       for (line = 3; line < STATUSROW; line++) {
         if (c < l)
           KVP_Display(LCD_COL_INDENT, line, &k[c++]);
         else
-          LCD_drawStringN(LCD_COL_INDENT, line, " ", LCDWIDTH);
+          LCD_drawStringN(LCD_COL_INDENT, line, " ", AXOLOTI_CONTROL_LCDWIDTH);
       }
     }
     else {
@@ -941,21 +941,21 @@ static void UIUpdateLCD(void) {
       if (c < l)
         KVP_Display(LCD_COL_INDENT, 1, &k[c++]);
       else
-        LCD_drawStringN(LCD_COL_INDENT, 1, " ", LCDWIDTH);
+        LCD_drawStringN(LCD_COL_INDENT, 1, " ", AXOLOTI_CONTROL_LCDWIDTH);
       if (c < l)
         KVP_Display(LCD_COL_INDENT, 2, &k[c++]);
       else
-        LCD_drawStringN(LCD_COL_INDENT, 2, " ", LCDWIDTH);
+        LCD_drawStringN(LCD_COL_INDENT, 2, " ", AXOLOTI_CONTROL_LCDWIDTH);
       if (c < l)
         KVP_DisplayInv(LCD_COL_INDENT, 3, &k[c++]);
       else
-        LCD_drawStringN(LCD_COL_INDENT, 3, " ", LCDWIDTH);
+        LCD_drawStringN(LCD_COL_INDENT, 3, " ", AXOLOTI_CONTROL_LCDWIDTH);
       int line;
       for (line = 3; line < STATUSROW; line++) {
         if (c < l)
           KVP_Display(LCD_COL_INDENT, line, &k[c++]);
         else
-          LCD_drawStringN(LCD_COL_INDENT, line, " ", LCDWIDTH);
+          LCD_drawStringN(LCD_COL_INDENT, line, " ", AXOLOTI_CONTROL_LCDWIDTH);
       }
     }
     if (KvpsDisplay->parent) {
@@ -993,13 +993,13 @@ static void UIUpdateLCD(void) {
       if (c < l)
         KVP_DisplayInv(LCD_COL_INDENT, 1, k[c++]);
       else
-        LCD_drawStringN(LCD_COL_INDENT, 1, " ", LCDWIDTH);
+        LCD_drawStringN(LCD_COL_INDENT, 1, " ", AXOLOTI_CONTROL_LCDWIDTH);
       int line;
       for (line = 2; line < STATUSROW; line++) {
         if (c < l)
           KVP_Display(LCD_COL_INDENT, line, k[c++]);
         else
-          LCD_drawStringN(LCD_COL_INDENT, line, " ", LCDWIDTH);
+          LCD_drawStringN(LCD_COL_INDENT, line, " ", AXOLOTI_CONTROL_LCDWIDTH);
       }
     }
     else if (c == 1) {
@@ -1007,17 +1007,17 @@ static void UIUpdateLCD(void) {
       if (c < l)
         KVP_Display(LCD_COL_INDENT, 1, k[c++]);
       else
-        LCD_drawStringN(LCD_COL_INDENT, 1, " ", LCDWIDTH);
+        LCD_drawStringN(LCD_COL_INDENT, 1, " ", AXOLOTI_CONTROL_LCDWIDTH);
       if (c < l)
         KVP_DisplayInv(LCD_COL_INDENT, 2, k[c++]);
       else
-        LCD_drawStringN(LCD_COL_INDENT, 2, " ", LCDWIDTH);
+        LCD_drawStringN(LCD_COL_INDENT, 2, " ", AXOLOTI_CONTROL_LCDWIDTH);
       int line;
       for (line = 3; line < STATUSROW; line++) {
         if (c < l)
           KVP_Display(LCD_COL_INDENT, line, k[c++]);
         else
-          LCD_drawStringN(LCD_COL_INDENT, line, " ", LCDWIDTH);
+          LCD_drawStringN(LCD_COL_INDENT, line, " ", AXOLOTI_CONTROL_LCDWIDTH);
       }
     }
     else {
@@ -1026,21 +1026,21 @@ static void UIUpdateLCD(void) {
       if (c < l)
         KVP_Display(LCD_COL_INDENT, 1, k[c++]);
       else
-        LCD_drawStringN(LCD_COL_INDENT, 1, " ", LCDWIDTH);
+        LCD_drawStringN(LCD_COL_INDENT, 1, " ", AXOLOTI_CONTROL_LCDWIDTH);
       if (c < l)
         KVP_Display(LCD_COL_INDENT, 2, k[c++]);
       else
-        LCD_drawStringN(LCD_COL_INDENT, 2, " ", LCDWIDTH);
+        LCD_drawStringN(LCD_COL_INDENT, 2, " ", AXOLOTI_CONTROL_LCDWIDTH);
       if (c < l)
         KVP_DisplayInv(LCD_COL_INDENT, 3, k[c++]);
       else
-        LCD_drawStringN(LCD_COL_INDENT, 3, " ", LCDWIDTH);
+        LCD_drawStringN(LCD_COL_INDENT, 3, " ", AXOLOTI_CONTROL_LCDWIDTH);
       int line;
       for (line = 4; line < STATUSROW; line++) {
         if (c < l)
           KVP_Display(LCD_COL_INDENT, line, k[c++]);
         else
-          LCD_drawStringN(LCD_COL_INDENT, line, " ", LCDWIDTH);
+          LCD_drawStringN(LCD_COL_INDENT, line, " ", AXOLOTI_CONTROL_LCDWIDTH);
       }
     }
     if (KvpsDisplay->parent) {
