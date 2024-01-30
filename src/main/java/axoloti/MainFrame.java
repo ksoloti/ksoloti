@@ -1183,7 +1183,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             jLabelCPUID.setText(" ");
         } else {
             String name = MainFrame.prefs.getBoardName(cpuId);
-            String txt;
+            // String txt;
             if (name == null) {
                 jLabelCPUID.setText("Board ID: " + cpuId);
             } else {
