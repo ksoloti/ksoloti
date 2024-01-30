@@ -96,8 +96,8 @@ int main(void)
 
     chThdSleepMilliseconds(10);
 
-  /* Pull up SPILINK detector (HIGH means MASTER i.e. regular operation) */
-  palSetPadMode(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN, PAL_MODE_INPUT_PULLUP);
+    /* Pull up SPILINK detector (HIGH means MASTER i.e. regular operation) */
+    palSetPadMode(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN, PAL_MODE_INPUT_PULLUP);
 
     axoloti_board_init();
     adc_init();
@@ -108,6 +108,8 @@ int main(void)
     ui_init();
     configSDRAM();
     // memTest();
+
+    bool_t is_master = palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN);
 
     codec_init(is_master);
     spilink_init(is_master);
