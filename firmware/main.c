@@ -158,6 +158,5 @@ void HAL_Delay(unsigned int n) {
 
 
 void _sbrk(void) {
-  while (1) {
-  }
+    while (1);
 }
