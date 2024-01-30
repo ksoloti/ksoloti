@@ -18,10 +18,8 @@
 
 #include "axoloti_defines.h"
 
-#if (BOARD_AXOLOTI_V05)
 #include "sdram.h"
 #include "stm32f4xx_fmc.h"
-#endif
 
 #include "ch.h"
 #include "hal.h"
@@ -46,22 +44,16 @@
 #include "usbcfg.h"
 #include "sysmon.h"
 
-#if (BOARD_AXOLOTI_V05)
 #include "sdram.c"
 #include "stm32f4xx_fmc.c"
-#define ENABLE_USB_HOST
-#endif
 
 /*===========================================================================*/
 /* Initialization and main thread.                                           */
 /*===========================================================================*/
 
-
 //#define ENABLE_SERIAL_DEBUG 1
 
-#ifdef ENABLE_USB_HOST
 extern void MY_USBH_Init(void);
-#endif
 
 
 int main(void) {
@@ -113,30 +105,25 @@ int main(void) {
     chThdSleepMilliseconds(1);
   }
 
-#if ((BOARD_AXOLOTI_V05) && (AXOLOTICONTROL))
+#ifdef AXOLOTI_CONTROL
   axoloti_control_init();
 #endif
+
   ui_init();
 
-#ifdef BOARD_AXOLOTI_V05
   configSDRAM();
   // memTest();
-#endif
 
-#ifdef ENABLE_USB_HOST
   MY_USBH_Init();
-#endif
 
   if (!exception_check()) {
     // only try booting a patch when no exception is to be reported
 
-#if (BOARD_AXOLOTI_V05)
     sdcard_attemptMountIfUnmounted();
     if (fs_ready && !palReadPad(SW2_PORT, SW2_PIN)){
       // button S2 not pressed
       LoadPatchStartSD();
     }
-#endif
 
     // if no patch booting or running yet
     // try loading from flash

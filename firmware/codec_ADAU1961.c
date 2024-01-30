@@ -30,10 +30,6 @@
 
 //#define STM_IS_I2S_MASTER true
 
-#if (BOARD_AXOLOTI_V05)
-#error "BOARD revision V05 uses SAI, please update the makefile to compile codec_ADAU1961_SAI.c"
-#endif
-
 extern void computebufI(int32_t *inp, int32_t *outp);
 
 const stm32_dma_stream_t* i2sdma_ADAU1961;

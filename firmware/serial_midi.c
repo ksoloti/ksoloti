@@ -152,20 +152,13 @@ void serial_midi_init(void) {
    * Activates the serial driver 2 using the driver default configuration.
    * PA2(TX) and PA3(RX) are routed to USART2.
    */
-#ifdef BOARD_AXOLOTI_V05
   // RX
   palSetPadMode(GPIOG, 9, PAL_MODE_ALTERNATE(8) | PAL_MODE_INPUT_PULLUP);
   // TX
   // palSetPadMode(GPIOG, 14, PAL_MODE_ALTERNATE(8) | PAL_STM32_OTYPE_OPENDRAIN); // seb don't know why but TX didn't work in open drain
    palSetPadMode(GPIOG, 14, PAL_MODE_ALTERNATE(8) | PAL_STM32_PUDR_PULLUP); // seb works so far
   // palSetPadMode(GPIOG, 14, PAL_MODE_ALTERNATE(8) | PAL_MODE_OUTPUT_PUSHPULL); // does not seem to work with some MIDI devices
-#else
-  // RX
-  palSetPadMode(GPIOB, 7, PAL_MODE_ALTERNATE(7)|PAL_MODE_INPUT_PULLUP);
-  // TX
-  palSetPadMode(GPIOB, 6, PAL_MODE_ALTERNATE(7)|PAL_STM32_OTYPE_OPENDRAIN);
-#endif
+
   sdStart(&SDMIDI, &sdMidiCfg);
-  chThdCreateStatic(waThreadMidi, sizeof(waThreadMidi), NORMALPRIO, ThreadMidi,
-                    NULL);
+  chThdCreateStatic(waThreadMidi, sizeof(waThreadMidi), NORMALPRIO, ThreadMidi, NULL);
 }

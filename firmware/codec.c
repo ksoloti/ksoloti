@@ -20,9 +20,7 @@
 
 #include "axoloti_defines.h"
 
-#if (BOARD_AXOLOTI_V05)
 #include "codec_ADAU1961.h"
-#endif
 
 int32_t buf[BUFSIZE*2] __attribute__ ((section (".sram2")));
 int32_t buf2[BUFSIZE*2] __attribute__ ((section (".sram2")));
@@ -30,12 +28,8 @@ int32_t rbuf[BUFSIZE*2] __attribute__ ((section (".sram2")));
 int32_t rbuf2[BUFSIZE*2] __attribute__ ((section (".sram2")));
 
 void codec_init(void) {
-#if (BOARD_AXOLOTI_V05)
   codec_ADAU1961_i2s_init(SAMPLERATE);
   codec_ADAU1961_hw_init(SAMPLERATE);
-#else
-#error "BOARD_ not defined"
-#endif
 }
 
 
@@ -47,6 +41,4 @@ void codec_clearbuffer(void) {
   }
 }
 
-#if (BOARD_AXOLOTI_V05)
 #include "codec_ADAU1961_SAI.c"
-#endif
