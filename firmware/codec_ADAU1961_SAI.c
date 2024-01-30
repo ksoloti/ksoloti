@@ -285,7 +285,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate)
 
     ADAU1961_WriteRegister(ADAU1961_REG_R17_CON0, 0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R18_CON1, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC, 0x30);
+    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC, 0x10);
     ADAU1961_WriteRegister(ADAU1961_REG_R20_LDVOL, 0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R21_RDVOL, 0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R22_PMIXL0, 0x00);
