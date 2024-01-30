@@ -31,6 +31,6 @@ extern void codec_init(void);
 
 extern void computebufI(int32_t *inp, int32_t *outp);
 
-void codec_clearbuffer(void);
+extern void codec_clearbuffer(void);
 
 #endif /* __CODEC_H */
