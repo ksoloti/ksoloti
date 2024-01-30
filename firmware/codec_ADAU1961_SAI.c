@@ -29,9 +29,6 @@
 #define ADAU1961_I2C_ADDR 0x70 /* (0x38<<1) */
 #define TIMEOUT 1000000
 
-// #define GYRO_I2C_ADDR 0xD4 /* (0x6A<<1) */
-// #define GYRO_TIMEOUT 1
-
 #define STM32_SAI_A_DMA_STREAM STM32_DMA_STREAM_ID(2, 1)
 #define STM32_SAI_B_DMA_STREAM STM32_DMA_STREAM_ID(2, 4)
 #define SAI_A_DMA_CHANNEL 0
@@ -58,7 +55,6 @@ void codec_ADAU1961_hw_reset(void) { }
 * SDA : PB11
 * SCL : PB10
 */
-// static const I2CConfig i2cfg2 = { OPMODE_I2C, 100000, STD_DUTY_CYCLE, };
 static const I2CConfig i2cfg2 = { OPMODE_I2C, 400000, FAST_DUTY_CYCLE_2, };
 
 static uint8_t i2crxbuf[8];
@@ -108,7 +104,6 @@ int HAL_RCC_GetPCLK1Freq(void)
 
 void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue)
 {
-    // msg_t status;
     i2ctxbuf[0] = RegisterAddr >> 8;
     i2ctxbuf[1] = RegisterAddr;
     i2ctxbuf[2] = RegisterValue;
@@ -126,19 +121,6 @@ void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue)
 
     chThdSleepMilliseconds(10);
 }
-
-// void Gyro_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue)
-// {
-//     i2ctxbuf[0] = RegisterAddr >> 8;
-//     i2ctxbuf[1] = RegisterAddr;
-//     i2ctxbuf[2] = RegisterValue;
-
-//     HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle,
-//         GYRO_I2C_ADDR, i2ctxbuf, 3, GYRO_TIMEOUT);
-
-//     chThdSleepMilliseconds(1);
-
-// }
 
 
 void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
@@ -208,7 +190,6 @@ void ADAU1961_ReadRegister6(uint16_t RegisterAddr)
 void codec_ADAU1961_hw_init(uint16_t samplerate)
 {
 
-    // tmo = MS2ST(4);
     ADAU_I2C_Init();
     chThdSleepMilliseconds(5);
 

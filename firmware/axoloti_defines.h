@@ -27,7 +27,7 @@
 typedef int32_t int32buffer[BUFSIZE];
 
 #define BOARD_AXOLOTI_V05 1
-#define USING_ADAU1761 1 /* Works with ADAU1961/ADAU1361 too so we just leave this defined */
+#define USING_ADAU1761 1 /* Works with ADAU1961/1761/1361 so we just leave this defined */
 #define HAS_SD_CARD_DETECT 1
 
 // firmware version 1.0.0.4 - Ksoloti v0.4

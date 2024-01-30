@@ -24,19 +24,19 @@ void TransmitLCDoverUSB(void) {
 
   static int r = 0;
   r++;
-  if (r == (LCDROWS + 1))
+  if (r == (AXOLOTI_CONTROL_LCDROWS + 1))
     r = 0;
 
-  if (r < LCDROWS) {
+  if (r < AXOLOTI_CONTROL_LCDROWS) {
     chSequentialStreamWrite(
         (BaseSequentialStream *)&BDU1,
-        (const unsigned char*)&lcd_buffer[r * (LCDHEADER + LCDWIDTH)],
-        LCDHEADER + LCDWIDTH);
+        (const unsigned char*)&lcd_buffer[r * (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH)],
+        AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH);
   }
   else {
     chSequentialStreamWrite((BaseSequentialStream *)&BDU1,
                             (const unsigned char*)&led_buffer[0],
-                            LCDHEADER + LCDWIDTH);
+                            AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH);
   }
 
 }
