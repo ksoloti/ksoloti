@@ -342,7 +342,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate)
     ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1, 0x00); /* 32 bits per frame */
 #endif
 
-    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC, 0x33);   /* ADC enable, highpass enabled */
+    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC, 0x13);   /* ADC enable */
     ADAU1961_WriteRegister(ADAU1961_REG_R36_DACC0, 0x03);  /* DAC enable */
 
     ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL, 0xE7); /* Playback Line Output Left Volume */
