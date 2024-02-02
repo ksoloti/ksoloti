@@ -58,6 +58,8 @@ public class Axoloti
         {
             initProperties();
 
+            System.setProperty("sun.java2d.dpiaware", "true");
+
             prefs.applyTheme();
 
             if (OSDetect.getOS() == OSDetect.OS.MAC)
