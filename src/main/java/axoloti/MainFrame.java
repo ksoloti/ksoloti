@@ -35,6 +35,7 @@ import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -607,6 +608,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         getContentPane().add(jPanelHeader);
 
+        jTextPaneLog.setCaretColor(new Color(0,0,0,0));
         jTextPaneLog.setEditable(false);
         jScrollPaneLog.setViewportView(jTextPaneLog);
 
