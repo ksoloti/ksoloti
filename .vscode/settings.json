@@ -12,5 +12,6 @@
         "*.axh": "xml",
         "*.axp": "xml",
         "*.axs": "xml"
-    }
+    },
+    "C_Cpp.default.compilerPath": ""
 }
