@@ -22,23 +22,22 @@
 
 #include "codec_ADAU1961.h"
 
-int32_t buf[BUFSIZE*2] __attribute__ ((section (".sram2")));
-int32_t buf2[BUFSIZE*2] __attribute__ ((section (".sram2")));
-int32_t rbuf[BUFSIZE*2] __attribute__ ((section (".sram2")));
+int32_t buf[BUFSIZE*2]   __attribute__ ((section (".sram2")));
+int32_t buf2[BUFSIZE*2]  __attribute__ ((section (".sram2")));
+int32_t rbuf[BUFSIZE*2]  __attribute__ ((section (".sram2")));
 int32_t rbuf2[BUFSIZE*2] __attribute__ ((section (".sram2")));
 
 void codec_init(void) {
-  codec_ADAU1961_i2s_init(SAMPLERATE);
-  codec_ADAU1961_hw_init(SAMPLERATE);
+    codec_ADAU1961_i2s_init(SAMPLERATE);
+    codec_ADAU1961_hw_init(SAMPLERATE);
 }
 
 
 void codec_clearbuffer(void) {
-  int i;
-  for(i=0;i<BUFSIZE*2;i++){
-    buf[i]=0;
-    buf2[i]=0;
-  }
+    int i; for(i=0; i<BUFSIZE*2; i++) {
+        buf[i] = 0;
+        buf2[i] = 0;
+    }
 }
 
 #include "codec_ADAU1961_SAI.c"

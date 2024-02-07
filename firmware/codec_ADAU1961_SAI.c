@@ -48,31 +48,26 @@
 #define SAI1_SD_B_PORT GPIOE
 #define SAI1_SD_B_PIN 3
 
+#define MCO1_PORT GPIOA
+#define MCO1_PIN 8
+
 extern void computebufI(int32_t *inp, int32_t *outp);
 
 
 const stm32_dma_stream_t* sai_a_dma;
 const stm32_dma_stream_t* sai_b_dma;
 
-volatile SAI_Block_TypeDef *sai_a;
-volatile SAI_Block_TypeDef *sai_b;
+volatile SAI_Block_TypeDef *sai_a = SAI1_Block_A;
+volatile SAI_Block_TypeDef *sai_b = SAI1_Block_B;
 
-unsigned int codec_interrupt_timestamp;
-
-void codec_ADAU1961_hw_reset(void) { }
-
-/*
-* I2C interface #2
-* SDA : PB11
-* SCL : PB10
-*/
-static const I2CConfig i2cfg2 = { OPMODE_I2C, 400000, FAST_DUTY_CYCLE_2, };
+/* use STM32 HAL for I2C */
+static I2C_HandleTypeDef ADAU1961_i2c_handle;
 
 static uint8_t i2crxbuf[8];
 static uint8_t i2ctxbuf[8];
 
-/* use STM32 HAL for I2C */
-static I2C_HandleTypeDef ADAU1961_i2c_handle;
+unsigned int codec_interrupt_timestamp;
+
 
 /******************************* I2C Routines**********************************/
 /**
@@ -119,13 +114,11 @@ void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue) {
 
     HAL_StatusTypeDef r = HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR, i2ctxbuf, 3, TIMEOUT);
 
-    if (r != HAL_OK)
-    {
-        // volatile unsigned int i = r;
+    if (r != HAL_OK) {
         while(1);
     }
 
-    chThdSleepMilliseconds(10);
+    chThdSleepMilliseconds(2);
 }
 
 
@@ -144,8 +137,7 @@ void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
 
     HAL_StatusTypeDef r = HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR, i2ctxbuf, 8, TIMEOUT);
 
-    if (r != HAL_OK)
-    {
+    if (r != HAL_OK) {
         setErrorFlag(ERROR_CODEC_I2C);
         while(1);
     }
@@ -166,16 +158,14 @@ void ADAU1961_ReadRegister6(uint16_t RegisterAddr) {
 
     HAL_StatusTypeDef r = HAL_I2C_Master_Receive(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR+1, i2crxbuf, 6, TIMEOUT);
 
-    if (r != HAL_OK)
-    {
-        // volatile unsigned int i = r;
-        while(1) { }
+    if (r != HAL_OK) {
+        setErrorFlag(ERROR_CODEC_I2C);
+        while(1);
     }
 }
 
 
-void codec_ADAU1961_hw_init(uint16_t samplerate)
-{
+void codec_ADAU1961_hw_init(uint16_t samplerate) {
 
     ADAU_I2C_Init();
     chThdSleepMilliseconds(5);
@@ -194,8 +184,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate)
 #else
     uint8_t pllreg[6];
 
-    if (samplerate == 48000)
-    {
+    if (samplerate == 48000) {
         // reg setting 0x007D 0012 3101
         pllreg[0] = 0x00;
         pllreg[1] = 0x7D; /* PLL denominator M = 125 */
@@ -217,33 +206,32 @@ void codec_ADAU1961_hw_init(uint16_t samplerate)
     //   pllreg[4] = 0x29;
     //   pllreg[5] = 0x01;
     // }
-    else
-    {
-        while (1) { }
+    else {
+        while (1);
     }
 
     ADAU1961_WriteRegister6(ADAU1961_REG_R1_PLLC, &pllreg[0]);
 
     int i = 1000;
 
-    while(i)
-    {
-        // wait for PLL
+    while (--i) {
+        /* wait for PLL */
         ADAU1961_ReadRegister6(ADAU1961_REG_R1_PLLC);
-        if (i2crxbuf[5] & 0x02) /*wait until PLL signals locked state */
-        {
+        if (i2crxbuf[5] & 0x02) {
+            /* Wait until PLL signals locked state */
             break;
         }
         chThdSleepMilliseconds(1);
-        i--;
     }
 
-    if (!i)
-    {
+    if (!i) {
+        /* PLL never got to lock... Something wrong with the codec? */
         setErrorFlag(ERROR_CODEC_I2C);
+        while (1);
     }
 
-    ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC, 0x09); /* PLL = clksrc */
+    ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC,     0x09); /* PLL = clksrc */
+    chThdSleepMilliseconds(1);
 #endif
 
     /*
@@ -251,127 +239,113 @@ void codec_ADAU1961_hw_init(uint16_t samplerate)
     * bclk and lrclk are ok too
     */
 
-    ADAU1961_WriteRegister(ADAU1961_REG_R2_DMICJ, 0x20); // enable digital mic function on pin JACKDET/MICIN
-    ADAU1961_WriteRegister(ADAU1961_REG_R3_RES, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R4_RMIXL0, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R5_RMIXL1, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R6_RMIXR0, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R7_RMIXR1, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R8_LDIVOL, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R9_RDIVOL, 0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R2_DMICJ,    0x20); /* Enable digital mic function via pin JACKDET/MICIN */
+    ADAU1961_WriteRegister(ADAU1961_REG_R3_RES,      0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R4_RMIXL0,   0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R5_RMIXL1,   0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R6_RMIXR0,   0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R7_RMIXR1,   0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R8_LDIVOL,   0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R9_RDIVOL,   0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R10_MICBIAS, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R11_ALC0, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R12_ALC1, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R13_ALC2, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R14_ALC3, 0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R11_ALC0,    0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R12_ALC1,    0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R13_ALC2,    0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R14_ALC3,    0x00);
 
 #ifdef STM_IS_I2S_MASTER
-    ADAU1961_WriteRegister(ADAU1961_REG_R15_SERP0,0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1,0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R15_SERP0,   0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1,   0x00);
 #else
-    ADAU1961_WriteRegister(ADAU1961_REG_R15_SERP0, 0x01); /* codec is master */
-    ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1, 0x00); /* 32bit samples */
+    ADAU1961_WriteRegister(ADAU1961_REG_R15_SERP0,   0x01); /* codec is master */
+    ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1,   0x00); /* 32bit samples */
     // ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1,0x60); /* 64bit samples, spdif clock! */
 #endif
 
-    ADAU1961_WriteRegister(ADAU1961_REG_R17_CON0, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R18_CON1, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC, 0x10);
-    ADAU1961_WriteRegister(ADAU1961_REG_R20_LDVOL, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R21_RDVOL, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R22_PMIXL0, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R23_PMIXL1, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R24_PMIXR0, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R25_PMIXR1, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R26_PLRML, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R27_PLRMR, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R28_PLRMM, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R29_PHPLVOL, 0x02);
-    ADAU1961_WriteRegister(ADAU1961_REG_R30_PHPRVOL, 0x02);
-    ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL, 0x02);
-    ADAU1961_WriteRegister(ADAU1961_REG_R32_PLRVOL, 0x02);
-    ADAU1961_WriteRegister(ADAU1961_REG_R33_PMONO, 0x02);
+    ADAU1961_WriteRegister(ADAU1961_REG_R17_CON0,     0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R18_CON1,     0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC,     0x10);
+    ADAU1961_WriteRegister(ADAU1961_REG_R20_LDVOL,    0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R21_RDVOL,    0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R22_PMIXL0,   0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R23_PMIXL1,   0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R24_PMIXR0,   0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R25_PMIXR1,   0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R26_PLRML,    0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R27_PLRMR,    0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R28_PLRMM,    0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R29_PHPLVOL,  0x02);
+    ADAU1961_WriteRegister(ADAU1961_REG_R30_PHPRVOL,  0x02);
+    ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL,   0x02);
+    ADAU1961_WriteRegister(ADAU1961_REG_R32_PLRVOL,   0x02);
+    ADAU1961_WriteRegister(ADAU1961_REG_R33_PMONO,    0x02);
     ADAU1961_WriteRegister(ADAU1961_REG_R34_POPCLICK, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R35_PWRMGMT, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R36_DACC0, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R37_DACC1, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R38_DACC2, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R39_SERPP, 0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R40_CPORTP0, 0xAA);
-    ADAU1961_WriteRegister(ADAU1961_REG_R41_CPORTP1, 0xAA);
+    ADAU1961_WriteRegister(ADAU1961_REG_R35_PWRMGMT,  0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R36_DACC0,    0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R37_DACC1,    0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R38_DACC2,    0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R39_SERPP,    0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R40_CPORTP0,  0xAA);
+    ADAU1961_WriteRegister(ADAU1961_REG_R41_CPORTP1,  0xAA);
     ADAU1961_WriteRegister(ADAU1961_REG_R42_JACKDETP, 0x00);
 
 #ifdef USING_ADAU1761
-    ADAU1961_WriteRegister(ADAU1761_REG_R58_SERINRT, 0x01);
+    ADAU1961_WriteRegister(ADAU1761_REG_R58_SERINRT,  0x01);
     ADAU1961_WriteRegister(ADAU1761_REG_R59_SEROUTRT, 0x01);
-    ADAU1961_WriteRegister(ADAU1761_REG_R64_SERSR, 0x00);
-    ADAU1961_WriteRegister(ADAU1761_REG_R65_CKEN0, 0x7F);
-    ADAU1961_WriteRegister(ADAU1761_REG_R66_CKEN1, 0x03);
+    ADAU1961_WriteRegister(ADAU1761_REG_R64_SERSR,    0x00);
+    ADAU1961_WriteRegister(ADAU1761_REG_R65_CKEN0,    0x7F);
+    ADAU1961_WriteRegister(ADAU1761_REG_R66_CKEN1,    0x03); /* Enable CLK0 and CLK1 (generate BCLK and LRCLK) */
 #endif
 
     chThdSleepMilliseconds(10);
 
-#if 0
-    while(1)
-    {
-        ADAU1961_WriteRegister(ADAU1961_REG_R39_SERPP,0x00);
-        ADAU1961_WriteRegister(ADAU1961_REG_R39_SERPP,0x03);
-        ADAU1961_WriteRegister(ADAU1961_REG_R39_SERPP,0x0C);
-        ADAU1961_WriteRegister(ADAU1961_REG_R39_SERPP,0x30);
-        ADAU1961_WriteRegister(ADAU1961_REG_R39_SERPP,0xC0);
-        ADAU1961_WriteRegister(ADAU1961_REG_R39_SERPP,0x00);
-    }
-#endif
-
     /* ADC Enable */
 #ifdef STM_IS_I2S_MASTER
-    // ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1, 0x20); /* 32 bits per frame */
-    ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1, 0x00); /* 32 bits per frame */
+    // ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1,    0x20); /* 32 bits per frame */
+    ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1,    0x00); /* 32 bits per frame */
 #endif
 
-    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC, 0x13);   /* ADC enable */
-    ADAU1961_WriteRegister(ADAU1961_REG_R36_DACC0, 0x03);  /* DAC enable */
+    ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC,     0x13); /* ADC enable */
+    ADAU1961_WriteRegister(ADAU1961_REG_R36_DACC0,    0x03); /* DAC enable */
 
-    ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL, 0xE7); /* Playback Line Output Left Volume */
-    ADAU1961_WriteRegister(ADAU1961_REG_R32_PLRVOL, 0xE7); /* Playback Right Output Left Volume */
+    ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL,   0xE7); /* Playback Line Output Left Volume */
+    ADAU1961_WriteRegister(ADAU1961_REG_R32_PLRVOL,   0xE7); /* Playback Line Output Right Volume */
 
-    ADAU1961_WriteRegister(ADAU1961_REG_R26_PLRML, 0x05);  /* unmute Mixer5, 6dB gain */
-    ADAU1961_WriteRegister(ADAU1961_REG_R27_PLRMR, 0x11);  /* unmute Mixer6, 6dB gain */
-    ADAU1961_WriteRegister(ADAU1961_REG_R22_PMIXL0, 0x21); /* unmute DAC, no aux mix */
-    ADAU1961_WriteRegister(ADAU1961_REG_R24_PMIXR0, 0x41); /* unmute DAC, no aux mix */
+    ADAU1961_WriteRegister(ADAU1961_REG_R26_PLRML,    0x05); /* unmute Mixer5, 6dB gain */
+    ADAU1961_WriteRegister(ADAU1961_REG_R27_PLRMR,    0x11); /* unmute Mixer6, 6dB gain */
+    ADAU1961_WriteRegister(ADAU1961_REG_R22_PMIXL0,   0x21); /* unmute DAC, no aux mix */
+    ADAU1961_WriteRegister(ADAU1961_REG_R24_PMIXR0,   0x41); /* unmute DAC, no aux mix */
 
-    ADAU1961_WriteRegister(ADAU1961_REG_R35_PWRMGMT, 0x03); /* enable L&R */
+    ADAU1961_WriteRegister(ADAU1961_REG_R35_PWRMGMT,  0x03); /* enable L&R */
 
-    ADAU1961_WriteRegister(ADAU1961_REG_R4_RMIXL0, 0x01);  /* mixer1 enable, mute LINP and LINR */
-    ADAU1961_WriteRegister(ADAU1961_REG_R5_RMIXL1, 0x08);  /* unmute PGA, aux mute, 0 dB boost */
-    ADAU1961_WriteRegister(ADAU1961_REG_R6_RMIXR0, 0x01);  /* mixer2 enable, mute LINP and LINR */
-    ADAU1961_WriteRegister(ADAU1961_REG_R7_RMIXR1, 0x08);  /* unmute PGA, aux mute, 0 dB boost */
+    ADAU1961_WriteRegister(ADAU1961_REG_R4_RMIXL0,    0x01); /* mixer1 enable, mute LINP and LINR */
+    ADAU1961_WriteRegister(ADAU1961_REG_R5_RMIXL1,    0x08); /* unmute PGA, aux mute, 0 dB boost */
+    ADAU1961_WriteRegister(ADAU1961_REG_R6_RMIXR0,    0x01); /* mixer2 enable, mute LINP and LINR */
+    ADAU1961_WriteRegister(ADAU1961_REG_R7_RMIXR1,    0x08); /* unmute PGA, aux mute, 0 dB boost */
 
-    ADAU1961_WriteRegister(ADAU1961_REG_R8_LDIVOL, 0x43);  /* 0dB gain */
-    ADAU1961_WriteRegister(ADAU1961_REG_R9_RDIVOL, 0x43);  /* 0dB gain */
+    ADAU1961_WriteRegister(ADAU1961_REG_R8_LDIVOL,    0x43); /* 0dB gain */
+    ADAU1961_WriteRegister(ADAU1961_REG_R9_RDIVOL,    0x43); /* 0dB gain */
 
     /* capless headphone config */
-    ADAU1961_WriteRegister(ADAU1961_REG_R33_PMONO, 0x03);  /* MONOM + MOMODE */
-    ADAU1961_WriteRegister(ADAU1961_REG_R28_PLRMM, 0x01);  /* MX7EN, COMMON MODE OUT */
-    ADAU1961_WriteRegister(ADAU1961_REG_R29_PHPLVOL, 0xC3);
-    ADAU1961_WriteRegister(ADAU1961_REG_R30_PHPRVOL, 0xC3);
+    ADAU1961_WriteRegister(ADAU1961_REG_R33_PMONO,    0x03); /* MONOM + MOMODE */
+    ADAU1961_WriteRegister(ADAU1961_REG_R28_PLRMM,    0x01); /* MX7EN, COMMON MODE OUT */
+    ADAU1961_WriteRegister(ADAU1961_REG_R29_PHPLVOL,  0xC3);
+    ADAU1961_WriteRegister(ADAU1961_REG_R30_PHPRVOL,  0xC3);
 
     chThdSleepMilliseconds(10);
 }
 
 
-static void dma_sai_a_interrupt(void* dat, uint32_t flags)
-{
+static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
+
     (void)dat;
     (void)flags;
     codec_interrupt_timestamp = hal_lld_get_counter_value();
 
-    if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT)
-    {
+    if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
         computebufI(rbuf2, buf);
     }
-    else
-    {
+    else {
         computebufI(rbuf, buf2);
     }
 
@@ -379,14 +353,11 @@ static void dma_sai_a_interrupt(void* dat, uint32_t flags)
 }
 
 
-void codec_ADAU1961_i2s_init(uint16_t sampleRate)
-{
-    sai_a = SAI1_Block_A;
-    sai_b = SAI1_Block_B;
+void codec_ADAU1961_i2s_init(uint16_t sampleRate) {
 
     /* configure MCO */
-    palSetPadMode(GPIOA, 8, PAL_MODE_OUTPUT_PUSHPULL);
-    palSetPadMode(GPIOA, 8, PAL_MODE_ALTERNATE(0));
+    palSetPadMode(MCO1_PORT, MCO1_PIN, PAL_MODE_OUTPUT_PUSHPULL);
+    palSetPadMode(MCO1_PORT, MCO1_PIN, PAL_MODE_ALTERNATE(0));
     chThdSleepMilliseconds(10);
 
     /* release SAI */
@@ -399,8 +370,8 @@ void codec_ADAU1961_i2s_init(uint16_t sampleRate)
     RCC->APB2ENR |= RCC_APB2ENR_SAI1EN;
     chThdSleepMilliseconds(1);
 
-    SAI1_Block_A->CR2 = SAI_xCR2_FTH_1;
-    SAI1_Block_B->CR2 = SAI_xCR2_FTH_1;
+    SAI1_Block_A->CR2 = 0;//SAI_xCR2_FTH_1;
+    SAI1_Block_B->CR2 = 0;//SAI_xCR2_FTH_0;
 
     SAI1_Block_A->FRCR = /*SAI_xFRCR_FSDEF |*/ SAI_xFRCR_FRL_0 | SAI_xFRCR_FRL_1
         | SAI_xFRCR_FRL_2 | SAI_xFRCR_FRL_3 | SAI_xFRCR_FRL_4 | SAI_xFRCR_FRL_5
@@ -446,8 +417,7 @@ void codec_ADAU1961_i2s_init(uint16_t sampleRate)
         | STM32_DMA_CR_TEIE | STM32_DMA_CR_TCIE | STM32_DMA_CR_DBM /* double buffer mode */
         | STM32_DMA_CR_PSIZE_WORD | STM32_DMA_CR_MSIZE_WORD;
 
-    bool_t b = dmaStreamAllocate(sai_a_dma, STM32_SAI_A_IRQ_PRIORITY,
-        (stm32_dmaisr_t)dma_sai_a_interrupt, (void *)0);
+    bool_t b = dmaStreamAllocate(sai_a_dma, STM32_SAI_A_IRQ_PRIORITY, (stm32_dmaisr_t)dma_sai_a_interrupt, (void *)0);
 
     dmaStreamSetPeripheral(sai_a_dma, &(sai_a->DR));
     dmaStreamSetMemory0(sai_a_dma, buf);
@@ -455,12 +425,11 @@ void codec_ADAU1961_i2s_init(uint16_t sampleRate)
     dmaStreamSetTransactionSize(sai_a_dma, 32);
     dmaStreamSetMode(sai_a_dma, sai_a_dma_mode | STM32_DMA_CR_MINC);
 
-    b |= dmaStreamAllocate(sai_b_dma, STM32_SAI_B_IRQ_PRIORITY,
-        (stm32_dmaisr_t)0, (void *)0);
+    b |= dmaStreamAllocate(sai_b_dma, STM32_SAI_B_IRQ_PRIORITY, (stm32_dmaisr_t)0, (void *)0);
 
-    if (b)
-    {
+    if (b) {
         setErrorFlag(ERROR_CODEC_I2C);
+        while (1);
     }
 
     dmaStreamSetPeripheral(sai_b_dma, &(sai_b->DR));

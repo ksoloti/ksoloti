@@ -79,8 +79,8 @@ int main(void) {
     palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7)); /* TX */
     /* 115200 baud */
     static const SerialConfig sd2Cfg = {115200, 0, 0, 0};
-  sdStart(&SD2, &sd2Cfg);
-  chprintf((BaseSequentialStream * )&SD2,"Hello world!\r\n");
+    sdStart(&SD2, &sd2Cfg);
+    chprintf((BaseSequentialStream * )&SD2,"Hello world!\r\n");
 #endif
 
     exception_init();
@@ -143,7 +143,7 @@ int main(void) {
 
 
 void HAL_Delay(unsigned int n) {
-  chThdSleepMilliseconds(n);
+    chThdSleepMilliseconds(n);
 }
 
 
