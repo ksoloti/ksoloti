@@ -51,91 +51,94 @@
 /* Initialization and main thread.                                           */
 /*===========================================================================*/
 
-//#define ENABLE_SERIAL_DEBUG 1
+// #define ENABLE_SERIAL_DEBUG 1
 
 extern void MY_USBH_Init(void);
 
 
 int main(void) {
-  // copy vector table to SRAM1!
+    /* copy vector table to SRAM1! */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnonnull"
-  memcpy((char *)0x20000000, (const char)0x00000000, 0x200);
+    memcpy((char *)0x20000000, (const char)0x00000000, 0x200);
 #pragma GCC diagnostic pop
-  // remap SRAM1 to 0x00000000
-  SYSCFG->MEMRMP |= 0x03;
 
-  halInit();
-  chSysInit();
+    /* remap SRAM1 to 0x00000000 */
+    SYSCFG->MEMRMP |= 0x03;
 
-  sdcard_init();
-  sysmon_init();
+    halInit();
+    chSysInit();
+
+    sdcard_init();
+    sysmon_init();
 
 #if ENABLE_SERIAL_DEBUG
-// SD2 for serial debug output
-  palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7) | PAL_MODE_INPUT); // RX
-  palSetPadMode(GPIOA, 2, PAL_MODE_OUTPUT_PUSHPULL); // TX
-  palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7)); // TX
-// 115200 baud
-  static const SerialConfig sd2Cfg = {115200,
-        0, 0, 0};
+    /* SD2 for serial debug output */
+    palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7) | PAL_MODE_INPUT); /* RX */
+    palSetPadMode(GPIOA, 2, PAL_MODE_OUTPUT_PUSHPULL); /* TX */
+    palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7)); /* TX */
+    /* 115200 baud */
+    static const SerialConfig sd2Cfg = {115200, 0, 0, 0};
   sdStart(&SD2, &sd2Cfg);
   chprintf((BaseSequentialStream * )&SD2,"Hello world!\r\n");
 #endif
 
-  exception_init();
+    exception_init();
 
-  InitPatch0();
+    InitPatch0();
 
-  InitPConnection();
+    InitPConnection();
 
-  chThdSleepMilliseconds(10);
+    chThdSleepMilliseconds(10);
 
-  /* Pull up SPILINK detector (HIGH means MASTER i.e. regular operation) */
-  palSetPadMode(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN, PAL_MODE_INPUT_PULLUP);
+    /* Pull up SPILINK detector (HIGH means MASTER i.e. regular operation) */
+    palSetPadMode(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN, PAL_MODE_INPUT_PULLUP);
 
-  axoloti_board_init();
-  adc_init();
-  axoloti_math_init();
-  midi_init();
-  start_dsp_thread();
-  codec_init();
-  if (!palReadPad(SW2_PORT, SW2_PIN)) { // button S2 not pressed
-//    watchdog_init();
-    chThdSleepMilliseconds(1);
-  }
+    axoloti_board_init();
+    adc_init();
+    adc_convert();
+    axoloti_math_init();
+    midi_init();
+    start_dsp_thread();
+    codec_init();
+
+    if (!palReadPad(SW2_PORT, SW2_PIN)) {
+        /* button S2 not pressed */
+        // watchdog_init();
+        chThdSleepMilliseconds(1);
+    }
 
 #ifdef AXOLOTI_CONTROL
-  axoloti_control_init();
+    axoloti_control_init();
 #endif
 
-  ui_init();
+    ui_init();
 
-  configSDRAM();
-  // memTest();
+    configSDRAM();
+    // memTest();
 
-  MY_USBH_Init();
+    MY_USBH_Init();
 
-  if (!exception_check()) {
-    // only try booting a patch when no exception is to be reported
+    if (!exception_check()) {
+        /* Only try mounting SD and booting a patch when no exception is reported */
 
-    sdcard_attemptMountIfUnmounted();
-    if (fs_ready && !palReadPad(SW2_PORT, SW2_PIN)){
-      // button S2 not pressed
-      LoadPatchStartSD();
+        sdcard_attemptMountIfUnmounted();
+
+        /* Patch start can be skipped by holding S2 during boot */
+        if (fs_ready && !palReadPad(SW2_PORT, SW2_PIN)) {
+            LoadPatchStartSD();
+        }
+
+        /* If no patch booting or running yet try loading from flash */
+        /* Patch start can be skipped by holding S2 during boot */
+        if (patchStatus == STOPPED && !palReadPad(SW2_PORT, SW2_PIN)) {
+            LoadPatchStartFlash();
+        }
     }
 
-    // if no patch booting or running yet
-    // try loading from flash
-    if (patchStatus == STOPPED) {
-      if (!palReadPad(SW2_PORT, SW2_PIN)) // button S2 not pressed
-        LoadPatchStartFlash();
+    while (1) {
+        chThdSleepMilliseconds(1000);
     }
-  }
-
-  while (1) {
-    chThdSleepMilliseconds(1000);
-  }
 }
 
 

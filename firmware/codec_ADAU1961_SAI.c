@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include "codec_ADAU1961.h"
 #include "ch.h"
 #include "hal.h"
@@ -77,10 +78,8 @@ static I2C_HandleTypeDef ADAU1961_i2c_handle;
 /**
   * @brief  Configures I2C interface.
   */
-static void ADAU_I2C_Init(void)
-{
-    if(HAL_I2C_GetState(&ADAU1961_i2c_handle) == HAL_I2C_STATE_RESET)
-    {
+static void ADAU_I2C_Init(void) {
+    if(HAL_I2C_GetState(&ADAU1961_i2c_handle) == HAL_I2C_STATE_RESET) {
         /* DISCOVERY_I2Cx peripheral configuration */
         ADAU1961_i2c_handle.Init.ClockSpeed = 400000;
         ADAU1961_i2c_handle.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
@@ -101,19 +100,17 @@ static void ADAU_I2C_Init(void)
 }
 
 
-unsigned int HAL_GetTick(void)
-{
+uint32_t HAL_GetTick(void) {
     return hal_lld_get_counter_value();
 }
 
-uint32_t HAL_RCC_GetPCLK1Freq(void)
-{
+
+uint32_t HAL_RCC_GetPCLK1Freq(void) {
     return STM32_PCLK1;
 }
 
 
-void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue)
-{
+void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue) {
     i2ctxbuf[0] = RegisterAddr >> 8;
     i2ctxbuf[1] = RegisterAddr;
     i2ctxbuf[2] = RegisterValue;
@@ -134,7 +131,6 @@ void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue)
 
 void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
 
-    // msg_t status;
     i2ctxbuf[0] = RegisterAddr >> 8;
     i2ctxbuf[1] = RegisterAddr;
     i2ctxbuf[2] = RegisterValues[0];
@@ -146,12 +142,10 @@ void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
 
     chThdSleepMilliseconds(2);
 
-    HAL_StatusTypeDef r = HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle,
-        ADAU1961_I2C_ADDR, i2ctxbuf, 8, TIMEOUT);
+    HAL_StatusTypeDef r = HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR, i2ctxbuf, 8, TIMEOUT);
 
     if (r != HAL_OK)
     {
-        // volatile unsigned int i = r;
         setErrorFlag(ERROR_CODEC_I2C);
         while(1);
     }
@@ -160,20 +154,17 @@ void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
 }
 
 
-void ADAU1961_ReadRegister6(uint16_t RegisterAddr)
-{
+void ADAU1961_ReadRegister6(uint16_t RegisterAddr) {
     i2ctxbuf[0] = RegisterAddr >> 8;
     i2ctxbuf[1] = RegisterAddr;
 
-    chThdSleepMilliseconds(1);
+    chThdSleepMilliseconds(2);
 
-    HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR,
-        i2ctxbuf, 2, TIMEOUT);
+    HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR, i2ctxbuf, 2, TIMEOUT);
 
-    chThdSleepMilliseconds(1);
+    chThdSleepMilliseconds(2);
 
-    HAL_StatusTypeDef r = HAL_I2C_Master_Receive(&ADAU1961_i2c_handle,
-        ADAU1961_I2C_ADDR+1, i2crxbuf, 6, TIMEOUT);
+    HAL_StatusTypeDef r = HAL_I2C_Master_Receive(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR+1, i2crxbuf, 6, TIMEOUT);
 
     if (r != HAL_OK)
     {
@@ -399,10 +390,10 @@ void codec_ADAU1961_i2s_init(uint16_t sampleRate)
     chThdSleepMilliseconds(10);
 
     /* release SAI */
-    palSetPadMode(SAI1_SD_B_PORT, SAI1_SD_B_PIN, PAL_MODE_INPUT);
-    palSetPadMode(SAI1_FS_PORT,   SAI1_FS_PIN,   PAL_MODE_INPUT);
-    palSetPadMode(SAI1_SCK_PORT,  SAI1_SCK_PIN,  PAL_MODE_INPUT);
+    palSetPadMode(SAI1_FS_PORT, SAI1_FS_PIN, PAL_MODE_INPUT);
     palSetPadMode(SAI1_SD_A_PORT, SAI1_SD_A_PIN, PAL_MODE_INPUT);
+    palSetPadMode(SAI1_SD_B_PORT, SAI1_SD_B_PIN, PAL_MODE_INPUT);
+    palSetPadMode(SAI1_SCK_PORT,  SAI1_SCK_PIN,  PAL_MODE_INPUT);
 
     /* configure SAI */
     RCC->APB2ENR |= RCC_APB2ENR_SAI1EN;
@@ -436,10 +427,10 @@ void codec_ADAU1961_i2s_init(uint16_t sampleRate)
     chThdSleepMilliseconds(1);
 
     /* reassign SAI */
-    palSetPadMode(GPIOE, 3, PAL_MODE_ALTERNATE(6));
-    palSetPadMode(GPIOE, 4, PAL_MODE_ALTERNATE(6));
-    palSetPadMode(GPIOE, 5, PAL_MODE_ALTERNATE(6));
-    palSetPadMode(GPIOE, 6, PAL_MODE_ALTERNATE(6));
+    palSetPadMode(SAI1_FS_PORT, SAI1_FS_PIN, PAL_MODE_ALTERNATE(6));
+    palSetPadMode(SAI1_SD_A_PORT, SAI1_SD_A_PIN, PAL_MODE_ALTERNATE(6));
+    palSetPadMode(SAI1_SD_B_PORT, SAI1_SD_B_PIN, PAL_MODE_ALTERNATE(6));
+    palSetPadMode(SAI1_SCK_PORT, SAI1_SCK_PIN, PAL_MODE_ALTERNATE(6));
 
     /* initialize DMA */
     sai_a_dma = STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM);
@@ -488,6 +479,3 @@ void codec_ADAU1961_i2s_init(uint16_t sampleRate)
     SAI1_Block_B->CR1 |= SAI_xCR1_SAIEN;
 
 }
-
-
-void codec_ADAU1961_Stop(void) { }

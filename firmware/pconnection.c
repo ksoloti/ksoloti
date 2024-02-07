@@ -50,12 +50,13 @@ uint32_t fwid;
 
 static WORKING_AREA(waThreadUSBDMidi, 256);
 
-__attribute__((noreturn))
-    static msg_t ThreadUSBDMidi(void *arg) {
+__attribute__((noreturn)) static msg_t ThreadUSBDMidi(void *arg) {
   (void)arg;
+
 #if CH_USE_REGISTRY
   chRegSetThreadName("usbdmidi");
 #endif
+
   uint8_t r[4];
   while (1) {
     chnReadTimeout(&MDU1, &r[0], 4, TIME_INFINITE);
@@ -70,9 +71,7 @@ void InitPConnection(void) {
   fwid = CalcCRC32((uint8_t *)(FLASH_BASE_ADDR),
                    (uint32_t)(&_flash_end) & 0x07FFFFF);
 
-  /*
-   * Initializes a serial-over-USB CDC driver.
-   */
+  /* Initializes a serial-over-USB CDC driver. */
   mduObjectInit(&MDU1);
   mduStart(&MDU1, &midiusbcfg);
   bduObjectInit(&BDU1);
@@ -440,11 +439,10 @@ void CopyPatchToFlash(void) {
     flash_addr += 4;
     c += 4;
   }
-  if (err) {
-    while (1) {
-      // flash verify fail
-    }
-  }
+
+  if (err)
+    while (1); /* flash verify failed */
+
   AckPending = 1;
 }
 

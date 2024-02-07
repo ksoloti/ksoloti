@@ -24,7 +24,6 @@
 
 uint8_t lcd_buffer[(AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) * AXOLOTI_CONTROL_LCDROWS] __attribute__ ((section (".sram2")));
 uint8_t led_buffer[AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH] __attribute__ ((section (".sram2")));
-uint8_t control_rx_buffer[AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH] __attribute__ ((section (".sram2")));
 
 /*
  * Low speed SPI configuration (328.125kHz, CPHA=0, CPOL=0, MSb first).
@@ -115,7 +114,7 @@ void LCD_updateBoundingBox(int x, int y, int x2, int y2) {
 
 // the most basic function, set a single pixel
 void LCD_drawPixel(int x, int y, uint16_t color) {
-  if ((x < 0) || (x >= AXOLOTI_CONTROL_LCDWIDTH) || (y < 0) || (y >= LCDHEIGHT))
+  if ((x < 0) || (x >= AXOLOTI_CONTROL_LCDWIDTH) || (y < 0) || (y >= AXOLOTI_CONTROL_LCDHEIGHT))
     return;
 
   // x is which column
@@ -128,21 +127,21 @@ void LCD_drawPixel(int x, int y, uint16_t color) {
 }
 
 void LCD_setPixel(int x, int y) {
-  if ((x < 0) || (x >= AXOLOTI_CONTROL_LCDWIDTH) || (y < 0) || (y >= LCDHEIGHT))
+  if ((x < 0) || (x >= AXOLOTI_CONTROL_LCDWIDTH) || (y < 0) || (y >= AXOLOTI_CONTROL_LCDHEIGHT))
     return;
   lcd_buffer[AXOLOTI_CONTROL_LCDHEADER + x + (y / 8) * (AXOLOTI_CONTROL_LCDWIDTH + AXOLOTI_CONTROL_LCDHEADER)] |= _BV(y%8);
   LCD_updateBoundingBox(x, y, x, y);
 }
 
 void LCD_clearPixel(int x, int y) {
-  if ((x < 0) || (x >= AXOLOTI_CONTROL_LCDWIDTH) || (y < 0) || (y >= LCDHEIGHT))
+  if ((x < 0) || (x >= AXOLOTI_CONTROL_LCDWIDTH) || (y < 0) || (y >= AXOLOTI_CONTROL_LCDHEIGHT))
     return;
   lcd_buffer[AXOLOTI_CONTROL_LCDHEADER + x + (y / 8) * (AXOLOTI_CONTROL_LCDWIDTH + AXOLOTI_CONTROL_LCDHEADER)] &= ~_BV(y%8);
   LCD_updateBoundingBox(x, y, x, y);
 }
 
 uint8_t LCD_getPixel(int x, int y) {
-  if ((x < 0) || (x >= AXOLOTI_CONTROL_LCDWIDTH) || (y < 0) || (y >= LCDHEIGHT))
+  if ((x < 0) || (x >= AXOLOTI_CONTROL_LCDWIDTH) || (y < 0) || (y >= AXOLOTI_CONTROL_LCDHEIGHT))
     return 0;
 
   return (lcd_buffer[AXOLOTI_CONTROL_LCDHEADER + x + (y / 8) * (AXOLOTI_CONTROL_LCDWIDTH + AXOLOTI_CONTROL_LCDHEADER)]
@@ -151,10 +150,9 @@ uint8_t LCD_getPixel(int x, int y) {
 
 // clear everything
 void LCD_clearDisplay(void) {
-  int i;
-  for (i = 0; i < AXOLOTI_CONTROL_LCDROWS; i++)
+  int i; for (i = 0; i < AXOLOTI_CONTROL_LCDROWS; i++)
     memset(&lcd_buffer[AXOLOTI_CONTROL_LCDHEADER + i * AXOLOTI_CONTROL_LCDWIDTH], 0, AXOLOTI_CONTROL_LCDWIDTH);
-  LCD_updateBoundingBox(0, 0, AXOLOTI_CONTROL_LCDWIDTH - 1, LCDHEIGHT - 1);
+  LCD_updateBoundingBox(0, 0, AXOLOTI_CONTROL_LCDWIDTH - 1, AXOLOTI_CONTROL_LCDHEIGHT - 1);
 //  cursor_y = cursor_x = 0;
 }
 
@@ -234,7 +232,7 @@ void LCD_drawNumber5D(int x, int y, int i) {
 void LCD_drawCharInv(int x, int y, unsigned char c) {
   // pixel x, line y
   //
-  if ((x < 0) || (x >= (AXOLOTI_CONTROL_LCDWIDTH - 5)) || (y < 0) || (y >= (LCDHEIGHT / 8)))
+  if ((x < 0) || (x >= (AXOLOTI_CONTROL_LCDWIDTH - 5)) || (y < 0) || (y >= (AXOLOTI_CONTROL_LCDHEIGHT / 8)))
     return;
   int i = c * 5;
   int j = AXOLOTI_CONTROL_LCDHEADER + x + y * (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH);
@@ -354,7 +352,7 @@ void LCD_drawStringInvN(int x, int y, const char *str, int N) {
 }
 
 void LCD_drawIBAR(int x, int y, int v, int N) {
-  if ((y < 0) || (y >= (LCDHEIGHT / 8)) || (x < 0))
+  if ((y < 0) || (y >= (AXOLOTI_CONTROL_LCDHEIGHT / 8)) || (x < 0))
     return;
   int j = AXOLOTI_CONTROL_LCDHEADER + x + (y * AXOLOTI_CONTROL_LCDWIDTH);
   int k = 1;
@@ -381,7 +379,7 @@ void LCD_drawIBAR(int x, int y, int v, int N) {
 }
 
 void LCD_drawIBARadd(int x, int y, int v) {
-  if ((y < 0) || (y >= (LCDHEIGHT)) || (x < 0))
+  if ((y < 0) || (y >= (AXOLOTI_CONTROL_LCDHEIGHT)) || (x < 0))
     return;
   int j = AXOLOTI_CONTROL_LCDHEADER + x + (y * AXOLOTI_CONTROL_LCDWIDTH);
   int b = 1 << (y & 0x07);

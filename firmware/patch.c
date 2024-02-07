@@ -64,6 +64,7 @@ static WORKING_AREA(waThreadDSP, 7200) __attribute__ ((section (".ccmramend")));
 static Thread *pThreadDSP = 0;
 static const char *index_fn = "/index.axb";
 
+
 static int GetNumberOfThreads(void){
 #ifdef CH_USE_REGISTRY
   int i=1;
@@ -117,14 +118,17 @@ void CheckStackOverflow(void) {
 #endif
 }
 
+
 static void StopPatch1(void) {
   if (patchMeta.fptr_patch_dispose != 0) {
     CheckStackOverflow();
     (patchMeta.fptr_patch_dispose)();
-    // check if the number of threads after patch disposal is the same as before
+
+    /* Check if the number of threads after patch disposal is the same as before */
     int j=20;
     int i = GetNumberOfThreads();
-    // try sleeping up to 1 second so threads can terminate
+
+    /* Try sleeping up to 1 second so threads can terminate */
     while( (j--) && (i!=nThreadsBeforePatch)) {
       chThdSleepMilliseconds(50);
       i = GetNumberOfThreads();
@@ -138,15 +142,18 @@ static void StopPatch1(void) {
   sysmon_enable_blinker();
 }
 
+
 static int StartPatch1(void) {
   KVP_ClearObjects();
   sdcard_attemptMountIfUnmounted();
-  // reinit pin configuration for adc
+
+  /* Reinit pin configuration for ADC */
   adc_configpads();
-  int32_t *ccm; // clear ccmram area declared in ramlink.ld
-  for (ccm = (int32_t *)0x10000000; ccm < (int32_t *)(0x10000000 + 0x0000C000);
-      ccm++)
+
+  int32_t *ccm; /* Clear CCMRAM area declared in ramlink.ld */
+  for (ccm = (int32_t*)0x10000000; ccm < (int32_t*)(0x10000000 + 0x0000C000); ccm++) {
     *ccm = 0;
+  }
   patchMeta.fptr_dsp_process = 0;
   nThreadsBeforePatch = GetNumberOfThreads();
   patchMeta.fptr_patch_init = (fptr_patch_init_t)(PATCHMAINLOC + 1);
@@ -167,6 +174,7 @@ static int StartPatch1(void) {
   patchStatus = RUNNING;
   return 0;
 }
+
 
 static msg_t ThreadDSP(void *arg) {
   (void)(arg);
@@ -233,8 +241,9 @@ static msg_t ThreadDSP(void *arg) {
         FIL f;
         uint32_t bytes_read;
         err = f_open(&f, index_fn, FA_READ | FA_OPEN_EXISTING);
-        if (err)
+        if (err) {
           report_fatfs_error(err, index_fn);
+        }
         err = f_read(&f, (uint8_t *)PATCHMAINLOC, 0xE000, (void *)&bytes_read);
         if (err != FR_OK) {
           report_fatfs_error(err, index_fn);
@@ -314,6 +323,7 @@ static msg_t ThreadDSP(void *arg) {
   return (msg_t)0;
 }
 
+
 void StopPatch(void) {
   if (!patchStatus) {
     patchStatus = STOPPING;
@@ -327,6 +337,7 @@ void StopPatch(void) {
   }
 }
 
+
 int StartPatch(void) {
   chEvtSignal(pThreadDSP, (eventmask_t)4);
   while ((patchStatus != RUNNING) && (patchStatus != STARTFAILED)) {
@@ -338,6 +349,7 @@ int StartPatch(void) {
   }
   return 0;
 }
+
 
 void start_dsp_thread(void) {
   if (!pThreadDSP)
@@ -357,8 +369,8 @@ void computebufI(int32_t *inp, int32_t *outp) {
   chSysUnlockFromIsr();
 }
 
-void MidiInMsgHandler(midi_device_t dev, uint8_t port, uint8_t status,
-                      uint8_t data1, uint8_t data2) {
+
+void MidiInMsgHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t data1, uint8_t data2) {
   if (patchStatus == RUNNING) {
     (patchMeta.fptr_MidiInHandler)(dev, port, status, data1, data2);
   }
@@ -370,6 +382,7 @@ void LoadPatch(const char *name) {
   chEvtSignal(pThreadDSP, (eventmask_t)2);
 }
 
+
 void LoadPatchStartSD(void) {
   strcpy(loadFName, "/START.BIN");
   loadPatchIndex = START_SD;
@@ -377,16 +390,19 @@ void LoadPatchStartSD(void) {
   chThdSleepMilliseconds(50);
 }
 
+
 void LoadPatchStartFlash(void) {
   loadPatchIndex = START_FLASH;
   chEvtSignal(pThreadDSP, (eventmask_t)2);
 }
+
 
 void LoadPatchIndexed(uint32_t index) {
   loadPatchIndex = index;
   loadFName[0] = 0;
   chEvtSignal(pThreadDSP, (eventmask_t)2);
 }
+
 
 loadPatchIndex_t GetIndexOfCurrentPatch(void) {
   return loadPatchIndex;
