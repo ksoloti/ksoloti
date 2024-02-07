@@ -19,13 +19,14 @@ package axoloti.dialogs;
 
 import axoloti.ConnectionStatusListener;
 import axoloti.MainFrame;
+
+import static axoloti.MainFrame.fc;
 import static axoloti.MainFrame.prefs;
 import axoloti.SDCardInfo;
 import axoloti.SDFileInfo;
 import axoloti.USBBulkConnection;
 import axoloti.utils.Constants;
 import components.ScrollPaneComponent;
-import li.flor.nativejfilechooser.NativeJFileChooser;
 
 import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
@@ -40,7 +41,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
@@ -393,7 +393,10 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
         }
         if (USBBulkConnection.GetConnection().isConnected()) {
-            final JFileChooser fc = new NativeJFileChooser(prefs.getCurrentFileDirectory());
+            fc.resetChoosableFileFilters();
+            fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+            fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fc.setDialogTitle("Select File...");
             int returnVal = fc.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File f = fc.getSelectedFile();

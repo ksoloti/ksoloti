@@ -22,13 +22,12 @@ import axoloti.attributedefinition.AxoAttributeSDFile;
 import axoloti.object.AxoObjectInstance;
 import axoloti.utils.Constants;
 import components.ButtonComponent;
-import li.flor.nativejfilechooser.NativeJFileChooser;
+
+import static axoloti.MainFrame.fc;
 
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-// import java.awt.event.KeyEvent;
-// import java.awt.event.KeyListener;
 import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -110,13 +109,15 @@ public class AttributeInstanceSDFile extends AttributeInstanceString<AxoAttribut
                 }
             }
         });
-        ButtonChooseFile = new ButtonComponent("choose");
+        ButtonChooseFile = new ButtonComponent("Select");
         ButtonChooseFile.addActListener(new ButtonComponent.ActListener() {
             @Override
             public void OnPushed() {
                 GetObjectInstance().getPatch().getPatchframe().toFront();
-                JFileChooser fc = new NativeJFileChooser(GetObjectInstance().getPatch().GetCurrentWorkingDirectory());
-                // fc.setPreferredSize(new java.awt.Dimension(640, 640));
+                fc.resetChoosableFileFilters();
+                fc.setCurrentDirectory(new File(GetObjectInstance().getPatch().getFileNamePath()).getParentFile());
+                fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                fc.setDialogTitle("Select File...");
                 int returnVal = fc.showOpenDialog(GetObjectInstance().getPatch().getPatchframe());
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     String f = toRelative(fc.getSelectedFile());

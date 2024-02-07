@@ -17,13 +17,13 @@
  */
 package axoloti;
 
-import static axoloti.MainFrame.mainframe;
+import static axoloti.MainFrame.fc;
 import static axoloti.MainFrame.prefs;
 import axoloti.dialogs.PatchBank;
-import li.flor.nativejfilechooser.NativeJFileChooser;
+
 import java.io.File;
 
-import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -136,14 +136,17 @@ public class FileUtils {
         }
     };
 
-    public static void Open() {
+    public static void Open(JFrame anc) {
         JFrame frame = new JFrame();
         frame.setSize(0,0);
+        frame.setLocationRelativeTo(anc);
         frame.setUndecorated(true);
         frame.setVisible(true);
 
-        NativeJFileChooser fc = new NativeJFileChooser(prefs.getCurrentFileDirectory());
+        fc.resetChoosableFileFilters();
+        fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
         fc.setDialogTitle("Open...");
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(new FileNameExtensionFilter("Axoloti Files", "axp", "axh", "axs", "axb"));
         fc.addChoosableFileFilter(axpFileFilter);
@@ -152,7 +155,7 @@ public class FileUtils {
         fc.addChoosableFileFilter(axbFileFilter);
 
         int returnVal = fc.showOpenDialog(frame);
-        if (returnVal == NativeJFileChooser.APPROVE_OPTION) {
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
             File f = fc.getSelectedFile();
             prefs.setCurrentFileDirectory(f.getParentFile().toString());
 

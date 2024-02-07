@@ -22,6 +22,8 @@ import axoloti.DocumentWindow;
 import axoloti.DocumentWindowList;
 import static axoloti.FileUtils.axpFileFilter;
 import axoloti.MainFrame;
+
+import static axoloti.MainFrame.fc;
 import static axoloti.MainFrame.prefs;
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
@@ -30,7 +32,6 @@ import axoloti.SDCardMountStatusListener;
 import axoloti.SDFileInfo;
 import axoloti.USBBulkConnection;
 import components.ScrollPaneComponent;
-import li.flor.nativejfilechooser.NativeJFileChooser;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -318,8 +319,10 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     }
 
     void SaveAs() {
-        final JFileChooser fc = new NativeJFileChooser(MainFrame.prefs.getCurrentFileDirectory());
-        // fc.setPreferredSize(new java.awt.Dimension(640, 640));
+        fc.resetChoosableFileFilters();
+        fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.setDialogTitle("Save As...");
         fc.setAcceptAllFileFilterUsed(false);
         FileFilter axb = new FileFilter() {
             @Override
@@ -745,8 +748,10 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     }//GEN-LAST:event_jButtonRemoveActionPerformed
 
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
-        JFileChooser fc = new NativeJFileChooser(prefs.getCurrentFileDirectory());
-        // fc.setPreferredSize(new java.awt.Dimension(640, 640));
+        fc.resetChoosableFileFilters();
+        fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.setDialogTitle("Open...");
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(new FileNameExtensionFilter("Axoloti Files", "axp"));
         fc.addChoosableFileFilter(axpFileFilter);

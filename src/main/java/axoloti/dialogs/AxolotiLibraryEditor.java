@@ -7,11 +7,12 @@ package axoloti.dialogs;
 
 import axoloti.Axoloti;
 import axoloti.MainFrame;
+
+import static axoloti.MainFrame.fc;
 import static axoloti.MainFrame.prefs;
 import axoloti.utils.AxoFileLibrary;
 import axoloti.utils.AxoGitLibrary;
 import axoloti.utils.AxolotiLibrary;
-import li.flor.nativejfilechooser.NativeJFileChooser;
 
 import java.awt.Component;
 import java.io.File;
@@ -500,9 +501,10 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
         }
 
         File seldir = new File(dir).getParentFile();
-        JFileChooser fc = new NativeJFileChooser(seldir);
-        // fc.setPreferredSize(new java.awt.Dimension(640, 640));
+        fc.resetChoosableFileFilters();
+        fc.setCurrentDirectory(seldir);
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fc.setDialogTitle("Select Directory...");
         fc.setFileFilter(new FileFilter() {
             @Override
             public boolean accept(File f) {
@@ -515,7 +517,6 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
             }
         });
 
-        fc.setDialogTitle("Select Directory");
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
         fc.setApproveButtonText("Select");
         ArrayList<JPanel> jpanels = new ArrayList<JPanel>();

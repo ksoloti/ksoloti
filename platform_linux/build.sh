@@ -183,7 +183,7 @@ fi
 
 cd "${PLATFORM_ROOT}/../jdks"
 
-JDK_ARCHIVE_LINUX="zulu21.30.15-ca-fx-jdk21.0.1-linux_x64.tar.gz"
+JDK_ARCHIVE_LINUX="zulu21.30.15-ca-jdk21.0.1-linux_x64.tar.gz"
 if [ ! -f "${JDK_ARCHIVE_LINUX}" ];
 then
     echo "##### downloading ${JDK_ARCHIVE_LINUX} #####"
@@ -192,7 +192,7 @@ else
     echo "##### ${JDK_ARCHIVE_LINUX} already downloaded #####"
 fi
 
-JDK_ARCHIVE_MAC="zulu21.30.15-ca-fx-jdk21.0.1-macosx_x64.tar.gz"
+JDK_ARCHIVE_MAC="zulu21.30.15-ca-jdk21.0.1-macosx_x64.tar.gz"
 if [ ! -f "${JDK_ARCHIVE_MAC}" ];
 then
     echo "##### downloading ${JDK_ARCHIVE_MAC} #####"
@@ -201,7 +201,7 @@ else
     echo "##### ${JDK_ARCHIVE_MAC} already downloaded #####"
 fi
 
-JDK_ARCHIVE_WINDOWS="zulu21.30.15-ca-fx-jdk21.0.1-win_x64.zip"
+JDK_ARCHIVE_WINDOWS="zulu21.30.15-ca-jdk21.0.1-win_x64.zip"
 if [ ! -f "${JDK_ARCHIVE_WINDOWS}" ];
 then
     echo "##### downloading ${JDK_ARCHIVE_WINDOWS} #####"
