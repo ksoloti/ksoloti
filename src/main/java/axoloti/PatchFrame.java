@@ -25,8 +25,8 @@ import axoloti.utils.KeyUtils;
 import components.PresetPanel;
 import components.ScrollPaneComponent;
 import components.VisibleCablePanel;
-import li.flor.nativejfilechooser.NativeJFileChooser;
 
+import static axoloti.MainFrame.fc;
 import static axoloti.MainFrame.prefs;
 
 import java.awt.Cursor;
@@ -822,12 +822,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         JFrame frame = new JFrame();
         frame.setSize(0,0);
+        frame.setLocationRelativeTo(patch.getPatchframe());
         frame.setUndecorated(true);
         frame.setVisible(true);
 
-
-        NativeJFileChooser fc = new NativeJFileChooser(prefs.getCurrentFileDirectory());
+        fc.resetChoosableFileFilters();
+        fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
         fc.setDialogTitle(title);
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(FileUtils.axpFileFilter);
         fc.addChoosableFileFilter(FileUtils.axsFileFilter);
@@ -901,30 +903,28 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 }
             }
 
-            // if (fileToBeSaved.exists()) {
-            //     Object[] options = {"Yes",
-            //         "No"};
-            //     int n = JOptionPane.showOptionDialog(this,
-            //             "File exists! Overwrite?",
-            //             "File Exists",
-            //             JOptionPane.YES_NO_OPTION,
-            //             JOptionPane.QUESTION_MESSAGE,
-            //             null,
-            //             options,
-            //             options[1]);
-            //     switch (n) {
-            //         case JOptionPane.YES_OPTION:
-            //             break;
-            //         case JOptionPane.NO_OPTION:
-            //             return null;
-            //     }
-            // }
+            if (fileToBeSaved.exists()) {
+                Object[] options = {"Yes",
+                    "No"};
+                int n = JOptionPane.showOptionDialog(this,
+                        "File exists! Overwrite?",
+                        "File Exists",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[1]);
+                switch (n) {
+                    case JOptionPane.YES_OPTION:
+                        break;
+                    case JOptionPane.NO_OPTION:
+                        return null;
+                }
+            }
 
-            // patch.getPatchframe().requestFocus();
             frame.setVisible(false);
             return fileToBeSaved;
         } else {
-            // patch.getPatchframe().requestFocus();
             frame.setVisible(false);
             return null;
         }
@@ -932,7 +932,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private void jMenuSaveAsActionPerformed(java.awt.event.ActionEvent evt) {
         File fileToBeSaved = FileChooserSave("Save As...");
-        patch.getPatchframe().requestFocus();
         if (fileToBeSaved != null) {
             patch.setFileNamePath(fileToBeSaved.getPath());
             patch.save(fileToBeSaved);

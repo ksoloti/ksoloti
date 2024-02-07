@@ -1,6 +1,7 @@
 package axoloti;
 
 import static axoloti.FileUtils.axtFileFilter;
+import static axoloti.MainFrame.fc;
 import static axoloti.MainFrame.prefs;
 import axoloti.object.AxoObjects;
 import axoloti.utils.ColorConverter;
@@ -213,8 +214,10 @@ public class Theme {
     public Color VU_Bright_Red = new Color(0.8f, 0.0f, 0.0f);
 
     private File FileChooserSave(JFrame frame) {
-        final JFileChooser fc = new JFileChooser(MainFrame.prefs.getCurrentFileDirectory());
-        fc.setPreferredSize(new java.awt.Dimension(640, 640));
+        fc.resetChoosableFileFilters();
+        fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.setDialogTitle("Save Theme...");
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(FileUtils.axtFileFilter);
 
@@ -296,8 +299,10 @@ public class Theme {
     }
 
     public JFileChooser GetFileChooser() {
-        JFileChooser fc = new JFileChooser(prefs.getCurrentFileDirectory());
-        fc.setPreferredSize(new java.awt.Dimension(640, 640));
+        fc.resetChoosableFileFilters();
+        fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.setDialogTitle("Theme...");
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(axtFileFilter);
         return fc;

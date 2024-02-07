@@ -24,17 +24,18 @@ import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
 import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
-import li.flor.nativejfilechooser.NativeJFileChooser;
+
+import static axoloti.MainFrame.fc;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -577,13 +578,15 @@ public class PreferencesFrame extends javax.swing.JFrame {
     }
 
     private void btnFavDirActionPerformed(java.awt.event.ActionEvent evt) {
-        JFileChooser chooser = new NativeJFileChooser(prefs.getCurrentFileDirectory());
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setAcceptAllFileFilterUsed(false);
-        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        fc.resetChoosableFileFilters();
+        fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.setDialogTitle("Open...");
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fc.setAcceptAllFileFilterUsed(false);
+        if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             String dir;
             try {
-                dir = chooser.getSelectedFile().getCanonicalPath();
+                dir = fc.getSelectedFile().getCanonicalPath();
                 prefs.setFavouriteDir(dir);
                 jTextFieldFavDir.setText(dir);
             } catch (IOException ex) {

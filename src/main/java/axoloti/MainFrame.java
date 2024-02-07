@@ -62,6 +62,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import javax.swing.BoundedRangeModel;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
@@ -97,6 +98,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     static public Preferences prefs = Preferences.LoadPreferences();
     static public AxoObjects axoObjects;
     public static MainFrame mainframe;
+    public static JFileChooser fc;
+
     boolean even = false;
     String LinkFirmwareID;
     String TargetFirmwareID;
@@ -128,6 +131,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         mainframe = this;
         setVisible(true);
+
+        fc = new JFileChooser(prefs.getCurrentFileDirectory());
+        fc.setMinimumSize(new Dimension(640, 480));
 
         final Style styleParent = jTextPaneLog.addStyle(null, null);
         jTextPaneLog.setFont(Constants.FONT_MONO);

@@ -37,11 +37,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+
 import qcmds.QCmdProcessor;
 
 /**
@@ -267,7 +271,7 @@ public class FileMenu extends JMenu {
     }
 
     private void jMenuOpenActionPerformed(java.awt.event.ActionEvent evt) {
-        FileUtils.Open();
+        FileUtils.Open((JFrame) SwingUtilities.getWindowAncestor(this));
     }
 
     private void jMenuNewPatchActionPerformed(java.awt.event.ActionEvent evt) {
