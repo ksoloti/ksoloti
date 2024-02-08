@@ -355,40 +355,7 @@ void EnterMenuFormat(void) {
   }
 }
 
-#define NEWBOARD 1
-#ifndef NEWBOARD
-/*
- * This is a periodic thread that handles display/buttons
- */
-static void UIPollButtons(void);
-static void UIUpdateLCD(void);
 
-void AxolotiControlUpdate(void) {
-  static int refreshLCD=0;
-    UIPollButtons();
-    if (!(0x0F & refreshLCD++)) {
-      UIUpdateLCD();
-      LCD_display();
-    }
-}
-
-
-void (*pControlUpdate)(void) = AxolotiControlUpdate;
-
-static WORKING_AREA(waThreadUI, 2048);
-static msg_t ThreadUI(void *arg) {
-  while(1) {
-    if(pControlUpdate != 0L) {
-        pControlUpdate();
-    }
-    AxoboardADCConvert();
-    PollMidiIn();
-    PExTransmit();
-    PExReceive();
-    chThdSleepMilliseconds(2);
-  }
-}
-#else
 static void UIUpdateLCD(void);
 static void UIPollButtons2(void);
 
@@ -419,7 +386,7 @@ static msg_t ThreadUI(void *arg) {
   }
   return (msg_t)0;
 }
-#endif
+
 
 void UIGoSafe(void) {
   KvpsDisplay = &KvpsHead;
@@ -1059,6 +1026,6 @@ static void UIUpdateLCD(void) {
       LCD_drawString(LCD_COL_ENTER, STATUSROW, "     ");
   }
   else if (KvpsDisplay->kvptype == KVP_TYPE_CUSTOM) {
-    (*KvpsDisplay->custom.displayFunction)(KvpsDisplay->custom.userdata);
+    (*KvpsDisplay->custom.displayFunction)((int)KvpsDisplay->custom.userdata);
   }
 }
