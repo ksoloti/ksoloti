@@ -133,7 +133,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         setVisible(true);
 
         fc = new JFileChooser(prefs.getCurrentFileDirectory());
-        fc.setMinimumSize(new Dimension(640, 480));
+        fc.setPreferredSize(new Dimension(640, 480));
 
         final Style styleParent = jTextPaneLog.addStyle(null, null);
         jTextPaneLog.setFont(Constants.FONT_MONO);

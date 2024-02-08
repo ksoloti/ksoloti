@@ -137,11 +137,11 @@ public class FileUtils {
     };
 
     public static void Open(JFrame anc) {
-        JFrame frame = new JFrame();
-        frame.setSize(0,0);
-        frame.setLocationRelativeTo(anc);
-        frame.setUndecorated(true);
-        frame.setVisible(true);
+        // JFrame frame = new JFrame();
+        // frame.setSize(0,0);
+        // frame.setLocationRelativeTo(anc);
+        // frame.setUndecorated(true);
+        // frame.setVisible(true);
 
         fc.resetChoosableFileFilters();
         fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
@@ -154,7 +154,7 @@ public class FileUtils {
         fc.addChoosableFileFilter(axsFileFilter);
         fc.addChoosableFileFilter(axbFileFilter);
 
-        int returnVal = fc.showOpenDialog(frame);
+        int returnVal = fc.showOpenDialog(anc);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File f = fc.getSelectedFile();
             prefs.setCurrentFileDirectory(f.getParentFile().toString());
@@ -176,6 +176,6 @@ public class FileUtils {
                 PatchBank.OpenBank(f);
             }
         }
-        frame.setVisible(false);
+        // frame.setVisible(false);
     }
 }

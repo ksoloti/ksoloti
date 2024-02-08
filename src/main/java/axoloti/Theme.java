@@ -298,18 +298,13 @@ public class Theme {
         }
     }
 
-    public JFileChooser GetFileChooser() {
+    public void load(JFrame frame) {
         fc.resetChoosableFileFilters();
         fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
         fc.setDialogTitle("Theme...");
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(axtFileFilter);
-        return fc;
-    }
-
-    public void load(JFrame frame) {
-        JFileChooser fc = GetFileChooser();
         int returnVal = fc.showOpenDialog(frame);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             prefs.setCurrentFileDirectory(fc.getCurrentDirectory().getPath());

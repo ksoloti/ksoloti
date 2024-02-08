@@ -820,12 +820,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     File FileChooserSave(String title) {
 
-        JFrame frame = new JFrame();
-        frame.setSize(0,0);
-        frame.setLocationRelativeTo(patch.getPatchframe());
-        frame.setUndecorated(true);
-        frame.setVisible(true);
-
         fc.resetChoosableFileFilters();
         fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
         fc.setDialogTitle(title);
@@ -858,7 +852,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             fc.setFileFilter(FileUtils.axpFileFilter);
         }
 
-        int returnVal = fc.showSaveDialog(frame);
+        int returnVal = fc.showSaveDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             String filterext = ".axp";
             if (fc.getFileFilter() == FileUtils.axpFileFilter) {
@@ -922,10 +916,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 }
             }
 
-            frame.setVisible(false);
             return fileToBeSaved;
         } else {
-            frame.setVisible(false);
             return null;
         }
     }
