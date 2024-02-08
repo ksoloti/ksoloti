@@ -66,7 +66,7 @@ static I2C_HandleTypeDef ADAU1961_i2c_handle;
 static uint8_t i2crxbuf[8];
 static uint8_t i2ctxbuf[8];
 
-unsigned int codec_interrupt_timestamp;
+uint32_t codec_interrupt_timestamp;
 
 
 /******************************* I2C Routines**********************************/

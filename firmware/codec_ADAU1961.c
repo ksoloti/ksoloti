@@ -35,7 +35,7 @@ extern void computebufI(int32_t *inp, int32_t *outp);
 const stm32_dma_stream_t* i2sdma_ADAU1961;
 const stm32_dma_stream_t* i2sdma_ADAU1961rx;
 
-int codec_interrupt_timestamp;
+uint32_t codec_interrupt_timestamp;
 
 #define I2S2_TX_DMA_CHANNEL \
 STM32_DMA_GETCHANNEL(STM32_SPI_SPI2_TX_DMA_STREAM /* STM32_DMA_STREAM_ID(1, 4) */, \

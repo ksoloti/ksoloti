@@ -35,6 +35,7 @@ uint8_t row_update_index;
 uint8_t k;
 
 void do_axoloti_control(void) {
+  #if 0
   row_update_index++;
   if (row_update_index == ((AXOLOTI_CONTROL_LCDROWS) + 1)) {
     row_update_index = 0;
@@ -65,9 +66,11 @@ void do_axoloti_control(void) {
     EncBuffer[2] += control_rx_buffer[14];
     EncBuffer[3] += control_rx_buffer[15];
   }
+  #endif
 }
 
 void axoloti_control_init(void) {
+  #if 0
   /*
    *  Commm to FP test...
    */
@@ -101,6 +104,7 @@ void axoloti_control_init(void) {
 
   for (i = 0; i < AXOLOTI_CONTROL_LCDWIDTH; i++)
     control_rx_buffer[i] = 0;
+  #endif
 }
 
 #define _BV(bit) (1 << (bit))
