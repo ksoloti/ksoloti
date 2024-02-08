@@ -87,6 +87,7 @@ public class Axoloti
             UIManager.put("Component.focusWidth", 0);
             UIManager.put("ToggleButton.selectedForeground", Theme.getCurrentTheme().Button_Accent_Foreground);
             UIManager.put("ToggleButton.selectedBackground", Theme.getCurrentTheme().Button_Accent_Background);
+            UIManager.put("Objects.Grey", UIManager.getColor("Panel.foreground"));
 
         }
         catch (URISyntaxException e)
