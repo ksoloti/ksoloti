@@ -822,6 +822,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         fc.resetChoosableFileFilters();
         fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.restoreCurrentSize();
         fc.setDialogTitle(title);
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setAcceptAllFileFilterUsed(false);
@@ -916,8 +917,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 }
             }
 
+            fc.updateCurrentSize();
             return fileToBeSaved;
         } else {
+            fc.updateCurrentSize();
             return null;
         }
     }

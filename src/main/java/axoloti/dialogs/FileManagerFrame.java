@@ -395,6 +395,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         if (USBBulkConnection.GetConnection().isConnected()) {
             fc.resetChoosableFileFilters();
             fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+            fc.restoreCurrentSize();
             fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fc.setDialogTitle("Select File...");
             int returnVal = fc.showOpenDialog(this);
@@ -409,6 +410,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     processor.AppendToQueue(new QCmdUploadFile(f, dir + f.getName()));
                 }
             }
+            fc.updateCurrentSize();
         }
     }//GEN-LAST:event_jButtonUploadActionPerformed
 

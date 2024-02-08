@@ -580,6 +580,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private void btnFavDirActionPerformed(java.awt.event.ActionEvent evt) {
         fc.resetChoosableFileFilters();
         fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.restoreCurrentSize();
         fc.setDialogTitle("Open...");
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fc.setAcceptAllFileFilterUsed(false);
@@ -593,6 +594,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
                 Logger.getLogger(PreferencesFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        fc.updateCurrentSize();
     }
 
     private void jControllerEnabledActionPerformed(java.awt.event.ActionEvent evt) {

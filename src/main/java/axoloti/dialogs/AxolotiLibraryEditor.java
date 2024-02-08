@@ -503,6 +503,7 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
         File seldir = new File(dir).getParentFile();
         fc.resetChoosableFileFilters();
         fc.setCurrentDirectory(seldir);
+        fc.restoreCurrentSize();
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fc.setDialogTitle("Select Directory...");
         fc.setFileFilter(new FileFilter() {
@@ -530,6 +531,7 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             }
         }
+        fc.updateCurrentSize();
 
     }//GEN-LAST:event_jSelectDirBtnActionPerformed
 

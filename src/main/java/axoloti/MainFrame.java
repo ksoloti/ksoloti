@@ -22,6 +22,7 @@ import static axoloti.Axoloti.HOME_DIR;
 import static axoloti.Axoloti.RELEASE_DIR;
 import static axoloti.Axoloti.RUNTIME_DIR;
 // import axoloti.dialogs.AxolotiRemoteControl;
+import axoloti.dialogs.AxoJFileChooser;
 import axoloti.dialogs.FileManagerFrame;
 import axoloti.dialogs.KeyboardFrame;
 import axoloti.dialogs.PatchBank;
@@ -98,7 +99,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     static public Preferences prefs = Preferences.LoadPreferences();
     static public AxoObjects axoObjects;
     public static MainFrame mainframe;
-    public static JFileChooser fc;
+    public static AxoJFileChooser fc;
 
     boolean even = false;
     String LinkFirmwareID;
@@ -132,8 +133,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         mainframe = this;
         setVisible(true);
 
-        fc = new JFileChooser(prefs.getCurrentFileDirectory());
-        fc.setPreferredSize(new Dimension(640, 480));
+        fc = new AxoJFileChooser(prefs.getCurrentFileDirectory());
 
         final Style styleParent = jTextPaneLog.addStyle(null, null);
         jTextPaneLog.setFont(Constants.FONT_MONO);
@@ -538,12 +538,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
-            // public void windowDeactivated(java.awt.event.WindowEvent evt) {
-            //     getKeyboard().setAlwaysOnTop(false);
-            // }
-            // public void windowActivated(java.awt.event.WindowEvent evt) {
-            //     getKeyboard().setAlwaysOnTop(true);
-            // }
         });
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
 

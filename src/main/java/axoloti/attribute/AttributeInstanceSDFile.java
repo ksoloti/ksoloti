@@ -116,6 +116,7 @@ public class AttributeInstanceSDFile extends AttributeInstanceString<AxoAttribut
                 GetObjectInstance().getPatch().getPatchframe().toFront();
                 fc.resetChoosableFileFilters();
                 fc.setCurrentDirectory(new File(GetObjectInstance().getPatch().getFileNamePath()).getParentFile());
+                fc.restoreCurrentSize();
                 fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 fc.setDialogTitle("Select File...");
                 int returnVal = fc.showOpenDialog(GetObjectInstance().getPatch().getPatchframe());
@@ -127,6 +128,7 @@ public class AttributeInstanceSDFile extends AttributeInstanceString<AxoAttribut
                         SetDirty();
                     }
                 }
+                fc.updateCurrentSize();
             }
         });
         add(ButtonChooseFile);

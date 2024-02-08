@@ -321,6 +321,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     void SaveAs() {
         fc.resetChoosableFileFilters();
         fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.restoreCurrentSize();
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setDialogTitle("Save As...");
         fc.setAcceptAllFileFilterUsed(false);
@@ -418,6 +419,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             MainFrame.prefs.setCurrentFileDirectory(fileToBeSaved.getPath());
             Save(fileToBeSaved);
         }
+        fc.updateCurrentSize();
     }
 
     boolean isDirty() {
@@ -750,6 +752,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
         fc.resetChoosableFileFilters();
         fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.restoreCurrentSize();
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setDialogTitle("Open...");
         fc.setAcceptAllFileFilterUsed(false);
@@ -761,6 +764,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             setDirty();
             refresh();
         }
+        fc.updateCurrentSize();
     }//GEN-LAST:event_jButtonAddActionPerformed
 
     private void jButtonOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOpenActionPerformed

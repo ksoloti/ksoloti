@@ -145,6 +145,7 @@ public class FileUtils {
 
         fc.resetChoosableFileFilters();
         fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.restoreCurrentSize();
         fc.setDialogTitle("Open...");
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setAcceptAllFileFilterUsed(false);
@@ -176,6 +177,6 @@ public class FileUtils {
                 PatchBank.OpenBank(f);
             }
         }
-        // frame.setVisible(false);
+        fc.updateCurrentSize();
     }
 }

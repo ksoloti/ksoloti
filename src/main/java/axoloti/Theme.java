@@ -86,7 +86,7 @@ public class Theme {
     public Color Cable_Shadow_Highlighted = Color.DARK_GRAY;
 
     @Element
-    public Color Cable_Bool32 = new Color(0xEF, 0xDF, 0x40);
+    public Color Cable_Bool32 = new Color(0xEF, 0xDF, 0x50);
     @Element
     public Color Cable_Bool32_Highlighted = Cable_Bool32.brighter();
 
@@ -101,7 +101,7 @@ public class Theme {
     public Color Cable_Zombie_Highlighted = new Color(0x9F, 0x00, 0x00);
 
     @Element
-    public Color Cable_Frac32 = new Color(0x20, 0x40, 0xFF);
+    public Color Cable_Frac32 = new Color(0x30, 0x50, 0xFF);
     @Element
     public Color Cable_Frac32_Highlighted = Cable_Frac32.brighter().brighter();
 
@@ -111,7 +111,7 @@ public class Theme {
     public Color Cable_Frac32Buffer_Highlighted = new Color(0xFF, 0x60, 0x80);
 
     @Element
-    public Color Cable_Int32 = new Color(0x20, 0xEF, 0x40);
+    public Color Cable_Int32 = new Color(0x30, 0xEF, 0x50);
     @Element
     public Color Cable_Int32_Highlighted = Cable_Int32.brighter().brighter();
 
@@ -216,6 +216,7 @@ public class Theme {
     private File FileChooserSave(JFrame frame) {
         fc.resetChoosableFileFilters();
         fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.restoreCurrentSize();
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setDialogTitle("Save Theme...");
         fc.setAcceptAllFileFilterUsed(false);
@@ -291,9 +292,11 @@ public class Theme {
                         return null;
                 }
             }
+            fc.updateCurrentSize();
             return fileToBeSaved;
         }
         else {
+            fc.updateCurrentSize();
             return null;
         }
     }
@@ -301,6 +304,7 @@ public class Theme {
     public void load(JFrame frame) {
         fc.resetChoosableFileFilters();
         fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.restoreCurrentSize();
         fc.setDialogTitle("Theme...");
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setAcceptAllFileFilterUsed(false);
