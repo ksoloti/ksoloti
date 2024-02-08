@@ -517,16 +517,8 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
             }
         });
 
-        fc.setDialogType(JFileChooser.SAVE_DIALOG);
-        fc.setApproveButtonText("Select");
-        ArrayList<JPanel> jpanels = new ArrayList<JPanel>();
-        for (Component c : fc.getComponents()) {
-            if (c instanceof JPanel) {
-                jpanels.add((JPanel) c);
-            }
-        }
-        jpanels.get(0).getComponent(0).setVisible(false);
-        if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        int returnVal = fc.showSaveDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
             seldir = fc.getSelectedFile();
             if (!seldir.exists()) {
                 seldir = seldir.getParentFile();

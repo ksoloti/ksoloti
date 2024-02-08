@@ -2,8 +2,8 @@
 
 set -e
 
-echo -e "\n\nKsoloti Install script for Linux"
-echo -e "This will install Ksoloti (I think)"
+echo -e "\n\nKsoloti build script for Linux"
+echo -e "This will build Ksoloti (I think)"
 echo -e "Use at your own risk\n"
 echo -e "Some packages will be installed with apt-get,"
 echo -e "and all users will be granted permission to access some USB devices"
