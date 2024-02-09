@@ -35,8 +35,6 @@ import static axoloti.usb.Usb.VID_STM;
 import axoloti.utils.OSDetect;
 import static axoloti.utils.OSDetect.getOS;
 
-import java.awt.Dimension;
-
 import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 
@@ -122,7 +120,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 TableModel model = (TableModel)e.getSource();
                 String name = (String) model.getValueAt(row, column);
                 String cpuid = (String) ((DefaultTableModel) jTable1.getModel()).getValueAt(row, 3);
-                Preferences prefs = MainFrame.mainframe.prefs;
+                Preferences prefs = MainFrame.prefs;
                 prefs.setBoardName(cpuid,name);
                 prefs.SavePrefs();
             }
@@ -163,74 +161,57 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         }
     }
 
-    final void Populate()
-    {
+    final void Populate() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
         DeviceList list = new DeviceList();
         int result = LibUsb.getDeviceList(null, list);
 
-        if (result < 0)
-        {
+        if (result < 0) {
             throw new LibUsbException("Unable to get device list", result);
         }
 
-        try
-        {
+        try {
             /* Iterate over all devices and scan for the right one */
-            for (Device device : list)
-            {
+            for (Device device : list) {
                 DeviceDescriptor descriptor = new DeviceDescriptor();
                 result = LibUsb.getDeviceDescriptor(device, descriptor);
 
-                if (result == LibUsb.SUCCESS)
-                {
-                    if (descriptor.idVendor() == VID_STM)
-                    {
-                        if (descriptor.idProduct() == PID_STM_DFU)
-                        {
+                if (result == LibUsb.SUCCESS) {
+                    if (descriptor.idVendor() == VID_STM) {
+                        if (descriptor.idProduct() == PID_STM_DFU) {
                             DeviceHandle handle = new DeviceHandle();
                             result = LibUsb.open(device, handle);
-                            if (result < 0)
-                            {
-                                if (getOS() == OSDetect.OS.WIN)
-                                {
-                                    if (result == LibUsb.ERROR_NOT_SUPPORTED)
-                                    {
+                            if (result < 0) {
+                                if (getOS() == OSDetect.OS.WIN) {
+                                    if (result == LibUsb.ERROR_NOT_SUPPORTED) {
                                         model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Not accessible: wrong driver installed"});
                                     }
-                                    else if (result == LibUsb.ERROR_ACCESS)
-                                    {
+                                    else if (result == LibUsb.ERROR_ACCESS) {
                                         model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Not accessible: busy?"});
                                     }
-                                    else
-                                    {
+                                    else {
                                         model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Not accessible: " + result});
                                     }
                                 }
-                                else
-                                {
+                                else {
                                     model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Not accessible: " + result});
                                 }
                             }
-                            else
-                            {
+                            else {
                                 model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Driver OK"});
                                 LibUsb.close(handle);
                             }
                         }
                     }
 
-                    else if (!prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI)
-                    {
+                    else if (!prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI) {
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);
-                        if (result < 0)
-                        {
+                        if (result < 0) {
                             model.addRow(new String[]{"",sKsolotiCore, DeviceToPath(device), ErrorString(result)});
                         }
-                        else
-                        {
+                        else {
                             String serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
                             String name = MainFrame.prefs.getBoardName(serial);
                             if(name==null) name = "";
@@ -239,21 +220,17 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                         }
                     }
 
-                    else if (!prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD)
-                    {
+                    else if (!prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD) {
                         model.addRow(new String[]{"",sKsolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
                     }
 
-                    else if (prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI)
-                    {
+                    else if (prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI) {
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);
-                        if (result < 0)
-                        {
+                        if (result < 0) {
                             model.addRow(new String[]{"",sAxolotiCore, DeviceToPath(device), ErrorString(result)});
                         }
-                        else
-                        {
+                        else {
                             String serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
                             String name = MainFrame.prefs.getBoardName(serial);
                             if(name==null) name = "";
@@ -262,8 +239,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                         }
                     }
 
-                    else if (prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI_SDCARD)
-                    {
+                    else if (prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI_SDCARD) {
                         model.addRow(new String[]{"",sAxolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
                     }
 
@@ -279,8 +255,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 }
             }
         }
-        finally
-        {
+        finally {
             // Ensure the allocated device list is freed
             LibUsb.freeDeviceList(list, true);
         }

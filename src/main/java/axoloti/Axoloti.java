@@ -40,8 +40,7 @@ import javax.swing.UIManager;
  *
  * @author Johannes Taelman
  */
-public class Axoloti
-{
+public class Axoloti {
 
     public final static String RUNTIME_DIR    = "axoloti_runtime";
     public final static String HOME_DIR       = "axoloti_home";
@@ -52,18 +51,15 @@ public class Axoloti
     /**
      * @param args the command line arguments
      */
-    public static void main(final String[] args)
-    {
-        try
-        {
+    public static void main(final String[] args) {
+        try {
             initProperties();
 
             System.setProperty("sun.java2d.dpiaware", "true");
 
             prefs.applyTheme();
 
-            if (OSDetect.getOS() == OSDetect.OS.MAC)
-            {
+            if (OSDetect.getOS() == OSDetect.OS.MAC) {
                 // System.setProperty("apple.laf.useScreenMenuBar", "true"); /* This option breaks menu functions */
                 System.setProperty("apple.awt.application.name", "Ksoloti");
                 System.setProperty("apple.awt.application.appearance", "system");
@@ -90,12 +86,10 @@ public class Axoloti
             UIManager.put("Objects.Grey", UIManager.getColor("Panel.foreground"));
 
         }
-        catch (URISyntaxException e)
-        {
+        catch (URISyntaxException e) {
             throw new Error(e);
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             throw new Error(e);
         }
 
@@ -105,19 +99,16 @@ public class Axoloti
         handleCommandLine(args);
     }
 
-    static void BuildEnv(String var, String def)
-    {
+    static void BuildEnv(String var, String def) {
         String ev = System.getProperty(var);
-        if (ev == null)
-        {
+        if (ev == null) {
             ev = System.getenv(var);
             if (ev == null) {
                 ev = def;
             }
         }
         File f = new File(ev);
-        if (f.exists())
-        {
+        if (f.exists()) {
             try {
                 ev = f.getCanonicalPath();
             } catch (IOException ex) {
@@ -127,17 +118,14 @@ public class Axoloti
         System.setProperty(var, ev);
     }
 
-    static boolean TestDir(String var)
-    {
+    static boolean TestDir(String var) {
         String ev = System.getProperty(var);
         File f = new File(ev);
-        if (!f.exists())
-        {
+        if (!f.exists()) {
             System.err.println(var + " directory does not exist " + ev);
             return false;
         }
-        if (!f.isDirectory())
-        {
+        if (!f.isDirectory()) {
             System.err.println(var + " must be a valid directory " + ev);
             return false;
         }
@@ -148,15 +136,13 @@ public class Axoloti
     private static String cacheFWDir = null;
     private static boolean cacheDeveloper = false;
 
-    public static boolean isDeveloper()
-    {
+    public static boolean isDeveloper() {
         
         String fwEnv = System.getProperty(FIRMWARE_DIR);
         if (prefs.getAxolotiLegacyMode()) {
             fwEnv += "_axoloti_legacy";
         }
-        if (cacheFWDir != null && fwEnv.equals(cacheFWDir))
-        {
+        if (cacheFWDir != null && fwEnv.equals(cacheFWDir)) {
             return cacheDeveloper;
         }
 
@@ -170,26 +156,21 @@ public class Axoloti
             fwRelease += "_axoloti_legacy";
         }
 
-        if (!fwRelease.equals(cacheFWDir))
-        {
+        if (!fwRelease.equals(cacheFWDir)) {
             File fR = new File(fwRelease);
             File fE = new File(fwEnv);
 
-            try
-            {
+            try {
                 cacheDeveloper = !fR.getCanonicalPath().equals(fE.getCanonicalPath());
             }
-            catch (IOException ex)
-            {
+            catch (IOException ex) {
                 Logger.getLogger(Axoloti.class.getName()).log(Level.SEVERE, null, ex);
                 cacheDeveloper = false;
             }
         }
-        else
-        {
+        else {
             File f = new File(dirRelease + File.separator + ".git");
-            if (f.exists())
-            {
+            if (f.exists()) {
                 cacheDeveloper = true;
             }
         }
@@ -225,8 +206,7 @@ public class Axoloti
     //     return failSafeMode;
     // }
 
-    private static void initProperties() throws URISyntaxException, IOException
-    {
+    private static void initProperties() throws URISyntaxException, IOException {
         String curDir = System.getProperty("user.dir");
         File jarFile = new File(Axoloti.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         String jarDir = jarFile.getParentFile().getCanonicalPath();
@@ -246,25 +226,22 @@ public class Axoloti
 
         String osHomeDir;
         OS os = OSDetect.getOS();
-        if (os != null) 
-        {
-            switch (os)
-            {
-            case WIN:
-                // not sure which versions of Windows this is valid for, good for 10!
-                osHomeDir = System.getenv("HOMEDRIVE") + System.getenv("HOMEPATH") + File.separator;
-                break;
-            case MAC:
-                osHomeDir = System.getenv("HOME") + "/";
-                break;
-            case LINUX:
-            default:
-                osHomeDir = System.getenv("HOME") + "/";
-                break;
+        if (os != null) {
+            switch (os) {
+                case WIN:
+                    // not sure which versions of Windows this is valid for, good for 10!
+                    osHomeDir = System.getenv("HOMEDRIVE") + System.getenv("HOMEPATH") + File.separator;
+                    break;
+                case MAC:
+                    osHomeDir = System.getenv("HOME") + "/";
+                    break;
+                case LINUX:
+                default:
+                    osHomeDir = System.getenv("HOME") + "/";
+                    break;
             }
         }
-        else
-        {
+        else {
             osHomeDir = System.getenv("HOME") + "/";
         }
 
@@ -315,8 +292,7 @@ public class Axoloti
         );
     }
 
-    private static void handleCommandLine(final String args[])
-    {
+    private static void handleCommandLine(final String args[]) {
         boolean cmdLineOnly = false;
         boolean cmdRunAllTest = false;
         boolean cmdRunPatchTest = false;

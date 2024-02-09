@@ -37,8 +37,7 @@ public class AssignPresetMenuItems {
         this.param = param;
         this.parent = parent;
 
-        if (param.GetObjectInstance().getPatch().getSettings().GetNPresets() < 1)
-        {
+        if (param.GetObjectInstance().getPatch().getSettings().GetNPresets() < 1) {
             JMenuItem mi = new JMenuItem("Presets set to 0 in patch settings");
             mi.setEnabled(false);
             parent.add(mi);
@@ -48,8 +47,7 @@ public class AssignPresetMenuItems {
         //sub2 = new JPopupMenu();
         {
             JMenuItem mi = new JMenuItem("Track in Current Preset");
-            if (param.presetEditActive == 0)
-            {
+            if (param.presetEditActive == 0) {
                 mi.setEnabled(false);
             }
             mi.addActionListener(new ActionListener() {
@@ -72,8 +70,7 @@ public class AssignPresetMenuItems {
         }
         {
             JMenuItem mi = new JMenuItem("Untrack from Current Preset");
-            if (param.presetEditActive == 0)
-            {
+            if (param.presetEditActive == 0) {
                 mi.setEnabled(false);
             }
             mi.addActionListener(new ActionListener() {

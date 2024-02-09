@@ -208,12 +208,8 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 
     public void IncludeInAllPresets() {
         PatchSettings settings = new PatchSettings();
-        for (int i=1; i<settings.GetNPresets()+1; i++)
-        {
+        for (int i=1; i<=settings.GetNPresets(); i++) {
             Preset p = GetPreset(i);
-            // if (p != null) {
-            //     return;
-            // }
             if (presets == null) {
                 presets = new ArrayList<Preset>();
             }

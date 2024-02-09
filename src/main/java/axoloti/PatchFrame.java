@@ -765,49 +765,40 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
     }
 
-    private void jMenuCopyActionPerformed(java.awt.event.ActionEvent evt)
-    {
+    private void jMenuCopyActionPerformed(java.awt.event.ActionEvent evt) {
         Patch p = patch.GetSelectedObjects();
-        if (p.objectinstances.isEmpty())
-        {
+        if (p.objectinstances.isEmpty()) {
             getToolkit().getSystemClipboard().setContents(new StringSelection(""), null);
             return;
         }
         p.PreSerialize();
         Serializer serializer = new Persister();
-        try
-        {
+        try {
             Clipboard clip = getToolkit().getSystemClipboard();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             serializer.write(p, baos);
             StringSelection s = new StringSelection(baos.toString());
             clip.setContents(s, (ClipboardOwner)null);
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void jMenuPasteActionPerformed(java.awt.event.ActionEvent evt)
-    {
+    private void jMenuPasteActionPerformed(java.awt.event.ActionEvent evt) {
         Clipboard clip = getToolkit().getSystemClipboard();
-        try
-        {
+        try {
             patch.paste((String)clip.getData(DataFlavor.stringFlavor), null, false);
         }
-        catch (UnsupportedFlavorException ex)
-        {
+        catch (UnsupportedFlavorException ex) {
             Logger.getLogger(PatchFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-        catch (IOException ex)
-        {
+        catch (IOException ex) {
             Logger.getLogger(PatchFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void jMenuSaveActionPerformed(java.awt.event.ActionEvent evt)
-    { 
+    private void jMenuSaveActionPerformed(java.awt.event.ActionEvent evt) { 
         String fn = patch.getFileNamePath();
         if ((fn != null) && (!fn.equals("untitled"))) {
             File f = new File(fn);
@@ -1007,8 +998,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
     }
 
-    private void jMenuItemDeleteActionPerformed(java.awt.event.ActionEvent evt)
-    { 
+    private void jMenuItemDeleteActionPerformed(java.awt.event.ActionEvent evt) { 
         patch.deleteSelectedAxoObjInstances();
     }
 

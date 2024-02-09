@@ -63,7 +63,8 @@ public class AxoObjects {
             bfname = cwd + "/../" + n.substring(3);
         }
         if ((bfname != null) && (cwd != null)) {
-            { // try object file
+            {
+                // try object file
                 ArrayList<AxoObjectAbstract> set = new ArrayList<AxoObjectAbstract>();
                 String fnameA = bfname + ".axo";
                 Logger.getLogger(AxoObjects.class.getName()).log(Level.FINE, "Attempt to create object from object file: {0}", fnameA);
@@ -97,7 +98,8 @@ public class AxoObjects {
                     }
                 }
             }
-            { // try subpatch file
+            {
+                // try subpatch file
                 ArrayList<AxoObjectAbstract> set = new ArrayList<AxoObjectAbstract>();
                 String fnameP = bfname + ".axs";
                 Logger.getLogger(AxoObjects.class.getName()).log(Level.FINE, "Attempt to create object from subpatch file in patch directory: {0}", fnameP);

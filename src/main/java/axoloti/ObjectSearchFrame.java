@@ -217,8 +217,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                     Cancel();
                     e.consume();
                 }
-                else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
-                {
+                else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
                     jResultList.clearSelection();
                     if (jTextFieldObjName != null) {
                         String str = jTextFieldObjName.getText();
@@ -243,8 +242,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                     e.consume();
 
                 }
-                else if (e.getKeyCode() == KeyEvent.VK_UP && jResultList.getSelectedIndex() == 0)
-                {
+                else if (e.getKeyCode() == KeyEvent.VK_UP && jResultList.getSelectedIndex() == 0) {
                     jResultList.clearSelection();
                     jTextFieldObjName.grabFocus();
                     e.consume();
@@ -296,21 +294,17 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             public void keyTyped(KeyEvent e) { }
 
             @Override
-            public void keyPressed(KeyEvent e)
-            {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER)
-                {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     Accept();
                     e.consume();
                 }
-                else if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-                {
+                else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     type = null;
                     Cancel();
                     e.consume();
                 }
-                else if (e.getKeyCode() == KeyEvent.VK_DOWN)
-                {
+                else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     jResultList.grabFocus();
                     jResultList.setSelectedIndex(0);
                     jResultList.ensureIndexIsVisible(0);
@@ -318,8 +312,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
 
             @Override
-            public void keyReleased(KeyEvent e)
-            {
+            public void keyReleased(KeyEvent e) {
                 Search(jTextFieldObjName.getText());
             }
         });
@@ -341,11 +334,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         GraphicsDevice[] gs = ge.getScreenDevices();
         Rectangle allScreenBounds = new Rectangle();
 
-        for(GraphicsDevice curGs : gs)
-        {
+        for(GraphicsDevice curGs : gs) {
             GraphicsConfiguration[] gc = curGs.getConfigurations();
-            for(GraphicsConfiguration curGc : gc)
-            {
+            for(GraphicsConfiguration curGc : gc) {
                 Rectangle bounds = curGc.getBounds();
                 allScreenBounds = allScreenBounds.union(bounds);
             }
@@ -490,8 +481,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     }
 
 
-    public void Search(String s)
-    {
+    public void Search(String s) {
         ArrayList<AxoObjectAbstract> listData = new ArrayList<AxoObjectAbstract>();
 
         if ((s == null) || s.isEmpty()) {
@@ -575,8 +565,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
             else {
                 ArrayList<AxoObjectAbstract> objs = MainFrame.axoObjects.GetAxoObjectFromName(s, p.GetCurrentWorkingDirectory());
-                if ((objs != null) && (objs.size() > 0))
-                {
+                if ((objs != null) && (objs.size() > 0)) {
                     jResultList.setListData(objs.toArray());
                     SetPreview(objs.get(0));
                 }

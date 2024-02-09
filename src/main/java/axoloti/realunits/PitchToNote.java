@@ -79,9 +79,11 @@ public class PitchToNote implements NativeToReal {
         s += Integer.toString(i);
         if (f > 0) {
             s += String.format("+%02d", Math.round(f * 100));
-        } else if (f < 0) {
+        }
+        else if (f < 0) {
             s += String.format("-%02d", -Math.round(f * 100));
-        } else {
+        }
+        else {
             s += "   ";
         }
         return s;
@@ -106,20 +108,17 @@ public class PitchToNote implements NativeToReal {
                 oct = Integer.parseInt(matcher.group("oct"));
                 if (matcher.group("delta").length() != 0)
                     delta = Integer.parseInt(matcher.group("delta"));
-            } catch (java.lang.NumberFormatException ex) {
+            }
+            catch (java.lang.NumberFormatException ex) {
                 throw new ParseException("Not PitchToNote", 0);
             }
 
-            if (sharp == '#')
-            {
+            if (sharp == '#') {
                 incidental = 1;
             }
-            else if (sharp == 'b')
-            {
-                if (note == 'a')
-                    note = 'g';
-                else
-                    note--;
+            else if (sharp == 'b') {
+                if (note == 'a') note = 'g';
+                else note--;
                 incidental = 1;
             }
 
@@ -149,12 +148,10 @@ public class PitchToNote implements NativeToReal {
                     throw new ParseException("Not PitchToNote", 0);
             }
             n += (oct * 12) - 52;
-            if (sign == '+')
-            {
+            if (sign == '+') {
                 n += delta / 100.0;
             }
-            else if (sign == '-')
-            {
+            else if (sign == '-') {
                 n -= delta / 100.0;
             }
             return n;

@@ -380,8 +380,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jLabelTheme.setEnabled(true);
 
 
-        for (String i : Preferences.THEMELIST)
-        {
+        for (String i : Preferences.THEMELIST) {
             jComboBoxTheme.addItem(i);
         }
 
@@ -700,8 +699,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
                                              JOptionPane.YES_NO_OPTION);
         switch (n) {
             case JOptionPane.YES_OPTION: {
-                if (idx >= 0)
-                {
+                if (idx >= 0) {
                     prefs.removeLibrary(id);
                 }
 

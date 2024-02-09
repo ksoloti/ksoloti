@@ -287,8 +287,8 @@ public class USBBulkConnection extends Connection {
             return false;
         }
 
-        try //devicePath = Usb.DeviceToPath(device);
-        {
+        try {
+            // devicePath = Usb.DeviceToPath(device);
 
             int result = LibUsb.claimInterface(handle, interfaceNumber);
             if (result != LibUsb.SUCCESS) {

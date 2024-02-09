@@ -58,21 +58,24 @@ public class ResizableUndecoratedFrame extends javax.swing.JFrame implements Mou
 
         if (location.x < dragInsets.left) {
             direction += WEST;
-        } else if (location.x > getWidth() - dragInsets.right - 1) {
+        }
+        else if (location.x > getWidth() - dragInsets.right - 1) {
             direction += EAST;
         }
 
         if (location.y < dragInsets.top) {
             direction += NORTH;
-        } else if (location.y > getHeight() - dragInsets.bottom - 1) {
+        }
+        else if (location.y > getHeight() - dragInsets.bottom - 1) {
             direction += SOUTH;
         }
 
         if (direction == 0) {
             //  Mouse is no longer over a resizable border
             getContentPane().setCursor(null);
-        } else // use the appropriate resizable cursor
-        {
+        }
+        else {
+            // use the appropriate resizable cursor
             int cursorType = cursors.get(direction);
             Cursor cursor = Cursor.getPredefinedCursor(cursorType);
             getContentPane().setCursor(cursor);

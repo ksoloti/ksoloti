@@ -195,8 +195,8 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
             if (types == null) {
                 Logger.getLogger(AxoObjectInstanceAbstract.class.getName()).log(Level.SEVERE, "Object name \"{0}\" not found", typeName);
             }
-            else
-            { // pick first
+            else {
+                // pick first
                 if (types.size() > 1) {
                     typeWasAmbiguous = true;
                 }
