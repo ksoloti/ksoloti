@@ -545,7 +545,7 @@ public class USBBulkConnection extends Connection {
         if (name == null) {
             Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Selecting CPUID: {0} for connection.", cpuid);
         } else {
-            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Selecting Board: {0} for connection.", new Object[]{name});
+            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Selecting {0} for connection.", new Object[]{name});
         }
     }
 
