@@ -30,6 +30,8 @@ import axoloti.outlets.OutletInstance;
 import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
 
+import static axoloti.MainFrame.prefs;
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -86,20 +88,95 @@ import qcmds.QCmdProcessor;
 @Root(name = "patch-1.0")
 public class PatchGUI extends Patch {
 
-    // shortcut patch names
-    final static String patchComment = "patch/comment";
-    final static String patchControl = "ctrl/";
-    final static String patchKsolotiGpioIn = "ksoloti/gpio/in";
-    final static String patchKsolotiGpioOut = "ksoloti/gpio/out";
-    final static String patchInlet = "patch/inlet";
-    final static String patchOutlet = "patch/outlet";
-    final static String patchAudio = "audio/";
-    final static String patchAudioOut = "audio/out";
-    final static String patchMidi = "midi";
-    final static String patchMidiKey = "midi/in/keyb";
-    final static String patchDisplay = "disp/";
-    final static String patchKsoloti = "ksoloti/";
-    final static String patchKsolotiGills = "ksoloti/gills/";
+    /* KeyCode integers */
+    static final int keyCodeList[] = {
+        KeyEvent.VK_A,
+        KeyEvent.VK_B,
+        KeyEvent.VK_C,
+        KeyEvent.VK_D,
+        KeyEvent.VK_E,
+        KeyEvent.VK_F,
+        KeyEvent.VK_G,
+        KeyEvent.VK_H,
+        KeyEvent.VK_I,
+        KeyEvent.VK_J,
+        KeyEvent.VK_K,
+        KeyEvent.VK_L,
+        KeyEvent.VK_M,
+        KeyEvent.VK_N,
+        KeyEvent.VK_O,
+        KeyEvent.VK_P,
+        KeyEvent.VK_Q,
+        KeyEvent.VK_R,
+        KeyEvent.VK_S,
+        KeyEvent.VK_T,
+        KeyEvent.VK_U,
+        KeyEvent.VK_V,
+        KeyEvent.VK_W,
+        KeyEvent.VK_X,
+        KeyEvent.VK_Y,
+        KeyEvent.VK_Z
+    };
+
+    /* Shortcut strings */
+    static final String shortcutList[] = {
+
+        /* a */ "audio/in",
+        /* b */ null,
+        /* c */ "ctrl",
+        /* d */ "disp",
+        /* e */ "patch/object",
+        /* f */ null,
+        /* g */ "gain",
+        /* h */ "harmony",
+        /* i */ "gpio/in",
+        /* j */ null,
+        /* k */ null,
+        /* l */ "logic",
+        /* m */ "math",
+        /* n */ "noise",
+        /* o */ "gpio/out",
+        /* p */ "patch",
+        /* q */ "(seq|sequencer)",
+        /* r */ null,
+        /* s */ "string",
+        /* t */ "table",
+        /* u */ "util",
+        /* v */ null,
+        /* w */ "wave",
+        /* x */ "mix",
+        /* y */ null,
+        /* z */ null,
+
+        /* A */ "audio/out",
+        /* B */ "ksoloti/big genes",
+        /* C */ "patch/comment", /* will never get here */
+        /* D */ "delay",
+        /* E */ "env",
+        /* F */ "filter",
+        /* G */ "ksoloti/gills",
+        /* H */ null,
+        /* I */ "patch/inlet",
+        /* J */ null,
+        /* K */ "ksoloti",
+        /* L */ "lfo",
+        /* M */ "midi",
+        /* N */ null,
+        /* O */ "patch/outlet",
+        /* P */ "patch/patcher",
+        /* Q */ null,
+        /* R */ null,
+        /* S */ "script",
+        /* T */ null,
+        /* U */ null,
+        /* V */ null,
+        /* W */ "osc",
+        /* X */ "fx",
+        /* Y */ null,
+        /* Z */ null,
+    };
+
+    final static int capitalLetterOffset = 26;
 
     public JLayeredPane Layers = new JLayeredPane();
 
@@ -256,12 +333,14 @@ public class PatchGUI extends Patch {
 
             @Override
             public void keyPressed(KeyEvent ke) {
-                int xsteps = 1;
-                int ysteps = 1;
-                if (!ke.isShiftDown()) {
-                    xsteps = Constants.X_GRID;
-                    ysteps = Constants.Y_GRID;
+                int xsteps = Constants.X_GRID;
+                int ysteps = Constants.Y_GRID;
+
+                if (ke.isShiftDown()) {
+                    xsteps = 1;
+                    ysteps = 1;
                 }
+
                 if ((ke.getKeyCode() == KeyEvent.VK_SPACE) && !KeyUtils.isControlOrCommandDown(ke)) {
                     if (!ke.isShiftDown()) {
                         Point p = Layers.getMousePosition();
@@ -273,125 +352,68 @@ public class PatchGUI extends Patch {
                     else {
                         // shift + space ...
                     }
-                } else if ((ke.getKeyCode() == KeyEvent.VK_C) && !KeyUtils.isControlOrCommandDown(ke)) {
-                    if (!ke.isShiftDown()) {
-                        Point p = Layers.getMousePosition();
-                        ke.consume();
-                        if (p != null) {
-                            ShowClassSelector(p, null, patchControl, false);
-                        }
-                    }
-                    else {
-                        AxoObjectInstanceAbstract ao = AddObjectInstance(MainFrame.axoObjects.GetAxoObjectFromName(patchComment, null).get(0), Layers.getMousePosition());
-                        ao.addInstanceNameEditor();
-
-                    }
-                    ke.consume();
-                } else if ((ke.getKeyCode() == KeyEvent.VK_I) && !KeyUtils.isControlOrCommandDown(ke)) {
-                    if (!ke.isShiftDown()) {
-                        // i
-                        Point p = Layers.getMousePosition();
-                        ke.consume();
-                        if (p != null) {
-                            ShowClassSelector(p, null, patchKsolotiGpioIn, false);
-                        }
-                    }
-                    else {
-                        // shift + i:
-                        Point p = Layers.getMousePosition();
-                        ke.consume();
-                        if (p != null) {
-                            ShowClassSelector(p, null, patchInlet, false);
-                        }
-                    }
-                } else if ((ke.getKeyCode() == KeyEvent.VK_O) && !KeyUtils.isControlOrCommandDown(ke)) {
-                    if (!ke.isShiftDown()) {
-                        // o
-                        Point p = Layers.getMousePosition();
-                        ke.consume();
-                        if (p != null) {
-                            ShowClassSelector(p, null, patchKsolotiGpioOut, false);
-                        }
-                    }
-                    else {
-                        // shift + o
-                        Point p = Layers.getMousePosition();
-                        ke.consume();
-                        if (p != null) {
-                            ShowClassSelector(p, null, patchOutlet, false);
-                        }
-                    }
-                } else if ((ke.getKeyCode() == KeyEvent.VK_D) && !KeyUtils.isControlOrCommandDown(ke)) {
-                    Point p = Layers.getMousePosition();
-                    ke.consume();
-                    if (p != null) {
-                        ShowClassSelector(p, null, patchDisplay, false);
-                    }
-                } else if ((ke.getKeyCode() == KeyEvent.VK_M) && !KeyUtils.isControlOrCommandDown(ke)) {
-                    Point p = Layers.getMousePosition();
-                    ke.consume();
-                    if (p != null) {
-                        if (ke.isShiftDown()) {
-                            ShowClassSelector(p, null, patchMidiKey, false);
-                        } else {
-                            ShowClassSelector(p, null, patchMidi, false);
-                        }
-                    }
-                } else if ((ke.getKeyCode() == KeyEvent.VK_A) && !KeyUtils.isControlOrCommandDown(ke)) {
-                    Point p = Layers.getMousePosition();
-                    ke.consume();
-                    if (p != null) {
-                        if (ke.isShiftDown()) {
-                            ShowClassSelector(p, null, patchAudioOut, false);
-                        } else {
-                            ShowClassSelector(p, null, patchAudio, false);
-                        }
-                    }
-                } else if ((ke.getKeyCode() == KeyEvent.VK_K) && !KeyUtils.isControlOrCommandDown(ke)) {
-                    Point p = Layers.getMousePosition();
-                    ke.consume();
-                    if (p != null) {
-                        if (ke.isShiftDown()) {
-                            // nothing yet
-                        } else {
-                            ShowClassSelector(p, null, patchKsoloti, false);
-                        }
-                    }
-                } else if ((ke.getKeyCode() == KeyEvent.VK_G) && !KeyUtils.isControlOrCommandDown(ke)) {
-                    Point p = Layers.getMousePosition();
-                    ke.consume();
-                    if (p != null) {
-                        if (ke.isShiftDown()) {
-                            // nothing yet
-                        } else {
-                            ShowClassSelector(p, null, patchKsolotiGills, false);
-                        }
-                    }
-                } else if ((ke.getKeyCode() == KeyEvent.VK_DELETE) || (ke.getKeyCode() == KeyEvent.VK_BACK_SPACE)) {
+                }
+                else if ((ke.getKeyCode() == KeyEvent.VK_DELETE) || (ke.getKeyCode() == KeyEvent.VK_BACK_SPACE)) {
                     deleteSelectedAxoObjInstances();
-
                     ke.consume();
-                } else if (ke.getKeyCode() == KeyEvent.VK_UP) {
+                }
+                else if (ke.getKeyCode() == KeyEvent.VK_UP) {
                     MoveSelectedAxoObjInstances(Direction.UP, xsteps, ysteps);
                     ke.consume();
-                } else if (ke.getKeyCode() == KeyEvent.VK_DOWN) {
+                }
+                else if (ke.getKeyCode() == KeyEvent.VK_DOWN) {
                     MoveSelectedAxoObjInstances(Direction.DOWN, xsteps, ysteps);
                     ke.consume();
-                } else if (ke.getKeyCode() == KeyEvent.VK_RIGHT) {
+                }
+                else if (ke.getKeyCode() == KeyEvent.VK_RIGHT) {
                     MoveSelectedAxoObjInstances(Direction.RIGHT, xsteps, ysteps);
                     ke.consume();
-                } else if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
+                }
+                else if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
                     MoveSelectedAxoObjInstances(Direction.LEFT, xsteps, ysteps);
                     ke.consume();
-                } else if ((ke.getKeyCode() == KeyEvent.VK_M) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
+                }
+                else if ((ke.getKeyCode() == KeyEvent.VK_C) && ke.isShiftDown() && !KeyUtils.isControlOrCommandDown(ke)) {
+                    AxoObjectInstanceAbstract ao = AddObjectInstance(MainFrame.axoObjects.GetAxoObjectFromName("patch/comment", null).get(0), Layers.getMousePosition());
+                    ao.addInstanceNameEditor();
+                    ke.consume();
+                }
+                else if ((ke.getKeyCode() == KeyEvent.VK_M) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
                     MainFrame.mainframe.setVisible(true);
                     ke.consume();
-                } else if ((ke.getKeyCode() == KeyEvent.VK_Y) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
+                }
+                else if ((ke.getKeyCode() == KeyEvent.VK_Y) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
                     MainFrame.mainframe.getKeyboard().setVisible(true);
                     ke.consume();
-                } else if ((ke.getKeyCode() == KeyEvent.VK_F) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
+                }
+                else if ((ke.getKeyCode() == KeyEvent.VK_F) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
                     MainFrame.mainframe.getFilemanager().setVisible(true);
                     ke.consume();
+                }
+                else if (ke.isShiftDown() && ke.getKeyCode() > KeyEvent.VK_0 && ke.getKeyCode() < KeyEvent.VK_5 && !KeyUtils.isControlOrCommandDown(ke)) {
+
+                    /* SHIFT+1...4: user shortcuts 1-4 */
+                    Point p = Layers.getMousePosition();
+                    String userstr = prefs.getUserShortcut(ke.getKeyCode() - KeyEvent.VK_1);
+                    ke.consume();
+
+                    if (p != null && userstr != null && !userstr.equals("")) {
+                        ShowClassSelector(p, null, userstr, false);
+                    }
+                }
+                else if (!KeyUtils.isControlOrCommandDown(ke) && ke.getKeyCode() >= KeyEvent.VK_A && ke.getKeyCode() <= KeyEvent.VK_Z) {
+
+                    /* Trigger stock shortcut list */
+                    int i = ke.getKeyCode() - KeyEvent.VK_A;
+                    Point p = Layers.getMousePosition();
+                    if (ke.isShiftDown()) {
+                        i += capitalLetterOffset;
+                    }
+                    ke.consume();
+
+                    if (p != null && shortcutList[i] != null) {
+                        ShowClassSelector(p, null, shortcutList[i], false);
+                    }
                 }
             }
 

@@ -106,6 +106,8 @@ public class Preferences {
     String Theme;
     @Element(required = false)
     int CodeFontSize = 14; /* default to 14pt */
+    @Element(required = false)
+    String[] UserShortcuts = {"", "", "", ""}; /* Four user shortcuts in object finder */
 
     @ElementMap(required = false, entry = "Boards", key = "cpuid", attribute = true, inline = true)
     HashMap<String, String> BoardNames;
@@ -121,20 +123,20 @@ public class Preferences {
     String[] ObjectPath;
 
     boolean isDirty = false;
-    boolean restartRequired = false;
+    private boolean restartRequired = false;
 
     final int nRecentFiles = 16;
 
     final int minimumPollInterval = 20;
 
     public static final String THEMELIST[] = {
-        // {"Arc", "FlatArcIJTheme"},
-        // {"Arc - Orange", "FlatArcOrangeIJTheme"},
-        // {"Arc Dark", "FlatArcDarkIJTheme"},
-        // {"Arc Dark - Orange", "FlatArcDarkOrangeIJTheme"},
-        // {"Carbon", "FlatCarbonIJTheme"},
-        // {"Dark purple", "FlatDarkPurpleIJTheme"},
-        // {"Dracula", "FlatDraculaIJTheme"},
+        // "Arc",
+        // "Arc - Orange",
+        // "Arc Dark",
+        // "Arc Dark - Orange",
+        // "Carbon",
+        // "Dark purple",
+        // "Dracula",
         "FlatLaf Light",
         "FlatLaf Dark",
         // "FlatLaf Darcula",
@@ -143,30 +145,30 @@ public class Preferences {
         "FlatLaf macOS Dark",
         "Cobalt 2",
         "Cyan Light",
-        // {"Gradianto Dark Fuchsia", "FlatGradiantoDarkFuchsiaIJTheme"},
-        // {"Gradianto Deep Ocean", "FlatGradiantoDeepOceanIJTheme"},
-        // {"Gradianto Midnight Blue", "FlatGradiantoMidnightBlueIJTheme"},
-        // {"Gradianto Nature Green", "FlatGradiantoNatureGreenIJTheme"},
+        // "Gradianto Dark Fuchsia",
+        // "Gradianto Deep Ocean",
+        // "Gradianto Midnight Blue",
+        // "Gradianto Nature Green",
         // "Flat Gray",
         "Gruvbox Dark Hard",
         "Gruvbox Dark Soft",
         "Hiberbee Dark",
         // "High Contrast",
         "Monocai",
-        // {"Monokai Pro", "FlatMonokaiProIJTheme"},
+        // "Monokai Pro",
         "Nord",
         // "One Dark",
-        // {"Solarized Dark", "FlatSolarizedDarkIJTheme"},
-        // {"Solarized Light", "FlatSolarizedLightIJTheme"},
+        // "Solarized Dark",
+        // "Solarized Light",
         "Spacegray",
-        // {"Vuesion", "FlatVuesionIJTheme"},
+        // "Vuesion",
         "Xcode Dark",
-        // {"Arc Dark (Material)", "materialthemeuilite.FlatArcDarkIJTheme"},
+        // "Arc Dark (Material)",
         "Atom One Light (Material)",
         "Atom One Dark (Material)",
         "Dracula (Material)",
-        // {"GitHub (Material)", "materialthemeuilite.FlatGitHubIJTheme"},
-        // {"GitHub Dark (Material)", "materialthemeuilite.FlatGitHubDarkIJTheme"},
+        // "GitHub (Material)",
+        // "GitHub Dark (Material)",
         "Light Owl (Material)",
         "Night Owl (Material)",
         "Material Lighter (Material)",
@@ -175,8 +177,8 @@ public class Preferences {
         "Material Deep Ocean (Material)",
         "Material Oceanic (Material)",
         "Material Palenight (Material)",
-        // {"Monokai Pro (Material)", "materialthemeuilite.FlatMonokaiProIJTheme"},
-        // {"Moonlight (Material)", "materialthemeuilite.FlatMoonlightIJTheme"},
+        // "Monokai Pro (Material)",
+        // "Moonlight (Material)",
         "Solarized Light (Material)",
         "Solarized Dark (Material)"
     };
@@ -196,6 +198,11 @@ public class Preferences {
         }
         if (AxolotiLegacyMode == null) {
             AxolotiLegacyMode = false;
+        }
+        for (int i=0; i<4; i++) {
+            if (UserShortcuts[i] == null) {
+                UserShortcuts[i] = "";
+            }
         }
         if (MouseDoNotRecenterWhenAdjustingControls == null) {
             MouseDoNotRecenterWhenAdjustingControls = false;
@@ -458,6 +465,14 @@ public class Preferences {
         return AxolotiLegacyMode;
     }
 
+    public String getUserShortcut(int index) {
+        if (index < 0 || index > 3) {
+            /* Only four user shortcuts so far */
+            return null;
+        }
+        return UserShortcuts[index];
+    }
+
     public void setMouseDialAngular(boolean MouseDialAngular) {
         if (this.MouseDialAngular == MouseDialAngular) {
             return;
@@ -472,6 +487,17 @@ public class Preferences {
         }
         this.AxolotiLegacyMode = AxolotiLegacyMode;
         restartRequired = true;
+        SetDirty();
+    }
+
+    public void setUserShortcut(int index, String userShortcut) {
+        if (index < 0 || index > 3) {
+            return;
+        }
+        if (this.UserShortcuts[index] == userShortcut) {
+            return;
+        }
+        this.UserShortcuts[index] = userShortcut;
         SetDirty();
     }
 

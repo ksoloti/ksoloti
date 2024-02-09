@@ -79,6 +79,11 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
         jTextFieldFavDir.setText(prefs.getFavouriteDir());
 
+        jTextFieldUserShortcut1.setText(prefs.getUserShortcut(0));
+        jTextFieldUserShortcut2.setText(prefs.getUserShortcut(1));
+        jTextFieldUserShortcut3.setText(prefs.getUserShortcut(2));
+        jTextFieldUserShortcut4.setText(prefs.getUserShortcut(3));
+
         jControllerEnabled.setSelected(prefs.isControllerEnabled());
         jTextFieldController.setText(prefs.getControllerObject());
         jTextFieldController.setEnabled(prefs.isControllerEnabled());
@@ -122,6 +127,12 @@ public class PreferencesFrame extends javax.swing.JFrame {
         MainFrame.mainframe.updateConsoleFont();
         prefs.setMouseDialAngular(jComboBoxDialMouseBehaviour.getSelectedItem().equals("Angular"));
         prefs.setAxolotiLegacyMode(jComboBoxAxolotiLegacyMode.getSelectedItem().equals("Axoloti (Legacy)"));
+
+        prefs.setUserShortcut(0, jTextFieldUserShortcut1.getText());
+        prefs.setUserShortcut(1, jTextFieldUserShortcut2.getText());
+        prefs.setUserShortcut(2, jTextFieldUserShortcut3.getText());
+        prefs.setUserShortcut(3, jTextFieldUserShortcut4.getText());
+
         prefs.setFavouriteDir(jTextFieldFavDir.getText());
         prefs.setControllerObject(jTextFieldController.getText().trim());
         prefs.setControllerEnabled(jControllerEnabled.isSelected());
@@ -165,7 +176,17 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jComboBoxDialMouseBehaviour = new javax.swing.JComboBox();
         jComboBoxAxolotiLegacyMode = new javax.swing.JComboBox();
         jLabelFavouritesDir = new javax.swing.JLabel();
+        jLabelUserShortcut1 = new javax.swing.JLabel();
+        jLabelUserShortcut2 = new javax.swing.JLabel();
+        jLabelUserShortcut3 = new javax.swing.JLabel();
+        jLabelUserShortcut4 = new javax.swing.JLabel();
         jTextFieldFavDir = new javax.swing.JTextField();
+
+        jTextFieldUserShortcut1 = new javax.swing.JTextField();
+        jTextFieldUserShortcut2 = new javax.swing.JTextField();
+        jTextFieldUserShortcut3 = new javax.swing.JTextField();
+        jTextFieldUserShortcut4 = new javax.swing.JTextField();
+
         btnFavDir = new javax.swing.JButton();
         jLabelController = new javax.swing.JLabel();
         jTextFieldController = new javax.swing.JTextField();
@@ -187,7 +208,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jTextFieldPollInterval.setToolTipText("Interval at which the Patcher displays the newest parameter data coming from the Core.");
         jTextFieldPollInterval.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
 
-        jLabelPollInterval.setText("Poll Interval (Milliseconds)");
+        jLabelPollInterval.setText("Poll Interval (milliseconds)");
         jLabelPollInterval.setToolTipText(jTextFieldPollInterval.getToolTipText());
 
         jTextFieldCodeFontSize.setText("jTextField2");
@@ -230,10 +251,29 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
         jLabelFavouritesDir.setText("Favourites Dir");
 
+        jLabelUserShortcut1.setText("Object Finder Shortcut 1");
+        jLabelUserShortcut2.setText("Object Finder Shortcut 2");
+        jLabelUserShortcut3.setText("Object Finder Shortcut 3");
+        jLabelUserShortcut4.setText("Object Finder Shortcut 4");
+
         jTextFieldFavDir.setText("test");
         jTextFieldFavDir.setToolTipText("Select a folder/subfolder with patch files to conveniently access them via the file menu.");
         jTextFieldFavDir.setEditable(false);
         jTextFieldFavDir.setCaretColor(new Color(0,0,0,0));
+
+        jTextFieldUserShortcut1.setText("test");
+        jTextFieldUserShortcut2.setText("test");
+        jTextFieldUserShortcut3.setText("test");
+        jTextFieldUserShortcut4.setText("test");
+
+        jTextFieldUserShortcut1.setToolTipText("Enter a string here to create a custom Object Finder shortcut. Useful if you have certain objects or a personal library you use a lot. In the patch window, press SHIFT+1 to open shortcut 1, SHIFT+2 for shortcut 2, etc.\nHint: The Object Finder also supports the \"*\" wildcard and regex!");
+        jTextFieldUserShortcut2.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
+        jTextFieldUserShortcut3.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
+        jTextFieldUserShortcut4.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
+        jLabelUserShortcut1.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
+        jLabelUserShortcut2.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
+        jLabelUserShortcut3.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
+        jLabelUserShortcut4.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
 
         btnFavDir.setText("Browse...");
         btnFavDir.setToolTipText(jTextFieldFavDir.getToolTipText());
@@ -376,6 +416,10 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabelFavouritesDir)
+                            .addComponent(jLabelUserShortcut1)
+                            .addComponent(jLabelUserShortcut2)
+                            .addComponent(jLabelUserShortcut3)
+                            .addComponent(jLabelUserShortcut4)
                             .addComponent(jLabelLibraries)
                         )
                         .addGap(15, 15, 15)
@@ -385,11 +429,22 @@ public class PreferencesFrame extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
 
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextFieldFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextFieldFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 403, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                )
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            )
+                            .addGroup(layout.createSequentialGroup()
+
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jTextFieldUserShortcut1, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextFieldUserShortcut2, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextFieldUserShortcut3, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextFieldUserShortcut4, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 )
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             )
                         )
+                        .addGap(12, 12, 12)
 
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnFavDir, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -488,6 +543,22 @@ public class PreferencesFrame extends javax.swing.JFrame {
                     .addComponent(jTextFieldFavDir)
                     .addComponent(jLabelFavouritesDir)
                     .addComponent(btnFavDir)
+                )
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextFieldUserShortcut1)
+                    .addComponent(jLabelUserShortcut1)
+                )
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextFieldUserShortcut2)
+                    .addComponent(jLabelUserShortcut2)
+                )
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextFieldUserShortcut3)
+                    .addComponent(jLabelUserShortcut3)
+                )
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextFieldUserShortcut4)
+                    .addComponent(jLabelUserShortcut4)
                 )
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabelLibraries)
@@ -719,6 +790,12 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelDialMouseBehaviour;
     private javax.swing.JLabel jLabelAxolotiLegacyMode;
     private javax.swing.JLabel jLabelFavouritesDir;
+    
+    private javax.swing.JLabel jLabelUserShortcut1;
+    private javax.swing.JLabel jLabelUserShortcut2;
+    private javax.swing.JLabel jLabelUserShortcut3;
+    private javax.swing.JLabel jLabelUserShortcut4;
+
     private javax.swing.JLabel jLabelController;
     private javax.swing.JLabel jLabelTheme;
     private javax.swing.JComboBox jComboBoxTheme;
@@ -730,4 +807,9 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTextFieldPollInterval;
     private javax.swing.JTextField jTextFieldCodeFontSize;
     private javax.swing.JTextField jTextFieldFavDir;
+
+    private javax.swing.JTextField jTextFieldUserShortcut1;
+    private javax.swing.JTextField jTextFieldUserShortcut2;
+    private javax.swing.JTextField jTextFieldUserShortcut3;
+    private javax.swing.JTextField jTextFieldUserShortcut4;
 }
