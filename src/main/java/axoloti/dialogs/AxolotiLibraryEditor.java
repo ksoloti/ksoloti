@@ -89,7 +89,7 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
      */
     private void initComponents() {
 
-        jTypeCombo = new javax.swing.JComboBox();
+        jTypeCombo = new javax.swing.JComboBox<String>();
         jLabelType = new javax.swing.JLabel();
         jId = new javax.swing.JTextField();
         jLocalDir = new javax.swing.JTextField();
@@ -397,7 +397,7 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
     private void jTypeComboActionPerformed(java.awt.event.ActionEvent evt) {
 
         /* Lazy hack to make library edit screen a bit less overwhelming */
-        if ((String)jTypeCombo.getSelectedItem() == "local") {
+        if (jTypeCombo.getSelectedItem() == "local") {
             /* Grey out Git part of settings window */
             jLabelRemotePath.setEnabled(false);
             jRemotePath.setEnabled(false);
@@ -563,7 +563,7 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
     private javax.swing.JButton jSelectDirBtn;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton jSyncBtn;
-    private javax.swing.JComboBox jTypeCombo;
+    private javax.swing.JComboBox<String> jTypeCombo;
     private javax.swing.JTextField jUserId;
 
     public AxolotiLibrary getLibrary() {

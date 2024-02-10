@@ -355,7 +355,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
             }
 
         });
-        JComboBox jComboBoxAtomDefinitionsList = new JComboBox(AtomDefinitionsList);
+        JComboBox<T> jComboBoxAtomDefinitionsList = new JComboBox<T>(AtomDefinitionsList);
         jTable1.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(jComboBoxAtomDefinitionsList));
         jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -550,7 +550,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
         int row = jTable1.getSelectedRow();
         if (row != -1 && (row < GetAtomDefinitions().size())) {
             o = GetAtomDefinitions().get(row);
-            Class c = o.getClass();
+            Class<?> c = o.getClass();
             for (String fn : o.getEditableFields()) {
                 try {
                     Field f = c.getField(fn);

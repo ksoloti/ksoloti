@@ -117,7 +117,7 @@ public class AddToLibraryDlg extends javax.swing.JDialog {
         jAxoFile = new javax.swing.JTextField();
         jAxoFileLabel = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jLibrary = new javax.swing.JComboBox();
+        jLibrary = new javax.swing.JComboBox<String>();
         jLabel9 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
@@ -317,7 +317,7 @@ public class AddToLibraryDlg extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JComboBox jLibrary;
+    private javax.swing.JComboBox<String> jLibrary;
     private javax.swing.JButton jOK;
     private javax.swing.JTextField jObjectName;
     private javax.swing.JSeparator jSeparator1;
