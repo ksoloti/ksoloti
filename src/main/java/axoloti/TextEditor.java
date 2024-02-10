@@ -76,8 +76,8 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
         RTextScrollPane sp = new RTextScrollPane(textArea);
         sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        sp.getHorizontalScrollBar().setUnitIncrement(Constants.X_GRID/2);
-        sp.getVerticalScrollBar().setUnitIncrement(Constants.Y_GRID/2);
+        sp.getHorizontalScrollBar().setUnitIncrement(10);
+        sp.getVerticalScrollBar().setUnitIncrement(10);
 
         cp.setLayout(new BorderLayout());
         cp.add(sp);

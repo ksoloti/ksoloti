@@ -44,7 +44,7 @@ public class ScrollPaneComponent extends JScrollPane {
     private void initComponents() {
         setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        getHorizontalScrollBar().setUnitIncrement(Constants.X_GRID/2);
-        getVerticalScrollBar().setUnitIncrement(Constants.Y_GRID/2);
+        getHorizontalScrollBar().setUnitIncrement(10);
+        getVerticalScrollBar().setUnitIncrement(10);
     }
 }
