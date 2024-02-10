@@ -726,7 +726,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
     }
 
     private void jEditLibActionPerformed(java.awt.event.ActionEvent evt) {
-        DefaultTableModel model = (DefaultTableModel) jLibraryTable.getModel();
+        // DefaultTableModel model = (DefaultTableModel) jLibraryTable.getModel();
         int idx = jLibraryTable.getSelectedRow();
         if (idx >= 0) {
             editLibraryRow(idx);
@@ -756,7 +756,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
             AxolotiLibrary lib = prefs.getLibrary(id);
             if (lib != null) {
                 String type = lib.getType();
-                AxolotiLibraryEditor d = new AxolotiLibraryEditor(this, true, lib);
+                // AxolotiLibraryEditor d = new AxolotiLibraryEditor(this, true, lib);
                 AxolotiLibrary updlib = lib;
                 if(!lib.getType().equals(type)) {
                   if (AxoGitLibrary.TYPE.equals(lib.getType())) {
