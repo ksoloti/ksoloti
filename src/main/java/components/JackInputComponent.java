@@ -17,7 +17,6 @@
  */
 package components;
 
-import axoloti.Theme;
 import axoloti.inlets.InletInstance;
 import java.awt.BasicStroke;
 import java.awt.Color;

@@ -24,7 +24,6 @@ import axoloti.utils.Constants;
 import components.ScrollPaneComponent;
 
 import java.util.Collection;
-import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 
 /**

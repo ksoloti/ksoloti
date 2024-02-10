@@ -17,17 +17,8 @@
  */
 package axoloti.dialogs;
 
-import java.io.File;
-import javax.swing.Icon;
-import javax.swing.filechooser.FileView;
-            
 import java.awt.Dimension;
-import javax.swing.JPanel;
-import java.io.File;
-
-import javax.swing.Icon;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileView;
 
 /**
  *

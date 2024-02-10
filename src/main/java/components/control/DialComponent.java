@@ -19,7 +19,6 @@ package components.control;
 
 import axoloti.MainFrame;
 import axoloti.Theme;
-import axoloti.datatypes.ValueFrac32;
 import axoloti.realunits.NativeToReal;
 import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;

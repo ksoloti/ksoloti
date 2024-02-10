@@ -19,7 +19,6 @@ package components.control;
 
 import axoloti.MainFrame;
 import axoloti.Theme;
-import axoloti.datatypes.ValueFrac32;
 import axoloti.realunits.NativeToReal;
 import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
@@ -31,7 +30,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 // import java.awt.MouseInfo;
-import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.Stroke;
