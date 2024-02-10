@@ -61,7 +61,7 @@ public class ParameterInt32VRadio extends Parameter<ParameterInstanceInt32VRadio
 
     @Override
     public List<String> getEditableFields() {
-        List l = super.getEditableFields();
+        List<String> l = super.getEditableFields();
         l.add("MaxValue");
         return l;
     }

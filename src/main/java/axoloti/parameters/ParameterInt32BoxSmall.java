@@ -67,7 +67,7 @@ public class ParameterInt32BoxSmall extends Parameter<ParameterInstanceInt32BoxS
 
     @Override
     public List<String> getEditableFields() {
-        List l = super.getEditableFields();
+        List<String> l = super.getEditableFields();
         l.add("MinValue");
         l.add("MaxValue");
         return l;

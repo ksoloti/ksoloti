@@ -44,7 +44,7 @@ public abstract class ParameterFrac32<T extends ParameterInstanceFrac32> extends
 
     @Override
     public List<String> getEditableFields() {
-        List l = super.getEditableFields();
+        List<String> l = super.getEditableFields();
         l.add("DefaultValue");
         return l;
     }

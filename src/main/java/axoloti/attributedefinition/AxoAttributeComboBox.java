@@ -74,7 +74,7 @@ public class AxoAttributeComboBox extends AxoAttribute {
 
     @Override
     public List<String> getEditableFields() {
-        List l = super.getEditableFields();
+        List<String> l = super.getEditableFields();
         l.add("MenuEntries");
         l.add("CEntries");
         return l;

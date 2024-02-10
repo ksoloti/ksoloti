@@ -71,7 +71,7 @@ public class AxoAttributeInt32 extends AxoAttribute {
 
     @Override
     public List<String> getEditableFields() {
-        List l = super.getEditableFields();
+        List<String> l = super.getEditableFields();
         l.add("MinValue");
         l.add("MaxValue");
         l.add("DefaultValue");
