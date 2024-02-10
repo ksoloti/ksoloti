@@ -47,7 +47,7 @@ public class LFOBPM implements NativeToReal {
         Matcher matcher = pattern.matcher(s);
 
         if (matcher.matches()) {
-            double num, mul = 1.0;
+            double num = 1.0;
 
             try {
                 num = Float.parseFloat(matcher.group("num"));
