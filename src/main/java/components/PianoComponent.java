@@ -52,7 +52,7 @@ public abstract class PianoComponent extends JComponent {
         MouseInputAdapter ma = new MouseInputAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if (e.getButton() == 1) {
+                if (e.getButton() == 1 || e.getButton() == 3) {
                     int i = HitTest(e.getX(), e.getY());
                     if (i >= 0) {
                         mouseDownNote = i;
@@ -80,13 +80,17 @@ public abstract class PianoComponent extends JComponent {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (e.isShiftDown() == false) {
+                if (e.isShiftDown() || e.getButton() == 3) {
+                    /* Sustain mode: keys stay pressed until left-clicked again*/
+                    e.consume();
+                    return;
+                }
+                else {
                     selection[mouseDownNote] = false;
                     KeyUp(mouseDownNote);
                     repaint();
                 }
             }
-
         };
 
         addMouseListener(ma);
