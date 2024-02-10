@@ -28,7 +28,7 @@ import axoloti.outlets.OutletFrac32;
 public class brainwave extends gentools {
 
     static void GenerateAll() {
-        String catName = "brainwave";
+//UNRELEASED                String catName = "brainwave";
 //UNRELEASED                WriteAxoObject(catName, Create_brainwave());
     }
 
