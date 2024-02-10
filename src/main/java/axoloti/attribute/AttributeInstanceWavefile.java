@@ -34,7 +34,7 @@ import java.nio.ShortBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioInputStream;
+// import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JLabel;
@@ -136,9 +136,9 @@ public class AttributeInstanceWavefile extends AttributeInstance<AxoAttributeWav
 
         try {
             AudioFileFormat af = AudioSystem.getAudioFileFormat(f);
-            AudioInputStream as = AudioSystem.getAudioInputStream(f);
+            // AudioInputStream as = AudioSystem.getAudioInputStream(f);
             byte[] bytes = new byte[af.getByteLength()];
-            int read = as.read(bytes, 0, af.getByteLength());
+            // int read = as.read(bytes, 0, af.getByteLength());
             ByteBuffer BB = ByteBuffer.wrap(bytes);
             BB.order(ByteOrder.LITTLE_ENDIAN);
             ShortBuffer SB = BB.asShortBuffer();
