@@ -22,6 +22,7 @@ import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import java.awt.AWTException;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.MouseInfo;
 import java.awt.Robot;
 import java.awt.datatransfer.Clipboard;
@@ -92,6 +93,11 @@ public abstract class ACtrlComponent extends JComponent {
                 ACtrlComponent.this.mouseEnteredTime = System.currentTimeMillis();
             }
 
+            @Override
+            public void mouseExited(MouseEvent e) {
+                getRootPane().setCursor(Cursor.getDefaultCursor());
+            }
+
         });
 
         addMouseMotionListener(new MouseMotionAdapter() {
@@ -112,11 +118,13 @@ public abstract class ACtrlComponent extends JComponent {
                 /* Only allow mousewheel adjustment after a [tooltip delay is showing].
                 * Prevents accidental edits while scrolling through the patch.
                 */
-                if (time < mouseEnteredTime + ToolTipManager.sharedInstance().getInitialDelay()) {
+                if (time < ACtrlComponent.this.mouseEnteredTime + ToolTipManager.sharedInstance().getInitialDelay()) {
+                    getRootPane().setCursor(Cursor.getDefaultCursor());
                     e.getComponent().getParent().dispatchEvent(e);
                     e.consume();
                 }
                 else {
+                    getRootPane().setCursor(new Cursor(Cursor.MOVE_CURSOR));
                     double t = 0.5;
                     if (e.isShiftDown()) {
                         t = t * 0.1;
