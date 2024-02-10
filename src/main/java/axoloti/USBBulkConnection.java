@@ -1087,7 +1087,7 @@ public class USBBulkConnection extends Connection {
     private ByteBuffer sdinfoRcvBuffer = ByteBuffer.allocate(12);
     private ByteBuffer fileinfoRcvBuffer = ByteBuffer.allocate(256);
     private ByteBuffer memReadBuffer = ByteBuffer.allocate(16 * 4);
-    private int memReadAddr;
+    // private int memReadAddr;
     private int memReadLength;
     private int memReadValue;
     private byte[] fwversion = new byte[4];
@@ -1396,18 +1396,18 @@ public class USBBulkConnection extends Connection {
                 break;
             case memread:
                 switch (dataIndex) {
-                    case 0:
-                        memReadAddr = (cc & 0xFF);
-                        break;
-                    case 1:
-                        memReadAddr += (cc & 0xFF) << 8;
-                        break;
-                    case 2:
-                        memReadAddr += (cc & 0xFF) << 16;
-                        break;
-                    case 3:
-                        memReadAddr += (cc & 0xFF) << 24;
-                        break;
+                    // case 0:
+                    //     memReadAddr = (cc & 0xFF);
+                    //     break;
+                    // case 1:
+                    //     memReadAddr += (cc & 0xFF) << 8;
+                    //     break;
+                    // case 2:
+                    //     memReadAddr += (cc & 0xFF) << 16;
+                    //     break;
+                    // case 3:
+                    //     memReadAddr += (cc & 0xFF) << 24;
+                    //     break;
                     case 4:
                         memReadLength = (cc & 0xFF);
                         break;
@@ -1455,18 +1455,18 @@ public class USBBulkConnection extends Connection {
 
             case memread1word:
                 switch (dataIndex) {
-                    case 0:
-                        memReadAddr = (cc & 0xFF);
-                        break;
-                    case 1:
-                        memReadAddr += (cc & 0xFF) << 8;
-                        break;
-                    case 2:
-                        memReadAddr += (cc & 0xFF) << 16;
-                        break;
-                    case 3:
-                        memReadAddr += (cc & 0xFF) << 24;
-                        break;
+                    // case 0:
+                    //     memReadAddr = (cc & 0xFF);
+                    //     break;
+                    // case 1:
+                    //     memReadAddr += (cc & 0xFF) << 8;
+                    //     break;
+                    // case 2:
+                    //     memReadAddr += (cc & 0xFF) << 16;
+                    //     break;
+                    // case 3:
+                    //     memReadAddr += (cc & 0xFF) << 24;
+                    //     break;
                     case 4:
                         memReadValue = (cc & 0xFF);
                         break;
