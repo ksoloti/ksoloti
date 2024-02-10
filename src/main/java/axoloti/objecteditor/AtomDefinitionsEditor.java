@@ -271,7 +271,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
             }
 
             @Override
-            public Class getColumnClass(int column) {
+            public Class<?> getColumnClass(int column) {
                 switch (column) {
                     case 0:
                         return String.class;
@@ -391,7 +391,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
             }
 
             @Override
-            public Class getColumnClass(int column) {
+            public Class<?> getColumnClass(int column) {
                 switch (column) {
                     case 0:
                         return String.class;

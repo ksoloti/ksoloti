@@ -89,7 +89,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
 
             @Override
-            public Class getColumnClass(int column) {
+            public Class<?> getColumnClass(int column) {
                 return String.class;
             }
 
