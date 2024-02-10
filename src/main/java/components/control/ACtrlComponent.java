@@ -119,12 +119,10 @@ public abstract class ACtrlComponent extends JComponent {
                 * Prevents accidental edits while scrolling through the patch.
                 */
                 if (time < ACtrlComponent.this.mouseEnteredTime + ToolTipManager.sharedInstance().getInitialDelay()) {
-                    getRootPane().setCursor(Cursor.getDefaultCursor());
                     e.getComponent().getParent().dispatchEvent(e);
                     e.consume();
                 }
                 else {
-                    getRootPane().setCursor(new Cursor(Cursor.MOVE_CURSOR));
                     double t = 0.5;
                     if (e.isShiftDown()) {
                         t = t * 0.1;

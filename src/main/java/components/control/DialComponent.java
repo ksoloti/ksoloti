@@ -442,7 +442,7 @@ public class DialComponent extends ACtrlComponent {
 
     public void robotMoveToCenter() {
         if (robot != null) {
-            // getRootPane().setCursor(MainFrame.transparentCursor);
+            getRootPane().setCursor(MainFrame.transparentCursor);
             robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
         }
     }
