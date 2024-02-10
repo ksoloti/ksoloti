@@ -17,13 +17,11 @@
  */
 package components.control;
 
-// import axoloti.MainFrame;
 import axoloti.object.AxoObjectInstance;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import java.awt.AWTException;
 import java.awt.Color;
-// import java.awt.Cursor;
 import java.awt.MouseInfo;
 import java.awt.Robot;
 import java.awt.datatransfer.Clipboard;
@@ -44,11 +42,13 @@ import java.awt.event.MouseWheelListener;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
+import javax.swing.ToolTipManager;
 import javax.swing.TransferHandler;
 
 /**
@@ -59,9 +59,11 @@ public abstract class ACtrlComponent extends JComponent {
 
     protected AxoObjectInstance axoObj;
     protected Color customBackgroundColor;
+    protected long mouseEnteredTime;
 
     public ACtrlComponent() {
         setFocusable(true);
+
         addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent fe) {
@@ -73,6 +75,7 @@ public abstract class ACtrlComponent extends JComponent {
                 repaint();
             }
         });
+
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -84,7 +87,13 @@ public abstract class ACtrlComponent extends JComponent {
                 ACtrlComponent.this.mouseReleased(e);
             }
 
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                ACtrlComponent.this.mouseEnteredTime = System.currentTimeMillis();
+            }
+
         });
+
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -95,10 +104,19 @@ public abstract class ACtrlComponent extends JComponent {
             //     getRootPane().setCursor(Cursor.getDefaultCursor());
             // }
         });
+
         addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
-                    // getRootPane().setCursor(MainFrame.transparentCursor);
+                long time = System.currentTimeMillis();
+                /* Only allow mousewheel adjustment after a [tooltip delay is showing].
+                * Prevents accidental edits while scrolling through the patch.
+                */
+                if (time < mouseEnteredTime + ToolTipManager.sharedInstance().getInitialDelay()) {
+                    e.getComponent().getParent().dispatchEvent(e);
+                    e.consume();
+                }
+                else {
                     double t = 0.5;
                     if (e.isShiftDown()) {
                         t = t * 0.1;
@@ -107,14 +125,16 @@ public abstract class ACtrlComponent extends JComponent {
                         t = t * 0.1;
                     }
                     t = t < 0.01 ? 0.01 : t > 1.0 ? 1.0 : t;
-                if (e.getWheelRotation() < 0) {
-                    setValue(getValue() + t);
-                }
-                else {
-                    setValue(getValue() - t);
+                    if (e.getWheelRotation() < 0) {
+                        setValue(getValue() + t);
+                    }
+                    else {
+                        setValue(getValue() - t);
+                    }
                 }
             }
         });
+
         addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent ke) {
