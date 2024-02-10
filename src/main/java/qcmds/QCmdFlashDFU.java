@@ -41,7 +41,7 @@ public class QCmdFlashDFU extends QCmdShellTask {
         if (success) {
             return "Done flashing firmware with DFU.\n";
         } else {
-            return "Flashing firmware failed!";
+            return "Error: Flashing firmware failed.\n";
         }
     }
     
