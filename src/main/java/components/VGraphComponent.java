@@ -36,7 +36,7 @@ public class VGraphComponent extends JComponent {
     private final int vsize;
     private int[] ypoints;
     private int[] xpoints;
-    private int index = 0;
+    // private int index = 0;
     private double max;
     private double min;
     private int imax;
