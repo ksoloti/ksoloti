@@ -109,11 +109,11 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 switch (columnIndex) {
                     case 0: {
                         SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
-                        if (f.isDirectory()) {
+                        // if (f.isDirectory()) {
                             returnValue = f.getFilename();
-                        } else {
-                            returnValue = f.getFilenameNoExtension();
-                        }
+                        // } else {
+                            // returnValue = f.getFilenameNoExtension();
+                        // }
                     }
                     break;
                     case 1: {
