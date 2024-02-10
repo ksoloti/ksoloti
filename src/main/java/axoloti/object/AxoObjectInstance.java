@@ -681,9 +681,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract implements Obje
 //                    s = s.replace("%" + p.name + "%", p.variableName(vprefix, enableOnParent));
                 }
             }
-            for (DisplayInstance p : displayInstances) {
-//                s = s.replace("%" + p.name + "%", p.valueName(vprefix));
-            }
+            // for (DisplayInstance p : displayInstances) {
+            //    s = s.replace("%" + p.name + "%", p.valueName(vprefix));
+            // }
             return s + "\n";
         }
         return "";
