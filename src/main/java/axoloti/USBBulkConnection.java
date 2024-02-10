@@ -348,7 +348,7 @@ public class USBBulkConnection extends Connection {
 
             q = new QCmdMemRead(targetProfile.getOTPAddr(), 32);
             qcmdp.AppendToQueue(q);
-            ByteBuffer otpInfo = q.getResult();
+            // ByteBuffer otpInfo = q.getResult();
 
             q = new QCmdMemRead(targetProfile.getOTPAddr() + 32, 256);
             qcmdp.AppendToQueue(q);
@@ -356,23 +356,25 @@ public class USBBulkConnection extends Connection {
             boolean signaturevalid = false;
             if (signature == null) {
                 Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Can''t obtain signature, upgrade firmware?");
-            } else if ((signature.getInt(0) == 0xFFFFFFFF) && (signature.getInt(1) == 0xFFFFFFFF)) {
-                // Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Can''t validate authenticity, no signature present.");
-            } else {
-                // signaturevalid = HWSignature.Verify(targetProfile.getCPUSerial(), otpInfo, bb2ba(signature));
-                // if (signaturevalid) {
-                //     String s = "";
-                //     otpInfo.rewind();
-                //     byte c = otpInfo.get();
-                //     while (c != 0) {
-                //         s += (char) (c & 0xFF);
-                //         c = otpInfo.get();
-                //     }
-                //     Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Authentic {0}", s);
-                // } else {
-                //     Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "Can''t validate authenticity, signature invalid.");
-                // }
             }
+            // else if ((signature.getInt(0) == 0xFFFFFFFF) && (signature.getInt(1) == 0xFFFFFFFF)) {
+            //     Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Can''t validate authenticity, no signature present.");
+            // }
+            // else {
+            //     signaturevalid = HWSignature.Verify(targetProfile.getCPUSerial(), otpInfo, bb2ba(signature));
+            //     if (signaturevalid) {
+            //         String s = "";
+            //         otpInfo.rewind();
+            //         byte c = otpInfo.get();
+            //         while (c != 0) {
+            //             s += (char) (c & 0xFF);
+            //             c = otpInfo.get();
+            //         }
+            //         Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Authentic {0}", s);
+            //     } else {
+            //         Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "Can''t validate authenticity, signature invalid.");
+            //     }
+            // }
 
             boolean signing = false;
             if (signing && !signaturevalid) {
