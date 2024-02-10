@@ -418,7 +418,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                     case 1:
                         Field f = fields.get(rowIndex);
                         Type t = f.getType();
-                        if (f.getType() == int.class) {
+                        if (t == int.class) {
                             try {
                                 f.setInt(o, Integer.parseInt((String) value));
                                 AtomDefinitionsEditor.this.obj.FireObjectModified(this);
@@ -427,7 +427,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                             } catch (IllegalAccessException ex) {
                                 Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        } else if (f.getType() == ArrayList.class) {
+                        } else if (t == ArrayList.class) {
                             try {
                                 ArrayList<String> l = (ArrayList<String>) f.get(o);
                                 l.clear();
@@ -439,7 +439,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                             } catch (IllegalAccessException ex) {
                                 Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        } else if (f.getType() == ValueInt32.class) {
+                        } else if (t == ValueInt32.class) {
                             try {
                                 ValueInt32 v;
                                 v = (ValueInt32) f.get(o);
@@ -454,7 +454,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                             } catch (IllegalAccessException ex) {
                                 Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        } else if (f.getType() == ValueFrac32.class) {
+                        } else if (t == ValueFrac32.class) {
                             try {
                                 if (value == null || ((String) value).isEmpty()) {
                                     f.set(o, null);
@@ -477,7 +477,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                             } catch (IllegalAccessException ex) {
                                 Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        } else if (f.getType() == String.class) {
+                        } else if (t == String.class) {
                             try {
                                 f.set(o, (String) value);
                                 AtomDefinitionsEditor.this.obj.FireObjectModified(this);
