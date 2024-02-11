@@ -24,6 +24,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+
 import javax.swing.JComponent;
 import javax.swing.event.MouseInputAdapter;
 
@@ -42,9 +43,11 @@ public abstract class PianoComponent extends JComponent {
     final int keyx[] = {0, 3, 4, 7, 8, 12, 15, 16, 19, 20, 23, 24};
     final int keyy[] = {0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0};
 
-    boolean selection[] = new boolean[128];
+    private boolean selection[] = new boolean[128];
 
-    int mouseDownNote;
+    private int mouseDownNote;
+
+    private int baseTranspose = 48; /* C3 */
 
     public PianoComponent() {
         super();
@@ -52,12 +55,15 @@ public abstract class PianoComponent extends JComponent {
         MouseInputAdapter ma = new MouseInputAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                getParent().requestFocus();
                 if (e.getButton() == 1 || e.getButton() == 3) {
                     int i = HitTest(e.getX(), e.getY());
                     if (i >= 0) {
                         mouseDownNote = i;
-                        selection[i] = true;
-                        KeyDown(i);
+                        if (!selection[i]) {
+                            selection[i] = true;
+                            KeyDown(i);
+                        }
                         repaint();
                     }
                 }
@@ -100,6 +106,27 @@ public abstract class PianoComponent extends JComponent {
     public abstract void KeyUp(int key);
 
     public abstract void KeyDown(int key);
+
+    public boolean isKeyDown(int key) {
+        return selection[key];
+    }
+
+    public void setSelection(int key) {
+        if (key < 0 || key > 127) return;
+        selection[key] = true;
+    }
+
+    public void clearSelection(int key) {
+        if (key < 0 || key > 127) return;
+        selection[key] = false;
+    }
+
+    public void setTranspose(int trans) {
+        if (trans < 0 || trans > 96) return;
+        baseTranspose = trans;
+        repaint();
+
+    }    
 
     public void clear() {
         for (int i=0;i<selection.length;i++) {
@@ -189,7 +216,13 @@ public abstract class PianoComponent extends JComponent {
             int x = keyToX(i);
             if (y == 0) {
                 g2.setFont(Constants.FONT);
-                g2.setPaint(Theme.getCurrentTheme().Object_Default_Foreground);
+                /* Mark keyboard-playable area with accent color */
+                if (i >= baseTranspose && i < baseTranspose + 25) {
+                    g2.setPaint(Theme.getCurrentTheme().Button_Accent_Background);
+                }
+                else {
+                    g2.setPaint(Theme.getCurrentTheme().Object_Default_Foreground);
+                }
                 AffineTransform t = g2.getTransform();
                 g2.rotate(-3.14159 / 2);
                 g2.drawString(String.format("%d", i - 64), -71, x + 11);
