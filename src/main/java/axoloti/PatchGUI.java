@@ -761,6 +761,7 @@ public class PatchGUI extends Patch {
     void ShowNotesTextEditor() {
         if (NotesTextEditor == null) {
             NotesTextEditor = new TextEditor(new StringRef(), getPatchframe());
+            NotesTextEditor.setLocationRelativeTo(patchframe);
             NotesTextEditor.disableSyntaxHighlighting();
             NotesTextEditor.setTitle("Patch Notes");
             NotesTextEditor.SetText(notes);

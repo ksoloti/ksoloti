@@ -136,6 +136,7 @@ public class PatchSettings {
         if (editor == null) {
             editor = new PatchSettingsFrame(this, patch);
         }
+        editor.setLocationRelativeTo(patch.patchframe);
         editor.setVisible(true);
         editor.setState(java.awt.Frame.NORMAL);
         editor.toFront();
