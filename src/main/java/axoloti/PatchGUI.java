@@ -756,26 +756,27 @@ public class PatchGUI extends Patch {
             o.SetSelected(false);
         }
     }
-    TextEditor NotesFrame;
+    TextEditor NotesTextEditor;
 
-    void ShowNotesFrame() {
-        if (NotesFrame == null) {
-            NotesFrame = new TextEditor(new StringRef(), getPatchframe());
-            NotesFrame.setTitle("notes");
-            NotesFrame.SetText(notes);
-            NotesFrame.addFocusListener(new FocusListener() {
+    void ShowNotesTextEditor() {
+        if (NotesTextEditor == null) {
+            NotesTextEditor = new TextEditor(new StringRef(), getPatchframe());
+            NotesTextEditor.disableSyntaxHighlighting();
+            NotesTextEditor.setTitle("Patch Notes");
+            NotesTextEditor.SetText(notes);
+            NotesTextEditor.addFocusListener(new FocusListener() {
                 @Override
                 public void focusGained(FocusEvent e) {
                 }
 
                 @Override
                 public void focusLost(FocusEvent e) {
-                    notes = NotesFrame.GetText();
+                    notes = NotesTextEditor.GetText();
                 }
             });
         }
-        NotesFrame.setVisible(true);
-        NotesFrame.toFront();
+        NotesTextEditor.setVisible(true);
+        NotesTextEditor.toFront();
     }
 
     enum Direction {
@@ -1068,8 +1069,8 @@ public class PatchGUI extends Patch {
     @Override
     void PreSerialize() {
         super.PreSerialize();
-        if (NotesFrame != null) {
-            this.notes = NotesFrame.GetText();
+        if (NotesTextEditor != null) {
+            this.notes = NotesTextEditor.GetText();
         }
         windowPos = patchframe.getBounds();
     }
@@ -1170,8 +1171,8 @@ public class PatchGUI extends Patch {
     @Override
     public void Close() {
         super.Close();
-        if (NotesFrame != null) {
-            NotesFrame.dispose();
+        if (NotesTextEditor != null) {
+            NotesTextEditor.dispose();
         }
         if ((settings != null) && (settings.editor != null)) {
             settings.editor.dispose();

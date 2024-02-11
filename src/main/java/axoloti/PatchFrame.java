@@ -1005,7 +1005,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuItemNotesActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.ShowNotesFrame();
+        patch.ShowNotesTextEditor();
     }
 
     private void jMenuItemSettingsActionPerformed(java.awt.event.ActionEvent evt) {

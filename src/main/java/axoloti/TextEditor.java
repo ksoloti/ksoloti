@@ -61,8 +61,8 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
             ioe.printStackTrace();
         }
         textArea.setFont(Constants.FONT_MONO);
-        textArea.setBackground(axoloti.Theme.getCurrentTheme().Object_Default_Background);
-        textArea.setForeground(axoloti.Theme.getCurrentTheme().Object_Default_Foreground);
+        // textArea.setBackground(axoloti.Theme.getCurrentTheme().Object_Default_Background);
+        // textArea.setForeground(axoloti.Theme.getCurrentTheme().Object_Default_Foreground);
         textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
         textArea.setHighlightCurrentLine(false);
         textArea.setLineWrap(true);
@@ -99,6 +99,10 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
     public void Close() {
         parent.GetChildDocuments().remove(this);
         dispose();
+    }
+
+    public void disableSyntaxHighlighting() {
+        textArea.setSyntaxEditingStyle(null);
     }
 
     /**
