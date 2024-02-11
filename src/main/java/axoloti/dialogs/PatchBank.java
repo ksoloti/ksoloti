@@ -396,23 +396,24 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 }
             }
 
-            // if (fileToBeSaved.exists()) {
-            //     Object[] options = {"Yes",
-            //         "No"};
-            //     int n = JOptionPane.showOptionDialog(this,
-            //             "File exists! Overwrite?",
-            //             "File Exists",
-            //             JOptionPane.YES_NO_OPTION,
-            //             JOptionPane.QUESTION_MESSAGE,
-            //             null,
-            //             options,
-            //             options[1]);
-            //     switch (n) {
-            //         case JOptionPane.YES_OPTION:
-            //             break;
-            //         case JOptionPane.NO_OPTION:
-            //             return;
-            //     }
+            if (fileToBeSaved.exists()) {
+                Object[] options = {"Yes",
+                    "No"};
+                int n = JOptionPane.showOptionDialog(this,
+                        "File exists! Overwrite?",
+                        "File Exists",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[1]);
+                switch (n) {
+                    case JOptionPane.YES_OPTION:
+                        break;
+                    case JOptionPane.NO_OPTION:
+                        return;
+                }
+            }
 
             FilenamePath = fileToBeSaved.getPath();
             setTitle(FilenamePath);
