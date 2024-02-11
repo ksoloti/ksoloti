@@ -104,7 +104,6 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         jSpinnerNumPresets = new javax.swing.JSpinner();
         jLabelSubpatchMode = new javax.swing.JLabel();
         jComboBoxMode = new javax.swing.JComboBox<String>();
-        jLabelMonoWithBypass = new javax.swing.JLabel();
         jLabelNumberOfPresets = new javax.swing.JLabel();
         jLabelEntriesPerPreset = new javax.swing.JLabel();
         jSpinnerPresetEntries = new javax.swing.JSpinner();
@@ -148,14 +147,13 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
 
         jLabelSubpatchMode.setText("Subpatch mode");
 
-        jComboBoxMode.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Off", "Mono", "Mono with bypass", "Polyphonic", "Polyphonic Multichannel", "Polyphonic Expression" }));
+        jComboBoxMode.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Off", "Mono", "(Reserved)", "Polyphonic", "Polyphonic Multichannel", "Polyphonic Expression" }));
         jComboBoxMode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxModeActionPerformed(evt);
             }
         });
 
-        jLabelMonoWithBypass.setText("Mono with bypass not implemented");
 
         jLabelNumberOfPresets.setText("Number of presets");
 
@@ -254,9 +252,8 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jComboBoxMode, 0, 1, Short.MAX_VALUE)
                             .addComponent(jCheckBoxHasChannelAttrib, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelMonoWithBypass)
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                        )
+                    )
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -322,8 +319,6 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBoxMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelSubpatchMode))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabelMonoWithBypass)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jCheckBoxHasChannelAttrib)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -430,7 +425,6 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
     private javax.swing.JLabel jLabelMIDIChannel;
     private javax.swing.JLabel jLabelAttributions;
     private javax.swing.JLabel jLabelSubpatchMode;
-    private javax.swing.JLabel jLabelMonoWithBypass;
     private javax.swing.JLabel jLabelNumberOfPresets;
     private javax.swing.JLabel jLabelEntriesPerPreset;
     private javax.swing.JLabel jLabelMaxModulationSources;
