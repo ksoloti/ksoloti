@@ -137,8 +137,8 @@ public class PatchGUI extends Patch {
         /* n */ "noise",
         /* o */ "gpio/out",
         /* p */ "patch",
-        /* q */ "(seq|sequencer)",
-        /* r */ null,
+        /* q */ null,
+        /* r */ "(read|write)",
         /* s */ "string",
         /* t */ "table",
         /* u */ "util",
@@ -150,7 +150,7 @@ public class PatchGUI extends Patch {
 
         /* A */ "audio/out",
         /* B */ "ksoloti/big genes",
-        /* C */ "patch/comment", /* will never get here */
+        /* C */ "patch/comment", /* special case - will never get here */
         /* D */ "delay",
         /* E */ "env",
         /* F */ "filter",
@@ -164,8 +164,8 @@ public class PatchGUI extends Patch {
         /* N */ null,
         /* O */ "patch/outlet",
         /* P */ "patch/patcher",
-        /* Q */ null,
-        /* R */ null,
+        /* Q */ "(seq|sequencer)",
+        /* R */ "reverb",
         /* S */ "script",
         /* T */ null,
         /* U */ null,
