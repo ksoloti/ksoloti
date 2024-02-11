@@ -148,7 +148,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
 
         jLabelSubpatchMode.setText("Subpatch mode");
 
-        jComboBoxMode.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "No", "Mono", "Mono with bypass", "Polyphonic", "Polyphonic Multichannel", "Polyphonic Expression" }));
+        jComboBoxMode.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Off", "Mono", "Mono with bypass", "Polyphonic", "Polyphonic Multichannel", "Polyphonic Expression" }));
         jComboBoxMode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxModeActionPerformed(evt);
@@ -186,7 +186,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
             }
         });
 
-        jCheckBoxHasChannelAttrib.setText("Has MIDI selector");
+        jCheckBoxHasChannelAttrib.setText("Advanced MIDI settings (subpatches only)");
         jCheckBoxHasChannelAttrib.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxHasChannelAttribActionPerformed(evt);
