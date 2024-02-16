@@ -176,6 +176,7 @@ rm -rf packagetemp/win
 
 # Cleanup
 cd firmware && make clean
+cd ../firmware_axoloti_legacy && make clean
 cd .. && ant clean
 
 END=$(date +%s)
