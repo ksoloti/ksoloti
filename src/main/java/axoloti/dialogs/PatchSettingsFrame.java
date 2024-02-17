@@ -28,6 +28,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.GroupLayout;
 
 /**
  *
@@ -53,6 +56,9 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setValue(settings.GetMidiChannel());
         ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setMinimum(1);
         ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setMaximum(16);
+        ((SpinnerNumberModel) jSpinnerMPENumberOfMemberChannels.getModel()).setValue(settings.getMPENumberOfMemberChannels());
+        ((SpinnerNumberModel) jSpinnerMPENumberOfMemberChannels.getModel()).setMinimum(1);
+        ((SpinnerNumberModel) jSpinnerMPENumberOfMemberChannels.getModel()).setMaximum(15);
         ((SpinnerNumberModel) jSpinnerNumPresets.getModel()).setValue(settings.GetNPresets());
         ((SpinnerNumberModel) jSpinnerNumPresets.getModel()).setMinimum(0);
         ((SpinnerNumberModel) jSpinnerNumPresets.getModel()).setMaximum(64);
@@ -88,7 +94,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
                 jComboBoxMode.setSelectedIndex(5);
                 break;
         }
-        jCheckBoxHasChannelAttrib.setSelected(settings.GetMidiSelector());
+        jCheckBoxHasMidiSelector.setSelected(settings.GetMidiSelector());
         jCheckBoxSaturate.setSelected(settings.getSaturate());
     }
 
@@ -100,10 +106,14 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
     private void initComponents() {
 
         jLabelMIDIChannel = new javax.swing.JLabel();
+        jLabelMPENumberOfMemberChannels = new javax.swing.JLabel();
+        jLabelMPEZone = new javax.swing.JLabel();
         jSpinnerMidiChannel = new javax.swing.JSpinner();
+        jSpinnerMPENumberOfMemberChannels = new javax.swing.JSpinner();
         jSpinnerNumPresets = new javax.swing.JSpinner();
         jLabelSubpatchMode = new javax.swing.JLabel();
         jComboBoxMode = new javax.swing.JComboBox<String>();
+        jComboBoxMPEZone = new javax.swing.JComboBox<String>();
         jLabelNumberOfPresets = new javax.swing.JLabel();
         jLabelEntriesPerPreset = new javax.swing.JLabel();
         jSpinnerPresetEntries = new javax.swing.JSpinner();
@@ -111,7 +121,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         jLabelMaxModulationTargets = new javax.swing.JLabel();
         jSpinnerModulationSources = new javax.swing.JSpinner();
         jSpinnerModulationTargets = new javax.swing.JSpinner();
-        jCheckBoxHasChannelAttrib = new javax.swing.JCheckBox();
+        jCheckBoxHasMidiSelector = new javax.swing.JCheckBox();
         jTextFieldAuthor = new javax.swing.JTextField();
         jComboBoxLicense = new javax.swing.JComboBox<String>();
         jLabelAuthor = new javax.swing.JLabel();
@@ -130,11 +140,29 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         });
 
         jLabelMIDIChannel.setText("MIDI Channel");
+        jLabelMIDIChannel.setToolTipText("<html>Defines the MIDI channel the patch should listen on. For subpatches this can be overridden by enabling<br/>\"Show Advanced MIDI Settings\" and freely selecting a device, port, and channel via the subpatch's representation in the parent patch.<br/>Note that if subpatch mode \"MPE\" is selected, this setting is ignored to conform with MPE specs.<br/>See the MPE-related tooltips for more info.");
 
+        jSpinnerMidiChannel.setToolTipText(jLabelMIDIChannel.getToolTipText());
         jSpinnerMidiChannel.setModel(new javax.swing.SpinnerNumberModel(0, 0, 15, 1));
         jSpinnerMidiChannel.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jSpinnerMidiChannelStateChanged(evt);
+            }
+        });
+
+
+        jLabelMPEZone.setText("MPE Zone");
+        jLabelMPEZone.setToolTipText("<html>Defines which MPE zone the subpatch should listen on.<br/>The Lower zone occupies MIDI channel 1 as Master channel for sending global controls<br/>and from channel 2 upwards as Member channels to control the individual voices.<br/>The upper zone occupies MIDI channel 16 as Master channel<br/>and from channel 15 downwards as Member channels.");
+        jComboBoxMPEZone.setToolTipText(jLabelMPEZone.getToolTipText());;
+
+        jLabelMPENumberOfMemberChannels.setText("Number of MPE Member Channels");
+        jLabelMPENumberOfMemberChannels.setToolTipText("<html>Defines how many Member channels are to be used by the MPE zone.<br/><br/>Example: <i>Set MPE Zone to \"Lower\" and the number of Member channels to 4</i> --<br/> Master channel occupies MIDI channel 1. Four Member channels occupy MIDI channels 2 to 5.<br/>Channels 6 to 16 are free for playing the main patch, other subpatches, or other devices.");
+
+        jSpinnerMPENumberOfMemberChannels.setToolTipText(jLabelMPENumberOfMemberChannels.getToolTipText());
+        jSpinnerMPENumberOfMemberChannels.setModel(new javax.swing.SpinnerNumberModel(15, 1, 15, 1));
+        jSpinnerMPENumberOfMemberChannels.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSpinnerMPENumberOfMemberChannelsChanged(evt);
             }
         });
 
@@ -145,19 +173,25 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
             }
         });
 
-        jLabelSubpatchMode.setText("Subpatch mode");
+        jLabelSubpatchMode.setText("Subpatch Mode");
 
-        jComboBoxMode.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Off", "Mono", "(Reserved)", "Polyphonic", "Polyphonic Multichannel", "Polyphonic Expression" }));
+        jComboBoxMode.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Off", "Mono", "(Reserved)", "Polyphonic", "Polyphonic Multichannel", "MPE (Polyphonic Expression)" }));
         jComboBoxMode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxModeActionPerformed(evt);
             }
         });
 
+        jComboBoxMPEZone.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] {"Lower (from Channel 1 upwards)", "Upper (from Channel 16 downwards)"}));
+        jComboBoxMPEZone.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxMPEZoneActionPerformed(evt);
+            }
+        });
 
-        jLabelNumberOfPresets.setText("Number of presets");
+        jLabelNumberOfPresets.setText("Number of Presets");
 
-        jLabelEntriesPerPreset.setText("Entries per preset");
+        jLabelEntriesPerPreset.setText("Entries per Preset");
 
         jSpinnerPresetEntries.setModel(new javax.swing.SpinnerNumberModel(0, 0, 15, 1));
         jSpinnerPresetEntries.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -166,9 +200,9 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
             }
         });
 
-        jLabelMaxModulationSources.setText("Maximum number of modulation sources");
+        jLabelMaxModulationSources.setText("Maximum Number of Modulation Sources");
 
-        jLabelMaxModulationTargets.setText("Maximum number of modulation targets");
+        jLabelMaxModulationTargets.setText("Maximum Number of Modulation Targets");
 
         jSpinnerModulationSources.setModel(new javax.swing.SpinnerNumberModel(0, 0, 15, 1));
         jSpinnerModulationSources.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -184,8 +218,9 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
             }
         });
 
-        jCheckBoxHasChannelAttrib.setText("Advanced MIDI settings (subpatches only)");
-        jCheckBoxHasChannelAttrib.addActionListener(new java.awt.event.ActionListener() {
+        jCheckBoxHasMidiSelector.setText("Show Advanced MIDI Settings");
+        jCheckBoxHasMidiSelector.setToolTipText("<html>Shows a set of attributes (MIDI channel, MIDI port, MIDI device)<br/> on the subpatch, allowing you to override<br/>the MIDI settings for this subpatch independent from its parent.");
+        jCheckBoxHasMidiSelector.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxHasChannelAttribActionPerformed(evt);
             }
@@ -199,7 +234,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         });
 
         jComboBoxLicense.setEditable(true);
-        jComboBoxLicense.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "undefined", "CC0", "CC BY 3.0", "CC BY SA 3.0", "GPL", "LGPL", "Confidential", "Secret", "Top secret", " " }));
+        jComboBoxLicense.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Undefined", "CC0", "CC BY 3.0", "CC BY SA 3.0", "GPL", "LGPL", "Confidential", "Secret", "Top Secret", " " }));
         jComboBoxLicense.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxLicenseActionPerformed(evt);
@@ -210,7 +245,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
 
         jLabelLicense.setText("License");
 
-        jCheckBoxSaturate.setText("Saturate audio output");
+        jCheckBoxSaturate.setText("Saturate Audio Output");
         jCheckBoxSaturate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxSaturateActionPerformed(evt);
@@ -226,106 +261,208 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
             }
         });
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
+
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+
+            layout.createParallelGroup(Alignment.LEADING)
+
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jCheckBoxSaturate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelAuthor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelLicense)
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextFieldAuthor, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
-                            .addComponent(jComboBoxLicense, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabelSubpatchMode)
-                        .addGap(22, 22, 22)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jComboBoxMode, 0, 1, Short.MAX_VALUE)
-                            .addComponent(jCheckBoxHasChannelAttrib, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+
+                .addGap(15, 15, 15)
+
+                .addGroup(layout.createParallelGroup(Alignment.LEADING)
+
+                    .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
+
+                        .addGroup(layout.createParallelGroup(Alignment.LEADING)
+                            .addComponent(jLabelAuthor, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelLicense, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelAttributions, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        )
+
+                        .addPreferredGap(ComponentPlacement.RELATED)
+
+                        .addGroup(layout.createParallelGroup(Alignment.TRAILING)
+                            .addComponent(jTextFieldAuthor, GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                            .addComponent(jComboBoxLicense, GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                            .addComponent(jTextFieldAttributions, GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                        )
+
+                    )
+
+                    .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
+
+                        .addGroup(layout.createParallelGroup(Alignment.LEADING)
+                            .addComponent(jCheckBoxSaturate, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         )
                     )
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelAttributions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jTextFieldAttributions, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabelMIDIChannel)
-                                    .addComponent(jLabelEntriesPerPreset)
-                                    .addComponent(jLabelNumberOfPresets)
-                                    .addComponent(jLabelMaxModulationSources)
-                                    .addComponent(jLabelMaxModulationTargets))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                            .addComponent(jSpinnerModulationSources, javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jSpinnerMidiChannel, javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jSpinnerNumPresets, javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jSpinnerPresetEntries, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jSpinnerModulationTargets, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(14, 14, 14))
+
+                    .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
+
+                        .addGroup(layout.createParallelGroup(Alignment.LEADING)
+                            .addComponent(jLabelMIDIChannel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelNumberOfPresets, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelEntriesPerPreset, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelMaxModulationSources, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelMaxModulationTargets, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        )
+
+                        .addPreferredGap(ComponentPlacement.RELATED)
+
+                        .addGroup(layout.createParallelGroup(Alignment.TRAILING)
+                            .addComponent(jSpinnerMidiChannel, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jSpinnerNumPresets, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jSpinnerPresetEntries, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jSpinnerModulationSources, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jSpinnerModulationTargets, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+                        )
+                    )
+
+                    .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
+
+                        .addComponent(jLabelSubpatchMode, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+
+                        .addPreferredGap(ComponentPlacement.RELATED)
+
+                        .addGroup(layout.createParallelGroup(Alignment.TRAILING)
+                            .addComponent(jComboBoxMode, GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                            .addComponent(jCheckBoxHasMidiSelector, GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                        )
+                    )
+
+                    .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
+
+                        .addGroup(layout.createParallelGroup(Alignment.LEADING)
+                            .addComponent(jLabelMPEZone, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelMPENumberOfMemberChannels, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        )
+
+                        .addPreferredGap(ComponentPlacement.RELATED)
+
+                        .addGroup(layout.createParallelGroup(Alignment.TRAILING)
+                            .addComponent(jComboBoxMPEZone, GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                            .addComponent(jSpinnerMPENumberOfMemberChannels, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+                        )
+                    )
+                )
+
+                .addGap(15, 15, 15)
+            )
         );
+
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextFieldAuthor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelAuthor))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBoxLicense, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelLicense))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextFieldAttributions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelAttributions))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jSpinnerMidiChannel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelMIDIChannel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+
+            layout.createParallelGroup(Alignment.LEADING)
+
+            .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
+
+                .addGap(15, 15, 15)
+
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jLabelAuthor)
+                    .addComponent(jTextFieldAuthor, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                )
+
+                .addPreferredGap(ComponentPlacement.RELATED)
+
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jLabelLicense)
+                    .addComponent(jComboBoxLicense, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                )
+
+                .addPreferredGap(ComponentPlacement.RELATED)
+
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jLabelAttributions)
+                    .addComponent(jTextFieldAttributions, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                )
+
+                .addPreferredGap(ComponentPlacement.RELATED)
+
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jCheckBoxSaturate, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                )
+
+                .addPreferredGap(ComponentPlacement.RELATED)
+
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jLabelMIDIChannel)
+                    .addComponent(jSpinnerMidiChannel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                )
+
+                .addPreferredGap(ComponentPlacement.RELATED)
+
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jLabelNumberOfPresets)
-                    .addComponent(jSpinnerNumPresets, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jSpinnerPresetEntries, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelEntriesPerPreset))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSpinnerNumPresets, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                )
+
+                .addPreferredGap(ComponentPlacement.RELATED)
+
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jLabelEntriesPerPreset)
+                    .addComponent(jSpinnerPresetEntries, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                )
+
+                .addPreferredGap(ComponentPlacement.RELATED)
+
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jLabelMaxModulationSources)
-                    .addComponent(jSpinnerModulationSources, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jSpinnerModulationSources, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                )
+
+                .addPreferredGap(ComponentPlacement.RELATED)
+
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jLabelMaxModulationTargets)
-                    .addComponent(jSpinnerModulationTargets, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBoxMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelSubpatchMode))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBoxHasChannelAttrib)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBoxSaturate))
+                    .addComponent(jSpinnerModulationTargets, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                )
+
+                .addPreferredGap(ComponentPlacement.RELATED)
+
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jLabelSubpatchMode)
+                    .addComponent(jComboBoxMode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                )
+
+                .addPreferredGap(ComponentPlacement.RELATED)
+
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jCheckBoxHasMidiSelector)
+                )
+
+                .addPreferredGap(ComponentPlacement.RELATED)
+
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jLabelMPEZone)
+                    .addComponent(jComboBoxMPEZone, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                )
+
+                .addPreferredGap(ComponentPlacement.RELATED)
+
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jLabelMPENumberOfMemberChannels)
+                    .addComponent(jSpinnerMPENumberOfMemberChannels, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                )
+
+                .addGap(15,15,15)
+            )
         );
 
         pack();
+    }
+
+    private void setEnabledMPEOptions(boolean b) {
+        jLabelMPEZone.setEnabled(b);
+        jComboBoxMPEZone.setEnabled(b);
+
+        jLabelMPENumberOfMemberChannels.setEnabled(b);
+        jSpinnerMPENumberOfMemberChannels.setEnabled(b);
+
+        jLabelMIDIChannel.setEnabled(!b);
+        jSpinnerMidiChannel.setEnabled(!b);
     }
 
     private void jSpinnerMidiChannelStateChanged(javax.swing.event.ChangeEvent evt) {
@@ -335,9 +472,23 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         }
     }
 
+    private void jSpinnerMPENumberOfMemberChannelsChanged(javax.swing.event.ChangeEvent evt) {
+        SpinnerModel nModel = jSpinnerMPENumberOfMemberChannels.getModel();
+        if (nModel instanceof SpinnerNumberModel) {
+            settings.setMPENumberOfMemberChannels(((SpinnerNumberModel) nModel).getNumber().intValue());
+        }
+    }
+
     private void jComboBoxModeActionPerformed(java.awt.event.ActionEvent evt) {
+
+        /* Set subpatch items as enabled unless overridden by subpatch mode "no" */
+        jCheckBoxHasMidiSelector.setEnabled(true);
+        /* Set MPE eoptions as disables unless subpatch mode "polyexpression" overrides them */
+        setEnabledMPEOptions(false);
+
         switch (jComboBoxMode.getSelectedIndex()) {
             case 0:
+                jCheckBoxHasMidiSelector.setEnabled(false);
                 settings.subpatchmode = SubPatchMode.no;
                 break;
             case 1:
@@ -353,10 +504,21 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
                 settings.subpatchmode = SubPatchMode.polychannel;
                 break;
             case 5:
+                setEnabledMPEOptions(true);
                 settings.subpatchmode = SubPatchMode.polyexpression;
                 break;
             default:
                 Logger.getLogger(PatchSettingsFrame.class.getName()).severe("Undefined subpatch mode");
+        }
+    }
+
+    private void jComboBoxMPEZoneActionPerformed(java.awt.event.ActionEvent evt) {
+        int val = jComboBoxMPEZone.getSelectedIndex();
+        if (val < 0 || val > 1) {
+            Logger.getLogger(PatchSettingsFrame.class.getName()).severe("Invalid MPE zone");
+        }
+        else {
+            settings.setMPEZone(val);
         }
     }
 
@@ -389,7 +551,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
     }
 
     private void jCheckBoxHasChannelAttribActionPerformed(java.awt.event.ActionEvent evt) {
-        settings.SetMidiSelector(jCheckBoxHasChannelAttrib.isSelected());
+        settings.SetMidiSelector(jCheckBoxHasMidiSelector.isSelected());
     }
 
     private void jComboBoxLicenseActionPerformed(java.awt.event.ActionEvent evt) {
@@ -418,11 +580,14 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         patch.getPatchframe().GetChildDocuments().add(this);
     }
 
-    private javax.swing.JCheckBox jCheckBoxHasChannelAttrib;
+    private javax.swing.JCheckBox jCheckBoxHasMidiSelector;
     private javax.swing.JCheckBox jCheckBoxSaturate;
     private javax.swing.JComboBox<String> jComboBoxLicense;
     private javax.swing.JComboBox<String> jComboBoxMode;
+    private javax.swing.JComboBox<String> jComboBoxMPEZone;
     private javax.swing.JLabel jLabelMIDIChannel;
+    private javax.swing.JLabel jLabelMPENumberOfMemberChannels;
+    private javax.swing.JLabel jLabelMPEZone;
     private javax.swing.JLabel jLabelAttributions;
     private javax.swing.JLabel jLabelSubpatchMode;
     private javax.swing.JLabel jLabelNumberOfPresets;
@@ -432,6 +597,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
     private javax.swing.JLabel jLabelAuthor;
     private javax.swing.JLabel jLabelLicense;
     private javax.swing.JSpinner jSpinnerMidiChannel;
+    private javax.swing.JSpinner jSpinnerMPENumberOfMemberChannels;
     private javax.swing.JSpinner jSpinnerModulationSources;
     private javax.swing.JSpinner jSpinnerModulationTargets;
     private javax.swing.JSpinner jSpinnerNumPresets;

@@ -200,7 +200,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
                     piano.KeyDown(pianoTranspose + 12);
                     ke.consume();
                 }
-                /* Higher octave */
+                /* Upper octave */
                 else if (key == KeyEvent.VK_Q && !piano.isKeyDown(pianoTranspose + 12)) {
                     piano.KeyDown(pianoTranspose + 12);
                     ke.consume();
@@ -391,7 +391,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
                     piano.KeyUp(pianoTranspose + 12);
                     ke.consume();
                 }
-                /* Higher octave */
+                /* Upper octave */
                 else if (key == KeyEvent.VK_Q) {
                     piano.KeyUp(pianoTranspose + 12);
                     ke.consume();

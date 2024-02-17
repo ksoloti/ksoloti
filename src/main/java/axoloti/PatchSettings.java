@@ -48,6 +48,11 @@ public class PatchSettings {
     private String Attributions;
     @Element(required = false)
     private Boolean Saturate;
+    @Element(required = false)
+    private Integer MPENumberOfMemberChannels;
+    @Element(required = false)
+    private Integer MPEZone;
+
     PatchSettingsFrame editor;
     
     public int GetMidiChannel() {
@@ -59,6 +64,22 @@ public class PatchSettings {
         }
     }
 
+    public int getMPENumberOfMemberChannels() {
+        if (MPENumberOfMemberChannels != null) {
+            setMPENumberOfMemberChannels(MPENumberOfMemberChannels);
+            return MPENumberOfMemberChannels;
+        } else {
+            return 15;
+        }
+    }
+
+    public int getMPEZone() {
+        if (MPEZone == null) {
+            MPEZone = 0;
+        }
+        return MPEZone;
+    }
+
     public void SetMidiChannel(int i) {
         if (i > 16) {
             i = 16;
@@ -67,6 +88,23 @@ public class PatchSettings {
             i = 1;
         }
         MidiChannel = i;
+    }
+
+    public void setMPENumberOfMemberChannels(int i) {
+        if (i > 15) {
+            i = 15;
+        }
+        if (i < 1) {
+            i = 1;
+        }
+        MPENumberOfMemberChannels = i;
+    }
+
+    public void setMPEZone(int i) {
+        if (i < 0 || i > 1) {
+            return;
+        }
+        MPEZone = i;
     }
 
     public boolean GetMidiSelector() {

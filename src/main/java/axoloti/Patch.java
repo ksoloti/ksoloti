@@ -1464,7 +1464,7 @@ public class Patch {
 
     String GenerateMidiCodePlusPlus(String ClassName) {
         String c = "";
-        c += "void MidiInHandler(midi_device_t dev, uint8_t port,uint8_t status, uint8_t data1, uint8_t data2){\n";
+        c += "void MidiInHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t data1, uint8_t data2){\n";
         c += GenerateMidiInCodePlusPlus();
         c += "}\n\n";
         return c;
@@ -2000,18 +2000,18 @@ public class Patch {
                 + "if ( attr_midiport > 0 && port > 0 && attr_midiport != port) return;\n"
                 + "if ((status == MIDI_NOTE_ON + attr_midichannel) && (data2)) {\n"
                 + "  int min = 1<<30;\n"
-                + "  int mini = 0;\n"
+                + "  int min_i = 0;\n"
                 + "  int i;\n"
                 + "  for(i=0;i<attr_poly;i++){\n"
                 + "    if (voicePriority[i] < min){\n"
                 + "      min = voicePriority[i];\n"
-                + "      mini = i;\n"
+                + "      min_i = i;\n"
                 + "    }\n"
                 + "  }\n"
-                + "  voicePriority[mini] = 100000+priority++;\n"
-                + "  notePlaying[mini] = data1;\n"
-                + "  pressed[mini] = 1;\n"
-                + "  getVoices()[mini].MidiInHandler(dev, port, status, data1, data2);\n"
+                + "  voicePriority[min_i] = 100000+priority++;\n"
+                + "  notePlaying[min_i] = data1;\n"
+                + "  pressed[min_i] = 1;\n"
+                + "  getVoices()[min_i].MidiInHandler(dev, port, status, data1, data2);\n"
                 + "} else if (((status == MIDI_NOTE_ON + attr_midichannel) && (!data2))||\n"
                 + "          (status == MIDI_NOTE_OFF + attr_midichannel)) {\n"
                 + "  int i;\n"
@@ -2059,22 +2059,22 @@ public class Patch {
                 + "if ( attr_mididevice > 0 && dev > 0 && attr_mididevice != dev) return;\n"
                 + "if ( attr_midiport > 0 && port > 0 && attr_midiport != port) return;\n"
                 + "int msg = (status & 0xF0);\n"
-                + "int channel = (status & 0x0F);\n"
+                + "int chnl = (status & 0x0F);\n"
                 + "if ((msg == MIDI_NOTE_ON) && (data2)) {\n"
                 + "  int min = 1<<30;\n"
-                + "  int mini = 0;\n"
+                + "  int min_i = 0;\n"
                 + "  int i;\n"
                 + "  for(i=0;i<attr_poly;i++){\n"
                 + "    if (voicePriority[i] < min){\n"
                 + "      min = voicePriority[i];\n"
-                + "      mini = i;\n"
+                + "      min_i = i;\n"
                 + "    }\n"
                 + "  }\n"
-                + "  voicePriority[mini] = 100000 + priority++;\n"
-                + "  notePlaying[mini] = data1;\n"
-                + "  pressed[mini] = 1;\n"
-                + "  voiceChannel[mini] = status & 0x0F;\n"
-                + "  getVoices()[mini].MidiInHandler(dev, port, status & 0xF0, data1, data2);\n"
+                + "  voicePriority[min_i] = 100000 + priority++;\n"
+                + "  notePlaying[min_i] = data1;\n"
+                + "  pressed[min_i] = 1;\n"
+                + "  voiceChannel[min_i] = chnl;\n"
+                + "  getVoices()[min_i].MidiInHandler(dev, port, msg, data1, data2);\n"
                 + "} else if (((msg == MIDI_NOTE_ON) && (!data2))||\n"
                 + "            (msg == MIDI_NOTE_OFF)) {\n"
                 + "  int i;\n"
@@ -2090,7 +2090,7 @@ public class Patch {
                 + "} else if (msg == MIDI_CONTROL_CHANGE) {\n"
                 + "  int i;\n"
                 + "  for(i=0;i<attr_poly;i++) {\n"
-                + "    if (voiceChannel[i] == channel) {\n"
+                + "    if (voiceChannel[i] == chnl) {\n"
                 + "      getVoices()[i].MidiInHandler(dev, port, MIDI_CONTROL_CHANGE + attr_midichannel, data1, data2);\n"
                 + "    }\n"
                 + "  }\n"
@@ -2109,14 +2109,14 @@ public class Patch {
                 + "} else if (msg == MIDI_PITCH_BEND) {\n"
                 + "  int i;\n"
                 + "  for(i=0;i<attr_poly;i++){\n"
-                + "    if (voiceChannel[i] == channel) {\n"
+                + "    if (voiceChannel[i] == chnl) {\n"
                 + "      getVoices()[i].MidiInHandler(dev, port, MIDI_PITCH_BEND + attr_midichannel, data1, data2);\n"
                 + "    }\n"
                 + "  }\n"
                 + "} else {"
                 + "  int i;\n"
                 + "  for(i=0;i<attr_poly;i++) {\n"
-                + "    if (voiceChannel[i] == channel) {\n"
+                + "    if (voiceChannel[i] == chnl) {\n"
                 + "         getVoices()[i].MidiInHandler(dev, port,msg + attr_midichannel, data1, data2);\n"
                 + "    }\n"
                 + "  }\n"
@@ -2126,9 +2126,13 @@ public class Patch {
 
     // Poly Expression supports the Midi Polyphonic Expression (MPE) Spec
     // Can be used with (or without) the MPE objects
-    // the midi channel of the patch is the 'main/global channel'
+    // the Master channel of the patch is always channel 1 or 16
+    // Channels from 2 upwards (or from 15 downwards) are Member channels for individual voice control
+    // the amount of Member channels can be changed in subpatch settings
     AxoObject GenerateAxoObjPolyExpression(AxoObject template) {
         AxoObject o = GenerateAxoObjPoly(template);
+
+
         o.sLocalData
                 += "int8_t voiceChannel[attr_poly];\n"
                 + "int8_t pitchbendRange;\n"
@@ -2136,47 +2140,62 @@ public class Patch {
                 + "int8_t highChannel;\n"
                 + "int8_t lastRPN_LSB;\n"
                 + "int8_t lastRPN_MSB;\n";
+
         o.sInitCode
                 += "int vc;\n"
                 + "for (vc=0;vc<attr_poly;vc++) {\n"
                 + "   voiceChannel[vc]=0xFF;\n"
-                + "}\n"
-                + "lowChannel = attr_midichannel + 1;\n"
-                + "highChannel = attr_midichannel + ( 15 - attr_midichannel);\n"
-                + "pitchbendRange = 48;\n"
+                + "}\n";
+
+        if (settings != null) {
+            if (settings.getMPEZone() == 0) {
+                o.sInitCode
+                        += "lowChannel = 1;\n"
+                        + "highChannel = " + settings.getMPENumberOfMemberChannels() + ";\n";
+            }
+            else {
+                o.sInitCode
+                        += "lowChannel = 15 - " + settings.getMPENumberOfMemberChannels() + ";\n"
+                        + "highChannel = 14;\n";
+            }
+        }
+
+        o.sInitCode
+                += "pitchbendRange = 48;\n"
                 + "lastRPN_LSB=0xFF;\n"
                 + "lastRPN_MSB=0xFF;\n";
+
         o.sMidiCode = ""
                 + "if ( attr_mididevice > 0 && dev > 0 && attr_mididevice != dev) return;\n"
                 + "if ( attr_midiport > 0 && port > 0 && attr_midiport != port) return;\n"
                 + "int msg = (status & 0xF0);\n"
-                + "int channel = (status & 0x0F);\n"
+                + "int chnl = (status & 0x0F);\n"
                 + "if ((msg == MIDI_NOTE_ON) && (data2)) {\n"
-                + "  if (channel == attr_midichannel \n"
-                + "   || channel < lowChannel || channel > highChannel)\n"
+                + "  if (chnl == attr_midichannel \n"
+                + "   || chnl < lowChannel || chnl > highChannel)\n"
                 + "    return;\n"
                 + "  int min = 1<<30;\n"
-                + "  int mini = 0;\n"
+                + "  int min_i = 0;\n"
                 + "  int i;\n"
                 + "  for(i=0;i<attr_poly;i++){\n"
                 + "    if (voicePriority[i] < min){\n"
                 + "      min = voicePriority[i];\n"
-                + "      mini = i;\n"
+                + "      min_i = i;\n"
                 + "    }\n"
                 + "  }\n"
-                + "  voicePriority[mini] = 100000 + priority++;\n"
-                + "  notePlaying[mini] = data1;\n"
-                + "  pressed[mini] = 1;\n"
-                + "  voiceChannel[mini] = status & 0x0F;\n"
-                + "  getVoices()[mini].MidiInHandler(dev, port, status & 0xF0, data1, data2);\n"
+                + "  voicePriority[min_i] = 100000 + priority++;\n"
+                + "  notePlaying[min_i] = data1;\n"
+                + "  pressed[min_i] = 1;\n"
+                + "  voiceChannel[min_i] = chnl;\n"
+                + "  getVoices()[min_i].MidiInHandler(dev, port, msg, data1, data2);\n"
                 + "} else if (((msg == MIDI_NOTE_ON) && (!data2))||\n"
                 + "            (msg == MIDI_NOTE_OFF)) {\n"
-                + "  if (channel == attr_midichannel\n "
-                + "   || channel < lowChannel || channel > highChannel)\n"
+                + "  if (chnl == attr_midichannel\n "
+                + "   || chnl < lowChannel || chnl > highChannel)\n"
                 + "    return;\n"
                 + "  int i;\n"
                 + "  for(i=0;i<attr_poly;i++){\n"
-                + "    if (notePlaying[i] == data1 && voiceChannel[i] == channel){\n"
+                + "    if (notePlaying[i] == data1 && voiceChannel[i] == chnl){\n"
                 + "      voicePriority[i] = priority++;\n"
                 + "      voiceChannel[i] = 0xFF;\n"
                 + "      pressed[i] = 0;\n"
@@ -2187,12 +2206,12 @@ public class Patch {
                 + "} else if (msg == MIDI_CONTROL_CHANGE) {\n"
                 + "  if (data1 == MIDI_C_POLY) {\n" // MPE enable mode
                 + "     if (data2 > 0) {\n "
-                + "       if (channel == attr_midichannel) {\n"
-                + "         if (channel != 15) {\n" // e.g ch 1 (g), we use 2-N notes
-                + "           lowChannel = channel + 1;\n"
+                + "       if (chnl == attr_midichannel) {\n"
+                + "         if (chnl != 15) {\n" // e.g ch 1 (g), we use 2-N notes
+                + "           lowChannel = chnl + 1;\n"
                 + "           highChannel = lowChannel + data2 - 1;\n"
                 + "         } else {\n" // ch 16, we use 16(g) 15-N notes
-                + "           highChannel = channel - 1;\n"
+                + "           highChannel = chnl - 1;\n"
                 + "           lowChannel = highChannel + 1 - data2;\n"
                 + "         }\n"
                 + "         for(int i=0;i<attr_poly;i++) {\n"
@@ -2206,12 +2225,12 @@ public class Patch {
                 + "      highChannel = 0;\n"
                 + "    }\n"
                 + "  }\n"// cc127
-                + "  if (channel != attr_midichannel\n"
-                + "    && (channel < lowChannel || channel > highChannel))\n"
+                + "  if (chnl != attr_midichannel\n"
+                + "    && (chnl < lowChannel || chnl > highChannel))\n"
                 + "    return;\n"
                 + "  int i;\n"
                 + "  for(i=0;i<attr_poly;i++) {\n"
-                + "    if (voiceChannel[i] == channel || channel == attr_midichannel) {\n"
+                + "    if (voiceChannel[i] == chnl || chnl == attr_midichannel) {\n"
                 + "      getVoices()[i].MidiInHandler(dev, port, MIDI_CONTROL_CHANGE + attr_midichannel, data1, data2);\n"
                 + "    }\n"
                 + "  }\n"
@@ -2222,7 +2241,7 @@ public class Patch {
                 + "         case MIDI_C_DATA_ENTRY: {\n"
                 + "             if (lastRPN_LSB == 0 && lastRPN_MSB == 0) {\n"
                 + "               for(i=0;i<attr_poly;i++) {\n"
-                + "                 if (voiceChannel[i] != channel) {\n" // because already sent above
+                + "                 if (voiceChannel[i] != chnl) {\n" // because already sent above
                 + "                   pitchbendRange = data2;\n"
                 + "                   getVoices()[i].MidiInHandler(dev, port, MIDI_CONTROL_CHANGE + attr_midichannel, 100, lastRPN_LSB);\n"
                 + "                   getVoices()[i].MidiInHandler(dev, port, MIDI_CONTROL_CHANGE + attr_midichannel, 101, lastRPN_MSB);\n"
@@ -2247,26 +2266,40 @@ public class Patch {
                 + "    }\n" //sus=1
                 + "  }\n" //cc64
                 + "} else if (msg == MIDI_PITCH_BEND) {\n"
-                + "  if (channel != attr_midichannel\n"
-                + "    && (channel < lowChannel || channel > highChannel))\n"
+                + "  if (chnl != attr_midichannel\n"
+                + "    && (chnl < lowChannel || chnl > highChannel))\n"
                 + "    return;\n"
                 + "  int i;\n"
                 + "  for(i=0;i<attr_poly;i++) {\n"
-                + "    if (voiceChannel[i] == channel || channel == attr_midichannel) {\n"
+                + "    if (voiceChannel[i] == chnl || chnl == attr_midichannel) {\n"
                 + "      getVoices()[i].MidiInHandler(dev, port, MIDI_PITCH_BEND + attr_midichannel, data1, data2);\n"
                 + "    }\n"
                 + "  }\n"
                 + "} else {" // end pb, other midi
-                + "  if (channel != attr_midichannel\n"
-                + "    && (channel < lowChannel || channel > highChannel))\n"
+                + "  if (chnl != attr_midichannel\n"
+                + "    && (chnl < lowChannel || chnl > highChannel))\n"
                 + "    return;\n"
                 + "  int i;\n"
                 + "  for(i=0;i<attr_poly;i++) {\n"
-                + "    if (voiceChannel[i] == channel || channel == attr_midichannel) {\n"
+                + "    if (voiceChannel[i] == chnl || chnl == attr_midichannel) {\n"
                 + "         getVoices()[i].MidiInHandler(dev, port, msg + attr_midichannel, data1, data2);\n"
                 + "    }\n"
                 + "  }\n"
                 + "}\n"; // other midi
+        
+        if (settings != null) {
+            /* Override MIDI channel. MPE specifies either channel 1 or 16 has to be Master channel. */
+            String mch = "0";
+            if (settings.getMPEZone() == 1) {
+                mch = "15";
+            }
+            o.sLocalData = o.sLocalData.replace("attr_midichannel", mch);
+            o.sInitCode = o.sInitCode.replace("attr_midichannel", mch);
+            o.sDisposeCode = o.sDisposeCode.replace("attr_midichannel", mch);
+            o.sKRateCode = o.sKRateCode.replace("attr_midichannel", mch);
+            o.sMidiCode = o.sMidiCode.replace("attr_midichannel", mch);
+        }
+        
         return o;
     }
 
