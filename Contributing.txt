@@ -1,6 +1,7 @@
 == Reporting issues/bugs
 
 Refer to http://community.axoloti.com/t/reporting-issues-bugs/21
+(Backup link here: https://sebiik.github.io/community.axoloti.com.backup/t/reporting-issues-bugs/21)
 
 == Contributing code
 
