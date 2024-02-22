@@ -17,7 +17,7 @@
  */
 package axoloti.menus;
 
-import static axoloti.menus.PopulatePatchMenu.PopulatePatchMenu;
+import static axoloti.menus.PopulatePatchMenu.populatePatchMenu;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Preferences;
 import javax.swing.JMenu;
@@ -39,7 +39,7 @@ public class LibraryMenu extends JMenu {
                 for (AxolotiLibrary lib1 : Preferences.LoadPreferences().getLibraries() ) {
                     JMenu plib = new JMenu(lib1.getId());
                     plib.setDelay(300);
-                    PopulatePatchMenu(plib, lib1.getLocalLocation() + "/patches/", ".axp");
+                    populatePatchMenu(plib, lib1.getLocalLocation() + "/patches/", ".axp");
                     add(plib);                    
                 }
             }

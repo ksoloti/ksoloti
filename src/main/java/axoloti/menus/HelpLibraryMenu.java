@@ -38,7 +38,7 @@ public class HelpLibraryMenu extends JMenu {
                     JMenu mi = new JMenu(lib.getId());
                     mi.setDelay(300);
                     String dir = lib.getLocalLocation() + "objects/";
-                    PopulatePatchMenu.PopulatePatchMenu(mi, dir, ".axh");
+                    PopulatePatchMenu.populatePatchMenu(mi, dir, ".axh");
                     HelpLibraryMenu.this.add(mi);
                 }
             }
