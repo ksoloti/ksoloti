@@ -510,6 +510,7 @@ public class AxoObjects {
                         break;
                     }
                 }
+                is1.close(); is2.close();
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {

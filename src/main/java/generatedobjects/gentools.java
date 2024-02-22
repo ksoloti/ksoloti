@@ -401,6 +401,7 @@ public class gentools {
                         break;
                     }
                 }
+                is1.close(); is2.close();
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(gentools.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
@@ -491,6 +492,7 @@ public class gentools {
                         break;
                     }
                 }
+                is1.close(); is2.close();
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(gentools.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
