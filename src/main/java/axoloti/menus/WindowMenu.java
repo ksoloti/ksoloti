@@ -93,11 +93,11 @@ public class WindowMenu extends JMenu {
             addActionListener(wmiAL);
         }
 
-        public WindowMenuItem(JFrame frame) {
-            super(frame.getTitle());
-            this.frame = frame;
-            addActionListener(wmiAL);
-        }
+        // public WindowMenuItem(JFrame frame) {
+        //     super(frame.getTitle());
+        //     this.frame = frame;
+        //     addActionListener(wmiAL);
+        // }
 
         public JFrame getFrame() {
             return frame;
