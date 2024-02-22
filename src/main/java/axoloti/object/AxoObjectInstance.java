@@ -64,7 +64,7 @@ import org.simpleframework.xml.core.Persist;
  * @author Johannes Taelman
  */
 @Root(name = "obj")
-public class AxoObjectInstance extends AxoObjectInstanceAbstract implements ObjectModifiedListener {
+public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     public ArrayList<InletInstance> inletInstances;
     public ArrayList<OutletInstance> outletInstances;
