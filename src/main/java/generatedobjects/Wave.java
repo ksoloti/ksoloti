@@ -32,6 +32,7 @@ import axoloti.outlets.OutletInt32Bipolar;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Wave extends gentools {
 
     static void GenerateAll() {

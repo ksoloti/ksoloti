@@ -38,6 +38,7 @@ import java.util.ArrayList;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Logic extends gentools {
 
     static void GenerateAll() {

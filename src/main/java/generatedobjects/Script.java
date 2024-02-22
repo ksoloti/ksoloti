@@ -30,6 +30,7 @@ import axoloti.parameters.ParameterFrac32SMap;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Script extends gentools {
 
     static void GenerateAll() {

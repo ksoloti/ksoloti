@@ -33,6 +33,7 @@ import axoloti.outlets.OutletInt32;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Convert extends gentools {
 
     static void GenerateAll() {

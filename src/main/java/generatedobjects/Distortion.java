@@ -33,6 +33,7 @@ import java.util.HashSet;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Distortion extends gentools {
 
     static void GenerateAll() {

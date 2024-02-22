@@ -27,6 +27,7 @@ import axoloti.outlets.OutletCharPtr32;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Strings extends gentools {
 
     static void GenerateAll() {

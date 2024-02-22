@@ -32,6 +32,7 @@ import axoloti.outlets.OutletInt32;
  *
  * @author jtaelman
  */
+@SuppressWarnings("deprecation")
 public class Demux extends gentools {
 
     static void GenerateAll() {

@@ -25,6 +25,7 @@ import axoloti.outlets.OutletFrac32;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class brainwave extends gentools {
 
     static void GenerateAll() {

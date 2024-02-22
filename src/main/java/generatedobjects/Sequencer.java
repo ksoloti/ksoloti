@@ -40,6 +40,7 @@ import axoloti.parameters.ParameterInt32BoxSmall;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Sequencer extends gentools {
 
     static void GenerateAll() {

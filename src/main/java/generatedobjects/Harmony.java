@@ -29,6 +29,7 @@ import axoloti.parameters.ParameterBin12;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Harmony extends gentools {
 
     static void GenerateAll() {

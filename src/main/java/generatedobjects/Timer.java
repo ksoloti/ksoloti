@@ -30,6 +30,7 @@ import axoloti.parameters.ParameterFrac32SMapKLineTimeExp;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Timer extends gentools {
 
     static void GenerateAll() {

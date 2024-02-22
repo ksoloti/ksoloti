@@ -30,6 +30,7 @@ import axoloti.parameters.ParameterInt32Box;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Stochastics extends gentools {
 
     static void GenerateAll() {

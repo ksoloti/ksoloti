@@ -37,6 +37,7 @@ import java.util.ArrayList;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Mixer extends gentools {
 
     static void GenerateAll() {

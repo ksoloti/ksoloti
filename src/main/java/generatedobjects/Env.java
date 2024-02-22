@@ -38,6 +38,7 @@ import axoloti.parameters.ParameterFrac32UMapKDecayTime;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Env extends gentools {
 
     static void GenerateAll() {

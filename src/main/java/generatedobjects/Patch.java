@@ -45,6 +45,7 @@ import axoloti.outlets.OutletInt32Pos;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Patch extends gentools {
 
     static void GenerateAll() {

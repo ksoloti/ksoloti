@@ -31,6 +31,7 @@ import axoloti.parameters.ParameterFrac32UMap;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Spectral extends gentools {
 
     static void GenerateAll() {

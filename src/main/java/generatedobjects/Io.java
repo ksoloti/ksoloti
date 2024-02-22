@@ -33,6 +33,7 @@ import axoloti.outlets.OutletFrac32Buffer;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Io extends gentools {
 
     static void GenerateAll() {

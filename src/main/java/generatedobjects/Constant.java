@@ -27,6 +27,7 @@ import axoloti.outlets.OutletInt32;
  *
  * @author jtaelman
  */
+@SuppressWarnings("deprecation")
 public class Constant extends gentools {
 
     static void GenerateAll() {

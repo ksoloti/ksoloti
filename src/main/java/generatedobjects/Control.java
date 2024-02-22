@@ -38,6 +38,7 @@ import axoloti.parameters.ParameterInt32VRadio;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Control extends gentools {
 
     static void GenerateAll() {

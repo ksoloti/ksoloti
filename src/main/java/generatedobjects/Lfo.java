@@ -31,6 +31,7 @@ import axoloti.parameters.ParameterFrac32SMapLFOPitch;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Lfo extends gentools {
 
     static void GenerateAll() {

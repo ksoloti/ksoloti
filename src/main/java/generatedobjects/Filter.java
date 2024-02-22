@@ -38,6 +38,7 @@ import java.util.HashSet;
  *
  * @author Johannes Taelman
  */
+@SuppressWarnings("deprecation")
 public class Filter extends gentools {
 
     static void GenerateAll() {
