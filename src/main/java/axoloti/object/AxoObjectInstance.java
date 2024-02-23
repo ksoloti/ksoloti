@@ -770,7 +770,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     @Override
     public String GenerateClass(String ClassName, String OnParentAccess, Boolean enableOnParent) {
         String s = "";
-        s += "class " + getCInstanceName() + "{\n";
+        s += "class " + getCInstanceName() + " {\n";
         s += "  public: // v1\n";
         s += "  " + ClassName + " *parent;\n";
         s += GenerateInstanceCodePlusPlus(ClassName, enableOnParent);
@@ -785,7 +785,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 s += "}\n";
             }
         }
-        s += "}\n;";
+        s += "\n}\n;";
         return s;
     }
 
