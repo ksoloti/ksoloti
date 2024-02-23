@@ -1305,10 +1305,20 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         String cmd = e.getActionCommand();
         if (cmd.startsWith("open:")) {
             String fn = cmd.substring(5);
-            if (fn.endsWith(".axb")) {
-                PatchBank.OpenBank(new File(fn));
-            } else if (fn.endsWith(".axp") || fn.endsWith(".axs") || fn.endsWith(".axh")) {
-                PatchGUI.OpenPatch(new File(fn));
+            File f = new File(fn);
+            if (f.exists()) {
+                if (fn.endsWith(".axp") || fn.endsWith(".axs") || fn.endsWith(".axh")) {
+                    PatchGUI.OpenPatch(f);
+                }
+                else if (fn.endsWith(".axb")) {
+                    PatchBank.OpenBank(f);
+                }
+                else if (fn.endsWith(".axo")) {
+                    // TODO
+                }
+            }
+            else {
+                Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "File not found.");
             }
         }
     }
