@@ -2150,14 +2150,14 @@ public class Patch {
         if (settings != null && settings.getMPEZone() == 1) {
             /* Upper zone selected in settings */
             o.sInitCode
-                    += "lowChannel = " + (15 - settings.getMPENumberOfMemberChannels()) + ";\n"
-                    + "highChannel = 14;\n";
+                += "lowChannel = " + (15 - settings.getMPENumberOfMemberChannels()) + ";\n"
+                + "highChannel = 14;\n";
         }
         else {
             /* Else default to lower zone */
             o.sInitCode
-                    += "lowChannel = 1;\n"
-                    + "highChannel = " + settings.getMPENumberOfMemberChannels() + ";\n";
+                += "lowChannel = 1;\n"
+                + "highChannel = " + settings.getMPENumberOfMemberChannels() + ";\n";
         }
 
         o.sMidiCode = ""
