@@ -18,6 +18,9 @@
 package axoloti.menus;
 
 import axoloti.MainFrame;
+import static axoloti.MainFrame.prefs;
+
+import java.io.File;
 import java.util.ArrayList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -36,12 +39,30 @@ public class RecentFileMenu extends JMenu {
         addMenuListener(new MenuListener() {
             @Override
             public void menuSelected(MenuEvent e) {
+
                 ArrayList<String> r = MainFrame.prefs.getRecentFiles();
+
+                /* "Garbage bin": collects any strings that point to non-existent files (cannot remove those inside the loop - ConcurrentModificationException) */
+                ArrayList<String> filesNotFound = new ArrayList<String>();
+
+                /* Loop through list and add all valid file references */
                 for (String s : r) {
-                    JMenuItem mi = new JMenuItem(s);
-                    mi.setActionCommand("open:" + s);
-                    mi.addActionListener(MainFrame.mainframe);
-                    add(mi, 0);
+                    File f = new File(s);
+                    if (f.exists()) {
+                        /* Add as menu entry */
+                        JMenuItem mi = new JMenuItem(s);
+                        mi.setActionCommand("open:" + s);
+                        mi.addActionListener(MainFrame.mainframe);
+                        add(mi, 0);
+                    }
+                    else {
+                        /* If file does not exist, add entry to the garbage bin */
+                        filesNotFound.add(s);
+                    }
+                }
+                for (String s : filesNotFound) {
+                    /* Now remove any invalid strings */
+                    prefs.removeRecentFile(s);
                 }
             }
 

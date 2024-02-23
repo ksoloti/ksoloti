@@ -541,6 +541,20 @@ public class Preferences {
         SetDirty();
     }
 
+    public void removeRecentFile(String filename) {
+        boolean alreadyInMenu = false;
+        for (String r : recentFiles) {
+            if (r.equals(filename)) {
+                /* Schedule to remove from current position, will be added to top */
+                /* Can't remove while iterating - will trigger ConcurrentModificationException */
+                alreadyInMenu = true;
+            }
+        }
+        if (alreadyInMenu) {
+            recentFiles.remove(filename);
+        }
+    }
+
     public String getFavouriteDir() {
         return FavouriteDir;
     }
