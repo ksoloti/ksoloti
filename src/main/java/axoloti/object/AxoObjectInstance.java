@@ -1004,7 +1004,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             return;
         }
         try {
-            // ArrayList<AxoObjectAbstract> ol = MainFrame.mainframe.axoObjects.GetAxoObjectFromName("patch/object", null);
+
             ArrayList<AxoObjectAbstract> ol = MainFrame.axoObjects.GetAxoObjectFromName("patch/object", null);
             assert (!ol.isEmpty());
             AxoObjectAbstract o = ol.get(0);

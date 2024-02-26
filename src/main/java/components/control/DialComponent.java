@@ -349,7 +349,7 @@ public class DialComponent extends ACtrlComponent {
         g2.drawLine(radius, radius, 0, 2 * radius);
         g2.drawLine(radius, radius, 2 * radius, 2 * radius);
         if (isFocusOwner()) {
-            g2.setStroke(strokeThick); //TODO: set accent color
+            g2.setStroke(strokeThick);
         } else {
             g2.setStroke(strokeThin);
         }
