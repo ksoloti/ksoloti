@@ -96,8 +96,16 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         visibleCablePanel = new VisibleCablePanel(patch);
         
         Dimension di = new Dimension(10,0);
+
         jToolbarPanel.add(new Box.Filler(di, di, new Dimension(32767, 32767)));
         jToolbarPanel.add(presetPanel);
+        if (patch.settings != null) {
+            presetPanel.setVisible(patch.settings.GetNPresets() > 0);
+        }
+        else {
+            presetPanel.setVisible(false);
+        }
+
         jToolbarPanel.add(new Box.Filler(di, di, new Dimension(32767, 32767)));
         jToolbarPanel.add(visibleCablePanel);
 
@@ -234,7 +242,12 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
     }
 
-    void ShowConnect1(boolean status){
+    public void showPresetPanel(boolean show) {
+        presetPanel.setVisible(show);
+    }
+
+
+    void ShowConnect1(boolean status) {
         jToggleButtonLive.setEnabled(status);
         jCheckBoxMenuItemLive.setEnabled(status);
         jMenuItemUploadInternalFlash.setEnabled(status);

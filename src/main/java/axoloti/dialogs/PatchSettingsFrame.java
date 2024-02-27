@@ -166,7 +166,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
             }
         });
 
-        jSpinnerNumPresets.setModel(new javax.swing.SpinnerNumberModel(0, 0, 15, 1));
+        jSpinnerNumPresets.setModel(new javax.swing.SpinnerNumberModel(0, 0, 64, 1));
         jSpinnerNumPresets.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jSpinnerNumPresetsStateChanged(evt);
@@ -193,7 +193,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
 
         jLabelEntriesPerPreset.setText("Entries per Preset");
 
-        jSpinnerPresetEntries.setModel(new javax.swing.SpinnerNumberModel(0, 0, 15, 1));
+        jSpinnerPresetEntries.setModel(new javax.swing.SpinnerNumberModel(0, 0, 64, 1));
         jSpinnerPresetEntries.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jSpinnerPresetEntriesStateChanged(evt);
@@ -526,6 +526,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         SpinnerModel nModel = jSpinnerNumPresets.getModel();
         if (nModel instanceof SpinnerNumberModel) {
             settings.SetNPresets(((SpinnerNumberModel) nModel).getNumber().intValue());
+            patch.getPatchframe().showPresetPanel(settings.GetNPresets() > 0);
         }
     }
 
