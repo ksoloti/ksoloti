@@ -1037,10 +1037,10 @@ public class Patch {
         c += "    static const uint16_t NPEXCH = " + ParameterInstances.size() + ";\n";
         c += "    ParameterExchange_t PExch[NPEXCH];\n";
         c += "    int32_t displayVector[" + (displayDataLength + 3) + "];\n";
-        c += "    static const uint32_t NPRESETS = " + settings.GetNPresets() + ";\n";
-        c += "    static const uint32_t NPRESET_ENTRIES = " + settings.GetNPresetEntries() + ";\n";
-        c += "    static const uint32_t NMODULATIONSOURCES = " + settings.GetNModulationSources() + ";\n";
-        c += "    static const uint32_t NMODULATIONTARGETS = " + settings.GetNModulationTargetsPerSource() + ";\n";
+        c += "    static const uint8_t NPRESETS = " + settings.GetNPresets() + ";\n";
+        c += "    static const uint8_t NPRESET_ENTRIES = " + settings.GetNPresetEntries() + ";\n";
+        c += "    static const uint8_t NMODULATIONSOURCES = " + settings.GetNModulationSources() + ";\n";
+        c += "    static const uint8_t NMODULATIONTARGETS = " + settings.GetNModulationTargetsPerSource() + ";\n";
         return c;
     }
 
@@ -1147,7 +1147,7 @@ public class Patch {
                 + "   if (index < NPRESETS) {\n"
                 + "     PresetParamChange_t *pa = (PresetParamChange_t *)(GetPresets());\n"
                 + "     PresetParamChange_t *p = &pa[index*NPRESET_ENTRIES];\n"
-                + "       int i; for (i=0; i<NPRESET_ENTRIES; i++) {\n"
+                + "       uint8_t i; for (i=0; i<NPRESET_ENTRIES; i++) {\n"
                 + "         PresetParamChange_t *pp = &p[i];\n"
                 + "         if ((pp->pexIndex>=0)&&(pp->pexIndex<NPEXCH)) {\n"
                 + "           PExParameterChange(&PExch[pp->pexIndex],pp->value,0xFFEF);"
