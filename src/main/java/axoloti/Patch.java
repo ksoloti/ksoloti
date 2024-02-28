@@ -1449,7 +1449,7 @@ public class Patch {
         String c;
         c = "/* krate */\n";
         c += "void dsp (void) {\n";
-        c += "  int i;\n";
+        c += "  uint8_t i;\n";
         c += "  for (i=0; i<BUFSIZE; i++) AudioOutputLeft[i] = 0;\n";
         c += "  for (i=0; i<BUFSIZE; i++) AudioOutputRight[i] = 0;\n";
         c += GenerateDSPCodePlusPlusSub(ClassName, enableOnParent);
@@ -1471,7 +1471,7 @@ public class Patch {
         c += "static rootc root;\n";
 
         c += "void PatchProcess( int32_t * inbuf, int32_t * outbuf) {\n"
-                + "  int i; for (i=0; i<BUFSIZE; i++) {\n"
+                + "  uint8_t i; for (i=0; i<BUFSIZE; i++) {\n"
                 + "    AudioInputLeft[i] = inbuf[i*2]>>4;\n"
                 + "    switch (AudioInputMode) {\n"
                 + "       case A_MONO:\n"
@@ -1966,7 +1966,7 @@ public class Patch {
                 ao.sKRateCode += "  outlet_" + o.getLegalName() + " = 0;\n";
             } else if (o.typeName.equals("patch/outlet a")) {
                 ao.sKRateCode += "{\n"
-                               + "  int j; for (j=0; j<BUFSIZE; j++) outlet_" + o.getLegalName() + "[j] = 0;\n"
+                               + "  uint8_t j; for (j=0; j<BUFSIZE; j++) outlet_" + o.getLegalName() + "[j] = 0;\n"
                                + "}\n";
             }
         }
@@ -1980,7 +1980,7 @@ public class Patch {
                 ao.sKRateCode += "  getVoices()[vi]." + o.getCInstanceName() + "_i._inlet = (char *)inlet_" + o.getLegalName() + ";\n";
             } else if (o.typeName.equals("inlet~") || o.typeName.equals("patch/inlet a")) {
                 ao.sKRateCode += "{\n"
-                               + "  int j; for (j=0; j<BUFSIZE; j++) getVoices()[vi]." + o.getCInstanceName() + "_i._inlet[j] = inlet_" + o.getLegalName() + "[j];\n"
+                               + "  uint8_t j; for (j=0; j<BUFSIZE; j++) getVoices()[vi]." + o.getCInstanceName() + "_i._inlet[j] = inlet_" + o.getLegalName() + "[j];\n"
                                + "}\n";
             }
         }
@@ -1994,7 +1994,7 @@ public class Patch {
                 ao.sKRateCode += "  outlet_" + o.getLegalName() + " = (char *)getVoices()[vi]." + o.getCInstanceName() + "_i._outlet;\n";
             } else if (o.typeName.equals("patch/outlet a")) {
                 ao.sKRateCode += "{\n"
-                               + "  int j; for (j=0; j<BUFSIZE; j++) outlet_" + o.getLegalName() + "[j] += getVoices()[vi]." + o.getCInstanceName() + "_i._outlet[j];\n"
+                               + "  uint8_t j; for (j=0; j<BUFSIZE; j++) outlet_" + o.getLegalName() + "[j] += getVoices()[vi]." + o.getCInstanceName() + "_i._outlet[j];\n"
                                + "}\n";
             }
         }
