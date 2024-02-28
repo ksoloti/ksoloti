@@ -1919,11 +1919,11 @@ public class Patch {
                        + "  }"
                        + "}\n";
 
-        ao.sLocalData += "int8_t voiceNotePlaying[attr_poly];\n";
-        ao.sLocalData += "int32_t voicePriority[attr_poly];\n";
-        ao.sLocalData += "int32_t priority;\n";
-        ao.sLocalData += "int32_t sustain;\n";
-        ao.sLocalData += "int8_t pressed[attr_poly];\n";
+        ao.sLocalData += "uint8_t voiceNotePlaying[attr_poly];\n";
+        ao.sLocalData += "uint32_t voicePriority[attr_poly];\n";
+        ao.sLocalData += "uint32_t priority;\n";
+        ao.sLocalData += "uint8_t sustain;\n";
+        ao.sLocalData += "uint8_t pressed[attr_poly];\n";
 
         ao.sLocalData = ao.sLocalData.replaceAll("parent->PExModulationSources", "parent->common->PExModulationSources");
         ao.sLocalData = ao.sLocalData.replaceAll("parent->PExModulationPrevVal", "parent->common->PExModulationPrevVal");
@@ -2059,8 +2059,8 @@ public class Patch {
         o.sMidiCode = ""
                 + "if ( attr_mididevice > 0 && dev > 0 && dev != attr_mididevice) return;\n"
                 + "if ( attr_midiport > 0 && port > 0 && port != attr_midiport) return;\n"
-                + "int msg = (status & 0xF0);\n"
-                + "int chnl = (status & 0x0F);\n"
+                + "uint8_t msg = (status & 0xF0);\n"
+                + "uint8_t chnl = (status & 0x0F);\n"
                 + "if ((msg == MIDI_NOTE_ON) && (data2)) {\n"
                 + "  int min = 1<<30;\n"
                 + "  int min_i = 0;\n"
@@ -2113,7 +2113,7 @@ public class Patch {
                 + "} else {"
                 + "  uint8_t i; for (i=0; i<attr_poly; i++) {\n"
                 + "    if (voiceChannel[i] == chnl) {\n"
-                + "         getVoices()[i].MidiInHandler(dev, port,msg + attr_midichannel, data1, data2);\n"
+                + "         getVoices()[i].MidiInHandler(dev, port, msg + attr_midichannel, data1, data2);\n"
                 + "    }\n"
                 + "  }\n"
                 + "}\n";
@@ -2132,12 +2132,12 @@ public class Patch {
         AxoObject o = GenerateAxoObjPoly(template);
 
         o.sLocalData
-                += "int8_t voiceChannel[attr_poly];\n"
-                + "int8_t pitchbendRange;\n"
-                + "int8_t lowChannel;\n"
-                + "int8_t highChannel;\n"
-                + "int8_t lastRPN_LSB;\n"
-                + "int8_t lastRPN_MSB;\n";
+                += "uint8_t voiceChannel[attr_poly];\n"
+                + "uint8_t pitchbendRange;\n"
+                + "uint8_t lowChannel;\n"
+                + "uint8_t highChannel;\n"
+                + "uint8_t lastRPN_LSB;\n"
+                + "uint8_t lastRPN_MSB;\n";
 
         o.sInitCode
                 += "uint8_t vc; for (vc=0; vc<attr_poly; vc++) {\n"
@@ -2163,8 +2163,8 @@ public class Patch {
         o.sMidiCode = ""
                 + "if ((attr_mididevice > 0) && (dev > 0) && (dev != attr_mididevice)) return;\n"
                 + "if ((attr_midiport > 0) && (port > 0) && (port != attr_midiport)) return;\n\n"
-                + "int msg = (status & 0xF0);\n"
-                + "int chnl = (status & 0x0F);\n\n"
+                + "uint8_t msg = (status & 0xF0);\n"
+                + "uint8_t chnl = (status & 0x0F);\n\n"
                 + "if ((msg == MIDI_NOTE_ON) && (data2)) {\n"
                 + "  if ((chnl == attr_midichannel) || (chnl < lowChannel) || (chnl > highChannel)) return;\n"
                 + "  int min = 1<<30;\n"
