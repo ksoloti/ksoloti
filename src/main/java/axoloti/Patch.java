@@ -1034,7 +1034,7 @@ public class Patch {
 
     String GeneratePexchAndDisplayCodeV() {
         String c = "";
-        c += "    static const uint32_t NPEXCH = " + +ParameterInstances.size() + ";\n";
+        c += "    static const uint16_t NPEXCH = " + ParameterInstances.size() + ";\n";
         c += "    ParameterExchange_t PExch[NPEXCH];\n";
         c += "    int32_t displayVector[" + (displayDataLength + 3) + "];\n";
         c += "    static const uint32_t NPRESETS = " + settings.GetNPresets() + ";\n";
@@ -1139,7 +1139,7 @@ public class Patch {
         c += "void ApplyPreset(int index) {\n"
                 + "   if (!index) {\n"
                 + "     int32_t *p = GetInitParams();\n"
-                + "     int i; for (i=0; i<NPEXCH; i++) {\n"
+                + "     uint16_t i; for (i=0; i<NPEXCH; i++) {\n"
                 + "        PExParameterChange(&PExch[i],p[i],0xFFEF);\n"
                 + "     }\n"
                 + "   }\n"
@@ -1244,7 +1244,7 @@ public class Patch {
                 c += " );\n";
             }
         }
-        c += "      int k; for (k = 0; k < NPEXCH; k++) {\n"
+        c += "      uint16_t k; for (k=0; k<NPEXCH; k++) {\n"
                 + "        if (PExch[k].pfunction) {\n"
                 + "          (PExch[k].pfunction)(&PExch[k]);\n"
                 + "        } else {\n"
@@ -1893,7 +1893,7 @@ public class Patch {
         ao.sLocalData += GenerateObjectCode("voice", true, "parent->common->");
         ao.sLocalData += "  attr_parent *common;\n";
         ao.sLocalData += "  void Init(voice *parent) {\n";
-        ao.sLocalData += "    int i; for (i=0; i<NPEXCH; i++) {\n"
+        ao.sLocalData += "    uint16_t i; for (i=0; i<NPEXCH; i++) {\n"
                        + "      PExch[i].pfunction = 0;\n"
                        + "    }\n";
         ao.sLocalData += GenerateObjInitCodePlusPlusSub("voice", "parent");
@@ -1930,7 +1930,7 @@ public class Patch {
         ao.sLocalData = ao.sLocalData.replaceAll("parent->GetModulationTable", "parent->common->GetModulationTable");
 
         ao.sInitCode = GenerateParamInitCodePlusPlusSub("", "parent");
-        ao.sInitCode += "int k; for (k=0; k<NPEXCH; k++) {\n"
+        ao.sInitCode += "uint16_t k; for (k=0; k<NPEXCH; k++) {\n"
                      + "  PExch[k].pfunction = PropagateToVoices;\n"
                      + "  PExch[k].finalvalue = (int32_t) (&(getVoices()[0].PExch[k]));\n"
                      + "}\n\n";
