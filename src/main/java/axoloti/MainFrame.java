@@ -408,7 +408,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         EventQueue.invokeLater(initr);
 
-        for (String arg : args) { //TODO check why always opening new instance
+        for (String arg : this.args) { //TODO check why always opening new instance
             if (!arg.startsWith("-")) {
                 if (arg.endsWith(".axp") || arg.endsWith(".axs") || arg.endsWith(".axh")) {
                     final File f = new File(arg);
