@@ -17,6 +17,8 @@
  */
 package axoloti.displays;
 
+import java.awt.Dimension;
+
 import components.LabelComponent;
 
 /**
@@ -35,9 +37,13 @@ public class DisplayInstanceInt32HexLabel extends DisplayInstanceInt32<DisplayIn
     public void PostConstructor() {
         super.PostConstructor();
 
+        Dimension fll = new Dimension(1,0);
+        add(new javax.swing.Box.Filler(fll, fll, fll));
         readout = new LabelComponent("0xxxxxxxxx");
         add(readout);
-        readout.setSize(80, 18);
+        Dimension di = new Dimension(64, 13);
+        readout.setMinimumSize(di);
+        setPreferredSize(di);
     }
 
     @Override

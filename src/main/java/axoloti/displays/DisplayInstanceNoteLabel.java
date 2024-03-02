@@ -17,6 +17,8 @@
  */
 package axoloti.displays;
 
+import java.awt.Dimension;
+
 import axoloti.realunits.NativeToReal;
 import axoloti.realunits.PitchToNote;
 import components.LabelComponent;
@@ -39,9 +41,13 @@ public class DisplayInstanceNoteLabel extends DisplayInstanceFrac32<DisplayNoteL
     public void PostConstructor() {
         super.PostConstructor();
 
+        Dimension fll = new Dimension(1,0);
+        add(new javax.swing.Box.Filler(fll, fll, fll));
         readout = new LabelComponent("xxxxx");
         add(readout);
-        readout.setSize(40, 18);
+        Dimension di = new Dimension(40, 13);
+        readout.setMinimumSize(di);
+        setPreferredSize(di);
     }
 
     @Override
