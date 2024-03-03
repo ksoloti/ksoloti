@@ -376,7 +376,6 @@ static msg_t ThreadUI(void *arg) {
   chRegSetThreadName("ui");
 #endif
   while (1) {
-//    AxoboardADCConvert();
     PExTransmit();
     PExReceive();
     if(pControlUpdate != 0L) {
