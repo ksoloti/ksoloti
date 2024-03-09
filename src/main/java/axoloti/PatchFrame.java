@@ -1000,7 +1000,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         Robot robot;
         try {
             robot = new Robot();
-            // robot.setAutoDelay(10);
             Point point = p.objectinstances.get(0).getLocationOnScreen();
             robot.mouseMove(point.x + 40,point.y + 22);
             robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);

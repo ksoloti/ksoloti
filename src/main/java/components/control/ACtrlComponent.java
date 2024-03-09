@@ -280,7 +280,6 @@ public abstract class ACtrlComponent extends JComponent {
                 return null;
             } else {
                 Robot r = new Robot(MouseInfo.getPointerInfo().getDevice());
-                r.setAutoDelay(10);
                 return r;
             }
         } catch (AWTException ex) {
