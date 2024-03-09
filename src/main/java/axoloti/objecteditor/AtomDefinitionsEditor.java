@@ -537,6 +537,17 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
             }
 
         });
+        
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(70);
+            jTable1.getColumnModel().getColumn(1).setPreferredWidth(70);
+            jTable1.getColumnModel().getColumn(2).setPreferredWidth(260);
+        }
+
+        if (jTable2.getColumnModel().getColumnCount() > 0) {
+            jTable2.getColumnModel().getColumn(0).setPreferredWidth(40);
+            jTable2.getColumnModel().getColumn(1).setPreferredWidth(360);
+        }
 
         jScrollPane1.setViewportView(jTable1);
         jScrollPane2.setViewportView(jTable2);
