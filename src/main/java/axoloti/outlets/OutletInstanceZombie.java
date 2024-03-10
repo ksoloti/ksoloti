@@ -51,6 +51,9 @@ public class OutletInstanceZombie extends OutletInstance {
 
         jack = new components.JackOutputComponent(this);
         add(jack);
+
+        addMouseListener(this);
+        addMouseMotionListener(this);
     }
 
     @Override

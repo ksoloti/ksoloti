@@ -48,6 +48,9 @@ public class InletInstanceZombie extends InletInstance {
         add(new LabelComponent(this.inletname));
 
         add(Box.createHorizontalGlue());
+
+        addMouseListener(this);
+        addMouseMotionListener(this);
     }
 
     @Override
