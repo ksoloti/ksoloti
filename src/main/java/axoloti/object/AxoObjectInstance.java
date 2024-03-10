@@ -156,8 +156,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         Titlebar.add(popupIcon);
 
         LabelComponent idlbl = new LabelComponent("");
-        if (typeName.length() <= 20)
+        if (typeName.length() <= 20) {
             idlbl.setText(typeName); /* if not too long, use full object name */
+        }
         else {
             String[] ssubs = typeName.split("/"); /* else split path of full object name */
             String slbl = ssubs[ssubs.length-1]; /* start with "most signinficant" part */

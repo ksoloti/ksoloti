@@ -22,6 +22,7 @@ import axoloti.object.AxoObjectInstanceZombie;
 import components.LabelComponent;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.SwingConstants;
 
 /**
  *
@@ -36,10 +37,18 @@ public class OutletInstanceZombie extends OutletInstance {
         this.axoObj = obj;
         this.outletname = name;
         this.objname = obj.getInstanceName();
+
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+        setAlignmentX(LEFT_ALIGNMENT);
+
         add(Box.createHorizontalGlue());
-        add(new LabelComponent(this.outletname));
+
+        LabelComponent olbl = new LabelComponent(this.outletname);
+        olbl.setHorizontalAlignment(SwingConstants.RIGHT);
+        add(olbl);
+
         add(Box.createHorizontalStrut(2));
+
         jack = new components.JackOutputComponent(this);
         add(jack);
     }

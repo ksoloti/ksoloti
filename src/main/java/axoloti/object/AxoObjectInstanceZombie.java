@@ -24,9 +24,9 @@ import axoloti.inlets.InletInstance;
 import axoloti.inlets.InletInstanceZombie;
 import axoloti.outlets.OutletInstance;
 import axoloti.outlets.OutletInstanceZombie;
+import axoloti.utils.Constants;
 import components.LabelComponent;
 import components.PopupIcon;
-// import static java.awt.Component.LEFT_ALIGNMENT;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.border.EmptyBorder;
+
 import org.simpleframework.xml.Root;
 
 /**
@@ -58,32 +60,50 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
     @Override
     public void PostConstructor() {
         super.PostConstructor();
-        LabelComponent idlbl = new LabelComponent(typeName);
-        idlbl.setAlignmentX(LEFT_ALIGNMENT);
-        idlbl.setForeground(Theme.getCurrentTheme().Object_TitleBar_Foreground);
+
+        setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        setOpaque(true);
+        setBackground(Theme.getCurrentTheme().Object_Zombie_Background);
 
         final PopupIcon popupIcon = new PopupIcon();
         popupIcon.setPopupIconListener(
-                new PopupIcon.PopupIconListener() {
-                    @Override
-                    public void ShowPopup() {
-                        JPopupMenu popup = CreatePopupMenu();
-                        popupIcon.add(popup);
-                        popup.show(popupIcon,
-                                0, popupIcon.getHeight());
-                    }
-                });
+            new PopupIcon.PopupIconListener() {
+                @Override
+                public void ShowPopup() {
+                    JPopupMenu popup = CreatePopupMenu();
+                    popupIcon.add(popup);
+                    popup.show(popupIcon,
+                            0, popupIcon.getHeight());
+                }
+            });
+        popupIcon.setAlignmentX(LEFT_ALIGNMENT);
         Titlebar.add(popupIcon);
+
+        LabelComponent idlbl = new LabelComponent("");
+        if (typeName.length() <= 20) {
+            idlbl.setText(typeName); /* if not too long, use full object name */
+        }
+        else {
+            String[] ssubs = typeName.split("/"); /* else split path of full object name */
+            String slbl = ssubs[ssubs.length-1]; /* start with "most signinficant" part */
+
+            for (int i=ssubs.length-2; i>0; i--) {
+                if (slbl.length() >= 16) break; /* it object name is too long already, leave */
+                slbl = ssubs[i] + "/" + slbl; /* else keep adding subpaths until it is too long */
+            }
+            idlbl.setText("…/" + slbl);
+        }
+        idlbl.setAlignmentX(LEFT_ALIGNMENT);
+        idlbl.setForeground(Theme.getCurrentTheme().Object_TitleBar_Foreground);
+        idlbl.setFont(Constants.FONT_BOLD);
         Titlebar.add(idlbl);
 
-        Titlebar.setToolTipText("<html>" + "Unresolved object!");
+        Titlebar.setToolTipText("<html><b>" + typeName + "</b><br/><br/><b>Unresolved object!</b><br/>The object/subpatch could not be created.<br/>This could be either because the library this object/subpatch<br/>belongs to is not set up in the preferences, or because<br/>the patch depends on additional local files (.axo or .axs)<br/>which were not found.");
         Titlebar.setAlignmentX(LEFT_ALIGNMENT);
         add(Titlebar);
 
-        setOpaque(true);
-        setBackground(Theme.getCurrentTheme().Object_Zombie_Background);
-        setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         InstanceLabel = new LabelComponent(getInstanceName());
+        InstanceLabel.setBorder(new EmptyBorder(-3,1,-2,0));
         InstanceLabel.setAlignmentX(LEFT_ALIGNMENT);
         InstanceLabel.addMouseListener(new MouseListener() {
             @Override
@@ -110,8 +130,8 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
             }
         });
         add(InstanceLabel);
+        
         setLocation(x, y);
-
         resizeToGrid();
     }
 

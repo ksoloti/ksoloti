@@ -36,11 +36,17 @@ public class InletInstanceZombie extends InletInstance {
         this.axoObj = obj;
         this.inletname = name;
         this.objname = obj.getInstanceName();
+
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+        setAlignmentX(LEFT_ALIGNMENT);
+
         jack = new components.JackInputComponent(this);
         add(jack);
+
         add(Box.createHorizontalStrut(2));
+
         add(new LabelComponent(this.inletname));
+
         add(Box.createHorizontalGlue());
     }
 
