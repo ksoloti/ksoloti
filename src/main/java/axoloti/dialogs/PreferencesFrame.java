@@ -755,7 +755,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
             AxolotiLibrary lib = prefs.getLibrary(id);
             if (lib != null) {
                 String type = lib.getType();
-                // AxolotiLibraryEditor d = new AxolotiLibraryEditor(this, true, lib);
+                AxolotiLibraryEditor d = new AxolotiLibraryEditor(this, true, lib);
                 AxolotiLibrary updlib = lib;
                 if(!lib.getType().equals(type)) {
                   if (AxoGitLibrary.TYPE.equals(lib.getType())) {
