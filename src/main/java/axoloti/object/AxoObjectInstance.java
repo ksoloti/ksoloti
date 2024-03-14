@@ -180,7 +180,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             tooltiptxt += "<p><br/>" + getType().sDescription.replace("\n", "<br/>");
         }
         if ((getType().sAuthor != null) && (!getType().sAuthor.isEmpty())) {
-            tooltiptxt += "<p>Author: " + getType().sAuthor;
+            tooltiptxt += "<p><br/>Author: " + getType().sAuthor;
         }
         if ((getType().sPath != null) && (!getType().sPath.isEmpty())) {
             tooltiptxt += "<p>Path: " + getType().sPath;
