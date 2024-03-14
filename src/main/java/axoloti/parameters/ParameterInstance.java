@@ -566,7 +566,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         }
 
         if (isOnParent()) {
-            ctrl.setToolTipText(ctrl.getToolTipText() + "<p>This parameter is being controlled from the parent patch.");
+            ctrl.setToolTipText(ctrl.getToolTipText() + "<p><b>This parameter is being controlled from the parent patch.</b>");
         }
 
     }
