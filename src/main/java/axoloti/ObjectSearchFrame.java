@@ -103,7 +103,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jButtonAccept.setEnabled(false);
 
-        this.setTitle("Object Finder");
+        this.setTitle("    Object Finder");
 
         this.p = p;
         DefaultMutableTreeNode root1 = new DefaultMutableTreeNode();
@@ -572,7 +572,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         }
         /* show number of results */
-        this.setTitle(String.format("%d found", listData.size()));
+        this.setTitle(String.format("    %d found", listData.size()));
     }
 
     boolean accepted = false;
