@@ -91,9 +91,9 @@ public class Theme {
     public Color Cable_Bool32_Highlighted = Cable_Bool32.brighter();
 
     @Element
-    public Color Cable_CharPointer32 = new Color(0xFF, 0xCF, 0xDF);
+    public Color Cable_CharPointer32 = Color.MAGENTA;
     @Element
-    public Color Cable_CharPointer32_Highlighted = new Color(0xFF, 0xDF, 0xFF);
+    public Color Cable_CharPointer32_Highlighted = new Color(0xFF, 0x90, 0xFF);
 
     @Element
     public Color Cable_Zombie = Color.WHITE;
@@ -116,9 +116,9 @@ public class Theme {
     public Color Cable_Int32_Highlighted = Cable_Int32.brighter().brighter();
 
     @Element
-    public Color Cable_Int32Pointer = Color.MAGENTA;
+    public Color Cable_Int32Pointer = Color.PINK;
     @Element
-    public Color Cable_Int32Pointer_Highlighted = Cable_Int32Pointer.brighter().brighter();
+    public Color Cable_Int32Pointer_Highlighted = Cable_Int32Pointer.brighter();
 
     @Element
     public Color Cable_Int8Array = Cable_Int32Pointer;
