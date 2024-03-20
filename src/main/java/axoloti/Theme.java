@@ -91,9 +91,9 @@ public class Theme {
     public Color Cable_Bool32_Highlighted = Cable_Bool32.brighter();
 
     @Element
-    public Color Cable_CharPointer32 = new Color(0xFF, 0xAF, 0xDF);
+    public Color Cable_CharPointer32 = new Color(0xFF, 0xCF, 0xDF);
     @Element
-    public Color Cable_CharPointer32_Highlighted = new Color(0xFF, 0xCF, 0xDF);
+    public Color Cable_CharPointer32_Highlighted = new Color(0xFF, 0xDF, 0xFF);
 
     @Element
     public Color Cable_Zombie = Color.WHITE;
