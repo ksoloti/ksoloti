@@ -67,6 +67,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JOptionPane;
+
 import org.simpleframework.xml.*;
 import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Complete;
@@ -120,6 +123,8 @@ public class Patch {
     private boolean dirty = false;
     @Element(required = false)
     private String helpPatch;
+    // @Element(required = false)
+    private boolean hasZombies = false;
 
     // patch this patch is contained in
     private Patch container = null;
@@ -382,14 +387,24 @@ public class Patch {
                 o.patch = this;
                 o.PostConstructor();
                 // System.out.println("Obj added " + o.getInstanceName());
-            } else if (t == null) {
+            } else if (t == null || o.getName().equals("zombie")) {
+                if (o.getName() != null && o.getName().equals("zombie")) {
+                    Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "The patch has been previously saved with zombies. You have to replace all zombies manually to be able to compile it again.");
+                }
                 // o.patch = this;
                 objectinstances.remove(o);
                 AxoObjectInstanceZombie zombie = new AxoObjectInstanceZombie(new AxoObjectZombie(), this, o.getInstanceName(), new Point(o.getX(), o.getY()));
                 zombie.patch = this;
                 zombie.typeName = o.typeName;
+                zombie.typeUUID = o.typeUUID;
+                zombie.inletInstances = o.GetInletInstances();
+                zombie.outletInstances = o.GetOutletInstances();
+                zombie.attributeInstances = o.getAttributeInstances();
+                zombie.parameterInstances = o.getParameterInstances();
+                // zombie.displayInstances = o.GetDisplayInstances(); // this is probably useless
                 zombie.PostConstructor();
                 objectinstances.add(zombie);
+                hasZombies = true;
             }
         }
         ArrayList<Net> nets2 = (ArrayList<Net>) nets.clone();
@@ -451,6 +466,15 @@ public class Patch {
 
     public boolean isDirty() {
         return dirty;
+    }
+
+    public void setHasZombies(boolean has) {
+        if (has) {
+            hasZombies = true;
+        }
+        else {
+            hasZombies = false;
+        }
     }
 
     public Patch container() {
@@ -777,6 +801,31 @@ public class Patch {
     }
 
     boolean save(File f) {
+        if (hasZombies) {
+            Object[] options = {"Save Anyway",
+                "Cancel"};
+            int n = JOptionPane.showOptionDialog(
+                    this.getPatchframe(),
+                    this.FileNamePath + " contains one or more unresolved (zombie) objects.\n\nSaving the patch now will overwrite the unresolved objects with hard zombies and you have to replace them manually later for the patch to be usable.\n\nThe zombie objects\' names and connections will be preserved, but you may lose some parameter and attribute values you had originally set up when the objects were alive, depending on how well the manually replaced object matches the original one.",
+                    "Zombie Infestation",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE,
+                    null,
+                    options,
+                    options[1]);
+            switch (n) {
+                case JOptionPane.YES_OPTION:
+                    /* Save Anyway, do not display warning anymore */
+                    hasZombies = false;
+                    break;
+                case JOptionPane.NO_OPTION:
+                    /* Cancel */
+                    return false;
+                default:
+                    return false;
+            }
+
+        }
         SortByPosition();
         PreSerialize();
         Strategy strategy = new AnnotationStrategy();
@@ -2483,11 +2532,13 @@ public class Patch {
     public AxoObjectInstanceAbstract ChangeObjectInstanceType1(AxoObjectInstanceAbstract obj, AxoObjectAbstract objType) {
         if ((obj instanceof AxoObjectInstancePatcher) && (objType instanceof AxoObjectPatcher)) {
             return obj;
-        } else if ((obj instanceof AxoObjectInstancePatcherObject) && (objType instanceof AxoObjectPatcherObject)) {
+        }
+        else if ((obj instanceof AxoObjectInstancePatcherObject) && (objType instanceof AxoObjectPatcherObject)) {
             return obj;
-        } else if (obj instanceof AxoObjectInstance) {
+        }
+        else if (obj instanceof AxoObjectInstance) {
             String n = obj.getInstanceName();
-            obj.setInstanceName(n + "____tmp");
+            obj.setInstanceName(n + "__temp");
             AxoObjectInstanceAbstract obj1 = AddObjectInstance(objType, obj.getLocation());
             if ((obj1 instanceof AxoObjectInstance)) {
                 AxoObjectInstance new_obj = (AxoObjectInstance) obj1;
@@ -2499,15 +2550,18 @@ public class Patch {
             }
             obj1.setName(n);
             return obj1;
-        } else if (obj instanceof AxoObjectInstanceZombie) {
+        }
+        else if (obj instanceof AxoObjectInstanceZombie) {
             String n = obj.getInstanceName();
-            obj.setInstanceName(n + "____tmp");
+            obj.setInstanceName(n + "__temp");
             AxoObjectInstanceAbstract obj1 = AddObjectInstance(objType, obj.getLocation());
             if ((obj1 instanceof AxoObjectInstance)) {
                 AxoObjectInstance new_obj = (AxoObjectInstance) obj1;
                 AxoObjectInstanceZombie old_obj = (AxoObjectInstanceZombie) obj;
                 new_obj.outletInstances = old_obj.outletInstances;
                 new_obj.inletInstances = old_obj.inletInstances;
+                new_obj.parameterInstances = old_obj.parameterInstances;
+                new_obj.attributeInstances = old_obj.attributeInstances;
             }
             obj1.setName(n);
             return obj1;

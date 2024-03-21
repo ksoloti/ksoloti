@@ -20,10 +20,12 @@ package axoloti.object;
 import axoloti.Patch;
 import axoloti.PatchGUI;
 import axoloti.Theme;
+import axoloti.attribute.*;
 import axoloti.inlets.InletInstance;
 import axoloti.inlets.InletInstanceZombie;
 import axoloti.outlets.OutletInstance;
 import axoloti.outlets.OutletInstanceZombie;
+import axoloti.parameters.*;
 import axoloti.utils.Constants;
 import components.LabelComponent;
 import components.PopupIcon;
@@ -39,6 +41,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
 
 import org.simpleframework.xml.Root;
+import org.simpleframework.xml.Path;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.ElementListUnion;
 
 /**
  *
@@ -49,6 +54,33 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
 
     public ArrayList<InletInstance> inletInstances = new ArrayList<InletInstance>();
     public ArrayList<OutletInstance> outletInstances = new ArrayList<OutletInstance>();
+    @Path("params")
+    @ElementListUnion({
+        @ElementList(entry = "frac32.u.map", type = ParameterInstanceFrac32UMap.class, inline = true, required = false),
+        @ElementList(entry = "frac32.s.map", type = ParameterInstanceFrac32SMap.class, inline = true, required = false),
+        @ElementList(entry = "frac32.u.mapvsl", type = ParameterInstanceFrac32UMapVSlider.class, inline = true, required = false),
+        @ElementList(entry = "frac32.s.mapvsl", type = ParameterInstanceFrac32SMapVSlider.class, inline = true, required = false),
+        @ElementList(entry = "int32", type = ParameterInstanceInt32Box.class, inline = true, required = false),
+        @ElementList(entry = "int32.small", type = ParameterInstanceInt32BoxSmall.class, inline = true, required = false),
+        @ElementList(entry = "int32.hradio", type = ParameterInstanceInt32HRadio.class, inline = true, required = false),
+        @ElementList(entry = "int32.vradio", type = ParameterInstanceInt32VRadio.class, inline = true, required = false),
+        @ElementList(entry = "int2x16", type = ParameterInstance4LevelX16.class, inline = true, required = false),
+        @ElementList(entry = "bin12", type = ParameterInstanceBin12.class, inline = true, required = false),
+        @ElementList(entry = "bin16", type = ParameterInstanceBin16.class, inline = true, required = false),
+        @ElementList(entry = "bin32", type = ParameterInstanceBin32.class, inline = true, required = false),
+        @ElementList(entry = "bool32.tgl", type = ParameterInstanceBin1.class, inline = true, required = false),
+        @ElementList(entry = "bool32.mom", type = ParameterInstanceBin1Momentary.class, inline = true, required = false)})
+    public ArrayList<ParameterInstance> parameterInstances;
+    @Path("attribs")
+    @ElementListUnion({
+        @ElementList(entry = "objref", type = AttributeInstanceObjRef.class, inline = true, required = false),
+        @ElementList(entry = "table", type = AttributeInstanceTablename.class, inline = true, required = false),
+        @ElementList(entry = "combo", type = AttributeInstanceComboBox.class, inline = true, required = false),
+        @ElementList(entry = "int", type = AttributeInstanceInt32.class, inline = true, required = false),
+        @ElementList(entry = "spinner", type = AttributeInstanceSpinner.class, inline = true, required = false),
+        @ElementList(entry = "file", type = AttributeInstanceSDFile.class, inline = true, required = false),
+        @ElementList(entry = "text", type = AttributeInstanceTextEditor.class, inline = true, required = false)})
+    public ArrayList<AttributeInstance> attributeInstances;
 
     public AxoObjectInstanceZombie() {
     }

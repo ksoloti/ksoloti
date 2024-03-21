@@ -128,7 +128,7 @@ public class Theme {
     @Element
     public Color Cable_Int8Pointer = Cable_Int32Pointer;
     @Element
-    public Color Cable_Int8Pointer_Highlighted = Cable_Int32Pointer_Highlighted;;
+    public Color Cable_Int8Pointer_Highlighted = Cable_Int32Pointer_Highlighted;
 
     /* Objects */
     @Element
