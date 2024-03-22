@@ -27,8 +27,8 @@ extern uint8_t lcd_buffer[(AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH)
 extern uint8_t led_buffer[AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH];
 extern uint8_t control_rx_buffer[(AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH)];
 
-extern void do_axoloti_control(void);
-void axoloti_control_init(void);
+// extern void do_axoloti_control(void);
+// void axoloti_control_init(void);
 
 void LCD_clearDisplay(void);
 void LCD_drawPixel(int x, int y, uint16_t color);

@@ -19,17 +19,20 @@
 #include "codec.h"
 
 #include "axoloti_defines.h"
-
+#ifdef FW_SPILINK
+#include "ch.h"
+#include "spilink.h"
+#endif
 #include "codec_ADAU1961.h"
+
 
 int32_t buf[BUFSIZE*2]   __attribute__ ((section (".sram2")));
 int32_t buf2[BUFSIZE*2]  __attribute__ ((section (".sram2")));
 int32_t rbuf[BUFSIZE*2]  __attribute__ ((section (".sram2")));
 int32_t rbuf2[BUFSIZE*2] __attribute__ ((section (".sram2")));
 
-void codec_init(void) {
-    codec_ADAU1961_i2s_init(SAMPLERATE);
-    codec_ADAU1961_hw_init(SAMPLERATE);
+void codec_init(bool_t isMaster) {
+    codec_ADAU1961_SAI_init(SAMPLERATE, isMaster);
 }
 
 
@@ -38,6 +41,11 @@ void codec_clearbuffer(void) {
         buf[i] = 0;
         buf2[i] = 0;
     }
+
+#ifdef FW_SPILINK
+    spilink_clear_audio_tx();
+#endif
+
 }
 
 #include "codec_ADAU1961_SAI.c"

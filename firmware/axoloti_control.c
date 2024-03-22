@@ -25,6 +25,8 @@
 uint8_t lcd_buffer[(AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) * AXOLOTI_CONTROL_LCDROWS] __attribute__ ((section (".sram2")));
 uint8_t led_buffer[AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH] __attribute__ ((section (".sram2")));
 
+
+#if 0
 /*
  * Low speed SPI configuration (328.125kHz, CPHA=0, CPOL=0, MSb first).
  */
@@ -35,7 +37,6 @@ uint8_t row_update_index;
 uint8_t k;
 
 void do_axoloti_control(void) {
-  #if 0
   row_update_index++;
   if (row_update_index == ((AXOLOTI_CONTROL_LCDROWS) + 1)) {
     row_update_index = 0;
@@ -66,15 +67,13 @@ void do_axoloti_control(void) {
     EncBuffer[2] += control_rx_buffer[14];
     EncBuffer[3] += control_rx_buffer[15];
   }
-  #endif
 }
 
 void axoloti_control_init(void) {
-  #if 0
   /*
    *  Commm to FP test...
    */
-  row_update_index = 0;
+  // row_update_index = 0;
   palSetPadMode(GPIOA, 15, PAL_MODE_OUTPUT_PUSHPULL);
   // NSS
   palSetPadMode(GPIOB, 5, PAL_MODE_ALTERNATE(6));
@@ -83,29 +82,19 @@ void axoloti_control_init(void) {
   // MISO
   palSetPadMode(GPIOB, 3, PAL_MODE_ALTERNATE(6));
   // SCK
+  palClearPad(GPIOB, 3);
+  // SCK
   int i;
   // clear
   for (i = 0; i < (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) * AXOLOTI_CONTROL_LCDROWS; i++)
     lcd_buffer[i] = 0;
   // fill header
-  for (i = 0; i < AXOLOTI_CONTROL_LCDROWS; i++) {
-    lcd_buffer[i * (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) + 0] = 'A';
-    lcd_buffer[i * (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) + 1] = 'x';
-    lcd_buffer[i * (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) + 2] = 'o';
-    lcd_buffer[i * (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) + 3] = '0' + i;
-  }
   led_buffer[0] = 'A';
   led_buffer[1] = 'x';
   led_buffer[2] = 'o';
   led_buffer[3] = '0' + i;
-
-  for (i = 0; i < AXOLOTI_CONTROL_LCDWIDTH; i++)
-    led_buffer[AXOLOTI_CONTROL_LCDHEADER + i] = 0; //i;
-
-  for (i = 0; i < AXOLOTI_CONTROL_LCDWIDTH; i++)
-    control_rx_buffer[i] = 0;
-  #endif
 }
+#endif
 
 #define _BV(bit) (1 << (bit))
 

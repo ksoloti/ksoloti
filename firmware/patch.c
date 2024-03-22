@@ -27,6 +27,9 @@
 #include "sysmon.h"
 #include "codec.h"
 #include "axoloti_memory.h"
+#ifdef FW_SPILINK
+#include "spilink.h"
+#endif
 
 #define STACKSPACE_MARGIN 32
 // #define DEBUG_PATCH_INT_ON_GPIO 1

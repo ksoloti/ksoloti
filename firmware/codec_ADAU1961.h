@@ -17,9 +17,8 @@
  */
 #include "hal.h"
 
-extern void codec_ADAU1961_i2s_init(uint16_t samplerate);
-extern void codec_ADAU1961_SAI_init(uint16_t samplerate);
-extern void codec_ADAU1961_hw_init(uint16_t samplerate);
+extern void codec_ADAU1961_SAI_init(uint16_t samplerate, bool_t isMaster);
+extern void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster);
 
 extern uint32_t codec_interrupt_timestamp;
 

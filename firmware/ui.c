@@ -164,6 +164,7 @@ inline void KVP_Decrement(KeyValuePair_s *kvp) {
   }
 }
 
+#if 0
 void k_scope_DisplayFunction(void * userdata) {
 // userdata  int32_t[64], one sample per column
   int i;
@@ -249,6 +250,7 @@ void k_scope_DisplayFunction4(void * userdata) {
 void k_value_DisplayFunction(void * userdata) {
   (void)userdata;
 }
+#endif
 
 #define POLLENC(NAME, INCREMENT_FUNCTION, DECREMENT_FUNCTION)  \
       if (!expander_PrevStates.NAME##A) {                 \
@@ -356,8 +358,8 @@ void EnterMenuFormat(void) {
 }
 
 
-static void UIUpdateLCD(void);
-static void UIPollButtons2(void);
+// static void UIUpdateLCD(void);
+// static void UIPollButtons2(void);
 
 void AxolotiControlUpdate(void) {
 #ifdef AXOLOTI_CONTROL
@@ -558,8 +560,8 @@ void KVP_Display(int x, int y, KeyValuePair_s *kvp) {
   }
 }
 
-static void UIPollButtons(void) {
 #if 0
+static void UIPollButtons(void) {
   expander_CurStates.i = ~read_ioexpander();
 
   IF_EXPANDER_BTN_DOWN(S1)
@@ -685,9 +687,10 @@ static void UIPollButtons(void) {
   Btn_Nav_PrevStates = Btn_Nav_CurStates;
 
 #endif
-#endif
 }
+#endif
 
+#if 0
 /*
  * We need one uniform state for the buttons, whether controlled from the GUI or from Axoloti Control.
  * btn_or is a true if the button was down during the last time interval
@@ -1028,3 +1031,4 @@ static void UIUpdateLCD(void) {
     (*KvpsDisplay->custom.displayFunction)((int)KvpsDisplay->custom.userdata);
   }
 }
+#endif

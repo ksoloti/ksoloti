@@ -43,6 +43,9 @@
 #include "chprintf.h"
 #include "usbcfg.h"
 #include "sysmon.h"
+#ifdef FW_SPILINK
+#include "spilink.h"
+#endif
 
 #include "sdram.c"
 #include "stm32f4xx_fmc.c"
@@ -68,6 +71,10 @@ int main(void) {
 
     halInit();
     chSysInit();
+
+#ifdef FW_SPILINK
+    pThreadSpilink = 0;
+#endif
 
     sdcard_init();
     sysmon_init();
@@ -100,7 +107,16 @@ int main(void) {
     axoloti_math_init();
     midi_init();
     start_dsp_thread();
-    codec_init();
+    ui_init();
+    configSDRAM();
+    // memTest();
+
+    bool_t is_master = palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN);
+
+    codec_init(is_master);
+#ifdef FW_SPILINK
+    spilink_init(is_master);
+#endif
 
     if (!palReadPad(SW2_PORT, SW2_PIN)) {
         /* button S2 not pressed */
@@ -111,11 +127,6 @@ int main(void) {
 #ifdef AXOLOTI_CONTROL
     axoloti_control_init();
 #endif
-
-    ui_init();
-
-    configSDRAM();
-    // memTest();
 
     MY_USBH_Init();
 

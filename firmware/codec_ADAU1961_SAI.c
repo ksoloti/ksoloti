@@ -25,8 +25,11 @@
 #include "stm32f4xx_hal_i2c.h"
 #include "axoloti_board.h"
 #include "sysmon.h"
+#ifdef FW_SPILINK
+#include "spilink.h"
+#include "spilink_lld.h"
+#endif
 
-// #define STM_IS_I2S_MASTER 1
 #define ADAU1961_I2C_ADDR 0x70 /* (0x38<<1) */
 #define TIMEOUT 1000000
 
@@ -51,6 +54,11 @@
 #define MCO1_PORT GPIOA
 #define MCO1_PIN 8
 
+#ifdef FW_SPILINK
+#define SPILINK_FSYNC_PORT GPIOD
+#define SPILINK_FSYNC_PIN 5
+#endif
+
 extern void computebufI(int32_t *inp, int32_t *outp);
 
 
@@ -69,10 +77,117 @@ static uint8_t i2ctxbuf[8];
 uint32_t codec_interrupt_timestamp;
 
 
-/******************************* I2C Routines**********************************/
-/**
-  * @brief  Configures I2C interface.
-  */
+#ifdef FW_SPILINK
+/* approx 1Hz drift... */
+// static uint8_t pll48k_pullup[6]   = {0x1F, 0x40, 0x04, 0x82, 0x31, 0x01};
+static uint8_t pll48k_exact[6]    = {0x1F, 0x40, 0x04, 0x81, 0x31, 0x01};
+static uint8_t pll48k_pulldown[6] = {0x1F, 0x40, 0x04, 0x80, 0x31, 0x01};
+
+typedef enum {
+    falling=0,
+    rising=1
+} edge_t;
+
+void blink_and_retry(void) {
+    sysmon_blink_pattern(SYNCED_ERROR);
+    chThdSleepMilliseconds(2000);
+}
+
+
+void wait_SPI_fsync(edge_t edge) {
+    while (1) {
+        /* sync on NSS. */
+        palSetPadMode(SPILINK_FSYNC_PORT, SPILINK_FSYNC_PIN, PAL_MODE_INPUT);
+
+        volatile int i,j;
+
+        j = 1000000; /* wait till NSS is low (or already is) */
+        while(--j) {
+            if (edge ^ !palReadPad(SPILINK_FSYNC_PORT, SPILINK_FSYNC_PIN))
+                break;
+        }
+
+        i = 1000000; /* wait till NSS is high */
+        while(--i) {
+            if (edge ^ palReadPad(SPILINK_FSYNC_PORT, SPILINK_FSYNC_PIN))
+                break;
+        }
+
+        j = 1000000; /* wait till NSS is low again */
+        while(--j) {
+            if (edge ^ !palReadPad(SPILINK_FSYNC_PORT, SPILINK_FSYNC_PIN))
+                break;
+        }
+
+        if ((j == 0) || (i == 0)) {
+            /* no pulse edge found. Blink and retry. */
+            blink_and_retry();
+        }
+        else {
+            break; /* pulse edge found. Leave this loop and function. */
+        }
+    }
+}
+
+
+void detect_MCO(void) {
+    while (1) {
+        volatile int i, j;
+
+        chSysLock();
+
+        j = 1000; /* wait till clock is low */
+        while (--j) {
+            if (!palReadPad(MCO1_PORT, MCO1_PIN))
+                break;
+        }
+
+        i = 1000; /* then wait till clock is high */
+        while (--i) {
+            if (palReadPad(MCO1_PORT, MCO1_PIN))
+                break;
+        }
+
+        j = 1000; /* then wait till clock is low again */
+        while (--j) {
+            if (!palReadPad(MCO1_PORT, MCO1_PIN))
+                break;
+        }
+
+        chSysUnlock();
+
+        if ((j == 0) || (i == 0)) {
+            /* no pulse edge found. Blink and retry. */
+            blink_and_retry();
+        }
+        else {
+            break; /* clock found, leave this loop... */
+        }
+    }
+}
+
+
+void lock_SAI_to_SPI_FS(void) {
+    while(1) {
+        /* Sync codec FS with SPI frame */
+        volatile int i = 0;
+
+        /* Wait for SPI frame */
+        wait_SPI_fsync(falling);
+
+        /* Now count time to SAI1 FS edge */
+        while(palReadPad(SAI1_FS_PORT, SAI1_FS_PIN)) {
+            ++i;
+        }
+
+        if ((i > 1) && (i < 4)) {
+            break; /* Lock found */
+        }
+    }
+}
+#endif
+
+
 static void ADAU_I2C_Init(void) {
     if(HAL_I2C_GetState(&ADAU1961_i2c_handle) == HAL_I2C_STATE_RESET) {
         /* DISCOVERY_I2Cx peripheral configuration */
@@ -165,7 +280,61 @@ void ADAU1961_ReadRegister6(uint16_t RegisterAddr) {
 }
 
 
-void codec_ADAU1961_hw_init(uint16_t samplerate) {
+#ifdef FW_SPILINK
+static void dma_sai_a_interrupt_spilink_master(void* dat, uint32_t flags) {
+
+    (void) dat;
+    (void) flags;
+
+    chSysLockFromIsr();
+    codec_interrupt_timestamp = hal_lld_get_counter_value();
+    spilink_master_process();
+    chSysUnlockFromIsr();
+
+    if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
+        computebufI(rbuf2, buf);
+    }
+    else {
+        computebufI(rbuf, buf2);
+    }
+}
+
+
+static void dma_sai_a_interrupt_spilink_slave(void* dat, uint32_t flags) {
+
+    (void) dat;
+    (void) flags;
+
+    codec_interrupt_timestamp = hal_lld_get_counter_value();
+    spilink_slave_process();
+
+    if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT)
+        computebufI(rbuf2, buf);
+    else
+        computebufI(rbuf, buf2);
+}
+
+#else
+static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
+
+    (void)dat;
+    (void)flags;
+    codec_interrupt_timestamp = hal_lld_get_counter_value();
+
+    if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
+        computebufI(rbuf2, buf);
+    }
+    else {
+        computebufI(rbuf, buf2);
+    }
+
+    dmaStreamClearInterrupt(sai_a_dma);
+}
+
+#endif
+
+
+void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
 
     ADAU_I2C_Init();
     chThdSleepMilliseconds(5);
@@ -178,39 +347,42 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
     * 5. Assert the core clock enable bit after the PLL lock is acquired.
     */
 
-#ifdef STM_IS_I2S_MASTER
-    ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC, 0x01); // 256FS
-    chThdSleepMilliseconds(10);
-#else
-    uint8_t pllreg[6];
+#ifdef FW_SPILINK
+    ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC, 0x0E); /* Disable core, PLL as clksrc, 1024*FS */
+#endif
 
-    if (samplerate == 48000) {
-        // reg setting 0x007D 0012 3101
-        pllreg[0] = 0x00;
-        pllreg[1] = 0x7D; /* PLL denominator M = 125 */
-
-        pllreg[2] = 0x00;
-        pllreg[3] = 0x12; /* PLL numerator N = 18 */
-
-        pllreg[4] = 0x31; /* 0b 0 0110 00 1; PLL integer R = 6, PLL in clock div X = 1, PLL type = fractional */
-
-        pllreg[5] = 0x01; /* PLL unlocked (read-only), PLL enabled */
-    }
-    // else if (samplerate == 44100)
-    // {
-    //   // reg setting 0x0271 0193 2901
-    //   pllreg[0] = 0x02;
-    //   pllreg[1] = 0x71;
-    //   pllreg[2] = 0x01;
-    //   pllreg[3] = 0x93;
-    //   pllreg[4] = 0x29;
-    //   pllreg[5] = 0x01;
-    // }
-    else {
+    /* Confirm samplerate (redundant) */
+    if (samplerate != 48000) {
+        /* Incompatible sample rate. Do nothing. */
+        setErrorFlag(ERROR_CODEC_I2C);
         while (1);
     }
 
+#ifdef FW_SPILINK
+    if (isMaster) {
+        ADAU1961_WriteRegister6(ADAU1961_REG_R1_PLLC, &pll48k_exact[0]);
+    }
+    else {
+        /* Temporarily set lower PLL frequency for synced codec */
+        ADAU1961_WriteRegister6(ADAU1961_REG_R1_PLLC, &pll48k_pulldown[0]);
+    }
+
+#else
+    uint8_t pllreg[6] = {0x00, 0x7D, 0x00, 0x12, 0x31, 0x01};
+    /* reg setting 0x007D 0012 3101
+     * pllreg[0] = 0x00;
+     * pllreg[1] = 0x7D; PLL denominator M = 125
+     * pllreg[2] = 0x00;
+     * pllreg[3] = 0x12; PLL numerator N = 18
+     * pllreg[4] = 0x31; 0b 0 0110 00 1; PLL integer R = 6, PLL in clock div X = 1, PLL type = fractional
+     * pllreg[5] = 0x01; PLL unlocked (read-only), PLL enabled
+     */
+
     ADAU1961_WriteRegister6(ADAU1961_REG_R1_PLLC, &pllreg[0]);
+
+#endif
+
+    chThdSleepMilliseconds(3);
 
     int i = 1000;
 
@@ -230,9 +402,15 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
         while (1);
     }
 
+#ifdef FW_SPILINK
+    ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC,     0x0F); /* Enable core, PLL as clksrc, 1024*FS */
+
+#else
     ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC,     0x09); /* PLL = clksrc */
-    chThdSleepMilliseconds(1);
+
 #endif
+
+    chThdSleepMilliseconds(1);
 
     /*
     * i2s2_sd (dac) is a confirmed connection, i2s2_ext_sd (adc) is not however
@@ -253,14 +431,44 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
     ADAU1961_WriteRegister(ADAU1961_REG_R13_ALC2,    0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R14_ALC3,    0x00);
 
-#ifdef STM_IS_I2S_MASTER
-    ADAU1961_WriteRegister(ADAU1961_REG_R15_SERP0,   0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1,   0x00);
-#else
-    ADAU1961_WriteRegister(ADAU1961_REG_R15_SERP0,   0x01); /* codec is master */
-    ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1,   0x00); /* 32bit samples */
-    // ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1,0x60); /* 64bit samples, spdif clock! */
+#ifdef USING_ADAU1761
+    ADAU1961_WriteRegister(ADAU1761_REG_R58_SERINRT,  0x01);
+    ADAU1961_WriteRegister(ADAU1761_REG_R59_SEROUTRT, 0x01);
+    ADAU1961_WriteRegister(ADAU1761_REG_R64_SERSR,    0x00);
+    ADAU1961_WriteRegister(ADAU1761_REG_R65_CKEN0,    0x7F);
+    ADAU1961_WriteRegister(ADAU1761_REG_R66_CKEN1,    0x03); /* Enable CLK0 and CLK1 (generate BCLK and LRCLK) */
 #endif
+
+    ADAU1961_WriteRegister(ADAU1961_REG_R15_SERP0,    0x01); /* Codec is master */
+
+#ifdef FW_SPILINK
+    if (!isMaster) {
+        /* Pick up timing from codec's LRCLK (=FS) */
+
+        palSetPad(LED2_PORT, LED2_PIN); /* Light red LED as long as there is no sync */
+
+        chSysLock();
+        lock_SAI_to_SPI_FS();
+        chSysUnlock();
+
+        /* Now write exact frequency back into the PLL */
+        ADAU1961_WriteRegister6(ADAU1961_REG_R1_PLLC, &pll48k_exact[0]);
+
+        palClearPad(LED2_PORT, LED2_PIN); /* Clear red LED as we are now synced */
+
+        dmaStreamClearInterrupt(sai_b_dma);
+        dmaStreamEnable(sai_b_dma);
+
+        dmaStreamClearInterrupt(sai_a_dma);
+        dmaStreamEnable(sai_a_dma);
+
+        SAI1_Block_A->CR1 |= SAI_xCR1_SAIEN;
+        SAI1_Block_B->CR1 |= SAI_xCR1_SAIEN;
+    }
+#endif
+
+    ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1,    0x00); /* 32bit samples */
+    // ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1,0x60); /* 64bit samples, spdif clock! */
 
     ADAU1961_WriteRegister(ADAU1961_REG_R17_CON0,     0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R18_CON1,     0x00);
@@ -289,21 +497,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
     ADAU1961_WriteRegister(ADAU1961_REG_R41_CPORTP1,  0xAA);
     ADAU1961_WriteRegister(ADAU1961_REG_R42_JACKDETP, 0x00);
 
-#ifdef USING_ADAU1761
-    ADAU1961_WriteRegister(ADAU1761_REG_R58_SERINRT,  0x01);
-    ADAU1961_WriteRegister(ADAU1761_REG_R59_SEROUTRT, 0x01);
-    ADAU1961_WriteRegister(ADAU1761_REG_R64_SERSR,    0x00);
-    ADAU1961_WriteRegister(ADAU1761_REG_R65_CKEN0,    0x7F);
-    ADAU1961_WriteRegister(ADAU1761_REG_R66_CKEN1,    0x03); /* Enable CLK0 and CLK1 (generate BCLK and LRCLK) */
-#endif
-
     chThdSleepMilliseconds(10);
-
-    /* ADC Enable */
-#ifdef STM_IS_I2S_MASTER
-    // ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1,    0x20); /* 32 bits per frame */
-    ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1,    0x00); /* 32 bits per frame */
-#endif
 
     ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC,     0x13); /* ADC enable */
     ADAU1961_WriteRegister(ADAU1961_REG_R36_DACC0,    0x03); /* DAC enable */
@@ -336,35 +530,37 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
 }
 
 
-static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
+void codec_ADAU1961_SAI_init(uint16_t samplerate, bool_t isMaster) {
 
-    (void)dat;
-    (void)flags;
-    codec_interrupt_timestamp = hal_lld_get_counter_value();
 
-    if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
-        computebufI(rbuf2, buf);
+#ifdef FW_SPILINK
+    /*configure MCO */
+    if (isMaster) {
+        /* Core in master mode */
+        palSetPadMode(MCO1_PORT, MCO1_PIN, PAL_MODE_OUTPUT_PUSHPULL);
+        palSetPadMode(MCO1_PORT, MCO1_PIN, PAL_MODE_ALTERNATE(0));
     }
     else {
-        computebufI(rbuf, buf2);
+        /* Core in synced mode */
+        palSetPadMode(MCO1_PORT, MCO1_PIN, PAL_MODE_INPUT);
+        /* verify clock is present */
+        detect_MCO();
     }
 
-    dmaStreamClearInterrupt(sai_a_dma);
-}
-
-
-void codec_ADAU1961_i2s_init(uint16_t sampleRate) {
-
+#else
     /* configure MCO */
     palSetPadMode(MCO1_PORT, MCO1_PIN, PAL_MODE_OUTPUT_PUSHPULL);
     palSetPadMode(MCO1_PORT, MCO1_PIN, PAL_MODE_ALTERNATE(0));
-    chThdSleepMilliseconds(10);
+
+#endif
 
     /* release SAI */
     palSetPadMode(SAI1_FS_PORT, SAI1_FS_PIN, PAL_MODE_INPUT);
     palSetPadMode(SAI1_SD_A_PORT, SAI1_SD_A_PIN, PAL_MODE_INPUT);
     palSetPadMode(SAI1_SD_B_PORT, SAI1_SD_B_PIN, PAL_MODE_INPUT);
     palSetPadMode(SAI1_SCK_PORT,  SAI1_SCK_PIN,  PAL_MODE_INPUT);
+
+    codec_ADAU1961_hw_init(samplerate, isMaster);
 
     /* configure SAI */
     RCC->APB2ENR |= RCC_APB2ENR_SAI1EN;
@@ -417,13 +613,29 @@ void codec_ADAU1961_i2s_init(uint16_t sampleRate) {
         | STM32_DMA_CR_TEIE | STM32_DMA_CR_TCIE | STM32_DMA_CR_DBM /* double buffer mode */
         | STM32_DMA_CR_PSIZE_WORD | STM32_DMA_CR_MSIZE_WORD;
 
-    bool_t b = dmaStreamAllocate(sai_a_dma, STM32_SAI_A_IRQ_PRIORITY, (stm32_dmaisr_t)dma_sai_a_interrupt, (void *)0);
+    bool_t b;
+
+#ifdef FW_SPILINK
+    if  (isMaster) {
+        b = dmaStreamAllocate(sai_a_dma, STM32_SAI_A_IRQ_PRIORITY,
+                              (stm32_dmaisr_t)dma_sai_a_interrupt_spilink_master, (void *)0);
+    }
+    else {
+        b = dmaStreamAllocate(sai_a_dma, STM32_SAI_A_IRQ_PRIORITY,
+                              (stm32_dmaisr_t)dma_sai_a_interrupt_spilink_slave, (void *)0);
+    }
+
+#else
+    b = dmaStreamAllocate(sai_a_dma, STM32_SAI_A_IRQ_PRIORITY, (stm32_dmaisr_t)dma_sai_a_interrupt, (void *)0);
+
+#endif
 
     dmaStreamSetPeripheral(sai_a_dma, &(sai_a->DR));
     dmaStreamSetMemory0(sai_a_dma, buf);
     dmaStreamSetMemory1(sai_a_dma, buf2);
     dmaStreamSetTransactionSize(sai_a_dma, 32);
     dmaStreamSetMode(sai_a_dma, sai_a_dma_mode | STM32_DMA_CR_MINC);
+
 
     b |= dmaStreamAllocate(sai_b_dma, STM32_SAI_B_IRQ_PRIORITY, (stm32_dmaisr_t)0, (void *)0);
 
@@ -439,12 +651,42 @@ void codec_ADAU1961_i2s_init(uint16_t sampleRate) {
     dmaStreamSetMode(sai_b_dma, sai_b_dma_mode | STM32_DMA_CR_MINC);
 
     dmaStreamClearInterrupt(sai_b_dma);
-    dmaStreamEnable(sai_b_dma);
-
     dmaStreamClearInterrupt(sai_a_dma);
+
+#ifdef FW_SPILINK
+    if (isMaster) {
+        chSysLock();
+        SAI1_Block_A->CR2 |= SAI_xCR2_FFLUSH;
+        SAI1_Block_B->CR2 |= SAI_xCR2_FFLUSH;
+        SAI1_Block_A->DR = 0;
+        SAI1_Block_B->DR = 0;
+        dmaStreamEnable(sai_b_dma);
+        dmaStreamEnable(sai_a_dma);
+        SAI1_Block_B->CR1 |= SAI_xCR1_SAIEN;
+        SAI1_Block_A->CR1 |= SAI_xCR1_SAIEN;
+        /* 2.25 us offset between dmarx and dmatx */
+        chSysUnlock();
+    }
+    else {
+        chSysLock();
+        SAI1_Block_A->CR2 |= SAI_xCR2_FFLUSH;
+        SAI1_Block_B->CR2 |= SAI_xCR2_FFLUSH;
+        SAI1_Block_A->DR = 0;
+        SAI1_Block_B->DR = 0;
+        wait_SPI_fsync(rising);
+        dmaStreamEnable(sai_b_dma);
+        dmaStreamEnable(sai_a_dma);
+        SAI1_Block_B->CR1 |= SAI_xCR1_SAIEN;
+        SAI1_Block_A->CR1 |= SAI_xCR1_SAIEN;
+        chSysUnlock();
+    }
+#else
+    dmaStreamEnable(sai_b_dma);
     dmaStreamEnable(sai_a_dma);
 
     SAI1_Block_A->CR1 |= SAI_xCR1_SAIEN;
     SAI1_Block_B->CR1 |= SAI_xCR1_SAIEN;
+
+#endif
 
 }
