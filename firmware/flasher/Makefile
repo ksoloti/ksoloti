@@ -75,7 +75,8 @@ include $(CHIBIOS)/os/kernel/kernel.mk
 #include $(CHIBIOS)/test/test.mk
 	
 # Define linker script file here
-LDSCRIPT= STM32F407xG.ld
+# LDSCRIPT= STM32F407xG.ld
+LDSCRIPT= STM32F427xG.ld
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
