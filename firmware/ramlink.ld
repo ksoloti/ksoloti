@@ -2,29 +2,32 @@ ENTRY(xpatch_init)
 
 MEMORY
 {
-/*
- originally 
-  24kB for program
-  64kB for variables
- new:
-  56kB for program
-  64kB for variables 
- next:
-  72kB for program!
-*/
+    /*
+    originally 
+        24kB for program
+        64kB for variables
+    new:
+        56kB for program
+        64kB for variables 
+    next:
+        72kB for program!
+    */
 
-      SRAM (rwx) : ORIGIN = 0x00011000, LENGTH = 0x0000B000 /* 44kB in RAM1 */
-      SRAM2 (rwx) : ORIGIN = 0x2001C000, LENGTH = 0x00002000 /* first 8kB in SRAM2 */
-      CCMSRAM (rw) : ORIGIN = 0x10000000, LENGTH = 0x0000C000 /* CCM - ccmramend */
-      sdram : org = 0xC0000000, len = 0x2000000 /* 32MB */
+    SRAM (rwx) : ORIGIN = 0x00011000, LENGTH = 0x0000B000 /* 44kB in RAM1 */
+    SRAM2 (rwx) : ORIGIN = 0x2001C000, LENGTH = 0x00002000 /* first 8kB in SRAM2 */
+    CCMSRAM (rw) : ORIGIN = 0x10000000, LENGTH = 0x0000C000 /* CCM - ccmramend */
+    sdram : org = 0xC0000000, len = 0x2000000 /* 32MB */
 }
 
-SECTIONS {
+SECTIONS
+{
 
     .text : ALIGN(16) SUBALIGN(16)
     {
-	/* Note: the .boot section _must_ be first in the resulting binary,
-	 * as that is where the firmware calls the patch when loaded. */
+    /*
+    Note: the .boot section _must_ be first in the resulting binary,
+    as that is where the firmware calls the patch when loaded.
+    */
         * (.boot);
         * (.text);
         etext = .;

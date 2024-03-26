@@ -2,29 +2,30 @@ ENTRY(ResetHandler)
 
 MEMORY
 {
-/*
- originally 
-  24kB for program
-  64kB for variables
- new:
-  56kB for program
-  64kB for variables 
- next:
-  72kB for program!
-*/
+    /*
+    originally:
+        24kB for program
+        64kB for variables
+    new:
+        56kB for program
+        64kB for variables
+    next:
+        72kB for program!
+    */
 
-      SRAM (rwx) : ORIGIN = 0x20011000, LENGTH = 0x00009000 
-      CCMSRAM : ORIGIN = 0x10000000, LENGTH = 0x0000E000 /* CCM - ccmramend */
+    SRAM (rwx) : ORIGIN = 0x20011000, LENGTH = 0x00009000
+    CCMSRAM    : ORIGIN = 0x10000000, LENGTH = 0x0000E000 /* CCM - ccmramend */
 }
 
 __main_stack_size__     = 0x400;
 __process_stack_size__  = 0x400;
 
-SECTIONS {
+SECTIONS
+{
     . = 0;
     _text = .;
-    
-      .text : ALIGN(16) SUBALIGN(16)
+
+    .text : ALIGN(16) SUBALIGN(16)
     {
         *(.text.ResetHandler)
         *(.text.startup.*)
@@ -37,7 +38,7 @@ SECTIONS {
         *(.gcc*)
         *(.startup)
     } > SRAM
-    
+
     constructors : ALIGN(4) SUBALIGN(4)
     {
         PROVIDE(__init_array_start = .);
@@ -53,8 +54,8 @@ SECTIONS {
         KEEP(*(SORT(.fini_array.*)))
         PROVIDE(__fini_array_end = .);
     } > SRAM
-        
-    .rodata : ALIGN(4) SUBALIGN(4) 
+
+    .rodata : ALIGN(4) SUBALIGN(4)
     {
         * (.rodata);
         * (.rodata.*);
@@ -64,7 +65,6 @@ SECTIONS {
     {
         KEEP(*(vectors))
     } > SRAM
-
 
     _etext = .;
     _textdata = _etext;
@@ -81,7 +81,7 @@ SECTIONS {
         . = ALIGN(4);
         PROVIDE(_edata = .);
     } > SRAM
-    
+
     .stacks :
     {
         . = ALIGN(8);
@@ -108,9 +108,8 @@ SECTIONS {
         *(COMMON)
         . = ALIGN(4);
         PROVIDE(_bss_end = .);
-    } > SRAM    
- 
+    } > SRAM
 }
 
 PROVIDE(end = .);
-_end            = .;
+_end = .;
