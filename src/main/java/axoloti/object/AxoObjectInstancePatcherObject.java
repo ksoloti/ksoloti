@@ -85,6 +85,17 @@ public class AxoObjectInstancePatcherObject extends AxoObjectInstance {
         }
         if (aoe == null) {
             aoe = new AxoObjectEditor(ao);
+
+            String t; /* Build window frame title from object instance name and patch path*/
+            if (getInstanceName() != null) {
+                t = getInstanceName();
+            }
+            else {
+                t = "patch/object";
+            }
+            t += " (embedded)   [" + getPatch().getFileNamePath() + "]";
+            aoe.setTitle(t);
+
         } else {
             aoe.updateReferenceXML();
         }

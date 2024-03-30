@@ -42,7 +42,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -85,7 +88,8 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             Theme theme = Theme.load(Theme.class.getResourceAsStream(
                 "/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
             theme.apply(rsta);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -143,21 +147,26 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         if (s == null) {
             return null;
         }
+
         s = s.trim();
         if (s.isEmpty()) {
             return null;
         }
+
         return s;
     }
 
     public void updateReferenceXML() {
         Serializer serializer = new Persister();
         ByteArrayOutputStream origOS = new ByteArrayOutputStream(2048);
+
         try {
             serializer.write(editObj, origOS);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         origXML = origOS.toString();
     }
 
@@ -168,8 +177,8 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             editObj.copy(objrev);
             editObj.FireObjectModified(this);
             Close();
-
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -181,6 +190,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         fileMenu1.initComponents();
         DocumentWindowList.RegisterWindow(this);
+
         jTextAreaLocalData = initCodeEditor(jPanelLocalData, acProvider);
         jTextAreaInitCode = initCodeEditor(jPanelInitCode, acProvider);
         jTextAreaKRateCode = initCodeEditor(jPanelKRateCode2, acProvider);
@@ -191,10 +201,9 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         editObj = origObj;
         updateAcProvider(editObj);
 
-
-
         initEditFromOrig();
         updateReferenceXML();
+
         inletDefinitionsEditor1.initComponents(editObj);
         outletDefinitionsEditorPanel1.initComponents(editObj);
         paramDefinitionsEditorPanel1.initComponents(editObj);
@@ -241,36 +250,42 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
                 editObj.sLocalData = CleanString(jTextAreaLocalData.getText());
             }
         });
+
         jTextAreaInitCode.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             void update() {
                 editObj.sInitCode = CleanString(jTextAreaInitCode.getText());
             }
         });
+
         jTextAreaKRateCode.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             void update() {
                 editObj.sKRateCode = CleanString(jTextAreaKRateCode.getText());
             }
         });
+
         jTextAreaSRateCode.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             void update() {
                 editObj.sSRateCode = CleanString(jTextAreaSRateCode.getText());
             }
         });
+
         jTextAreaDisposeCode.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             void update() {
                 editObj.sDisposeCode = CleanString(jTextAreaDisposeCode.getText());
             }
         });
+
         jTextAreaMidiCode.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             void update() {
                 editObj.sMidiCode = CleanString(jTextAreaMidiCode.getText());
             }
         });
+
         rSyntaxTextAreaXML.setFont(Constants.FONT_MONO);
         rSyntaxTextAreaXML.setEditable(false);
 
@@ -278,29 +293,32 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         AxolotiLibrary sellib = null;
         for (AxolotiLibrary lib : MainFrame.prefs.getLibraries()) {
             if (editObj.sPath != null && editObj.sPath.startsWith(lib.getLocalLocation())) {
-
                 if (sellib == null || sellib.getLocalLocation().length() < lib.getLocalLocation().length()) {
                     sellib = lib;
                 }
             }
         }
+
         if (IsEmbeddedObj()) {
             jMenuItemSave.setEnabled(false);
             jLabelLibrary.setText("embedded");
-            setTitle("");
-            // embedded objects have no use for help patches
+
+            /* Embedded objects have no use for help patches */
             jTextFieldHelp.setVisible(false);
             jLabelHelp.setVisible(false);
-        } else // normal objects
-        if (sellib != null) {
-            jMenuItemSave.setEnabled(!sellib.isReadOnly());
-            if (sellib.isReadOnly()) {
-                SetReadOnly(true);
-                jLabelLibrary.setText(sellib.getId() + " (readonly)");
-                setTitle(sellib.getId() + ":" + origObj.id + " (readonly)");
-            } else {
-                jLabelLibrary.setText(sellib.getId());
-                setTitle(sellib.getId() + ":" + origObj.id);
+        }
+        else { // normal objects
+            if (sellib != null) {
+                jMenuItemSave.setEnabled(!sellib.isReadOnly());
+                if (sellib.isReadOnly()) {
+                    SetReadOnly(true);
+                    jLabelLibrary.setText(sellib.getId() + " (readonly)");
+                    setTitle(sellib.getId() + ":" + origObj.id + " (readonly)");
+                }
+                else {
+                    jLabelLibrary.setText(sellib.getId());
+                    setTitle(sellib.getId() + ":" + origObj.id);
+                }
             }
         }
 
@@ -314,6 +332,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
     void SetReadOnly(boolean readonly) {
         this.readonly = readonly;
+
         jTextDesc.setEditable(!readonly);
         jTextFieldAuthor.setEditable(!readonly);
         jTextFieldLicense.setEditable(!readonly);
@@ -366,14 +385,17 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
     boolean hasChanged() {
         updateAcProvider(editObj);
-        Serializer serializer = new Persister();
 
+        Serializer serializer = new Persister();
         ByteArrayOutputStream editOS = new ByteArrayOutputStream(2048);
+
         try {
             serializer.write(editObj, editOS);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         return !(origXML.equals(editOS.toString()));
     }
 
@@ -387,16 +409,20 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             jTextAreaDisposeCode.setText(editObj.sDisposeCode == null ? "" : editObj.sDisposeCode);
             jTextAreaMidiCode.setText(editObj.sMidiCode == null ? "" : editObj.sMidiCode);
         }
+
         Serializer serializer = new Persister();
         ByteArrayOutputStream os = new ByteArrayOutputStream(2048);
+
         try {
             serializer.write(editObj, os);
             Theme theme = Theme.load(Theme.class.getResourceAsStream(
                 "/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
             theme.apply(rSyntaxTextAreaXML);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         rSyntaxTextAreaXML.setFont(Constants.FONT_MONO);
         rSyntaxTextAreaXML.setText(os.toString());
         rSyntaxTextAreaXML.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
@@ -448,11 +474,13 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
                     default: // closed
                         return true;
                 }
-            } else {
+            }
+            else {
                 Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, "Changed but readonly: should not happen");
                 return true;
             }
-        } else {
+        }
+        else {
             // no changes
             Close();
             return false;
@@ -587,19 +615,20 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         jInternalFrame1.setVisible(true);
 
-        javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
+        GroupLayout jInternalFrame1Layout = new GroupLayout(jInternalFrame1.getContentPane());
         jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
         jInternalFrame1Layout.setHorizontalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jInternalFrame1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
         jInternalFrame1Layout.setVerticalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jInternalFrame1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(800, 480));
+
         addWindowFocusListener(new java.awt.event.WindowFocusListener() {
             public void windowGainedFocus(java.awt.event.WindowEvent evt) {
             }
@@ -612,17 +641,18 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
                 formWindowClosing(evt);
             }
         });
-        getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
+
+        getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
         getContentPane().add(jLabel4);
 
         jPanel1.setPreferredSize(new java.awt.Dimension(640, 100));
-        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.PAGE_AXIS));
+        jPanel1.setLayout(new BoxLayout(jPanel1, BoxLayout.PAGE_AXIS));
 
         jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.LEFT);
         jTabbedPane1.setPreferredSize(new java.awt.Dimension(640, 100));
         jTabbedPane1.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
-        jPanelOverview.setLayout(new javax.swing.BoxLayout(jPanelOverview, javax.swing.BoxLayout.Y_AXIS));
+        jPanelOverview.setLayout(new BoxLayout(jPanelOverview, BoxLayout.Y_AXIS));
 
         jPanel2.setLayout(new java.awt.GridLayout(5, 2));
 
@@ -658,7 +688,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         jPanelOverview.add(jPanel2);
 
-        jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.Y_AXIS));
+        jPanel3.setLayout(new BoxLayout(jPanel3, BoxLayout.Y_AXIS));
 
         jLabel10.setText("Description:");
         jPanel3.add(jLabel10);
@@ -691,107 +721,107 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         jTabbedPane1.addTab("Overview", jPanelOverview);
 
-        javax.swing.GroupLayout inletDefinitionsEditor1Layout = new javax.swing.GroupLayout(inletDefinitionsEditor1);
+        GroupLayout inletDefinitionsEditor1Layout = new GroupLayout(inletDefinitionsEditor1);
         inletDefinitionsEditor1.setLayout(inletDefinitionsEditor1Layout);
         inletDefinitionsEditor1Layout.setHorizontalGroup(
-            inletDefinitionsEditor1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            inletDefinitionsEditor1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 466, Short.MAX_VALUE)
         );
         inletDefinitionsEditor1Layout.setVerticalGroup(
-            inletDefinitionsEditor1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            inletDefinitionsEditor1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 302, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Inlets", inletDefinitionsEditor1);
 
-        javax.swing.GroupLayout outletDefinitionsEditorPanel1Layout = new javax.swing.GroupLayout(outletDefinitionsEditorPanel1);
+        GroupLayout outletDefinitionsEditorPanel1Layout = new GroupLayout(outletDefinitionsEditorPanel1);
         outletDefinitionsEditorPanel1.setLayout(outletDefinitionsEditorPanel1Layout);
         outletDefinitionsEditorPanel1Layout.setHorizontalGroup(
-            outletDefinitionsEditorPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            outletDefinitionsEditorPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 466, Short.MAX_VALUE)
         );
         outletDefinitionsEditorPanel1Layout.setVerticalGroup(
-            outletDefinitionsEditorPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            outletDefinitionsEditorPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 302, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Outlets", outletDefinitionsEditorPanel1);
 
-        javax.swing.GroupLayout attributeDefinitionsEditorPanel1Layout = new javax.swing.GroupLayout(attributeDefinitionsEditorPanel1);
+        GroupLayout attributeDefinitionsEditorPanel1Layout = new GroupLayout(attributeDefinitionsEditorPanel1);
         attributeDefinitionsEditorPanel1.setLayout(attributeDefinitionsEditorPanel1Layout);
         attributeDefinitionsEditorPanel1Layout.setHorizontalGroup(
-            attributeDefinitionsEditorPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            attributeDefinitionsEditorPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 466, Short.MAX_VALUE)
         );
         attributeDefinitionsEditorPanel1Layout.setVerticalGroup(
-            attributeDefinitionsEditorPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            attributeDefinitionsEditorPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 302, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Attributes", attributeDefinitionsEditorPanel1);
 
-        javax.swing.GroupLayout paramDefinitionsEditorPanel1Layout = new javax.swing.GroupLayout(paramDefinitionsEditorPanel1);
+        GroupLayout paramDefinitionsEditorPanel1Layout = new GroupLayout(paramDefinitionsEditorPanel1);
         paramDefinitionsEditorPanel1.setLayout(paramDefinitionsEditorPanel1Layout);
         paramDefinitionsEditorPanel1Layout.setHorizontalGroup(
-            paramDefinitionsEditorPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            paramDefinitionsEditorPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 466, Short.MAX_VALUE)
         );
         paramDefinitionsEditorPanel1Layout.setVerticalGroup(
-            paramDefinitionsEditorPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            paramDefinitionsEditorPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 302, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Parameters", paramDefinitionsEditorPanel1);
 
-        javax.swing.GroupLayout displayDefinitionsEditorPanel1Layout = new javax.swing.GroupLayout(displayDefinitionsEditorPanel1);
+        GroupLayout displayDefinitionsEditorPanel1Layout = new GroupLayout(displayDefinitionsEditorPanel1);
         displayDefinitionsEditorPanel1.setLayout(displayDefinitionsEditorPanel1Layout);
         displayDefinitionsEditorPanel1Layout.setHorizontalGroup(
-            displayDefinitionsEditorPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            displayDefinitionsEditorPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 466, Short.MAX_VALUE)
         );
         displayDefinitionsEditorPanel1Layout.setVerticalGroup(
-            displayDefinitionsEditorPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            displayDefinitionsEditorPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 302, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Displays", displayDefinitionsEditorPanel1);
 
-        javax.swing.GroupLayout jPanelLocalDataLayout = new javax.swing.GroupLayout(jPanelLocalData);
+        GroupLayout jPanelLocalDataLayout = new GroupLayout(jPanelLocalData);
         jPanelLocalData.setLayout(jPanelLocalDataLayout);
         jPanelLocalDataLayout.setHorizontalGroup(
-            jPanelLocalDataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jPanelLocalDataLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 466, Short.MAX_VALUE)
         );
         jPanelLocalDataLayout.setVerticalGroup(
-            jPanelLocalDataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jPanelLocalDataLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 302, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Local Data", jPanelLocalData);
 
-        javax.swing.GroupLayout jPanelInitCodeLayout = new javax.swing.GroupLayout(jPanelInitCode);
+        GroupLayout jPanelInitCodeLayout = new GroupLayout(jPanelInitCode);
         jPanelInitCode.setLayout(jPanelInitCodeLayout);
         jPanelInitCodeLayout.setHorizontalGroup(
-            jPanelInitCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jPanelInitCodeLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 466, Short.MAX_VALUE)
         );
         jPanelInitCodeLayout.setVerticalGroup(
-            jPanelInitCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jPanelInitCodeLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 302, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Init Code", jPanelInitCode);
 
-        jPanelKRateCode.setLayout(new javax.swing.BoxLayout(jPanelKRateCode, javax.swing.BoxLayout.Y_AXIS));
+        jPanelKRateCode.setLayout(new BoxLayout(jPanelKRateCode, BoxLayout.Y_AXIS));
 
-        javax.swing.GroupLayout jPanelKRateCode2Layout = new javax.swing.GroupLayout(jPanelKRateCode2);
+        GroupLayout jPanelKRateCode2Layout = new GroupLayout(jPanelKRateCode2);
         jPanelKRateCode2.setLayout(jPanelKRateCode2Layout);
         jPanelKRateCode2Layout.setHorizontalGroup(
-            jPanelKRateCode2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jPanelKRateCode2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 466, Short.MAX_VALUE)
         );
         jPanelKRateCode2Layout.setVerticalGroup(
-            jPanelKRateCode2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jPanelKRateCode2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 302, Short.MAX_VALUE)
         );
 
@@ -799,45 +829,45 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         jTabbedPane1.addTab("K-rate Code", jPanelKRateCode);
 
-        javax.swing.GroupLayout jPanelSRateCodeLayout = new javax.swing.GroupLayout(jPanelSRateCode);
+        GroupLayout jPanelSRateCodeLayout = new GroupLayout(jPanelSRateCode);
         jPanelSRateCode.setLayout(jPanelSRateCodeLayout);
         jPanelSRateCodeLayout.setHorizontalGroup(
-            jPanelSRateCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jPanelSRateCodeLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 466, Short.MAX_VALUE)
         );
         jPanelSRateCodeLayout.setVerticalGroup(
-            jPanelSRateCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jPanelSRateCodeLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 302, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("S-rate Code", jPanelSRateCode);
 
-        javax.swing.GroupLayout jPanelDisposeCodeLayout = new javax.swing.GroupLayout(jPanelDisposeCode);
+        GroupLayout jPanelDisposeCodeLayout = new GroupLayout(jPanelDisposeCode);
         jPanelDisposeCode.setLayout(jPanelDisposeCodeLayout);
         jPanelDisposeCodeLayout.setHorizontalGroup(
-            jPanelDisposeCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jPanelDisposeCodeLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 466, Short.MAX_VALUE)
         );
         jPanelDisposeCodeLayout.setVerticalGroup(
-            jPanelDisposeCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jPanelDisposeCodeLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 302, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Dispose Code", jPanelDisposeCode);
 
-        jPanelMidiCode.setLayout(new javax.swing.BoxLayout(jPanelMidiCode, javax.swing.BoxLayout.Y_AXIS));
+        jPanelMidiCode.setLayout(new BoxLayout(jPanelMidiCode, BoxLayout.Y_AXIS));
 
         jLabelMidiPrototype.setText("jLabel11");
         jPanelMidiCode.add(jLabelMidiPrototype);
 
-        javax.swing.GroupLayout jPanelMidiCode2Layout = new javax.swing.GroupLayout(jPanelMidiCode2);
+        GroupLayout jPanelMidiCode2Layout = new GroupLayout(jPanelMidiCode2);
         jPanelMidiCode2.setLayout(jPanelMidiCode2Layout);
         jPanelMidiCode2Layout.setHorizontalGroup(
-            jPanelMidiCode2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jPanelMidiCode2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 466, Short.MAX_VALUE)
         );
         jPanelMidiCode2Layout.setVerticalGroup(
-            jPanelMidiCode2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jPanelMidiCode2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 288, Short.MAX_VALUE)
         );
 
@@ -849,15 +879,15 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         rSyntaxTextAreaXML.setRows(5);
         jScrollPane6.setViewportView(rSyntaxTextAreaXML);
 
-        javax.swing.GroupLayout jPanelXMLLayout = new javax.swing.GroupLayout(jPanelXML);
+        GroupLayout jPanelXMLLayout = new GroupLayout(jPanelXML);
         jPanelXML.setLayout(jPanelXMLLayout);
         jPanelXMLLayout.setHorizontalGroup(
-            jPanelXMLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
+            jPanelXMLLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane6, GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
         );
         jPanelXMLLayout.setVerticalGroup(
-            jPanelXMLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+            jPanelXMLLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane6, GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("XML", jPanelXML);
