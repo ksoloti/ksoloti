@@ -1,3 +1,4 @@
+@echo off
 set platformdir=%~sdp0
 
 if not defined axoloti_release (
