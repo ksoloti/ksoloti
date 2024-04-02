@@ -1,5 +1,6 @@
 /**
- * Copyright (C) 2013-2016 Johannes Taelman
+ * Copyright (C) 2013 - 2016 Johannes Taelman
+ * Edited 2023 - 2024 by Ksoloti
  *
  * This file is part of Axoloti.
  *
