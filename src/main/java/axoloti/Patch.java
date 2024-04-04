@@ -388,7 +388,8 @@ public class Patch {
                 o.patch = this;
                 o.PostConstructor();
                 // System.out.println("Obj added " + o.getInstanceName());
-            } else if (t == null || o.getName().equals("zombie")) {
+            }
+            else if ((t == null) || (o.getName() != null && o.getName().equals("zombie"))) {
                 if (o.getName() != null && o.getName().equals("zombie")) {
                     Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "The patch has been previously saved with zombies. You have to replace all zombies manually to be able to compile it again.");
                 }
