@@ -33,7 +33,8 @@ void axoloti_math_init(void) {
   volatile uint32_t i;
   p = (short *)sinet;
   for (i = 0; i < SINETSIZE + 1; i++) {
-//    volatile float f = i * 2 * PI_F / (float)SINETSIZE;
+    /* Use PI defined in arm_math.h instead of PI_F from axoloti_defines.h */
+//    volatile float f = i * 2 * PI / (float)SINETSIZE;
 //    volatile float sin_f = sinf(f);
 //    volatile int isinf = (32767.0f*sin_f);
 //    float f2 = (sin_f*sin_f*sin_f);
@@ -43,13 +44,15 @@ void axoloti_math_init(void) {
 
   int32_t *p32 = (int32_t *)sine2t;
   for (i = 0; i < SINE2TSIZE + 1; i++) {
-    float f = i * 2 * PI_F / (float)SINE2TSIZE;
+    /* Use PI defined in arm_math.h instead of PI_F from axoloti_defines.h */
+    float f = i * 2 * PI / (float)SINE2TSIZE;
     *p32++ = (int32_t)(INT32_MAX * sinf(f));
   }
 
   p = (short *)windowt;
   for (i = 0; i < WINDOWSIZE + 1; i++) {
-    float f = i * 2 * PI_F / (float)WINDOWSIZE;
+    /* Use PI defined in arm_math.h instead of PI_F from axoloti_defines.h */
+    float f = i * 2 * PI / (float)WINDOWSIZE;
     *p++ = (int16_t)(32767.0f * (0.5f - 0.5f * cosf(f)));
   }
 
