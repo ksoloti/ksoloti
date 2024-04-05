@@ -1,3 +1,13 @@
+/* IMPORTANT NOTE: this file is modified by JT
+*    the macro's
+*       multAcc_32x32_keep32_R, multSub_32x32_keep32_R, mult_32x32_keep32_R,
+*       multAcc_32x32_keep32, multSub_32x32_keep32, mult_32x32_keep32
+*    do not seem to convince the gcc compiler to emit
+*       SMMLAR, SMMLSR, SMMULR
+*       SMMLA, SMMLS, SMMUL
+*    instructions but less efficient code, so replaced with inline assembly...
+*/
+
 /******************************************************************************
  * @file     arm_math.h
  * @brief    Public header file for CMSIS DSP Library
@@ -7074,27 +7084,33 @@ arm_status arm_sqrt_q15(
 
 /* SMMLAR */
 #define multAcc_32x32_keep32_R(a, x, y) \
-    a = (q31_t) (((((q63_t) a) << 32) + ((q63_t) x * y) + 0x80000000LL ) >> 32)
+	__ASM volatile ("smmlar %0, %1, %2, %3" : "=r" (a) : "r" (x), "r" (y), "r" (a) );
+//    a = (q31_t) (((((q63_t) a) << 32) + ((q63_t) x * y) + 0x80000000LL ) >> 32)
 
 /* SMMLSR */
 #define multSub_32x32_keep32_R(a, x, y) \
-    a = (q31_t) (((((q63_t) a) << 32) - ((q63_t) x * y) + 0x80000000LL ) >> 32)
+	__ASM volatile ("smmlsr %0, %1, %2, %3" : "=r" (a) : "r" (x), "r" (y), "r" (a) );
+//    a = (q31_t) (((((q63_t) a) << 32) - ((q63_t) x * y) + 0x80000000LL ) >> 32)
 
 /* SMMULR */
 #define mult_32x32_keep32_R(a, x, y) \
-    a = (q31_t) (((q63_t) x * y + 0x80000000LL ) >> 32)
+	__ASM volatile ("smmulr %0, %1, %2" : "=r" (a) : "r" (x), "r" (y) );
+//    a = (q31_t) (((q63_t) x * y + 0x80000000LL ) >> 32)
 
 /* SMMLA */
 #define multAcc_32x32_keep32(a, x, y) \
-    a += (q31_t) (((q63_t) x * y) >> 32)
+	__ASM volatile ("smmla %0, %1, %2, %3" : "=r" (a) : "r" (x), "r" (y), "r" (a) );
+//    a += (q31_t) (((q63_t) x * y) >> 32)
 
 /* SMMLS */
 #define multSub_32x32_keep32(a, x, y) \
-    a -= (q31_t) (((q63_t) x * y) >> 32)
+	__ASM volatile ("smmls %0, %1, %2, %3" : "=r" (a) : "r" (x), "r" (y), "r" (a) );
+//    a -= (q31_t) (((q63_t) x * y) >> 32)
 
 /* SMMUL */
 #define mult_32x32_keep32(a, x, y) \
-    a = (q31_t) (((q63_t) x * y ) >> 32)
+	__ASM volatile ("smmul %0, %1, %2" : "=r" (a) : "r" (x), "r" (y) );
+//    a = (q31_t) (((q63_t) x * y ) >> 32)
 
 
 #if   defined ( __CC_ARM )
