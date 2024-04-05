@@ -1,66 +1,54 @@
 /* ----------------------------------------------------------------------
-* Copyright (C) 2010-2014 ARM Limited. All rights reserved.
-*
-* $Date:        03. January 2017
-* $Revision:    V.1.5.0
-*
-* Project:      CMSIS DSP Library
-* Title:        arm_rfft_init_f32.c
-*
-* Description:  RFFT & RIFFT Floating point initialisation function
-*
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions
-* are met:
-*   - Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
-*   - Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
-*   - Neither the name of ARM LIMITED nor the names of its contributors
-*     may be used to endorse or promote products derived from this
-*     software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-* COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-* LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-* ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.
-* -------------------------------------------------------------------- */
-
+ * Project:      CMSIS DSP Library
+ * Title:        arm_rfft_init_f32.c
+ * Description:  RFFT & RIFFT Floating point initialisation function
+ *
+ * $Date:        18. March 2019
+ * $Revision:    V1.6.0
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2019 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
 /**
- * @ingroup RealFFT
+  @ingroup RealFFT
  */
 
 /**
- * @addtogroup RealFFT_Table Real FFT Tables
- * @{
+  @addtogroup RealFFT_Table Real FFT Tables
+  @{
  */
 
 /**
-* \par
-* Generation of realCoefA array:
-* \par
-* 	n = 4096
-* <pre>for (i = 0; i < n; i++)
-*  {
-*    pATable[2 * i] = 0.5 * (1.0 - sin (2 * PI / (double) (2 * n) * (double) i));
-*    pATable[2 * i + 1] = 0.5 * (-1.0 * cos (2 * PI / (double) (2 * n) * (double) i));
-*  } </pre>
-*/
+  @par
+  Generation of realCoefA array:
+  @par
+  n = 4096
+  <pre>for (i = 0; i < n; i++)
+  {
+     pATable[2 * i]     = 0.5 * ( 1.0 - sin (2 * PI / (double) (2 * n) * (double) i));
+     pATable[2 * i + 1] = 0.5 * (-1.0 * cos (2 * PI / (double) (2 * n) * (double) i));
+  }</pre>
+ */
+
 static const float32_t realCoefA[8192] = {
   0.500000000000000f, -0.500000000000000f, 0.499616503715515f, -0.499999850988388f,
   0.499233007431030f, -0.499999403953552f, 0.498849511146545f, -0.499998688697815f,
@@ -2114,17 +2102,17 @@ static const float32_t realCoefA[8192] = {
 
 
 /**
-* \par
-* Generation of realCoefB array:
-* \par
-* n = 4096
-* <pre>for (i = 0; i < n; i++)
-* {
-*    pBTable[2 * i] = 0.5 * (1.0 + sin (2 * PI / (double) (2 * n) * (double) i));
-*    pBTable[2 * i + 1] = 0.5 * (1.0 * cos (2 * PI / (double) (2 * n) * (double) i));
-*  } </pre>
-*
-*/
+  @par
+  Generation of realCoefB array:
+  @par
+  n = 4096
+  <pre>for (i = 0; i < n; i++)
+  {
+     pBTable[2 * i]     = 0.5 * (1.0 + sin (2 * PI / (double) (2 * n) * (double) i));
+     pBTable[2 * i + 1] = 0.5 * (1.0 * cos (2 * PI / (double) (2 * n) * (double) i));
+  }</pre>
+ */
+
 static const float32_t realCoefB[8192] = {
   0.500000000000000f, 0.500000000000000f, 0.500383496284485f, 0.499999850988388f,
   0.500766992568970f, 0.499999403953552f, 0.501150488853455f, 0.499998688697815f,
@@ -4179,37 +4167,42 @@ static const float32_t realCoefB[8192] = {
 
 
 /**
-* @brief  Initialization function for the floating-point RFFT/RIFFT.
-* @deprecated Do not use this function.  It has been superceded by \ref arm_rfft_fast_init_f32 and will be removed
-* in the future.
-* @param[in,out] *S             points to an instance of the floating-point RFFT/RIFFT structure.
-* @param[in,out] *S_CFFT        points to an instance of the floating-point CFFT/CIFFT structure.
-* @param[in]     fftLenReal     length of the FFT.
-* @param[in]     ifftFlagR      flag that selects forward (ifftFlagR=0) or inverse (ifftFlagR=1) transform.
-* @param[in]     bitReverseFlag flag that enables (bitReverseFlag=1) or disables (bitReverseFlag=0) bit reversal of output.
-* @return        The function returns ARM_MATH_SUCCESS if initialization is successful or ARM_MATH_ARGUMENT_ERROR if <code>fftLenReal</code> is not a supported value.
-*
-* \par Description:
-* \par
-* The parameter <code>fftLenReal</code>	Specifies length of RFFT/RIFFT Process. Supported FFT Lengths are 128, 512, 2048.
-* \par
-* The parameter <code>ifftFlagR</code> controls whether a forward or inverse transform is computed.
-* Set(=1) ifftFlagR to calculate RIFFT, otherwise RFFT is calculated.
-* \par
-* The parameter <code>bitReverseFlag</code> controls whether output is in normal order or bit reversed order.
-* Set(=1) bitReverseFlag for output to be in normal order otherwise output is in bit reversed order.
-* \par
-* This function also initializes Twiddle factor table.
-*/
+  @} end of RealFFT_Table group
+ */
 
 /**
-* @} end of RealFFT_Table group
-*/
+  @addtogroup RealFFT
+  @{
+ */
 
 /**
-* @addtogroup RealFFT
-* @{
-*/
+  @brief         Initialization function for the floating-point RFFT/RIFFT.
+  @deprecated    Do not use this function. It has been superceded by \ref arm_rfft_fast_init_f32 and will be removed in the future.
+  @param[in,out] S             points to an instance of the floating-point RFFT/RIFFT structure
+  @param[in,out] S_CFFT        points to an instance of the floating-point CFFT/CIFFT structure
+  @param[in]     fftLenReal     length of the FFT.
+  @param[in]     ifftFlagR      flag that selects transform direction
+                   - value = 0: forward transform
+                   - value = 1: inverse transform
+  @param[in]     bitReverseFlag flag that enables / disables bit reversal of output
+                   - value = 0: disables bit reversal of output
+                   - value = 1: enables bit reversal of output
+  @return        execution status
+                   - \ref ARM_MATH_SUCCESS        : Operation successful
+                   - \ref ARM_MATH_ARGUMENT_ERROR : <code>fftLenReal</code> is not a supported length
+
+  @par Description
+                   The parameter <code>fftLenReal</code>specifies length of RFFT/RIFFT Process.
+                   Supported FFT Lengths are 128, 512, 2048.
+  @par
+                   The parameter <code>ifftFlagR</code> controls whether a forward or inverse transform is computed.
+                   Set(=1) ifftFlagR to calculate RIFFT, otherwise RFFT is calculated.
+  @par
+                   The parameter <code>bitReverseFlag</code> controls whether output is in normal order or bit reversed order.
+                   Set(=1) bitReverseFlag for output to be in normal order otherwise output is in bit reversed order.
+  @par
+                   This function also initializes Twiddle factor table.
+ */
 
 arm_status arm_rfft_init_f32(
   arm_rfft_instance_f32 * S,
@@ -4226,7 +4219,7 @@ arm_status arm_rfft_init_f32(
   S->fftLenReal = (uint16_t) fftLenReal;
 
   /*  Initialize the Complex FFT length */
-  S->fftLenBy2 = (uint16_t) fftLenReal / 2u;
+  S->fftLenBy2 = (uint16_t) fftLenReal / 2U;
 
   /*  Initialize the Twiddle coefficientA pointer */
   S->pTwiddleAReal = (float32_t *) realCoefA;
@@ -4244,17 +4237,17 @@ arm_status arm_rfft_init_f32(
   switch (S->fftLenReal)
   {
     /* Init table modifier value */
-  case 8192u:
-    S->twidCoefRModifier = 1u;
+  case 8192U:
+    S->twidCoefRModifier = 1U;
     break;
-  case 2048u:
-    S->twidCoefRModifier = 4u;
+  case 2048U:
+    S->twidCoefRModifier = 4U;
     break;
-  case 512u:
-    S->twidCoefRModifier = 16u;
+  case 512U:
+    S->twidCoefRModifier = 16U;
     break;
-  case 128u:
-    S->twidCoefRModifier = 64u;
+  case 128U:
+    S->twidCoefRModifier = 64U;
     break;
   default:
     /*  Reporting argument error if rfftSize is not valid value */
@@ -4268,12 +4261,12 @@ arm_status arm_rfft_init_f32(
   if (S->ifftFlagR)
   {
     /* Initializes the CIFFT Module for fftLenreal/2 length */
-    arm_cfft_radix4_init_f32(S->pCfft, S->fftLenBy2, 1u, 0u);
+    arm_cfft_radix4_init_f32(S->pCfft, S->fftLenBy2, 1U, 0U);
   }
   else
   {
     /* Initializes the CFFT Module for fftLenreal/2 length */
-    arm_cfft_radix4_init_f32(S->pCfft, S->fftLenBy2, 0u, 0u);
+    arm_cfft_radix4_init_f32(S->pCfft, S->fftLenBy2, 0U, 0U);
   }
 
   /* return the status of RFFT Init function */
@@ -4281,6 +4274,6 @@ arm_status arm_rfft_init_f32(
 
 }
 
-  /**
-   * @} end of RealFFT group
-   */
+/**
+  @} end of RealFFT group
+ */

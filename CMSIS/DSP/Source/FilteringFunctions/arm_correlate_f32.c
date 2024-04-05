@@ -1,142 +1,125 @@
-/* ----------------------------------------------------------------------------
-* Copyright (C) 2010-2014 ARM Limited. All rights reserved.
-*
-* $Date:        03. January 2017
-* $Revision:    V.1.5.0
-*
-* Project:      CMSIS DSP Library
-* Title:        arm_correlate_f32.c
-*
-* Description:  Correlation of floating-point sequences.
-*
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions
-* are met:
-*   - Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
-*   - Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
-*   - Neither the name of ARM LIMITED nor the names of its contributors
-*     may be used to endorse or promote products derived from this
-*     software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-* COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-* LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-* ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.
-* -------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_correlate_f32.c
+ * Description:  Correlation of floating-point sequences
+ *
+ * $Date:        18. March 2019
+ * $Revision:    V1.6.0
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2019 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
 /**
- * @ingroup groupFilters
+  @ingroup groupFilters
  */
 
 /**
- * @defgroup Corr Correlation
- *
- * Correlation is a mathematical operation that is similar to convolution.
- * As with convolution, correlation uses two signals to produce a third signal.
- * The underlying algorithms in correlation and convolution are identical except that one of the inputs is flipped in convolution.
- * Correlation is commonly used to measure the similarity between two signals.
- * It has applications in pattern recognition, cryptanalysis, and searching.
- * The CMSIS library provides correlation functions for Q7, Q15, Q31 and floating-point data types.
- * Fast versions of the Q15 and Q31 functions are also provided.
- *
- * \par Algorithm
- * Let <code>a[n]</code> and <code>b[n]</code> be sequences of length <code>srcALen</code> and <code>srcBLen</code> samples respectively.
- * The convolution of the two signals is denoted by
- * <pre>
- *                   c[n] = a[n] * b[n]
- * </pre>
- * In correlation, one of the signals is flipped in time
- * <pre>
- *                   c[n] = a[n] * b[-n]
- * </pre>
- *
- * \par
- * and this is mathematically defined as
- * \image html CorrelateEquation.gif
- * \par
- * The <code>pSrcA</code> points to the first input vector of length <code>srcALen</code> and <code>pSrcB</code> points to the second input vector of length <code>srcBLen</code>.
- * The result <code>c[n]</code> is of length <code>2 * max(srcALen, srcBLen) - 1</code> and is defined over the interval <code>n=0, 1, 2, ..., (2 * max(srcALen, srcBLen) - 2)</code>.
- * The output result is written to <code>pDst</code> and the calling function must allocate <code>2 * max(srcALen, srcBLen) - 1</code> words for the result.
- *
- * <b>Note</b>
- * \par
- * The <code>pDst</code> should be initialized to all zeros before being used.
- *
- * <b>Fixed-Point Behavior</b>
- * \par
- * Correlation requires summing up a large number of intermediate products.
- * As such, the Q7, Q15, and Q31 functions run a risk of overflow and saturation.
- * Refer to the function specific documentation below for further details of the particular algorithm used.
- *
- *
- * <b>Fast Versions</b>
- *
- * \par
- * Fast versions are supported for Q31 and Q15.  Cycles for Fast versions are less compared to Q31 and Q15 of correlate and the design requires
- * the input signals should be scaled down to avoid intermediate overflows.
- *
- *
- * <b>Opt Versions</b>
- *
- * \par
- * Opt versions are supported for Q15 and Q7.  Design uses internal scratch buffer for getting good optimisation.
- * These versions are optimised in cycles and consumes more memory(Scratch memory) compared to Q15 and Q7 versions of correlate
+  @defgroup Corr Correlation
+
+  Correlation is a mathematical operation that is similar to convolution.
+  As with convolution, correlation uses two signals to produce a third signal.
+  The underlying algorithms in correlation and convolution are identical except that one of the inputs is flipped in convolution.
+  Correlation is commonly used to measure the similarity between two signals.
+  It has applications in pattern recognition, cryptanalysis, and searching.
+  The CMSIS library provides correlation functions for Q7, Q15, Q31 and floating-point data types.
+  Fast versions of the Q15 and Q31 functions are also provided.
+
+  @par           Algorithm
+                   Let <code>a[n]</code> and <code>b[n]</code> be sequences of length <code>srcALen</code> and <code>srcBLen</code> samples respectively.
+                   The convolution of the two signals is denoted by
+  <pre>
+      c[n] = a[n] * b[n]
+  </pre>
+                   In correlation, one of the signals is flipped in time
+  <pre>
+       c[n] = a[n] * b[-n]
+  </pre>
+  @par
+                   and this is mathematically defined as
+                   \image html CorrelateEquation.gif
+  @par
+                   The <code>pSrcA</code> points to the first input vector of length <code>srcALen</code> and <code>pSrcB</code> points to the second input vector of length <code>srcBLen</code>.
+                   The result <code>c[n]</code> is of length <code>2 * max(srcALen, srcBLen) - 1</code> and is defined over the interval <code>n=0, 1, 2, ..., (2 * max(srcALen, srcBLen) - 2)</code>.
+                   The output result is written to <code>pDst</code> and the calling function must allocate <code>2 * max(srcALen, srcBLen) - 1</code> words for the result.
+
+  @note
+                   The <code>pDst</code> should be initialized to all zeros before being used.
+
+  @par           Fixed-Point Behavior
+                   Correlation requires summing up a large number of intermediate products.
+                   As such, the Q7, Q15, and Q31 functions run a risk of overflow and saturation.
+                   Refer to the function specific documentation below for further details of the particular algorithm used.
+
+  @par           Fast Versions
+                   Fast versions are supported for Q31 and Q15.  Cycles for Fast versions are less compared to Q31 and Q15 of correlate and the design requires
+                   the input signals should be scaled down to avoid intermediate overflows.
+
+  @par           Opt Versions
+                   Opt versions are supported for Q15 and Q7.  Design uses internal scratch buffer for getting good optimisation.
+                   These versions are optimised in cycles and consumes more memory (Scratch memory) compared to Q15 and Q7 versions of correlate
  */
 
 /**
- * @addtogroup Corr
- * @{
+  @addtogroup Corr
+  @{
  */
+
 /**
- * @brief Correlation of floating-point sequences.
- * @param[in]  *pSrcA points to the first input sequence.
- * @param[in]  srcALen length of the first input sequence.
- * @param[in]  *pSrcB points to the second input sequence.
- * @param[in]  srcBLen length of the second input sequence.
- * @param[out] *pDst points to the location where the output result is written.  Length 2 * max(srcALen, srcBLen) - 1.
- * @return none.
+  @brief         Correlation of floating-point sequences.
+  @param[in]     pSrcA      points to the first input sequence
+  @param[in]     srcALen    length of the first input sequence
+  @param[in]     pSrcB      points to the second input sequence
+  @param[in]     srcBLen    length of the second input sequence
+  @param[out]    pDst       points to the location where the output result is written.  Length 2 * max(srcALen, srcBLen) - 1.
+  @return        none
  */
 
 void arm_correlate_f32(
-  float32_t * pSrcA,
-  uint32_t srcALen,
-  float32_t * pSrcB,
-  uint32_t srcBLen,
-  float32_t * pDst)
+  const float32_t * pSrcA,
+        uint32_t srcALen,
+  const float32_t * pSrcB,
+        uint32_t srcBLen,
+        float32_t * pDst)
 {
 
+#if (1)
+//#if !defined(ARM_MATH_CM0_FAMILY)
 
-#if defined (ARM_MATH_DSP)
+  const float32_t *pIn1;                               /* InputA pointer */
+  const float32_t *pIn2;                               /* InputB pointer */
+        float32_t *pOut = pDst;                        /* Output pointer */
+  const float32_t *px;                                 /* Intermediate inputA pointer */
+  const float32_t *py;                                 /* Intermediate inputB pointer */
+  const float32_t *pSrc1;                              /* Intermediate pointers */
+        float32_t sum;                                 /* Accumulators */
+        uint32_t blockSize1, blockSize2, blockSize3;   /* Loop counters */
+        uint32_t j, k, count, blkCnt;                  /* Loop counters */
+        uint32_t outBlockSize;                         /* Loop counter */
+        int32_t inc = 1;                               /* Destination address modifier */
 
-  /* Run the below code for Cortex-M4 and Cortex-M3 */
-
-  float32_t *pIn1;                               /* inputA pointer */
-  float32_t *pIn2;                               /* inputB pointer */
-  float32_t *pOut = pDst;                        /* output pointer */
-  float32_t *px;                                 /* Intermediate inputA pointer */
-  float32_t *py;                                 /* Intermediate inputB pointer */
-  float32_t *pSrc1;                              /* Intermediate pointers */
-  float32_t sum, acc0, acc1, acc2, acc3;         /* Accumulators */
-  float32_t x0, x1, x2, x3, c0;                  /* temporary variables for holding input and coefficient values */
-  uint32_t j, k = 0u, count, blkCnt, outBlockSize, blockSize1, blockSize2, blockSize3;  /* loop counters */
-  int32_t inc = 1;                               /* Destination address modifier */
-
+#if defined (ARM_MATH_LOOPUNROLL)
+        float32_t acc0, acc1, acc2, acc3;              /* Accumulators */
+        float32_t x0, x1, x2, x3, c0;                  /* Temporary variables for holding input and coefficient values */
+#endif
 
   /* The algorithm implementation is based on the lengths of the inputs. */
   /* srcB is always made to slide across srcA. */
@@ -160,18 +143,18 @@ void arm_correlate_f32(
     pIn2 = pSrcB;
 
     /* Number of output samples is calculated */
-    outBlockSize = (2u * srcALen) - 1u;
+    outBlockSize = (2U * srcALen) - 1U;
 
     /* When srcALen > srcBLen, zero padding has to be done to srcB
      * to make their lengths equal.
      * Instead, (outBlockSize - (srcALen + srcBLen - 1))
      * number of output samples are made zero */
-    j = outBlockSize - (srcALen + (srcBLen - 1u));
+    j = outBlockSize - (srcALen + (srcBLen - 1U));
 
     /* Updating the pointer position to non zero value */
     pOut += j;
 
-    //while (j > 0u)
+    //while (j > 0U)
     //{
     //  /* Zero is stored in the destination buffer */
     //  *pOut++ = 0.0f;
@@ -196,7 +179,7 @@ void arm_correlate_f32(
 
     /* CORR(x, y) = Reverse order(CORR(y, x)) */
     /* Hence set the destination pointer to point to the last output sample */
-    pOut = pDst + ((srcALen + srcBLen) - 2u);
+    pOut = pDst + ((srcALen + srcBLen) - 2U);
 
     /* Destination address modifier is set to -1 */
     inc = -1;
@@ -204,16 +187,17 @@ void arm_correlate_f32(
   }
 
   /* The function is internally
-   * divided into three parts according to the number of multiplications that has to be
-   * taken place between inputA samples and inputB samples. In the first part of the
+   * divided into three stages according to the number of multiplications that has to be
+   * taken place between inputA samples and inputB samples. In the first stage of the
    * algorithm, the multiplications increase by one for every iteration.
-   * In the second part of the algorithm, srcBLen number of multiplications are done.
-   * In the third part of the algorithm, the multiplications decrease by one
-   * for every iteration.*/
+   * In the second stage of the algorithm, srcBLen number of multiplications are done.
+   * In the third stage of the algorithm, the multiplications decrease by one
+   * for every iteration. */
+
   /* The algorithm is implemented in three stages.
-   * The loop counters of each stage is initiated here. */
-  blockSize1 = srcBLen - 1u;
-  blockSize2 = srcALen - (srcBLen - 1u);
+     The loop counters of each stage is initiated here. */
+  blockSize1 = srcBLen - 1U;
+  blockSize2 = srcALen - (srcBLen - 1U);
   blockSize3 = blockSize1;
 
   /* --------------------------
@@ -228,13 +212,13 @@ void arm_correlate_f32(
 
   /* In this stage the MAC operations are increased by 1 for every iteration.
      The count variable holds the number of MAC operations performed */
-  count = 1u;
+  count = 1U;
 
   /* Working pointer of inputA */
   px = pIn1;
 
   /* Working pointer of inputB */
-  pSrc1 = pIn2 + (srcBLen - 1u);
+  pSrc1 = pIn2 + (srcBLen - 1U);
   py = pSrc1;
 
   /* ------------------------
@@ -242,42 +226,51 @@ void arm_correlate_f32(
    * ----------------------*/
 
   /* The first stage starts here */
-  while (blockSize1 > 0u)
+  while (blockSize1 > 0U)
   {
     /* Accumulator is made zero for every iteration */
     sum = 0.0f;
 
-    /* Apply loop unrolling and compute 4 MACs simultaneously. */
-    k = count >> 2u;
+#if defined (ARM_MATH_LOOPUNROLL)
 
-    /* First part of the processing with loop unrolling.  Compute 4 MACs at a time.
-     ** a second loop below computes MACs for the remaining 1 to 3 samples. */
-    while (k > 0u)
+    /* Loop unrolling: Compute 4 outputs at a time */
+    k = count >> 2U;
+
+    while (k > 0U)
     {
       /* x[0] * y[srcBLen - 4] */
       sum += *px++ * *py++;
+
       /* x[1] * y[srcBLen - 3] */
       sum += *px++ * *py++;
+
       /* x[2] * y[srcBLen - 2] */
       sum += *px++ * *py++;
+
       /* x[3] * y[srcBLen - 1] */
       sum += *px++ * *py++;
 
-      /* Decrement the loop counter */
+      /* Decrement loop counter */
       k--;
     }
 
-    /* If the count is not a multiple of 4, compute any remaining MACs here.
-     ** No loop unrolling is used. */
-    k = count % 0x4u;
+    /* Loop unrolling: Compute remaining outputs */
+    k = count % 0x4U;
 
-    while (k > 0u)
+#else
+
+    /* Initialize k with number of samples */
+    k = count;
+
+#endif /* #if defined (ARM_MATH_LOOPUNROLL) */
+
+    while (k > 0U)
     {
       /* Perform the multiply-accumulate */
       /* x[0] * y[srcBLen - 1] */
       sum += *px++ * *py++;
 
-      /* Decrement the loop counter */
+      /* Decrement loop counter */
       k--;
     }
 
@@ -290,10 +283,10 @@ void arm_correlate_f32(
     py = pSrc1 - count;
     px = pIn1;
 
-    /* Increment the MAC count */
+    /* Increment MAC count */
     count++;
 
-    /* Decrement the loop counter */
+    /* Decrement loop counter */
     blockSize1--;
   }
 
@@ -302,7 +295,7 @@ void arm_correlate_f32(
    * ------------------------*/
 
   /* sum = x[0] * y[0] + x[1] * y[1] +...+ x[srcBLen-1] * y[srcBLen-1]
-   * sum = x[1] * y[0] + x[2] * y[1] +...+ x[srcBLen] * y[srcBLen-1]
+   * sum = x[1] * y[0] + x[2] * y[1] +...+ x[srcBLen]   * y[srcBLen-1]
    * ....
    * sum = x[srcALen-srcBLen-2] * y[0] + x[srcALen-srcBLen-1] * y[1] +...+ x[srcALen-1] * y[srcBLen-1]
    */
@@ -314,7 +307,7 @@ void arm_correlate_f32(
   py = pIn2;
 
   /* count is index by which the pointer pIn1 to be incremented */
-  count = 0u;
+  count = 0U;
 
   /* -------------------
    * Stage2 process
@@ -322,13 +315,15 @@ void arm_correlate_f32(
 
   /* Stage2 depends on srcBLen as in this stage srcBLen number of MACS are performed.
    * So, to loop unroll over blockSize2,
-   * srcBLen should be greater than or equal to 4, to loop unroll the srcBLen loop */
-  if (srcBLen >= 4u)
+   * srcBLen should be greater than or equal to 4 */
+  if (srcBLen >= 4U)
   {
-    /* Loop unroll over blockSize2, by 4 */
-    blkCnt = blockSize2 >> 2u;
+#if defined (ARM_MATH_LOOPUNROLL)
 
-    while (blkCnt > 0u)
+    /* Loop unrolling: Compute 4 outputs at a time */
+    blkCnt = blockSize2 >> 2U;
+
+    while (blkCnt > 0U)
     {
       /* Set all accumulators to zero */
       acc0 = 0.0f;
@@ -337,12 +332,12 @@ void arm_correlate_f32(
       acc3 = 0.0f;
 
       /* read x[0], x[1], x[2] samples */
-      x0 = *(px++);
-      x1 = *(px++);
-      x2 = *(px++);
+      x0 = *px++;
+      x1 = *px++;
+      x2 = *px++;
 
       /* Apply loop unrolling and compute 4 MACs simultaneously. */
-      k = srcBLen >> 2u;
+      k = srcBLen >> 2U;
 
       /* First part of the processing with loop unrolling.  Compute 4 MACs at a time.
        ** a second loop below computes MACs for the remaining 1 to 3 samples. */
@@ -350,7 +345,6 @@ void arm_correlate_f32(
       {
         /* Read y[0] sample */
         c0 = *(py++);
-
         /* Read x[3] sample */
         x3 = *(px++);
 
@@ -366,7 +360,6 @@ void arm_correlate_f32(
 
         /* Read y[1] sample */
         c0 = *(py++);
-
         /* Read x[4] sample */
         x0 = *(px++);
 
@@ -382,11 +375,10 @@ void arm_correlate_f32(
 
         /* Read y[2] sample */
         c0 = *(py++);
-
         /* Read x[5] sample */
         x1 = *(px++);
 
-        /* Perform the multiply-accumulates */
+        /* Perform the multiply-accumulate */
         /* acc0 +=  x[2] * y[2] */
         acc0 += x2 * c0;
         /* acc1 +=  x[3] * y[2] */
@@ -398,11 +390,10 @@ void arm_correlate_f32(
 
         /* Read y[3] sample */
         c0 = *(py++);
-
         /* Read x[6] sample */
         x2 = *(px++);
 
-        /* Perform the multiply-accumulates */
+        /* Perform the multiply-accumulate */
         /* acc0 +=  x[3] * y[3] */
         acc0 += x3 * c0;
         /* acc1 +=  x[4] * y[3] */
@@ -412,22 +403,20 @@ void arm_correlate_f32(
         /* acc3 +=  x[6] * y[3] */
         acc3 += x2 * c0;
 
-
       } while (--k);
 
       /* If the srcBLen is not a multiple of 4, compute any remaining MACs here.
        ** No loop unrolling is used. */
-      k = srcBLen % 0x4u;
+      k = srcBLen % 0x4U;
 
-      while (k > 0u)
+      while (k > 0U)
       {
         /* Read y[4] sample */
         c0 = *(py++);
-
         /* Read x[7] sample */
         x3 = *(px++);
 
-        /* Perform the multiply-accumulates */
+        /* Perform the multiply-accumulate */
         /* acc0 +=  x[4] * y[4] */
         acc0 += x0 * c0;
         /* acc1 +=  x[5] * y[4] */
@@ -461,47 +450,59 @@ void arm_correlate_f32(
       pOut += inc;
 
       /* Increment the pointer pIn1 index, count by 4 */
-      count += 4u;
+      count += 4U;
 
       /* Update the inputA and inputB pointers for next MAC calculation */
       px = pIn1 + count;
       py = pIn2;
 
-      /* Decrement the loop counter */
+      /* Decrement loop counter */
       blkCnt--;
     }
 
-    /* If the blockSize2 is not a multiple of 4, compute any remaining output samples here.
-     ** No loop unrolling is used. */
-    blkCnt = blockSize2 % 0x4u;
+    /* Loop unrolling: Compute remaining outputs */
+    blkCnt = blockSize2 % 0x4U;
 
-    while (blkCnt > 0u)
+#else
+
+    /* Initialize blkCnt with number of samples */
+    blkCnt = blockSize2;
+
+#endif /* #if defined (ARM_MATH_LOOPUNROLL) */
+
+    while (blkCnt > 0U)
     {
       /* Accumulator is made zero for every iteration */
       sum = 0.0f;
 
-      /* Apply loop unrolling and compute 4 MACs simultaneously. */
-      k = srcBLen >> 2u;
+#if defined (ARM_MATH_LOOPUNROLL)
 
-      /* First part of the processing with loop unrolling.  Compute 4 MACs at a time.
-       ** a second loop below computes MACs for the remaining 1 to 3 samples. */
-      while (k > 0u)
+    /* Loop unrolling: Compute 4 outputs at a time */
+      k = srcBLen >> 2U;
+
+      while (k > 0U)
       {
-        /* Perform the multiply-accumulates */
+        /* Perform the multiply-accumulate */
         sum += *px++ * *py++;
         sum += *px++ * *py++;
         sum += *px++ * *py++;
         sum += *px++ * *py++;
 
-        /* Decrement the loop counter */
+        /* Decrement loop counter */
         k--;
       }
 
-      /* If the srcBLen is not a multiple of 4, compute any remaining MACs here.
-       ** No loop unrolling is used. */
-      k = srcBLen % 0x4u;
+      /* Loop unrolling: Compute remaining outputs */
+      k = srcBLen % 0x4U;
 
-      while (k > 0u)
+#else
+
+      /* Initialize blkCnt with number of samples */
+      k = srcBLen;
+
+#endif /* #if defined (ARM_MATH_LOOPUNROLL) */
+
+      while (k > 0U)
       {
         /* Perform the multiply-accumulate */
         sum += *px++ * *py++;
@@ -532,7 +533,7 @@ void arm_correlate_f32(
      * the blockSize2 loop cannot be unrolled by 4 */
     blkCnt = blockSize2;
 
-    while (blkCnt > 0u)
+    while (blkCnt > 0U)
     {
       /* Accumulator is made zero for every iteration */
       sum = 0.0f;
@@ -540,7 +541,7 @@ void arm_correlate_f32(
       /* Loop over srcBLen */
       k = srcBLen;
 
-      while (k > 0u)
+      while (k > 0U)
       {
         /* Perform the multiply-accumulate */
         sum += *px++ * *py++;
@@ -566,6 +567,7 @@ void arm_correlate_f32(
     }
   }
 
+
   /* --------------------------
    * Initializations of stage3
    * -------------------------*/
@@ -579,10 +581,10 @@ void arm_correlate_f32(
 
   /* In this stage the MAC operations are decreased by 1 for every iteration.
      The count variable holds the number of MAC operations performed */
-  count = srcBLen - 1u;
+  count = srcBLen - 1U;
 
   /* Working pointer of inputA */
-  pSrc1 = pIn1 + (srcALen - (srcBLen - 1u));
+  pSrc1 = pIn1 + (srcALen - (srcBLen - 1U));
   px = pSrc1;
 
   /* Working pointer of inputB */
@@ -592,42 +594,51 @@ void arm_correlate_f32(
    * Stage3 process
    * ------------------*/
 
-  while (blockSize3 > 0u)
+  while (blockSize3 > 0U)
   {
     /* Accumulator is made zero for every iteration */
     sum = 0.0f;
 
-    /* Apply loop unrolling and compute 4 MACs simultaneously. */
-    k = count >> 2u;
+#if defined (ARM_MATH_LOOPUNROLL)
 
-    /* First part of the processing with loop unrolling.  Compute 4 MACs at a time.
-     ** a second loop below computes MACs for the remaining 1 to 3 samples. */
-    while (k > 0u)
+    /* Loop unrolling: Compute 4 outputs at a time */
+    k = count >> 2U;
+
+    while (k > 0U)
     {
-      /* Perform the multiply-accumulates */
+      /* Perform the multiply-accumulate */
       /* sum += x[srcALen - srcBLen + 4] * y[3] */
       sum += *px++ * *py++;
+
       /* sum += x[srcALen - srcBLen + 3] * y[2] */
       sum += *px++ * *py++;
+
       /* sum += x[srcALen - srcBLen + 2] * y[1] */
       sum += *px++ * *py++;
+
       /* sum += x[srcALen - srcBLen + 1] * y[0] */
       sum += *px++ * *py++;
 
-      /* Decrement the loop counter */
+      /* Decrement loop counter */
       k--;
     }
 
-    /* If the count is not a multiple of 4, compute any remaining MACs here.
-     ** No loop unrolling is used. */
-    k = count % 0x4u;
+    /* Loop unrolling: Compute remaining outputs */
+    k = count % 0x4U;
 
-    while (k > 0u)
+#else
+
+    /* Initialize blkCnt with number of samples */
+    k = count;
+
+#endif /* #if defined (ARM_MATH_LOOPUNROLL) */
+
+    while (k > 0U)
     {
-      /* Perform the multiply-accumulates */
+      /* Perform the multiply-accumulate */
       sum += *px++ * *py++;
 
-      /* Decrement the loop counter */
+      /* Decrement loop counter */
       k--;
     }
 
@@ -640,7 +651,7 @@ void arm_correlate_f32(
     px = ++pSrc1;
     py = pIn2;
 
-    /* Decrement the MAC count */
+    /* Decrement MAC count */
     count--;
 
     /* Decrement the loop counter */
@@ -648,15 +659,14 @@ void arm_correlate_f32(
   }
 
 #else
+/* alternate version for CM0_FAMILY */
 
-  /* Run the below code for Cortex-M0 */
-
-  float32_t *pIn1 = pSrcA;                       /* inputA pointer */
-  float32_t *pIn2 = pSrcB + (srcBLen - 1u);      /* inputB pointer */
-  float32_t sum;                                 /* Accumulator */
-  uint32_t i = 0u, j;                            /* loop counters */
-  uint32_t inv = 0u;                             /* Reverse order flag */
-  uint32_t tot = 0u;                             /* Length */
+  const float32_t *pIn1 = pSrcA;                       /* inputA pointer */
+  const float32_t *pIn2 = pSrcB + (srcBLen - 1U);      /* inputB pointer */
+        float32_t sum;                                 /* Accumulator */
+        uint32_t i = 0U, j;                            /* Loop counters */
+        uint32_t inv = 0U;                             /* Reverse order flag */
+        uint32_t tot = 0U;                             /* Length */
 
   /* The algorithm implementation is based on the lengths of the inputs. */
   /* srcB is always made to slide across srcA. */
@@ -675,7 +685,7 @@ void arm_correlate_f32(
    * using convolution but with the shorter signal time shifted. */
 
   /* Calculate the length of the remaining sequence */
-  tot = ((srcALen + srcBLen) - 2u);
+  tot = ((srcALen + srcBLen) - 2U);
 
   if (srcALen > srcBLen)
   {
@@ -692,7 +702,7 @@ void arm_correlate_f32(
     pIn1 = pSrcB;
 
     /* Initialization to the end of inputA pointer */
-    pIn2 = pSrcA + (srcALen - 1u);
+    pIn2 = pSrcA + (srcALen - 1U);
 
     /* Initialisation of the pointer after zero padding */
     pDst = pDst + tot;
@@ -708,13 +718,13 @@ void arm_correlate_f32(
   }
 
   /* Loop to calculate convolution for output length number of times */
-  for (i = 0u; i <= tot; i++)
+  for (i = 0U; i <= tot; i++)
   {
-    /* Initialize sum with zero to carry on MAC operations */
+    /* Initialize sum with zero to carry out MAC operations */
     sum = 0.0f;
 
     /* Loop to perform MAC operations according to convolution equation */
-    for (j = 0u; j <= i; j++)
+    for (j = 0U; j <= i; j++)
     {
       /* Check the array limitations */
       if ((((i - j) < srcBLen) && (j < srcALen)))
@@ -723,6 +733,7 @@ void arm_correlate_f32(
         sum += pIn1[j] * pIn2[-((int32_t) i - j)];
       }
     }
+
     /* Store the output in the destination buffer */
     if (inv == 1)
       *pDst-- = sum;
@@ -730,10 +741,10 @@ void arm_correlate_f32(
       *pDst++ = sum;
   }
 
-#endif /*   #if defined (ARM_MATH_DSP) */
+#endif /* #if !defined(ARM_MATH_CM0_FAMILY) */
 
 }
 
 /**
- * @} end of Corr group
+  @} end of Corr group
  */
