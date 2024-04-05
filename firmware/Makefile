@@ -122,64 +122,64 @@ CSRC = $(PORTSRC) \
        ${FIRMWARE}/patch.c \
        ${FIRMWARE}/flash.c \
        ${FIRMWARE}/virtual_control.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_bitreversal.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_f32.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_q15.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_q31.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_radix2_f32.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_radix2_init_f32.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_radix2_init_q15.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_radix2_init_q31.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_radix2_q15.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_radix2_q31.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_q15.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_q31.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_q15.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_q31.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_cfft_radix8_f32.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_rfft_f32.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_rfft_fast_f32.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_rfft_fast_init_f32.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_rfft_init_f32.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_rfft_init_q15.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_rfft_init_q31.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_rfft_q15.c \
-       ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_rfft_q31.c \
-       ${CMSIS}/DSP_Lib/Source/BasicMathFunctions/arm_mult_q31.c \
-       ${CMSIS}/DSP_Lib/Source/BasicMathFunctions/arm_mult_q15.c \
-       ${CMSIS}/DSP_Lib/Source/BasicMathFunctions/arm_mult_f32.c \
-       ${CMSIS}/DSP_Lib/Source/BasicMathFunctions/arm_shift_q31.c \
-       ${CMSIS}/DSP_Lib/Source/BasicMathFunctions/arm_shift_q15.c \
-       ${CMSIS}/DSP_Lib/Source/BasicMathFunctions/arm_scale_f32.c \
-       ${CMSIS}/DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_q31.c \
-       ${CMSIS}/DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_f32.c \
-       ${CMSIS}/DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_q31.c \
-       ${CMSIS}/DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_q15.c \
-       ${CMSIS}/DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_q15.c \
-       ${CMSIS}/DSP_Lib/Source/FastMathFunctions/arm_cos_q31.c \
-       ${CMSIS}/DSP_Lib/Source/FastMathFunctions/arm_sin_q31.c \
-       ${CMSIS}/DSP_Lib/Source/FastMathFunctions/arm_sqrt_q31.c \
-       ${CMSIS}/DSP_Lib/Source/FastMathFunctions/arm_sqrt_q15.c \
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_fir_init_q31.c \
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_fir_fast_q31.c \
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_biquad_cascade_df1_32x64_init_q31.c \
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_biquad_cascade_df1_32x64_q31.c \
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_biquad_cascade_df1_fast_q31.c \
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_biquad_cascade_df1_init_q31.c \
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_biquad_cascade_df1_q31.c \
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_fir_interpolate_init_q31.c \
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_fir_interpolate_q31.c \
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_fir_decimate_init_q31.c \
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_fir_decimate_q31.c \
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_fir_decimate_fast_q31.c\
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_fir_lattice_init_q31.c\
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_fir_lattice_q31.c\
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_iir_lattice_init_q31.c\
-       ${CMSIS}/DSP_Lib/Source/FilteringFunctions/arm_iir_lattice_q31.c\
-       ${CMSIS}/DSP_Lib/Source/CommonTables/arm_common_tables.c \
-       ${CMSIS}/DSP_Lib/Source/CommonTables/arm_const_structs.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_bitreversal.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_f32.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_q15.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_q31.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_radix2_f32.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_radix2_init_f32.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_radix2_init_q15.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_radix2_init_q31.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_radix2_q15.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_radix4_f32.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_radix4_init_f32.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_radix4_init_q15.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_radix4_init_q31.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_radix4_q15.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_radix4_q31.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_radix8_f32.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_rfft_f32.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_rfft_fast_init_f32.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_rfft_init_f32.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_rfft_init_q15.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_rfft_init_q31.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_rfft_q15.c \
+       ${CMSIS}/DSP/Source/TransformFunctions/arm_rfft_q31.c \
+       ${CMSIS}/DSP/Source/BasicMathFunctions/arm_mult_q31.c \
+       ${CMSIS}/DSP/Source/BasicMathFunctions/arm_mult_q15.c \
+       ${CMSIS}/DSP/Source/BasicMathFunctions/arm_mult_f32.c \
+       ${CMSIS}/DSP/Source/BasicMathFunctions/arm_shift_q31.c \
+       ${CMSIS}/DSP/Source/BasicMathFunctions/arm_shift_q15.c \
+       ${CMSIS}/DSP/Source/BasicMathFunctions/arm_scale_f32.c \
+       ${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_q31.c \
+       ${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_f32.c \
+       ${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mag_q31.c \
+       ${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_q15.c \
+       ${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mag_q15.c \
+       ${CMSIS}/DSP/Source/FastMathFunctions/arm_cos_q31.c \
+       ${CMSIS}/DSP/Source/FastMathFunctions/arm_sin_q31.c \
+       ${CMSIS}/DSP/Source/FastMathFunctions/arm_sqrt_q31.c \
+       ${CMSIS}/DSP/Source/FastMathFunctions/arm_sqrt_q15.c \
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_fir_init_q31.c \
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_fir_fast_q31.c \
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_biquad_cascade_df1_32x64_init_q31.c \
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_biquad_cascade_df1_32x64_q31.c \
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_biquad_cascade_df1_fast_q31.c \
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_biquad_cascade_df1_init_q31.c \
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_biquad_cascade_df1_q31.c \
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_fir_interpolate_init_q31.c \
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_fir_interpolate_q31.c \
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_fir_decimate_init_q31.c \
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_fir_decimate_q31.c \
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_fir_decimate_fast_q31.c\
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_fir_lattice_init_q31.c\
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_fir_lattice_q31.c\
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_iir_lattice_init_q31.c\
+       ${CMSIS}/DSP/Source/FilteringFunctions/arm_iir_lattice_q31.c\
+       ${CMSIS}/DSP/Source/CommonTables/arm_common_tables.c \
+       ${CMSIS}/DSP/Source/CommonTables/arm_const_structs.c \
        ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_core.c \
        ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c \
        ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c \
@@ -313,10 +313,10 @@ TCPPSRC =
 
 # List ASM source files here
 ASMSRC = $(PORTASM) \
-         ${CMSIS}/DSP_Lib/Source/TransformFunctions/arm_bitreversal2.s
+         ${CMSIS}/DSP/Source/TransformFunctions/arm_bitreversal2.s
 
-INCDIR = ${CMSIS}/Include \
-         ${CMSIS}/DSP_Lib/Include \
+INCDIR = ${CMSIS}/Core/Include \
+         ${CMSIS}/DSP/Include \
          $(PORTINC) $(KERNINC) $(TESTINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) \
          $(FATFSINC) \
