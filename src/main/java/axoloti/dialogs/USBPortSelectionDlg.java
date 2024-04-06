@@ -166,7 +166,14 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
         DeviceList list = new DeviceList();
-        int result = LibUsb.getDeviceList(null, list);
+
+        int result = LibUsb.init(null);
+
+        if (result < 0) {
+            throw new LibUsbException("Unable to initialize LibUsb context", result);
+        }
+
+        result = LibUsb.getDeviceList(null, list);
 
         if (result < 0) {
             throw new LibUsbException("Unable to get device list", result);
