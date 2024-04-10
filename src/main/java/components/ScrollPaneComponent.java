@@ -17,7 +17,6 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 package components;
-import axoloti.utils.Constants;
 
 import java.awt.Component;
 

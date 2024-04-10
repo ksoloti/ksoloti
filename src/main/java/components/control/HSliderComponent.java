@@ -18,7 +18,6 @@
  */
 package components.control;
 
-import axoloti.Theme;
 import axoloti.utils.KeyUtils;
 
 import java.awt.BasicStroke;
