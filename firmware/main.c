@@ -137,14 +137,16 @@ int main(void) {
         sdcard_attemptMountIfUnmounted();
 
         /* Patch start can be skipped by holding S2 during boot */
-        if (fs_ready && !palReadPad(SW2_PORT, SW2_PIN)) {
-            LoadPatchStartSD();
-        }
+        if (!palReadPad(SW2_PORT, SW2_PIN)) {
 
-        /* If no patch booting or running yet try loading from flash */
-        /* Patch start can be skipped by holding S2 during boot */
-        if (patchStatus == STOPPED && !palReadPad(SW2_PORT, SW2_PIN)) {
-            LoadPatchStartFlash();
+            if (fs_ready) {
+                LoadPatchStartSD();
+            }
+
+            /* If no patch booting or running yet try loading from flash */
+            if (patchStatus == STOPPED || patchStatus == STARTFAILED) {
+                LoadPatchStartFlash();
+            }
         }
     }
 
