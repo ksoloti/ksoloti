@@ -207,13 +207,18 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         ShowPreset(presetEditActive);
     }
 
-    public void IncludeInAllPresets() {
-        PatchSettings settings = new PatchSettings();
-        for (int i=1; i<=settings.GetNPresets(); i++) {
+    public void IncludeInAllPresets(int nPres) {
+        if (presets == null) {
+            presets = new ArrayList<Preset>();
+        }
+
+        for (int i = 1; i <= nPres; i++) {
+
             Preset p = GetPreset(i);
-            if (presets == null) {
-                presets = new ArrayList<Preset>();
+            if (p != null) {
+                continue;
             }
+
             p = new Preset(i, getValue());
             presets.add(p);
         }
@@ -371,13 +376,13 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 
     public abstract String GenerateCodeMidiHandler(String vprefix);
 
-    void SetPresetState(boolean b) { // OBSOLETE
-        if (b) {
-            setForeground(Theme.getCurrentTheme().Parameter_Preset_Highlight_Foreground);
-        } else {
-            setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
-        }
-    }
+    // void SetPresetState(boolean b) { // OBSOLETE
+    //     if (b) {
+    //         setForeground(Theme.getCurrentTheme().Parameter_Preset_Highlight_Foreground);
+    //     } else {
+    //         setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
+    //     }
+    // }
 
     public abstract void ShowPreset(int i);
 

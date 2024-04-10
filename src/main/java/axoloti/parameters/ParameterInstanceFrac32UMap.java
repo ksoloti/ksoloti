@@ -170,10 +170,10 @@ public class ParameterInstanceFrac32UMap<T extends ParameterFrac32> extends Para
         if (i > 0) {
             Preset p = GetPreset(presetEditActive);
             if (p != null) {
-                setForeground(Theme.getCurrentTheme().Parameter_Preset_Highlight_Foreground);
+                // setForeground(Theme.getCurrentTheme().Parameter_Preset_Highlight_Foreground);
                 ctrl.setValue(p.value.getDouble());
             } else {
-                setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
+                // setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
                 ctrl.setValue(value.getDouble());
             }
         } else {

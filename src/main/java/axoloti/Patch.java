@@ -1189,7 +1189,7 @@ public class Patch {
         c += "   return &p[0][0][0];\n";
         c += "   };\n";
 
-        c += "void ApplyPreset(int index) {\n"
+        c += "void ApplyPreset(uint8_t index) {\n"
                 + "   if (!index) {\n"
                 + "     int32_t *p = GetInitParams();\n"
                 + "     uint16_t i; for (i=0; i<NPEXCH; i++) {\n"

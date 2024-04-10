@@ -173,7 +173,9 @@ public class Theme {
         Math.min(Object_TitleBar_Foreground.getBlue()+0x80, 0xFF)
     );
     @Element
-    public Color Parameter_Preset_Highlight_Foreground = UIManager.getColor("Component.accentColor");
+
+    // @Element
+    // public Color Parameter_Preset_Highlight_Foreground = UIManager.getColor("Component.accentColor");
 
     @Element
     public Color Component_Foreground = Object_Default_Foreground;

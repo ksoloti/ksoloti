@@ -64,7 +64,10 @@ public class AssignPresetMenuItems {
             mi.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    AssignPresetMenuItems.this.param.IncludeInAllPresets();
+                    int nPres = param.GetObjectInstance().getPatch().getSettings().GetNPresets();
+                    if (nPres > 0) {
+                        AssignPresetMenuItems.this.param.IncludeInAllPresets(nPres);
+                    }
                 }
             });
             parent.add(mi);
