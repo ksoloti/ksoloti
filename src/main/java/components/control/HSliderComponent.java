@@ -96,8 +96,6 @@ public class HSliderComponent extends ACtrlComponent {
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         int margin = 50;
         int bwidth = getWidth() - margin;
-        g2.setPaint(Theme.getCurrentTheme().Component_Background);
-        g2.drawRect(0, 0, bwidth, getHeight() - 1);
         g2.setPaint(getForeground());
         g2.drawRect(0, 0, bwidth, getHeight() - 1);
         int p = (int) (1 + ((value - min) * (bwidth - 2)) / (max - min));

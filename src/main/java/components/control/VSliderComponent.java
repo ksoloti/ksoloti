@@ -261,9 +261,9 @@ public class VSliderComponent extends ACtrlComponent {
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         if (isEnabled()) {
-            g2.setPaint(Theme.getCurrentTheme().Component_Background);
+            g2.setColor(Theme.getCurrentTheme().Component_Background);
             g2.fillRect(0, 0, getWidth(), height);
-            g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+            g2.setPaint(getForeground());
             if (isFocusOwner()) {
                 g2.setStroke(strokeThick);
             } else {
@@ -286,7 +286,7 @@ public class VSliderComponent extends ACtrlComponent {
             //Rectangle2D r = g2.getFontMetrics().getStringBounds(s, g);
             //g2.drawString(s, bwidth+(margin/2)-(int)(0.5 + r.getWidth()/2), getHeight());
         } else {
-            g2.setPaint(Theme.getCurrentTheme().Object_Default_Background);
+            g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
             g2.fillRect(0, 0, getWidth(), height);
             g2.setPaint(getForeground());
             g2.setStroke(strokeThin);

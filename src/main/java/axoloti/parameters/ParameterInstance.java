@@ -18,7 +18,6 @@
  */
 package axoloti.parameters;
 
-import axoloti.PatchSettings;
 import axoloti.Preset;
 import axoloti.Theme;
 import axoloti.atom.AtomInstance;
@@ -572,8 +571,13 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         }
 
         if (isOnParent()) {
+            ctrl.setForeground(Theme.getCurrentTheme().Parameter_On_Parent_Foreground);
+            ctrl.setBackground(Theme.getCurrentTheme().Parameter_On_Parent_Background);
             ctrl.setToolTipText(ctrl.getToolTipText() + "<p><b>This parameter is being controlled from the parent patch.</b>");
         }
-
+        else {
+            ctrl.setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
+            ctrl.setBackground(Theme.getCurrentTheme().Parameter_Default_Background);
+        }
     }
 }

@@ -171,7 +171,7 @@ public class HRadioComponent extends ACtrlComponent {
             g2.fillOval(i * bsize, 0, bsize, bsize);
         }
         if (isEnabled()) {
-            g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+            g2.setPaint(getForeground());
         } else {
             g2.setPaint(Theme.getCurrentTheme().Component_Mid);
         }
