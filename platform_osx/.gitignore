@@ -3,10 +3,10 @@ include/
 bin/
 lib/
 share/
-src/dfu-util-0.8.tar.gz
+src/dfu-util-0.11.tar.gz
 src/libusb-1.0.19.tar.bz2
 src/make-3.82.tar.gz
-src/dfu-util-0.8
+src/dfu-util-0.11
 src/libusb-1.0.19
 src/make-3.82
 src/ChibiOS*.zip

@@ -13,11 +13,11 @@ PLATFORM_ROOT="$(cd $(dirname $0); pwd -P)"
 cd "$PLATFORM_ROOT"
 
 rm src/ChibiOS_2.*.zip
-rm src/dfu-util-0.8.tar.gz
+rm src/dfu-util-0.11.tar.gz
 rm src/libusb-1.0.19.tar.bz2
 rm src/make-3.82.tar.gz
 
-rm -rv src/dfu-util-0.8
+rm -rv src/dfu-util-0.11
 rm -rv src/libusb-1.0.19
 rm -rv src/make-3.82
 

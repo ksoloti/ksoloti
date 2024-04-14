@@ -106,7 +106,7 @@ fi
 if [ ! -f "${PLATFORM_ROOT}/bin/dfu-util" ]; 
 then
     cd "${PLATFORM_ROOT}/src"
-    ARDIR=dfu-util-0.8
+    ARDIR=dfu-util-0.11
     ARCHIVE=${ARDIR}.tar.gz
     if [ ! -f $ARCHIVE ]; 
     then

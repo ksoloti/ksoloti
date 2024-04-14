@@ -93,7 +93,7 @@ fi
 
 if [ ! -f "bin/dfu-util-static.exe" ];
 then
-    ARCHIVE=dfu-util-0.9-win64.zip
+    ARCHIVE=dfu-util-0.11-win64.zip
     if [ ! -f ${ARCHIVE} ];
     then
         echo "downloading ${ARCHIVE}"
@@ -101,7 +101,7 @@ then
     else
         echo "${ARCHIVE} already downloaded"
     fi
-	unzip -q -j -d bin dfu-util-0.9-win64.zip
+	unzip -q -j -d bin dfu-util-0.11-win64.zip
 fi
 
 echo "DONE!"
