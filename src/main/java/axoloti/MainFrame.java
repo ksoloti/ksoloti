@@ -343,21 +343,40 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         }
                     // }
 
-                    // user library, ask user if they wish to upgrade, or do manual
+                    // Axoloti user library, ask user if they wish to upgrade, or do manual
                     // this allows them the opportunity to manually backup their files!
                     AxolotiLibrary ulib = prefs.getLibrary(AxolotiLibrary.USER_LIBRARY_ID);
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
-                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current community library does not match specified version: {0} <-> {1}", new Object[]{cb, ulib.getBranch()});
+                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current Axoloti community library does not match specified version: {0} <-> {1}", new Object[]{cb, ulib.getBranch()});
                             int s = JOptionPane.showConfirmDialog(MainFrame.this,
-                                    "Community library version mismatch detected. Upgrade now?\n"
+                                    "Axoloti community library version mismatch detected. Upgrade now?\n"
                                     + "This will stash any local changes and reapply them to the new version.\n"
                                     + "If you choose no, you will need to manually backup your changes and then sync libraries.",
-                                    "Community Library Mismatch",
+                                    "Axoloti Community Library Mismatch",
                                     JOptionPane.YES_NO_OPTION);
                             if (s == JOptionPane.YES_OPTION) {
                                 ulib.upgrade();
+                            }
+                        }
+                    }
+
+                    // Ksoloti user library, ask user if they wish to upgrade, or do manual
+                    // this allows them the opportunity to manually backup their files!
+                    AxolotiLibrary kso_ulib = prefs.getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID);
+                    if (kso_ulib != null) {
+                        String cb = kso_ulib.getCurrentBranch();
+                        if (!cb.equalsIgnoreCase(kso_ulib.getBranch())) {
+                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current Ksoloti community library does not match specified version: {0} <-> {1}", new Object[]{cb, kso_ulib.getBranch()});
+                            int s = JOptionPane.showConfirmDialog(MainFrame.this,
+                                    "Ksoloti community library version mismatch detected. Upgrade now?\n"
+                                    + "This will stash any local changes and reapply them to the new version.\n"
+                                    + "If you choose no, you will need to manually backup your changes and then sync libraries.",
+                                    "Ksoloti Community Library Mismatch",
+                                    JOptionPane.YES_NO_OPTION);
+                            if (s == JOptionPane.YES_OPTION) {
+                                kso_ulib.upgrade();
                             }
                         }
                     }

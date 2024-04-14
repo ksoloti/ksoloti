@@ -74,10 +74,14 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
         jTypeCombo.setSelectedItem(library.getType());
 
         boolean expert = MainFrame.prefs.getExpertMode() || Axoloti.isDeveloper();
-        boolean lockDown
-                = !expert
-                && ((AxolotiLibrary.FACTORY_ID.equals(library.getId()))
-                || (AxolotiLibrary.USER_LIBRARY_ID.equals(library.getId())));
+
+        boolean isOfficial = AxolotiLibrary.FACTORY_ID.equals(library.getId()) ||
+                            AxolotiLibrary.USER_LIBRARY_ID.equals(library.getId()) ||
+                            AxolotiLibrary.KSOLOTI_LIBRARY_ID.equals(library.getId()) ||
+                            AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID.equals(library.getId());
+
+        boolean lockDown = !expert && isOfficial;
+
         jRevision.setEditable(!lockDown);
         jRemotePath.setEditable(!lockDown);
     }
@@ -190,7 +194,7 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
             }
         });
 
-        jLabelRevision.setText("Revision");
+        jLabelRevision.setText("Branch");
 
         jRevision.setMinimumSize(new java.awt.Dimension(100, 28));
         jRevision.setPreferredSize(new java.awt.Dimension(100, 28));

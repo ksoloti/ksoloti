@@ -42,6 +42,7 @@ public class AxolotiLibrary {
     public static String FACTORY_ID = "factory";
     public static String USER_LIBRARY_ID = "community";
     public static String KSOLOTI_LIBRARY_ID = "ksoloti-objects";
+    public static String KSOLOTI_CONTRIB_LIBRARY_ID = "ksoloti-community";
 
     public AxolotiLibrary() {
         Id = "";
@@ -173,9 +174,14 @@ public class AxolotiLibrary {
     public String getBranch() {
         String branch = getRevision();
         if (branch == null || branch.length() == 0) {
-            if ((getId().equals(FACTORY_ID) || getId().equals(USER_LIBRARY_ID) || getId().equals(KSOLOTI_LIBRARY_ID))) {
+            boolean isOfficial = getId().equals(FACTORY_ID) || 
+                                getId().equals(USER_LIBRARY_ID) || 
+                                getId().equals(KSOLOTI_LIBRARY_ID) ||
+                                getId().equals(KSOLOTI_CONTRIB_LIBRARY_ID);
+            if (isOfficial) {
                 branch = Version.AXOLOTI_SHORT_VERSION;
-            } else {
+            }
+            else {
                 branch = "master";
             }
         }

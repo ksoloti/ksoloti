@@ -641,6 +641,16 @@ public class Preferences {
                 false
         ));
 
+        libraries.add(new AxoGitLibrary(
+                AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID,
+                "git",
+                System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
+                    + Version.AXOLOTI_SHORT_VERSION + File.separator
+                    + "ksoloti-contrib" + File.separator,
+                true,
+                "https://github.com/ksoloti/ksoloti-contrib.git",
+                false
+        ));
         // initialise the libraries
         for (AxolotiLibrary lib : libraries) {
             if (lib.getEnabled()) {
