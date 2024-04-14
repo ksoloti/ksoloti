@@ -144,7 +144,9 @@ int main(void) {
             }
 
             /* If no patch booting or running yet try loading from flash */
-            if (patchStatus == STOPPED || patchStatus == STARTFAILED) {
+            chThdSleepMilliseconds(10);
+            // if (patchStatus == STOPPED) {
+            if (patchStatus != RUNNING) {
                 LoadPatchStartFlash();
             }
         }
