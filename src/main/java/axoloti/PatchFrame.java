@@ -663,7 +663,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuPatch.add(jMenuItemUploadSDStart);
 
         jMenuItemUploadInternalFlash.setMnemonic('F');
-        jMenuItemUploadInternalFlash.setText("Upload to Internal Flash");
+        jMenuItemUploadInternalFlash.setText("Upload to Internal Flash as Startup");
         jMenuItemUploadInternalFlash.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemUploadInternalFlashActionPerformed(evt);
