@@ -129,9 +129,9 @@ public class AttributeInstanceObjRef extends AttributeInstanceString<AxoAttribut
         if (o == null) {
             o = "";
         }
-        if (o.isEmpty()) {
-            Logger.getLogger(AttributeInstanceObjRef.class.getName()).log(Level.SEVERE, "Incomplete object reference attribute in {0}", GetObjectInstance().getInstanceName());
-        }
+        // if (o.isEmpty()) {
+        //     Logger.getLogger(AttributeInstanceObjRef.class.getName()).log(Level.SEVERE, "Incomplete object reference attribute in {0}", GetObjectInstance().getInstanceName());
+        // }
         String o2 = "parent->";
 
         if ((o.length() > 3) && (o.substring(0, 3).equals("../"))
