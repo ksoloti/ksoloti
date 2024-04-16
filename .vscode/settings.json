@@ -11,7 +11,8 @@
         "*.axo": "xml",
         "*.axh": "xml",
         "*.axp": "xml",
-        "*.axs": "xml"
+        "*.axs": "xml",
+        "stm32f427xx.h": "c"
     },
     "C_Cpp.default.compilerPath": ""
 }
