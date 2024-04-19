@@ -8,9 +8,9 @@ export axoloti_firmware=${axoloti_firmware:="$axoloti_release/firmware"}
 export axoloti_legacy_firmware=${axoloti_legacy_firmware:="$axoloti_release/firmware_axoloti_legacy"}
 export axoloti_home=${axoloti_home:="$platformdir/.."}
 
-echo "\n------ axo legacy firmware ------"
+echo "\n\n\n-------------------------- compiling axo legacy firmware --------------------------"
 "${axoloti_legacy_firmware}/compile_firmware_linux.sh" $1
-echo "\n------ ksoloti firmware ------"
+echo "\n\n\n-------------------------- compiling ksoloti firmware --------------------------"
 cd ..
 cd "${axoloti_firmware}"
 "${axoloti_firmware}/compile_firmware_linux.sh" $1
