@@ -25,6 +25,8 @@ import components.ButtonComponent;
 import components.ButtonComponent.ActListener;
 // import java.awt.Component;
 import java.awt.Point;
+import java.io.File;
+
 import javax.swing.SwingUtilities;
 import org.simpleframework.xml.Element;
 
@@ -84,6 +86,7 @@ public class AxoObjectInstancePatcherObject extends AxoObjectInstance {
             // ao.id = "id";
             ao.sDescription = "";
         }
+
         if (aoe == null) {
             aoe = new AxoObjectEditor(ao);
 
@@ -94,10 +97,19 @@ public class AxoObjectInstancePatcherObject extends AxoObjectInstance {
             else {
                 t = "patch/object";
             }
-            t += " (embedded)   [" + getPatch().getFileNamePath() + "]";
+            /* Get last occurrence of slash or backslash (separating path and filename) */
+            if (getPatch().getFileNamePath() != null) {
+                String fpath = getPatch().getFileNamePath();
+                int brk = fpath.lastIndexOf(File.separator) + 1;
+                if (brk != 0) {
+                    t += "   [" + fpath.substring(brk) + "]";
+                }
+            }
+
             aoe.setTitle(t);
 
-        } else {
+        }
+        else {
             aoe.updateReferenceXML();
         }
         SwingUtilities.invokeLater(new Runnable() {
