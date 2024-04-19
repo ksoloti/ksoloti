@@ -26,6 +26,7 @@
 
 #include "axoloti_oscs.h"
 #include "axoloti_filters.h"
+#include "axoloti_defines.h"
 #include "limits.h"
 #include "ui.h"
 #include "midi.h"
