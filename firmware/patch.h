@@ -83,6 +83,9 @@ extern uint8_t hid_buttons[3];
 extern uint8_t hid_mouse_x;
 extern uint8_t hid_mouse_y;
 
+extern uint8_t hid_keys[6];
+extern uint8_t hid_key_modifiers;
+
 void InitPatch0(void);
 int StartPatch(void);
 void StopPatch(void);

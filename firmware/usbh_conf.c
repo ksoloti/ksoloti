@@ -509,36 +509,93 @@ uint8_t hid_buttons[3];
 uint8_t hid_mouse_x;
 uint8_t hid_mouse_y;
 
+uint8_t hid_keys[6];
+uint8_t hid_key_modifiers;
+
 void USBH_HID_EventCallback(USBH_HandleTypeDef *phost) {
+
   if (USBH_HID_GetDeviceType(&hUSBHost) == HID_MOUSE) {
+
     HID_MOUSE_Info_TypeDef *m_pinfo_mouse;
     m_pinfo_mouse = USBH_HID_GetMouseInfo(phost);
+
     if (m_pinfo_mouse) {
-//      USBH_DbgLog("btns:%u%u%u", m_pinfo_mouse->buttons[0],m_pinfo_mouse->buttons[1],m_pinfo_mouse->buttons[2]);
+
+      USBH_DbgLog("btns:%u%u%u", m_pinfo_mouse->buttons[0],m_pinfo_mouse->buttons[1],m_pinfo_mouse->buttons[2]);
+
       hid_buttons[0] = m_pinfo_mouse->buttons[0];
       hid_buttons[1] = m_pinfo_mouse->buttons[1];
       hid_buttons[2] = m_pinfo_mouse->buttons[2];
+
       hid_mouse_x += m_pinfo_mouse->x;
       hid_mouse_y += m_pinfo_mouse->y;
-    } else {
+
+    }
+    else {
       hid_buttons[0] = 0;
       hid_buttons[1] = 0;
       hid_buttons[2] = 0;
     }
+
     USBH_DbgLog("btns:%u%u%u", hid_buttons[0],hid_buttons[1],hid_buttons[2]);
+
   }
   else if (USBH_HID_GetDeviceType(&hUSBHost) == HID_KEYBOARD) {
+
     HID_KEYBD_Info_TypeDef *m_pinfo_keyb;
     m_pinfo_keyb = USBH_HID_GetKeybdInfo(phost);
-    if (m_pinfo_keyb) {
-      if (m_pinfo_keyb->lshift) {
-        USBH_DbgLog("ls");
 
-      }
-      if (m_pinfo_keyb->rshift) {
-        USBH_DbgLog("rs");
+    if (m_pinfo_keyb) {
+
+      // USBH_DbgLog( "->keys:%u%u%u%u%u%u",
+      //   m_pinfo_keyb->keys[0], m_pinfo_keyb->keys[1], m_pinfo_keyb->keys->keys[2],
+      //   m_pinfo_keyb->keys[3], m_pinfo_keyb->keys[4], m_pinfo_keyb->keys[5]);
+
+      // USBH_DbgLog( "->mods:%u%u%u%u%u%u%u%u",
+      //   m_pinfo_keyb->lctrl,
+      //   m_pinfo_keyb->lshift,
+      //   m_pinfo_keyb->lalt,
+      //   m_pinfo_keyb->lgui,
+      //   m_pinfo_keyb->rctrl,
+      //   m_pinfo_keyb->rshift,
+      //   m_pinfo_keyb->ralt,
+      //   m_pinfo_keyb->rgui);
+
+      hid_key_modifiers  =  (m_pinfo_keyb->lctrl  << 7);
+      hid_key_modifiers  += (m_pinfo_keyb->lshift << 6);
+      hid_key_modifiers  += (m_pinfo_keyb->lalt   << 5);
+      hid_key_modifiers  += (m_pinfo_keyb->lgui   << 4);
+
+      hid_key_modifiers  += (m_pinfo_keyb->rctrl  << 3);
+      hid_key_modifiers  += (m_pinfo_keyb->rshift << 2);
+      hid_key_modifiers  += (m_pinfo_keyb->ralt   << 1);
+      hid_key_modifiers  += (m_pinfo_keyb->rgui       );
+
+      uint8_t k; for (k = 0; k < 6; k++) {
+        hid_keys[k] = m_pinfo_keyb->keys[k];
+      } 
+    }
+    else {
+
+      hid_key_modifiers = 0;
+
+      uint8_t k; for (k = 0; k < 6; k++) {
+        hid_keys[k] = 0;
       }
     }
+
+    // USBH_DbgLog( "hid_keys:%u%u%u%u%u%u",
+    //   hid_keys[0], hid_keys[1], hid_keys[2], hid_keys[3], hid_keys[4], hid_keys[5]);
+
+    // USBH_DbgLog( "->mods:%u%u%u%u%u%u%u%u",
+    //   hid_key_lctrl,
+    //   hid_key_lshift,
+    //   hid_key_lalt,
+    //   hid_key_lgui,
+    //   hid_key_rctrl,
+    //   hid_key_rshift,
+    //   hid_key_ralt,
+    //   hid_key_rgui);
   }
 }
 
