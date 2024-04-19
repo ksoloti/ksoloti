@@ -50,9 +50,20 @@
 
 void BootLoaderInit(void);
 
+
 uint32_t fwid;
 
+int AckPending = 0;
+
+bool connected = 0;
+
+char FileName[256];
+
+FIL pFile;
+int pFileSize;
+
 static WORKING_AREA(waThreadUSBDMidi, 256);
+
 
 __attribute__((noreturn)) static msg_t ThreadUSBDMidi(void *arg) {
     (void)arg;
@@ -69,6 +80,7 @@ __attribute__((noreturn)) static msg_t ThreadUSBDMidi(void *arg) {
                          r[2], r[3]);
     }
 }
+
 
 void InitPConnection(void) {
 
@@ -94,12 +106,11 @@ void InitPConnection(void) {
     chThdCreateStatic(waThreadUSBDMidi, sizeof(waThreadUSBDMidi), NORMALPRIO, ThreadUSBDMidi, NULL);
 }
 
-int AckPending = 0;
-bool connected = 0;
 
 int GetFirmwareID(void) {
     return fwid;
 }
+
 
 void TransmitDisplayPckt(void) {
     if (patchMeta.pDisplayVector == 0) {
@@ -114,6 +125,7 @@ void TransmitDisplayPckt(void) {
     chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&patchMeta.pDisplayVector[0], length);
 }
 
+
 void LogTextMessage(const char* format, ...) {
     if ((usbGetDriverStateI(BDU1.config->usbp) == USB_ACTIVE) && (connected)) {
         int h = 0x546F7841; /* "AxoT" */
@@ -127,6 +139,7 @@ void LogTextMessage(const char* format, ...) {
         chSequentialStreamPut((BaseSequentialStream * )&BDU1, 0);
     }
 }
+
 
 void PExTransmit(void) {
   if (!chOQIsEmptyI(&BDU1.oqueue)) {
@@ -179,7 +192,6 @@ void PExTransmit(void) {
   }
 }
 
-char FileName[256];
 
 static FRESULT scan_files(char *path) {
   FRESULT res;
@@ -245,6 +257,7 @@ static FRESULT scan_files(char *path) {
   return res;
 }
 
+
 void ReadDirectoryListing(void) {
   FATFS *fsp;
   uint32_t clusters;
@@ -286,6 +299,7 @@ void ReadDirectoryListing(void) {
   chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, 14);
 }
 
+
 /* input data decoder state machine
  *
  * "AxoP" (int value, int16 index) -> parameter set
@@ -308,8 +322,6 @@ void ReadDirectoryListing(void) {
  * "AxoB (int or) (int and)" buttons for virtual Axoloti Control
  */
 
-FIL pFile;
-int pFileSize;
 
 void ManipulateFile(void) {
   sdcard_attemptMountIfUnmounted();
@@ -397,6 +409,7 @@ void ManipulateFile(void) {
   }
 }
 
+
 void CloseFile(void) {
   FRESULT err;
   err = f_close(&pFile);
@@ -414,6 +427,7 @@ void CloseFile(void) {
     }
   }
 }
+
 
 void CopyPatchToFlash(void) {
     flash_unlock();
@@ -1091,6 +1105,7 @@ void PExReceiveByte(unsigned char c) {
   }
 }
 
+
 void PExReceive(void) {
   if (!AckPending) {
     unsigned char received;
@@ -1099,6 +1114,7 @@ void PExReceive(void) {
     }
   }
 }
+
 
 /*
  void USBDMidiPoll(void) {
