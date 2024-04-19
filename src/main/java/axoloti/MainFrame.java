@@ -855,19 +855,63 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     public boolean runPatchTests() {
+        boolean result;
+
         AxolotiLibrary fLib = prefs.getLibrary(AxolotiLibrary.FACTORY_ID);
         if (fLib == null) {
             return false;
         }
-        return runTestDir(new File(fLib.getLocalLocation() + "patches"));
+        result = runTestDir(new File(fLib.getLocalLocation() + "patches"));
+
+        fLib = prefs.getLibrary(AxolotiLibrary.USER_LIBRARY_ID);
+        if (fLib == null) {
+            return false;
+        }
+        result &= runTestDir(new File(fLib.getLocalLocation() + "patches"));
+
+        fLib = prefs.getLibrary(AxolotiLibrary.KSOLOTI_LIBRARY_ID);
+        if (fLib == null) {
+            return false;
+        }
+        result &= runTestDir(new File(fLib.getLocalLocation() + "patches"));
+
+        fLib = prefs.getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID);
+        if (fLib == null) {
+            return false;
+        }
+        result &= runTestDir(new File(fLib.getLocalLocation() + "patches"));
+
+        return result;
     }
 
     public boolean runObjectTests() {
+        boolean result;
+
         AxolotiLibrary fLib = prefs.getLibrary(AxolotiLibrary.FACTORY_ID);
         if (fLib == null) {
             return false;
         }
-        return runTestDir(new File(fLib.getLocalLocation() + "objects"));
+        result = runTestDir(new File(fLib.getLocalLocation() + "objects"));
+
+        fLib = prefs.getLibrary(AxolotiLibrary.USER_LIBRARY_ID);
+        if (fLib == null) {
+            return false;
+        }
+        result &= runTestDir(new File(fLib.getLocalLocation() + "objects"));
+
+        fLib = prefs.getLibrary(AxolotiLibrary.KSOLOTI_LIBRARY_ID);
+        if (fLib == null) {
+            return false;
+        }
+        result &= runTestDir(new File(fLib.getLocalLocation() + "objects"));
+
+        fLib = prefs.getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID);
+        if (fLib == null) {
+            return false;
+        }
+        result &= runTestDir(new File(fLib.getLocalLocation() + "objects"));
+
+        return result;
     }
 
     public boolean runFileTest(String patchName) {
@@ -927,11 +971,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             Thread.sleep(2500);
             status = cp.success();
             if (status == false) {
-                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "COMPILE FAILED: {0}", f.getPath());
+                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "COMPILE FAILED: {0}\n", f.getPath());
             }
             return status;
         } catch (Exception ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "COMPILE FAILED: " + f.getPath(), ex);
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "COMPILE FAILED: " + f.getPath() + "\n", ex);
             return false;
         }
     }
