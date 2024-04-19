@@ -79,9 +79,9 @@ typedef enum {
 
 extern volatile patchStatus_t patchStatus;
 
-extern int8_t hid_buttons[8];
-extern int8_t hid_mouse_x;
-extern int8_t hid_mouse_y;
+extern uint8_t hid_buttons[3];
+extern uint8_t hid_mouse_x;
+extern uint8_t hid_mouse_y;
 
 void InitPatch0(void);
 int StartPatch(void);

@@ -505,9 +505,9 @@ void MY_USBH_Init(void) {
 
 }
 
-int8_t hid_buttons[8];
-int8_t hid_mouse_x;
-int8_t hid_mouse_y;
+uint8_t hid_buttons[3];
+uint8_t hid_mouse_x;
+uint8_t hid_mouse_y;
 
 void USBH_HID_EventCallback(USBH_HandleTypeDef *phost) {
   if (USBH_HID_GetDeviceType(&hUSBHost) == HID_MOUSE) {
