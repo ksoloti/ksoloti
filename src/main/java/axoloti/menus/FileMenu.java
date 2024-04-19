@@ -240,7 +240,15 @@ public class FileMenu extends JMenu {
 
     private void jMenuAutoTestActionPerformed(java.awt.event.ActionEvent evt) {
         if (JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and freeze the UI with no output until complete. Do you wish to continue?") == JOptionPane.YES_OPTION) {
-            mainframe.runAllTests();
+            class Thd extends Thread {
+                public void run() {
+                    Logger.getLogger(FileMenu.class.getName()).log(Level.WARNING, "Running tests, please wait...");
+                    mainframe.runAllTests();
+                    Logger.getLogger(FileMenu.class.getName()).log(Level.WARNING, "Finished running tests.\n");
+                }
+            }
+            Thd thread = new Thd();
+            thread.start();
         }
     }
 
