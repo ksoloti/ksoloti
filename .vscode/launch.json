@@ -5,16 +5,9 @@
     "projectName": "ksoloti",
     "configurations": [
         {
-            "type": "java",
-            "name": "Axoloti",
-            "request": "launch",
-            "mainClass": "axoloti.Axoloti",
-            "projectName": "ksoloti_cdb2d624"
-        },
-        {
             "name": "STlink launch",
             "cwd": "${workspaceRoot}",
-            "executable": "${workspaceRoot}/firmware/build/axoloti.elf",
+            "executable": "./firmware/build/axoloti.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "stlink",
@@ -22,20 +15,20 @@
             "interface": "swd",
             "runToEntryPoint": "main",
             "preLaunchTask": "Build all",
-            "svdFile": "${workspaceRoot}/debug/STM32F429.svd",
+            "svdFile": "./debug/STM32F429.svd",
             "swoConfig": {}
         },
         {
             "name": "STlink attach",
             "cwd": "${workspaceRoot}",
-            "executable": "${workspaceRoot}/firmware/build/axoloti.elf",
+            "executable": "./firmware/build/axoloti.elf",
             "request": "attach",
             "type": "cortex-debug",
             "servertype": "stlink",
             "device": "STM32F429ZG",
             "interface": "swd",
             "runToEntryPoint": "main",
-            "svdFile": "${workspaceRoot}/debug/STM32F429.svd",
+            "svdFile": "./debug/STM32F429.svd",
             "swoConfig": {}
         },
        ]
