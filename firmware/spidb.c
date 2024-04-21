@@ -244,25 +244,28 @@ void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config) {
 }
 
 
-void spidbStart(SPIDriver *spip) {
-    dmaStreamEnable(spip->dmatx);
-    dmaStreamEnable(spip->dmarx);
-    spip->spi->CR1 |= SPI_CR1_SPE;
-}
-
-
 void spidbStop(SPIDriver *spip) {
-    dmaStreamDisable(spip->dmatx);
 
-    /* Wait till buffer is empty */
-    while (!(spip->spi->SR & SPI_SR_TXE));
+    // WIP! currently buggy and apparently useless
 
-    /* Wait till transfer is done */
-    while (spip->spi->SR & SPI_SR_BSY);
+    /* Only necessary if Core is synced */
+    if (!palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN)) {
+        chSysLock();
+        dmaStreamDisable(spip->dmatx);
+        dmaStreamRelease(spip->dmatx);
 
-    spip->spi->CR1 &= ~SPI_CR1_SPE;
+        /* Wait till buffer is empty */
+        while (!(spip->spi->SR & SPI_SR_TXE));
 
-    dmaStreamDisable(spip->dmarx);
+        /* Wait till transfer is done */
+        while (spip->spi->SR & SPI_SR_BSY);
 
-    spiStop(spip);
+        spip->spi->CR1 &= ~SPI_CR1_SPE;
+
+        dmaStreamDisable(spip->dmarx);
+        dmaStreamRelease(spip->dmarx);
+
+        spiStop(spip);
+        chSysUnlock();
+    }
 }

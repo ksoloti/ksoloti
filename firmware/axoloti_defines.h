@@ -30,7 +30,7 @@ typedef int32_t int32buffer[BUFSIZE];
 #define USING_ADAU1761 1 /* Works with ADAU1961/1761/1361 so we just leave this defined */
 #define HAS_SD_CARD_DETECT 1
 
-// #define FW_SPILINK
+// #define FW_SPILINK 1
 
 // firmware version 1.0.0.4 - Ksoloti v0.4+
 #define FWVERSION1 1

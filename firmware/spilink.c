@@ -207,11 +207,6 @@ void spilink_init(bool_t isMaster)
 }
 
 
-void spilink_start(void) {
-    spidbStart(&SPILINKD);
-}
-
-
 void spilink_stop(void) {
     spidbStop(&SPILINKD);
     palSetPadMode(SPILINK_NSS_PORT, SPILINK_NSS_PIN, PAL_MODE_INPUT); /* synced NSS */
