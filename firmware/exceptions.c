@@ -249,13 +249,13 @@ void exception_checkandreport(void) {
       LogTextMessage("File error: %s, filename:\"%s\"",fs_err_name[exceptiondump->r0],(char *)(BKPSRAM_BASE)+12);
     }
     else if (exceptiondump->type == patch_load_crc_fail) {
-      LogTextMessage("Failed to load patch, firmware version mismatch? Filename:\"%s\"",(char *)(BKPSRAM_BASE)+12);
+      LogTextMessage("Failed to load patch, firmware version mismatch? \"%s\"",(char *)(BKPSRAM_BASE)+12);
     }
     else if (exceptiondump->type == patch_load_sdram_overflow) {
       LogTextMessage("SDRAM overflow by %d bytes",exceptiondump->r0);
     }
     else if (exceptiondump->type == usbh_midi_ringbuffer_overflow) {
-      LogTextMessage("USB host MIDI output ringbuffer overflow");
+      LogTextMessage("USB host MIDI output buffer overflow");
     }
     else
     {
