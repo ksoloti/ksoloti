@@ -141,10 +141,10 @@ int main(void) {
 
             if (fs_ready) {
                 LoadPatchStartSD();
+                chThdSleepMilliseconds(100);
             }
 
             /* If no patch booting or running yet try loading from flash */
-            chThdSleepMilliseconds(10);
             // if (patchStatus == STOPPED) {
             if (patchStatus != RUNNING) {
                 LoadPatchStartFlash();

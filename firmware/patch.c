@@ -87,6 +87,7 @@ static int GetNumberOfThreads(void) {
 #endif
 }
 
+
 void CheckStackOverflow(void) {
 #ifdef CH_USE_REGISTRY
 #ifdef CH_DBG_FILL_THREADS

@@ -4,13 +4,13 @@ MEMORY
 {
     /*
     originally 
-        24kB for program
-        64kB for variables
+        24 kB for program
+        64 kB for variables
     new:
-        56kB for program
-        64kB for variables 
+        44+8 = 52 kB for program
+        64 kB for variables 
     next:
-        72kB for program!
+        44+8+16 = 68 kB for program?? (sram3?)
     */
 
     SRAM (rwx) : ORIGIN = 0x00011000, LENGTH = 0x0000B000 /* 44kB in RAM1 */
