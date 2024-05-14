@@ -1,5 +1,6 @@
 /**
  * Copyright (C) 2013, 2014 Johannes Taelman
+ * Edited 2023 - 2024 by Ksoloti
  *
  * This file is part of Axoloti.
  *
@@ -177,7 +178,17 @@ __attribute__ ( ( always_inline ) ) __STATIC_INLINE int32_t rand_s32(void) {
   return randSeed = (randSeed * 196314165) + RNG->DR;
 }
 
+/* If RAND_MAX was perviously defined, satisfy compiler by undefining it */
+#ifdef RAND_MAX
+#undef RAND_MAX
+#endif
 #define RAND_MAX INT32_MAX
+
+/* Satisfy compiler by undefining standard C rand() and replacing it with below, bipolar version */
+#ifdef rand
+#undef rand
+#endif
+
 __attribute__ ( ( always_inline ) ) __STATIC_INLINE int rand(void) {
   // standard C rand()
   return ((uint32_t)rand_s32())>>1;
