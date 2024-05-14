@@ -79,13 +79,13 @@ then
     rm ${ARCHIVE}
 fi
 
-if [ ! -f "zadig_2.3.exe" ];
+if [ ! -f "zadig-2.8.exe" ];
 then
-    ARCHIVE=zadig_2.3.exe
+    ARCHIVE=zadig-2.8.exe
     if [ ! -f ${ARCHIVE} ]; 
     then
         echo "downloading ${ARCHIVE}"
-        curl -L http://zadig.akeo.ie/downloads/${ARCHIVE} > ${ARCHIVE}
+        curl -L https://github.com/pbatard/libwdi/releases/download/v1.5.0/${ARCHIVE} > ${ARCHIVE}
     else
         echo "${ARCHIVE} already downloaded"
     fi        
