@@ -12,12 +12,9 @@ set KeyName=HKEY_LOCAL_MACHINE\SOFTWARE\JavaSoft\Java Development Kit
 set Cmd=reg query "%KeyName%" /s
 for /f "tokens=2*" %%i in ('%Cmd% ^| find "JavaHome"') do set JAVA_HOME=%%j
 
-set KeyName=HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\JavaSoft\Java Development Kit
-set Cmd=reg query "%KeyName%" /s
-for /f "tokens=2*" %%i in ('%Cmd% ^| find "JavaHome"') do set JAVA_HOME=%%j
-
 if not defined JAVA_HOME (
    echo JDK not installed, please install JDK first
+   echo Azul Zulu JDK 21.30.15 (21.0.1) is recommended: https://www.azul.com/core-post-download/?endpoint=zulu&uuid=d7b2d714-9065-45cb-b9b4-aa286b5a8f81
    pause
    goto :end
 )
