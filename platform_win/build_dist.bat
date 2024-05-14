@@ -26,7 +26,7 @@ if not defined JAVA_HOME (
 
 echo JAVA_HOME: %JAVA_HOME%
 
-set ANT=%~dp0\apache-ant-1.9.4\bin\ant.bat
+set ANT=%~dp0\apache-ant-1.10.14\bin\ant.bat
 
 echo ANT: %ANT%
 

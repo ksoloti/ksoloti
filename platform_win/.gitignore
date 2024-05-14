@@ -8,6 +8,7 @@ man/
 manifest/
 chibios/
 apache-ant-1.9.4/
+apache-ant-1.10.*/
 ChibiOS_2.6.*/
 
 coreutils-5.3.0-bin.zip

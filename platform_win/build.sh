@@ -64,9 +64,9 @@ then
     rm coreutils-5.3.0-bin.zip
 fi
 
-if [ ! -d "apache-ant-1.9.4" ];
+if [ ! -d "apache-ant-1.10.14" ];
 then
-    ARCHIVE=apache-ant-1.9.4-bin.zip
+    ARCHIVE=apache-ant-1.10.14-bin.zip
     if [ ! -f ${ARCHIVE} ]; 
     then
         echo "downloading ${ARCHIVE}"

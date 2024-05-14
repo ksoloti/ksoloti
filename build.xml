@@ -215,7 +215,7 @@
         </exec>
 
         <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-rf build/runtime/tmp_win/axoloti_runtime/platform_win/apache-ant-1.9.4"/>
+            <arg line="-rf build/runtime/tmp_win/axoloti_runtime/platform_win/apache-ant-1.10.14"/>
         </exec>
 
         <exec dir="." executable="rm" osfamily="Windows">
