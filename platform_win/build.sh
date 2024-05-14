@@ -101,7 +101,8 @@ then
     else
         echo "${ARCHIVE} already downloaded"
     fi
-	unzip -q -j -d bin dfu-util-0.9-win64.zip
+	unzip -q -j -d bin ${ARCHIVE}
+	rm ${ARCHIVE}
 fi
 
 echo "DONE!"
