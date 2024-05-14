@@ -13,10 +13,11 @@ MEMORY
         44+8+16 = 68 kB for program?? (sram3?)
     */
 
-    SRAM (rwx) : ORIGIN = 0x00011000, LENGTH = 0x0000B000 /* 44kB in RAM1 */
-    SRAM2 (rwx) : ORIGIN = 0x2001C000, LENGTH = 0x00002000 /* first 8kB in SRAM2 */
+    SRAM (rwx)   : ORIGIN = 0x00011000, LENGTH = 0x0000B000 /* 44kB in RAM1 */
+    SRAM2 (rwx)  : ORIGIN = 0x2001C000, LENGTH = 0x00002000 /* first 8kB in SRAM2 */
+    SRAM3 (rwx)  : ORIGIN = 0x20020000, LENGTH = 0x00010000 /* TODO */
     CCMSRAM (rw) : ORIGIN = 0x10000000, LENGTH = 0x0000C000 /* CCM - ccmramend */
-    sdram : org = 0xC0000000, len = 0x2000000 /* 32MB */
+    sdram        : ORIGIN = 0xC0000000, LENGTH = 0x2000000 /* 32MB */
 }
 
 SECTIONS
