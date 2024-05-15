@@ -353,8 +353,8 @@
  * PB3  - PIN3                      (input pulldown or SPI3 SCK)
  * PB4  - PIN4                      (input pulldown or SPI3 MISO)
  * PB5  - PIN5                      (input floating)
- * PB6  - PIN6                      fmc
- * PB7  - PIN7                      (input pullup).
+ * PB6  - PIN6                      (input pulldown)
+ * PB7  - PIN7                      (input pulldown).
  * PB8  - PIN8                      (input pullup).
  * PB9  - PIN9                      (input pullup).
  * PB10 - SCL                       (alternate 4).
@@ -421,8 +421,8 @@
                                      PIN_PUPDR_PULLDOWN(GPIOB_PIN3) |       \
                                      PIN_PUPDR_PULLDOWN(GPIOB_PIN4) |       \
                                      PIN_PUPDR_FLOATING(GPIOB_PIN5) |       \
-                                     PIN_PUPDR_FLOATING(GPIOB_PIN6) |       \
-                                     PIN_PUPDR_FLOATING(GPIOB_PIN7) |         \
+                                     PIN_PUPDR_PULLDOWN(GPIOB_PIN6) |       \
+                                     PIN_PUPDR_PULLDOWN(GPIOB_PIN7) |         \
                                      PIN_PUPDR_PULLUP(GPIOB_PIN8) |         \
                                      PIN_PUPDR_PULLUP(GPIOB_PIN9) |         \
                                      PIN_PUPDR_FLOATING(GPIOB_PIN10) |      \
