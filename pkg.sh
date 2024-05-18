@@ -9,7 +9,8 @@ VERSION_LONG="$(git describe --long --always --tags 2>&1)"
 echo $VERSION
 echo $VERSION_LONG
 
-# Compile firmware and jar
+
+# ----- Compile firmware and jar
 ./qlean.sh
 ./kompile_shortcut.sh
 ant clean
@@ -17,12 +18,12 @@ ant clean
 ant clean
 
 
-# Init
+# ----- Init
 mkdir -p packagetemp
 rm -rf packagetemp/*
 
 
-# Linux
+# ----- Linux
 java -jar ./jdks/packr-all-4.0.0.jar --verbose ./jdks/packr-linux-x64.json
 
 rm -rf packagetemp/linux/ksoloti-${VERSION}/chibios/demos
@@ -76,7 +77,7 @@ cd ../..
 rm -rf packagetemp/linux
 
 
-# MacOS
+# ----- MacOS x64
 java -jar ./jdks/packr-all-4.0.0.jar --verbose ./jdks/packr-mac-x64.json
 
 rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/chibios/demos
@@ -123,7 +124,7 @@ cd ../..
 rm -rf packagetemp/mac
 
 
-# Windows
+# ----- Windows
 java -jar ./jdks/packr-all-4.0.0.jar --verbose ./jdks/packr-win-x64.json
 
 rm -rf packagetemp/win/ksoloti-${VERSION}/chibios/demos
@@ -177,7 +178,7 @@ cd ../..
 rm -rf packagetemp/win
 
 
-# Cleanup
+# ----- Cleanup
 cd firmware && make clean
 cd ../firmware_axoloti_legacy && make clean
 cd .. && ant clean
