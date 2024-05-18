@@ -40,10 +40,14 @@ fi
 
 if [ ! -f "bin/make.exe" ];
 then
+    ARCHIVE=make-bin-win64.zip
     echo "downloading make"
-    curl -L http://gnuwin32.sourceforge.net/downlinks/make-bin-zip.php > make-3.81-bin.zip
-    unzip -q -o make-3.81-bin.zip 
-    rm make-3.81-bin.zip
+    curl -L https://github.com/maweil/MakeForWindows/releases/download/v4.4.1/make-bin-win64.zip > make-4.4.1-bin.zip
+    # curl -L https://downloads.sourceforge.net/project/ezwinports/make-4.4.1-without-guile-w32-bin.zip > make-4.4.1-bin.zip
+    unzip -q -o make-4.4.1-bin.zip
+    cp make-4.4.1/dist/* bin/
+    rm make-4.4.1-bin.zip
+    rm -rf make-4.4.1/
 fi
 
 
