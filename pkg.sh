@@ -10,8 +10,11 @@ echo $VERSION
 echo $VERSION_LONG
 
 # Compile firmware and jar
-./platform_linux/compile_firmware.sh
+./qlean.sh
+./kompile_shortcut.sh
+ant clean
 ./platform_linux/compile_java.sh
+ant clean
 
 
 # Init
