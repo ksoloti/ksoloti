@@ -189,7 +189,7 @@ __attribute__ ( ( always_inline ) ) __STATIC_INLINE int32_t rand_s32(void) {
 #undef rand
 #endif
 
-__attribute__ ( ( always_inline ) ) __STATIC_INLINE int rand(void) {
+__attribute__ ( ( always_inline ) ) __INLINE int rand(void) {
   // standard C rand()
   return ((uint32_t)rand_s32())>>1;
 }
