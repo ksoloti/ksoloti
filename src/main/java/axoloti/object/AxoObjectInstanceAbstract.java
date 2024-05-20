@@ -186,7 +186,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         if (typeUUID != null) {
             type = MainFrame.axoObjects.GetAxoObjectFromUUID(typeUUID);
             if (type != null) {
-                System.out.println("Restored from UUID:" + type.id);
+                // System.out.println("Restored from UUID:" + type.id);
                 typeName = type.id;
             }
         }

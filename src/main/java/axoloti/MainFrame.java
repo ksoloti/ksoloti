@@ -951,7 +951,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private boolean runTestCompile(File f) {
-        Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Testing {0}", f.getPath());
+        Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "----- Testing {0} -----", f.getPath());
 
         Strategy strategy = new AnnotationStrategy();
         Serializer serializer = new Persister(strategy);
