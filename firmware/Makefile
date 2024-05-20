@@ -5,7 +5,7 @@
 
 # Compiler options here.
 ifeq ($(USE_OPT),)
-  USE_OPT = -O2 -ggdb0 -fomit-frame-pointer -falign-functions=16 -fno-math-errno -Wno-unused-parameter
+  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -fno-math-errno -Wno-unused-parameter -Wno-unused-function
 endif
 
 # C specific options here (added to USE_OPT).
