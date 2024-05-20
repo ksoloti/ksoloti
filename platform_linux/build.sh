@@ -181,31 +181,6 @@ else
     echo "##### dfu-util already present, skipping... #####"
 fi
 
-if [ ! -f "$PLATFORM_ROOT/bin/make" ]; 
-then
-    cd "${PLATFORM_ROOT}/src"
-    ARDIR=make-4.4.1
-    ARCHIVE=${ARDIR}.tar.gz
-
-    if [ ! -f ${ARCHIVE} ]; 
-    then
-        echo "downloading ${ARCHIVE}"
-        curl -L http://ftp.gnu.org/gnu/make/$ARCHIVE > $ARCHIVE
-    else
-        echo "${ARCHIVE} already downloaded"
-    fi
-
-    tar xfz $ARCHIVE
-
-    cd "${PLATFORM_ROOT}/src/${ARDIR}"
-    ./configure
-    make 
-    cp -v make "${PLATFORM_ROOT}/bin/"
-    cp -v "${PLATFORM_ROOT}/lib/"*.dylib "${PLATFORM_ROOT}/bin/"
-    make clean
-
-fi
-
 cd "${PLATFORM_ROOT}/../jdks"
 
 JDK_ARCHIVE_LINUX="zulu21.30.15-ca-jdk21.0.1-linux_x64.tar.gz"
