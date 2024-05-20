@@ -139,7 +139,7 @@ fi
 if [ ! -f "$PLATFORM_ROOT/bin/make" ]; 
 then
     cd "${PLATFORM_ROOT}/src"
-    ARDIR=make-4.4.1
+    ARDIR=make-3.82
     ARCHIVE=${ARDIR}.tar.gz
 
     if [ ! -f ${ARCHIVE} ]; 
