@@ -349,15 +349,11 @@ public class Axoloti {
         if (cmdLineOnly) {
             try {
                 MainFrame frame = new MainFrame(args);
+                frame.setVisible(false);
                 AxoObjects objs = new AxoObjects();
                 objs.LoadAxoObjects();
                 if (SplashScreen.getSplashScreen() != null) {
                     SplashScreen.getSplashScreen().close();
-                }
-                try {
-                    objs.LoaderThread.join();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Axoloti.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
                 System.out.println("Axoloti cmd line initialised");
