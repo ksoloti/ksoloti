@@ -83,7 +83,9 @@ public class FileMenu extends JMenu {
         recentFileMenu1 = new RecentFileMenu();
         favouriteMenu1 = new FavouriteMenu();
         jMenuItemPreferences = new JMenuItem();
-        jMenuAutoTest = new JMenuItem();
+        jMenuAutoTestObjects = new JMenuItem();
+        jMenuAutoTestPatches = new JMenuItem();
+        jMenuAutoTestAll = new JMenuItem();
 
         jMenuNewPatch.setMnemonic('N');
         jMenuNewPatch.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
@@ -174,14 +176,32 @@ public class FileMenu extends JMenu {
         });
         add(jMenuRegenerateObjects);
 
-        jMenuAutoTest.setText("Test Compilation");
-        jMenuAutoTest.addActionListener(new java.awt.event.ActionListener() {
+        jMenuAutoTestObjects.setText("Test Compilation: Run objects");
+        jMenuAutoTestObjects.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuAutoTestActionPerformed(evt);
+                jMenuAutoTestObjectsActionPerformed(evt);
             }
         });
-        add(jMenuAutoTest);
+        add(jMenuAutoTestObjects);
+
+        jMenuAutoTestPatches.setText("Test Compilation: Run patches");
+        jMenuAutoTestPatches.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuAutoTestPatchesActionPerformed(evt);
+            }
+        });
+        add(jMenuAutoTestPatches);
+
+        jMenuAutoTestAll.setText("Test Compilation: Run all tests");
+        jMenuAutoTestAll.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuAutoTestAllActionPerformed(evt);
+            }
+        });
+        add(jMenuAutoTestAll);
         add(jSeparator2);
 
         jMenuItemPreferences.setMnemonic('P');
@@ -211,7 +231,9 @@ public class FileMenu extends JMenu {
 
         jMenuRegenerateObjects.setVisible(false);
         if (!Preferences.LoadPreferences().getExpertMode()) {
-            jMenuAutoTest.setVisible(false);
+            jMenuAutoTestObjects.setVisible(false);
+            jMenuAutoTestPatches.setVisible(false);
+            jMenuAutoTestAll.setVisible(false);
         }
     }
 
@@ -231,14 +253,45 @@ public class FileMenu extends JMenu {
     private axoloti.menus.RecentFileMenu recentFileMenu1;
     private axoloti.menus.FavouriteMenu favouriteMenu1;
     private javax.swing.JMenuItem jMenuItemPreferences;
-    private javax.swing.JMenuItem jMenuAutoTest;
+    private javax.swing.JMenuItem jMenuAutoTestAll;
+    private javax.swing.JMenuItem jMenuAutoTestObjects;
+    private javax.swing.JMenuItem jMenuAutoTestPatches;
 
     private void jMenuItemPreferencesActionPerformed(java.awt.event.ActionEvent evt) {
         PreferencesFrame.GetPreferencesFrame().setState(java.awt.Frame.NORMAL);
         PreferencesFrame.GetPreferencesFrame().setVisible(true);
     }
 
-    private void jMenuAutoTestActionPerformed(java.awt.event.ActionEvent evt) {
+    private void jMenuAutoTestObjectsActionPerformed(java.awt.event.ActionEvent evt) {
+        if (JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and freeze the UI with no output until complete. Do you wish to continue?") == JOptionPane.YES_OPTION) {
+            class Thd extends Thread {
+                public void run() {
+                    Logger.getLogger(FileMenu.class.getName()).log(Level.WARNING, "Running object tests, please wait...");
+                    mainframe.runObjectTests();
+                    Logger.getLogger(FileMenu.class.getName()).log(Level.WARNING, "Finished running object tests.\n");
+                }
+            }
+            Thd thread = new Thd();
+            thread.start();
+        }
+    }
+
+    private void jMenuAutoTestPatchesActionPerformed(java.awt.event.ActionEvent evt) {
+        if (JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and freeze the UI with no output until complete. Do you wish to continue?") == JOptionPane.YES_OPTION) {
+            class Thd extends Thread {
+                public void run() {
+                    Logger.getLogger(FileMenu.class.getName()).log(Level.WARNING, "Running patch tests, please wait...");
+                    mainframe.runPatchTests();
+                    Logger.getLogger(FileMenu.class.getName()).log(Level.WARNING, "Finished running patch tests.\n");
+                }
+            }
+            Thd thread = new Thd();
+            thread.start();
+        }
+    }
+
+
+    private void jMenuAutoTestAllActionPerformed(java.awt.event.ActionEvent evt) {
         if (JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and freeze the UI with no output until complete. Do you wish to continue?") == JOptionPane.YES_OPTION) {
             class Thd extends Thread {
                 public void run() {
