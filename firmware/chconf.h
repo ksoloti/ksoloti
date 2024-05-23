@@ -534,7 +534,7 @@
 /* Other                                                                     */
 /*===========================================================================*/
 
-#define CHPRINTF_USE_FLOAT  TRUE
+#define CHPRINTF_USE_FLOAT  FALSE
 
 #endif  /* _CHCONF_H_ */
 
