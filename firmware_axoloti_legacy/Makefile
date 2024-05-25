@@ -67,7 +67,7 @@ PROJECT = axoloti
 axoloti_runtime ?= ..
 axoloti_release ?= ..
 axoloti_home ?= ..
-axoloti_firmware ?= ../firmware
+axoloti_legacy_firmware ?= ../firmware_axoloti_legacy
 
 CHIBIOS = ${axoloti_release}/chibios
 

@@ -1,13 +1,13 @@
 @ECHO OFF
 
-call :setfirmware "%axoloti_firmware%"
+call :setfirmware "%axoloti_legacy_firmware%"
 call :sethome "%axoloti_home%"
 call :setrelease "%axoloti_release%"
 
 set PATH=%axoloti_runtime%\platform_win\bin
 
 echo "setup build dir"
-cd %axoloti_firmware%
+cd %axoloti_legacy_firmware%
 if not exist ".dep\" mkdir .dep
 if not exist "build\" mkdir build
 if not exist "build\obj\" mkdir build\obj
@@ -49,7 +49,7 @@ goto :eof
 rem --- path shortening
 
 :setfirmware
-set axoloti_firmware=%~s1
+set axoloti_legacy_firmware=%~s1
 goto :eof
 
 :sethome

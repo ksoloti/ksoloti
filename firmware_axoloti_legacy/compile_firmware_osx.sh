@@ -2,7 +2,7 @@
 export PATH=${axoloti_runtime}/platform_osx/bin:$PATH
 
 echo "Compiling Axoloti Legacy firmware... ${axoloti_legacy_firmware}"
-cd "${axoloti_firmware}"
+cd "${axoloti_legacy_firmware}"
 make -f Makefile.patch clean
 
 mkdir -p build/obj
