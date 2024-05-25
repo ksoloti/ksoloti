@@ -71,12 +71,9 @@ axoloti_legacy_firmware ?= ../firmware_axoloti_legacy
 
 CHIBIOS = ${axoloti_release}/chibios
 
-
-# theoretically should be this...., but CSRC expansion cannot cope with escape spaces
-#SPACE :=
-#SPACE +=
-#FIRMWARE=$(subst $(SPACE),\ ,${axoloti_firmware})
-FIRMWARE=.
+EMPTY := 
+SPACE := $(EMPTY) $(EMPTY)
+FIRMWARE=$(subst $(SPACE),\ ,${axoloti_legacy_firmware})
 
 MUTABLE_INSTRUMENTS = ${FIRMWARE}/mutable_instruments
 
@@ -156,7 +153,7 @@ CSRC = $(PORTSRC) \
        ${CMSIS}/DSP/Source/BasicMathFunctions/arm_shift_q15.c \
        ${CMSIS}/DSP/Source/BasicMathFunctions/arm_scale_f32.c \
        ${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_q31.c \
-	   ${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_f32.c \
+	${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_f32.c \
        ${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mag_q31.c \
        ${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_q15.c \
        ${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mag_q15.c \
