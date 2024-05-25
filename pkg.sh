@@ -9,6 +9,12 @@ VERSION_LONG="$(git describe --long --always --tags 2>&1)"
 echo $VERSION
 echo $VERSION_LONG
 
+CUSTOMNAME=
+if [ $# -eq 1 ]
+  then
+    CUSTOMNAME=$1
+fi
+echo $CUSTOMNAME
 
 # ----- Compile firmware and jar
 ./qlean.sh
@@ -72,7 +78,7 @@ rm -rf packagetemp/linux/ksoloti-${VERSION}/jre/demo
 rm -rf packagetemp/linux/ksoloti-${VERSION}/jre/man
 rm packagetemp/linux/ksoloti-${VERSION}/jre/lib/src.zip
 
-cd packagetemp/linux && tar -czf ../ksoloti_patcher-linux-${VERSION_LONG}.tar.gz *
+cd packagetemp/linux && tar -czf ../ksoloti_patcher-linux-${VERSION_LONG}${CUSTOMNAME}.tar.gz *
 cd ../..
 rm -rf packagetemp/linux
 
@@ -119,7 +125,7 @@ rm packagetemp/mac/Ksoloti.app/Contents/Resources/jre/lib/src.zip
 
 chmod +x packagetemp/mac/Ksoloti.app/Contents/Resources/jre/lib/jspawnhelper
 
-cd packagetemp/mac && tar -czf ../ksoloti_patcher-mac-${VERSION_LONG}.tar.gz *
+cd packagetemp/mac && tar -czf ../ksoloti_patcher-mac-${VERSION_LONG}${CUSTOMNAME}.tar.gz *
 cd ../..
 rm -rf packagetemp/mac
 
@@ -173,7 +179,7 @@ rm -rf packagetemp/win/ksoloti-${VERSION}/jre/demo
 rm -rf packagetemp/win/ksoloti-${VERSION}/jre/man
 rm packagetemp/win/ksoloti-${VERSION}/jre/lib/src.zip
 
-cd packagetemp/win && zip -q -r ../ksoloti_patcher-windows-${VERSION_LONG}.zip *
+cd packagetemp/win && zip -q -r ../ksoloti_patcher-windows-${VERSION_LONG}${CUSTOMNAME}.zip *
 cd ../..
 rm -rf packagetemp/win
 
