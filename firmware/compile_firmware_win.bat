@@ -13,14 +13,14 @@ if not exist "build\" mkdir build
 if not exist "build\obj\" mkdir build\obj
 if not exist "build\lst\" mkdir build\lst
 
-echo "Compiling firmware..."
+echo "Compiling Ksoloti firmware..."
 make -f Makefile.patch clean
 make
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
 
-echo "Compiling firmware flasher..."
+echo "Compiling Ksoloti firmware flasher..."
 cd flasher
 if not exist ".dep\" mkdir .dep
 if not exist "flasher_build\" mkdir flasher_build
@@ -32,7 +32,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 cd ..
 
-echo "Compiling firmware mounter..."
+echo "Compiling Ksoloti firmware mounter..."
 cd mounter
 if not exist ".dep\" mkdir .dep
 if not exist "mounter_build\" mkdir mounter_build

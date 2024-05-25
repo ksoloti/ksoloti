@@ -3,7 +3,7 @@ set -e
 
 export PATH=${axoloti_runtime}/platform_osx/bin:$PATH
 
-echo "Compiling firmware... ${axoloti_firmware}"
+echo "Compiling Ksoloti firmware... ${axoloti_firmware}"
 cd "${axoloti_firmware}"
 make -f Makefile.patch clean
 
@@ -13,14 +13,14 @@ if ! make $1; then
     exit 1
 fi
 
-echo "Compiling firmware flasher..."
+echo "Compiling Ksoloti firmware flasher..."
 cd flasher
 mkdir -p flasher_build/obj
 mkdir -p flasher_build/lst
 make $1
 cd ..
 
-echo "Compiling firmware mounter..."
+echo "Compiling Ksoloti firmware mounter..."
 cd mounter
 mkdir -p mounter_build/obj
 mkdir -p mounter_build/lst
