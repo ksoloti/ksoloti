@@ -19,6 +19,9 @@ make
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
+rmdir /s /q .dep
+rmdir /s /q build\lst
+rmdir /s /q build\obj
 
 echo "Compiling Axoloti Legacy firmware flasher..."
 cd flasher
@@ -30,6 +33,9 @@ make
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
+rmdir /s /q .dep
+rmdir /s /q flasher_build\lst
+rmdir /s /q flasher_build\obj
 cd ..
 
 echo "Compiling Axoloti Legacy firmware mounter..."
@@ -42,6 +48,9 @@ make
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
+rmdir /s /q .dep
+rmdir /s /q mounter_build\lst
+rmdir /s /q mounter_build\obj
 cd ..
 
 goto :eof
