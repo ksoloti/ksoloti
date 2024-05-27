@@ -10,8 +10,8 @@
     ],
     "mainclass": "axoloti.Axoloti",
     "vmargs": [
-        "Xms1G",
-        "Xmx1G",
+        "Xms128m",
+        "Xmx1g",
         "Xbootclasspath/a:lib/marlin-0.9.4.8-Unsafe-OpenJDK11.jar",
         "Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine",
         "Dsun.java2d.dpiaware=true"
