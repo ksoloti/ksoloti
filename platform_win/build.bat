@@ -4,13 +4,13 @@ setlocal
 
 cd %~sdp0
 
-set MSYS32=c:\msys32
-set PACMAN=%MSYS32%\usr\bin\pacman.exe
+set MSYS64=c:\msys64
+set PACMAN=%MSYS64%\usr\bin\pacman.exe
 
 if not exist %PACMAN% (
   echo %PACMAN% not found,
-  echo MSYS32 not installed
-  echo download and run msys2-i686 from http://msys2.github.io/
+  echo MSYS64 not installed
+  echo download and run msys2-x86_64-[VERSION].exe from http://msys2.github.io/
   echo and then re-run this script
   echo launching a browser for you...
   start /max http://msys2.github.io/
@@ -20,9 +20,9 @@ if not exist %PACMAN% (
 
 %PACMAN% pacman -S --needed git gcc autoconf libtool make wget unzip diffutils patch pkg-config mingw-w64-i686-gcc
 
-set PATH=%PATH%;%MSYS32%\usr\bin
+set PATH=%PATH%;%MSYS64%\usr\bin
 set HOME=.
-%MSYS32%\usr\bin\bash.exe build.sh
+%MSYS64%\usr\bin\bash.exe build.sh
 
 call build_gui.bat
 

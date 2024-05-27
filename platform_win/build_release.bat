@@ -31,7 +31,7 @@ if not exist %ANT% (
 
 cd %~dp0\..
 
-set PATH=%PATH%;C:\msys32\usr\bin
+set PATH=%PATH%;C:\msys64\usr\bin
 
 call %ANT% clean
 call %ANT% 
