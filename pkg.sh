@@ -118,6 +118,15 @@ rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware_axoloti_legacy/mo
 rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware_axoloti_legacy/mounter/mounter_build/lst
 rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware_axoloti_legacy/mounter/mounter_build/obj
 
+rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/share
+rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/src
+rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/arm-none-eabi/lib/armv6-m
+rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/arm-none-eabi/lib/armv7-ar
+rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/arm-none-eabi/lib/armv7-m
+rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/lib/gcc/arm-none-eabi/4.9.3/armv6-m
+rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/lib/gcc/arm-none-eabi/4.9.3/armv7-ar
+rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/lib/gcc/arm-none-eabi/4.9.3/armv7-mo
+
 rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/jre/jmods
 rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/jre/demo
 rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/jre/man
