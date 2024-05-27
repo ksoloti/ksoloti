@@ -32,7 +32,7 @@
 #include "exceptions.h"
 #include "flash.h"
 
-extern int _vectors;
+extern uint32_t _vectors;
 
 // #define AXOLOTI_CONTROL 1
 // #define SERIALDEBUG TRUE

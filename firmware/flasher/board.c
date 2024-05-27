@@ -53,7 +53,7 @@ void __early_init(void) {
   rccResetAPB2(~0x10000000); //RCC_APB1RSTR_PWRRST
   OTG_HS->GINTMSK = 0; // disable OTG_HS interrupts!
   // copy vector table
-  extern int _vectors;
+  extern uint32_t _vectors;
   memcpy((char *)0x20000000, (const char *)&_vectors, 0x200);
   // remap SRAM1 to 0x00000000
   SYSCFG->MEMRMP |= 0x03;
