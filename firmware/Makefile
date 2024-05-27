@@ -87,6 +87,10 @@ include $(CHIBIOS)/os/kernel/kernel.mk
 
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 
+# get the same binary as openOCD flashes from elf
+override BIN = $(CP) -O binary --gap-fill 0xff
+override HEX = $(CP) -O ihex --gap-fill 0xff
+
 CMSIS = ${axoloti_release}/CMSIS/
 
 
