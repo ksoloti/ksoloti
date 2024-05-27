@@ -24,16 +24,17 @@ export axoloti_home=${axoloti_home:="$rootdir"}
 
 which java >/dev/null || echo "Java not found in path" 
 
+heap_jvmargs='-Xms128m -Xmx1g'
+marlin_jvmargs='-Xbootclasspath/a:lib/marlin-0.9.4.8-Unsafe-OpenJDK11.jar -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine'
+
 if [ -f $rootdir/dist/Ksoloti.jar ]
 then
     case "$platform" in
         mac)
-                # java -Xdock:name=Ksoloti -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
-                java -Xdock:name=Ksoloti --patch-module java.desktop=$rootdir/lib/marlin-0.9.4.8-Unsafe-OpenJDK11.jar -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
+                java -Xdock:name=Ksoloti $heap_jvmargs $marlin_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
         ;;
         linux)
-                # java -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
-                java --patch-module java.desktop=$rootdir/lib/marlin-0.9.4.8-Unsafe-OpenJDK11.jar -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
+                java $heap_jvmargs $marlin_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
         ;;
     esac
 else
