@@ -5,7 +5,14 @@
 
 # Compiler options here.
 ifeq ($(USE_OPT),)
-  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -fno-math-errno -Wno-unused-parameter -Wno-unused-function
+  USE_OPT = \
+    -O2 \
+    -ggdb \
+    -fomit-frame-pointer \
+    -falign-functions=16 \
+    -fno-math-errno \
+    -Wno-unused-parameter \
+    -Wno-unused-function
 endif
 
 # C specific options here (added to USE_OPT).
@@ -365,13 +372,20 @@ BIN  = $(CP) -O binary
 AOPT =
 
 # THUMB-specific options here
-TOPT = -mthumb -DTHUMB
+TOPT = \
+    -mthumb \
+    -DTHUMB
 
 # Define C warning options here
-CWARN = -Wall -Wextra -Wstrict-prototypes
+CWARN = \
+    -Wall \
+    -Wextra \
+    -Wstrict-prototypes
 
 # Define C++ warning options here
-CPPWARN = -Wall -Wextra
+CPPWARN = \
+    -Wall \
+    -Wextra
 
 #
 # Compiler settings
@@ -405,7 +419,9 @@ DLIBS =
 #
 
 # List all user C define here, like -D_DEBUG=1
-UDEFS = -DARM_MATH_CM4 -D__FPU_PRESENT
+UDEFS = \
+    -DARM_MATH_CM4 \
+    -D__FPU_PRESENT
 
 # Define ASM defines here
 UADEFS =

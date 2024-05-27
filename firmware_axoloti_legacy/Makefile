@@ -5,7 +5,14 @@
 
 # Compiler options here.
 ifeq ($(USE_OPT),)
-  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -fno-math-errno -Wno-unused-parameter -Wno-unused-function
+  USE_OPT = \
+    -O2 \
+    -ggdb \
+    -fomit-frame-pointer \
+    -falign-functions=16 \
+    -fno-math-errno \
+    -Wno-unused-parameter \
+    -Wno-unused-function
 endif
 
 # C specific options here (added to USE_OPT).
@@ -48,7 +55,7 @@ endif
 
 #Axoloti optional modules, here we define defaults if none supplied
 ifeq ($(AXO_OPT_MODULES),)
-	AXO_OPT_MODULES = BRAIDS RINGS CLOUDS STREAMS ELEMENTS WARPS
+  AXO_OPT_MODULES = BRAIDS RINGS CLOUDS STREAMS ELEMENTS WARPS
 endif
 
 
@@ -95,7 +102,6 @@ CMSIS = ${axoloti_release}/CMSIS/
 
 # Define linker script file here
 LDSCRIPT= STM32F407xG.ld
-
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
@@ -157,7 +163,7 @@ CSRC = $(PORTSRC) \
        ${CMSIS}/DSP/Source/BasicMathFunctions/arm_shift_q15.c \
        ${CMSIS}/DSP/Source/BasicMathFunctions/arm_scale_f32.c \
        ${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_q31.c \
-	${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_f32.c \
+       ${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_f32.c \
        ${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mag_q31.c \
        ${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mult_cmplx_q15.c \
        ${CMSIS}/DSP/Source/ComplexMathFunctions/arm_cmplx_mag_q15.c \
@@ -361,13 +367,20 @@ BIN  = $(CP) -O binary
 AOPT =
 
 # THUMB-specific options here
-TOPT = -mthumb -DTHUMB
+TOPT = \
+    -mthumb \
+    -DTHUMB
 
 # Define C warning options here
-CWARN = -Wall -Wextra -Wstrict-prototypes
+CWARN = \
+    -Wall \
+    -Wextra \
+    -Wstrict-prototypes
 
 # Define C++ warning options here
-CPPWARN = -Wall -Wextra
+CPPWARN = \
+    -Wall \
+    -Wextra
 
 #
 # Compiler settings

@@ -1,11 +1,36 @@
-CCFLAGS = -nostdlib -fno-exceptions -fno-rtti -mcpu=cortex-m4 -O3 -fomit-frame-pointer -falign-functions=16 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wunused-parameter -DCORTEX_USE_FPU=TRUE -DTHUMB_PRESENT -mno-thumb-interwork -DTHUMB_NO_INTERWORKING -mthumb -DTHUMB -std=c++11 -DARM_MATH_CM4 -D__FPU_PRESENT -fno-math-errno -fno-threadsafe-statics -fno-use-cxa-atexit -Wno-unused-parameter
+CCFLAGS = \
+    -nostdlib \
+    -fno-exceptions \
+    -fno-rtti \
+    -mcpu=cortex-m4 \
+    -O3 \
+    -fomit-frame-pointer \
+    -falign-functions=16 \
+    -mfloat-abi=hard \
+    -mfpu=fpv4-sp-d16 \
+    -Wunused-parameter \
+    -DCORTEX_USE_FPU=TRUE \
+    -DTHUMB_PRESENT \
+    -mno-thumb-interwork \
+    -DTHUMB_NO_INTERWORKING \
+    -mthumb \
+    -DTHUMB \
+    -std=c++11 \
+    -DARM_MATH_CM4 \
+    -D__FPU_PRESENT \
+    -fno-math-errno \
+    -fno-threadsafe-statics \
+    -fno-use-cxa-atexit \
+    -Wno-unused-parameter
 
-LDFLAGS = -nostartfiles -Tramlink.ld -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mthumb -mno-thumb-interwork
-
-#-mcpu=cortex-m4
-#-mno-thumb-interwork
-#-mthumb
-#-Wl,-Map=build/ch.map,--cref,--no-warn-mismatch,--gc-sections
+LDFLAGS = \
+    -nostartfiles \
+    -Tramlink.ld \
+    -mcpu=cortex-m4 \
+    -mfloat-abi=hard \
+    -mfpu=fpv4-sp-d16 \
+    -mthumb \
+    -mno-thumb-interwork
 
 CC=arm-none-eabi-gcc
 CPP=arm-none-eabi-g++
@@ -27,9 +52,6 @@ EMPTY :=
 SPACE := $(EMPTY) $(EMPTY)
 BUILDDIR=$(subst $(SPACE),\ ,${axoloti_libraries}/build)
 FIRMWARE=$(subst $(SPACE),\ ,${axoloti_firmware})
-
-# $(info BUILDDIR = ${BUILDDIR})
-# $(info FIRMWARE = ${FIRMWARE})
 
 include $(CHIBIOS)/boards/ST_STM32F4_DISCOVERY/board.mk
 include $(CHIBIOS)/os/hal/platforms/STM32F4xx/platform.mk
