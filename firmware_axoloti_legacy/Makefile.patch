@@ -54,8 +54,6 @@ SPACE := $(EMPTY) $(EMPTY)
 BUILDDIR=$(subst $(SPACE),\ ,${axoloti_libraries}/build)
 FIRMWARE=$(subst $(SPACE),\ ,${axoloti_firmware})
 
-# $(info BUILDDIR = ${BUILDDIR})
-# $(info FIRMWARE = ${FIRMWARE})
 
 include $(CHIBIOS)/boards/ST_STM32F4_DISCOVERY/board.mk
 include $(CHIBIOS)/os/hal/platforms/STM32F4xx/platform.mk
