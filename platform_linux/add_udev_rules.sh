@@ -7,15 +7,15 @@ cd $(dirname $0)
 # install udev rules
 if [ ! -f /etc/udev/rules.d/49-axoloti.rules ];
 then
-   echo "##### copying 49-axoloti.rules rules to /etc/udev/rules.d/ #####"
+   echo "##### Copying 49-axoloti.rules to /etc/udev/rules.d/ #####"
 
 else
-   echo "##### updating 49-axoloti.rules rules at /etc/udev/rules.d/ #####"
+   echo "##### Overwriting 49-axoloti.rules at /etc/udev/rules.d/ #####"
 fi
 
 sudo cp 49-axoloti.rules /etc/udev/rules.d/
 
 # reload udev rules
-echo "##### reloading udev rules #####"
+echo "##### Reloading udev rules #####"
 sudo udevadm control --reload-rules
-echo "DONE"
+echo "#####         DONE         #####"
