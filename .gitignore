@@ -40,6 +40,7 @@ axoloti.prefs
 ksoloti.prefs
 temp_*.cpp
 temp_*.h
+ChibiOS-*.zip
 
 #libraries
 home/

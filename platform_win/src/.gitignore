@@ -1,6 +1,6 @@
-libusb-1.0.19
-libusb-1.0.19.tar.gz
-libusb-1.0.19.tar.bz2
-dfu-util-0.8
-dfu-util-0.8.tar.gz
+libusb-1.*
+libusb-1.*.tar.gz
+libusb-1.*.tar.bz2
+dfu-util-*
+dfu-util-*.tar.gz
 ChibiOS*.zip
