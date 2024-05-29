@@ -148,9 +148,9 @@ public class AttributeInstanceObjRef extends AttributeInstanceString<AxoAttribut
         String ao[] = o.split("/");
         String o3 = "";
         for (int i = 1; i < ao.length; i++) {
-            o3 = o3 + ".instance" + CharEscape.CharEscape(ao[i]) + "_i";
+            o3 = o3 + ".objectinstance_" + CharEscape.CharEscape(ao[i]) + "_i";
         }
-        o2 = o2 + "instance" + CharEscape.CharEscape(ao[0]) + "_i" + o3;
+        o2 = o2 + "objectinstance_" + CharEscape.CharEscape(ao[0]) + "_i" + o3;
         return o2;
     }
 

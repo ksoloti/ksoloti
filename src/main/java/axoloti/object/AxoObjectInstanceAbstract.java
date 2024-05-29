@@ -621,7 +621,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     }
 
     public String getCInstanceName() {
-        String s = "instance" + getLegalName();
+        String s = "objectinstance_" + getLegalName();
         return s;
     }
 

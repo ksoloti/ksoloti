@@ -611,8 +611,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             if (p.parameter.PropagateToChild != null) {
                 c += "// on Parent: propagate " + p.getName() + " " + enableOnParent + " " + getLegalName() + "" + p.parameter.PropagateToChild + "\n";
                 c += p.PExName("parent->") + ".pfunction = PropagateToSub;\n";
-                c += p.PExName("parent->") + ".finalvalue = (int32_t)(&(parent->instance"
-                        + getLegalName() + "_i.PExch[instance" + getLegalName() + "::PARAM_INDEX_"
+                c += p.PExName("parent->") + ".finalvalue = (int32_t)(&(parent->objectinstance_"
+                        + getLegalName() + "_i.PExch[objectinstance_" + getLegalName() + "::PARAM_INDEX_"
                         + p.parameter.PropagateToChild + "]));\n";
 
             } else {
