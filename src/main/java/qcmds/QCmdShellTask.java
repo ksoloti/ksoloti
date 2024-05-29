@@ -56,13 +56,16 @@ public abstract class QCmdShellTask implements QCmd {
             try {
                 line = br.readLine();
                 while (line != null) {
-                    if (line.contains("error")) {
+                    if (line.contains("error:") || line.contains("#error")) {
                         Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "{0}",line);
                     }
                     else if (line.contains("overflowed by")) {
                         Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "{0}\n>>> Patch is too complex to fit in internal RAM. <<<",line);
                     }
-                    else if (line.contains("warning")) {
+                    else if (line.contains("has no member named \'objectinstance__i\'")) {
+                        Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "{0}\n>>> One or more object reference text fields (table, delay read/write, filename, ...) in the patch can''t be left empty. <<<",line);
+                    }
+                    else if (line.contains("warning:")) {
                         Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.WARNING, "{0}",line);
                     }
                     else {
