@@ -98,32 +98,40 @@ public class Patch {
 
     @Attribute(required = false)
     String appVersion;
+
     public @ElementListUnion({
         @ElementList(entry = "obj", type = AxoObjectInstance.class, inline = true, required = false),
         @ElementList(entry = "patcher", type = AxoObjectInstancePatcher.class, inline = true, required = false),
         @ElementList(entry = "patchobj", type = AxoObjectInstancePatcherObject.class, inline = true, required = false),
         @ElementList(entry = "comment", type = AxoObjectInstanceComment.class, inline = true, required = false),
         @ElementList(entry = "hyperlink", type = AxoObjectInstanceHyperlink.class, inline = true, required = false),
-        @ElementList(entry = "zombie", type = AxoObjectInstanceZombie.class, inline = true, required = false)})
-    ArrayList<AxoObjectInstanceAbstract> objectinstances = new ArrayList<AxoObjectInstanceAbstract>();
+        @ElementList(entry = "zombie", type = AxoObjectInstanceZombie.class, inline = true, required = false)
+    }) ArrayList<AxoObjectInstanceAbstract> objectinstances = new ArrayList<AxoObjectInstanceAbstract>();
+
     @ElementList(name = "nets")
     public ArrayList<Net> nets = new ArrayList<Net>();
+
     @Element(required = false)
     PatchSettings settings;
     @Element(required = false, data = true)
     String notes = "";
     @Element(required = false)
     Rectangle windowPos;
+
     private String FileNamePath;
     PatchFrame patchframe;
+
     ArrayList<ParameterInstance> ParameterInstances = new ArrayList<ParameterInstance>();
     ArrayList<DisplayInstance> DisplayInstances = new ArrayList<DisplayInstance>();
     public ArrayList<Modulator> Modulators = new ArrayList<Modulator>();
+
     public int presetNo = 0;
     boolean locked = false;
     private boolean dirty = false;
+
     @Element(required = false)
     private String helpPatch;
+
     // @Element(required = false)
     private boolean hasZombies = false;
 
@@ -136,9 +144,7 @@ public class Patch {
     private List<String> previousStates = new ArrayList<String>();
     private int currentState = 0;
 
-    static public class PatchVersionException
-            extends RuntimeException {
-
+    static public class PatchVersionException extends RuntimeException {
         PatchVersionException(String msg) {
             super(msg);
         }
@@ -155,7 +161,8 @@ public class Patch {
                 String v = vS.substring(0, i);
                 try {
                     return Integer.valueOf(v);
-                } catch (NumberFormatException e) {
+                }
+                catch (NumberFormatException e) {
                 }
             }
         }
@@ -171,8 +178,8 @@ public class Patch {
                     String v = vS.substring(i + 1, j);
                     try {
                         return Integer.valueOf(v);
-                    } catch (NumberFormatException e) {
-
+                    }
+                    catch (NumberFormatException e) {
                     }
                 }
             }
@@ -189,8 +196,8 @@ public class Patch {
                     String v = vS.substring(j + 1);
                     try {
                         return Integer.valueOf(v);
-                    } catch (NumberFormatException e) {
-
+                    }
+                    catch (NumberFormatException e) {
                     }
                 }
             }
@@ -200,7 +207,7 @@ public class Patch {
 
     @Validate
     public void Validate() {
-        // called after deserialializtion, stops validation
+        /* Called after deserialializtion, stops validation */
         if (appVersion != null && !appVersion.equals(Version.AXOLOTI_SHORT_VERSION)) {
             int vX = getVersionX(appVersion);
             int vY = getVersionY(appVersion);
@@ -229,12 +236,12 @@ public class Patch {
 
     @Complete
     public void Complete() {
-        // called after deserialializtion
+        /* called after deserialializtion */
     }
 
     @Persist
     public void Persist() {
-        // called prior to serialization
+        /* called prior to serialization */
         appVersion = Version.AXOLOTI_SHORT_VERSION;
     }
 
@@ -258,7 +265,7 @@ public class Patch {
         for (SDFileReference fref : files) {
             File f = fref.localfile;
             if (f == null) {
-                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "File not resolved: {0}", fref.targetPath);
+                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Couldn''t resolve file: {0}", fref.targetPath);
                 continue;
             }
             if (!f.exists()) {
@@ -269,6 +276,7 @@ public class Patch {
                 Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Can''t read file {0}", f.getName());
                 continue;
             }
+
             String targetfn = fref.targetPath;
             if (targetfn.isEmpty()) {
                 Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Target filename is empty: {0}", f.getName());
@@ -277,16 +285,19 @@ public class Patch {
             if (targetfn.charAt(0) != '/') {
                 targetfn = sdpath + "/" + fref.targetPath;
             }
+
             if (!SDCardInfo.getInstance().exists(targetfn, f.lastModified(), f.length())) {
                 GetQCmdProcessor().AppendToQueue(new qcmds.QCmdGetFileInfo(targetfn));
                 GetQCmdProcessor().WaitQueueFinished();
                 GetQCmdProcessor().AppendToQueue(new qcmds.QCmdPing());
                 GetQCmdProcessor().WaitQueueFinished();
+
                 if (!SDCardInfo.getInstance().exists(targetfn, f.lastModified(), f.length())) {
                     if (f.length() > 8 * 1024 * 1024) {
                         Logger.getLogger(Patch.class.getName()).log(Level.INFO, "File {0} is larger than 8MB, skipping upload.", f.getName());
                         continue;
                     }
+
                     for (int i = 1; i < targetfn.length(); i++) {
                         if (targetfn.charAt(i) == '/') {
                             GetQCmdProcessor().AppendToQueue(new qcmds.QCmdCreateDirectory(targetfn.substring(0, i)));
@@ -294,10 +305,12 @@ public class Patch {
                         }
                     }
                     GetQCmdProcessor().AppendToQueue(new QCmdUploadFile(f, targetfn));
-                } else {
+                }
+                else {
                     Logger.getLogger(Patch.class.getName()).log(Level.INFO, "File {0} matches timestamp and size, skipping upload.", f.getName());
                 }
-            } else {
+            }
+            else {
                 Logger.getLogger(Patch.class.getName()).log(Level.INFO, "File {0} matches timestamp and size, skipping upload.", f.getName());
             }
         }
@@ -313,8 +326,9 @@ public class Patch {
             }
             GetQCmdProcessor().AppendToQueue(new QCmdChangeWorkingDirectory(f));
             UploadDependentFiles("/" + getSDCardPath());
-        } else {
-            // issue warning when there are dependent files
+        }
+        else {
+            /* issue warning when there are dependent files */
             ArrayList<SDFileReference> files = GetDependendSDFiles();
             if (files.size() > 0) {
                 Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Patch requires file {0} on SD card, but no SD card mounted.", files.get(0).targetPath);
@@ -405,22 +419,25 @@ public class Patch {
                 zombie.outletInstances = o.GetOutletInstances();
                 zombie.attributeInstances = o.getAttributeInstances();
                 zombie.parameterInstances = o.getParameterInstances();
-                // zombie.displayInstances = o.GetDisplayInstances(); // this is probably useless
                 zombie.PostConstructor();
                 objectinstances.add(zombie);
                 hasZombies = true;
             }
         }
+
         ArrayList<Net> nets2 = (ArrayList<Net>) nets.clone();
         for (Net n : nets2) {
             n.patch = this;
             n.PostConstructor();
         }
+
         PromoteOverloading(true);
         ShowPreset(0);
+
         if (settings == null) {
             settings = new PatchSettings();
         }
+
         ClearDirty();
         saveState();
     }
@@ -459,10 +476,12 @@ public class Patch {
         if (container != null) {
             container.SetDirty(shouldSaveState);
         }
+
         if (shouldSaveState) {
             currentState += 1;
             saveState();
         }
+
         if (patchframe != null) {
             patchframe.updateUndoRedoEnabled();
         }
@@ -495,12 +514,14 @@ public class Patch {
                 Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "AddObjectInstance NULL");
                 return null;
             }
+
             int i = 1;
             String n = obj.getDefaultInstanceName() + "_";
             while (GetObjectInstance(n + i) != null) {
                 i++;
             }
             AxoObjectInstanceAbstract objinst = obj.CreateInstance(this, n + i, loc);
+
             SetDirty();
 
             Modulator[] m = obj.getModulators();
@@ -515,7 +536,8 @@ public class Patch {
             }
 
             return objinst;
-        } else {
+        }
+        else {
             Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t add instance: locked!");
         }
         return null;
@@ -545,6 +567,7 @@ public class Patch {
      if ((d1 == DataType.frac32)&&(d2 == DataType.bool32)) return true;
      return false;
      }*/
+
     public Net AddConnection(InletInstance il, OutletInstance ol) {
         if (!IsLocked()) {
             if (il.GetObjectInstance().patch != this) {
@@ -565,15 +588,18 @@ public class Patch {
                 n.connectOutlet(ol);
                 Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: new net added");
                 return n;
-            } else if (n1 == n2) {
+            }
+            else if (n1 == n2) {
                 Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t connect: already connected");
                 return null;
-            } else if ((n1 != null) && (n2 == null)) {
+            }
+            else if ((n1 != null) && (n2 == null)) {
                 if (n1.source.isEmpty()) {
                     Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: adding outlet to inlet net");
                     n1.connectOutlet(ol);
                     return n1;
-                } else {
+                }
+                else {
                     disconnect(il);
                     Net n = new Net(this);
                     nets.add(n);
@@ -582,19 +608,22 @@ public class Patch {
                     Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: replace inlet with new net");
                     return n;
                 }
-            } else if ((n1 == null) && (n2 != null)) {
+            }
+            else if ((n1 == null) && (n2 != null)) {
                 n2.connectInlet(il);
                 Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: add additional outlet");
                 return n2;
-            } else if ((n1 != null) && (n2 != null)) {
-                // inlet already has connect, and outlet has another
-                // replace 
+            }
+            else if ((n1 != null) && (n2 != null)) {
+                /* inlet already has connect, and outlet has another */
+                /* replace */
                 disconnect(il);
                 n2.connectInlet(il);
                 Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: replace inlet with existing net");
                 return n2;
             }
-        } else {
+        }
+        else {
             Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t add connection: locked!");
         }
         return null;
@@ -614,6 +643,7 @@ public class Patch {
                 Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t connect: different patch");
                 return null;
             }
+
             Net n1, n2;
             n1 = GetNet(il);
             n2 = GetNet(ol);
@@ -624,21 +654,26 @@ public class Patch {
                 n.connectInlet(ol);
                 Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: new net added");
                 return n;
-            } else if (n1 == n2) {
+            }
+            else if (n1 == n2) {
                 Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t connect: already connected");
-            } else if ((n1 != null) && (n2 == null)) {
+            }
+            else if ((n1 != null) && (n2 == null)) {
                 n1.connectInlet(ol);
                 Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: inlet added");
                 return n1;
-            } else if ((n1 == null) && (n2 != null)) {
+            }
+            else if ((n1 == null) && (n2 != null)) {
                 n2.connectInlet(il);
                 Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: inlet added");
                 return n2;
-            } else if ((n1 != null) && (n2 != null)) {
+            }
+            else if ((n1 != null) && (n2 != null)) {
                 Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t connect: both inlets included in net");
                 return null;
             }
-        } else {
+        }
+        else {
             Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t add connection: locked!");
         }
         return null;
@@ -650,7 +685,8 @@ public class Patch {
             if (n != null) {
                 if (io instanceof OutletInstance) {
                     n.source.remove((OutletInstance) io);
-                } else if (io instanceof InletInstance) {
+                }
+                else if (io instanceof InletInstance) {
                     n.dest.remove((InletInstance) io);
                 }
                 if (n.source.size() + n.dest.size() <= 1) {
@@ -658,7 +694,8 @@ public class Patch {
                 }
                 return n;
             }
-        } else {
+        }
+        else {
             Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t disconnect: locked!");
         }
         return null;
@@ -668,7 +705,8 @@ public class Patch {
         if (!IsLocked()) {
             nets.remove(n);
             return n;
-        } else {
+        }
+        else {
             Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t disconnect: locked!");
         }
         return null;
@@ -678,12 +716,15 @@ public class Patch {
         if (o == null) {
             return;
         }
+
         for (InletInstance ii : o.GetInletInstances()) {
             disconnect(ii);
         }
+
         for (OutletInstance oi : o.GetOutletInstances()) {
             disconnect(oi);
         }
+
         int i; for (i = Modulators.size() - 1; i >= 0; i--) {
             Modulator m1 = Modulators.get(i);
             if (m1.objinst == o) {
@@ -693,6 +734,7 @@ public class Patch {
                 }
             }
         }
+
         objectinstances.remove(o);
         AxoObjectAbstract t = o.getType();
         if (o != null) {
@@ -703,22 +745,25 @@ public class Patch {
     }
 
     public void updateModulation(Modulation n) {
-        // find modulator
+        /* find modulator */
         Modulator m = null;
         for (Modulator m1 : Modulators) {
             if (m1.objinst == n.source) {
                 if ((m1.name == null) || (m1.name.isEmpty())) {
                     m = m1;
                     break;
-                } else if (m1.name.equals(n.modName)) {
+                }
+                else if (m1.name.equals(n.modName)) {
                     m = m1;
                     break;
                 }
             }
         }
+
         if (m == null) {
             throw new UnsupportedOperationException("Modulator not found");
         }
+
         if (!m.Modulations.contains(n)) {
             m.Modulations.add(n);
             System.out.println("modulation added to Modulator " + Modulators.indexOf(m));
@@ -740,7 +785,8 @@ public class Patch {
                 }
             }
             SetDirty();
-        } else {
+        }
+        else {
             Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t delete: locked!");
         }
     }
@@ -751,8 +797,10 @@ public class Patch {
     void saveState() {
         SortByPosition();
         PreSerialize();
+
         Serializer serializer = new Persister();
         ByteArrayOutputStream b = new ByteArrayOutputStream();
+
         try {
             serializer.write(this, b);
             try {
@@ -763,14 +811,17 @@ public class Patch {
                         // after some undoing,
                         // cleanup dangling states
                         previousStates.subList(currentState + 1, previousStates.size()).clear();
-                    } catch (IndexOutOfBoundsException e) {
+                    }
+                    catch (IndexOutOfBoundsException e) {
                     }
                 }
                 this.cleanDanglingStates = true;
-            } catch (IndexOutOfBoundsException e) {
+            }
+            catch (IndexOutOfBoundsException e) {
                 previousStates.add(b.toString());
             }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -789,9 +840,10 @@ public class Patch {
     void loadState() {
         Serializer serializer = new Persister();
         ByteArrayInputStream b = new ByteArrayInputStream(previousStates.get(currentState).getBytes());
+
         try {
             Patch p = serializer.read(Patch.class, b);
-            // prevent detached sub-windows
+            /* prevent detached sub-windows */
             Close();
             this.objectinstances = p.objectinstances;
             this.nets = p.nets;
@@ -799,7 +851,8 @@ public class Patch {
             this.cleanDanglingStates = false;
             this.PostContructor();
             AdjustSize();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -810,7 +863,7 @@ public class Patch {
                 "Cancel"};
             int n = JOptionPane.showOptionDialog(
                     this.getPatchframe(),
-                    this.FileNamePath + " contains one or more unresolved (zombie) objects.\n\nSaving the patch now will overwrite the unresolved objects with hard zombies and you have to replace them manually later for the patch to be usable.\n\nThe zombie objects\' names and connections will be preserved, but you may lose some parameter and attribute values you had originally set up when the objects were alive, depending on how well the manually replaced object matches the original one.",
+                    this.FileNamePath + " contains one or more unresolved (zombie) objects.\n\nSaving the patch now will overwrite the unresolved objects with hard zombies. You will have to replace them manually later for the patch to be usable.\n\nThe zombie objects\' names and connections will be preserved, but you may lose some parameter and attribute values you had originally set when the objects were alive, depending on how closely the manually replaced object matches the original one.",
                     "Zombie Infestation",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE,
@@ -828,17 +881,20 @@ public class Patch {
                 default:
                     return false;
             }
-
         }
+
         SortByPosition();
         PreSerialize();
+
         Strategy strategy = new AnnotationStrategy();
         Serializer serializer = new Persister(strategy);
+
         try {
             serializer.write(this, f);
             MainFrame.prefs.addRecentFile(f.getAbsolutePath());
             dirty = false;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
@@ -854,6 +910,7 @@ public class Patch {
 //        if (settings.subpatchmode == SubPatchMode.no) {
 //            return;
 //        }
+
         /*
          String axoObjPath = getFileNamePath();
          int i = axoObjPath.lastIndexOf(".axp");
@@ -863,6 +920,7 @@ public class Patch {
          ExportAxoObj(f2);
          MainFrame.axoObjects.LoadAxoObjects();
          */
+
     }
 
     int displayDataLength = 0;
@@ -900,7 +958,7 @@ public class Patch {
     Dimension GetSize() {
         int nx = 0;
         int ny = 0;
-        // negative coordinates?
+        /* negative coordinates? */
         for (AxoObjectInstanceAbstract o : objectinstances) {
             Point p = o.getLocation();
             if (p.x < nx) {
@@ -910,7 +968,8 @@ public class Patch {
                 ny = p.y;
             }
         }
-        if ((nx < 0) || (ny < 0)) { // move all to positive coordinates
+        if ((nx < 0) || (ny < 0)) {
+            /* move all to positive coordinates */
             for (AxoObjectInstanceAbstract o : objectinstances) {
                 Point p = o.getLocation();
                 o.SetLocation(p.x - nx, p.y - ny);
@@ -942,26 +1001,29 @@ public class Patch {
     void SortParentsByExecution(AxoObjectInstanceAbstract o, LinkedList<AxoObjectInstanceAbstract> result) {
         LinkedList<AxoObjectInstanceAbstract> before = new LinkedList<AxoObjectInstanceAbstract>(result);
         LinkedList<AxoObjectInstanceAbstract> parents = new LinkedList<AxoObjectInstanceAbstract>();
-        // get the parents
+
+        /* get the parents */
         for (InletInstance il : o.GetInletInstances()) {
             Net n = GetNet(il);
             if (n != null) {
                 for (OutletInstance ol: n.GetSource()) {
                     AxoObjectInstanceAbstract i = ol.GetObjectInstance();
-                    if (!parents.contains(i)) {    
+                    if (!parents.contains(i)) {
                         parents.add(i);
                     }
                 }
             }
         }
-        // sort the parents
+
+        /* sort the parents */
         Collections.sort(parents);
-        // prepend any we haven't seen before
+        /* prepend any we haven't seen before */
         for (AxoObjectInstanceAbstract c: parents) {
             if (!result.contains(c))
                 result.addFirst(c);
         }
-        // prepend their parents 
+
+        /* prepend their parents */
         for (AxoObjectInstanceAbstract c: parents) {
             if (!before.contains(c))
                 SortParentsByExecution(c, result);
@@ -971,7 +1033,8 @@ public class Patch {
     void SortByExecution() {
         LinkedList<AxoObjectInstanceAbstract> endpoints = new LinkedList<AxoObjectInstanceAbstract>();
         LinkedList<AxoObjectInstanceAbstract> result = new LinkedList<AxoObjectInstanceAbstract>();
-        // start with all objects without outlets (end points)
+
+        /* start with all objects without outlets (end points) */
         for (AxoObjectInstanceAbstract o : objectinstances) {
             if (o.GetOutletInstances().isEmpty()) {
                 endpoints.add(o);
@@ -985,15 +1048,19 @@ public class Patch {
                     endpoints.add(o);
             }
         }
-        // sort them by position
+
+        /* sort them by position */
         Collections.sort(endpoints);
-        // walk their inlets
+
+        /* walk their inlets */
         for (AxoObjectInstanceAbstract o : endpoints) {
             SortParentsByExecution(o, result);
         }
-        // add the end points
+
+        /* add the end points */
         result.addAll(endpoints);
-        // turn it back into a freshly sorted array
+
+        /* turn it back into a freshly sorted array */
         objectinstances = new ArrayList<AxoObjectInstanceAbstract>(result);
         refreshIndexes();
     }
@@ -1071,7 +1138,8 @@ public class Patch {
         for (String s : includes) {
             if (s.startsWith("\"")) {
                 inc += "#include " + s + "\n";
-            } else {
+            }
+            else {
                 inc += "#include \"" + s + "\"\n";
             }
         }
@@ -1644,6 +1712,7 @@ public class Patch {
         Preferences prefs = MainFrame.prefs;
         controllerinstance = null;
         String cobjstr = prefs.getControllerObject();
+
         if (prefs.isControllerEnabled() && cobjstr != null && !cobjstr.isEmpty()) {
             Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Using controller object: {0}", cobjstr);
             AxoObjectAbstract x = null;
@@ -1653,7 +1722,8 @@ public class Patch {
             }
             if (x != null) {
                 controllerinstance = x.CreateInstance(null, "ctrl0x123", new Point(0, 0));
-            } else {
+            }
+            else {
                 Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Unable to create controller object for: {0}", cobjstr);
             }
         }
@@ -1704,13 +1774,16 @@ public class Patch {
 
         if (settings == null) {
             c = c.replace("attr_midichannel", "0");
-        } else {
+        }
+        else {
             c = c.replace("attr_midichannel", Integer.toString(settings.GetMidiChannel() - 1));
         }
+
         if (settings == null || !settings.GetMidiSelector()) {
             c = c.replace("attr_mididevice", "0");
             c = c.replace("attr_midiport", "0");
         }
+
         return c;
     }
 
@@ -1720,25 +1793,35 @@ public class Patch {
         for (AxoObjectInstanceAbstract o : objectinstances) {
             if (o.typeName.equals("patch/inlet f")) {
                 ao.inlets.add(new InletFrac32(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/inlet i")) {
+            }
+            else if (o.typeName.equals("patch/inlet i")) {
                 ao.inlets.add(new InletInt32(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/inlet b")) {
+            }
+            else if (o.typeName.equals("patch/inlet b")) {
                 ao.inlets.add(new InletBool32(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/inlet a")) {
+            }
+            else if (o.typeName.equals("patch/inlet a")) {
                 ao.inlets.add(new InletFrac32Buffer(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/inlet string")) {
+            }
+            else if (o.typeName.equals("patch/inlet string")) {
                 ao.inlets.add(new InletCharPtr32(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/outlet f")) {
+            }
+            else if (o.typeName.equals("patch/outlet f")) {
                 ao.outlets.add(new OutletFrac32(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/outlet i")) {
+            }
+            else if (o.typeName.equals("patch/outlet i")) {
                 ao.outlets.add(new OutletInt32(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/outlet b")) {
+            }
+            else if (o.typeName.equals("patch/outlet b")) {
                 ao.outlets.add(new OutletBool32(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/outlet a")) {
+            }
+            else if (o.typeName.equals("patch/outlet a")) {
                 ao.outlets.add(new OutletFrac32Buffer(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/outlet string")) {
+            }
+            else if (o.typeName.equals("patch/outlet string")) {
                 ao.outlets.add(new OutletCharPtr32(o.getInstanceName(), o.getInstanceName()));
             }
+
             for (ParameterInstance p : o.getParameterInstances()) {
                 if (p.isOnParent()) {
                     ao.params.add(p.getParameterForParent());
@@ -1760,16 +1843,19 @@ public class Patch {
         ao.depends = getDepends();
         if ((notes != null) && (!notes.isEmpty())) {
             ao.sDescription = notes;
-        } else {
+        }
+        else {
             ao.sDescription = "no description";
         }
         ao.sKRateCode = "uint8_t i; /*...*/\n";
         for (AxoObjectInstanceAbstract o : objectinstances) {
             if (o.typeName.equals("patch/inlet f") || o.typeName.equals("patch/inlet i") || o.typeName.equals("patch/inlet b")) {
                 ao.sKRateCode += "   " + o.getCInstanceName() + "_i._inlet = inlet_" + o.getLegalName() + ";\n";
-            } else if (o.typeName.equals("patch/inlet string")) {
+            }
+            else if (o.typeName.equals("patch/inlet string")) {
                 ao.sKRateCode += "   " + o.getCInstanceName() + "_i._inlet = (char *)inlet_" + o.getLegalName() + ";\n";
-            } else if (o.typeName.equals("patch/inlet a")) {
+            }
+            else if (o.typeName.equals("patch/inlet a")) {
                 ao.sKRateCode += "   for (i=0; i<BUFSIZE; i++) " + o.getCInstanceName() + "_i._inlet[i] = inlet_" + o.getLegalName() + "[i];\n";
             }
 
@@ -1778,9 +1864,11 @@ public class Patch {
         for (AxoObjectInstanceAbstract o : objectinstances) {
             if (o.typeName.equals("patch/outlet f") || o.typeName.equals("patch/outlet i") || o.typeName.equals("patch/outlet b")) {
                 ao.sKRateCode += "   outlet_" + o.getLegalName() + " = " + o.getCInstanceName() + "_i._outlet;\n";
-            } else if (o.typeName.equals("patch/outlet string")) {
+            }
+            else if (o.typeName.equals("patch/outlet string")) {
                 ao.sKRateCode += "   outlet_" + o.getLegalName() + " = (char *)" + o.getCInstanceName() + "_i._outlet;\n";
-            } else if (o.typeName.equals("patch/outlet a")) {
+            }
+            else if (o.typeName.equals("patch/outlet a")) {
                 ao.sKRateCode += "      for (i=0; i<BUFSIZE; i++) outlet_" + o.getLegalName() + "[i] = " + o.getCInstanceName() + "_i._outlet[i];\n";
             }
         }
@@ -1813,7 +1901,8 @@ public class Patch {
         AxoObject ao;
         if (settings == null) {
             ao = GenerateAxoObjNormal(template);
-        } else {
+        }
+        else {
             switch (settings.subpatchmode) {
                 case no:
                 case normal:
@@ -1832,6 +1921,7 @@ public class Patch {
                     return null;
             }
         }
+
         if (settings != null) {
             ao.sAuthor = settings.getAuthor();
             ao.sLicense = settings.getLicense();
@@ -1850,9 +1940,11 @@ public class Patch {
         AxoObjectFile aof = new AxoObjectFile();
         aof.objs.add(ao);
         Serializer serializer = new Persister();
+
         try {
             serializer.write(aof, f1);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, null, ex);
         }
         Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Export obj complete");
@@ -1873,7 +1965,8 @@ public class Patch {
 
         if ((notes != null) && (!notes.isEmpty())) {
             ao.sDescription = notes;
-        } else {
+        }
+        else {
             ao.sDescription = "no description";
         }
 
@@ -1900,26 +1993,36 @@ public class Patch {
         for (AxoObjectInstanceAbstract o : objectinstances) {
             if (o.typeName.equals("patch/inlet f")) {
                 ao.inlets.add(new InletFrac32(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/inlet i")) {
+            }
+            else if (o.typeName.equals("patch/inlet i")) {
                 ao.inlets.add(new InletInt32(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/inlet b")) {
+            }
+            else if (o.typeName.equals("patch/inlet b")) {
                 ao.inlets.add(new InletBool32(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/inlet a")) {
+            }
+            else if (o.typeName.equals("patch/inlet a")) {
                 ao.inlets.add(new InletFrac32Buffer(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/inlet string")) {
+            }
+            else if (o.typeName.equals("patch/inlet string")) {
                 ao.inlets.add(new InletCharPtr32(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/outlet f")) {
+            }
+            else if (o.typeName.equals("patch/outlet f")) {
                 ao.outlets.add(new OutletFrac32(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/outlet i")) {
+            }
+            else if (o.typeName.equals("patch/outlet i")) {
                 ao.outlets.add(new OutletInt32(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/outlet b")) {
+            }
+            else if (o.typeName.equals("patch/outlet b")) {
                 ao.outlets.add(new OutletBool32(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/outlet a")) {
+            }
+            else if (o.typeName.equals("patch/outlet a")) {
                 ao.outlets.add(new OutletFrac32Buffer(o.getInstanceName(), o.getInstanceName()));
-            } else if (o.typeName.equals("patch/outlet string")) {
+            }
+            else if (o.typeName.equals("patch/outlet string")) {
                 Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "String outlet impossible in poly subpatches!");
                 // ao.outlets.add(new OutletCharPtr32(o.getInstanceName(), o.getInstanceName()));                
             }
+
             for (ParameterInstance p : o.getParameterInstances()) {
                 if (p.isOnParent()) {
                     ao.params.add(p.getParameterForParent());
@@ -2017,7 +2120,8 @@ public class Patch {
             if (o.typeName.equals("patch/outlet f") || o.typeName.equals("patch/outlet i")
                     || o.typeName.equals("patch/outlet b") || o.typeName.equals("patch/outlet string")) {
                 ao.sKRateCode += "  outlet_" + o.getLegalName() + " = 0;\n";
-            } else if (o.typeName.equals("patch/outlet a")) {
+            }
+            else if (o.typeName.equals("patch/outlet a")) {
                 ao.sKRateCode += "{\n"
                                + "  uint8_t j; for (j=0; j<BUFSIZE; j++) outlet_" + o.getLegalName() + "[j] = 0;\n"
                                + "}\n";
@@ -2029,9 +2133,11 @@ public class Patch {
             if (o.typeName.equals("inlet") || o.typeName.equals("inlet_i") || o.typeName.equals("inlet_b") || o.typeName.equals("inlet_")
                     || o.typeName.equals("patch/inlet f") || o.typeName.equals("patch/inlet i") || o.typeName.equals("patch/inlet b")) {
                 ao.sKRateCode += "  getVoices()[vi]." + o.getCInstanceName() + "_i._inlet = inlet_" + o.getLegalName() + ";\n";
-            } else if (o.typeName.equals("inlet_string") || o.typeName.equals("patch/inlet string")) {
+            }
+            else if (o.typeName.equals("inlet_string") || o.typeName.equals("patch/inlet string")) {
                 ao.sKRateCode += "  getVoices()[vi]." + o.getCInstanceName() + "_i._inlet = (char *)inlet_" + o.getLegalName() + ";\n";
-            } else if (o.typeName.equals("inlet~") || o.typeName.equals("patch/inlet a")) {
+            }
+            else if (o.typeName.equals("inlet~") || o.typeName.equals("patch/inlet a")) {
                 ao.sKRateCode += "{\n"
                                + "  uint8_t j; for (j=0; j<BUFSIZE; j++) getVoices()[vi]." + o.getCInstanceName() + "_i._inlet[j] = inlet_" + o.getLegalName() + "[j];\n"
                                + "}\n";
@@ -2043,14 +2149,17 @@ public class Patch {
                     || o.typeName.equals("patch/outlet i")
                     || o.typeName.equals("patch/outlet b")) {
                 ao.sKRateCode += "  outlet_" + o.getLegalName() + " += getVoices()[vi]." + o.getCInstanceName() + "_i._outlet;\n";
-            } else if (o.typeName.equals("patch/outlet string")) {
+            }
+            else if (o.typeName.equals("patch/outlet string")) {
                 ao.sKRateCode += "  outlet_" + o.getLegalName() + " = (char *)getVoices()[vi]." + o.getCInstanceName() + "_i._outlet;\n";
-            } else if (o.typeName.equals("patch/outlet a")) {
+            }
+            else if (o.typeName.equals("patch/outlet a")) {
                 ao.sKRateCode += "{\n"
                                + "  uint8_t j; for (j=0; j<BUFSIZE; j++) outlet_" + o.getLegalName() + "[j] += getVoices()[vi]." + o.getCInstanceName() + "_i._outlet[j];\n"
                                + "}\n";
             }
         }
+
         ao.sKRateCode += "}\n";
         ao.sMidiCode = ""
                      + "if (attr_mididevice > 0 && dev > 0 && attr_mididevice != dev) return;\n"
@@ -2103,12 +2212,15 @@ public class Patch {
      */
     AxoObject GenerateAxoObjPolyChannel(AxoObject template) {
         AxoObject o = GenerateAxoObjPoly(template);
+
         o.sLocalData
                 += "int8_t voiceChannel[attr_poly];\n";
+
         o.sInitCode
                 += "uint8_t vc; for (vc=0; vc<attr_poly; vc++) {\n"
                 + "   voiceChannel[vc] = 0xFF;\n"
                 + "}\n";
+
         o.sMidiCode = ""
                 + "if ( attr_mididevice > 0 && dev > 0 && dev != attr_mididevice) return;\n"
                 + "if ( attr_midiport > 0 && port > 0 && port != attr_midiport) return;\n"
@@ -2324,6 +2436,7 @@ public class Patch {
             /* Set to channel 16 if upper zone is selected in settings. */
             glch = "15";
         }
+
         o.sLocalData = o.sLocalData.replace("attr_midichannel", glch);
         o.sInitCode = o.sInitCode.replace("attr_midichannel", glch);
         o.sDisposeCode = o.sDisposeCode.replace("attr_midichannel", glch);
@@ -2341,9 +2454,11 @@ public class Patch {
             FileOutputStream f = new FileOutputStream(buildDir + "/xpatch.cpp");
             f.write(c.getBytes());
             f.close();
-        } catch (FileNotFoundException ex) {
+        }
+        catch (FileNotFoundException ex) {
             Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, ex.toString());
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, ex.toString());
         }
         Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Done generating code.\n");
@@ -2412,6 +2527,7 @@ public class Patch {
      }
      }
      */
+
     void ClearCurrentPreset() {
     }
 
@@ -2489,15 +2605,18 @@ public class Patch {
         for (int j = 0; j < settings.GetNPresetEntries(); j++) {
             pdata[j * 2] = -1;
         }
+
         int index = 0;
         for (AxoObjectInstanceAbstract o : objectinstances) {
             for (ParameterInstance param : o.getParameterInstances()) {
                 ParameterInstance p7 = (ParameterInstance) param;
                 Preset p = p7.GetPreset(i);
+
                 if (p != null) {
                     pdata[index * 2] = p7.getIndex();
                     pdata[index * 2 + 1] = p.value.getRaw();
                     index++;
+
                     if (index == settings.GetNPresetEntries()) {
                         Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "More than {0} entries in preset, skipping...", settings.GetNPresetEntries());
                         return pdata;
@@ -2505,12 +2624,14 @@ public class Patch {
                 }
             }
         }
+
         /*
          System.out.format("preset data: %d\n",i);
          for (int j=0; j<pdata.length/2; j++) {
          System.out.format("  %d : %d\n",pdata[j*2],pdata[j*2+1] );
          }
          */
+
         return pdata;
     }
 
@@ -2618,6 +2739,7 @@ public class Patch {
                 }
             }
         }
+
         if (!(ProcessedInstances.size() == objectinstances.size())) {
             for (AxoObjectInstanceAbstract o : objectinstances) {
                 if (!ProcessedInstances.contains(o.getInstanceName())) {
@@ -2631,13 +2753,16 @@ public class Patch {
         if (objname == null) {
             return null;
         }
+
         if (inletname == null) {
             return null;
         }
+
         AxoObjectInstanceAbstract o = GetObjectInstance(objname);
         if (o == null) {
             return null;
         }
+
         return o.GetInletInstance(inletname);
     }
 
@@ -2645,13 +2770,16 @@ public class Patch {
         if (objname == null) {
             return null;
         }
+
         if (outletname == null) {
             return null;
         }
+
         AxoObjectInstanceAbstract o = GetObjectInstance(objname);
         if (o == null) {
             return null;
         }
+
         return o.GetOutletInstance(outletname);
     }
 
@@ -2659,10 +2787,12 @@ public class Patch {
         if (FileNamePath == null) {
             return null;
         }
+
         int i = FileNamePath.lastIndexOf(File.separatorChar);
         if (i < 0) {
             return null;
         }
+
         return FileNamePath.substring(0, i);
     }
 
@@ -2680,17 +2810,20 @@ public class Patch {
 
     public ArrayList<SDFileReference> GetDependendSDFiles() {
         ArrayList<SDFileReference> files = new ArrayList<SDFileReference>();
+
         for (AxoObjectInstanceAbstract o : objectinstances) {
             ArrayList<SDFileReference> f2 = o.GetDependendSDFiles();
             if (f2 != null) {
                 files.addAll(f2);
             }
         }
+
         return files;
     }
 
     public File getBinFile() {
         String buildDir = System.getProperty(Axoloti.LIBRARIES_DIR) + "/build";;
+
         return new File(buildDir + "/xpatch.bin");
 //            Logger.getLogger(QCmdWriteFile.class.getName()).log(Level.INFO, "bin path: {0}", f.getAbsolutePath());        
     }
@@ -2698,6 +2831,7 @@ public class Patch {
     public void UploadToSDCard(String sdfilename) {
         WriteCode();
         Logger.getLogger(PatchFrame.class.getName()).log(Level.INFO, "SD card filename: {0}", sdfilename);
+
         QCmdProcessor qcmdprocessor = QCmdProcessor.getQCmdProcessor();
         qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
         qcmdprocessor.AppendToQueue(new qcmds.QCmdCompilePatch(this));
@@ -2709,11 +2843,14 @@ public class Patch {
                 qcmdprocessor.WaitQueueFinished();
             }
         }
+
         qcmdprocessor.WaitQueueFinished();
+
         Calendar cal;
         if (dirty) {
             cal = Calendar.getInstance();
-        } else {
+        }
+        else {
             cal = Calendar.getInstance();
             if (FileNamePath != null && !FileNamePath.isEmpty()) {
                 File f = new File(FileNamePath);
@@ -2728,7 +2865,8 @@ public class Patch {
         int i = sdfilename.lastIndexOf("/");
         if (i > 0) {
             dir = sdfilename.substring(0, i);
-        } else {
+        }
+        else {
             dir = "";
         }
         UploadDependentFiles(dir);
@@ -2741,19 +2879,23 @@ public class Patch {
     public String getSDCardPath() {
         String FileNameNoPath = getFileNamePath();
         String separator = System.getProperty("file.separator");
+
         int lastSeparatorIndex = FileNameNoPath.lastIndexOf(separator);
         if (lastSeparatorIndex > 0) {
             FileNameNoPath = FileNameNoPath.substring(lastSeparatorIndex + 1);
         }
+
         String FileNameNoExt = FileNameNoPath;
         if (FileNameNoExt.endsWith(".axp") || FileNameNoExt.endsWith(".axs") || FileNameNoExt.endsWith(".axh")) {
             FileNameNoExt = FileNameNoExt.substring(0, FileNameNoExt.length() - 4);
         }
+
         return FileNameNoExt;
     }
 
     public void Close() {
         Unlock();
+
         Collection<AxoObjectInstanceAbstract> c = (Collection<AxoObjectInstanceAbstract>) objectinstances.clone();
         for (AxoObjectInstanceAbstract o : c) {
             o.Close();
