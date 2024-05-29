@@ -404,7 +404,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         }
 
         if (type instanceof AxoObjectFromPatch) {
-            JMenuItem popm_embed = new JMenuItem("Embed as patch/patcher");
+            JMenuItem popm_embed = new JMenuItem("Embed as Subpatch");
             popm_embed.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
@@ -413,7 +413,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             });
             popup.add(popm_embed);
         } else if (!(this instanceof AxoObjectInstancePatcherObject)) {
-            JMenuItem popm_embed = new JMenuItem("Embed as patch/object");
+            JMenuItem popm_embed = new JMenuItem("Embed as Object");
             popm_embed.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
