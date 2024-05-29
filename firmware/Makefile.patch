@@ -87,7 +87,7 @@ ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
 #   -j .text.startup -j .text.memcpy
 	@$(CP) -O binary ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin
 #	@echo Displaying size statistic
-	@$(SIZ) --format=berkeley ${BUILDDIR}/xpatch.elf
+	@$(SIZ) --format=sysv ${BUILDDIR}/xpatch.elf
 
 .PHONY: clean
 
