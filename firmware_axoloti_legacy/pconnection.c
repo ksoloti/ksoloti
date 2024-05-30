@@ -46,7 +46,7 @@
 
 void BootLoaderInit(void);
 
-uint32_t fwid;
+static uint32_t fwid;
 
 static WORKING_AREA(waThreadUSBDMidi, 256);
 
@@ -92,8 +92,8 @@ void InitPConnection(void) {
                     ThreadUSBDMidi, NULL);
 }
 
-int AckPending = 0;
-bool connected = 0;
+static int AckPending = 0;
+static bool connected = 0;
 
 int GetFirmwareID(void) {
   return fwid;
@@ -176,7 +176,7 @@ void PExTransmit(void) {
   }
 }
 
-char FileName[256];
+static char FileName[256];
 
 static FRESULT scan_files(char *path) {
   FRESULT res;
@@ -309,10 +309,10 @@ void ReadDirectoryListing(void) {
  * "AxoB (int or) (int and)" buttons for virtual Axoloti Control
  */
 
-FIL pFile;
-int pFileSize;
+static FIL pFile;
+static int pFileSize;
 
-void ManipulateFile(void) {
+static void ManipulateFile(void) {
   sdcard_attemptMountIfUnmounted();
   if (FileName[0]) {
     // backwards compatibility
@@ -399,7 +399,7 @@ void ManipulateFile(void) {
   }
 }
 
-void CloseFile(void) {
+static void CloseFile(void) {
   FRESULT err;
   err = f_close(&pFile);
   if (err != FR_OK) {
@@ -417,7 +417,7 @@ void CloseFile(void) {
   }
 }
 
-void CopyPatchToFlash(void) {
+static void CopyPatchToFlash(void) {
   flash_unlock();
   flash_Erase_sector(11);
   int src_addr = PATCHMAINLOC;
@@ -1028,7 +1028,7 @@ void PExReceiveByte(unsigned char c) {
       chSequentialStreamWrite((BaseSequentialStream * )&BDU1,
                               (const unsigned char* )(offset), value);
 
-      AckPending = true;
+      AckPending = 1;
       header = 0;
       state = 0;
       break;
@@ -1061,7 +1061,7 @@ void PExReceiveByte(unsigned char c) {
       chSequentialStreamWrite((BaseSequentialStream * )&BDU1,
                               (const unsigned char* )(&read_repy_header[0]), 3 * 4);
 
-      AckPending = true;
+      AckPending = 1;
       header = 0;
       state = 0;
       break;
@@ -1082,11 +1082,11 @@ void PExReceive(void) {
 }
 
 /*
- void USBDMidiPoll(void) {
- uint8_t r[4];
- while (chnReadTimeout(&MDU1, &r, 4, TIME_IMMEDIATE)) {
- MidiInMsgHandler(MIDI_DEVICE_USB_DEVICE, (( r[0] & 0xF0) >> 4)+ 1, r[1], r[2], r[3]);
- }
- }
- */
+void USBDMidiPoll(void) {
+  uint8_t r[4];
+  while (chnReadTimeout(&MDU1, &r, 4, TIME_IMMEDIATE)) {
+    MidiInMsgHandler(MIDI_DEVICE_USB_DEVICE, (( r[0] & 0xF0) >> 4)+ 1, r[1], r[2], r[3]);
+  }
+}
+*/
 

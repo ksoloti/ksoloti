@@ -26,7 +26,7 @@
 #include "exceptions.h"
 
 __attribute__ ((naked))
-void report_exception(void) {
+static void report_exception(void) {
 
   __asm volatile
   (
@@ -363,7 +363,7 @@ void dbg_set_i(int i) {
   exceptiondump->i = i;
 }
 
-void terminator(void) {
+static void terminator(void) {
 #ifdef INFINITE_LOOP_ON_FAULTS
   for (;;)
   ;
