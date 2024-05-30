@@ -333,7 +333,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
                 draggingObjects.add(this);
                 dragLocation = getLocation();
                 if (IsSelected()) {
-                    for (AxoObjectInstanceAbstract o : patch.objectinstances) {
+                    for (AxoObjectInstanceAbstract o : patch.objectInstances) {
                         if (o.IsSelected()) {
                             moveToDraggedLayer(o);
                             draggingObjects.add(o);
@@ -485,7 +485,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
      return false;
      }
      if (patch != null) {
-     for (AxoObjectInstanceAbstract o : patch.objectinstances) {
+     for (AxoObjectInstanceAbstract o : patch.objectInstances) {
      if (o.InstanceName.equalsIgnoreCase(text) && (AxoObjectInstanceAbstract.this != o)) {
      System.out.println("reject instancename : exists");
      return false;

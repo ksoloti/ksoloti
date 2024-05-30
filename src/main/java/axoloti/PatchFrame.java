@@ -122,7 +122,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             @Override
             public void actionPerformed(ActionEvent e) {
                 Patch p = patch.GetSelectedObjects();
-                if (p.objectinstances.isEmpty()) {
+                if (p.objectInstances.isEmpty()) {
                     getToolkit().getSystemClipboard().setContents(new StringSelection(""), null);
                     return;
                 }
@@ -152,7 +152,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             @Override
             public void actionPerformed(ActionEvent e) {
                 Patch p = patch.GetSelectedObjects();
-                if (p.objectinstances.isEmpty()) {
+                if (p.objectInstances.isEmpty()) {
                     getToolkit().getSystemClipboard().setContents(new StringSelection(""), null);
                     return;
                 }
@@ -779,7 +779,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private void jMenuCopyActionPerformed(java.awt.event.ActionEvent evt) {
         Patch p = patch.GetSelectedObjects();
-        if (p.objectinstances.isEmpty()) {
+        if (p.objectInstances.isEmpty()) {
             getToolkit().getSystemClipboard().setContents(new StringSelection(""), null);
             return;
         }
@@ -991,7 +991,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             return;
         }
         Patch p = patch.GetSelectedObjects();
-        if (p.objectinstances.isEmpty()) {
+        if (p.objectInstances.isEmpty()) {
             return;
         }
         jMenuCopyActionPerformed(evt);
@@ -1001,7 +1001,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         Robot robot;
         try {
             robot = new Robot();
-            Point point = p.objectinstances.get(0).getLocationOnScreen();
+            Point point = p.objectInstances.get(0).getLocationOnScreen();
             robot.mouseMove(point.x + 40,point.y + 22);
             robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
         } catch (Exception e1) {
@@ -1023,7 +1023,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private void jMenuItemSettingsActionPerformed(java.awt.event.ActionEvent evt) {
         AxoObjectInstanceAbstract selObj = null;
-        ArrayList<AxoObjectInstanceAbstract> oi = patch.objectinstances;
+        ArrayList<AxoObjectInstanceAbstract> oi = patch.objectInstances;
         if(oi != null) {
             for(AxoObjectInstanceAbstract i : oi) {
                 if(i.IsSelected() && i instanceof AxoObjectInstance) {
@@ -1156,7 +1156,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     ; // fall thru
             }
         }
-        for (AxoObjectInstanceAbstract aoi : patch.objectinstances) {
+        for (AxoObjectInstanceAbstract aoi : patch.objectInstances) {
             if (aoi instanceof AxoObjectInstancePatcher) {
                 ((AxoObjectInstancePatcher)aoi).updateObj();
             }

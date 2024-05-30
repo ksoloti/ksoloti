@@ -293,14 +293,14 @@ public class Net extends JComponent {
         // reads before last write on net
         int lastSource = 0;
         for (OutletInstance s : source) {
-            int i = patch.objectinstances.indexOf(s.GetObjectInstance());
+            int i = patch.objectInstances.indexOf(s.GetObjectInstance());
             if (i > lastSource) {
                 lastSource = i;
             }
         }
         int firstDest = java.lang.Integer.MAX_VALUE;
         for (InletInstance d : dest) {
-            int i = patch.objectinstances.indexOf(d.GetObjectInstance());
+            int i = patch.objectInstances.indexOf(d.GetObjectInstance());
             if (i < firstDest) {
                 firstDest = i;
             }
@@ -312,7 +312,7 @@ public class Net extends JComponent {
         if (source.size() == 1) {
             return true;
         }
-        for (AxoObjectInstanceAbstract o : patch.objectinstances) {
+        for (AxoObjectInstanceAbstract o : patch.objectInstances) {
             for (OutletInstance i : o.GetOutletInstances()) {
                 if (source.contains(i)) {
                     // o is first objectinstance connected to this net

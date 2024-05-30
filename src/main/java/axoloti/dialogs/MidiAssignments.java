@@ -44,7 +44,7 @@ public class MidiAssignments extends javax.swing.JDialog {
         Patch patch = param.GetObjectInstance().patch;
         String CCObj[] = new String[128];
         String CCParam[] = new String[128];
-        for (AxoObjectInstanceAbstract obj : patch.objectinstances) {
+        for (AxoObjectInstanceAbstract obj : patch.objectInstances) {
             Collection<ParameterInstance> params = obj.getParameterInstances();
             if (params != null) {
                 for (ParameterInstance param1 : params) {

@@ -56,7 +56,7 @@ public class AxoObjectUnloaded extends AxoObjectAbstract {
         Load();
         AxoObjectInstance oi = new AxoObjectInstance(loadedObject, patch, InstanceName1, location);
         if (patch != null) {
-            patch.objectinstances.add(oi);
+            patch.objectInstances.add(oi);
         }
         oi.PostConstructor();
         return oi;

@@ -254,7 +254,7 @@ public class PatchGUI extends Patch {
             @Override
             public void exportToClipboard(JComponent comp, Clipboard clip, int action) throws IllegalStateException {
                 Patch p = GetSelectedObjects();
-                if (p.objectinstances.isEmpty()) {
+                if (p.objectInstances.isEmpty()) {
                     clip.setContents(new StringSelection(""), null);
                     return;
                 }
@@ -429,7 +429,7 @@ public class PatchGUI extends Patch {
             @Override
             public void mouseClicked(MouseEvent me) {
                 if (me.getButton() == MouseEvent.BUTTON1) {
-                    for (AxoObjectInstanceAbstract o : objectinstances) {
+                    for (AxoObjectInstanceAbstract o : objectInstances) {
                         o.SetSelected(false);
                     }
                     if (me.getClickCount() == 2) {
@@ -467,7 +467,7 @@ public class PatchGUI extends Patch {
             public void mouseReleased(MouseEvent me) {
                 if (selectionrectangle.isVisible() | me.getButton() == MouseEvent.BUTTON1) {
                     Rectangle r = selectionrectangle.getBounds();
-                    for (AxoObjectInstanceAbstract o : objectinstances) {
+                    for (AxoObjectInstanceAbstract o : objectInstances) {
                         o.SetSelected(o.getBounds().intersects(r));
                     }
                     selectionrectangle.setVisible(false);
@@ -558,7 +558,7 @@ public class PatchGUI extends Patch {
         try {
             PatchGUI p = serializer.read(PatchGUI.class, v);
             HashMap<String, String> dict = new HashMap<String, String>();
-            ArrayList<AxoObjectInstanceAbstract> obj2 = (ArrayList<AxoObjectInstanceAbstract>) p.objectinstances.clone();
+            ArrayList<AxoObjectInstanceAbstract> obj2 = (ArrayList<AxoObjectInstanceAbstract>) p.objectInstances.clone();
             for (AxoObjectInstanceAbstract o : obj2) {
                 o.patch = this;
                 AxoObjectAbstract obj = o.resolveType();
@@ -575,16 +575,16 @@ public class PatchGUI extends Patch {
                     }
                 } else {
                     //o.patch = this;
-                    p.objectinstances.remove(o);
+                    p.objectInstances.remove(o);
                     AxoObjectInstanceZombie zombie = new AxoObjectInstanceZombie(new AxoObjectZombie(), this, o.getInstanceName(), new Point(o.getX(), o.getY()));
                     zombie.patch = this;
                     zombie.typeName = o.typeName;
                     zombie.PostConstructor();
-                    p.objectinstances.add(zombie);
+                    p.objectInstances.add(zombie);
                 }
             }
             int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
-            for (AxoObjectInstanceAbstract o : p.objectinstances) {
+            for (AxoObjectInstanceAbstract o : p.objectInstances) {
                 String original_name = o.getInstanceName();
                 if (original_name != null) {
                     String new_name = original_name;
@@ -625,7 +625,7 @@ public class PatchGUI extends Patch {
                     minY = o.getY();
                 }
                 o.patch = this;
-                objectinstances.add(o);
+                objectInstances.add(o);
                 objectLayerPanel.add(o, 0);
                 o.PostConstructor();
                 int newposx = o.getX();
@@ -729,7 +729,7 @@ public class PatchGUI extends Patch {
     }
 
     AxoObjectInstanceAbstract getObjectAtLocation(int x, int y) {
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             if ((o.getX() == x) && (o.getY() == y)) {
                 return o;
             }
@@ -749,13 +749,13 @@ public class PatchGUI extends Patch {
     }
 
     void SelectAll() {
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             o.SetSelected(true);
         }
     }
 
     public void SelectNone() {
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             o.SetSelected(false);
         }
     }
@@ -790,9 +790,9 @@ public class PatchGUI extends Patch {
 
     Patch GetSelectedObjects() {
         Patch p = new Patch();
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.IsSelected()) {
-                p.objectinstances.add(o);
+                p.objectInstances.add(o);
             }
         }
         p.nets = new ArrayList<Net>();
@@ -841,7 +841,7 @@ public class PatchGUI extends Patch {
                     break;
             }
             boolean isUpdate = false;
-            for (AxoObjectInstanceAbstract o : objectinstances) {
+            for (AxoObjectInstanceAbstract o : objectInstances) {
                 if (o.IsSelected()) {
                     isUpdate = true;
                     Point p = o.getLocation();
@@ -868,8 +868,8 @@ public class PatchGUI extends Patch {
         objectLayerPanel.removeAll();
         netLayerPanel.removeAll();
 
-        /* Duplicate objectinstances then reverse it - achieving "top to bottom" layering so partly overlapped objects have visible titlebars */
-        ArrayList<AxoObjectInstanceAbstract> obj2 = (ArrayList<AxoObjectInstanceAbstract>) objectinstances.clone();
+        /* Duplicate objectInstances then reverse it - achieving "top to bottom" layering so partly overlapped objects have visible titlebars */
+        ArrayList<AxoObjectInstanceAbstract> obj2 = (ArrayList<AxoObjectInstanceAbstract>) objectInstances.clone();
         Collections.reverse(obj2);
 
         for (AxoObjectInstanceAbstract o : obj2) {
@@ -1030,7 +1030,7 @@ public class PatchGUI extends Patch {
     Dimension GetInitialSize() {
         int mx = 480; // min size
         int my = 320;
-        for (AxoObjectInstanceAbstract i : objectinstances) {
+        for (AxoObjectInstanceAbstract i : objectInstances) {
 
             Dimension s = i.getPreferredSize();
 

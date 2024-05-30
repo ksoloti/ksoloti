@@ -106,7 +106,7 @@ public class Patch {
         @ElementList(entry = "comment", type = AxoObjectInstanceComment.class, inline = true, required = false),
         @ElementList(entry = "hyperlink", type = AxoObjectInstanceHyperlink.class, inline = true, required = false),
         @ElementList(entry = "zombie", type = AxoObjectInstanceZombie.class, inline = true, required = false)
-    }) ArrayList<AxoObjectInstanceAbstract> objectinstances = new ArrayList<AxoObjectInstanceAbstract>();
+    }) ArrayList<AxoObjectInstanceAbstract> objectInstances = new ArrayList<AxoObjectInstanceAbstract>();
 
     @ElementList(name = "nets")
     public ArrayList<Net> nets = new ArrayList<Net>();
@@ -137,7 +137,7 @@ public class Patch {
 
     // patch this patch is contained in
     private Patch container = null;
-    private AxoObjectInstanceAbstract controllerinstance;
+    private AxoObjectInstanceAbstract controllerInstance;
 
     public boolean presetUpdatePending = false;
 
@@ -336,7 +336,7 @@ public class Patch {
         }
         ShowPreset(0);
         presetUpdatePending = false;
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             for (ParameterInstance pi : o.getParameterInstances()) {
                 pi.ClearNeedsTransmit();
             }
@@ -378,7 +378,7 @@ public class Patch {
     }
 
     public void PostContructor() {
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             o.patch = this;
             AxoObjectAbstract t = o.resolveType();
             if ((t != null) && (t.providesModulationSource())) {
@@ -395,7 +395,7 @@ public class Patch {
             }
         }
 
-        ArrayList<AxoObjectInstanceAbstract> obj2 = (ArrayList<AxoObjectInstanceAbstract>) objectinstances.clone();
+        ArrayList<AxoObjectInstanceAbstract> obj2 = (ArrayList<AxoObjectInstanceAbstract>) objectInstances.clone();
         for (AxoObjectInstanceAbstract o : obj2) {
             AxoObjectAbstract t = o.getType();
             boolean hasType = t != null;
@@ -410,7 +410,7 @@ public class Patch {
                     Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "The patch has been previously saved with zombies. You have to replace all zombies manually to be able to compile it again.");
                 }
                 // o.patch = this;
-                objectinstances.remove(o);
+                objectInstances.remove(o);
                 AxoObjectInstanceZombie zombie = new AxoObjectInstanceZombie(new AxoObjectZombie(), this, o.getInstanceName(), new Point(o.getX(), o.getY()));
                 zombie.patch = this;
                 zombie.typeName = o.typeName;
@@ -420,7 +420,7 @@ public class Patch {
                 zombie.attributeInstances = o.getAttributeInstances();
                 zombie.parameterInstances = o.getParameterInstances();
                 zombie.PostConstructor();
-                objectinstances.add(zombie);
+                objectInstances.add(zombie);
                 hasZombies = true;
             }
         }
@@ -447,7 +447,7 @@ public class Patch {
     }
 
     public AxoObjectInstanceAbstract GetObjectInstance(String n) {
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             if (n.equals(o.getInstanceName())) {
                 return o;
             }
@@ -735,7 +735,7 @@ public class Patch {
             }
         }
 
-        objectinstances.remove(o);
+        objectInstances.remove(o);
         AxoObjectAbstract t = o.getType();
         if (o != null) {
             o.Close();
@@ -776,7 +776,7 @@ public class Patch {
             boolean cont = true;
             while (cont) {
                 cont = false;
-                for (AxoObjectInstanceAbstract o : objectinstances) {
+                for (AxoObjectInstanceAbstract o : objectInstances) {
                     if (o.IsSelected()) {
                         this.delete(o);
                         cont = true;
@@ -845,7 +845,7 @@ public class Patch {
             Patch p = serializer.read(Patch.class, b);
             /* prevent detached sub-windows */
             Close();
-            this.objectinstances = p.objectinstances;
+            this.objectInstances = p.objectInstances;
             this.nets = p.nets;
             this.Modulators = p.Modulators;
             this.cleanDanglingStates = false;
@@ -926,12 +926,12 @@ public class Patch {
     int displayDataLength = 0;
 
     void refreshIndexes() {
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             o.refreshIndex();
         }
         int i = 0;
         ParameterInstances = new ArrayList<ParameterInstance>();
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             for (ParameterInstance p : o.getParameterInstances()) {
                 p.setIndex(i);
                 i++;
@@ -944,7 +944,7 @@ public class Patch {
         // 2 : length
 
         DisplayInstances = new ArrayList<DisplayInstance>();
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             for (DisplayInstance p : o.GetDisplayInstances()) {
                 p.setOffset(offset + 3);
                 int l = p.getLength();
@@ -959,7 +959,7 @@ public class Patch {
         int nx = 0;
         int ny = 0;
         /* negative coordinates? */
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             Point p = o.getLocation();
             if (p.x < nx) {
                 nx = p.x;
@@ -970,7 +970,7 @@ public class Patch {
         }
         if ((nx < 0) || (ny < 0)) {
             /* move all to positive coordinates */
-            for (AxoObjectInstanceAbstract o : objectinstances) {
+            for (AxoObjectInstanceAbstract o : objectInstances) {
                 Point p = o.getLocation();
                 o.SetLocation(p.x - nx, p.y - ny);
             }
@@ -978,7 +978,7 @@ public class Patch {
 
         int mx = 0;
         int my = 0;
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             Point p = o.getLocation();
             Dimension s = o.getSize();
             int px = p.x + s.width;
@@ -994,7 +994,7 @@ public class Patch {
     }
 
     void SortByPosition() {
-        Collections.sort(this.objectinstances);
+        Collections.sort(this.objectInstances);
         refreshIndexes();
     }
     
@@ -1035,7 +1035,7 @@ public class Patch {
         LinkedList<AxoObjectInstanceAbstract> result = new LinkedList<AxoObjectInstanceAbstract>();
 
         /* start with all objects without outlets (end points) */
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.GetOutletInstances().isEmpty()) {
                 endpoints.add(o);
             } else {
@@ -1061,7 +1061,7 @@ public class Patch {
         result.addAll(endpoints);
 
         /* turn it back into a freshly sorted array */
-        objectinstances = new ArrayList<AxoObjectInstanceAbstract>(result);
+        objectInstances = new ArrayList<AxoObjectInstanceAbstract>(result);
         refreshIndexes();
     }
 
@@ -1092,7 +1092,7 @@ public class Patch {
 
     List<AxoObjectAbstract> GetUsedAxoObjects() {
         ArrayList<AxoObjectAbstract> aos = new ArrayList<AxoObjectAbstract>();
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             if (!aos.contains(o.getType())) {
                 aos.add(o.getType());
             }
@@ -1105,13 +1105,13 @@ public class Patch {
 
     public HashSet<String> getIncludes() {
         HashSet<String> includes = new HashSet<String>();
-        if (controllerinstance != null) {
-            Set<String> i = controllerinstance.getType().GetIncludes();
+        if (controllerInstance != null) {
+            Set<String> i = controllerInstance.getType().GetIncludes();
             if (i != null) {
                 includes.addAll(i);
             }
         }
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             Set<String> i = o.getType().GetIncludes();
             if (i != null) {
                 includes.addAll(i);
@@ -1123,7 +1123,7 @@ public class Patch {
 
     public HashSet<String> getDepends() {
         HashSet<String> depends = new HashSet<String>();
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             Set<String> i = o.getType().GetDepends();
             if (i != null) {
                 depends.addAll(i);
@@ -1167,40 +1167,23 @@ public class Patch {
 
     String GenerateObjectCode(String classname, boolean enableOnParent, String OnParentAccess) {
         String c = "";
-        {
-            c += "/* modsource defines */\n";
-            int k = 0;
-            for (Modulator m : Modulators) {
-                c += "static const int " + m.getCName() + " = " + k + ";\n";
-                k++;
-            }
-        }
-        {
-            c += "/* parameter instance indices */\n";
-            int k = 0;
-            for (ParameterInstance p : ParameterInstances) {
-                c += "static const int PARAM_INDEX_" + p.GetObjectInstance().getLegalName() + "_" + p.getLegalName() + " = " + k + ";\n";
-                k++;
-            }
-        }
-        c += "/* controller classes */\n";
-        if (controllerinstance != null) {
-            c += controllerinstance.GenerateClass(classname, OnParentAccess, enableOnParent);
+        if (controllerInstance != null) {
+            c += controllerInstance.GenerateClass(classname, OnParentAccess, enableOnParent, 4);
         }
         c += "/* object classes */\n";
-        for (AxoObjectInstanceAbstract o : objectinstances) {
-            c += o.GenerateClass(classname, OnParentAccess, enableOnParent);
+        for (AxoObjectInstanceAbstract o : objectInstances) {
+            c += o.GenerateClass(classname, OnParentAccess, enableOnParent, 4);
         }
         c += "/* controller instances */\n";
-        if (controllerinstance != null) {
-            String s = controllerinstance.getCInstanceName();
+        if (controllerInstance != null) {
+            String s = controllerInstance.getCInstanceName();
             if (!s.isEmpty()) {
                 c += "     " + s + " " + s + "_i;\n";
             }
         }
 
         c += "/* object instances */\n";
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             String s = o.getCInstanceName();
             if (!s.isEmpty()) {
                 c += "     " + s + " " + s + "_i;\n";
@@ -1208,7 +1191,7 @@ public class Patch {
         }
         c += "/* net latches */\n";
         for (Net n : nets) {
-            // check if net has multiple sources
+            /* check if net has multiple sources */
             if ((n.CType() != null) && n.NeedsLatch()) {
                 c += "    " + n.CType() + " " + n.CName() + "Latch" + ";\n";
             }
@@ -1338,11 +1321,11 @@ public class Patch {
 
     String GenerateObjInitCodePlusPlusSub(String className, String parentReference) {
         String c = "";
-        if (controllerinstance != null) {
-            String s = controllerinstance.getCInstanceName();
+        if (controllerInstance != null) {
+            String s = controllerInstance.getCInstanceName();
             if (!s.isEmpty()) {
                 c += "   " + s + "_i.Init(" + parentReference;
-                for (DisplayInstance i : controllerinstance.GetDisplayInstances()) {
+                for (DisplayInstance i : controllerInstance.GetDisplayInstances()) {
                     if (i.display.getLength() > 0) {
                         c += ", ";
                         c += i.valueName("");
@@ -1352,7 +1335,7 @@ public class Patch {
             }
         }
 
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             String s = o.getCInstanceName();
             if (!s.isEmpty()) {
                 c += "   " + o.getCInstanceName() + "_i.Init(" + parentReference;
@@ -1411,18 +1394,18 @@ public class Patch {
     String GenerateDisposeCodePlusPlusSub(String className) {
         // reverse order
         String c = "";
-        int l = objectinstances.size();
+        int l = objectInstances.size();
         for (int i = l - 1; i >= 0; i--) {
-            AxoObjectInstanceAbstract o = objectinstances.get(i);
+            AxoObjectInstanceAbstract o = objectInstances.get(i);
             String s = o.getCInstanceName();
             if (!s.isEmpty()) {
                 c += "   " + o.getCInstanceName() + "_i.Dispose();\n";
             }
         }
-        if (controllerinstance != null) {
-            String s = controllerinstance.getCInstanceName();
+        if (controllerInstance != null) {
+            String s = controllerInstance.getCInstanceName();
             if (!s.isEmpty()) {
-                c += "   " + controllerinstance.getCInstanceName() + "_i.Dispose();\n";
+                c += "   " + controllerInstance.getCInstanceName() + "_i.Dispose();\n";
             }
         }
 
@@ -1457,11 +1440,11 @@ public class Patch {
         c += "//--------- </zero> ----------//\n";
 
         c += "//--------- <controller calls> ----------//\n";
-        if (controllerinstance != null) {
-            c += GenerateDSPCodePlusPlusSubObj(controllerinstance, ClassName, enableOnParent);
+        if (controllerInstance != null) {
+            c += GenerateDSPCodePlusPlusSubObj(controllerInstance, ClassName, enableOnParent);
         }
         c += "//--------- <object calls> ----------//\n";
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             c += GenerateDSPCodePlusPlusSubObj(o, ClassName, enableOnParent);
         }
         c += "//--------- </object calls> ----------//\n";
@@ -1484,12 +1467,14 @@ public class Patch {
     String GenerateDSPCodePlusPlusSubObj(AxoObjectInstanceAbstract o, String ClassName, boolean enableOnParent) {
         String c = "";
         String s = o.getCInstanceName();
+
         if (s.isEmpty()) {
             return c;
         }
         c += "  " + o.getCInstanceName() + "_i.dsp(";
 //            c += "  " + o.GenerateDoFunctionName() + "(this";
         boolean needsComma = false;
+
         for (InletInstance i : o.GetInletInstances()) {
             if (needsComma) {
                 c += ", ";
@@ -1498,20 +1483,26 @@ public class Patch {
             if ((n != null) && (n.isValidNet())) {
                 if (i.GetDataType().equals(n.GetDataType())) {
                     if (n.NeedsLatch()
-                            && (objectinstances.indexOf(n.source.get(0).GetObjectInstance()) >= objectinstances.indexOf(o))) {
+                            && (objectInstances.indexOf(n.source.get(0).GetObjectInstance()) >= objectInstances.indexOf(o))) {
                         c += n.CName() + "Latch";
-                    } else {
+                    }
+                    else {
                         c += n.CName();
                     }
-                } else if (n.NeedsLatch()
-                        && (objectinstances.indexOf(n.source.get(0).GetObjectInstance()) >= objectinstances.indexOf(o))) {
+                }
+                else if (n.NeedsLatch()
+                        && (objectInstances.indexOf(n.source.get(0).GetObjectInstance()) >= objectInstances.indexOf(o))) {
                     c += n.GetDataType().GenerateConversionToType(i.GetDataType(), n.CName() + "Latch");
-                } else {
+                }
+                else {
                     c += n.GetDataType().GenerateConversionToType(i.GetDataType(), n.CName());
                 }
-            } else if (n == null) { // unconnected input
+            }
+            else if (n == null) {
+                /* unconnected input */
                 c += i.GetDataType().GenerateSetDefaultValueCode();
-            } else if (!n.isValidNet()) {
+            }
+            else if (!n.isValidNet()) {
                 c += i.GetDataType().GenerateSetDefaultValueCode();
                 Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Patch contains invalid net! {0}", i.objname + ":" + i.getInletname());
             }
@@ -1557,10 +1548,10 @@ public class Patch {
 
     String GenerateMidiInCodePlusPlus() {
         String c = "";
-        if (controllerinstance != null) {
-            c += controllerinstance.GenerateCallMidiHandler();
+        if (controllerInstance != null) {
+            c += controllerInstance.GenerateCallMidiHandler();
         }
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             c += o.GenerateCallMidiHandler();
         }
         return c;
@@ -1710,7 +1701,7 @@ public class Patch {
 
     String GenerateCode3() {
         Preferences prefs = MainFrame.prefs;
-        controllerinstance = null;
+        controllerInstance = null;
         String cobjstr = prefs.getControllerObject();
 
         if (prefs.isControllerEnabled() && cobjstr != null && !cobjstr.isEmpty()) {
@@ -1721,7 +1712,7 @@ public class Patch {
                 x = objs.get(0);
             }
             if (x != null) {
-                controllerinstance = x.CreateInstance(null, "ctrl0x123", new Point(0, 0));
+                controllerInstance = x.CreateInstance(null, "ctrl0x123", new Point(0, 0));
             }
             else {
                 Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Unable to create controller object for: {0}", cobjstr);
@@ -1790,7 +1781,7 @@ public class Patch {
     public AxoObject GenerateAxoObjNormal(AxoObject template) {
         SortByPosition();
         AxoObject ao = template;
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("patch/inlet f")) {
                 ao.inlets.add(new InletFrac32(o.getInstanceName(), o.getInstanceName()));
             }
@@ -1848,7 +1839,7 @@ public class Patch {
             ao.sDescription = "no description";
         }
         ao.sKRateCode = "uint8_t i; /*...*/\n";
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("patch/inlet f") || o.typeName.equals("patch/inlet i") || o.typeName.equals("patch/inlet b")) {
                 ao.sKRateCode += "   " + o.getCInstanceName() + "_i._inlet = inlet_" + o.getLegalName() + ";\n";
             }
@@ -1861,7 +1852,7 @@ public class Patch {
 
         }
         ao.sKRateCode += GenerateDSPCodePlusPlusSub("attr_parent", true);
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("patch/outlet f") || o.typeName.equals("patch/outlet i") || o.typeName.equals("patch/outlet b")) {
                 ao.sKRateCode += "   outlet_" + o.getLegalName() + " = " + o.getCInstanceName() + "_i._outlet;\n";
             }
@@ -1990,7 +1981,7 @@ public class Patch {
 
         }
 
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("patch/inlet f")) {
                 ao.inlets.add(new InletFrac32(o.getInstanceName(), o.getInstanceName()));
             }
@@ -2116,7 +2107,7 @@ public class Patch {
                      + "  v->dispose();\n"
                      + "}\n";
         ao.sKRateCode = "";
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("patch/outlet f") || o.typeName.equals("patch/outlet i")
                     || o.typeName.equals("patch/outlet b") || o.typeName.equals("patch/outlet string")) {
                 ao.sKRateCode += "  outlet_" + o.getLegalName() + " = 0;\n";
@@ -2129,7 +2120,7 @@ public class Patch {
         }
         ao.sKRateCode += "uint8_t vi; for (vi=0; vi<attr_poly; vi++) {";
 
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("inlet") || o.typeName.equals("inlet_i") || o.typeName.equals("inlet_b") || o.typeName.equals("inlet_")
                     || o.typeName.equals("patch/inlet f") || o.typeName.equals("patch/inlet i") || o.typeName.equals("patch/inlet b")) {
                 ao.sKRateCode += "  getVoices()[vi]." + o.getCInstanceName() + "_i._inlet = inlet_" + o.getLegalName() + ";\n";
@@ -2144,7 +2135,7 @@ public class Patch {
             }
         }
         ao.sKRateCode += "getVoices()[vi].dsp();\n";
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("outlet") || o.typeName.equals("patch/outlet f")
                     || o.typeName.equals("patch/outlet i")
                     || o.typeName.equals("patch/outlet b")) {
@@ -2471,7 +2462,7 @@ public class Patch {
     public void ShowPreset(int i) {
         presetNo = i;
 
-        Collection<AxoObjectInstanceAbstract> c = (Collection<AxoObjectInstanceAbstract>) objectinstances.clone();
+        Collection<AxoObjectInstanceAbstract> c = (Collection<AxoObjectInstanceAbstract>) objectInstances.clone();
         for (AxoObjectInstanceAbstract o : c) {
             for (ParameterInstance p : o.getParameterInstances()) {
                 p.ShowPreset(i);
@@ -2489,7 +2480,7 @@ public class Patch {
      while (presets.size()<8) presets.add(new PresetObsolete());
      if (i>0) {
      PresetObsolete p = presets.get(i-1);
-     for (AxoObjectInstance o:objectinstances) {
+     for (AxoObjectInstance o:objectInstances) {
      for (ParameterInstance a:o.parameterInstances) {
      a.SetPresetState(false);
      a.ppc = null;
@@ -2505,7 +2496,7 @@ public class Patch {
      initPreset = new InitPreset();
      initPreset.patch = this;
      }
-     for (AxoObjectInstance o:objectinstances) {
+     for (AxoObjectInstance o:objectInstances) {
      for (ParameterInstance a:o.parameterInstances) {
      a.SetPresetState(false);
      a.ppc = null;
@@ -2518,7 +2509,7 @@ public class Patch {
      }
      SaveToInitPreset();
      } else {
-     for (AxoObjectInstance o:objectinstances) {
+     for (AxoObjectInstance o:objectInstances) {
      for (ParameterInstance a:o.parameterInstances) {
      a.SetPresetState(false);
      a.ppc = null;
@@ -2536,7 +2527,7 @@ public class Patch {
 
     void DifferenceToPreset() {
         /*
-         for (AxoObjectInstance o:objectinstances) {
+         for (AxoObjectInstance o:objectInstances) {
          for (ParameterInstance param:o.parameterInstances) {
          // find corresponding in init
          PresetParameterChange ppc = null;
@@ -2578,7 +2569,7 @@ public class Patch {
      }
     
      void SaveToInitPreset() {
-     for (AxoObjectInstance o:objectinstances) {
+     for (AxoObjectInstance o:objectInstances) {
      for (ParameterInstance param:o.parameterInstances) {
      PresetParameterChange ppc = null;
      for (PresetParameterChange ppc1:initPreset.paramchanges) {
@@ -2607,7 +2598,7 @@ public class Patch {
         }
 
         int index = 0;
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             for (ParameterInstance param : o.getParameterInstances()) {
                 ParameterInstance p7 = (ParameterInstance) param;
                 Preset p = p7.GetPreset(i);
@@ -2637,14 +2628,14 @@ public class Patch {
 
     public void Lock() {
         locked = true;
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             o.Lock();
         }
     }
 
     public void Unlock() {
         locked = false;
-        ArrayList<AxoObjectInstanceAbstract> objInstsClone = (ArrayList<AxoObjectInstanceAbstract>) objectinstances.clone();
+        ArrayList<AxoObjectInstanceAbstract> objInstsClone = (ArrayList<AxoObjectInstanceAbstract>) objectInstances.clone();
         for (AxoObjectInstanceAbstract o : objInstsClone) {
             o.Unlock();
         }
@@ -2726,9 +2717,9 @@ public class Patch {
         refreshIndexes();
         Set<String> ProcessedInstances = new HashSet<String>();
         boolean p = true;
-        while (p && !(ProcessedInstances.size() == objectinstances.size())) {
+        while (p && !(ProcessedInstances.size() == objectInstances.size())) {
             p = false;
-            for (AxoObjectInstanceAbstract o : objectinstances) {
+            for (AxoObjectInstanceAbstract o : objectInstances) {
                 if (!ProcessedInstances.contains(o.getInstanceName())) {
                     ProcessedInstances.add(o.getInstanceName());
                     if (!initial || o.isTypeWasAmbiguous()) {
@@ -2740,8 +2731,8 @@ public class Patch {
             }
         }
 
-        if (!(ProcessedInstances.size() == objectinstances.size())) {
-            for (AxoObjectInstanceAbstract o : objectinstances) {
+        if (!(ProcessedInstances.size() == objectInstances.size())) {
+            for (AxoObjectInstanceAbstract o : objectInstances) {
                 if (!ProcessedInstances.contains(o.getInstanceName())) {
                     Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "PromoteOverloading: fault in {0}", o.getInstanceName());
                 }
@@ -2811,7 +2802,7 @@ public class Patch {
     public ArrayList<SDFileReference> GetDependendSDFiles() {
         ArrayList<SDFileReference> files = new ArrayList<SDFileReference>();
 
-        for (AxoObjectInstanceAbstract o : objectinstances) {
+        for (AxoObjectInstanceAbstract o : objectInstances) {
             ArrayList<SDFileReference> f2 = o.GetDependendSDFiles();
             if (f2 != null) {
                 files.addAll(f2);
@@ -2896,7 +2887,7 @@ public class Patch {
     public void Close() {
         Unlock();
 
-        Collection<AxoObjectInstanceAbstract> c = (Collection<AxoObjectInstanceAbstract>) objectinstances.clone();
+        Collection<AxoObjectInstanceAbstract> c = (Collection<AxoObjectInstanceAbstract>) objectInstances.clone();
         for (AxoObjectInstanceAbstract o : c) {
             o.Close();
         }

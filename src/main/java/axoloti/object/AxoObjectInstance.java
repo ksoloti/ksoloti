@@ -104,7 +104,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     @Override
     public void refreshIndex() {
         if (patch != null && IndexLabel != null) {
-            IndexLabel.setText(" " + patch.objectinstances.indexOf(this));
+            IndexLabel.setText(" " + patch.objectInstances.indexOf(this));
         }
     }
 

@@ -364,7 +364,7 @@ public class AxoObject extends AxoObjectAbstract {
 //        System.out.println("object " + o);
 //        Thread.dumpStack();
         if (patch != null) {
-            patch.objectinstances.add(o);
+            patch.objectInstances.add(o);
         }
         o.PostConstructor();
         return o;
