@@ -119,7 +119,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         setMaximumSize(null);
         setModalExclusionType(java.awt.Dialog.ModalExclusionType.TOOLKIT_EXCLUDE);
         setName("Keyboard"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(914, 155));
+        setPreferredSize(new java.awt.Dimension(928, 155));
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.Y_AXIS));
         addWindowListener(new WindowAdapter() {
             public void windowOpened(WindowEvent e) {
