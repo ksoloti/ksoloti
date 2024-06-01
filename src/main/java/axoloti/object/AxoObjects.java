@@ -341,6 +341,9 @@ public class AxoObjects {
     public Thread LoaderThread;
 
     public void LoadAxoObjects() {
+        Runnable objloader = new Runnable() {
+            @Override
+            public void run() {
                 ObjectTree = new AxoObjectTreeNode("/");
                 ObjectList = new ArrayList<AxoObjectAbstract>();
                 ObjectUUIDMap = new HashMap<String, AxoObjectAbstract>();
@@ -350,13 +353,16 @@ public class AxoObjects {
                         Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Object search path: {0}", path);
                         LoadAxoObjects(path);
                     }
-                }
-                else {
+                } else {
                     Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, "Object search path empty!\n");
                 }
                 Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Finished loading objects.\n");
+            }
+        };
+        LoaderThread = new Thread(objloader);
+        LoaderThread.start();
     }
-
+    
     public static String ConvertToLegalFilename(String s) {
         s = s.replaceAll("<", "LT");
         s = s.replaceAll(">", "GT");
