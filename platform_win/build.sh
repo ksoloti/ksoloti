@@ -90,7 +90,7 @@ then
     fi        
 fi
 
-if [ ! -f "bin/dfu-util-static.exe" ];
+if [ ! -f "bin/dfu-util.exe" ];
 then
     ARCHIVE=dfu-util-0.9-win64.zip
     if [ ! -f ${ARCHIVE} ];
