@@ -451,8 +451,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         EventQueue.invokeLater(r);
                     }
                 } else if (arg.endsWith(".axo")) {
-                    // NewPatch();
                     // NOP for AXO at the moment - new patch and paste object as embedded inside?
+                    // NewPatchWithObjectEmbedded---or something();
                 }
             }
         }

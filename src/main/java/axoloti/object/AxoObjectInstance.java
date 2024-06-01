@@ -101,6 +101,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     boolean deferredObjTypeUpdate = false;
 
+    private int indentWidth = 4;
+    private String I = new String(new char[indentWidth]).replace("\0", " ");
+
     @Override
     public void refreshIndex() {
         if (patch != null && IndexLabel != null) {
@@ -588,7 +591,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public String GenerateInstanceCodePlusPlus(String classname, boolean enableOnParent) {
         String c = "";
         for (ParameterInstance p : parameterInstances) {
-            c += p.GenerateCodeDeclaration(classname);
+            c += I+I + p.GenerateCodeDeclaration(classname);
         }
         c += GenerateInstanceDataDeclaration2();
         for (AttributeInstance p : attributeInstances) {
@@ -606,19 +609,19 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 //            c = "  void " + GenerateInitFunctionName() + "(" + GenerateStructName() + " * x ) {\n";
 //        else
 //        if (!classname.equals("one"))
-        c += "parent = _parent;\n";
+        c += I+I+I + "parent = _parent;\n";
         for (ParameterInstance p : parameterInstances) {
             if (p.parameter.PropagateToChild != null) {
-                c += "// on Parent: propagate " + p.getName() + " " + enableOnParent + " " + getLegalName() + "" + p.parameter.PropagateToChild + "\n";
-                c += p.PExName("parent->") + ".pfunction = PropagateToSub;\n";
-                c += p.PExName("parent->") + ".finalvalue = (int32_t)(&(parent->objectinstance_"
+                c += I+I + "// on Parent: propagate " + p.getName() + " " + enableOnParent + " " + getLegalName() + "" + p.parameter.PropagateToChild + "\n";
+                c += I+I +  p.PExName("parent->") + ".pfunction = PropagateToSub;\n";
+                c += I+I +  p.PExName("parent->") + ".finalvalue = (int32_t)(&(parent->objectinstance_"
                         + getLegalName() + "_i.PExch[objectinstance_" + getLegalName() + "::PARAM_INDEX_"
                         + p.parameter.PropagateToChild + "]));\n";
 
             } else {
-                c += p.GenerateCodeInit("parent->", "");
+                c += I+I + p.GenerateCodeInit("parent->", "");
             }
-            c += p.GenerateCodeInitModulator("parent->", "");
+            c += I+I + p.GenerateCodeInitModulator("parent->", "");
             //           if ((p.isOnParent() && !enableOnParent)) {
             //c += "// on Parent: propagate " + p.name + "\n";
             //String parentparametername = classname.substring(8);
@@ -628,7 +631,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             //         }
         }
         for (DisplayInstance p : displayInstances) {
-            c += p.GenerateCodeInit("");
+            c += I+I + p.GenerateCodeInit("");
         }
         if (getType().sInitCode != null) {
             String s = getType().sInitCode;
@@ -637,7 +640,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
             c += s + "\n";
         }
-        String d = "  public: void Init(" + classname + " * _parent";
+        String d = "\n" + I+I + "public: void Init(" + classname + " * _parent";
         if (!displayInstances.isEmpty()) {
             for (DisplayInstance p : displayInstances) {
                 if (p.display.getLength() > 0) {
@@ -660,11 +663,11 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         if (getType().sDisposeCode != null) {
             String s = getType().sDisposeCode;
             for (AttributeInstance p : attributeInstances) {
-                s = s.replaceAll(p.GetCName(), p.CValue());
+                s = I+I + s.replaceAll(p.GetCName(), p.CValue());
             }
             c += s + "\n";
         }
-        c = "  public: void Dispose() {\n" + c + "}\n";
+        c = "\n" + I+I + "public: void Dispose() {\n" + c + I+I + "}\n";
         return c;
     }
 
@@ -677,11 +680,11 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             s = s.replace("attr_name", getCInstanceName());
             s = s.replace("attr_legal_name", getLegalName());
             for (ParameterInstance p : parameterInstances) {
-                if (p.isOnParent() && enableOnParent) {
+//               if (p.isOnParent() && enableOnParent) {
 //                    s = s.replace("%" + p.name + "%", OnParentAccess + p.variableName(vprefix, enableOnParent));
-                } else {
+//                } else {
 //                    s = s.replace("%" + p.name + "%", p.variableName(vprefix, enableOnParent));
-                }
+//                }
             }
             // for (DisplayInstance p : displayInstances) {
             //    s = s.replace("%" + p.name + "%", p.valueName(vprefix));
@@ -693,10 +696,10 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     public String GenerateSRateCodePlusPlus(String vprefix, boolean enableOnParent, String OnParentAccess) {
         if (getType().sSRateCode != null) {
-            String s = "int buffer_index;\n"
-                    + "for(buffer_index=0;buffer_index<BUFSIZE;buffer_index++) {\n"
-                    + getType().sSRateCode
-                    + "\n}\n";
+            String s = I+I + "int buffer_index;\n"
+                     + I+I + "for(buffer_index=0;buffer_index<BUFSIZE;buffer_index++) {\n"
+                     + I+I + getType().sSRateCode
+                     + I+I + "\n}\n";
 
             for (AttributeInstance p : attributeInstances) {
                 s = s.replaceAll(p.GetCName(), p.CValue());
@@ -723,7 +726,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public String GenerateDoFunctionPlusPlus(String ClassName, String OnParentAccess, Boolean enableOnParent) {
         String s;
         boolean comma = false;
-        s = "  public: void dsp (";
+        s = "\n" + I+I + "public: void dsp (";
         for (InletInstance i : inletInstances) {
             if (comma) {
                 s += ",\n";
@@ -741,7 +744,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         for (ParameterInstance i : parameterInstances) {
             if (i.parameter.PropagateToChild == null) {
                 if (comma) {
-                    s += ",\n";
+                    s += ", ";
                 }
                 s += i.parameter.CType() + " " + i.GetCName();
                 comma = true;
@@ -760,10 +763,10 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 comma = true;
             }
         }
-        s += "  ){\n";
+        s += ") {\n";
         s += GenerateKRateCodePlusPlus("", enableOnParent, OnParentAccess);
         s += GenerateSRateCodePlusPlus("", enableOnParent, OnParentAccess);
-        s += "}\n";
+        s += I+I + "}\n";
         return s;
     }
 
@@ -771,10 +774,10 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     @Override
     public String GenerateClass(String ClassName, String OnParentAccess, Boolean enableOnParent) {
-        String s = "";
-        s += "class " + getCInstanceName() + " {\n";
-        s += "  public: // v1\n";
-        s += "  " + ClassName + " *parent;\n";
+        String s  = I + "class " + getCInstanceName() + " {\n"
+                  + I+I + "public: // v1\n"
+                  + I+I + ClassName + " *parent;\n";
+
         s += GenerateInstanceCodePlusPlus(ClassName, enableOnParent);
         s += GenerateInitCodePlusPlus(ClassName, enableOnParent);
         s += GenerateDisposeCodePlusPlus(ClassName);
@@ -784,10 +787,10 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             if (!d3.isEmpty()) {
                 s += MidiHandlerFunctionHeader;
                 s += d3;
-                s += "}\n";
+                s += I+I + "}\n";
             }
         }
-        s += "\n}\n;";
+        s += I + "};\n\n";
         return s;
     }
 
@@ -866,7 +869,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
         int ranking[];
         ranking = new int[candidates.size()];
-        // auto-choose depending on 1st connected inlet
+        /* auto-choose depending on 1st connected inlet */
 
         //      InletInstance i = null;// = GetInletInstances().get(0);
         for (InletInstance j : GetInletInstances()) {
@@ -960,7 +963,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         } else {
             String p1 = getType().sPath;
             if (p1==null) {
-                // embedded object, reference path is of the patch
+                /* embedded object, reference path is of the patch */
                 p1 = getPatch().getFileNamePath();
                 if (p1 == null) {
                     p1 = "";

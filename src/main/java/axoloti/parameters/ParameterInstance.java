@@ -57,12 +57,16 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 
     @Attribute
     String name;
+
     @Attribute(required = false)
     private Boolean onParent;
+
     protected int index;
     public T parameter;
+
     @ElementList(required = false)
     ArrayList<Preset> presets;
+
     protected boolean needsTransmit = false;
     AxoObjectInstance axoObj;
     LabelComponent valuelbl = new LabelComponent("123456789");
@@ -70,8 +74,10 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     int selectedConv = 0;
     public int presetEditActive = 0;
     ACtrlComponent ctrl;
+
     @Attribute(required = false)
     Integer MidiCC = null;
+
     AssignMidiCCComponent midiAssign;
 
     public ParameterInstance() {
@@ -487,7 +493,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         if (GetObjectInstance().getPatch() != null) {
             JMenu m_preset = new JMenu("Preset");
             m_preset.setDelay(300);
-            // AssignPresetMenuItems, does stuff in ctor
+            /* AssignPresetMenuItems, does stuff in ctor */
             AssignPresetMenuItems assignPresetMenuItems = new AssignPresetMenuItems(this, m_preset);
             m.add(m_preset);
         }
