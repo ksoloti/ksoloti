@@ -132,6 +132,13 @@ public class Patch {
     private int indentWidth = 4;
     private String I = new String(new char[indentWidth]).replace("\0", " ");
 
+    /*
+        0 = A_STEREO
+        1 = A_MONO
+        2 = A_BALANCED
+    */
+    private int audioInputMode = 0;
+    private int audioOutputMode = 0;
 
     @Element(required = false)
     private String helpPatch;
@@ -501,6 +508,26 @@ public class Patch {
         }
         else {
             hasZombies = false;
+        }
+    }
+
+    public void setAudioInputMode(int mode) {
+        audioInputMode = mode;
+        if (audioInputMode > 2) {
+            audioInputMode = 2;
+        }
+        else if (audioInputMode < 0) {
+            audioInputMode = 0;
+        }
+    }
+
+    public void setAudioOutputMode(int mode) {
+        audioOutputMode = mode;
+        if (audioOutputMode > 2) {
+            audioOutputMode = 2;
+        }
+        else if (audioOutputMode < 0) {
+            audioOutputMode = 0;
         }
     }
 
@@ -1607,47 +1634,73 @@ public class Patch {
         c += "static rootc root;\n\n";
 
         c += "void PatchProcess( int32_t * inbuf, int32_t * outbuf) {\n"
-                + "  uint8_t i; for (i=0; i<BUFSIZE; i++) {\n"
-                + "    AudioInputLeft[i] = inbuf[i*2]>>4;\n"
-                + "    switch (AudioInputMode) {\n"
-                + "       case A_MONO:\n"
-                + "             AudioInputRight[i] = AudioInputLeft[i]; break;\n"
-                + "       case A_BALANCED:\n"
-                + "             AudioInputLeft[i] = (AudioInputLeft[i] - (inbuf[i*2+1]>>4) ) >> 1;\n"
-                + "             AudioInputRight[i] = AudioInputLeft[i];"
-                + "             break;\n"
-                + "       case A_STEREO:\n"
-                + "       default:\n"
-                + "             AudioInputRight[i] = inbuf[i*2+1]>>4;\n"
-                + "     }\n"
-                + "  }\n"
-                + "  root.dsp();\n";
+           + I + "uint8_t i;\n";
+
+        /* audioInputMode and audioOutputMode are modified during
+           object init code generation in AxoObjectInstance.java.
+           This saves a bit of memory and instructions in the patch. */
+        if (audioInputMode == 1) {
+        c += I + "for (i=0;i<BUFSIZE;i++) {\n"
+           + I+I + "AudioInputLeft[i] = inbuf[i*2]>>4;\n"
+           + I+I + "AudioInputRight[i] = AudioInputLeft[i];\n"
+           + I + "}\n";
+        }
+        else if (audioInputMode == 2) {
+        c += I + "for (i=0;i<BUFSIZE;i++) {\n"
+           + I+I + "AudioInputLeft[i] = inbuf[i*2]>>4;\n"
+           + I+I + "AudioInputLeft[i] = (AudioInputLeft[i] - (inbuf[i*2+1]>>4) ) >> 1;\n"
+           + I+I + "AudioInputRight[i] = AudioInputLeft[i];\n"
+           + I + "}\n";
+        }
+        else {
+        c += I + "for (i=0;i<BUFSIZE;i++) {\n"
+           + I+I + "AudioInputLeft[i] = inbuf[i*2]>>4;\n"
+           + I+I + "AudioInputRight[i] = inbuf[i*2+1]>>4;\n"
+           + I + "}\n";
+
+        }
+
+        c += I + "root.dsp();\n\n";
+
         if (settings.getSaturate()) {
-                 c += "  for (i=0; i<BUFSIZE; i++) {\n"
-                    + "    outbuf[i*2] = __SSAT(AudioOutputLeft[i],28)<<4;\n"
-                    + "    switch (AudioOutputMode) {\n"
-                    + "      case A_MONO:\n"
-                    + "        outbuf[i*2+1] = 0; break;\n"
-                    + "      case A_BALANCED:\n"
-                    + "        outbuf[i*2+1] = ~ outbuf[i*2]; break;\n"
-                    + "      case A_STEREO:\n"
-                    + "      default:\n"
-                    + "        outbuf[i*2+1] = __SSAT(AudioOutputRight[i],28)<<4;\n"
-                    + "    }\n"
-                    + "  }\n";
-        } else {
-                 c += "  for (i=0; i<BUFSIZE; i++) {\n"
-                    + "    outbuf[i*2] = AudioOutputLeft[i];\n"
-                    + "    switch (AudioOutputMode) {\n"
-                    + "      case A_MONO:\n"
-                    + "        outbuf[i*2+1] = 0; break;\n"
-                    + "      case A_BALANCED:\n"
-                    + "        outbuf[i*2+1] = ~ outbuf[i*2]; break;\n"
-                    + "      case A_STEREO:\n"
-                    + "      default:\n"
-                    + "        outbuf[i*2+1] = AudioOutputRight[i];\n"
-                    + "     }\n"
-                    + "  }\n";
+            if (audioOutputMode == 1) {
+                c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                   + I+I + "outbuf[i*2] = __SSAT(AudioOutputLeft[i],28)<<4;\n"
+                   + I+I + "outbuf[i*2+1] = 0;\n"
+                   + I + "}\n";
+            }
+            else if (audioOutputMode == 2) {
+                c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                   + I+I + "outbuf[i*2] = __SSAT(AudioOutputLeft[i],28)<<4;\n"
+                   + I+I + "outbuf[i*2+1] = ~outbuf[i*2];\n"
+                   + I + "}\n";
+            }
+            else {
+                c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                   + I+I + "outbuf[i*2] = __SSAT(AudioOutputLeft[i],28)<<4;\n"
+                   + I+I + "outbuf[i*2+1] = __SSAT(AudioOutputRight[i],28)<<4;\n"
+                   + I + "}\n";
+            }
+        }
+        else {
+            if (audioOutputMode == 1) {
+                c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                   + I+I + "outbuf[i*2] = AudioOutputLeft[i];\n"
+                   + I+I + "outbuf[i*2+1] = 0;\n"
+                   + I + "}\n";
+            }
+            else if (audioOutputMode == 2) {
+                c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                   + I+I + "outbuf[i*2] = AudioOutputLeft[i];\n"
+                   + I+I + "outbuf[i*2+1] = ~outbuf[i*2];\n"
+                   + I + "}\n";
+            }
+            else {
+                c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                   + I+I + "outbuf[i*2] = AudioOutputLeft[i];\n"
+                   + I+I + "outbuf[i*2+1] = AudioOutputRight[i];\n"
+                   + I + "}\n";
+            }
         }
         c += "}\n\n";
 
@@ -1765,13 +1818,10 @@ public class Patch {
 
         c += "void PatchMidiInHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t data1, uint8_t data2);\n\n";
 
-        c += "int32buffer AudioInputLeft;\n";
-        c += "int32buffer AudioInputRight;\n";
-        c += "int32buffer AudioOutputLeft;\n";
-        c += "int32buffer AudioOutputRight;\n";
-        c += "typedef enum { A_STEREO, A_MONO, A_BALANCED } AudioModeType;\n";
-        c += "AudioModeType AudioOutputMode = A_STEREO;\n";
-        c += "AudioModeType AudioInputMode = A_STEREO;\n\n";
+        c += "int32buffer AudioInputLeft, AudioInputRight, AudioOutputLeft, AudioOutputRight;\n\n";
+        // c += "typedef enum { A_STEREO, A_MONO, A_BALANCED } AudioModeType;\n";
+        // c += "AudioModeType AudioInputMode = A_STEREO;\n";
+        // c += "AudioModeType AudioOutputMode = A_STEREO;\n\n";
 
         c += "static void PropagateToSub(ParameterExchange_t *origin) {\n"
            + I + "ParameterExchange_t *pex = (ParameterExchange_t *) origin->finalvalue;\n"

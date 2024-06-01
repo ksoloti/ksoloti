@@ -638,6 +638,43 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             for (AttributeInstance p : attributeInstances) {
                 s = s.replace(p.GetCName(), p.CValue());
             }
+            
+            /* Reverse-analyze if generated init code contains code which changes
+             * the audio input or output config. This is a workaround to ensure
+             * compatibility with axoloti-factory inconfig and outconfig objects.*/
+            String opt = "/* Code was optimized out during code generation */";
+            if (s.contains("AudioInputMode = A_STEREO;")) {
+                patch.setAudioInputMode(0);
+                s = s.replace("AudioInputMode = A_STEREO;", opt);
+                Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "Audio input mode set: STEREO");
+            }
+            if (s.contains("AudioInputMode = A_MONO;")) {
+                patch.setAudioInputMode(1);
+                s = s.replace("AudioInputMode = A_MONO;", opt);
+                Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "Audio input mode set: MONO");
+            }
+            if (s.contains("AudioInputMode = A_BALANCED;")) {
+                patch.setAudioInputMode(2);
+                s = s.replace("AudioInputMode = A_BALANCED;", opt);
+                Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "Audio input mode set: BALANCED");
+            }
+
+            if (s.contains("AudioOutputMode = A_MONO;")) {
+                patch.setAudioOutputMode(1);
+                s = s.replace("AudioOutputMode = A_MONO;", opt);
+                Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "Audio output mode set: MONO");
+            }
+            if (s.contains("AudioOutputMode = A_BALANCED;")) {
+                patch.setAudioOutputMode(2);
+                s = s.replace("AudioOutputMode = A_BALANCED;", opt);
+                Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "Audio output mode set: BALANCED");
+            }
+            if (s.contains("AudioOutputMode = A_STEREO;")) {
+                patch.setAudioOutputMode(0);
+                s = s.replace("AudioOutputMode = A_STEREO;", opt);
+                Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "Audio output mode set: STEREO");
+            }
+
             c += s + "\n";
         }
         String d = "\n" + I+I + "public: void Init(" + classname + " * _parent";
