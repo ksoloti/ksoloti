@@ -1117,7 +1117,9 @@ public class PatchGUI extends Patch {
 
         Strategy strategy = new AnnotationStrategy();
         Serializer serializer = new Persister(strategy);
+
         try {
+            MainFrame.axoObjects.LoaderThread.join();
             PatchGUI patch1 = serializer.read(PatchGUI.class, f);
             PatchFrame pf = new PatchFrame(patch1, QCmdProcessor.getQCmdProcessor());
             patch1.setFileNamePath(f.getAbsolutePath());
