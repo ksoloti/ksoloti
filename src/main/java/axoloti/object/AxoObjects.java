@@ -353,7 +353,8 @@ public class AxoObjects {
                         Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Object search path: {0}", path);
                         LoadAxoObjects(path);
                     }
-                } else {
+                }
+                else {
                     Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, "Object search path empty!\n");
                 }
                 Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Finished loading objects.\n");

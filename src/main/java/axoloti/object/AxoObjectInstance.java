@@ -101,7 +101,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     boolean deferredObjTypeUpdate = false;
 
-    private int indentWidth = 4;
+    private int indentWidth = 2;
     private String I = new String(new char[indentWidth]).replace("\0", " ");
 
     @Override
@@ -681,7 +681,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         if (!displayInstances.isEmpty()) {
             for (DisplayInstance p : displayInstances) {
                 if (p.display.getLength() > 0) {
-                    d += ",\n";
+                    d += ", ";
                     if (p.display.getDatatype().isPointer()) {
                         d += p.display.getDatatype().CType() + " " + p.GetCName();
                     } else {
@@ -766,14 +766,14 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         s = "\n" + I+I + "public: void dsp (";
         for (InletInstance i : inletInstances) {
             if (comma) {
-                s += ",\n";
+                s += ", ";
             }
             s += "const " + i.GetDataType().CType() + " " + i.GetCName();
             comma = true;
         }
         for (OutletInstance i : outletInstances) {
             if (comma) {
-                s += ",\n";
+                s += ", ";
             }
             s += i.GetDataType().CType() + " & " + i.GetCName();
             comma = true;
@@ -790,7 +790,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         for (DisplayInstance i : displayInstances) {
             if (i.display.getLength() > 0) {
                 if (comma) {
-                    s += ",\n";
+                    s += ",";
                 }
                 if (i.display.getDatatype().isPointer()) {
                     s += i.display.getDatatype().CType() + " " + i.GetCName();
@@ -801,7 +801,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
         }
         s += ") {\n";
+        s += "\n" + I+I + "/* Object K-Rate Code */\n";
         s += GenerateKRateCodePlusPlus("", enableOnParent, OnParentAccess);
+        s += "\n" + I+I + "/* Object S-Rate Code */\n";
         s += GenerateSRateCodePlusPlus("", enableOnParent, OnParentAccess);
         s += I+I + "}\n";
         return s;
@@ -815,11 +817,16 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                   + I+I + "public: // v1\n"
                   + I+I + ClassName + " *parent;\n";
 
+        s += "\n" + I+I + "/* Object Local Code */\n";
         s += GenerateInstanceCodePlusPlus(ClassName, enableOnParent);
+        s += "\n" + I+I + "/* Object Init Code */\n";
         s += GenerateInitCodePlusPlus(ClassName, enableOnParent);
+        s += "\n" + I+I + "/* Object Dispose Code */\n";
         s += GenerateDisposeCodePlusPlus(ClassName);
+        s += "\n" + I+I + "/* Object DSP Loop */\n";
         s += GenerateDoFunctionPlusPlus(ClassName, OnParentAccess, enableOnParent);
         {
+            s += "\n" + I+I + "/* Object Midi Handler */\n";
             String d3 = GenerateCodeMidiHandler("");
             if (!d3.isEmpty()) {
                 s += MidiHandlerFunctionHeader;

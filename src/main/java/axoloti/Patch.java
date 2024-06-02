@@ -129,7 +129,7 @@ public class Patch {
     boolean locked = false;
     private boolean dirty = false;
 
-    private int indentWidth = 4;
+    private int indentWidth = 2;
     private String I = new String(new char[indentWidth]).replace("\0", " ");
 
     /*
