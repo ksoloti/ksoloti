@@ -1374,7 +1374,7 @@ public class Patch {
         if (controllerInstance != null) {
             String s = controllerInstance.getCInstanceName();
             if (!s.isEmpty()) {
-                c += I + s + "_i.Init(" + parentReference;
+                c += I+I + s + "_i.Init(" + parentReference;
                 for (DisplayInstance i : controllerInstance.GetDisplayInstances()) {
                     if (i.display.getLength() > 0) {
                         c += ", ";
@@ -1522,8 +1522,8 @@ public class Patch {
         if (s.isEmpty()) {
             return c;
         }
-        c += I + o.getCInstanceName() + "_i.dsp(";
-//            c += I + o.GenerateDoFunctionName() + "(this";
+        c += I+I + o.getCInstanceName() + "_i.dsp(";
+//            c += I+I + o.GenerateDoFunctionName() + "(this";
         boolean needsComma = false;
 
         for (InletInstance i : o.GetInletInstances()) {
@@ -1612,19 +1612,19 @@ public class Patch {
         String c;
         c = "\n" + I + "/* k-rate */\n";
         c += I + "void dsp (void) {\n";
-        c += I + "    uint8_t i;\n";
-        c += I + "    for (i=0; i<BUFSIZE; i++) AudioOutputLeft[i] = 0;\n";
-        c += I + "    for (i=0; i<BUFSIZE; i++) AudioOutputRight[i] = 0;\n";
-        c += I + GenerateDSPCodePlusPlusSub(ClassName, enableOnParent);
+        c += I+I + "uint8_t i;\n";
+        c += I+I + "for (i=0; i<BUFSIZE; i++) AudioOutputLeft[i] = 0;\n";
+        c += I+I + "for (i=0; i<BUFSIZE; i++) AudioOutputRight[i] = 0;\n";
+        c += GenerateDSPCodePlusPlusSub(ClassName, enableOnParent);
         c += I + "}\n\n";
         return c;
     }
 
     String GenerateMidiCodePlusPlus(String ClassName) {
         String c = "";
-        c += "void MidiInHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t data1, uint8_t data2) {\n";
+        c += I+I + "void MidiInHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t data1, uint8_t data2) {\n";
         c += GenerateMidiInCodePlusPlus();
-        c += "}\n\n";
+        c += I+I + "}\n\n";
         return c;
     }
 
@@ -1660,7 +1660,7 @@ public class Patch {
 
         }
 
-        c += I + "root.dsp();\n\n";
+        c += "\n" + I + "root.dsp();\n\n";
 
         if (settings.getSaturate()) {
             if (audioOutputMode == 1) {
@@ -1705,7 +1705,7 @@ public class Patch {
         c += "}\n\n";
 
         c += "void ApplyPreset(int32_t i) {\n"
-                + "   root.ApplyPreset(i);\n"
+                + I + "root.ApplyPreset(i);\n"
                 + "}\n\n";
 
         c += "void PatchMidiInHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t data1, uint8_t data2) {\n"
@@ -1916,6 +1916,7 @@ public class Patch {
         else {
             ao.sDescription = "no description";
         }
+
         ao.sKRateCode = "uint8_t i; /*...*/\n";
         for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("patch/inlet f") || o.typeName.equals("patch/inlet i") || o.typeName.equals("patch/inlet b")) {
@@ -1929,6 +1930,7 @@ public class Patch {
             }
 
         }
+
         ao.sKRateCode += GenerateDSPCodePlusPlusSub("attr_parent", true);
         for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("patch/outlet f") || o.typeName.equals("patch/outlet i") || o.typeName.equals("patch/outlet b")) {

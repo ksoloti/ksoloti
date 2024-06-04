@@ -677,7 +677,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
             c += s + "\n";
         }
-        String d = "\n" + I+I + "public: void Init(" + classname + " * _parent";
+        String d = I+I + "public: void Init(" + classname + " * _parent";
         if (!displayInstances.isEmpty()) {
             for (DisplayInstance p : displayInstances) {
                 if (p.display.getLength() > 0) {
@@ -704,7 +704,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
             c += s + "\n";
         }
-        c = "\n" + I+I + "public: void Dispose() {\n" + c + I+I + "}\n";
+        c = I+I + "public: void Dispose() {\n" + c + I+I + "}\n";
         return c;
     }
 
@@ -763,7 +763,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public String GenerateDoFunctionPlusPlus(String ClassName, String OnParentAccess, Boolean enableOnParent) {
         String s;
         boolean comma = false;
-        s = "\n" + I+I + "public: void dsp (";
+        s = I+I + "public: void dsp (";
         for (InletInstance i : inletInstances) {
             if (comma) {
                 s += ", ";
