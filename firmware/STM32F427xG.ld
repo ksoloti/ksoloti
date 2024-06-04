@@ -29,7 +29,7 @@ MEMORY
     flash (rx) : org = 0x08000000, len = 896k       /* last 128kB for patch storage*/
     ram        : org = 0x20000200, len = 0x0AE00    /* 44k - first 0x200 for vector table */
     SRAM2      : org = 0x2001E000, len = 0x00002000 /* second half (8kB) of SRAM2 for DMA*/
-    SRAM3      : org = 0x20020000, len = 0x00010000
+    /* SRAM3      : org = 0x20020000, len = 0x00010000 */
     CCMRAMEND  : org = 0x1000C000, len = 10k        /* for stacks */
     sdram      : org = 0xC0000000, len = 0x2000000  /* 32MB */
 }
@@ -172,11 +172,11 @@ SECTIONS
         * (.sram2.*);
     } > SRAM2
 
-    .sram3 (NOLOAD): ALIGN(4) SUBALIGN(4)
+    /* .sram3 (NOLOAD): ALIGN(4) SUBALIGN(4)
     {
         * (.sram3);
         * (.sram3.*);
-    } > SRAM3
+    } > SRAM3 */
 
     .ccmramend (NOLOAD): ALIGN(4) SUBALIGN(4)
     {
