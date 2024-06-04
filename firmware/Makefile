@@ -242,15 +242,15 @@ ifneq (,$(findstring ELEMENTS,$(AXO_OPT_MODULES)))
 #$(info including ELEMENTS)
 ELEMENTS_SRC = \
        ${FIRMWARE}/axoloti_mi.cpp \
+       ${MUTABLE_INSTRUMENTS}/elements/elements_resources.cpp \
        ${MUTABLE_INSTRUMENTS}/elements/dsp/multistage_envelope.cpp \
        ${MUTABLE_INSTRUMENTS}/elements/dsp/ominous_voice.cpp \
        ${MUTABLE_INSTRUMENTS}/elements/dsp/resonator.cpp \
        ${MUTABLE_INSTRUMENTS}/elements/dsp/string.cpp \
        ${MUTABLE_INSTRUMENTS}/elements/dsp/tube.cpp \
        ${MUTABLE_INSTRUMENTS}/elements/dsp/exciter.cpp \
-       ${MUTABLE_INSTRUMENTS}/elements/elements_resources.cpp \
-       ${MUTABLE_INSTRUMENTS}/elements/part.cpp \
-       ${MUTABLE_INSTRUMENTS}/elements/voice.cpp 
+       ${MUTABLE_INSTRUMENTS}/elements/dsp/part.cpp \
+       ${MUTABLE_INSTRUMENTS}/elements/dsp/voice.cpp
 endif
 
 ifneq (,$(findstring CLOUDS,$(AXO_OPT_MODULES)))
