@@ -23,6 +23,8 @@
 #include "ch.h"
 #include "hal.h"
 
+#ifdef FW_SPILINK
+
 /*
  * Double buffered periodic spi exchange
  */
@@ -69,4 +71,5 @@ __STATIC_INLINE void spidbMasterExchangeI(SPIDriver *spip, bool_t toggle) {
 }
 
 
+#endif /* FW_SPILINK */
 #endif /* SPIDB_H_ */

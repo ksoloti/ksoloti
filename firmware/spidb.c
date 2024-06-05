@@ -27,6 +27,8 @@
 #include "spidb.h"
 #include <stdint.h>
 
+#ifdef FW_SPILINK
+
 uint32_t spidb_interrupt_timestamp;
 
 // #define DEBUG_SPIDB_INT_ON_GPIO 1
@@ -269,3 +271,5 @@ void spidbStop(SPIDriver *spip) {
         chSysUnlock();
     }
 }
+
+#endif

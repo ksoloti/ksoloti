@@ -22,6 +22,8 @@
 
 #include "spidb.h"
 
+#ifdef FW_SPILINK
+
 
 __STATIC_INLINE void spilink_master_process(void) {
 
@@ -77,4 +79,5 @@ __STATIC_INLINE void spilink_slave_process(void)
 }
 
 
+#endif /* FW_SPILINK */
 #endif /* SPILINK_LLD_H_ */

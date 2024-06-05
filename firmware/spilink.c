@@ -25,6 +25,8 @@
 #include "spidb.h"
 #include "sysmon.h"
 
+#ifdef FW_SPILINK
+
 bool_t spilink_toggle;
 Thread *pThreadSpilink = 0;
 
@@ -196,3 +198,5 @@ void spilink_stop(void) {
     palSetPadMode(GPIOB, 4, PAL_MODE_INPUT); /* MISO */
     palSetPadMode(GPIOD, 6, PAL_MODE_INPUT); /* MOSI */
 }
+
+#endif /* FW_SPILINK */

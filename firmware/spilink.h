@@ -30,6 +30,8 @@
 #include "axoloti_control.h"
 #include "ui.h"
 
+#ifdef FW_SPILINK
+
 #define SPILINK_BUFSIZE 16
 #define SPILINK_CHANNELS 4
 
@@ -74,5 +76,5 @@ extern bool_t spilink_toggle;
 // extern int spilink_update_index;
 // extern int lcd_update_index;
 
-
+#endif /* FW_SPILINK */
 #endif /* SPILINK_H_ */
