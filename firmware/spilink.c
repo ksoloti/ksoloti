@@ -85,15 +85,11 @@ static msg_t ThreadSpilinkSlave(void *arg)
         /* Waiting for messages.*/
         msg_t m = chEvtWaitAnyTimeout(7, MS2ST(50));
 
-        if (!m)
-        {
+        if (!m) {
             /* timeout */
-            int i; for (i = 0; i < 2; i++)
-            {
-                int j; for (j = 0; j < SPILINK_CHANNELS; j++)
-                {
-                    int k; for (k = 0; k < SPILINK_BUFSIZE; k++)
-                    {
+            int i; for (i = 0; i < 2; i++) {
+                int j; for (j = 0; j < SPILINK_CHANNELS; j++) {
+                    int k; for (k = 0; k < SPILINK_BUFSIZE; k++) {
                         spilink_rx[i].audio_io.channel[j].samples[k] = i + 2;
                     }
                 }
@@ -105,20 +101,16 @@ static msg_t ThreadSpilinkSlave(void *arg)
             continue;
 
         }
-        else if (m & half_transfer_complete)
-        {
+        else if (m & half_transfer_complete) {
             spilink_toggle = 0;
-            if (spilink_rx[0].header != SPILINK_HEADER)
-            {
+            if (spilink_rx[0].header != SPILINK_HEADER) {
                 spidbSlaveResync(&SPILINKD);
                 // LogTextMessage("spislaveresync halftransfer");
             }
         }
-        else if (m & full_transfer_complete)
-        {
+        else if (m & full_transfer_complete) {
             spilink_toggle = 1;
-            if (spilink_rx[0].header != SPILINK_HEADER)
-            {
+            if (spilink_rx[0].header != SPILINK_HEADER) {
                 spidbSlaveResync(&SPILINKD);
                 // LogTextMessage("spislaveresync fulltransfer");
             }
@@ -129,14 +121,12 @@ static msg_t ThreadSpilinkSlave(void *arg)
                    chSysUnlock();
             }*/
         }
-        else if (m & other_transfer)
-        {
+        else if (m & other_transfer) {
             spidbSlaveResync(&SPILINKD);
             // LogTextMessage("spislaveresync other");
             continue;
         }
-        else
-        {
+        else {
             // LogTextMessage("spislaveresync unknown state");
             //????
         }
@@ -144,14 +134,10 @@ static msg_t ThreadSpilinkSlave(void *arg)
 }
 
 
-void spilink_clear_audio_tx(void)
-{
-    int i; for (i = 0; i < 2; i++)
-    {
-        int j; for (j = 0; j < SPILINK_CHANNELS; j++)
-        {
-            int k; for (k = 0; k < SPILINK_BUFSIZE; k++)
-            {
+void spilink_clear_audio_tx(void) {
+    int i; for (i = 0; i < 2; i++) {
+        int j; for (j = 0; j < SPILINK_CHANNELS; j++) {
+            int k; for (k = 0; k < SPILINK_BUFSIZE; k++) {
                 spilink_tx[i].audio_io.channel[j].samples[k] = i + 1;
             }
         }
@@ -159,8 +145,7 @@ void spilink_clear_audio_tx(void)
 }
 
 
-void spilink_init(bool_t isMaster)
-{
+void spilink_init(bool_t isMaster) {
     if (isMaster)
         palSetPadMode(SPILINK_NSS_PORT, SPILINK_NSS_PIN, PAL_MODE_OUTPUT_PUSHPULL); /* master NSS */
     else
@@ -170,15 +155,12 @@ void spilink_init(bool_t isMaster)
     palSetPadMode(GPIOB, 4, PAL_MODE_ALTERNATE(6)); /* MISO */
     palSetPadMode(GPIOD, 6, PAL_MODE_ALTERNATE(5)); /* MOSI */
 
-    int i; for (i = 0; i < 2; i++)
-    {
+    int i; for (i = 0; i < 2; i++) {
         spilink_tx[i].header = SPILINK_HEADER;
         spilink_tx[i].footer = SPILINK_FOOTER;
 
-        int j; for (j = 0; j < SPILINK_CHANNELS; j++)
-        {
-            int k; for (k = 0; k < SPILINK_BUFSIZE; k++)
-            {
+        int j; for (j = 0; j < SPILINK_CHANNELS; j++) {
+            int k; for (k = 0; k < SPILINK_BUFSIZE; k++) {
                 spilink_rx[i].audio_io.channel[j].samples[k] = i;
                 spilink_tx[i].audio_io.channel[j].samples[k] = i + 1;
             }
@@ -188,15 +170,13 @@ void spilink_init(bool_t isMaster)
     spilink_rx_samples = &spilink_rx[0].audio_io;
     spilink_tx_samples = &spilink_tx[0].audio_io;
 
-    if (isMaster)
-    {
+    if (isMaster) {
         /* Master */
         spilink_toggle = 0;
         spidbMasterStart(&SPILINKD, &spidbcfg_master);
         spilink_master_active = 1;
     }
-    else
-    {
+    else {
         /* Synced */
         Thread *_pThreadSpilink = chThdCreateStatic(waThreadSpilink,
             sizeof(waThreadSpilink), HIGHPRIO - 1, ThreadSpilinkSlave, NULL);
