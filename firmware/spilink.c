@@ -36,6 +36,8 @@ spilink_channels_t *spilink_tx_samples;
 
 uint32_t frameno = 0;
 
+extern void detect_MCO(void);
+
 #define SPILINK_NSS_PORT GPIOD
 #define SPILINK_NSS_PIN 5
 
@@ -94,10 +96,10 @@ static msg_t ThreadSpilinkSlave(void *arg)
                     }
                 }
             }
-            sysmon_blink_pattern(SYNCED_ERROR);
-            chThdSleepMilliseconds(1000);
-            // spidbSlaveResync(&SPILINKD);
-            // LogTextMessage("spislaveresync !m");
+            LogTextMessage("SPILINK sync lost, waiting...");
+            detect_MCO();
+            LogTextMessage("SPILINK sync found, rebooting...");
+            NVIC_SystemReset();
             continue;
 
         }
