@@ -763,7 +763,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public String GenerateDoFunctionPlusPlus(String ClassName, String OnParentAccess, Boolean enableOnParent) {
         String s;
         boolean comma = false;
-        s = I+I + "public: void dsp (";
+        s = I+I + "public: void dsp(";
         for (InletInstance i : inletInstances) {
             if (comma) {
                 s += ", ";

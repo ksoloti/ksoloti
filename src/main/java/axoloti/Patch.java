@@ -1611,7 +1611,7 @@ public class Patch {
     String GenerateDSPCodePlusPlus(String ClassName, boolean enableOnParent) {
         String c;
         c = "\n" + I + "/* k-rate */\n";
-        c += I + "void dsp (void) {\n";
+        c += I + "void dsp(void) {\n";
         c += I+I + "uint8_t i;\n";
         c += I+I + "for (i=0; i<BUFSIZE; i++) AudioOutputLeft[i] = 0;\n";
         c += I+I + "for (i=0; i<BUFSIZE; i++) AudioOutputRight[i] = 0;\n";
