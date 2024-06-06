@@ -101,6 +101,7 @@ static msg_t ThreadSpilinkSlave(void *arg)
             LogTextMessage("SPILINK sync lost, waiting...");
             detect_MCO();
             LogTextMessage("SPILINK sync found, rebooting...");
+            chThdSleepMilliseconds(10);
             NVIC_SystemReset();
             continue;
 
