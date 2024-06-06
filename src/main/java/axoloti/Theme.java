@@ -167,23 +167,10 @@ public class Theme {
     @Element
     public Color Parameter_Default_Foreground = Object_Default_Foreground;
     @Element
-    public Color Parameter_On_Parent_Background = 
-        isBgDark ? new Color(0x00,0x00,0x60) : new Color(0xE0, 0xE0, 0xFF);
-    // public Color Parameter_On_Parent_Background = new Color(
-    //     Math.max(Object_Default_Background.getRed()-0x10, 0x30),
-    //     Math.max(Object_Default_Background.getGreen()-0x20, 0x20),
-    //     Math.min(Object_Default_Background.getBlue()+0x80, 0xFF)
-    // );
+    public Color Parameter_On_Parent_Background = isBgDark ? new Color(0x00,0x00,0x60) : new Color(0xE0, 0xE0, 0xFF);
     @Element
     public Color Parameter_On_Parent_Foreground = isBgDark ? new Color(0x60, 0x60, 0xFF) : Color.BLUE;
-    // public Color Parameter_On_Parent_Foreground = new Color(
-    //     Math.min(Object_Default_Foreground.getRed(), 0xA0),
-    //     Math.min(Object_Default_Foreground.getGreen(), 0x90),
-    //     0xFF
-    // );
 
-    // @Element
-    // public Color Parameter_Preset_Highlight_Foreground = UIManager.getColor("Component.accentColor");
 
     @Element
     public Color Component_Foreground = Object_Default_Foreground;
