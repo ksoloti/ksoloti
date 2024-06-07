@@ -547,29 +547,15 @@ void USBH_HID_EventCallback(USBH_HandleTypeDef *phost) {
 
     if (m_pinfo_keyb) {
 
-      // USBH_DbgLog( "->keys:%u%u%u%u%u%u",
-      //   m_pinfo_keyb->keys[0], m_pinfo_keyb->keys[1], m_pinfo_keyb->keys->keys[2],
-      //   m_pinfo_keyb->keys[3], m_pinfo_keyb->keys[4], m_pinfo_keyb->keys[5]);
+      hid_key_modifiers  =  (m_pinfo_keyb->lctrl  << 0);
+      hid_key_modifiers  += (m_pinfo_keyb->lshift << 1);
+      hid_key_modifiers  += (m_pinfo_keyb->lalt   << 2);
+      hid_key_modifiers  += (m_pinfo_keyb->lgui   << 3);
 
-      // USBH_DbgLog( "->mods:%u%u%u%u%u%u%u%u",
-      //   m_pinfo_keyb->lctrl,
-      //   m_pinfo_keyb->lshift,
-      //   m_pinfo_keyb->lalt,
-      //   m_pinfo_keyb->lgui,
-      //   m_pinfo_keyb->rctrl,
-      //   m_pinfo_keyb->rshift,
-      //   m_pinfo_keyb->ralt,
-      //   m_pinfo_keyb->rgui);
-
-      hid_key_modifiers  =  (m_pinfo_keyb->lctrl  << 7);
-      hid_key_modifiers  += (m_pinfo_keyb->lshift << 6);
-      hid_key_modifiers  += (m_pinfo_keyb->lalt   << 5);
-      hid_key_modifiers  += (m_pinfo_keyb->lgui   << 4);
-
-      hid_key_modifiers  += (m_pinfo_keyb->rctrl  << 3);
-      hid_key_modifiers  += (m_pinfo_keyb->rshift << 2);
-      hid_key_modifiers  += (m_pinfo_keyb->ralt   << 1);
-      hid_key_modifiers  += (m_pinfo_keyb->rgui       );
+      hid_key_modifiers  += (m_pinfo_keyb->rctrl  << 4);
+      hid_key_modifiers  += (m_pinfo_keyb->rshift << 5);
+      hid_key_modifiers  += (m_pinfo_keyb->ralt   << 6);
+      hid_key_modifiers  += (m_pinfo_keyb->rgui   << 7);
 
       uint8_t k; for (k = 0; k < 6; k++) {
         hid_keys[k] = m_pinfo_keyb->keys[k];
