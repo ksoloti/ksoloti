@@ -47,11 +47,11 @@ public class ParameterInstanceInt32HRadio extends ParameterInstanceInt32 {
         String s = /*"    " + variableName(vprefix) + " = " + (value.getInt()) + ";\n"
                  + "    " + valueName(vprefix) + " = " + (value.getInt()) + ";\n"
                  + "    " + signalsName(vprefix) + " = 0;\n"
-                 + I+I + "SetKVP_IPVP(&" + StructAccces + KVPName(vprefix) + ",ObjectKvpRoot, \"" + KVPName(vprefix) + "\" ,"
+                 + I+I+I + "SetKVP_IPVP(&" + StructAccces + KVPName(vprefix) + ",ObjectKvpRoot, \"" + KVPName(vprefix) + "\" ,"
                  + "&" + PExName(vprefix) + ","
                  + 0 + ","
                  + ((1<<16)-1) + ");\n"
-                 + I+I + "KVP_RegisterObject(&" + StructAccces + KVPName(vprefix) + ");\n"*/ "";
+                 + I+I+I + "KVP_RegisterObject(&" + StructAccces + KVPName(vprefix) + ");\n"*/ "";
         return s;
     }
 
