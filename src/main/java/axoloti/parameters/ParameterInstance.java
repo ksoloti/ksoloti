@@ -80,6 +80,8 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 
     AssignMidiCCComponent midiAssign;
 
+    String I = "\t";
+
     public ParameterInstance() {
     }
 
