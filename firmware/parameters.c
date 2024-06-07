@@ -61,7 +61,7 @@ void PExParameterChange(ParameterExchange_t *param, int32_t value,
   }
 }
 
-void ApplyPreset(uint16_t index) {
+void ApplyPreset(uint8_t index) {
   if (patchMeta.fptr_applyPreset >= 0)
     (patchMeta.fptr_applyPreset)(index);
 }

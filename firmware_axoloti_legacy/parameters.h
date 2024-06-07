@@ -69,6 +69,6 @@ void PExModulationSourceChange(PExModulationTarget_t *modulation,
 void PExParameterChange(ParameterExchange_t *param, int32_t value,
                         uint32_t signals);
 
-void ApplyPreset(uint16_t index);
+void ApplyPreset(uint8_t index);
 
 #endif
