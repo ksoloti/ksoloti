@@ -129,8 +129,7 @@ public class Patch {
     boolean locked = false;
     private boolean dirty = false;
 
-    private int indentWidth = 2;
-    private String I = new String(new char[indentWidth]).replace("\0", " ");
+    String I = "\t";
 
     /*
         0 = A_STEREO

@@ -101,8 +101,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     boolean deferredObjTypeUpdate = false;
 
-    private int indentWidth = 2;
-    private String I = new String(new char[indentWidth]).replace("\0", " ");
+    String I = "\t";
 
     @Override
     public void refreshIndex() {
@@ -612,16 +611,16 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         c += I+I+I + "parent = _parent;\n";
         for (ParameterInstance p : parameterInstances) {
             if (p.parameter.PropagateToChild != null) {
-                c += I+I + "// on Parent: propagate " + p.getName() + " " + enableOnParent + " " + getLegalName() + "" + p.parameter.PropagateToChild + "\n";
-                c += I+I +  p.PExName("parent->") + ".pfunction = PropagateToSub;\n";
-                c += I+I +  p.PExName("parent->") + ".finalvalue = (int32_t)(&(parent->objectinstance_"
+                c += I+I+I + "// on Parent: propagate " + p.getName() + " " + enableOnParent + " " + getLegalName() + "" + p.parameter.PropagateToChild + "\n";
+                c += I+I+I +  p.PExName("parent->") + ".pfunction = PropagateToSub;\n";
+                c += I+I+I +  p.PExName("parent->") + ".finalvalue = (int32_t)(&(parent->objectinstance_"
                         + getLegalName() + "_i.PExch[objectinstance_" + getLegalName() + "::PARAM_INDEX_"
                         + p.parameter.PropagateToChild + "]));\n";
 
             } else {
-                c += I+I + p.GenerateCodeInit("parent->", "");
+                c += I+I+I + p.GenerateCodeInit("parent->", "");
             }
-            c += I+I + p.GenerateCodeInitModulator("parent->", "");
+            c += I+I+I + p.GenerateCodeInitModulator("parent->", "");
             //           if ((p.isOnParent() && !enableOnParent)) {
             //c += "// on Parent: propagate " + p.name + "\n";
             //String parentparametername = classname.substring(8);
@@ -631,7 +630,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             //         }
         }
         for (DisplayInstance p : displayInstances) {
-            c += I+I + p.GenerateCodeInit("");
+            c += p.GenerateCodeInit("");
         }
         if (getType().sInitCode != null) {
             String s = getType().sInitCode;
