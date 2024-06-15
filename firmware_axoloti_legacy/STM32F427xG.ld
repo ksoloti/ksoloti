@@ -1,5 +1,6 @@
 /**
  * Copyright (C) 2013, 2014, 2015 Johannes Taelman
+ * Edited 2023 - 2024 by Ksoloti
  *
  * This file is part of Axoloti.
  *
@@ -17,7 +18,7 @@
  */
 
 /*
- * ST32F407xG memory setup.
+ * ST32F427xG memory setup.
  */
 
 __main_stack_size__     = 0x400;
@@ -25,20 +26,21 @@ __process_stack_size__  = 0x400;
 
 MEMORY
 {
-    flash (rx): org = 0x08000000, len = 896k /* last 128kB for patch storage*/
-    ram : org = 0x20000200, len = 0x0AE00 /* 44k - first 0x200 for vector table */
-    SRAM2  : org = 0x2001E000, len = 0x00002000 /* second half (8kB) of SRAM2 for DMA*/      
-    CCMRAMEND  : org = 0x1000C000, len = 10k /* for stacks */    
-    sdram : org = 0xC0000000, len = 0x400000
+    flash (rx) : org = 0x08000000, len = 896k       /* last 128kB for patch storage*/
+    ram        : org = 0x20000200, len = 0x0AE00    /* 44k - first 0x200 for vector table */
+    SRAM2      : org = 0x2001E000, len = 0x00002000 /* second half (8kB) of SRAM2 for DMA*/
+    /* SRAM3      : org = 0x20020000, len = 0x00010000 */
+    CCMRAMEND  : org = 0x1000C000, len = 10k        /* for stacks */
+    sdram      : org = 0xC0000000, len = 0x2000000  /* 32MB */
 }
 
-__ram_start__           = ORIGIN(ram);
-__ram_size__            = LENGTH(ram);
-__ram_end__             = __ram_start__ + __ram_size__;
+__ram_start__   = ORIGIN(ram);
+__ram_size__    = LENGTH(ram);
+__ram_end__     = __ram_start__ + __ram_size__;
 
 __sdram_start__ = ORIGIN(sdram);
-__sdram_size__ = LENGTH(sdram);
-__sdram_end__ = __sdram_start__ + __sdram_size__;
+__sdram_size__  = LENGTH(sdram);
+__sdram_end__   = __sdram_start__ + __sdram_size__;
 
 ENTRY(ResetHandler)
 
@@ -100,7 +102,7 @@ SECTIONS
     {
         *(.eh_frame)
     } > flash
-    
+
     .textalign : ONLY_IF_RO
     {
         . = ALIGN(8);
@@ -163,14 +165,20 @@ SECTIONS
         . = ALIGN(4);
         PROVIDE(_bss_end = .);
     } > ram
-    
-    .sram2 (NOLOAD): ALIGN(4) SUBALIGN(4) 
+
+    .sram2 (NOLOAD): ALIGN(4) SUBALIGN(4)
     {
         * (.sram2);
         * (.sram2.*);
-    } > SRAM2    
+    } > SRAM2
 
-    .ccmramend (NOLOAD): ALIGN(4) SUBALIGN(4)  
+    /* .sram3 (NOLOAD): ALIGN(4) SUBALIGN(4)
+    {
+        * (.sram3);
+        * (.sram3.*);
+    } > SRAM3 */
+
+    .ccmramend (NOLOAD): ALIGN(4) SUBALIGN(4)
     {
         * (.ccmramend);
         * (.ccmramend.*);
@@ -184,7 +192,7 @@ SECTIONS
 }
 
 PROVIDE(end = .);
-_end            = .;
+_end = .;
 
-__heap_base__   = _end;
-__heap_end__    = __ram_end__;
+__heap_base__ = _end;
+__heap_end__  = __ram_end__;

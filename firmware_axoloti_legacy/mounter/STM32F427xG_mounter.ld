@@ -1,30 +1,43 @@
+/**
+ * Copyright (C) 2013, 2014, 2015 Johannes Taelman
+ * Edited 2023 - 2024 by Ksoloti
+ *
+ * This file is part of Axoloti.
+ *
+ * Axoloti is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * Axoloti is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Axoloti. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * ST32F427xG mounter memory setup.
+ */
+
 ENTRY(ResetHandler)
 
 MEMORY
 {
-/*
- originally 
-  24kB for program
-  64kB for variables
- new:
-  56kB for program
-  64kB for variables 
- next:
-  72kB for program!
-*/
-
-      SRAM (rwx) : ORIGIN = 0x20011000, LENGTH = 0x00009000 
-      CCMSRAM : ORIGIN = 0x10000000, LENGTH = 0x0000E000 /* CCM - ccmramend */
+    SRAM (rwx) : ORIGIN = 0x20011000, LENGTH = 0x00009000
+    CCMSRAM    : ORIGIN = 0x10000000, LENGTH = 0x0000E000 /* CCM - ccmramend */
 }
 
 __main_stack_size__     = 0x400;
 __process_stack_size__  = 0x400;
 
-SECTIONS {
+SECTIONS
+{
     . = 0;
     _text = .;
-    
-      .text : ALIGN(16) SUBALIGN(16)
+
+    .text : ALIGN(16) SUBALIGN(16)
     {
         *(.text.ResetHandler)
         *(.text.startup.*)
@@ -37,7 +50,7 @@ SECTIONS {
         *(.gcc*)
         *(.startup)
     } > SRAM
-    
+
     constructors : ALIGN(4) SUBALIGN(4)
     {
         PROVIDE(__init_array_start = .);
@@ -53,8 +66,8 @@ SECTIONS {
         KEEP(*(SORT(.fini_array.*)))
         PROVIDE(__fini_array_end = .);
     } > SRAM
-        
-    .rodata : ALIGN(4) SUBALIGN(4) 
+
+    .rodata : ALIGN(4) SUBALIGN(4)
     {
         * (.rodata);
         * (.rodata.*);
@@ -64,7 +77,6 @@ SECTIONS {
     {
         KEEP(*(vectors))
     } > SRAM
-
 
     _etext = .;
     _textdata = _etext;
@@ -81,7 +93,7 @@ SECTIONS {
         . = ALIGN(4);
         PROVIDE(_edata = .);
     } > SRAM
-    
+
     .stacks :
     {
         . = ALIGN(8);
@@ -108,9 +120,8 @@ SECTIONS {
         *(COMMON)
         . = ALIGN(4);
         PROVIDE(_bss_end = .);
-    } > SRAM    
- 
+    } > SRAM
 }
 
 PROVIDE(end = .);
-_end            = .;
+_end = .;

@@ -5,7 +5,7 @@
 
 # Compiler options here.
 ifeq ($(USE_OPT),)
-  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -Wno-unused-function
+  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -Wno-unused-parameter -Wno-unused-function
 endif 
 
 # C specific options here (added to USE_OPT).
@@ -75,7 +75,7 @@ include $(CHIBIOS)/os/kernel/kernel.mk
 #include $(CHIBIOS)/test/test.mk
 	
 # Define linker script file here
-LDSCRIPT= STM32F407xG.ld
+LDSCRIPT= STM32F427xG_flasher.ld
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
