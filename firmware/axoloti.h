@@ -40,10 +40,6 @@ void axoloti_init(void);
 
 extern void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue);
 
-#ifdef FW_SPILINK
-extern void spilink_stop(void);
-#endif
-
 void LogTextMessage(const char* format, ...);
 
 #endif

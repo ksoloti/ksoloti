@@ -56,7 +56,6 @@ typedef struct {
 
 void spilink_init(bool_t isMaster);
 void spilink_clear_audio_tx(void);
-void spilink_stop(void);
 
 extern Thread *pThreadSpilink;
 
