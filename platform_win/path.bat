@@ -14,6 +14,11 @@ if not defined axoloti_firmware (
 )
 call :setrelease "%axoloti_release%"
 
+if not defined axoloti_legacy_firmware (
+   call :setfirmware_legacy "%axoloti_release%\firmware_axoloti_legacy"
+)
+call :setrelease "%axoloti_release%"
+
 if not defined axoloti_home (
    set axoloti_home=%platformdir%..
 )
@@ -23,6 +28,10 @@ goto :eof
 
 :setfirmware
 set axoloti_firmware=%~s1
+goto :eof
+
+:setfirmware_legacy
+set axoloti_legacy_firmware=%~s1
 goto :eof
 
 :setrelease
