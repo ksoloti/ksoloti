@@ -9,17 +9,23 @@
 #define USB_MS_DATA_EP 1
 
 /* USB device descriptor */
-static const uint8_t deviceDescriptorData[] =
-{
-    USB_DESC_DEVICE
-    (
+static const uint8_t deviceDescriptorData[] = {
+    USB_DESC_DEVICE(
         0x0200, /* supported USB version (2.0)                     */
         0x00,   /* device class (none, specified in interface)     */
         0x00,   /* device sub-class (none, specified in interface) */
         0x00,   /* device protocol (none, specified in interface)  */
         64,     /* max packet size of control end-point            */
         0x16C0, /* vendor ID (Voti)                                */
+#ifdef BOARD_KSOLOTI_CORE
+        /* Ksoloti Core */
         0x0445, /* product ID (lab use only!)                      */
+#elif (defined(BOARD_AXOLOTI_CORE) || defined(BOARD_STM32F4_DISCOVERY))
+        /* Axoloti Core */
+        0x0443, /* product ID (lab use only!)                      */
+#else
+#error No valid board defined in axoloti_defines.h!
+#endif
         0x0100, /* device release number                           */
         1,      /* index of manufacturer string descriptor         */
         2,      /* index of product string descriptor              */
@@ -27,18 +33,16 @@ static const uint8_t deviceDescriptorData[] =
         1       /* number of possible configurations               */
     )
 };
-static const USBDescriptor deviceDescriptor =
-{
+
+static const USBDescriptor deviceDescriptor = {
     sizeof(deviceDescriptorData),
     deviceDescriptorData
 };
 
 /* configuration descriptor */
-static const uint8_t configurationDescriptorData[] =
-{
+static const uint8_t configurationDescriptorData[] = {
     /* configuration descriptor */
-    USB_DESC_CONFIGURATION
-    (
+    USB_DESC_CONFIGURATION(
         32,   /* total length                                             */
         1,    /* number of interfaces                                     */
         1,    /* value that selects this configuration                    */
@@ -48,8 +52,7 @@ static const uint8_t configurationDescriptorData[] =
     ),
 
     /* interface descriptor */
-    USB_DESC_INTERFACE
-    (
+    USB_DESC_INTERFACE(
         0,    /* interface number                                     */
         0,    /* value used to select alternative setting             */
         2,    /* number of end-points used by this interface          */
@@ -60,8 +63,7 @@ static const uint8_t configurationDescriptorData[] =
     ),
 
     /* end-point descriptor */
-    USB_DESC_ENDPOINT
-    (
+    USB_DESC_ENDPOINT(
         USB_MS_DATA_EP | 0x00, /* address (end point index | IN direction)       */
         USB_EP_MODE_TYPE_BULK, /* attributes (bulk)                              */
         64,                    /* max packet size                                */
@@ -69,130 +71,131 @@ static const uint8_t configurationDescriptorData[] =
     ),
 
     /* end-point descriptor */
-    USB_DESC_ENDPOINT
-    (
+    USB_DESC_ENDPOINT(
         USB_MS_DATA_EP | 0x80, /* address (end point index | OUT direction)      */
         USB_EP_MODE_TYPE_BULK, /* attributes (bulk)                              */
         64,                    /* max packet size                                */
         0x05                   /* polling interval (ignored for bulk end-points) */
     )
 };
-static const USBDescriptor configurationDescriptor =
-{
+
+static const USBDescriptor configurationDescriptor = {
     sizeof(configurationDescriptorData),
     configurationDescriptorData
 };
 
 /* Language descriptor */
-static const uint8_t languageDescriptorData[] =
-{
+static const uint8_t languageDescriptorData[] = {
     USB_DESC_BYTE(4),
     USB_DESC_BYTE(USB_DESCRIPTOR_STRING),
     USB_DESC_WORD(0x0409) /* U.S. english */
 };
-static const USBDescriptor languageDescriptor =
-{
+
+static const USBDescriptor languageDescriptor = {
     sizeof(languageDescriptorData),
     languageDescriptorData
 };
 
 /* Vendor descriptor */
-static const uint8_t vendorDescriptorData[] =
-{
+static const uint8_t vendorDescriptorData[] = {
     USB_DESC_BYTE(16),
     USB_DESC_BYTE(USB_DESCRIPTOR_STRING),
+#ifdef BOARD_KSOLOTI_CORE
     'K', 0, 's', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0
+#elif (defined(BOARD_AXOLOTI_CORE) || defined(BOARD_STM32F4_DISCOVERY))
+    'A', 0, 'x', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0
+#else
+#error No valid board defined in axoloti_defines.h!
+#endif
 };
-static const USBDescriptor vendorDescriptor =
-{
+
+static const USBDescriptor vendorDescriptor = {
     sizeof(vendorDescriptorData),
     vendorDescriptorData
 };
 
 /* Product descriptor */
-static const uint8_t productDescriptorData[] =
-{
+static const uint8_t productDescriptorData[] = {
     USB_DESC_BYTE(22),
     USB_DESC_BYTE(USB_DESCRIPTOR_STRING),
     'C', 0, 'a', 0, 'r', 0, 'd', 0, 'r', 0, 'e', 0, 'a', 0, 'd', 0, 'e', 0, 'r', 0
 };
-static const USBDescriptor productDescriptor =
-{
+
+static const USBDescriptor productDescriptor = {
     sizeof(productDescriptorData),
     productDescriptorData
 };
 
 /* Serial number descriptor */
-static const uint8_t serialNumberDescriptorData[] =
-{
+static const uint8_t serialNumberDescriptorData[] = {
     USB_DESC_BYTE(26),
     USB_DESC_BYTE(USB_DESCRIPTOR_STRING),
     '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '1', 0
 };
-static const USBDescriptor serialNumberDescriptor =
-{
+
+static const USBDescriptor serialNumberDescriptor = {
     sizeof(serialNumberDescriptorData),
     serialNumberDescriptorData
 };
 
 /* Handles GET_DESCRIPTOR requests from the USB host */
-static const USBDescriptor* getDescriptor(USBDriver* usbp, uint8_t type, uint8_t index, uint16_t lang)
+static const USBDescriptor *getDescriptor(USBDriver *usbp, uint8_t type, uint8_t index, uint16_t lang)
 {
     (void)usbp;
     (void)lang;
 
     switch (type)
     {
-        case USB_DESCRIPTOR_DEVICE:
-            return &deviceDescriptor;
+    case USB_DESCRIPTOR_DEVICE:
+        return &deviceDescriptor;
 
-        case USB_DESCRIPTOR_CONFIGURATION:
-            return &configurationDescriptor;
+    case USB_DESCRIPTOR_CONFIGURATION:
+        return &configurationDescriptor;
 
-        case USB_DESCRIPTOR_STRING:
-            switch (index)
-            {
-                case 0: return &languageDescriptor;
-                case 1: return &vendorDescriptor;
-                case 2: return &productDescriptor;
-                case 3: return &serialNumberDescriptor;
-            }
+    case USB_DESCRIPTOR_STRING:
+        switch (index)
+        {
+        case 0:
+            return &languageDescriptor;
+        case 1:
+            return &vendorDescriptor;
+        case 2:
+            return &productDescriptor;
+        case 3:
+            return &serialNumberDescriptor;
+        }
     }
 
     return 0;
 }
 
-
-
 /* USB mass storage driver */
 USBMassStorageDriver UMSD1;
 
-
 /* Handles global events of the USB driver */
-static void usbEvent(USBDriver* usbp, usbevent_t event)
+static void usbEvent(USBDriver *usbp, usbevent_t event)
 {
     switch (event)
     {
-        case USB_EVENT_CONFIGURED:
-            chSysLockFromIsr();
-//            usbInitEndpointI(usbp, USB_MS_DATA_EP, &ep_data_config);
-            msdConfigureHookI(&UMSD1);
-            chSysUnlockFromIsr();
-            break;
+    case USB_EVENT_CONFIGURED:
+        chSysLockFromIsr();
+        //            usbInitEndpointI(usbp, USB_MS_DATA_EP, &ep_data_config);
+        msdConfigureHookI(&UMSD1);
+        chSysUnlockFromIsr();
+        break;
 
-        case USB_EVENT_RESET:
-        case USB_EVENT_ADDRESS:
-        case USB_EVENT_SUSPEND:
-        case USB_EVENT_WAKEUP:
-        case USB_EVENT_STALLED:
-        default:
-            break;
+    case USB_EVENT_RESET:
+    case USB_EVENT_ADDRESS:
+    case USB_EVENT_SUSPEND:
+    case USB_EVENT_WAKEUP:
+    case USB_EVENT_STALLED:
+    default:
+        break;
     }
 }
 
 /* Configuration of the USB driver */
-static const USBConfig usbConfig =
-{
+static const USBConfig usbConfig = {
     usbEvent,
     getDescriptor,
     msdRequestsHook,
@@ -202,20 +205,28 @@ static const USBConfig usbConfig =
 /* Turns on a LED when there is I/O activity on the USB port */
 static void usbActivity(bool_t active)
 {
-    if (active)
+    if (active) {
         palSetPad(LED1_PORT, LED1_PIN);
+    }
     else
+    {
         palClearPad(LED1_PORT, LED1_PIN);
+    }
 }
 
 /* USB mass storage configuration */
-static const USBMassStorageConfig msdConfig =
-{
+static const USBMassStorageConfig msdConfig = {
     &USBD1,
-    (BaseBlockDevice*)&SDCD1,
+    (BaseBlockDevice *)&SDCD1,
     USB_MS_DATA_EP,
     &usbActivity,
+#ifdef BOARD_KSOLOTI_CORE
     "Ksoloti",
+#elif (defined(BOARD_AXOLOTI_CORE) || defined(BOARD_STM32F4_DISCOVERY))
+    "Axoloti",
+#else
+#error No valid board defined in axoloti_defines.h!
+#endif
     "Cardreader",
     "0.1"
 };
@@ -225,14 +236,14 @@ int main(void)
     /* system & hardware initialization */
     halInit();
 
-    // float usb inputs, hope the host notices detach...
+    /* float usb inputs, hope the host notices detach... */
     palSetPadMode(GPIOA, 11, PAL_MODE_INPUT);
     palSetPadMode(GPIOA, 12, PAL_MODE_INPUT);
-    // setup LEDs, red+green on
+    /* setup LEDs, red+green on */
     palSetPadMode(LED1_PORT, LED1_PIN, PAL_MODE_OUTPUT_PUSHPULL);
     palSetPadMode(LED2_PORT, LED2_PIN, PAL_MODE_OUTPUT_PUSHPULL);
-    palClearPad(LED1_PORT,LED1_PIN);
-    palClearPad(LED2_PORT,LED2_PIN);
+    palClearPad(LED1_PORT, LED1_PIN);
+    palClearPad(LED2_PORT, LED2_PIN);
 
     chSysInit();
 
@@ -260,7 +271,8 @@ int main(void)
 
     /* start the USB mass storage service */
     int ret = msdStart(&UMSD1, &msdConfig);
-    if (ret != 0) {
+    if (ret != 0)
+    {
         /* no media found : bye bye !*/
         usbDisconnectBus(&USBD1);
         chThdSleepMilliseconds(1000);
@@ -273,13 +285,11 @@ int main(void)
     chEvtRegisterMask(&UMSD1.evt_connected, &connected, EVENT_MASK(1));
     chEvtRegisterMask(&UMSD1.evt_ejected, &ejected, EVENT_MASK(2));
 
-
     /* start the USB driver */
     usbDisconnectBus(&USBD1);
     chThdSleepMilliseconds(1000);
     usbStart(&USBD1, &usbConfig);
     usbConnectBus(&USBD1);
-
 
     while (TRUE)
     {

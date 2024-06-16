@@ -21,6 +21,10 @@
 
 #include <stdint.h>
 
+#define BOARD_KSOLOTI_CORE
+// #define BOARD_AXOLOTI_CORE
+// #define BOARD_STM32F4_DISCOVERY
+
 #define PI_F 3.1415927f
 #define SAMPLERATE 48000
 #define BUFSIZE 16
