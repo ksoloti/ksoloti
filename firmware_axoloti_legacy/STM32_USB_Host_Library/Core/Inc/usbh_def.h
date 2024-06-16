@@ -122,6 +122,7 @@
 
 /* Table 9-4. Standard Request Codes  */
 /* bRequest , Value */
+#ifndef USB_REQ_GET_STATUS
 #define  USB_REQ_GET_STATUS                             0x00
 #define  USB_REQ_CLEAR_FEATURE                          0x01
 #define  USB_REQ_SET_FEATURE                            0x03
@@ -133,6 +134,7 @@
 #define  USB_REQ_GET_INTERFACE                          0x0A
 #define  USB_REQ_SET_INTERFACE                          0x0B
 #define  USB_REQ_SYNCH_FRAME                            0x0C
+#endif
 
 /* Table 9-5. Descriptor Types of USB Specifications */
 #define  USB_DESC_TYPE_DEVICE                              1
@@ -155,6 +157,7 @@
 
 /* Descriptor Type and Descriptor Index  */
 /* Use the following values when calling the function USBH_GetDescriptor  */
+#ifndef USB_DESC_DEVICE
 #define  USB_DESC_DEVICE                    ((USB_DESC_TYPE_DEVICE << 8) & 0xFF00)
 #define  USB_DESC_CONFIGURATION             ((USB_DESC_TYPE_CONFIGURATION << 8) & 0xFF00)
 #define  USB_DESC_STRING                    ((USB_DESC_TYPE_STRING << 8) & 0xFF00)
@@ -165,6 +168,7 @@
 #define  USB_DESC_INTERFACE_POWER           ((USB_DESC_TYPE_INTERFACE_POWER << 8) & 0xFF00)
 #define  USB_DESC_HID_REPORT                ((USB_DESC_TYPE_HID_REPORT << 8) & 0xFF00)
 #define  USB_DESC_HID                       ((USB_DESC_TYPE_HID << 8) & 0xFF00)
+#endif
 
 
 #define  USB_EP_TYPE_CTRL                               0x00

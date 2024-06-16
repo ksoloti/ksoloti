@@ -34,10 +34,10 @@
 
 extern uint32_t _vectors;
 
-// #define AXOLOTI_CONTROL 1
-// #define SERIALDEBUG TRUE
+// #define AXOLOTI_CONTROL
+// #define SERIALDEBUG
 
-#if SERIALDEBUG
+#ifdef SERIALDEBUG
 #define DBGPRINTCHAR(x) sdPut(&SD2, x); // chThdSleepMilliseconds(1);
 
 void dbgPrintHexDigit(uint8_t b)
@@ -48,19 +48,19 @@ void dbgPrintHexDigit(uint8_t b)
         DBGPRINTCHAR('0' + b);
 }
 
-#define DBGPRINTHEX(x) \
-    DBGPRINTCHAR(' '); \
-    DBGPRINTCHAR('0'); \
-    DBGPRINTCHAR('x'); \
-    dbgPrintHexDigit( (x>>28) & 0x0f); \
-    dbgPrintHexDigit( (x>>24) & 0x0f); \
-    dbgPrintHexDigit( (x>>20) & 0x0f); \
-    dbgPrintHexDigit( (x>>16) & 0x0f); \
-    dbgPrintHexDigit( (x>>12) & 0x0f); \
-    dbgPrintHexDigit( (x>>8)  & 0x0f); \
-    dbgPrintHexDigit( (x>>4)  & 0x0f); \
-    dbgPrintHexDigit( (x)     & 0x0f); \
-    DBGPRINTCHAR('\r'); \
+#define DBGPRINTHEX(x)                  \
+    DBGPRINTCHAR(' ');                  \
+    DBGPRINTCHAR('0');                  \
+    DBGPRINTCHAR('x');                  \
+    dbgPrintHexDigit((x >> 28) & 0x0f); \
+    dbgPrintHexDigit((x >> 24) & 0x0f); \
+    dbgPrintHexDigit((x >> 20) & 0x0f); \
+    dbgPrintHexDigit((x >> 16) & 0x0f); \
+    dbgPrintHexDigit((x >> 12) & 0x0f); \
+    dbgPrintHexDigit((x >> 8) & 0x0f);  \
+    dbgPrintHexDigit((x >> 4) & 0x0f);  \
+    dbgPrintHexDigit((x) & 0x0f);       \
+    DBGPRINTCHAR('\r');                 \
     DBGPRINTCHAR('\n');
 #else
 #define DBGPRINTCHAR(x)
@@ -69,17 +69,19 @@ void dbgPrintHexDigit(uint8_t b)
 
 #define FLASH_BASE_ADDR 0x08000000
 
-/* dummy ui hooks... */
+/* Dummy ui hooks... */
 Btn_Nav_States_struct Btn_Nav_CurStates;
 Btn_Nav_States_struct Btn_Nav_PrevStates;
 Btn_Nav_States_struct Btn_Nav_Or;
 Btn_Nav_States_struct Btn_Nav_And;
+
 int8_t EncBuffer[4];
 
 #ifdef AXOLOTI_CONTROL
 void refresh_LCD(void)
 {
-    int i; for(i=0; i<9; i++)
+    int i;
+    for (i = 0; i < 9; i++)
     {
         do_axoloti_control();
         chThdSleepMilliseconds(20);
@@ -100,7 +102,8 @@ void DisplayAbortErr(int err)
     /* blink red slowly, green off */
     palWritePad(LED1_PORT, LED1_PIN, 0);
 
-    int i = 10; while (i--)
+    int i = 10;
+    while (i--)
     {
         palWritePad(LED2_PORT, LED2_PIN, 1);
         chThdSleepMilliseconds(1000);
@@ -132,8 +135,8 @@ int main(void)
 #ifdef SERIALDEBUG
     /* SD2 for serial debug output */
     palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7) | PAL_MODE_INPUT); // RX
-    palSetPadMode(GPIOA, 2, PAL_MODE_OUTPUT_PUSHPULL); // TX
-    palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7)); // TX
+    palSetPadMode(GPIOA, 2, PAL_MODE_OUTPUT_PUSHPULL);               // TX
+    palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7));                  // TX
 
     /* 115200 baud */
     static const SerialConfig sd2Cfg = {115200, 0, 0, 0};
@@ -151,9 +154,7 @@ int main(void)
     uint32_t *sdram32 = (uint32_t *)SDRAM_BANK_ADDR;
     uint8_t *sdram8 = (uint8_t *)SDRAM_BANK_ADDR;
 
-    if ((sdram8[0] != 'f') || (sdram8[1] != 'l') || (sdram8[2] != 'a')
-        || (sdram8[3] != 's') || (sdram8[4] != 'c') || (sdram8[5] != 'o')
-        || (sdram8[6] != 'p') || (sdram8[7] != 'y'))
+    if ((sdram8[0] != 'f') || (sdram8[1] != 'l') || (sdram8[2] != 'a') || (sdram8[3] != 's') || (sdram8[4] != 'c') || (sdram8[5] != 'o') || (sdram8[6] != 'p') || (sdram8[7] != 'y'))
     {
         DisplayAbortErr(1);
     }
@@ -164,7 +165,9 @@ int main(void)
     uint32_t fcrc = sdram32[3];
 
     if (flength > 1 * 1024 * 1024)
+    {
         DisplayAbortErr(2);
+    }
 
     DBGPRINTCHAR('c');
 
@@ -176,19 +179,20 @@ int main(void)
 
     DBGPRINTHEX(ccrc);
     DBGPRINTHEX(fcrc);
-    
+
     if (ccrc != fcrc)
+    {
         DisplayAbortErr(3);
+    }
 
     DBGPRINTCHAR('e');
 
-    // unlock sequence
+    /* Unlock sequence */
     FLASH->KEYR = 0x45670123;
     FLASH->KEYR = 0xCDEF89AB;
 
     uint32_t i;
-
-    for (i=0; i<12; i++)
+    for (i = 0; i < 12; i++)
     {
         flash_Erase_sector(i);
 
@@ -198,9 +202,9 @@ int main(void)
         refresh_LCD();
 #endif
 
-        palWritePad(LED2_PORT,LED2_PIN,1);
+        palWritePad(LED2_PORT, LED2_PIN, 1);
         chThdSleepMilliseconds(100);
-        palWritePad(LED2_PORT,LED2_PIN,0);
+        palWritePad(LED2_PORT, LED2_PIN, 0);
 
         DBGPRINTCHAR('f');
         DBGPRINTHEX(i);
@@ -218,11 +222,13 @@ int main(void)
     DBGPRINTHEX(fcrc);
 
     if (ccrc != fcrc)
+    {
         DisplayAbortErr(4);
+    }
 
     DBGPRINTCHAR('i');
 
-    int destptr = FLASH_BASE_ADDR; /* flash base adress */
+    int destptr = FLASH_BASE_ADDR;                            /* flash base adress */
     uint32_t *srcptr = (uint32_t *)(SDRAM_BANK_ADDR + 0x010); /* sdram base adress + header offset */
 
     for (i = 0; i < (flength + 3) / 4; i++)
@@ -241,9 +247,9 @@ int main(void)
 
         if ((i & 0xFFF) == 0)
         {
-            palWritePad(LED2_PORT,LED2_PIN,1);
+            palWritePad(LED2_PORT, LED2_PIN, 1);
             chThdSleepMilliseconds(100);
-            palWritePad(LED2_PORT,LED2_PIN,0);
+            palWritePad(LED2_PORT, LED2_PIN, 0);
 
             DBGPRINTCHAR('j');
             DBGPRINTHEX(destptr);
@@ -264,7 +270,9 @@ int main(void)
     DBGPRINTHEX(fcrc);
 
     if (ccrc != fcrc)
+    {
         DisplayAbortErr(5);
+    }
 
     DBGPRINTCHAR('\r');
     DBGPRINTCHAR('\n');
