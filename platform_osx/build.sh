@@ -85,17 +85,18 @@ then
 
     patch -N -p1 < ../libusb.stdfu.patch
 
-    ./configure --prefix="${PLATFORM_ROOT}/i386" CFLAGS="-arch i386 -mmacosx-version-min=10.6" LDFLAGS="-arch i386"
-    make 
-    make install
-    make clean
+ #   ./configure --prefix="${PLATFORM_ROOT}/i386" CFLAGS="-arch i386 -mmacosx-version-min=10.6" LDFLAGS="-arch i386"
+ #   make 
+ #   make install
+ #   make clean
     ./configure --prefix="${PLATFORM_ROOT}/x86_64" CFLAGS="-arch x86_64 -mmacosx-version-min=10.6" LDFLAGS="-arch x86_64"
     make 
     make install
     make clean
 
     cd $PLATFORM_ROOT/
-    lipo -create x86_64/lib/libusb-1.0.0.dylib i386/lib/libusb-1.0.0.dylib -output lib/libusb-1.0.0.dylib
+#    lipo -create x86_64/lib/libusb-1.0.0.dylib i386/lib/libusb-1.0.0.dylib -output lib/libusb-1.0.0.dylib
+    cp x86_64/lib/libusb-1.0.0.dylib lib/libusb-1.0.0.dylib
 
     cd $PLATFORM_ROOT/lib
     install_name_tool -id libusb-1.0.0.dylib libusb-1.0.0.dylib
@@ -118,20 +119,21 @@ then
     tar xfz ${ARCHIVE}
 
     cd "${PLATFORM_ROOT}/src/${ARDIR}"
-    ./configure --prefix="${PLATFORM_ROOT}/i386" USB_LIBS="${PLATFORM_ROOT}/lib/libusb-1.0.0.dylib" USB_CFLAGS=-I${PLATFORM_ROOT}/i386/include/libusb-1.0/ CFLAGS="-arch i386 -mmacosx-version-min=10.6" LDFLAGS="-arch i386"
-    make 
-    make install
-    make clean
+#    ./configure --prefix="${PLATFORM_ROOT}/i386" USB_LIBS="${PLATFORM_ROOT}/lib/libusb-1.0.0.dylib" USB_CFLAGS=-I${PLATFORM_ROOT}/i386/include/libusb-1.0/ CFLAGS="-arch i386 -mmacosx-version-min=10.6" LDFLAGS="-arch i386"
+#    make 
+#    make install
+#    make clean
 
     cd "$PLATFORM_ROOT/src/$ARDIR"
-    make clean
+#    make clean
     ./configure --prefix="${PLATFORM_ROOT}/x86_64" USB_LIBS="${PLATFORM_ROOT}/lib/libusb-1.0.0.dylib" USB_CFLAGS=-I${PLATFORM_ROOT}/x86_64/include/libusb-1.0/ CFLAGS="-arch x86_64 -mmacosx-version-min=10.6" LDFLAGS="-arch x86_64"
     make 
     make install
     make clean
 
     cd "$PLATFORM_ROOT"
-    lipo -create x86_64/bin/dfu-util i386/bin/dfu-util -output bin/dfu-util
+#    lipo -create x86_64/bin/dfu-util i386/bin/dfu-util -output bin/dfu-util
+    cp x86_64/bin/dfu-util bin/dfu-util
 else
     printf "\ndfu-util already present, skipping...\n"
 fi
@@ -152,11 +154,11 @@ then
 
     tar xfz $ARCHIVE
 
-    cd "${PLATFORM_ROOT}/src/${ARDIR}"
-    ./configure --prefix="${PLATFORM_ROOT}/i386" CFLAGS="-arch i386 -mmacosx-version-min=10.6" LDFLAGS="-arch i386"
-    make 
-    make install
-    make clean
+#    cd "${PLATFORM_ROOT}/src/${ARDIR}"
+#    ./configure --prefix="${PLATFORM_ROOT}/i386" CFLAGS="-arch i386 -mmacosx-version-min=10.6" LDFLAGS="-arch i386"
+#    make 
+#    make install
+#    make clean
 
     cd "${PLATFORM_ROOT}/src/${ARDIR}"
     ./configure --prefix="${PLATFORM_ROOT}/x86_64" CFLAGS="-arch x86_64 -mmacosx-version-min=10.6" LDFLAGS="-arch x86_64"
@@ -165,7 +167,8 @@ then
     make clean
 
     cd "${PLATFORM_ROOT}"
-    lipo -create x86_64/bin/make i386/bin/make -output bin/make
+#    lipo -create x86_64/bin/make i386/bin/make -output bin/make
+    cp x86_64/bin/make  bin/make
 fi
 
 cd "${PLATFORM_ROOT}/../jdks"
