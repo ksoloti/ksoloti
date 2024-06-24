@@ -72,15 +72,16 @@ void CheckI2CErrors(void) {
 }
 
 void ADAU1961_I2CStart(void) {
-  palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN);
-  palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN);
+  // No need to redefine the pin mode each time!
+  // palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN);
+  // palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN);
   // chMtxLock(&Mutex_DMAStream_1_7);
   i2cStart(&I2CD2, &i2cfg2);
 }
 
 void ADAU1961_I2CStop(void) {
   i2cStop(&I2CD2);
-  chMtxUnlock();
+  // chMtxUnlock();
 }
 
 uint8_t ADAU1961_ReadRegister(uint16_t RegisterAddr) {
@@ -339,68 +340,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
 
   }
 
-  // slave
-//  ADAU1961_WriteRegister(ADAU1961_REG_R15_SERP0, 0x01); // codec is I2S master for testing....
-
   chThdSleepMilliseconds(10);
-
-  /*
-   i2cStop(&I2CD2);
-   i2cStart(&I2CD2, &i2cfg2);
-   ADAU1961_WriteRegister(0x4000, 0x8); // 1024FS
-   rd = ADAU1961_ReadRegister(0x4000);
-   if (rd != 0x08){
-   while(1){};
-   }
-
-   i2cStop(&I2CD2);
-   i2cStart(&I2CD2, &i2cfg2);
-
-
-   // power down PLL
-   uint8_t R1[6];
-   R1[0]=0;R1[1]=0;R1[2]=0;
-   R1[3]=0;R1[4]=0;R1[5]=0;
-   ADAU1961_WriteRegister6(ADAU1961_REG_R1_PLLC,&R1[0]);
-
-   i2cStop(&I2CD2);
-   i2cStart(&I2CD2, &i2cfg2);
-
-
-   // Integer PLL Parameter Settings for fS = 48 kHz
-   // (PLL Output = 49.152 MHz = 1024 � fS)
-   R1[4] = 0x20;
-   R1[5] = 0x01;
-   R1[1] = 0x20;
-   R1[0] = 0x01;
-   ADAU1961_WriteRegister6(ADAU1961_REG_R1_PLLC,&R1[0]);
-   // poll lock bit
-   i2cStop(&I2CD2);
-   i2cStart(&I2CD2, &i2cfg2);
-
-
-   ADAU1961_WriteRegister(0x4000, 0xE); // 1024FS
-   rd = ADAU1961_ReadRegister(0x4000);
-   if (rd != 0xE){
-   while(1){};
-   }
-
-   i2cStop(&I2CD2);
-   i2cStart(&I2CD2, &i2cfg2);
-
-   while(1){
-   ADAU1961_ReadRegister6(ADAU1961_REG_R1_PLLC);
-   if (i2crxbuf[5] & 0x02) break;
-   chThdSleepMilliseconds(5);
-   }
-   // mclk = 12.319MHz
-   ADAU1961_WriteRegister(0x4000, 0xE); // 1024FS
-   rd = ADAU1961_ReadRegister(0x4000);
-   if (rd != 0xE){
-   while(1){};
-   }
-   */
-
 }
 
 static void dma_i2s_interrupt(void* dat, uint32_t flags) {
@@ -435,16 +375,12 @@ static void codec_ADAU1961_dma_init(void) {
                                (stm32_dmaisr_t)dma_i2s_interrupt,
                                (void *)&SPID2);
 
-//  if (!b)
-//  chprintf((BaseChannel*)&SD2, "DMA Allocated Successfully to I2S2\r\n");
-
   dmaStreamSetPeripheral(i2sdma_ADAU1961, &(CODEC_ADAU1961_I2S->DR));
 // my double buffer test
   dmaStreamSetMemory0(i2sdma_ADAU1961, buf);
   dmaStreamSetMemory1(i2sdma_ADAU1961, buf2);
   dmaStreamSetTransactionSize(i2sdma_ADAU1961, 64);
   dmaStreamSetMode(i2sdma_ADAU1961, i2stxdmamode | STM32_DMA_CR_MINC);
-//  dmaStreamSetFIFO(i2sdma,
 
   // RX
 #if 1
@@ -465,7 +401,6 @@ static void codec_ADAU1961_dma_init(void) {
 //  if (!b)
 //  chprintf((BaseChannel*)&SD2, "DMA Allocated Successfully to I2S2\r\n");
 
-//  dmaStreamSetPeripheral(i2sdma_ADAU1961rx, &(CODEC_ADAU1961_I2Sext->DR));
   dmaStreamSetPeripheral(i2sdma_ADAU1961rx, &(CODEC_ADAU1961_I2Sext->DR));
 // my double buffer test
   dmaStreamSetMemory0(i2sdma_ADAU1961rx, rbuf2);
@@ -483,52 +418,19 @@ static void codec_ADAU1961_dma_init(void) {
 
 void codec_ADAU1961_i2s_init(uint16_t sampleRate) {
 
-#if 0
-  /* CODEC_I2S output pins configuration: WS, SCK SD0 and SDI pins ------------------*/
-  GPIO_InitStructure.GPIO_Pin = CODEC_I2S_SCK_PIN | CODEC_I2S_SDO_PIN | CODEC_I2S_SDI_PIN | CODEC_I2S_WS_PIN;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_Init(CODEC_I2S_GPIO, &GPIO_InitStructure);
-
-  /* CODEC_I2S pins configuration: MCK pin */
-  GPIO_InitStructure.GPIO_Pin = CODEC_I2S_MCK_PIN;
-  GPIO_Init(CODEC_I2S_MCK_GPIO, &GPIO_InitStructure);
-
-  /* Connect pins to I2S peripheral  */
-  GPIO_PinAFConfig(CODEC_I2S_GPIO, CODEC_I2S_WS_PINSRC, CODEC_I2S_GPIO_AF);
-  GPIO_PinAFConfig(CODEC_I2S_GPIO, CODEC_I2S_SCK_PINSRC, CODEC_I2S_GPIO_AF);
-  GPIO_PinAFConfig(CODEC_I2S_GPIO, CODEC_I2S_SDO_PINSRC, CODEC_I2S_GPIO_AF);
-  GPIO_PinAFConfig(CODEC_I2S_GPIO, CODEC_I2S_SDI_PINSRC, CODEC_I2S_GPIO_AF);
-  GPIO_PinAFConfig(CODEC_I2S_MCK_GPIO, CODEC_I2S_MCK_PINSRC, CODEC_I2S_GPIO_AF);
-#endif
-  /*
-   palSetPadMode(GPIOB, 12, PAL_MODE_OUTPUT_PUSHPULL|PAL_MODE_ALTERNATE(5));
-   palSetPadMode(GPIOB, 13, PAL_MODE_OUTPUT_PUSHPULL|PAL_MODE_ALTERNATE(5));
-   palSetPadMode(GPIOB, 14, PAL_MODE_ALTERNATE(5));
-   palSetPadMode(GPIOB, 15, PAL_MODE_OUTPUT_PUSHPULL|PAL_MODE_ALTERNATE(5));
-   palSetPadMode(GPIOC, 6, PAL_MODE_OUTPUT_PUSHPULL|PAL_MODE_ALTERNATE(5));
-   */
-
 #if 1
-  palSetPadMode(GPIOB, 12, PAL_MODE_ALTERNATE(5));
-  // i2s2ws
-  palSetPadMode(GPIOB, 13, PAL_MODE_ALTERNATE(5));
-  // i2s2ck
-  palSetPadMode(GPIOB, 14, PAL_MODE_ALTERNATE(5));
-  // i2s2_ext_sd
-  palSetPadMode(GPIOB, 15, PAL_MODE_ALTERNATE(5));
-  // i2s2_sd
+  palSetPadMode(GPIOB, 12, PAL_MODE_ALTERNATE(5)); // i2s2ws
+  palSetPadMode(GPIOB, 13, PAL_MODE_ALTERNATE(5)); // i2s2ck
+  palSetPadMode(GPIOB, 14, PAL_MODE_ALTERNATE(5)); // i2s2_ext_sd
+  palSetPadMode(GPIOB, 15, PAL_MODE_ALTERNATE(5)); // i2s2_sd
 #else // test if codec is connected
   palSetPadMode(GPIOB, 12, PAL_MODE_INPUT); // i2s2ws
-  palSetPadMode(GPIOB, 13, PAL_MODE_INPUT);// i2s2ck
-  palSetPadMode(GPIOB, 14, PAL_MODE_INPUT);// i2s2_ext_sd
-  palSetPadMode(GPIOB, 15, PAL_MODE_INPUT);// i2s2_sd
+  palSetPadMode(GPIOB, 13, PAL_MODE_INPUT); // i2s2ck
+  palSetPadMode(GPIOB, 14, PAL_MODE_INPUT); // i2s2_ext_sd
+  palSetPadMode(GPIOB, 15, PAL_MODE_INPUT); // i2s2_sd
 #endif
 
-  palSetPadMode(GPIOC, 6, PAL_MODE_ALTERNATE(5));
-  // i2s2_mck
+  palSetPadMode(GPIOC, 6, PAL_MODE_ALTERNATE(5)); // i2s2_mck
 
 // SPI2 in I2S Mode, Master
   CODEC_ADAU1961_I2S_ENABLE;
