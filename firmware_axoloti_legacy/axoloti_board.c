@@ -105,7 +105,8 @@ unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH] __attribute
  * Mode:        Linear buffer, 8 samples of 1 channel, SW triggered.
  * Channels:    IN11.
  */
-static const ADCConversionGroup adcgrpcfg1 = {FALSE,      //circular buffer mode
+static const ADCConversionGroup adcgrpcfg1 = {
+    FALSE,      //circular buffer mode
     ADC_GRP1_NUM_CHANNELS,        //Number of the analog channels
     NULL,                         //Callback function (not needed here)
     0,             //Error callback
