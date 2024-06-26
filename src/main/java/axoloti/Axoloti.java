@@ -263,6 +263,15 @@ public class Axoloti {
             builddir.mkdir();
         }
 
+        /* Flush previous build files on start */
+        File[] bfiles = builddir.listFiles();
+        if (bfiles != null) {
+            for (File bf : bfiles) {
+                if (!bf.isDirectory()) { /* Redundant check. Normally there would never be a subdirectory there. */
+                    bf.delete();
+                }
+            }
+        }
         // checkFailSafeModeActive(); // do this as as possible after home dir setup
 
         BuildEnv(RELEASE_DIR, defaultRelease);
