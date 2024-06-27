@@ -38,8 +38,8 @@ import java.security.spec.X509EncodedKeySpec;
  */
 public class HWSignature {
 
-    public static final String PRIVATE_KEY_FILE = "private_key.der";
-    public static final String PUBLIC_KEY_FILE = "/resources/public_key.der";
+    private static final String PRIVATE_KEY_FILE = "private_key.der";
+    private static final String PUBLIC_KEY_FILE = "/resources/public_key.der";
     public static final int length = 256;
 
     static PrivateKey ReadPrivateKey(String privateKeyPath) throws Exception {
