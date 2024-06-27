@@ -35,7 +35,6 @@
 #include "sdcard.h"
 #include "patch.h"
 #include "pconnection.h"
-#include "axoloti_control.h"
 #include "axoloti_math.h"
 #include "axoloti_board.h"
 #include "exceptions.h"
@@ -124,10 +123,6 @@ int main(void) {
         // watchdog_init();
         chThdSleepMilliseconds(1);
     }
-
-#ifdef AXOLOTI_CONTROL
-    axoloti_control_init();
-#endif
 
     MY_USBH_Init();
 

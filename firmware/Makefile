@@ -115,7 +115,6 @@ CSRC = $(PORTSRC) \
        $(FATFSSRC) \
        $(CHIBIOS)/os/various/chprintf.c \
        $(CHIBIOS)/os/various/memstreams.c \
-       ${FIRMWARE}/axoloti_control.c \
        ${FIRMWARE}/codec.c \
        ${FIRMWARE}/axoloti.c \
        ${FIRMWARE}/axoloti_filters.c \
@@ -124,7 +123,6 @@ CSRC = $(PORTSRC) \
        ${FIRMWARE}/axoloti_board.c \
        ${FIRMWARE}/midi.c \
        ${FIRMWARE}/ui.c \
-       ${FIRMWARE}/glcdfont.c \
        ${FIRMWARE}/usbcfg.c \
        ${FIRMWARE}/sdcard.c \
        ${FIRMWARE}/pconnection.c \
@@ -132,7 +130,6 @@ CSRC = $(PORTSRC) \
        ${FIRMWARE}/main.c \
        ${FIRMWARE}/patch.c \
        ${FIRMWARE}/flash.c \
-       ${FIRMWARE}/virtual_control.c \
        ${CMSIS}/DSP/Source/TransformFunctions/arm_bitreversal.c \
        ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_f32.c \
        ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_q15.c \

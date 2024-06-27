@@ -87,8 +87,6 @@ CSRC = $(PORTSRC) \
        $(CHIBIOS)/os/various/shell.c \
        $(CHIBIOS)/os/various/chprintf.c \
        $(CHIBIOS)/os/various/memstreams.c \
-       ../glcdfont.c \
-       ../axoloti_control.c \
        ../axoloti_board.c \
        ../watchdog.c \
 	   mass_storage/usb_msd.c \

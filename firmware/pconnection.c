@@ -20,7 +20,6 @@
 #include "hal.h"
 #include "chprintf.h"
 #include "pconnection.h"
-#include "axoloti_control.h"
 #include "parameters.h"
 #include "patch.h"
 #include "ff.h"
@@ -30,7 +29,6 @@
 #include "sdcard.h"
 #include "ui.h"
 #include "string.h"
-#include "virtual_control.h"
 #include "flash.h"
 #include "exceptions.h"
 #include "crc32.h"
@@ -173,7 +171,6 @@ void PExTransmit(void) {
       exception_checkandreport();
       AckPending = 0;
     }
-    // TransmitLCDoverUSB(); // broken
     if (!patchStatus) {
       unsigned int i;
       for (i = 0; i < patchMeta.numPEx; i++) {
@@ -496,7 +493,8 @@ void ReplySpilinkSynced(void) {
   reply[1] = 'x';
   reply[2] = 'o';
   reply[3] = 'Y';
-  reply[4] = !palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN); /* SPILINK jumper low means Core is synced */
+  /* SPILINK pin high means Core is master (default), else synced */
+  reply[4] = !palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN);
   chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&reply[0]), 5);
 }
 

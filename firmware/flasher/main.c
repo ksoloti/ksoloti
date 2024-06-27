@@ -21,7 +21,6 @@
 #include "hal.h"
 #include "chprintf.h"
 #include "ui.h"
-#include "axoloti_control.h"
 #include "axoloti_board.h"
 #if 0
 #include "sdcard.h"
@@ -34,7 +33,6 @@
 
 extern uint32_t _vectors;
 
-// #define AXOLOTI_CONTROL
 // #define SERIALDEBUG
 
 #ifdef SERIALDEBUG
@@ -77,27 +75,9 @@ Btn_Nav_States_struct Btn_Nav_And;
 
 int8_t EncBuffer[4];
 
-#ifdef AXOLOTI_CONTROL
-void refresh_LCD(void)
-{
-    int i;
-    for (i = 0; i < 9; i++)
-    {
-        do_axoloti_control();
-        chThdSleepMilliseconds(20);
-    }
-}
-#endif
-
 void DisplayAbortErr(int err)
 {
     DBGPRINTCHAR('0' + err);
-
-#ifdef AXOLOTI_CONTROL
-    LCD_drawStringN(0, 5, "error code:", 128);
-    LCD_drawNumber3D(0, 6, (int)err);
-    refresh_LCD();
-#endif
 
     /* blink red slowly, green off */
     palWritePad(LED1_PORT, LED1_PIN, 0);
@@ -195,12 +175,6 @@ int main(void)
     for (i = 0; i < 12; i++)
     {
         flash_Erase_sector(i);
-
-#ifdef AXOLOTI_CONTROL
-        LCD_drawStringN(0, 3, "Erased sector", 128);
-        LCD_drawNumber3D(80, 3, i);
-        refresh_LCD();
-#endif
 
         palWritePad(LED2_PORT, LED2_PIN, 1);
         chThdSleepMilliseconds(100);

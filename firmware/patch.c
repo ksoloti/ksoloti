@@ -177,7 +177,7 @@ static int StartPatch1(void) {
     /* Reinit pin configuration for ADC */
     adc_configpads();
 
-    int32_t *ccm; /* Clear CCMRAM area declared in ramlink.ld */
+    int32_t *ccm; /* Clear CCMRAM area declared in ramlink_*.ld */
     for (ccm = (int32_t*)0x10000000; ccm < (int32_t*)(0x10000000 + 0x0000C000); ccm++) {
         *ccm = 0;
     }

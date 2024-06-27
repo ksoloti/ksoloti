@@ -88,8 +88,6 @@ CSRC = $(PORTSRC) \
        $(CHIBIOS)/os/various/chprintf.c \
        $(CHIBIOS)/os/various/memstreams.c \
        ../STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
-       ../glcdfont.c \
-       ../axoloti_control.c \
        ../axoloti_board.c \
        ../sdram.c \
        ../crc32.c \

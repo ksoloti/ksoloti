@@ -27,7 +27,6 @@
 
 #include "ch.h"
 #include "stdint.h"
-#include "axoloti_control.h"
 #include "ui.h"
 
 #ifdef FW_SPILINK
