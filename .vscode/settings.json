@@ -1,9 +1,11 @@
 {
     "C_Cpp.errorSquiggles": "enabled",
-    "cortex-debug.gdbPath": "/home/sbcm/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/arm-none-eabi-gdb",
-    // "cortex-debug.stutilPath": "/usr/bin/st-util",
-    "cortex-debug.armToolchainPath": "/home/sbcm/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin",
-    "cortex-debug.objdumpPath": "/home/sbcm/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/arm-none-eabi-objdump",
+    "cortex-debug.armToolchainPath.linux": "/home/sbcm/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin",
+    "cortex-debug.gdbPath.linux": "/home/sbcm/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/arm-none-eabi-gdb",
+    "cortex-debug.objdumpPath.linux": "/home/sbcm/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/arm-none-eabi-objdump",
+    "cortex-debug.armToolchainPath.windows": "C:\\ST\\STM32CubeIDE_1.15.1\\STM32CubeIDE\\plugins\\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.win32_1.0.100.202403111256\\tools\\bin",
+    "cortex-debug.gdbPath.windows": "C:\\ST\\STM32CubeIDE_1.15.1\\STM32CubeIDE\\plugins\\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.win32_1.0.100.202403111256\\tools\\bin\\arm-none-eabi-gdb",
+    "cortex-debug.objdumpPath.windows": "C:\\ST\\STM32CubeIDE_1.15.1\\STM32CubeIDE\\plugins\\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.win32_1.0.100.202403111256\\tools\\bin\\arm-none-eabi-objdump",
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
         "lib/*.jar"
