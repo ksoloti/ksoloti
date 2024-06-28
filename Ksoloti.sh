@@ -11,6 +11,10 @@ case "$unamestr" in
 		platform='mac'
 		rootdir="$(cd $(dirname $0); pwd -P)"
 	;;
+	MINGW*)
+		platform='windows'
+		rootdir="$(cd $(dirname $0); pwd -P)"
+	;;
         *)
                 echo "Unknown OS: $unamestr - aborting..."
                 exit
@@ -35,6 +39,9 @@ then
                 java -Xdock:name=Ksoloti $heap_jvmargs $marlin_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
         ;;
         linux)
+                java $heap_jvmargs $marlin_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
+        ;;
+        windows)
                 java $heap_jvmargs $marlin_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
         ;;
     esac
