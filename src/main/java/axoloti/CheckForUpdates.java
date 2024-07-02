@@ -24,8 +24,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,9 +45,9 @@ public class CheckForUpdates {
             return;
         }
         try {
-            URL url = new URL("http://www.axoloti.com/updates/" + Version.AXOLOTI_SHORT_VERSION + "-2");
+            URI uri = new URI("http://www.axoloti.com/updates/" + Version.AXOLOTI_SHORT_VERSION + "-2");
             BufferedReader in = new BufferedReader(
-                    new InputStreamReader(url.openStream()));
+                    new InputStreamReader(uri.toURL().openStream()));
             in.close();
 
             int result = JOptionPane.showOptionDialog(null, "There is an update available", null, DEFAULT_OPTION, INFORMATION_MESSAGE, null,
@@ -56,16 +56,14 @@ public class CheckForUpdates {
                     }, in);
             switch (result) {
                 case 0: {
-                    try {
-                        Desktop.getDesktop().browse(url.toURI());
-                    } catch (URISyntaxException ex) {
-                        Logger.getLogger(CheckForUpdates.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                        Desktop.getDesktop().browse(uri);
                 }
                 break;
                 default:
             }
         } catch (MalformedURLException ex) {
+            Logger.getLogger(CheckForUpdates.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (URISyntaxException ex) {
             Logger.getLogger(CheckForUpdates.class.getName()).log(Level.SEVERE, null, ex);
         } catch (FileNotFoundException ex) {
             JOptionPane.showMessageDialog(null, "No updated release available", "Checking for updates", JOptionPane.INFORMATION_MESSAGE);

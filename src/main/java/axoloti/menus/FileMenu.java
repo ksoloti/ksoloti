@@ -35,7 +35,8 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -319,18 +320,20 @@ public class FileMenu extends JMenu {
     }
 
     public void OpenURL() {
-        String url = JOptionPane.showInputDialog(this, "Enter URL:");
-        if (url == null) {
+        String uri = JOptionPane.showInputDialog(this, "Enter URL:");
+        if (uri == null) {
             return;
         }
         try {
-            InputStream input = new URL(url).openStream();
-            String name = url.substring(url.lastIndexOf("/") + 1, url.length());
+            InputStream input = new URI(uri).toURL().openStream();
+            String name = uri.substring(uri.lastIndexOf("/") + 1, uri.length());
             PatchGUI.OpenPatch(name, input);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{url, ex});
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
         } catch (IOException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{url, ex});
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{uri, ex});
         }
     }
 
