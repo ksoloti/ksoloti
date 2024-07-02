@@ -2,10 +2,11 @@
 # Build global options
 # NOTE: Can be overridden externally.
 #
+BOARDDEF=
 
 # Compiler options here.
 ifeq ($(USE_OPT),)
-  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -Wno-unused-parameter -Wno-unused-function
+  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -Wno-unused-parameter -Wno-unused-function $(BOARDDEF)
 endif 
 
 # C specific options here (added to USE_OPT).
@@ -61,7 +62,11 @@ endif
 #
 
 # Define project name here
-PROJECT = mounter
+ifeq ($(BOARDDEF), -DBOARD_KSOLOTI_CORE)
+PROJECT = ksoloti_mounter
+else
+PROJECT = axoloti_mounter
+endif
 BUILDDIR = mounter_build
 
 # Imported source files and paths

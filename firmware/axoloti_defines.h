@@ -21,22 +21,27 @@
 
 #include <stdint.h>
 
-#define BOARD_KSOLOTI_CORE
-// #define BOARD_AXOLOTI_CORE
-// #define BOARD_STM32F4_DISCOVERY
+/* Currently supported boards:
+ * Do not uncomment any of the BOARD_* defines here!
+ * The defines are handled via the Patcher and passed to the Makefile and compiler
+ * depending on the board setting in the Patcher preferences.
+ * #define BOARD_KSOLOTI_CORE
+ * #define BOARD_AXOLOTI_CORE
+ * #define BOARD_STM32F4_DISCOVERY
+ */
 
-#define PI_F 3.1415927f
+// #define FW_SPILINK 
+
+#define PI_F 3.14159265359f
 #define SAMPLERATE 48000
 #define BUFSIZE 16
 #define BUFSIZE_POW 4
+
 typedef int32_t int32buffer[BUFSIZE];
 
 #define USING_ADAU1761 1 /* Works with ADAU1961/1761/1361 so we just leave this defined */
-#define HAS_SD_CARD_DETECT 1
 
-// #define FW_SPILINK 1
-
-// firmware version 1.0.0.4 - Ksoloti v0.4+
+/* Firmware version 1.0.0.4 - Ksoloti v0.4+ */
 #define FWVERSION1 1
 #define FWVERSION2 0
 #define FWVERSION3 0

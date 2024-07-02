@@ -78,7 +78,7 @@ void SDRAM_Init(void) {
   /* TRAS: min=42ns (4x11.90ns) max=120k (ns) */ // seb same
   FMC_SDRAMTimingInitStructure.FMC_SelfRefreshTime = 4;
   /* TRC:  min=63 (6x11.90ns) */ // seb min 60 ns; set to 6 * 11.11ns = 66.66ns
-  FMC_SDRAMTimingInitStructure.FMC_RowCycleDelay = 6;// orig 7
+  FMC_SDRAMTimingInitStructure.FMC_RowCycleDelay = 7; // seb reverted to original 7 due to Axoloti compatibility "backport"
   /* TWR:  2 Clock cycles */ // seb 1 clock cycle + 6 ns, or 12 ns. TWR has to be >= TRAS-TRCD => 4-2 = 2
   FMC_SDRAMTimingInitStructure.FMC_WriteRecoveryTime = 2;
   /* TRP:  15ns => 2x11.90ns */ // seb 18 ns
@@ -88,10 +88,17 @@ void SDRAM_Init(void) {
 
   /* FMC SDRAM control configuration */
   FMC_SDRAMInitStructure.FMC_Bank = FMC_Bank1_SDRAM;
+#if defined(BOARD_KSOLOTI_CORE)
   /* Row addressing: [8:0] */
   FMC_SDRAMInitStructure.FMC_ColumnBitsNumber = FMC_ColumnBits_Number_9b;
   /* Column addressing: [12:0] */
   FMC_SDRAMInitStructure.FMC_RowBitsNumber = FMC_RowBits_Number_13b;
+#elif defined(BOARD_AXOLOTI_CORE)
+  /* Row addressing: [7:0] */
+  FMC_SDRAMInitStructure.FMC_ColumnBitsNumber = FMC_ColumnBits_Number_8b;
+  /* Column addressing: [11:0] */
+  FMC_SDRAMInitStructure.FMC_RowBitsNumber = FMC_RowBits_Number_12b;
+#endif
   FMC_SDRAMInitStructure.FMC_SDMemoryDataWidth = SDRAM_MEMORY_WIDTH; // 16bit
   FMC_SDRAMInitStructure.FMC_InternalBankNumber = FMC_InternalBank_Number_4;
   FMC_SDRAMInitStructure.FMC_CASLatency = SDRAM_CAS_LATENCY; // 2
@@ -133,7 +140,13 @@ void memTest(void)
 {
   palSetPad(LED2_PORT,LED2_PIN);
   palClearPad(LED1_PORT,LED1_PIN);
-  int memSize = 0x2000000; // 32MB
+
+#if defined(BOARD_KSOLOTI_CORE)
+  int memSize = 0x02000000; // 32MB
+#elif defined(BOARD_AXOLOTI_CORE)
+  int memSize = 0x00800000; // 8 MB
+#endif
+
   void *base;
   base = (void *)0xC0000000;
   int i;

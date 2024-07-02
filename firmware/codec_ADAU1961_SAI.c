@@ -56,8 +56,15 @@
 #define MCO1_PIN 8
 
 #ifdef FW_SPILINK
+
+#if defined(BOARD_KSOLOTI_CORE)
 #define SPILINK_FSYNC_PORT GPIOD
 #define SPILINK_FSYNC_PIN 5
+#elif defined(BOARD_AXOLOTI_CORE)
+#define SPILINK_FSYNC_PORT GPIOA
+#define SPILINK_FSYNC_PIN 15
+#endif
+
 #endif
 
 extern void computebufI(int32_t *inp, int32_t *outp);
@@ -196,15 +203,21 @@ static void ADAU_I2C_Init(void) {
         ADAU1961_i2c_handle.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
         ADAU1961_i2c_handle.Init.OwnAddress1 = 0x33;
         ADAU1961_i2c_handle.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+#if defined(BOARD_KSOLOTI_CORE)
         ADAU1961_i2c_handle.Instance = I2C2;
-
         /* SCL: PB10, SDA: PB11 */
         palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
         palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
-
         rccEnableI2C2(FALSE);
-        // nvicEnableVector(I2C2_EV_IRQn, STM32_I2C_I2C2_IRQ_PRIORITY);
-        // nvicEnableVector(I2C2_ER_IRQn, STM32_I2C_I2C2_IRQ_PRIORITY);
+#elif defined(BOARD_AXOLOTI_CORE)
+        ADAU1961_i2c_handle.Instance = I2C3;
+        /* SCL: PH7, SDA: PH8 */
+        palSetPadMode(GPIOH, 7, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
+        palSetPadMode(GPIOH, 8, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
+        rccEnableI2C3(FALSE);
+#elif defined(BOARD_STM32F4_DISCOVERY)
+//TODO
+#endif
 
         HAL_I2C_Init(&ADAU1961_i2c_handle);
     }
@@ -432,7 +445,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     ADAU1961_WriteRegister(ADAU1961_REG_R13_ALC2,    0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R14_ALC3,    0x00);
 
-#ifdef USING_ADAU1761
+#if defined(BOARD_KSOLOTI_CORE) && defined(USING_ADAU1761)
     ADAU1961_WriteRegister(ADAU1761_REG_R58_SERINRT,  0x01);
     ADAU1961_WriteRegister(ADAU1761_REG_R59_SEROUTRT, 0x01);
     ADAU1961_WriteRegister(ADAU1761_REG_R64_SERSR,    0x00);

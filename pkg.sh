@@ -50,20 +50,6 @@ rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/.dep
 rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/lst
 rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/obj
 
-rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware_axoloti_legacy/.dep
-rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware_axoloti_legacy/.settings
-
-rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware_axoloti_legacy/build/lst
-rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware_axoloti_legacy/build/obj
-
-rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware_axoloti_legacy/flasher/.dep
-rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware_axoloti_legacy/flasher/flasher_build/lst
-rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware_axoloti_legacy/flasher/flasher_build/obj
-
-rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware_axoloti_legacy/mounter/.dep
-rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware_axoloti_legacy/mounter/mounter_build/lst
-rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware_axoloti_legacy/mounter/mounter_build/obj
-
 rm -rf packagetemp/linux/ksoloti-${VERSION}/platform_linux/share
 rm -rf packagetemp/linux/ksoloti-${VERSION}/platform_linux/src
 rm -rf packagetemp/linux/ksoloti-${VERSION}/platform_linux/arm-none-eabi/lib/armv6-m
@@ -103,20 +89,6 @@ rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware/flasher/flasher_b
 rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware/mounter/.dep
 rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware/mounter/mounter_build/lst
 rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware/mounter/mounter_build/obj
-
-rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware_axoloti_legacy/.dep
-rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware_axoloti_legacy/.settings
-
-rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware_axoloti_legacy/build/lst
-rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware_axoloti_legacy/build/obj
-
-rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware_axoloti_legacy/flasher/.dep
-rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware_axoloti_legacy/flasher/flasher_build/lst
-rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware_axoloti_legacy/flasher/flasher_build/obj
-
-rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware_axoloti_legacy/mounter/.dep
-rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware_axoloti_legacy/mounter/mounter_build/lst
-rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/firmware_axoloti_legacy/mounter/mounter_build/obj
 
 rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/share
 rm -rf packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/src
@@ -160,20 +132,6 @@ rm -rf packagetemp/win/ksoloti-${VERSION}/firmware/mounter/.dep
 rm -rf packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/lst
 rm -rf packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/obj
 
-rm -rf packagetemp/win/ksoloti-${VERSION}/firmware_axoloti_legacy/.dep
-rm -rf packagetemp/win/ksoloti-${VERSION}/firmware_axoloti_legacy/.settings
-
-rm -rf packagetemp/win/ksoloti-${VERSION}/firmware_axoloti_legacy/build/lst
-rm -rf packagetemp/win/ksoloti-${VERSION}/firmware_axoloti_legacy/build/obj
-
-rm -rf packagetemp/win/ksoloti-${VERSION}/firmware_axoloti_legacy/flasher/.dep
-rm -rf packagetemp/win/ksoloti-${VERSION}/firmware_axoloti_legacy/flasher/flasher_build/lst
-rm -rf packagetemp/win/ksoloti-${VERSION}/firmware_axoloti_legacy/flasher/flasher_build/obj
-
-rm -rf packagetemp/win/ksoloti-${VERSION}/firmware_axoloti_legacy/mounter/.dep
-rm -rf packagetemp/win/ksoloti-${VERSION}/firmware_axoloti_legacy/mounter/mounter_build/lst
-rm -rf packagetemp/win/ksoloti-${VERSION}/firmware_axoloti_legacy/mounter/mounter_build/obj
-
 rm -rf packagetemp/win/ksoloti-${VERSION}/platform_win/share
 rm -rf packagetemp/win/ksoloti-${VERSION}/platform_win/src
 rm -rf packagetemp/win/ksoloti-${VERSION}/platform_win/arm-none-eabi/lib/armv6-m
@@ -195,7 +153,6 @@ rm -rf packagetemp/win
 
 # ----- Cleanup
 cd firmware && make clean
-cd ../firmware_axoloti_legacy && make clean
 cd .. && ant clean
 
 END=$(date +%s)

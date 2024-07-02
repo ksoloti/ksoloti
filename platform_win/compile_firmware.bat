@@ -8,8 +8,6 @@ call %~sdp0\path.bat
 call %~sdp0\test_env.bat
 
 cd %axoloti_firmware%
-call %axoloti_firmware%\compile_firmware_win.bat
-cd ..
-call %axoloti_legacy_firmware%\compile_firmware_win.bat
+call %axoloti_firmware%\compile_firmware_win.bat $1
 
 endlocal

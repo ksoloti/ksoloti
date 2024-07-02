@@ -24,7 +24,6 @@ esac
 export axoloti_release=${axoloti_release:="$rootdir"}
 export axoloti_runtime=${axoloti_runtime:="$rootdir"}
 export axoloti_firmware=${axoloti_firmware:="$axoloti_release/firmware"}
-export axoloti_legacy_firmware=${axoloti_legacy_firmware:="$axoloti_release/firmware_axoloti_legacy"}
 export axoloti_home=${axoloti_home:="$rootdir"}
 
 which java >/dev/null || echo "Java not found in path" 

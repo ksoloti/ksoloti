@@ -20,6 +20,9 @@ package qcmds;
 
 import axoloti.MainFrame;
 import axoloti.utils.OSDetect;
+
+import static axoloti.MainFrame.prefs;
+
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,12 +52,19 @@ public class QCmdCompileFirmware extends QCmdShellTask {
     
     @Override
     String GetExec() {
+        String boarddef;
+        if (prefs.getAxolotiLegacyMode()) {
+            boarddef = "BOARD_AXOLOTI_CORE";
+        }
+        else {
+            boarddef = "BOARD_KSOLOTI_CORE";
+        }
         if (OSDetect.getOS() == OSDetect.OS.WIN) {
-            return FirmwareDir()+"/compile_firmware_win.bat";
+            return FirmwareDir()+"/compile_firmware_win.bat " + boarddef;
         } else if (OSDetect.getOS() == OSDetect.OS.MAC) {
-            return "/bin/sh ./compile_firmware_osx.sh";
+            return "/bin/sh ./compile_firmware_osx.sh " + boarddef;
         } else if (OSDetect.getOS() == OSDetect.OS.LINUX) {
-            return "/bin/sh ./compile_firmware_linux.sh";
+            return "/bin/sh ./compile_firmware_linux.sh " + boarddef;
         } else {
             Logger.getLogger(QCmdCompileFirmware.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");
             return null;

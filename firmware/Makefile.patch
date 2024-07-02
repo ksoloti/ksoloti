@@ -1,3 +1,5 @@
+BOARDDEF=
+
 CCFLAGS = \
     -nostdlib \
     -fno-exceptions \
@@ -21,11 +23,18 @@ CCFLAGS = \
     -fno-math-errno \
     -fno-threadsafe-statics \
     -fno-use-cxa-atexit \
-    -Wno-unused-parameter
+    -Wno-unused-parameter \
+    $(BOARDDEF)
+
+ifeq ($(BOARDDEF), -DBOARD_KSOLOTI_CORE)
+RAMLINKOPT = -Tramlink_ksoloti.ld
+else
+RAMLINKOPT = -Tramlink_axoloti.ld
+endif
 
 LDFLAGS = \
     -nostartfiles \
-    -Tramlink.ld \
+    $(RAMLINKOPT) \
     -mcpu=cortex-m4 \
     -mfloat-abi=hard \
     -mfpu=fpv4-sp-d16 \
@@ -81,7 +90,12 @@ ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
 #	@echo Compiling patch dependencies
 	@$(CPP) $(CCFLAGS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c ${BUILDDIR}/xpatch.cpp -o ${BUILDDIR}/xpatch.o
 #	@echo Linking patch dependencies
+ifeq ($(BOARDDEF), -DBOARD_KSOLOTI_CORE)
+	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/ksoloti.elf -o ${BUILDDIR}/xpatch.elf
+else
 	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/axoloti.elf -o ${BUILDDIR}/xpatch.elf
+endif
+
 #	@echo Creating binary
 #	$(CP) -O binary -j .text  -j .init_array -j .rodata -j .rodata\* xpatch.elf xpatch.bin
 #   -j .text.startup -j .text.memcpy

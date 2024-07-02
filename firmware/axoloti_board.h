@@ -21,27 +21,25 @@
 
 #include "axoloti_defines.h"
 
-/* Total number of channels to be sampled by a single ADC operation.*/
+#if defined(BOARD_KSOLOTI_CORE)
 #define ADC_GRP1_NUM_CHANNELS   14
+#define ADC_GRP2_NUM_CHANNELS   5
+#else
+#define ADC_GRP1_NUM_CHANNELS   16
+#define ADC_GRP2_NUM_CHANNELS   0
+#endif
 
-/* Depth of the conversion buffer, channels are sampled four times each.*/
 #define ADC_GRP1_BUF_DEPTH      1
 
-/* Total number of additional channels to be sampled via ADC3 currently without DMA.*/
-#define ADC_GRP2_NUM_CHANNELS   5
-
-/* Depth of the ADC3 conversion buffer, channels are sampled four times each.*/
-#define ADC_GRP2_BUF_DEPTH      1
-
-extern unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS+ADC_GRP2_NUM_CHANNELS];
+extern unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS];
 
 void axoloti_board_init(void);
 void adc_init(void);
-// void adc3_init(void);
 void adc_configpads(void);
 void adc_convert(void);
 
 
+#if defined(BOARD_AXOLOTI_CORE) || defined(BOARD_KSOLOTI_CORE)
 #define LED1_PORT GPIOG
 #define LED1_PIN 6
 #define LED2_PORT GPIOC
@@ -53,14 +51,34 @@ void adc_convert(void);
 #define SW2_PIN 10
 #define OCFLAG_PORT GPIOG
 #define OCFLAG_PIN 13
-#define SPILINK_JUMPER_PORT GPIOD
-#define SPILINK_JUMPER_PIN 12
-
-#ifdef HAS_SD_CARD_DETECT
 #define SDCSW_PORT GPIOD
 #define SDCSW_PIN 13
+
+#elif defined(BOARD_STM32F4_DISCOVERY)
+/* LED1: green */
+#define LED1_PORT GPIOD
+#define LED1_PIN 12
+/* LED2: red */
+#define LED2_PORT GPIOD
+#define LED2_PIN 14
+#define SW2_PORT GPIOA
+#define SW2_PIN 0
+
 #endif
 
+#if defined(BOARD_KSOLOTI_CORE)
+#define SPILINK_JUMPER_PORT GPIOD
+#define SPILINK_JUMPER_PIN 12
+#elif defined(BOARD_AXOLOTI_CORE)
+#define SPILINK_JUMPER_PORT GPIOB
+#define SPILINK_JUMPER_PIN 10
+#endif
+
+
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
 #define SDMIDI SD6
+#elif defined(BOARD_STM32F4_DISCOVERY)
+#define SDMIDI SD1
+#endif
 
 #endif

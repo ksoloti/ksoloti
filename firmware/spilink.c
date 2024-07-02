@@ -40,8 +40,13 @@ uint32_t frameno = 0;
 
 extern void detect_MCO(void);
 
+#if defined(BOARD_KSOLOTI_CORE)
 #define SPILINK_NSS_PORT GPIOD
 #define SPILINK_NSS_PIN 5
+#elif defined(BOARD_AXOLOTI_CORE)
+#define SPILINK_NSS_PORT GPIOA
+#define SPILINK_NSS_PIN 15
+#endif
 
 #define SPILINKD SPID3
 

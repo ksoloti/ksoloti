@@ -3,35 +3,38 @@ set -e
 
 export PATH=${axoloti_runtime}/platform_osx/bin:$PATH
 
-echo "Compiling Ksoloti firmware... ${axoloti_firmware}"
 cd "${axoloti_firmware}"
 make -f Makefile.patch clean
 
-mkdir -p build/obj
+echo "Compiling firmware... $1"
+rm -rf .dep
+rm -rf build/lst
+rm -rf build/obj
+mkdir -p .dep
 mkdir -p build/lst
-if ! make $1; then
+mkdir -p build/obj
+if ! make BOARDDEF=-D$1; then
     exit 1
 fi
-# rm -rf .dep
-# rm -rf build/obj
-# rm -rf build/lst
 
-echo "Compiling Ksoloti firmware flasher..."
+echo "Compiling firmware flasher... $1"
 cd flasher
-mkdir -p flasher_build/obj
+rm -rf .dep
+rm -rf flasher_build/lst
+rm -rf flasher_build/obj
+mkdir -p .dep
 mkdir -p flasher_build/lst
-make $1
-# rm -rf .dep
-# rm -rf flasher_build/obj
-# rm -rf flasher_build/lst
+mkdir -p flasher_build/obj
+make BOARDDEF=-D$1
 cd ..
 
-echo "Compiling Ksoloti firmware mounter..."
+echo "Compiling firmware mounter... $1"
 cd mounter
-mkdir -p mounter_build/obj
+rm -rf .dep
+rm -rf mounter_build/lst
+rm -rf mounter_build/obj
+mkdir -p .dep
 mkdir -p mounter_build/lst
-make $1
-# rm -rf .dep
-# rm -rf mounter_build/obj
-# rm -rf mounter_build/lst
+mkdir -p mounter_build/obj
+make BOARDDEF=-D$1
 cd ..

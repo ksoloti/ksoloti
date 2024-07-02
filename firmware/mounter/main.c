@@ -17,14 +17,12 @@ static const uint8_t deviceDescriptorData[] = {
         0x00,   /* device protocol (none, specified in interface)  */
         64,     /* max packet size of control end-point            */
         0x16C0, /* vendor ID (Voti)                                */
-#ifdef BOARD_KSOLOTI_CORE
+#if defined(BOARD_KSOLOTI_CORE)
         /* Ksoloti Core */
         0x0445, /* product ID (lab use only!)                      */
-#elif (defined(BOARD_AXOLOTI_CORE) || defined(BOARD_STM32F4_DISCOVERY))
+#elif defined(BOARD_AXOLOTI_CORE) || defined(BOARD_STM32F4_DISCOVERY)
         /* Axoloti Core */
         0x0443, /* product ID (lab use only!)                      */
-#else
-#error No valid board defined in axoloti_defines.h!
 #endif
         0x0100, /* device release number                           */
         1,      /* index of manufacturer string descriptor         */
@@ -100,12 +98,10 @@ static const USBDescriptor languageDescriptor = {
 static const uint8_t vendorDescriptorData[] = {
     USB_DESC_BYTE(16),
     USB_DESC_BYTE(USB_DESCRIPTOR_STRING),
-#ifdef BOARD_KSOLOTI_CORE
+#if defined(BOARD_KSOLOTI_CORE)
     'K', 0, 's', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0
-#elif (defined(BOARD_AXOLOTI_CORE) || defined(BOARD_STM32F4_DISCOVERY))
+#elif defined(BOARD_AXOLOTI_CORE) || defined(BOARD_STM32F4_DISCOVERY)
     'A', 0, 'x', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0
-#else
-#error No valid board defined in axoloti_defines.h!
 #endif
 };
 
@@ -220,12 +216,10 @@ static const USBMassStorageConfig msdConfig = {
     (BaseBlockDevice *)&SDCD1,
     USB_MS_DATA_EP,
     &usbActivity,
-#ifdef BOARD_KSOLOTI_CORE
+#if defined(BOARD_KSOLOTI_CORE)
     "Ksoloti",
-#elif (defined(BOARD_AXOLOTI_CORE) || defined(BOARD_STM32F4_DISCOVERY))
+#elif defined(BOARD_AXOLOTI_CORE) || defined(BOARD_STM32F4_DISCOVERY)
     "Axoloti",
-#else
-#error No valid board defined in axoloti_defines.h!
 #endif
     "Cardreader",
     "0.1"

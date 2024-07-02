@@ -82,16 +82,23 @@ static msg_t ThreadSysmon(void *arg) {
     }
 
     // v50 monitor
+#if defined(BOARD_KSOLOTI_CORE)
     int v = adcvalues[18];  // adcvalues[18] contains filtered 5V supervisor data via PF10
+#elif defined(BOARD_AXOLOTI_CORE)
+    int v = (ADC3->DR);  // adcvalues[18] contains filtered 5V supervisor data via PF10
+#endif
+
     if (v > v50_max)
       v50_max = v;
     if (v < v50_min)
       v50_min = v;
     voltage_50 = v;
+#if defined(BOARD_AXOLOTI_CORE)
+    ADC3->CR2 |= ADC_CR2_SWSTART;
+#endif
 
 // sdcard switch monitor
-// #ifdef SDCSW_PIN
-#ifdef HAS_SD_CARD_DETECT
+#ifdef SDCSW_PIN
     bool sdcsw = palReadPad(SDCSW_PORT, SDCSW_PIN);
     if (sdcsw && !sdcsw_prev) {
 //      LogTextMessage("SD card ejected");
@@ -123,10 +130,20 @@ void sysmon_init(void) {
   palSetPadMode(LED2_PORT, LED2_PIN, PAL_MODE_OUTPUT_PUSHPULL);
 #endif
 
-#ifdef HAS_SD_CARD_DETECT
+#ifdef SDCSW_PIN
   palSetPadMode(SDCSW_PORT, SDCSW_PIN, PAL_MODE_INPUT_PULLUP);
-#else
-  palSetPadMode(GPIOD, 13, PAL_MODE_INPUT_PULLDOWN); // seb experimental: override SD card detect for use with external SD card sockets
+#endif
+
+#if defined(BOARD_AXOLOTI_CORE)
+  // ADC3 for 5V supply monitoring
+  rccEnableADC3(FALSE);
+  ADC3->CR2 = ADC_CR2_ADON;
+  ADC3->SMPR1 = 0x07FFFFFF;
+  ADC3->SMPR2 = 0x3F7FFFFF;
+  ADC3->SQR1 = 0;
+  ADC3->SQR2 = 0;
+  ADC3->SQR3 = 8;
+  ADC3->CR2 |= ADC_CR2_SWSTART;
 #endif
 
   v50_max = 0;
@@ -172,5 +189,10 @@ uint16_t sysmon_getVoltage50(void) {
 }
 
 uint16_t sysmon_getVoltage10(void) {
+#if defined(BOARD_KSOLOTI_CORE)
   return adcvalues[13];
+#else
+  return adcvalues[15];
+#endif
+
 }

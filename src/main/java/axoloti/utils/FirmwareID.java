@@ -39,10 +39,10 @@ public class FirmwareID {
         try {
             File f;
             if (prefs.getAxolotiLegacyMode()) {
-                f = new File(System.getProperty(Axoloti.FIRMWARE_DIR) +"_axoloti_legacy/build/axoloti.bin");
+                f = new File(System.getProperty(Axoloti.FIRMWARE_DIR) +"/build/axoloti.bin");
             }
             else {
-                f = new File(System.getProperty(Axoloti.FIRMWARE_DIR) +"/build/axoloti.bin");
+                f = new File(System.getProperty(Axoloti.FIRMWARE_DIR) +"/build/ksoloti.bin");
             }
 
             if (!f.canRead()) {

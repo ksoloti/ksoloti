@@ -29,7 +29,13 @@
 #define CODEC_ADAU1961_I2S SPI2
 #define CODEC_ADAU1961_I2Sext I2S2ext
 
-//#define STM_IS_I2S_MASTER true
+#if defined(BOARD_KSOLOTI_CORE)
+#define CODEC_I2CD I2CD2
+#elif defined(BOARD_AXOLOTI_CORE)
+#define CODEC_I2CD I2CD3
+#elif defined(BOARD_STM32F4_DISCOVERY)
+// TODO
+#endif
 
 extern void computebufI(int32_t *inp, int32_t *outp);
 
@@ -53,11 +59,9 @@ static const SPIConfig spi1c_cfg = {NULL, /* HW dependent part.*/GPIOE, 8,
 void codec_ADAU1961_hw_reset(void) {
 }
 
-/* I2C interface #2 */
-/* SDA : PB11
- * SCL : PB10
- */
-static const I2CConfig i2cfg2 = {OPMODE_I2C, 400000, FAST_DUTY_CYCLE_2, };
+/* Ksoloti Core: I2C interface #2, SDA : PB11, SCL : PB10 */
+/* Axoloti Core: I2C interface #3, SDA : PH7,  SCL : PH8  */
+static const I2CConfig i2cfg2 = {OPMODE_I2C, 400000, FAST_DUTY_CYCLE_16_9, };
 
 static uint8_t i2crxbuf[8];
 static uint8_t i2ctxbuf[8];
@@ -67,7 +71,7 @@ static systime_t tmo;
 
 void CheckI2CErrors(void) {
   volatile i2cflags_t errors;
-  errors = i2cGetErrors(&I2CD2);
+  errors = i2cGetErrors(&CODEC_I2CD);
   (void)errors;
 }
 
@@ -76,11 +80,11 @@ void ADAU1961_I2CStart(void) {
   // palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN);
   // palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN);
   // chMtxLock(&Mutex_DMAStream_1_7);
-  i2cStart(&I2CD2, &i2cfg2);
+  i2cStart(&CODEC_I2CD, &i2cfg2);
 }
 
 void ADAU1961_I2CStop(void) {
-  i2cStop(&I2CD2);
+  i2cStop(&CODEC_I2CD);
   // chMtxUnlock();
 }
 
@@ -89,13 +93,13 @@ uint8_t ADAU1961_ReadRegister(uint16_t RegisterAddr) {
   i2ctxbuf[0] = RegisterAddr >> 8;
   i2ctxbuf[1] = RegisterAddr;
   ADAU1961_I2CStart();
-  i2cAcquireBus(&I2CD2);
-  status = i2cMasterTransmitTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2ctxbuf, 2,
+  i2cAcquireBus(&CODEC_I2CD);
+  status = i2cMasterTransmitTimeout(&CODEC_I2CD, ADAU1961_I2C_ADDR, i2ctxbuf, 2,
                                     i2crxbuf, 1, tmo);
   if (status != RDY_OK) {
     CheckI2CErrors();
   }
-  i2cReleaseBus(&I2CD2);
+  i2cReleaseBus(&CODEC_I2CD);
   ADAU1961_I2CStop();
   chThdSleepMilliseconds(1);
   return i2crxbuf[0];
@@ -106,17 +110,17 @@ void ADAU1961_ReadRegister6(uint16_t RegisterAddr) {
   i2ctxbuf[0] = RegisterAddr >> 8;
   i2ctxbuf[1] = RegisterAddr;
   ADAU1961_I2CStart();
-  i2cAcquireBus(&I2CD2);
-  status = i2cMasterTransmitTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2ctxbuf, 2,
+  i2cAcquireBus(&CODEC_I2CD);
+  status = i2cMasterTransmitTimeout(&CODEC_I2CD, ADAU1961_I2C_ADDR, i2ctxbuf, 2,
                                     i2crxbuf, 0, tmo);
   if (status != RDY_OK) {
     CheckI2CErrors();
   }
-  status = i2cMasterReceiveTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2crxbuf, 6, tmo);
+  status = i2cMasterReceiveTimeout(&CODEC_I2CD, ADAU1961_I2C_ADDR, i2crxbuf, 6, tmo);
   if (status != RDY_OK) {
     CheckI2CErrors();
   }
-  i2cReleaseBus(&I2CD2);
+  i2cReleaseBus(&CODEC_I2CD);
   ADAU1961_I2CStop();
   chThdSleepMilliseconds(1);
 }
@@ -128,16 +132,16 @@ void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue) {
   i2ctxbuf[2] = RegisterValue;
 
   ADAU1961_I2CStart();
-  i2cAcquireBus(&I2CD2);
-  status = i2cMasterTransmitTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2ctxbuf, 3,
+  i2cAcquireBus(&CODEC_I2CD);
+  status = i2cMasterTransmitTimeout(&CODEC_I2CD, ADAU1961_I2C_ADDR, i2ctxbuf, 3,
                                     i2crxbuf, 0, tmo);
   if (status != RDY_OK) {
     CheckI2CErrors();
-    status = i2cMasterTransmitTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2ctxbuf, 3,
+    status = i2cMasterTransmitTimeout(&CODEC_I2CD, ADAU1961_I2C_ADDR, i2ctxbuf, 3,
                                       i2crxbuf, 0, tmo);
     chThdSleepMilliseconds(1);
   }
-  i2cReleaseBus(&I2CD2);
+  i2cReleaseBus(&CODEC_I2CD);
   ADAU1961_I2CStop();
   chThdSleepMilliseconds(1);
 
@@ -160,10 +164,10 @@ void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
   i2ctxbuf[6] = RegisterValues[4];
   i2ctxbuf[7] = RegisterValues[5];
   ADAU1961_I2CStart();
-  i2cAcquireBus(&I2CD2);
-  status = i2cMasterTransmitTimeout(&I2CD2, ADAU1961_I2C_ADDR, i2ctxbuf, 8,
+  i2cAcquireBus(&CODEC_I2CD);
+  status = i2cMasterTransmitTimeout(&CODEC_I2CD, ADAU1961_I2C_ADDR, i2ctxbuf, 8,
                                     i2crxbuf, 0, TIME_INFINITE);
-  i2cReleaseBus(&I2CD2);
+  i2cReleaseBus(&CODEC_I2CD);
   ADAU1961_I2CStop();
   if (status != RDY_OK) {
     CheckI2CErrors();
@@ -194,10 +198,6 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
    */
 
   while (1) {
-#ifdef STM_IS_I2S_MASTER
-    ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC, 0x01); // 256FS
-    chThdSleepMilliseconds(10);
-#else
     palSetPadMode(GPIOA, 8, PAL_MODE_OUTPUT_PUSHPULL);
 
     uint8_t pllreg[6];
@@ -238,7 +238,6 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
 
     ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC, 0x09); // PLL = clksrc
 
-#endif
     // i2s2_sd (dac) is a confirmed connection, i2s2_ext_sd (adc) is not however
     // bclk and lrclk are ok too
     ADAU1961_WriteRegister(ADAU1961_REG_R2_DMICJ, 0x20); // enable digital mic function on pin JACKDET/MICIN
@@ -254,14 +253,9 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
     ADAU1961_WriteRegister(ADAU1961_REG_R12_ALC1, 0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R13_ALC2, 0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R14_ALC3, 0x00);
-#ifdef STM_IS_I2S_MASTER
-    ADAU1961_WriteRegister(ADAU1961_REG_R15_SERP0,0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1,0x00);
-#else
     ADAU1961_WriteRegister(ADAU1961_REG_R15_SERP0, 0x01); // codec is master
     ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1, 0x00); // 32bit samples
 //ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1,0x60); // 64bit samples, spdif clock!
-#endif
     ADAU1961_WriteRegister(ADAU1961_REG_R17_CON0, 0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R18_CON1, 0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC, 0x30);
@@ -307,10 +301,6 @@ void codec_ADAU1961_hw_init(uint16_t samplerate) {
 
   {
 // ADC Enable
-#ifdef STM_IS_I2S_MASTER
-//  ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1, 0x20); // 32 bits per frame
-    ADAU1961_WriteRegister(ADAU1961_REG_R16_SERP1, 0x00);// 32 bits per frame
-#endif
     ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC, 0x33); // ADC enable
     ADAU1961_WriteRegister(ADAU1961_REG_R36_DACC0, 0x03); // DAC enable
 
@@ -435,27 +425,6 @@ void codec_ADAU1961_i2s_init(uint16_t sampleRate) {
 // SPI2 in I2S Mode, Master
   CODEC_ADAU1961_I2S_ENABLE;
 
-#if STM_IS_I2S_MASTER
-  CODEC_ADAU1961_I2S ->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_1 | SPI_I2SCFGR_DATLEN_1; /* MASTER TRANSMIT */
-
-  uint16_t prescale;
-  uint32_t pllfreq = STM32_PLLI2SVCO / STM32_PLLI2SR_VALUE;
-  // Master clock mode Fs * 256
-  prescale = (pllfreq * 10) / (256 * sampleRate) + 5;
-  prescale /= 10;
-
-  if (prescale > 0xFF || prescale < 2)
-  prescale = 2;
-
-  if (prescale & 0x01)
-  CODEC_ADAU1961_I2S ->I2SPR = SPI_I2SPR_MCKOE | SPI_I2SPR_ODD | (prescale >> 1);
-  else
-  CODEC_ADAU1961_I2S ->I2SPR = SPI_I2SPR_MCKOE | (prescale >> 1);
-
-  CODEC_ADAU1961_I2Sext ->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_0 | SPI_I2SCFGR_DATLEN_1; /* SLAVE RECEIVE*/
-  CODEC_ADAU1961_I2Sext ->I2SPR = 0x0002;
-
-#else
   CODEC_ADAU1961_I2S->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_DATLEN_1; /* SLAVE TRANSMIT, 32bit */
 
   // generate 8MHz clock on MCK pin with PWM...
@@ -477,7 +446,6 @@ void codec_ADAU1961_i2s_init(uint16_t sampleRate) {
       | SPI_I2SCFGR_DATLEN_1; /* SLAVE RECEIVE, 32bit*/
   CODEC_ADAU1961_I2Sext->I2SPR = 0x0002;
 
-#endif
 //  CODEC_ADAU1961_I2S ->I2SPR = SPI_I2SPR_MCKOE |
 
 //// FULL DUPLEX CONFIG

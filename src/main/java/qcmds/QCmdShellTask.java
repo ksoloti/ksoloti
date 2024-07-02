@@ -101,9 +101,6 @@ public abstract class QCmdShellTask implements QCmd {
 
     public String FirmwareDir() {
         String str = System.getProperty(axoloti.Axoloti.FIRMWARE_DIR);
-        if (prefs.getAxolotiLegacyMode()) {
-            str += "_axoloti_legacy";
-        }
         return str;
     }
     

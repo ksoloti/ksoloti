@@ -141,9 +141,6 @@ public class Axoloti {
     public static boolean isDeveloper() {
         
         String fwEnv = System.getProperty(FIRMWARE_DIR);
-        if (prefs.getAxolotiLegacyMode()) {
-            fwEnv += "_axoloti_legacy";
-        }
         if (cacheFWDir != null && fwEnv.equals(cacheFWDir)) {
             return cacheDeveloper;
         }
@@ -154,9 +151,6 @@ public class Axoloti {
         String dirRelease = System.getProperty(RELEASE_DIR);
 
         String fwRelease = dirRelease + File.separator + "firmware";
-        if (prefs.getAxolotiLegacyMode()) {
-            fwRelease += "_axoloti_legacy";
-        }
 
         if (!fwRelease.equals(cacheFWDir)) {
             File fR = new File(fwRelease);
@@ -290,9 +284,6 @@ public class Axoloti {
         }
 
         String fwdir = System.getProperty(FIRMWARE_DIR);
-        if (prefs.getAxolotiLegacyMode()) {
-            fwdir += "_axoloti_legacy";
-        }
 
         System.out.println("Directories:\n"
                 + "Current = " + curDir + "\n"

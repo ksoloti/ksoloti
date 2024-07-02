@@ -228,7 +228,7 @@ public class USBBulkConnection extends Connection {
 
                 if (prefs.getAxolotiLegacyMode()) {
                     if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDAxoloti) {
-                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Matching USB device found.");
+                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Axoloti Core found.");
                         DeviceHandle h = new DeviceHandle();
                         result = LibUsb.open(d, h);
                         if (result < 0) {
@@ -240,7 +240,7 @@ public class USBBulkConnection extends Connection {
                 }
                 else {
                     if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDKsoloti) {
-                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Matching USB device found.");
+                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Ksoloti Core found.");
                         DeviceHandle h = new DeviceHandle();
                         result = LibUsb.open(d, h);
                         if (result < 0) {

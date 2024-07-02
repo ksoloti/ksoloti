@@ -2,6 +2,7 @@
 # Build global options
 # NOTE: Can be overridden externally.
 #
+BOARDDEF=
 
 # Compiler options here.
 ifeq ($(USE_OPT),)
@@ -12,7 +13,8 @@ ifeq ($(USE_OPT),)
     -falign-functions=16 \
     -fno-math-errno \
     -Wno-unused-parameter \
-    -Wno-unused-function
+    -Wno-unused-function  \
+    $(BOARDDEF)
 endif
 
 # C specific options here (added to USE_OPT).
@@ -68,7 +70,11 @@ endif
 #
 
 # Define project name here
+ifeq ($(BOARDDEF), -DBOARD_KSOLOTI_CORE)
+PROJECT = ksoloti
+else
 PROJECT = axoloti
+endif
 
 # Imported source files and paths
 axoloti_runtime ?= ..
@@ -98,11 +104,15 @@ include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 override BIN = $(CP) -O binary --gap-fill 0xff
 override HEX = $(CP) -O ihex --gap-fill 0xff
 
-CMSIS = ${axoloti_release}/CMSIS/
+CMSIS = ${axoloti_release}/CMSIS
 
 
 # Define linker script file here
-LDSCRIPT= STM32F427xG.ld
+ifeq ($(BOARDDEF), -DBOARD_KSOLOTI_CORE)
+LDSCRIPT= STM32F427xG_ksoloti.ld
+else
+LDSCRIPT= STM32F427xG_axoloti.ld
+endif
 
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global

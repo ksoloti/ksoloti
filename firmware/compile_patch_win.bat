@@ -6,7 +6,7 @@ call :sethome "%axoloti_home%"
 call :setrelease "%axoloti_release%"
 
 cd %axoloti_firmware%
-make -f Makefile.patch
+make BOARDDEF=-D%1 -f Makefile.patch
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )

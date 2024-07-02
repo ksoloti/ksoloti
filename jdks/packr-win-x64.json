@@ -20,7 +20,6 @@
         "chibios",
         "CMSIS",
         "firmware",
-        "firmware_axoloti_legacy",
         "platform_win"
     ],
     "minimizejre": "soft",

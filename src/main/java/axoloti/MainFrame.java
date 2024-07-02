@@ -1062,11 +1062,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
         String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
         if (prefs.getAxolotiLegacyMode()) {
-            fname += "_axoloti_legacy";
-            pname += "_axoloti_legacy";
+            fname += "/flasher/flasher_build/axoloti_flasher.bin";
+            pname += "/build/axoloti.bin";
         }
-        fname += "/flasher/flasher_build/flasher.bin";
-        pname += "/build/axoloti.bin";
+        else {
+            fname += "/flasher/flasher_build/ksoloti_flasher.bin";
+            pname += "/build/ksoloti.bin";
+        }
         flashUsingSDRam(fname, pname);
     }
 
@@ -1083,20 +1085,24 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
         String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
         if (prefs.getAxolotiLegacyMode()) {
-            fname += "_axoloti_legacy";
-            pname += "_axoloti_legacy";
+            fname += "/flasher/flasher_build/axoloti_flasher.bin";
+            pname += "/build/axoloti.bin";
         }
-        fname += "/flasher/flasher_build/flasher.bin";
-        pname += "/build/axoloti.bin";
+        else {
+            fname += "/flasher/flasher_build/ksoloti_flasher.bin";
+            pname += "/build/ksoloti.bin";
+        }
         flashUsingSDRam(fname, pname);
     }
 
     private void jMenuItemMountActionPerformed(java.awt.event.ActionEvent evt) {
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
         if (prefs.getAxolotiLegacyMode()) {
-            fname += "_axoloti_legacy";
+            fname += "/mounter/mounter_build/axoloti_mounter.bin";
         }
-        fname += "/mounter/mounter_build/mounter.bin";
+        else {
+            fname += "/mounter/mounter_build/ksoloti_mounter.bin";
+        }
         File f = new File(fname);
         if (f.canRead()) {
             qcmdprocessor.AppendToQueue(new QCmdStop());
@@ -1353,11 +1359,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
             String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
             if (prefs.getAxolotiLegacyMode()) {
-                fname += "_axoloti_legacy";
-                pname += "_axoloti_legacy";
+                fname += "/flasher/flasher_build/axoloti_flasher.bin";
+                pname += "/build/axoloti.bin";
             }
-            fname += "/flasher/flasher_build/flasher.bin";
-            pname += "/build/axoloti.bin";
+            else {
+                fname += "/flasher/flasher_build/ksoloti_flasher.bin";
+                pname += "/build/ksoloti.bin";
+            }
             flashUsingSDRam(fname, pname);
         }
     }

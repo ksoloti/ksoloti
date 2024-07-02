@@ -21,7 +21,6 @@
         "chibios",
         "CMSIS",
         "firmware",
-        "firmware_axoloti_legacy",
         "platform_linux",
         "src/main/java/resources/ksoloti_icon_512.png"
     ],
