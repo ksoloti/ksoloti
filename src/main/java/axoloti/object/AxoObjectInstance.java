@@ -623,13 +623,6 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 c += I+I+I + p.GenerateCodeInit("parent->", "");
             }
             c += I+I+I + p.GenerateCodeInitModulator("parent->", "");
-            //           if ((p.isOnParent() && !enableOnParent)) {
-            //c += "// on Parent: propagate " + p.name + "\n";
-            //String parentparametername = classname.substring(8);
-            //c += "// classname : " + classname + " : " + parentparametername + "\n";
-            //c += "parent->PExch[PARAM_INDEX_" + parentparametername + "_" + getLegalName() + "].pfunction = PropagateToSub;\n";
-            //c += "parent->parent->PExch[PARAM_INDEX_" + parentparametername + "_" + getLegalName() + "].finalvalue = (int32_t)(&(" + p.PExName("parent->") + "));\n";
-            //         }
         }
         for (DisplayInstance p : displayInstances) {
             c += p.GenerateCodeInit("");
