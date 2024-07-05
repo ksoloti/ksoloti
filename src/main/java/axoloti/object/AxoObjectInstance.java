@@ -69,6 +69,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     public ArrayList<InletInstance> inletInstances;
     public ArrayList<OutletInstance> outletInstances;
+
     @Path("params")
     @ElementListUnion({
         @ElementList(entry = "frac32.u.map", type = ParameterInstanceFrac32UMap.class, inline = true, required = false),
@@ -86,6 +87,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         @ElementList(entry = "bool32.tgl", type = ParameterInstanceBin1.class, inline = true, required = false),
         @ElementList(entry = "bool32.mom", type = ParameterInstanceBin1Momentary.class, inline = true, required = false)})
     public ArrayList<ParameterInstance> parameterInstances;
+
     @Path("attribs")
     @ElementListUnion({
         @ElementList(entry = "objref", type = AttributeInstanceObjRef.class, inline = true, required = false),
@@ -588,7 +590,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     }
 
     public String GenerateInstanceCodePlusPlus(String classname, boolean enableOnParent) {
-        String c = "";
+        String c = "\n" + I+I + "/* Object Local Code */\n";
         for (ParameterInstance p : parameterInstances) {
             c += I+I + p.GenerateCodeDeclaration(classname);
         }
@@ -603,7 +605,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     @Override
     public String GenerateInitCodePlusPlus(String classname, boolean enableOnParent) {
-        String c = "";
+        String c = "\n" + I+I+I + "/* Object Init Code */\n";
 //        if (hasStruct())
 //            c = "  void " + GenerateInitFunctionName() + "(" + GenerateStructName() + " * x ) {\n";
 //        else
@@ -689,12 +691,14 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 }
             }
         }
-        d += ") {\n" + c + "}\n";
+        d += ") {\n" + c;
+        d += "\n" + I+I + "}\n";
         return d;
     }
 
     @Override
     public String GenerateDisposeCodePlusPlus(String classname) {
+        String h = "\n" + I+I + "/* Object Dispose Code */\n";
         String c = "";
         if (getType().sDisposeCode != null) {
             String s = getType().sDisposeCode;
@@ -703,39 +707,33 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
             c += s + "\n";
         }
-        c = I+I + "public: void Dispose() {\n" + c + I+I + "}\n";
+        c = h + I+I + "public: void Dispose() {\n" + c + I+I + "}\n";
         return c;
     }
 
     public String GenerateKRateCodePlusPlus(String vprefix, boolean enableOnParent, String OnParentAccess) {
         String s = getType().sKRateCode;
         if (s != null) {
+            String h = "\n" + I+I + "/* Object K-Rate Code */\n";
+
             for (AttributeInstance p : attributeInstances) {
                 s = s.replaceAll(p.GetCName(), p.CValue());
             }
             s = s.replace("attr_name", getCInstanceName());
             s = s.replace("attr_legal_name", getLegalName());
-            for (ParameterInstance p : parameterInstances) {
-//               if (p.isOnParent() && enableOnParent) {
-//                    s = s.replace("%" + p.name + "%", OnParentAccess + p.variableName(vprefix, enableOnParent));
-//                } else {
-//                    s = s.replace("%" + p.name + "%", p.variableName(vprefix, enableOnParent));
-//                }
-            }
-            // for (DisplayInstance p : displayInstances) {
-            //    s = s.replace("%" + p.name + "%", p.valueName(vprefix));
-            // }
-            return s + "\n";
+
+            return h + s + "\n";
         }
         return "";
     }
 
     public String GenerateSRateCodePlusPlus(String vprefix, boolean enableOnParent, String OnParentAccess) {
         if (getType().sSRateCode != null) {
-            String s = I+I + "int buffer_index;\n"
-                     + I+I + "for(buffer_index=0;buffer_index<BUFSIZE;buffer_index++) {\n"
-                     + I+I + getType().sSRateCode
-                     + I+I + "\n}\n";
+            String s = "\n" + I+I+I + "uint8_t buffer_index;\n"
+                            + I+I+I + "for (buffer_index = 0; buffer_index < BUFSIZE; buffer_index++) {\n"
+                     + "\n" + I+I+I+I + "/* Object S-Rate Code */\n"
+                            + getType().sSRateCode
+                     + "\n" + I+I+I + "}\n";
 
             for (AttributeInstance p : attributeInstances) {
                 s = s.replaceAll(p.GetCName(), p.CValue());
@@ -760,9 +758,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     }
 
     public String GenerateDoFunctionPlusPlus(String ClassName, String OnParentAccess, Boolean enableOnParent) {
-        String s;
+        String s = "\n" + I+I + "/* Object DSP Loop */\n";
         boolean comma = false;
-        s = I+I + "public: void dsp(";
+        s += I+I + "public: void dsp(";
         for (InletInstance i : inletInstances) {
             if (comma) {
                 s += ", ";
@@ -800,9 +798,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
         }
         s += ") {\n";
-        s += "\n" + I+I + "/* Object K-Rate Code */\n";
         s += GenerateKRateCodePlusPlus("", enableOnParent, OnParentAccess);
-        s += "\n" + I+I + "/* Object S-Rate Code */\n";
         s += GenerateSRateCodePlusPlus("", enableOnParent, OnParentAccess);
         s += I+I + "}\n";
         return s;
@@ -816,16 +812,11 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                   + I+I + "public: // v1\n"
                   + I+I + ClassName + " *parent;\n";
 
-        s += "\n" + I+I + "/* Object Local Code */\n";
         s += GenerateInstanceCodePlusPlus(ClassName, enableOnParent);
-        s += "\n" + I+I + "/* Object Init Code */\n";
         s += GenerateInitCodePlusPlus(ClassName, enableOnParent);
-        s += "\n" + I+I + "/* Object Dispose Code */\n";
         s += GenerateDisposeCodePlusPlus(ClassName);
-        s += "\n" + I+I + "/* Object DSP Loop */\n";
         s += GenerateDoFunctionPlusPlus(ClassName, OnParentAccess, enableOnParent);
         {
-            s += "\n" + I+I + "/* Object Midi Handler */\n";
             String d3 = GenerateCodeMidiHandler("");
             if (!d3.isEmpty()) {
                 s += MidiHandlerFunctionHeader;
@@ -841,6 +832,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public String GenerateCodeMidiHandler(String vprefix) {
         String s = "";
         if (getType().sMidiCode != null) {
+            s += "\n" + I+I + "/* Object Midi Handler */\n";
             s += getType().sMidiCode;
         }
         for (ParameterInstance i : parameterInstances) {
@@ -862,11 +854,11 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     @Override
     public String GenerateCallMidiHandler() {
         if ((getType().sMidiCode != null) && (!getType().sMidiCode.isEmpty())) {
-            return getCInstanceName() + "_i.MidiInHandler(dev, port, status, data1, data2);\n";
+            return I+I + getCInstanceName() + "_i.MidiInHandler(dev, port, status, data1, data2);\n";
         }
         for (ParameterInstance pi : getParameterInstances()) {
             if (!pi.GenerateCodeMidiHandler("").isEmpty()) {
-                return getCInstanceName() + "_i.MidiInHandler(dev, port, status, data1, data2);\n";
+                return I+I + getCInstanceName() + "_i.MidiInHandler(dev, port, status, data1, data2);\n";
             }
         }
         return "";
