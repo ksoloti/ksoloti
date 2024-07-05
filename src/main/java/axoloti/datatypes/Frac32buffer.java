@@ -65,7 +65,7 @@ public class Frac32buffer extends DataTypeBuffer {
 
     @Override
     public String CType() {
-        return "int32buffer ";
+        return "int32buffer";
     }
 
     @Override

@@ -678,7 +678,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
             c += s + "\n";
         }
-        String d = I+I + "public: void Init(" + classname + " * _parent";
+        String d = I+I + "public: void Init(" + classname + " *_parent";
         if (!displayInstances.isEmpty()) {
             for (DisplayInstance p : displayInstances) {
                 if (p.display.getLength() > 0) {
@@ -686,7 +686,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     if (p.display.getDatatype().isPointer()) {
                         d += p.display.getDatatype().CType() + " " + p.GetCName();
                     } else {
-                        d += p.display.getDatatype().CType() + " & " + p.GetCName();
+                        d += p.display.getDatatype().CType() + " &" + p.GetCName();
                     }
                 }
             }
@@ -772,7 +772,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             if (comma) {
                 s += ", ";
             }
-            s += i.GetDataType().CType() + " & " + i.GetCName();
+            s += i.GetDataType().CType() + " &" + i.GetCName();
             comma = true;
         }
         for (ParameterInstance i : parameterInstances) {
@@ -792,7 +792,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 if (i.display.getDatatype().isPointer()) {
                     s += i.display.getDatatype().CType() + " " + i.GetCName();
                 } else {
-                    s += i.display.getDatatype().CType() + " & " + i.GetCName();
+                    s += i.display.getDatatype().CType() + " &" + i.GetCName();
                 }
                 comma = true;
             }

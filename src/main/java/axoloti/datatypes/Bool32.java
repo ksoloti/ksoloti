@@ -56,7 +56,7 @@ public class Bool32 implements DataType {
 
     @Override
     public String CType() {
-        return "bool ";
+        return "bool";
     }
 
     @Override
