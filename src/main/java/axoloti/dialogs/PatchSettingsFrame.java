@@ -202,10 +202,13 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         });
 
         jLabelMaxModulationSources.setText("Maximum Number of Modulation Sources");
+        jLabelMaxModulationSources.setToolTipText("Set this to (or higher than) the number of modsource objects you are using in your patch.");
 
-        jLabelMaxModulationTargets.setText("Maximum Number of Modulation Targets");
+        jLabelMaxModulationTargets.setText("Maximum Number of Targets per Source");
+        jLabelMaxModulationSources.setToolTipText("Set this to the maximum number of targets each modsource should be able to affect.");
 
         jSpinnerModulationSources.setModel(new javax.swing.SpinnerNumberModel(0, 0, 15, 1));
+        jSpinnerModulationSources.setToolTipText(jLabelMaxModulationSources.getToolTipText());
         jSpinnerModulationSources.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jSpinnerModulationSourcesStateChanged(evt);
@@ -213,6 +216,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         });
 
         jSpinnerModulationTargets.setModel(new javax.swing.SpinnerNumberModel(0, 0, 15, 1));
+        jSpinnerModulationTargets.setToolTipText(jLabelMaxModulationTargets.getToolTipText());
         jSpinnerModulationTargets.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jSpinnerModulationTargetsStateChanged(evt);
