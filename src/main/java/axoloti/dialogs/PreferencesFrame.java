@@ -266,7 +266,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jTextFieldUserShortcut3.setText("test");
         jTextFieldUserShortcut4.setText("test");
 
-        jTextFieldUserShortcut1.setToolTipText("Enter a string here to create a custom Object Finder shortcut. Useful if you have certain objects or a personal library you use a lot. In the patch window, press SHIFT+1 to open shortcut 1, SHIFT+2 for shortcut 2, etc.\nHint: The Object Finder also supports the \"*\" wildcard and regex!");
+        jTextFieldUserShortcut1.setToolTipText("Enter a string here to create a custom Object Finder shortcut.\nUseful if you have certain objects or a personal library you use a lot.\nIn the patch window, press SHIFT+1 to open shortcut 1, SHIFT+2 for shortcut 2, etc.\nHint: The Object Finder also supports the \"*\" wildcard and regex!");
         jTextFieldUserShortcut2.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
         jTextFieldUserShortcut3.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
         jTextFieldUserShortcut4.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
