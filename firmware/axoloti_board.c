@@ -93,7 +93,10 @@ void adc_configpads(void) {
     palSetPadMode(GPIOB, 0, PAL_MODE_INPUT_ANALOG);
     palSetPadMode(GPIOB, 1, PAL_MODE_INPUT_ANALOG);
 
+    /* palSetPadMode(GPIOC, 0, PAL_MODE_INPUT_ANALOG); !! pin remapped to FMC */
     palSetPadMode(GPIOC, 1, PAL_MODE_INPUT_ANALOG);
+    /* palSetPadMode(GPIOC, 2, PAL_MODE_INPUT_ANALOG); !! pin remapped to FMC */
+    /* palSetPadMode(GPIOC, 3, PAL_MODE_INPUT_ANALOG); !! pin remapped to FMC */
     palSetPadMode(GPIOC, 4, PAL_MODE_INPUT_ANALOG);
     palSetPadMode(GPIOC, 5, PAL_MODE_INPUT_ANALOG);
     /* On Ksoloti Core, four additional ADC inputs sampled at lower speed via ADC3 */
