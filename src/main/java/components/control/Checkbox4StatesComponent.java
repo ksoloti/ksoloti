@@ -37,7 +37,7 @@ public class Checkbox4StatesComponent extends ACtrlComponent {
 
     private double value;
     private final int n;
-    private final int bsize = 12;
+    private final int bsize = 11;
     private int selIndex = -1;
 
     public Checkbox4StatesComponent(int value, int n) {

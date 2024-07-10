@@ -33,7 +33,7 @@ public class LedstripComponent extends ADispComponent {
 
     private double value;
     private final int n;
-    private static final int bsize = 12;
+    private static final int bsize = 11;
 
     public LedstripComponent(int value, int n) {
         //setInheritsPopupMenu(true);
