@@ -1238,7 +1238,7 @@ public class Patch {
             }
         }
 
-        c += "\n" + I + "/* net latches */\n";
+        c += "\n" + I + "/* Net latches */\n";
         for (Net n : nets) {
             /* check if net has multiple sources */
             if ((n.CType() != null) && n.NeedsLatch()) {
@@ -1265,7 +1265,7 @@ public class Patch {
 
     String GeneratePresetCode3(String ClassName) {
 
-        String c = I + "static const int32_t * GetPresets(void) {\n";
+        String c = I + "static const int32_t* GetPresets(void) {\n";
         c += I+I + "static const int32_t p[NPRESETS][NPRESET_ENTRIES][2] = {\n";
 
         for (int i = 0; i < settings.GetNPresets(); i++) {
@@ -1291,17 +1291,17 @@ public class Patch {
 
         c += I + "void ApplyPreset(uint8_t index) {\n"
               + I+I + "if (!index) {\n"
-              + I+I+I + "int32_t *p = GetInitParams();\n"
+              + I+I+I + "int32_t* p = GetInitParams();\n"
               + I+I+I + "uint16_t i; for (i=0; i<NPEXCH; i++) {\n"
               + I+I+I+I + "PExParameterChange(&PExch[i],p[i],0xFFEF);\n"
               + I+I+I + "}\n"
               + I+I + "}\n"
               + I+I + "index--;\n"
               + I+I + "if (index < NPRESETS) {\n"
-              + I+I+I + "PresetParamChange_t *pa = (PresetParamChange_t *)(GetPresets());\n"
-              + I+I+I + "PresetParamChange_t *p = &pa[index*NPRESET_ENTRIES];\n"
+              + I+I+I + "PresetParamChange_t* pa = (PresetParamChange_t*) (GetPresets());\n"
+              + I+I+I + "PresetParamChange_t* p = &pa[index * NPRESET_ENTRIES];\n"
               + I+I+I + "uint8_t i; for (i=0; i<NPRESET_ENTRIES; i++) {\n"
-              + I+I+I+I + "PresetParamChange_t *pp = &p[i];\n"
+              + I+I+I+I + "PresetParamChange_t* pp = &p[i];\n"
               + I+I+I+I + "if ((pp->pexIndex>=0)&&(pp->pexIndex<NPEXCH)) {\n"
               + I+I+I+I+I + "PExParameterChange(&PExch[pp->pexIndex],pp->value,0xFFEF);\n"
               + I+I+I+I + "}\n"
@@ -1314,7 +1314,7 @@ public class Patch {
 
     String GenerateModulationCode3() {
 
-        String s = I + "static PExModulationTarget_t * GetModulationTable(void) {\n";
+        String s = I + "static PExModulationTarget_t* GetModulationTable(void) {\n";
         s += I+I + "static const PExModulationTarget_t PExModulationSources[NMODULATIONSOURCES][NMODULATIONTARGETS] = {\n";
         for (int i = 0; i < settings.GetNModulationSources(); i++) {
             s += I+I+I + "{";
@@ -1325,26 +1325,26 @@ public class Patch {
                         Modulation n = m.Modulations.get(j);
                         s += "{" + n.destination.indexName() + ", " + n.value.getRaw() + "}";
                     } else {
-                        s += "{-1,0}";
+                        s += "{-1, 0}";
                     }
                     if (j != settings.GetNModulationTargetsPerSource() - 1) {
                         s += ",";
                     } else {
-                        s += "}";
+                        s += "\n}";
                     }
                 }
             } else {
                 for (int j = 0; j < settings.GetNModulationTargetsPerSource() - 1; j++) {
-                    s += "{-1,0},";
+                    s += "{-1, 0},";
                 }
-                s += "{-1,0}}";
+                s += "{-1, 0}}";
             }
             if (i != settings.GetNModulationSources() - 1) {
                 s += ",\n";
             }
         }
         s += I+I + "};\n\n";
-        s += I+I + "return (PExModulationTarget_t *)&PExModulationSources[0][0];\n";
+        s += I+I + "return (PExModulationTarget_t*) &PExModulationSources[0][0];\n";
         s += I + "};\n";
 
         return s;
@@ -1352,7 +1352,7 @@ public class Patch {
 
     String GenerateParamInitCode3(String ClassName) {
         int s = ParameterInstances.size();
-        String c = I + "static int32_t * GetInitParams(void) {\n"
+        String c = I + "static int32_t* GetInitParams(void) {\n"
                  + I+I + "static const int32_t p[" + s + "] = {\n";
         for (int i = 0; i < s; i++) {
             c += I+I+I + ParameterInstances.get(i).GetValueRaw();
@@ -1363,7 +1363,7 @@ public class Patch {
             }
         }
         c += I+I + "};\n"
-                + I+I + "return (int32_t *)&p[0];\n"
+                + I+I + "return (int32_t*) &p[0];\n"
                 + I + "}\n\n";
         return c;
     }
@@ -1411,7 +1411,7 @@ public class Patch {
         String c = "";
         c += I+I + "int i;\n";
         c += I+I + "int j;\n";
-        c += I+I + "const int32_t *p;\n";
+        c += I+I + "const int32_t* p;\n";
         c += I+I + "p = GetInitParams();\n";
         c += I+I + "for (j=0; j<" + ParameterInstances.size() + "; j++) {\n";
         c += I+I+I + "PExch[j].value = p[j];\n";
@@ -1420,7 +1420,7 @@ public class Patch {
         c += I+I+I + "PExch[j].pfunction = 0;\n";
 //        c += I+I+I + "PExch[j].finalvalue = p[j];\n"; /*TBC*/
         c += I+I + "}\n";
-        c += I+I + "int32_t *pp = &PExModulationPrevVal[0][0];\n";
+        c += I+I + "int32_t* pp = &PExModulationPrevVal[0][0];\n";
         c += I+I + "for (j=0; j<attr_poly*NMODULATIONSOURCES; j++) {\n";
         c += I+I+I + "*pp = 0; pp++;\n";
         c += I+I + "}\n";
@@ -1636,7 +1636,7 @@ public class Patch {
         c += "};\n\n";
         c += "static rootc root;\n\n";
 
-        c += "void PatchProcess( int32_t * inbuf, int32_t * outbuf) {\n"
+        c += "void PatchProcess( int32_t* inbuf, int32_t* outbuf) {\n"
            + I + "uint8_t i;\n";
 
         /* audioInputMode and audioOutputMode are modified during
@@ -1644,21 +1644,21 @@ public class Patch {
            This saves a bit of memory and instructions in the patch. */
         if (audioInputMode == 1) {
         c += I + "for (i=0; i<BUFSIZE; i++) {\n"
-           + I+I + "AudioInputLeft[i] = inbuf[i*2]>>4;\n"
+           + I+I + "AudioInputLeft[i] = inbuf[i * 2]>>4;\n"
            + I+I + "AudioInputRight[i] = AudioInputLeft[i];\n"
            + I + "}\n";
         }
         else if (audioInputMode == 2) {
         c += I + "for (i=0; i<BUFSIZE; i++) {\n"
-           + I+I + "AudioInputLeft[i] = inbuf[i*2]>>4;\n"
-           + I+I + "AudioInputLeft[i] = (AudioInputLeft[i] - (inbuf[i*2+1]>>4) ) >> 1;\n"
+           + I+I + "AudioInputLeft[i] = inbuf[i * 2]>>4;\n"
+           + I+I + "AudioInputLeft[i] = (AudioInputLeft[i] - (inbuf[i * 2 + 1]>>4) ) >> 1;\n"
            + I+I + "AudioInputRight[i] = AudioInputLeft[i];\n"
            + I + "}\n";
         }
         else {
         c += I + "for (i=0; i<BUFSIZE; i++) {\n"
-           + I+I + "AudioInputLeft[i] = inbuf[i*2]>>4;\n"
-           + I+I + "AudioInputRight[i] = inbuf[i*2+1]>>4;\n"
+           + I+I + "AudioInputLeft[i] = inbuf[i * 2]>>4;\n"
+           + I+I + "AudioInputRight[i] = inbuf[i * 2 + 1]>>4;\n"
            + I + "}\n";
 
         }
@@ -1668,40 +1668,40 @@ public class Patch {
         if (settings.getSaturate()) {
             if (audioOutputMode == 1) {
                 c += I + "for (i=0; i<BUFSIZE; i++) {\n"
-                   + I+I + "outbuf[i*2] = __SSAT(AudioOutputLeft[i],28)<<4;\n"
-                   + I+I + "outbuf[i*2+1] = 0;\n"
+                   + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28)<<4;\n"
+                   + I+I + "outbuf[i * 2 + 1] = 0;\n"
                    + I + "}\n";
             }
             else if (audioOutputMode == 2) {
                 c += I + "for (i=0; i<BUFSIZE; i++) {\n"
-                   + I+I + "outbuf[i*2] = __SSAT(AudioOutputLeft[i],28)<<4;\n"
-                   + I+I + "outbuf[i*2+1] = ~outbuf[i*2];\n"
+                   + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28)<<4;\n"
+                   + I+I + "outbuf[i * 2 + 1] = ~outbuf[i * 2];\n"
                    + I + "}\n";
             }
             else {
                 c += I + "for (i=0; i<BUFSIZE; i++) {\n"
-                   + I+I + "outbuf[i*2] = __SSAT(AudioOutputLeft[i],28)<<4;\n"
-                   + I+I + "outbuf[i*2+1] = __SSAT(AudioOutputRight[i],28)<<4;\n"
+                   + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28)<<4;\n"
+                   + I+I + "outbuf[i * 2 + 1] = __SSAT(AudioOutputRight[i], 28)<<4;\n"
                    + I + "}\n";
             }
         }
         else {
             if (audioOutputMode == 1) {
                 c += I + "for (i=0; i<BUFSIZE; i++) {\n"
-                   + I+I + "outbuf[i*2] = AudioOutputLeft[i];\n"
-                   + I+I + "outbuf[i*2+1] = 0;\n"
+                   + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
+                   + I+I + "outbuf[i * 2 + 1] = 0;\n"
                    + I + "}\n";
             }
             else if (audioOutputMode == 2) {
                 c += I + "for (i=0; i<BUFSIZE; i++) {\n"
-                   + I+I + "outbuf[i*2] = AudioOutputLeft[i];\n"
-                   + I+I + "outbuf[i*2+1] = ~outbuf[i*2];\n"
+                   + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
+                   + I+I + "outbuf[i * 2 + 1] = ~outbuf[i * 2];\n"
                    + I + "}\n";
             }
             else {
                 c += I + "for (i=0; i<BUFSIZE; i++) {\n"
-                   + I+I + "outbuf[i*2] = AudioOutputLeft[i];\n"
-                   + I+I + "outbuf[i*2+1] = AudioOutputRight[i];\n"
+                   + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
+                   + I+I + "outbuf[i * 2 + 1] = AudioOutputRight[i];\n"
                    + I + "}\n";
             }
         }
@@ -1715,8 +1715,8 @@ public class Patch {
            + I + "root.MidiInHandler(dev, port, status, data1, data2);\n"
                 + "}\n\n";
 
-        c += "typedef void (*funcp_t)(void);\n"
-           + "typedef funcp_t * funcpp_t;\n\n"
+        c += "typedef void (*funcp_t) (void);\n"
+           + "typedef funcp_t* funcpp_t;\n\n"
                 + "extern funcp_t __ctor_array_start;\n"
            + "extern funcp_t __ctor_array_end;\n"
                 + "extern funcp_t __dtor_array_start;\n"
@@ -1739,7 +1739,7 @@ public class Patch {
            + I + "}\n\n"
            + I + "extern uint32_t _pbss_start;\n"
            + I + "extern uint32_t _pbss_end;\n"
-           + I + "volatile uint32_t *p;\n"
+           + I + "volatile uint32_t* p;\n"
            + I + "for (p = &_pbss_start; p < &_pbss_end; p++) *p = 0;\n\n"
            + I + "{\n"
            + I+I + "funcpp_t fpp = &__ctor_array_start;\n"
@@ -1825,8 +1825,8 @@ public class Patch {
         // c += "AudioModeType AudioInputMode = A_STEREO;\n";
         // c += "AudioModeType AudioOutputMode = A_STEREO;\n\n";
 
-        c += "static void PropagateToSub(ParameterExchange_t *origin) {\n"
-           + I + "ParameterExchange_t *pex = (ParameterExchange_t *) origin->finalvalue;\n"
+        c += "static void PropagateToSub(ParameterExchange_t* origin) {\n"
+           + I + "ParameterExchange_t* pex = (ParameterExchange_t*) origin->finalvalue;\n"
            + I + "PExParameterChange(pex, origin->modvalue, 0xFFFFFFEE);\n"
                 + "}\n\n";
 
@@ -1919,16 +1919,16 @@ public class Patch {
             ao.sDescription = "no description";
         }
 
-        ao.sKRateCode = "uint8_t i; /*...*/\n";
+        ao.sKRateCode = "uint8_t i;\n";
         for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("patch/inlet f") || o.typeName.equals("patch/inlet i") || o.typeName.equals("patch/inlet b")) {
-                ao.sKRateCode += "   " + o.getCInstanceName() + "_i._inlet = inlet_" + o.getLegalName() + ";\n";
+                ao.sKRateCode += I + o.getCInstanceName() + "_i._inlet = inlet_" + o.getLegalName() + ";\n";
             }
             else if (o.typeName.equals("patch/inlet string")) {
-                ao.sKRateCode += "   " + o.getCInstanceName() + "_i._inlet = (char *)inlet_" + o.getLegalName() + ";\n";
+                ao.sKRateCode += I + o.getCInstanceName() + "_i._inlet = (char*) inlet_" + o.getLegalName() + ";\n";
             }
             else if (o.typeName.equals("patch/inlet a")) {
-                ao.sKRateCode += "   for (i=0; i<BUFSIZE; i++) " + o.getCInstanceName() + "_i._inlet[i] = inlet_" + o.getLegalName() + "[i];\n";
+                ao.sKRateCode += I + "for (i=0; i<BUFSIZE; i++) " + o.getCInstanceName() + "_i._inlet[i] = inlet_" + o.getLegalName() + "[i];\n";
             }
 
         }
@@ -1936,13 +1936,13 @@ public class Patch {
         ao.sKRateCode += GenerateDSPCodePlusPlusSub("attr_parent", true);
         for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("patch/outlet f") || o.typeName.equals("patch/outlet i") || o.typeName.equals("patch/outlet b")) {
-                ao.sKRateCode += "   outlet_" + o.getLegalName() + " = " + o.getCInstanceName() + "_i._outlet;\n";
+                ao.sKRateCode += I + "outlet_" + o.getLegalName() + " = " + o.getCInstanceName() + "_i._outlet;\n";
             }
             else if (o.typeName.equals("patch/outlet string")) {
-                ao.sKRateCode += "   outlet_" + o.getLegalName() + " = (char *)" + o.getCInstanceName() + "_i._outlet;\n";
+                ao.sKRateCode += I + "outlet_" + o.getLegalName() + " = (char*) " + o.getCInstanceName() + "_i._outlet;\n";
             }
             else if (o.typeName.equals("patch/outlet a")) {
-                ao.sKRateCode += "      for (i=0; i<BUFSIZE; i++) outlet_" + o.getLegalName() + "[i] = " + o.getCInstanceName() + "_i._outlet[i];\n";
+                ao.sKRateCode += I + "for (i=0; i<BUFSIZE; i++) outlet_" + o.getLegalName() + "[i] = " + o.getCInstanceName() + "_i._outlet[i];\n";
             }
         }
 
@@ -2105,7 +2105,7 @@ public class Patch {
 
         ao.sLocalData = GenerateParamInitCode3("");
         ao.sLocalData += GeneratePexchAndDisplayCode();
-        ao.sLocalData += "\n/* parameter instance indices */\n";
+        ao.sLocalData += "\n" + I + "/* Parameter instance indices */\n";
 
         int k = 0;
         for (ParameterInstance p : ParameterInstances) {
@@ -2113,6 +2113,7 @@ public class Patch {
             k++;
         }
 
+        ao.sLocalData += "\n";
         ao.sLocalData += GeneratePresetCode3("");
         ao.sLocalData += GenerateModulationCode3();
         ao.sLocalData += "class voice {\n";
@@ -2120,8 +2121,8 @@ public class Patch {
         ao.sLocalData += "  uint8_t polyIndex;\n";
         ao.sLocalData += GeneratePexchAndDisplayCodeV();
         ao.sLocalData += GenerateObjectCode("voice", true, "parent->common->");
-        ao.sLocalData += "  attr_parent *common;\n";
-        ao.sLocalData += "  void Init(voice *parent) {\n";
+        ao.sLocalData += "  attr_parent* common;\n";
+        ao.sLocalData += "  void Init(voice* parent) {\n";
         ao.sLocalData += "    uint16_t i; for (i=0; i<NPEXCH; i++) {\n"
                        + "      PExch[i].pfunction = 0;\n"
                        + "    }\n";
@@ -2135,16 +2136,16 @@ public class Patch {
         ao.sLocalData += "}\n";
         ao.sLocalData += GenerateMidiCodePlusPlus("attr_parent");
         ao.sLocalData += "};\n\n";
-        ao.sLocalData += "static voice * getVoices(void) {\n"
+        ao.sLocalData += "static voice* getVoices(void) {\n"
                        + "  static voice v[attr_poly];\n"
                        + "  return v;\n"
                        + "}\n";
 
-        ao.sLocalData += "static void PropagateToVoices(ParameterExchange_t *origin) {\n"
-                       + "  ParameterExchange_t *pex = (ParameterExchange_t *)origin->finalvalue;\n"
+        ao.sLocalData += "static void PropagateToVoices(ParameterExchange_t* origin) {\n"
+                       + "  ParameterExchange_t *pex = (ParameterExchange_t*) origin->finalvalue;\n"
                        + "  uint8_t vi; for (vi=0; vi<attr_poly; vi++) {\n"
                        + "    PExParameterChange(pex,origin->modvalue, 0xFFFFFFEE);\n"
-                       + "    pex = (ParameterExchange_t *)((int)pex + sizeof(voice)); // dirty trick...\n"
+                       + "    pex = (ParameterExchange_t*) ((int) pex + sizeof(voice)); // dirty trick...\n"
                        + "  }"
                        + "}\n";
 
@@ -2164,7 +2165,7 @@ public class Patch {
                      + "  PExch[k].finalvalue = (int32_t) (&(getVoices()[0].PExch[k]));\n"
                      + "}\n\n";
         ao.sInitCode += "uint8_t vi; for (vi=0; vi<attr_poly; vi++) {\n"
-                     + "  voice *v = &getVoices()[vi];\n"
+                     + "  voice* v = &getVoices()[vi];\n"
                      + "  v->polyIndex = vi;\n"
                      + "  v->common = this;\n"
                      + "  v->Init(&getVoices()[vi]);\n"
@@ -2185,7 +2186,7 @@ public class Patch {
                      + "priority = 0;\n"
                      + "sustain = 0;\n";
         ao.sDisposeCode = "uint8_t vi; for (vi=0; vi<attr_poly; vi++) {\n"
-                     + "  voice *v = &getVoices()[vi];\n"
+                     + "  voice* v = &getVoices()[vi];\n"
                      + "  v->dispose();\n"
                      + "}\n";
         ao.sKRateCode = "";
@@ -2208,7 +2209,7 @@ public class Patch {
                 ao.sKRateCode += "  getVoices()[vi]." + o.getCInstanceName() + "_i._inlet = inlet_" + o.getLegalName() + ";\n";
             }
             else if (o.typeName.equals("inlet_string") || o.typeName.equals("patch/inlet string")) {
-                ao.sKRateCode += "  getVoices()[vi]." + o.getCInstanceName() + "_i._inlet = (char *)inlet_" + o.getLegalName() + ";\n";
+                ao.sKRateCode += "  getVoices()[vi]." + o.getCInstanceName() + "_i._inlet = (char*) inlet_" + o.getLegalName() + ";\n";
             }
             else if (o.typeName.equals("inlet~") || o.typeName.equals("patch/inlet a")) {
                 ao.sKRateCode += "{\n"
@@ -2224,7 +2225,7 @@ public class Patch {
                 ao.sKRateCode += "  outlet_" + o.getLegalName() + " += getVoices()[vi]." + o.getCInstanceName() + "_i._outlet;\n";
             }
             else if (o.typeName.equals("patch/outlet string")) {
-                ao.sKRateCode += "  outlet_" + o.getLegalName() + " = (char *)getVoices()[vi]." + o.getCInstanceName() + "_i._outlet;\n";
+                ao.sKRateCode += "  outlet_" + o.getLegalName() + " = (char*) getVoices()[vi]." + o.getCInstanceName() + "_i._outlet;\n";
             }
             else if (o.typeName.equals("patch/outlet a")) {
                 ao.sKRateCode += "{\n"

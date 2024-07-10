@@ -238,7 +238,7 @@ public class Patch extends gentools {
 //                + "   parent2->PExModulationSources[MODULATOR_%name%][i].PEx = 0;\n";
         o.sKRateCode = "if ((%trig%>0) && !ntrig) {\n"
                 + "  PExModulationSourceChange(\n"
-                + "    &parent->GetModulationTable()[parent->MODULATOR_attr_name*NMODULATIONTARGETS],\n"
+                + "    &parent->GetModulationTable()[parent->MODULATOR_attr_name * NMODULATIONTARGETS],\n"
                 + "    NMODULATIONTARGETS,\n"
                 + "    &parent->PExch[0],\n"
                 + "    &parent->PExModulationPrevVal[parent->polyIndex][parent->MODULATOR_attr_name],\n"
