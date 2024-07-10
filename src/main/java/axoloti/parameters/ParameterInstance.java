@@ -471,23 +471,19 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     }
 
     public void setFrozen(Boolean f) {
-        /* Only parameters that are not on parent can be frozen.
-           Parameters on parent must be frozen via the parent patch.  */
-        if (!isOnParent()) {
-            if (f == null) {
-                setCtrlToolTip();
-                return;
-            }
-            if (isFrozen() == f) {
-                return;
-            }
-            if (f) {
-                isFrozen = true;
-            } else {
-                isFrozen = null;
-            }
+        if (f == null) {
             setCtrlToolTip();
+            return;
         }
+        if (isFrozen() == f) {
+            return;
+        }
+        if (f) {
+            isFrozen = true;
+        } else {
+            isFrozen = null;
+        }
+        setCtrlToolTip();
     }
 
     public abstract ACtrlComponent CreateControl();
