@@ -62,6 +62,7 @@ public abstract class ACtrlComponent extends JComponent {
     protected AxoObjectInstance axoObj;
     protected Color customBackgroundColor;
     protected long mouseEnteredTime;
+    protected boolean isLocked = false;
 
     public ACtrlComponent() {
         setFocusable(true);
@@ -81,22 +82,30 @@ public abstract class ACtrlComponent extends JComponent {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                if (!isLocked) {
                 ACtrlComponent.this.mousePressed(e);
+                }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
+                if (!isLocked) {
                 ACtrlComponent.this.mouseReleased(e);
+                }
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
+                if (!isLocked) {
                 ACtrlComponent.this.mouseEnteredTime = System.currentTimeMillis();
+                }
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
+                if (!isLocked) {
                 getRootPane().setCursor(Cursor.getDefaultCursor());
+                }
             }
 
         });
@@ -104,7 +113,9 @@ public abstract class ACtrlComponent extends JComponent {
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
+                if (!isLocked) {
                 ACtrlComponent.this.mouseDragged(e);
+                }
             }
             // @Override
             // public void mouseMoved(MouseEvent e) {
@@ -115,28 +126,30 @@ public abstract class ACtrlComponent extends JComponent {
         addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
-                long time = System.currentTimeMillis();
-                /* Only allow mousewheel adjustment after a [tooltip delay is showing].
-                * Prevents accidental edits while scrolling through the patch.
-                */
-                if (time < ACtrlComponent.this.mouseEnteredTime + ToolTipManager.sharedInstance().getInitialDelay()) {
-                    e.getComponent().getParent().dispatchEvent(e);
-                    e.consume();
-                }
-                else {
-                    double t = 0.5;
-                    if (e.isShiftDown()) {
-                        t = t * 0.1;
-                    }
-                    if (KeyUtils.isControlOrCommandDown(e)) {
-                        t = t * 0.1;
-                    }
-                    t = t < 0.01 ? 0.01 : t > 1.0 ? 1.0 : t;
-                    if (e.getWheelRotation() < 0) {
-                        setValue(getValue() + t);
+                if (!isLocked) {
+                    long time = System.currentTimeMillis();
+                    /* Only allow mousewheel adjustment after a [tooltip delay is showing].
+                    * Prevents accidental edits while scrolling through the patch.
+                    */
+                    if (time < ACtrlComponent.this.mouseEnteredTime + ToolTipManager.sharedInstance().getInitialDelay()) {
+                        e.getComponent().getParent().dispatchEvent(e);
+                        e.consume();
                     }
                     else {
-                        setValue(getValue() - t);
+                        double t = 0.5;
+                        if (e.isShiftDown()) {
+                            t = t * 0.1;
+                        }
+                        if (KeyUtils.isControlOrCommandDown(e)) {
+                            t = t * 0.1;
+                        }
+                        t = t < 0.01 ? 0.01 : t > 1.0 ? 1.0 : t;
+                        if (e.getWheelRotation() < 0) {
+                            setValue(getValue() + t);
+                        }
+                        else {
+                            setValue(getValue() - t);
+                        }
                     }
                 }
             }
@@ -149,12 +162,16 @@ public abstract class ACtrlComponent extends JComponent {
 
             @Override
             public void keyPressed(KeyEvent ke) {
+                if (!isLocked) {
                 ACtrlComponent.this.keyPressed(ke);
+                }
             }
 
             @Override
             public void keyReleased(KeyEvent ke) {
+                if (!isLocked) {
                 ACtrlComponent.this.keyReleased(ke);
+                }
             }
         });
     }
@@ -162,6 +179,18 @@ public abstract class ACtrlComponent extends JComponent {
     abstract public double getValue();
 
     abstract public void setValue(double value);
+
+    public void Lock() {
+        isLocked = true;
+    }
+
+    public void UnLock() {
+        isLocked = false;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
 
     abstract void mouseDragged(MouseEvent e);
 

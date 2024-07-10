@@ -80,6 +80,9 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 
     AssignMidiCCComponent midiAssign;
 
+    @Attribute(required = false)
+    private Boolean isFrozen;
+
     String I = "\t";
 
     public ParameterInstance() {
@@ -102,9 +105,24 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         return parameter.GetCName();
     }
 
+    public void Lock() {
+        if (ctrl != null) {
+            ctrl.Lock();
+        }
+    }
+
+    public void UnLock() {
+        if (ctrl != null) {
+            ctrl.UnLock();
+        }
+    }
+
     public void CopyValueFrom(ParameterInstance p) {
         if (p.onParent != null) {
             setOnParent(p.onParent);
+        }
+        if (p.isFrozen != null) {
+            setFrozen(p.isFrozen);
         }
         SetMidiCC(p.MidiCC);
     }
@@ -402,7 +420,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     }
 
     String GenerateMidiCCCodeSub(String vprefix, String value) {
-        if (MidiCC != null) {
+        if (!isFrozen() && MidiCC != null) {
             return "        if ((status == attr_midichannel + MIDI_CONTROL_CHANGE)&&(data1 == " + MidiCC + ")) {\n"
                     + "            PExParameterChange(&parent->" + PExName(vprefix) + "," + value + ", 0xFFFD);\n"
                     + "        }\n";
@@ -437,10 +455,39 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         }
         if (b) {
             onParent = true;
+            setFrozen(false); /* Cancel parameter freeze */
         } else {
             onParent = null;
         }
         setCtrlToolTip();
+    }
+
+    public boolean isFrozen() {
+        if (isFrozen == null) {
+            return false;
+        } else {
+            return isFrozen;
+        }
+    }
+
+    public void setFrozen(Boolean f) {
+        /* Only parameters that are not on parent can be frozen.
+           Parameters on parent must be frozen via the parent patch.  */
+        if (!isOnParent()) {
+            if (f == null) {
+                setCtrlToolTip();
+                return;
+            }
+            if (isFrozen() == f) {
+                return;
+            }
+            if (f) {
+                isFrozen = true;
+            } else {
+                isFrozen = null;
+            }
+            setCtrlToolTip();
+        }
     }
 
     public abstract ACtrlComponent CreateControl();
@@ -453,7 +500,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 
         @Override
         public void mousePressed(MouseEvent e) {
-            if (e.isPopupTrigger()) {
+            if (!getControlComponent().isLocked() && e.isPopupTrigger()) {
                 doPopup(e);
                 e.consume();
             }
@@ -461,7 +508,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            if (e.isPopupTrigger()) {
+            if (!getControlComponent().isLocked() && e.isPopupTrigger()) {
                 doPopup(e);
                 e.consume();
             }
@@ -484,14 +531,37 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 
     public void populatePopup(JPopupMenu m) {
         final JCheckBoxMenuItem m_onParent = new JCheckBoxMenuItem("Show Parameter on Parent");
+        m_onParent.setToolTipText("When selected and the current patch is a subpatch, this parameter\n" +
+                                  "will be shown on the parent patch and can be changed from there.n" +
+                                  "Any changes to the parameter value from inside the subpatch\n" +
+                                  "will have no effect while it is shown on the parent.");
         m_onParent.setSelected(isOnParent());
         m.add(m_onParent);
         m_onParent.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 setOnParent(m_onParent.isSelected());
+                SetDirty();
             }
         });
+
+        final JCheckBoxMenuItem m_isFrozen = new JCheckBoxMenuItem("Freeze Parameter");
+        m_isFrozen.setToolTipText("While frozen, a parameter consumes less memory and DSP but cannot be\n" +
+                                  "changed while the patch is live (essentially acting as an attribute).\n" +
+                                  "Any modulation, preset change, and MIDI assignments to the parameter\n" +
+                                  "will have no effect while it is frozen.");
+        m_isFrozen.setSelected(isFrozen());
+        /* TODO Only enabled if parameter is not on parent */
+        // m_isFrozen.setEnabled(!isOnParent());
+        m.add(m_isFrozen);
+        m_isFrozen.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                setFrozen(m_isFrozen.isSelected());
+                SetDirty();
+            }
+        });
+
         if (GetObjectInstance().getPatch() != null) {
             JMenu m_preset = new JMenu("Preset");
             m_preset.setDelay(300);
@@ -578,14 +648,19 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
             ctrl.setToolTipText("<html>" + parameter.name);
         }
 
+        ctrl.setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
+        ctrl.setBackground(Theme.getCurrentTheme().Parameter_Default_Background);
+
         if (isOnParent()) {
             ctrl.setForeground(Theme.getCurrentTheme().Parameter_On_Parent_Foreground);
-            ctrl.setBackground(Theme.getCurrentTheme().Parameter_On_Parent_Background);
             ctrl.setToolTipText(ctrl.getToolTipText() + "<p><b>This parameter is being controlled from the parent patch.</b>");
         }
+        if (isFrozen()) {
+            ctrl.setBackground(Theme.getCurrentTheme().Parameter_Frozen_Background);
+            ctrl.setToolTipText(ctrl.getToolTipText() + "<p><b>This parameter is currently frozen to save memory and DSP power.</b>");
+        }
         else {
-            ctrl.setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
-            ctrl.setBackground(Theme.getCurrentTheme().Parameter_Default_Background);
+            ctrl.setBackground(Theme.getCurrentTheme().Component_Background);
         }
     }
 }

@@ -530,6 +530,11 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         for (AttributeInstance a : attributeInstances) {
             a.Lock();
         }
+        for (ParameterInstance p : parameterInstances) {
+            if (p.isFrozen()) {
+                p.Lock();
+            }
+        }
     }
 
     public void updateObj() {
@@ -542,6 +547,11 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         super.Unlock();
         for (AttributeInstance a : attributeInstances) {
             a.UnLock();
+        }
+        for (ParameterInstance p : parameterInstances) {
+            if (p.isFrozen()) {
+                p.UnLock();
+            }
         }
         if (deferredObjTypeUpdate) {
             updateObj();
@@ -592,7 +602,13 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public String GenerateInstanceCodePlusPlus(String classname, boolean enableOnParent) {
         String c = "\n" + I+I + "/* Object Local Code */\n";
         for (ParameterInstance p : parameterInstances) {
-            c += I+I + p.GenerateCodeDeclaration(classname);
+            if (p.isFrozen()) {
+                c += I+I + "// Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + "_" + p.getLegalName() + "\n";
+                c += I+I + "static const int32_t param_" + p.getLegalName() + " = " + p.GetValueRaw() + ";\n"; 
+            }
+            else {
+                c += I+I + p.GenerateCodeDeclaration(classname);
+            }
         }
         c += GenerateInstanceDataDeclaration2();
         for (AttributeInstance p : attributeInstances) {
@@ -611,22 +627,27 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 //        else
 //        if (!classname.equals("one"))
         c += I+I+I + "parent = _parent;\n";
-        for (ParameterInstance p : parameterInstances) {
-            if (p.parameter.PropagateToChild != null) {
-                c += I+I+I + "// on Parent: propagate " + p.getName() + " " + enableOnParent + " " + getLegalName() + "" + p.parameter.PropagateToChild + "\n";
-                c += I+I+I +  p.PExName("parent->") + ".pfunction = PropagateToSub;\n";
-                c += I+I+I +  p.PExName("parent->") + ".finalvalue = (int32_t)(&(parent->objectinstance_"
-                        + getLegalName() + "_i.PExch[objectinstance_" + getLegalName() + "::PARAM_INDEX_"
-                        + p.parameter.PropagateToChild + "]));\n";
 
-            } else {
-                c += I+I+I + p.GenerateCodeInit("parent->", "");
+        for (ParameterInstance p : parameterInstances) {
+            if (!p.isFrozen()) {
+                if (p.parameter.PropagateToChild != null) {
+
+                        c += I+I+I + "// on Parent: propagate " + p.getName() + " " + enableOnParent + " " + getLegalName() + "" + p.parameter.PropagateToChild + "\n";
+                        c += I+I+I +  p.PExName("parent->") + ".pfunction = PropagateToSub;\n";
+                        c += I+I+I +  p.PExName("parent->") + ".finalvalue = (int32_t)(&(parent->objectinstance_"
+                                + getLegalName() + "_i.PExch[objectinstance_" + getLegalName() + "::PARAM_INDEX_"
+                                + p.parameter.PropagateToChild + "]));\n";
+                } else {
+                    c += I+I+I + p.GenerateCodeInit("parent->", "");
+                }
+                c += I+I+I + p.GenerateCodeInitModulator("parent->", "");
             }
-            c += I+I+I + p.GenerateCodeInitModulator("parent->", "");
         }
+
         for (DisplayInstance p : displayInstances) {
             c += p.GenerateCodeInit("");
         }
+
         if (getType().sInitCode != null) {
             String s = getType().sInitCode;
             for (AttributeInstance p : attributeInstances) {
@@ -769,7 +790,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             comma = true;
         }
         for (ParameterInstance i : parameterInstances) {
-            if (i.parameter.PropagateToChild == null) {
+            if (!i.isFrozen() && i.parameter.PropagateToChild == null) {
                 if (comma) {
                     s += ", ";
                 }
@@ -829,7 +850,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             s += getType().sMidiCode;
         }
         for (ParameterInstance i : parameterInstances) {
-            s += i.GenerateCodeMidiHandler("");
+            if (!i.isFrozen()) {
+                s += i.GenerateCodeMidiHandler("");
+            }
         }
         for (AttributeInstance p : attributeInstances) {
             s = s.replaceAll(p.GetCName(), p.CValue());

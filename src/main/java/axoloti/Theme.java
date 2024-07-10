@@ -172,9 +172,9 @@ public class Theme {
     public Color Parameter_On_Parent_Foreground = isBgDark ? new Color(0x60, 0x60, 0xFF) : Color.BLUE;
 
     @Element
-    public Color Parameter_Frozen_Background = isBgDark ? new Color(0x60,0x60,0x00) : new Color(0xFF, 0xFF, 0xC0);
-    @Element
-    public Color Parameter_Frozen_Foreground = isBgDark ? new Color(0x60, 0x60, 0xFF) : Color.ORANGE;
+    public Color Parameter_Frozen_Background = isBgDark ? Parameter_Default_Background.brighter() : Parameter_Default_Background.darker();
+    // @Element /* not used */
+    // public Color Parameter_Frozen_Foreground = isBgDark ? new Color(0x60, 0x60, 0xFF) : Color.ORANGE;
 
     @Element
     public Color Component_Foreground = Object_Default_Foreground;

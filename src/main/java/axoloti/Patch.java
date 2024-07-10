@@ -348,7 +348,9 @@ public class Patch {
         presetUpdatePending = false;
         for (AxoObjectInstanceAbstract o : objectInstances) {
             for (ParameterInstance pi : o.getParameterInstances()) {
-                pi.ClearNeedsTransmit();
+                if (!pi.isFrozen()) {
+                    pi.ClearNeedsTransmit();
+                }
             }
         }
         WriteCode();
@@ -963,9 +965,11 @@ public class Patch {
         ParameterInstances = new ArrayList<ParameterInstance>();
         for (AxoObjectInstanceAbstract o : objectInstances) {
             for (ParameterInstance p : o.getParameterInstances()) {
-                p.setIndex(i);
-                i++;
-                ParameterInstances.add(p);
+                if (!p.isFrozen()) {
+                    p.setIndex(i);
+                    i++;
+                    ParameterInstances.add(p);
+                }
             }
         }
         int offset = 0;
@@ -1201,9 +1205,9 @@ public class Patch {
 
         if (Modulators.size() > 0) {
             c += "\n" + I + "/* Modsource defines */\n";
-        for (Modulator m : Modulators) {
-            c += I + "static const int " + m.getCName() + " = " + k + ";\n";
-            k++;
+            for (Modulator m : Modulators) {
+                c += I + "static const int " + m.getCName() + " = " + k + ";\n";
+                k++;
             }
         }
 
@@ -1323,7 +1327,12 @@ public class Patch {
                 for (int j = 0; j < settings.GetNModulationTargetsPerSource(); j++) {
                     if (j < m.Modulations.size()) {
                         Modulation n = m.Modulations.get(j);
-                        s += "{" + n.destination.indexName() + ", " + n.value.getRaw() + "}";
+                        if (n.destination.isFrozen()) {
+                            s += "{-1, 0}";
+                        }
+                        else {
+                            s += "{" + n.destination.indexName() + ", " + n.value.getRaw() + "}";
+                        }
                     } else {
                         s += "{-1, 0}";
                     }
@@ -1577,12 +1586,14 @@ public class Patch {
             needsComma = true;
         }
         for (ParameterInstance i : o.getParameterInstances()) {
-            if (i.parameter.PropagateToChild == null) {
-                if (needsComma) {
-                    c += ", ";
+            if (!i.isFrozen()) {
+                if (i.parameter.PropagateToChild == null) {
+                    if (needsComma) {
+                        c += ", ";
+                    }
+                    c += i.variableName("", false);
+                    needsComma = true;
                 }
-                c += i.variableName("", false);
-                needsComma = true;
             }
         }
         for (DisplayInstance i : o.GetDisplayInstances()) {
@@ -1708,18 +1719,18 @@ public class Patch {
         c += "}\n\n";
 
         c += "void ApplyPreset(uint8_t i) {\n"
-                + I + "root.ApplyPreset(i);\n"
-                + "}\n\n";
+           + I + "root.ApplyPreset(i);\n"
+           + "}\n\n";
 
         c += "void PatchMidiInHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t data1, uint8_t data2) {\n"
            + I + "root.MidiInHandler(dev, port, status, data1, data2);\n"
-                + "}\n\n";
+           + "}\n\n";
 
         c += "typedef void (*funcp_t) (void);\n"
            + "typedef funcp_t* funcpp_t;\n\n"
-                + "extern funcp_t __ctor_array_start;\n"
+           + "extern funcp_t __ctor_array_start;\n"
            + "extern funcp_t __ctor_array_end;\n"
-                + "extern funcp_t __dtor_array_start;\n"
+           + "extern funcp_t __dtor_array_start;\n"
            + "extern funcp_t __dtor_array_end;\n\n";
 
         c += "void PatchDispose( ) {\n"
@@ -1731,7 +1742,7 @@ public class Patch {
            + I+I+I + "fpp++;\n"
            + I+I + "}\n"
            + I + "}\n\n"
-                + "}\n\n";
+           + "}\n\n";
 
         c += "void xpatch_init2(int fwid) {\n"
            + I + "if (fwid != 0x" + MainFrame.mainframe.LinkFirmwareID + ") {\n"
@@ -1763,7 +1774,7 @@ public class Patch {
            + I + "patchMeta.fptr_patch_dispose = PatchDispose;\n"
            + I + "patchMeta.fptr_MidiInHandler = PatchMidiInHandler;\n"
            + I + "patchMeta.fptr_dsp_process = PatchProcess;\n"
-                + "}\n";
+           + "}\n";
         return c;
     }
 
@@ -1894,8 +1905,10 @@ public class Patch {
             }
 
             for (ParameterInstance p : o.getParameterInstances()) {
-                if (p.isOnParent()) {
-                    ao.params.add(p.getParameterForParent());
+                if (!p.isFrozen()) {
+                    if (p.isOnParent()) {
+                        ao.params.add(p.getParameterForParent());
+                    }
                 }
             }
         }
@@ -2097,8 +2110,10 @@ public class Patch {
             }
 
             for (ParameterInstance p : o.getParameterInstances()) {
-                if (p.isOnParent()) {
-                    ao.params.add(p.getParameterForParent());
+                if (!p.isFrozen()) {
+                    if (p.isOnParent()) {
+                        ao.params.add(p.getParameterForParent());
+                    }
                 }
             }
         }
@@ -2109,8 +2124,10 @@ public class Patch {
 
         int k = 0;
         for (ParameterInstance p : ParameterInstances) {
-            ao.sLocalData += "static const int PARAM_INDEX_" + p.GetObjectInstance().getLegalName() + "_" + p.getLegalName() + " = " + k + ";\n";
-            k++;
+            if (!p.isFrozen()) {
+                ao.sLocalData += I + "static const int32_t PARAM_INDEX_" + p.GetObjectInstance().getLegalName() + "_" + p.getLegalName() + " = " + k + ";\n";
+                k++;
+            }
         }
 
         ao.sLocalData += "\n";
@@ -2548,7 +2565,9 @@ public class Patch {
         Collection<AxoObjectInstanceAbstract> c = (Collection<AxoObjectInstanceAbstract>) objectInstances.clone();
         for (AxoObjectInstanceAbstract o : c) {
             for (ParameterInstance p : o.getParameterInstances()) {
-                p.ShowPreset(i);
+                if (!p.isFrozen()) {
+                    p.ShowPreset(i);
+                }
             }
         }
         repaint();
