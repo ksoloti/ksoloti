@@ -211,7 +211,7 @@ public class Checkbox4StatesComponent extends ACtrlComponent {
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         if (isEnabled()) {
-            g2.setColor(Theme.getCurrentTheme().Component_Background);
+            g2.setColor(getBackground());
         } else {
             g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
         }
@@ -240,7 +240,7 @@ public class Checkbox4StatesComponent extends ACtrlComponent {
             for (int i = 0; i < n; i++) {
                 switch (v & 3) {
                     case 0:
-                        g2.setColor(Theme.getCurrentTheme().Component_Background);
+                        g2.setColor(getBackground());
                         g2.fillRect(i * bsize + inset, inset, bsize - inset - 2, bsize - inset - 1);
                         break;
                     case 1:
@@ -252,7 +252,7 @@ public class Checkbox4StatesComponent extends ACtrlComponent {
                         g2.fillRect(i * bsize + inset + 1 , inset + 1, bsize - inset - 4, bsize - inset - 3);
                         break;
                     case 3:
-                        g2.setColor(Theme.getCurrentTheme().Component_Foreground);
+                        g2.setColor(getForeground());
                         g2.fillRect(i * bsize + inset, inset, bsize - inset - 2, bsize - inset - 1);
                         break;
                 }

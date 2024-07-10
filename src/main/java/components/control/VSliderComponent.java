@@ -261,7 +261,7 @@ public class VSliderComponent extends ACtrlComponent {
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         if (isEnabled()) {
-            g2.setColor(Theme.getCurrentTheme().Component_Background);
+            g2.setColor(getBackground());
             g2.fillRect(0, 0, getWidth(), height);
             g2.setPaint(getForeground());
             if (isFocusOwner()) {

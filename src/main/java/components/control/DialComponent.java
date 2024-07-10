@@ -359,7 +359,7 @@ public class DialComponent extends ACtrlComponent {
                 g2.setColor(this.customBackgroundColor);
             }
             else {
-                g2.setColor(Theme.getCurrentTheme().Component_Background);
+                g2.setColor(getBackground());
             }
         }
         else {

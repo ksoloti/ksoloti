@@ -291,7 +291,7 @@ public class NumberBoxComponent extends ACtrlComponent {
             g2.setStroke(strokeThin);
         }
         if (isEnabled()) {
-            g2.setColor(Theme.getCurrentTheme().Component_Background);
+            g2.setColor(getBackground());
         } else {
             g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
         }

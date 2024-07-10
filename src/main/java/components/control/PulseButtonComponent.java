@@ -105,7 +105,7 @@ public class PulseButtonComponent extends ACtrlComponent {
             g2.drawOval(2, 2, bsize - 5, bsize - 5);
             g2.fillOval(2, 2, bsize - 5, bsize - 5);
         } else {
-            g2.setColor(Theme.getCurrentTheme().Component_Background);
+            g2.setColor(getBackground());
             g2.fillOval(2, 2, bsize - 5, bsize - 5);
             g2.setPaint(getForeground());
             g2.drawOval(2, 2, bsize - 5, bsize - 5);

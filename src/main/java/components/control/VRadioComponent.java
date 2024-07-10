@@ -55,7 +55,7 @@ public class VRadioComponent extends HRadioComponent {
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         if (isEnabled()) {
-            g2.setColor(Theme.getCurrentTheme().Component_Background);
+            g2.setColor(getBackground());
         } else {
             g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
         }
