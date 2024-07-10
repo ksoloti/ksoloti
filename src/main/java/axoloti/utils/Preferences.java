@@ -106,7 +106,7 @@ public class Preferences {
     @Element(required = false)
     String Theme;
     @Element(required = false)
-    int CodeFontSize = 14; /* default to 14pt */
+    int CodeFontSize = 12; /* default to 12pt */
     @Element(required = false)
     String[] UserShortcuts = {"", "", "", ""}; /* Four user shortcuts in object finder */
 
