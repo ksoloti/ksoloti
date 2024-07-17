@@ -8,6 +8,10 @@ johannes.taelman@gmail.com
 
 Fork with a standalone patcher and firmware edits for the Ksoloti Core board by ksoloti.axo@gmail.com
 
+
+This patcher has legacy support for Axoloti boards.
+
+
 Axoloti is a platform for sketching music-DSP algorithms running on standalone hardware.
 
 
