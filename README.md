@@ -11,14 +11,22 @@ Fork with a standalone patcher and firmware edits for the Ksoloti Core board by 
 Axoloti is a platform for sketching music-DSP algorithms running on standalone hardware.
 
 
-[Ksoloti website](http://ksoloti.github.io)
 
 
 Ksoloti Core boards are available at:
 
+
 [Thonk (UK)](https://www.thonk.co.uk/brand/ksoloti)
 
+
 [Alt Circuits (US)](https://altcircuits.myshopify.com/)
+
+
+More info:
+
+
+[Ksoloti website](http://ksoloti.github.io)
+
 
 [Ksoloti on Instagram](https://instagram.com/ksoloti.axo/)
 
