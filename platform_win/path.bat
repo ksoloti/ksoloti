@@ -6,7 +6,7 @@ if not defined axoloti_release (
 )
 
 if not defined axoloti_runtime (
-   set axoloti_runtime=%platformdir%\..
+   set axoloti_runtime=%platformdir%..
 )
 
 if not defined axoloti_firmware (
