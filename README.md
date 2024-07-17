@@ -1,4 +1,4 @@
-# Ksoloti
+p# Ksoloti
 
 ![Ksoloti Core front and back](/doc/ksoloti_core_front_and_back.jpg)
 
@@ -32,13 +32,13 @@ More info:
 [Ksoloti website](http://ksoloti.github.io)
 
 
-[Ksoloti on Instagram](https://instagram.com/ksoloti.axo/)
-
-
 [Ksoloti Discord Group](https://discord.com/invite/629kNnhj5R)
 
 
 [Axoloti Community Forum Backup](https://sebiik.github.io/community.axoloti.com.backup/)
+
+
+[Ksoloti on Instagram](https://instagram.com/ksoloti.axo/)
 
 
 [Axoloti website](http://www.axoloti.com) (inactive?)
