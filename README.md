@@ -14,8 +14,11 @@ Axoloti is a platform for sketching music-DSP algorithms running on standalone h
 [Ksoloti website](http://ksoloti.github.io)
 
 
-[Ksoloti Core boards are available via Thonk](https://www.thonk.co.uk/shop/ksoloti-core-pcb)
+Ksoloti Core boards are available at:
 
+[Thonk (UK)](https://www.thonk.co.uk/brand/ksoloti)
+
+[Alt Circuits (US)](https://altcircuits.myshopify.com/)
 
 [Ksoloti on Instagram](https://instagram.com/ksoloti.axo/)
 
