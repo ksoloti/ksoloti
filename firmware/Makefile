@@ -7,6 +7,8 @@ BOARDDEF=
 # Compiler options here.
 ifeq ($(USE_OPT),)
   USE_OPT = \
+    --specs=nano.specs \
+    --specs=nosys.specs \
     -O2 \
     -ggdb \
     -fomit-frame-pointer \

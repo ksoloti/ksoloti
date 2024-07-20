@@ -4,7 +4,7 @@ set -e
 export PATH=${axoloti_runtime}/platform_linux/bin:$PATH
 
 cd "${axoloti_firmware}"
-make -f Makefile.patch clean
+make -f Makefile.patch.mk clean
 
 echo "Compiling firmware... $1"
 rm -rf .dep

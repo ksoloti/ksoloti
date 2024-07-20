@@ -1,29 +1,32 @@
 BOARDDEF=
 
 CCFLAGS = \
+    -ggdb3 \
+    -std=c++11 \
+    -mword-relocations \
+    -mlong-calls \
+    -mfloat-abi=hard \
+    -mcpu=cortex-m4 \
+    -mfpu=fpv4-sp-d16 \
+    -mthumb \
     -nostdlib \
+    -fno-common \
     -fno-exceptions \
     -fno-rtti \
-    -mcpu=cortex-m4 \
-    -O3 \
     -fomit-frame-pointer \
-    -falign-functions=16 \
-    -mfloat-abi=hard \
-    -mfpu=fpv4-sp-d16 \
-    -Wunused-parameter \
-    -DCORTEX_USE_FPU=TRUE \
-    -DTHUMB_PRESENT \
-    -mno-thumb-interwork \
-    -DTHUMB_NO_INTERWORKING \
-    -mthumb \
-    -DTHUMB \
-    -std=c++11 \
-    -DARM_MATH_CM4 \
-    -D__FPU_PRESENT \
     -fno-math-errno \
     -fno-threadsafe-statics \
     -fno-use-cxa-atexit \
+    -fpermissive \
+    -O3 \
     -Wno-unused-parameter \
+    -DCORTEX_USE_FPU=TRUE \
+    -DTHUMB \
+    -DTHUMB_PRESENT \
+    -DTHUMB_NO_INTERWORKING \
+    -DARM_MATH_CM4 \
+    -D__FPU_PRESENT \
+    -DSTM32F427xx \
     $(BOARDDEF)
 
 ifeq ($(BOARDDEF), -DBOARD_KSOLOTI_CORE)
@@ -33,16 +36,22 @@ RAMLINKOPT = -Tramlink_axoloti.ld
 endif
 
 LDFLAGS = \
-    -nostartfiles \
     $(RAMLINKOPT) \
+    -Bsymbolic \
+	-mlong-calls \
+	-fno-common \
+    -nostartfiles \
     -mcpu=cortex-m4 \
     -mfloat-abi=hard \
     -mfpu=fpv4-sp-d16 \
     -mthumb \
-    -mno-thumb-interwork
+    -mno-thumb-interwork \
+   	-Wl,--gc-sections \
+	-Wl,--wrap -Wl,memcpy
 
 CC=arm-none-eabi-gcc
 CPP=arm-none-eabi-g++
+#CPP=arm-none-eabi-gcc -lstdc++
 LD=arm-none-eabi-gcc
 CP=arm-none-eabi-objcopy
 DMP=arm-none-eabi-objdump
@@ -102,6 +111,7 @@ endif
 	@$(CP) -O binary ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin
 #	@echo Displaying size statistic
 	@$(SIZ) --format=sysv ${BUILDDIR}/xpatch.elf
+	@$(SIZ) --format=berkeley ${BUILDDIR}/xpatch.elf
 
 .PHONY: clean
 
