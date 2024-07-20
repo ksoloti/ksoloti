@@ -48,7 +48,9 @@ public class ValueFrac32 extends Value<Frac32> {
 
     @Override
     public int getFrac() {
-        return (int) (v * (1 << 21));
+        int val = (int) (v * (1 << 21));
+        val = val > (1<<27)-1 ? (1<<27)-1 : val;
+        return val;
     }
 
     @Override
