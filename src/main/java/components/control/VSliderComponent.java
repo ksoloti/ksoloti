@@ -52,6 +52,9 @@ public class VSliderComponent extends ACtrlComponent {
     double min;
     double tick;
 
+    private int MousePressedCoordX;
+    private int MousePressedCoordY;
+
     private static final int height = 128;
     private static final int width = 12;
     private static final Dimension dim = new Dimension(width, height);
@@ -87,8 +90,6 @@ public class VSliderComponent extends ACtrlComponent {
         });
         SetupTransferHandler();
     }
-    private int MousePressedCoordX;
-    private int MousePressedCoordY;
 
     @Override
     protected void mouseDragged(MouseEvent e) {
@@ -142,7 +143,12 @@ public class VSliderComponent extends ACtrlComponent {
     public void keyPressed(KeyEvent ke) {
         double steps = tick;
         if (ke.isShiftDown()) {
-            steps = 8 * tick;
+            steps = steps * 0.1; // mini steps!
+            if (KeyUtils.isControlOrCommandDown(ke)) {
+                steps = steps * 0.1; // micro steps!                
+            }
+        } else if (KeyUtils.isControlOrCommandDown(ke)) {
+            steps = steps * 10.0; //accelerate!
         }
         switch (ke.getKeyCode()) {
             case KeyEvent.VK_UP:
