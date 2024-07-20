@@ -47,6 +47,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -603,8 +606,107 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         String c = "\n" + I+I + "/* Object Local Code */\n";
         for (ParameterInstance p : parameterInstances) {
             if (p.isFrozen()) {
+
                 c += I+I + "// Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + "_" + p.getLegalName() + "\n";
-                c += I+I + "static const int32_t param_" + p.getLegalName() + " = " + p.GetValueRaw() + ";\n"; 
+                c += I+I + "static const int32_t param_" + p.getLegalName() + " = ";
+                /* Do parameter value mapping in Java so save MCU memory.
+                 * These are the same functions like in firmware/parameter_functions.h.
+                 */
+                String pfun = p.GetPFunction();
+                if (pfun != null && !pfun.equals("")) {
+                    int S28_MAX = (1<<27)-1;
+                    int S28_MIN = -(1<<27);
+                    int signedClampedVal = Math.clamp(p.GetValueRaw(), S28_MIN, S28_MAX);
+                    int unsignedClampedVal = Math.clamp(p.GetValueRaw(), 0, S28_MAX);
+
+                    if (pfun.equals("pfun_signed_clamp")) {
+                        c += signedClampedVal + "; /*pfun_signed_clamp*/\n";
+                    }
+
+                    else if (pfun.equals("pfun_unsigned_clamp")) {
+                        c += unsignedClampedVal + "; /*pfun_unsigned_clamp*/\n";
+                    }
+
+                    else if (pfun.equals("pfun_signed_clamp_fullrange")) {
+                        c += (signedClampedVal << 4) + "; /*pfun_signed_clamp_fullrange*/\n";
+                    }
+
+                    else if (pfun.equals("pfun_unsigned_clamp_fullrange")) {
+                        c += (unsignedClampedVal << 4) + "; /*pfun_unsigned_clamp_fullrange*/\n";
+                    }
+
+                    else if (pfun.equals("pfun_signed_clamp_squarelaw")) {
+                        long psat = (long) signedClampedVal;
+                        long mappedVal = 0;
+                        if (psat > 0) {
+                            mappedVal = ((psat * psat) >> 31);
+                        }
+                        else {
+                            mappedVal = -((psat * psat) >> 31);
+                        }
+                        c += (int) mappedVal + " /*pfun_signed_clamp_squarelaw*/;\n";
+                    }
+
+                    else if (pfun.equals("pfun_unsigned_clamp_squarelaw")) {
+                        long psat = unsignedClampedVal;
+                        long mappedVal = ((psat * psat) >> 31);
+                        c += (int) mappedVal + "; /*pfun_unsigned_clamp_squarelaw*/\n";
+                    }
+
+                    else if (pfun.equals("pfun_signed_clamp_fullrange_squarelaw")) {
+                        long psat = (long) signedClampedVal;
+                        long mappedVal;
+                        if (psat > 0) {
+                            mappedVal = ((psat * psat) >> 23);
+                        }
+                        else {
+                            mappedVal = -((psat * psat) >> 23);
+                        }
+                        c += (int) mappedVal + "; /*pfun_signed_clamp_fullrange_squarelaw*/\n";
+                    }
+
+                    else if (pfun.equals("pfun_unsigned_clamp_fullrange_squarelaw")) {
+                        long psat = (long) unsignedClampedVal;
+                        long mappedVal = ((psat * psat) >> 23);
+                        c += (int) mappedVal + "; /*pfun_unsigned_clamp_fullrange_squarelaw*/\n";
+                    }
+
+                    else if (pfun.equals("pfun_kexpltime") || pfun.equals("pfun_kexpdtime")) {
+                        /* Calculate java version of pitch table (firmware/axoloti_math.c) */
+                        int[] pitchTable = new int[257];
+
+                        /* Attempt to emulate single precision and "round to zero" behaviour of Cortex FPU */
+                        MathContext mc = new MathContext(10, RoundingMode.DOWN);
+
+                        for (int i = 0; i < pitchTable.length; i++) {
+                            BigDecimal frq_hz = new BigDecimal(440.0 * Math.pow(2.0, (i - 69.0 - 64.0) / 12.0), mc);
+                            BigDecimal phi = new BigDecimal(4.0 * (double) (1 << 30) * frq_hz.floatValue() / 48000.0, mc);
+                            pitchTable[i] = phi.intValue();
+                            // Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "pitchtable: " + pitchTable[i]);
+                        }
+
+                        /* Calculate "fractional" pitch (mtof48k_q31 in firmware/axoloti_math.h) */
+                        int pi = -signedClampedVal;
+                        int pit = pi / (1<<21); /* equals pi >> 21 */
+                        long y1 = pitchTable[128 + pit];
+                        long y2 = pitchTable[128 + pit + 1];
+                        int pf = (pi & 0x1FFFFF) * 1024; /* equals ... << 10 */
+                        int pfc = 0x7FFFFFFF /* INT32_MAX */ - pf;
+                        long r = (y1 * (long) pfc) >> 32;
+                             r += (y2 * (long) pf) >> 32;
+                        int frequency = (int) r / 2; /* equals >> 1 */
+
+                        if (pfun.equals("pfun_kexpltime")) {
+                            c += frequency + "; /*pfun_kexpltime*/\n";
+                        }
+                        else if (pfun.equals("pfun_kexpdtime")) {
+                            c += (0x7FFFFFFF - frequency) + "; /*pfun_kexpdtime*/\n";
+                        }
+                    }
+                }
+                else {
+                    c += p.GetValueRaw() + ";\n"; 
+}
             }
             else {
                 c += I+I + p.GenerateCodeDeclaration(classname);
