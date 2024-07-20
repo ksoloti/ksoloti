@@ -389,7 +389,7 @@ public class AxoObject extends AxoObjectAbstract {
     public Modulator[] getModulators() {
         if ((providesModulationSource != null) && (providesModulationSource)) {
             Modulator[] m = new Modulator[1];
-            //m[0].objinst = this;
+            //m[0].objInst = this;
             m[0] = new Modulator();
             m[0].name = "";
             return m;

@@ -65,8 +65,8 @@ public class Modulation {
         }
         Modulator m = null;
         for (Modulator m1 : p.GetObjectInstance().patch.Modulators) {
-            System.out.println("modulator match? " + m1.objinst.getInstanceName());
-            if (m1.objinst == source) {
+            System.out.println("modulator match? " + m1.objInst.getInstanceName());
+            if (m1.objInst == source) {
                 if ((m1.name != null) && (!m1.name.isEmpty())) {
                     if (m1.name.equals(modName)) {
                         m = m1;

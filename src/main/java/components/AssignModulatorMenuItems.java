@@ -52,9 +52,9 @@ public class AssignModulatorMenuItems {
             p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
             String modlabel;
             if ((m.name == null) || (m.name.isEmpty())) {
-                modlabel = m.objinst.getInstanceName();
+                modlabel = m.objInst.getInstanceName();
             } else {
-                modlabel = m.objinst.getInstanceName() + ":" + m.name;
+                modlabel = m.objInst.getInstanceName() + ":" + m.name;
             }
             p.add(new JLabel(modlabel + " "));
             HSliderComponent hsl = new HSliderComponent();
@@ -70,7 +70,7 @@ public class AssignModulatorMenuItems {
                 @Override
                 public void ACtrlAdjusted(ACtrlEvent e) {
                     int i = hsls.indexOf(e.getSource());
-                    //                            System.out.println("ctrl " + i + parameterInstance.axoObj.patch.Modulators.get(i).objinst.InstanceName);
+                    // System.out.println("ctrl " + i + parameterInstance.axoObj.patch.Modulators.get(i).objInst.InstanceName);
                     ValueFrac32 v = new ValueFrac32(((HSliderComponent) e.getSource()).getValue());
                     param.updateModulation(i, v.getDouble());
                 }

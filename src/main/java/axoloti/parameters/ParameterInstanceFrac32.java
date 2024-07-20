@@ -124,7 +124,7 @@ public abstract class ParameterInstanceFrac32<Tx extends ParameterFrac32> extend
             //System.out.println("updatemodulation2:" + modulator.name);
             Modulation n = null;
             for (Modulation m : modulators) {
-                if (m.source == modulator.objinst) {
+                if (m.source == modulator.objInst) {
                     if ((modulator.name == null) || (modulator.name.isEmpty())) {
                         n = m;
                         break;
@@ -141,8 +141,8 @@ public abstract class ParameterInstanceFrac32<Tx extends ParameterFrac32> extend
                 //System.out.println("updatemodulation3:" + n.sourceName);
                 modulators.add(n);
             }
-            n.source = modulator.objinst;
-            n.sourceName = modulator.objinst.getInstanceName();
+            n.source = modulator.objInst;
+            n.sourceName = modulator.objInst.getInstanceName();
             n.modName = modulator.name;
             n.getValue().setDouble(amount);
             n.destination = this;

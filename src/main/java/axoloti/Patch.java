@@ -401,7 +401,7 @@ public class Patch {
                     Modulators = new ArrayList<Modulator>();
                 }
                 for (Modulator mm : m) {
-                    mm.objinst = o;
+                    mm.objInst = o;
                     Modulators.add(mm);
                 }
             }
@@ -552,7 +552,7 @@ public class Patch {
             while (GetObjectInstance(n + i) != null) {
                 i++;
             }
-            AxoObjectInstanceAbstract objinst = obj.CreateInstance(this, n + i, loc);
+            AxoObjectInstanceAbstract oi = obj.CreateInstance(this, n + i, loc);
 
             SetDirty();
 
@@ -562,12 +562,12 @@ public class Patch {
                     Modulators = new ArrayList<Modulator>();
                 }
                 for (Modulator mm : m) {
-                    mm.objinst = objinst;
+                    mm.objInst = oi;
                     Modulators.add(mm);
                 }
             }
 
-            return objinst;
+            return oi;
         }
         else {
             Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t add instance: locked!");
@@ -759,7 +759,7 @@ public class Patch {
 
         int i; for (i = Modulators.size() - 1; i >= 0; i--) {
             Modulator m1 = Modulators.get(i);
-            if (m1.objinst == o) {
+            if (m1.objInst == o) {
                 Modulators.remove(m1);
                 for (Modulation mt : m1.Modulations) {
                     mt.destination.removeModulation(mt);
@@ -780,7 +780,7 @@ public class Patch {
         /* find modulator */
         Modulator m = null;
         for (Modulator m1 : Modulators) {
-            if (m1.objinst == n.source) {
+            if (m1.objInst == n.source) {
                 if ((m1.name == null) || (m1.name.isEmpty())) {
                     m = m1;
                     break;

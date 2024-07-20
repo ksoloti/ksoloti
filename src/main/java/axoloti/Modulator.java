@@ -28,14 +28,14 @@ import java.util.ArrayList;
 public class Modulator {
 
     public String name;
-    public AxoObjectInstanceAbstract objinst;
+    public AxoObjectInstanceAbstract objInst;
     public ArrayList<Modulation> Modulations = new ArrayList<Modulation>();
 
     public String getCName() {
         if ((name != null) && (!name.isEmpty())) {
-            return "MODULATOR_" + objinst.getCInstanceName() + "_" + name;
+            return "MODULATOR_" + objInst.getCInstanceName() + "_" + name;
         } else {
-            return "MODULATOR_" + objinst.getCInstanceName();
+            return "MODULATOR_" + objInst.getCInstanceName();
         }
     }
 }

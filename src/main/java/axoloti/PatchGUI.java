@@ -569,7 +569,7 @@ public class PatchGUI extends Patch {
                             Modulators = new ArrayList<Modulator>();
                         }
                         for (Modulator mm : m) {
-                            mm.objinst = o;
+                            mm.objInst = o;
                             Modulators.add(mm);
                         }
                     }
@@ -964,16 +964,16 @@ public class PatchGUI extends Patch {
 
     @Override
     public AxoObjectInstanceAbstract AddObjectInstance(AxoObjectAbstract obj, Point loc) {
-        AxoObjectInstanceAbstract objinst = super.AddObjectInstance(obj, loc);
-        if (objinst != null) {
+        AxoObjectInstanceAbstract oi = super.AddObjectInstance(obj, loc);
+        if (oi != null) {
             SelectNone();
-            objectLayerPanel.add(objinst);
-            objinst.SetSelected(true);
-            objinst.moveToFront();
-            objinst.revalidate();
+            objectLayerPanel.add(oi);
+            oi.SetSelected(true);
+            oi.moveToFront();
+            oi.revalidate();
             AdjustSize();
         }
-        return objinst;
+        return oi;
     }
 
     public void SetCordsInBackground(boolean b) {
