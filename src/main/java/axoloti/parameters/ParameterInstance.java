@@ -532,7 +532,9 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
                                   "Any changes to the parameter value from inside the subpatch\n" +
                                   "will have no effect while it is shown on the parent.");
         m_onParent.setSelected(isOnParent());
+        m_onParent.setMnemonic('S');
         m.add(m_onParent);
+
         m_onParent.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -542,14 +544,14 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         });
 
         final JCheckBoxMenuItem m_isFrozen = new JCheckBoxMenuItem("Freeze Parameter");
+        m_isFrozen.setMnemonic('F');
         m_isFrozen.setToolTipText("While frozen, a parameter consumes less memory and DSP but cannot be\n" +
                                   "changed while the patch is live (essentially acting as an attribute).\n" +
                                   "Any modulation, preset change, and MIDI assignments to the parameter\n" +
                                   "will have no effect while it is frozen.");
         m_isFrozen.setSelected(isFrozen());
-        /* TODO Only enabled if parameter is not on parent */
-        // m_isFrozen.setEnabled(!isOnParent());
         m.add(m_isFrozen);
+
         m_isFrozen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -561,6 +563,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         if (GetObjectInstance().getPatch() != null) {
             JMenu m_preset = new JMenu("Preset");
             m_preset.setDelay(300);
+            m_preset.setMnemonic('P');
             /* AssignPresetMenuItems, does stuff in ctor */
             AssignPresetMenuItems assignPresetMenuItems = new AssignPresetMenuItems(this, m_preset);
             m.add(m_preset);

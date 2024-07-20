@@ -87,6 +87,7 @@ public class ParameterInstanceBin1 extends ParameterInstanceInt32<ParameterBin1>
         super.populatePopup(m);
         JMenu m1 = new JMenu("Midi CC");
         m1.setDelay(300);
+        m1.setMnemonic('C');
         // assignMidiCCMenuItems, does stuff in ctor
         AssignMidiCCMenuItems assignMidiCCMenuItems = new AssignMidiCCMenuItems(this, m1);
         m.add(m1);

@@ -198,10 +198,12 @@ public class ParameterInstanceFrac32UMap<T extends ParameterFrac32> extends Para
         if (GetObjectInstance().getPatch() != null) {
             JMenu m1 = new JMenu("Midi CC");
             m1.setDelay(300);
+            m1.setMnemonic('C');
             new AssignMidiCCMenuItems(this, m1);
             m.add(m1);
             JMenu m2 = new JMenu("Modulation");
             m2.setDelay(300);
+            m2.setMnemonic('M');
             new AssignModulatorMenuItems((ParameterInstanceFrac32UMap<ParameterFrac32>) this, m2);
             m.add(m2);
         }

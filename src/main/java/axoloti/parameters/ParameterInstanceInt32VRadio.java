@@ -82,6 +82,7 @@ public class ParameterInstanceInt32VRadio extends ParameterInstanceInt32 {
         super.populatePopup(m);
         JMenu m1 = new JMenu("Midi CC");
         m1.setDelay(300);
+        m1.setMnemonic('C');
         // AssignMidiCCMenuItems, does stuff in ctor
         AssignMidiCCMenuItems assignMidiCCMenuItems = new AssignMidiCCMenuItems(this, m1);
         m.add(m1);
