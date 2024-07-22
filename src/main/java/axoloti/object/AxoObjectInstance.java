@@ -606,7 +606,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         String c = "\n" + I+I + "/* Object Local Code */\n";
         for (ParameterInstance p : parameterInstances) {
             if (p.isFrozen()) {
-
+                
                 c += I+I + "// Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + "_" + p.getLegalName() + "\n";
                 c += I+I + "static const int32_t param_" + p.getLegalName() + " = ";
                 /* Do parameter value mapping in Java so save MCU memory.
@@ -672,41 +672,79 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     }
 
                     else if (pfun.equals("pfun_kexpltime") || pfun.equals("pfun_kexpdtime")) {
-                        /* Calculate java version of pitch table (firmware/axoloti_math.c) */
-                        int[] pitchTable = new int[257];
 
-                        /* Attempt to emulate single precision and "round to zero" behaviour of Cortex FPU */
-                        MathContext mc = new MathContext(10, RoundingMode.DOWN);
+                        /* After a calculated table using Java double math proved "too precise" to emulate Cortex-M signed integer math, this exponential parameter value lookup table has been extracted from a Ksoloti Core using a printout of klineartime.exp2 dial values. */
+                        int[] intTable = {
+                            /* 130 entries: 129 integer pitch values (-64..+64) + 1 extra for interpolation */
+                            0x11B83BF4, 0x10B9A2D0, 0x0FC9535E, 0x0EE680DA, 0x0E10698E, 0x0D465619, 0x0C879A1C, 0x0BD392DB,
+                            0x0B29A60E, 0x0A8942D0, 0x09F1E04C, 0x0962FC95, 0x08DC1E14, 0x085CD147, 0x07E4A9AF, 0x07734077,
+                            0x070834B1, 0x06A32B0C, 0x0643CD23, 0x05E9C962, 0x0594D307, 0x0544A17E, 0x04F8F010, 0x04B17E4A,
+                            0x046E0F09, 0x042E68A3, 0x03F254D7, 0x03B9A03B, 0x03841A58, 0x03519586, 0x0321E691, 0x02F4E4B1,
+                            0x02CA6983, 0x02A250BE, 0x027C7807, 0x0258BF25, 0x02370782, 0x02173457, 0x01F92A6B, 0x01DCD01D,
+                            0x01C20D2E, 0x01A8CAC2, 0x0190F346, 0x017A725B, 0x016534C1, 0x0151285C, 0x013E3C06, 0x012C5F92,
+                            0x011B83C0, 0x010B9A2A, 0x00FC9535, 0x00EE680E, 0x00E10695, 0x00D46561, 0x00C879A2, 0x00BD392D,
+                            0x00B29A60, 0x00A8942E, 0x009F1E03, 0x00962FC9, 0x008DC1E0, 0x0085CD14, 0x007E4A9A, 0x00773407,
+                            0x0070834B, 0x006A32B0, 0x00643CD1, 0x005E9C96, 0x00594D30, 0x00544A16, 0x004F8F00, 0x004B17E4,
+                            0x0046E0F0, 0x0042E68A, 0x003F254D, 0x003B9A03, 0x003841A5, 0x00351958, 0x00321E68, 0x002F4E4B,
+                            0x002CA697, 0x002A250B, 0x0027C780, 0x00258BF2, 0x00237078, 0x00217344, 0x001F92A6, 0x001DCD01,
+                            0x001C20D2, 0x001A8CAB, 0x00190F34, 0x0017A725, 0x0016534B, 0x00151285, 0x0013E3C0, 0x0012C5F8,
+                            0x0011B83B, 0x0010B9A2, 0x000FC953, 0x000EE680, 0x000E1069, 0x000D4655, 0x000C879A, 0x000BD392,
+                            0x000B29A5, 0x000A8942, 0x0009F1DF, 0x000962FC, 0x0008DC1D, 0x00085CD1, 0x0007E4A9, 0x00077340,
+                            0x00070834, 0x0006A32A, 0x000643CC, 0x0005E9C9, 0x000594D2, 0x000544A1, 0x0004F8EF, 0x0004B17E,
+                            0x00046E0E, 0x00042E68, 0x0003F254, 0x0003B99F, 0x0003841A, 0x00035195, 0x000321E6, 0x0002F4E4,
+                            0x0002CA69, 0x0002CA69
+                        };
+                        
+                        // /* Too accurate java version of pitch table (firmware/axoloti_math.c): */
+                        // /* Attempt to emulate single precision and "round to zero" behaviour of Cortex FPU */
+                        // MathContext mc = new MathContext(10, RoundingMode.DOWN);
 
-                        for (int i = 0; i < pitchTable.length; i++) {
-                            BigDecimal frq_hz = new BigDecimal(440.0 * Math.pow(2.0, (i - 69.0 - 64.0) / 12.0), mc);
-                            BigDecimal phi = new BigDecimal(4.0 * (double) (1 << 30) * frq_hz.floatValue() / 48000.0, mc);
-                            pitchTable[i] = phi.intValue();
-                            // Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "pitchtable: " + pitchTable[i]);
+                        // for (int i = 0; i < pitchTable.length; i++) {
+                        //     BigDecimal frq_hz = new BigDecimal(440.0 * Math.pow(2.0, (i - 69.0 - 64.0) / 12.0), mc);
+                        //     BigDecimal phi = new BigDecimal(4.0 * (double) (1 << 30) * frq_hz.floatValue() / 48000.0, mc);
+                        //     pitchTable[i] = phi.intValue();
+                        //     // Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "pitchtable: " + pitchTable[i]);
+                        // }
+
+                        /* Calculate "integer" and "fractional" pitch */
+                        /* Scale parameter value to -64.00..64.00  */
+                        /* Using BigDecimal for its easy rounding functions. */
+                        BigDecimal pindex = BigDecimal.valueOf(signedClampedVal / 2097152.0d).setScale(2, RoundingMode.HALF_UP);
+                        
+                        /* Get integer part of index */
+                        int pindex_int = (int) pindex.doubleValue();
+                        /* Emulate round down on negative values */
+                        if (pindex.doubleValue() < 0.0d) {
+                            pindex_int -= 1;
                         }
+                        /* Clamp */
+                        if (pindex_int < -64) pindex_int = -64;
+                        if (pindex_int > 64) pindex_int = 64;
 
-                        /* Calculate "fractional" pitch (mtof48k_q31 in firmware/axoloti_math.h) */
-                        int pi = -signedClampedVal;
-                        int pit = pi / (1<<21); /* equals pi >> 21 */
-                        long y1 = pitchTable[128 + pit];
-                        long y2 = pitchTable[128 + pit + 1];
-                        int pf = (pi & 0x1FFFFF) * 1024; /* equals ... << 10 */
-                        int pfc = 0x7FFFFFFF /* INT32_MAX */ - pf;
-                        long r = (y1 * (long) pfc) >> 32;
-                             r += (y2 * (long) pf) >> 32;
-                        int frequency = (int) r / 2; /* equals >> 1 */
+                        /* Fetch two adjacent indices from pitch table */
+                        double y1 = intTable[64 + pindex_int];
+                        double y2 = intTable[64 + 1 + pindex_int];
+
+                        /* Interpolate between integer and fractional parts of index */
+                        BigDecimal p_dec_ratio = BigDecimal.valueOf(pindex.doubleValue() - pindex_int).setScale(2, RoundingMode.HALF_UP);
+                        BigDecimal p_int_ratio = BigDecimal.valueOf(1 - p_dec_ratio.doubleValue()).setScale(2, RoundingMode.HALF_UP);
+
+                        BigDecimal r  = BigDecimal.valueOf(y1 * p_int_ratio.doubleValue() + y2 * p_dec_ratio.doubleValue());
+
+                        BigDecimal final_bd = BigDecimal.valueOf(r.doubleValue()).setScale(0, RoundingMode.HALF_UP);
+                        int final_val = final_bd.intValue();
 
                         if (pfun.equals("pfun_kexpltime")) {
-                            c += frequency + "; /*pfun_kexpltime*/\n";
+                            c += final_val + "; /*pfun_kexpltime*/\n";
                         }
                         else if (pfun.equals("pfun_kexpdtime")) {
-                            c += (0x7FFFFFFF - frequency) + "; /*pfun_kexpdtime*/\n";
+                            c += (0x7FFFFFFF - final_val) + "; /*pfun_kexpdtime*/\n";
                         }
                     }
                 }
                 else {
                     c += p.GetValueRaw() + ";\n"; 
-}
+                }
             }
             else {
                 c += I+I + p.GenerateCodeDeclaration(classname);
