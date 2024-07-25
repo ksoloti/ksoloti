@@ -1,32 +1,32 @@
 BOARDDEF=
 
 CCFLAGS = \
-    -ggdb3 \
-    -std=c++11 \
-    -mword-relocations \
-    -mlong-calls \
-    -mfloat-abi=hard \
-    -mcpu=cortex-m4 \
-    -mfpu=fpv4-sp-d16 \
-    -mthumb \
-    -nostdlib \
-    -fno-common \
-    -fno-exceptions \
-    -fno-rtti \
-    -fomit-frame-pointer \
-    -fno-math-errno \
-    -fno-threadsafe-statics \
-    -fno-use-cxa-atexit \
-    -fpermissive \
+    -DARM_MATH_CM4 \
+    -DCORTEX_USE_FPU=TRUE \
+    -DSTM32F427xx \
+    -DTHUMB \
+    -DTHUMB_NO_INTERWORKING \
+    -DTHUMB_PRESENT \
+    -D__FPU_PRESENT \
     -O3 \
     -Wno-unused-parameter \
-    -DCORTEX_USE_FPU=TRUE \
-    -DTHUMB \
-    -DTHUMB_PRESENT \
-    -DTHUMB_NO_INTERWORKING \
-    -DARM_MATH_CM4 \
-    -D__FPU_PRESENT \
-    -DSTM32F427xx \
+    -fno-common \
+    -fno-exceptions \
+    -fno-math-errno \
+    -fno-rtti \
+    -fno-threadsafe-statics \
+    -fno-unwind-tables \
+    -fno-use-cxa-atexit \
+    -fomit-frame-pointer \
+    -fpermissive \
+    -ggdb3 \
+    -mcpu=cortex-m4 \
+    -mfloat-abi=hard \
+    -mfpu=fpv4-sp-d16 \
+    -mthumb \
+    -mword-relocations \
+    -nostdlib \
+    -std=c++11 \
     $(BOARDDEF)
 
 ifeq ($(BOARDDEF), -DBOARD_KSOLOTI_CORE)
@@ -38,16 +38,14 @@ endif
 LDFLAGS = \
     $(RAMLINKOPT) \
     -Bsymbolic \
-	-mlong-calls \
-	-fno-common \
-    -nostartfiles \
+    -Wl,--gc-sections \
+    -fno-common \
     -mcpu=cortex-m4 \
     -mfloat-abi=hard \
     -mfpu=fpv4-sp-d16 \
-    -mthumb \
     -mno-thumb-interwork \
-   	-Wl,--gc-sections \
-	-Wl,--wrap -Wl,memcpy
+    -mthumb \
+    -nostartfiles
 
 CC=arm-none-eabi-gcc
 CPP=arm-none-eabi-g++
@@ -84,8 +82,8 @@ INCDIR = $(CMSIS)/Core/Include $(CMSIS)/DSP/Include \
          ${FIRMWARE} $(CHIBIOS) ${FIRMWARE}/mutable_instruments
 
 # Paths
-IINCDIR   = $(patsubst %,-I%,$(INCDIR) $(DINCDIR) $(UINCDIR))
-LLIBDIR   = $(patsubst %,-L%,$(DLIBDIR) $(ULIBDIR))
+IINCDIR = $(patsubst %,-I%,$(INCDIR) $(DINCDIR) $(UINCDIR))
+LLIBDIR = $(patsubst %,-L%,$(DLIBDIR) $(ULIBDIR))
 
 all: ${BUILDDIR}/xpatch.bin
 
@@ -104,6 +102,9 @@ ifeq ($(BOARDDEF), -DBOARD_KSOLOTI_CORE)
 else
 	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/axoloti.elf -o ${BUILDDIR}/xpatch.elf
 endif
+#	@echo Creating LST file for debugging
+	@$(DMP) -belf32-littlearm -marm --demangle --disassemble ${BUILDDIR}/xpatch.elf > ${BUILDDIR}/xpatch.lst
+#   --source-comment --line-numbers 
 
 #	@echo Creating binary
 #	$(CP) -O binary -j .text  -j .init_array -j .rodata -j .rodata\* xpatch.elf xpatch.bin
