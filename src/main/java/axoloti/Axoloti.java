@@ -352,11 +352,13 @@ public class Axoloti {
                 frame.setVisible(false);
                 AxoObjects objs = new AxoObjects();
                 objs.LoadAxoObjects();
+                System.out.println("Waiting...");
+                Thread.sleep(10000);
                 if (SplashScreen.getSplashScreen() != null) {
                     SplashScreen.getSplashScreen().close();
                 }
 
-                System.out.println("Axoloti cmd line initialised");
+                System.out.println("Ksoloti command line initialised.");
                 int exitCode = 0;
                 if (cmdRunAllTest) {
                     exitCode = frame.runAllTests() ? 0 : -1;
