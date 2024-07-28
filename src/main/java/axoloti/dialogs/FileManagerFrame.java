@@ -167,6 +167,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             public synchronized void drop(DropTargetDropEvent evt) {
                 try {
                     evt.acceptDrop(DnDConstants.ACTION_COPY);
+                    @SuppressWarnings("unchecked")
                     List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
                     QCmdProcessor processor = MainFrame.mainframe.getQcmdprocessor();
                     if (USBBulkConnection.GetConnection().isConnected()) {
