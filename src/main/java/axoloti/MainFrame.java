@@ -855,32 +855,38 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     public boolean runPatchTests() {
+        SetGrabFocusOnSevereErrors(false);
         boolean result;
 
         AxolotiLibrary fLib = prefs.getLibrary(AxolotiLibrary.FACTORY_ID);
         if (fLib == null) {
+            SetGrabFocusOnSevereErrors(true);
             return false;
         }
         result = runTestDir(new File(fLib.getLocalLocation() + "patches"));
 
         fLib = prefs.getLibrary(AxolotiLibrary.USER_LIBRARY_ID);
         if (fLib == null) {
+            SetGrabFocusOnSevereErrors(true);
             return false;
         }
         result &= runTestDir(new File(fLib.getLocalLocation() + "patches"));
 
         fLib = prefs.getLibrary(AxolotiLibrary.KSOLOTI_LIBRARY_ID);
         if (fLib == null) {
+            SetGrabFocusOnSevereErrors(true);
             return false;
         }
         result &= runTestDir(new File(fLib.getLocalLocation() + "patches"));
 
         fLib = prefs.getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID);
         if (fLib == null) {
+            SetGrabFocusOnSevereErrors(true);
             return false;
         }
         result &= runTestDir(new File(fLib.getLocalLocation() + "patches"));
 
+        SetGrabFocusOnSevereErrors(true);
         return result;
     }
 
@@ -918,7 +924,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         return runTestDir(new File(patchName));
     }
 
-    private boolean runTestDir(File f) {
+    public boolean runTestDir(File f) {
         if (!f.exists()) {
             return true;
         }
@@ -951,6 +957,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private boolean runTestCompile(File f) {
+        SetGrabFocusOnSevereErrors(false);
         Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "----- Testing {0} -----", f.getPath());
 
         Strategy strategy = new AnnotationStrategy();
@@ -969,14 +976,16 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             patch1.GetQCmdProcessor().AppendToQueue(cp);
             qcmdprocessor.WaitQueueFinished();
             pf.Close();
-            Thread.sleep(2500);
+            Thread.sleep(2000);
             status = cp.success();
             if (status == false) {
                 Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "COMPILE FAILED: {0}\n", f.getPath());
             }
+            SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
             return status;
         } catch (Exception ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "COMPILE FAILED: " + f.getPath() + "\n", ex);
+            SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
             return false;
         }
     }
