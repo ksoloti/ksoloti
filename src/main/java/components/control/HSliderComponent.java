@@ -19,6 +19,8 @@
 package components.control;
 
 import axoloti.MainFrame;
+import axoloti.Theme;
+import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 
@@ -263,9 +265,16 @@ public class HSliderComponent extends ACtrlComponent {
         g2.setStroke(new BasicStroke(2));
         g2.drawLine(p, 0, p, getHeight());
 
-        String s = String.format("%5.2f", value);
-        Rectangle2D r = g2.getFontMetrics().getStringBounds(s, g);
-        g2.drawString(s, bwidth + (margin / 2) - (int) (0.5 + r.getWidth() / 2), getHeight());
+        Rectangle2D r = g2.getFontMetrics().getStringBounds("-99.99", g);
+        if (keybBuffer.isEmpty()) {
+            String s = String.format("%6.2f", value);
+            g2.drawString(s, bwidth + (margin / 2) - (int) (0.5 + r.getWidth() / 2), getHeight());
+        }
+        else {
+            g2.setColor(Theme.getCurrentTheme().Error_Text);
+            g2.setFont(Constants.FONT);
+            g2.drawString(keybBuffer, bwidth + (margin / 2) - (int) (0.5 + r.getWidth() / 2), getHeight());
+        }
     }
 
     @Override

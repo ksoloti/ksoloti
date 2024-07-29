@@ -27,6 +27,8 @@ import components.control.ACtrlEvent;
 import components.control.ACtrlListener;
 import components.control.HSliderComponent;
 import java.util.ArrayList;
+
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -56,7 +58,9 @@ public class AssignModulatorMenuItems {
             } else {
                 modlabel = m.objInst.getInstanceName() + ":" + m.name;
             }
-            p.add(new JLabel(modlabel + " "));
+            JLabel ml = new JLabel(modlabel + "  ");
+            p.add(ml);
+            p.add(Box.createGlue());
             HSliderComponent hsl = new HSliderComponent();
             if (param.getModulators() != null) {
                 for (Modulation n : param.getModulators()) {
