@@ -135,6 +135,7 @@ public class AxoObject extends AxoObjectAbstract {
     private Boolean rotatedParams;
     @ElementList(required = false)
     public ArrayList<String> ModulationSources;
+
     @Path("inlets")
     @ElementListUnion({
         @ElementList(entry = InletBool32.TypeName, type = InletBool32.class, inline = true, required = false),
@@ -152,6 +153,7 @@ public class AxoObject extends AxoObjectAbstract {
         @ElementList(entry = InletFrac32BufferBipolar.TypeName, type = InletFrac32BufferBipolar.class, inline = true, required = false)
     })
     public ArrayList<Inlet> inlets;
+
     @Path("outlets")
     @ElementListUnion({
         @ElementList(entry = OutletBool32.TypeName, type = OutletBool32.class, inline = true, required = false),
@@ -168,6 +170,7 @@ public class AxoObject extends AxoObjectAbstract {
         @ElementList(entry = OutletFrac32BufferBipolar.TypeName, type = OutletFrac32BufferBipolar.class, inline = true, required = false)
     })
     public ArrayList<Outlet> outlets;
+
     @Path("displays")
     @ElementListUnion({
         @ElementList(entry = DisplayBool32.TypeName, type = DisplayBool32.class, inline = true, required = false),
@@ -191,6 +194,7 @@ public class AxoObject extends AxoObjectAbstract {
         @ElementList(entry = DisplayNoteLabel.TypeName, type = DisplayNoteLabel.class, inline = true, required = false)
     })
     public ArrayList<Display> displays; // readouts
+
     @Path("params")
     @ElementListUnion({
         @ElementList(entry = ParameterFrac32UMap.TypeName, type = ParameterFrac32UMap.class, inline = true, required = false),
@@ -225,6 +229,7 @@ public class AxoObject extends AxoObjectAbstract {
         @ElementList(entry = ParameterBin1Momentary.TypeName, type = ParameterBin1Momentary.class, inline = true, required = false)
     })
     public ArrayList<Parameter> params; // variables
+
     @Path("attribs")
     @ElementListUnion({
         @ElementList(entry = AxoAttributeObjRef.TypeName, type = AxoAttributeObjRef.class, inline = true, required = false),
@@ -235,6 +240,7 @@ public class AxoObject extends AxoObjectAbstract {
         @ElementList(entry = AxoAttributeSDFile.TypeName, type = AxoAttributeSDFile.class, inline = true, required = false),
         @ElementList(entry = AxoAttributeTextEditor.TypeName, type = AxoAttributeTextEditor.class, inline = true, required = false)})
     public ArrayList<AxoAttribute> attributes; // literal constants
+
     @ElementList(name = "file-depends", entry = "file-depend", type = SDFileReference.class, required = false)
     public ArrayList<SDFileReference> filedepends;
     @ElementList(name = "includes", entry = "include", type = String.class, required = false)
@@ -280,9 +286,9 @@ public class AxoObject extends AxoObjectAbstract {
     public AxoObject() {
         inlets = new ArrayList<Inlet>();
         outlets = new ArrayList<Outlet>();
-        displays = new ArrayList<Display>();
-        params = new ArrayList<Parameter>();
         attributes = new ArrayList<AxoAttribute>();
+        params = new ArrayList<Parameter>();
+        displays = new ArrayList<Display>();
         includes = new HashSet<String>();
     }
 
@@ -290,9 +296,9 @@ public class AxoObject extends AxoObjectAbstract {
         super(id, sDescription);
         inlets = new ArrayList<Inlet>();
         outlets = new ArrayList<Outlet>();
-        displays = new ArrayList<Display>();
-        params = new ArrayList<Parameter>();
         attributes = new ArrayList<AxoAttribute>();
+        params = new ArrayList<Parameter>();
+        displays = new ArrayList<Display>();
         includes = new HashSet<String>();
     }
 
@@ -459,35 +465,35 @@ public class AxoObject extends AxoObjectAbstract {
         this.rotatedParams = rotatedParams;
     }
 
-    private static String getRelativePath(String baseDir, String targetPath) {
-        String[] base = baseDir.replace('\\', '/').split("\\/");
-        targetPath = targetPath.replace('\\', '/');
-        String[] target = targetPath.split("\\/");
-
-        // Count common elements and their length.
-        int commonCount = 0, commonLength = 0, maxCount = Math.min(target.length, base.length);
-        while (commonCount < maxCount) {
-            String targetElement = target[commonCount];
-            if (!targetElement.equals(base[commonCount])) {
-                break;
-            }
-            commonCount++;
-            commonLength += targetElement.length() + 1; // Directory name length plus slash.
-        }
-        if (commonCount == 0) {
-            return targetPath; // No common path element.
-        }
-        int targetLength = targetPath.length();
-        int dirsUp = base.length - commonCount;
-        StringBuilder relative = new StringBuilder(dirsUp * 3 + targetLength - commonLength + 1);
-        for (int i = 0; i < dirsUp; i++) {
-            relative.append("../");
-        }
-        if (commonLength < targetLength) {
-            relative.append(targetPath.substring(commonLength));
-        }
-        return relative.toString();
-    }
+    // private static String getRelativePath(String baseDir, String targetPath) {
+    //     String[] base = baseDir.replace('\\', '/').split("\\/");
+    //     targetPath = targetPath.replace('\\', '/');
+    //     String[] target = targetPath.split("\\/");
+    //
+    //     // Count common elements and their length.
+    //     int commonCount = 0, commonLength = 0, maxCount = Math.min(target.length, base.length);
+    //     while (commonCount < maxCount) {
+    //         String targetElement = target[commonCount];
+    //         if (!targetElement.equals(base[commonCount])) {
+    //             break;
+    //         }
+    //         commonCount++;
+    //         commonLength += targetElement.length() + 1; // Directory name length plus slash.
+    //     }
+    //     if (commonCount == 0) {
+    //         return targetPath; // No common path element.
+    //     }
+    //     int targetLength = targetPath.length();
+    //     int dirsUp = base.length - commonCount;
+    //     StringBuilder relative = new StringBuilder(dirsUp * 3 + targetLength - commonLength + 1);
+    //     for (int i = 0; i < dirsUp; i++) {
+    //         relative.append("../");
+    //     }
+    //     if (commonLength < targetLength) {
+    //         relative.append(targetPath.substring(commonLength));
+    //     }
+    //     return relative.toString();
+    // }
 
     @Override
     public HashSet<String> GetIncludes() {
@@ -577,6 +583,10 @@ public class AxoObject extends AxoObjectAbstract {
         for (Outlet i : outlets) {
             c.outlets.add(i.clone());
         }
+        c.attributes = new ArrayList<AxoAttribute>();
+        for (AxoAttribute i : attributes) {
+            c.attributes.add(i.clone());
+        }
         c.params = new ArrayList<Parameter>();
         for (Parameter i : params) {
             c.params.add(i.clone());
@@ -584,10 +594,6 @@ public class AxoObject extends AxoObjectAbstract {
         c.displays = new ArrayList<Display>();
         for (Display i : displays) {
             c.displays.add(i.clone());
-        }
-        c.attributes = new ArrayList<AxoAttribute>();
-        for (AxoAttribute i : attributes) {
-            c.attributes.add(i.clone());
         }
         return c;
     }
@@ -602,6 +608,10 @@ public class AxoObject extends AxoObjectAbstract {
         for (Outlet i : o.outlets) {
             outlets.add(i.clone());
         }
+        attributes = new ArrayList<AxoAttribute>();
+        for (AxoAttribute i : o.attributes) {
+            attributes.add(i.clone());
+        }
         params = new ArrayList<Parameter>();
         for (Parameter i : o.params) {
             params.add(i.clone());
@@ -609,10 +619,6 @@ public class AxoObject extends AxoObjectAbstract {
         displays = new ArrayList<Display>();
         for (Display i : o.displays) {
             displays.add(i.clone());
-        }
-        attributes = new ArrayList<AxoAttribute>();
-        for (AxoAttribute i : o.attributes) {
-            attributes.add(i.clone());
         }
 
         helpPatch = o.helpPatch;
