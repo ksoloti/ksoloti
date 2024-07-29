@@ -1797,7 +1797,7 @@ public class Patch {
         String cobjstr = prefs.getControllerObject();
 
         if (prefs.isControllerEnabled() && cobjstr != null && !cobjstr.isEmpty()) {
-            Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Using controller object: {0}", cobjstr);
+            Logger.getLogger(Patch.class.getName()).log(Level.WARNING, "Using controller object: {0}", cobjstr);
             AxoObjectAbstract x = null;
             ArrayList<AxoObjectAbstract> objs = MainFrame.axoObjects.GetAxoObjectFromName(cobjstr, GetCurrentWorkingDirectory());
             if ((objs != null) && (!objs.isEmpty())) {
