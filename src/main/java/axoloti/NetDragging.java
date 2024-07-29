@@ -33,11 +33,11 @@ import javax.swing.SwingUtilities;
  */
 public class NetDragging extends Net {
 
-    private PatchGUI patchGUI;
+    // private PatchGUI patchGUI;
 
     public NetDragging(PatchGUI patchGUI) {
         super(patchGUI);
-        this.patchGUI = patchGUI;
+        // this.patchGUI = patchGUI;
     }
 
     Point p0;
