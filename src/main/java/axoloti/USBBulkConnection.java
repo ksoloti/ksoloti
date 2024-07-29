@@ -1344,7 +1344,13 @@ public class USBBulkConnection extends Connection {
                     //textRcvBuffer.append((char) cc);
                     textRcvBuffer.limit(textRcvBuffer.position());
                     textRcvBuffer.rewind();
-                    Logger.getLogger(USBBulkConnection.class.getName()).log(Level.WARNING, "{0}", textRcvBuffer.toString());
+                    if (textRcvBuffer.toString().toLowerCase().contains("file error: fr_no_file, filename:\"/start.bin\"")) {
+                        /* Filter out error if SD card is connected but no start.bin is found */
+                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "SD card connected, no startup patch found.");
+                    }
+                    else {
+                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.WARNING, "{0}", textRcvBuffer.toString());
+                    }
                     GoIdleState();
                 }
                 break;
