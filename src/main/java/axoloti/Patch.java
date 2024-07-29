@@ -1364,7 +1364,7 @@ public class Patch {
     String GenerateParamInitCode3(String ClassName) {
         int s = ParameterInstances.size();
         String c = I + "static int32_t* GetInitParams(void) {\n"
-                 + I+I + "static const int32_t p[" + s + "] = {\n";
+                 + I+I + "static const int32_t p[" + /*s*/ "NPEXCH" + "] = {\n";
         for (int i = 0; i < s; i++) {
             c += I+I+I + ParameterInstances.get(i).GetValueRaw();
             if (i != s - 1) {
@@ -1424,7 +1424,7 @@ public class Patch {
         c += I+I + "int j;\n";
         c += I+I + "const int32_t* p;\n";
         c += I+I + "p = GetInitParams();\n";
-        c += I+I + "for (j=0; j<" + ParameterInstances.size() + "; j++) {\n";
+        c += I+I + "for (j=0; j<" + /*ParameterInstances.size()*/ "NPEXCH" + "; j++) {\n";
         c += I+I+I + "PExch[j].value = p[j];\n";
         c += I+I+I + "PExch[j].modvalue = p[j];\n";
         c += I+I+I + "PExch[j].signals = 0;\n";
@@ -2127,7 +2127,7 @@ public class Patch {
         int k = 0;
         for (ParameterInstance p : ParameterInstances) {
             if (!p.isFrozen()) {
-                ao.sLocalData += I + "static const int32_t PARAM_INDEX_" + p.GetObjectInstance().getLegalName() + "_" + p.getLegalName() + " = " + k + ";\n";
+                ao.sLocalData += I + "static const uint16_t PARAM_INDEX_" + p.GetObjectInstance().getLegalName() + "_" + p.getLegalName() + " = " + k + ";\n";
                 k++;
             }
         }
