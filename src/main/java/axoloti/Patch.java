@@ -341,7 +341,7 @@ public class Patch {
             /* issue warning when there are dependent files */
             ArrayList<SDFileReference> files = GetDependendSDFiles();
             if (files.size() > 0) {
-                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Patch requires file {0} on SD card, but no SD card mounted.", files.get(0).targetPath);
+                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Patch requires file {0} on SD card, but no SD card connected.", files.get(0).targetPath);
             }
         }
         ShowPreset(0);
@@ -1214,8 +1214,10 @@ public class Patch {
         c += "\n" + I + "/* Parameter instance indices */\n";
         k = 0;
         for (ParameterInstance p : ParameterInstances) {
-            c += I + "static const int PARAM_INDEX_" + p.GetObjectInstance().getLegalName() + "_" + p.getLegalName() + " = " + k + ";\n";
-            k++;
+            if (!p.isFrozen()) {
+                c += I + "static const uint16_t PARAM_INDEX_" + p.GetObjectInstance().getLegalName() + "_" + p.getLegalName() + " = " + k + ";\n";
+                k++;
+            }
         }
 
         if (controllerInstance != null) {
