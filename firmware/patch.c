@@ -449,7 +449,7 @@ void LoadPatch(const char *name) {
 
 
 void LoadPatchStartSD(void) {
-    strcpy(loadFName, "/START.BIN");
+    strcpy(loadFName, "/start.bin");
     loadPatchIndex = START_SD;
     chEvtSignal(pThreadDSP, (eventmask_t)2);
     chThdSleepMilliseconds(50);
