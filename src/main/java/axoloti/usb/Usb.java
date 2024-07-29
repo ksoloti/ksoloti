@@ -105,7 +105,7 @@ public class Usb {
                             hasOne = true;
                         }
 
-                    } else if (!prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI) {
+                    } else if (prefs.getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI) {
                         hasOne = true;
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);
@@ -117,7 +117,7 @@ public class Usb {
                         }
                         Logger.getLogger(Usb.class.getName()).log(Level.INFO, "  location: {0}", DeviceToPath(device));
 
-                    } else if (prefs.getAxolotiLegacyMode() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI) {
+                    } else if (prefs.getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI) {
                         hasOne = true;
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);

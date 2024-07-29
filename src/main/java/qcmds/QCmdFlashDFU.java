@@ -56,7 +56,7 @@ public class QCmdFlashDFU extends QCmdShellTask {
     @Override
     String GetExec() {
         String bname;
-        if (prefs.getAxolotiLegacyMode()) {
+        if (prefs.getFirmwareMode().contains("Axoloti Core")) {
             bname = "axoloti";
         }
         else {

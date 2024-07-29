@@ -93,7 +93,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
         if (prefs.getMouseDialAngular()) jComboBoxDialMouseBehaviour.setSelectedItem("Angular"); 
 
-        if (prefs.getAxolotiLegacyMode()) jComboBoxAxolotiLegacyMode.setSelectedItem("Axoloti (Legacy)"); 
+        jComboBoxFirmwareMode.setSelectedItem(prefs.getFirmwareMode()); 
 
         jComboBoxTheme.setSelectedItem(prefs.getTheme());
 
@@ -127,7 +127,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         Constants.FONT_MONO = Constants.FONT_MONO.deriveFont((float)prefs.getCodeFontSize());
         MainFrame.mainframe.updateConsoleFont();
         prefs.setMouseDialAngular(jComboBoxDialMouseBehaviour.getSelectedItem().equals("Angular"));
-        prefs.setAxolotiLegacyMode(jComboBoxAxolotiLegacyMode.getSelectedItem().equals("Axoloti (Legacy)"));
+        prefs.setFirmwareMode(jComboBoxFirmwareMode.getSelectedItem().toString());
 
         prefs.setUserShortcut(0, jTextFieldUserShortcut1.getText());
         prefs.setUserShortcut(1, jTextFieldUserShortcut2.getText());
@@ -172,9 +172,9 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jLabelCodeFontSize = new javax.swing.JLabel();
         jButtonSave = new javax.swing.JButton();
         jLabelDialMouseBehaviour = new javax.swing.JLabel();
-        jLabelAxolotiLegacyMode = new javax.swing.JLabel();
+        jLabelFirmwareMode = new javax.swing.JLabel();
         jComboBoxDialMouseBehaviour = new javax.swing.JComboBox<String>();
-        jComboBoxAxolotiLegacyMode = new javax.swing.JComboBox<String>();
+        jComboBoxFirmwareMode = new javax.swing.JComboBox<String>();
         jLabelFavouritesDir = new javax.swing.JLabel();
         jLabelUserShortcut1 = new javax.swing.JLabel();
         jLabelUserShortcut2 = new javax.swing.JLabel();
@@ -231,8 +231,8 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
         jLabelDialMouseBehaviour.setText("Dial Mouse Behaviour");
 
-        jLabelAxolotiLegacyMode.setText("Axoloti Legacy Mode (restart required)");
-        jLabelAxolotiLegacyMode.setToolTipText("<html>Legacy support of Axoloti Core.<p>Select \"Axoloti (Legacy)\" if you want this copy of the patcher to connect to Axoloti Cores instead of Ksoloti Cores.<p>FOR WHATEVER OPTION IS ACTIVE, THE PATCHER WILL ONLY DETECT THAT PARTICULAR BOARD TYPE.<p>You can run another copy of the patcher in \"Ksoloti (Default)\" mode to connect to both types of boards simultaneously.");
+        jLabelFirmwareMode.setText("Firmware Mode (restart required)");
+        jLabelFirmwareMode.setToolTipText("<html><div width=\"480px\">Several firmware modes are available, each supporting different boards and/or adding certain firmware features.<p/><p/><b>Ksoloti Core</b>: The default mode. The Patcher will (only!) detect and connect to Ksoloti Core boards.<p/><b>Axoloti Core</b>: \"Legacy mode\". The Patcher will (only!) detect and connect to Axoloti Core boards.<p/><p/><b>[BOARD] + SPILink</b>: Activates a link between two Cores which lets them sync up and exchange audio and data channels. Make the necessary hardware connections as described in the SPILink help patch, and flash this firmware mode on both Cores to be synced together. Follow the instructions in the SPILink help patch.<p/><p/><b>Make sure you restart the Patcher after changing the firmware mode. In the \"Firmware Mismatch\" popup, click \"Yes\" to let it update the Core's firmware automatically.</b></div>");
 
         jComboBoxDialMouseBehaviour.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Vertical", "Angular" }));
         jComboBoxDialMouseBehaviour.addActionListener(new java.awt.event.ActionListener() {
@@ -241,13 +241,13 @@ public class PreferencesFrame extends javax.swing.JFrame {
             }
         });
 
-        jComboBoxAxolotiLegacyMode.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Ksoloti (Default)", "Axoloti (Legacy)" }));
-        jComboBoxAxolotiLegacyMode.addActionListener(new java.awt.event.ActionListener() {
+        jComboBoxFirmwareMode.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Ksoloti Core", "Ksoloti Core + SPILink", "Axoloti Core", "Axoloti Core + SPILink" }));
+        jComboBoxFirmwareMode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxAxolotiLegacyModeActionPerformed(evt);
+                jComboBoxFirmwareModeActionPerformed(evt);
             }
         });
-        jComboBoxAxolotiLegacyMode.setToolTipText(jLabelAxolotiLegacyMode.getToolTipText());
+        jComboBoxFirmwareMode.setToolTipText(jLabelFirmwareMode.getToolTipText());
 
         jLabelFavouritesDir.setText("Favourites Dir");
 
@@ -644,7 +644,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private void jComboBoxDialMouseBehaviourActionPerformed(java.awt.event.ActionEvent evt) {
     }
 
-    private void jComboBoxAxolotiLegacyModeActionPerformed(java.awt.event.ActionEvent evt) {
+    private void jComboBoxFirmwareModeActionPerformed(java.awt.event.ActionEvent evt) {
     }
 
     private void btnFavDirActionPerformed(java.awt.event.ActionEvent evt) {
@@ -778,7 +778,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButtonSave;
     private javax.swing.JCheckBox jCheckBoxNoMouseReCenter;
     private javax.swing.JComboBox<String> jComboBoxDialMouseBehaviour;
-    private javax.swing.JComboBox<String> jComboBoxAxolotiLegacyMode;
+    private javax.swing.JComboBox<String> jComboBoxFirmwareMode;
     private javax.swing.JCheckBox jControllerEnabled;
     private javax.swing.JButton jDelLibBtn;
     private javax.swing.JButton jEditLib;
@@ -786,7 +786,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelPollInterval;
     private javax.swing.JLabel jLabelCodeFontSize;
     private javax.swing.JLabel jLabelDialMouseBehaviour;
-    private javax.swing.JLabel jLabelAxolotiLegacyMode;
+    private javax.swing.JLabel jLabelFirmwareMode;
     private javax.swing.JLabel jLabelFavouritesDir;
     
     private javax.swing.JLabel jLabelUserShortcut1;

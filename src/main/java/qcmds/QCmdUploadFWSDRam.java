@@ -63,7 +63,7 @@ public class QCmdUploadFWSDRam implements QCmdSerialTask {
         try {
             if (f == null) {
                 String buildDir = System.getProperty(Axoloti.FIRMWARE_DIR);
-                if (prefs.getAxolotiLegacyMode()) {
+                if (prefs.getFirmwareMode().contains("Axoloti Core")) {
                     f = new File(buildDir + "/build/axoloti.bin");
                 }
                 else {

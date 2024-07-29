@@ -174,7 +174,7 @@ public class USBBulkConnection extends Connection {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
 
-                if (prefs.getAxolotiLegacyMode()) {
+                if (prefs.getFirmwareMode().contains("Axoloti Core")) {
                     if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDAxoloti) {
                         Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Axoloti Core found.");
                         DeviceHandle h = new DeviceHandle();
@@ -226,7 +226,7 @@ public class USBBulkConnection extends Connection {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
 
-                if (prefs.getAxolotiLegacyMode()) {
+                if (prefs.getFirmwareMode().contains("Axoloti Core")) {
                     if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDAxoloti) {
                         Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Axoloti Core found.");
                         DeviceHandle h = new DeviceHandle();

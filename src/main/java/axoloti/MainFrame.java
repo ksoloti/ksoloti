@@ -306,7 +306,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     //     Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Failsafe mode activated");
                     //     tsuf = "Failsafe";
                     // }
-                    if (prefs.getAxolotiLegacyMode()) {
+                    if (prefs.getFirmwareMode().contains("Axoloti Core")) {
                         if (tsuf.length() > 0) {
                             tsuf += ", ";
                         }
@@ -322,7 +322,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         MainFrame.this.setTitle(MainFrame.this.getTitle() + " (" + tsuf + ")");
                     }
                     Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Patcher version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
-                    if (prefs.getAxolotiLegacyMode()) {
+                    if (prefs.getFirmwareMode().contains("Axoloti Core")) {
                         Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, ">>> Axoloti Legacy Mode <<<\n");
                     }
 
@@ -1048,7 +1048,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
-
     private void formWindowClosing(java.awt.event.WindowEvent evt) {
         Quit();
     }
@@ -1071,7 +1070,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private void jMenuItemFlashUserActionPerformed(java.awt.event.ActionEvent evt) {
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
         String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
-        if (prefs.getAxolotiLegacyMode()) {
+        if (prefs.getFirmwareMode().contains("Axoloti Core")) {
             fname += "/flasher/flasher_build/axoloti_flasher.bin";
             pname += "/build/axoloti.bin";
         }
@@ -1094,7 +1093,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
         String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
-        if (prefs.getAxolotiLegacyMode()) {
+        if (prefs.getFirmwareMode().contains("Axoloti Core")) {
             fname += "/flasher/flasher_build/axoloti_flasher.bin";
             pname += "/build/axoloti.bin";
         }
@@ -1107,20 +1106,20 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void jMenuItemMountActionPerformed(java.awt.event.ActionEvent evt) {
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
-        if (prefs.getAxolotiLegacyMode()) {
-            fname += "/mounter/mounter_build/axoloti_mounter.bin";
-        }
-        else {
+        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
             fname += "/mounter/mounter_build/ksoloti_mounter.bin";
+        }
+        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+            fname += "/mounter/mounter_build/axoloti_mounter.bin";
         }
         File f = new File(fname);
         if (f.canRead()) {
             qcmdprocessor.AppendToQueue(new QCmdStop());
             qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
             qcmdprocessor.AppendToQueue(new QCmdStartMounter());
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Will disconnect, unmount SD card to go back to normal mode (required to connect)");
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Disconnecting from Patcher...");
         } else {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Can''t read mounter firmware, please compile mounter firmware! (file: {0})", fname);
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Can''t read Mounter firmware. Please compile firmware first! (file: {0})", fname);
         }
 
     }
@@ -1368,7 +1367,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (s == 0) {
             String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
             String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
-            if (prefs.getAxolotiLegacyMode()) {
+            if (prefs.getFirmwareMode().contains("Axoloti Core")) {
                 fname += "/flasher/flasher_build/axoloti_flasher.bin";
                 pname += "/build/axoloti.bin";
             }
@@ -1425,7 +1424,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     @Override
     public void ShowSDCardMounted() {
-        jLabelSDCardPresent.setText("SD card mounted");
+        jLabelSDCardPresent.setText("SD card connected");
         jMenuItemMount.setEnabled(true);
     }
 

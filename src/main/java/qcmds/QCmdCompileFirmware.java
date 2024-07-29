@@ -53,7 +53,7 @@ public class QCmdCompileFirmware extends QCmdShellTask {
     @Override
     String GetExec() {
         String boarddef;
-        if (prefs.getAxolotiLegacyMode()) {
+        if (prefs.getFirmwareMode().contains("Axoloti Core")) {
             boarddef = "BOARD_AXOLOTI_CORE";
         }
         else {
