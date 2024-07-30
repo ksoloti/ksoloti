@@ -38,7 +38,7 @@ public class FirmwareID {
     static public String getFirmwareID() {
         try {
             File f;
-            if (prefs.getAxolotiLegacyMode()) {
+            if (prefs.getFirmwareMode().contains("Axoloti Core")) {
                 f = new File(System.getProperty(Axoloti.FIRMWARE_DIR) +"/build/axoloti.bin");
             }
             else {

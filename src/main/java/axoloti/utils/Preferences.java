@@ -84,7 +84,7 @@ public class Preferences {
     @Element(required = false)
     Boolean MouseDialAngular;
     @Element(required = false)
-    Boolean AxolotiLegacyMode;
+    String FirmwareMode;
     @Element(required = false)
     Boolean MouseDoNotRecenterWhenAdjustingControls;
     @Element(required = false)
@@ -197,8 +197,8 @@ public class Preferences {
         if (MouseDialAngular == null) {
             MouseDialAngular = false;
         }
-        if (AxolotiLegacyMode == null) {
-            AxolotiLegacyMode = false;
+        if (FirmwareMode == null) {
+            FirmwareMode = "Ksoloti Core";
         }
         for (int i=0; i<4; i++) {
             if (UserShortcuts[i] == null) {
@@ -462,8 +462,8 @@ public class Preferences {
         return MouseDialAngular;
     }
 
-    public Boolean getAxolotiLegacyMode() {
-        return AxolotiLegacyMode;
+    public String getFirmwareMode() {
+        return FirmwareMode;
     }
 
     public String getUserShortcut(int index) {
@@ -482,11 +482,11 @@ public class Preferences {
         SetDirty();
     }
 
-    public void setAxolotiLegacyMode(boolean AxolotiLegacyMode) {
-        if (this.AxolotiLegacyMode == AxolotiLegacyMode) {
+    public void setFirmwareMode(String FirmwareMode) {
+        if (this.FirmwareMode.equals(FirmwareMode)) {
             return;
         }
-        this.AxolotiLegacyMode = AxolotiLegacyMode;
+        this.FirmwareMode = FirmwareMode;
         restartRequired = true;
         SetDirty();
     }

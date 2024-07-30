@@ -69,7 +69,7 @@ public class Constants {
         ge.registerFont(FONT);
         ge.registerFont(FONT_BOLD);
         ge.registerFont(FONT_MENU);
-        if (prefs.getAxolotiLegacyMode()) {
+        if (prefs.getFirmwareMode().contains("Axoloti Core")) {
             APP_ICON = new ImageIcon(Constants.class.getResource("/resources/axoloti_icon.png"));
         }
         else {
