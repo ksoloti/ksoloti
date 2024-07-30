@@ -257,12 +257,13 @@ public class Axoloti {
             builddir.mkdir();
         }
 
-        /* Flush previous build files on start */
+        /* Flush previous xpatch.h.gch build file on start */
         File[] bfiles = builddir.listFiles();
         if (bfiles != null) {
             for (File bf : bfiles) {
-                if (!bf.isDirectory()) { /* Redundant check. Normally there would never be a subdirectory there. */
-                    bf.delete();
+                if (!bf.isDirectory()) {
+                    /* Redundant check. Normally there would never be a subdirectory there. */
+                    if (bf.getName().equals("xpatch.h.gch")) bf.delete();
                 }
             }
         }
