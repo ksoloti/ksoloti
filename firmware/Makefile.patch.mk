@@ -19,12 +19,14 @@ CCFLAGS = \
     -fno-use-cxa-atexit \
     -fomit-frame-pointer \
     -fpermissive \
+    -ggdb3 \
     -mcpu=cortex-m4 \
     -mfloat-abi=hard \
     -mfpu=fpv4-sp-d16 \
     -mthumb \
     -mword-relocations \
     -nostdlib \
+    -std=c++11 \
     $(BOARDDEF)
 
 ifeq ($(BOARDDEF), -DBOARD_KSOLOTI_CORE)
@@ -38,7 +40,6 @@ LDFLAGS = \
     -Bsymbolic \
     -Wl,--gc-sections \
     -fno-common \
-    -Wno-unused-local-typedefs \
     -mcpu=cortex-m4 \
     -mfloat-abi=hard \
     -mfpu=fpv4-sp-d16 \
