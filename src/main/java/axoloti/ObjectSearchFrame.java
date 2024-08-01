@@ -432,7 +432,11 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 String path = t.sPath == null ? o.sPath : t.sPath;
                 String author = t.sAuthor == null ? o.sAuthor : t.sAuthor;
                 String license = t.sLicense == null ? o.sLicense : t.sLicense;
-                String txt = description;
+
+                String txt = "";
+                if ((description != null) && (!description.isEmpty())) {
+                    txt += description;
+                }
                 if ((path != null) && (!path.isEmpty())) {
                     txt += "<p>Path: " + path;
                 }

@@ -113,18 +113,20 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
         Titlebar.add(popupIcon);
 
         LabelComponent idlbl = new LabelComponent("");
-        if (typeName.length() <= 20) {
-            idlbl.setText(typeName); /* if not too long, use full object name */
-        }
-        else {
-            String[] ssubs = typeName.split("/"); /* else split path of full object name */
-            String slbl = ssubs[ssubs.length-1]; /* start with "most signinficant" part */
-
-            for (int i=ssubs.length-2; i>0; i--) {
-                if (slbl.length() >= 16) break; /* it object name is too long already, leave */
-                slbl = ssubs[i] + "/" + slbl; /* else keep adding subpaths until it is too long */
+        if (typeName != null) {
+            if (typeName.length() <= 20) {
+                idlbl.setText(typeName); /* if not too long, use full object name */
             }
-            idlbl.setText("…/" + slbl);
+            else {
+                String[] ssubs = typeName.split("/"); /* else split path of full object name */
+                String slbl = ssubs[ssubs.length-1]; /* start with "most signinficant" part */
+    
+                for (int i=ssubs.length-2; i>0; i--) {
+                    if (slbl.length() >= 16) break; /* it object name is too long already, leave */
+                    slbl = ssubs[i] + "/" + slbl; /* else keep adding subpaths until it is too long */
+                }
+                idlbl.setText("…/" + slbl);
+            }
         }
         idlbl.setAlignmentX(LEFT_ALIGNMENT);
         idlbl.setForeground(Theme.getCurrentTheme().Object_TitleBar_Foreground);
@@ -171,7 +173,7 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
     @Override
     JPopupMenu CreatePopupMenu() {
         JPopupMenu popup = super.CreatePopupMenu();
-        JMenuItem popm_substitute = new JMenuItem("replace");
+        JMenuItem popm_substitute = new JMenuItem("Replace");
         popm_substitute.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -179,7 +181,7 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
             }
         });
         popup.add(popm_substitute);
-        JMenuItem popm_editInstanceName = new JMenuItem("edit instance name");
+        JMenuItem popm_editInstanceName = new JMenuItem("Edit Instance Name");
         popm_editInstanceName.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
