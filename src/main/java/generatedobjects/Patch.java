@@ -282,7 +282,7 @@ public class Patch extends gentools {
     }
 
     static AxoObject CreateLoadPatchIndexed() {
-        AxoObject o = new AxoObject("load i", "load a patch from SD card, index in patch bank file");
+        AxoObject o = new AxoObject("load i", "load a patch from SD card, index in patchbank file");
         o.inlets.add(new InletInt32Pos("i", "index"));
         o.inlets.add(new InletBool32Rising("trig", "trigger"));
         o.sLocalData = "int ntrig;\n";

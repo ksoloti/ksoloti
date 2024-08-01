@@ -261,8 +261,8 @@ public class Axoloti {
         File[] bfiles = builddir.listFiles();
         if (bfiles != null) {
             for (File bf : bfiles) {
+                /* Redundant check. Normally there would never be a subdirectory there. */
                 if (!bf.isDirectory()) {
-                    /* Redundant check. Normally there would never be a subdirectory there. */
                     if (bf.getName().equals("xpatch.h.gch")) bf.delete();
                 }
             }

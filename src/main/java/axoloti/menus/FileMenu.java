@@ -105,7 +105,7 @@ public class FileMenu extends JMenu {
         jMenuNewBank.setMnemonic('B');
         jMenuNewBank.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
                 KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
-        jMenuNewBank.setText("New Patch Bank");
+        jMenuNewBank.setText("New Patchbank");
         jMenuNewBank.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {

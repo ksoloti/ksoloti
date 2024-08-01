@@ -133,7 +133,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         } else {
                             int size = f.getSize();
                             if (size < 10240) {
-                                returnValue = "" + size + "  bytes";
+                                returnValue = "" + size + " bytes";
                             } else if (size < 10240 * 1024) {
                                 returnValue = "" + (size / 1024) + " kB";
                             } else {
@@ -463,7 +463,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 dir = f.getFilename();
             }
         }
-        String fn = JOptionPane.showInputDialog(this, "Directory name?");
+        String fn = JOptionPane.showInputDialog(this, "Enter Folder name:");
         if (fn != null && !fn.isEmpty()) {
             QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
             processor.AppendToQueue(new QCmdCreateDirectory(dir + fn));
@@ -484,11 +484,12 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             jFileTable.revalidate();
             jFileTable.repaint();
         }
-            int clusters = SDCardInfo.getInstance().getClusters();
-            int clustersize = SDCardInfo.getInstance().getClustersize();
-            int sectorsize = SDCardInfo.getInstance().getSectorsize();
-            jLabelSDInfo.setText("Free: " + ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)) + "MB");
-            // System.out.println(String.format("SD free: %d MB, Cluster size: %d", ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)), (clustersize * sectorsize)));
+
+        int clusters = SDCardInfo.getInstance().getClusters();
+        int clustersize = SDCardInfo.getInstance().getClustersize();
+        int sectorsize = SDCardInfo.getInstance().getSectorsize();
+        jLabelSDInfo.setText("Free: " + ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)) + "MB");
+        // System.out.println(String.format("SD free: %d MB, Cluster size: %d", ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)), (clustersize * sectorsize)));
     }
 
     private axoloti.menus.FileMenu fileMenu1;

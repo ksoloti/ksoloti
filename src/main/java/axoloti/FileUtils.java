@@ -99,7 +99,7 @@ public class FileUtils {
 
         @Override
         public String getDescription() {
-            return "Axoloti Patch Bank";
+            return "Axoloti Patchbank";
         }
     };
 

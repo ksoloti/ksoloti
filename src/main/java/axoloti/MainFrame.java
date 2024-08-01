@@ -185,7 +185,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             @Override
             public void publish(LogRecord lr) {
                 if (!SwingUtilities.isEventDispatchThread()) {
-//                    System.out.println("logging outside GUI thread:"+lr.getMessage());
+                    // System.out.println("logging outside GUI thread:"+lr.getMessage());
                     final LogRecord lrf = lr;
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -451,6 +451,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         EventQueue.invokeLater(r);
                     }
                 } else if (arg.endsWith(".axo")) {
+                    System.out.println("opening .axo files not implemented yet");
                     // NOP for AXO at the moment - new patch and paste object as embedded inside?
                     // NewPatchWithObjectEmbedded---or something();
                 }

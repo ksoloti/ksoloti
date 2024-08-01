@@ -145,7 +145,7 @@ public class Patch {
     // @Element(required = false)
     private boolean hasZombies = false;
 
-    // patch this patch is contained in
+    /* Patch this patch is contained in as a subpatch */
     private Patch container = null;
     private AxoObjectInstanceAbstract controllerInstance;
 
@@ -1748,6 +1748,7 @@ public class Patch {
 
         c += "void xpatch_init2(int fwid) {\n"
            + I + "if (fwid != 0x" + MainFrame.mainframe.LinkFirmwareID + ") {\n"
+           + I+I + "LogTextMessage(\"Patch firmware mismatch\");\n"
            + I+I + "return;\n"
            + I + "}\n\n"
            + I + "extern uint32_t _pbss_start;\n"
@@ -1797,13 +1798,13 @@ public class Patch {
         String cobjstr = prefs.getControllerObject();
 
         if (prefs.isControllerEnabled() && cobjstr != null && !cobjstr.isEmpty()) {
-            Logger.getLogger(Patch.class.getName()).log(Level.WARNING, "Using controller object: {0}", cobjstr);
             AxoObjectAbstract x = null;
             ArrayList<AxoObjectAbstract> objs = MainFrame.axoObjects.GetAxoObjectFromName(cobjstr, GetCurrentWorkingDirectory());
             if ((objs != null) && (!objs.isEmpty())) {
                 x = objs.get(0);
             }
             if (x != null) {
+                Logger.getLogger(Patch.class.getName()).log(Level.WARNING, "Using controller object: {0}", cobjstr);
                 controllerInstance = x.CreateInstance(null, "ctrl0x123", new Point(0, 0));
             }
             else {
@@ -1815,7 +1816,8 @@ public class Patch {
         SortByPosition();
 
         String c = generateIncludes();
-        c += "\n"
+        c += "/* Auto-generated using Ksoloti Patcher v" + Version.AXOLOTI_SHORT_VERSION + " on " + System.getProperty("os.name") + "*/\n"
+                + "/* Patch file: " + getFileNamePath() + " */\n"
                 + "#pragma GCC diagnostic ignored \"-Wunused-variable\"\n"
                 + "#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n\n";
 
