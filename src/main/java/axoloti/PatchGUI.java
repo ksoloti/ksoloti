@@ -1098,6 +1098,7 @@ public class PatchGUI extends Patch {
             patch1.PostContructor();
             patch1.setFileNamePath(name);
             pf.setVisible(true);
+            pf.repositionIfOutsideScreen();
         } catch (Exception ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1145,6 +1146,7 @@ public class PatchGUI extends Patch {
         PatchFrame pf = OpenPatchInvisible(f);
         pf.setVisible(true);
         pf.setState(java.awt.Frame.NORMAL);
+        pf.repositionIfOutsideScreen();
         pf.toFront();
         MainFrame.prefs.addRecentFile(f.getAbsolutePath());
         return pf;

@@ -18,7 +18,6 @@
  */
 package axoloti;
 
-import axoloti.object.AxoObjectInstance;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
 import axoloti.object.AxoObjects;
@@ -28,11 +27,16 @@ import components.ScrollPaneComponent;
 import components.VisibleCablePanel;
 
 import static axoloti.MainFrame.fc;
+import static axoloti.MainFrame.mainframe;
 import static axoloti.MainFrame.prefs;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -223,6 +227,34 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         createBufferStrategy(2);
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
         USBBulkConnection.GetConnection().addSDCardMountStatusListener(this);
+    }
+    
+    public void repositionIfOutsideScreen() {
+
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice[] gs = ge.getScreenDevices();
+        Rectangle allScreenBounds = new Rectangle();
+
+        for(GraphicsDevice curGs : gs) {
+            GraphicsConfiguration[] gc = curGs.getConfigurations();
+            for(GraphicsConfiguration curGc : gc) {
+                Rectangle bounds = curGc.getBounds();
+                allScreenBounds = allScreenBounds.union(bounds);
+            }
+        }
+        
+        Point patchFrameOnScreen = getLocationOnScreen();
+        double safetyMargin = 64.0;
+
+        if(patchFrameOnScreen.getX() > (allScreenBounds.getMaxX() - safetyMargin) ||
+           patchFrameOnScreen.getY() > (allScreenBounds.getMaxY() - safetyMargin) ||
+           patchFrameOnScreen.getY() < (allScreenBounds.getMinY() + safetyMargin) ||
+           patchFrameOnScreen.getY() < (allScreenBounds.getMinY() + safetyMargin)) {
+            /* Do not tolerate any coordinate to be outside all
+             * screen boundaries (with safety margin). Reset position instead.
+             */
+            setLocationRelativeTo(mainframe);
+        }
     }
 
     QCmdProcessor qcmdprocessor;
