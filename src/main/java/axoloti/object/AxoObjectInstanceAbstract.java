@@ -162,7 +162,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         if (patch != null) {
             AxoObjectInstanceAbstract o1 = patch.GetObjectInstance(InstanceName);
             if ((o1 != null) && (o1 != this)) {
-                Logger.getLogger(AxoObjectInstanceAbstract.class.getName()).log(Level.SEVERE, "Object name {0} already exists!", InstanceName);
+                Logger.getLogger(AxoObjectInstanceAbstract.class.getName()).log(Level.SEVERE, "Object name already exists: \"{0}\"", InstanceName);
                 repaint();
                 return;
             }
@@ -194,7 +194,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         if (type == null) {
             ArrayList<AxoObjectAbstract> types = MainFrame.axoObjects.GetAxoObjectFromName(typeName, patch.GetCurrentWorkingDirectory());
             if (types == null) {
-                Logger.getLogger(AxoObjectInstanceAbstract.class.getName()).log(Level.SEVERE, "Object name \"{0}\" not found", typeName);
+                Logger.getLogger(AxoObjectInstanceAbstract.class.getName()).log(Level.SEVERE, "Object name not found: \"{0}\"", typeName);
             }
             else {
                 // pick first
