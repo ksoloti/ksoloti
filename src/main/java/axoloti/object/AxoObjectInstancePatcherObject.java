@@ -102,7 +102,7 @@ public class AxoObjectInstancePatcherObject extends AxoObjectInstance {
                 String fpath = getPatch().getFileNamePath();
                 int brk = fpath.lastIndexOf(File.separator) + 1;
                 if (brk != 0) {
-                    t += "   [" + fpath.substring(brk) + "]";
+                    t += "  [" + fpath.substring(brk) + "]";
                 }
             }
 
