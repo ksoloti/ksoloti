@@ -583,10 +583,10 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         jTextDesc = new javax.swing.JTextArea();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane4 = new ScrollPaneComponent();
-        jListIncludes = new javax.swing.JList();
+        jListIncludes = new javax.swing.JList<>();
         jLabel6 = new javax.swing.JLabel();
         jScrollPane12 = new ScrollPaneComponent();
-        jListDepends = new javax.swing.JList();
+        jListDepends = new javax.swing.JList<>();
         inletDefinitionsEditor1 = new axoloti.objecteditor.InletDefinitionsEditorPanel();
         outletDefinitionsEditorPanel1 = new axoloti.objecteditor.OutletDefinitionsEditorPanel();
         attributeDefinitionsEditorPanel1 = new axoloti.objecteditor.AttributeDefinitionsEditorPanel();

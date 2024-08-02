@@ -632,7 +632,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jTextFieldObjName = new javax.swing.JTextField();
         jButtonCancel = new javax.swing.JButton();
         jButtonAccept = new javax.swing.JButton();
-        jResultList = new javax.swing.JList();
+        jResultList = new javax.swing.JList<>();
 
         jObjectTree = new javax.swing.JTree();
 
