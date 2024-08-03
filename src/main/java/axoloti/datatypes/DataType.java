@@ -25,6 +25,8 @@ import java.awt.Color;
  * @author Johannes Taelman
  */
 public interface DataType {
+    
+    public final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
 
     abstract boolean IsConvertableToType(DataType dest);
 

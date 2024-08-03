@@ -86,8 +86,8 @@ public class Frac32buffer extends DataTypeBuffer {
     @Override
     public String GenerateCopyCode(String dest, String source) {
         String c = "for (i=0; i<BUFSIZE; i++) {\n"
-                 + "\t" + dest + "[i] = " + source + "[i];\n"
-                 + "}\n";
+                 + I+I+I + dest + "[i] = " + source + "[i];\n"
+                 + I+I + "}\n";
         return c;
     }
 

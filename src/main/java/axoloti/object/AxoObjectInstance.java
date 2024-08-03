@@ -101,12 +101,16 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         @ElementList(entry = "file", type = AttributeInstanceSDFile.class, inline = true, required = false),
         @ElementList(entry = "text", type = AttributeInstanceTextEditor.class, inline = true, required = false)})
     public ArrayList<AttributeInstance> attributeInstances;
+
     public ArrayList<DisplayInstance> displayInstances;
+
     LabelComponent IndexLabel;
+    
+    private final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
 
     boolean deferredObjTypeUpdate = false;
 
-    String I = "\t";
+
 
     @Override
     public void refreshIndex() {
@@ -400,7 +404,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             popup.add(popm_help);
         }
         if (MainFrame.prefs.getExpertMode()) {
-            JMenuItem popm_adapt = new JMenuItem("Adapt homonym");
+            JMenuItem popm_adapt = new JMenuItem("Adapt Homonym");
             popm_adapt.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
@@ -832,7 +836,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
             c += s + "\n";
         }
-        String d = I+I + "public: void Init(" + classname + " *_parent";
+        String d = "\n" + I+I + "public: void Init(" + classname + " *_parent";
         if (!displayInstances.isEmpty()) {
             for (DisplayInstance p : displayInstances) {
                 if (p.display.getLength() > 0) {
@@ -852,7 +856,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     @Override
     public String GenerateDisposeCodePlusPlus(String classname) {
-        String h = "\n" + I+I + "/* Object Dispose Code */\n";
+        String h = "\n";
         String c = "";
         if (getType().sDisposeCode != null) {
             String s = getType().sDisposeCode;
@@ -861,14 +865,14 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
             c += s + "\n";
         }
-        c = h + I+I + "public: void Dispose() {\n" + c + I+I + "}\n";
+        c = h + I+I + "public: void Dispose() {\n\n" + I+I+I + "/* Object Dispose Code */\n" + c + I+I + "}\n";
         return c;
     }
 
     public String GenerateKRateCodePlusPlus(String vprefix, boolean enableOnParent, String OnParentAccess) {
         String s = getType().sKRateCode;
         if (s != null) {
-            String h = "\n" + I+I + "/* Object K-Rate Code */\n";
+            String h = "\n" + I+I+I + "/* Object K-Rate Code */\n";
 
             for (AttributeInstance p : attributeInstances) {
                 s = s.replaceAll(p.GetCName(), p.CValue());
@@ -912,7 +916,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     }
 
     public String GenerateDoFunctionPlusPlus(String ClassName, String OnParentAccess, Boolean enableOnParent) {
-        String s = "\n" + I+I + "/* Object DSP Loop */\n";
+        String s = "\n";
         boolean comma = false;
         s += I+I + "public: void dsp(";
         for (InletInstance i : inletInstances) {
@@ -951,7 +955,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 comma = true;
             }
         }
-        s += ") {\n";
+        s += ") {\n";//\n" + I+I+I + "/* Object DSP Loop */\n";
         s += GenerateKRateCodePlusPlus("", enableOnParent, OnParentAccess);
         s += GenerateSRateCodePlusPlus("", enableOnParent, OnParentAccess);
         s += I+I + "}\n";

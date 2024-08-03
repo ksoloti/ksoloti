@@ -189,6 +189,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             public void mouseExited(MouseEvent e) {
             }
         });
+
         jResultList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {

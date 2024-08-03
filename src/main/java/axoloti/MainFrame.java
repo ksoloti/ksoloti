@@ -1398,6 +1398,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     PatchBank.OpenBank(f);
                 }
                 else if (fn.endsWith(".axo")) {
+                    System.out.println("opening .axo files not implemented yet");
                     // TODO
                 }
             }

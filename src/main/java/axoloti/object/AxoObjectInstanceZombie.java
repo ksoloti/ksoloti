@@ -72,6 +72,7 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
         @ElementList(entry = "bool32.tgl", type = ParameterInstanceBin1.class, inline = true, required = false),
         @ElementList(entry = "bool32.mom", type = ParameterInstanceBin1Momentary.class, inline = true, required = false)})
     public ArrayList<ParameterInstance> parameterInstances;
+
     @Path("attribs")
     @ElementListUnion({
         @ElementList(entry = "objref", type = AttributeInstanceObjRef.class, inline = true, required = false),
@@ -128,8 +129,8 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
                 idlbl.setText("…/" + slbl);
             }
         }
-        idlbl.setAlignmentX(LEFT_ALIGNMENT);
         idlbl.setForeground(Theme.getCurrentTheme().Object_TitleBar_Foreground);
+        idlbl.setAlignmentX(LEFT_ALIGNMENT);
         idlbl.setFont(Constants.FONT_BOLD);
         Titlebar.add(idlbl);
 

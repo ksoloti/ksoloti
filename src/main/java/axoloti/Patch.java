@@ -129,7 +129,7 @@ public class Patch {
     boolean locked = false;
     private boolean dirty = false;
 
-    String I = "\t";
+    private final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
 
     /*
         0 = A_STEREO

@@ -32,8 +32,10 @@ import axoloti.outlets.Outlet;
 import axoloti.parameters.Parameter;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
-import components.ScrollPaneComponent;
 
+import static axoloti.MainFrame.prefs;
+
+import components.ScrollPaneComponent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Point;
@@ -292,7 +294,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         // is it from the factory?
         AxolotiLibrary sellib = null;
-        for (AxolotiLibrary lib : MainFrame.prefs.getLibraries()) {
+        for (AxolotiLibrary lib : prefs.getLibraries()) {
             if (editObj.sPath != null && editObj.sPath.startsWith(lib.getLocalLocation())) {
                 if (sellib == null || sellib.getLocalLocation().length() < lib.getLocalLocation().length()) {
                     sellib = lib;

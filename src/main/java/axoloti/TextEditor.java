@@ -34,6 +34,8 @@ import org.fife.ui.rtextarea.*;
 
 import axoloti.utils.Constants;
 
+import static axoloti.MainFrame.prefs;
+
 /**
  *
  * @author Johannes Taelman

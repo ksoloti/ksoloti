@@ -83,7 +83,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     @Attribute(required = false)
     private Boolean isFrozen;
 
-    String I = "\t";
+    public final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
 
     public ParameterInstance() {
     }
