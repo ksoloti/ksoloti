@@ -636,11 +636,12 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     }
 
     public String GenerateInstanceCodePlusPlus(String classname, boolean enableOnParent) {
-        String c = "\n" + I+I + "/* Object Local Code */\n";
+        String c = "\n" + I+I + "/* Object Local Code Tab */\n";
         for (ParameterInstance p : parameterInstances) {
             if (p.isFrozen()) {
                 
-                c += I+I + "// Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + "_" + p.GetCName() + "\n";
+                // c += I+I + "// Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + "_" + p.GetCName() + "\n";
+                c += I+I + "// Frozen parameter: " + p.GenerateCodeDeclaration(classname);
                 c += I+I + "static const int32_t " + p.GetCName() + " = ";
                 /* Do parameter value mapping in Java so save MCU memory.
                  * These are the same functions like in firmware/parameter_functions.h.
@@ -653,19 +654,19 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     int unsignedClampedVal = Math.clamp(p.GetValueRaw(), 0, S28_MAX);
 
                     if (pfun.equals("pfun_signed_clamp")) {
-                        c += signedClampedVal + "; /*pfun_signed_clamp*/\n";
+                        c += signedClampedVal + "; /* pfun_signed_clamp */\n";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp")) {
-                        c += unsignedClampedVal + "; /*pfun_unsigned_clamp*/\n";
+                        c += unsignedClampedVal + "; /* pfun_unsigned_clamp */\n";
                     }
 
                     else if (pfun.equals("pfun_signed_clamp_fullrange")) {
-                        c += (signedClampedVal << 4) + "; /*pfun_signed_clamp_fullrange*/\n";
+                        c += (signedClampedVal << 4) + "; /* pfun_signed_clamp_fullrange */\n";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_fullrange")) {
-                        c += (unsignedClampedVal << 4) + "; /*pfun_unsigned_clamp_fullrange*/\n";
+                        c += (unsignedClampedVal << 4) + "; /* pfun_unsigned_clamp_fullrange */\n";
                     }
 
                     else if (pfun.equals("pfun_signed_clamp_squarelaw")) {
@@ -677,13 +678,13 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         else {
                             mappedVal = -((psat * psat) >> 31);
                         }
-                        c += (int) mappedVal + " /*pfun_signed_clamp_squarelaw*/;\n";
+                        c += (int) mappedVal + " /* pfun_signed_clamp_squarelaw */;\n";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_squarelaw")) {
                         long psat = unsignedClampedVal;
                         long mappedVal = ((psat * psat) >> 31);
-                        c += (int) mappedVal + "; /*pfun_unsigned_clamp_squarelaw*/\n";
+                        c += (int) mappedVal + "; /* pfun_unsigned_clamp_squarelaw */\n";
                     }
 
                     else if (pfun.equals("pfun_signed_clamp_fullrange_squarelaw")) {
@@ -695,13 +696,13 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         else {
                             mappedVal = -((psat * psat) >> 23);
                         }
-                        c += (int) mappedVal + "; /*pfun_signed_clamp_fullrange_squarelaw*/\n";
+                        c += (int) mappedVal + "; /* pfun_signed_clamp_fullrange_squarelaw */\n";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_fullrange_squarelaw")) {
                         long psat = (long) unsignedClampedVal;
                         long mappedVal = ((psat * psat) >> 23);
-                        c += (int) mappedVal + "; /*pfun_unsigned_clamp_fullrange_squarelaw*/\n";
+                        c += (int) mappedVal + "; /* pfun_unsigned_clamp_fullrange_squarelaw */\n";
                     }
 
                     else if (pfun.equals("pfun_kexpltime") || pfun.equals("pfun_kexpdtime")) {
@@ -768,10 +769,10 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         int final_val = final_bd.intValue();
 
                         if (pfun.equals("pfun_kexpltime")) {
-                            c += final_val + "; /*pfun_kexpltime*/\n";
+                            c += final_val + "; /* pfun_kexpltime */\n";
                         }
                         else if (pfun.equals("pfun_kexpdtime")) {
-                            c += (0x7FFFFFFF - final_val) + "; /*pfun_kexpdtime*/\n";
+                            c += (0x7FFFFFFF - final_val) + "; /* pfun_kexpdtime */\n";
                         }
                     }
                 }
@@ -794,7 +795,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     @Override
     public String GenerateInitCodePlusPlus(String classname, boolean enableOnParent) {
-        String c = I+I+I + "/* Object Init Code */\n";
+        String c = I+I+I + "/* Object Init Code Tab */\n";
 //        if (hasStruct())
 //            c = "  void " + GenerateInitFunctionName() + "(" + GenerateStructName() + " * x ) {\n";
 //        else
@@ -901,14 +902,14 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
             c += s + "\n";
         }
-        c = h + I+I + "public: void Dispose() {\n" + I+I+I + "/* Object Dispose Code */\n" + c + I+I + "}\n";
+        c = h + I+I + "public: void Dispose() {\n" + I+I+I + "/* Object Dispose Code Tab */\n" + c + I+I + "}\n";
         return c;
     }
 
     public String GenerateKRateCodePlusPlus(String vprefix, boolean enableOnParent, String OnParentAccess) {
         String s = getType().sKRateCode;
         if (s != null) {
-            String h = I+I+I + "/* Object K-Rate Code */\n";
+            String h = I+I+I + "/* Object K-Rate Code Tab */\n";
 
             for (AttributeInstance p : attributeInstances) {
                 s = s.replaceAll(p.GetCName(), p.CValue());
@@ -925,7 +926,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         if (getType().sSRateCode != null) {
             String s = "\n" + I+I+I + "uint8_t buffer_index;\n"
                             + I+I+I + "for (buffer_index = 0; buffer_index < BUFSIZE; buffer_index++) {\n"
-                     + "\n" + I+I+I+I + "/* Object S-Rate Code */\n"
+                     + "\n" + I+I+I+I + "/* Object S-Rate Code Tab */\n"
                             + getType().sSRateCode
                      + "\n" + I+I+I + "}\n";
 

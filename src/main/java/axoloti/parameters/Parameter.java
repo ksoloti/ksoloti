@@ -54,7 +54,7 @@ public abstract class Parameter<T extends ParameterInstance> implements AtomDefi
 
     public String CType() {
         // fixme
-        return "int";
+        return "int32_t";
     }
 
     public Parameter() {

@@ -35,7 +35,7 @@ public class Int8Ptr implements DataType {
 
     @Override
     public String CType() {
-        return "int8_t *";
+        return "int8_t*";
     }
 
     @Override

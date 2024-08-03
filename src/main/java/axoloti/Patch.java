@@ -1072,7 +1072,8 @@ public class Patch {
         for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.GetOutletInstances().isEmpty()) {
                 endpoints.add(o);
-            } else {
+            }
+            else {
                 int count = 0;
                 for (OutletInstance ol : o.GetOutletInstances()) {
                     if (GetNet(ol) != null)
@@ -1206,7 +1207,7 @@ public class Patch {
         if (Modulators.size() > 0) {
             c += "\n" + I + "/* Modsource defines */\n";
             for (Modulator m : Modulators) {
-                c += I + "static const int " + m.getCName() + " = " + k + ";\n";
+                c += I + "static const int32_t " + m.getCName() + " = " + k + ";\n";
                 k++;
             }
         }
@@ -1281,13 +1282,15 @@ public class Patch {
                 c += I+I+I + "{" + dp[j * 2] + "," + dp[j * 2 + 1] + "}";
                 if (j != settings.GetNPresetEntries() - 1) {
                     c += ",\n";
-                } else {
+                }
+                else {
                     c += "\n";
                 }
             }
             if (i != settings.GetNPresets() - 1) {
                 c += I+I+I + "},\n";
-            } else {
+            }
+            else {
                 c += I+I+I + "}\n";
             }
         }
@@ -1299,7 +1302,7 @@ public class Patch {
               + I+I + "if (!index) {\n"
               + I+I+I + "int32_t* p = GetInitParams();\n"
               + I+I+I + "uint16_t i; for (i=0; i<NPEXCH; i++) {\n"
-              + I+I+I+I + "PExParameterChange(&PExch[i],p[i],0xFFEF);\n"
+              + I+I+I+I + "PExParameterChange(&PExch[i], p[i], 0xFFEF);\n"
               + I+I+I + "}\n"
               + I+I + "}\n"
               + I+I + "index--;\n"
@@ -1308,8 +1311,8 @@ public class Patch {
               + I+I+I + "PresetParamChange_t* p = &pa[index * NPRESET_ENTRIES];\n"
               + I+I+I + "uint8_t i; for (i=0; i<NPRESET_ENTRIES; i++) {\n"
               + I+I+I+I + "PresetParamChange_t* pp = &p[i];\n"
-              + I+I+I+I + "if ((pp->pexIndex>=0)&&(pp->pexIndex<NPEXCH)) {\n"
-              + I+I+I+I+I + "PExParameterChange(&PExch[pp->pexIndex],pp->value,0xFFEF);\n"
+              + I+I+I+I + "if ((pp->pexIndex >= 0) && (pp->pexIndex < NPEXCH)) {\n"
+              + I+I+I+I+I + "PExParameterChange(&PExch[pp->pexIndex], pp->value, 0xFFEF);\n"
               + I+I+I+I + "}\n"
               + I+I+I+I + "else break;\n"
               + I+I+I + "}\n"
@@ -1335,16 +1338,19 @@ public class Patch {
                         else {
                             s += "{" + n.destination.indexName() + ", " + n.value.getRaw() + "}";
                         }
-                    } else {
+                    }
+                    else {
                         s += "{-1, 0}";
                     }
                     if (j != settings.GetNModulationTargetsPerSource() - 1) {
                         s += ",";
-                    } else {
+                    }
+                    else {
                         s += "\n}";
                     }
                 }
-            } else {
+            }
+            else {
                 for (int j = 0; j < settings.GetNModulationTargetsPerSource() - 1; j++) {
                     s += "{-1, 0},";
                 }
@@ -1369,7 +1375,8 @@ public class Patch {
             c += I+I+I + ParameterInstances.get(i).GetValueRaw();
             if (i != s - 1) {
                 c += ",\n";
-            } else {
+            }
+            else {
                 c += "\n";
             }
         }
@@ -1411,7 +1418,8 @@ public class Patch {
         c += "\n" + I+I + "uint16_t k; for (k=0; k<NPEXCH; k++) {\n"
            + I+I+I + "if (PExch[k].pfunction) {\n"
            + I+I+I+I + "(PExch[k].pfunction)(&PExch[k]);\n"
-           + I+I+I + "} else {\n"
+           + I+I+I + "}\n"
+           + I+I+I + "else {\n"
            + I+I+I+I + "PExch[k].finalvalue = PExch[k].value;\n"
            + I+I+I + "}\n"
            + I+I + "}\n";
@@ -1420,21 +1428,20 @@ public class Patch {
 
     String GenerateParamInitCodePlusPlusSub(String className, String parentReference) {
         String c = "";
-        c += I+I + "int i;\n";
-        c += I+I + "int j;\n";
+        c += I+I + "uint32_t i, j;\n";
         c += I+I + "const int32_t* p;\n";
-        c += I+I + "p = GetInitParams();\n";
+        c += I+I + "p = GetInitParams();\n\n";
         c += I+I + "for (j=0; j<" + /*ParameterInstances.size()*/ "NPEXCH" + "; j++) {\n";
         c += I+I+I + "PExch[j].value = p[j];\n";
         c += I+I+I + "PExch[j].modvalue = p[j];\n";
         c += I+I+I + "PExch[j].signals = 0;\n";
         c += I+I+I + "PExch[j].pfunction = 0;\n";
 //        c += I+I+I + "PExch[j].finalvalue = p[j];\n"; /*TBC*/
-        c += I+I + "}\n";
+        c += I+I + "}\n\n";
         c += I+I + "int32_t* pp = &PExModulationPrevVal[0][0];\n";
-        c += I+I + "for (j=0; j<attr_poly*NMODULATIONSOURCES; j++) {\n";
+        c += I+I + "for (j=0; j<attr_poly * NMODULATIONSOURCES; j++) {\n";
         c += I+I+I + "*pp = 0; pp++;\n";
-        c += I+I + "}\n";
+        c += I+I + "}\n\n";
         c += I+I + "displayVector[0] = 0x446F7841;\n"; // "AxoD"
         c += I+I + "displayVector[1] = 0;\n";
         c += I+I + "displayVector[2] = " + displayDataLength + ";\n";
@@ -1488,7 +1495,8 @@ public class Patch {
         for (Net n : nets) {
             if (n.CType() != null) {
                 c += I+I + n.CType() + " " + n.CName() + ";\n";
-            } else {
+            }
+            else {
                 Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Net has no data type!");
             }
         }
@@ -1496,7 +1504,7 @@ public class Patch {
         c += I+I + "//--------- <zero> ----------//\n";
         c += I+I + "int32_t UNCONNECTED_OUTPUT;\n";
         c += I+I + "static const int32_t UNCONNECTED_INPUT = 0;\n";
-        c += I+I + "static const int32buffer zerobuffer = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};\n";
+        c += I+I + "static const int32buffer ZEROBUFFER = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};\n";
         c += I+I + "int32buffer UNCONNECTED_OUTPUT_BUFFER;\n";
         c += I+I + "//--------- </zero> ----------//\n\n";
 
@@ -1518,7 +1526,8 @@ public class Patch {
             if (n.NeedsLatch()) {
                 if (n.GetDataType() != null) {
                     c += I+I + n.GetDataType().GenerateCopyCode(n.CName() + "Latch", n.CName());
-                } else {
+                }
+                else {
                     Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Only inlets connected on net!");
                 }
             }
@@ -1579,10 +1588,12 @@ public class Patch {
             if ((n != null) && n.isValidNet()) {
                 if (n.IsFirstOutlet(i)) {
                     c += n.CName();
-                } else {
+                }
+                else {
                     c += n.CName() + "+";
                 }
-            } else {
+            }
+            else {
                 c += i.GetDataType().UnconnectedSink();
             }
             needsComma = true;
@@ -1746,7 +1757,7 @@ public class Patch {
            + I + "}\n\n"
            + "}\n\n";
 
-        c += "void xpatch_init2(int fwid) {\n"
+        c += "void xpatch_init2(uint32_t fwid) {\n"
            + I + "if (fwid != 0x" + MainFrame.mainframe.LinkFirmwareID + ") {\n"
            + I+I + "LogTextMessage(\"Patch firmware mismatch\");\n"
            + I+I + "return;\n"
@@ -1828,8 +1839,8 @@ public class Patch {
             c += "#define MIDICHANNEL " + (settings.GetMidiChannel() - 1) + " // DEPRECATED!\n\n";
         }
 
-        c += "void xpatch_init2(int fwid);\n\n"
-                + "extern \"C\" __attribute__ ((section(\".boot\"))) void xpatch_init(int fwid) {\n"
+        c += "void xpatch_init2(uint32_t fwid);\n\n"
+                + "extern \"C\" __attribute__ ((section(\".boot\"))) void xpatch_init(uint32_t fwid) {\n"
            + I + "xpatch_init2(fwid);\n"
                 + "}\n\n";
 
@@ -2185,6 +2196,7 @@ public class Patch {
                      + "  PExch[k].pfunction = PropagateToVoices;\n"
                      + "  PExch[k].finalvalue = (int32_t) (&(getVoices()[0].PExch[k]));\n"
                      + "}\n\n";
+
         ao.sInitCode += "uint8_t vi; for (vi=0; vi<attr_poly; vi++) {\n"
                      + "  voice* v = &getVoices()[vi];\n"
                      + "  v->polyIndex = vi;\n"
@@ -2200,17 +2212,21 @@ public class Patch {
                      + "for (k=0; k<NPEXCH; k++) {\n"
                      + "  if (PExch[k].pfunction) {\n"
                      + "    (PExch[k].pfunction)(&PExch[k]);\n"
-                     + "  } else {\n"
+                     + "  }\n"
+                     + "  else {\n"
                      + "    PExch[k].finalvalue = PExch[k].value;\n"
                      + "  }\n"
                      + "}\n\n"
                      + "priority = 0;\n"
                      + "sustain = 0;\n";
+
         ao.sDisposeCode = "uint8_t vi; for (vi=0; vi<attr_poly; vi++) {\n"
                      + "  voice* v = &getVoices()[vi];\n"
                      + "  v->dispose();\n"
                      + "}\n";
+
         ao.sKRateCode = "";
+
         for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("patch/outlet f") || o.typeName.equals("patch/outlet i")
                     || o.typeName.equals("patch/outlet b") || o.typeName.equals("patch/outlet string")) {

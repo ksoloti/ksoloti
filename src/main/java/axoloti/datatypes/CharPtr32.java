@@ -47,7 +47,7 @@ public class CharPtr32 implements DataType {
 
     @Override
     public String CType() {
-        return "char *";
+        return "char*";
     }
 
     @Override

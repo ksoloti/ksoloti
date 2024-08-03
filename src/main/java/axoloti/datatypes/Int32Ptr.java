@@ -35,7 +35,7 @@ public class Int32Ptr implements DataType {
 
     @Override
     public String CType() {
-        return "int32_t *";
+        return "int32_t*";
     }
 
     @Override

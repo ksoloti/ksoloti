@@ -98,7 +98,7 @@ public class Frac32buffer extends DataTypeBuffer {
 
     @Override
     public String GenerateSetDefaultValueCode() {
-        return "zerobuffer";
+        return "ZEROBUFFER";
     }
 
     @Override
