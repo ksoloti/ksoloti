@@ -58,6 +58,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+// import javax.swing.JSeparator;
+// import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import org.simpleframework.xml.*;
@@ -111,11 +113,45 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     boolean deferredObjTypeUpdate = false;
 
 
+    private void refreshTooltip() {
+        String tooltiptxt = "<html>";
+        tooltiptxt += "<b>" + typeName + "</b>";
+        if ((getType().sDescription != null) && (!getType().sDescription.isEmpty())) {
+            String[] splitStrings = getType().sDescription.split(" ");
+            String putBackTogetherString = "";
+            int lineLength = 0;
+            for (String s : splitStrings) {
+                putBackTogetherString += s + " ";
+                lineLength += (s.length()+1);
+                if (s.contains("\n")) {
+                    lineLength = 0; /* Reset line length counter if there is going to be a formatted line break */
+                }
+                if (lineLength > 80) {
+                    putBackTogetherString += "\n"; /* Insert line break to make text wrap around */
+                    lineLength = 0; /* Reset line length counter */
+                }
+            }
+            // tooltiptxt += "<p><br/>" + getType().sDescription.replaceAll("\n", "<br/>") + "<br/>";
+            tooltiptxt += "<p><br/>" + putBackTogetherString.replaceAll("\n", "<br/>") + "<br/>";
+        }
+        if ((getType().sAuthor != null) && (!getType().sAuthor.isEmpty())) {
+            tooltiptxt += "<p><br/>Author: " + getType().sAuthor + "</p>";
+        }
+        if ((getType().sPath != null) && (!getType().sPath.isEmpty())) {
+            tooltiptxt += "<p>Path: " + getType().sPath + "</p>";
+        }
+        if (IndexLabel != null && !IndexLabel.getText().equals("")) {
+            tooltiptxt += "<p>Execution order: " + (IndexLabel.getText()) + "/" + patch.objectInstances.size() + "</p>";
+        }
+        tooltiptxt += "</div>";
+        Titlebar.setToolTipText(tooltiptxt);
+    }
 
     @Override
     public void refreshIndex() {
         if (patch != null && IndexLabel != null) {
-            IndexLabel.setText(" " + patch.objectInstances.indexOf(this));
+            IndexLabel.setText("" + (patch.objectInstances.indexOf(this) + 1)); /* Add 1, so Index 0 means 1st object */
+            refreshTooltip();
         }
     }
 
@@ -186,30 +222,23 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         idlbl.setFont(Constants.FONT_BOLD);
         Titlebar.add(idlbl);
 
-        String tooltiptxt = "<html>";
-        tooltiptxt += "<b>" + typeName + "</b>";
-        if ((getType().sDescription != null) && (!getType().sDescription.isEmpty())) {
-            tooltiptxt += "<p><br/>" + getType().sDescription.replace("\n", "<br/>");
-        }
-        if ((getType().sAuthor != null) && (!getType().sAuthor.isEmpty())) {
-            tooltiptxt += "<p><br/>Author: " + getType().sAuthor;
-        }
-        if ((getType().sPath != null) && (!getType().sPath.isEmpty())) {
-            tooltiptxt += "<p>Path: " + getType().sPath;
-        }
-        Titlebar.setToolTipText(tooltiptxt);
+        /* Execution Index shown in object tooltip for now */
+        IndexLabel = new LabelComponent("");
+        refreshIndex();
+        
+        /* IndexLabel only shown in object tooltip for now ...
+        Titlebar.add(Box.createHorizontalStrut(3));
+        Titlebar.add(Box.createHorizontalGlue());
+        Titlebar.add(new JSeparator(SwingConstants.VERTICAL));
+        IndexLabel = new LabelComponent("");
+        IndexLabel.setSize(IndexLabel.getMinimumSize());
+        refreshIndex();
+        IndexLabel.setForeground(Theme.getCurrentTheme().Object_TitleBar_Foreground);
+        // idlbl.setFont(Constants.FONT_BOLD);
+        IndexLabel.setAlignmentX(RIGHT_ALIGNMENT);
+        Titlebar.add(IndexLabel);
+        */
 
-
-        /*
-         h.add(Box.createHorizontalStrut(3));
-         h.add(Box.createHorizontalGlue());
-         h.add(new JSeparator(SwingConstants.VERTICAL));*/
-        ////IndexLabel not shown, maybe useful later...
-        //IndexLabel.setSize(IndexLabel.getMinimumSize());
-        //IndexLabel = new LabelComponent("");
-        //refreshIndex();
-        //h.add(IndexLabel);
-        //IndexLabel.setAlignmentX(RIGHT_ALIGNMENT);
         Titlebar.setAlignmentX(LEFT_ALIGNMENT);
         add(Titlebar);
 
@@ -834,7 +863,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "Audio output mode set: STEREO");
             }
 
-            c += s + "\n";
+            c += s;
         }
         String d = "\n" + I+I + "public: void Init(" + classname + " *_parent";
         if (!displayInstances.isEmpty()) {
