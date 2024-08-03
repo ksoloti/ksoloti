@@ -794,7 +794,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     @Override
     public String GenerateInitCodePlusPlus(String classname, boolean enableOnParent) {
-        String c = "\n" + I+I+I + "/* Object Init Code */\n";
+        String c = I+I+I + "/* Object Init Code */\n";
 //        if (hasStruct())
 //            c = "  void " + GenerateInitFunctionName() + "(" + GenerateStructName() + " * x ) {\n";
 //        else
@@ -802,15 +802,22 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         c += I+I+I + "parent = _parent;\n";
 
         for (ParameterInstance p : parameterInstances) {
-            if (!p.isFrozen()) {
+            if (p.isFrozen()) {
                 if (p.parameter.PropagateToChild != null) {
-
-                        c += I+I+I + "// on Parent: propagate " + p.getName() + " " + enableOnParent + " " + getLegalName() + "" + p.parameter.PropagateToChild + "\n";
-                        c += I+I+I +  p.PExName("parent->") + ".pfunction = PropagateToSub;\n";
-                        c += I+I+I +  p.PExName("parent->") + ".finalvalue = (int32_t)(&(parent->objectinstance_"
-                                + getLegalName() + "_i.PExch[objectinstance_" + getLegalName() + "::PARAM_INDEX_"
-                                + p.parameter.PropagateToChild + "]));\n";
-                } else {
+                    // Frozen via parent:
+                    // c += I+I+I + "/* Parent control is frozen. Inserting parent value here: */\n";
+                    // c += I+I+I + "PExch[PARAM_INDEX_" + p.getLegalName() + "_" + p.ControlOnParentName() + "].finalvalue = objectinstance_" + getLegalName() + "::" + p.GetCName() + ";\n";
+                }
+            }
+            else {
+                if (p.parameter.PropagateToChild != null) {
+                    c += I+I+I + "// on Parent: propagate " + p.getName() + " " + enableOnParent + " " + getLegalName() + "" + p.parameter.PropagateToChild + "\n";
+                    c += I+I+I + p.PExName("parent->") + ".pfunction = PropagateToSub;\n";
+                    c += I+I+I + p.PExName("parent->") + ".finalvalue = (int32_t)(&(parent->objectinstance_"
+                               + getLegalName() + "_i.PExch[objectinstance_" + getLegalName() + "::PARAM_INDEX_"
+                               + p.parameter.PropagateToChild + "]));\n";
+                }
+                else {
                     c += I+I+I + p.GenerateCodeInit("parent->", "");
                 }
                 c += I+I+I + p.GenerateCodeInitModulator("parent->", "");
@@ -894,14 +901,14 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
             c += s + "\n";
         }
-        c = h + I+I + "public: void Dispose() {\n\n" + I+I+I + "/* Object Dispose Code */\n" + c + I+I + "}\n";
+        c = h + I+I + "public: void Dispose() {\n" + I+I+I + "/* Object Dispose Code */\n" + c + I+I + "}\n";
         return c;
     }
 
     public String GenerateKRateCodePlusPlus(String vprefix, boolean enableOnParent, String OnParentAccess) {
         String s = getType().sKRateCode;
         if (s != null) {
-            String h = "\n" + I+I+I + "/* Object K-Rate Code */\n";
+            String h = I+I+I + "/* Object K-Rate Code */\n";
 
             for (AttributeInstance p : attributeInstances) {
                 s = s.replaceAll(p.GetCName(), p.CValue());
