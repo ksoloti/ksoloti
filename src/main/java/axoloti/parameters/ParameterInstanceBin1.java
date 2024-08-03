@@ -45,9 +45,7 @@ public class ParameterInstanceBin1 extends ParameterInstanceInt32<ParameterBin1>
 
     @Override
     public String GenerateCodeInit(String vprefix, String StructAccces) {
-        String s = /*"    " + variableName(vprefix) + " = " + (value.getInt()) + ";\n"
-                 + "    " + valueName(vprefix) + " = " + (value.getInt()) + ";\n"
-                 +*/ "    " + signalsName(vprefix) + " = 0;\n"
+        String s = "    " + signalsName(vprefix) + " = 0;\n"
                 + I+I+I + "SetKVP_IPVP(&" + StructAccces + KVPName(vprefix) + ",ObjectKvpRoot, \"" + KVPName(vprefix) + "\" ,"
                 + "&" + PExName(vprefix) + ","
                 + 0 + ","
