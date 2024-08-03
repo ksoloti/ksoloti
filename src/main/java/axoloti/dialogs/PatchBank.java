@@ -34,6 +34,11 @@ import axoloti.SDFileInfo;
 import axoloti.USBBulkConnection;
 import components.ScrollPaneComponent;
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -48,6 +53,8 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -59,6 +66,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.AbstractTableModel;
+
 import qcmds.QCmdProcessor;
 import qcmds.QCmdUploadFile;
 
@@ -192,6 +200,32 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 return (columnIndex == 1);
             }
 
+        jScrollPane1.setDropTarget(new DropTarget() {
+            @Override
+            public synchronized void drop(DropTargetDropEvent evt) {
+                try {
+                    evt.acceptDrop(DnDConstants.ACTION_COPY);
+                    @SuppressWarnings("unchecked")
+                    List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    for (File f : droppedFiles) {
+                        System.out.println(f.getName());
+                        if (!f.canRead()) {
+                            Logger.getLogger(PatchBank.class.getName()).log(Level.SEVERE, "Can''t read file");
+                        }
+                        else {
+                            files.add(f);
+                        }
+                    }
+
+                    setDirty();
+                    refresh();
+
+                } catch (UnsupportedFlavorException ex) {
+                    Logger.getLogger(PatchBank.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(PatchBank.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         });
 
         if (jTable1.getColumnModel().getColumnCount() > 0) {
@@ -512,7 +546,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         windowMenu1 = new axoloti.menus.WindowMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Untitled patch bank");
+        setTitle("untitled patchbank");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -601,21 +635,21 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             }
         });
 
-        jButtonRemove.setText("Remove");
+        jButtonRemove.setText("Remove Selected");
         jButtonRemove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonRemoveActionPerformed(evt);
             }
         });
 
-        jButtonAdd.setText(" Add ");
+        jButtonAdd.setText(" Add... ");
         jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonAddActionPerformed(evt);
             }
         });
 
-        jButtonOpen.setText("Open");
+        jButtonOpen.setText("Open Selected");
         jButtonOpen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonOpenActionPerformed(evt);
@@ -659,7 +693,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                     .addComponent(jButtonRemove)
                     .addComponent(jButtonOpen)
                     .addComponent(jButtonUpload)))
-        );
+                    );
 
         getContentPane().add(jPanel2);
 
@@ -832,6 +866,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Patch bank uploaded");
     }
 
+        refresh();
+    }
 
     private axoloti.menus.FileMenu fileMenu1;
     private javax.swing.JButton jButtonAdd;

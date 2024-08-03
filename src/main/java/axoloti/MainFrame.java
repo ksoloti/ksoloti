@@ -41,6 +41,11 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Point;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
@@ -59,6 +64,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -148,6 +154,62 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         DefaultCaret caret = (DefaultCaret) jTextPaneLog.getCaret();
         caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+
+        jTextPaneLog.setDropTarget(new DropTarget() {
+            @Override
+            public synchronized void drop(DropTargetDropEvent evt) {
+                try {
+                    evt.acceptDrop(DnDConstants.ACTION_COPY);
+                    System.out.println("drag & drop:");
+                    @SuppressWarnings("unchecked")
+                    List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+
+                    /* Cap max opened files to 64 */
+                    int openedCount = 0, maxCount = 64;
+                    if (droppedFiles.size() > maxCount) {
+                        /* Display "whoa" message first */
+                        Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Whoa, slow down. Only the first " + maxCount + " files were opened.");
+                    }
+
+                    for (File f : droppedFiles) {
+                        /* Leave loop if already successfully opened 20 files */ 
+                        if (openedCount > maxCount) {
+                            break;
+                        }
+
+                        String fn = f.getName();
+                        System.out.println(fn);
+                        if (f != null && f.exists()) {
+                            if (f.canRead()) {
+                                if (fn.endsWith(".axp") || fn.endsWith(".axs") || fn.endsWith(".axh")) {
+                                    PatchGUI.OpenPatch(f);
+                                    openedCount++;
+                                }
+                                else if (fn.endsWith(".axb")) {
+                                    PatchBank.OpenBank(f);
+                                    openedCount++;
+                                }
+                                else if (fn.endsWith(".axo")) {
+                                    System.out.println("opening .axo files not implemented yet");
+                                    // TODO
+                                }
+                            }
+                            else {
+                                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Error: Can''t read file \"" + fn + "\".)");
+                            }
+                        }
+                        else {
+                            Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Warning: File \"" + fn + "\" not found.");
+                        }
+                    }
+                } catch (UnsupportedFlavorException ex) {
+                    Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
         jScrollPaneLog.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
             BoundedRangeModel brm = jScrollPaneLog.getVerticalScrollBar().getModel();
 

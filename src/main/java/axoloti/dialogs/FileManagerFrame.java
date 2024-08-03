@@ -162,7 +162,16 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
         });
 
-        jFileTable.setDropTarget(new DropTarget() {
+        jFileTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                UpdateButtons();
+            }
+        });
+
+        jFileTable.getTableHeader().setReorderingAllowed(false);
+
+        jScrollPane1.setDropTarget(new DropTarget() {
             @Override
             public synchronized void drop(DropTargetDropEvent evt) {
                 try {
@@ -188,13 +197,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 }
             }
         });
-        jFileTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                UpdateButtons();
-            }
-        });
-        jFileTable.getTableHeader().setReorderingAllowed(false);
 
         jScrollPane1.setViewportView(jFileTable);
         if (jFileTable.getColumnModel().getColumnCount() > 0) {
@@ -483,7 +485,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     refresh();
                 }
             });
-        } else {
+        }
+        else {
             jFileTable.clearSelection();
             jFileTable.revalidate();
             jFileTable.repaint();
