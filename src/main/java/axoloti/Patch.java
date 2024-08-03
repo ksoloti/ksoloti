@@ -1816,7 +1816,7 @@ public class Patch {
         SortByPosition();
 
         String c = generateIncludes();
-        c += "/* Auto-generated using Ksoloti Patcher v" + Version.AXOLOTI_SHORT_VERSION + " on " + System.getProperty("os.name") + " */\n"
+        c += "/* Auto-generated using Ksoloti Patcher v" + Version.AXOLOTI_VERSION + " on " + System.getProperty("os.name") + " */\n"
                 + "/* Patch file: " + getFileNamePath() + " */\n"
                 + "#pragma GCC diagnostic ignored \"-Wunused-variable\"\n"
                 + "#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n\n";
