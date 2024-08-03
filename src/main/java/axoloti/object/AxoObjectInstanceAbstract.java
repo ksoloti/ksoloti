@@ -641,7 +641,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
      return "";
      }
      */
-    public String GenerateInitCodePlusPlus(String vprefix, boolean enableOnParent) {
+    public String GenerateInitCodePlusPlus(String vprefix) {
         return "";
     }
 
@@ -649,7 +649,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         return "";
     }
 
-    public String GenerateClass(String ClassName, String OnParentAccess, Boolean enableOnParent) {
+    public String GenerateClass(String ClassName) {
         return "";
     }
 

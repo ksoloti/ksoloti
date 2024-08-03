@@ -635,7 +635,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         return getType().sInitCode.length() != 0;
     }
 
-    public String GenerateInstanceCodePlusPlus(String classname, boolean enableOnParent) {
+    public String GenerateInstanceCodePlusPlus(String classname) {
         String c = "\n" + I+I + "/* Object Local Code Tab */\n";
         for (ParameterInstance p : parameterInstances) {
             if (p.isFrozen()) {
@@ -794,7 +794,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     }
 
     @Override
-    public String GenerateInitCodePlusPlus(String classname, boolean enableOnParent) {
+    public String GenerateInitCodePlusPlus(String classname) {
         String c = I+I+I + "/* Object Init Code Tab */\n";
 //        if (hasStruct())
 //            c = "  void " + GenerateInitFunctionName() + "(" + GenerateStructName() + " * x ) {\n";
@@ -812,7 +812,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
             else {
                 if (p.parameter.PropagateToChild != null) {
-                    c += I+I+I + "// on Parent: propagate " + p.getName() + " " + enableOnParent + " " + getLegalName() + "" + p.parameter.PropagateToChild + "\n";
+                    c += I+I+I + "// on Parent: propagate " + p.getName() + " " + getLegalName() + "" + p.parameter.PropagateToChild + "\n";
                     c += I+I+I + p.PExName("parent->") + ".pfunction = PropagateToSub;\n";
                     c += I+I+I + p.PExName("parent->") + ".finalvalue = (int32_t)(&(parent->objectinstance_"
                                + getLegalName() + "_i.PExch[objectinstance_" + getLegalName() + "::PARAM_INDEX_"
@@ -906,7 +906,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         return c;
     }
 
-    public String GenerateKRateCodePlusPlus(String vprefix, boolean enableOnParent, String OnParentAccess) {
+    public String GenerateKRateCodePlusPlus(String vprefix) {
         String s = getType().sKRateCode;
         if (s != null) {
             String h = I+I+I + "/* Object K-Rate Code Tab */\n";
@@ -922,7 +922,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         return "";
     }
 
-    public String GenerateSRateCodePlusPlus(String vprefix, boolean enableOnParent, String OnParentAccess) {
+    public String GenerateSRateCodePlusPlus(String vprefix) {
         if (getType().sSRateCode != null) {
             String s = "\n" + I+I+I + "uint8_t buffer_index;\n"
                             + I+I+I + "for (buffer_index = 0; buffer_index < BUFSIZE; buffer_index++) {\n"
@@ -952,7 +952,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         return "";
     }
 
-    public String GenerateDoFunctionPlusPlus(String ClassName, String OnParentAccess, Boolean enableOnParent) {
+    public String GenerateDoFunctionPlusPlus(String ClassName) {
         String s = "\n";
         boolean comma = false;
         s += I+I + "public: void dsp(";
@@ -993,8 +993,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
         }
         s += ") {\n";//\n" + I+I+I + "/* Object DSP Loop */\n";
-        s += GenerateKRateCodePlusPlus("", enableOnParent, OnParentAccess);
-        s += GenerateSRateCodePlusPlus("", enableOnParent, OnParentAccess);
+        s += GenerateKRateCodePlusPlus("");
+        s += GenerateSRateCodePlusPlus("");
         s += I+I + "}\n";
         return s;
     }
@@ -1002,15 +1002,15 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public final static String MidiHandlerFunctionHeader = "void MidiInHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t data1, uint8_t data2) {\n";
 
     @Override
-    public String GenerateClass(String ClassName, String OnParentAccess, Boolean enableOnParent) {
+    public String GenerateClass(String ClassName) {
         String s  = I + "class " + getCInstanceName() + " {\n"
                   + I+I + "public: // v1\n"
                   + I+I + ClassName + " *parent;\n";
 
-        s += GenerateInstanceCodePlusPlus(ClassName, enableOnParent);
-        s += GenerateInitCodePlusPlus(ClassName, enableOnParent);
+        s += GenerateInstanceCodePlusPlus(ClassName);
+        s += GenerateInitCodePlusPlus(ClassName);
         s += GenerateDisposeCodePlusPlus(ClassName);
-        s += GenerateDoFunctionPlusPlus(ClassName, OnParentAccess, enableOnParent);
+        s += GenerateDoFunctionPlusPlus(ClassName);
         {
             String d3 = GenerateCodeMidiHandler("");
             if (!d3.isEmpty()) {

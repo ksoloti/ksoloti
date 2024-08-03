@@ -1200,7 +1200,7 @@ public class Patch {
         return c;
     }
 
-    String GenerateObjectCode(String classname, boolean enableOnParent, String OnParentAccess) {
+    String GenerateObjectCode(String classname) {
         String c = "";
         int k = 0;
 
@@ -1223,11 +1223,11 @@ public class Patch {
 
         if (controllerInstance != null) {
             c += "\n" + I + "/* Controller classes */\n";
-            c += controllerInstance.GenerateClass(classname, OnParentAccess, enableOnParent);
+            c += controllerInstance.GenerateClass(classname);
         }
         c += "\n" + I + "/* Object classes */\n";
         for (AxoObjectInstanceAbstract o : objectInstances) {
-            c += o.GenerateClass(classname, OnParentAccess, enableOnParent);
+            c += o.GenerateClass(classname);
         }
         if (controllerInstance != null) {
             c += "\n" + I + "/* Controller instances */\n";
@@ -1255,18 +1255,18 @@ public class Patch {
         return c + "\n";
     }
 
-    String GenerateStructCodePlusPlusSub(String classname, boolean enableOnParent) {
+    String GenerateStructCodePlusPlusSub(String classname) {
         String c = "";
         c += GeneratePexchAndDisplayCode();
-        c += GenerateObjectCode(classname, enableOnParent, "parent->");
+        c += GenerateObjectCode(classname);
         return c;
     }
 
-    String GenerateStructCodePlusPlus(String classname, boolean enableOnParent, String parentclassname) {
+    String GenerateStructCodePlusPlus(String classname, String parentclassname) {
         String c = "";
         c += "class " + classname + " {\n";
         c += I + "public:\n";
-        c += GenerateStructCodePlusPlusSub(parentclassname, enableOnParent);
+        c += GenerateStructCodePlusPlusSub(parentclassname);
         return c;
     }
 
@@ -1489,7 +1489,7 @@ public class Patch {
         return c;
     }
 
-    String GenerateDSPCodePlusPlusSub(String ClassName, boolean enableOnParent) {
+    String GenerateDSPCodePlusPlusSub(String ClassName) {
         String c = "\n";
         c += I+I + "//--------- <nets> -----------//\n";
         for (Net n : nets) {
@@ -1510,13 +1510,13 @@ public class Patch {
 
         if (controllerInstance != null) {
             c += I+I + "//--------- <controller calls> ----------//\n";
-            c += GenerateDSPCodePlusPlusSubObj(controllerInstance, ClassName, enableOnParent);
+            c += GenerateDSPCodePlusPlusSubObj(controllerInstance, ClassName);
             c += I+I + "//--------- </controller calls> ----------//\n\n";
         }
 
         c += I+I + "//--------- <object calls> ----------//\n";
         for (AxoObjectInstanceAbstract o : objectInstances) {
-            c += GenerateDSPCodePlusPlusSubObj(o, ClassName, enableOnParent);
+            c += GenerateDSPCodePlusPlusSubObj(o, ClassName);
         }
         c += I+I + "//--------- </object calls> ----------//\n\n";
 
@@ -1536,7 +1536,7 @@ public class Patch {
         return c;
     }
 
-    String GenerateDSPCodePlusPlusSubObj(AxoObjectInstanceAbstract o, String ClassName, boolean enableOnParent) {
+    String GenerateDSPCodePlusPlusSubObj(AxoObjectInstanceAbstract o, String ClassName) {
         String c = "";
         String s = o.getCInstanceName();
 
@@ -1604,7 +1604,7 @@ public class Patch {
                     if (needsComma) {
                         c += ", ";
                     }
-                    c += i.variableName("", false);
+                    c += i.variableName("");
                     needsComma = true;
                 }
             }
@@ -1633,7 +1633,7 @@ public class Patch {
         return c;
     }
 
-    String GenerateDSPCodePlusPlus(String ClassName, boolean enableOnParent) {
+    String GenerateDSPCodePlusPlus(String ClassName) {
         String c = "\n";
         c = I + "/* Patch k-rate */\n"
           + I + "void dsp(void) {\n"
@@ -1642,7 +1642,7 @@ public class Patch {
           + I+I+I + "AudioOutputLeft[i] = 0;\n"
           + I+I+I + "AudioOutputRight[i] = 0;\n"
           + I+I + "}\n";
-        c += GenerateDSPCodePlusPlusSub(ClassName, enableOnParent);
+        c += GenerateDSPCodePlusPlusSub(ClassName);
         c += I + "}\n\n";
         return c;
     }
@@ -1856,14 +1856,14 @@ public class Patch {
            + I + "PExParameterChange(pex, origin->modvalue, 0xFFFFFFEE);\n"
                 + "}\n\n";
 
-        c += GenerateStructCodePlusPlus("rootc", false, "rootc")
+        c += GenerateStructCodePlusPlus("rootc", "rootc")
                 + I + "static const uint8_t polyIndex = 0;\n\n"
                 + GenerateParamInitCode3("rootc")
                 + GeneratePresetCode3("rootc")
                 + GenerateModulationCode3()
                 + GenerateInitCodePlusPlus("rootc")
                 + GenerateDisposeCodePlusPlus("rootc")
-                + GenerateDSPCodePlusPlus("rootc", false)
+                + GenerateDSPCodePlusPlus("rootc")
                 + GenerateMidiCodePlusPlus("rootc")
                 + GeneratePatchCodePlusPlus("rootc");
 
@@ -1929,7 +1929,7 @@ public class Patch {
         }
         /* object structures */
 //         ao.sCName = fnNoExtension;
-        ao.sLocalData = GenerateStructCodePlusPlusSub("attr_parent", true)
+        ao.sLocalData = GenerateStructCodePlusPlusSub("attr_parent")
                 + "static const uint8_t polyIndex = 0;\n";
         ao.sLocalData += GenerateParamInitCode3("");
         ao.sLocalData += GeneratePresetCode3("");
@@ -1961,7 +1961,7 @@ public class Patch {
 
         }
 
-        ao.sKRateCode += GenerateDSPCodePlusPlusSub("attr_parent", true);
+        ao.sKRateCode += GenerateDSPCodePlusPlusSub("attr_parent");
         for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("patch/outlet f") || o.typeName.equals("patch/outlet i") || o.typeName.equals("patch/outlet b")) {
                 ao.sKRateCode += I + "outlet_" + o.getLegalName() + " = " + o.getCInstanceName() + "_i._outlet;\n";
@@ -2152,7 +2152,7 @@ public class Patch {
         ao.sLocalData += "  public:\n";
         ao.sLocalData += "  uint8_t polyIndex;\n";
         ao.sLocalData += GeneratePexchAndDisplayCodeV();
-        ao.sLocalData += GenerateObjectCode("voice", true, "parent->common->");
+        ao.sLocalData += GenerateObjectCode("voice");
         ao.sLocalData += "  attr_parent* common;\n";
         ao.sLocalData += "  void Init(voice* parent) {\n";
         ao.sLocalData += "    uint16_t i; for (i=0; i<NPEXCH; i++) {\n"
@@ -2161,7 +2161,7 @@ public class Patch {
         ao.sLocalData += GenerateObjInitCodePlusPlusSub("voice", "parent");
         ao.sLocalData += "}\n\n";
         ao.sLocalData += "void dsp(void) {\n int i;\n";
-        ao.sLocalData += GenerateDSPCodePlusPlusSub("", true);
+        ao.sLocalData += GenerateDSPCodePlusPlusSub("");
         ao.sLocalData += "}\n";
         ao.sLocalData += "void dispose(void) {\n int i;\n";
         ao.sLocalData += GenerateDisposeCodePlusPlusSub("");

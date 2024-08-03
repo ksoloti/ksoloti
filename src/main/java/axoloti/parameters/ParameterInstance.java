@@ -81,7 +81,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     AssignMidiCCComponent midiAssign;
 
     @Attribute(required = false)
-    private Boolean isFrozen;
+    private Boolean frozen;
 
     public final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
 
@@ -121,8 +121,8 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         if (p.onParent != null) {
             setOnParent(p.onParent);
         }
-        if (p.isFrozen != null) {
-            setFrozen(p.isFrozen);
+        if (p.frozen != null) {
+            setFrozen(p.frozen);
         }
         SetMidiCC(p.MidiCC);
     }
@@ -377,12 +377,12 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         }
     }
 
-    public String variableName(String vprefix, boolean enableOnParent) {
-        if ((onParent != null) && (onParent) && (enableOnParent)) {
-            return "%" + ControlOnParentName() + "%";
-        } else {
+    public String variableName(String vprefix) {
+        // if ((onParent != null) && (onParent)) {
+        //     return "%" + ControlOnParentName() + "%";
+        // } else {
             return PExName(vprefix) + ".finalvalue";
-        }
+        // }
     }
 
     public String signalsName(String vprefix) {
@@ -455,7 +455,6 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         }
         if (b) {
             onParent = true;
-            setFrozen(false); /* Cancel parameter freeze */
         } else {
             onParent = null;
         }
@@ -463,10 +462,10 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     }
 
     public boolean isFrozen() {
-        if (isFrozen == null) {
+        if (frozen == null || (parameter != null && parameter.PropagateToChild != null)) {
             return false;
         } else {
-            return isFrozen;
+            return frozen;
         }
     }
 
@@ -479,9 +478,9 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
             return;
         }
         if (f) {
-            isFrozen = true;
+            frozen = true;
         } else {
-            isFrozen = null;
+            frozen = null;
         }
         setCtrlToolTip();
     }
@@ -543,19 +542,30 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
             }
         });
 
-        final JCheckBoxMenuItem m_isFrozen = new JCheckBoxMenuItem("Freeze Parameter");
-        m_isFrozen.setMnemonic('F');
-        m_isFrozen.setToolTipText("While frozen, a parameter consumes less memory and DSP but cannot be\n" +
-                                  "changed while the patch is live (essentially acting as an attribute).\n" +
-                                  "Any modulation, preset change, and MIDI assignments to the parameter\n" +
-                                  "will have no effect while it is frozen.");
-        m_isFrozen.setSelected(isFrozen());
-        m.add(m_isFrozen);
+        final JCheckBoxMenuItem m_frozen = new JCheckBoxMenuItem("Freeze Parameter");
+        m_frozen.setMnemonic('F');
+        m_frozen.setSelected(frozen != null && frozen);
+        m_frozen.setEnabled(this.parameter.PropagateToChild == null);
+        if (m_frozen.isEnabled()) {
+            m_frozen.setToolTipText("While frozen, a parameter consumes less memory and DSP but cannot be\n" +
+                                    "changed while the patch is live (essentially acting as an attribute).\n" +
+                                    "Any modulation, preset change, and MIDI assignments to the parameter\n" +
+                                    "will have no effect while it is frozen.");
+        }
+        else {
+            m_frozen.setToolTipText("This parameter cannot be frozen here because it is shown here via the\n" +
+                                    "subpatch. You can freeze it from inside the subpatch. Note that if a parameter\n" +
+                                    "that is set to \"Show on Parent\" is frozen from inside the subpatch, it will\n" +
+                                    "temporarily disappear from the parent. Unfreeze it inside the subpatch to make it\n" +
+                                    "reappear on the parent and be editable from here.");
 
-        m_isFrozen.addActionListener(new ActionListener() {
+        }
+        m.add(m_frozen);
+
+        m_frozen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                setFrozen(m_isFrozen.isSelected());
+                setFrozen(m_frozen.isSelected());
                 SetDirty();
             }
         });
