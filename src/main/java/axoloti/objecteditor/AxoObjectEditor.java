@@ -101,6 +101,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         rsta.setCodeFoldingEnabled(true);
         rsta.setAntiAliasingEnabled(true);
         rsta.setAutoIndentEnabled(true);
+        rsta.setAnimateBracketMatching(false);
         rsta.setMarkOccurrences(true);
         rsta.setMarkOccurrencesColor(new Color(0x00,0x00,0x00, 0x60));
         rsta.setPaintTabLines(true);
