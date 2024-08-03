@@ -106,6 +106,8 @@ public class Preferences {
     @Element(required = false)
     String Theme;
     @Element(required = false)
+    String codeSyntaxTheme;
+    @Element(required = false)
     int CodeFontSize = 12; /* default to 12pt */
     @Element(required = false)
     String[] UserShortcuts = {"", "", "", ""}; /* Four user shortcuts in object finder */
@@ -224,6 +226,9 @@ public class Preferences {
         if (Theme == null) {
             Theme = "FlatLaf Light";
         }
+        if (codeSyntaxTheme == null) {
+            codeSyntaxTheme = "monokai";
+        }
         if (libraries == null) {
             libraries = new ArrayList<AxolotiLibrary>();
         }
@@ -337,6 +342,19 @@ public class Preferences {
             return;
         }
         this.Theme = Theme;
+        restartRequired = true;
+        SetDirty();
+    }
+
+    public String getCodeSyntaxTheme() {
+        return codeSyntaxTheme;
+    }
+
+    public void setCodeSyntaxTheme(String codeSyntaxTheme) {
+        if (codeSyntaxTheme.equals(this.codeSyntaxTheme)) {
+            return;
+        }
+        this.codeSyntaxTheme = codeSyntaxTheme;
         restartRequired = true;
         SetDirty();
     }

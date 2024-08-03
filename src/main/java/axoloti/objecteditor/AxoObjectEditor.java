@@ -89,7 +89,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         try {
             Theme theme = Theme.load(Theme.class.getResourceAsStream(
-                "/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
+                "/resources/rsyntaxtextarea/themes/" + prefs.getCodeSyntaxTheme() + ".xml"));
             theme.apply(rsta);
         }
         catch (Exception e) {
@@ -419,7 +419,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         try {
             serializer.write(editObj, os);
             Theme theme = Theme.load(Theme.class.getResourceAsStream(
-                "/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
+                "/resources/rsyntaxtextarea/themes/" + prefs.getCodeSyntaxTheme() + ".xml"));
             theme.apply(rSyntaxTextAreaXML);
         }
         catch (Exception ex) {

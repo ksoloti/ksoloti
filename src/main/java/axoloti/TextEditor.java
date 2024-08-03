@@ -58,7 +58,7 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
         textArea = new RSyntaxTextArea(20, 60);
         try {
             Theme theme = Theme.load(getClass().getResourceAsStream(
-                "/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
+                "/resources/rsyntaxtextarea/themes/" + prefs.getCodeSyntaxTheme() + ".xml"));
             theme.apply(textArea);
         } catch (IOException ioe) { // Never happens
             ioe.printStackTrace();
