@@ -29,7 +29,10 @@ Ksoloti Core boards and related kits are available at:
 More info:
 
 
-[Ksoloti website](http://ksoloti.github.io)
+[Ksoloti website](https://ksoloti.github.io)
+
+
+[Ksoloti Forum](https://ksoloti.discourse.group)
 
 
 [Ksoloti Discord Group](https://discord.com/invite/629kNnhj5R)
