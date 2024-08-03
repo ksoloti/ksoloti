@@ -605,7 +605,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             if (target_object == null) {
                 p.AddObjectInstance(x, new Point(patchLocX, patchLocY));
             } else {
-                AxoObjectInstanceAbstract oi = p.ChangeObjectInstanceType(target_object, x);
+                p.ChangeObjectInstanceType(target_object, x);
                 p.cleanUpIntermediateChangeStates(2);
             }
         }

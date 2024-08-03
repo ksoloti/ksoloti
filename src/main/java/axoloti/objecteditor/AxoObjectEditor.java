@@ -432,7 +432,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         rSyntaxTextAreaXML.setCodeFoldingEnabled(true);
         updateAcProvider(editObj);
 
-        AxoObjectInstance obji = editObj.CreateInstance(null, "test", new Point(0, 0));
+        editObj.CreateInstance(null, "test", new Point(0, 0));
     }
 
     public void initEditFromOrig() {

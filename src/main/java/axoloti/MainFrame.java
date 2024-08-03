@@ -1097,7 +1097,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         try {
             boolean status;
             PatchGUI patch1 = serializer.read(PatchGUI.class, f);
-            PatchFrame pf = new PatchFrame(patch1, qcmdprocessor);
+            new PatchFrame(patch1, qcmdprocessor);
             patch1.setFileNamePath(f.getPath());
             patch1.PostContructor();
             status = patch1.save(f);

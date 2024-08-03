@@ -30,7 +30,6 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.submodule.SubmoduleWalk;
-import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 public class AxoGitLibrary extends AxolotiLibrary {
@@ -244,7 +243,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
         cmd.setIncludeUntracked(true);
         try {
             cmd.setWorkingDirectoryMessage(ref);
-            RevCommit rev = cmd.call();
+            cmd.call();
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.INFO, "Changes stashed successfully: {0}", new Object[]{logDetails(), ref});
 
             return true;
@@ -452,7 +451,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
         cmd.setMessage("commit from axoloti UI");
         cmd.setAllowEmpty(false);
         try {
-            RevCommit rev = cmd.call();
+            cmd.call();
             return true;
         } catch (GitAPIException ex) {
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (commit) FAILED: {0}", logDetails());
@@ -530,7 +529,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
         }
 
         try {
-            Iterable<PushResult> res = cmd.call();
+            cmd.call();
             return true;
         } catch (GitAPIException ex) {
             Logger.getLogger(AxoGitLibrary.class.getName()).log(Level.WARNING, "Sync (push) FAILED: {0}", logDetails());

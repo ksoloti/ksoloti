@@ -52,7 +52,6 @@ public class NumberBoxComponent extends ACtrlComponent {
     private double max;
     private double min;
     private double tick;
-    private NativeToReal convs[];
     private String keybBuffer = "";
 
     private boolean hiliteUp = false;
@@ -65,7 +64,6 @@ public class NumberBoxComponent extends ACtrlComponent {
     int htick = 3;
 
     public void setNative(NativeToReal convs[]) {
-        this.convs = convs;
     }
 
     public NumberBoxComponent(double value, double min, double max, double tick) {

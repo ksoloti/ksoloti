@@ -53,7 +53,7 @@ public class AssignPresetComponent extends JComponent {
             @Override
             public void mouseClicked(MouseEvent e) {
                 JPopupMenu pm = new JPopupMenu();
-                AssignPresetMenuItems m = new AssignPresetMenuItems(AssignPresetComponent.this.param, pm);
+                new AssignPresetMenuItems(AssignPresetComponent.this.param, pm);
                 pm.show(AssignPresetComponent.this, 0, getHeight());
 
                 e.consume();

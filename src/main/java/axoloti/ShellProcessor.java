@@ -34,12 +34,10 @@ import qcmds.QCmdShellTask;
 public class ShellProcessor extends SwingWorker<Integer, String> {
 
     private final BlockingQueue<QCmdShellTask> queueShellTasks;
-    private final BlockingQueue<QCmd> queueResponse;
 
     public ShellProcessor(BlockingQueue<QCmd> queueResponse) {
         super();
         queueShellTasks = new ArrayBlockingQueue<QCmdShellTask>(10);
-        this.queueResponse = queueResponse;
     }
 
     public boolean AppendToQueue(QCmdShellTask cmd) {
@@ -52,7 +50,7 @@ public class ShellProcessor extends SwingWorker<Integer, String> {
         while (true) {
             //          Logger.getLogger(ShellProcessor.class.getName()).log(Level.INFO, "ShellProcessor Waiting");
             try {
-                QCmdShellTask qc = queueShellTasks.take();
+                queueShellTasks.take();
 //                Logger.getLogger(ShellProcessor.class.getName()).log(Level.INFO, "ShellProcessor: "+ qc.GetStartMessage());
 //                queueResponse.add(qc.Do(this));
             } catch (InterruptedException ex) {

@@ -57,7 +57,6 @@ public class DialComponent extends ACtrlComponent {
     private Robot robot;
 
     public void setNative(NativeToReal convs[]) {
-        this.convs = convs;
     }
 
     public DialComponent(double value, double min, double max, double tick) {

@@ -84,7 +84,7 @@ public class ParameterInstanceInt32VRadio extends ParameterInstanceInt32 {
         m1.setDelay(300);
         m1.setMnemonic('C');
         // AssignMidiCCMenuItems, does stuff in ctor
-        AssignMidiCCMenuItems assignMidiCCMenuItems = new AssignMidiCCMenuItems(this, m1);
+        new AssignMidiCCMenuItems(this, m1);
         m.add(m1);
     }
 }

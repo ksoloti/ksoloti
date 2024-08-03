@@ -51,11 +51,8 @@ public class DropDownComponent extends JComponent implements MouseListener {
     int SelectedIndex;
     ArrayList<String> Items;
     
-    final private AttributeInstanceComboBox parent;
-    
     public DropDownComponent(ArrayList<String> Items, AttributeInstanceComboBox parent) {
         this.Items = Items;
-        this.parent = parent;
         SelectedIndex = 0;
         
         FontRenderContext frc = new FontRenderContext(null, true, true);

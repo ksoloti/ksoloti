@@ -181,7 +181,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         getControlComponent().addACtrlListener(new ACtrlListener() {
             @Override
             public void ACtrlAdjusted(ACtrlEvent e) {
-                boolean changed = handleAdjustment();
+                handleAdjustment();
             }
 
             @Override
@@ -565,7 +565,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
             m_preset.setDelay(300);
             m_preset.setMnemonic('P');
             /* AssignPresetMenuItems, does stuff in ctor */
-            AssignPresetMenuItems assignPresetMenuItems = new AssignPresetMenuItems(this, m_preset);
+            new AssignPresetMenuItems(this, m_preset);
             m.add(m_preset);
         }
     }

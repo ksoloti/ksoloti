@@ -74,7 +74,7 @@ public class AssignModulatorComponent extends JComponent {
 
     void doPopup() {
         JPopupMenu sub2 = new JPopupMenu();
-        AssignModulatorMenuItems mi = new AssignModulatorMenuItems(param, sub2);
+        new AssignModulatorMenuItems(param, sub2);
         sub2.show(this, 0, getHeight() - 1);
     }
 
