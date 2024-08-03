@@ -38,6 +38,7 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
@@ -75,9 +76,9 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         setIconImage(Constants.APP_ICON.getImage());
         jLabelSDInfo.setText("");
 
-        jFileTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jFileTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         jFileTable.setModel(new AbstractTableModel() {
-            private String[] columnNames = {"Name", "Type", "Size", "Modified"};
+            private final String[] columnNames = {"Name", "Type", "Size", "Modified"};
 
             @Override
             public int getColumnCount() {
@@ -208,20 +209,30 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     }
     
     void UpdateButtons(){
-        int row = jFileTable.getSelectedRow();
-        if (row < 0) {
-            jButtonDelete.setEnabled(false);
-            ButtonUploadDefaultName();
-        } else {
+        int rows[] = jFileTable.getSelectedRows();
+        if (rows.length > 1) {
             jButtonDelete.setEnabled(true);
-            SDFileInfo f = SDCardInfo.getInstance().getFiles().get(row);
-            if (f != null && f.isDirectory()) {
-                jButtonUpload.setText("Upload to " + f.getFilename() + " ...");
-                jButtonCreateDir.setText("Create Folder in " + f.getFilename() + " ...");
-            } else {
+            jButtonUpload.setEnabled(false);
+            jButtonCreateDir.setEnabled(false);
+            ButtonUploadDefaultName();
+        }
+        else {
+            jButtonUpload.setEnabled(true);
+            jButtonCreateDir.setEnabled(true);
+            if (rows[0] < 0) {
+                jButtonDelete.setEnabled(false);
                 ButtonUploadDefaultName();
-            }
-        }        
+            } else {
+                jButtonDelete.setEnabled(true);
+                SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rows[0]);
+                if (f != null && f.isDirectory()) {
+                    jButtonUpload.setText("Upload to Selected...");// + f.getFilename() + " ...");
+                    jButtonCreateDir.setText("New Folder in Selected...");// + f.getFilename() + " ...");
+                } else {
+                    ButtonUploadDefaultName();
+                }
+            }        
+        }
     }
 
     void ButtonUploadDefaultName() {
@@ -430,32 +441,46 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     }
 
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {
-        int rowIndex = jFileTable.getSelectedRow();
+        int rows[] = jFileTable.getSelectedRows();
+        Arrays.sort(rows);
 
-        if (rowIndex >= 0) {
+        if (rows[0] >= 0) {
 
-            SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
-            String ff = f.getFilename();
+            String txt;
 
-            int n = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete \"" + ff + "\"?",
-                                                  "Confirm Delete", JOptionPane.YES_NO_OPTION);
+            if (rows.length > 1) {
+                txt = "Are you sure you want to delete all selected items?";
+            }
+            else {
+                SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rows[0]);
+                String ff = f.getFilename();
+                txt = "Are you sure you want to delete \"" + ff + "\"?";
+            }
 
+            int n = JOptionPane.showConfirmDialog(this, txt, "Confirm Delete", JOptionPane.YES_NO_OPTION);
             switch (n) {
                 case JOptionPane.YES_OPTION: {
                     QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
-                    if (!f.isDirectory()) {
-                        processor.AppendToQueue(new QCmdDeleteFile(f.getFilename()));
-                    } else {
-                        if (ff.endsWith("/")) {
-                            ff = ff.substring(0, ff.length() - 1);
+                    
+                    for (int row : rows) {
+                        SDFileInfo f = SDCardInfo.getInstance().getFiles().get(row);
+                        String ff = f.getFilename();
+
+                        if (!f.isDirectory()) {
+                            processor.AppendToQueue(new QCmdDeleteFile(f.getFilename()));
                         }
-                        processor.AppendToQueue(new QCmdDeleteFile(ff));
+                        else {
+                            if (ff.endsWith("/")) {
+                                ff = ff.substring(0, ff.length() - 1);
+                            }
+                            processor.AppendToQueue(new QCmdDeleteFile(ff));
+                        }
                     }
-                        break;
                 }
-                case JOptionPane.NO_OPTION: {
-                    break;
-                }
+                break;
+
+                case JOptionPane.NO_OPTION:
+                break;
             }
         }
     }

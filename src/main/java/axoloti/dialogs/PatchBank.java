@@ -61,6 +61,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
@@ -96,7 +97,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axb.png")).getImage());
 
         jTable1.setModel(new AbstractTableModel() {
-            private final String[] columnNames = {"Index", "File", "Location"};
+            private final String[] columnNames = {"Index", "File", "Found locally", "Found on SD"};
 
             @Override
             public int getColumnCount() {
@@ -112,10 +113,12 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             public Class<?> getColumnClass(int column) {
                 switch (column) {
                     case 0:
-                        return String.class;
+                        return Integer.class;
                     case 1:
                         return String.class;
                     case 2:
+                        return String.class;
+                    case 3:
                         return String.class;
                 }
                 return null;
@@ -144,6 +147,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                         }
                         break;
                     case 2:
+                    case 3:
                         break;
                 }
             }
@@ -155,7 +159,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 switch (columnIndex) {
                     case 0:
                         returnValue = Integer.toString(rowIndex);
-                        break;
+                    break;
                     case 1: {
                         File f = files.get(rowIndex);
                         if (f != null) {
@@ -163,33 +167,39 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                         } else {
                             returnValue = "";
                         }
-                        break;
                     }
+                    break;
                     case 2: {
                         File f = files.get(rowIndex);
                         if (f != null) {
                             boolean en = f.exists();
+                            if (en) {
+                                returnValue = "Found locally";
+                            } else {
+                                returnValue = "NOT found locally";
+                            }
+                        }
+                    }
+                    break;
+                    case 3: {
+                        File f = files.get(rowIndex);
+                        if (f != null) {
                             String fn = f.getName();
                             int i = fn.lastIndexOf('.');
                             if (i > 0) {
                                 fn = fn.substring(0, i);
                             }
                             SDFileInfo sdfi = SDCardInfo.getInstance().find("/" + fn + "/patch.bin");
+                            // Logger.getLogger(PatchBank.class.getName()).log(Level.INFO, "/" + fn + "/patch.bin");
                             if (sdfi != null) {
-                                if (en) {
-                                    returnValue = "Found locally, found on SD card";
-                                } else {
-                                    returnValue = "NOT found locally, found on SD card";
-                                }
+                                returnValue = "Found on SD card";
                             }
-                            else if (en) {
-                                returnValue = "Found locally, NOT found on SD card";
-                            } else {
-                                returnValue = "NOT found locally, NOT found on SD card";
+                            else {
+                                returnValue = "NOT on SD card";
                             }
                         }
-                        break;
                     }
+                    break;
                 }
 
                 return returnValue;
@@ -199,6 +209,9 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return (columnIndex == 1);
             }
+        });
+        jTable1.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
 
         jScrollPane1.setDropTarget(new DropTarget() {
             @Override
@@ -229,30 +242,36 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         });
 
         if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setPreferredWidth(10);
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(20);
             jTable1.getColumnModel().getColumn(1).setPreferredWidth(300);
-            jTable1.getColumnModel().getColumn(2).setPreferredWidth(200);
+            jTable1.getColumnModel().getColumn(2).setPreferredWidth(60);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(60);
         }
 
         jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                reflectSelection(jTable1.getSelectedRow());
+                    if (jTable1.getSelectedRowCount() > 0) {
+                        reflectSelection(jTable1.getSelectedRows());
+                    }
             }
         });
-        reflectSelection(-1);
+        int[] s = {1};
+        reflectSelection(s);
     }
 
-    final void reflectSelection(int row) {
-        if (row < 0) {
+    final void reflectSelection(int[] rows) {
+        Arrays.sort(rows);
+        if (rows[0] < 0 || files.size() < 1) {
             jButtonUp.setEnabled(false);
             jButtonDown.setEnabled(false);
             jButtonOpen.setEnabled(false);
             jButtonRemove.setEnabled(false);
+            jButtonUpload.setEnabled(false);
         } else {
-            jButtonUp.setEnabled(row > 0);
-            jButtonDown.setEnabled(row < files.size() - 1);
-            File f = files.get(row);
+            jButtonUp.setEnabled(rows[0] > 0);
+            jButtonDown.setEnabled(rows[rows.length-1] < files.size() - 1);
+            File f = files.get(rows[0]);
             boolean en = (f != null) && (f.exists());
             jButtonOpen.setEnabled(en);
             jButtonUpload.setEnabled(en);
@@ -331,8 +350,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             pw.close();
             clearDirty();
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(PatchBank.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PatchBank.class.getName()).log(Level.SEVERE, null, ex);
         }
         //  catch (IOException ex) {
         //     Logger.getLogger(PatchBank.class
@@ -525,8 +543,9 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jButtonUploadBank = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        jButtonUploadIndex = new javax.swing.JButton();
+        // jLabelDisclaimer = new javax.swing.JLabel();
+        jUploadPatches = new javax.swing.JButton();
         jUploadAll = new javax.swing.JButton();
         jScrollPane1 = new ScrollPaneComponent();
         jTable1 = new javax.swing.JTable();
@@ -554,16 +573,28 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         });
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.Y_AXIS));
 
-        jButtonUploadBank.setText("Upload bank table");
-        jButtonUploadBank.addActionListener(new java.awt.event.ActionListener() {
+        jButtonUploadIndex.setText("Upload Bank Index");
+        jButtonUploadIndex.setToolTipText("Creates or updates a file called \"index.axb\" on SD card.\n"
+                                        + "This is a simple text file containing an ordered list of patches.\n"
+                                        + "You will also have to upload the patch binaries to SD via \"Upload Patches\"\n"
+                                        + "Then you can load these patches via the index and a\"patch/load i\" object."
+        );
+        jButtonUploadIndex.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonUploadBankActionPerformed(evt);
             }
         });
 
-        jLabel1.setText("Not (fully) implemented yet!");
+        // jLabelDisclaimer.setText("Not (fully) implemented yet!");
 
-        jUploadAll.setText("Upload All");
+        jUploadPatches.setText("Upload Patches");
+        jUploadPatches.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jUploadPatchesActionPerformed(evt);
+            }
+        });
+
+        jUploadAll.setText("Upload Index & Patches");
         jUploadAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jUploadAllActionPerformed(evt);
@@ -576,9 +607,11 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButtonUploadBank)
+                // .addComponent(jLabelDisclaimer)
+                // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButtonUploadIndex)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 108, Short.MAX_VALUE)
+                .addComponent(jUploadPatches)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 108, Short.MAX_VALUE)
                 .addComponent(jUploadAll)
                 .addContainerGap())
@@ -588,8 +621,9 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonUploadBank)
+                    // .addComponent(jLabelDisclaimer, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonUploadIndex)
+                    .addComponent(jUploadPatches)
                     .addComponent(jUploadAll))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -600,7 +634,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         jTable1.setModel(new javax.swing.table.DefaultTableModel( new Object [][] { }, new String [] { "#", "File" }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
 
             boolean[] canEdit = new boolean [] {
@@ -751,38 +785,49 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     }
 
     private void jButtonUpActionPerformed(java.awt.event.ActionEvent evt) {
-        int row = jTable1.getSelectedRow();
-        if (row < 1) {
-            return;
+        int[] rows = jTable1.getSelectedRows();
+        Arrays.sort(rows);
+        jTable1.clearSelection();
+        for (int row : rows) {
+            if (row < 1) {
+                return;
+            }
+            File o = files.remove(row);
+            files.add(row - 1, o);
+            jTable1.addRowSelectionInterval(row - 1, row - 1);
         }
-        File o = files.remove(row);
-        files.add(row - 1, o);
-        jTable1.setRowSelectionInterval(row - 1, row - 1);
         setDirty();
         refresh();
     }
 
     private void jButtonDownActionPerformed(java.awt.event.ActionEvent evt) {
-        int row = jTable1.getSelectedRow();
-        if (row < 0) {
-            return;
+        int[] rows = jTable1.getSelectedRows();
+        jTable1.clearSelection();
+        /* Count backwards so entries are moved highest index first (furthest down the table first) */
+        for (int i=rows.length-1; i>=0; i--) {
+            if (rows[i] < 0) {
+                return;
+            }
+            if (rows[i] > (files.size() - 1)) {
+                return;
+            }
+            File o = files.remove(rows[i]);
+            files.add(rows[i] + 1, o);
+            jTable1.addRowSelectionInterval(rows[i] + 1, rows[i] + 1);
         }
-        if (row > (files.size() - 1)) {
-            return;
-        }
-        File o = files.remove(row);
-        files.add(row + 1, o);
-        jTable1.setRowSelectionInterval(row + 1, row + 1);
         setDirty();
         refresh();
     }
 
     private void jButtonRemoveActionPerformed(java.awt.event.ActionEvent evt) {
-        int row = jTable1.getSelectedRow();
-        if (row < 0) {
-            return;
+        int[] rows = jTable1.getSelectedRows();
+        /* Count backwards so entries are removed highest index first (furthest down in table first) */
+        for (int i=rows.length-1; i>=0; i--) {
+            if (rows[i] < 0) {
+                return;
+            }
+            files.remove(rows[i]);
         }
-        files.remove(row);
         setDirty();
         refresh();
     }
@@ -812,11 +857,12 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     }
 
     private void jButtonOpenActionPerformed(java.awt.event.ActionEvent evt) {
-        int row = jTable1.getSelectedRow();
-        if (row >= 0) {
-            File f = files.get(jTable1.getSelectedRow());
-            if (f.isFile() && f.canRead()) {
-                PatchGUI.OpenPatch(f);
+        for (int row : jTable1.getSelectedRows()) {
+            if (row >= 0) {
+                File f = files.get(row);
+                if (f.isFile() && f.canRead()) {
+                    PatchGUI.OpenPatch(f);
+                }
             }
         }
     }
@@ -848,23 +894,46 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
 
     private void jButtonUploadActionPerformed(java.awt.event.ActionEvent evt) {
-        File f = files.get(jTable1.getSelectedRow());
-        UploadOneFile(f);
+        for (int row : jTable1.getSelectedRows()) {
+            File f = files.get(row);
+            UploadOneFile(f);
+        }
+        refresh();
+    }
+
+    private void jUploadPatchesActionPerformed(java.awt.event.ActionEvent evt) {
+        class Thd extends Thread {
+            public void run() {
+                for (File f : files) {
+                    Logger.getLogger(PatchBank.class.getName()).log(Level.INFO, "Compiling and uploading: {0}", f.getName());
+                    UploadOneFile(f);
+                }
+                Logger.getLogger(PatchBank.class.getName()).log(Level.INFO, "Done uploading patches in patchbank.");
+            }
+        }
+        Thd thread = new Thd();
+        thread.start();
+
+        refresh();
     }
 
     private void jUploadAllActionPerformed(java.awt.event.ActionEvent evt) {
-        Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Uploading patch bank file");
-        QCmdProcessor processor = MainFrame.mainframe.getQcmdprocessor();
-        if (USBBulkConnection.GetConnection().isConnected()) {
-            processor.AppendToQueue(new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb"));
-        }
+        class Thd extends Thread {
+            public void run() {
+                QCmdProcessor processor = MainFrame.mainframe.getQcmdprocessor();
+                if (USBBulkConnection.GetConnection().isConnected()) {
+                    processor.AppendToQueue(new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb"));
+                }
 
-        for (File f : files) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Compiling and uploading: {0}", f.getName());
-            UploadOneFile(f);
+                for (File f : files) {
+                    Logger.getLogger(PatchBank.class.getName()).log(Level.INFO, "Compiling and uploading: {0}...", f.getName());
+                    UploadOneFile(f);
+                }
+                Logger.getLogger(PatchBank.class.getName()).log(Level.INFO, "Done uploading index and patches.");
+            }
         }
-        Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Patch bank uploaded");
-    }
+        Thd thread = new Thd();
+        thread.start();
 
         refresh();
     }
@@ -876,8 +945,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     private javax.swing.JButton jButtonRemove;
     private javax.swing.JButton jButtonUp;
     private javax.swing.JButton jButtonUpload;
-    private javax.swing.JButton jButtonUploadBank;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton jButtonUploadIndex;
+    // private javax.swing.JLabel jLabelDisclaimer;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItemSave;
@@ -887,6 +956,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     private ScrollPaneComponent jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JButton jUploadPatches;
     private javax.swing.JButton jUploadAll;
     private axoloti.menus.WindowMenu windowMenu1;
 
@@ -896,9 +966,10 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     }
 
     public void ShowConnect1(boolean status) {
-        jButtonUploadBank.setEnabled(status);
-        jButtonUpload.setEnabled(status);
+        jButtonUploadIndex.setEnabled(status);
+        jUploadPatches.setEnabled(status);
         jUploadAll.setEnabled(status);
+        jButtonUpload.setEnabled(status);
     }
 
     @Override
