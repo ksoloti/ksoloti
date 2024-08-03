@@ -21,10 +21,10 @@
 #include <stdint.h>
 
 typedef struct {
-  int32_t header;
-  uint32_t patchID;
-  int32_t value;
-  int32_t index;
+    int32_t header;
+    uint32_t patchID;
+    int32_t value;
+    int32_t index;
 } PExMessage;
 
 //typedef int32_t (*ParameterExchangeFn_t)(int32_t, int32_t);
@@ -37,38 +37,36 @@ typedef struct {
 //typedef void (*ParameterExchangeFn_t)(struct ParameterExchange_t *);
 
 typedef struct _ParameterExchange {
-  int32_t value;      // parameter value
-  int32_t modvalue;   // parameter value after modulation
-  int32_t finalvalue; // parameter value after modulation and function evaluation
-  // in certain cases ( PropagateToVoices ) finalvalue is used as additional input data for pFunction
-  //ParameterExchangeFn_t pfunction; // function to call after modulation
-  void (*pfunction)(struct _ParameterExchange *);
-  uint32_t signals; // flags to distribute value changes to different targets (usb, midi...)
-  // signals are bitmasks, indicating which subsystems need to be signaled of this change:
-  // origins :
-  //      masks : 0x00000001 -> USB parameter exchange
-  //              0x00000002 -> DIN MIDI port
-  //              0x00000004 -> Display
-  //              0x00000008 -> buttons and dials
-  //              0x00000010 -> polling readback enabled (never clear this) (OBSOLETE)
-  // so a parameter received on USB will set the mask to 0xFFFFFFFE
-  // signaling the other subsystems, but preventing echoing the change again via USB
+    int32_t value;      // parameter value
+    int32_t modvalue;   // parameter value after modulation
+    int32_t finalvalue; // parameter value after modulation and function evaluation
+    // in certain cases ( PropagateToVoices ) finalvalue is used as additional input data for pFunction
+    //ParameterExchangeFn_t pfunction; // function to call after modulation
+    void (*pfunction)(struct _ParameterExchange *);
+    uint32_t signals; // flags to distribute value changes to different targets (usb, midi...)
+    // signals are bitmasks, indicating which subsystems need to be signaled of this change:
+    // origins :
+    //      masks : 0x00000001 -> USB parameter exchange
+    //              0x00000002 -> DIN MIDI port
+    //              0x00000004 -> Display
+    //              0x00000008 -> buttons and dials
+    //              0x00000010 -> polling readback enabled (never clear this) (OBSOLETE)
+    // so a parameter received on USB will set the mask to 0xFFFFFFFE
+    // signaling the other subsystems, but preventing echoing the change again via USB
 } ParameterExchange_t;
 
 typedef struct {
-  int32_t parameterIndex;
-  int32_t amount;
+    int32_t parameterIndex;
+    int32_t amount;
 } PExModulationTarget_t;
 
 
-void PExModulationSourceChange(PExModulationTarget_t *modulation,
-                               int32_t nTargets,
-                               ParameterExchange_t *parameters,
-                               int32_t *oldvalue,
-                               int32_t value);
+void PExModulationSourceChange(PExModulationTarget_t *modulation, uint16_t nTargets,
+                                ParameterExchange_t *parameters, int32_t *oldvalue, int32_t value);
 
-void PExParameterChange(ParameterExchange_t *param, int32_t value,
-                        uint32_t signals);
+
+void PExParameterChange(ParameterExchange_t *param, int32_t value, uint32_t signals);
+
 
 void ApplyPreset(uint8_t index);
 
