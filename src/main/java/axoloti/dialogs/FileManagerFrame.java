@@ -397,19 +397,23 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
             fc.restoreCurrentSize();
             fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fc.setMultiSelectionEnabled(true);
             fc.setDialogTitle("Select File...");
             int returnVal = fc.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File f = fc.getSelectedFile();
-                if (f != null) {
-                    prefs.setCurrentFileDirectory(f.getParentFile().toString());
-                    if (!f.canRead()) {
-                        Logger.getLogger(FileManagerFrame.class.getName()).log(Level.SEVERE, "Can''t read file");
-                        return;
+                File[] fs = fc.getSelectedFiles();
+                for (File f : fs) {
+                    if (f != null) {
+                        prefs.setCurrentFileDirectory(f.getParentFile().toString());
+                        if (!f.canRead()) {
+                            Logger.getLogger(FileManagerFrame.class.getName()).log(Level.SEVERE, "Can''t read file");
+                            return;
+                        }
+                        processor.AppendToQueue(new QCmdUploadFile(f, dir + f.getName()));
                     }
-                    processor.AppendToQueue(new QCmdUploadFile(f, dir + f.getName()));
                 }
             }
+            fc.setMultiSelectionEnabled(false);
             fc.updateCurrentSize();
         }
     }

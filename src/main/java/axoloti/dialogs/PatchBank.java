@@ -83,9 +83,10 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         initComponents();
         fileMenu1.initComponents();
         files = new ArrayList<File>();
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axb.png")).getImage());
         DocumentWindowList.RegisterWindow(this);
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
+        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axb.png")).getImage());
+
         jTable1.setModel(new AbstractTableModel() {
             private final String[] columnNames = {"Index", "File", "Location"};
 
@@ -339,7 +340,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
             @Override
             public String getDescription() {
-                return "Axoloti Patch Bank";
+                return "Axoloti Patchbank";
             }
         };
         fc.addChoosableFileFilter(axb);
@@ -448,9 +449,13 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             Object[] options = {"Yes",
                 "No",
                 "Cancel"};
+            String fn = FilenamePath;
+            if (fn == null) {
+                fn = "untitled";
+            }
             int n = JOptionPane.showOptionDialog(
                     this,
-                    "Save changes to " + FilenamePath + "?",
+                    "Save changes to " + fn + "?",
                     "Unsaved Changes",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
@@ -558,17 +563,12 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         getContentPane().add(jPanel1);
 
         jTable1.getTableHeader().setReorderingAllowed(false);
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "#", "File"
-            }
+        jTable1.setModel(new javax.swing.table.DefaultTableModel( new Object [][] { }, new String [] { "#", "File" }
         ) {
             Class[] types = new Class [] {
                 java.lang.Integer.class, java.lang.String.class
             };
+
             boolean[] canEdit = new boolean [] {
                 false, true
             };
@@ -581,21 +581,20 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 return canEdit [columnIndex];
             }
         });
-        jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
         jTable1.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTable1);
-        jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         getContentPane().add(jScrollPane1);
 
-        jButtonUp.setText(" Move up ");
+        jButtonUp.setText(" ⇑ Move Up ");
         jButtonUp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonUpActionPerformed(evt);
             }
         });
 
-        jButtonDown.setText("Move Down");
+        jButtonDown.setText("⇓ Move Down");
         jButtonDown.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonDownActionPerformed(evt);
@@ -696,10 +695,13 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     }
 
     private void jButtonUploadBankActionPerformed(java.awt.event.ActionEvent evt) {
+        Logger.getLogger(PatchBank.class.getName()).log(Level.INFO, "Uploading patchbank index...");
         QCmdProcessor processor = MainFrame.mainframe.getQcmdprocessor();
         if (USBBulkConnection.GetConnection().isConnected()) {
             processor.AppendToQueue(new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb"));
         }
+        Logger.getLogger(PatchBank.class.getName()).log(Level.INFO, "Done uploading index.");
+        refresh();
     }
 
     private void jMenuItemSaveActionPerformed(java.awt.event.ActionEvent evt) {
@@ -756,16 +758,22 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
         fc.restoreCurrentSize();
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.setMultiSelectionEnabled(true);
         fc.setDialogTitle("Open...");
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(new FileNameExtensionFilter("Axoloti Files", "axp"));
         fc.addChoosableFileFilter(axpFileFilter);
         int returnVal = fc.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            files.add(fc.getSelectedFile());
+            for (File f : fc.getSelectedFiles()) {
+                if (f != null && f.exists()) {
+                    files.add(f);
+                }
+            }
             setDirty();
             refresh();
         }
+        fc.setMultiSelectionEnabled(false);
         fc.updateCurrentSize();
     }
 
@@ -801,6 +809,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
             QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
         }
+        refresh();
     }
 
 
@@ -874,7 +883,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             pb.setVisible(true);
         } catch (IOException ex) {
             pb.Close();
-            Logger.getLogger(PatchBank.class.getName()).log(Level.SEVERE, "Patchbank file not found or not accessable:{0}", f.getName());
+            Logger.getLogger(PatchBank.class.getName()).log(Level.SEVERE, "Patchbank file not found or not accessible: {0}", f.getName());
         }
     }
 

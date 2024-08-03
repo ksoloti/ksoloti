@@ -145,6 +145,7 @@ public class FileUtils {
         // frame.setVisible(true);
 
         fc.resetChoosableFileFilters();
+        fc.setMultiSelectionEnabled(true);
         fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
         fc.restoreCurrentSize();
         fc.setDialogTitle("Open...");
@@ -158,26 +159,29 @@ public class FileUtils {
 
         int returnVal = fc.showOpenDialog(anc);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File f = fc.getSelectedFile();
-            prefs.setCurrentFileDirectory(f.getParentFile().toString());
+            File[] fs = fc.getSelectedFiles();
+            prefs.setCurrentFileDirectory(fs[0].getParentFile().toString());
 
-            for (DocumentWindow dw : DocumentWindowList.GetList()) {
-                if (f.equals(dw.getFile())) {
-                    JFrame frame1 = dw.GetFrame();
-                    frame1.setVisible(true);
-                    frame1.setState(java.awt.Frame.NORMAL);
-                    frame1.toFront();
-                    return;
+            for (File f : fs) {
+                for (DocumentWindow dw : DocumentWindowList.GetList()) {
+                    if (f.equals(dw.getFile())) {
+                        JFrame frame1 = dw.GetFrame();
+                        frame1.setVisible(true);
+                        frame1.setState(java.awt.Frame.NORMAL);
+                        frame1.toFront();
+                        return;
+                    }
+                }
+                if (axpFileFilter.accept(f)
+                        || axsFileFilter.accept(f)
+                        || axhFileFilter.accept(f)) {
+                    PatchGUI.OpenPatch(f);
+                } else if (axbFileFilter.accept(f)) {
+                    PatchBank.OpenBank(f);
                 }
             }
-            if (axpFileFilter.accept(f)
-                    || axsFileFilter.accept(f)
-                    || axhFileFilter.accept(f)) {
-                PatchGUI.OpenPatch(f);
-            } else if (axbFileFilter.accept(f)) {
-                PatchBank.OpenBank(f);
-            }
         }
+        fc.setMultiSelectionEnabled(false);
         fc.updateCurrentSize();
     }
 }
