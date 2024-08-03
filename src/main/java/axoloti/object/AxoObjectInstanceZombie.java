@@ -146,6 +146,7 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     addInstanceNameEditor();
+                    e.consume();
                 }
             }
 
