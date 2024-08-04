@@ -174,27 +174,7 @@ public class USBBulkConnection extends Connection {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
 
-                if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                    if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDAxoloti) {
-                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Axoloti Core found.");
-                        DeviceHandle h = new DeviceHandle();
-                        result = LibUsb.open(d, h);
-                        if (result < 0) {
-                            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, ErrorString(result));
-                        } else {
-                            String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
-                            if (cpuid != null) {
-                                if (serial.equals(cpuid)) {
-                                    return h;
-                                }
-                            } else {
-                                return h;
-                            }
-                            LibUsb.close(h);
-                        }
-                    }
-                }
-                else {
+                if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
                     if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDKsoloti) {
                         Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Ksoloti Core found.");
                         DeviceHandle h = new DeviceHandle();
@@ -214,7 +194,26 @@ public class USBBulkConnection extends Connection {
                         }
                     }
                 }
-
+                else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+                    if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDAxoloti) {
+                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Axoloti Core found.");
+                        DeviceHandle h = new DeviceHandle();
+                        result = LibUsb.open(d, h);
+                        if (result < 0) {
+                            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, ErrorString(result));
+                        } else {
+                            String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
+                            if (cpuid != null) {
+                                if (serial.equals(cpuid)) {
+                                    return h;
+                                }
+                            } else {
+                                return h;
+                            }
+                            LibUsb.close(h);
+                        }
+                    }
+                }
             }
 
             // or else pick the first one
@@ -226,19 +225,7 @@ public class USBBulkConnection extends Connection {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
 
-                if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                    if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDAxoloti) {
-                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Axoloti Core found.");
-                        DeviceHandle h = new DeviceHandle();
-                        result = LibUsb.open(d, h);
-                        if (result < 0) {
-                            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, ErrorString(result));
-                        } else {
-                            return h;
-                        }
-                    }
-                }
-                else {
+                if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
                     if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDKsoloti) {
                         Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Ksoloti Core found.");
                         DeviceHandle h = new DeviceHandle();
@@ -249,7 +236,18 @@ public class USBBulkConnection extends Connection {
                             return h;
                         }
                     }
-
+                }
+                else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+                    if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDAxoloti) {
+                        Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "Axoloti Core found.");
+                        DeviceHandle h = new DeviceHandle();
+                        result = LibUsb.open(d, h);
+                        if (result < 0) {
+                            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, ErrorString(result));
+                        } else {
+                            return h;
+                        }
+                    }
                 }
             }
         } finally {

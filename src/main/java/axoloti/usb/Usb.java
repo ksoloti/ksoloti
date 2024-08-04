@@ -85,7 +85,8 @@ public class Usb {
                         if (descriptor.idProduct() == PID_STM_CDC) {
                             hasOne = true;
                             Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* USB Serial port device");
-                        } else if (descriptor.idProduct() == PID_STM_DFU) {
+                        }
+                        else if (descriptor.idProduct() == PID_STM_DFU) {
                             hasOne = true;
                             Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* DFU device");
                             // try to open it to check if correct driver is installed
@@ -93,31 +94,37 @@ public class Usb {
                             result = LibUsb.open(device, handle);
                             if (result < 0) {
                                 Logger.getLogger(Usb.class.getName()).log(Level.INFO, " but can''t access: {0}", LibUsb.strError(result));
-                            } else {
+                            }
+                            else {
                                 Logger.getLogger(Usb.class.getName()).log(Level.INFO, " driver OK");
                                 LibUsb.close(handle);
                             }
-                        } else if (descriptor.idProduct() == PID_STM_STLINK) {
+                        }
+                        else if (descriptor.idProduct() == PID_STM_STLINK) {
                             Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* STM STLink");
                             hasOne = true;
-                        } else {
+                        }
+                        else {
                             Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* other STM device:\n{0}", descriptor.dump());
                             hasOne = true;
                         }
 
-                    } else if (prefs.getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI) {
+                    }
+                    else if (prefs.getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI) {
                         hasOne = true;
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);
                         if (result < 0) {
                             Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* Ksoloti USB device, but can''t access: {0}", LibUsb.strError(result));
-                        } else {
+                        }
+                        else {
                             Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* Ksoloti USB device, serial #{0}", LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
                             LibUsb.close(handle);
                         }
                         Logger.getLogger(Usb.class.getName()).log(Level.INFO, "  location: {0}", DeviceToPath(device));
 
-                    } else if (prefs.getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI) {
+                    }
+                    else if (prefs.getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI) {
                         hasOne = true;
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);
@@ -130,7 +137,8 @@ public class Usb {
                         Logger.getLogger(Usb.class.getName()).log(Level.INFO, "  location: {0}", DeviceToPath(device));
                     }
 
-                } else {
+                }
+                else {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
             }
@@ -177,13 +185,15 @@ public class Usb {
                             default:
                         }
                         return false;
-                    } else {
+                    }
+                    else {
                         LibUsb.close(handle);
                         return true;
                     }
                 }
             }
-        } finally {
+        }
+        finally {
             // Ensure the allocated device list is freed
             LibUsb.freeDeviceList(list, true);
         }
@@ -216,7 +226,8 @@ public class Usb {
                     return device;
                 }
             }
-        } finally {
+        }
+        finally {
             // Ensure the allocated device list is freed
             LibUsb.freeDeviceList(list, true);
         }

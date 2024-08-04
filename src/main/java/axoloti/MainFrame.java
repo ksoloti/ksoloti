@@ -368,22 +368,34 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     //     Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Failsafe mode activated");
                     //     tsuf = "Failsafe";
                     // }
+
                     if (prefs.getFirmwareMode().contains("Axoloti Core")) {
                         if (tsuf.length() > 0) {
                             tsuf += ", ";
                         }
-                        tsuf += "Axoloti Legacy Mode";
+                        tsuf += "Axoloti Legacy";
                     }
+
+                    if (prefs.getFirmwareMode().contains("SPILink")) {
+                        if (tsuf.length() > 0) {
+                            tsuf += ", ";
+                        }
+                        tsuf += "SPILink";
+                    }
+
                     if (Axoloti.isDeveloper()) {
                         if (tsuf.length() > 0) {
                             tsuf += ", ";
                         }
                         tsuf += "Developer";
                     }
+
                     if (tsuf.length() > 0) {
                         MainFrame.this.setTitle(MainFrame.this.getTitle() + " (" + tsuf + ")");
                     }
+
                     Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Patcher version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
+
                     if (prefs.getFirmwareMode().contains("Axoloti Core")) {
                         Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, ">>> Axoloti Legacy Mode <<<\n");
                     }
@@ -1133,13 +1145,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private void jMenuItemFlashUserActionPerformed(java.awt.event.ActionEvent evt) {
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
         String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
-        if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-            fname += "/flasher/flasher_build/axoloti_flasher.bin";
-            pname += "/build/axoloti.bin";
-        }
-        else {
+        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
             fname += "/flasher/flasher_build/ksoloti_flasher.bin";
             pname += "/build/ksoloti.bin";
+        }
+        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+            fname += "/flasher/flasher_build/axoloti_flasher.bin";
+            pname += "/build/axoloti.bin";
         }
         flashUsingSDRam(fname, pname);
     }
@@ -1156,13 +1168,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
         String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
-        if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-            fname += "/flasher/flasher_build/axoloti_flasher.bin";
-            pname += "/build/axoloti.bin";
-        }
-        else {
+        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
             fname += "/flasher/flasher_build/ksoloti_flasher.bin";
             pname += "/build/ksoloti.bin";
+        }
+        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+            fname += "/flasher/flasher_build/axoloti_flasher.bin";
+            pname += "/build/axoloti.bin";
         }
         flashUsingSDRam(fname, pname);
     }
@@ -1430,13 +1442,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (s == 0) {
             String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
             String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
-            if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                fname += "/flasher/flasher_build/axoloti_flasher.bin";
-                pname += "/build/axoloti.bin";
-            }
-            else {
+            if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
                 fname += "/flasher/flasher_build/ksoloti_flasher.bin";
                 pname += "/build/ksoloti.bin";
+            }
+            else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+                fname += "/flasher/flasher_build/axoloti_flasher.bin";
+                pname += "/build/axoloti.bin";
             }
             flashUsingSDRam(fname, pname);
         }

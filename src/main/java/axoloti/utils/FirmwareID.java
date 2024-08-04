@@ -37,21 +37,22 @@ public class FirmwareID {
 
     static public String getFirmwareID() {
         try {
-            File f;
-            if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                f = new File(System.getProperty(Axoloti.FIRMWARE_DIR) +"/build/axoloti.bin");
-            }
-            else {
+            File f = null;
+            if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
                 f = new File(System.getProperty(Axoloti.FIRMWARE_DIR) +"/build/ksoloti.bin");
             }
+            else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+                f = new File(System.getProperty(Axoloti.FIRMWARE_DIR) +"/build/axoloti.bin");
+            }
 
-            if (!f.canRead()) {
+            if (f == null || !f.canRead()) {
                 return "Please compile the firmware first";
             }
             int tlength = (int) f.length();
             FileInputStream inputStream = new FileInputStream(f);
             byte[] bb = new byte[tlength];
             int nRead = inputStream.read(bb, 0, tlength);
+            inputStream.close();
             if (nRead != tlength) {
                 Logger.getLogger(FirmwareID.class.getName()).log(Level.SEVERE, "File size wrong?" + nRead);
             }
