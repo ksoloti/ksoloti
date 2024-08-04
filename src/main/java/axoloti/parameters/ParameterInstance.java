@@ -545,7 +545,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         final JCheckBoxMenuItem m_frozen = new JCheckBoxMenuItem("Freeze Parameter");
         m_frozen.setMnemonic('F');
         m_frozen.setSelected(frozen != null && frozen);
-        m_frozen.setEnabled(this.parameter.PropagateToChild == null);
+        m_frozen.setEnabled(parameter.PropagateToChild == null);
         if (m_frozen.isEnabled()) {
             m_frozen.setToolTipText("While frozen, a parameter consumes less memory and DSP but cannot be\n" +
                                     "changed while the patch is live (essentially acting as an attribute).\n" +
@@ -553,11 +553,10 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
                                     "will have no effect while it is frozen.");
         }
         else {
-            m_frozen.setToolTipText("This parameter cannot be frozen here because it is shown here via the\n" +
-                                    "subpatch. You can freeze it from inside the subpatch. Note that if a parameter\n" +
-                                    "that is set to \"Show on Parent\" is frozen from inside the subpatch, it will\n" +
-                                    "temporarily disappear from the parent. Unfreeze it inside the subpatch to make it\n" +
-                                    "reappear on the parent and be editable from here.");
+            m_frozen.setToolTipText("This parameter cannot be frozen because it belongs to the subpatch.\n" +
+                                    "You can freeze it from inside the subpatch. If the parameter is being\n" +
+                                    "frozen inside the subpatch, it will temporarily disappear from the parent.\n" +
+                                    "Unfreeze it to make it reappear on the parent and become editable.");
 
         }
         m.add(m_frozen);

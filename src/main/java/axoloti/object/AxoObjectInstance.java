@@ -805,9 +805,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         for (ParameterInstance p : parameterInstances) {
             if (p.isFrozen()) {
                 if (p.parameter.PropagateToChild != null) {
-                    // Frozen via parent:
-                    // c += I+I+I + "/* Parent control is frozen. Inserting parent value here: */\n";
-                    // c += I+I+I + "PExch[PARAM_INDEX_" + p.getLegalName() + "_" + p.ControlOnParentName() + "].finalvalue = objectinstance_" + getLegalName() + "::" + p.GetCName() + ";\n";
+                    // TODO: This is probably where forwarding the frozen value to the child parameter should happen?
                 }
             }
             else {
