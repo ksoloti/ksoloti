@@ -8,18 +8,6 @@ set PATH=%axoloti_runtime%\platform_win\bin
 
 cd %axoloti_firmware%
 
-echo.&&echo Compiling firmware... %1
-if exist ".dep\" rmdir /s /q .dep
-if exist "build\lst" rmdir /s /q build\lst
-if exist "build\obj" rmdir /s /q build\obj
-mkdir .dep
-mkdir build\lst
-mkdir build\obj
-make BOARDDEF=-D%1
-IF %ERRORLEVEL% NEQ 0 (
-	exit /b 1
-)
-
 echo.&&echo Compiling firmware flasher... %1
 cd flasher
 if exist ".dep\" rmdir /s /q .dep
@@ -47,6 +35,18 @@ IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
 cd ..
+
+echo.&&echo Compiling firmware... %1
+if exist ".dep\" rmdir /s /q .dep
+if exist "build\lst" rmdir /s /q build\lst
+if exist "build\obj" rmdir /s /q build\obj
+mkdir .dep
+mkdir build\lst
+mkdir build\obj
+make BOARDDEF=-D%1
+IF %ERRORLEVEL% NEQ 0 (
+	exit /b 1
+)
 
 goto :eof
 
