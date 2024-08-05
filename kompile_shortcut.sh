@@ -24,21 +24,15 @@ esac
 
 case "$platform" in
         mac)
-            # sh ./qlean.sh
             sh ./platform_osx/compile_firmware.sh BOARD_AXOLOTI_CORE && ./platform_osx/compile_firmware.sh BOARD_KSOLOTI_CORE 2>&1 | tee firmware.log
         ;;
         linux)
-            # sh ./qlean.sh
-            sh ./platform_linux/compile_firmware.sh 2>&1 | tee firmware.log
             sh ./platform_linux/compile_firmware.sh BOARD_AXOLOTI_CORE && ./platform_linux/compile_firmware.sh BOARD_KSOLOTI_CORE 2>&1 | tee firmware.log
         ;;
         windows)
-            # sh ./qlean.sh
-            # echo "This script currently does not support Windows."
             cd platform_win
-            cmd "//C path.bat && compile_firmware.bat BOARD_AXOLOTI_CORE && compile_firmware.bat BOARD_KSOLOTI_CORE"
+            cmd "//C path.bat && compile_firmware.bat BOARD_AXOLOTI_CORE 2>&1 | tee ..\firmware.log && compile_firmware.bat BOARD_KSOLOTI_CORE 2>&1 | tee -a ..\firmware.log"
             cd ..
-            
         ;;
 esac
 
