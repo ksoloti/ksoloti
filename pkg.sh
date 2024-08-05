@@ -167,6 +167,7 @@ rm -rf packagetemp/win/ksoloti-${VERSION}/firmware/mounter/.dep
 rm -rf packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/lst
 rm -rf packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/obj
 
+rm -rf packagetemp/win/ksoloti-${VERSION}/platform_win/apache-ant-1.10.14
 rm -rf packagetemp/win/ksoloti-${VERSION}/platform_win/share
 rm -rf packagetemp/win/ksoloti-${VERSION}/platform_win/src
 rm -rf packagetemp/win/ksoloti-${VERSION}/platform_win/arm-none-eabi/lib/armv6-m
