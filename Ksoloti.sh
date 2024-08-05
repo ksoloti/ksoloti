@@ -29,7 +29,7 @@ export axoloti_home=${axoloti_home:="$rootdir"}
 which java >/dev/null || echo "Java not found in path" 
 
 heap_jvmargs='-Xms256m -Xmx2g'
-marlin_jvmargs='-Xbootclasspath/a:lib/marlin-0.9.4.8-Unsafe-OpenJDK11.jar -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine'
+marlin_jvmargs='-Xbootclasspath/a:lib/marlin-0.9.4.8-Unsafe-OpenJDK11.jar -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine -Dsun.java2d.dpiaware=true -Dsun.java2d.d3d=false'
 
 if [ -f $rootdir/dist/Ksoloti.jar ]
 then
