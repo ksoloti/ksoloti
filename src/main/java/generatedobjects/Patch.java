@@ -217,8 +217,8 @@ public class Patch extends gentools {
         o.SetProvidesModulationSource();
         o.sMidiCode = "if ((status == MIDI_CONTROL_CHANGE + attr_midichannel)&&(data1 == %cc%)) {\n"
                 + "  PExModulationSourceChange(\n"
-                + "    &parent->GetModulationTable()[parent->MODULATOR_attr_name * NMODULATIONTARGETS],\n"
-                + "    NMODULATIONTARGETS,\n"
+                + "    &parent->GetModulationTable()[parent->MODULATOR_attr_name * NUM_MODULATION_TARGETS],\n"
+                + "    NUM_MODULATION_TARGETS,\n"
                 + "    &parent->PExch[0],\n"
                 + "    &parent->PExModulationPrevVal[parent->polyIndex][parent->MODULATOR_attr_name],\n"
                 + "    data2<<20);\n"
@@ -234,12 +234,12 @@ public class Patch extends gentools {
         //o.sInstanceData = "PExModulationTargets_t ;\n";
         o.sLocalData = "int ntrig;\n";
 //        o.sInitCode = "int i;\n"
-//                + "for(i=0;i<NMODULATIONTARGETS;i++)\n"
+//                + "for(i=0;i<NUM_MODULATION_TARGETS;i++)\n"
 //                + "   parent2->PExModulationSources[MODULATOR_%name%][i].PEx = 0;\n";
         o.sKRateCode = "if ((%trig%>0) && !ntrig) {\n"
                 + "  PExModulationSourceChange(\n"
-                + "    &parent->GetModulationTable()[parent->MODULATOR_attr_name * NMODULATIONTARGETS],\n"
-                + "    NMODULATIONTARGETS,\n"
+                + "    &parent->GetModulationTable()[parent->MODULATOR_attr_name * NUM_MODULATION_TARGETS],\n"
+                + "    NUM_MODULATION_TARGETS,\n"
                 + "    &parent->PExch[0],\n"
                 + "    &parent->PExModulationPrevVal[parent->polyIndex][parent->MODULATOR_attr_name],\n"
                 + "    %v%);"

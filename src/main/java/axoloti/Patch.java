@@ -1184,19 +1184,19 @@ public class Patch {
     /* the c++ code generator */
     String GeneratePexchAndDisplayCode() {
         String c = GeneratePexchAndDisplayCodeV();
-        c += I + "int32_t PExModulationPrevVal[attr_poly][NMODULATIONSOURCES];\n";
+        c += I + "int32_t PExModulationPrevVal[attr_poly][NUM_MODULATION_SOURCES];\n";
         return c;
     }
 
     String GeneratePexchAndDisplayCodeV() {
         String c = "\n";
-        c += I + "static const uint16_t NPEXCH = " + ParameterInstances.size() + ";\n";
-        c += I + "ParameterExchange_t PExch[NPEXCH];\n";
+        c += I + "static const uint16_t NUM_P_EXCH = " + ParameterInstances.size() + ";\n";
+        c += I + "ParameterExchange_t PExch[NUM_P_EXCH];\n";
         c += I + "int32_t displayVector[" + (displayDataLength + 3) + "];\n";
-        c += I + "static const uint8_t NPRESETS = " + settings.GetNPresets() + ";\n";
-        c += I + "static const uint8_t NPRESET_ENTRIES = " + settings.GetNPresetEntries() + ";\n";
-        c += I + "static const uint8_t NMODULATIONSOURCES = " + settings.GetNModulationSources() + ";\n";
-        c += I + "static const uint8_t NMODULATIONTARGETS = " + settings.GetNModulationTargetsPerSource() + ";\n";
+        c += I + "static const uint8_t NUM_PRESETS = " + settings.GetNPresets() + ";\n";
+        c += I + "static const uint8_t NUM_PRESET_ENTRIES = " + settings.GetNPresetEntries() + ";\n";
+        c += I + "static const uint8_t NUM_MODULATION_SOURCES = " + settings.GetNModulationSources() + ";\n";
+        c += I + "static const uint8_t NUM_MODULATION_TARGETS = " + settings.GetNModulationTargetsPerSource() + ";\n";
         return c;
     }
 
@@ -1273,7 +1273,7 @@ public class Patch {
     String GeneratePresetCode3(String ClassName) {
 
         String c = I + "static const int32_t* GetPresets(void) {\n";
-        c += I+I + "static const int32_t p[NPRESETS][NPRESET_ENTRIES][2] = {\n";
+        c += I+I + "static const int32_t p[NUM_PRESETS][NUM_PRESET_ENTRIES][2] = {\n";
 
         for (int i = 0; i < settings.GetNPresets(); i++) {
             int[] dp = DistillPreset(i + 1);
@@ -1301,17 +1301,17 @@ public class Patch {
         c += I + "void ApplyPreset(uint8_t index) {\n"
               + I+I + "if (!index) {\n"
               + I+I+I + "int32_t* p = GetInitParams();\n"
-              + I+I+I + "uint16_t i; for (i=0; i<NPEXCH; i++) {\n"
+              + I+I+I + "uint16_t i; for (i=0; i<NUM_P_EXCH; i++) {\n"
               + I+I+I+I + "PExParameterChange(&PExch[i], p[i], 0xFFEF);\n"
               + I+I+I + "}\n"
               + I+I + "}\n"
               + I+I + "index--;\n"
-              + I+I + "if (index < NPRESETS) {\n"
+              + I+I + "if (index < NUM_PRESETS) {\n"
               + I+I+I + "PresetParamChange_t* pa = (PresetParamChange_t*) (GetPresets());\n"
-              + I+I+I + "PresetParamChange_t* p = &pa[index * NPRESET_ENTRIES];\n"
-              + I+I+I + "uint8_t i; for (i=0; i<NPRESET_ENTRIES; i++) {\n"
+              + I+I+I + "PresetParamChange_t* p = &pa[index * NUM_PRESET_ENTRIES];\n"
+              + I+I+I + "uint8_t i; for (i=0; i<NUM_PRESET_ENTRIES; i++) {\n"
               + I+I+I+I + "PresetParamChange_t* pp = &p[i];\n"
-              + I+I+I+I + "if ((pp->pexIndex >= 0) && (pp->pexIndex < NPEXCH)) {\n"
+              + I+I+I+I + "if ((pp->pexIndex >= 0) && (pp->pexIndex < NUM_P_EXCH)) {\n"
               + I+I+I+I+I + "PExParameterChange(&PExch[pp->pexIndex], pp->value, 0xFFEF);\n"
               + I+I+I+I + "}\n"
               + I+I+I+I + "else break;\n"
@@ -1324,7 +1324,7 @@ public class Patch {
     String GenerateModulationCode3() {
 
         String s = I + "static PExModulationTarget_t* GetModulationTable(void) {\n";
-        s += I+I + "static const PExModulationTarget_t PExModulationSources[NMODULATIONSOURCES][NMODULATIONTARGETS] = {\n";
+        s += I+I + "static const PExModulationTarget_t PExModulationSources[NUM_MODULATION_SOURCES][NUM_MODULATION_TARGETS] = {\n";
         for (int i = 0; i < settings.GetNModulationSources(); i++) {
             s += I+I+I + "{";
             if (i < Modulators.size()) {
@@ -1370,7 +1370,7 @@ public class Patch {
     String GenerateParamInitCode3(String ClassName) {
         int s = ParameterInstances.size();
         String c = I + "static int32_t* GetInitParams(void) {\n"
-                 + I+I + "static const int32_t p[" + /*s*/ "NPEXCH" + "] = {\n";
+                 + I+I + "static const int32_t p[" + /*s*/ "NUM_P_EXCH" + "] = {\n";
         for (int i = 0; i < s; i++) {
             c += I+I+I + ParameterInstances.get(i).GetValueRaw();
             if (i != s - 1) {
@@ -1415,7 +1415,7 @@ public class Patch {
                 c += ");\n";
             }
         }
-        c += "\n" + I+I + "uint16_t k; for (k=0; k<NPEXCH; k++) {\n"
+        c += "\n" + I+I + "uint16_t k; for (k=0; k<NUM_P_EXCH; k++) {\n"
            + I+I+I + "if (PExch[k].pfunction) {\n"
            + I+I+I+I + "(PExch[k].pfunction)(&PExch[k]);\n"
            + I+I+I + "}\n"
@@ -1431,7 +1431,7 @@ public class Patch {
         c += I+I + "uint32_t i, j;\n";
         c += I+I + "const int32_t* p;\n";
         c += I+I + "p = GetInitParams();\n\n";
-        c += I+I + "for (j=0; j<" + /*ParameterInstances.size()*/ "NPEXCH" + "; j++) {\n";
+        c += I+I + "for (j=0; j<" + /*ParameterInstances.size()*/ "NUM_P_EXCH" + "; j++) {\n";
         c += I+I+I + "PExch[j].value = p[j];\n";
         c += I+I+I + "PExch[j].modvalue = p[j];\n";
         c += I+I+I + "PExch[j].signals = 0;\n";
@@ -1439,7 +1439,7 @@ public class Patch {
 //        c += I+I+I + "PExch[j].finalvalue = p[j];\n"; /*TBC*/
         c += I+I + "}\n\n";
         c += I+I + "int32_t* pp = &PExModulationPrevVal[0][0];\n";
-        c += I+I + "for (j=0; j<attr_poly * NMODULATIONSOURCES; j++) {\n";
+        c += I+I + "for (j=0; j<attr_poly * NUM_MODULATION_SOURCES; j++) {\n";
         c += I+I+I + "*pp = 0; pp++;\n";
         c += I+I + "}\n\n";
         c += I+I + "displayVector[0] = 0x446F7841;\n"; // "AxoD"
@@ -2155,7 +2155,7 @@ public class Patch {
         ao.sLocalData += GenerateObjectCode("voice");
         ao.sLocalData += "  attr_parent* common;\n";
         ao.sLocalData += "  void Init(voice* parent) {\n";
-        ao.sLocalData += "    uint16_t i; for (i=0; i<NPEXCH; i++) {\n"
+        ao.sLocalData += "    uint16_t i; for (i=0; i<NUM_P_EXCH; i++) {\n"
                        + "      PExch[i].pfunction = 0;\n"
                        + "    }\n";
         ao.sLocalData += GenerateObjInitCodePlusPlusSub("voice", "parent");
@@ -2192,7 +2192,7 @@ public class Patch {
         ao.sLocalData = ao.sLocalData.replaceAll("parent->GetModulationTable", "parent->common->GetModulationTable");
 
         ao.sInitCode = GenerateParamInitCodePlusPlusSub("", "parent");
-        ao.sInitCode += "uint16_t k; for (k=0; k<NPEXCH; k++) {\n"
+        ao.sInitCode += "uint16_t k; for (k=0; k<NUM_P_EXCH; k++) {\n"
                      + "  PExch[k].pfunction = PropagateToVoices;\n"
                      + "  PExch[k].finalvalue = (int32_t) (&(getVoices()[0].PExch[k]));\n"
                      + "}\n\n";
@@ -2204,12 +2204,12 @@ public class Patch {
                      + "  v->Init(&getVoices()[vi]);\n"
                      + "  voiceNotePlaying[vi] = 0;\n"
                      + "  voicePriority[vi] = 0;\n"
-                     + "  for (j=0; j<v->NPEXCH; j++) {\n"
+                     + "  for (j=0; j<v->NUM_P_EXCH; j++) {\n"
                      + "    v->PExch[j].value = 0;\n"
                      + "    v->PExch[j].modvalue = 0;\n"
                      + "  }\n"
                      + "}\n\n"
-                     + "for (k=0; k<NPEXCH; k++) {\n"
+                     + "for (k=0; k<NUM_P_EXCH; k++) {\n"
                      + "  if (PExch[k].pfunction) {\n"
                      + "    (PExch[k].pfunction)(&PExch[k]);\n"
                      + "  }\n"
