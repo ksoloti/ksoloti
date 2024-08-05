@@ -37,19 +37,37 @@ if [ $# -eq 1 ]
 fi
 echo $CUSTOMNAME
 
-# ----- Compile firmware and jar
-./qlean.sh
-./kompile_shortcut.sh
+# ----- Windows: Check if 7-Zip is installed
+case "$platform" in
+    windows)
+        #echo "Java build currently not supported on Windows."
+        DIRECTORY="C:\Program Files\7-Zip"
+        if [ -d "$DIRECTORY" ]; then
+            echo "$DIRECTORY found."
+        else
+            echo "$DIRECTORY does not exist. Please install 7-Zip in the standard location."
+            exit 1
+        fi
+    ;;
+esac
+
+# ----- Compile firmware
+sh ./qlean.sh
+sh ./kompile_shortcut.sh
+sh ./qlean.sh
+
+
+# ----- Compile jar
 ant clean
 case "$platform" in
         mac)
-            ./platform_osx/compile_java.sh
+            sh ./platform_osx/compile_java.sh
         ;;
         linux)
-            ./platform_linux/compile_java.sh
+            sh ./platform_linux/compile_java.sh
         ;;
         windows)
-            echo "Java build currently not supported on Windows."
+            sh ./win_byld_java.sh
         ;;
 esac
 ant clean
@@ -184,14 +202,21 @@ rm -rf packagetemp/win/ksoloti-${VERSION}/jre/demo
 rm -rf packagetemp/win/ksoloti-${VERSION}/jre/man
 rm packagetemp/win/ksoloti-${VERSION}/jre/lib/src.zip
 
-cd packagetemp/win && zip -q -r ../ksoloti_patcher-windows-${VERSION_LONG}${CUSTOMNAME}.zip *
+
+case "$platform" in
+        mac)
+            cd packagetemp/win && zip -q -r ../ksoloti_patcher-windows-${VERSION_LONG}${CUSTOMNAME}.zip *
+        ;;
+        linux)
+            cd packagetemp/win && zip -q -r ../ksoloti_patcher-windows-${VERSION_LONG}${CUSTOMNAME}.zip *
+        ;;
+        windows)
+            cd packagetemp/win && "C:/Program Files/7-Zip/7z.exe" a -tzip ../ksoloti_patcher-windows-${VERSION_LONG}${CUSTOMNAME}.zip *
+        ;;
+esac
 cd ../..
 rm -rf packagetemp/win
 
-
-# ----- Cleanup
-cd firmware && make clean
-cd .. && ant clean
 
 END=$(date +%s)
 echo "All done! Elapsed time: $(($END-$START)) seconds."
