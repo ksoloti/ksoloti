@@ -19,9 +19,9 @@
 
 #include "ch.h"
 #include "hal.h"
+#include "chprintf.h"
 #include "ff.h"
 #include "codec.h"
-#include "chprintf.h"
 #include "pconnection.h"
 #include "axoloti_board.h"
 #include "exceptions.h"

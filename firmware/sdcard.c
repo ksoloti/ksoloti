@@ -24,7 +24,6 @@
 #include "patch.h"
 #include "sdcard.h"
 #include <string.h>
-#include "chprintf.h"
 #include "exceptions.h"
 
 /*===========================================================================*/

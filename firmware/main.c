@@ -40,7 +40,6 @@
 #include "exceptions.h"
 #include "watchdog.h"
 
-#include "chprintf.h"
 #include "usbcfg.h"
 #include "sysmon.h"
 #ifdef FW_SPILINK
