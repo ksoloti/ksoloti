@@ -25,14 +25,16 @@ esac
 case "$platform" in
         mac)
             sh ./platform_osx/compile_firmware.sh BOARD_AXOLOTI_CORE && ./platform_osx/compile_firmware.sh BOARD_KSOLOTI_CORE 2>&1 | tee firmware.log
+            sh arm-none-eabi-objdump -belf32-littlearm -marm --demangle --disassemble ../firmware/build/axoloti.elf > ../firmware/build/axoloti.lst && arm-none-eabi-objdump -belf32-littlearm -marm --demangle --disassemble ../firmware/build/ksoloti.elf > ../firmware/build/ksoloti.lst
         ;;
         linux)
             sh ./platform_linux/compile_firmware.sh BOARD_AXOLOTI_CORE && ./platform_linux/compile_firmware.sh BOARD_KSOLOTI_CORE 2>&1 | tee firmware.log
+            sh arm-none-eabi-objdump -belf32-littlearm -marm --demangle --disassemble ../firmware/build/axoloti.elf > ../firmware/build/axoloti.lst && arm-none-eabi-objdump -belf32-littlearm -marm --demangle --disassemble ../firmware/build/ksoloti.elf > ../firmware/build/ksoloti.lst
         ;;
         windows)
             cd platform_win
             cmd "//C path.bat && compile_firmware.bat BOARD_AXOLOTI_CORE 2>&1 | tee ..\firmware.log && compile_firmware.bat BOARD_KSOLOTI_CORE 2>&1 | tee -a ..\firmware.log"
+            cmd "//C path.bat && arm-none-eabi-objdump -belf32-littlearm -marm --demangle --disassemble ..\firmware\build\axoloti.elf > ..\firmware\build\axoloti.lst && arm-none-eabi-objdump -belf32-littlearm -marm --demangle --disassemble ..\firmware\build\ksoloti.elf > ..\firmware\build\ksoloti.lst"
             cd ..
         ;;
 esac
-
