@@ -76,7 +76,7 @@ int flash_ProgramWord(uint32_t Address, uint32_t Data) {
 }
 
 void flash_unlock(void) {
-    /* unlock sequence */
+    /* Unlock sequence as per reference manual*/
     FLASH->KEYR = 0x45670123;
     FLASH->KEYR = 0xCDEF89AB;
 }

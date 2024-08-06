@@ -929,7 +929,7 @@ static void USBH_Process_OS(void const * argument)
   chRegSetThreadName("usbh");
 #endif
 
-  osEvent event;
+  __attribute__((unused)) osEvent event;
   
   for(;;)
   {

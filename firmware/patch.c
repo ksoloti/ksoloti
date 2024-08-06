@@ -207,7 +207,7 @@ static int StartPatch1(void) {
 }
 
 
-static msg_t ThreadDSP(void *arg) {
+ __attribute__((__noreturn__)) static msg_t ThreadDSP(void *arg) {
     (void)(arg);
 #if CH_USE_REGISTRY
     chRegSetThreadName("dsp");

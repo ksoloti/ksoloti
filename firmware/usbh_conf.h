@@ -29,7 +29,12 @@
 #ifndef __USBH_CONF__H__
 #define __USBH_CONF__H__
 
-#define STM32F40_41xxx
+/* some things are being inlined (?) which creates GCC warnings
+ * about "implicit declaration of function" - suppress them
+ */
+#pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
+
+#define STM32F429_439xx
 
 #include "stm32f4xx.h"
 #include <stdio.h>
