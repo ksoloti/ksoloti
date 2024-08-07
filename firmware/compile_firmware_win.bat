@@ -16,7 +16,7 @@ if exist "flasher_build\obj" rmdir /s /q flasher_build\obj
 mkdir .dep
 mkdir flasher_build\lst
 mkdir flasher_build\obj
-make BOARDDEF=-D%1
+make -j8 BOARDDEF=-D%1
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
@@ -30,7 +30,7 @@ if exist "mounter_build\obj" rmdir /s /q mounter_build\obj
 mkdir .dep
 mkdir mounter_build\lst
 mkdir mounter_build\obj
-make BOARDDEF=-D%1
+make -j8 BOARDDEF=-D%1
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
@@ -43,7 +43,7 @@ if exist "build\obj" rmdir /s /q build\obj
 mkdir .dep
 mkdir build\lst
 mkdir build\obj
-make BOARDDEF=-D%1
+make -j8 BOARDDEF=-D%1
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
