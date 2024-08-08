@@ -106,7 +106,7 @@ int main(void) {
     axoloti_math_init();
     midi_init();
     start_dsp_thread();
-    ui_init();
+    // ui_init();
     configSDRAM();
     // memTest();
 
