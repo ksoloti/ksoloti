@@ -173,8 +173,8 @@ const int16_t* lookup_table_int16_table[] = {
 
 
 
-const uint32_t* lookup_table_uint32_table[] = {
-};
+// const uint32_t* lookup_table_uint32_table[] = {
+// };
 
 const float lut_approx_svf_gain[] = {
    4.200005822e+02,  4.099237183e+02,  4.000886248e+02,  3.904895013e+02,
