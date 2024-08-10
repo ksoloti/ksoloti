@@ -30,21 +30,21 @@
 #include "ff.h"
 #include <string.h>
 
-Btn_Nav_States_struct Btn_Nav_CurStates;
-Btn_Nav_States_struct Btn_Nav_PrevStates;
-Btn_Nav_States_struct Btn_Nav_Or;
-Btn_Nav_States_struct Btn_Nav_And;
+// Btn_Nav_States_struct Btn_Nav_CurStates;
+// Btn_Nav_States_struct Btn_Nav_PrevStates;
+// Btn_Nav_States_struct Btn_Nav_Or;
+// Btn_Nav_States_struct Btn_Nav_And;
 
-int8_t EncBuffer[4];
+// int8_t EncBuffer[4];
 
-struct KeyValuePair KvpsHead;
-struct KeyValuePair *KvpsDisplay;
+// struct KeyValuePair KvpsHead;
+// struct KeyValuePair *KvpsDisplay;
 struct KeyValuePair *ObjectKvpRoot;
 #define MAXOBJECTS 256
 struct KeyValuePair *ObjectKvps[MAXOBJECTS];
-#define MAXTMPMENUITEMS 15
-KeyValuePair_s TmpMenuKvps[MAXTMPMENUITEMS];
-KeyValuePair_s ADCkvps[3];
+// #define MAXTMPMENUITEMS 15
+// KeyValuePair_s TmpMenuKvps[MAXTMPMENUITEMS];
+// KeyValuePair_s ADCkvps[3];
 
 //const char stat = 2;
 
@@ -164,6 +164,7 @@ inline void KVP_Decrement(KeyValuePair_s *kvp) {
   }
 }
 
+#if 0
 #define POLLENC(NAME, INCREMENT_FUNCTION, DECREMENT_FUNCTION)  \
       if (!expander_PrevStates.NAME##A) {                 \
           if (!expander_PrevStates.NAME##B) {             \
@@ -196,7 +197,9 @@ inline void KVP_Decrement(KeyValuePair_s *kvp) {
               }                                           \
           }                                               \
       }
+#endif
 
+#if 0
 /*
  * Create menu tree from file tree
  */
@@ -245,13 +248,13 @@ void EnterMenuLoad(void) {
           s = (char *)memp;
           strcpy(s, fn);
           memp += l + 1;
-          SetKVP_FNCTN(&TmpMenuKvps[index], NULL, s, &EnterMenuLoadFile);
+          // SetKVP_FNCTN(&TmpMenuKvps[index], NULL, s, &EnterMenuLoadFile);
           index++;
         }
       }
     }
-    SetKVP_AVP(&LoadMenu, &KvpsHead, "Load SD", index, &TmpMenuKvps[0]);
-    KvpsDisplay = &LoadMenu;
+    // SetKVP_AVP(&LoadMenu, &KvpsHead, "Load SD", index, &TmpMenuKvps[0]);
+    // KvpsDisplay = &LoadMenu;
   }
   // TBC: error messaging
 }
@@ -260,14 +263,15 @@ void EnterMenuFormat(void) {
   FRESULT err;
   err = f_mkfs(0, 0, 0);
   if (err != FR_OK) {
-    SetKVP_AVP(&TmpMenuKvps[0], &KvpsHead, "Format failed", 0, 0);
-    KvpsDisplay = &TmpMenuKvps[0];
+    // SetKVP_AVP(&TmpMenuKvps[0], &KvpsHead, "Format failed", 0, 0);
+    // KvpsDisplay = &TmpMenuKvps[0];
   }
   else {
-    SetKVP_AVP(&TmpMenuKvps[0], &KvpsHead, "Format OK", 0, 0);
-    KvpsDisplay = &TmpMenuKvps[0];
+    // SetKVP_AVP(&TmpMenuKvps[0], &KvpsHead, "Format OK", 0, 0);
+    // KvpsDisplay = &TmpMenuKvps[0];
   }
 }
+#endif
 
 
 static WORKING_AREA(waThreadUI, 1172);
@@ -285,11 +289,12 @@ static msg_t ThreadUI(void *arg) {
 }
 
 
-void UIGoSafe(void) {
-  KvpsDisplay = &KvpsHead;
-}
+// void UIGoSafe(void) {
+//   KvpsDisplay = &KvpsHead;
+// }
 
 void ui_init(void) {
+#if 0
   Btn_Nav_Or.word = 0;
   Btn_Nav_And.word = ~0;
 
@@ -331,13 +336,14 @@ void ui_init(void) {
   }
 
   ObjectKvpRoot = &p[0];
+#endif
 
   chThdCreateStatic(waThreadUI, sizeof(waThreadUI), NORMALPRIO, ThreadUI, NULL);
 }
 
 void KVP_ClearObjects(void) {
   ObjectKvpRoot->apvp.length = 0;
-  KvpsDisplay = &KvpsHead;
+  // KvpsDisplay = &KvpsHead;
 }
 
 void KVP_RegisterObject(KeyValuePair_s *kvp) {
@@ -346,8 +352,8 @@ void KVP_RegisterObject(KeyValuePair_s *kvp) {
   ObjectKvpRoot->apvp.length++;
 }
 
-#define LCD_COL_INDENT 5
-#define LCD_COL_EQ 91
-#define LCD_COL_VAL 97
-#define LCD_COL_ENTER 97
-#define STATUSROW 7
+// #define LCD_COL_INDENT 5
+// #define LCD_COL_EQ 91
+// #define LCD_COL_VAL 97
+// #define LCD_COL_ENTER 97
+// #define STATUSROW 7
