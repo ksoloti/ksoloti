@@ -34,6 +34,10 @@ ifeq ($(USE_LINK_GC),)
   USE_LINK_GC = no
 endif
 
+ifeq ($(USE_LTO),)
+  USE_LTO = no
+endif
+
 # If enabled, this option allows to compile the application in THUMB mode.
 ifeq ($(USE_THUMB),)
   USE_THUMB = yes
