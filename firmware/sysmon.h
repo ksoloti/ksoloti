@@ -23,16 +23,18 @@
 void sysmon_init(void);
 void sysmon_blink_pattern(uint32_t pattern);
 
+/* Edit: Newer compilers may display "warning: binary constants are a GCC extension" 
+   So using hex here */
 // just green
-#define BLINK_OK 0b01010101010101010101010101010101
+#define BLINK_OK 0x55555555 /* 0b0101 0101 0101 0101 0101 0101 0101 0101 */
 // green/red/green/red alternating : boot
-#define BLINK_BOOT 0b10011001100110011001100110011001
+#define BLINK_BOOT 0x99999999 /* 0b1001 1001 1001 1001 1001 1001 1001 1001 */
 // green+red
-#define BLINK_OVERLOAD 0b11111111111111111111111111111111
+#define BLINK_OVERLOAD 0xFFFFFFFF /* 0b1111 1111 1111 1111 1111 1111 1111 1111 */
 // green + red slow blink
-#define BLINK_ERROR 0b11110101111101011111010111110101
+#define BLINK_ERROR 0xF5F5F5F5 /* 0b 1111 0101 1111 0101 1111 0101 1111 0101 */
 // green/red overlapping alternate slow blink
-#define SYNCED_ERROR 0b10110100101101001011010010110100
+#define SYNCED_ERROR 0xB4B4B4B4 /* 0b1011 0100 1011 0100 1011 0100 1011 0100 */
 
 typedef enum
 {
