@@ -958,23 +958,23 @@ void PExReceiveByte(unsigned char c) {
       state++;
       break;
     case 12:
-      // EncBuffer[0] += c;
+      EncBuffer[0] += c;
       state++;
       break;
     case 13:
-      // EncBuffer[1] += c;
+      EncBuffer[1] += c;
       state++;
       break;
     case 14:
-      // EncBuffer[2] += c;
+      EncBuffer[2] += c;
       state++;
       break;
     case 15:
-      // EncBuffer[3] += c;
+      EncBuffer[3] += c;
       header = 0;
       state = 0;
-      // Btn_Nav_Or.word = Btn_Nav_Or.word | a;
-      // Btn_Nav_And.word = Btn_Nav_And.word & b;
+      Btn_Nav_Or.word = Btn_Nav_Or.word | a;
+      Btn_Nav_And.word = Btn_Nav_And.word & b;
       break;
     }
   }

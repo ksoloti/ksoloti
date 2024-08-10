@@ -163,7 +163,7 @@ static void StopPatch1(void) {
         }
     }
 
-    // UIGoSafe();
+    UIGoSafe();
     InitPatch0();
     sysmon_enable_blinker();
 }
