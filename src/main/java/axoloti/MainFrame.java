@@ -369,6 +369,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     //     tsuf = "Failsafe";
                     // }
 
+                    if (Axoloti.isDeveloper()) {
+                        if (tsuf.length() > 0) {
+                            tsuf += ", ";
+                        }
+                        tsuf += "Developer";
+                    }
+
                     if (prefs.getFirmwareMode().contains("Axoloti Core")) {
                         if (tsuf.length() > 0) {
                             tsuf += ", ";
@@ -383,13 +390,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         tsuf += "SPILink";
                     }
 
-                    if (Axoloti.isDeveloper()) {
-                        if (tsuf.length() > 0) {
-                            tsuf += ", ";
-                        }
-                        tsuf += "Developer";
-                    }
-
                     if (tsuf.length() > 0) {
                         MainFrame.this.setTitle(MainFrame.this.getTitle() + " (" + tsuf + ")");
                     }
@@ -398,6 +398,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     if (prefs.getFirmwareMode().contains("Axoloti Core")) {
                         Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, ">>> Axoloti Legacy Mode <<<\n");
+                    }
+                    if (prefs.getFirmwareMode().contains("SPILink")) {
+                        Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, ">>> SPILink-enabled firmware <<<\nPins PB3, PB4, PD5, PD6 are occupied by SPILink communication in this firmware mode!\n");
                     }
 
                     updateLinkFirmwareID();
