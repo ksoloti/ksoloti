@@ -48,7 +48,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.math.BigDecimal;
-// import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -58,8 +57,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-// import javax.swing.JSeparator;
-// import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import org.simpleframework.xml.*;
@@ -650,8 +647,12 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 if (pfun != null && !pfun.equals("")) {
                     int S28_MAX = (1<<27)-1;
                     int S28_MIN = -(1<<27);
-                    int signedClampedVal = Math.clamp(p.GetValueRaw(), S28_MIN, S28_MAX);
-                    int unsignedClampedVal = Math.clamp(p.GetValueRaw(), 0, S28_MAX);
+
+                    int signedClampedVal = p.GetValueRaw();
+                    signedClampedVal = signedClampedVal < S28_MIN ? S28_MIN : signedClampedVal > S28_MAX ? S28_MAX : signedClampedVal;
+
+                    int unsignedClampedVal = p.GetValueRaw();
+                    unsignedClampedVal = unsignedClampedVal < S28_MIN ? S28_MIN : unsignedClampedVal > S28_MAX ? S28_MAX : unsignedClampedVal;
 
                     if (pfun.equals("pfun_signed_clamp")) {
                         c += signedClampedVal + "; /* pfun_signed_clamp */\n";
