@@ -69,7 +69,7 @@ public class Usb {
     public static void listDevices() {
         initialize();
         DeviceList list = new DeviceList();
-        int result = LibUsb.getDeviceList(null, list);
+        int result = LibUsb.getDeviceList(context, list);
         if (result < 0) {
             throw new LibUsbException("Unable to get device list", result);
         }
@@ -155,7 +155,7 @@ public class Usb {
         initialize();
         // Read the USB device list
         DeviceList list = new DeviceList();
-        int result = LibUsb.getDeviceList(null, list);
+        int result = LibUsb.getDeviceList(context, list);
         if (result < 0) {
             Logger.getLogger(Usb.class.getName()).log(Level.SEVERE, "Unable to get device list");
             return false;
@@ -209,7 +209,7 @@ public class Usb {
         initialize();
         // Read the USB device list
         DeviceList list = new DeviceList();
-        int result = LibUsb.getDeviceList(null, list);
+        int result = LibUsb.getDeviceList(context, list);
         if (result < 0) {
             throw new LibUsbException("Unable to get device list", result);
         }
