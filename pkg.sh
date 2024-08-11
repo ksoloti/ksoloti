@@ -90,14 +90,23 @@ rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware/.settings
 
 rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware/build/lst
 rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware/build/obj
+rm packagetemp/linux/ksoloti-${VERSION}/firmware/build/*.dmp
+rm packagetemp/linux/ksoloti-${VERSION}/firmware/build/*.lst
+rm packagetemp/linux/ksoloti-${VERSION}/firmware/build/*.map
 
 rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/.dep
 rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/lst
 rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/obj
+rm packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.dmp
+rm packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.lst
+rm packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.map
 
 rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/.dep
 rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/lst
 rm -rf packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/obj
+rm packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.dmp
+rm packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.lst
+rm packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.map
 
 rm -rf packagetemp/linux/ksoloti-${VERSION}/platform_linux/share
 rm -rf packagetemp/linux/ksoloti-${VERSION}/platform_linux/src
