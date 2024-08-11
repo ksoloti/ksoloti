@@ -38,15 +38,14 @@
 #define	_SYS_TIME_H_
 
 #include <_ansi.h>
+#include <sys/cdefs.h>
 #include <sys/_timeval.h>
 #include <sys/types.h>
 #include <sys/timespec.h>
 
-/* Cygwin exposes sys/select.h to users of sys/time.h for a couple of years
-   so we have to maintain that.  Note that this is in accordance with POSIX. */
-#ifdef __CYGWIN__
+#if __BSD_VISIBLE || __POSIX_VISIBLE >= 200112 || __XSI_VISIBLE
 #include <sys/select.h>
-#endif /* __CYGWIN__ */
+#endif
 
 struct timezone {
 	int	tz_minuteswest;	/* minutes west of Greenwich */
@@ -252,47 +251,6 @@ tvtosbt(struct timeval _tv)
 }
 #endif /* __BSD_VISIBLE */
 
-#ifdef _KERNEL
-
-/* Operations on timespecs */
-#define	timespecclear(tvp)	((tvp)->tv_sec = (tvp)->tv_nsec = 0)
-#define	timespecisset(tvp)	((tvp)->tv_sec || (tvp)->tv_nsec)
-#define	timespeccmp(tvp, uvp, cmp)					\
-	(((tvp)->tv_sec == (uvp)->tv_sec) ?				\
-	    ((tvp)->tv_nsec cmp (uvp)->tv_nsec) :			\
-	    ((tvp)->tv_sec cmp (uvp)->tv_sec))
-#define	timespecadd(vvp, uvp)						\
-	do {								\
-		(vvp)->tv_sec += (uvp)->tv_sec;				\
-		(vvp)->tv_nsec += (uvp)->tv_nsec;			\
-		if ((vvp)->tv_nsec >= 1000000000) {			\
-			(vvp)->tv_sec++;				\
-			(vvp)->tv_nsec -= 1000000000;			\
-		}							\
-	} while (0)
-#define	timespecsub(vvp, uvp)						\
-	do {								\
-		(vvp)->tv_sec -= (uvp)->tv_sec;				\
-		(vvp)->tv_nsec -= (uvp)->tv_nsec;			\
-		if ((vvp)->tv_nsec < 0) {				\
-			(vvp)->tv_sec--;				\
-			(vvp)->tv_nsec += 1000000000;			\
-		}							\
-	} while (0)
-
-/* Operations on timevals. */
-
-#define	timevalclear(tvp)		((tvp)->tv_sec = (tvp)->tv_usec = 0)
-#define	timevalisset(tvp)		((tvp)->tv_sec || (tvp)->tv_usec)
-#define	timevalcmp(tvp, uvp, cmp)					\
-	(((tvp)->tv_sec == (uvp)->tv_sec) ?				\
-	    ((tvp)->tv_usec cmp (uvp)->tv_usec) :			\
-	    ((tvp)->tv_sec cmp (uvp)->tv_sec))
-
-/* timevaladd and timevalsub are not inlined */
-
-#endif /* _KERNEL */
-
 /*
  * Names of the interval timers, and structure
  * defining a timer setting.
@@ -306,141 +264,39 @@ struct itimerval {
 	struct	timeval it_value;	/* current value */
 };
 
-#ifdef _KERNEL
-
-/*
- * Kernel to clock driver interface.
- */
-void	inittodr(time_t base);
-void	resettodr(void);
-
-extern volatile time_t	time_second;
-extern volatile time_t	time_uptime;
-extern struct bintime boottimebin;
-extern struct timeval boottime;
-extern struct bintime tc_tick_bt;
-extern sbintime_t tc_tick_sbt;
-extern struct bintime tick_bt;
-extern sbintime_t tick_sbt;
-extern int tc_precexp;
-extern int tc_timepercentage;
-extern struct bintime bt_timethreshold;
-extern struct bintime bt_tickthreshold;
-extern sbintime_t sbt_timethreshold;
-extern sbintime_t sbt_tickthreshold;
-
-/*
- * Functions for looking at our clock: [get]{bin,nano,micro}[up]time()
- *
- * Functions without the "get" prefix returns the best timestamp
- * we can produce in the given format.
- *
- * "bin"   == struct bintime  == seconds + 64 bit fraction of seconds.
- * "nano"  == struct timespec == seconds + nanoseconds.
- * "micro" == struct timeval  == seconds + microseconds.
- *
- * Functions containing "up" returns time relative to boot and
- * should be used for calculating time intervals.
- *
- * Functions without "up" returns UTC time.
- *
- * Functions with the "get" prefix returns a less precise result
- * much faster than the functions without "get" prefix and should
- * be used where a precision of 1/hz seconds is acceptable or where
- * performance is priority. (NB: "precision", _not_ "resolution" !)
- */
-
-void	binuptime(struct bintime *bt);
-void	nanouptime(struct timespec *tsp);
-void	microuptime(struct timeval *tvp);
-
-static __inline sbintime_t
-sbinuptime(void)
-{
-	struct bintime _bt;
-
-	binuptime(&_bt);
-	return (bttosbt(_bt));
-}
-
-void	bintime(struct bintime *bt);
-void	nanotime(struct timespec *tsp);
-void	microtime(struct timeval *tvp);
-
-void	getbinuptime(struct bintime *bt);
-void	getnanouptime(struct timespec *tsp);
-void	getmicrouptime(struct timeval *tvp);
-
-static __inline sbintime_t
-getsbinuptime(void)
-{
-	struct bintime _bt;
-
-	getbinuptime(&_bt);
-	return (bttosbt(_bt));
-}
-
-void	getbintime(struct bintime *bt);
-void	getnanotime(struct timespec *tsp);
-void	getmicrotime(struct timeval *tvp);
-
-/* Other functions */
-int	itimerdecr(struct itimerval *itp, int usec);
-int	itimerfix(struct timeval *tv);
-int	ppsratecheck(struct timeval *, int *, int);
-int	ratecheck(struct timeval *, const struct timeval *);
-void	timevaladd(struct timeval *t1, const struct timeval *t2);
-void	timevalsub(struct timeval *t1, const struct timeval *t2);
-int	tvtohz(struct timeval *tv);
-
-#define	TC_DEFAULTPERC		5
-
-#define	BT2FREQ(bt)                                                     \
-	(((uint64_t)0x8000000000000000 + ((bt)->frac >> 2)) /           \
-	    ((bt)->frac >> 1))
-
-#define	SBT2FREQ(sbt)	((SBT_1S + ((sbt) >> 1)) / (sbt))
-
-#define	FREQ2BT(freq, bt)                                               \
-{									\
-	(bt)->sec = 0;                                                  \
-	(bt)->frac = ((uint64_t)0x8000000000000000  / (freq)) << 1;     \
-}
-
-#define	TIMESEL(sbt, sbt2)						\
-	(((sbt2) >= sbt_timethreshold) ?				\
-	    ((*(sbt) = getsbinuptime()), 1) : ((*(sbt) = sbinuptime()), 0))
-
-#else /* !_KERNEL */
+#ifndef _KERNEL
 #include <time.h>
 
-#include <sys/cdefs.h>
-
 __BEGIN_DECLS
-int _EXFUN(setitimer, (int __which, const struct itimerval *__restrict __value,
-					struct itimerval *__restrict __ovalue));
-int _EXFUN(utimes, (const char *__path, const struct timeval *__tvp));
+int utimes (const char *__path, const struct timeval *__tvp);
 
 #if __BSD_VISIBLE
-int _EXFUN(adjtime, (const struct timeval *, struct timeval *));
-int _EXFUN(futimes, (int, const struct timeval *));
-int _EXFUN(futimesat, (int, const char *, const struct timeval [2]));
-int _EXFUN(lutimes, (const char *, const struct timeval *));
-int _EXFUN(settimeofday, (const struct timeval *, const struct timezone *));
+int adjtime (const struct timeval *, struct timeval *);
+int futimes (int, const struct timeval *);
+int lutimes (const char *, const struct timeval *);
+int settimeofday (const struct timeval *, const struct timezone *);
 #endif
 
-#if __XSI_VISIBLE
-int _EXFUN(getitimer, (int __which, struct itimerval *__value));
-int _EXFUN(gettimeofday, (struct timeval *__restrict __p,
-			  void *__restrict __tz));
+#if __MISC_VISIBLE || __XSI_VISIBLE
+int getitimer (int __which, struct itimerval *__value);
+int setitimer (int __which, const struct itimerval *__restrict __value,
+					struct itimerval *__restrict __ovalue);
+#endif
+
+int gettimeofday (struct timeval *__restrict __p,
+			  void *__restrict __tz);
+
+#if __GNU_VISIBLE
+int futimesat (int, const char *, const struct timeval [2]);
 #endif
 
 #ifdef _COMPILING_NEWLIB
-int _EXFUN(_gettimeofday, (struct timeval *__p, void *__tz));
+int _gettimeofday (struct timeval *__p, void *__tz);
 #endif
 
 __END_DECLS
 
 #endif /* !_KERNEL */
+#include <machine/_time.h>
 
 #endif /* !_SYS_TIME_H_ */

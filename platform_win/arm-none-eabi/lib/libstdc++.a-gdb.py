@@ -1,5 +1,5 @@
 # -*- python -*-
-# Copyright (C) 2009-2014 Free Software Foundation, Inc.
+# Copyright (C) 2009-2017 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@ import gdb
 import os
 import os.path
 
-pythondir = '/home/build/work/GCC-4-9-build/install-native/share/gcc-arm-none-eabi'
-libdir = '/home/build/work/GCC-4-9-build/install-native/arm-none-eabi/lib'
+pythondir = '/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-775_20180622_1529687456/install-native/share/gcc-arm-none-eabi'
+libdir = '/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-775_20180622_1529687456/install-native/arm-none-eabi/lib'
 
 # This file might be loaded when there is no current objfile.  This
 # can happen if the user loads it manually.  In this case we don't
@@ -55,6 +55,7 @@ if gdb.current_objfile () is not None:
     if not dir_ in sys.path:
         sys.path.insert(0, dir_)
 
-# Load the pretty-printers.
-from libstdcxx.v6.printers import register_libstdcxx_printers
-register_libstdcxx_printers (gdb.current_objfile ())
+# Call a function as a plain import would not execute body of the included file
+# on repeated reloads of this object file.
+from libstdcxx.v6 import register_libstdcxx_printers
+register_libstdcxx_printers(gdb.current_objfile())

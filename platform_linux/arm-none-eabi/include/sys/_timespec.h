@@ -34,11 +34,12 @@
 #ifndef _SYS__TIMESPEC_H_
 #define	_SYS__TIMESPEC_H_
 
-#include <machine/types.h>
+#include <sys/_types.h>
 
-#ifndef __time_t_defined
+#if !defined(__time_t_defined) && !defined(_TIME_T_DECLARED)
 typedef	_TIME_T_	time_t;
 #define	__time_t_defined
+#define	_TIME_T_DECLARED
 #endif
 
 struct timespec {

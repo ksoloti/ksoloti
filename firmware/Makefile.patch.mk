@@ -9,10 +9,15 @@ CCFLAGS = \
     -DTHUMB_NO_INTERWORKING \
     -DTHUMB_PRESENT \
     -D__FPU_PRESENT \
-    -O3 \
-    -Wno-unused-parameter \
-    -fno-common \
+    -O2	\
+    -fgcse-after-reload \
+    -foptimize-strlen \
+    -freorder-blocks-algorithm=simple \
+    -fno-schedule-insns \
+    -fno-split-paths \
+    -fno-data-sections \
     -fno-exceptions \
+    -fno-unwind-tables \
     -fno-math-errno \
     -fno-rtti \
     -fno-threadsafe-statics \
@@ -24,17 +29,73 @@ CCFLAGS = \
     -mfloat-abi=hard \
     -mfpu=fpv4-sp-d16 \
     -mthumb \
+    -mtune=cortex-m4 \
     -mword-relocations \
     -nostdlib \
     -std=c++11 \
+	\
+    -fgcse-after-reload \
+    -finline-functions \
+    -fipa-cp-clone \
+    -fmerge-constants \
+    -fno-data-sections \
+    -fno-fp-int-builtin-inexact \
+    -fno-function-cse \
+    -fno-ipa-bit-cp \
+    -fno-ipa-icf \
+    -fno-ipa-icf-functions \
+    -fno-ipa-icf-variables \
+    -fno-ipa-ra \
+    -fno-ipa-vrp \
+    -fno-ira-share-save-slots \
+    -fno-ira-share-spill-slots \
+    -fno-loop-block \
+    -fno-loop-interchange \
+    -fno-loop-strip-mine \
+    -fno-lto \
+    -fno-lra-remat \
+    -fmerge-all-constants \
+    -fpartial-inlining \
+    -fno-peel-loops \
+    -fno-printf-return-value \
+    -fno-schedule-insns	\
+    -fno-split-loops \
+    -fno-split-paths \
+    -fno-ssa-backprop \
+    -fno-ssa-phiopt \
+    -fno-stdarg-opt \
+    -fno-store-merging \
+    -fno-strict-overflow \
+    -fno-strict-volatile-bitfields \
+    -fno-tree-loop-if-convert-stores \
+    -fno-tree-switch-conversion \
+    -fno-unsafe-loop-optimizations \
+    -fno-unsafe-math-optimizations \
+    -fno-whole-program \
+    -foptimize-strlen \
+    -fpredictive-commoning \
+    -freciprocal-math \
+    -fschedule-fusion \
+    -fschedule-insns \
+    -ftoplevel-reorder \
+    -ftree-copyrename \
+    -ftree-loop-distribute-patterns \
+    -ftree-loop-vectorize \
+    -ftree-vectorize \
+    -ftree-parallelize-loops=1 \
+    -ftree-partial-pre \
+    -ftree-slp-vectorize \
+    -funit-at-a-time \
+    -funswitch-loops \
+    -fvect-cost-model=dynamic \
     -D$(BOARDDEF)
 
 ELFNAME=
 ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
-RAMLINKOPT = -Tramlink_ksoloti.ld
+  RAMLINKOPT = -Tramlink_ksoloti.ld
   ELFNAME = ksoloti
 else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
-RAMLINKOPT = -Tramlink_axoloti.ld
+  RAMLINKOPT = -Tramlink_axoloti.ld
   ELFNAME = axoloti
 endif
 
@@ -45,9 +106,12 @@ endif
 LDFLAGS = \
     $(RAMLINKOPT) \
     -Bsymbolic \
-    -Wl,--gc-sections \
-    -fno-common \
+    -fno-exceptions \
+    -fno-unwind-tables \
+    -flto \
+    -fno-rtti \
     -mcpu=cortex-m4 \
+    -mtune=cortex-m4 \
     -mfloat-abi=hard \
     -mfpu=fpv4-sp-d16 \
     -mno-thumb-interwork \

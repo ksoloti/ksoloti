@@ -6,6 +6,7 @@
 #define _LIBGEN_H_
 
 #include "_ansi.h"
+#include <sys/cdefs.h>
 #include <sys/reent.h>
 
 #ifdef __cplusplus
@@ -24,9 +25,9 @@ extern "C" {
    this also implies that the POSIX version is used in this case.  That's made
    sure here. */
 #undef basename
-#define basename basename
-char      *_EXFUN(basename,     (char *));
-char      *_EXFUN(dirname,     (char *));
+#define basename __xpg_basename
+char      *basename (char *) __asm__(__ASMNAME("basename"));
+char      *dirname (char *);
 
 #ifdef __cplusplus
 }
