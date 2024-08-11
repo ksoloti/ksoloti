@@ -29,8 +29,8 @@ patch/xpatch.map
 /jdks/zulu*.zip
 hs_err_*.log
 private_key.*
-axoloti.prefs
-ksoloti.prefs
+axoloti.prefs*
+ksoloti.prefs*
 temp_*.cpp
 temp_*.h
 ChibiOS-*.zip
