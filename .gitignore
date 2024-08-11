@@ -9,12 +9,7 @@ firmware*/flasher/.dep
 firmware*/flasher/flasher_build
 firmware*/mounter/.dep
 firmware*/mounter/mounter_build
-control_firmware/build/*
-control_firmware/.dep
-portaudio-r1891-build/*
-portaudio/*
 win32tools/
-chibios/
 package/
 packagetemp/
 patch/xpatch.c
@@ -26,7 +21,6 @@ patch/xpatch.bin
 patch/xpatch.lst
 patch/xpatch.map
 .preferences.xml
-/chibios
 /target/
 /build/
 /nbproject/private/
@@ -34,7 +28,6 @@ patch/xpatch.map
 /jdks/zulu*.tar.gz
 /jdks/zulu*.zip
 hs_err_*.log
-axoloti_osx.zip
 private_key.*
 axoloti.prefs
 ksoloti.prefs
