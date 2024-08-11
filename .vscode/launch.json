@@ -57,6 +57,60 @@
             "runToEntryPoint": "main",
             "svdFile": "./debug/STM32F429.svd",
             "swoConfig": {}
+        },
+        {
+            "name": "Ksoloti SPILink launch",
+            "cwd": "${workspaceRoot}",
+            "executable": "./firmware/build/ksoloti_spilink.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "stlink",
+            "device": "STM32F429ZG",
+            "interface": "swd",
+            "runToEntryPoint": "main",
+            //"preLaunchTask": "Build all",
+            "svdFile": "./debug/STM32F429.svd",
+            "swoConfig": {}
+        },
+        {
+            "name": "Ksoloti SPILink attach",
+            "cwd": "${workspaceRoot}",
+            "executable": "./firmware/build/ksoloti_spilink.elf",
+            "request": "attach",
+            "type": "cortex-debug",
+            "servertype": "stlink",
+            "device": "STM32F429ZG",
+            "interface": "swd",
+            "runToEntryPoint": "main",
+            "svdFile": "./debug/STM32F429.svd",
+            "swoConfig": {}
+        },
+        {
+            "name": "Axoloti SPILink launch",
+            "cwd": "${workspaceRoot}",
+            "executable": "./firmware/build/axoloti_spilink.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "stlink",
+            "device": "STM32F429ZG",
+            "interface": "swd",
+            "runToEntryPoint": "main",
+            //"preLaunchTask": "Build all",
+            "svdFile": "./debug/STM32F429.svd",
+            "swoConfig": {}
+        },
+        {
+            "name": "Axoloti SPILink attach",
+            "cwd": "${workspaceRoot}",
+            "executable": "./firmware/build/axoloti_spilink.elf",
+            "request": "attach",
+            "type": "cortex-debug",
+            "servertype": "stlink",
+            "device": "STM32F429ZG",
+            "interface": "swd",
+            "runToEntryPoint": "main",
+            "svdFile": "./debug/STM32F429.svd",
+            "swoConfig": {}
         }
        ]
 }
