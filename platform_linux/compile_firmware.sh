@@ -10,4 +10,4 @@ export axoloti_home=${axoloti_home:="$platformdir/.."}
 echo "\n\n\n-----------------------------------------------------------------------------------"
 cd ..
 cd "${axoloti_firmware}"
-"${axoloti_firmware}/compile_firmware_linux.sh" $1
+"${axoloti_firmware}/compile_firmware_linux.sh" $1 $2

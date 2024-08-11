@@ -6,7 +6,7 @@ BOARDDEF=
 
 # Compiler options here.
 ifeq ($(USE_OPT),)
-  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -Wno-unused-parameter -Wno-unused-function $(BOARDDEF)
+  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -Wno-unused-parameter -Wno-unused-function -D$(BOARDDEF)
 endif 
 
 # C specific options here (added to USE_OPT).
@@ -66,11 +66,12 @@ endif
 #
 
 # Define project name here
-ifeq ($(BOARDDEF), -DBOARD_KSOLOTI_CORE)
-PROJECT = ksoloti_flasher
-else
-PROJECT = axoloti_flasher
+ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
+  PROJECT = ksoloti_flasher
+else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
+  PROJECT = axoloti_flasher
 endif
+
 BUILDDIR = flasher_build
 
 # Imported source files and paths

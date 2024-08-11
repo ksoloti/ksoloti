@@ -1,4 +1,5 @@
 BOARDDEF=
+FWOPTIONDEF=
 
 CCFLAGS = \
     -DARM_MATH_CM4 \
@@ -26,12 +27,19 @@ CCFLAGS = \
     -mword-relocations \
     -nostdlib \
     -std=c++11 \
-    $(BOARDDEF)
+    -D$(BOARDDEF)
 
-ifeq ($(BOARDDEF), -DBOARD_KSOLOTI_CORE)
+ELFNAME=
+ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
 RAMLINKOPT = -Tramlink_ksoloti.ld
-else
+  ELFNAME = ksoloti
+else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
 RAMLINKOPT = -Tramlink_axoloti.ld
+  ELFNAME = axoloti
+endif
+
+ifeq ($(FWOPTIONDEF),FW_SPILINK)
+  ELFNAME := $(ELFNAME)_spilink
 endif
 
 LDFLAGS = \
@@ -96,10 +104,10 @@ ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
 #	@echo Compiling patch dependencies
 	@$(CPP) $(CCFLAGS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c ${BUILDDIR}/xpatch.cpp -o ${BUILDDIR}/xpatch.o
 #	@echo Linking patch dependencies
-ifeq ($(BOARDDEF), -DBOARD_KSOLOTI_CORE)
-	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/ksoloti.elf -o ${BUILDDIR}/xpatch.elf
+ifeq ($(BOARDDEF), BOARD_KSOLOTI_CORE)
+	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/$(ELFNAME).elf -o ${BUILDDIR}/xpatch.elf
 else
-	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/axoloti.elf -o ${BUILDDIR}/xpatch.elf
+	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/$(ELFNAME).elf -o ${BUILDDIR}/xpatch.elf
 endif
 #	@echo Creating LST file for debugging
 	@$(DMP) -belf32-littlearm -marm --demangle --disassemble ${BUILDDIR}/xpatch.elf > ${BUILDDIR}/xpatch.lst

@@ -3,10 +3,12 @@
 # NOTE: Can be overridden externally.
 #
 BOARDDEF=
+FWOPTIONDEF=
 
 # Compiler options here.
 ifeq ($(USE_OPT),)
   USE_OPT = \
+    -D$(BOARDDEF) \
     -O2 \
     --specs=nano.specs \
     --specs=nosys.specs \
@@ -15,8 +17,11 @@ ifeq ($(USE_OPT),)
     -falign-functions=16 \
     -fno-math-errno \
     -Wno-unused-parameter \
-    -Wno-unused-function  \
-    $(BOARDDEF)
+    -Wno-unused-function
+endif
+
+ifneq ($(FWOPTIONDEF),)
+  USE_OPT := $(USE_OPT) -D$(FWOPTIONDEF)
 endif
 
 # C specific options here (added to USE_OPT).
@@ -76,10 +81,14 @@ endif
 #
 
 # Define project name here
-ifeq ($(BOARDDEF), -DBOARD_KSOLOTI_CORE)
-PROJECT = ksoloti
-else
-PROJECT = axoloti
+ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
+  PROJECT = ksoloti
+else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
+  PROJECT = axoloti
+endif
+
+ifeq ($(FWOPTIONDEF),FW_SPILINK)
+  PROJECT := $(PROJECT)_spilink
 endif
 
 # Imported source files and paths
@@ -114,10 +123,10 @@ CMSIS = ${axoloti_release}/CMSIS
 
 
 # Define linker script file here
-ifeq ($(BOARDDEF), -DBOARD_KSOLOTI_CORE)
-LDSCRIPT= STM32F427xG_ksoloti.ld
-else
-LDSCRIPT= STM32F427xG_axoloti.ld
+ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
+LDSCRIPT = STM32F427xG_ksoloti.ld
+else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
+LDSCRIPT = STM32F427xG_axoloti.ld
 endif
 
 

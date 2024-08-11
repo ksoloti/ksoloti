@@ -62,6 +62,9 @@ public class QCmdFlashDFU extends QCmdShellTask {
         else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
             bname = "axoloti";
         }
+        if (prefs.getFirmwareMode().contains("SPILink")) {
+            bname += "_spilink";
+        }
 
         if (OSDetect.getOS() == OSDetect.OS.WIN) {
             return RuntimeDir() + "/platform_win/upload_fw_dfu.bat " + bname;

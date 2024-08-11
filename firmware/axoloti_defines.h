@@ -22,15 +22,19 @@
 #include <stdint.h>
 
 /* Currently supported boards:
- * Do not uncomment any of the BOARD_* defines here!
+ * Do not uncomment any of the * defines here!
  * The defines are handled via the Patcher and passed to the Makefile and compiler
  * depending on the board setting in the Patcher preferences.
  * #define BOARD_KSOLOTI_CORE
  * #define BOARD_AXOLOTI_CORE
- * #define BOARD_STM32F4_DISCOVERY
  */
 
-// #define FW_SPILINK 
+/* Currenty supported firmware add-on options: 
+ * Do not uncomment any of the defines here!
+ * The defines are handled via the Patcher and passed to the Makefile and compiler
+ * depending on the board setting in the Patcher preferences.
+ * #define FW_SPILINK 
+ */
 
 #define PI_F 3.14159265359f
 #define SAMPLERATE 48000
