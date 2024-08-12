@@ -167,7 +167,7 @@ __attribute__ ( ( always_inline ) ) __STATIC_INLINE int32_t ConvertFloatToFrac(f
   return (int32_t)(f*(1<<21));
 }
 
-__attribute__ ( ( always_inline ) ) __STATIC_INLINE int32_t rand_s32(void) {
+__attribute__ ( ( always_inline ) ) __INLINE int32_t rand_s32(void) {
   // This function differs from the standard C rand() definition, standard C
   // rand() only returns positive numbers, while rand_s32() returns the full
   // signed 32 bit range.
