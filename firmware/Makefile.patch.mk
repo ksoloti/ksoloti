@@ -2,23 +2,7 @@ BOARDDEF =
 FWOPTIONDEF =
 
 CCFLAGS = \
-    -O2 \
     -Wno-unused-parameter \
-    -fgcse-after-reload \
-    -finline-functions\
-    -fipa-cp-clone \
-    -fno-common \
-    -fno-exceptions \
-    -fno-math-errno \
-    -fno-partial-inlining \
-    -fno-rtti \
-    -fno-threadsafe-statics \
-    -fno-use-cxa-atexit \
-    -fomit-frame-pointer \
-    -foptimize-strlen \
-    -fpermissive \
-    -freorder-blocks-algorithm=simple \
-    -fschedule-fusion \
     -ggdb3 \
     -mcpu=cortex-m4 \
     -mfloat-abi=hard \
@@ -29,7 +13,108 @@ CCFLAGS = \
     -mword-relocations \
     -nostartfiles \
     -nostdlib \
-    -std=c++11
+    -std=c++11 \
+    \
+    -O3 \
+    -falign-functions \
+    -falign-jumps \
+    -falign-labels \
+    -falign-loops \
+    -fbranch-count-reg \
+    -fcaller-saves \
+    -fcode-hoisting \
+    -fcombine-stack-adjustments \
+    -fcompare-elim \
+    -fcprop-registers \
+    -fcrossjumping \
+    -fcse-follow-jumps \
+    -fdefer-pop \
+    -fdevirtualize \
+    -fdevirtualize-speculatively \
+    -fexpensive-optimizations \
+    -ffast-math \
+    -fno-forward-propagate \
+    -fgcse \
+    -fgcse-after-reload \
+    -fguess-branch-probability \
+    -fhoist-adjacent-loads \
+    -fif-conversion \
+    -fif-conversion2 \
+    -findirect-inlining \
+    -finline-functions \
+    -finline-functions-called-once \
+    -finline-small-functions \
+    -fipa-bit-cp \
+    -fipa-cp \
+    -fipa-cp-clone \
+    -fipa-icf \
+    -fipa-profile \
+    -fipa-pure-const \
+    -fipa-ra \
+    -fipa-reference \
+    -fipa-reference-addressable \
+    -fipa-sra \
+    -fipa-vrp \
+    -fisolate-erroneous-paths-dereference \
+    -floop-interchange \
+    -floop-unroll-and-jam \
+    -flra-remat \
+    -fmerge-constants \
+    -fno-common \
+    -fno-exceptions \
+    -fno-math-errno \
+    -fno-rtti \
+    -fno-threadsafe-statics \
+    -fno-use-cxa-atexit \
+    -fomit-frame-pointer \
+    -foptimize-sibling-calls \
+    -foptimize-strlen \
+    -fno-partial-inlining \
+    -fpeel-loops \
+    -fpeephole2 \
+    -fpermissive \
+    -fpredictive-commoning \
+    -fno-reorder-blocks \
+    -freorder-functions \
+    -frerun-cse-after-loop \
+    -fschedule-fusion \
+    -fno-schedule-insns \
+    -fno-schedule-insns2 \
+    -fshrink-wrap \
+    -fsplit-loops \
+    -fsplit-paths \
+    -fsplit-wide-types \
+    -fssa-phiopt \
+    -fstore-merging \
+    -fstrict-aliasing \
+    -fthread-jumps \
+    -ftree-bit-ccp \
+    -ftree-builtin-call-dce \
+    -ftree-ccp \
+    -ftree-ch \
+    -ftree-coalesce-vars \
+    -ftree-copy-prop \
+    -ftree-dce \
+    -ftree-dominator-opts \
+    -ftree-dse \
+    -ftree-fre \
+    -ftree-loop-distribute-patterns \
+    -ftree-loop-distribution \
+    -ftree-loop-vectorize \
+    -ftree-partial-pre \
+    -ftree-pre \
+    -ftree-pta \
+    -ftree-sink \
+    -ftree-slp-vectorize \
+    -ftree-slsr \
+    -ftree-sra \
+    -ftree-switch-conversion \
+    -ftree-tail-merge \
+    -ftree-ter \
+    -ftree-vrp \
+    -funswitch-loops \
+    -fvect-cost-model=cheap \
+    -fversion-loops-for-strides
 
 DEFS = \
     -D$(BOARDDEF) \
