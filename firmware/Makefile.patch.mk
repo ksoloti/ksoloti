@@ -1,94 +1,45 @@
-BOARDDEF=
-FWOPTIONDEF=
+BOARDDEF =
+FWOPTIONDEF =
 
 CCFLAGS = \
+    -O2 \
+    -Wno-unused-parameter \
+    -fgcse-after-reload \
+    -finline-functions\
+    -fipa-cp-clone \
+    -fno-common \
+    -fno-exceptions \
+    -fno-math-errno \
+    -fno-partial-inlining \
+    -fno-rtti \
+    -fno-threadsafe-statics \
+    -fno-use-cxa-atexit \
+    -fomit-frame-pointer \
+    -foptimize-strlen \
+    -fpermissive \
+    -freorder-blocks-algorithm=simple \
+    -fschedule-fusion \
+    -ggdb3 \
+    -mcpu=cortex-m4 \
+    -mfloat-abi=hard \
+    -mfpu=fpv4-sp-d16 \
+    -mlong-calls \
+    -mthumb \
+    -mtune=cortex-m4 \
+    -mword-relocations \
+    -nostartfiles \
+    -nostdlib \
+    -std=c++11
+
+DEFS = \
+    -D$(BOARDDEF) \
     -DARM_MATH_CM4 \
     -DCORTEX_USE_FPU=TRUE \
     -DSTM32F427xx \
     -DTHUMB \
     -DTHUMB_NO_INTERWORKING \
     -DTHUMB_PRESENT \
-    -D__FPU_PRESENT \
-    -O2	\
-    -fgcse-after-reload \
-    -foptimize-strlen \
-    -freorder-blocks-algorithm=simple \
-    -fno-schedule-insns \
-    -fno-split-paths \
-    -fno-data-sections \
-    -fno-exceptions \
-    -fno-unwind-tables \
-    -fno-math-errno \
-    -fno-rtti \
-    -fno-threadsafe-statics \
-    -fno-unwind-tables \
-    -fno-use-cxa-atexit \
-    -fomit-frame-pointer \
-    -fpermissive \
-    -mcpu=cortex-m4 \
-    -mfloat-abi=hard \
-    -mfpu=fpv4-sp-d16 \
-    -mthumb \
-    -mtune=cortex-m4 \
-    -mword-relocations \
-    -nostdlib \
-    -std=c++11 \
-	\
-    -fgcse-after-reload \
-    -finline-functions \
-    -fipa-cp-clone \
-    -fmerge-constants \
-    -fno-data-sections \
-    -fno-fp-int-builtin-inexact \
-    -fno-function-cse \
-    -fno-ipa-bit-cp \
-    -fno-ipa-icf \
-    -fno-ipa-icf-functions \
-    -fno-ipa-icf-variables \
-    -fno-ipa-ra \
-    -fno-ipa-vrp \
-    -fno-ira-share-save-slots \
-    -fno-ira-share-spill-slots \
-    -fno-loop-block \
-    -fno-loop-interchange \
-    -fno-loop-strip-mine \
-    -fno-lto \
-    -fno-lra-remat \
-    -fmerge-all-constants \
-    -fpartial-inlining \
-    -fno-peel-loops \
-    -fno-printf-return-value \
-    -fno-schedule-insns	\
-    -fno-split-loops \
-    -fno-split-paths \
-    -fno-ssa-backprop \
-    -fno-ssa-phiopt \
-    -fno-stdarg-opt \
-    -fno-store-merging \
-    -fno-strict-overflow \
-    -fno-strict-volatile-bitfields \
-    -fno-tree-loop-if-convert-stores \
-    -fno-tree-switch-conversion \
-    -fno-unsafe-loop-optimizations \
-    -fno-unsafe-math-optimizations \
-    -fno-whole-program \
-    -foptimize-strlen \
-    -fpredictive-commoning \
-    -freciprocal-math \
-    -fschedule-fusion \
-    -fschedule-insns \
-    -ftoplevel-reorder \
-    -ftree-copyrename \
-    -ftree-loop-distribute-patterns \
-    -ftree-loop-vectorize \
-    -ftree-vectorize \
-    -ftree-parallelize-loops=1 \
-    -ftree-partial-pre \
-    -ftree-slp-vectorize \
-    -funit-at-a-time \
-    -funswitch-loops \
-    -fvect-cost-model=dynamic \
-    -D$(BOARDDEF)
+    -D__FPU_PRESENT
 
 ELFNAME=
 ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
@@ -106,25 +57,24 @@ endif
 LDFLAGS = \
     $(RAMLINKOPT) \
     -Bsymbolic \
-    -fno-exceptions \
-    -fno-unwind-tables \
-    -flto \
-    -fno-rtti \
+    -Wl,--gc-sections \
+    -fno-common \
     -mcpu=cortex-m4 \
-    -mtune=cortex-m4 \
     -mfloat-abi=hard \
     -mfpu=fpv4-sp-d16 \
+    -mlong-calls \
     -mno-thumb-interwork \
     -mthumb \
+    -mtune=cortex-m4 \
     -nostartfiles
 
-CC=arm-none-eabi-gcc
-CPP=arm-none-eabi-g++
-#CPP=arm-none-eabi-gcc -lstdc++
-LD=arm-none-eabi-gcc
-CP=arm-none-eabi-objcopy
-DMP=arm-none-eabi-objdump
-SIZ=arm-none-eabi-size
+TRGT = arm-none-eabi-
+CC=$(TRGT)gcc
+CPP=$(TRGT)g++
+LD=$(TRGT)gcc
+CP=$(TRGT)objcopy
+DMP=$(TRGT)objdump
+SIZ=$(TRGT)size
 
 axoloti_runtime ?= ..
 axoloti_release ?= ..
@@ -160,22 +110,18 @@ all: ${BUILDDIR}/xpatch.bin
 
 ${BUILDDIR}/xpatch.h.gch: ${FIRMWARE}/xpatch.h ${FIRMWARE}/patch.h ${FIRMWARE}/axoloti.h ${FIRMWARE}/parameter_functions.h ${FIRMWARE}/axoloti_math.h ${FIRMWARE}/axoloti_filters.h
 #	@echo Building precompiled header
-	@$(CPP) $(CCFLAGS) $(IINCDIR) -Winvalid-pch -MD -MP -c ${FIRMWARE}/xpatch.h  -o ${BUILDDIR}/xpatch.h.gch
+	@$(CPP) $(CCFLAGS) $(DEFS) $(IINCDIR) -Winvalid-pch -MD -MP -c ${FIRMWARE}/xpatch.h  -o ${BUILDDIR}/xpatch.h.gch
 
 ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
 #	@echo Removing previous build files
 	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.lst
 #	@echo Compiling patch dependencies
-	@$(CPP) $(CCFLAGS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c ${BUILDDIR}/xpatch.cpp -o ${BUILDDIR}/xpatch.o
+	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c ${BUILDDIR}/xpatch.cpp -o ${BUILDDIR}/xpatch.o
 #	@echo Linking patch dependencies
-ifeq ($(BOARDDEF), BOARD_KSOLOTI_CORE)
 	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/$(ELFNAME).elf -o ${BUILDDIR}/xpatch.elf
-else
-	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/$(ELFNAME).elf -o ${BUILDDIR}/xpatch.elf
-endif
 #	@echo Creating LST file for debugging
-	@$(DMP) -belf32-littlearm -marm --demangle --disassemble ${BUILDDIR}/xpatch.elf > ${BUILDDIR}/xpatch.lst
-#   --source-comment --line-numbers 
+	@$(DMP) -belf32-littlearm -marm --demangle --debugging --source --disassemble ${BUILDDIR}/xpatch.elf > ${BUILDDIR}/xpatch.lst
+#   (--source-comment not supported in gcc7 yet) --line-numbers 
 
 #	@echo Creating binary
 #	$(CP) -O binary -j .text  -j .init_array -j .rodata -j .rodata\* xpatch.elf xpatch.bin
