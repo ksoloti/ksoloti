@@ -9,15 +9,22 @@ FWOPTIONDEF=
 ifeq ($(USE_OPT),)
   USE_OPT = \
     -D$(BOARDDEF) \
-    -O2 \
-    --specs=nano.specs \
     --specs=nosys.specs \
-    -ggdb \
-    -fomit-frame-pointer \
+    --specs=nano.specs \
+    -O2 \
+    -Wno-unused-function \
+    -Wno-unused-parameter \
     -falign-functions=16 \
     -fno-math-errno \
-    -Wno-unused-parameter \
-    -Wno-unused-function
+    -fomit-frame-pointer \
+    -ggdb3 \
+    -mcpu=cortex-m4 \
+    -mfloat-abi=hard \
+    -mfpu=fpv4-sp-d16 \
+    -mlong-calls \
+    -mthumb \
+    -mtune=cortex-m4 \
+    -mword-relocations
 endif
 
 ifneq ($(FWOPTIONDEF),)
