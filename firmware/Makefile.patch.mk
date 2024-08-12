@@ -1,6 +1,10 @@
 BOARDDEF =
 FWOPTIONDEF =
 
+
+# Unneccessarily long list of -fxxx optimisation options, most of which are included in -O3.
+# Will leave them in for now and possibly start weeding them out occasionally.
+# However some of them are important to keep SRAM usage and DSP load low in newer GCC versions
 CCFLAGS = \
     -Wno-unused-parameter \
     -ggdb3 \
