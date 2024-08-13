@@ -2,9 +2,11 @@ BOARDDEF =
 FWOPTIONDEF =
 
 
-# Unneccessarily long list of -fxxx optimisation options, most of which are included in -O3.
-# Will leave them in for now and possibly start weeding them out occasionally.
-# However some of them are important to keep SRAM usage and DSP load low in newer GCC versions
+# Unneccessarily long list of -fxxx optimisation options, most of which
+# are already included when specifying -O3. Will leave them in for now
+# and possibly start weeding them out. However some of them 
+# (especially some "-fno-*") are important to keep SRAM usage
+# and DSP load low in newer GCC versions.
 CCFLAGS = \
     -Wno-unused-parameter \
     -ggdb3 \
@@ -33,10 +35,12 @@ CCFLAGS = \
     -fcrossjumping \
     -fcse-follow-jumps \
     -fdefer-pop \
+    -fdata-sections \
     -fdevirtualize \
     -fdevirtualize-speculatively \
     -fexpensive-optimizations \
     -ffast-math \
+    -ffunction-sections \
     -fno-forward-propagate \
     -fgcse \
     -fgcse-after-reload \
@@ -147,6 +151,7 @@ LDFLAGS = \
     $(RAMLINKOPT) \
     -Bsymbolic \
     -Wl,--gc-sections \
+    -Wl,--print-memory-usage \
     -fno-common \
     -mcpu=cortex-m4 \
     -mfloat-abi=hard \
@@ -199,26 +204,28 @@ all: ${BUILDDIR}/xpatch.bin
 
 ${BUILDDIR}/xpatch.h.gch: ${FIRMWARE}/xpatch.h ${FIRMWARE}/patch.h ${FIRMWARE}/axoloti.h ${FIRMWARE}/parameter_functions.h ${FIRMWARE}/axoloti_math.h ${FIRMWARE}/axoloti_filters.h
 #	@echo Building precompiled header
-	@$(CPP) $(CCFLAGS) $(DEFS) $(IINCDIR) -Winvalid-pch -MD -MP -c ${FIRMWARE}/xpatch.h  -o ${BUILDDIR}/xpatch.h.gch
+	@$(CPP) $(CCFLAGS) $(DEFS) $(IINCDIR) -Winvalid-pch -MD -MP -c ${FIRMWARE}/xpatch.h -o ${BUILDDIR}/xpatch.h.gch
 
 ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
 #	@echo Removing previous build files
-	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.lst
+	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.lst ${BUILDDIR}/xpatch.siz
 #	@echo Compiling patch dependencies
 	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c ${BUILDDIR}/xpatch.cpp -o ${BUILDDIR}/xpatch.o
 #	@echo Linking patch dependencies
 	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/$(ELFNAME).elf -o ${BUILDDIR}/xpatch.elf
-#	@echo Creating LST file for debugging
-	@$(DMP) -belf32-littlearm -marm --demangle --debugging --source --disassemble ${BUILDDIR}/xpatch.elf > ${BUILDDIR}/xpatch.lst
-#   (--source-comment not supported in gcc7 yet) --line-numbers 
 
 #	@echo Creating binary
 #	$(CP) -O binary -j .text  -j .init_array -j .rodata -j .rodata\* xpatch.elf xpatch.bin
 #   -j .text.startup -j .text.memcpy
 	@$(CP) -O binary ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin
-#	@echo Displaying size statistic
-	@$(SIZ) --format=sysv ${BUILDDIR}/xpatch.elf
-	@$(SIZ) --format=berkeley ${BUILDDIR}/xpatch.elf
+
+#	@echo Creating SIZe statistic file for debugging
+	@$(SIZ) --format=sysv ${BUILDDIR}/xpatch.elf > ${BUILDDIR}/xpatch.siz
+	@$(SIZ) --format=berkeley ${BUILDDIR}/xpatch.elf >> ${BUILDDIR}/xpatch.siz
+
+#	@echo Creating LST file for debugging
+	@$(DMP) -belf32-littlearm -marm --demangle --source-comment --disassemble ${BUILDDIR}/xpatch.elf > ${BUILDDIR}/xpatch.lst
+#   (--source-comment now supported in gcc9) --line-numbers 
 
 .PHONY: clean
 
