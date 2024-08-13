@@ -24,7 +24,8 @@ ifeq ($(USE_OPT),)
     -mlong-calls \
     -mthumb \
     -mtune=cortex-m4 \
-    -mword-relocations
+    -mword-relocations \
+    -pipe 
 endif
 
 ifneq ($(FWOPTIONDEF),)
