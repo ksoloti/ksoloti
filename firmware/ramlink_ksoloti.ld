@@ -15,8 +15,9 @@ MEMORY
 
     SRAM (rwx)   : ORIGIN = 0x00011000, LENGTH = 0x0000B000 /* 44kB in RAM1 */
     SRAM2 (rwx)  : ORIGIN = 0x2001C000, LENGTH = 0x00002000 /* first 8kB in SRAM2 */
+    SRAM3 (rwx)  : ORIGIN = 0x20020000, LENGTH = 0x00010000 /* 64kB */
     CCMSRAM (rw) : ORIGIN = 0x10000000, LENGTH = 0x0000C000 /* CCM - ccmramend */
-    sdram        : ORIGIN = 0xC0000000, LENGTH = 0x02000000 /* 32 MB */
+    SDRAM        : ORIGIN = 0xC0000000, LENGTH = 0x02000000 /* 32 MB */
 }
 
 SECTIONS
@@ -67,6 +68,12 @@ SECTIONS
         * (.sram2);
         * (.sram2.*);
     } > SRAM2
+
+    .sram3 (NOLOAD): ALIGN(4) SUBALIGN(4) 
+    {
+        * (.sram3);
+        * (.sram3.*);
+    } > SRAM3
    
     .bss (NOLOAD): ALIGN(4) SUBALIGN(4)
     {
@@ -82,8 +89,8 @@ SECTIONS
         KEEP(*(.sdram))
         KEEP(*(.sdram.*))
         PROVIDE(_sdram_dyn_start = .);
-        PROVIDE(_sdram_dyn_end = ORIGIN(sdram) + LENGTH(sdram));
-    } > sdram
+        PROVIDE(_sdram_dyn_end = ORIGIN(SDRAM) + LENGTH(SDRAM));
+    } > SDRAM
 
 
  /*   

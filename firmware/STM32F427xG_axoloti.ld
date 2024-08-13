@@ -26,20 +26,20 @@ __process_stack_size__  = 0x400;
 
 MEMORY
 {
-    flash (rx) : org = 0x08000000, len = 896k       /* last 128kB for patch storage*/
-    ram        : org = 0x20000200, len = 0x0AE00    /* 44k - first 0x200 for vector table */
-    SRAM2      : org = 0x2001E000, len = 0x00002000 /* second half (8kB) of SRAM2 for DMA*/
-    /* SRAM3      : org = 0x20020000, len = 0x00010000 */
+    FLASH (rx) : org = 0x08000000, len = 896k       /* last 128kB for patch storage*/
+    RAM        : org = 0x20000200, len = 0x0AE00    /* 44k - first 0x200 for vector table */
+    SRAM2      : org = 0x2001E000, len = 0x00002000 /* second half (8kB) of SRAM2 for DMA */
+    SRAM3      : org = 0x20020000, len = 0x00010000 /* 64kB */
     CCMRAMEND  : org = 0x1000C000, len = 10k        /* for stacks */
-    sdram      : org = 0xC0000000, len = 0x00800000  /* 8 MB */
+    SDRAM      : org = 0xC0000000, len = 0x00800000  /* 8 MB */
 }
 
-__ram_start__   = ORIGIN(ram);
-__ram_size__    = LENGTH(ram);
+__ram_start__   = ORIGIN(RAM);
+__ram_size__    = LENGTH(RAM);
 __ram_end__     = __ram_start__ + __ram_size__;
 
-__sdram_start__ = ORIGIN(sdram);
-__sdram_size__  = LENGTH(sdram);
+__sdram_start__ = ORIGIN(SDRAM);
+__sdram_size__  = LENGTH(SDRAM);
 __sdram_end__   = __sdram_start__ + __sdram_size__;
 
 ENTRY(ResetHandler)
@@ -52,7 +52,7 @@ SECTIONS
     startup : ALIGN(16) SUBALIGN(16)
     {
         KEEP(*(vectors))
-    } > flash
+    } > FLASH
 
     constructors : ALIGN(4) SUBALIGN(4)
     {
@@ -60,7 +60,7 @@ SECTIONS
         KEEP(*(SORT(.init_array.*)))
         KEEP(*(.init_array))
         PROVIDE(__init_array_end = .);
-    } > flash
+    } > FLASH
 
     destructors : ALIGN(4) SUBALIGN(4)
     {
@@ -68,7 +68,7 @@ SECTIONS
         KEEP(*(.fini_array))
         KEEP(*(SORT(.fini_array.*)))
         PROVIDE(__fini_array_end = .);
-    } > flash
+    } > FLASH
 
     .text : ALIGN(16) SUBALIGN(16)
     {
@@ -80,38 +80,38 @@ SECTIONS
         *(.glue_7t)
         *(.glue_7)
         *(.gcc*)
-    } > flash
+    } > FLASH
 
     .ARM.extab :
     {
         *(.ARM.extab* .gnu.linkonce.armextab.*)
-    } > flash
+    } > FLASH
 
     .ARM.exidx : {
         PROVIDE(__exidx_start = .);
         *(.ARM.exidx* .gnu.linkonce.armexidx.*)
         PROVIDE(__exidx_end = .);
-     } > flash
+     } > FLASH
 
     .eh_frame_hdr :
     {
         *(.eh_frame_hdr)
-    } > flash
+    } > FLASH
 
     .eh_frame : ONLY_IF_RO
     {
         *(.eh_frame)
-    } > flash
+    } > FLASH
 
     .textalign : ONLY_IF_RO
     {
         . = ALIGN(8);
-    } > flash
+    } > FLASH
 
     .samples :  ONLY_IF_RO
     {
         . = ALIGN(8);
-    } > flash
+    } > FLASH
 
 
     _etext = .;
@@ -143,7 +143,7 @@ SECTIONS
         *(.ramtext)
         . = ALIGN(4);
         PROVIDE(_edata = .);
-    } > ram AT > flash
+    } > RAM AT > FLASH
 
 
     .flashend :
@@ -151,7 +151,7 @@ SECTIONS
         . = ALIGN(4);
         LONG(0x12345678)
         PROVIDE(_flash_end = .);
-    } > flash
+    } > FLASH
 
     .bss :
     {
@@ -164,7 +164,7 @@ SECTIONS
         *(COMMON)
         . = ALIGN(4);
         PROVIDE(_bss_end = .);
-    } > ram
+    } > RAM
 
     .sram2 (NOLOAD): ALIGN(4) SUBALIGN(4)
     {
@@ -172,11 +172,11 @@ SECTIONS
         * (.sram2.*);
     } > SRAM2
 
-    /* .sram3 (NOLOAD): ALIGN(4) SUBALIGN(4)
+    .sram3 (NOLOAD): ALIGN(4) SUBALIGN(4)
     {
         * (.sram3);
         * (.sram3.*);
-    } > SRAM3 */
+    } > SRAM3
 
     .ccmramend (NOLOAD): ALIGN(4) SUBALIGN(4)
     {
@@ -188,7 +188,7 @@ SECTIONS
     {
         KEEP(*(.sdram))
         KEEP(*(.sdram.*))
-    } > sdram
+    } > SDRAM
 }
 
 PROVIDE(end = .);
