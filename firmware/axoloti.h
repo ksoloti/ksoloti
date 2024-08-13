@@ -36,6 +36,10 @@
 #include "spilink.h"
 #endif
 
+#define SECTION_DMA_DATA __attribute__((section(".sram2")))
+#define SECTION_SRAM3_DATA __attribute__((section(".sram3")))
+#define SECTION_SDRAM_DATA __attribute__((section(".sdram")))
+
 void axoloti_init(void);
 
 extern void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue);
