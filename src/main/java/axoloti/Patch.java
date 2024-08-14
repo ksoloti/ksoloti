@@ -419,9 +419,8 @@ public class Patch {
             }
             else if (!hasType || isNamedZombie) {
                 if (isNamedZombie) {
-                    Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "The patch has been previously saved with zombies. You have to replace all zombies manually to be able to compile it again.");
+                    Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "This patch was previously saved with zombies. You have to replace all zombies manually to be able to go live again.");
                 }
-                // o.patch = this;
                 objectInstances.remove(o);
                 AxoObjectInstanceZombie zombie = new AxoObjectInstanceZombie(new AxoObjectZombie(), this, o.getInstanceName(), new Point(o.getX(), o.getY()));
                 zombie.patch = this;
