@@ -3,22 +3,22 @@
 platform='unknown'
 unamestr=`uname`
 case "$unamestr" in
-	Linux)
-		platform='linux'
-		rootdir="$(dirname $(readlink -f $0))"
+    Linux)
+	    platform='linux'
+	    rootdir="$(dirname $(readlink -f $0))"
 	;;
 	Darwin)
-		platform='mac'
-		rootdir="$(cd $(dirname $0); pwd -P)"
+	    platform='mac'
+	    rootdir="$(cd $(dirname $0); pwd -P)"
 	;;
 	MINGW*)
-		platform='windows'
-		rootdir="$(cd $(dirname $0); pwd -P)"
+	    platform='windows'
+	    rootdir="$(cd $(dirname $0); pwd -P)"
 	;;
-        *)
-                echo "Unknown OS: $unamestr - aborting..."
-                exit
-        ;;
+    *)
+        echo "Unknown OS: $unamestr - aborting..."
+        exit
+    ;;
 esac
 
 export axoloti_release=${axoloti_release:="$rootdir"}
@@ -35,13 +35,13 @@ if [ -f $rootdir/dist/Ksoloti.jar ]
 then
     case "$platform" in
         mac)
-                java -Xdock:name=Ksoloti $heap_jvmargs $marlin_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
+            java -Xdock:name=Ksoloti $heap_jvmargs $marlin_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
         ;;
         linux)
-                java $heap_jvmargs $marlin_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
+            java $heap_jvmargs $marlin_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
         ;;
         windows)
-                java $heap_jvmargs $marlin_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
+            java $heap_jvmargs $marlin_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
         ;;
     esac
 else
