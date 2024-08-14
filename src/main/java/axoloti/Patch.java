@@ -1193,8 +1193,12 @@ public class Patch {
         c += I + "static const uint16_t NPEXCH = " + ParameterInstances.size() + ";\n";
         c += I + "ParameterExchange_t PExch[NPEXCH];\n";
         c += I + "int32_t displayVector[" + (displayDataLength + 3) + "];\n";
-        c += I + "static const uint8_t NPRESETS = " + settings.GetNPresets() + ";\n";
-        c += I + "static const uint8_t NPRESET_ENTRIES = " + settings.GetNPresetEntries() + ";\n";
+
+        if (settings.GetNPresets() > 0) {
+            c += I + "static const uint8_t NPRESETS = " + settings.GetNPresets() + ";\n";
+            c += I + "static const uint8_t NPRESET_ENTRIES = " + settings.GetNPresetEntries() + ";\n";
+        }
+
         c += I + "static const uint8_t NMODULATIONSOURCES = " + settings.GetNModulationSources() + ";\n";
         c += I + "static const uint8_t NMODULATIONTARGETS = " + settings.GetNModulationTargetsPerSource() + ";\n";
         return c;
@@ -1731,9 +1735,11 @@ public class Patch {
         }
         c += "}\n\n";
 
-        c += "void ApplyPreset(uint8_t i) {\n"
-           + I + "root.ApplyPreset(i);\n"
-           + "}\n\n";
+        if (settings.GetNPresets() > 0) {
+            c += "void ApplyPreset(uint8_t i) {\n"
+               + I + "root.ApplyPreset(i);\n"
+               + "}\n\n";
+        }
 
         c += "void PatchMidiInHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t data1, uint8_t data2) {\n"
            + I + "root.MidiInHandler(dev, port, status, data1, data2);\n"
@@ -1772,20 +1778,28 @@ public class Patch {
            + I+I+I + "(*fpp)();\n"
            + I+I+I + "fpp++;\n"
            + I+I + "}\n"
-           + I + "}\n\n"
-           + I + "patchMeta.npresets = " + settings.GetNPresets() + ";\n"
-           + I + "patchMeta.npreset_entries = " + settings.GetNPresetEntries() + ";\n"
-           + I + "patchMeta.pPresets = (PresetParamChange_t*) root.GetPresets();\n"
-           + I + "patchMeta.pPExch = &root.PExch[0];\n"
+           + I + "}\n\n";
+
+        if (settings.GetNPresets() > 0) {
+            c += I + "patchMeta.npresets = " + settings.GetNPresets() + ";\n"
+               + I + "patchMeta.npreset_entries = " + settings.GetNPresetEntries() + ";\n"
+               + I + "patchMeta.pPresets = (PresetParamChange_t*) root.GetPresets();\n";
+        }
+
+        c += I + "patchMeta.pPExch = &root.PExch[0];\n"
            + I + "patchMeta.pDisplayVector = &root.displayVector[0];\n"
            + I + "patchMeta.numPEx = " + ParameterInstances.size() + ";\n"
            + I + "patchMeta.patchID = " + GetIID() + ";\n\n"
            + I + "extern char _sdram_dyn_start;\n"
            + I + "extern char _sdram_dyn_end;\n"
            + I + "sdram_init(&_sdram_dyn_start, &_sdram_dyn_end);\n\n"
-           + I + "root.Init();\n\n"
-           + I + "patchMeta.fptr_applyPreset = ApplyPreset;\n"
-           + I + "patchMeta.fptr_patch_dispose = PatchDispose;\n"
+           + I + "root.Init();\n\n";
+
+        if (settings.GetNPresets() > 0) {
+            c += I + "patchMeta.fptr_applyPreset = ApplyPreset;\n";
+        }
+
+        c += I + "patchMeta.fptr_patch_dispose = PatchDispose;\n"
            + I + "patchMeta.fptr_MidiInHandler = PatchMidiInHandler;\n"
            + I + "patchMeta.fptr_dsp_process = PatchProcess;\n"
            + "}\n";
@@ -1858,9 +1872,13 @@ public class Patch {
 
         c += GenerateStructCodePlusPlus("rootc", "rootc")
                 + I + "static const uint8_t polyIndex = 0;\n\n"
-                + GenerateParamInitCode3("rootc")
-                + GeneratePresetCode3("rootc")
-                + GenerateModulationCode3()
+                + GenerateParamInitCode3("rootc");
+
+                if (settings.GetNPresets() > 0) {
+                    c += GeneratePresetCode3("rootc");
+                }
+
+                c += GenerateModulationCode3()
                 + GenerateInitCodePlusPlus("rootc")
                 + GenerateDisposeCodePlusPlus("rootc")
                 + GenerateDSPCodePlusPlus("rootc")
@@ -1932,7 +1950,11 @@ public class Patch {
         ao.sLocalData = GenerateStructCodePlusPlusSub("attr_parent")
                 + "static const uint8_t polyIndex = 0;\n";
         ao.sLocalData += GenerateParamInitCode3("");
-        ao.sLocalData += GeneratePresetCode3("");
+
+        if (settings.GetNPresets() > 0) {
+            ao.sLocalData += GeneratePresetCode3("");
+        }
+
         ao.sLocalData += GenerateModulationCode3();
         ao.sLocalData = ao.sLocalData.replaceAll("attr_poly", "1");
         ao.sInitCode = GenerateParamInitCodePlusPlusSub("attr_parent", "this");
@@ -2146,7 +2168,11 @@ public class Patch {
         }
 
         ao.sLocalData += "\n";
-        ao.sLocalData += GeneratePresetCode3("");
+
+        if (settings.GetNPresets() > 0) {
+            ao.sLocalData += GeneratePresetCode3("");
+        }
+
         ao.sLocalData += GenerateModulationCode3();
         ao.sLocalData += "class voice {\n";
         ao.sLocalData += "  public:\n";
