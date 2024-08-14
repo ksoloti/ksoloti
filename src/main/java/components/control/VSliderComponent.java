@@ -93,7 +93,7 @@ public class VSliderComponent extends ACtrlComponent {
 
     @Override
     protected void mouseDragged(MouseEvent e) {
-        if (isEnabled()) {
+        if (isEnabled() && e.getButton() == MouseEvent.BUTTON1) {
             double t = tick;
             if (KeyUtils.isControlOrCommandDown(e)) {
                 t = t * 0.1;
@@ -112,7 +112,7 @@ public class VSliderComponent extends ACtrlComponent {
 
     @Override
     protected void mousePressed(MouseEvent e) {
-        if (!e.isPopupTrigger()) {
+        if (!e.isPopupTrigger() && e.getButton() == MouseEvent.BUTTON1) {
             grabFocus();
             MousePressedCoordX = e.getXOnScreen();
             MousePressedCoordY = e.getYOnScreen();
