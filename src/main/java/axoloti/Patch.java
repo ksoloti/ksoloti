@@ -58,6 +58,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -1840,16 +1842,17 @@ public class Patch {
         SortByPosition();
 
         String c = generateIncludes();
-        c += "/* Auto-generated using Ksoloti Patcher v" + Version.AXOLOTI_VERSION + " on " + System.getProperty("os.name") + " */\n"
-                + "/* Patch file: " + getFileNamePath() + " */\n"
+        c += "/* Generated using Ksoloti Patcher v" + Version.AXOLOTI_VERSION + " on " + System.getProperty("os.name") + " */\n"
+                + "/* File: " + getFileNamePath() + " */\n"
+                + "/* Compiled: " + DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()) + " */\n"
                 + "#pragma GCC diagnostic ignored \"-Wunused-variable\"\n"
                 + "#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n\n";
 
         if (settings == null) {
-            c += "#define MIDICHANNEL 0 // DEPRECATED!\n\n";
+            c += "#define MIDICHANNEL 0 // DEPRECATED\n\n";
         }
         else {
-            c += "#define MIDICHANNEL " + (settings.GetMidiChannel() - 1) + " // DEPRECATED!\n\n";
+            c += "#define MIDICHANNEL " + (settings.GetMidiChannel() - 1) + " // DEPRECATED\n\n";
         }
 
         c += "void xpatch_init2(uint32_t fwid);\n\n"
