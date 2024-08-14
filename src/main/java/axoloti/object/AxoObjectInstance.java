@@ -604,9 +604,11 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     @Override
     public String GenerateInstanceDataDeclaration2() {
-        String c = "";
+        String c = "\n";
         if (getType().sLocalData != null) {
+            c += I+I + "/* Object Local Code Tab */\n";
             String s = getType().sLocalData;
+            s = I+I + s.replace("\n", "\n\t\t");
             s = s.replaceAll("attr_parent", getCInstanceName());
             c += s + "\n";
         }
@@ -633,7 +635,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     }
 
     public String GenerateInstanceCodePlusPlus(String classname) {
-        String c = "\n" + I+I + "/* Object Local Code Tab */\n";
+        String c = "";
         for (ParameterInstance p : parameterInstances) {
             if (p.isFrozen()) {
                 
@@ -796,7 +798,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     @Override
     public String GenerateInitCodePlusPlus(String classname) {
-        String c = I+I+I + "/* Object Init Code Tab */\n";
+        String c = "";
 //        if (hasStruct())
 //            c = "  void " + GenerateInitFunctionName() + "(" + GenerateStructName() + " * x ) {\n";
 //        else
@@ -828,11 +830,13 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             c += p.GenerateCodeInit("");
         }
 
+        c += "\n" + I+I+I + "/* Object Init Code Tab */\n";
         if (getType().sInitCode != null) {
             String s = getType().sInitCode;
             for (AttributeInstance p : attributeInstances) {
                 s = s.replace(p.GetCName(), p.CValue());
             }
+            s = I+I+I + s.replace("\n", "\n\t\t\t");
             
             /* Reverse-analyze if generated init code contains code which changes
              * the audio input or output config. This is a workaround to ensure
@@ -872,7 +876,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
             c += s;
         }
-        String d = "\n" + I+I + "public: void Init(" + classname + " *_parent";
+
+        String d = I+I + "public: void Init(" + classname + " *_parent";
         if (!displayInstances.isEmpty()) {
             for (DisplayInstance p : displayInstances) {
                 if (p.display.getLength() > 0) {
@@ -886,29 +891,32 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
         }
         d += ") {\n" + c;
-        d += "\n" + I+I + "}\n";
+        d += I+I + "}\n\n";
         return d;
     }
 
     @Override
     public String GenerateDisposeCodePlusPlus(String classname) {
-        String h = "\n";
-        String c = "";
+        String h = I+I + "public: void Dispose() {\n";
+        String c = "\n";
         if (getType().sDisposeCode != null) {
+            c += I+I+I + "/* Object Dispose Code Tab */\n";
             String s = getType().sDisposeCode;
+            s = I+I+I + s.replace("\n", "\n\t\t\t");
             for (AttributeInstance p : attributeInstances) {
                 s = I+I + s.replaceAll(p.GetCName(), p.CValue());
             }
             c += s + "\n";
         }
-        c = h + I+I + "public: void Dispose() {\n" + I+I+I + "/* Object Dispose Code Tab */\n" + c + I+I + "}\n";
+        c = h + c + I+I + "}\n\n";
         return c;
     }
 
     public String GenerateKRateCodePlusPlus(String vprefix) {
-        String s = getType().sKRateCode;
-        if (s != null) {
-            String h = I+I+I + "/* Object K-Rate Code Tab */\n";
+        String h = "\n" + I+I+I + "/* Object K-Rate Code Tab */\n";
+        if (getType().sKRateCode != null) {
+            String s = getType().sKRateCode;
+            s = I+I+I + s.replace("\n", "\n\t\t\t");
 
             for (AttributeInstance p : attributeInstances) {
                 s = s.replaceAll(p.GetCName(), p.CValue());
@@ -926,8 +934,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             String s = "\n" + I+I+I + "uint8_t buffer_index;\n"
                             + I+I+I + "for (buffer_index = 0; buffer_index < BUFSIZE; buffer_index++) {\n"
                      + "\n" + I+I+I+I + "/* Object S-Rate Code Tab */\n"
-                            + getType().sSRateCode
-                     + "\n" + I+I+I + "}\n";
+                            + I+I+I+I + getType().sSRateCode.replace("\n", "\n\t\t\t\t")
+                            + I+I+I + "}\n";
 
             for (AttributeInstance p : attributeInstances) {
                 s = s.replaceAll(p.GetCName(), p.CValue());
@@ -952,7 +960,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     }
 
     public String GenerateDoFunctionPlusPlus(String ClassName) {
-        String s = "\n";
+        String s = "";
         boolean comma = false;
         s += I+I + "public: void dsp(";
         for (InletInstance i : inletInstances) {
@@ -994,7 +1002,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         s += ") {\n";//\n" + I+I+I + "/* Object DSP Loop */\n";
         s += GenerateKRateCodePlusPlus("");
         s += GenerateSRateCodePlusPlus("");
-        s += I+I + "}\n";
+        s += I+I + "}\n\n";
         return s;
     }
 

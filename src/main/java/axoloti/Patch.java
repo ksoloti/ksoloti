@@ -1948,7 +1948,6 @@ public class Patch {
             }
         }
         /* object structures */
-//         ao.sCName = fnNoExtension;
         ao.sLocalData = GenerateStructCodePlusPlusSub("attr_parent")
                 + "static const uint8_t polyIndex = 0;\n";
         ao.sLocalData += GenerateParamInitCode3("");
