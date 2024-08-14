@@ -18,7 +18,7 @@
  */
 package components.control;
 
-//import axoloti.Theme;
+import axoloti.Theme;
 import axoloti.object.AxoObjectInstance;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
@@ -67,7 +67,7 @@ public abstract class ACtrlComponent extends JComponent {
 
     public ACtrlComponent() {
         setFocusable(true);
-        //setBackground(Theme.getCurrentTheme().Component_Background); // TODO: this seemed necessary, can't remember where though
+        setBackground(Theme.getCurrentTheme().Component_Background); // this seems necessary, can't remember where though
 
         addFocusListener(new FocusListener() {
             @Override
