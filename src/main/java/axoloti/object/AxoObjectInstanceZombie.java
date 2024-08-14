@@ -22,6 +22,9 @@ import axoloti.Patch;
 import axoloti.PatchGUI;
 import axoloti.Theme;
 import axoloti.attribute.*;
+import axoloti.datatypes.Value;
+import axoloti.datatypes.ValueFrac32;
+import axoloti.datatypes.ValueInt32;
 import axoloti.inlets.InletInstance;
 import axoloti.inlets.InletInstanceZombie;
 import axoloti.outlets.OutletInstance;
@@ -36,8 +39,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
 
@@ -71,7 +78,7 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
         @ElementList(entry = "bin32", type = ParameterInstanceBin32.class, inline = true, required = false),
         @ElementList(entry = "bool32.tgl", type = ParameterInstanceBin1.class, inline = true, required = false),
         @ElementList(entry = "bool32.mom", type = ParameterInstanceBin1Momentary.class, inline = true, required = false)})
-    public ArrayList<ParameterInstance> parameterInstances;
+    public ArrayList<ParameterInstance> parameterInstances = new ArrayList<ParameterInstance>();
 
     @Path("attribs")
     @ElementListUnion({
@@ -82,7 +89,10 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
         @ElementList(entry = "spinner", type = AttributeInstanceSpinner.class, inline = true, required = false),
         @ElementList(entry = "file", type = AttributeInstanceSDFile.class, inline = true, required = false),
         @ElementList(entry = "text", type = AttributeInstanceTextEditor.class, inline = true, required = false)})
-    public ArrayList<AttributeInstance> attributeInstances;
+    public ArrayList<AttributeInstance> attributeInstances = new ArrayList<AttributeInstance>();
+
+    public final JPanel p_attribs = new JPanel();
+    public final JPanel p_params = new JPanel();
 
     public AxoObjectInstanceZombie() {
     }
@@ -167,6 +177,48 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
             }
         });
         add(InstanceLabel);
+
+        p_attribs.removeAll();
+        p_params.removeAll();
+
+        p_attribs.setLayout(new BoxLayout(p_attribs, BoxLayout.PAGE_AXIS));
+        p_params.setLayout(new BoxLayout(p_params, BoxLayout.PAGE_AXIS));
+
+        p_attribs.add(Box.createHorizontalGlue());
+        p_params.add(Box.createHorizontalGlue());
+
+        if (attributeInstances != null) {
+            for (AttributeInstance attr : attributeInstances) {
+                String nameValue = "attrib " + attr.getName();
+                JLabel attrlbl = new JLabel(nameValue);
+                attrlbl.setFont(Constants.FONT);
+                attrlbl.setAlignmentX(LEFT_ALIGNMENT);
+                p_attribs.add(attrlbl);
+            }
+        }
+
+        if (parameterInstances != null) {
+            for (ParameterInstance param : parameterInstances) {
+                Value vl = param.getValue();
+                String paramVal = "";
+                if (vl instanceof ValueFrac32) {
+                    paramVal += vl.getDouble();
+                }
+                else if (vl instanceof ValueInt32) {
+                    paramVal += vl.getInt();
+                }
+                String nameValue = "param " + param.getName() + " = " + paramVal;
+                JLabel paramlbl = new JLabel(nameValue);
+                paramlbl.setFont(Constants.FONT);
+                paramlbl.setAlignmentX(LEFT_ALIGNMENT);
+                p_params.add(paramlbl);
+            }
+        }
+
+        /* ... */
+
+        add(p_attribs);
+        add(p_params);
         
         setLocation(x, y);
         resizeToGrid();
