@@ -63,7 +63,7 @@ public abstract class QCmdShellTask implements QCmd {
                         Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "{0}\n>>> Patch is too complex to fit in internal RAM. <<<",line);
                     }
                     else if (line.contains("has no member named \'objectinstance__i\'")) {
-                        Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "{0}\n>>> One or more object reference text fields (table, delay read/write, filename, ...) in the patch can''t be left empty. <<<",line);
+                        Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "{0}\n>>> A required reference text field in the patch has been left empty. (table, delay read/write, filename, ...) <<<",line);
                     }
                     else if (line.contains("warning:")) {
                         Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.WARNING, "{0}",line);

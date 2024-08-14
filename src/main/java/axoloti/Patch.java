@@ -895,7 +895,7 @@ public class Patch {
                 "Cancel"};
             int n = JOptionPane.showOptionDialog(
                     this.getPatchframe(),
-                    this.FileNamePath + " contains one or more unresolved (zombie) objects.\n\nSaving the patch now will overwrite the unresolved objects with hard zombies. You will have to replace them manually later for the patch to be usable.\n\nThe zombie objects\' names and connections will be preserved, but you may lose some parameter and attribute values you had originally set when the objects were alive, depending on how closely the manually replaced object matches the original one.",
+                    this.FileNamePath + " contains one or more unresolved (zombie) objects.\n\nSaving the patch now will overwrite the unresolved objects with hard zombies. You will have to replace them manually later for the patch to be usable, even if the object library is found later.\n\nThe zombie objects\' names and connections will be preserved, but you may lose some parameter and attribute values you had originally set when the objects were alive, depending on how closely the manually replaced object matches the original one.",
                     "Zombie Infestation",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE,
@@ -2593,54 +2593,6 @@ public class Patch {
         repaint();
     }
 
-    /*
-     void ApplyPreset(int i) { // OBSOLETE
-     presetNo = i;
-     if (presets == null) {
-     presets = new ArrayList<>();
-     }
-     while (presets.size()<8) presets.add(new PresetObsolete());
-     if (i>0) {
-     PresetObsolete p = presets.get(i-1);
-     for (AxoObjectInstance o:objectInstances) {
-     for (ParameterInstance a:o.parameterInstances) {
-     a.SetPresetState(false);
-     a.ppc = null;
-     }
-     }
-     for (PresetParameterChange ppc:p.paramchanges) {
-     ppc.ref.ppc = ppc;
-     ppc.ref.SetValueRaw(ppc.newValue);
-     ppc.ref.SetPresetState(true);
-     }
-     } else if (i == 0) {
-     if (initPreset == null) {
-     initPreset = new InitPreset();
-     initPreset.patch = this;
-     }
-     for (AxoObjectInstance o:objectInstances) {
-     for (ParameterInstance a:o.parameterInstances) {
-     a.SetPresetState(false);
-     a.ppc = null;
-     }
-     }
-     for (PresetParameterChange ppc:initPreset.paramchanges) {
-     ppc.ref.ppc = ppc;
-     ppc.ref.SetValueRaw(ppc.newValue);
-     ppc.ref.SetPresetState(true);
-     }
-     SaveToInitPreset();
-     } else {
-     for (AxoObjectInstance o:objectInstances) {
-     for (ParameterInstance a:o.parameterInstances) {
-     a.SetPresetState(false);
-     a.ppc = null;
-     }
-     }            
-     }
-     }
-     */
-
     void ClearCurrentPreset() {
     }
 
@@ -2648,69 +2600,7 @@ public class Patch {
     }
 
     void DifferenceToPreset() {
-        /*
-         for (AxoObjectInstance o:objectInstances) {
-         for (ParameterInstance param:o.parameterInstances) {
-         // find corresponding in init
-         PresetParameterChange ppc = null;
-         for (PresetParameterChange ppc1:initPreset.paramchanges) {
-         if (ppc1.ref == param) {
-         ppc = ppc1;
-         break;
-         }
-         }
-         if (ppc!=null) { // ppc = param in preset
-         if (ppc.newValue != param.GetValueRaw()) {
-         IncludeParameterInPreset(param);
-         }
-         }
-         }
-         }*/
     }
-
-    /*
-     PresetParameterChange IncludeParameterInPreset(ParameterInstance param) {
-     if (presetNo>0) {
-     for (PresetParameterChange ppc:presets.get(presetNo-1).paramchanges) {
-     if (ppc.ref == param) return ppc;
-     }
-     PresetParameterChange ppc = new PresetParameterChange();
-     ppc.newValue = param.GetValueRaw();
-     ppc.paramName = param.getName();
-     ppc.ref = param;
-     presets.get(presetNo-1).paramchanges.add(ppc);
-     param.SetPresetState(true);
-     return ppc;
-     }
-     return null;
-     }
-
-     void ExcludeParameterFromPreset(ParameterInstance param) {
-     if (presetNo>0)
-     presets.get(presetNo-1).ExcludeParameter(param);
-     }
-    
-     void SaveToInitPreset() {
-     for (AxoObjectInstance o:objectInstances) {
-     for (ParameterInstance param:o.parameterInstances) {
-     PresetParameterChange ppc = null;
-     for (PresetParameterChange ppc1:initPreset.paramchanges) {
-     if (ppc1.ref == param) {
-     ppc = ppc1;
-     break;
-     }
-     }
-     if (ppc == null) {
-     ppc = new PresetParameterChange();
-     ppc.paramName = param.getName();
-     ppc.ref = param;                    
-     initPreset.paramchanges.add(ppc);
-     }
-     ppc.newValue = param.GetValueRaw();
-     }
-     }        
-     }
-     */
 
     public int[] DistillPreset(int i) {
         int[] pdata;

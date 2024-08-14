@@ -1057,12 +1057,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             Thread.sleep(2000);
             status = cp.success();
             if (status == false) {
-                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "COMPILE FAILED: {0}\n", f.getPath());
+                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "COMPILATION FAILED: {0}\n", f.getPath());
             }
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
             return status;
         } catch (Exception ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "COMPILE FAILED: " + f.getPath() + "\n", ex);
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "COMPILATION FAILED: " + f.getPath() + "\n", ex);
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
             return false;
         }

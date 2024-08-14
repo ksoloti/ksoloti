@@ -554,9 +554,10 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         }
         else {
             m_frozen.setToolTipText("This parameter cannot be frozen because it belongs to the subpatch.\n" +
-                                    "You can freeze it from inside the subpatch. If the parameter is being\n" +
-                                    "frozen inside the subpatch, it will temporarily disappear from the parent.\n" +
-                                    "Unfreeze it to make it reappear on the parent and become editable.");
+                                    "You can freeze it from inside the subpatch. If you do so, it will\n" +
+                                    "temporarily disappear from the parent and its value will revert to the\n" + 
+                                    "knob position in the subpatch. Unfreeze it to make it reappear on\n" +
+                                    "the parent and become editable again.");
 
         }
         m.add(m_frozen);
