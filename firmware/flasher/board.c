@@ -43,7 +43,7 @@ void __early_init(void)
     rccResetAPB1(~0);
     rccResetAPB2(~0x10000000); // RCC_APB1RSTR_PWRRST
     OTG_HS->GINTMSK = 0;       // disable OTG_HS interrupts!
-    extern uint32_t _vectors;  // copy vector table
+    extern uint32_t _vectors[0x200];  // copy vector table. Trick compiler into believing us it is 0x200 bytes long.
 
     memcpy((char *)0x20000000, (const char *)&_vectors, 0x200);
     SYSCFG->MEMRMP |= 0x03;    // remap SRAM1 to 0x00000000

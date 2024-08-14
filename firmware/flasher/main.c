@@ -31,7 +31,7 @@
 #include "exceptions.h"
 #include "flash.h"
 
-extern uint32_t _vectors;
+extern uint32_t _vectors[0x200]; // Trick compiler into believing us it is 0x200 bytes long.
 
 // #define SERIALDEBUG
 
