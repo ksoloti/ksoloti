@@ -65,7 +65,7 @@ static const uint8_t vcom_configuration_descriptor_data[]=
                         0x01,          /* bConfigurationValue.             */
                         5,             /* iConfiguration.                  */
                         0xC0,          /* bmAttributes (self powered).     */
-                        50),           /* bMaxPower (100mA).               */
+                        150),           /* bMaxPower (300mA).               */
  /* Interface Association Descriptor.*/
  USB_DESC_INTERFACE_ASSOCIATION(0x00, /* bFirstInterface.                  */
                                 0x02, /* bInterfaceCount.                  */
