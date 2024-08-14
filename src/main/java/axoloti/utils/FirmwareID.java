@@ -37,13 +37,19 @@ public class FirmwareID {
 
     static public String getFirmwareID() {
         try {
-            File f = null;
+            String boarddef = System.getProperty(Axoloti.FIRMWARE_DIR) + "/build/";
+
             if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-                f = new File(System.getProperty(Axoloti.FIRMWARE_DIR) +"/build/ksoloti.bin");
+                boarddef += "ksoloti";
             }
             else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                f = new File(System.getProperty(Axoloti.FIRMWARE_DIR) +"/build/axoloti.bin");
+                boarddef += "axoloti";
             }
+            if (prefs.getFirmwareMode().contains("SPILink")) {
+                boarddef += "_spilink";
+            }
+            boarddef += ".bin";
+            File f = new File(boarddef);
 
             if (f == null || !f.canRead()) {
                 return "Please compile the firmware first";
