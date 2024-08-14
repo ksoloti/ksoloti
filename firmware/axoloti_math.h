@@ -174,7 +174,7 @@ __attribute__ ( ( always_inline ) ) __INLINE int32_t rand_s32(void) {
   // The hardware random generator can't provide new data as quick as desireable
   // but rather than waiting for a new true random number,
   // we multiply/add the seed with the latest hardware-generated number.
-  static uint32_t randSeed = 22222;
+  uint32_t randSeed = 22222;
   return randSeed = (randSeed * 196314165) + RNG->DR;
 }
 
