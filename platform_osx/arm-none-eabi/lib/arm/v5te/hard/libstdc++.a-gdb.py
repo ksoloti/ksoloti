@@ -19,8 +19,8 @@ import gdb
 import os
 import os.path
 
-pythondir = '/tmp/jenkins-GCC-9-pipeline-100_20191030_1572397548/install-native/share/gcc-arm-none-eabi'
-libdir = '/tmp/jenkins-GCC-9-pipeline-100_20191030_1572397548/install-native/arm-none-eabi/lib/arm/v5te/hard'
+pythondir = '/tmp/jenkins-GCC-9-pipeline-200_20200521_1590053285/install-native/share/gcc-arm-none-eabi'
+libdir = '/tmp/jenkins-GCC-9-pipeline-200_20200521_1590053285/install-native/arm-none-eabi/lib/arm/v5te/hard'
 
 # This file might be loaded when there is no current objfile.  This
 # can happen if the user loads it manually.  In this case we don't
