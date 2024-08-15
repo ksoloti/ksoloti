@@ -114,6 +114,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         String tooltiptxt = "<html>";
         tooltiptxt += "<b>" + typeName + "</b>";
         if ((getType().sDescription != null) && (!getType().sDescription.isEmpty())) {
+            /* Chop up string and put it back together with line breaks */
+            /* TODO: turn this into a callable routine */
             String[] splitStrings = getType().sDescription.split(" ");
             String putBackTogetherString = "";
             int lineLength = 0;
@@ -128,17 +130,16 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     lineLength = 0; /* Reset line length counter */
                 }
             }
-            // tooltiptxt += "<p><br/>" + getType().sDescription.replaceAll("\n", "<br/>") + "<br/>";
             tooltiptxt += "<p><br/>" + putBackTogetherString.replaceAll("\n", "<br/>") + "<br/>";
         }
         if ((getType().sAuthor != null) && (!getType().sAuthor.isEmpty())) {
-            tooltiptxt += "<p><br/>Author: " + getType().sAuthor + "</p>";
+            tooltiptxt += "<p><br/><i>Author: " + getType().sAuthor + "</p>";
         }
         if ((getType().sPath != null) && (!getType().sPath.isEmpty())) {
-            tooltiptxt += "<p>Path: " + getType().sPath + "</p>";
+            tooltiptxt += "<p><i>Path: " + getType().sPath + "</p>";
         }
         if (IndexLabel != null && !IndexLabel.getText().equals("")) {
-            tooltiptxt += "<p>Execution order: " + (IndexLabel.getText()) + "/" + patch.objectInstances.size() + "</p>";
+            tooltiptxt += "<p><i>Execution order: " + (IndexLabel.getText()) + "/" + patch.objectInstances.size() + "</p>";
         }
         tooltiptxt += "</div>";
         Titlebar.setToolTipText(tooltiptxt);
