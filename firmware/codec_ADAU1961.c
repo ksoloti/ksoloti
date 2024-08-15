@@ -338,10 +338,10 @@ static void dma_i2s_interrupt(void* dat, uint32_t flags) {
   (void)flags;
   codec_interrupt_timestamp = hal_lld_get_counter_value();
   if ((i2sdma_ADAU1961)->stream->CR & STM32_DMA_CR_CT) {
-    computebufI(rbuf, buf);
+    computebufI(rbuf, buf2);
   }
   else {
-    computebufI(rbuf2, buf2);
+    computebufI(rbuf2, buf);
   }
   dmaStreamClearInterrupt(i2sdma_ADAU1961);
 }
@@ -393,8 +393,8 @@ static void codec_ADAU1961_dma_init(void) {
 
   dmaStreamSetPeripheral(i2sdma_ADAU1961rx, &(CODEC_ADAU1961_I2Sext->DR));
 // my double buffer test
-  dmaStreamSetMemory0(i2sdma_ADAU1961rx, rbuf2);
-  dmaStreamSetMemory1(i2sdma_ADAU1961rx, rbuf);
+  dmaStreamSetMemory0(i2sdma_ADAU1961rx, rbuf);
+  dmaStreamSetMemory1(i2sdma_ADAU1961rx, rbuf2);
   dmaStreamSetTransactionSize(i2sdma_ADAU1961rx, 64); //PLAYBACK_BUFFER_SIZE);
   dmaStreamSetMode(i2sdma_ADAU1961rx, i2srxdmamode | STM32_DMA_CR_MINC);
 
