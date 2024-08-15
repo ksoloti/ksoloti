@@ -1007,7 +1007,7 @@ public class USBBulkConnection extends Connection {
                     if ((patch.GetIID() != PatchID) && patch.IsLocked()) {
                         patch.Unlock();
                     } else {
-                        patch.SetDSPLoad(DSPLoad);
+                        patch.UpdateDSPLoad(DSPLoad);
                     }
                 }
                 MainFrame.mainframe.showPatchIndex(patchIndex);

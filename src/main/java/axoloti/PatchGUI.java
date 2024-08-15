@@ -1023,7 +1023,7 @@ public class PatchGUI extends Patch {
     }
 
     @Override
-    void SetDSPLoad(int pct) {
+    void UpdateDSPLoad(int pct) {
         patchframe.ShowDSPLoad(pct);
     }
 
