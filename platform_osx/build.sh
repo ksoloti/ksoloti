@@ -176,7 +176,8 @@ file "${PLATFORM_ROOT}/bin/libusb-1.0.0.dylib"
 
 echo "##### building firmware... #####"
 cd "$PLATFORM_ROOT"
-./compile_firmware.sh
+./compile_firmware.sh BOARD_AXOLOTI_CORE
+./compile_firmware.sh BOARD_KSOLOTI_CORE
 
 echo "##### building GUI... #####"
 cd "${PLATFORM_ROOT}"/..

@@ -53,25 +53,21 @@ public class QCmdCompileFirmware extends QCmdShellTask {
     @Override
     String GetExec() {
         String boarddef = "";
-        String fwoptiondef = "";
         if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
             boarddef = "BOARD_KSOLOTI_CORE";
         }
         else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
             boarddef = "BOARD_AXOLOTI_CORE";
         }
-        if (prefs.getFirmwareMode().contains("SPILink")) {
-            fwoptiondef += " FW_SPILINK";
-        }
 
         if (OSDetect.getOS() == OSDetect.OS.WIN) {
-            return FirmwareDir()+"/compile_firmware_win.bat " + boarddef + fwoptiondef;
+            return FirmwareDir()+"/compile_firmware_win.bat " + boarddef;
         }
         else if (OSDetect.getOS() == OSDetect.OS.MAC) {
-            return "/bin/sh ./compile_firmware_osx.sh " + boarddef + fwoptiondef;
+            return "/bin/sh ./compile_firmware_osx.sh " + boarddef;
         }
         else if (OSDetect.getOS() == OSDetect.OS.LINUX) {
-            return "/bin/sh ./compile_firmware_linux.sh " + boarddef + fwoptiondef;
+            return "/bin/sh ./compile_firmware_linux.sh " + boarddef;
         }
         else {
             Logger.getLogger(QCmdCompileFirmware.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");

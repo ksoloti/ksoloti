@@ -234,7 +234,8 @@ esac
 
 echo "##### compiling firmware... #####"
 cd "${PLATFORM_ROOT}"
-./compile_firmware.sh
+./compile_firmware.sh BOARD_AXOLOTI_CORE
+./compile_firmware.sh BOARD_KSOLOTI_CORE
 
 echo "##### building GUI... #####"
 cd "${PLATFORM_ROOT}"/..
