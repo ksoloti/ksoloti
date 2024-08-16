@@ -245,7 +245,7 @@ static int StartPatch1(void) {
 
             DspTime = RTT2US(hal_lld_get_counter_value() - tStart);
             dspLoad200 = (2000 * DspTime) / 3333;
-            if (dspLoad200 > 186) { /* 186=2*98, corresponds to 98% */
+            if (dspLoad200 > 196) { /* 196=2*98, corresponds to 98% */
                 /* Overload: clear output buffers and give other processes a chance */
                 codec_clearbuffer();
                 // LogTextMessage("dsp overrun");
