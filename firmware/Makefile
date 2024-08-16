@@ -11,9 +11,10 @@ ifeq ($(USE_OPT),)
     -D$(BOARDDEF) \
     --specs=nosys.specs \
     --specs=nano.specs \
-    -O2 \
+    -Wno-implicit-fallthrough \
     -Wno-unused-function \
     -Wno-unused-parameter \
+    -O2 \
     -falign-functions=16 \
     -fno-math-errno \
     -fomit-frame-pointer \

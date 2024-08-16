@@ -6,6 +6,7 @@ FWOPTIONDEF =
 # SRAM usage and DSP load low with newer GCC versions.
 # below the single backslash are options which are unknown to make any difference so far
 CCFLAGS = \
+    -Wno-implicit-fallthrough \
     -Wno-unused-parameter \
     -ggdb3 \
     -mcpu=cortex-m4 \

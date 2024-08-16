@@ -7,46 +7,55 @@ call :setrelease "%axoloti_release%"
 set PATH=%axoloti_runtime%\platform_win\bin
 
 cd %axoloti_firmware%
-make BOARDDEF=%1 FWOPTIONDEF=%2 -f Makefile.patch.mk clean
+make BOARDDEF=%1 -f Makefile.patch.mk clean
 
-echo.&&echo Compiling firmware flasher... %1 %2
+echo.&&echo Compiling firmware flasher... %1
 cd flasher
-if exist ".dep\" rmdir /s /q .dep
-if exist "flasher_build\lst" rmdir /s /q flasher_build\lst
-if exist "flasher_build\obj" rmdir /s /q flasher_build\obj
-mkdir .dep
-mkdir flasher_build\lst
-mkdir flasher_build\obj
+if not exist ".dep" mkdir .dep
+if not exist "flasher_build\lst" mkdir flasher_build\lst
+if not exist "flasher_build\obj" mkdir flasher_build\obj
+del /q .dep\*
+del /q flasher_build\lst\*
+del /q flasher_build\obj\*
 rem FWOPTIONDEF currently not used in flasher
-make -j4 BOARDDEF=%1 FWOPTIONDEF=%2
+make -j4 BOARDDEF=%1
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
 cd ..
 
-echo.&&echo Compiling firmware mounter... %1 %2
+echo.&&echo Compiling firmware mounter... %1
 cd mounter
-if exist ".dep\" rmdir /s /q .dep
-if exist "mounter_build\lst" rmdir /s /q mounter_build\lst
-if exist "mounter_build\obj" rmdir /s /q mounter_build\obj
-mkdir .dep
-mkdir mounter_build\lst
-mkdir mounter_build\obj
+if not exist ".dep" mkdir .dep
+if not exist "mounter_build\lst" mkdir mounter_build\lst
+if not exist "mounter_build\obj" mkdir mounter_build\obj
+del /q .dep\*
+del /q mounter_build\lst\*
+del /q mounter_build\obj\*
 rem FWOPTIONDEF currently not used in mounter
-make -j4 BOARDDEF=%1 FWOPTIONDEF=%2
+make -j4 BOARDDEF=%1
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
 cd ..
 
-echo.&&echo Compiling firmware... %1 %2
-if exist ".dep\" rmdir /s /q .dep
-if exist "build\lst" rmdir /s /q build\lst
-if exist "build\obj" rmdir /s /q build\obj
-mkdir .dep
-mkdir build\lst
-mkdir build\obj
-make -j4 BOARDDEF=%1 FWOPTIONDEF=%2
+echo.&&echo Compiling firmware... %1
+if not exist ".dep" mkdir .dep
+if not exist "build\lst" mkdir build\lst
+if not exist "build\obj" mkdir build\obj
+del /q .dep\*
+del /q build\lst\*
+del /q build\obj\*
+make -j4 BOARDDEF=%1
+IF %ERRORLEVEL% NEQ 0 (
+	exit /b 1
+)
+
+echo.&&echo Compiling firmware... %1 FW_SPILINK
+del /q .dep\*
+del /q build\lst\*
+del /q build\obj\*
+make -j4 BOARDDEF=%1 FWOPTIONDEF=FW_SPILINK
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
