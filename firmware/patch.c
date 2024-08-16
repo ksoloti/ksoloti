@@ -178,7 +178,7 @@ static int StartPatch1(void) {
     adc_configpads();
 
     int32_t *ccm; /* Clear CCMRAM area declared in ramlink_*.ld */
-    for (ccm = (int32_t*)0x10000000; ccm < (int32_t*)(0x10000000 + 0x0000C000); ccm++) {
+    for (ccm = (int32_t*) 0x10000000; ccm < (int32_t*) 0x1000C000; ccm++) {
         *ccm = 0;
     }
 
@@ -244,7 +244,8 @@ static int StartPatch1(void) {
             adc_convert();
 
             DspTime = RTT2US(hal_lld_get_counter_value() - tStart);
-            dspLoadPct = (100 * DspTime) / (1000000 / 3000);
+            // dspLoadPct = (100 * DspTime) / (1000000 / 3000);
+            dspLoadPct = DspTime / 33333;
             if (dspLoadPct > 98) {
                 /* Overload: clear output buffers and give other processes a chance */
                 codec_clearbuffer();
