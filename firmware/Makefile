@@ -40,7 +40,9 @@ endif
 
 # C++ specific options here (added to USE_OPT).
 ifeq ($(USE_CPPOPT),)
-  USE_CPPOPT = -fno-rtti
+  USE_CPPOPT = \
+    -fno-rtti \
+    -fno-threadsafe-statics
 endif
 
 # Enable this if you want the linker to remove unused code and data

@@ -321,7 +321,7 @@ void ui_init(void) {
     }
     SetKVP_AVP(&p[entries++], &KvpsHead, "SDCard Tools", 2, &p1[0]);
     SetKVP_AVP(&p[entries++], &KvpsHead, "ADCs", 3, &ADCkvps[0]);
-    SetKVP_IVP(&p[entries++], &KvpsHead, "dsp%", &dspLoadPct, 0, 100);
+    SetKVP_IVP(&p[entries++], &KvpsHead, "dsp%", &dspLoad200, 0, 100);
 
     SetKVP_AVP(&KvpsHead, NULL, "--- AXOLOTI ---", entries, &p[0]);
 

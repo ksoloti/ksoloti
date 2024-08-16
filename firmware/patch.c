@@ -39,8 +39,8 @@ patchMeta_t patchMeta;
 
 volatile patchStatus_t patchStatus;
 
-int dspLoadPct; // DSP load in percent
-unsigned int DspTime;
+uint32_t dspLoad200; // DSP load: Values 0-200 correspond to 0-100%
+uint32_t DspTime;
 
 char loadFName[64] = "";
 loadPatchIndex_t loadPatchIndex = UNINITIALIZED;
@@ -244,9 +244,8 @@ static int StartPatch1(void) {
             adc_convert();
 
             DspTime = RTT2US(hal_lld_get_counter_value() - tStart);
-            // dspLoadPct = (100 * DspTime) / (1000000 / 3000);
-            dspLoadPct = DspTime / 33333;
-            if (dspLoadPct > 98) {
+            dspLoad200 = (2000 * DspTime) / 3333;
+            if (dspLoad200 > 186) { /* 186=2*98, corresponds to 98% */
                 /* Overload: clear output buffers and give other processes a chance */
                 codec_clearbuffer();
                 // LogTextMessage("dsp overrun");

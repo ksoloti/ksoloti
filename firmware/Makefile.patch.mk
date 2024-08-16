@@ -21,6 +21,7 @@ CCFLAGS = \
     -std=c++11 \
     -O3 \
     -fcode-hoisting \
+    -fno-threadsafe-statics \
     -ffunction-sections \
     -fdata-sections \
     -fno-common \

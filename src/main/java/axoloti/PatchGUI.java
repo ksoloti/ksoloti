@@ -1023,8 +1023,8 @@ public class PatchGUI extends Patch {
     }
 
     @Override
-    void UpdateDSPLoad(int pct) {
-        patchframe.ShowDSPLoad(pct);
+    void UpdateDSPLoad(int val200) {
+        patchframe.ShowDSPLoad(val200);
     }
 
     Dimension GetInitialSize() {

@@ -58,7 +58,7 @@ typedef struct {
 
 extern patchMeta_t patchMeta;
 
-extern int dspLoadPct; // DSP load in percent
+extern uint32_t dspLoad200; // DSP load: Values 0-200 correspond to 0-100%
 
 typedef enum {
   START_SD = -1,

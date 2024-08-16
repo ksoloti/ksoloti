@@ -149,7 +149,7 @@ void PExTransmit(void) {
       int ack[7];
       ack[0] = 0x416F7841; /* "AxoA" */
       ack[1] = 0; /* reserved */
-      ack[2] = dspLoadPct;
+      ack[2] = dspLoad200;
       ack[3] = patchMeta.patchID;
       ack[4] = sysmon_getVoltage10() + (sysmon_getVoltage50()<<16);
       if (patchStatus) {

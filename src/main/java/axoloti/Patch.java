@@ -2737,7 +2737,7 @@ public class Patch {
     void invalidate() {
     }
 
-    void UpdateDSPLoad(int pct) {
+    void UpdateDSPLoad(int val200) {
     }
 
     public void repaint() {

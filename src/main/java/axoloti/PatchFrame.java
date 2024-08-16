@@ -472,6 +472,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jProgressBarDSPLoad.setMinimumSize(new java.awt.Dimension(60, 20));
         jProgressBarDSPLoad.setPreferredSize(new java.awt.Dimension(200, 20));
         jProgressBarDSPLoad.setName(""); // NOI18N
+        jProgressBarDSPLoad.setMaximum(200);
         jProgressBarDSPLoad.setStringPainted(true);
         jToolbarPanel.add(jProgressBarDSPLoad);
 
@@ -1249,15 +1250,12 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JMenuItem undoItem;
     private axoloti.menus.WindowMenu windowMenu1;
 
-    void ShowDSPLoad(int pct) {
-        int pv = jProgressBarDSPLoad.getValue();
-        if (pct == pv) {
+    void ShowDSPLoad(int val200) {
+        int pv = jProgressBarDSPLoad.getValue() * 2;
+        if (val200 == pv || val200 == (pv - 1)) {
             return;
         }
-        if (pct == (pv - 1)) {
-            return;
-        }
-        jProgressBarDSPLoad.setValue(pct);
+        jProgressBarDSPLoad.setValue(val200);
     }
 
     @Override
