@@ -24,7 +24,7 @@ esac
 
 case "$platform" in
     mac)
-        -rm -f ./firmware/build/*.*
+        rm -f ./firmware/build/*.*
         sh ./qlean.sh
 
         # compile board mode and firmware options
@@ -45,7 +45,7 @@ case "$platform" in
         sh ./qlean.sh
     ;;
     linux)
-        -rm -f ./firmware/build/*.*
+        rm -f ./firmware/build/*.*
         sh ./qlean.sh
 
         # compile board mode and firmware options
