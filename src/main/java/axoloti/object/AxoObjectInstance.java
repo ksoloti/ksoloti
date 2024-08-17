@@ -892,7 +892,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
         }
         d += ") {\n" + c;
-        d += I+I + "}\n\n";
+        d += "\n" + I+I + "}\n\n";
         return d;
     }
 
@@ -909,7 +909,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
             c += s + "\n";
         }
-        c = h + c + I+I + "}\n\n";
+        c = h + c + "\n" + I+I + "}\n\n";
         return c;
     }
 
@@ -1003,7 +1003,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         s += ") {\n";//\n" + I+I+I + "/* Object DSP Loop */\n";
         s += GenerateKRateCodePlusPlus("");
         s += GenerateSRateCodePlusPlus("");
-        s += I+I + "}\n\n";
+        s += "\n" + I+I + "}\n\n";
         return s;
     }
 
