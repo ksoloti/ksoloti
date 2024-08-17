@@ -16,22 +16,20 @@ case "$unamestr" in
 		platform='windows'
 		rootdir="$(cd $(dirname $0); pwd -P)"
 	;;
-        *)
-                echo "Unknown OS: $unamestr - aborting..."
-                exit
-        ;;
+    *)
+        echo "Unknown OS: $unamestr - aborting..."
+        exit
+    ;;
 esac
 
 case "$platform" in
         mac)
-            cd "${PLATFORM_ROOT}"/..
             ant clean
             ant
             ant clean
             ./Ksoloti.sh
         ;;
         linux)
-            cd "${PLATFORM_ROOT}"/..
             ant clean
             #./platform_linux/compile_java.sh #outdated java8 define?
             ant
