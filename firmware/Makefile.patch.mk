@@ -33,15 +33,8 @@ CCFLAGS = \
     -mno-thumb-interwork \
     -fno-use-cxa-atexit \
     -fpermissive \
-    -fschedule-fusion \
-    -fvect-cost-model=cheap \
     \
-    -fno-trapping-math \
-    -fno-partial-inlining \
-    -fno-schedule-insns \
-    -fno-schedule-insns2 \
-    -frename-registers \
-    -fno-tree-partial-pre \
+
 
 DEFS = \
     -D$(BOARDDEF) \
