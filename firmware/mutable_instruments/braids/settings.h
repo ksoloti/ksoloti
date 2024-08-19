@@ -301,7 +301,7 @@ class Settings {
   }
   
   inline int32_t pitch_transposition() const {
-    int32_t t = data_.pitch_range == PITCH_RANGE_LFO ? -36 << 7 : 0;
+    int32_t t = data_.pitch_range == PITCH_RANGE_LFO ? -(36 << 7) : 0;
     t += (static_cast<int32_t>(data_.pitch_octave) - 2) * 12 * 128;
     return t;
   }
