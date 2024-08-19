@@ -603,13 +603,15 @@ public class USBBulkConnection extends Connection {
     @Override
     public boolean WaitSync(int msec) {
         synchronized (sync) {
-            if (sync.Acked) {
-                return sync.Acked;
-            }
-            try {
-                sync.wait(msec);
-            } catch (InterruptedException ex) {
-                //              Logger.getLogger(SerialConnection.class.getName()).log(Level.SEVERE, "Sync wait interrupted");
+            for (int i=0; i<3; ++i) {
+                if (sync.Acked) {
+                    return sync.Acked;
+                }
+                try {
+                    sync.wait(msec/3);
+                } catch (InterruptedException ex) {
+                    //              Logger.getLogger(SerialConnection.class.getName()).log(Level.SEVERE, "Sync wait interrupted");
+                }
             }
             return sync.Acked;
         }
@@ -617,7 +619,7 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public boolean WaitSync() {
-        return WaitSync(1000);
+        return WaitSync(3000);
     }
 
     @Override
