@@ -13,7 +13,6 @@ CCFLAGS = \
     -mcpu=cortex-m4 \
     -mfloat-abi=hard \
     -mfpu=fpv4-sp-d16 \
-    -mlong-calls \
     -mthumb \
     -mtune=cortex-m4 \
     -mword-relocations \
@@ -26,10 +25,10 @@ CCFLAGS = \
     -ffunction-sections \
     -fdata-sections \
     -fno-common \
-    -fno-forward-propagate \
     -fno-math-errno \
     -fno-reorder-blocks \
     -fno-rtti \
+    -mno-thumb-interwork \
     -fno-use-cxa-atexit \
     -fpermissive \
     -fschedule-fusion \
@@ -38,7 +37,10 @@ CCFLAGS = \
     -fno-trapping-math \
     -fno-partial-inlining \
     -fno-schedule-insns \
-    -fno-schedule-insns2
+    -fno-schedule-insns2 \
+    -frename-registers \
+    -fno-tree-partial-pre \
+    --param max-completely-peeled-insns=100
 
 DEFS = \
     -D$(BOARDDEF) \
@@ -72,7 +74,6 @@ LDFLAGS = \
     -mcpu=cortex-m4 \
     -mfloat-abi=hard \
     -mfpu=fpv4-sp-d16 \
-    -mlong-calls \
     -mno-thumb-interwork \
     -mthumb \
     -mtune=cortex-m4 \
