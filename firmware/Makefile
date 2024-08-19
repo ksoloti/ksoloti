@@ -12,6 +12,7 @@ ifeq ($(USE_OPT),)
     --specs=nosys.specs \
     --specs=nano.specs \
     -Wno-implicit-fallthrough \
+    -Wno-return-type \
     -Wno-unused-function \
     -Wno-unused-parameter \
     -O2 \
