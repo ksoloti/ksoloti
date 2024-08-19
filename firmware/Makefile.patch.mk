@@ -8,6 +8,7 @@ FWOPTIONDEF =
 CCFLAGS = \
     -Wno-implicit-fallthrough \
     -Wno-unused-parameter \
+    -Wno-return-type \
     -ggdb3 \
     -mcpu=cortex-m4 \
     -mfloat-abi=hard \
