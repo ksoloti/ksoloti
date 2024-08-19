@@ -1251,11 +1251,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private axoloti.menus.WindowMenu windowMenu1;
 
     void ShowDSPLoad(int val200) {
-        int pv = jProgressBarDSPLoad.getValue() * 2;
-        if (val200 == pv || val200 == (pv - 1)) {
+        int pv = jProgressBarDSPLoad.getValue();
+        if (val200 == pv) {
             return;
         }
-        jProgressBarDSPLoad.setValue(val200);
+        jProgressBarDSPLoad.setValue((pv+val200)/2);
     }
 
     @Override
