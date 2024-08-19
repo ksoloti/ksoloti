@@ -51,9 +51,9 @@ void BootLoaderInit(void);
 
 static uint32_t fwid;
 
-static int AckPending = 0;
+static uint8_t AckPending = 0;
 
-static bool connected = 0;
+static uint8_t connected = 0;
 
 static char FileName[256];
 
