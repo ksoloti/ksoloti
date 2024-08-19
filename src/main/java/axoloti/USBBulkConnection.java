@@ -441,7 +441,7 @@ public class USBBulkConnection extends Connection {
         buffer.put(data);
         IntBuffer transfered = IntBuffer.allocate(1);
         int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 1000);
-        if (result != LibUsb.SUCCESS && result != -99) { /* ignore error -99 ... seems to pop up every now and then but does not lead to connection loss */
+        if (result != LibUsb.SUCCESS) {
             String errstr;
             switch (result) {
             case -1:  errstr = "Input/output error"; break;
