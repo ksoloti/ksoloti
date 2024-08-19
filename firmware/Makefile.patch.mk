@@ -2,9 +2,10 @@ BOARDDEF =
 FWOPTIONDEF =
 
 
-# Some "-fno-*" options are important to keep
+# Some new options are important to keep
 # SRAM usage and DSP load low with newer GCC versions.
-# below the single backslash are options which are unknown to make any difference so far
+# "--param max-completely-peeled-insns=100" makes a big difference to get SRAM down. Newer GCC versions use 200 here, original axoloti (GCC 4.9) used 100.
+# below the single backslash line are options which are unknown to make any difference so far
 CCFLAGS = \
     -Wno-implicit-fallthrough \
     -Wno-unused-parameter \
@@ -20,6 +21,7 @@ CCFLAGS = \
     -nostdlib \
     -std=c++11 \
     -O3 \
+    --param max-completely-peeled-insns=100 \
     -fcode-hoisting \
     -fno-threadsafe-statics \
     -ffunction-sections \
@@ -40,7 +42,6 @@ CCFLAGS = \
     -fno-schedule-insns2 \
     -frename-registers \
     -fno-tree-partial-pre \
-    --param max-completely-peeled-insns=100
 
 DEFS = \
     -D$(BOARDDEF) \
