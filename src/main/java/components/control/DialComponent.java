@@ -135,11 +135,9 @@ public class DialComponent extends ACtrlComponent {
                 int lastBtn = MousePressedBtn;
                 MousePressedBtn = e.getButton();
 
-                if (lastBtn != MouseEvent.NOBUTTON) {
-                    if (lastBtn == MouseEvent.BUTTON1) {
-                        // now have both mouse buttons pressed...
-                        getRootPane().setCursor(Cursor.getDefaultCursor());
-                    }
+                if (lastBtn == MouseEvent.BUTTON1) {
+                    // now have both mouse buttons pressed...
+                    getRootPane().setCursor(Cursor.getDefaultCursor());
                 }
 
                 if (MousePressedBtn == MouseEvent.BUTTON1) {
