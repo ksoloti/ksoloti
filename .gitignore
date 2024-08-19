@@ -43,6 +43,11 @@ axoloti-contrib
 axoloti-factory
 ksoloti-objects
 
+#compiler toolchain etc.
+platform_*/arm-none-eabi
+platform_*/lib
+platform_*/bin/arm-none-eabi-*
+platform_win/apache-ant*
 
 #Version file
 src/main/java/axoloti/Version.java
