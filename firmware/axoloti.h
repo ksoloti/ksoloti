@@ -36,9 +36,10 @@
 #include "spilink.h"
 #endif
 
-#define SECTION_DMA_DATA __attribute__((section(".sram2")))
-#define SECTION_SRAM3_DATA __attribute__((section(".sram3")))
-#define SECTION_SDRAM_DATA __attribute__((section(".sdram")))
+#define SECTION_SRAM2 __attribute__((section(".sram2")))
+#define SECTION_SRAM3 __attribute__((section(".sram3")))
+#define SECTION_CCMSRAM __attribute__((section(".ccmsram")))
+#define SECTION_SDRAM __attribute__((section(".sdram")))
 
 void axoloti_init(void);
 

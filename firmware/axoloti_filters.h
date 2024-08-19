@@ -73,7 +73,7 @@ static __attribute__ ((noinline)) void biquad_dsp(biquad_state *state,
   int32_t filter_x_n2 = state->filter_x_n2;
   int32_t filter_y_n1 = state->filter_y_n1;
   int32_t filter_y_n2 = state->filter_y_n2;
-  int i;
+  uint8_t i;
   for (i = 0; i < BUFSIZE; i++) {
     int32_t filterinput = inbuffer[i];
     int32_t accu = ___SMMUL(coefs->cxn_0, filterinput);
