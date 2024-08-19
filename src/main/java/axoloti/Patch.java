@@ -1304,25 +1304,26 @@ public class Patch {
         c += I + "};\n\n";
 
         c += I + "void ApplyPreset(uint8_t index) {\n"
-              + I+I + "if (!index) {\n"
-              + I+I+I + "int32_t* p = GetInitParams();\n"
-              + I+I+I + "uint16_t i; for (i=0; i<NPEXCH; i++) {\n"
-              + I+I+I+I + "PExParameterChange(&PExch[i], p[i], 0xFFEF);\n"
-              + I+I+I + "}\n"
-              + I+I + "}\n"
-              + I+I + "index--;\n"
-              + I+I + "if (index < NPRESETS) {\n"
-              + I+I+I + "PresetParamChange_t* pa = (PresetParamChange_t*) (GetPresets());\n"
-              + I+I+I + "PresetParamChange_t* p = &pa[index * NPRESET_ENTRIES];\n"
-              + I+I+I + "uint8_t i; for (i=0; i<NPRESET_ENTRIES; i++) {\n"
-              + I+I+I+I + "PresetParamChange_t* pp = &p[i];\n"
-              + I+I+I+I + "if ((pp->pexIndex >= 0) && (pp->pexIndex < NPEXCH)) {\n"
-              + I+I+I+I+I + "PExParameterChange(&PExch[pp->pexIndex], pp->value, 0xFFEF);\n"
-              + I+I+I+I + "}\n"
-              + I+I+I+I + "else break;\n"
-              + I+I+I + "}\n"
-              + I+I + "}\n"
-              + I + "}\n\n";
+           + I+I + "if (!index) {\n"
+           + I+I+I + "int32_t* p = GetInitParams();\n"
+           + I+I+I + "uint16_t i; for (i=0; i<NPEXCH; i++) {\n"
+           + I+I+I+I + "PExParameterChange(&PExch[i], p[i], 0xFFEF);\n"
+           + I+I+I + "}\n"
+           + I+I + "}\n"
+           + I+I + "index--;\n"
+           + I+I + "if (index < NPRESETS) {\n"
+           + I+I+I + "PresetParamChange_t* pa = (PresetParamChange_t*) (GetPresets());\n"
+           + I+I+I + "PresetParamChange_t* p = &pa[index * NPRESET_ENTRIES];\n"
+           + I+I+I + "uint8_t i; for (i=0; i<NPRESET_ENTRIES; i++) {\n"
+           + I+I+I+I + "PresetParamChange_t* pp = &p[i];\n"
+           + I+I+I+I + "if ((pp->pexIndex >= 0) && (pp->pexIndex < NPEXCH)) {\n"
+           + I+I+I+I+I + "PExParameterChange(&PExch[pp->pexIndex], pp->value, 0xFFEF);\n"
+           + I+I+I+I + "}\n"
+           + I+I+I+I + "else break;\n"
+           + I+I+I + "}\n"
+           + I+I + "}\n"
+           + I + "}\n\n";
+
         return c;
     }
 
@@ -1672,13 +1673,15 @@ public class Patch {
            object init code generation in AxoObjectInstance.java.
            This saves a bit of memory and instructions in the patch. */
         if (audioInputMode == 1) {
-        c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+            c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+           + I+I + "/* AudioInputMode == A_MONO */\n"
            + I+I + "AudioInputLeft[i] = inbuf[i * 2]>>4;\n"
            + I+I + "AudioInputRight[i] = AudioInputLeft[i];\n"
            + I + "}\n";
         }
         else if (audioInputMode == 2) {
         c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+           + I+I + "/* AudioInputMode == A_BALANCED */\n"
            + I+I + "AudioInputLeft[i] = inbuf[i * 2]>>4;\n"
            + I+I + "AudioInputLeft[i] = (AudioInputLeft[i] - (inbuf[i * 2 + 1]>>4) ) >> 1;\n"
            + I+I + "AudioInputRight[i] = AudioInputLeft[i];\n"
@@ -1686,6 +1689,7 @@ public class Patch {
         }
         else {
         c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+           + I+I + "/* AudioInputMode == A_STEREO */\n"
            + I+I + "AudioInputLeft[i] = inbuf[i * 2]>>4;\n"
            + I+I + "AudioInputRight[i] = inbuf[i * 2 + 1]>>4;\n"
            + I + "}\n";
@@ -1697,18 +1701,21 @@ public class Patch {
         if (settings.getSaturate()) {
             if (audioOutputMode == 1) {
                 c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                   + I+I + "/* AudioOutputMode == A_MONO */\n"
                    + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28)<<4;\n"
                    + I+I + "outbuf[i * 2 + 1] = 0;\n"
                    + I + "}\n";
             }
             else if (audioOutputMode == 2) {
                 c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                   + I+I + "/* AudioOutputMode == A_BALANCED */\n"
                    + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28)<<4;\n"
                    + I+I + "outbuf[i * 2 + 1] = ~outbuf[i * 2];\n"
                    + I + "}\n";
             }
             else {
                 c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                   + I+I + "/* AudioOutputMode == A_STEREO */\n"
                    + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28)<<4;\n"
                    + I+I + "outbuf[i * 2 + 1] = __SSAT(AudioOutputRight[i], 28)<<4;\n"
                    + I + "}\n";
@@ -1717,18 +1724,21 @@ public class Patch {
         else {
             if (audioOutputMode == 1) {
                 c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                   + I+I + "/* AudioOutputMode == A_MONO, unsaturated */\n"
                    + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
                    + I+I + "outbuf[i * 2 + 1] = 0;\n"
                    + I + "}\n";
             }
             else if (audioOutputMode == 2) {
                 c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                   + I+I + "/* AudioOutputMode == A_BALANCED, unsaturated */\n"
                    + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
                    + I+I + "outbuf[i * 2 + 1] = ~outbuf[i * 2];\n"
                    + I + "}\n";
             }
             else {
                 c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                   + I+I + "/* AudioOutputMode == A_STEREO, unsaturated */\n"
                    + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
                    + I+I + "outbuf[i * 2 + 1] = AudioOutputRight[i];\n"
                    + I + "}\n";
@@ -1761,7 +1771,7 @@ public class Patch {
            + I+I+I + "(*fpp)();\n"
            + I+I+I + "fpp++;\n"
            + I+I + "}\n"
-           + I + "}\n\n"
+           + I + "}\n"
            + "}\n\n";
 
         c += "void xpatch_init2(uint32_t fwid) {\n"
@@ -1841,12 +1851,15 @@ public class Patch {
         CreateIID();
         SortByPosition();
 
-        String c = generateIncludes();
-        c += "/* Generated using Ksoloti Patcher v" + Version.AXOLOTI_VERSION + " on " + System.getProperty("os.name") + " */\n"
-                + "/* File: " + getFileNamePath() + " */\n"
-                + "/* Compiled: " + DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()) + " */\n"
-                + "#pragma GCC diagnostic ignored \"-Wunused-variable\"\n"
-                + "#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n\n";
+        String c = "/*\n"
+        + "  Generated using Ksoloti Patcher v" + Version.AXOLOTI_VERSION + " on " + System.getProperty("os.name") + "\n"
+        + "  File: " + getFileNamePath() + "\n"
+        + "  Compiled: " + DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()) + "\n"
+        + "*/\n\n"
+        + "#pragma GCC diagnostic ignored \"-Wunused-variable\"\n"
+        + "#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n\n";
+
+        c += generateIncludes();
 
         if (settings == null) {
             c += "#define MIDICHANNEL 0 // DEPRECATED\n\n";
@@ -1855,17 +1868,17 @@ public class Patch {
             c += "#define MIDICHANNEL " + (settings.GetMidiChannel() - 1) + " // DEPRECATED\n\n";
         }
 
+        c += "int32buffer AudioInputLeft, AudioInputRight, AudioOutputLeft, AudioOutputRight;\n\n";
+        // c += "typedef enum { A_STEREO, A_MONO, A_BALANCED } AudioModeType;\n";
+        // c += "AudioModeType AudioInputMode = A_STEREO;\n";
+        // c += "AudioModeType AudioOutputMode = A_STEREO;\n\n";
+
         c += "void xpatch_init2(uint32_t fwid);\n\n"
                 + "extern \"C\" __attribute__ ((section(\".boot\"))) void xpatch_init(uint32_t fwid) {\n"
            + I + "xpatch_init2(fwid);\n"
                 + "}\n\n";
 
         c += "void PatchMidiInHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t data1, uint8_t data2);\n\n";
-
-        c += "int32buffer AudioInputLeft, AudioInputRight, AudioOutputLeft, AudioOutputRight;\n\n";
-        // c += "typedef enum { A_STEREO, A_MONO, A_BALANCED } AudioModeType;\n";
-        // c += "AudioModeType AudioInputMode = A_STEREO;\n";
-        // c += "AudioModeType AudioOutputMode = A_STEREO;\n\n";
 
         c += "static void PropagateToSub(ParameterExchange_t* origin) {\n"
            + I + "ParameterExchange_t* pex = (ParameterExchange_t*) origin->finalvalue;\n"

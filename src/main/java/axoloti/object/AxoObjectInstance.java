@@ -827,8 +827,11 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
         }
 
+        c += I+I+I;
         for (DisplayInstance p : displayInstances) {
-            c += p.GenerateCodeInit("");
+            String s = "";
+            s += p.GenerateCodeInit("");
+            c += s.replace("\n", "\n\t\t\t");
         }
 
         c += "\n" + I+I+I + "/* Object Init Code Tab */\n";
