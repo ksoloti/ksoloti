@@ -141,7 +141,7 @@ ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
 	@$(SIZ) --format=berkeley ${BUILDDIR}/xpatch.elf >> ${BUILDDIR}/xpatch.siz
 
 #	@echo Creating LST file for debugging
-	@$(DMP) -belf32-littlearm -marm --demangle --source-comment --disassemble ${BUILDDIR}/xpatch.elf > ${BUILDDIR}/xpatch.lst
+	@$(DMP) --demangle --source-comment --disassemble ${BUILDDIR}/xpatch.elf > ${BUILDDIR}/xpatch.lst
 #   (--source-comment now supported in gcc9) --line-numbers 
 
 .PHONY: clean
