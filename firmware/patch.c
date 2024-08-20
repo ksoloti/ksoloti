@@ -44,14 +44,14 @@ uint32_t DspTime;
 
 char loadFName[64] = "";
 loadPatchIndex_t loadPatchIndex = UNINITIALIZED;
-static const char *index_fn = "/index.axb";
+static const char* index_fn = "/index.axb";
 
 static int32_t inbuf[32];
-static int32_t *outbuf;
+static int32_t* outbuf;
 
-static int nThreadsBeforePatch;
+static int16_t nThreadsBeforePatch;
 static WORKING_AREA(waThreadDSP, 7200) __attribute__ ((section (".ccmramend")));
-static Thread *pThreadDSP = 0;
+static Thread* pThreadDSP = 0;
 
 
 void InitPatch0(void) {
@@ -72,10 +72,10 @@ void InitPatch0(void) {
 }
 
 
-static int GetNumberOfThreads(void) {
+static int16_t GetNumberOfThreads(void) {
 #ifdef CH_USE_REGISTRY
-    int i = 1;
-    Thread *thd1 = chRegFirstThread();
+    int16_t i = 1;
+    Thread* thd1 = chRegFirstThread();
 
     while (thd1) {
         i++;
@@ -91,7 +91,7 @@ static int GetNumberOfThreads(void) {
 void CheckStackOverflow(void) {
 #ifdef CH_USE_REGISTRY
 #ifdef CH_DBG_FILL_THREADS
-    Thread *thd = chRegFirstThread();
+    Thread* thd = chRegFirstThread();
 
     /* skip 1st thread, main thread */
     thd = chRegNextThread (thd);
@@ -99,7 +99,7 @@ void CheckStackOverflow(void) {
     int nfree = 0;
 
     while(thd) {
-        char *stk = (char *)(thd + 1);
+        char* stk = (char*) (thd + 1);
         nfree = 0;
 
         while (*stk == CH_STACK_FILL_VALUE) {
@@ -119,7 +119,7 @@ void CheckStackOverflow(void) {
     }
 
     if (critical) {
-        const char *name = chRegGetThreadName(thd);
+        const char* name = chRegGetThreadName(thd);
 
         if (name != 0) {
             if (nfree) {
@@ -149,8 +149,8 @@ static void StopPatch1(void) {
         (patchMeta.fptr_patch_dispose)();
 
         /* Check if the number of threads after patch disposal is the same as before */
-        int j = 20;
-        int i = GetNumberOfThreads();
+        uint8_t j = 20;
+        int16_t i = GetNumberOfThreads();
 
         /* Try sleeping up to 1 second so threads can terminate */
         while ((j--) && (i != nThreadsBeforePatch)) {
@@ -177,8 +177,8 @@ static int StartPatch1(void) {
     /* Reinit pin configuration for ADC */
     adc_configpads();
 
-    int32_t *ccm; /* Clear CCMRAM area declared in ramlink_*.ld */
-    for (ccm = (int32_t*) 0x10000000; ccm < (int32_t*) 0x1000C000; ccm++) {
+    uint32_t* ccm; /* Clear CCMRAM area declared in ramlink_*.ld */
+    for (ccm = (uint32_t*) 0x10000000; ccm < (uint32_t*) 0x1000C000; ccm++) {
         *ccm = 0;
     }
 
@@ -188,7 +188,7 @@ static int StartPatch1(void) {
     (patchMeta.fptr_patch_init)(GetFirmwareID());
 
     if (patchMeta.fptr_dsp_process == 0) {
-        report_patchLoadFail((const char *)&loadFName[0]);
+        report_patchLoadFail((const char*) &loadFName[0]);
         patchStatus = STARTFAILED;
         return -1;
     }
@@ -198,7 +198,7 @@ static int StartPatch1(void) {
         StopPatch1();
         patchStatus = STARTFAILED;
         patchMeta.patchID = 0;
-        report_patchLoadSDRamOverflow((const char *)&loadFName[0],-sdrem);
+        report_patchLoadSDRamOverflow((const char*) &loadFName[0],-sdrem);
         return -1;
     }
 
@@ -207,7 +207,7 @@ static int StartPatch1(void) {
 }
 
 
- __attribute__((__noreturn__)) static msg_t ThreadDSP(void *arg) {
+ __attribute__((__noreturn__)) static msg_t ThreadDSP(void* arg) {
     (void)(arg);
 #if CH_USE_REGISTRY
     chRegSetThreadName("dsp");
@@ -223,7 +223,7 @@ static int StartPatch1(void) {
         /* Codec DSP cycle */
         eventmask_t evt = chEvtWaitOne((eventmask_t)7);
         if (evt == 1) {
-            static unsigned int tStart;
+            static uint32_t tStart;
             tStart = hal_lld_get_counter_value();
             watchdog_feed();
 
@@ -266,8 +266,8 @@ static int StartPatch1(void) {
             }
             else if (loadPatchIndex == START_FLASH) {
                 /* Patch in flash sector 11 */
-                memcpy((uint8_t *)PATCHMAINLOC, (uint8_t *)PATCHFLASHLOC, PATCHFLASHSIZE);
-                if ((*(uint32_t *)PATCHMAINLOC != 0xFFFFFFFF) && (*(uint32_t *)PATCHMAINLOC != 0)) {
+                memcpy((uint8_t*) PATCHMAINLOC, (uint8_t*) PATCHFLASHLOC, PATCHFLASHSIZE);
+                if ((*(uint32_t*) PATCHMAINLOC != 0xFFFFFFFF) && (*(uint32_t*) PATCHMAINLOC != 0)) {
                     StartPatch1();
                 }
             }
@@ -286,7 +286,7 @@ static int StartPatch1(void) {
                     report_fatfs_error(err, index_fn);
                 }
 
-                err = f_read(&f, (uint8_t *)PATCHMAINLOC, 0xE000, (void *)&bytes_read);
+                err = f_read(&f, (uint8_t*) PATCHMAINLOC, 0xE000, (void*) &bytes_read);
                 if (err != FR_OK) {
                     report_fatfs_error(err, index_fn);
                     continue;
@@ -298,8 +298,8 @@ static int StartPatch1(void) {
                     continue;
                 }
 
-                char *t;
-                t = (char *)PATCHMAINLOC;
+                char* t;
+                t = (char*) PATCHMAINLOC;
                 int32_t cindex = 0;
 
                 // LogTextMessage("load %d %d %x",index, bytes_read, t);
@@ -421,7 +421,7 @@ void start_dsp_thread(void) {
 }
 
 
-void computebufI(int32_t *inp, int32_t *outp) {
+void computebufI(int32_t* inp, int32_t* outp) {
     uint8_t i; for (i = 0; i < 32; i++) {
         inbuf[i] = inp[i];
     }
@@ -441,7 +441,7 @@ void MidiInMsgHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t d
 }
 
 
-void LoadPatch(const char *name) {
+void LoadPatch(const char* name) {
     strcpy(loadFName, name);
     loadPatchIndex = BY_FILENAME;
     chEvtSignal(pThreadDSP, (eventmask_t)2);
