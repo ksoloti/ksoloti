@@ -441,27 +441,30 @@ public class USBBulkConnection extends Connection {
         buffer.put(data);
         IntBuffer transfered = IntBuffer.allocate(1);
         int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 1000);
-        if (result != LibUsb.SUCCESS && result != -99) { /* ignore error -99 ... seems to pop up every now and then but does not lead to connection loss */
+        if (result != LibUsb.SUCCESS && result != -99) { /* handle error -99 below */
             String errstr;
             switch (result) {
-            case -1:  errstr = "Input/output error"; break;
-            case -2:  errstr = "Invalid parameter"; break;
-            case -3:  errstr = "Access denied (insufficient permissions?)"; break;
-            case -4:  errstr = "Device may have been disconnected"; break;
-            case -5:  errstr = "Device not found"; break;
-            case -6:  errstr = "Device busy"; break;
-            case -7:  errstr = "Operation timed out"; break;
-            case -8:  errstr = "Overflow"; break;
-            case -9:  errstr = "Pipe error"; break;
-            case -10: errstr = "System call interrupted"; break;
-            case -11: errstr = "Insufficient memory"; break;
-            case -12: errstr = "Operation not supported or unimplemented"; break;
-            default:  errstr = Integer.toString(result); break;
-
+                case -1:  errstr = "Input/output error"; break;
+                case -2:  errstr = "Invalid parameter"; break;
+                case -3:  errstr = "Access denied (insufficient permissions?)"; break;
+                case -4:  errstr = "Device may have been disconnected"; break;
+                case -5:  errstr = "Device not found"; break;
+                case -6:  errstr = "Device busy"; break;
+                case -7:  errstr = "Operation timed out"; break;
+                case -8:  errstr = "Overflow"; break;
+                case -9:  errstr = "Pipe error"; break;
+                case -10: errstr = "System call interrupted"; break;
+                case -11: errstr = "Insufficient memory"; break;
+                case -12: errstr = "Operation not supported or unimplemented"; break;
+                default:  errstr = Integer.toString(result); break;
             }
             Logger.getLogger(USBBulkConnection.class.getName()).log(Level.SEVERE, "USB connection failed: " + errstr);
         }
-        //System.out.println(transfered.get() + " bytes sent");
+        else if (result == -99) {
+            /* show error -99 as regular text ... seems to pop up every now and then but does not lead to connection loss */
+            /* this "bug" will likely  be resolved after libusb update */
+            Logger.getLogger(USBBulkConnection.class.getName()).log(Level.INFO, "USB connection not happy: " + result);
+        }
     }
 
     @Override
