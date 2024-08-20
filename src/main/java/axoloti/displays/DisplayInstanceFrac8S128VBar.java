@@ -46,7 +46,7 @@ public class DisplayInstanceFrac8S128VBar extends DisplayInstance<DisplayFrac8S1
     public String GenerateCodeInit(String vprefix) {
         String s = "{\n"
                 + "   int _i;\n"
-                + "   for(_i=0;_i<" + n + ";_i++)\n"
+                + "   for (_i = 0; _i < " + n + "; _i++)\n"
                 + "   " + GetCName() + "[_i] = 0;\n"
                 + "}\n";
         return s;
@@ -54,7 +54,7 @@ public class DisplayInstanceFrac8S128VBar extends DisplayInstance<DisplayFrac8S1
 
     @Override
     public String valueName(String vprefix) {
-        return "(int8_t *)(&displayVector[" + offset + "])";
+        return "(int8_t*) (&displayVector[" + offset + "])";
     }
 
     byte dst[] = new byte[n];
