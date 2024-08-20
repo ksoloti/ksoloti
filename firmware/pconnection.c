@@ -140,53 +140,55 @@ void LogTextMessage(const char* format, ...) {
 
 
 void PExTransmit(void) {
-  if (!chOQIsEmptyI(&BDU1.oqueue)) {
-    chThdSleepMilliseconds(1);
-    BDU1.oqueue.q_notify(&BDU1.oqueue);
-  }
-  else {
-    if (AckPending) {
-      int ack[7];
-      ack[0] = 0x416F7841; /* "AxoA" */
-      ack[1] = 0; /* reserved */
-      ack[2] = dspLoad200;
-      ack[3] = patchMeta.patchID;
-      ack[4] = sysmon_getVoltage10() + (sysmon_getVoltage50()<<16);
-      if (patchStatus) {
-        ack[5] = UNINITIALIZED;
-      } else {
-        ack[5] = loadPatchIndex;
-      }
-      ack[6] = fs_ready;
-      chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&ack[0], 7 * 4);
+    if (!chOQIsEmptyI(&BDU1.oqueue)) {
+        chThdSleepMilliseconds(1);
+        BDU1.oqueue.q_notify(&BDU1.oqueue);
+    }
+    else {
+        if (AckPending) {
+            uint32_t ack[7];
+            ack[0] = 0x416F7841; /* "AxoA" */
+            ack[1] = 0; /* reserved */
+            ack[2] = dspLoad200;
+            ack[3] = patchMeta.patchID;
+            ack[4] = sysmon_getVoltage10() + (sysmon_getVoltage50()<<16);
+            if (patchStatus) {
+                ack[5] = UNINITIALIZED;
+            }
+            else {
+                ack[5] = loadPatchIndex;
+            }
+            ack[6] = fs_ready;
+            chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&ack[0], 7 * 4);
 
 #ifdef DEBUG_SERIAL
-      chprintf((BaseSequentialStream * )&SD2,"ack!\r\n");
+            chprintf((BaseSequentialStream * )&SD2,"ack!\r\n");
 #endif
 
-      if (!patchStatus)
-        TransmitDisplayPckt();
+            if (!patchStatus) {
+                TransmitDisplayPckt();
+            }
 
-      connected = 1;
-      exception_checkandreport();
-      AckPending = 0;
-    }
-    if (!patchStatus) {
-      unsigned int i;
-      for (i = 0; i < patchMeta.numPEx; i++) {
-        if (patchMeta.pPExch[i].signals & 0x01) {
-          int v = (patchMeta.pPExch)[i].value;
-          patchMeta.pPExch[i].signals &= ~0x01;
-          PExMessage msg;
-          msg.header = 0x516F7841; /*"AxoQ" */
-          msg.patchID = patchMeta.patchID;
-          msg.index = i;
-          msg.value = v;
-          chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&msg, sizeof(msg));
+            connected = 1;
+            exception_checkandreport();
+            AckPending = 0;
         }
-      }
+        if (!patchStatus) {
+            uint16_t i;
+            for (i = 0; i < patchMeta.numPEx; i++) {
+                if (patchMeta.pPExch[i].signals & 0x01) {
+                    int v = (patchMeta.pPExch)[i].value;
+                    patchMeta.pPExch[i].signals &= ~0x01;
+                    PExMessage msg;
+                    msg.header = 0x516F7841; /*"AxoQ" */
+                    msg.patchID = patchMeta.patchID;
+                    msg.index = i;
+                    msg.value = v;
+                    chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&msg, sizeof(msg));
+                }
+            }
+        }
     }
-  }
 }
 
 
@@ -305,6 +307,7 @@ void ReadDirectoryListing(void) {
  * "Axow" (int length, int offset, char[12] filename, char[length] data) -> data write to SD card
  * "Axor" (int offset, int length) -> generic memory read
  * "Axoy" (int offset) -> generic memory read, single 32bit aligned
+ * "AxoY" returns true if Core SPILink jumper is set, i.e. Core is set up to be synced
  * "AxoS" -> start patch
  * "Axos" -> stop patch
  * "AxoT" (char number) -> apply preset
