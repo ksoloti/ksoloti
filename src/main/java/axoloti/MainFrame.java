@@ -1358,8 +1358,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                  */
                 String lastFive = cpuId.length() > 5 ? cpuId.substring(cpuId.length() - 5) : cpuId;
                 jLabelCPUID.setText("Board ID:    " + lastFive);
+                jLabelCPUID.setToolTipText("Showing the last five digits of the full board ID.\n" +
+                                           "You can name your Core by disconnecting it from\n" +
+                                           "the Patcher, then going to Board > Select Device... > Name.");
             } else {
                 jLabelCPUID.setText("Board Name: " + name);
+                jLabelCPUID.setToolTipText("Showing the name defined in Board > Select Device... > Name");
             }
         }
     }
