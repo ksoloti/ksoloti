@@ -625,43 +625,42 @@ public class Preferences {
     }
 
     public final void ResetLibraries(boolean delete) {
-        libraries = new ArrayList<AxolotiLibrary>();
 
-        AxoGitLibrary factory = new AxoGitLibrary(
+        /* Create default configs */
+        AxoGitLibrary axo_fact = new AxoGitLibrary(
                 AxolotiLibrary.FACTORY_ID,
                 "git",
                 System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
                     + Version.AXOLOTI_SHORT_VERSION + File.separator
                     + "axoloti-factory" + File.separator,
                 true,
-                "https://github.com/ksoloti/axoloti-factory.git",
+                "https://github.com/ksoloti/axoloti-factory.git", /* Notice we're now pointing to the forked&fixed /KSOLOTI/axoloti-factory! */
                 false
         );
-        libraries.add(factory);
 
-        libraries.add(new AxoGitLibrary(
+        AxoGitLibrary axo_comm = new AxoGitLibrary(
                 AxolotiLibrary.USER_LIBRARY_ID,
                 "git",
                 System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
                     + Version.AXOLOTI_SHORT_VERSION + File.separator
                     + "axoloti-contrib" + File.separator,
                 true,
-                "https://github.com/axoloti/axoloti-contrib.git",
+                "https://github.com/axoloti/axoloti-contrib.git", /* Will point to /KSOLOTI/axoloti-contrib in the future */
                 false
-        ));
+        );
 
-        libraries.add(new AxoGitLibrary(
+        AxoGitLibrary kso_fact = new AxoGitLibrary(
                 AxolotiLibrary.KSOLOTI_LIBRARY_ID,
                 "git",
                 System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
                     + Version.AXOLOTI_SHORT_VERSION + File.separator
                     + "ksoloti-objects" + File.separator,
                 true,
-                "https://github.com/ksoloti/ksoloti-objects.git",
+                "https://github.com/ksoloti/ksoloti-objects.git", /* Should be merged into ksoloti-contrib? */
                 false
-        ));
+        );
 
-        libraries.add(new AxoGitLibrary(
+        AxoGitLibrary kso_comm = new AxoGitLibrary(
                 AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID,
                 "git",
                 System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
@@ -670,13 +669,45 @@ public class Preferences {
                 true,
                 "https://github.com/ksoloti/ksoloti-contrib.git",
                 false
-        ));
-        // initialise the libraries
-        for (AxolotiLibrary lib : libraries) {
-            if (lib.getEnabled()) {
-                lib.init(delete);
-            }
+        );
+
+        /*
+         * Check and remove old libraries if they exist.
+         * Add back respective default config library, then initialize it.
+         */
+        libraries = getLibraries();
+        if (getLibrary(AxoGitLibrary.FACTORY_ID) != null) {
+            libraries.remove(getLibrary(AxoGitLibrary.FACTORY_ID));
         }
+        libraries.add(axo_fact);
+        if (axo_fact.getEnabled()) {
+            axo_fact.init(delete);
+        }
+
+        if (getLibrary(AxoGitLibrary.USER_LIBRARY_ID) != null) {
+            libraries.remove(getLibrary(AxoGitLibrary.USER_LIBRARY_ID));
+        }
+        libraries.add(axo_comm);
+        if (axo_comm.getEnabled()) {
+            axo_comm.init(delete);
+        }
+
+        if (getLibrary(AxoGitLibrary.KSOLOTI_LIBRARY_ID) != null) {
+            libraries.remove(getLibrary(AxoGitLibrary.KSOLOTI_LIBRARY_ID));
+        }
+        libraries.add(kso_fact);
+        if (kso_fact.getEnabled()) {
+            kso_fact.init(delete);
+        }
+
+        if (getLibrary(AxoGitLibrary.KSOLOTI_CONTRIB_LIBRARY_ID) != null) {
+            libraries.remove(getLibrary(AxoGitLibrary.KSOLOTI_CONTRIB_LIBRARY_ID));
+        }
+        libraries.add(kso_comm);
+        if (kso_comm.getEnabled()) {
+            kso_comm.init(delete);
+        }
+
         buildObjectSearchPatch();
     }
 
