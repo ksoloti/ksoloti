@@ -37,6 +37,8 @@ import javax.swing.event.HyperlinkListener;
  */
 public class AboutFrame extends javax.swing.JFrame {
 
+    private static final Logger LOGGER = Logger.getLogger(AboutFrame.class.getName());
+
     public static AboutFrame aboutFrame = new AboutFrame();
 
     /**
@@ -48,7 +50,7 @@ public class AboutFrame extends javax.swing.JFrame {
         try {
             jTextPaneAboutHtml.setPage(getClass().getResource("/resources/about.html"));
         } catch (IOException ex) {
-            Logger.getLogger(AboutFrame.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         jVersionTxt.setText(Version.AXOLOTI_VERSION);
@@ -69,15 +71,15 @@ public class AboutFrame extends javax.swing.JFrame {
                         try {
                             desktop.browse(f.toURI());
                         } catch (IOException ex) {
-                            Logger.getLogger(AboutFrame.class.getName()).log(Level.SEVERE, null, ex);
+                            LOGGER.log(Level.SEVERE, null, ex);
                         }
                     } else {
                         try {
                             desktop.browse(hle.getURL().toURI());
                         } catch (IOException ex) {
-                            Logger.getLogger(AboutFrame.class.getName()).log(Level.SEVERE, null, ex);
+                            LOGGER.log(Level.SEVERE, null, ex);
                         } catch (URISyntaxException ex) {
-                            Logger.getLogger(AboutFrame.class.getName()).log(Level.SEVERE, null, ex);
+                            LOGGER.log(Level.SEVERE, null, ex);
                         }
                     }
                 }

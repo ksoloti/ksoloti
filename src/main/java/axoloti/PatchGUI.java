@@ -89,6 +89,8 @@ import qcmds.QCmdProcessor;
 @Root(name = "patch-1.0")
 public class PatchGUI extends Patch {
 
+    private static final Logger LOGGER = Logger.getLogger(PatchGUI.class.getName());
+
     /* KeyCode integers */
     static final int keyCodeList[] = {
         KeyEvent.VK_A,
@@ -266,7 +268,7 @@ public class PatchGUI extends Patch {
                     StringSelection s = new StringSelection(baos.toString());
                     clip.setContents(s, (ClipboardOwner) null);
                 } catch (Exception ex) {
-                    Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
                 if (action == MOVE) {
                     deleteSelectedAxoObjInstances();
@@ -288,9 +290,9 @@ public class PatchGUI extends Patch {
                         }
                     }
                 } catch (UnsupportedFlavorException ex) {
-                    Logger.getLogger(PatchGUI.class.getName()).log(Level.SEVERE, "Paste", ex);
+                    LOGGER.log(Level.SEVERE, "Paste", ex);
                 } catch (IOException ex) {
-                    Logger.getLogger(PatchGUI.class.getName()).log(Level.SEVERE, "Paste", ex);
+                    LOGGER.log(Level.SEVERE, "Paste", ex);
                 }
                 return true;
             }
@@ -512,9 +514,9 @@ public class PatchGUI extends Patch {
                         }
                         dtde.dropComplete(true);
                     } catch (UnsupportedFlavorException ex) {
-                        Logger.getLogger(PatchGUI.class.getName()).log(Level.SEVERE, null, ex);
+                        LOGGER.log(Level.SEVERE, null, ex);
                     } catch (IOException ex) {
-                        Logger.getLogger(PatchGUI.class.getName()).log(Level.SEVERE, null, ex);
+                        LOGGER.log(Level.SEVERE, null, ex);
                     }
                     return;
                 }
@@ -724,7 +726,7 @@ public class PatchGUI extends Patch {
         } catch (javax.xml.stream.XMLStreamException ex) {
             // silence
         } catch (Exception ex) {
-            Logger.getLogger(PatchGUI.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -858,7 +860,7 @@ public class PatchGUI extends Patch {
                 SetDirty();
             }
         } else {
-            Logger.getLogger(PatchGUI.class.getName()).log(Level.INFO, "Can''t move: locked");
+            LOGGER.log(Level.INFO, "Can''t move: locked");
         }
     }
 
@@ -1100,7 +1102,7 @@ public class PatchGUI extends Patch {
             pf.setVisible(true);
             pf.repositionIfOutsideScreen();
         } catch (Exception ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -1130,14 +1132,14 @@ public class PatchGUI extends Patch {
         } catch (java.lang.reflect.InvocationTargetException ite) {
             if (ite.getTargetException() instanceof Patch.PatchVersionException) {
                 Patch.PatchVersionException pve = (Patch.PatchVersionException) ite.getTargetException();
-                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Patch \"{0}\" produced with newer version of Axoloti: {1}",
+                LOGGER.log(Level.SEVERE, "Patch \"{0}\" produced with newer version of Axoloti: {1}",
                         new Object[]{f.getAbsoluteFile(), pve.getMessage()});
             } else {
-                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ite);
+                LOGGER.log(Level.SEVERE, null, ite);
             }
             return null;
         } catch (Exception ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             return null;
         }
     }

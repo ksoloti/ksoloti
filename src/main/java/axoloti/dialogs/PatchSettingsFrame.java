@@ -39,6 +39,8 @@ import javax.swing.GroupLayout;
  */
 public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWindow {
 
+    private static final Logger LOGGER = Logger.getLogger(PatchSettingsFrame.class.getName());
+
     PatchSettings settings;
 
     final Patch patch;
@@ -513,14 +515,14 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
                 settings.subpatchmode = SubPatchMode.polyexpression;
                 break;
             default:
-                Logger.getLogger(PatchSettingsFrame.class.getName()).severe("Undefined subpatch mode");
+                LOGGER.severe("Undefined subpatch mode");
         }
     }
 
     private void jComboBoxMPEZoneActionPerformed(java.awt.event.ActionEvent evt) {
         int val = jComboBoxMPEZone.getSelectedIndex();
         if (val < 0 || val > 1) {
-            Logger.getLogger(PatchSettingsFrame.class.getName()).severe("Invalid MPE zone");
+            LOGGER.severe("Invalid MPE zone");
         }
         else {
             settings.setMPEZone(val);

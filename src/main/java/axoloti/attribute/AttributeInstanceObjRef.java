@@ -43,6 +43,8 @@ import org.simpleframework.xml.core.Persist;
  */
 public class AttributeInstanceObjRef extends AttributeInstanceString<AxoAttributeObjRef> {
 
+    // private static final Logger LOGGER = Logger.getLogger(AttributeInstanceObjRef.class.getName());
+
     @Attribute(name = "obj")
     String objName = "";
     JTextField TFObjName;
@@ -130,7 +132,7 @@ public class AttributeInstanceObjRef extends AttributeInstanceString<AxoAttribut
             o = "";
         }
         // if (o.isEmpty()) {
-        //     Logger.getLogger(AttributeInstanceObjRef.class.getName()).log(Level.SEVERE, "Incomplete object reference attribute in {0}", GetObjectInstance().getInstanceName());
+        //     LOGGER.log(Level.SEVERE, "Incomplete object reference attribute in {0}", GetObjectInstance().getInstanceName());
         // }
         String o2 = "parent->";
 

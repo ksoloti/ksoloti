@@ -19,7 +19,7 @@
 package axoloti.menus;
 
 // import axoloti.CheckForUpdates;
-import axoloti.MainFrame;
+// import axoloti.MainFrame;
 import axoloti.dialogs.AboutFrame;
 import axoloti.dialogs.ShortcutsFrame;
 import java.awt.Desktop;
@@ -38,6 +38,8 @@ import javax.swing.event.MenuListener;
  * @author jtaelman
  */
 public class HelpMenu extends JMenu {
+
+    private static final Logger LOGGER = Logger.getLogger(HelpMenu.class.getName());
 
     private javax.swing.JMenuItem jMenuHelpContents;
     private javax.swing.JMenuItem jMenuAbout;
@@ -148,9 +150,9 @@ public class HelpMenu extends JMenu {
         try {
             Desktop.getDesktop().browse(new URI("https://sebiik.github.io/community.axoloti.com.backup/t/axoloti-user-guide/50.html"));
         } catch (IOException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         } catch (URISyntaxException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -158,9 +160,9 @@ public class HelpMenu extends JMenu {
         try {
             Desktop.getDesktop().browse(new URI("https://sebiik.github.io/community.axoloti.com.backup/"));
         } catch (IOException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         } catch (URISyntaxException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 

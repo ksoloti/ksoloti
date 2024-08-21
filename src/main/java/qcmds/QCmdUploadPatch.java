@@ -33,6 +33,8 @@ import java.util.logging.Logger;
  */
 public class QCmdUploadPatch implements QCmdSerialTask {
 
+    private static final Logger LOGGER = Logger.getLogger(QCmdUploadPatch.class.getName());
+
     File f;
 
     public QCmdUploadPatch() {
@@ -61,7 +63,7 @@ public class QCmdUploadPatch implements QCmdSerialTask {
                 String buildDir=System.getProperty(Axoloti.LIBRARIES_DIR)+"/build";
                 f = new File(buildDir + "/xpatch.bin");
             }
-            Logger.getLogger(QCmdUploadPatch.class.getName()).log(Level.INFO, "{0}", f.getAbsolutePath());
+            LOGGER.log(Level.INFO, "{0}", f.getAbsolutePath());
             int tlength = (int) f.length();
             FileInputStream inputStream = new FileInputStream(f);
             int offset = 0;
@@ -78,7 +80,7 @@ public class QCmdUploadPatch implements QCmdSerialTask {
                 byte[] buffer = new byte[l];
                 int nRead = inputStream.read(buffer, 0, l);
                 if (nRead != l) {
-                    Logger.getLogger(QCmdUploadPatch.class.getName()).log(Level.SEVERE, "File size wrong? {0}", nRead);
+                    LOGGER.log(Level.SEVERE, "File size wrong? {0}", nRead);
                 }
                 connection.UploadFragment(buffer, connection.getTargetProfile().getPatchAddr() + offset);
                 offset += nRead;
@@ -86,9 +88,9 @@ public class QCmdUploadPatch implements QCmdSerialTask {
             inputStream.close();
             return this;
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(QCmdUploadPatch.class.getName()).log(Level.SEVERE, "FileNotFoundException", ex);
+            LOGGER.log(Level.SEVERE, "FileNotFoundException", ex);
         } catch (IOException ex) {
-            Logger.getLogger(QCmdUploadPatch.class.getName()).log(Level.SEVERE, "IOException", ex);
+            LOGGER.log(Level.SEVERE, "IOException", ex);
         }
         return new QCmdDisconnect();
     }

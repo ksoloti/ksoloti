@@ -51,6 +51,8 @@ import org.simpleframework.xml.Attribute;
 @Deprecated
 public class AttributeInstanceWavefile extends AttributeInstance<AxoAttributeWavefile> {
 
+    private static final Logger LOGGER = Logger.getLogger(AttributeInstanceWavefile.class.getName());
+
     @Attribute
     String waveFilename;
     JTextField TFwaveFilename;
@@ -151,9 +153,9 @@ public class AttributeInstanceWavefile extends AttributeInstance<AxoAttributeWav
             }
             s = s + " 0}";
         } catch (UnsupportedAudioFileException ex) {
-            Logger.getLogger(AttributeInstanceWavefile.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(AttributeInstanceWavefile.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         return s;

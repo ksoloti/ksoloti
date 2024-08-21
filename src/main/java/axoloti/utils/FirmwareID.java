@@ -35,6 +35,8 @@ import java.util.zip.CRC32;
  */
 public class FirmwareID {
 
+    private static final Logger LOGGER = Logger.getLogger(FirmwareID.class.getName());
+
     static public String getFirmwareID() {
         try {
             String boarddef = System.getProperty(Axoloti.FIRMWARE_DIR) + "/build/";
@@ -60,14 +62,14 @@ public class FirmwareID {
             int nRead = inputStream.read(bb, 0, tlength);
             inputStream.close();
             if (nRead != tlength) {
-                Logger.getLogger(FirmwareID.class.getName()).log(Level.SEVERE, "File size wrong?" + nRead);
+                LOGGER.log(Level.SEVERE, "File size wrong?" + nRead);
             }
             CRC32 zcrc = new CRC32();
             zcrc.update(bb);
             int zcrcv = (int) zcrc.getValue();
             return String.format("%08X", zcrcv);
         } catch (IOException ex) {
-            Logger.getLogger(FirmwareID.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         return "";
     }

@@ -58,6 +58,8 @@ import org.simpleframework.xml.core.Persister;
 @Deprecated
 public class gentools {
 
+    private static final Logger LOGGER = Logger.getLogger(gentools.class.getName());
+
     static protected Serializer serializer = new Persister();
     static String unstable = "unstable";
 
@@ -102,17 +104,17 @@ public class gentools {
         s = s.replaceAll("default", "");
         for (Parameter p : o.params) {
             if (s.contains(p.getName())) {
-                Logger.getLogger(axoloti.Patch.class.getName()).log(Level.SEVERE, "Object " + o.id + ": contains unmarked string " + p.getName() + "\n" + s);
+                LOGGER.log(Level.SEVERE, "Object " + o.id + ": contains unmarked string " + p.getName() + "\n" + s);
             }
         }
         for (Inlet p : o.inlets) {
             if (s.contains(p.getName())) {
-                Logger.getLogger(axoloti.Patch.class.getName()).log(Level.SEVERE, "Object " + o.id + ": contains unmarked string " + p.getName() + "\n" + s);
+                LOGGER.log(Level.SEVERE, "Object " + o.id + ": contains unmarked string " + p.getName() + "\n" + s);
             }
         }
         for (Outlet p : o.outlets) {
             if (s.contains(p.getName())) {
-                Logger.getLogger(axoloti.Patch.class.getName()).log(Level.SEVERE, "Object " + o.id + ": contains unmarked string " + p.getName() + "\n" + s);
+                LOGGER.log(Level.SEVERE, "Object " + o.id + ": contains unmarked string " + p.getName() + "\n" + s);
             }
         }
 
@@ -377,7 +379,7 @@ public class gentools {
             try {
                 serializer.write(a, os);
             } catch (Exception ex) {
-                Logger.getLogger(GeneratedObjects.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
 
             boolean identical = false;
@@ -404,9 +406,9 @@ public class gentools {
                 }
                 is1.close(); is2.close();
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(gentools.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                Logger.getLogger(gentools.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
             if (!identical) {
                 // overwrite with new
@@ -415,7 +417,7 @@ public class gentools {
                     File f2 = new File(getObjDir() + path + "/" + fn + ".axo");
                     serializer.write(a, f2);
                 } catch (Exception ex) {
-                    Logger.getLogger(GeneratedObjects.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             } else {
                 System.out.println("object file unchanged : " + f.getName());
@@ -426,7 +428,7 @@ public class gentools {
                 serializer.write(a, f);
                 System.out.println("object file created : " + f.getName());
             } catch (Exception ex) {
-                Logger.getLogger(GeneratedObjects.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -468,7 +470,7 @@ public class gentools {
             try {
                 serializer.write(a, os);
             } catch (Exception ex) {
-                Logger.getLogger(GeneratedObjects.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
 
             boolean identical = false;
@@ -495,9 +497,9 @@ public class gentools {
                 }
                 is1.close(); is2.close();
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(gentools.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                Logger.getLogger(gentools.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
             if (!identical) {
                 // overwrite with new
@@ -506,7 +508,7 @@ public class gentools {
                     File f2 = new File(getObjDir() + path + "/" + fn + ".axo");
                     serializer.write(a, f2);
                 } catch (Exception ex) {
-                    Logger.getLogger(GeneratedObjects.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             } else {
                 System.out.println("object file unchanged : " + f.getName());
@@ -517,7 +519,7 @@ public class gentools {
                 serializer.write(a, f);
                 System.out.println("object file created : " + f.getName());
             } catch (Exception ex) {
-                Logger.getLogger(GeneratedObjects.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
     }

@@ -51,6 +51,8 @@ import javax.swing.table.AbstractTableModel;
  */
 abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel implements ObjectModifiedListener {
 
+    private static final Logger LOGGER = Logger.getLogger(AtomDefinitionsEditor.class.getName());
+
     final T[] AtomDefinitionsList;
     AxoObject obj;
     private T o;
@@ -197,9 +199,9 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                     UpdateTable2();
                     AtomDefinitionsEditor.this.obj.FireObjectModified(this);
                 } catch (InstantiationException ex) {
-                    Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 } catch (IllegalAccessException ex) {
-                    Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -310,9 +312,9 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                             AtomDefinitionsEditor.this.obj.FireObjectModified(this);
                             UpdateTable2();
                         } catch (InstantiationException ex) {
-                            Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, ex);
+                            LOGGER.log(Level.SEVERE, null, ex);
                         } catch (IllegalAccessException ex) {
-                            Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, ex);
+                            LOGGER.log(Level.SEVERE, null, ex);
                         }
                         break;
                     case 2:
@@ -424,9 +426,9 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                                 f.setInt(o, Integer.parseInt((String) value));
                                 AtomDefinitionsEditor.this.obj.FireObjectModified(this);
                             } catch (IllegalArgumentException ex) {
-                                Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
+                                LOGGER.log(Level.SEVERE, null, ex);
                             } catch (IllegalAccessException ex) {
-                                Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
+                                LOGGER.log(Level.SEVERE, null, ex);
                             }
                         } else if (t == ArrayList.class) {
                             try {
@@ -436,9 +438,9 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                                 l.addAll(StringToStringArrayList(s));
                                 AtomDefinitionsEditor.this.obj.FireObjectModified(this);
                             } catch (IllegalArgumentException ex) {
-                                Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
+                                LOGGER.log(Level.SEVERE, null, ex);
                             } catch (IllegalAccessException ex) {
-                                Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
+                                LOGGER.log(Level.SEVERE, null, ex);
                             }
                         } else if (t == ValueInt32.class) {
                             try {
@@ -451,9 +453,9 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                                 v.setInt(Integer.parseInt((String) value));
                                 AtomDefinitionsEditor.this.obj.FireObjectModified(this);
                             } catch (IllegalArgumentException ex) {
-                                Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
+                                LOGGER.log(Level.SEVERE, null, ex);
                             } catch (IllegalAccessException ex) {
-                                Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
+                                LOGGER.log(Level.SEVERE, null, ex);
                             }
                         } else if (t == ValueFrac32.class) {
                             try {
@@ -474,18 +476,18 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                                 }
                                 AtomDefinitionsEditor.this.obj.FireObjectModified(this);
                             } catch (IllegalArgumentException ex) {
-                                Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
+                                LOGGER.log(Level.SEVERE, null, ex);
                             } catch (IllegalAccessException ex) {
-                                Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
+                                LOGGER.log(Level.SEVERE, null, ex);
                             }
                         } else if (t == String.class) {
                             try {
                                 f.set(o, (String) value);
                                 AtomDefinitionsEditor.this.obj.FireObjectModified(this);
                             } catch (IllegalArgumentException ex) {
-                                Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
+                                LOGGER.log(Level.SEVERE, null, ex);
                             } catch (IllegalAccessException ex) {
-                                Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
+                                LOGGER.log(Level.SEVERE, null, ex);
                             }
                         }
                         break;
@@ -568,9 +570,9 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                     Field f = c.getField(fn);
                     fields.add(f);
                 } catch (NoSuchFieldException ex) {
-                    Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 } catch (SecurityException ex) {
-                    Logger.getLogger(AtomDefinitionsEditor.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         }

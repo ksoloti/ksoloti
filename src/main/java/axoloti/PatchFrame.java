@@ -78,6 +78,7 @@ import qcmds.QCmdUploadPatch;
  */
 public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, ConnectionStatusListener, SDCardMountStatusListener {
 
+    private static final Logger LOGGER = Logger.getLogger(PatchFrame.class.getName());
     /**
      * Creates new form PatchFrame
      */
@@ -140,7 +141,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     clip.setContents(s, (ClipboardOwner) null);
                     patch.deleteSelectedAxoObjInstances();
                 } catch (Exception ex) {
-                    Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -169,7 +170,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     StringSelection s = new StringSelection(baos.toString());
                     clip.setContents(s, (ClipboardOwner) null);
                 } catch (Exception ex) {
-                    Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -186,9 +187,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 try {
                     patch.paste((String) clip.getData(DataFlavor.stringFlavor), null, false);
                 } catch (UnsupportedFlavorException ex) {
-                    Logger.getLogger(PatchFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
-                    Logger.getLogger(PatchFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -826,7 +827,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             clip.setContents(s, (ClipboardOwner)null);
         }
         catch (Exception ex) {
-            Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -836,10 +837,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             patch.paste((String)clip.getData(DataFlavor.stringFlavor), null, false);
         }
         catch (UnsupportedFlavorException ex) {
-            Logger.getLogger(PatchFrame.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         catch (IOException ex) {
-            Logger.getLogger(PatchFrame.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -1104,7 +1105,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         try {
             serializer.write(patch, baos);
         } catch (Exception ex) {
-            Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
         c.setContents(new StringSelection(baos.toString()), null);

@@ -64,6 +64,8 @@ import javax.swing.SwingUtilities;
  */
 public class FileManagerFrame extends javax.swing.JFrame implements ConnectionStatusListener, SDCardMountStatusListener {
 
+    private static final Logger LOGGER = Logger.getLogger(FileManagerFrame.class.getName());
+
     /**
      * Creates new form FileManagerFrame
      */
@@ -184,7 +186,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         for (File f : droppedFiles) {
                             System.out.println(f.getName());
                             if (!f.canRead()) {
-                                Logger.getLogger(FileManagerFrame.class.getName()).log(Level.SEVERE, "Can''t read file");
+                               LOGGER.log(Level.SEVERE, "Can''t read file");
                             } else {
                                 processor.AppendToQueue(new QCmdUploadFile(f, f.getName()));
                             }
@@ -192,9 +194,9 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         RequestRefresh();
                     }
                 } catch (UnsupportedFlavorException ex) {
-                    Logger.getLogger(FileManagerFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
-                    Logger.getLogger(FileManagerFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -419,7 +421,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     if (f != null) {
                         prefs.setCurrentFileDirectory(f.getParentFile().toString());
                         if (!f.canRead()) {
-                            Logger.getLogger(FileManagerFrame.class.getName()).log(Level.SEVERE, "Can''t read file");
+                            LOGGER.log(Level.SEVERE, "Can''t read file");
                             return;
                         }
                         processor.AppendToQueue(new QCmdUploadFile(f, dir + f.getName()));

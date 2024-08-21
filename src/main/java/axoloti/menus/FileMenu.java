@@ -57,6 +57,8 @@ import qcmds.QCmdProcessor;
  */
 public class FileMenu extends JMenu {
 
+    private static final Logger LOGGER = Logger.getLogger(FileMenu.class.getName());
+
     public FileMenu(String s) {
         super(s);
         setDelay(300);
@@ -280,9 +282,9 @@ public class FileMenu extends JMenu {
     //     if (JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and may freeze the UI until complete. Continue?") == JOptionPane.YES_OPTION) {
     //         class Thd extends Thread {
     //             public void run() {
-    //                 Logger.getLogger(FileMenu.class.getName()).log(Level.WARNING, "Running object tests, please wait...");
+    //                 LOGGER.log(Level.WARNING, "Running object tests, please wait...");
     //                 mainframe.runObjectTests();
-    //                 Logger.getLogger(FileMenu.class.getName()).log(Level.WARNING, "Finished running object tests.\n");
+    //                 LOGGER.log(Level.WARNING, "Finished running object tests.\n");
     //             }
     //         }
     //         Thd thread = new Thd();
@@ -294,9 +296,9 @@ public class FileMenu extends JMenu {
     //     if (JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and may freeze the UI until complete. Continue?") == JOptionPane.YES_OPTION) {
     //         class Thd extends Thread {
     //             public void run() {
-    //                 Logger.getLogger(FileMenu.class.getName()).log(Level.WARNING, "Running patch tests, please wait...");
+    //                 LOGGER.log(Level.WARNING, "Running patch tests, please wait...");
     //                 mainframe.runPatchTests();
-    //                 Logger.getLogger(FileMenu.class.getName()).log(Level.WARNING, "Finished running patch tests.\n");
+    //                 LOGGER.log(Level.WARNING, "Finished running patch tests.\n");
     //             }
     //         }
     //         Thd thread = new Thd();
@@ -309,9 +311,9 @@ public class FileMenu extends JMenu {
         if (JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and may freeze the UI until complete. Continue?") == JOptionPane.YES_OPTION) {
             class Thd extends Thread {
                 public void run() {
-                    Logger.getLogger(FileMenu.class.getName()).log(Level.WARNING, "Running tests, please wait...");
+                    LOGGER.log(Level.WARNING, "Running tests, please wait...");
                     mainframe.runAllTests();
-                    Logger.getLogger(FileMenu.class.getName()).log(Level.WARNING, "Finished running tests.\n");
+                    LOGGER.log(Level.WARNING, "Finished running tests.\n");
                 }
             }
             Thd thread = new Thd();
@@ -327,9 +329,9 @@ public class FileMenu extends JMenu {
                 if (f.exists() && f.canRead()) {
                     class Thd extends Thread {
                         public void run() {
-                            Logger.getLogger(FileMenu.class.getName()).log(Level.WARNING, "Running tests, please wait...");
+                            LOGGER.log(Level.WARNING, "Running tests, please wait...");
                             mainframe.runTestDir(f);
-                            Logger.getLogger(FileMenu.class.getName()).log(Level.WARNING, "Finished running tests.\n");
+                            LOGGER.log(Level.WARNING, "Finished running tests.\n");
                         }
                     }
                     Thd thread = new Thd();
@@ -362,11 +364,11 @@ public class FileMenu extends JMenu {
             String name = uri.substring(uri.lastIndexOf("/") + 1, uri.length());
             PatchGUI.OpenPatch(name, input);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
+            LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
         } catch (URISyntaxException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
+            LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
         } catch (IOException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{uri, ex});
+            LOGGER.log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{uri, ex});
         }
     }
 
@@ -381,11 +383,11 @@ public class FileMenu extends JMenu {
     private void jMenuSyncActionPerformed(java.awt.event.ActionEvent evt) {
         class Thd extends Thread {
             public void run() {
-                Logger.getLogger(FileMenu.class.getName()).log(Level.INFO, "Syncing Libraries, please wait...");
+                LOGGER.log(Level.INFO, "Syncing Libraries, please wait...");
                 for (AxolotiLibrary lib : Preferences.LoadPreferences().getLibraries()) {
                     lib.sync();
                 }
-                Logger.getLogger(FileMenu.class.getName()).log(Level.INFO, "Finished syncing Libraries.\n");
+                LOGGER.log(Level.INFO, "Finished syncing Libraries.\n");
                 axoObjects.LoadAxoObjects();
             }
         }

@@ -37,6 +37,8 @@ import java.util.zip.CRC32;
  */
 public class QCmdUploadFWSDRam implements QCmdSerialTask {
 
+    private static final Logger LOGGER = Logger.getLogger(QCmdUploadFWSDRam.class.getName());
+
     File f;
 
     public QCmdUploadFWSDRam() {
@@ -76,7 +78,7 @@ public class QCmdUploadFWSDRam implements QCmdSerialTask {
                 f = new File(buildDir);
             }
 
-            Logger.getLogger(QCmdUploadFWSDRam.class.getName()).log(Level.INFO, "Firmware file path: {0}", f.getAbsolutePath());
+            LOGGER.log(Level.INFO, "Firmware file path: {0}", f.getAbsolutePath());
             int tlength = (int) f.length();
             FileInputStream inputStream = new FileInputStream(f);
 
@@ -97,16 +99,16 @@ public class QCmdUploadFWSDRam implements QCmdSerialTask {
             byte[] bb = new byte[tlength];
             int nRead = inputStream.read(bb, 0, tlength);
             if (nRead != tlength) {
-                Logger.getLogger(QCmdUploadFWSDRam.class.getName()).log(Level.SEVERE, "File size wrong? {0}", nRead);
+                LOGGER.log(Level.SEVERE, "File size wrong? {0}", nRead);
             }
             inputStream.close();
             inputStream = new FileInputStream(f);
-            Logger.getLogger(QCmdUploadFWSDRam.class.getName()).log(Level.INFO, "Firmware file size: {0}", tlength);
+            LOGGER.log(Level.INFO, "Firmware file size: {0}", tlength);
 //            bb.order(ByteOrder.LITTLE_ENDIAN);
             CRC32 zcrc = new CRC32();
             zcrc.update(bb);
             int zcrcv = (int) zcrc.getValue();
-            Logger.getLogger(QCmdUploadFWSDRam.class.getName()).log(Level.INFO, "Firmware CRC: 0x{0}", Integer.toHexString(zcrcv).toUpperCase());
+            LOGGER.log(Level.INFO, "Firmware CRC: 0x{0}", Integer.toHexString(zcrcv).toUpperCase());
             header[12] = (byte) (zcrcv);
             header[13] = (byte) (zcrcv >> 8);
             header[14] = (byte) (zcrcv >> 16);
@@ -126,7 +128,7 @@ public class QCmdUploadFWSDRam implements QCmdSerialTask {
                 byte[] buffer = new byte[l];
                 nRead = inputStream.read(buffer, 0, l);
                 if (nRead != l) {
-                    Logger.getLogger(QCmdUploadFWSDRam.class.getName()).log(Level.SEVERE, "File size wrong? {0}", nRead);
+                    LOGGER.log(Level.SEVERE, "File size wrong? {0}", nRead);
                 }
                 connection.UploadFragment(buffer, connection.getTargetProfile().getSDRAMAddr() + offset);
                 offset += nRead;
@@ -134,9 +136,9 @@ public class QCmdUploadFWSDRam implements QCmdSerialTask {
             inputStream.close();
             return this;
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(QCmdUploadFWSDRam.class.getName()).log(Level.SEVERE, "FileNotFoundException", ex);
+            LOGGER.log(Level.SEVERE, "FileNotFoundException", ex);
         } catch (IOException ex) {
-            Logger.getLogger(QCmdUploadFWSDRam.class.getName()).log(Level.SEVERE, "IOException", ex);
+            LOGGER.log(Level.SEVERE, "IOException", ex);
         }
         return new QCmdDisconnect();
     }

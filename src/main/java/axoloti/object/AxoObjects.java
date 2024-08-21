@@ -46,6 +46,8 @@ import org.simpleframework.xml.core.Persister;
  */
 public class AxoObjects {
 
+    private static final Logger LOGGER = Logger.getLogger(AxoObjects.class.getName());
+
     public AxoObjectTreeNode ObjectTree;
     public ArrayList<AxoObjectAbstract> ObjectList;
     HashMap<String, AxoObjectAbstract> ObjectUUIDMap;
@@ -68,22 +70,22 @@ public class AxoObjects {
                 // try object file
                 ArrayList<AxoObjectAbstract> set = new ArrayList<AxoObjectAbstract>();
                 String fnameA = bfname + ".axo";
-                Logger.getLogger(AxoObjects.class.getName()).log(Level.FINE, "Attempt to create object from object file: {0}", fnameA);
+                LOGGER.log(Level.FINE, "Attempt to create object from object file: {0}", fnameA);
                 File f = new File(fnameA);
                 if (f.isFile()) {
                     boolean loadOK = false;
                     AxoObjectFile of = null;
                     try {
-                        Logger.getLogger(AxoObjects.class.getName()).log(Level.FINE, "Hit: {0}", fnameA);
+                        LOGGER.log(Level.FINE, "Hit: {0}", fnameA);
                         of = serializer.read(AxoObjectFile.class, f);
                         loadOK = true;
                     } catch (Exception ex) {
-                        Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+                        LOGGER.log(Level.SEVERE, null, ex);
                         try {
                             of = serializer.read(AxoObjectFile.class, f, false);
                             loadOK = true;
                         } catch (Exception ex1) {
-                            Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex1);
+                            LOGGER.log(Level.SEVERE, null, ex1);
                         }
                     }
                     if (loadOK) {
@@ -92,7 +94,7 @@ public class AxoObjects {
                             o.sPath = fnameA;
                             // to be completed : loading overloaded objects too
                             o.createdFromRelativePath = true;
-                            Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Loaded: {0}", fnameA);
+                            LOGGER.log(Level.INFO, "Loaded: {0}", fnameA);
                             set.add(o);
                             return set;
                         }
@@ -103,16 +105,16 @@ public class AxoObjects {
                 // try subpatch file
                 ArrayList<AxoObjectAbstract> set = new ArrayList<AxoObjectAbstract>();
                 String fnameP = bfname + ".axs";
-                Logger.getLogger(AxoObjects.class.getName()).log(Level.FINE, "Attempt to create object from subpatch file in patch directory: {0}", fnameP);
+                LOGGER.log(Level.FINE, "Attempt to create object from subpatch file in patch directory: {0}", fnameP);
                 File f = new File(fnameP);
                 if (f.isFile()) {
-                    Logger.getLogger(AxoObjects.class.getName()).log(Level.FINE, "Hit: {0}", fnameP);
+                    LOGGER.log(Level.FINE, "Hit: {0}", fnameP);
                     AxoObjectAbstract o = new AxoObjectFromPatch(f);
                     if (n.startsWith("./") || n.startsWith("../")) {
                         o.createdFromRelativePath = true;
                     }
                     o.sPath = f.getPath();
-                    Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Loaded: {0}", fnameP);
+                    LOGGER.log(Level.INFO, "Loaded: {0}", fnameP);
                     set.add(o);
                     return set;
                 }
@@ -129,13 +131,13 @@ public class AxoObjects {
             String spath[] = MainFrame.prefs.getObjectSearchPath();
             for (String s : spath) {
                 String fsname = s + "/" + n + ".axs";
-                Logger.getLogger(AxoObjects.class.getName()).log(Level.FINE, "Attempt to create object from subpatch file: {0}", fsname);
+                LOGGER.log(Level.FINE, "Attempt to create object from subpatch file: {0}", fsname);
                 File fs = new File(fsname);
                 if (fs.isFile()) {
                     AxoObjectAbstract o = new AxoObjectFromPatch(fs);
 //                    o.createdFromRelativePath = true;
                     o.sPath = n + ".axs";
-                    Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Loaded: {0}", fsname);
+                    LOGGER.log(Level.INFO, "Loaded: {0}", fsname);
                     set.add(o);
                     return set;
                 }
@@ -167,7 +169,7 @@ public class AxoObjects {
                     }
                 }
             } catch (IOException ex) {
-                Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
         AxoObjectTreeNode t = new AxoObjectTreeNode(id);
@@ -184,16 +186,16 @@ public class AxoObjects {
                 }
                 t.description = result.toString();
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             } finally {
                 try {
                     if (reader != null) {
                         reader.close();
                     }
                 } catch (IOException ex) {
-                    Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -234,24 +236,24 @@ public class AxoObjects {
                     } catch (java.lang.reflect.InvocationTargetException ite) {
                         if(ite.getTargetException() instanceof AxoObjectFile.ObjectVersionException) {
                             AxoObjectFile.ObjectVersionException ove = (AxoObjectFile.ObjectVersionException) ite.getTargetException();
-                            Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, "Object \"{0}\" produced with newer version of Axoloti: {1}", 
+                            LOGGER.log(Level.SEVERE, "Object \"{0}\" produced with newer version of Axoloti: {1}", 
                             new Object[]{fileEntry.getAbsoluteFile(), ove.getMessage()});
                         } else {
-                            Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, fileEntry.getAbsolutePath(), ite);
+                            LOGGER.log(Level.SEVERE, fileEntry.getAbsolutePath(), ite);
                             try {
-                                Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO,"Error reading object, try relaxed mode {0}",fileEntry.getAbsolutePath());
+                                LOGGER.log(Level.INFO,"Error reading object, try relaxed mode {0}",fileEntry.getAbsolutePath());
                                 o = serializer.read(AxoObjectFile.class, fileEntry, false);
                             } catch (Exception ex1) {
-                                Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex1);
+                                LOGGER.log(Level.SEVERE, null, ex1);
                             }
                         }
                     } catch (Exception ex) {
-                        Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, fileEntry.getAbsolutePath(), ex);
+                        LOGGER.log(Level.SEVERE, fileEntry.getAbsolutePath(), ex);
                         try {
-                            Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO,"Error reading object, try relaxed mode {0}",fileEntry.getAbsolutePath());
+                            LOGGER.log(Level.INFO,"Error reading object, try relaxed mode {0}",fileEntry.getAbsolutePath());
                             o = serializer.read(AxoObjectFile.class, fileEntry, false);
                         } catch (Exception ex1) {
-                            Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex1);
+                            LOGGER.log(Level.SEVERE, null, ex1);
                         }
                     }
                     if (o!=null) {
@@ -276,7 +278,7 @@ public class AxoObjects {
                             ObjectList.add(a);
 
                             if ((a.getUUID() != null) && (ObjectUUIDMap.containsKey(a.getUUID()))) {
-                                Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, "Duplicate UUID! {0}\nOriginal name: {1}\nPath: {2}", new Object[]{fileEntry.getAbsolutePath(), ObjectUUIDMap.get(a.getUUID()).id, ObjectUUIDMap.get(a.getUUID()).sPath});
+                                LOGGER.log(Level.SEVERE, "Duplicate UUID! {0}\nOriginal name: {1}\nPath: {2}", new Object[]{fileEntry.getAbsolutePath(), ObjectUUIDMap.get(a.getUUID()).id, ObjectUUIDMap.get(a.getUUID()).sPath});
                             }
                             ObjectUUIDMap.put(a.getUUID(), a);
                         }
@@ -295,7 +297,7 @@ public class AxoObjects {
                         t.Objects.add(a);
                         ObjectList.add(a);
                     } catch (Exception ex) {
-                        Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, fileEntry.getAbsolutePath(), ex);
+                        LOGGER.log(Level.SEVERE, fileEntry.getAbsolutePath(), ex);
                     }
                 }
             }
@@ -319,7 +321,7 @@ public class AxoObjects {
                     try {
                         pname = folder.getCanonicalFile().getParent();
                     } catch (IOException ex) {
-                        Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+                        LOGGER.log(Level.SEVERE, null, ex);
                     }
                     if (!ObjectTree.SubNodes.containsKey(pname)) {
                         ObjectTree.SubNodes.put(pname, t);
@@ -350,14 +352,14 @@ public class AxoObjects {
                 String spath[] = MainFrame.prefs.getObjectSearchPath();
                 if (spath != null) {
                     for (String path : spath) {
-                        Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Object search path: {0}", path);
+                        LOGGER.log(Level.INFO, "Object search path: {0}", path);
                         LoadAxoObjects(path);
                     }
                 }
                 else {
-                    Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, "Object search path empty!\n");
+                    LOGGER.log(Level.SEVERE, "Object search path empty!\n");
                 }
-                Logger.getLogger(AxoObjects.class.getName()).log(Level.INFO, "Finished loading objects.\n");
+                LOGGER.log(Level.INFO, "Finished loading objects.\n");
             }
         };
         LoaderThread = new Thread(objloader);
@@ -487,7 +489,7 @@ public class AxoObjects {
             try {
                 serializer.write(a, os);
             } catch (Exception ex) {
-                Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
 
             boolean identical = false;
@@ -514,9 +516,9 @@ public class AxoObjects {
                 }
                 is1.close(); is2.close();
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
             if (!identical) {
                 // overwrite with new
@@ -524,7 +526,7 @@ public class AxoObjects {
                     System.out.println("object file changed : " + f.getName());
                     serializer.write(a, f);
                 } catch (Exception ex) {
-                    Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             } else {
                 System.out.println("object file unchanged : " + f.getName());
@@ -535,7 +537,7 @@ public class AxoObjects {
                 serializer.write(a, f);
                 System.out.println("object file created : " + f.getName());
             } catch (Exception ex) {
-                Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
         o.id = id;

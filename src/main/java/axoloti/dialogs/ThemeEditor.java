@@ -25,6 +25,8 @@ import javax.swing.text.BadLocationException;
 
 public class ThemeEditor extends JFrame {
 
+    private static final Logger LOGGER = Logger.getLogger(ThemeEditor.class.getName());
+
     private Theme theme;
     private JPanel p;
 
@@ -158,7 +160,7 @@ public class ThemeEditor extends JFrame {
                                 }
 
                             } catch (IllegalAccessException ex) {
-                                Logger.getLogger(ThemeEditor.class.getName()).log(Level.SEVERE, "{0}", new Object[]{ex});
+                                LOGGER.log(Level.SEVERE, "{0}", new Object[]{ex});
                             }
                         }
 
@@ -181,7 +183,7 @@ public class ThemeEditor extends JFrame {
                     p.add(t);
                 }
             } catch (IllegalAccessException ex) {
-                Logger.getLogger(ThemeEditor.class.getName()).log(Level.SEVERE, "{0}", new Object[]{ex});
+                LOGGER.log(Level.SEVERE, "{0}", new Object[]{ex});
             }
         }
         this.setContentPane(s);
@@ -201,7 +203,7 @@ public class ThemeEditor extends JFrame {
                     ((JTextArea) target).setText(themeName);
                 }
             } catch (IllegalAccessException e) {
-                Logger.getLogger(ThemeEditor.class.getName()).log(Level.SEVERE, "{0}", new Object[]{e});
+                LOGGER.log(Level.SEVERE, "{0}", new Object[]{e});
             }
             target.repaint();
             i += 2;
@@ -212,7 +214,7 @@ public class ThemeEditor extends JFrame {
         try {
             theme.Theme_Name = e.getDocument().getText(0, e.getDocument().getLength());
         } catch (BadLocationException ex) {
-            Logger.getLogger(ThemeEditor.class.getName()).log(Level.SEVERE, "{0}", new Object[]{e});
+            LOGGER.log(Level.SEVERE, "{0}", new Object[]{e});
         }
     }
 

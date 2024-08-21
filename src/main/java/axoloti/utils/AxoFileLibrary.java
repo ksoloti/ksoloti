@@ -4,8 +4,9 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AxoFileLibrary
-        extends AxolotiLibrary {
+public class AxoFileLibrary extends AxolotiLibrary {
+
+    private static final Logger LOGGER = Logger.getLogger(AxoFileLibrary.class.getName());
 
     public static String TYPE="local";
     
@@ -25,9 +26,9 @@ public class AxoFileLibrary
     public void reportStatus() {
         File f = new File(getLocalLocation()); 
         if(!f.exists()) {
-           Logger.getLogger(AxoFileLibrary.class.getName()).log(Level.WARNING, "Library status: {0} - Local directory missing", getId());
+           LOGGER.log(Level.WARNING, "Library status: {0} - Local directory missing", getId());
         }
-        Logger.getLogger(AxoFileLibrary.class.getName()).log(Level.INFO, "Library status: {0} (local) - OK", getId());
+        LOGGER.log(Level.INFO, "Library status: {0} (local) - OK", getId());
     }
     
     @Override

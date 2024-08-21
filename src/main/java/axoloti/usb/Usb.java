@@ -31,6 +31,8 @@ import org.usb4java.*;
  */
 public class Usb {
 
+    private static final Logger LOGGER = Logger.getLogger(Usb.class.getName());
+
     static final public short VID_STM = (short) 0x0483;
     static final public short PID_STM_DFU = (short) 0xDF11;
     static final public short PID_STM_CDC = (short) 0x5740;
@@ -74,7 +76,7 @@ public class Usb {
             throw new LibUsbException("Unable to get device list", result);
         }
         try {
-            Logger.getLogger(Usb.class.getName()).log(Level.INFO, "Relevant USB Devices currently attached:");
+            LOGGER.log(Level.INFO, "Relevant USB Devices currently attached:");
             boolean hasOne = false;
             // Iterate over all devices and scan for the right one
             for (Device device : list) {
@@ -84,28 +86,28 @@ public class Usb {
                     if (descriptor.idVendor() == VID_STM) {
                         if (descriptor.idProduct() == PID_STM_CDC) {
                             hasOne = true;
-                            Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* USB Serial port device");
+                            LOGGER.log(Level.INFO, "* USB Serial port device");
                         }
                         else if (descriptor.idProduct() == PID_STM_DFU) {
                             hasOne = true;
-                            Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* DFU device");
+                            LOGGER.log(Level.INFO, "* DFU device");
                             // try to open it to check if correct driver is installed
                             DeviceHandle handle = new DeviceHandle();
                             result = LibUsb.open(device, handle);
                             if (result < 0) {
-                                Logger.getLogger(Usb.class.getName()).log(Level.INFO, " but can''t access: {0}", LibUsb.strError(result));
+                                LOGGER.log(Level.INFO, " but can''t access: {0}", LibUsb.strError(result));
                             }
                             else {
-                                Logger.getLogger(Usb.class.getName()).log(Level.INFO, " driver OK");
+                                LOGGER.log(Level.INFO, " driver OK");
                                 LibUsb.close(handle);
                             }
                         }
                         else if (descriptor.idProduct() == PID_STM_STLINK) {
-                            Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* STM STLink");
+                            LOGGER.log(Level.INFO, "* STM STLink");
                             hasOne = true;
                         }
                         else {
-                            Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* other STM device:\n{0}", descriptor.dump());
+                            LOGGER.log(Level.INFO, "* other STM device:\n{0}", descriptor.dump());
                             hasOne = true;
                         }
 
@@ -115,13 +117,13 @@ public class Usb {
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);
                         if (result < 0) {
-                            Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* Ksoloti USB device, but can''t access: {0}", LibUsb.strError(result));
+                            LOGGER.log(Level.INFO, "* Ksoloti USB device, but can''t access: {0}", LibUsb.strError(result));
                         }
                         else {
-                            Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* Ksoloti USB device, serial #{0}", LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
+                            LOGGER.log(Level.INFO, "* Ksoloti USB device, serial #{0}", LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
                             LibUsb.close(handle);
                         }
-                        Logger.getLogger(Usb.class.getName()).log(Level.INFO, "  location: {0}", DeviceToPath(device));
+                        LOGGER.log(Level.INFO, "  location: {0}", DeviceToPath(device));
 
                     }
                     else if (prefs.getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI) {
@@ -129,12 +131,12 @@ public class Usb {
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);
                         if (result < 0) {
-                            Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* Axoloti USB device, but can''t access: {0}", LibUsb.strError(result));
+                            LOGGER.log(Level.INFO, "* Axoloti USB device, but can''t access: {0}", LibUsb.strError(result));
                         } else {
-                            Logger.getLogger(Usb.class.getName()).log(Level.INFO, "* Axoloti USB device, serial #{0}", LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
+                            LOGGER.log(Level.INFO, "* Axoloti USB device, serial #{0}", LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
                             LibUsb.close(handle);
                         }
-                        Logger.getLogger(Usb.class.getName()).log(Level.INFO, "  location: {0}", DeviceToPath(device));
+                        LOGGER.log(Level.INFO, "  location: {0}", DeviceToPath(device));
                     }
 
                 }
@@ -143,7 +145,7 @@ public class Usb {
                 }
             }
             if (!hasOne) {
-                Logger.getLogger(Usb.class.getName()).log(Level.INFO, "None found...");
+                LOGGER.log(Level.INFO, "None found...");
             }
         } finally {
             // Ensure the allocated device list is freed
@@ -157,7 +159,7 @@ public class Usb {
         DeviceList list = new DeviceList();
         int result = LibUsb.getDeviceList(context, list);
         if (result < 0) {
-            Logger.getLogger(Usb.class.getName()).log(Level.SEVERE, "Unable to get device list");
+            LOGGER.log(Level.SEVERE, "Unable to get device list");
             return false;
         }
 
@@ -173,14 +175,14 @@ public class Usb {
                     DeviceHandle handle = new DeviceHandle();
                     result = LibUsb.open(device, handle);
                     if (result < 0) {
-                        Logger.getLogger(Usb.class.getName()).log(Level.SEVERE, "DFU device found but can''t access: {0}", LibUsb.strError(result));
+                        LOGGER.log(Level.SEVERE, "DFU device found but can''t access: {0}", LibUsb.strError(result));
                         switch (axoloti.utils.OSDetect.getOS()) {
                             case WIN:
-                                Logger.getLogger(Usb.class.getName()).log(Level.SEVERE, "Please install the WinUSB driver for the \"STM32 Bootloader\":");
-                                Logger.getLogger(Usb.class.getName()).log(Level.SEVERE, "Launch Zadig (http://zadig.akeo.ie/) , " +
+                                LOGGER.log(Level.SEVERE, "Please install the WinUSB driver for the \"STM32 Bootloader\":");
+                                LOGGER.log(Level.SEVERE, "Launch Zadig (http://zadig.akeo.ie/) , " +
 									"select \"Options->List all devices\", select \"STM32 BOOTLOADER\", and \"replace\" the STTub30 driver with the WinUSB driver");                                break;
                             case LINUX:
-                                Logger.getLogger(Usb.class.getName()).log(Level.SEVERE, "Probably need to add a udev rule.");
+                                LOGGER.log(Level.SEVERE, "Probably need to add a udev rule.");
                                 break;
                             default:
                         }

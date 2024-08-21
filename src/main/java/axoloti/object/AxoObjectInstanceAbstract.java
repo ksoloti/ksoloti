@@ -68,6 +68,8 @@ import org.simpleframework.xml.Root;
 @Root(name = "obj_abstr")
 public abstract class AxoObjectInstanceAbstract extends JPanel implements Comparable<AxoObjectInstanceAbstract>, ObjectModifiedListener, MouseListener, MouseMotionListener {
 
+    private static final Logger LOGGER = Logger.getLogger(AxoObjectInstanceAbstract.class.getName());
+
     @Attribute(name = "type")
     public String typeName;
     @Deprecated
@@ -162,7 +164,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         if (patch != null) {
             AxoObjectInstanceAbstract o1 = patch.GetObjectInstance(InstanceName);
             if ((o1 != null) && (o1 != this)) {
-                Logger.getLogger(AxoObjectInstanceAbstract.class.getName()).log(Level.SEVERE, "Object name already exists: \"{0}\"", InstanceName);
+                LOGGER.log(Level.SEVERE, "Object name already exists: \"{0}\"", InstanceName);
                 repaint();
                 return;
             }
@@ -194,7 +196,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         if (type == null) {
             ArrayList<AxoObjectAbstract> types = MainFrame.axoObjects.GetAxoObjectFromName(typeName, patch.GetCurrentWorkingDirectory());
             if (types == null) {
-                Logger.getLogger(AxoObjectInstanceAbstract.class.getName()).log(Level.SEVERE, "Object name not found: \"{0}\"", typeName);
+                LOGGER.log(Level.SEVERE, "Object name not found: \"{0}\"", typeName);
             }
             else {
                 // pick first

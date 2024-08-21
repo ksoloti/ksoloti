@@ -34,6 +34,8 @@ import java.util.logging.Logger;
  */
 public class QCmdUploadFile implements QCmdSerialTask {
 
+    private static final Logger LOGGER = Logger.getLogger(QCmdUploadFile.class.getName());
+
     InputStream inputStream;
     final String filename;
     final Calendar cal;
@@ -82,18 +84,18 @@ public class QCmdUploadFile implements QCmdSerialTask {
         try {
             if (inputStream == null) {
                 if (!file.isFile()) {
-                    Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.INFO, "File does not exist: {0}", filename);
+                    LOGGER.log(Level.INFO, "File does not exist: {0}", filename);
                     success = false;
                     return this;
                 }
                 if (!file.canRead()) {
-                    Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.INFO, "Can''t read file: {0}", filename);
+                    LOGGER.log(Level.INFO, "Can''t read file: {0}", filename);
                     success = false;
                     return this;
                 }
                 inputStream = new FileInputStream(file);
             }
-            Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.INFO, "Uploading: {0}", filename);
+            LOGGER.log(Level.INFO, "Uploading: {0}", filename);
             Calendar ts;
             if (cal != null) {
                 ts = cal;
@@ -121,12 +123,12 @@ public class QCmdUploadFile implements QCmdSerialTask {
                 byte[] buffer = new byte[l];
                 int nRead = inputStream.read(buffer, 0, l);
                 if (nRead != l) {
-                    Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.SEVERE, "File size wrong?{0}", nRead);
+                    LOGGER.log(Level.SEVERE, "File size wrong?{0}", nRead);
                 }
                 connection.TransmitAppendFile(buffer);
                 int newpct = (100 * (tlength - remLength) / tlength);
                 if (newpct != pct) {
-                    Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.INFO, "Uploading: {0}%", newpct);
+                    LOGGER.log(Level.INFO, "Uploading: {0}%", newpct);
                 }
                 pct = newpct;
                 remLength = inputStream.available();
@@ -139,7 +141,7 @@ public class QCmdUploadFile implements QCmdSerialTask {
             success = true;
             return this;
         } catch (IOException ex) {
-            Logger.getLogger(QCmdUploadFile.class.getName()).log(Level.SEVERE, "IOException", ex);
+            LOGGER.log(Level.SEVERE, "IOException", ex);
         }
         success = false;
         return this;

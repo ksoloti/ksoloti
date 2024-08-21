@@ -23,6 +23,8 @@ import axoloti.object.AxoObjectInstance;
 import axoloti.utils.Constants;
 import components.DropDownComponent;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.simpleframework.xml.Attribute;
 
 /**
@@ -30,6 +32,8 @@ import org.simpleframework.xml.Attribute;
  * @author Johannes Taelman
  */
 public class AttributeInstanceComboBox extends AttributeInstanceString<AxoAttributeComboBox> {
+
+    private static final Logger LOGGER = Logger.getLogger(AttributeInstanceComboBox.class.getName());
 
     @Attribute(name = "selection", required = false)
     String selection;
@@ -114,6 +118,6 @@ public class AttributeInstanceComboBox extends AttributeInstanceString<AxoAttrib
                 return;
             }
         }
-        java.util.logging.Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.SEVERE, "Error: object \"{0}\" attribute \"{1}\", value \"{2}\" unmatched", new Object[]{GetObjectInstance().getInstanceName(), GetDefinition().getName(), selection});
+        LOGGER.log(Level.SEVERE, "Error: object \"{0}\" attribute \"{1}\", value \"{2}\" unmatched", new Object[]{GetObjectInstance().getInstanceName(), GetDefinition().getName(), selection});
     }
 }

@@ -37,6 +37,8 @@ import org.simpleframework.xml.strategy.Strategy;
  */
 public class AxoObjectFromPatch extends AxoObject {
 
+    private static final Logger LOGGER = Logger.getLogger(AxoObjectFromPatch.class.getName());
+
     Patch p;
     PatchGUI pg;
     PatchFrame pf;
@@ -50,7 +52,7 @@ public class AxoObjectFromPatch extends AxoObject {
             p.setFileNamePath(f.getAbsolutePath());
             p.PostContructor();
         } catch (Exception ex) {
-            Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         shortId = f.getName().substring(0, f.getName().lastIndexOf("."));
         sPath = f.getAbsolutePath();
@@ -100,7 +102,7 @@ public class AxoObjectFromPatch extends AxoObject {
                 pg.PostContructor();
                 pg.ObjEditor = this;
             } catch (Exception ex) {
-                Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
         if (pf == null) {

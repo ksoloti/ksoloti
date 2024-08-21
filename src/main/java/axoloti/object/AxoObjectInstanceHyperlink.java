@@ -46,6 +46,8 @@ import org.simpleframework.xml.Root;
 @Root(name = "hyperlink")
 public class AxoObjectInstanceHyperlink extends AxoObjectInstanceAbstract {
 
+    private static final Logger LOGGER = Logger.getLogger(AxoObjectInstanceHyperlink.class.getName());
+
     public AxoObjectInstanceHyperlink() {
     }
 
@@ -68,9 +70,9 @@ public class AxoObjectInstanceHyperlink extends AxoObjectInstanceAbstract {
             try {
                 Desktop.getDesktop().browse(new URI(link));
             } catch (IOException ex) {
-                Logger.getLogger(AxoObjectInstanceHyperlink.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             } catch (URISyntaxException ex) {
-                Logger.getLogger(AxoObjectInstanceHyperlink.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         } else if (link.endsWith(".axp") || link.endsWith(".axh") || link.endsWith(".axs")) {
             String s = getPatch().getFileNamePath();
@@ -79,7 +81,7 @@ public class AxoObjectInstanceHyperlink extends AxoObjectInstanceAbstract {
             if (f.canRead()) {
                 PatchGUI.OpenPatch(f);
             } else {
-                Logger.getLogger(AxoObjectInstanceHyperlink.class.getName()).log(Level.SEVERE, "Can''t read file {0}", f.getAbsolutePath());
+                LOGGER.log(Level.SEVERE, "Can''t read file {0}", f.getAbsolutePath());
             }
         }
     }

@@ -65,6 +65,8 @@ import com.formdev.flatlaf.themes.FlatMacLightLaf;
 @Root
 public class Preferences {
 
+    private static final Logger LOGGER = Logger.getLogger(Preferences.class.getName());
+
     @Attribute(required = false)
     String appVersion;
 
@@ -420,11 +422,11 @@ public class Preferences {
                     prefs = serializer.read(Preferences.class, p);
                 } catch (Exception ex) {
                     try {
-                        Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, ex);
-                        Logger.getLogger(Preferences.class.getName()).log(Level.INFO,"Attempting to load preferences in relaxed mode");
+                        LOGGER.log(Level.SEVERE, null, ex);
+                        LOGGER.log(Level.INFO,"Attempting to load preferences in relaxed mode");
                         prefs = serializer.read(Preferences.class, p,false);
                     } catch (Exception ex1) {
-                        Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, ex1);
+                        LOGGER.log(Level.SEVERE, null, ex1);
                     }
                 }
                 if (prefs == null){
@@ -451,7 +453,7 @@ public class Preferences {
     public void SavePrefs() {
         Logger.getLogger(Preferences.class .getName()).log(Level.INFO, "Saving preferences...");
         if (restartRequired) {
-            Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, ">>> RESTART REQUIRED <<<");
+            LOGGER.log(Level.SEVERE, ">>> RESTART REQUIRED <<<");
         }
         Serializer serializer = new Persister();
         File f = new File(GetPrefsFileLoc());
@@ -462,7 +464,7 @@ public class Preferences {
             serializer.write(this, f);
         }
         catch (Exception ex) {
-            Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         ClearDirty();
     }

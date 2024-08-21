@@ -42,6 +42,7 @@ import javax.swing.UIManager;
  * @author Johannes Taelman
  */
 public class Axoloti {
+    private static final Logger LOGGER = Logger.getLogger(Axoloti.class.getName());
 
     public final static String RUNTIME_DIR    = "axoloti_runtime";
     public final static String HOME_DIR       = "axoloti_home";
@@ -114,7 +115,7 @@ public class Axoloti {
             try {
                 ev = f.getCanonicalPath();
             } catch (IOException ex) {
-                Logger.getLogger(Axoloti.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
         System.setProperty(var, ev);
@@ -160,7 +161,7 @@ public class Axoloti {
                 cacheDeveloper = !fR.getCanonicalPath().equals(fE.getCanonicalPath());
             }
             catch (IOException ex) {
-                Logger.getLogger(Axoloti.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
                 cacheDeveloper = false;
             }
         }

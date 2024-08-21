@@ -527,7 +527,7 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
                 dir = seldir.getCanonicalPath();
                 jLocalDir.setText(dir + File.separator);
             } catch (IOException ex) {
-                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AxolotiLibraryEditor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         fc.updateCurrentSize();

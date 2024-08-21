@@ -33,6 +33,8 @@ import qcmds.QCmdShellTask;
  */
 public class ShellProcessor extends SwingWorker<Integer, String> {
 
+    private static final Logger LOGGER = Logger.getLogger(ShellProcessor.class.getName());
+
     private final BlockingQueue<QCmdShellTask> queueShellTasks;
 
     public ShellProcessor(BlockingQueue<QCmd> queueResponse) {
@@ -41,20 +43,20 @@ public class ShellProcessor extends SwingWorker<Integer, String> {
     }
 
     public boolean AppendToQueue(QCmdShellTask cmd) {
-//        Logger.getLogger(ShellProcessor.class.getName()).log(Level.INFO, "ShellProcessor queue: "+ cmd.GetStartMessage());
+//        LOGGER.log(Level.INFO, "ShellProcessor queue: "+ cmd.GetStartMessage());
         return queueShellTasks.add(cmd);
     }
 
     @Override
     public Integer doInBackground() {
         while (true) {
-            //          Logger.getLogger(ShellProcessor.class.getName()).log(Level.INFO, "ShellProcessor Waiting");
+            //          LOGGER.log(Level.INFO, "ShellProcessor Waiting");
             try {
                 queueShellTasks.take();
-//                Logger.getLogger(ShellProcessor.class.getName()).log(Level.INFO, "ShellProcessor: "+ qc.GetStartMessage());
+//                LOGGER.log(Level.INFO, "ShellProcessor: "+ qc.GetStartMessage());
 //                queueResponse.add(qc.Do(this));
             } catch (InterruptedException ex) {
-                Logger.getLogger(ShellProcessor.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -66,13 +68,13 @@ public class ShellProcessor extends SwingWorker<Integer, String> {
     @Override
     protected void process(List<String> chunks) {
         for (String s : chunks) {
-            Logger.getLogger(ShellProcessor.class.getName()).log(Level.INFO, s);
+            LOGGER.log(Level.INFO, s);
         }
     }
 
     @Override
     protected void done() {
-        Logger.getLogger(ShellProcessor.class.getName()).log(Level.SEVERE, "ShellProcessor Terminated!");
+        LOGGER.log(Level.SEVERE, "ShellProcessor Terminated!");
     }
 
     public void Panic() {

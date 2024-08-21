@@ -32,6 +32,8 @@ import java.util.logging.Logger;
  */
 public class ksoloti_core {
 
+    private static final Logger LOGGER = Logger.getLogger(ksoloti_core.class.getName());
+
     enum cputype_e {
         STM32F40xxx,
         STM32F42xxx
@@ -78,7 +80,7 @@ public class ksoloti_core {
 
             return bb;
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ksoloti_core.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             return null;
         }
     }
@@ -192,7 +194,7 @@ public class ksoloti_core {
             }
             mainframe.setCpuID(s);
         } else {
-            Logger.getLogger(ksoloti_core.class.getName()).log(Level.SEVERE, "Invalid CPU serial number, invalid protocol?, update firmware",new Object());
+            LOGGER.log(Level.SEVERE, "Invalid CPU serial number, invalid protocol?, update firmware",new Object());
             mainframe.setCpuID("CFCFCFCF");
         }
     }

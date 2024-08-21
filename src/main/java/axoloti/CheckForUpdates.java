@@ -39,6 +39,8 @@ import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
  */
 public class CheckForUpdates {
 
+    private static final Logger LOGGER = Logger.getLogger(CheckForUpdates.class.getName());        
+
     static public void checkForUpdates() {
         if (Version.AXOLOTI_VERSION.equalsIgnoreCase("(git missing)")) {
             JOptionPane.showMessageDialog(null, "No version info found.", "Checking for updates", JOptionPane.ERROR_MESSAGE);
@@ -62,15 +64,15 @@ public class CheckForUpdates {
                 default:
             }
         } catch (MalformedURLException ex) {
-            Logger.getLogger(CheckForUpdates.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         } catch (URISyntaxException ex) {
-            Logger.getLogger(CheckForUpdates.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         } catch (FileNotFoundException ex) {
             JOptionPane.showMessageDialog(null, "No updated release available", "Checking for updates", JOptionPane.INFORMATION_MESSAGE);
         } catch (UnknownHostException ex) {
             JOptionPane.showMessageDialog(null, "Server not reachable", "Checking for updates", JOptionPane.ERROR_MESSAGE);
         } catch (IOException ex) {
-            Logger.getLogger(CheckForUpdates.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 }

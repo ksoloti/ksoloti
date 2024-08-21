@@ -98,6 +98,8 @@ import qcmds.QCmdUploadPatch;
 @Root
 public class Patch {
 
+    private static final Logger LOGGER = Logger.getLogger(Patch.class.getName());
+
     @Attribute(required = false)
     String appVersion;
 
@@ -277,21 +279,21 @@ public class Patch {
         for (SDFileReference fref : files) {
             File f = fref.localfile;
             if (f == null) {
-                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Couldn''t resolve file: {0}", fref.targetPath);
+                LOGGER.log(Level.SEVERE, "Couldn''t resolve file: {0}", fref.targetPath);
                 continue;
             }
             if (!f.exists()) {
-                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "File does not exist: {0}", f.getName());
+                LOGGER.log(Level.SEVERE, "File does not exist: {0}", f.getName());
                 continue;
             }
             if (!f.canRead()) {
-                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Can''t read file {0}", f.getName());
+                LOGGER.log(Level.SEVERE, "Can''t read file {0}", f.getName());
                 continue;
             }
 
             String targetfn = fref.targetPath;
             if (targetfn.isEmpty()) {
-                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Target filename is empty: {0}", f.getName());
+                LOGGER.log(Level.SEVERE, "Target filename is empty: {0}", f.getName());
                 continue;
             }
             if (targetfn.charAt(0) != '/') {
@@ -306,7 +308,7 @@ public class Patch {
 
                 if (!SDCardInfo.getInstance().exists(targetfn, f.lastModified(), f.length())) {
                     if (f.length() > 8 * 1024 * 1024) {
-                        Logger.getLogger(Patch.class.getName()).log(Level.INFO, "File {0} is larger than 8MB, skipping upload.", f.getName());
+                        LOGGER.log(Level.INFO, "File {0} is larger than 8MB, skipping upload.", f.getName());
                         continue;
                     }
 
@@ -319,11 +321,11 @@ public class Patch {
                     GetQCmdProcessor().AppendToQueue(new QCmdUploadFile(f, targetfn));
                 }
                 else {
-                    Logger.getLogger(Patch.class.getName()).log(Level.INFO, "File {0} matches timestamp and size, skipping upload.", f.getName());
+                    LOGGER.log(Level.INFO, "File {0} matches timestamp and size, skipping upload.", f.getName());
                 }
             }
             else {
-                Logger.getLogger(Patch.class.getName()).log(Level.INFO, "File {0} matches timestamp and size, skipping upload.", f.getName());
+                LOGGER.log(Level.INFO, "File {0} matches timestamp and size, skipping upload.", f.getName());
             }
         }
     }
@@ -343,7 +345,7 @@ public class Patch {
             /* issue warning when there are dependent files */
             ArrayList<SDFileReference> files = GetDependendSDFiles();
             if (files.size() > 0) {
-                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Patch requires file {0} on SD card, but no SD card connected.", files.get(0).targetPath);
+                LOGGER.log(Level.SEVERE, "Patch requires file {0} on SD card, but no SD card connected.", files.get(0).targetPath);
             }
         }
         ShowPreset(0);
@@ -421,7 +423,7 @@ public class Patch {
             }
             else if (!hasType || isNamedZombie) {
                 if (isNamedZombie) {
-                    Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "This patch was previously saved with zombies. You have to replace all zombies manually to be able to go live again.");
+                    LOGGER.log(Level.SEVERE, "This patch was previously saved with zombies. You have to replace all zombies manually to be able to go live again.");
                 }
                 objectInstances.remove(o);
                 AxoObjectInstanceZombie zombie = new AxoObjectInstanceZombie(new AxoObjectZombie(), this, o.getInstanceName(), new Point(o.getX(), o.getY()));
@@ -544,7 +546,7 @@ public class Patch {
     public AxoObjectInstanceAbstract AddObjectInstance(AxoObjectAbstract obj, Point loc) {
         if (!IsLocked()) {
             if (obj == null) {
-                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "AddObjectInstance NULL");
+                LOGGER.log(Level.SEVERE, "AddObjectInstance NULL");
                 return null;
             }
 
@@ -571,7 +573,7 @@ public class Patch {
             return oi;
         }
         else {
-            Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t add instance: locked!");
+            LOGGER.log(Level.INFO, "Can''t add instance: locked!");
         }
         return null;
     }
@@ -604,11 +606,11 @@ public class Patch {
     public Net AddConnection(InletInstance il, OutletInstance ol) {
         if (!IsLocked()) {
             if (il.GetObjectInstance().patch != this) {
-                Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t connect: different patch");
+                LOGGER.log(Level.INFO, "Can''t connect: different patch");
                 return null;
             }
             if (ol.GetObjectInstance().patch != this) {
-                Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t connect: different patch");
+                LOGGER.log(Level.INFO, "Can''t connect: different patch");
                 return null;
             }
             Net n1, n2;
@@ -619,16 +621,16 @@ public class Patch {
                 nets.add(n);
                 n.connectInlet(il);
                 n.connectOutlet(ol);
-                Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: new net added");
+                LOGGER.log(Level.FINE, "Connect: new net added");
                 return n;
             }
             else if (n1 == n2) {
-                Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t connect: already connected");
+                LOGGER.log(Level.INFO, "Can''t connect: already connected");
                 return null;
             }
             else if ((n1 != null) && (n2 == null)) {
                 if (n1.source.isEmpty()) {
-                    Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: adding outlet to inlet net");
+                    LOGGER.log(Level.FINE, "Connect: adding outlet to inlet net");
                     n1.connectOutlet(ol);
                     return n1;
                 }
@@ -638,13 +640,13 @@ public class Patch {
                     nets.add(n);
                     n.connectInlet(il);
                     n.connectOutlet(ol);
-                    Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: replace inlet with new net");
+                    LOGGER.log(Level.FINE, "Connect: replace inlet with new net");
                     return n;
                 }
             }
             else if ((n1 == null) && (n2 != null)) {
                 n2.connectInlet(il);
-                Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: add additional outlet");
+                LOGGER.log(Level.FINE, "Connect: add additional outlet");
                 return n2;
             }
             else if ((n1 != null) && (n2 != null)) {
@@ -652,12 +654,12 @@ public class Patch {
                 /* replace */
                 disconnect(il);
                 n2.connectInlet(il);
-                Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: replace inlet with existing net");
+                LOGGER.log(Level.FINE, "Connect: replace inlet with existing net");
                 return n2;
             }
         }
         else {
-            Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t add connection: locked!");
+            LOGGER.log(Level.INFO, "Can''t add connection: locked!");
         }
         return null;
     }
@@ -665,15 +667,15 @@ public class Patch {
     public Net AddConnection(InletInstance il, InletInstance ol) {
         if (!IsLocked()) {
             if (il == ol) {
-                Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t connect: same inlet");
+                LOGGER.log(Level.INFO, "Can''t connect: same inlet");
                 return null;
             }
             if (il.GetObjectInstance().patch != this) {
-                Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t connect: different patch");
+                LOGGER.log(Level.INFO, "Can''t connect: different patch");
                 return null;
             }
             if (ol.GetObjectInstance().patch != this) {
-                Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t connect: different patch");
+                LOGGER.log(Level.INFO, "Can''t connect: different patch");
                 return null;
             }
 
@@ -685,29 +687,29 @@ public class Patch {
                 nets.add(n);
                 n.connectInlet(il);
                 n.connectInlet(ol);
-                Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: new net added");
+                LOGGER.log(Level.FINE, "Connect: new net added");
                 return n;
             }
             else if (n1 == n2) {
-                Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t connect: already connected");
+                LOGGER.log(Level.INFO, "Can''t connect: already connected");
             }
             else if ((n1 != null) && (n2 == null)) {
                 n1.connectInlet(ol);
-                Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: inlet added");
+                LOGGER.log(Level.FINE, "Connect: inlet added");
                 return n1;
             }
             else if ((n1 == null) && (n2 != null)) {
                 n2.connectInlet(il);
-                Logger.getLogger(Patch.class.getName()).log(Level.FINE, "Connect: inlet added");
+                LOGGER.log(Level.FINE, "Connect: inlet added");
                 return n2;
             }
             else if ((n1 != null) && (n2 != null)) {
-                Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t connect: both inlets included in net");
+                LOGGER.log(Level.INFO, "Can''t connect: both inlets included in net");
                 return null;
             }
         }
         else {
-            Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t add connection: locked!");
+            LOGGER.log(Level.INFO, "Can''t add connection: locked!");
         }
         return null;
     }
@@ -729,7 +731,7 @@ public class Patch {
             }
         }
         else {
-            Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t disconnect: locked!");
+            LOGGER.log(Level.INFO, "Can''t disconnect: locked!");
         }
         return null;
     }
@@ -740,7 +742,7 @@ public class Patch {
             return n;
         }
         else {
-            Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t disconnect: locked!");
+            LOGGER.log(Level.INFO, "Can''t disconnect: locked!");
         }
         return null;
     }
@@ -804,7 +806,7 @@ public class Patch {
     }
 
     void deleteSelectedAxoObjInstances() {
-        Logger.getLogger(Patch.class.getName()).log(Level.FINE, "deleteSelectedAxoObjInstances()");
+        LOGGER.log(Level.FINE, "deleteSelectedAxoObjInstances()");
         if (!IsLocked()) {
             boolean cont = true;
             while (cont) {
@@ -820,7 +822,7 @@ public class Patch {
             SetDirty();
         }
         else {
-            Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Can''t delete: locked!");
+            LOGGER.log(Level.INFO, "Can''t delete: locked!");
         }
     }
 
@@ -855,7 +857,7 @@ public class Patch {
             }
         }
         catch (Exception ex) {
-            Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -886,7 +888,7 @@ public class Patch {
             AdjustSize();
         }
         catch (Exception ex) {
-            Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -928,7 +930,7 @@ public class Patch {
             dirty = false;
         }
         catch (Exception ex) {
-            Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             return false;
         }
 
@@ -948,7 +950,7 @@ public class Patch {
          String axoObjPath = getFileNamePath();
          int i = axoObjPath.lastIndexOf(".axp");
          axoObjPath = axoObjPath.substring(0, i) + ".axo";
-         Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Exporting axo to " + axoObjPath);
+         LOGGER.log(Level.INFO, "Exporting axo to " + axoObjPath);
          File f2 = new File(axoObjPath);
          ExportAxoObj(f2);
          MainFrame.axoObjects.LoadAxoObjects();
@@ -1503,7 +1505,7 @@ public class Patch {
                 c += I+I + n.CType() + " " + n.CName() + ";\n";
             }
             else {
-                Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Net has no data type!");
+                LOGGER.log(Level.INFO, "Net has no data type!");
             }
         }
         c += I+I + "//--------- </nets> ----------//\n\n";
@@ -1534,7 +1536,7 @@ public class Patch {
                     c += I+I + n.GetDataType().GenerateCopyCode(n.CName() + "Latch", n.CName());
                 }
                 else {
-                    Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Only inlets connected on net!");
+                    LOGGER.log(Level.SEVERE, "Only inlets connected on net!");
                 }
             }
         }
@@ -1582,7 +1584,7 @@ public class Patch {
             }
             else if (!n.isValidNet()) {
                 c += i.GetDataType().GenerateSetDefaultValueCode();
-                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Patch contains invalid net! {0}", i.objname + ":" + i.getInletname());
+                LOGGER.log(Level.SEVERE, "Patch contains invalid net! {0}", i.objname + ":" + i.getInletname());
             }
             needsComma = true;
         }
@@ -1842,11 +1844,11 @@ public class Patch {
                 x = objs.get(0);
             }
             if (x != null) {
-                Logger.getLogger(Patch.class.getName()).log(Level.WARNING, "Using controller object: {0}", cobjstr);
+                LOGGER.log(Level.WARNING, "Using controller object: {0}", cobjstr);
                 controllerInstance = x.CreateInstance(null, "ctrl0x123", new Point(0, 0));
             }
             else {
-                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "Unable to create controller object for: {0}", cobjstr);
+                LOGGER.log(Level.SEVERE, "Unable to create controller object for: {0}", cobjstr);
             }
         }
 
@@ -2084,9 +2086,9 @@ public class Patch {
             serializer.write(aof, f1);
         }
         catch (Exception ex) {
-            Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
-        Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Export obj complete");
+        LOGGER.log(Level.INFO, "Export obj complete");
     }
 
 //    void ExportAxoObjPoly2(File f1) {
@@ -2158,7 +2160,7 @@ public class Patch {
                 ao.outlets.add(new OutletFrac32Buffer(o.getInstanceName(), o.getInstanceName()));
             }
             else if (o.typeName.equals("patch/outlet string")) {
-                Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "String outlet impossible in poly subpatches!");
+                LOGGER.log(Level.SEVERE, "String outlet impossible in poly subpatches!");
                 // ao.outlets.add(new OutletCharPtr32(o.getInstanceName(), o.getInstanceName()));                
             }
 
@@ -2609,12 +2611,12 @@ public class Patch {
             f.close();
         }
         catch (FileNotFoundException ex) {
-            Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, ex.toString());
+            LOGGER.log(Level.SEVERE, ex.toString());
         }
         catch (IOException ex) {
-            Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, ex.toString());
+            LOGGER.log(Level.SEVERE, ex.toString());
         }
-        Logger.getLogger(Patch.class.getName()).log(Level.INFO, "Done generating code.\n");
+        LOGGER.log(Level.INFO, "Done generating code.\n");
     }
 
     public void Compile() {
@@ -2663,7 +2665,7 @@ public class Patch {
                     index++;
 
                     if (index == settings.GetNPresetEntries()) {
-                        Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "More than {0} entries in preset, skipping...", settings.GetNPresetEntries());
+                        LOGGER.log(Level.SEVERE, "More than {0} entries in preset, skipping...", settings.GetNPresetEntries());
                         return pdata;
                     }
                 }
@@ -2788,7 +2790,7 @@ public class Patch {
         if (!(ProcessedInstances.size() == objectInstances.size())) {
             for (AxoObjectInstanceAbstract o : objectInstances) {
                 if (!ProcessedInstances.contains(o.getInstanceName())) {
-                    Logger.getLogger(Patch.class.getName()).log(Level.SEVERE, "PromoteOverloading: fault in {0}", o.getInstanceName());
+                    LOGGER.log(Level.SEVERE, "PromoteOverloading: fault in {0}", o.getInstanceName());
                 }
             }
         }
@@ -2870,12 +2872,12 @@ public class Patch {
         String buildDir = System.getProperty(Axoloti.LIBRARIES_DIR) + "/build";;
 
         return new File(buildDir + "/xpatch.bin");
-//            Logger.getLogger(QCmdWriteFile.class.getName()).log(Level.INFO, "bin path: {0}", f.getAbsolutePath());        
+//            LOGGER.log(Level.INFO, "bin path: {0}", f.getAbsolutePath());        
     }
 
     public void UploadToSDCard(String sdfilename) {
         WriteCode();
-        Logger.getLogger(PatchFrame.class.getName()).log(Level.INFO, "SD card filename: {0}", sdfilename);
+        LOGGER.log(Level.INFO, "SD card filename: {0}", sdfilename);
 
         QCmdProcessor qcmdprocessor = QCmdProcessor.getQCmdProcessor();
         qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());

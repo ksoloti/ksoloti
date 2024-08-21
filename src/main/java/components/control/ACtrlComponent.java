@@ -60,6 +60,8 @@ import javax.swing.TransferHandler;
  */
 public abstract class ACtrlComponent extends JComponent {
 
+    private static final Logger LOGGER = Logger.getLogger(ACtrlComponent.class.getName());
+
     protected AxoObjectInstance axoObj;
     protected Color customBackgroundColor;
     protected long mouseEnteredTime;
@@ -268,9 +270,9 @@ public abstract class ACtrlComponent extends JComponent {
                         System.out.println("Paste on control: " + s);
                         setValue(Double.parseDouble(s));
                     } catch (UnsupportedFlavorException ex) {
-                        Logger.getLogger(NumberBoxComponent.class.getName()).log(Level.SEVERE, "Paste", ex);
+                        LOGGER.log(Level.SEVERE, "Paste", ex);
                     } catch (IOException ex) {
-                        Logger.getLogger(NumberBoxComponent.class.getName()).log(Level.SEVERE, "Paste", ex);
+                        LOGGER.log(Level.SEVERE, "Paste", ex);
                     }
                     return true;
                 }
@@ -315,7 +317,7 @@ public abstract class ACtrlComponent extends JComponent {
                 return r;
             }
         } catch (AWTException ex) {
-            Logger.getLogger(NumberBoxComponent.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             return null;
         }
     }

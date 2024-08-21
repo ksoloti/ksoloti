@@ -72,6 +72,8 @@ import org.simpleframework.xml.core.Persister;
  */
 public final class AxoObjectEditor extends JFrame implements DocumentWindow, ObjectModifiedListener {
 
+    private static final Logger LOGGER = Logger.getLogger(AxoObjectEditor.class.getName());
+
     final AxoObject editObj;
     private String origXML;
     private final RSyntaxTextArea jTextAreaLocalData;
@@ -168,7 +170,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             serializer.write(editObj, origOS);
         }
         catch (Exception ex) {
-            Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         origXML = origOS.toString();
@@ -183,7 +185,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             Close();
         }
         catch (Exception ex) {
-            Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -398,7 +400,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             serializer.write(editObj, editOS);
         }
         catch (Exception ex) {
-            Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         return !(origXML.equals(editOS.toString()));
@@ -425,7 +427,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             theme.apply(rSyntaxTextAreaXML);
         }
         catch (Exception ex) {
-            Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         rSyntaxTextAreaXML.setFont(Constants.FONT_MONO);
@@ -481,7 +483,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
                 }
             }
             else {
-                Logger.getLogger(AxoObjectEditor.class.getName()).log(Level.SEVERE, null, "Changed but readonly: should not happen");
+                LOGGER.log(Level.SEVERE, null, "Changed but readonly: should not happen");
                 return true;
             }
         }

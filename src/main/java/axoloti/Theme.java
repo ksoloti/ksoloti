@@ -26,6 +26,8 @@ import org.simpleframework.xml.strategy.Strategy;
 @Root
 public class Theme {
 
+    private static final Logger LOGGER = Logger.getLogger(Theme.class.getName());
+
     public Theme() {
         super();
     }
@@ -38,7 +40,7 @@ public class Theme {
         try {
             REGISTRY.bind(Color.class, ColorConverter.class);
         } catch (Exception e) {
-            Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, e);
+            LOGGER.log(Level.SEVERE, null, e);
         }
     }
 
@@ -320,7 +322,7 @@ public class Theme {
                     currentTheme = Theme.SERIALIZER.read(Theme.class, inputStream);
                     MainFrame.prefs.setThemePath(f.getAbsolutePath());
                 } catch (Exception ex) {
-                    Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Unable to open theme {0}", new Object[]{ex});
+                    LOGGER.log(Level.SEVERE, "Unable to open theme {0}", new Object[]{ex});
                 }
             }
         }
@@ -333,7 +335,7 @@ public class Theme {
                 Theme.SERIALIZER.write(this, fileToBeSaved);
                 MainFrame.prefs.setThemePath(fileToBeSaved.getAbsolutePath());
             } catch (Exception e) {
-                Logger.getLogger(AxoObjects.class.getName()).log(Level.SEVERE, null, e);
+                LOGGER.log(Level.SEVERE, null, e);
             }
         }
     }

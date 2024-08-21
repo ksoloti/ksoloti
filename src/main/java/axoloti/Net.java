@@ -44,6 +44,8 @@ import org.simpleframework.xml.*;
 @Root(name = "net")
 public class Net extends JComponent {
 
+    private static final Logger LOGGER = Logger.getLogger(Net.class.getName());
+
     @ElementList(inline = true, required = false)
     ArrayList<OutletInstance> source;
     @ElementList(inline = true, required = false)
@@ -77,13 +79,13 @@ public class Net extends JComponent {
             String outletname = i.getOutletname();
             AxoObjectInstanceAbstract o = patch.GetObjectInstance(objname);
             if (o == null) {
-                Logger.getLogger(Net.class.getName()).log(Level.SEVERE, "Could not resolve net source object: {0}::{1}", new Object[]{i.getObjname(), i.getOutletname()});
+                LOGGER.log(Level.SEVERE, "Could not resolve net source object: {0}::{1}", new Object[]{i.getObjname(), i.getOutletname()});
                 patch.nets.remove(this);
                 return;
             }
             OutletInstance r = o.GetOutletInstance(outletname);
             if (r == null) {
-                Logger.getLogger(Net.class.getName()).log(Level.SEVERE, "Could not resolve net source outlet: {0}::{1}", new Object[]{i.getObjname(), i.getOutletname()});
+                LOGGER.log(Level.SEVERE, "Could not resolve net source outlet: {0}::{1}", new Object[]{i.getObjname(), i.getOutletname()});
                 patch.nets.remove(this);
                 return;
             }
@@ -95,13 +97,13 @@ public class Net extends JComponent {
             String inletname = i.getInletname();
             AxoObjectInstanceAbstract o = patch.GetObjectInstance(objname);
             if (o == null) {
-                Logger.getLogger(Net.class.getName()).log(Level.SEVERE, "Could not resolve net dest obj :{0}::{1}", new Object[]{i.getObjname(), i.getInletname()});
+                LOGGER.log(Level.SEVERE, "Could not resolve net dest obj :{0}::{1}", new Object[]{i.getObjname(), i.getInletname()});
                 patch.nets.remove(this);
                 return;
             }
             InletInstance r = o.GetInletInstance(inletname);
             if (r == null) {
-                Logger.getLogger(Net.class.getName()).log(Level.SEVERE, "Could not resolve net dest inlet :{0}::{1}", new Object[]{i.getObjname(), i.getInletname()});
+                LOGGER.log(Level.SEVERE, "Could not resolve net dest inlet :{0}::{1}", new Object[]{i.getObjname(), i.getInletname()});
                 patch.nets.remove(this);
                 return;
             }
@@ -320,7 +322,7 @@ public class Net extends JComponent {
                 }
             }
         }
-        Logger.getLogger(Net.class.getName()).log(Level.SEVERE, "IsFirstOutlet: shouldn't get here");
+        LOGGER.log(Level.SEVERE, "IsFirstOutlet: shouldn't get here");
         return false;
     }
 

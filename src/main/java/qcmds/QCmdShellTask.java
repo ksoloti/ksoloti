@@ -36,6 +36,8 @@ import java.util.logging.Logger;
  */
 public abstract class QCmdShellTask implements QCmd {
 
+    private static final Logger LOGGER = Logger.getLogger(QCmdShellTask.class.getName());
+
     abstract String GetExec();
     boolean success;
 
@@ -57,24 +59,24 @@ public abstract class QCmdShellTask implements QCmd {
                 line = br.readLine();
                 while (line != null) {
                     if (line.contains("error:") || line.contains("#error")) {
-                        Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "{0}",line);
+                        LOGGER.log(Level.SEVERE, "{0}",line);
                     }
                     else if (line.contains("overflowed by")) {
-                        Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "{0}\n>>> Patch is too complex to fit in internal RAM. <<<",line);
+                        LOGGER.log(Level.SEVERE, "{0}\n>>> Patch is too complex to fit in internal RAM. <<<",line);
                     }
                     else if (line.contains("has no member named \'objectinstance__i\'")) {
-                        Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "{0}\n>>> A required reference text field in the patch has been left empty. (table, delay read/write, filename, ...) <<<",line);
+                        LOGGER.log(Level.SEVERE, "{0}\n>>> A required reference text field in the patch has been left empty. (table, delay read/write, filename, ...) <<<",line);
                     }
                     else if (line.contains("warning:")) {
-                        Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.WARNING, "{0}",line);
+                        LOGGER.log(Level.WARNING, "{0}",line);
                     }
                     else {
-                        Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.INFO, "{0}",line);
+                        LOGGER.log(Level.INFO, "{0}",line);
                     }
                     line = br.readLine();
                 }
             } catch (IOException ex) {
-                Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -142,14 +144,14 @@ public abstract class QCmdShellTask implements QCmd {
             if (p1.exitValue() == 0) {
                 success = true;
             } else {
-                Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "Shell task failed, exit value: {0}", p1.exitValue());
+                LOGGER.log(Level.SEVERE, "Shell task failed, exit value: {0}", p1.exitValue());
                 success = false;
                 return err();
             }
         } catch (InterruptedException ex) {
-            Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         return null;
     }

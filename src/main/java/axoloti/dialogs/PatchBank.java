@@ -77,6 +77,8 @@ import qcmds.QCmdUploadFile;
  */
 public class PatchBank extends javax.swing.JFrame implements DocumentWindow, ConnectionStatusListener, SDCardMountStatusListener {
 
+    private static final Logger LOGGER = Logger.getLogger(PatchBank.class.getName());
+
     String FilenamePath = null;
 
     final String fileExtension = ".axb";
@@ -190,7 +192,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                                 fn = fn.substring(0, i);
                             }
                             SDFileInfo sdfi = SDCardInfo.getInstance().find("/" + fn + "/patch.bin");
-                            // Logger.getLogger(PatchBank.class.getName()).log(Level.INFO, "/" + fn + "/patch.bin");
+                            // LOGGER.log(Level.INFO, "/" + fn + "/patch.bin");
                             if (sdfi != null) {
                                 returnValue = "Found on SD card";
                             }
@@ -223,7 +225,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                     for (File f : droppedFiles) {
                         System.out.println(f.getName());
                         if (!f.canRead()) {
-                            Logger.getLogger(PatchBank.class.getName()).log(Level.SEVERE, "Can''t read file");
+                            LOGGER.log(Level.SEVERE, "Can''t read file");
                         }
                         else {
                             files.add(f);
@@ -234,9 +236,9 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                     refresh();
 
                 } catch (UnsupportedFlavorException ex) {
-                    Logger.getLogger(PatchBank.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
-                    Logger.getLogger(PatchBank.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -350,11 +352,10 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             pw.close();
             clearDirty();
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(PatchBank.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         //  catch (IOException ex) {
-        //     Logger.getLogger(PatchBank.class
-        //             .getName()).log(Level.SEVERE, null, ex);
+        //     LOGGER.log(Level.SEVERE, null, ex);
         // }
     }
 
@@ -763,12 +764,12 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     }
 
     private void jButtonUploadBankActionPerformed(java.awt.event.ActionEvent evt) {
-        Logger.getLogger(PatchBank.class.getName()).log(Level.INFO, "Uploading patchbank index...");
+        LOGGER.log(Level.INFO, "Uploading patchbank index...");
         QCmdProcessor processor = MainFrame.mainframe.getQcmdprocessor();
         if (USBBulkConnection.GetConnection().isConnected()) {
             processor.AppendToQueue(new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb"));
         }
-        Logger.getLogger(PatchBank.class.getName()).log(Level.INFO, "Done uploading index.");
+        LOGGER.log(Level.INFO, "Done uploading index.");
         refresh();
     }
 
@@ -905,10 +906,10 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         class Thd extends Thread {
             public void run() {
                 for (File f : files) {
-                    Logger.getLogger(PatchBank.class.getName()).log(Level.INFO, "Compiling and uploading: {0}", f.getName());
+                    LOGGER.log(Level.INFO, "Compiling and uploading: {0}", f.getName());
                     UploadOneFile(f);
                 }
-                Logger.getLogger(PatchBank.class.getName()).log(Level.INFO, "Done uploading patches in patchbank.");
+                LOGGER.log(Level.INFO, "Done uploading patches in patchbank.");
             }
         }
         Thd thread = new Thd();
@@ -926,10 +927,10 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 }
 
                 for (File f : files) {
-                    Logger.getLogger(PatchBank.class.getName()).log(Level.INFO, "Compiling and uploading: {0}...", f.getName());
+                    LOGGER.log(Level.INFO, "Compiling and uploading: {0}...", f.getName());
                     UploadOneFile(f);
                 }
-                Logger.getLogger(PatchBank.class.getName()).log(Level.INFO, "Done uploading index and patches.");
+                LOGGER.log(Level.INFO, "Done uploading index and patches.");
             }
         }
         Thd thread = new Thd();
@@ -990,7 +991,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             pb.setVisible(true);
         } catch (IOException ex) {
             pb.Close();
-            Logger.getLogger(PatchBank.class.getName()).log(Level.SEVERE, "Patchbank file not found or not accessible: {0}", f.getName());
+            LOGGER.log(Level.SEVERE, "Patchbank file not found or not accessible: {0}", f.getName());
         }
     }
 

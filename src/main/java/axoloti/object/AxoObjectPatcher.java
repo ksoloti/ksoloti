@@ -29,6 +29,8 @@ import java.util.logging.Logger;
  */
 public class AxoObjectPatcher extends AxoObject {
 
+    private static final Logger LOGGER = Logger.getLogger(AxoObjectPatcher.class.getName());
+
     public AxoObjectPatcher() {
     }
 
@@ -46,7 +48,7 @@ public class AxoObjectPatcher extends AxoObject {
                 || (sMidiNoteOnCode != null)
                 || (sMidiPBendCode != null)
                 || (sMidiResetControllersCode != null)) {
-            Logger.getLogger(AxoObject.class.getName()).log(Level.SEVERE, "Object {0} uses obsolete midi handling. If it is a subpatch-generated object, open and save the original patch again!", InstanceName1);
+            LOGGER.log(Level.SEVERE, "Object {0} uses obsolete midi handling. If it is a subpatch-generated object, open and save the original patch again!", InstanceName1);
         }
 
         AxoObjectInstancePatcher o = new AxoObjectInstancePatcher(this, patch, InstanceName1, location);

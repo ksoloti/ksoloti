@@ -11,6 +11,8 @@ import org.simpleframework.xml.core.Persister;
 
 public class Synonyms {
 
+    private static final Logger LOGGER = Logger.getLogger(Synonyms.class.getName());
+
     public static Synonyms instance() {
         if (instance == null) {
 //            instance = new Synonyms();
@@ -45,12 +47,12 @@ public class Synonyms {
             if(lib != null) {
                 instance = serializer.read(Synonyms.class, new File(lib.getLocalLocation() + filename));
             } else {
-                Logger.getLogger(Synonyms.class.getName()).log(Level.WARNING,"Not loading synonyms: cannot find factory library");
+                LOGGER.log(Level.WARNING,"Not loading synonyms: cannot find factory library");
             }
 
             
         } catch (Exception ex) {
-            Logger.getLogger(Synonyms.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -59,7 +61,7 @@ public class Synonyms {
         try {
             serializer.write(instance, new File(filename));
         } catch (Exception ex) {
-            Logger.getLogger(Synonyms.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 

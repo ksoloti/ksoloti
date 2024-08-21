@@ -37,6 +37,8 @@ import javax.swing.event.HyperlinkListener;
  */
 public class ShortcutsFrame extends javax.swing.JFrame {
 
+    private static final Logger LOGGER = Logger.getLogger(ShortcutsFrame.class.getName());
+
     public static ShortcutsFrame shortcutsFrame = new ShortcutsFrame();
 
     /**
@@ -48,7 +50,7 @@ public class ShortcutsFrame extends javax.swing.JFrame {
         try {
             jTextPaneShortcutsHtml.setPage(getClass().getResource("/resources/shortcuts.html"));
         } catch (IOException ex) {
-            Logger.getLogger(ShortcutsFrame.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         jVersionTxt.setText(Version.AXOLOTI_VERSION);
@@ -67,15 +69,15 @@ public class ShortcutsFrame extends javax.swing.JFrame {
                         try {
                             desktop.browse(f.toURI());
                         } catch (IOException ex) {
-                            Logger.getLogger(ShortcutsFrame.class.getName()).log(Level.SEVERE, null, ex);
+                            LOGGER.log(Level.SEVERE, null, ex);
                         }
                     } else {
                         try {
                             desktop.browse(hle.getURL().toURI());
                         } catch (IOException ex) {
-                            Logger.getLogger(ShortcutsFrame.class.getName()).log(Level.SEVERE, null, ex);
+                            LOGGER.log(Level.SEVERE, null, ex);
                         } catch (URISyntaxException ex) {
-                            Logger.getLogger(ShortcutsFrame.class.getName()).log(Level.SEVERE, null, ex);
+                            LOGGER.log(Level.SEVERE, null, ex);
                         }
                     }
                 }

@@ -102,6 +102,8 @@ import qcmds.QCmdUploadPatch;
  */
 public final class MainFrame extends javax.swing.JFrame implements ActionListener, ConnectionStatusListener, SDCardMountStatusListener {
 
+    private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
+
     static public Preferences prefs = Preferences.LoadPreferences();
     static public AxoObjects axoObjects;
     public static MainFrame mainframe;
@@ -168,7 +170,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     int openedCount = 0, maxCount = 64;
                     if (droppedFiles.size() > maxCount) {
                         /* Display "whoa" message first */
-                        Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Whoa, slow down. Only the first " + maxCount + " files were opened.");
+                        LOGGER.log(Level.WARNING, "Whoa, slow down. Only the first " + maxCount + " files were opened.");
                     }
 
                     for (File f : droppedFiles) {
@@ -195,17 +197,17 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                                 }
                             }
                             else {
-                                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Error: Can''t read file \"" + fn + "\".)");
+                                LOGGER.log(Level.SEVERE, "Error: Can''t read file \"" + fn + "\".)");
                             }
                         }
                         else {
-                            Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Warning: File \"" + fn + "\" not found.");
+                            LOGGER.log(Level.WARNING, "Warning: File \"" + fn + "\" not found.");
                         }
                     }
                 } catch (UnsupportedFlavorException ex) {
-                    Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
-                    Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -290,7 +292,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                                     txt + "\n", styleInfo);
                         }
                     } catch (BadLocationException ex) {
-                        Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                        LOGGER.log(Level.SEVERE, null, ex);
                     } catch (UnsupportedEncodingException ex) {
                     }
                 }
@@ -340,18 +342,18 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jDevSeparator.setVisible(true);
 
         if (!TestDir(HOME_DIR, true)) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid home directory: {0} - Does it exist? Can it be written to?", System.getProperty(Axoloti.HOME_DIR));
+            LOGGER.log(Level.SEVERE, "Invalid home directory: {0} - Does it exist? Can it be written to?", System.getProperty(Axoloti.HOME_DIR));
         }
 
         if (!TestDir(RELEASE_DIR, false)) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid release directory: {0} - Does it exist?", System.getProperty(Axoloti.RELEASE_DIR));
+            LOGGER.log(Level.SEVERE, "Invalid release directory: {0} - Does it exist?", System.getProperty(Axoloti.RELEASE_DIR));
         }
         if (!TestDir(RUNTIME_DIR, false)) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid runtime directory: {0} - Is the runtime installed correctly?", System.getProperty(Axoloti.RUNTIME_DIR));
+            LOGGER.log(Level.SEVERE, "Invalid runtime directory: {0} - Is the runtime installed correctly?", System.getProperty(Axoloti.RUNTIME_DIR));
         }
 
         if (!TestDir(FIRMWARE_DIR, false)) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid firmware directory: {0} - Does it exist?", System.getProperty(Axoloti.FIRMWARE_DIR));
+            LOGGER.log(Level.SEVERE, "Invalid firmware directory: {0} - Does it exist?", System.getProperty(Axoloti.FIRMWARE_DIR));
         }
 
         /* Do NOT do any serious initialisation in constructor
@@ -365,7 +367,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 try {
                     String tsuf = "";
                     // if (Axoloti.isFailSafeMode()) {
-                    //     Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Failsafe mode activated");
+                    //     LOGGER.log(Level.WARNING, "Failsafe mode activated");
                     //     tsuf = "Failsafe";
                     // }
 
@@ -394,13 +396,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         MainFrame.this.setTitle(MainFrame.this.getTitle() + " (" + tsuf + ")");
                     }
 
-                    Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "Patcher version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
+                    LOGGER.log(Level.WARNING, "Patcher version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
 
                     if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                        Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, ">>> Axoloti Legacy Mode <<<\n");
+                        LOGGER.log(Level.WARNING, ">>> Axoloti Legacy Mode <<<\n");
                     }
                     if (prefs.getFirmwareMode().contains("SPILink")) {
-                        Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, ">>> SPILink-enabled firmware <<<\nPins PB3, PB4, PD5, PD6 are occupied by SPILink communication in this firmware mode!\n");
+                        LOGGER.log(Level.WARNING, ">>> SPILink-enabled firmware <<<\nPins PB3, PB4, PD5, PD6 are occupied by SPILink communication in this firmware mode!\n");
                     }
 
                     updateLinkFirmwareID();
@@ -426,7 +428,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
-                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current Axoloti community library does not match specified version: {0} <-> {1}", new Object[]{cb, ulib.getBranch()});
+                            LOGGER.log(Level.INFO, "Current Axoloti community library does not match specified version: {0} <-> {1}", new Object[]{cb, ulib.getBranch()});
                             int s = JOptionPane.showConfirmDialog(MainFrame.this,
                                     "Axoloti community library version mismatch detected. Upgrade now?\n"
                                     + "This will stash any local changes and reapply them to the new version.\n"
@@ -445,7 +447,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (kso_ulib != null) {
                         String cb = kso_ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(kso_ulib.getBranch())) {
-                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current Ksoloti community library does not match specified version: {0} <-> {1}", new Object[]{cb, kso_ulib.getBranch()});
+                            LOGGER.log(Level.INFO, "Current Ksoloti community library does not match specified version: {0} <-> {1}", new Object[]{cb, kso_ulib.getBranch()});
                             int s = JOptionPane.showConfirmDialog(MainFrame.this,
                                     "Ksoloti community library version mismatch detected. Upgrade now?\n"
                                     + "This will stash any local changes and reapply them to the new version.\n"
@@ -464,7 +466,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
-                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current factory library does not match specified version, upgrading... ({0} -> {1})", new Object[]{cb, ulib.getBranch()});
+                            LOGGER.log(Level.INFO, "Current factory library does not match specified version, upgrading... ({0} -> {1})", new Object[]{cb, ulib.getBranch()});
                             ulib.upgrade();
                         }
                     }
@@ -475,7 +477,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
-                            Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Current ksoloti-objects library does not match specified version, upgrading... ({0} -> {1})", new Object[]{cb, ulib.getBranch()});
+                            LOGGER.log(Level.INFO, "Current ksoloti-objects library does not match specified version, upgrading... ({0} -> {1})", new Object[]{cb, ulib.getBranch()});
                             ulib.upgrade();
                         }
                     }
@@ -486,13 +488,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                                 lib.sync();
                             }
                         }
-                        Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "");
+                        LOGGER.log(Level.INFO, "");
                     // }
 
                     for (AxolotiLibrary lib : prefs.getLibraries()) {
                         lib.reportStatus();
                     }
-                    Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "");
+                    LOGGER.log(Level.INFO, "");
 
                     axoObjects = new AxoObjects();
                     axoObjects.LoadAxoObjects();
@@ -567,10 +569,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
                 qcmdprocessor.AppendToQueue(new QCmdStartFlasher());
             } else {
-                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Can''t read firmware, please compile firmware! (File: {0})", pname);
+                LOGGER.log(Level.SEVERE, "Can''t read firmware, please compile firmware! (File: {0})", pname);
             }
         } else {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Can''t read flasher, please compile firmware! (File: {0})", fname_flasher);
+            LOGGER.log(Level.SEVERE, "Can''t read flasher, please compile firmware! (File: {0})", fname_flasher);
         }
     }
 
@@ -1036,7 +1038,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private boolean runTestCompile(File f) {
         SetGrabFocusOnSevereErrors(false);
-        Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "----- Testing {0} -----", f.getPath());
+        LOGGER.log(Level.INFO, "----- Testing {0} -----", f.getPath());
 
         Strategy strategy = new AnnotationStrategy();
         Serializer serializer = new Persister(strategy);
@@ -1057,12 +1059,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             Thread.sleep(2000);
             status = cp.success();
             if (status == false) {
-                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "COMPILATION FAILED: {0}\n", f.getPath());
+                LOGGER.log(Level.SEVERE, "COMPILATION FAILED: {0}\n", f.getPath());
             }
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
             return status;
         } catch (Exception ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "COMPILATION FAILED: " + f.getPath() + "\n", ex);
+            LOGGER.log(Level.SEVERE, "COMPILATION FAILED: " + f.getPath() + "\n", ex);
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
             return false;
         }
@@ -1105,7 +1107,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private boolean runUpgradeFile(File f) {
-        Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Upgrading {0}", f.getPath());
+        LOGGER.log(Level.INFO, "Upgrading {0}", f.getPath());
 
         Strategy strategy = new AnnotationStrategy();
         Serializer serializer = new Persister(strategy);
@@ -1117,11 +1119,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             patch1.PostContructor();
             status = patch1.save(f);
             if (status == false) {
-                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "UPGRADING FAILED: {0}", f.getPath());
+                LOGGER.log(Level.SEVERE, "UPGRADING FAILED: {0}", f.getPath());
             }
             return status;
         } catch (Exception ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "UPGRADING FAILED: " + f.getPath(), ex);
+            LOGGER.log(Level.SEVERE, "UPGRADING FAILED: " + f.getPath(), ex);
             return false;
         }
     }
@@ -1141,7 +1143,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.AppendToQueue(new qcmds.QCmdDisconnect());
             qcmdprocessor.AppendToQueue(new qcmds.QCmdFlashDFU());
         } else {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "No devices in Rescue Mode detected. To bring Ksoloti Core into Rescue Mode:\n1. Remove power.\n2. Hold down button S1 then connect the USB prog port to your computer.\nThe LEDs will stay off when in Rescue Mode.");
+            LOGGER.log(Level.SEVERE, "No devices in Rescue Mode detected. To bring Ksoloti Core into Rescue Mode:\n1. Remove power.\n2. Hold down button S1 then connect the USB prog port to your computer.\nThe LEDs will stay off when in Rescue Mode.");
         }
     }
 
@@ -1203,9 +1205,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.AppendToQueue(new QCmdStop());
             qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
             qcmdprocessor.AppendToQueue(new QCmdStartMounter());
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Disconnecting from Patcher...");
+            LOGGER.log(Level.SEVERE, "Disconnecting from Patcher...");
         } else {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Can''t read Mounter firmware. Please compile firmware first! (file: {0})", fname);
+            LOGGER.log(Level.SEVERE, "Can''t read Mounter firmware. Please compile firmware first! (file: {0})", fname);
         }
 
     }
@@ -1220,11 +1222,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             String name = uri.substring(uri.lastIndexOf("/") + 1, uri.length());
             PatchGUI.OpenPatch(name, input);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
+            LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
         } catch (URISyntaxException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
+            LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
         } catch (IOException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{uri, ex});
+            LOGGER.log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{uri, ex});
         }
     }
 
@@ -1372,7 +1374,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         LinkFirmwareID = FirmwareID.getFirmwareID();
         // TargetFirmwareID = LinkFirmwareID;
         jLabelFirmwareID.setText("Firmware ID: " + LinkFirmwareID);
-        Logger.getLogger(MainFrame.class.getName()).log(Level.INFO, "Link to firmware CRC {0}", LinkFirmwareID);
+        LOGGER.log(Level.INFO, "Link to firmware CRC {0}", LinkFirmwareID);
         WarnedAboutFWCRCMismatch = false;
     }
 
@@ -1382,8 +1384,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         TargetFirmwareID = firmwareId;
         if (!firmwareId.equals(this.LinkFirmwareID)) {
             if (!WarnedAboutFWCRCMismatch) {
-                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Firmware CRC mismatch! Please flash the firmware first!");
-                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, "Hardware CRC {0} <-> Software CRC {1}", new Object[]{firmwareId, this.LinkFirmwareID});
+                LOGGER.log(Level.SEVERE, "Firmware CRC mismatch! Please flash the firmware first!");
+                LOGGER.log(Level.SEVERE, "Hardware CRC {0} <-> Software CRC {1}", new Object[]{firmwareId, this.LinkFirmwareID});
                 WarnedAboutFWCRCMismatch = true;
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
@@ -1502,7 +1504,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 }
             }
             else {
-                Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "File not found.");
+                LOGGER.log(Level.WARNING, "File not found.");
             }
         }
     }

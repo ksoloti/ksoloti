@@ -34,6 +34,8 @@ import javax.swing.SwingUtilities;
  */
 public class QCmdProcessor implements Runnable {
 
+    private static final Logger LOGGER = Logger.getLogger(QCmdProcessor.class.getName());
+
     private final BlockingQueue<QCmd> queue;
     private final BlockingQueue<QCmd> queueResponse;
     protected Connection serialconnection;
@@ -51,7 +53,7 @@ public class QCmdProcessor implements Runnable {
                 try {
                     Thread.sleep(MainFrame.prefs.getPollInterval());
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(QCmdProcessor.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
                 if (queue.isEmpty() && serialconnection.isConnected()) {
                     queue.add(new QCmdPing());
@@ -71,7 +73,7 @@ public class QCmdProcessor implements Runnable {
                 try {
                     Thread.sleep(5);
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(QCmdProcessor.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -160,7 +162,7 @@ public class QCmdProcessor implements Runnable {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException ex) {
-                Logger.getLogger(QCmdProcessor.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -212,7 +214,7 @@ public class QCmdProcessor implements Runnable {
                     publish(m);
                 }
             } catch (InterruptedException ex) {
-                Logger.getLogger(QCmdProcessor.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
             setProgress(0);
         }
@@ -225,7 +227,7 @@ public class QCmdProcessor implements Runnable {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                Logger.getLogger(QCmdProcessor.class.getName()).log(Level.INFO, s);
+                LOGGER.log(Level.INFO, s);
             }
         });
     }

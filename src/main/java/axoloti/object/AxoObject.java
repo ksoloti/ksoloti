@@ -127,6 +127,8 @@ import org.simpleframework.xml.*;
 @Root
 public class AxoObject extends AxoObjectAbstract {
 
+    private static final Logger LOGGER = Logger.getLogger(AxoObject.class.getName());
+
     @Element(required = false)
     public String helpPatch;
     @Element(required = false)
@@ -362,7 +364,7 @@ public class AxoObject extends AxoObjectAbstract {
                     || (sMidiNoteOnCode != null)
                     || (sMidiPBendCode != null)
                     || (sMidiResetControllersCode != null)) {
-                Logger.getLogger(AxoObject.class.getName()).log(Level.SEVERE, "Object {0} uses obsolete midi handling. If it is a subpatch-generated object, open and save the original patch again!", InstanceName1);
+                LOGGER.log(Level.SEVERE, "Object {0} uses obsolete midi handling. If it is a subpatch-generated object, open and save the original patch again!", InstanceName1);
             }
         }
 

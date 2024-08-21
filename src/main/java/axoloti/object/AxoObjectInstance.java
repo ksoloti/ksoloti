@@ -69,6 +69,8 @@ import org.simpleframework.xml.core.Persist;
 @Root(name = "obj")
 public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
+    private static final Logger LOGGER = Logger.getLogger(AxoObjectInstance.class.getName());
+
     public ArrayList<InletInstance> inletInstances;
     public ArrayList<OutletInstance> outletInstances;
 
@@ -741,7 +743,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         //     BigDecimal frq_hz = new BigDecimal(440.0 * Math.pow(2.0, (i - 69.0 - 64.0) / 12.0), mc);
                         //     BigDecimal phi = new BigDecimal(4.0 * (double) (1 << 30) * frq_hz.floatValue() / 48000.0, mc);
                         //     pitchTable[i] = phi.intValue();
-                        //     // Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "pitchtable: " + pitchTable[i]);
+                        //     // LOGGER.log(Level.INFO, "pitchtable: " + pitchTable[i]);
                         // }
 
                         /* Calculate "integer" and "fractional" pitch */
@@ -849,33 +851,33 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             if (s.contains("AudioInputMode = A_STEREO;")) {
                 patch.setAudioInputMode(0);
                 s = s.replace("AudioInputMode = A_STEREO;", opt);
-                Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "Audio input mode set: STEREO");
+                LOGGER.log(Level.INFO, "Audio input mode set: STEREO");
             }
             if (s.contains("AudioInputMode = A_MONO;")) {
                 patch.setAudioInputMode(1);
                 s = s.replace("AudioInputMode = A_MONO;", opt);
-                Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "Audio input mode set: MONO");
+                LOGGER.log(Level.INFO, "Audio input mode set: MONO");
             }
             if (s.contains("AudioInputMode = A_BALANCED;")) {
                 patch.setAudioInputMode(2);
                 s = s.replace("AudioInputMode = A_BALANCED;", opt);
-                Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "Audio input mode set: BALANCED");
+                LOGGER.log(Level.INFO, "Audio input mode set: BALANCED");
             }
 
             if (s.contains("AudioOutputMode = A_MONO;")) {
                 patch.setAudioOutputMode(1);
                 s = s.replace("AudioOutputMode = A_MONO;", opt);
-                Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "Audio output mode set: MONO");
+                LOGGER.log(Level.INFO, "Audio output mode set: MONO");
             }
             if (s.contains("AudioOutputMode = A_BALANCED;")) {
                 patch.setAudioOutputMode(2);
                 s = s.replace("AudioOutputMode = A_BALANCED;", opt);
-                Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "Audio output mode set: BALANCED");
+                LOGGER.log(Level.INFO, "Audio output mode set: BALANCED");
             }
             if (s.contains("AudioOutputMode = A_STEREO;")) {
                 patch.setAudioOutputMode(0);
                 s = s.replace("AudioOutputMode = A_STEREO;", opt);
-                Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "Audio output mode set: STEREO");
+                LOGGER.log(Level.INFO, "Audio output mode set: STEREO");
             }
 
             c += s;
@@ -1104,7 +1106,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             return;
         }
         if (candidates.isEmpty()) {
-            Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.SEVERE, "Could not resolve any candidates {0}", id);
+            LOGGER.log(Level.SEVERE, "Could not resolve any candidates {0}", id);
         }
         if (candidates.size() == 1) {
             return;
@@ -1156,15 +1158,15 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         }
 
         if (selected == null) {
-            //Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO,"No promotion to null" + this + " to " + selected);            
+            //LOGGER.log(Level.INFO,"No promotion to null" + this + " to " + selected);            
             return;
         }
         if (selected != getType()) {
-            Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.FINE, "Promoting " + this + " to " + selected);
+            LOGGER.log(Level.FINE, "Promoting " + this + " to " + selected);
             patch.ChangeObjectInstanceType(this, selected);
             patch.cleanUpIntermediateChangeStates(4);
         } else {
-//            Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.INFO, "No promotion for {0}", typeName);
+//            LOGGER.log(Level.INFO, "No promotion for {0}", typeName);
         }
     }
 
@@ -1269,7 +1271,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             getPatch().delete(this);
             getPatch().SetDirty();
         } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(AxoObjectInstance.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
