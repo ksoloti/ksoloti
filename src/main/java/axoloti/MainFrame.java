@@ -197,7 +197,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                                 }
                             }
                             else {
-                                LOGGER.log(Level.SEVERE, "Error: Can''t read file \"" + fn + "\".)");
+                                LOGGER.log(Level.SEVERE, "Error: Cannot read file \"" + fn + "\".)");
                             }
                         }
                         else {
@@ -428,7 +428,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
-                            LOGGER.log(Level.INFO, "Current Axoloti community library does not match specified version: {0} <-> {1}", new Object[]{cb, ulib.getBranch()});
+                            LOGGER.log(Level.INFO, "Current axoloti-community library does not match specified version: {0} <-> {1}", new Object[]{cb, ulib.getBranch()});
                             int s = JOptionPane.showConfirmDialog(MainFrame.this,
                                     "Axoloti community library version mismatch detected. Upgrade now?\n"
                                     + "This will stash any local changes and reapply them to the new version.\n"
@@ -447,7 +447,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (kso_ulib != null) {
                         String cb = kso_ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(kso_ulib.getBranch())) {
-                            LOGGER.log(Level.INFO, "Current Ksoloti community library does not match specified version: {0} <-> {1}", new Object[]{cb, kso_ulib.getBranch()});
+                            LOGGER.log(Level.INFO, "Current ksoloti-community library does not match specified version: {0} <-> {1}", new Object[]{cb, kso_ulib.getBranch()});
                             int s = JOptionPane.showConfirmDialog(MainFrame.this,
                                     "Ksoloti community library version mismatch detected. Upgrade now?\n"
                                     + "This will stash any local changes and reapply them to the new version.\n"
@@ -466,7 +466,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
-                            LOGGER.log(Level.INFO, "Current factory library does not match specified version, upgrading... ({0} -> {1})", new Object[]{cb, ulib.getBranch()});
+                            LOGGER.log(Level.INFO, "Current axoloti-factory library does not match specified version, upgrading... ({0} -> {1})", new Object[]{cb, ulib.getBranch()});
                             ulib.upgrade();
                         }
                     }
@@ -569,10 +569,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
                 qcmdprocessor.AppendToQueue(new QCmdStartFlasher());
             } else {
-                LOGGER.log(Level.SEVERE, "Can''t read firmware, please compile firmware! (File: {0})", pname);
+                LOGGER.log(Level.SEVERE, "Cannot read firmware, please compile firmware! (File: {0})", pname);
             }
         } else {
-            LOGGER.log(Level.SEVERE, "Can''t read flasher, please compile firmware! (File: {0})", fname_flasher);
+            LOGGER.log(Level.SEVERE, "Cannot read flasher, please compile firmware! (File: {0})", fname_flasher);
         }
     }
 
@@ -1119,11 +1119,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             patch1.PostContructor();
             status = patch1.save(f);
             if (status == false) {
-                LOGGER.log(Level.SEVERE, "UPGRADING FAILED: {0}", f.getPath());
+                LOGGER.log(Level.SEVERE, "UPGRADE FAILED: {0}", f.getPath());
             }
             return status;
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "UPGRADING FAILED: " + f.getPath(), ex);
+            LOGGER.log(Level.SEVERE, "UPGRADE FAILED: " + f.getPath(), ex);
             return false;
         }
     }
@@ -1207,7 +1207,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.AppendToQueue(new QCmdStartMounter());
             LOGGER.log(Level.SEVERE, "Disconnecting from Patcher...");
         } else {
-            LOGGER.log(Level.SEVERE, "Can''t read Mounter firmware. Please compile firmware first! (file: {0})", fname);
+            LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first! (file: {0})", fname);
         }
 
     }

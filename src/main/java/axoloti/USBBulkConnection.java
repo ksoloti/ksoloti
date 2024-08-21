@@ -356,10 +356,10 @@ public class USBBulkConnection extends Connection {
             ByteBuffer signature = q.getResult();
             boolean signaturevalid = false;
             if (signature == null) {
-                LOGGER.log(Level.INFO, "Can''t obtain signature, upgrade firmware?");
+                LOGGER.log(Level.INFO, "Cannot obtain signature, upgrade firmware?");
             }
             // else if ((signature.getInt(0) == 0xFFFFFFFF) && (signature.getInt(1) == 0xFFFFFFFF)) {
-            //     LOGGER.log(Level.INFO, "Can''t validate authenticity, no signature present.");
+            //     LOGGER.log(Level.INFO, "Cannot validate authenticity, no signature present.");
             // }
             // else {
             //     signaturevalid = HWSignature.Verify(targetProfile.getCPUSerial(), otpInfo, bb2ba(signature));
@@ -373,7 +373,7 @@ public class USBBulkConnection extends Connection {
             //         }
             //         LOGGER.log(Level.INFO, "Authentic {0}", s);
             //     } else {
-            //         LOGGER.log(Level.SEVERE, "Can''t validate authenticity, signature invalid.");
+            //         LOGGER.log(Level.SEVERE, "Cannot validate authenticity, signature invalid.");
             //     }
             // }
 

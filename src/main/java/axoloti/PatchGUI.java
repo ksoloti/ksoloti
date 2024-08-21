@@ -860,7 +860,7 @@ public class PatchGUI extends Patch {
                 SetDirty();
             }
         } else {
-            LOGGER.log(Level.INFO, "Can''t move: locked");
+            LOGGER.log(Level.INFO, "Cannot move: locked");
         }
     }
 

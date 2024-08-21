@@ -287,7 +287,7 @@ public class Patch {
                 continue;
             }
             if (!f.canRead()) {
-                LOGGER.log(Level.SEVERE, "Can''t read file {0}", f.getName());
+                LOGGER.log(Level.SEVERE, "Cannot read file {0}", f.getName());
                 continue;
             }
 
@@ -573,7 +573,7 @@ public class Patch {
             return oi;
         }
         else {
-            LOGGER.log(Level.INFO, "Can''t add instance: locked!");
+            LOGGER.log(Level.INFO, "Cannot add instance: locked!");
         }
         return null;
     }
@@ -606,11 +606,11 @@ public class Patch {
     public Net AddConnection(InletInstance il, OutletInstance ol) {
         if (!IsLocked()) {
             if (il.GetObjectInstance().patch != this) {
-                LOGGER.log(Level.INFO, "Can''t connect: different patch");
+                LOGGER.log(Level.INFO, "Cannot connect: different patch");
                 return null;
             }
             if (ol.GetObjectInstance().patch != this) {
-                LOGGER.log(Level.INFO, "Can''t connect: different patch");
+                LOGGER.log(Level.INFO, "Cannot connect: different patch");
                 return null;
             }
             Net n1, n2;
@@ -625,7 +625,7 @@ public class Patch {
                 return n;
             }
             else if (n1 == n2) {
-                LOGGER.log(Level.INFO, "Can''t connect: already connected");
+                LOGGER.log(Level.INFO, "Cannot connect: already connected");
                 return null;
             }
             else if ((n1 != null) && (n2 == null)) {
@@ -659,7 +659,7 @@ public class Patch {
             }
         }
         else {
-            LOGGER.log(Level.INFO, "Can''t add connection: locked!");
+            LOGGER.log(Level.INFO, "Cannot add connection: locked!");
         }
         return null;
     }
@@ -667,15 +667,15 @@ public class Patch {
     public Net AddConnection(InletInstance il, InletInstance ol) {
         if (!IsLocked()) {
             if (il == ol) {
-                LOGGER.log(Level.INFO, "Can''t connect: same inlet");
+                LOGGER.log(Level.INFO, "Cannot connect: same inlet");
                 return null;
             }
             if (il.GetObjectInstance().patch != this) {
-                LOGGER.log(Level.INFO, "Can''t connect: different patch");
+                LOGGER.log(Level.INFO, "Cannot connect: different patch");
                 return null;
             }
             if (ol.GetObjectInstance().patch != this) {
-                LOGGER.log(Level.INFO, "Can''t connect: different patch");
+                LOGGER.log(Level.INFO, "Cannot connect: different patch");
                 return null;
             }
 
@@ -691,7 +691,7 @@ public class Patch {
                 return n;
             }
             else if (n1 == n2) {
-                LOGGER.log(Level.INFO, "Can''t connect: already connected");
+                LOGGER.log(Level.INFO, "Cannot connect: already connected");
             }
             else if ((n1 != null) && (n2 == null)) {
                 n1.connectInlet(ol);
@@ -704,12 +704,12 @@ public class Patch {
                 return n2;
             }
             else if ((n1 != null) && (n2 != null)) {
-                LOGGER.log(Level.INFO, "Can''t connect: both inlets included in net");
+                LOGGER.log(Level.INFO, "Cannot connect: both inlets included in net");
                 return null;
             }
         }
         else {
-            LOGGER.log(Level.INFO, "Can''t add connection: locked!");
+            LOGGER.log(Level.INFO, "Cannot add connection: locked!");
         }
         return null;
     }
@@ -731,7 +731,7 @@ public class Patch {
             }
         }
         else {
-            LOGGER.log(Level.INFO, "Can''t disconnect: locked!");
+            LOGGER.log(Level.INFO, "Cannot disconnect: locked!");
         }
         return null;
     }
@@ -742,7 +742,7 @@ public class Patch {
             return n;
         }
         else {
-            LOGGER.log(Level.INFO, "Can''t disconnect: locked!");
+            LOGGER.log(Level.INFO, "Cannot disconnect: locked!");
         }
         return null;
     }
@@ -822,7 +822,7 @@ public class Patch {
             SetDirty();
         }
         else {
-            LOGGER.log(Level.INFO, "Can''t delete: locked!");
+            LOGGER.log(Level.INFO, "Cannot delete: locked!");
         }
     }
 

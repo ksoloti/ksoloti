@@ -186,7 +186,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         for (File f : droppedFiles) {
                             System.out.println(f.getName());
                             if (!f.canRead()) {
-                               LOGGER.log(Level.SEVERE, "Can''t read file");
+                               LOGGER.log(Level.SEVERE, "Cannot read file");
                             } else {
                                 processor.AppendToQueue(new QCmdUploadFile(f, f.getName()));
                             }
@@ -421,7 +421,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     if (f != null) {
                         prefs.setCurrentFileDirectory(f.getParentFile().toString());
                         if (!f.canRead()) {
-                            LOGGER.log(Level.SEVERE, "Can''t read file");
+                            LOGGER.log(Level.SEVERE, "Cannot read file");
                             return;
                         }
                         processor.AppendToQueue(new QCmdUploadFile(f, dir + f.getName()));

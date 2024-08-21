@@ -81,7 +81,7 @@ public class AxoObjectInstanceHyperlink extends AxoObjectInstanceAbstract {
             if (f.canRead()) {
                 PatchGUI.OpenPatch(f);
             } else {
-                LOGGER.log(Level.SEVERE, "Can''t read file {0}", f.getAbsolutePath());
+                LOGGER.log(Level.SEVERE, "Cannot read file {0}", f.getAbsolutePath());
             }
         }
     }

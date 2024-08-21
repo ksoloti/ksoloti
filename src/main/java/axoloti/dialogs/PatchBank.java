@@ -225,7 +225,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                     for (File f : droppedFiles) {
                         System.out.println(f.getName());
                         if (!f.canRead()) {
-                            LOGGER.log(Level.SEVERE, "Can''t read file");
+                            LOGGER.log(Level.SEVERE, "Cannot read file");
                         }
                         else {
                             files.add(f);

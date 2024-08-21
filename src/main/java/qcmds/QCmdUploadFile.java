@@ -89,7 +89,7 @@ public class QCmdUploadFile implements QCmdSerialTask {
                     return this;
                 }
                 if (!file.canRead()) {
-                    LOGGER.log(Level.INFO, "Can''t read file: {0}", filename);
+                    LOGGER.log(Level.INFO, "Cannot read file: {0}", filename);
                     success = false;
                     return this;
                 }
