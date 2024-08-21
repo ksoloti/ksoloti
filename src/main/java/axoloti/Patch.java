@@ -1308,7 +1308,7 @@ public class Patch {
         c += I + "void ApplyPreset(uint8_t index) {\n"
            + I+I + "if (!index) {\n"
            + I+I+I + "int32_t* p = GetInitParams();\n"
-           + I+I+I + "uint16_t i; for (i=0; i<NPEXCH; i++) {\n"
+           + I+I+I + "uint16_t i; for (i = 0; i < NPEXCH; i++) {\n"
            + I+I+I+I + "PExParameterChange(&PExch[i], p[i], 0xFFEF);\n"
            + I+I+I + "}\n"
            + I+I + "}\n"
@@ -1316,7 +1316,7 @@ public class Patch {
            + I+I + "if (index < NPRESETS) {\n"
            + I+I+I + "PresetParamChange_t* pa = (PresetParamChange_t*) (GetPresets());\n"
            + I+I+I + "PresetParamChange_t* p = &pa[index * NPRESET_ENTRIES];\n"
-           + I+I+I + "uint8_t i; for (i=0; i<NPRESET_ENTRIES; i++) {\n"
+           + I+I+I + "uint8_t i; for (i = 0; i < NPRESET_ENTRIES; i++) {\n"
            + I+I+I+I + "PresetParamChange_t* pp = &p[i];\n"
            + I+I+I+I + "if ((pp->pexIndex >= 0) && (pp->pexIndex < NPEXCH)) {\n"
            + I+I+I+I+I + "PExParameterChange(&PExch[pp->pexIndex], pp->value, 0xFFEF);\n"
@@ -1423,7 +1423,7 @@ public class Patch {
                 c += ");\n";
             }
         }
-        c += "\n" + I+I + "uint16_t k; for (k=0; k<NPEXCH; k++) {\n"
+        c += "\n" + I+I + "uint16_t k; for (k = 0; k < NPEXCH; k++) {\n"
            + I+I+I + "if (PExch[k].pfunction) {\n"
            + I+I+I+I + "(PExch[k].pfunction)(&PExch[k]);\n"
            + I+I+I + "}\n"
@@ -1439,7 +1439,7 @@ public class Patch {
         c += I+I + "uint32_t i, j;\n";
         c += I+I + "const int32_t* p;\n";
         c += I+I + "p = GetInitParams();\n\n";
-        c += I+I + "for (j=0; j<" + /*ParameterInstances.size()*/ "NPEXCH" + "; j++) {\n";
+        c += I+I + "for (j = 0; j < " + /*ParameterInstances.size()*/ "NPEXCH" + "; j++) {\n";
         c += I+I+I + "PExch[j].value = p[j];\n";
         c += I+I+I + "PExch[j].modvalue = p[j];\n";
         c += I+I+I + "PExch[j].signals = 0;\n";
@@ -1447,7 +1447,7 @@ public class Patch {
 //        c += I+I+I + "PExch[j].finalvalue = p[j];\n"; /*TBC*/
         c += I+I + "}\n\n";
         c += I+I + "int32_t* pp = &PExModulationPrevVal[0][0];\n";
-        c += I+I + "for (j=0; j<attr_poly * NMODULATIONSOURCES; j++) {\n";
+        c += I+I + "for (j = 0; j < (attr_poly * NMODULATIONSOURCES); j++) {\n";
         c += I+I+I + "*pp = 0; pp++;\n";
         c += I+I + "}\n\n";
         c += I+I + "displayVector[0] = 0x446F7841;\n"; // "AxoD"
@@ -1499,7 +1499,7 @@ public class Patch {
 
     String GenerateDSPCodePlusPlusSub(String ClassName) {
         String c = "\n";
-        c += I+I + "//--------- <nets> -----------//\n";
+        c += I+I + "/* <nets> -*/\n";
         for (Net n : nets) {
             if (n.CType() != null) {
                 c += I+I + n.CType() + " " + n.CName() + ";\n";
@@ -1508,27 +1508,27 @@ public class Patch {
                 LOGGER.log(Level.INFO, "Net has no data type!");
             }
         }
-        c += I+I + "//--------- </nets> ----------//\n\n";
-        c += I+I + "//--------- <zero> ----------//\n";
+        c += I+I + "/* </nets> */\n\n";
+        c += I+I + "/* <zero> */\n";
         c += I+I + "int32_t UNCONNECTED_OUTPUT;\n";
         c += I+I + "static const int32_t UNCONNECTED_INPUT = 0;\n";
         c += I+I + "static const int32buffer ZEROBUFFER = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};\n";
         c += I+I + "int32buffer UNCONNECTED_OUTPUT_BUFFER;\n";
-        c += I+I + "//--------- </zero> ----------//\n\n";
+        c += I+I + "/* </zero> */\n\n";
 
         if (controllerInstance != null) {
-            c += I+I + "//--------- <controller calls> ----------//\n";
+            c += I+I + "/* <controller calls> */\n";
             c += GenerateDSPCodePlusPlusSubObj(controllerInstance, ClassName);
-            c += I+I + "//--------- </controller calls> ----------//\n\n";
+            c += I+I + "/* </controller calls> */\n\n";
         }
 
-        c += I+I + "//--------- <object calls> ----------//\n";
+        c += I+I + "/* <object calls> */\n";
         for (AxoObjectInstanceAbstract o : objectInstances) {
             c += GenerateDSPCodePlusPlusSubObj(o, ClassName);
         }
-        c += I+I + "//--------- </object calls> ----------//\n\n";
+        c += I+I + "/* </object calls> */\n\n";
 
-        c += I+I + "//--------- <net latch copy> ----------//\n";
+        c += I+I + "/* <net latch copy> */\n";
         for (Net n : nets) {
             // check if net has multiple sources
             if (n.NeedsLatch()) {
@@ -1540,7 +1540,7 @@ public class Patch {
                 }
             }
         }
-        c += I+I + "//--------- </net latch copy> ----------//\n";
+        c += I+I + "/* </net latch copy> */\n";
         return c;
     }
 
@@ -1646,7 +1646,7 @@ public class Patch {
         c = I + "/* Patch k-rate */\n"
           + I + "void dsp(void) {\n"
           + I+I + "uint8_t i;\n"
-          + I+I + "for (i=0; i<BUFSIZE; i++) {\n"
+          + I+I + "for (i = 0; i < BUFSIZE; i++) {\n"
           + I+I+I + "AudioOutputLeft[i] = 0;\n"
           + I+I+I + "AudioOutputRight[i] = 0;\n"
           + I+I + "}\n";
@@ -1675,25 +1675,25 @@ public class Patch {
            object init code generation in AxoObjectInstance.java.
            This saves a bit of memory and instructions in the patch. */
         if (audioInputMode == 1) {
-            c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+            c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
            + I+I + "/* AudioInputMode == A_MONO */\n"
-           + I+I + "AudioInputLeft[i] = inbuf[i * 2]>>4;\n"
+           + I+I + "AudioInputLeft[i] = inbuf[i * 2] >> 4;\n"
            + I+I + "AudioInputRight[i] = AudioInputLeft[i];\n"
            + I + "}\n";
         }
         else if (audioInputMode == 2) {
-        c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+        c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
            + I+I + "/* AudioInputMode == A_BALANCED */\n"
            + I+I + "AudioInputLeft[i] = inbuf[i * 2]>>4;\n"
-           + I+I + "AudioInputLeft[i] = (AudioInputLeft[i] - (inbuf[i * 2 + 1]>>4) ) >> 1;\n"
+           + I+I + "AudioInputLeft[i] = (AudioInputLeft[i] - (inbuf[i * 2 + 1] >> 4) ) >> 1;\n"
            + I+I + "AudioInputRight[i] = AudioInputLeft[i];\n"
            + I + "}\n";
         }
         else {
-        c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+        c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
            + I+I + "/* AudioInputMode == A_STEREO */\n"
-           + I+I + "AudioInputLeft[i] = inbuf[i * 2]>>4;\n"
-           + I+I + "AudioInputRight[i] = inbuf[i * 2 + 1]>>4;\n"
+           + I+I + "AudioInputLeft[i] = inbuf[i * 2] >> 4;\n"
+           + I+I + "AudioInputRight[i] = inbuf[i * 2 + 1] >> 4;\n"
            + I + "}\n";
 
         }
@@ -1702,44 +1702,44 @@ public class Patch {
 
         if (settings.getSaturate()) {
             if (audioOutputMode == 1) {
-                c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
                    + I+I + "/* AudioOutputMode == A_MONO */\n"
-                   + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28)<<4;\n"
+                   + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28) << 4;\n"
                    + I+I + "outbuf[i * 2 + 1] = 0;\n"
                    + I + "}\n";
             }
             else if (audioOutputMode == 2) {
-                c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
                    + I+I + "/* AudioOutputMode == A_BALANCED */\n"
-                   + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28)<<4;\n"
+                   + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28) << 4;\n"
                    + I+I + "outbuf[i * 2 + 1] = ~outbuf[i * 2];\n"
                    + I + "}\n";
             }
             else {
-                c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
                    + I+I + "/* AudioOutputMode == A_STEREO */\n"
-                   + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28)<<4;\n"
-                   + I+I + "outbuf[i * 2 + 1] = __SSAT(AudioOutputRight[i], 28)<<4;\n"
+                   + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28) << 4;\n"
+                   + I+I + "outbuf[i * 2 + 1] = __SSAT(AudioOutputRight[i], 28) << 4;\n"
                    + I + "}\n";
             }
         }
         else {
             if (audioOutputMode == 1) {
-                c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
                    + I+I + "/* AudioOutputMode == A_MONO, unsaturated */\n"
                    + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
                    + I+I + "outbuf[i * 2 + 1] = 0;\n"
                    + I + "}\n";
             }
             else if (audioOutputMode == 2) {
-                c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
                    + I+I + "/* AudioOutputMode == A_BALANCED, unsaturated */\n"
                    + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
                    + I+I + "outbuf[i * 2 + 1] = ~outbuf[i * 2];\n"
                    + I + "}\n";
             }
             else {
-                c += I + "for (i=0; i<BUFSIZE; i++) {\n"
+                c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
                    + I+I + "/* AudioOutputMode == A_STEREO, unsaturated */\n"
                    + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
                    + I+I + "outbuf[i * 2 + 1] = AudioOutputRight[i];\n"
@@ -2453,31 +2453,31 @@ public class Patch {
 
         o.sLocalData
                 += "uint8_t voiceChannel[attr_poly];\n"
-                + "uint8_t pitchbendRange;\n"
-                + "uint8_t lowChannel;\n"
-                + "uint8_t highChannel;\n"
-                + "uint8_t lastRPN_LSB;\n"
-                + "uint8_t lastRPN_MSB;\n";
+                 + "uint8_t pitchbendRange;\n"
+                 + "uint8_t lowChannel;\n"
+                 + "uint8_t highChannel;\n"
+                 + "uint8_t lastRPN_LSB;\n"
+                 + "uint8_t lastRPN_MSB;\n";
 
         o.sInitCode
                 += "uint8_t vc; for (vc = 0; vc < attr_poly; vc++) {\n"
-                + "  voiceChannel[vc] = 0xFF;\n"
-                + "}\n"
-                + "pitchbendRange = 48;\n"
-                + "lastRPN_LSB = 0xFF;\n"
-                + "lastRPN_MSB = 0xFF;\n";
+                 + "  voiceChannel[vc] = 0xFF;\n"
+                 + "}\n"
+                 + "pitchbendRange = 48;\n"
+                 + "lastRPN_LSB = 0xFF;\n"
+                 + "lastRPN_MSB = 0xFF;\n";
 
         if (settings != null && settings.getMPEZone() == 1) {
             /* Upper zone selected in settings */
             o.sInitCode
                 += "lowChannel = " + (15 - settings.getMPENumberOfMemberChannels()) + ";\n"
-                + "highChannel = 14;\n";
+                 + "highChannel = 14;\n";
         }
         else {
             /* Else default to lower zone */
             o.sInitCode
                 += "lowChannel = 1;\n"
-                + "highChannel = " + settings.getMPENumberOfMemberChannels() + ";\n";
+                 + "highChannel = " + settings.getMPENumberOfMemberChannels() + ";\n";
         }
 
         o.sMidiCode = ""
