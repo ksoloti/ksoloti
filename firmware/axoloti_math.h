@@ -198,10 +198,13 @@ uint32_t FastLog(uint32_t f);
 #define MTOF(pitch, frequency) frequency = mtof48k_q31(pitch);
 
 #define MTOFEXTENDED(pitch, frequency) frequency = mtof48k_ext_q31(pitch);
+#define MTOF_EXTENDED MTOFEXTENDED
 
 #define SINE2TINTERP(phase, output) output = sin_q31(phase);
+#define SINE2T_INTERP SINE2TINTERP
 
 #define HANNING2TINTERP(phase, output) output = hann_q31(phase);
+#define HANNING2T_INTERP HANNING2TINTERP
 
 // deprecated functions
 __attribute__((always_inline)) __STATIC_INLINE uint32_t GenerateRandomNumber(void) {
