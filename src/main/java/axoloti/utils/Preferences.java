@@ -634,7 +634,7 @@ public class Preferences {
                     + Version.AXOLOTI_SHORT_VERSION + File.separator
                     + "axoloti-factory" + File.separator,
                 true,
-                "https://github.com/axoloti/axoloti-factory.git",
+                "https://github.com/ksoloti/axoloti-factory.git",
                 false
         );
         libraries.add(factory);
