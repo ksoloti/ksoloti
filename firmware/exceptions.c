@@ -97,7 +97,7 @@ void BootLoaderInit() {
     asm volatile ("NOP");
     asm volatile ("LDR     R0, =0x40013800 ;");
     // SYSCFG_CFGR1 (+0x00)
-    asm volatile ("MOV     R1, =0x1        ;");
+    asm volatile ("LDR     R1, =0x1        ;");
     // MAP ROM
     asm volatile ("STR     R1, [R0, #0]    ;");
     // MAP ROM AT ZERO (1)
