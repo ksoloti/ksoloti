@@ -20,8 +20,8 @@ package axoloti;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+// import java.util.logging.Level;
+// import java.util.logging.Logger;
 
 /**
  *
@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  */
 public class SDCardInfo {
 
-    private static final Logger LOGGER = Logger.getLogger(SDCardInfo.class.getName());
+    // private static final Logger LOGGER = Logger.getLogger(SDCardInfo.class.getName());
 
     private final ArrayList<SDFileInfo> files = new ArrayList<SDFileInfo>();
     boolean available = false;
@@ -113,7 +113,7 @@ public class SDCardInfo {
         }
         sdf = new SDFileInfo(fname, date, size);
         files.add(sdf);
-        LOGGER.log(Level.SEVERE, "File added " + files.size() + ":" + fname);
+        // LOGGER.log(Level.SEVERE, "File added " + files.size() + ":" + fname);
         MainFrame.mainframe.filemanager.refresh();
     }
 
@@ -145,12 +145,12 @@ public class SDCardInfo {
     }
 
     public synchronized boolean exists(String name, long timestampEpoch, long size) {
-        LOGGER.log(Level.SEVERE, "Does " + name + " exist?");
+        // LOGGER.log(Level.SEVERE, "Does " + name + " exist?");
         if (!name.startsWith("/")) {
             name = "/" + name;
         }
         for (SDFileInfo f : files) {
-            LOGGER.log(Level.SEVERE, "File compare " + name + ":" + f.filename);
+            // LOGGER.log(Level.SEVERE, "File compare " + name + ":" + f.filename);
             if (f.filename.equalsIgnoreCase(name) && f.size == size && (Math.abs(f.timestamp.getTimeInMillis() - timestampEpoch) < 3000)) {
                 return true;
             }
