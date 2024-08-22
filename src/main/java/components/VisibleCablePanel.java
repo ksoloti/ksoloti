@@ -7,7 +7,7 @@ import axoloti.datatypes.CharPtr32;
 import axoloti.datatypes.Frac32;
 import axoloti.datatypes.Frac32buffer;
 import axoloti.datatypes.Int32;
-import axoloti.datatypes.Int32Ptr;
+// import axoloti.datatypes.Int32Ptr;
 
 public class VisibleCablePanel extends javax.swing.JPanel {
 
@@ -17,35 +17,48 @@ public class VisibleCablePanel extends javax.swing.JPanel {
         this.p = p;
         initComponents();
 
-        jCheckBox1.setBackground(Theme.getCurrentTheme().Cable_Frac32Buffer);
-        jCheckBox1.setOpaque(true);
-        jCheckBox1.setSelected(true);
-        jCheckBox1.setRolloverEnabled(false);
+        /* Red wires */
+        jCheckBoxFrac32Buffer.setBackground(Theme.getCurrentTheme().Cable_Frac32Buffer);
+        jCheckBoxFrac32Buffer.setOpaque(true);
+        jCheckBoxFrac32Buffer.setSelected(true);
+        jCheckBoxFrac32Buffer.setRolloverEnabled(false);
+        jCheckBoxFrac32Buffer.setToolTipText("Audio rate signals, 48 kHz sampling rate.");
 
-        jCheckBox2.setBackground(Theme.getCurrentTheme().Cable_Frac32);
-        jCheckBox2.setOpaque(true);
-        jCheckBox2.setSelected(true);
-        jCheckBox2.setRolloverEnabled(false);
+        /* Blue wires */
+        jCheckBoxFrac32.setBackground(Theme.getCurrentTheme().Cable_Frac32);
+        jCheckBoxFrac32.setOpaque(true);
+        jCheckBoxFrac32.setSelected(true);
+        jCheckBoxFrac32.setRolloverEnabled(false);
+        jCheckBoxFrac32.setToolTipText("Control rate signals, 3 kHz sampling rate.");
 
-        jCheckBox4.setBackground(Theme.getCurrentTheme().Cable_Int32Pointer);
-        jCheckBox4.setOpaque(true);
-        jCheckBox4.setSelected(true);
-        jCheckBox4.setRolloverEnabled(false);
+        /* Yellow wires */
+        jCheckBoxBool32.setBackground(Theme.getCurrentTheme().Cable_Bool32);
+        jCheckBoxBool32.setOpaque(true);
+        jCheckBoxBool32.setSelected(true);
+        jCheckBoxBool32.setRolloverEnabled(false);
+        jCheckBoxFrac32.setToolTipText("Control rate signals (true/false, on/off etc.), 3 kHz sampling rate.");
 
-        jCheckBox5.setBackground(Theme.getCurrentTheme().Cable_CharPointer32);
-        jCheckBox5.setOpaque(true);
-        jCheckBox5.setSelected(true);
-        jCheckBox5.setRolloverEnabled(false);
+        /* Green wires */
+        jCheckBoxInt32.setBackground(Theme.getCurrentTheme().Cable_Int32);
+        jCheckBoxInt32.setOpaque(true);
+        jCheckBoxInt32.setSelected(true);
+        jCheckBoxInt32.setRolloverEnabled(false);
+        jCheckBoxInt32.setToolTipText("Control rate signals (whole numbers), 3 kHz sampling rate.");
 
-        jCheckBox6.setBackground(Theme.getCurrentTheme().Cable_Bool32);
-        jCheckBox6.setOpaque(true);
-        jCheckBox6.setSelected(true);
-        jCheckBox6.setRolloverEnabled(false);
-
-        jCheckBox7.setBackground(Theme.getCurrentTheme().Cable_Int32);
-        jCheckBox7.setOpaque(true);
-        jCheckBox7.setSelected(true);
-        jCheckBox7.setRolloverEnabled(false);
+        
+        /* Pink wires */
+        jCheckBoxCharPointer32.setBackground(Theme.getCurrentTheme().Cable_CharPointer32);
+        jCheckBoxCharPointer32.setOpaque(true);
+        jCheckBoxCharPointer32.setSelected(true);
+        jCheckBoxCharPointer32.setRolloverEnabled(false);
+        jCheckBoxCharPointer32.setToolTipText("String pointers (pointers to character arrays), 3 kHz sampling rate.");
+        
+        /* Rose... Salmon(?) wires (currently not used?) */
+        // jCheckBoxInt32Pointer.setBackground(Theme.getCurrentTheme().Cable_Int32Pointer);
+        // jCheckBoxInt32Pointer.setOpaque(true);
+        // jCheckBoxInt32Pointer.setSelected(true);
+        // jCheckBoxInt32Pointer.setRolloverEnabled(false);
+        // jCheckBoxInt32Pointer.setToolTipText("Int32 Pointers (pointers to integer arrays), 3 kHz sampling rate. Currently not used?");
     }
 
     /**
@@ -55,15 +68,14 @@ public class VisibleCablePanel extends javax.swing.JPanel {
      */
     private void initComponents() {
 
-        // buttonGroup1 = new javax.swing.ButtonGroup();
+        jPanelCheckboxes = new javax.swing.JPanel();
         jLabelVisibleCables = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        jCheckBox2 = new javax.swing.JCheckBox();
-        jCheckBox6 = new javax.swing.JCheckBox();
-        jCheckBox7 = new javax.swing.JCheckBox();
-        jCheckBox4 = new javax.swing.JCheckBox();
-        jCheckBox5 = new javax.swing.JCheckBox();
+        jCheckBoxFrac32Buffer = new javax.swing.JCheckBox();
+        jCheckBoxFrac32 = new javax.swing.JCheckBox();
+        jCheckBoxBool32 = new javax.swing.JCheckBox();
+        jCheckBoxInt32 = new javax.swing.JCheckBox();
+        jCheckBoxCharPointer32 = new javax.swing.JCheckBox();
+        // jCheckBoxInt32Pointer = new javax.swing.JCheckBox();
 
         setAlignmentX(LEFT_ALIGNMENT);
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
@@ -75,93 +87,92 @@ public class VisibleCablePanel extends javax.swing.JPanel {
         jLabelVisibleCables.setPreferredSize(null);
         add(jLabelVisibleCables);
 
-        jPanel2.setMaximumSize(null);
-        jPanel2.setMinimumSize(null);
-        jPanel2.setPreferredSize(null);
-        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
+        jPanelCheckboxes.setMaximumSize(null);
+        jPanelCheckboxes.setMinimumSize(null);
+        jPanelCheckboxes.setPreferredSize(null);
+        jPanelCheckboxes.setLayout(new javax.swing.BoxLayout(jPanelCheckboxes, javax.swing.BoxLayout.LINE_AXIS));
 
-        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+        jCheckBoxFrac32Buffer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox1ActionPerformed(evt);
+                jCheckBoxFrac32BufferActionPerformed(evt);
             }
         });
-        jPanel2.add(jCheckBox1);
+        jPanelCheckboxes.add(jCheckBoxFrac32Buffer);
 
-        jCheckBox2.addActionListener(new java.awt.event.ActionListener() {
+        jCheckBoxFrac32.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox2ActionPerformed(evt);
+                jCheckBoxFrac32ActionPerformed(evt);
             }
         });
-        jPanel2.add(jCheckBox2);
+        jPanelCheckboxes.add(jCheckBoxFrac32);
 
-        jCheckBox6.addActionListener(new java.awt.event.ActionListener() {
+        jCheckBoxBool32.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox6ActionPerformed(evt);
+                jCheckBoxBool32ActionPerformed(evt);
             }
         });
-        jPanel2.add(jCheckBox6);
+        jPanelCheckboxes.add(jCheckBoxBool32);
 
-        jCheckBox7.addActionListener(new java.awt.event.ActionListener() {
+        jCheckBoxInt32.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox7ActionPerformed(evt);
+                jCheckBoxInt32ActionPerformed(evt);
             }
         });
-        jPanel2.add(jCheckBox7);
-
-        jCheckBox4.addActionListener(new java.awt.event.ActionListener() {
+        jPanelCheckboxes.add(jCheckBoxInt32);
+    
+        jCheckBoxCharPointer32.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox4ActionPerformed(evt);
+                jCheckBoxCharPointer32ActionPerformed(evt);
             }
         });
-        jPanel2.add(jCheckBox4);
+        jPanelCheckboxes.add(jCheckBoxCharPointer32);
 
-        jCheckBox5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox5ActionPerformed(evt);
-            }
-        });
-        jPanel2.add(jCheckBox5);
+        // jCheckBoxInt32Pointer.addActionListener(new java.awt.event.ActionListener() {
+        //     public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //         jCheckBoxInt32PointerActionPerformed(evt);
+        //     }
+        // });
+        // jPanelCheckboxes.add(jCheckBoxInt32Pointer);
 
-        add(jPanel2);
+        add(jPanelCheckboxes);
     }
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {
-        p.setCableTypeEnabled(Frac32buffer.d, jCheckBox1.isSelected());
+    private void jCheckBoxFrac32BufferActionPerformed(java.awt.event.ActionEvent evt) {
+        p.setCableTypeEnabled(Frac32buffer.d, jCheckBoxFrac32Buffer.isSelected());
         p.updateNetVisibility();
     }
 
-    private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {
-        p.setCableTypeEnabled(Frac32.d, jCheckBox2.isSelected());
+    private void jCheckBoxFrac32ActionPerformed(java.awt.event.ActionEvent evt) {
+        p.setCableTypeEnabled(Frac32.d, jCheckBoxFrac32.isSelected());
         p.updateNetVisibility();
     }
 
-    private void jCheckBox6ActionPerformed(java.awt.event.ActionEvent evt) {
-        p.setCableTypeEnabled(Bool32.d, jCheckBox6.isSelected());
+    private void jCheckBoxBool32ActionPerformed(java.awt.event.ActionEvent evt) {
+        p.setCableTypeEnabled(Bool32.d, jCheckBoxBool32.isSelected());
         p.updateNetVisibility();
     }
 
-    private void jCheckBox7ActionPerformed(java.awt.event.ActionEvent evt) {
-        p.setCableTypeEnabled(Int32.d, jCheckBox7.isSelected());
+    private void jCheckBoxInt32ActionPerformed(java.awt.event.ActionEvent evt) {
+        p.setCableTypeEnabled(Int32.d, jCheckBoxInt32.isSelected());
         p.updateNetVisibility();
     }
 
-    private void jCheckBox4ActionPerformed(java.awt.event.ActionEvent evt) {
-        p.setCableTypeEnabled(Int32Ptr.d, jCheckBox4.isSelected());
+    private void jCheckBoxCharPointer32ActionPerformed(java.awt.event.ActionEvent evt) {
+        p.setCableTypeEnabled(CharPtr32.d, jCheckBoxCharPointer32.isSelected());
         p.updateNetVisibility();
     }
+    
+    // private void jCheckBoxInt32PointerActionPerformed(java.awt.event.ActionEvent evt) {
+    //     p.setCableTypeEnabled(Int32Ptr.d, jCheckBoxInt32Pointer.isSelected());
+    //     p.updateNetVisibility();
+    // }
 
-    private void jCheckBox5ActionPerformed(java.awt.event.ActionEvent evt) {
-        p.setCableTypeEnabled(CharPtr32.d, jCheckBox5.isSelected());
-        p.updateNetVisibility();
-    }
-
-    // private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox2;
-    private javax.swing.JCheckBox jCheckBox4;
-    private javax.swing.JCheckBox jCheckBox5;
-    private javax.swing.JCheckBox jCheckBox6;
-    private javax.swing.JCheckBox jCheckBox7;
+    private javax.swing.JPanel jPanelCheckboxes;
     private javax.swing.JLabel jLabelVisibleCables;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JCheckBox jCheckBoxFrac32Buffer;
+    private javax.swing.JCheckBox jCheckBoxFrac32;
+    private javax.swing.JCheckBox jCheckBoxBool32;
+    private javax.swing.JCheckBox jCheckBoxInt32;
+    private javax.swing.JCheckBox jCheckBoxCharPointer32;
+    // private javax.swing.JCheckBox jCheckBoxInt32Pointer;
 }
