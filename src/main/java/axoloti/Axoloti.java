@@ -82,6 +82,7 @@ public class Axoloti {
             UIManager.put("Table.showHorizontalLines", true);
             UIManager.put("Table.showVerticalLines", true);
             UIManager.put("flatlaf.menuBarEmbedded", true);
+            UIManager.put("ScrollBar.thumb", UIManager.getColor("ScrollBar.hoverThumbColor"));
             UIManager.put("Component.innerFocusWidth", 0);
             UIManager.put("Component.focusWidth", 0);
             UIManager.put("ToggleButton.selectedForeground", Theme.getCurrentTheme().Button_Accent_Foreground);
