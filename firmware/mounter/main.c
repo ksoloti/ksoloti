@@ -17,6 +17,7 @@ static const uint8_t deviceDescriptorData[] = {
         0x00,   /* device protocol (none, specified in interface)  */
         64,     /* max packet size of control end-point            */
         0x16C0, /* vendor ID (Voti)                                */
+
 #if defined(BOARD_KSOLOTI_CORE)
         /* Ksoloti Core */
         0x0445, /* product ID (lab use only!)                      */
@@ -24,6 +25,7 @@ static const uint8_t deviceDescriptorData[] = {
         /* Axoloti Core */
         0x0443, /* product ID (lab use only!)                      */
 #endif
+
         0x0100, /* device release number                           */
         1,      /* index of manufacturer string descriptor         */
         2,      /* index of product string descriptor              */
@@ -46,7 +48,7 @@ static const uint8_t configurationDescriptorData[] = {
         1,    /* value that selects this configuration                    */
         0,    /* index of string descriptor describing this configuration */
         0xC0, /* attributes (self-powered)                                */
-        50    /* max power (100 mA)                                       */
+        150   /* max power (300 mA)                                       */
     ),
 
     /* interface descriptor */
@@ -86,7 +88,7 @@ static const USBDescriptor configurationDescriptor = {
 static const uint8_t languageDescriptorData[] = {
     USB_DESC_BYTE(4),
     USB_DESC_BYTE(USB_DESCRIPTOR_STRING),
-    USB_DESC_WORD(0x0409) /* U.S. english */
+    USB_DESC_WORD(0x0409) /* U.S. English */
 };
 
 static const USBDescriptor languageDescriptor = {
@@ -98,11 +100,13 @@ static const USBDescriptor languageDescriptor = {
 static const uint8_t vendorDescriptorData[] = {
     USB_DESC_BYTE(16),
     USB_DESC_BYTE(USB_DESCRIPTOR_STRING),
+
 #if defined(BOARD_KSOLOTI_CORE)
     'K', 0, 's', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0
 #elif defined(BOARD_AXOLOTI_CORE) || defined(BOARD_STM32F4_DISCOVERY)
     'A', 0, 'x', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0
 #endif
+
 };
 
 static const USBDescriptor vendorDescriptor = {
@@ -135,31 +139,26 @@ static const USBDescriptor serialNumberDescriptor = {
 };
 
 /* Handles GET_DESCRIPTOR requests from the USB host */
-static const USBDescriptor *getDescriptor(USBDriver *usbp, uint8_t type, uint8_t index, uint16_t lang)
-{
+static const USBDescriptor *getDescriptor(USBDriver *usbp, uint8_t type, uint8_t index, uint16_t lang) {
     (void)usbp;
     (void)lang;
 
-    switch (type)
-    {
-    case USB_DESCRIPTOR_DEVICE:
-        return &deviceDescriptor;
-
-    case USB_DESCRIPTOR_CONFIGURATION:
-        return &configurationDescriptor;
-
-    case USB_DESCRIPTOR_STRING:
-        switch (index)
-        {
-        case 0:
-            return &languageDescriptor;
-        case 1:
-            return &vendorDescriptor;
-        case 2:
-            return &productDescriptor;
-        case 3:
-            return &serialNumberDescriptor;
-        }
+    switch (type) {
+        case USB_DESCRIPTOR_DEVICE:
+            return &deviceDescriptor;
+        case USB_DESCRIPTOR_CONFIGURATION:
+            return &configurationDescriptor;
+        case USB_DESCRIPTOR_STRING:
+            switch (index) {
+                case 0:
+                    return &languageDescriptor;
+                case 1:
+                    return &vendorDescriptor;
+                case 2:
+                    return &productDescriptor;
+                case 3:
+                    return &serialNumberDescriptor;
+            }
     }
 
     return 0;
@@ -169,24 +168,22 @@ static const USBDescriptor *getDescriptor(USBDriver *usbp, uint8_t type, uint8_t
 USBMassStorageDriver UMSD1;
 
 /* Handles global events of the USB driver */
-static void usbEvent(USBDriver *usbp, usbevent_t event)
-{
-    switch (event)
-    {
-    case USB_EVENT_CONFIGURED:
-        chSysLockFromIsr();
-        //            usbInitEndpointI(usbp, USB_MS_DATA_EP, &ep_data_config);
-        msdConfigureHookI(&UMSD1);
-        chSysUnlockFromIsr();
-        break;
+static void usbEvent(USBDriver *usbp, usbevent_t event) {
+    switch (event) {
+        case USB_EVENT_CONFIGURED:
+            chSysLockFromIsr();
+            // usbInitEndpointI(usbp, USB_MS_DATA_EP, &ep_data_config);
+            msdConfigureHookI(&UMSD1);
+            chSysUnlockFromIsr();
+            break;
 
-    case USB_EVENT_RESET:
-    case USB_EVENT_ADDRESS:
-    case USB_EVENT_SUSPEND:
-    case USB_EVENT_WAKEUP:
-    case USB_EVENT_STALLED:
-    default:
-        break;
+        case USB_EVENT_RESET:
+        case USB_EVENT_ADDRESS:
+        case USB_EVENT_SUSPEND:
+        case USB_EVENT_WAKEUP:
+        case USB_EVENT_STALLED:
+        default:
+            break;
     }
 }
 
@@ -199,13 +196,11 @@ static const USBConfig usbConfig = {
 };
 
 /* Turns on a LED when there is I/O activity on the USB port */
-static void usbActivity(bool_t active)
-{
+static void usbActivity(bool_t active) {
     if (active) {
         palSetPad(LED1_PORT, LED1_PIN);
     }
-    else
-    {
+    else {
         palClearPad(LED1_PORT, LED1_PIN);
     }
 }
@@ -213,26 +208,28 @@ static void usbActivity(bool_t active)
 /* USB mass storage configuration */
 static const USBMassStorageConfig msdConfig = {
     &USBD1,
-    (BaseBlockDevice *)&SDCD1,
+    (BaseBlockDevice*) &SDCD1,
     USB_MS_DATA_EP,
     &usbActivity,
+
 #if defined(BOARD_KSOLOTI_CORE)
     "Ksoloti",
 #elif defined(BOARD_AXOLOTI_CORE) || defined(BOARD_STM32F4_DISCOVERY)
     "Axoloti",
 #endif
+
     "Cardreader",
     "0.1"
 };
 
-int main(void)
-{
+int main(void) {
     /* system & hardware initialization */
     halInit();
 
     /* float usb inputs, hope the host notices detach... */
     palSetPadMode(GPIOA, 11, PAL_MODE_INPUT);
     palSetPadMode(GPIOA, 12, PAL_MODE_INPUT);
+
     /* setup LEDs, red+green on */
     palSetPadMode(LED1_PORT, LED1_PIN, PAL_MODE_OUTPUT_PUSHPULL);
     palSetPadMode(LED2_PORT, LED2_PIN, PAL_MODE_OUTPUT_PUSHPULL);
@@ -244,12 +241,12 @@ int main(void)
     palSetPadMode(GPIOA, 11, PAL_MODE_ALTERNATE(10));
     palSetPadMode(GPIOA, 12, PAL_MODE_ALTERNATE(10));
 
-    palSetPadMode(GPIOC, 8, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
-    palSetPadMode(GPIOC, 9, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
+    palSetPadMode(GPIOC, 8,  PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
+    palSetPadMode(GPIOC, 9,  PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
     palSetPadMode(GPIOC, 10, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
     palSetPadMode(GPIOC, 11, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
     palSetPadMode(GPIOC, 12, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
-    palSetPadMode(GPIOD, 2, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
+    palSetPadMode(GPIOD, 2,  PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
     chThdSleepMilliseconds(50);
 
     /* initialize the SD card */
@@ -265,9 +262,8 @@ int main(void)
 
     /* start the USB mass storage service */
     int ret = msdStart(&UMSD1, &msdConfig);
-    if (ret != 0)
-    {
-        /* no media found : bye bye !*/
+    if (ret != 0) {
+        /* no media found : bye bye! */
         usbDisconnectBus(&USBD1);
         chThdSleepMilliseconds(1000);
         NVIC_SystemReset();
@@ -285,16 +281,13 @@ int main(void)
     usbStart(&USBD1, &usbConfig);
     usbConnectBus(&USBD1);
 
-    while (TRUE)
-    {
+    while (1) {
         eventmask_t event = chEvtWaitOne(EVENT_MASK(1) | EVENT_MASK(2));
-        if (event == EVENT_MASK(1))
-        {
+        if (event == EVENT_MASK(1)) {
             /* media connected */
         }
-        else if (event == EVENT_MASK(2))
-        {
-            /* media ejected : bye bye !*/
+        else if (event == EVENT_MASK(2)) {
+            /* media ejected : bye bye! */
             usbDisconnectBus(&USBD1);
             chThdSleepMilliseconds(1000);
             NVIC_SystemReset();
