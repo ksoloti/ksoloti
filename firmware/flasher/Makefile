@@ -6,7 +6,26 @@ BOARDDEF=
 
 # Compiler options here.
 ifeq ($(USE_OPT),)
-  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -Wno-unused-parameter -Wno-unused-function -D$(BOARDDEF)
+  USE_OPT = \
+    -D$(BOARDDEF) \
+    --specs=nosys.specs \
+    --specs=nano.specs \
+    -Wno-implicit-fallthrough \
+    -Wno-return-type \
+    -Wno-unused-function \
+    -Wno-unused-parameter \
+    -O2 \
+    -falign-functions=16 \
+    -fno-math-errno \
+    -fomit-frame-pointer \
+    -ggdb3 \
+    -mcpu=cortex-m4 \
+    -mfloat-abi=hard \
+    -mfpu=fpv4-sp-d16 \
+    -mthumb \
+    -mtune=cortex-m4 \
+    -mword-relocations \
+    -pipe 
 endif 
 
 # C specific options here (added to USE_OPT).
@@ -16,7 +35,9 @@ endif
 
 # C++ specific options here (added to USE_OPT).
 ifeq ($(USE_CPPOPT),)
-  USE_CPPOPT = -fno-rtti
+  USE_CPPOPT = \
+    -fno-rtti \
+    -fno-threadsafe-statics
 endif
 
 # Enable this if you want the linker to remove unused code and data
@@ -170,13 +191,20 @@ BIN  = $(CP) -O binary
 AOPT =
 
 # THUMB-specific options here
-TOPT = -mthumb -DTHUMB
+TOPT = \
+    -mthumb \
+    -DTHUMB
 
 # Define C warning options here
-CWARN = -Wall -Wextra -Wstrict-prototypes
+CWARN = \
+    -Wall \
+    -Wextra \
+    -Wstrict-prototypes
 
 # Define C++ warning options here
-CPPWARN = -Wall -Wextra
+CPPWARN = \
+    -Wall \
+    -Wextra
 
 #
 # Compiler settings
@@ -210,7 +238,9 @@ DLIBS =
 #
 
 # List all user C define here, like -D_DEBUG=1
-UDEFS =
+UDEFS = \
+    -DARM_MATH_CM4 \
+    -D__FPU_PRESENT
 
 # Define ASM defines here
 UADEFS =

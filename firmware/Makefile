@@ -23,7 +23,6 @@ ifeq ($(USE_OPT),)
     -mcpu=cortex-m4 \
     -mfloat-abi=hard \
     -mfpu=fpv4-sp-d16 \
-    -mlong-calls \
     -mthumb \
     -mtune=cortex-m4 \
     -mword-relocations \
@@ -386,7 +385,6 @@ INCDIR = ${CMSIS}/Core/Include \
 
 MCU  = cortex-m4
 
-#TRGT = arm-elf-
 TRGT = arm-none-eabi-
 CC   = $(TRGT)gcc 
 CPPC = $(TRGT)g++ 
