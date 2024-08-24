@@ -16,4 +16,9 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef _VIRTUAL_CONTROL_H
+#define _VIRTUAL_CONTROL_H
+
 void TransmitLCDoverUSB(void);
+
+#endif /* _VIRTUAL_CONTROL_H */

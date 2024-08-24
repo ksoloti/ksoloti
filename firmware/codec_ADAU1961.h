@@ -16,6 +16,8 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef _CODEC_ADAU1961_H
+#define _CODEC_ADAU1961_H
 #include "hal.h"
 
 extern void codec_ADAU1961_SAI_init(uint16_t samplerate, bool_t isMaster);
@@ -76,3 +78,5 @@ extern uint32_t codec_interrupt_timestamp;
 #define ADAU1761_REG_R65_CKEN0 0x40F9 /* Set this to 0x7F */
 #define ADAU1761_REG_R66_CKEN1 0x40FA /* Set this to 0x03 */
 #endif
+
+#endif /* _CODEC_ADAU1961_H */

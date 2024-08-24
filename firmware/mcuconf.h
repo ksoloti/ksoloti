@@ -30,9 +30,11 @@
  * DMA priorities:
  * 0...3        Lowest...Highest.
  */
+#ifndef _MCUCONF_H
+#define _MCUCONF_H
+#include "axoloti_defines.h"
 
 #define STM32F4xx_MCUCONF
-#include "axoloti_defines.h"
 
 #if defined(BOARD_KSOLOTI_CORE)
 /*
@@ -517,3 +519,5 @@
 #define STM32_SDC_SDIO_DMA_STREAM           STM32_DMA_STREAM_ID(2, 6)
 
 #endif
+
+#endif /* _MCUCONF_H */
