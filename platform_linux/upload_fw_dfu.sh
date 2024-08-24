@@ -11,5 +11,5 @@ then
     cd "${platformdir}/bin"
     ./dfu-util --transfer-size 4096 --device 0483:df11 -i 0 -a 0 -D "${axoloti_firmware}/build/$1.bin" --dfuse-address=0x08000000:leave
 else
-    echo "dfu-util not found, run ./build.sh in axoloti/platform_linux"
+    echo "dfu-util not found, run ./build.sh or ./build.bat in axoloti/platform_*"
 fi
