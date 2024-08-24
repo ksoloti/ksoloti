@@ -38,18 +38,28 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
-import javax.swing.LayoutStyle;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ListSelectionModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Johannes Taelman
  */
-public class PreferencesFrame extends javax.swing.JFrame {
+public class PreferencesFrame extends JFrame {
 
     static PreferencesFrame singleton = null;
 
@@ -167,44 +177,44 @@ public class PreferencesFrame extends javax.swing.JFrame {
      */
     private void initComponents() {
 
-        jTextFieldPollInterval = new javax.swing.JTextField();
-        jTextFieldCodeFontSize = new javax.swing.JTextField();
-        jLabelLibraries = new javax.swing.JLabel();
-        jLabelPollInterval = new javax.swing.JLabel();
-        jLabelCodeFontSize = new javax.swing.JLabel();
-        jButtonSave = new javax.swing.JButton();
-        jLabelDialMouseBehaviour = new javax.swing.JLabel();
-        jLabelFirmwareMode = new javax.swing.JLabel();
-        jComboBoxDialMouseBehaviour = new javax.swing.JComboBox<String>();
-        jComboBoxFirmwareMode = new javax.swing.JComboBox<String>();
-        jLabelFavouritesDir = new javax.swing.JLabel();
-        jLabelUserShortcut1 = new javax.swing.JLabel();
-        jLabelUserShortcut2 = new javax.swing.JLabel();
-        jLabelUserShortcut3 = new javax.swing.JLabel();
-        jLabelUserShortcut4 = new javax.swing.JLabel();
-        jTextFieldFavDir = new javax.swing.JTextField();
+        jTextFieldPollInterval = new JTextField();
+        jTextFieldCodeFontSize = new JTextField();
+        jLabelLibraries = new JLabel();
+        jLabelPollInterval = new JLabel();
+        jLabelCodeFontSize = new JLabel();
+        jButtonSave = new JButton();
+        jLabelDialMouseBehaviour = new JLabel();
+        jLabelFirmwareMode = new JLabel();
+        jComboBoxDialMouseBehaviour = new JComboBox<String>();
+        jComboBoxFirmwareMode = new JComboBox<String>();
+        jLabelFavouritesDir = new JLabel();
+        jLabelUserShortcut1 = new JLabel();
+        jLabelUserShortcut2 = new JLabel();
+        jLabelUserShortcut3 = new JLabel();
+        jLabelUserShortcut4 = new JLabel();
+        jTextFieldFavDir = new JTextField();
 
-        jTextFieldUserShortcut1 = new javax.swing.JTextField();
-        jTextFieldUserShortcut2 = new javax.swing.JTextField();
-        jTextFieldUserShortcut3 = new javax.swing.JTextField();
-        jTextFieldUserShortcut4 = new javax.swing.JTextField();
+        jTextFieldUserShortcut1 = new JTextField();
+        jTextFieldUserShortcut2 = new JTextField();
+        jTextFieldUserShortcut3 = new JTextField();
+        jTextFieldUserShortcut4 = new JTextField();
 
-        btnFavDir = new javax.swing.JButton();
-        jLabelController = new javax.swing.JLabel();
-        jTextFieldController = new javax.swing.JTextField();
-        jControllerEnabled = new javax.swing.JCheckBox();
+        btnFavDir = new JButton();
+        jLabelController = new JLabel();
+        jTextFieldController = new JTextField();
+        jControllerEnabled = new JCheckBox();
         jScrollPaneLibraryTable = new ScrollPaneComponent();
-        jLibraryTable = new javax.swing.JTable();
-        jAddLibBtn = new javax.swing.JButton();
-        jDelLibBtn = new javax.swing.JButton();
-        jResetLib = new javax.swing.JButton();
-        jEditLib = new javax.swing.JButton();
-        jLibStatus = new javax.swing.JButton();
-        jLabelTheme = new javax.swing.JLabel();
-        jComboBoxTheme = new javax.swing.JComboBox<String>();
-        jCheckBoxNoMouseReCenter = new javax.swing.JCheckBox();
+        jLibraryTable = new JTable();
+        jAddLibBtn = new JButton();
+        jDelLibBtn = new JButton();
+        jResetLib = new JButton();
+        jEditLib = new JButton();
+        jLibStatus = new JButton();
+        jLabelTheme = new JLabel();
+        jComboBoxTheme = new JComboBox<String>();
+        jCheckBoxNoMouseReCenter = new JCheckBox();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         jTextFieldPollInterval.setText("jTextField1");
         jTextFieldPollInterval.setToolTipText("Interval at which the Patcher displays the newest parameter data coming from the Core.");
@@ -236,14 +246,14 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jLabelFirmwareMode.setText("Firmware Mode (restart required)");
         jLabelFirmwareMode.setToolTipText("<html><div width=\"480px\">Several firmware modes are available, each supporting different boards and/or adding certain firmware features.<p/><p/><b>Ksoloti Core</b>: The default mode. The Patcher will (only!) detect and connect to Ksoloti Core boards.<p/><b>Axoloti Core</b>: \"Legacy mode\". The Patcher will (only!) detect and connect to Axoloti Core boards.<p/><p/><b>[BOARD] + SPILink</b>: Activates a link between two Cores which lets them sync up and exchange audio and data channels. Make the necessary hardware connections as described in the SPILink help patch, and flash this firmware mode on both Cores to be synced together. Follow the instructions in the SPILink help patch.<p/><p/><b>Make sure you restart the Patcher after changing the firmware mode. In the \"Firmware Mismatch\" popup, click \"Yes\" to let it update the Core's firmware automatically.</b></div>");
 
-        jComboBoxDialMouseBehaviour.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Vertical", "Angular" }));
+        jComboBoxDialMouseBehaviour.setModel(new DefaultComboBoxModel<String>(new String[] { "Vertical", "Angular" }));
         jComboBoxDialMouseBehaviour.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxDialMouseBehaviourActionPerformed(evt);
             }
         });
 
-        jComboBoxFirmwareMode.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Ksoloti Core", "Ksoloti Core + SPILink", "Axoloti Core", "Axoloti Core + SPILink" }));
+        jComboBoxFirmwareMode.setModel(new DefaultComboBoxModel<String>(new String[] { "Ksoloti Core", "Ksoloti Core + SPILink", "Axoloti Core", "Axoloti Core + SPILink" }));
         jComboBoxFirmwareMode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxFirmwareModeActionPerformed(evt);
@@ -288,7 +298,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         jLabelFavouritesDir.setToolTipText(jTextFieldFavDir.getToolTipText());
 
         jLabelController.setText("Controller Object");
-        jLabelController.setToolTipText("A controller object runs invisibly in the background on the Core, regardless of which patch is currently loaded. This is useful for implementing a patch change system.");
+        jLabelController.setToolTipText("A controller object runs invisibly in the background on the Core,\nregardless of which patch is currently loaded.\nThis is useful for implementing a patch change system.");
 
         jTextFieldController.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         jTextFieldController.setToolTipText(jLabelController.getToolTipText());
@@ -302,7 +312,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
         });
 
         jLibraryTable.getTableHeader().setReorderingAllowed(false);
-        jLibraryTable.setModel(new javax.swing.table.DefaultTableModel(
+        jLibraryTable.setModel(new DefaultTableModel(
             new Object [][] {
 
             },
@@ -326,10 +336,10 @@ public class PreferencesFrame extends javax.swing.JFrame {
             }
         });
         jLibraryTable.setColumnSelectionAllowed(true);
-        jLibraryTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jLibraryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         jScrollPaneLibraryTable.setViewportView(jLibraryTable);
         jLibraryTable.getTableHeader().setReorderingAllowed(false);
-        jLibraryTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jLibraryTable.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         if (jLibraryTable.getColumnModel().getColumnCount() > 0) {
             jLibraryTable.getColumnModel().getColumn(0).setPreferredWidth(60);
             jLibraryTable.getColumnModel().getColumn(1).setPreferredWidth(140);
@@ -406,16 +416,16 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
         layout.setHorizontalGroup(
 
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup(Alignment.LEADING)
 
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
 
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(Alignment.LEADING)
 
-                    .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
 
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(Alignment.LEADING)
                             .addComponent(jLabelFavouritesDir)
                             .addComponent(jLabelUserShortcut1)
                             .addComponent(jLabelUserShortcut2)
@@ -425,29 +435,29 @@ public class PreferencesFrame extends javax.swing.JFrame {
                         )
                         .addGap(15, 15, 15)
 
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(Alignment.LEADING)
 
                             .addGroup(layout.createSequentialGroup()
 
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createParallelGroup(Alignment.LEADING)
                                     .addComponent(jTextFieldFavDir, GroupLayout.PREFERRED_SIZE, 403, GroupLayout.PREFERRED_SIZE)
                                 )
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             )
                             .addGroup(layout.createSequentialGroup()
 
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createParallelGroup(Alignment.LEADING)
                                     .addComponent(jTextFieldUserShortcut1, GroupLayout.PREFERRED_SIZE, 201, GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jTextFieldUserShortcut2, GroupLayout.PREFERRED_SIZE, 201, GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jTextFieldUserShortcut3, GroupLayout.PREFERRED_SIZE, 201, GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jTextFieldUserShortcut4, GroupLayout.PREFERRED_SIZE, 201, GroupLayout.PREFERRED_SIZE)
                                 )
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             )
                         )
                         .addGap(12, 12, 12)
 
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(Alignment.LEADING)
                             .addComponent(btnFavDir, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
                         )
                         .addGap(16, 16, 16)
@@ -455,9 +465,9 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPaneLibraryTable, GroupLayout.PREFERRED_SIZE, 560, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(ComponentPlacement.UNRELATED)
 
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(Alignment.LEADING)
 
                                 .addComponent(jResetLib, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
 
@@ -465,7 +475,7 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jAddLibBtn, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(jDelLibBtn, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
                             )
                             .addComponent(jEditLib, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
@@ -473,13 +483,13 @@ public class PreferencesFrame extends javax.swing.JFrame {
                         .addContainerGap(14, Short.MAX_VALUE)
                     )
 
-                    .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
 
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(Alignment.LEADING)
 
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelController, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(jTextFieldController, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
                                 .addGap(10, 10, 10)
                                 .addComponent(jControllerEnabled)
@@ -488,15 +498,15 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelTheme, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(jComboBoxTheme, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
                             )
 
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelFirmwareMode, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(jComboBoxFirmwareMode, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
                                 .addComponent(jButtonSave, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
                                 .addGap(15, 15, 15)
                             )
@@ -505,23 +515,23 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
                     .addGroup(layout.createSequentialGroup()
 
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(Alignment.LEADING)
 
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelPollInterval, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(jTextFieldPollInterval, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
                             )
 
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelCodeFontSize, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(jTextFieldCodeFontSize, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
                             )
 
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelDialMouseBehaviour, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(jComboBoxDialMouseBehaviour, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addGap(10, 10, 10)
                                 .addComponent(jCheckBoxNoMouseReCenter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -536,94 +546,94 @@ public class PreferencesFrame extends javax.swing.JFrame {
 
         layout.setVerticalGroup(
 
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup(Alignment.LEADING)
 
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
 
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jTextFieldFavDir)
                     .addComponent(jLabelFavouritesDir)
                     .addComponent(btnFavDir)
                 )
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jTextFieldUserShortcut1)
                     .addComponent(jLabelUserShortcut1)
                 )
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jTextFieldUserShortcut2)
                     .addComponent(jLabelUserShortcut2)
                 )
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jTextFieldUserShortcut3)
                     .addComponent(jLabelUserShortcut3)
                 )
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jTextFieldUserShortcut4)
                     .addComponent(jLabelUserShortcut4)
                 )
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(ComponentPlacement.UNRELATED)
                 .addComponent(jLabelLibraries)
                 .addGap(24, 24, 24)
 
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(Alignment.LEADING)
 
                     .addGroup(layout.createSequentialGroup()
 
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jAddLibBtn)
                             .addComponent(jDelLibBtn)
                         )
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(ComponentPlacement.RELATED)
 
                         .addComponent(jEditLib)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(ComponentPlacement.RELATED)
 
                             .addComponent(jResetLib)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(ComponentPlacement.RELATED)
                             .addComponent(jLibStatus)
                     )
 
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPaneLibraryTable, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPaneLibraryTable, GroupLayout.PREFERRED_SIZE, 114, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(ComponentPlacement.UNRELATED)
 
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelPollInterval)
                             .addComponent(jTextFieldPollInterval, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
 
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelCodeFontSize)
                             .addComponent(jTextFieldCodeFontSize, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
                     )
                 )
 
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(Alignment.LEADING)
 
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(ComponentPlacement.RELATED)
 
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jComboBoxDialMouseBehaviour, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabelDialMouseBehaviour)
                             .addComponent(jCheckBoxNoMouseReCenter)
                         )
 
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelController)
                             .addComponent(jTextFieldController, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                             .addComponent(jControllerEnabled)
                         )
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(ComponentPlacement.UNRELATED)
 
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelTheme)
                             .addComponent(jComboBoxTheme, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
 
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelFirmwareMode)
                             .addComponent(jComboBoxFirmwareMode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButtonSave)
@@ -778,41 +788,41 @@ public class PreferencesFrame extends javax.swing.JFrame {
     }
 
 
-    private javax.swing.JButton btnFavDir;
-    private javax.swing.JButton jAddLibBtn;
-    private javax.swing.JButton jButtonSave;
-    private javax.swing.JCheckBox jCheckBoxNoMouseReCenter;
-    private javax.swing.JComboBox<String> jComboBoxDialMouseBehaviour;
-    private javax.swing.JComboBox<String> jComboBoxFirmwareMode;
-    private javax.swing.JCheckBox jControllerEnabled;
-    private javax.swing.JButton jDelLibBtn;
-    private javax.swing.JButton jEditLib;
-    private javax.swing.JLabel jLabelLibraries;
-    private javax.swing.JLabel jLabelPollInterval;
-    private javax.swing.JLabel jLabelCodeFontSize;
-    private javax.swing.JLabel jLabelDialMouseBehaviour;
-    private javax.swing.JLabel jLabelFirmwareMode;
-    private javax.swing.JLabel jLabelFavouritesDir;
+    private JButton btnFavDir;
+    private JButton jAddLibBtn;
+    private JButton jButtonSave;
+    private JCheckBox jCheckBoxNoMouseReCenter;
+    private JComboBox<String> jComboBoxDialMouseBehaviour;
+    private JComboBox<String> jComboBoxFirmwareMode;
+    private JCheckBox jControllerEnabled;
+    private JButton jDelLibBtn;
+    private JButton jEditLib;
+    private JLabel jLabelLibraries;
+    private JLabel jLabelPollInterval;
+    private JLabel jLabelCodeFontSize;
+    private JLabel jLabelDialMouseBehaviour;
+    private JLabel jLabelFirmwareMode;
+    private JLabel jLabelFavouritesDir;
     
-    private javax.swing.JLabel jLabelUserShortcut1;
-    private javax.swing.JLabel jLabelUserShortcut2;
-    private javax.swing.JLabel jLabelUserShortcut3;
-    private javax.swing.JLabel jLabelUserShortcut4;
+    private JLabel jLabelUserShortcut1;
+    private JLabel jLabelUserShortcut2;
+    private JLabel jLabelUserShortcut3;
+    private JLabel jLabelUserShortcut4;
 
-    private javax.swing.JLabel jLabelController;
-    private javax.swing.JLabel jLabelTheme;
-    private javax.swing.JComboBox<String> jComboBoxTheme;
-    private javax.swing.JButton jLibStatus;
-    private javax.swing.JTable jLibraryTable;
-    private javax.swing.JButton jResetLib;
+    private JLabel jLabelController;
+    private JLabel jLabelTheme;
+    private JComboBox<String> jComboBoxTheme;
+    private JButton jLibStatus;
+    private JTable jLibraryTable;
+    private JButton jResetLib;
     private ScrollPaneComponent jScrollPaneLibraryTable;
-    private javax.swing.JTextField jTextFieldController;
-    private javax.swing.JTextField jTextFieldPollInterval;
-    private javax.swing.JTextField jTextFieldCodeFontSize;
-    private javax.swing.JTextField jTextFieldFavDir;
+    private JTextField jTextFieldController;
+    private JTextField jTextFieldPollInterval;
+    private JTextField jTextFieldCodeFontSize;
+    private JTextField jTextFieldFavDir;
 
-    private javax.swing.JTextField jTextFieldUserShortcut1;
-    private javax.swing.JTextField jTextFieldUserShortcut2;
-    private javax.swing.JTextField jTextFieldUserShortcut3;
-    private javax.swing.JTextField jTextFieldUserShortcut4;
+    private JTextField jTextFieldUserShortcut1;
+    private JTextField jTextFieldUserShortcut2;
+    private JTextField jTextFieldUserShortcut3;
+    private JTextField jTextFieldUserShortcut4;
 }

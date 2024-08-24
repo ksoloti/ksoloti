@@ -18,15 +18,29 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.Box;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 
 /**
  *
  * @author kodiak
  */
-public class AxolotiLibraryEditor extends javax.swing.JDialog {
+public class AxolotiLibraryEditor extends JDialog {
 
     private AxolotiLibrary library;
 
@@ -93,36 +107,36 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
      */
     private void initComponents() {
 
-        jTypeCombo = new javax.swing.JComboBox<String>();
-        jLabelType = new javax.swing.JLabel();
-        jId = new javax.swing.JTextField();
-        jLocalDir = new javax.swing.JTextField();
-        jLabelId = new javax.swing.JLabel();
-        jLabelDirectory = new javax.swing.JLabel();
-        jRemotePath = new javax.swing.JTextField();
-        jLabelRemotePath = new javax.swing.JLabel();
-        jLabelRemoteLibrary = new javax.swing.JLabel();
-        jSeparator1 = new javax.swing.JSeparator();
-        jUserId = new javax.swing.JTextField();
-        jLabelUserId = new javax.swing.JLabel();
-        jLabelPassword = new javax.swing.JLabel();
-        jEnabled = new javax.swing.JCheckBox();
-        jPassword = new javax.swing.JPasswordField();
-        jOK = new javax.swing.JButton();
-        jCancel = new javax.swing.JButton();
-        jInitRepo = new javax.swing.JButton();
-        jAutoSync = new javax.swing.JCheckBox();
-        jSelectDirBtn = new javax.swing.JButton();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 3), new java.awt.Dimension(0, 3), new java.awt.Dimension(32767, 3));
-        jLabelRevision = new javax.swing.JLabel();
-        jRevision = new javax.swing.JTextField();
-        jLabelContributorsOnly = new javax.swing.JLabel();
-        jLabelTypeOptional = new javax.swing.JLabel();
-        jLabelTypeContributorPrefix = new javax.swing.JLabel();
-        jPrefix = new javax.swing.JTextField();
-        jSyncBtn = new javax.swing.JButton();
+        jTypeCombo = new JComboBox<String>();
+        jLabelType = new JLabel();
+        jId = new JTextField();
+        jLocalDir = new JTextField();
+        jLabelId = new JLabel();
+        jLabelDirectory = new JLabel();
+        jRemotePath = new JTextField();
+        jLabelRemotePath = new JLabel();
+        jLabelRemoteLibrary = new JLabel();
+        jSeparator1 = new JSeparator();
+        jUserId = new JTextField();
+        jLabelUserId = new JLabel();
+        jLabelPassword = new JLabel();
+        jEnabled = new JCheckBox();
+        jPassword = new JPasswordField();
+        jOK = new JButton();
+        jCancel = new JButton();
+        jInitRepo = new JButton();
+        jAutoSync = new JCheckBox();
+        jSelectDirBtn = new JButton();
+        filler1 = new Box.Filler(new java.awt.Dimension(0, 3), new java.awt.Dimension(0, 3), new java.awt.Dimension(32767, 3));
+        jLabelRevision = new JLabel();
+        jRevision = new JTextField();
+        jLabelContributorsOnly = new JLabel();
+        jLabelTypeOptional = new JLabel();
+        jLabelTypeContributorPrefix = new JLabel();
+        jPrefix = new JTextField();
+        jSyncBtn = new JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         jTypeCombo.setPreferredSize(new java.awt.Dimension(100, 28));
         jTypeCombo.addActionListener(new java.awt.event.ActionListener() {
@@ -215,170 +229,170 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
             }
         });
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
 
         layout.setHorizontalGroup(
 
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup(Alignment.LEADING)
 
             .addGroup(layout.createSequentialGroup()
                 .addGap(17, 17, 17)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jCancel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(ComponentPlacement.RELATED)
                         .addComponent(jOK)
                     )
 
                     .addComponent(jSeparator1)
 
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabelRemotePath, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(Alignment.TRAILING)
+                            .addGroup(Alignment.LEADING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(Alignment.LEADING)
+                                    .addComponent(jLabelRemotePath, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabelRevision))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addPreferredGap(ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(Alignment.LEADING, false)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jRevision, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jRevision, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(ComponentPlacement.RELATED)
                                         .addComponent(jLabelTypeOptional)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(jAutoSync))
-                                    .addComponent(jRemotePath, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(jLabelContributorsOnly, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jRemotePath, GroupLayout.PREFERRED_SIZE, 394, GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabelContributorsOnly, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 185, GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createParallelGroup(Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabelTypeContributorPrefix)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jPrefix, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(ComponentPlacement.RELATED)
+                                        .addComponent(jPrefix, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabelUserId)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jUserId, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addPreferredGap(ComponentPlacement.RELATED)
+                                        .addComponent(jUserId, GroupLayout.PREFERRED_SIZE, 196, GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(jLabelPassword)
                                 .addGap(1, 1, 1)
-                                .addComponent(jPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jPassword, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE))
                         )
 
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                        .addPreferredGap(ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
 
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jInitRepo, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jSyncBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(Alignment.LEADING)
+                            .addComponent(jInitRepo, Alignment.TRAILING)
+                            .addComponent(jSyncBtn, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
                         )
                     )
                     .addGroup(layout.createSequentialGroup()
                         .addGap(1, 1, 1)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createParallelGroup(Alignment.LEADING)
                                     .addComponent(jLabelType)
                                     .addComponent(jLabelId)
-                                    .addComponent(jLabelDirectory, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabelDirectory, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(Alignment.TRAILING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jTypeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jId, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createParallelGroup(Alignment.LEADING)
+                                            .addComponent(jTypeCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jId, GroupLayout.PREFERRED_SIZE, 215, GroupLayout.PREFERRED_SIZE))
                                         .addGap(104, 104, 104)
                                         .addComponent(jEnabled))
-                                    .addComponent(jLocalDir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jSelectDirBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jLocalDir, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jSelectDirBtn, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelRemoteLibrary, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabelRemoteLibrary, GroupLayout.PREFERRED_SIZE, 179, GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))))
                 )
                 .addContainerGap()
             )
 
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createParallelGroup(Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 306, Short.MAX_VALUE)
-                    .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(filler1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addGap(0, 306, Short.MAX_VALUE))
             )
         );
 
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup(Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTypeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jTypeCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelType)
                 )
 
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(ComponentPlacement.RELATED)
 
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelId)
                     .addComponent(jEnabled)
                 )
 
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(ComponentPlacement.RELATED)
 
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLocalDir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jLocalDir, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelDirectory)
                     .addComponent(jSelectDirBtn)
                 )
 
                 .addGap(18, 18, 18)
 
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jSeparator1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(ComponentPlacement.RELATED)
 
-                .addComponent(jLabelRemoteLibrary, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabelRemoteLibrary, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
 
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(ComponentPlacement.RELATED)
 
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabelRemotePath, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jRemotePath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jLabelRemotePath, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jRemotePath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(jInitRepo)
                 )
 
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(ComponentPlacement.RELATED)
 
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jLabelRevision)
-                    .addComponent(jRevision, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jRevision, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(jAutoSync)
                     .addComponent(jLabelTypeOptional)
                     .addComponent(jSyncBtn)
                 )
 
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
+                .addPreferredGap(ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
                 .addComponent(jLabelContributorsOnly)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(ComponentPlacement.RELATED)
 
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jLabelTypeContributorPrefix)
-                    .addComponent(jPrefix, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPrefix, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 )
 
                 .addGap(2, 2, 2)
 
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jUserId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jUserId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelUserId)
-                    .addComponent(jPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPassword, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelPassword)
                 )
 
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(ComponentPlacement.UNRELATED)
 
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jOK)
                     .addComponent(jCancel)
                 )
@@ -386,10 +400,10 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
                 .addGap(19, 19, 19)
             )
 
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createParallelGroup(Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 198, Short.MAX_VALUE)
-                    .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(filler1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addGap(0, 198, Short.MAX_VALUE)
                 )
             )
@@ -541,34 +555,34 @@ public class AxolotiLibraryEditor extends javax.swing.JDialog {
     }
 
 
-    private javax.swing.Box.Filler filler1;
-    private javax.swing.JCheckBox jAutoSync;
-    private javax.swing.JButton jCancel;
-    private javax.swing.JCheckBox jEnabled;
-    private javax.swing.JTextField jId;
-    private javax.swing.JButton jInitRepo;
-    private javax.swing.JLabel jLabelType;
-    private javax.swing.JLabel jLabelTypeOptional;
-    private javax.swing.JLabel jLabelTypeContributorPrefix;
-    private javax.swing.JLabel jLabelId;
-    private javax.swing.JLabel jLabelDirectory;
-    private javax.swing.JLabel jLabelRemotePath;
-    private javax.swing.JLabel jLabelRemoteLibrary;
-    private javax.swing.JLabel jLabelUserId;
-    private javax.swing.JLabel jLabelPassword;
-    private javax.swing.JLabel jLabelRevision;
-    private javax.swing.JLabel jLabelContributorsOnly;
-    private javax.swing.JTextField jLocalDir;
-    private javax.swing.JButton jOK;
-    private javax.swing.JPasswordField jPassword;
-    private javax.swing.JTextField jPrefix;
-    private javax.swing.JTextField jRemotePath;
-    private javax.swing.JTextField jRevision;
-    private javax.swing.JButton jSelectDirBtn;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JButton jSyncBtn;
-    private javax.swing.JComboBox<String> jTypeCombo;
-    private javax.swing.JTextField jUserId;
+    private Box.Filler filler1;
+    private JCheckBox jAutoSync;
+    private JButton jCancel;
+    private JCheckBox jEnabled;
+    private JTextField jId;
+    private JButton jInitRepo;
+    private JLabel jLabelType;
+    private JLabel jLabelTypeOptional;
+    private JLabel jLabelTypeContributorPrefix;
+    private JLabel jLabelId;
+    private JLabel jLabelDirectory;
+    private JLabel jLabelRemotePath;
+    private JLabel jLabelRemoteLibrary;
+    private JLabel jLabelUserId;
+    private JLabel jLabelPassword;
+    private JLabel jLabelRevision;
+    private JLabel jLabelContributorsOnly;
+    private JTextField jLocalDir;
+    private JButton jOK;
+    private JPasswordField jPassword;
+    private JTextField jPrefix;
+    private JTextField jRemotePath;
+    private JTextField jRevision;
+    private JButton jSelectDirBtn;
+    private JSeparator jSeparator1;
+    private JButton jSyncBtn;
+    private JComboBox<String> jTypeCombo;
+    private JTextField jUserId;
 
     public AxolotiLibrary getLibrary() {
         return library;
