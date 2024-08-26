@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e # exit immediately if anything "goes wrong"
 
 platform='unknown'
@@ -61,16 +60,26 @@ sh ./qlean.sh
 ant clean
 case "$platform" in
         mac)
-            sh ./platform_osx/compile_java.sh
+            ant clean
+            ant
+            ant clean
         ;;
         linux)
-            sh ./platform_linux/compile_java.sh
+            ant clean
+            ant
+            ant clean
         ;;
         windows)
-            sh ./win_byld_java.sh
+            ant clean
+            ant
+            ant clean
+            # cd platform_win
+            # cmd "//C path.bat && apache-ant-1.10.14/bin/ant.bat clean"
+            # cmd "//C path.bat && apache-ant-1.10.14/bin/ant.bat"
+            # cmd "//C path.bat && apache-ant-1.10.14/bin/ant.bat clean"
+            # cd ..
         ;;
 esac
-ant clean
 
 
 # ----- Init
@@ -110,14 +119,14 @@ rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.m
 
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/share
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/src
-rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/arm-none-eabi/lib/armv6-m
-rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/arm-none-eabi/lib/armv7-ar
-rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/arm-none-eabi/lib/armv7-m
-rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/arm-none-eabi/lib/cortex-m7
-rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi/4.9.3/armv6-m
-rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi/4.9.3/armv7-ar
-rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi/4.9.3/armv7-m
-rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi/4.9.3/cortex-m7
+# rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/arm-none-eabi/lib/armv6-m
+# rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/arm-none-eabi/lib/armv7-ar
+# rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/arm-none-eabi/lib/armv7-m
+# rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/arm-none-eabi/lib/cortex-m7
+# rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi/4.9.3/armv6-m
+# rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi/4.9.3/armv7-ar
+# rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi/4.9.3/armv7-m
+# rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/lib/gcc/arm-none-eabi/4.9.3/cortex-m7
 
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/jre/jmods
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/jre/demo
@@ -161,14 +170,14 @@ rm     ./packagetemp/mac/Ksoloti.app/Contents/Resources/firmware/mounter/mounter
 
 rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/share
 rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/src
-rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/arm-none-eabi/lib/armv6-m
-rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/arm-none-eabi/lib/armv7-ar
-rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/arm-none-eabi/lib/armv7-m
-rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/arm-none-eabi/lib/cortex-m7
-rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/lib/gcc/arm-none-eabi/4.9.3/armv6-m
-rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/lib/gcc/arm-none-eabi/4.9.3/armv7-ar
-rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/lib/gcc/arm-none-eabi/4.9.3/armv7-mo
-rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/lib/gcc/arm-none-eabi/4.9.3/cortex-m7
+# rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/arm-none-eabi/lib/armv6-m
+# rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/arm-none-eabi/lib/armv7-ar
+# rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/arm-none-eabi/lib/armv7-m
+# rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/arm-none-eabi/lib/cortex-m7
+# rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/lib/gcc/arm-none-eabi/4.9.3/armv6-m
+# rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/lib/gcc/arm-none-eabi/4.9.3/armv7-ar
+# rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/lib/gcc/arm-none-eabi/4.9.3/armv7-mo
+# rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/platform_osx/lib/gcc/arm-none-eabi/4.9.3/cortex-m7
 
 rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/jre/jmods
 rm -rf ./packagetemp/mac/Ksoloti.app/Contents/Resources/jre/demo
@@ -215,14 +224,14 @@ rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.map
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/apache-ant-1.10.14
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/share
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/src
-rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/arm-none-eabi/lib/armv6-m
-rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/arm-none-eabi/lib/armv7-ar
-rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/arm-none-eabi/lib/armv7-m
-rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/arm-none-eabi/lib/cortex-m7
-rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9.3/armv6-m
-rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9.3/armv7-ar
-rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9.3/armv7-mo
-rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9.3/cortex-m7
+# rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/arm-none-eabi/lib/armv6-m
+# rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/arm-none-eabi/lib/armv7-ar
+# rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/arm-none-eabi/lib/armv7-m
+# rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/arm-none-eabi/lib/cortex-m7
+# rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9.3/armv6-m
+# rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9.3/armv7-ar
+# rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9.3/armv7-mo
+# rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/lib/gcc/arm-none-eabi/4.9.3/cortex-m7
 
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/jre/jmods
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/jre/demo
