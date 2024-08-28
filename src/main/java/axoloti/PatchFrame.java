@@ -245,7 +245,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
         
         Point patchFrameOnScreen = getLocationOnScreen();
-        double safetyMargin = 64.0;
+        double safetyMargin = 32.0;
 
         if(patchFrameOnScreen.getX() > (allScreenBounds.getMaxX() - safetyMargin) ||
            patchFrameOnScreen.getY() > (allScreenBounds.getMaxY() - safetyMargin) ||
