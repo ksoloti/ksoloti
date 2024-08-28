@@ -1384,7 +1384,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         TargetFirmwareID = firmwareId;
         if (!firmwareId.equals(this.LinkFirmwareID)) {
             if (!WarnedAboutFWCRCMismatch) {
-                LOGGER.log(Level.SEVERE, "Firmware CRC mismatch! Please flash the firmware first!");
+                LOGGER.log(Level.SEVERE, "Firmware version mismatch! Please flash the firmware first!");
                 LOGGER.log(Level.SEVERE, "Hardware CRC {0} <-> Software CRC {1}", new Object[]{firmwareId, this.LinkFirmwareID});
                 WarnedAboutFWCRCMismatch = true;
                 SwingUtilities.invokeLater(new Runnable() {

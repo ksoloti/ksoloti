@@ -40,7 +40,7 @@ bool sdcsw_prev = FALSE;
 volatile uint8_t pattern_index;
 
 static WORKING_AREA(waThreadSysmon, 256);
-/* Separating ADC3 sampling process from Sysmon thread in order to "abuse" ADC3 to get 4 additional ADC inputs at PF6, PF7, PF8, and PF9. */
+/* Separating ADC3 sampling process from Sysmon thread in order to have ADC3 handle 4 additional ADC inputs at PF6, PF7, PF8, and PF9. */
 
 __attribute__((noreturn))
 static msg_t ThreadSysmon(void *arg) {

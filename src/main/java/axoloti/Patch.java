@@ -1499,7 +1499,7 @@ public class Patch {
 
     String GenerateDSPCodePlusPlusSub(String ClassName) {
         String c = "\n";
-        c += I+I + "/* <nets> -*/\n";
+        c += I+I + "/* <nets> */\n";
         for (Net n : nets) {
             if (n.CType() != null) {
                 c += I+I + n.CType() + " " + n.CName() + ";\n";
