@@ -1261,7 +1261,12 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         if (val200 == pv) {
             return;
         }
-        jProgressBarDSPLoad.setValue((pv+val200)/2);
+        if (patch.IsLocked()) {
+            jProgressBarDSPLoad.setValue((pv+val200)/2);
+        }
+        else if (pv != 0) {
+            jProgressBarDSPLoad.setValue(0);
+        }
     }
 
     @Override
