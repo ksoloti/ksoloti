@@ -417,9 +417,11 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             int returnVal = fc.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File[] fs = fc.getSelectedFiles();
+                if (fs[0] != null) {
+                    prefs.setCurrentFileDirectory(fs[0].getParentFile().toString());
+                }
                 for (File f : fs) {
                     if (f != null) {
-                        prefs.setCurrentFileDirectory(f.getParentFile().toString());
                         if (!f.canRead()) {
                             LOGGER.log(Level.SEVERE, "Cannot read file");
                             return;

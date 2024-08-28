@@ -160,7 +160,9 @@ public class FileUtils {
         int returnVal = fc.showOpenDialog(anc);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File[] fs = fc.getSelectedFiles();
-            prefs.setCurrentFileDirectory(fs[0].getParentFile().toString());
+            if (fs[0] != null) {
+                prefs.setCurrentFileDirectory(fs[0].getParentFile().toString());
+            }
 
             for (File f : fs) {
                 for (DocumentWindow dw : DocumentWindowList.GetList()) {

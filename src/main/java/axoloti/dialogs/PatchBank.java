@@ -845,7 +845,11 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         fc.addChoosableFileFilter(axpFileFilter);
         int returnVal = fc.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            for (File f : fc.getSelectedFiles()) {
+            File[] fs = fc.getSelectedFiles();
+            if (fs[0] != null) {
+                prefs.setCurrentFileDirectory(fs[0].getParentFile().toString());
+            }
+            for (File f : fs) {
                 if (f != null && f.exists()) {
                     files.add(f);
                 }
