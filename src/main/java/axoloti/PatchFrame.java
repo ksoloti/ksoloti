@@ -398,6 +398,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jCheckBoxMenuItemCordsInBackground = new javax.swing.JCheckBoxMenuItem();
         jMenuItemAdjScroll = new javax.swing.JMenuItem();
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
+        jSeparator6 = new javax.swing.JPopupMenu.Separator();
         jMenuPatch = new javax.swing.JMenu();
         jCheckBoxMenuItemLive = new javax.swing.JCheckBoxMenuItem();
         jMenuItemUploadSD = new javax.swing.JMenuItem();
@@ -678,6 +679,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuPatch.add(jCheckBoxMenuItemLive);
 
         jMenuItemUploadSD.setMnemonic('U');
+        jMenuItemUploadSD.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U,
+                KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuItemUploadSD.setText("Upload to SD Card");
         jMenuItemUploadSD.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -695,8 +698,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
         });
         jMenuPatch.add(jMenuItemUploadSDStart);
+        jMenuPatch.add(jSeparator6);
 
-        jMenuItemUploadInternalFlash.setMnemonic('F');
+        jMenuItemUploadInternalFlash.setMnemonic('I');
         jMenuItemUploadInternalFlash.setText("Upload to Internal Flash as Startup");
         jMenuItemUploadInternalFlash.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1246,6 +1250,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
+    private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JPanel jToolbarPanel;
     private javax.swing.JMenuItem redoItem;
     private javax.swing.JMenuItem undoItem;
