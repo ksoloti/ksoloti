@@ -224,7 +224,7 @@ public class PreferencesFrame extends JFrame {
         jLabelPollInterval.setToolTipText(jTextFieldPollInterval.getToolTipText());
 
         jTextFieldCodeFontSize.setText("jTextField2");
-        jTextFieldCodeFontSize.setToolTipText("Changes font size for all code text windows (object editor) and the main window console.");
+        jTextFieldCodeFontSize.setToolTipText("Changes font size for all code text windows (object editor), patch notes, and the main window console.");
         jTextFieldCodeFontSize.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
 
         jLabelCodeFontSize.setText("Code Font Size");
