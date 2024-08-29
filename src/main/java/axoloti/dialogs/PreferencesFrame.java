@@ -491,11 +491,11 @@ public class PreferencesFrame extends JFrame {
                         .addGroup(layout.createParallelGroup(Alignment.LEADING)
 
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelController, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabelController, GroupLayout.PREFERRED_SIZE, 144, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(jTextFieldController, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
-                                .addGap(10, 10, 10)
                                 .addComponent(jControllerEnabled)
+                                .addGap(10, 10, 10)
+                                .addComponent(jTextFieldController, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE)
                             )
 
@@ -559,6 +559,7 @@ public class PreferencesFrame extends JFrame {
                     .addComponent(jLabelFavouritesDir)
                     .addComponent(btnFavDir)
                 )
+                .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jTextFieldUserShortcut1)
                     .addComponent(jLabelUserShortcut1)
@@ -577,7 +578,7 @@ public class PreferencesFrame extends JFrame {
                 )
                 .addPreferredGap(ComponentPlacement.UNRELATED)
                 .addComponent(jLabelLibraries)
-                .addGap(24, 24, 24)
+                .addGap(10, 10, 10)
 
                 .addGroup(layout.createParallelGroup(Alignment.LEADING)
 
@@ -605,6 +606,7 @@ public class PreferencesFrame extends JFrame {
                             .addComponent(jLabelPollInterval)
                             .addComponent(jTextFieldPollInterval, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
+                        .addGap(5, 5, 5)
 
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelCodeFontSize)
@@ -623,18 +625,20 @@ public class PreferencesFrame extends JFrame {
                             .addComponent(jLabelDialMouseBehaviour)
                             .addComponent(jCheckBoxNoMouseReCenter)
                         )
+                        .addGap(5, 5, 5)
 
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelController)
-                            .addComponent(jTextFieldController, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                             .addComponent(jControllerEnabled)
+                            .addComponent(jTextFieldController, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
-                        .addPreferredGap(ComponentPlacement.UNRELATED)
+                        .addGap(15, 15, 15)
 
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelTheme)
                             .addComponent(jComboBoxTheme, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
+                        .addGap(5, 5, 5)
 
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelFirmwareMode)
