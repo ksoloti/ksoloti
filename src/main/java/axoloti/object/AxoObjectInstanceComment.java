@@ -72,13 +72,16 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
     @Override
     public void PostConstructor() {
         super.PostConstructor();
+
         if (InstanceName != null) {
             commentText = InstanceName;
             InstanceName = null;
         }
+
         setMinimumSize(new Dimension(12,13));
         setOpaque(true);
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+
         InstanceTextPane = new TextPaneComponent();
         if (commentText.contains("<html>")) {
             InstanceTextPane.setContentType("text/html");
@@ -87,6 +90,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         InstanceTextPane.setBorder(BorderFactory.createEmptyBorder(-2, 5, -1, 5));
         InstanceTextPane.setAlignmentX(CENTER_ALIGNMENT);
         InstanceTextPane.setAlignmentY(CENTER_ALIGNMENT);
+
         InstanceTextPane.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent me) {
@@ -125,7 +129,9 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         });
         InstanceTextPane.addMouseMotionListener(this);
         add(InstanceTextPane);
+        
         setLocation(x, y);
+        setSize(getPreferredSize());
 
         resizeToGrid();
     }
@@ -135,7 +141,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         InstanceNameTF = new TextFieldComponent(commentText);
         InstanceNameTF.setMargin(new Insets(-2,5,-1,5));
         InstanceNameTF.selectAll();
-//        InstanceNameTF.setInputVerifier(new AxoObjectInstanceNameVerifier());
+        //  InstanceNameTF.setInputVerifier(new AxoObjectInstanceNameVerifier());
         // InstanceNameTF.addActionListener(new ActionListener() {
         //     @Override
         //     public void actionPerformed(ActionEvent ae) {
