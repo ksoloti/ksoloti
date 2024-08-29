@@ -186,7 +186,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         this.commentText = s;
 
         if (InstanceTextPane != null) {
-            if (commentText.contains("<html>")) {
+            if (commentText.toLowerCase().contains(("<html>"))) {
                 InstanceTextPane.setContentType("text/html");
                 InstanceTextPane.setFont(UIManager.getFont("defaultFont"));
             }
