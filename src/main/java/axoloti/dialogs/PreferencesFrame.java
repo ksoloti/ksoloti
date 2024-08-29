@@ -242,10 +242,13 @@ public class PreferencesFrame extends JFrame {
         });
 
         jLabelDialMouseBehaviour.setText("Dial Mouse Behaviour");
+        jLabelDialMouseBehaviour.setToolTipText("Vertical: Drag up and down to change values.\n" +
+                                                "Angular: Circle the cursor around the control to change its value.");
 
         jLabelFirmwareMode.setText("Firmware Mode (restart required)");
         jLabelFirmwareMode.setToolTipText("<html><div width=\"480px\">Several firmware modes are available, each supporting different boards and/or adding certain firmware features.<p/><p/><b>Ksoloti Core</b>: The default mode. The Patcher will (only!) detect and connect to Ksoloti Core boards.<p/><b>Axoloti Core</b>: \"Legacy mode\". The Patcher will (only!) detect and connect to Axoloti Core boards.<p/><p/><b>[BOARD] + SPILink</b>: Activates a link between two Cores which lets them sync up and exchange audio and data channels. Make the necessary hardware connections as described in the SPILink help patch, and flash this firmware mode on both Cores to be synced together. Follow the instructions in the SPILink help patch.<p/><p/><b>Make sure you restart the Patcher after changing the firmware mode. In the \"Firmware Mismatch\" popup, click \"Yes\" to let it update the Core's firmware automatically.</b></div>");
 
+        jComboBoxDialMouseBehaviour.setToolTipText(jLabelDialMouseBehaviour.getToolTipText());
         jComboBoxDialMouseBehaviour.setModel(new DefaultComboBoxModel<String>(new String[] { "Vertical", "Angular" }));
         jComboBoxDialMouseBehaviour.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -404,7 +407,7 @@ public class PreferencesFrame extends JFrame {
         });
 
         jCheckBoxNoMouseReCenter.setText("Touchscreen Mode");
-        jCheckBoxNoMouseReCenter.setToolTipText("Makes the patcher usable with touchscreens. Also fixes abnormal mouse behaviour on some systems when turning knobs.");
+        jCheckBoxNoMouseReCenter.setToolTipText("Makes the Patcher usable with touchscreens.\nAlso fixes abnormal mouse behaviour on some systems when turning knobs.");
         jCheckBoxNoMouseReCenter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxNoMouseReCenterActionPerformed(evt);
