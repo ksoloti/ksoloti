@@ -18,7 +18,6 @@
  */
 package components;
 import axoloti.Theme;
-import axoloti.utils.Constants;
 import java.awt.Dimension;
 import javax.swing.JTextPane;
 
@@ -34,14 +33,14 @@ public class TextPaneComponent extends JTextPane {
     }
 
     public TextPaneComponent(String text) {
-        initComponents();
         setText(text);
+        initComponents();
     }
 
     private void initComponents() {
-        setContentType("text/plain");
-        setMinimumSize(new Dimension(12,13));
-        setFont(Constants.FONT);
+        // setContentType("text/plain");
+        setMinimumSize(new Dimension(14,14));
+        // setFont(Constants.FONT);
         setBackground(Theme.getCurrentTheme().Object_Default_Background);
         setForeground(Theme.getCurrentTheme().Object_Label_Text);
         setEditable(false);

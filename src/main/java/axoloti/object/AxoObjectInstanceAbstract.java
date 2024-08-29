@@ -31,7 +31,6 @@ import axoloti.outlets.OutletInstance;
 import axoloti.parameters.ParameterInstance;
 import axoloti.utils.CharEscape;
 import axoloti.utils.Constants;
-import components.TextPaneComponent;
 import components.LabelComponent;
 import components.TextFieldComponent;
 
@@ -93,7 +92,6 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     JPanel Titlebar = new JPanel();
     TextFieldComponent InstanceNameTF;
     LabelComponent InstanceLabel;
-    TextPaneComponent InstanceTextPane;
 
     public AxoObjectInstanceAbstract() { }
 

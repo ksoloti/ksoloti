@@ -20,22 +20,21 @@ package axoloti.object;
 
 import axoloti.Patch;
 import axoloti.PatchGUI;
+import axoloti.utils.Constants;
 import components.TextPaneComponent;
 import components.TextFieldComponent;
 
-import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Point;
-// import java.awt.event.ActionEvent;
-// import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.UIManager;
+
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
@@ -45,6 +44,8 @@ import org.simpleframework.xml.Root;
  */
 @Root(name = "comment")
 public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
+
+    TextPaneComponent InstanceTextPane;
 
     @Attribute(name = "text", required = false)
     private String commentText;
@@ -78,18 +79,14 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
             InstanceName = null;
         }
 
-        setMinimumSize(new Dimension(12,13));
         setOpaque(true);
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
         InstanceTextPane = new TextPaneComponent();
-        if (commentText.contains("<html>")) {
-            InstanceTextPane.setContentType("text/html");
-        }
-        InstanceTextPane.setText(commentText);
-        InstanceTextPane.setBorder(BorderFactory.createEmptyBorder(-2, 5, -1, 5));
+
         InstanceTextPane.setAlignmentX(CENTER_ALIGNMENT);
         InstanceTextPane.setAlignmentY(CENTER_ALIGNMENT);
+        InstanceTextPane.setMargin(new Insets(-3, 5, -1, 5));
 
         InstanceTextPane.addMouseListener(new MouseListener() {
             @Override
@@ -128,29 +125,20 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
             }
         });
         InstanceTextPane.addMouseMotionListener(this);
+
+        setInstanceName(commentText);
+
         add(InstanceTextPane);
         
         setLocation(x, y);
-        setSize(getPreferredSize());
-
         resizeToGrid();
     }
 
     @Override
     public void addInstanceNameEditor() {
         InstanceNameTF = new TextFieldComponent(commentText);
-        InstanceNameTF.setMargin(new Insets(-2,5,-1,5));
+        InstanceNameTF.setMargin(new Insets(-3, 5, -1, 5));
         InstanceNameTF.selectAll();
-        //  InstanceNameTF.setInputVerifier(new AxoObjectInstanceNameVerifier());
-        // InstanceNameTF.addActionListener(new ActionListener() {
-        //     @Override
-        //     public void actionPerformed(ActionEvent ae) {
-        //         String s = InstanceNameTF.getText();
-        //         setInstanceName(s);
-        //         getParent().remove(InstanceNameTF);
-        //         getParent().repaint();
-        //     }
-        // });
         InstanceNameTF.addFocusListener(new FocusListener() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -185,7 +173,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         });
         getParent().add(InstanceNameTF, 0);
         InstanceNameTF.setLocation(getLocation().x, getLocation().y + InstanceTextPane.getLocation().y);
-        InstanceNameTF.setSize(getWidth(), 13);
+        InstanceNameTF.setSize(getWidth(), 14);
         InstanceNameTF.setVisible(true);
         InstanceNameTF.requestFocus();
     }
@@ -200,9 +188,11 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         if (InstanceTextPane != null) {
             if (commentText.contains("<html>")) {
                 InstanceTextPane.setContentType("text/html");
+                InstanceTextPane.setFont(UIManager.getFont("defaultFont"));
             }
             else {
                 InstanceTextPane.setContentType("text/plain");
+                InstanceTextPane.setFont(Constants.FONT);
             }
             InstanceTextPane.setText(commentText);
             InstanceTextPane.setSize((int)InstanceTextPane.getPreferredSize().getWidth(), InstanceTextPane.getHeight());
