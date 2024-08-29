@@ -224,8 +224,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         removeAll();
         setMinimumSize(new Dimension(44, 40));
         // setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-
-//        setFocusable(true);
+        // setFocusable(true);
         Titlebar.removeAll();
         Titlebar.setLayout(new BoxLayout(Titlebar, BoxLayout.LINE_AXIS));
         Titlebar.setBackground(Theme.getCurrentTheme().Object_TitleBar_Background);
