@@ -25,6 +25,5 @@
         "src/main/java/resources/ksoloti_icon_512.png"
     ],
     "minimizejre": "soft",
-    "output": "packagetemp/linux/ksoloti-1.0.12",
     "verbose": true
 }

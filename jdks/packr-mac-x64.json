@@ -23,7 +23,6 @@
         "platform_osx"
     ],
     "minimizejre": "soft",
-    "output": "packagetemp/mac/Ksoloti.app",
     "verbose": true,
     "bundle": "org.axoloti.ksoloti",
     "icon": "src/main/java/resources/ksoloti_icon.icns"

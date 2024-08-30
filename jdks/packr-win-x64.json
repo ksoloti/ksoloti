@@ -23,6 +23,5 @@
         "platform_win"
     ],
     "minimizejre": "soft",
-    "output": "packagetemp/win/ksoloti-1.0.12",
     "verbose": true
 }
