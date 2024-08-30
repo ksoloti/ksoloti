@@ -25,16 +25,18 @@ esac
 START=$(date +%s)
 
 VERSION="$(git describe --tags | grep -Po '\d*\.\d*\.\d*' 2>&1)"
-VERSION_LONG="$(git describe --long --always --tags 2>&1)"
 echo $VERSION
-echo $VERSION_LONG
+VERSION_LONG=
 
 CUSTOMNAME=
 if [ $# -eq 1 ]
   then
     CUSTOMNAME=$1
+    echo $CUSTOMNAME
+  else
+    VERSION_LONG="$(git describe --long --always --tags 2>&1)"
+    echo $VERSION_LONG
 fi
-echo $CUSTOMNAME
 
 # ----- Windows: Check if 7-Zip is installed
 case "$platform" in
@@ -247,6 +249,9 @@ case "$platform" in
             cd ./packagetemp/win && zip -q -r ../ksoloti_patcher-windows-${VERSION_LONG}${CUSTOMNAME}.zip *
         ;;
         windows)
+            # apply icon
+            ./jdks/rcedit-x64.exe ./packagetemp/win/ksoloti-${VERSION}/Ksoloti.exe --set-icon ./src/main/java/resources/ksoloti_icon.ico
+            # zip using 7-zip
             cd ./packagetemp/win && "C:/Program Files/7-Zip/7z.exe" a -tzip ../ksoloti_patcher-windows-${VERSION_LONG}${CUSTOMNAME}.zip *
         ;;
 esac
