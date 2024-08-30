@@ -308,7 +308,8 @@ public class FileMenu extends JMenu {
 
 
     private void jMenuAutoTestAllActionPerformed(java.awt.event.ActionEvent evt) {
-        if (JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and may freeze the UI until complete. Continue?") == JOptionPane.YES_OPTION) {
+        int res = JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and may freeze the UI until complete. Continue?", "Warning", JOptionPane.OK_CANCEL_OPTION);
+        if (res == JOptionPane.OK_OPTION) {
             class Thd extends Thread {
                 public void run() {
                     LOGGER.log(Level.WARNING, "Running tests, please wait...");
@@ -322,7 +323,8 @@ public class FileMenu extends JMenu {
     }
 
     private void jMenuAutoTestDirActionPerformed(java.awt.event.ActionEvent evt) {
-        if (JOptionPane.showConfirmDialog(mainframe, "Running these tests may take a long time and/or freeze the UI until complete. Continue?") == JOptionPane.YES_OPTION) {
+        int res = JOptionPane.showConfirmDialog(mainframe, "Running these tests may take a long time and/or freeze the UI until complete. Continue?", "Warning", JOptionPane.OK_CANCEL_OPTION);
+        if (res == JOptionPane.OK_OPTION) {
             String path = JOptionPane.showInputDialog(this, "Enter directory to test:");
             if (path != null && !path.isEmpty()) {
                 File f = new File(path);
