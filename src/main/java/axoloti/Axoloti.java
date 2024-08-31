@@ -63,6 +63,7 @@ public class Axoloti {
 
             if (OSDetect.getOS() == OSDetect.OS.MAC) {
                 // System.setProperty("apple.laf.useScreenMenuBar", "true"); /* This option breaks menu functions */
+                System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS");
                 System.setProperty("apple.awt.application.name", "Ksoloti");
                 System.setProperty("apple.awt.application.appearance", "system");
                 System.setProperty("apple.awt.transparentTitleBar", "true");
