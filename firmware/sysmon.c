@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2015 Johannes Taelman
  * Edited 2023 - 2024 by Ksoloti
  *
@@ -17,7 +17,7 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
+/*
  * System health monitor and LED blinker thread
  */
 
