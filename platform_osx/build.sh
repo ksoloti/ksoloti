@@ -34,14 +34,13 @@ then
     then
         echo "downloading ${ARCHIVE}"
 		curl -L https://github.com/ChibiOS/ChibiOS/archive/ver${CH_VERSION}.zip > ${ARCHIVE}
-        # curl -L https://sourceforge.net/projects/chibios/files/ChibiOS%20GPL3/Version%20${CH_VERSION}/${ARCHIVE} > ${ARCHIVE}
     else
         echo "${ARCHIVE} already downloaded"
     fi
     unzip -q -o ${ARCHIVE}
     mv ${ARDIR} chibios
     cd chibios/ext
-    unzip -q -o ./fatfs-0.9-patched.zip
+    unzip -q -o ./fatfs-0.*-patched.zip
     cd ../../
     mv chibios ../..
 else
@@ -51,17 +50,17 @@ fi
 if [ ! -f "$PLATFORM_ROOT/bin/arm-none-eabi-gcc" ]; 
 then
     cd "${PLATFORM_ROOT}/src"
-    ARCHIVE=gcc-arm-none-eabi-4_9-2015q2-20150609-mac.tar.bz2
+    ARCHIVE=gcc-arm-none-eabi-9-2020-q2-update-mac.tar.bz2
     if [ ! -f ${ARCHIVE} ]; 
     then
         echo "downloading ${ARCHIVE}"
-        curl -L https://launchpad.net/gcc-arm-embedded/4.9/4.9-2015-q2-update/+download/$ARCHIVE > $ARCHIVE
+        curl -L https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/$ARCHIVE > $ARCHIVE
     else
         echo "${ARCHIVE} already downloaded"
     fi
     tar xfj ${ARCHIVE}
-    cp -r gcc-arm-none-eabi-4_9-2015q2/* ..
-    rm -r gcc-arm-none-eabi-4_9-2015q2
+    cp -r gcc-arm-none-eabi-9-2020-q2-update/* ..
+    rm -r gcc-arm-none-eabi-9-2020-q2-update
 else
     echo "bin/arm-none-eabi-gcc already present, skipping..."
 fi
@@ -106,7 +105,7 @@ fi
 if [ ! -f "${PLATFORM_ROOT}/bin/dfu-util" ]; 
 then
     cd "${PLATFORM_ROOT}/src"
-    ARDIR=dfu-util-0.8
+    ARDIR=dfu-util-0.11
     ARCHIVE=${ARDIR}.tar.gz
     if [ ! -f $ARCHIVE ]; 
     then
@@ -139,7 +138,7 @@ fi
 if [ ! -f "$PLATFORM_ROOT/bin/make" ]; 
 then
     cd "${PLATFORM_ROOT}/src"
-    ARDIR=make-3.82
+    ARDIR=make-4.3
     ARCHIVE=${ARDIR}.tar.gz
 
     if [ ! -f ${ARCHIVE} ]; 
