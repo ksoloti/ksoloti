@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2013, 2014 Johannes Taelman
  * Edited 2023 - 2024 by Ksoloti
  *
