@@ -105,7 +105,7 @@ then
     unzip -q -o ${ARCHIVE}
     mv ${ARDIR} chibios
     cd chibios/ext
-    unzip -q -o ./fatfs-0.9-patched.zip
+    unzip -q -o ./fatfs-0.*-patched.zip
     cd ../../
     mv chibios ../..
 else
@@ -116,17 +116,17 @@ fi
 if [ ! -f "$PLATFORM_ROOT/bin/arm-none-eabi-gcc" ];
 then
     cd "${PLATFORM_ROOT}/src"
-    ARCHIVE=gcc-arm-none-eabi-4_9-2015q2-20150609-linux.tar.bz2
+    ARCHIVE=gcc-arm-none-eabi-9-2020-q2-update-x86_64-linux.tar.bz2
     if [ ! -f ${ARCHIVE} ];
     then
         echo "downloading ${ARCHIVE}"
-        curl -L https://launchpad.net/gcc-arm-embedded/4.9/4.9-2015-q2-update/+download/$ARCHIVE > $ARCHIVE
+        curl -L https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/$ARCHIVE > $ARCHIVE
     else
         echo "${ARCHIVE} already downloaded"
     fi
     tar xfj ${ARCHIVE}
-    cp -rv gcc-arm-none-eabi-4_9-2015q2/* ..
-    rm -r gcc-arm-none-eabi-4_9-2015q2
+    cp -rv gcc-arm-none-eabi-9-2020-q2-update/* ..
+    rm -r gcc-arm-none-eabi-9-2020-q2-update
 else
     echo "bin/arm-none-eabi-gcc already present, skipping..."
 fi
@@ -134,7 +134,7 @@ fi
 if [ ! -f "$PLATFORM_ROOT/lib/libusb-1.0.a" ];
 then
     cd "${PLATFORM_ROOT}/src"
-    ARDIR=libusb-1.0.19
+    ARDIR=libusb-1.0.24
     ARCHIVE=${ARDIR}.tar.bz2
     if [ ! -f ${ARCHIVE} ];
     then
@@ -145,9 +145,9 @@ then
     fi
     tar xfj ${ARCHIVE}
 
-    cd "${PLATFORM_ROOT}/src/libusb-1.0.19"
+    cd "${PLATFORM_ROOT}/src/libusb-1.0.24"
 
-    patch -N -p1 < ../libusb.stdfu.patch
+    # patch -N -p1 < ../libusb.stdfu.patch # still necessary with 1.0.24??
 
     ./configure --prefix="${PLATFORM_ROOT}"
     make
@@ -160,7 +160,7 @@ fi
 if [ ! -f "${PLATFORM_ROOT}/bin/dfu-util" ];
 then
     cd "${PLATFORM_ROOT}/src"
-    ARDIR=dfu-util-0.9
+    ARDIR=dfu-util-0.11
     ARCHIVE=${ARDIR}.tar.gz
     if [ ! -f $ARCHIVE ];
     then
@@ -237,7 +237,7 @@ cd "${PLATFORM_ROOT}"
 ./compile_firmware.sh BOARD_AXOLOTI_CORE
 ./compile_firmware.sh BOARD_KSOLOTI_CORE
 
-echo "##### building GUI... #####"
+echo "##### building Patcher... #####"
 cd "${PLATFORM_ROOT}"/..
 ./byld_java.sh
 
