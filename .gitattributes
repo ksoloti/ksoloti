@@ -13,5 +13,7 @@ eol=lf
 *.exe binary
 *.tar binary
 
+*.axh   text diff=html
 *.axp   text diff=html
+*.axs   text diff=html
 *.axo   text diff=html
