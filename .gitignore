@@ -1,6 +1,6 @@
-#################
-## Axoloti
-#################
+##################
+## Axoloti/Ksoloti
+##################
 
 *.log
 firmware*/.dep
@@ -9,17 +9,7 @@ firmware*/flasher/.dep
 firmware*/flasher/flasher_build
 firmware*/mounter/.dep
 firmware*/mounter/mounter_build
-win32tools/
-package/
 packagetemp/
-patch/xpatch.c
-patch/xpatch.cpp
-patch/xpatch.elf
-patch/xpatch.o
-patch/xpatch.d
-patch/xpatch.bin
-patch/xpatch.lst
-patch/xpatch.map
 .preferences.xml
 /target/
 /build/
@@ -27,13 +17,14 @@ patch/xpatch.map
 /dist/
 /jdks/zulu*.tar.gz
 /jdks/zulu*.zip
-hs_err_*.log
 private_key.*
 axoloti.prefs*
 ksoloti.prefs*
 temp_*.cpp
 temp_*.h
 ChibiOS-*.zip
+dfu-util-0.*
+libusb-1.0.*
 
 #libraries
 home/
@@ -42,6 +33,7 @@ objects
 axoloti-contrib
 axoloti-factory
 ksoloti-objects
+ksoloti-contrib
 
 #compiler toolchain etc.
 platform_*/arm-none-eabi
