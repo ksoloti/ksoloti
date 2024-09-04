@@ -19,18 +19,18 @@ then
     rm ${ARCHIVE}
     mv ${ARDIR} chibios
     cd chibios/ext
-    unzip -q -o ./fatfs-0.9-patched.zip
+    unzip -q -o ./fatfs-0.*-patched.zip
     cd ../../
     mv chibios ..
 fi
 
 if [ ! -f "bin/arm-none-eabi-gcc.exe" ];
 then
-    ARCHIVE=gcc-arm-none-eabi-4_9-2015q2-20150609-win32.zip
+    ARCHIVE=gcc-arm-none-eabi-9-2020-q2-update-win32.zip
     if [ ! -f ${ARCHIVE} ]; 
     then
         echo "downloading ${ARCHIVE}"
-        curl -L https://launchpad.net/gcc-arm-embedded/4.9/4.9-2015-q2-update/+download/${ARCHIVE} > ${ARCHIVE}
+        curl -L https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/$ARCHIVE > $ARCHIVE
     else
         echo "${ARCHIVE} already downloaded"
     fi    
@@ -41,18 +41,18 @@ fi
 if [ ! -f "bin/make.exe" ];
 then
     echo "downloading make"
-    curl -L http://gnuwin32.sourceforge.net/downlinks/make-bin-zip.php > make-3.81-bin.zip
-    unzip -q -o make-3.81-bin.zip 
-    rm make-3.81-bin.zip
+    curl -L https://github.com/mbuilov/gnumake-windows/raw/master/gnumake-4.3-x64.exe > bin/make.exe
+    # unzip -q -o make-4.3-bin.zip 
+    # rm make-4.3-bin.zip
 fi
 
 
 if [ ! -f "bin/libiconv2.dll" ];
 then
     echo "downloading make-dep"
-    curl -L http://gnuwin32.sourceforge.net/downlinks/make-dep-zip.php > make-3.81-dep.zip
-    unzip -q -o make-3.81-dep.zip
-    rm make-3.81-dep.zip
+    curl -L http://gnuwin32.sourceforge.net/downlinks/make-dep-zip.php > make-dep.zip
+    unzip -q -o make-dep.zip
+    rm make-dep.zip
 fi
 
 if [ ! -f "bin/rm.exe" ];
@@ -92,7 +92,7 @@ fi
 
 if [ ! -f "bin/dfu-util.exe" ];
 then
-    ARCHIVE=dfu-util-0.9-win64.zip
+    ARCHIVE=dfu-util-0.11-win64.zip
     if [ ! -f ${ARCHIVE} ];
     then
         echo "downloading ${ARCHIVE}"
