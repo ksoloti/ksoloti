@@ -1227,7 +1227,7 @@ public class Patch {
         }
 
         if (controllerInstance != null) {
-            c += "\n" + I + "/* Controller classes */\n";
+            c += "\n" + I + "/* Controller class */\n";
             c += controllerInstance.GenerateClass(classname);
         }
         c += "\n" + I + "/* Object classes */\n";
@@ -1235,7 +1235,7 @@ public class Patch {
             c += o.GenerateClass(classname);
         }
         if (controllerInstance != null) {
-            c += "\n" + I + "/* Controller instances */\n";
+            c += "\n" + I + "/* Controller instance */\n";
             String s = controllerInstance.getCInstanceName();
             if (!s.isEmpty()) {
                 c += I + s + " " + s + "_i;\n";
