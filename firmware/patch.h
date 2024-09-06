@@ -23,10 +23,10 @@
 #include "hal.h"
 #include "ui.h"
 #include "axoloti_board.h"
-#include "ff.h"
 #include "midi.h"
 #include "crc32.h"
 #include "exceptions.h"
+#include "ff.h"
 
 typedef void (*fptr_patch_init_t)(uint32_t fwID);
 typedef void (*fptr_patch_dispose_t)(void);

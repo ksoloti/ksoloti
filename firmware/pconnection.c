@@ -22,7 +22,6 @@
 #include "pconnection.h"
 #include "parameters.h"
 #include "patch.h"
-#include "ff.h"
 #include "codec.h"
 #include "usbcfg.h"
 #include "midi.h"
@@ -40,6 +39,7 @@
 #include "midi_usb.h"
 #include "watchdog.h"
 #include "sysmon.h"
+#include "ff.h"
 #ifdef FW_SPILINK
 #include "spilink.h"
 #endif

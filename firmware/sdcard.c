@@ -20,11 +20,11 @@
 #include "hal.h"
 #include "chprintf.h"
 #include "shell.h"
-#include "ff.h"
 #include "patch.h"
 #include "sdcard.h"
-#include <string.h>
 #include "exceptions.h"
+#include "ff.h"
+#include <string.h>
 
 /*===========================================================================*/
 /* SDCard                                                                    */
