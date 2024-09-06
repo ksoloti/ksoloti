@@ -40,7 +40,6 @@ import axoloti.object.AxoObjectInstanceZombie;
 import axoloti.object.AxoObjectPatcher;
 import axoloti.object.AxoObjectPatcherObject;
 import axoloti.object.AxoObjectZombie;
-import axoloti.object.AxoObjects;
 import axoloti.outlets.OutletBool32;
 import axoloti.outlets.OutletCharPtr32;
 import axoloti.outlets.OutletFrac32;
