@@ -613,7 +613,7 @@ public class Preferences {
     }
 
     public void setControllerObject(String s) {
-        ControllerObject = s;
+        ControllerObject = s.strip();
     }
 
     public void setControllerEnabled(boolean b) {
