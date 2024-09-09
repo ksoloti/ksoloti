@@ -34,6 +34,7 @@ import axoloti.SDFileInfo;
 import axoloti.USBBulkConnection;
 import components.ScrollPaneComponent;
 
+import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
@@ -91,6 +92,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
      * Creates new form PatchBank
      */
     public PatchBank() {
+        setPreferredSize(new Dimension(800, 600));
         initComponents();
         fileMenu1.initComponents();
         files = new ArrayList<File>();
@@ -604,6 +606,9 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
+        jPanel1.setMinimumSize(new Dimension(256, 32));
+        jPanel1.setMaximumSize(new Dimension(32768, 32));
+        jPanel1.setPreferredSize(new Dimension(jPanel1.getWidth(), 32));
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -615,18 +620,20 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 .addComponent(jUploadPatches)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 108, Short.MAX_VALUE)
                 .addComponent(jUploadAll)
-                .addContainerGap())
+                .addContainerGap()
+            )
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGap(4)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     // .addComponent(jLabelDisclaimer, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButtonUploadIndex)
                     .addComponent(jUploadPatches)
                     .addComponent(jUploadAll))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(4)
+            )
         );
 
         getContentPane().add(jPanel1);
@@ -700,9 +707,12 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
+        jPanel2.setMinimumSize(new Dimension(256, 32));
+        jPanel2.setMaximumSize(new Dimension(32768, 32));
+        jPanel2.setPreferredSize(new Dimension(jPanel2.getWidth(), 32));
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButtonUp)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -715,20 +725,24 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 .addComponent(jButtonOpen)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
                 .addComponent(jButtonUpload)
-                .addContainerGap())
+                .addContainerGap()
+            )
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                .addGap(4)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(jButtonUp)
                     .addComponent(jButtonDown)
                     .addComponent(jButtonAdd)
                     .addComponent(jButtonRemove)
                     .addComponent(jButtonOpen)
-                    .addComponent(jButtonUpload)))
-                    );
+                    .addComponent(jButtonUpload)
+                )
+                .addGap(4)
+            )
+        );
 
         getContentPane().add(jPanel2);
 
