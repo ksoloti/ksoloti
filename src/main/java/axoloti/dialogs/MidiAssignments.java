@@ -24,7 +24,11 @@ import axoloti.parameters.ParameterInstance;
 import axoloti.utils.Constants;
 import components.ScrollPaneComponent;
 
+import java.awt.Dimension;
 import java.util.Collection;
+
+import javax.swing.JLabel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -37,7 +41,10 @@ public class MidiAssignments extends javax.swing.JDialog {
      * Creates new form MidiAssignments
      */
     public MidiAssignments(java.awt.Frame parent, boolean modal, ParameterInstance param) {
-        super(parent, modal);
+        super(null, java.awt.Dialog.ModalityType.TOOLKIT_MODAL);
+        setModal(modal);
+        setPreferredSize(new Dimension(640, 480));
+        setTitle("MIDI CC# Assignments");
         initComponents();
         setIconImage(Constants.APP_ICON.getImage());
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -47,7 +54,7 @@ public class MidiAssignments extends javax.swing.JDialog {
         for (AxoObjectInstanceAbstract obj : patch.objectInstances) {
             Collection<ParameterInstance> params = obj.getParameterInstances();
             if (params != null) {
-                for (ParameterInstance param1 : params) {
+                for (ParameterInstance<?> param1 : params) {
                     int cc = param1.getMidiCC();
                     if (cc >= 0) {
                         CCObj[cc] = obj.getInstanceName();
@@ -89,14 +96,14 @@ public class MidiAssignments extends javax.swing.JDialog {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new ScrollPaneComponent();
         jTable1 = new javax.swing.JTable();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 10), new java.awt.Dimension(0, 0));
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 10), new java.awt.Dimension(0, 10));
         jPanel2 = new javax.swing.JPanel();
         jButtonCancel = new javax.swing.JButton();
-        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(0, 0));
+        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(20, 0), new java.awt.Dimension(0, 0));
         jButtonDeassign = new javax.swing.JButton();
-        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(0, 0));
+        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(20, 0), new java.awt.Dimension(0, 0));
         jButtonAssign = new javax.swing.JButton();
-        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 10), new java.awt.Dimension(0, 0));
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 10), new java.awt.Dimension(0, 10));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.Y_AXIS));
@@ -127,9 +134,15 @@ public class MidiAssignments extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
+
+        /* Center integers (CC numbers) */
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        jTable1.setDefaultRenderer(Integer.class, centerRenderer);
+
         jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setPreferredWidth(40);
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(32);
             jTable1.getColumnModel().getColumn(1).setPreferredWidth(140);
             jTable1.getColumnModel().getColumn(2).setPreferredWidth(140);
             jTable1.getColumnModel().getColumn(3).setPreferredWidth(140);
@@ -143,6 +156,7 @@ public class MidiAssignments extends javax.swing.JDialog {
         getContentPane().add(filler1);
 
         jPanel2.setLayout(new java.awt.GridBagLayout());
+        jPanel2.setMaximumSize(new Dimension(640, 32));
 
         jButtonCancel.setText("Cancel");
         jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
