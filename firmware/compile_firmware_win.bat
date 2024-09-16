@@ -18,7 +18,7 @@ del /q .dep\*
 del /q flasher_build\lst\*
 del /q flasher_build\obj\*
 rem FWOPTIONDEF currently not used in flasher
-make -j4 BOARDDEF=%1
+make -j16 BOARDDEF=%1
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
@@ -33,7 +33,7 @@ del /q .dep\*
 del /q mounter_build\lst\*
 del /q mounter_build\obj\*
 rem FWOPTIONDEF currently not used in mounter
-make -j4 BOARDDEF=%1
+make -j16 BOARDDEF=%1
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
@@ -46,7 +46,7 @@ if not exist "build\obj" mkdir build\obj
 del /q .dep\*
 del /q build\lst\*
 del /q build\obj\*
-make -j4 BOARDDEF=%1
+make -j16 BOARDDEF=%1
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
@@ -55,7 +55,7 @@ echo.&&echo Compiling firmware... %1 FW_SPILINK
 del /q .dep\*
 del /q build\lst\*
 del /q build\obj\*
-make -j4 BOARDDEF=%1 FWOPTIONDEF=FW_SPILINK
+make -j16 BOARDDEF=%1 FWOPTIONDEF=FW_SPILINK
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
