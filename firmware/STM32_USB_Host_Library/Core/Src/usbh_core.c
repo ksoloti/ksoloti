@@ -427,7 +427,7 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
     
   case HOST_DEV_ATTACHED :
     
-    USBH_UsrLog("USB device attached");  
+    USBH_UsrLog("USB device connected");  
       
     /* Wait for 100 ms after Reset */
     USBH_Delay(100); 
