@@ -313,20 +313,20 @@ USBH_StatusTypeDef USBH_MIDI_InterfaceInit(USBH_HandleTypeDef *phost) {
                 if(!isValidInput(MIDI_Handle) && bInput) {
                     MIDI_Handle->InEp = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[i].bEndpointAddress;
                     MIDI_Handle->InEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[i].wMaxPacketSize;
-                    USBH_UsrLog("USB Host Input size requests : %x", MIDI_Handle->InEpSize );
+                    USBH_DbgLog("USB Host Input size requests : %x", MIDI_Handle->InEpSize );
                     MIDI_Handle->InEpSize = USBH_MIDI_EPS_IN_SIZE; // why bother reducing the size? Some devices will lie about the max ep size...
 //                    MIDI_Handle->read_poll = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[i].bInterval;
-//                  USBH_UsrLog("USB Host Input interval : %i", MIDI_Handle->read_poll);
+//                  USBH_DbgLog("USB Host Input interval : %i", MIDI_Handle->read_poll);
 //                    if(MIDI_Handle->read_poll<MIDI_MIN_READ_POLL) MIDI_Handle->read_poll = MIDI_MIN_READ_POLL;
                     MIDI_Handle->input_valid = true;
                 }
                 if(!isValidOutput(MIDI_Handle) && !bInput) {
                     MIDI_Handle->OutEp = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[i].bEndpointAddress;
                     MIDI_Handle->OutEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[i].wMaxPacketSize;
-                    USBH_UsrLog("USB Host Output size requests : %x", MIDI_Handle->OutEpSize );
+                    USBH_DbgLog("USB Host Output size requests : %x", MIDI_Handle->OutEpSize );
                     if(MIDI_Handle->OutEpSize >USBH_MIDI_EPS_OUT_SIZE) MIDI_Handle->OutEpSize = USBH_MIDI_EPS_OUT_SIZE;
 //                    MIDI_Handle->write_poll = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[i].bInterval;
-//                  USBH_UsrLog("USB Host Output interval : %i", MIDI_Handle->write_poll);
+//                  USBH_DbgLog("USB Host Output interval : %i", MIDI_Handle->write_poll);
 //                    if(MIDI_Handle->write_poll<MIDI_MIN_WRITE_POLL) MIDI_Handle->write_poll = MIDI_MIN_WRITE_POLL;
                     MIDI_Handle->output_valid = true;
                 }
@@ -336,7 +336,7 @@ USBH_StatusTypeDef USBH_MIDI_InterfaceInit(USBH_HandleTypeDef *phost) {
 
 
             if (isValidOutput(MIDI_Handle)) {
-                USBH_UsrLog("USB Host Output connected to %x : %x", interface, MIDI_Handle->OutEp );
+                USBH_DbgLog("USB Host Output connected to %x : %x", interface, MIDI_Handle->OutEp );
 
                 MIDI_Handle->OutPipe = USBH_AllocPipe(phost, MIDI_Handle->OutEp);
                 USBH_OpenPipe  (phost,
@@ -353,7 +353,7 @@ USBH_StatusTypeDef USBH_MIDI_InterfaceInit(USBH_HandleTypeDef *phost) {
             }
             
             if (isValidInput(MIDI_Handle)) {
-                USBH_UsrLog("USB Host Input connected to %x : %x", interface, MIDI_Handle->InEp );
+                USBH_DbgLog("USB Host Input connected to %x : %x", interface, MIDI_Handle->InEp );
 
                 MIDI_Handle->InPipe = USBH_AllocPipe(phost, MIDI_Handle->InEp);
                 USBH_OpenPipe  (phost,
@@ -386,7 +386,7 @@ USBH_StatusTypeDef USBH_MIDI_InterfaceInit(USBH_HandleTypeDef *phost) {
  * @retval None
  */
 USBH_StatusTypeDef USBH_MIDI_InterfaceDeInit  (__attribute__((__unused__))  USBH_HandleTypeDef *phost) {
-    USBH_UsrLog("USB Host : device disconnected");
+    USBH_UsrLog("USB device disconnected\n");
     MIDI_HandleTypeDef *MIDI_Handle = phost->pActiveClass->pData;
     if (isValidOutput(MIDI_Handle)) {
         USBH_ClosePipe(phost, MIDI_Handle->OutPipe);
@@ -441,7 +441,7 @@ USBH_StatusTypeDef USBH_MIDI_ProcessInput(USBH_HandleTypeDef *phost) {
     MIDI_HandleTypeDef *MIDI_Handle = phost->pActiveClass->pData;
 
     if(!isValidInput(MIDI_Handle)) {
-        USBH_UsrLog("USBH_MIDI_ProcessInput : invalid input");
+        USBH_DbgLog("USBH_MIDI_ProcessInput: invalid input");
         return status; // ?
     }
 
@@ -539,7 +539,7 @@ USBH_StatusTypeDef USBH_MIDI_ProcessOutput(USBH_HandleTypeDef *phost) {
     MIDI_HandleTypeDef *MIDI_Handle = phost->pActiveClass->pData;
 
     if(!isValidOutput(MIDI_Handle)) {
-        USBH_UsrLog("USBH_MIDI_ProcessOutput : invalid output");
+        USBH_DbgLog("USBH_MIDI_ProcessOutput : invalid output");
         return status; // ?
     }
 
@@ -680,7 +680,7 @@ USBH_StatusTypeDef USBH_MIDI_SOFProcess(USBH_HandleTypeDef *phost) {
     MIDI_HandleTypeDef *MIDI_Handle =  (MIDI_HandleTypeDef *) phost->pActiveClass->pData;
 
     if (!isValidInput(MIDI_Handle) && !isValidOutput(MIDI_Handle)) {
-        USBH_UsrLog("USBH_MIDI_SOFProcess : invalid input/output");
+        USBH_DbgLog("USBH_MIDI_SOFProcess : invalid input/output");
         return USBH_OK; //?
     }
 //    palTogglePad(LED1_PORT,LED1_PIN);

@@ -388,7 +388,7 @@ static void USBH_ParseCfgDesc (USBH_CfgDescTypeDef* cfg_desc,
   
   if (length > USB_CONFIGURATION_DESC_SIZE)
   {
-    USBH_UsrLog("cfg desc: num interfaces %u", cfg_desc->bNumInterfaces);
+    USBH_DbgLog("cfg desc: num interfaces %u", cfg_desc->bNumInterfaces);
     ptr = USB_LEN_CFG_DESC;
     pif = (USBH_InterfaceDescTypeDef *)0;
     if_ix = 0;
@@ -409,10 +409,10 @@ static void USBH_ParseCfgDesc (USBH_CfgDescTypeDef* cfg_desc,
                 ep_ix = 0;
                 if_num = if_ix;
                 if_ix++;
-                USBH_UsrLog("interface: interface %u, num %u, numep %u, class %x , sub class %x", if_num, pif->bInterfaceNumber, pif->bNumEndpoints, pif->bInterfaceClass, pif->bInterfaceSubClass);
+                USBH_DbgLog("interface: interface %u, num %u, numep %u, class %x , sub class %x", if_num, pif->bInterfaceNumber, pif->bNumEndpoints, pif->bInterfaceClass, pif->bInterfaceSubClass);
                 if(if_num + 1 > cfg_desc->bNumInterfaces) 
                 {
-                    USBH_UsrLog("interface: more interfaces described, that config detailed, use actual number");
+                    USBH_DbgLog("interface: more interfaces described, that config detailed, use actual number");
                     cfg_desc->bNumInterfaces = if_num + 1; // remember zero based
                 }
             }
@@ -427,7 +427,7 @@ static void USBH_ParseCfgDesc (USBH_CfgDescTypeDef* cfg_desc,
             {  
                 pep = &cfg_desc->Itf_Desc[if_num].Ep_Desc[ep_ix];
                 USBH_ParseEPDesc (pep, (uint8_t *)pdesc);
-                USBH_UsrLog("endpoint: interface %u, ep num %u, addr  %x", if_num, ep_ix, pep->bEndpointAddress); 
+                USBH_DbgLog("endpoint: interface %u, ep num %u, addr  %x", if_num, ep_ix, pep->bEndpointAddress); 
                 ep_ix++;
             }
         }
