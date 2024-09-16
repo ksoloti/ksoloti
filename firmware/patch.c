@@ -123,18 +123,18 @@ void CheckStackOverflow(void) {
 
         if (name != 0) {
             if (nfree) {
-                LogTextMessage("Thread %s : stack critical %d",name,nfree);
+                LogTextMessage("Thread %s: stack critical %d", name, nfree);
             }
             else {
-                LogTextMessage("Thread %s : stack overflow",name);
+                LogTextMessage("Thread %s: stack overflow", name);
             }
         }
         else {
             if (nfree) {
-                LogTextMessage("Thread ?? : stack critical %d",nfree);
+                LogTextMessage("Thread ??: stack critical %d", nfree);
             }
             else {
-                LogTextMessage("Thread ?? : stack overflow");
+                LogTextMessage("Thread ??: stack overflow");
             }
         }
     }
@@ -159,7 +159,7 @@ static void StopPatch1(void) {
         }
 
         if (i != nThreadsBeforePatch) {
-            LogTextMessage("error: patch stopped but did not terminate its thread(s)");
+            LogTextMessage("Error: patch did not terminate its thread(s)");
         }
     }
 
@@ -198,7 +198,7 @@ static int StartPatch1(void) {
         StopPatch1();
         patchStatus = STARTFAILED;
         patchMeta.patchID = 0;
-        report_patchLoadSDRamOverflow((const char*) &loadFName[0],-sdrem);
+        report_patchLoadSDRamOverflow((const char*) &loadFName[0], -sdrem);
         return -1;
     }
 
@@ -248,7 +248,7 @@ static int StartPatch1(void) {
             if (dspLoad200 > 194) { /* 194=2*97, corresponds to 97% */
                 /* Overload: clear output buffers and give other processes a chance */
                 codec_clearbuffer();
-                // LogTextMessage("dsp overrun");
+                // LogTextMessage("DSP overrun");
 
                 /* DSP overrun penalty, keeping cooperative with lower priority threads */
                 chThdSleepMilliseconds(1);
@@ -302,11 +302,11 @@ static int StartPatch1(void) {
                 t = (char*) PATCHMAINLOC;
                 int32_t cindex = 0;
 
-                // LogTextMessage("load %d %d %x",index, bytes_read, t);
+                // LogTextMessage("load %d %d %x", index, bytes_read, t);
                 while (bytes_read) {
-                    // LogTextMessage("scan %d",*t);
+                    // LogTextMessage("scan %d", *t);
                     if (cindex == loadPatchIndex) {
-                        // LogTextMessage("match %d",index);
+                        // LogTextMessage("match %d", index);
                         char *p, *e;
                         p = t;
                         e = t;
@@ -357,7 +357,7 @@ static int StartPatch1(void) {
                 }
 
                 if (!bytes_read) {
-                    LogTextMessage("patch load out-of-range %d", loadPatchIndex);
+                    LogTextMessage("Patch load out of range: %d", loadPatchIndex);
                     loadPatchIndex = START_SD;
                     strcpy(&loadFName[0], "/start.bin");
                     int res = sdcard_loadPatch1(loadFName);
@@ -408,7 +408,7 @@ int StartPatch(void) {
 
     if (patchStatus == STARTFAILED) {
         patchStatus = STOPPED;
-        LogTextMessage("patch start failed",patchStatus);
+        LogTextMessage("Patch start failed", patchStatus);
     }
 
     return 0;
