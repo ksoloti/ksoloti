@@ -688,6 +688,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
         });
         jMenuPatch.add(jMenuItemUploadSD);
+        jMenuPatch.add(jSeparator6);
 
         jMenuItemUploadSDStart.setText("Upload to SD Card as Startup");
         jMenuItemUploadSDStart.setMnemonic('S');
@@ -698,7 +699,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
         });
         jMenuPatch.add(jMenuItemUploadSDStart);
-        jMenuPatch.add(jSeparator6);
 
         jMenuItemUploadInternalFlash.setMnemonic('I');
         jMenuItemUploadInternalFlash.setText("Upload to Internal Flash as Startup");

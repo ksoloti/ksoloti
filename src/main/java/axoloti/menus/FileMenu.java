@@ -19,7 +19,6 @@
 package axoloti.menus;
 
 import axoloti.FileUtils;
-import axoloti.MainFrame;
 import static axoloti.MainFrame.axoObjects;
 import static axoloti.MainFrame.mainframe;
 
