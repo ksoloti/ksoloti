@@ -5,6 +5,12 @@
     "projectName": "ksoloti",
     "configurations": [
         {
+            "type": "java",
+            "name": "Debug Patcher!",
+            "request": "launch",
+            "mainClass": "axoloti.Axoloti",
+        },
+        {
             "name": "Ksoloti launch",
             "cwd": "${workspaceRoot}",
             "executable": "./firmware/build/ksoloti.elf",
