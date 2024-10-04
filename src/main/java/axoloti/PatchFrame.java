@@ -633,7 +633,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jMenuItemSettings.setMnemonic('I');
         jMenuItemSettings.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyUtils.CONTROL_OR_CMD_MASK));
-        jMenuItemSettings.setText("Settings");
+        jMenuItemSettings.setText("Patch Settings");
         jMenuItemSettings.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemSettingsActionPerformed(evt);
