@@ -596,13 +596,18 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 s = s.toLowerCase();
 
                 /* --- exact match of entire string, case-insensitive --- */
+                /* clear temporary list */
+                tempList = new ArrayList<AxoObjectAbstract>();
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
                     if (o.id.toLowerCase().equals(s)) {
                         if (!listData.contains(o)) {
-                            listData.add(o);
+                            tempList.add(o);
                         }
                     }
                 }
+                /* sort matches and add temp to list */
+                Collections.sort(tempList, objComp);
+                listData.addAll(tempList);
 
                 /* --- if starts with, case-insensitive --- */
                 /* clear temporary list */
