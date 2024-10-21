@@ -20,6 +20,7 @@ package axoloti.dialogs;
 
 import axoloti.Version;
 import axoloti.utils.Constants;
+import axoloti.utils.FirmwareID;
 import components.ScrollPaneComponent;
 
 import java.awt.Desktop;
@@ -53,9 +54,10 @@ public class AboutFrame extends javax.swing.JFrame {
             LOGGER.log(Level.SEVERE, null, ex);
         }
 
-        jVersionTxt.setText(Version.AXOLOTI_VERSION);
-        jDateTxt.setText(Version.AXOLOTI_BUILD_TIME);
-        jJavaVersion.setText(System.getProperty("java.version"));
+        jBuildVersionTxt.setText(Version.AXOLOTI_VERSION);
+        jBuildDateTxt.setText(Version.AXOLOTI_BUILD_TIME);
+        jJavaVersionTxt.setText(System.getProperty("java.version"));
+        jFirmwareVersionTxt.setText(FirmwareID.getFirmwareID());
         jTextPaneAboutHtml.setOpaque(false);
 
         jTextPaneAboutHtml.addHyperlinkListener(new HyperlinkListener() {
@@ -92,11 +94,13 @@ public class AboutFrame extends javax.swing.JFrame {
         jScrollPaneAboutHtml = new ScrollPaneComponent();
         jTextPaneAboutHtml = new javax.swing.JTextPane();
         jLabelBuildVersion = new javax.swing.JLabel();
-        jVersionTxt = new javax.swing.JLabel();
+        jBuildVersionTxt = new javax.swing.JLabel();
         jLabelBuildDate = new javax.swing.JLabel();
-        jDateTxt = new javax.swing.JLabel();
+        jBuildDateTxt = new javax.swing.JLabel();
         jLabelJavaVersion = new javax.swing.JLabel();
-        jJavaVersion = new javax.swing.JLabel();
+        jJavaVersionTxt = new javax.swing.JLabel();
+        jLabelFirmwareVersion = new javax.swing.JLabel();
+        jFirmwareVersionTxt = new javax.swing.JLabel();
 
         setTitle("About Axoloti");
 
@@ -107,11 +111,13 @@ public class AboutFrame extends javax.swing.JFrame {
         jScrollPaneAboutHtml.setViewportView(jTextPaneAboutHtml);
 
         jLabelBuildVersion.setText("Build Version:");
-        jVersionTxt.setText("test");
+        jBuildVersionTxt.setText("test");
         jLabelBuildDate.setText("Build Date:");
-        jDateTxt.setText("test");
+        jBuildDateTxt.setText("test");
         jLabelJavaVersion.setText("Java Version:");
-        jJavaVersion.setText("test");
+        jJavaVersionTxt.setText("test");
+        jLabelFirmwareVersion.setText("Firmware CRC:");
+        jFirmwareVersionTxt.setText("test");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -127,20 +133,25 @@ public class AboutFrame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabelBuildVersion, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jVersionTxt, javax.swing.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE))
+                        .addComponent(jBuildVersionTxt, javax.swing.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
+                    )
 
                     .addGroup(layout.createSequentialGroup()
-
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelBuildDate, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabelJavaVersion)
-                        )
+                        .addComponent(jLabelBuildDate, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
+                        .addComponent(jBuildDateTxt, javax.swing.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
+                    )
 
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jDateTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jJavaVersion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        )
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabelJavaVersion, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jJavaVersionTxt, javax.swing.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
+                    )
+
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabelFirmwareVersion, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jFirmwareVersionTxt, javax.swing.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
                     )
                 )
             )
@@ -154,21 +165,28 @@ public class AboutFrame extends javax.swing.JFrame {
 
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelBuildVersion)
-                    .addComponent(jVersionTxt)
+                    .addComponent(jBuildVersionTxt)
                 )
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelBuildDate)
-                    .addComponent(jDateTxt)
+                    .addComponent(jBuildDateTxt)
                 )
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jJavaVersion)
                     .addComponent(jLabelJavaVersion)
+                    .addComponent(jJavaVersionTxt)
                 )
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelFirmwareVersion)
+                    .addComponent(jFirmwareVersionTxt)
+                )
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+
                 .addComponent(jScrollPaneAboutHtml, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
                 .addContainerGap()
             )
@@ -177,12 +195,14 @@ public class AboutFrame extends javax.swing.JFrame {
         pack();
     }
 
-    private javax.swing.JLabel jDateTxt;
-    private javax.swing.JLabel jJavaVersion;
+    private javax.swing.JLabel jBuildDateTxt;
+    private javax.swing.JLabel jJavaVersionTxt;
+    private javax.swing.JLabel jFirmwareVersionTxt;
     private javax.swing.JLabel jLabelBuildVersion;
     private javax.swing.JLabel jLabelBuildDate;
     private javax.swing.JLabel jLabelJavaVersion;
+    private javax.swing.JLabel jLabelFirmwareVersion;
     private ScrollPaneComponent jScrollPaneAboutHtml;
     private javax.swing.JTextPane jTextPaneAboutHtml;
-    private javax.swing.JLabel jVersionTxt;
+    private javax.swing.JLabel jBuildVersionTxt;
 }
