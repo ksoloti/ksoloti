@@ -46,6 +46,7 @@ public class HelpMenu extends JMenu {
     private javax.swing.JMenuItem jMenuShortcuts;
     // private javax.swing.JMenuItem jMenuUpdates;
     private javax.swing.JMenuItem jMenuCommunity;
+    private javax.swing.JMenuItem jMenuAxolotiCommunityBackup;
     private axoloti.menus.HelpLibraryMenu helpLibraryMenu1;
 
     public HelpMenu() {
@@ -74,11 +75,13 @@ public class HelpMenu extends JMenu {
         jMenuShortcuts = new javax.swing.JMenuItem();
         // jMenuUpdates = new javax.swing.JMenuItem();
         jMenuCommunity = new javax.swing.JMenuItem();
+        jMenuAxolotiCommunityBackup = new javax.swing.JMenuItem();
         helpLibraryMenu1 = new axoloti.menus.HelpLibraryMenu();
 
         jMenuHelpContents.setMnemonic('H');
         jMenuHelpContents.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
         jMenuHelpContents.setText("Help Contents");
+        jMenuHelpContents.setToolTipText("Open Axoloti online user guide in your browser. (Has not been updated in a while)");
         jMenuHelpContents.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -89,6 +92,7 @@ public class HelpMenu extends JMenu {
 
         jMenuAbout.setMnemonic('A');
         jMenuAbout.setText("About");
+        jMenuAbout.setToolTipText("Popup window with some background info and version tags");
         jMenuAbout.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -99,6 +103,7 @@ public class HelpMenu extends JMenu {
 
         jMenuShortcuts.setMnemonic('S');
         jMenuShortcuts.setText("Keyboard Shortcuts");
+        jMenuShortcuts.setToolTipText("List of keyboard and mouse shortcuts");
         jMenuShortcuts.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -109,6 +114,7 @@ public class HelpMenu extends JMenu {
 
         jMenuCommunity.setMnemonic('C');
         jMenuCommunity.setText("Community Website");
+        jMenuCommunity.setToolTipText("Open Ksoloti Forum in your browser.");
         jMenuCommunity.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -116,6 +122,17 @@ public class HelpMenu extends JMenu {
             }
         });
         add(jMenuCommunity);
+
+        jMenuAxolotiCommunityBackup.setMnemonic('B');
+        jMenuAxolotiCommunityBackup.setText("Axoloti Community Forum Backup");
+        jMenuAxolotiCommunityBackup.setToolTipText("Open the read-only backup of the original Axoloti Community Forum in your browser.");
+        jMenuAxolotiCommunityBackup.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuAxolotiCommunityBackupActionPerformed(evt);
+            }
+        });
+        add(jMenuAxolotiCommunityBackup);
 
         // jMenuUpdates.setMnemonic('U');
         // jMenuUpdates.setText("Check for Updates...");
@@ -128,6 +145,7 @@ public class HelpMenu extends JMenu {
         // add(jMenuUpdates);
 
         helpLibraryMenu1.setText("Help Patches");
+        helpLibraryMenu1.setToolTipText("Open a help patch from a List of found help patches in all loaded libraries.");
         helpLibraryMenu1.setMnemonic('P');
         helpLibraryMenu1.setDisplayedMnemonicIndex(5);
         add(helpLibraryMenu1);
@@ -157,6 +175,16 @@ public class HelpMenu extends JMenu {
     }
 
     private void jMenuCommunityActionPerformed(java.awt.event.ActionEvent evt) {
+        try {
+            Desktop.getDesktop().browse(new URI("https://ksoloti.discourse.group/"));
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        } catch (URISyntaxException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void jMenuAxolotiCommunityBackupActionPerformed(java.awt.event.ActionEvent evt) {
         try {
             Desktop.getDesktop().browse(new URI("https://sebiik.github.io/community.axoloti.com.backup/"));
         } catch (IOException ex) {
