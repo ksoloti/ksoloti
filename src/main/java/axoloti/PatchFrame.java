@@ -20,7 +20,6 @@ package axoloti;
 
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
-import axoloti.object.AxoObjects;
 import axoloti.utils.KeyUtils;
 import components.PresetPanel;
 import components.ScrollPaneComponent;

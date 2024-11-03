@@ -358,7 +358,7 @@ public class PreferencesFrame extends JFrame {
             }
         });
 
-        jDelLibBtn.setText("🗑");
+        jDelLibBtn.setText("-");
         jDelLibBtn.setToolTipText("Delete the selected library.");
         jDelLibBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
