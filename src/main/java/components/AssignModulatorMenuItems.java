@@ -97,7 +97,8 @@ public class AssignModulatorMenuItems {
             parent.add(p);
         }
         if (param.GetObjectInstance().patch.Modulators.isEmpty()) {
-            JMenuItem d = new JMenuItem("no modulation sources in patch");
+            JMenuItem d = new JMenuItem("No modulation sources in patch");
+            d.setToolTipText("<html>Place a <b><i>modsource</b></i> or related object in your patch to be able to apply it here.");
             d.setEnabled(false);
             parent.add(d);
         }

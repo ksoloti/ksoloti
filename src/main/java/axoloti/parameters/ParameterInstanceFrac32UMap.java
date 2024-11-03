@@ -205,6 +205,9 @@ public class ParameterInstanceFrac32UMap<T extends ParameterFrac32> extends Para
             m2.setDelay(300);
             m2.setMnemonic('M');
             new AssignModulatorMenuItems((ParameterInstanceFrac32UMap<ParameterFrac32>) this, m2);
+            boolean isModulationNonZeroInSettings = GetObjectInstance().getPatch().getSettings().GetNModulationSources() > 0 && GetObjectInstance().getPatch().getSettings().GetNModulationTargetsPerSource() > 0;
+            m2.setEnabled(isModulationNonZeroInSettings);
+            m2.setToolTipText("<html>To activate this menu, go to View > Patch Settings and set <br><b>Maximum Number of Modulation Sources</b> and <b>Maximum Number of Targets per Source</b><br>higher than zero.<br>Try to set these to only as many <b>Sources</b> and <b>possible Targets per Source</b> as you need - unused modulation slots will consume memory.<br><br>Then place a <b><i>modsource</i></b> or related object in your patch and connect a signal to it, which you can then apply via this menu.</html>");
             m.add(m2);
         }
     }
