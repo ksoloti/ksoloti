@@ -549,8 +549,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 }
 
                 /* --- if starts with --- */
-                /* clear temporary list */
-                tempList = new ArrayList<AxoObjectAbstract>();
+                tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
                     if (o.id.startsWith(s)) {
                         if (!listData.contains(o)) {
@@ -563,8 +562,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 listData.addAll(tempList);
 
                 /* --- if contains string (literally, i.e. ignoring wildcards) --- */
-                /* clear temporary list */
-                tempList = new ArrayList<AxoObjectAbstract>();
+                tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
                     if (o.id.contains(s)) {
                         if (!listData.contains(o)) {
@@ -577,8 +575,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 listData.addAll(tempList);
 
                 /* --- if object description contains --- */
-                /* clear temporary list */
-                tempList = new ArrayList<AxoObjectAbstract>();
+                tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
                     if (o.sDescription != null && o.sDescription.contains(s)) {
                         if (!listData.contains(o)) {
@@ -596,8 +593,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 s = s.toLowerCase();
 
                 /* --- exact match of entire string, case-insensitive --- */
-                /* clear temporary list */
-                tempList = new ArrayList<AxoObjectAbstract>();
+                tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
                     if (o.id.toLowerCase().equals(s)) {
                         if (!listData.contains(o)) {
@@ -610,8 +606,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 listData.addAll(tempList);
 
                 /* --- if starts with, case-insensitive --- */
-                /* clear temporary list */
-                tempList = new ArrayList<AxoObjectAbstract>();
+                tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
                     if (o.id.toLowerCase().startsWith(s)) {
                         if (!listData.contains(o)) {
@@ -624,8 +619,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 listData.addAll(tempList);
 
                 /* --- if contains string (literally, i.e. ignoring wildcards), case-insensitive --- */
-                /* clear temporary list */
-                tempList = new ArrayList<AxoObjectAbstract>();
+                tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
                     if (o.id.toLowerCase().contains(s)) {
                         if (!listData.contains(o)) {
@@ -638,8 +632,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 listData.addAll(tempList);
 
                 /* --- if object description contains, case-insensitive --- */
-                /* clear temporary list */
-                tempList = new ArrayList<AxoObjectAbstract>();
+                tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
                     if (o.sDescription != null && o.sDescription.toLowerCase().contains(s)) {
                         if (!listData.contains(o)) {

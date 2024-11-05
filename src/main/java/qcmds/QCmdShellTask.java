@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import axoloti.Axoloti;
+
 /**
  *
  * @author Johannes Taelman
@@ -62,16 +64,19 @@ public abstract class QCmdShellTask implements QCmd {
                         LOGGER.log(Level.SEVERE, "{0}",line);
                     }
                     else if (line.contains("overflowed by")) {
-                        LOGGER.log(Level.SEVERE, "{0}\n>>> Patch is too complex to fit in internal RAM. <<<",line);
+                        LOGGER.log(Level.SEVERE, "{0}\n>>> Patch is too complex to fit in internal RAM. <<<", line);
                     }
                     else if (line.contains("has no member named \'objectinstance__i\'")) {
-                        LOGGER.log(Level.SEVERE, "{0}\n>>> A required reference text field in the patch has been left empty. (table, delay read/write, filename, ...) <<<",line);
+                        LOGGER.log(Level.SEVERE, "{0}\n>>> A required reference text field in the patch has been left empty. (table, delay read/write, filename, ...) <<<", line);
+                    }
+                    else if (line.contains("one or more PCH files were found, but they were invalid")) {
+                        LOGGER.log(Level.SEVERE, "{0}\n>>> Go to " + Axoloti.LIBRARIES_DIR + File.separator + "build and manually delete all files inside it. <<<", line);
                     }
                     else if (line.contains("warning:")) {
-                        LOGGER.log(Level.WARNING, "{0}",line);
+                        LOGGER.log(Level.WARNING, "{0}", line);
                     }
                     else {
-                        LOGGER.log(Level.INFO, "{0}",line);
+                        LOGGER.log(Level.INFO, "{0}", line);
                     }
                     line = br.readLine();
                 }

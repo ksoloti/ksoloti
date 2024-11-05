@@ -1132,7 +1132,7 @@ public class PatchGUI extends Patch {
         } catch (java.lang.reflect.InvocationTargetException ite) {
             if (ite.getTargetException() instanceof Patch.PatchVersionException) {
                 Patch.PatchVersionException pve = (Patch.PatchVersionException) ite.getTargetException();
-                LOGGER.log(Level.SEVERE, "Patch \"{0}\" produced with newer version of Axoloti: {1}",
+                LOGGER.log(Level.SEVERE, "Patch \"{0}\" was saved with a newer version of Ksoloti: {1}",
                         new Object[]{f.getAbsoluteFile(), pve.getMessage()});
             } else {
                 LOGGER.log(Level.SEVERE, null, ite);
