@@ -83,6 +83,21 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t ___SMMLS (int32_t op1, in
     return result;
 }
 
+
+__attribute__((always_inline)) __STATIC_INLINE float ___VMULF(float op1, float op2){
+    float result;
+    __ASM volatile ("vmul.f32 %0, %1, %2" : "=w" (result): "w" (op1), "w" (op2));
+    return result;
+}
+
+
+__attribute__((always_inline)) __STATIC_INLINE float ___VDIVF(float op1, float op2){
+    float result;
+    __ASM volatile ("vdiv.f32 %0, %1, %2" : "=w" (result): "w" (op1), "w" (op2));
+    return result;
+}
+
+
 __attribute__((always_inline)) __STATIC_INLINE float _VSQRTF(float op1){
     float result;
     __ASM volatile ("vsqrt.f32 %0, %1" : "=w" (result): "w" (op1));
