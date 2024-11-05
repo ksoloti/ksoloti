@@ -491,13 +491,13 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         return root;
     }
 
-    void ExpandJTreeToEl(AxoObjectAbstract s) {
+    void ExpandJTreeToEl(AxoObjectAbstract aoa) {
         Enumeration e = root.depthFirstEnumeration();
         DefaultMutableTreeNode n = null;
         while (e.hasMoreElements()) {
             Object o = e.nextElement();
             DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) o;
-            if (s.equals(dmtn.getUserObject())) {
+            if (aoa.equals(dmtn.getUserObject())) {
                 n = (DefaultMutableTreeNode) o;
                 break;
             }
@@ -590,12 +590,12 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
             /* Else do case-insensitive search */
             else {
-                s = s.toLowerCase();
+                String sl = s.toLowerCase();
 
                 /* --- exact match of entire string, case-insensitive --- */
                 tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.id.toLowerCase().equals(s)) {
+                    if (o.id.toLowerCase().equals(sl)) {
                         if (!listData.contains(o)) {
                             tempList.add(o);
                         }
@@ -608,7 +608,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 /* --- if starts with, case-insensitive --- */
                 tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.id.toLowerCase().startsWith(s)) {
+                    if (o.id.toLowerCase().startsWith(sl)) {
                         if (!listData.contains(o)) {
                             tempList.add(o);
                         }
@@ -621,7 +621,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 /* --- if contains string (literally, i.e. ignoring wildcards), case-insensitive --- */
                 tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.id.toLowerCase().contains(s)) {
+                    if (o.id.toLowerCase().contains(sl)) {
                         if (!listData.contains(o)) {
                             tempList.add(o);
                         }
@@ -634,7 +634,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 /* --- if object description contains, case-insensitive --- */
                 tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.sDescription != null && o.sDescription.toLowerCase().contains(s)) {
+                    if (o.sDescription != null && o.sDescription.toLowerCase().contains(sl)) {
                         if (!listData.contains(o)) {
                             tempList.add(o);
                         }
