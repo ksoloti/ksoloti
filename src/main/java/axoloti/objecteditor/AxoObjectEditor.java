@@ -99,15 +99,18 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         }
 
         rsta.setFont(Constants.FONT_MONO);
-        rsta.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
-        rsta.setCodeFoldingEnabled(true);
         rsta.setAntiAliasingEnabled(true);
-        rsta.setAutoIndentEnabled(true);
-        rsta.setAnimateBracketMatching(false);
-        rsta.setMarkOccurrences(true);
-        rsta.setMarkOccurrencesColor(new Color(0x00,0x00,0x00, 0x60));
-        rsta.setPaintTabLines(true);
+        rsta.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
+
+        rsta.setCodeFoldingEnabled(true);
         // rsta.setLineWrap(true);
+        rsta.setAutoIndentEnabled(true);
+
+        // rsta.setWhitespaceVisible(true);
+        // rsta.setEOLMarkersVisible(true);
+        rsta.setClearWhitespaceLinesEnabled(true);
+        rsta.setPaintTabLines(true);
+
 
         RTextScrollPane sp = new RTextScrollPane(rsta);
         sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
