@@ -111,6 +111,11 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         rsta.setClearWhitespaceLinesEnabled(true);
         rsta.setPaintTabLines(true);
 
+        rsta.setBracketMatchingEnabled(true);
+        rsta.setShowMatchedBracketPopup(false);
+
+        rsta.setMarkOccurrences(true);
+        rsta.setPaintMarkOccurrencesBorder(true);
 
         RTextScrollPane sp = new RTextScrollPane(rsta);
         sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
