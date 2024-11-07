@@ -33,6 +33,7 @@ CCFLAGS = \
     -mno-thumb-interwork \
     -fno-use-cxa-atexit \
     -fpermissive \
+    -ffast-math \
     \
 
 
