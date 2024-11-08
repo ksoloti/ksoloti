@@ -680,8 +680,8 @@ static USBH_StatusTypeDef USBH_HandleEnum (USBH_HandleTypeDef *phost)
     /* Get FULL Device Desc  */
     if ( USBH_Get_DevDesc(phost, USB_DEVICE_DESC_SIZE)== USBH_OK)
     {
-      USBH_DbgLog("VID: %04X", phost->device.DevDesc.idVendor );  
-      USBH_DbgLog("PID: %04X", phost->device.DevDesc.idProduct );  
+      USBH_UsrLog("VID: %04X", phost->device.DevDesc.idVendor );  
+      USBH_UsrLog("PID: %04X", phost->device.DevDesc.idProduct );  
       
       phost->EnumState = ENUM_SET_ADDR;
        
@@ -797,13 +797,13 @@ static USBH_StatusTypeDef USBH_HandleEnum (USBH_HandleTypeDef *phost)
                                0xff) == USBH_OK)
       {
         /* User callback for Serial number string */
-         USBH_DbgLog("Serial Number: %s",  (char *)phost->device.Data);
+         USBH_UsrLog("Serial Number: %s",  (char *)phost->device.Data);
         Status = USBH_OK;
       }
     }
     else
     {
-      USBH_DbgLog("Serial Number: N/A"); 
+      USBH_UsrLog("Serial Number: N/A"); 
       Status = USBH_OK;
 #if (USBH_USE_OS == 1)
     osMessagePut ( phost->os_event, USBH_STATE_CHANGED_EVENT, 0);
