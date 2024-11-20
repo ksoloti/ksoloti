@@ -97,7 +97,7 @@ typedef enum {
 } edge_t;
 
 void blink_and_retry(void) {
-    sysmon_blink_pattern(SYNCED_ERROR);
+    sysmon_blink_pattern(BLINK_SYNCED_ERROR);
     chThdSleepMilliseconds(2000);
 }
 
