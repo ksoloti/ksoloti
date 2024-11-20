@@ -378,6 +378,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         tsuf += "Developer";
                     }
 
+                    if (prefs.getExpertMode()) {
+                        if (tsuf.length() > 0) {
+                            tsuf += ", ";
+                        }
+                        tsuf += "Expert Mode";
+                    }
+
                     if (prefs.getFirmwareMode().contains("Axoloti Core")) {
                         if (tsuf.length() > 0) {
                             tsuf += ", ";
