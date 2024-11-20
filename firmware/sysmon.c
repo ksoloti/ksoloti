@@ -85,7 +85,9 @@ static msg_t ThreadSysmon(void *arg) {
 #if defined(BOARD_KSOLOTI_CORE)
     int v = adcvalues[18];  // adcvalues[18] contains filtered 5V supervisor data via PF10
 #elif defined(BOARD_AXOLOTI_CORE)
-    int v = (ADC3->DR);  // adcvalues[18] contains filtered 5V supervisor data via PF10
+    int v = (ADC3->DR);  // contains filtered 5V supervisor data
+#else
+#error "Must define board! (BOARD_KSOLOTI_CORE or BOARD_AXOLOTI_CORE)"
 #endif
 
     if (v > v50_max)

@@ -41,6 +41,9 @@ void sysmon_blink_pattern(uint32_t pattern);
 // green/red overlapping alternate slow blink
 #define BLINK_SYNCED_ERROR 0xB4B4B4B4 /* 0b1011 0100 1011 0100 1011 0100 1011 0100 */
 
+// just red (used since Patcher v1.1.0 to indicate patch couldn't be loaded)
+#define BLINK_PATCH_LOAD_FAIL 0xA0A0A0A0 /* 0b1000 1000 1000 1000 1000 1000 1000 1000 */
+
 typedef enum
 {
     ERROR_USBH_OVERCURRENT = 0,
