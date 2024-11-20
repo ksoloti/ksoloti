@@ -1849,10 +1849,10 @@ public class Patch {
         SortByPosition();
 
         String c = "/*\n"
-        + "  Generated using Ksoloti Patcher v" + Version.AXOLOTI_VERSION + " on " + System.getProperty("os.name") + "\n"
-        + "  File: " + getFileNamePath() + "\n"
-        + "  Compiled: " + DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()) + "\n"
-        + "*/\n\n"
+        + " * Generated using Ksoloti Patcher v" + Version.AXOLOTI_VERSION + " on " + System.getProperty("os.name") + "\n"
+        + " * File: " + getFileNamePath() + "\n"
+        + " * Compiled: " + DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()) + "\n"
+        + " */\n\n"
         + "#pragma GCC diagnostic ignored \"-Wunused-variable\"\n"
         + "#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n\n";
 
