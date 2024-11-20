@@ -616,7 +616,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     }
 
     public String getLegalName() {
-        return CharEscape.CharEscape(InstanceName);
+        return CharEscape.charEscape(InstanceName);
     }
 
     public String getCInstanceName() {

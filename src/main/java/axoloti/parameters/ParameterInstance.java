@@ -354,7 +354,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     }
 
     public String getLegalName() {
-        return CharEscape.CharEscape(name);
+        return CharEscape.charEscape(name);
     }
 
     public String KVPName(String vprefix) {

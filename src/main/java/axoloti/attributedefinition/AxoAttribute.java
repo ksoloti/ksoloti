@@ -95,7 +95,7 @@ public abstract class AxoAttribute implements AtomDefinition, Cloneable {
     }
 
     public String GetCName() {
-        return "attr_" + CharEscape.CharEscape(name);
+        return "attr_" + CharEscape.charEscape(name);
     }
 
     @Override

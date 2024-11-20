@@ -65,7 +65,7 @@ public abstract class Parameter<T extends ParameterInstance> implements AtomDefi
     }
 
     public String GetCName() {
-        return "param_" + CharEscape.CharEscape(name);
+        return "param_" + CharEscape.charEscape(name);
     }
 
     @Override

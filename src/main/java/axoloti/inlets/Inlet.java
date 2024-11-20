@@ -74,7 +74,7 @@ public abstract class Inlet implements AtomDefinition, Cloneable {
     }
 
     public String GetCName() {
-        return "inlet_" + CharEscape.CharEscape(name);
+        return "inlet_" + CharEscape.charEscape(name);
     }
 
     @Override

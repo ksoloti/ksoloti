@@ -24,7 +24,7 @@ package axoloti.utils;
  */
 public class CharEscape {
 
-    static public String CharEscape(String s) {
+    static public String charEscape(String s) {
         s = s.replaceAll("_", "__");
         s = s.replaceAll(" ", "_space_");
         s = s.replaceAll("\\*", "_star_");
@@ -35,7 +35,7 @@ public class CharEscape {
         s = s.replaceAll("%", "_pct_");
         s = s.replaceAll("@", "_at_");
         s = s.replaceAll("!", "_excl_");
-        s = s.replaceAll("#", "_cross_");
+        s = s.replaceAll("#", "_hash_");
         s = s.replaceAll("\\$", "_dollar_");
         s = s.replaceAll("&", "_amp_");
         s = s.replaceAll("\\(", "_bo_");

@@ -61,7 +61,7 @@ public abstract class Outlet implements AtomDefinition, Cloneable {
     }
 
     public String GetCName() {
-        return "outlet_" + CharEscape.CharEscape(name);
+        return "outlet_" + CharEscape.charEscape(name);
     }
 
     SignalMetaData GetSignalMetaData() {
