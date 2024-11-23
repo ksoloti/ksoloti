@@ -34,7 +34,6 @@ case "$platform" in
         ./platform_osx/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/mounter/mounter_build/axoloti_mounter.elf > ./firmware/mounter/mounter_build/axoloti_mounter.list 
         ./platform_osx/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/build/axoloti.elf > ./firmware/build/axoloti.list
         ./platform_osx/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/build/axoloti_spilink.elf > ./firmware/build/axoloti_spilink.list
-        ./platform_osx/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/build/axoloti_usbaudio.elf > ./firmware/build/axoloti_usbaudio.list
 
         # compile board mode and firmware options
         sh ./platform_osx/compile_firmware.sh BOARD_KSOLOTI_CORE 2>&1 | tee -a firmware.log
@@ -43,7 +42,6 @@ case "$platform" in
         ./platform_osx/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/mounter/mounter_build/ksoloti_mounter.elf > ./firmware/mounter/mounter_build/ksoloti_mounter.list
         ./platform_osx/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/build/ksoloti.elf > ./firmware/build/ksoloti.list
         ./platform_osx/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/build/ksoloti_spilink.elf > ./firmware/build/ksoloti_spilink.list
-        ./platform_osx/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/build/ksoloti_usbaudio.elf > ./firmware/build/ksoloti_usbaudio.list
         sh ./qlean.sh
     ;;
     linux)
@@ -57,7 +55,6 @@ case "$platform" in
         ./platform_linux/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/mounter/mounter_build/axoloti_mounter.elf > ./firmware/mounter/mounter_build/axoloti_mounter.list 
         ./platform_linux/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/build/axoloti.elf > ./firmware/build/axoloti.list
         ./platform_linux/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/build/axoloti_spilink.elf > ./firmware/build/axoloti_spilink.list
-        ./platform_linux/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/build/axoloti_usbaudio.elf > ./firmware/build/axoloti_usbaudio.list
 
         # compile board mode and firmware options
         sh ./platform_linux/compile_firmware.sh BOARD_KSOLOTI_CORE 2>&1 | tee -a firmware.log
@@ -66,7 +63,6 @@ case "$platform" in
         ./platform_linux/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/mounter/mounter_build/ksoloti_mounter.elf > ./firmware/mounter/mounter_build/ksoloti_mounter.list
         ./platform_linux/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/build/ksoloti.elf > ./firmware/build/ksoloti.list
         ./platform_linux/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/build/ksoloti_spilink.elf > ./firmware/build/ksoloti_spilink.list
-        ./platform_linux/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/build/ksoloti_spilink.elf > ./firmware/build/ksoloti_usbaudio.list
         sh ./qlean.sh
     ;;
     windows)
@@ -81,7 +77,6 @@ case "$platform" in
         cmd "//C path.bat && arm-none-eabi-objdump --source-comment --demangle --disassemble ..\firmware\mounter\mounter_build\axoloti_mounter.elf > ..\firmware\mounter\mounter_build\axoloti_mounter.list"
         cmd "//C path.bat && arm-none-eabi-objdump --source-comment --demangle --disassemble ..\firmware\build\axoloti.elf > ..\firmware\build\axoloti.list"
         cmd "//C path.bat && arm-none-eabi-objdump --source-comment --demangle --disassemble ..\firmware\build\axoloti_spilink.elf > ..\firmware\build\axoloti_spilink.list"
-        cmd "//C path.bat && arm-none-eabi-objdump --source-comment --demangle --disassemble ..\firmware\build\axoloti_spilink.elf > ..\firmware\build\axoloti_usbaudio.list"
 
         # compile board mode and firmware options
         cmd "//C path.bat && compile_firmware.bat BOARD_KSOLOTI_CORE 2>&1 | tee -a ..\firmware.log"
@@ -90,7 +85,6 @@ case "$platform" in
         cmd "//C path.bat && arm-none-eabi-objdump --source-comment --demangle --disassemble ..\firmware\mounter\mounter_build\ksoloti_mounter.elf > ..\firmware\mounter\mounter_build\ksoloti_mounter.list"
         cmd "//C path.bat && arm-none-eabi-objdump --source-comment --demangle --disassemble ..\firmware\build\ksoloti.elf > ..\firmware\build\ksoloti.list"
         cmd "//C path.bat && arm-none-eabi-objdump --source-comment --demangle --disassemble ..\firmware\build\ksoloti_spilink.elf > ..\firmware\build\ksoloti_spilink.list"
-        cmd "//C path.bat && arm-none-eabi-objdump --source-comment --demangle --disassemble ..\firmware\build\ksoloti_spilink.elf > ..\firmware\build\ksoloti_usbaudio.list"
 
         cd ..
         sh ./qlean.sh
