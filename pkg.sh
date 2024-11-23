@@ -103,7 +103,7 @@ rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/build/lst
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/build/obj
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/build/*.dmp
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/build/*.hex
-rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/build/*.lst
+rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/build/*.list
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/build/*.map
 
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/.dep
@@ -111,7 +111,7 @@ rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/lst
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/obj
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.dmp
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.hex
-rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.lst
+rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.list
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.map
 
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/.dep
@@ -119,7 +119,7 @@ rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/lst
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/obj
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.dmp
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.hex
-rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.lst
+rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.list
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.map
 
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/share
@@ -157,7 +157,7 @@ rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/buil
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/build/obj
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/build/*.dmp
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/build/*.hex
-rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/build/*.lst
+rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/build/*.list
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/build/*.map
 
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/.dep
@@ -165,7 +165,7 @@ rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flas
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/flasher_build/obj
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/flasher_build/*.dmp
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/flasher_build/*.hex
-rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/flasher_build/*.lst
+rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/flasher_build/*.list
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/flasher_build/*.map
 
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/.dep
@@ -173,7 +173,7 @@ rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/moun
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/mounter_build/obj
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/mounter_build/*.dmp
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/mounter_build/*.hex
-rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/mounter_build/*.lst
+rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/mounter_build/*.list
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/mounter_build/*.map
 
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/platform_osx/share
@@ -213,7 +213,7 @@ rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/build/lst
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/build/obj
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/build/*.dmp
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/build/*.hex
-rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/build/*.lst
+rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/build/*.list
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/build/*.map
 
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/.dep
@@ -221,7 +221,7 @@ rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/flasher_build/lst
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/flasher_build/obj
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.dmp
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.hex
-rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.lst
+rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.list
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.map
 
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/.dep
@@ -229,7 +229,7 @@ rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/lst
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/obj
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.dmp
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.hex
-rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.lst
+rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.list
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.map
 
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/apache-ant-1.10.14
