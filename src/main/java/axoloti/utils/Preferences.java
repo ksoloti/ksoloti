@@ -645,7 +645,7 @@ public class Preferences {
                     + Version.AXOLOTI_SHORT_VERSION + File.separator
                     + "axoloti-contrib" + File.separator,
                 true,
-                "https://github.com/axoloti/axoloti-contrib.git", /* Will point to /KSOLOTI/axoloti-contrib in the future */
+                "https://github.com/ksoloti/axoloti-contrib.git", /* Will point to /KSOLOTI/axoloti-contrib in the future */
                 false
         );
 
