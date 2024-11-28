@@ -58,6 +58,7 @@ endif
 
 ifeq ($(FWOPTIONDEF),FW_SPILINK)
   ELFNAME := $(ELFNAME)_spilink
+  DEFS := $(DEFS) -DFW_SPILINK
 endif
 
 LDFLAGS = \
