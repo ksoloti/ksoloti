@@ -941,7 +941,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                             + I+I+I + "for (buffer_index = 0; buffer_index < BUFSIZE; buffer_index++) {\n"
                      + "\n" + I+I+I+I + "/* Object S-Rate Code Tab */\n"
                             + I+I+I+I + getType().sSRateCode.replace("\n", "\n\t\t\t\t")
-                            + I+I+I + "}\n";
+                     + "\n" + I+I+I + "}\n";
 
             for (AttributeInstance p : attributeInstances) {
                 s = s.replaceAll(p.GetCName(), p.CValue());
