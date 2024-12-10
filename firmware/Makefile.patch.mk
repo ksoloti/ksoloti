@@ -34,6 +34,9 @@ CCFLAGS = \
     -fno-use-cxa-atexit \
     -fpermissive \
     -ffast-math \
+    -fno-unsafe-math-optimizations \
+    -fno-signed-zeros \
+    -ffp-contract=off \
     \
 
 
