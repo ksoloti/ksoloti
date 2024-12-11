@@ -185,7 +185,8 @@ public class Net extends JComponent {
     final QuadCurve2D.Float curve = new QuadCurve2D.Float();
 
     float CtrlPointY(float x1, float y1, float x2, float y2) {
-        return Math.max(y1, y2) + Math.abs(y2 - y1) * 0.1f + Math.abs(x2 - x1) * 0.1f;
+        float looseness = 0.05f;
+        return Math.max(y1, y2) + Math.abs(y2 - y1) * looseness + Math.abs(x2 - x1) * looseness;
     }
 
     void DrawWire(Graphics2D g2, float x1, float y1, float x2, float y2) {
