@@ -1027,7 +1027,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         {
             String d3 = GenerateCodeMidiHandler("");
             if (!d3.isEmpty()) {
-                s += MidiHandlerFunctionHeader;
+                s += I+I + MidiHandlerFunctionHeader;
                 s += d3;
                 s += I+I + "}\n";
             }
@@ -1040,8 +1040,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public String GenerateCodeMidiHandler(String vprefix) {
         String s = "";
         if (getType().sMidiCode != null) {
-            s += "\n" + I+I + "/* Object Midi Handler */\n";
-            s += getType().sMidiCode;
+            s += "\n" + I+I+I + "/* Object Midi Handler */\n";
+            s += I+I+I + getType().sMidiCode.replace("\n", "\n\t\t\t");
         }
         for (ParameterInstance i : parameterInstances) {
             if (!i.isFrozen()) {
@@ -1055,8 +1055,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         s = s.replace("attr_legal_name", getLegalName());
 
         if (s.length() > 0) {
-            return "{\n" + s + "}\n";
-        } else {
+            return "\n" + s + "\n";
+        }
+        else {
             return "";
         }
     }
