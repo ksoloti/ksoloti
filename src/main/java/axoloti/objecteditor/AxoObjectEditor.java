@@ -379,7 +379,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             }
         }
 
-        ((DefaultListModel) jListIncludes.getModel()).removeAllElements();
+        ((DefaultListModel) jListDepends.getModel()).removeAllElements();
         if (editObj.depends != null) {
             for (String i : editObj.depends) {
                 ((DefaultListModel) jListDepends.getModel()).addElement(i);
