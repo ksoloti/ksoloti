@@ -502,7 +502,8 @@ public class AxoObject extends AxoObjectAbstract {
         //TODO: search in common paths
         if ((includes == null) || includes.isEmpty()) {
             return null;
-        } else if (sPath != null) {
+        }
+        else if (sPath != null) {
             HashSet<String> r = new HashSet<String>();
             for (String s : includes) {
                 if (s.startsWith("./")) {
@@ -511,22 +512,28 @@ public class AxoObject extends AxoObjectAbstract {
                     String s2 = f.getAbsolutePath();
                     s2 = s2.replace('\\', '/');
                     r.add(s2);
-                } else if (s.startsWith("../")) {
+                }
+                else if (s.startsWith("../")) {
                     String strippedPath = sPath.substring(0, sPath.lastIndexOf(File.separatorChar));
                     File f = new File(strippedPath + "/" + s);
                     String s2 = f.getAbsolutePath();
                     s2 = s2.replace('\\', '/');
                     r.add(s2);
-                } else if (s.startsWith("chibios/")) {
+                }
+                else if (s.startsWith("chibios/")) {
                     r.add((new File(System.getProperty(FIRMWARE_DIR))).getAbsolutePath() + "/../chibios" + s.substring(7));
-                } else {
+                }
+                else {
                     r.add(s);
                 }
             }
+
             return r;
-        } else if (includes.isEmpty()) {
+        }
+        else if (includes.isEmpty()) {
             return null;
-        } else {
+        }
+        else {
             return includes;
         }
     }
