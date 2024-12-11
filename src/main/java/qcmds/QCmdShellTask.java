@@ -31,6 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import axoloti.Axoloti;
+import axoloti.Version;
 
 /**
  *
@@ -70,7 +71,7 @@ public abstract class QCmdShellTask implements QCmd {
                         LOGGER.log(Level.SEVERE, "{0}\n>>> A required reference text field in the patch has been left empty. (table, delay read/write, filename, ...) <<<", line);
                     }
                     else if (line.contains("one or more PCH files were found, but they were invalid")) {
-                        LOGGER.log(Level.SEVERE, "{0}\n>>> Go to " + Axoloti.LIBRARIES_DIR + File.separator + "build and manually delete all files inside it. <<<", line);
+                        LOGGER.log(Level.SEVERE, "{0}\n>>> Outdated PCH (precompiled header) file. Go to\n" + Axoloti.LIBRARIES_DIR + File.separator + "build\nand/or\n" + Axoloti.LIBRARIES_DIR + File.separator + Version.AXOLOTI_SHORT_VERSION + File.separator + "build\n and manually delete all files inside the folder(s). <<<", line);
                     }
                     else if (line.contains("warning:")) {
                         LOGGER.log(Level.WARNING, "{0}", line);
