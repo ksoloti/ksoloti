@@ -498,36 +498,80 @@ public class AxoObject extends AxoObjectAbstract {
     // }
 
     @Override
-    public HashSet<String> GetIncludes() {
-        //TODO: search in common paths
+    public HashSet<String> GetIncludes(String patchFilePath) {
+        /* Optional String argument makes is possible to
+         * search includes relative to containing patch file.
+         * Can be passed null.
+         */
+
         if ((includes == null) || includes.isEmpty()) {
             return null;
         }
-        else if (sPath != null) {
-            HashSet<String> r = new HashSet<String>();
-            for (String s : includes) {
-                if (s.startsWith("./")) {
-                    String strippedPath = sPath.substring(0, sPath.lastIndexOf(File.separatorChar));
-                    File f = new File(strippedPath + "/" + s.substring(2));
-                    String s2 = f.getAbsolutePath();
-                    s2 = s2.replace('\\', '/');
-                    r.add(s2);
-                }
-                else if (s.startsWith("../")) {
-                    String strippedPath = sPath.substring(0, sPath.lastIndexOf(File.separatorChar));
-                    File f = new File(strippedPath + "/" + s);
-                    String s2 = f.getAbsolutePath();
-                    s2 = s2.replace('\\', '/');
-                    r.add(s2);
-                }
-                else if (s.startsWith("chibios/")) {
-                    r.add((new File(System.getProperty(FIRMWARE_DIR))).getAbsolutePath() + "/../chibios" + s.substring(7));
-                }
-                else {
-                    r.add(s);
+
+        HashSet<String> r = new HashSet<String>();
+        if (sPath != null) {
+            if (sPath.lastIndexOf(File.separatorChar) >= 0) {
+                for (String s : includes) {
+                    if (s.startsWith("./")) {
+                        String strippedPath = sPath.substring(0, sPath.lastIndexOf(File.separatorChar));
+                        File f = new File(strippedPath + "/" + s.substring(2));
+                        if (f.isFile() && f.canRead()) {
+                            String s2 = f.getAbsolutePath();
+                            s2 = s2.replace('\\', '/');
+                            r.add(s2);
+                        }
+                    }
+                    else if (s.startsWith("../")) {
+                        String strippedPath = sPath.substring(0, sPath.lastIndexOf(File.separatorChar));
+                        File f = new File(strippedPath + "/" + s);
+                            String s2 = f.getAbsolutePath();
+                            s2 = s2.replace('\\', '/');
+                            r.add(s2);
+                    }
+                    else if (s.startsWith("chibios/")) {
+                        String s2 = (new File(System.getProperty(FIRMWARE_DIR))).getAbsolutePath() + "/../chibios" + s.substring(7);
+                        s2 = s2.replace('\\', '/');
+                        r.add(s2);
+                    }
+                    else {
+                        r.add(s);
+                    }
                 }
             }
+            else if (patchFilePath != null) {
+                /* try to resolve via patch directory */
+                if (patchFilePath.lastIndexOf(File.separatorChar) >= 0) {
+                    for (String s : includes) {
+                        if (s.startsWith("./")) {
+                            String strippedPath = patchFilePath.substring(0, patchFilePath.lastIndexOf(File.separatorChar));
+                            File f = new File(strippedPath + "/" + s.substring(2));
+                                String s2 = f.getAbsolutePath();
+                                s2 = s2.replace('\\', '/');
+                                r.add(s2);
+                        }
+                        else if (s.startsWith("../")) {
+                            String strippedPath = patchFilePath.substring(0, patchFilePath.lastIndexOf(File.separatorChar));
+                            File f = new File(strippedPath + "/" + s);
+                            if (f.isFile() && f.canRead()) {
+                                String s2 = f.getAbsolutePath();
+                                s2 = s2.replace('\\', '/');
+                                r.add(s2);
+                            }
+                        }
+                        else if (s.startsWith("chibios/")) {
+                            String s2 = (new File(System.getProperty(FIRMWARE_DIR))).getAbsolutePath() + "/../chibios" + s.substring(7);
+                            s2 = s2.replace('\\', '/');
+                            r.add(s2);
+                        }
+                        else {
+                            r.add(s);
+                        }
+                    }
+                }
+            }
+        }
 
+        if (r != null && !r.isEmpty()) {
             return r;
         }
         else if (includes.isEmpty()) {

@@ -464,10 +464,10 @@ public class AxoObjects {
         if (o.sLicense == null) {
             o.sLicense = "GPL";
         }
-        if (o.GetIncludes() == null) {
+        if (o.GetIncludes(null) == null) {
             o.SetIncludes(null);
         }
-        if ((o.GetIncludes() != null) && o.GetIncludes().isEmpty()) {
+        if ((o.GetIncludes(null) != null) && o.GetIncludes(null).isEmpty()) {
             o.SetIncludes(null);
         }
     }

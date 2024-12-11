@@ -1143,13 +1143,13 @@ public class Patch {
     public HashSet<String> getIncludes() {
         HashSet<String> includes = new HashSet<String>();
         if (controllerInstance != null) {
-            Set<String> i = controllerInstance.getType().GetIncludes();
+            Set<String> i = controllerInstance.getType().GetIncludes(patchframe.getPatch().getFileNamePath());
             if (i != null) {
                 includes.addAll(i);
             }
         }
         for (AxoObjectInstanceAbstract o : objectInstances) {
-            Set<String> i = o.getType().GetIncludes();
+            Set<String> i = o.getType().GetIncludes(patchframe.getPatch().getFileNamePath());
             if (i != null) {
                 includes.addAll(i);
             }

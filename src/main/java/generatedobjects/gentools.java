@@ -210,10 +210,10 @@ public class gentools {
         if (o.sLicense == null) {
             o.sLicense = "BSD";
         }
-        if (o.GetIncludes() == null) {
+        if (o.GetIncludes(null) == null) {
             o.SetIncludes(null);
         }
-        if ((o.GetIncludes() != null) && o.GetIncludes().isEmpty()) {
+        if ((o.GetIncludes(null) != null) && o.GetIncludes(null).isEmpty()) {
             o.SetIncludes(null);
         }
         o.id = catname + "/" + relativeID; // uuid based on full name
