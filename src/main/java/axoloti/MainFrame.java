@@ -1151,15 +1151,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void jMenuItemFlashUserActionPerformed(java.awt.event.ActionEvent evt) {
-        String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
-        String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
+        String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
+        String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
         if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-            fname += "/flasher/flasher_build/ksoloti_flasher.bin";
-            pname += "/build/ksoloti";
+            fname += File.separator +  "ksoloti_flasher.bin";
+            pname += File.separator + "ksoloti";
         }
         else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-            fname += "/flasher/flasher_build/axoloti_flasher.bin";
-            pname += "/build/axoloti";
+            fname += File.separator + "axoloti_flasher.bin";
+            pname += File.separator + "axoloti";
         }
         if (prefs.getFirmwareMode().contains("SPILink")) {
             pname += "_spilink";
@@ -1178,15 +1178,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void jMenuItemFlashDefaultActionPerformed(java.awt.event.ActionEvent evt) {
 
-        String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
-        String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
+        String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
+        String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
         if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-            fname += "/flasher/flasher_build/ksoloti_flasher.bin";
-            pname += "/build/ksoloti";
+            fname += File.separator +  "ksoloti_flasher.bin";
+            pname += File.separator + "ksoloti";
         }
         else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-            fname += "/flasher/flasher_build/axoloti_flasher.bin";
-            pname += "/build/axoloti";
+            fname += File.separator + "axoloti_flasher.bin";
+            pname += File.separator + "axoloti";
         }
         if (prefs.getFirmwareMode().contains("SPILink")) {
             pname += "_spilink";
@@ -1196,12 +1196,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void jMenuItemMountActionPerformed(java.awt.event.ActionEvent evt) {
-        String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
+        String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "mounter" + File.separator + "mounter_build";
         if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-            fname += "/mounter/mounter_build/ksoloti_mounter.bin";
+            fname += File.separator + "ksoloti_mounter.bin";
         }
         else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-            fname += "/mounter/mounter_build/axoloti_mounter.bin";
+            fname += File.separator + "axoloti_mounter.bin";
         }
         File f = new File(fname);
         if (f.canRead()) {
@@ -1467,15 +1467,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 "Firmware Update",
                 JOptionPane.YES_NO_OPTION);
         if (s == 0) {
-            String fname = System.getProperty(Axoloti.FIRMWARE_DIR);
-            String pname = System.getProperty(Axoloti.FIRMWARE_DIR);
+            String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
+            String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
             if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-                fname += "/flasher/flasher_build/ksoloti_flasher.bin";
-                pname += "/build/ksoloti";
+                fname += File.separator + "ksoloti_flasher.bin";
+                pname += File.separator + "ksoloti";
             }
             else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                fname += "/flasher/flasher_build/axoloti_flasher.bin";
-                pname += "/build/axoloti";
+                fname += File.separator + "axoloti_flasher.bin";
+                pname += File.separator + "axoloti";
             }
             if (prefs.getFirmwareMode().contains("SPILink")) {
                 pname += "_spilink";

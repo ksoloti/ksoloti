@@ -2590,8 +2590,8 @@ public class Patch {
         String c = GenerateCode3();
 
         try {
-            String buildDir = System.getProperty(Axoloti.LIBRARIES_DIR) + "/build";
-            FileOutputStream f = new FileOutputStream(buildDir + "/xpatch.cpp");
+            String buildDir = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build";
+            FileOutputStream f = new FileOutputStream(buildDir + File.separator + "xpatch.cpp");
             f.write(c.getBytes());
             f.close();
         }
@@ -2854,9 +2854,9 @@ public class Patch {
     }
 
     public File getBinFile() {
-        String buildDir = System.getProperty(Axoloti.LIBRARIES_DIR) + "/build";;
+        String buildDir = System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator + "build";
 
-        return new File(buildDir + "/xpatch.bin");
+        return new File(buildDir + File.separator + "xpatch.bin");
 //            LOGGER.log(Level.INFO, "bin path: {0}", f.getAbsolutePath());        
     }
 

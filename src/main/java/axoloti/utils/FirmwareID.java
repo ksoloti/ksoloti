@@ -39,13 +39,13 @@ public class FirmwareID {
 
     static public String getFirmwareID() {
         try {
-            String boarddef = System.getProperty(Axoloti.FIRMWARE_DIR) + "/build/";
+            String boarddef = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
 
             if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-                boarddef += "ksoloti";
+                boarddef += File.separator + "ksoloti";
             }
             else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                boarddef += "axoloti";
+                boarddef += File.separator + "axoloti";
             }
             if (prefs.getFirmwareMode().contains("SPILink")) {
                 boarddef += "_spilink";

@@ -64,12 +64,12 @@ public class QCmdUploadFWSDRam implements QCmdSerialTask {
         connection.ClearSync();
         try {
             if (f == null) {
-                String buildDir = System.getProperty(Axoloti.FIRMWARE_DIR);
+                String buildDir = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
                 if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-                    buildDir += "/build/ksoloti";
+                    buildDir += File.separator + "ksoloti";
                 } 
                 else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                    buildDir += "/build/axoloti";
+                    buildDir += File.separator + "axoloti";
                 }
                 if (prefs.getFirmwareMode().contains("SPILink")) {
                     buildDir += "_spilink";
