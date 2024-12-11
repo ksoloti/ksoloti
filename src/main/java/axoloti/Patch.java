@@ -1180,7 +1180,7 @@ public class Patch {
                 inc += "#include \"" + s + "\"\n";
             }
         }
-        return inc;
+        return inc + "\n";
     }
 
     /* the c++ code generator */
