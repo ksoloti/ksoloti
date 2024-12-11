@@ -229,22 +229,22 @@ public class Axoloti {
             switch (os) {
                 case WIN:
                     // not sure which versions of Windows this is valid for, good for 10!
-                    osHomeDir = System.getenv("HOMEDRIVE") + System.getenv("HOMEPATH") + File.separator;
+                    osHomeDir = System.getenv("HOMEDRIVE") + System.getenv("HOMEPATH");
                     break;
                 case MAC:
-                    osHomeDir = System.getenv("HOME") + "/";
+                    osHomeDir = System.getenv("HOME");
                     break;
                 case LINUX:
                 default:
-                    osHomeDir = System.getenv("HOME") + "/";
+                    osHomeDir = System.getenv("HOME");
                     break;
             }
         }
         else {
-            osHomeDir = System.getenv("HOME") + "/";
+            osHomeDir = System.getenv("HOME");
         }
 
-        defaultLibraries = osHomeDir + "ksoloti";
+        defaultLibraries = osHomeDir + File.separator + "ksoloti" + File.separator + Version.AXOLOTI_SHORT_VERSION;
 
         BuildEnv(LIBRARIES_DIR, defaultLibraries);
         File libdir = new File(System.getProperty(LIBRARIES_DIR));

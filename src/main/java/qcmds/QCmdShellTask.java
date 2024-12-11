@@ -61,17 +61,17 @@ public abstract class QCmdShellTask implements QCmd {
             try {
                 line = br.readLine();
                 while (line != null) {
-                    if (line.contains("error:") || line.contains("#error")) {
-                        LOGGER.log(Level.SEVERE, "{0}",line);
-                    }
-                    else if (line.contains("overflowed by")) {
+                    if (line.contains("overflowed by")) {
                         LOGGER.log(Level.SEVERE, "{0}\n>>> Patch is too complex to fit in internal RAM. <<<", line);
                     }
                     else if (line.contains("has no member named \'objectinstance__i\'")) {
                         LOGGER.log(Level.SEVERE, "{0}\n>>> A required reference text field in the patch has been left empty. (table, delay read/write, filename, ...) <<<", line);
                     }
                     else if (line.contains("one or more PCH files were found, but they were invalid")) {
-                        LOGGER.log(Level.SEVERE, "{0}\n>>> Outdated PCH (precompiled header) file. Go to\n" + Axoloti.LIBRARIES_DIR + File.separator + "build\nand/or\n" + Axoloti.LIBRARIES_DIR + File.separator + Version.AXOLOTI_SHORT_VERSION + File.separator + "build\n and manually delete all files inside the folder(s). <<<", line);
+                        LOGGER.log(Level.SEVERE, "{0}\n>>> Outdated PCH (precompiled header) file. Find the file \"xpatch.h.gch\" via the path shown above and delete it manually. <<<", line);
+                    }
+                    else if (line.contains("error:") || line.contains("#error")) {
+                        LOGGER.log(Level.SEVERE, "{0}",line);
                     }
                     else if (line.contains("warning:")) {
                         LOGGER.log(Level.WARNING, "{0}", line);
@@ -131,6 +131,7 @@ public abstract class QCmdShellTask implements QCmd {
     }
 
     public File GetWorkingDir() {
+        //TODO: should this be LibrariesDir()?
         return new File(HomeDir()+"/build");
     }
 
