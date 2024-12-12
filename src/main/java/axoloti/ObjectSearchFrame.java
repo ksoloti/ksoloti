@@ -967,11 +967,12 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
             Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             FontMetrics metrics = g2.getFontMetrics(g2.getFont());
             Rectangle2D bounds = metrics.getStringBounds(str, g2);
             int xc = (w / 2) + x;
             int yc = (h / 2) + y;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.drawString(str, xc - (int) bounds.getCenterX(), yc - (int) bounds.getCenterY());
             // g.fillOval(xm, ym, 1, 1);
         }
