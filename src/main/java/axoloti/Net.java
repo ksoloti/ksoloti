@@ -179,9 +179,9 @@ public class Net extends JComponent {
 
     final static float[] dash = {3.f, 6.f};
     final static Stroke strokeValidSelected = new BasicStroke(4.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    final static Stroke strokeValidDeselected = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    final static Stroke strokeValidDeselected = new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     final static Stroke strokeBrokenSelected = new BasicStroke(4.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
-    final static Stroke strokeBrokenDeselected = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
+    final static Stroke strokeBrokenDeselected = new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
     final QuadCurve2D.Float curve = new QuadCurve2D.Float();
 
     float CtrlPointY(float x1, float y1, float x2, float y2) {
@@ -224,7 +224,7 @@ public class Net extends JComponent {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        float shadowOffset = 0.5f;
+        float shadowOffset = 0.9f;
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -269,8 +269,32 @@ public class Net extends JComponent {
             Point p1 = i.getJackLocInCanvas();
 
             Point to = SwingUtilities.convertPoint(getPatchGui().Layers, p1, this);
-            g2.setColor(Theme.getCurrentTheme().Cable_Shadow);
-            DrawWire(g2, from.x + shadowOffset, from.y + shadowOffset, to.x + shadowOffset, to.y + shadowOffset);
+
+            // g2.setColor(Theme.getCurrentTheme().Cable_Shadow);
+            g2.setColor(c.darker().darker()); /* derive wire shadow color from actual color */
+            if (from.x > to.x) {
+                /* Wire goes right-to-left */
+                if (from.y > to.y) {
+                    /* Wire goes upwards, i.e. starts lower than it ends */
+                    DrawWire(g2, from.x - shadowOffset, from.y + shadowOffset, to.x - shadowOffset, to.y + shadowOffset);
+                }
+                else {
+                    /* Wire goes downwards, i.e. starts higher than it ends */
+                    DrawWire(g2, from.x + shadowOffset, from.y + shadowOffset, to.x + shadowOffset, to.y + shadowOffset);
+                }
+            }
+            else {
+                /* Wire goes left-to-right */
+                if (from.y > to.y) {
+                    /* Wire goes upwards, i.e. starts lower than it ends */
+                    DrawWire(g2, from.x + shadowOffset, from.y + shadowOffset, to.x + shadowOffset, to.y + shadowOffset);
+                }
+                else {
+                    /* Wire goes downwards, i.e. starts higher than it ends */
+                    DrawWire(g2, from.x - shadowOffset, from.y + shadowOffset, to.x - shadowOffset, to.y + shadowOffset);
+                }
+            }
+
             g2.setColor(c);
             DrawWire(g2, from.x, from.y, to.x, to.y);
         }
@@ -278,8 +302,32 @@ public class Net extends JComponent {
             Point p1 = i.getJackLocInCanvas();
 
             Point to = SwingUtilities.convertPoint(getPatchGui().Layers, p1, this);
-            g2.setColor(Theme.getCurrentTheme().Cable_Shadow);
-            DrawWire(g2, from.x + shadowOffset, from.y + shadowOffset, to.x + shadowOffset, to.y + shadowOffset);
+
+            // g2.setColor(Theme.getCurrentTheme().Cable_Shadow);
+            g2.setColor(c.darker().darker()); /* derive wire shadow color from actual color */
+            if (from.x > to.x) {
+                /* Wire goes right-to-left */
+                if (from.y > to.y) {
+                    /* Wire goes upwards, i.e. starts lower than it ends */
+                    DrawWire(g2, from.x - shadowOffset, from.y + shadowOffset, to.x - shadowOffset, to.y + shadowOffset);
+                }
+                else {
+                    /* Wire goes downwards, i.e. starts higher than it ends */
+                    DrawWire(g2, from.x + shadowOffset, from.y + shadowOffset, to.x + shadowOffset, to.y + shadowOffset);
+                }
+            }
+            else {
+                /* Wire goes left-to-right */
+                if (from.y > to.y) {
+                    /* Wire goes upwards, i.e. starts lower than it ends */
+                    DrawWire(g2, from.x + shadowOffset, from.y + shadowOffset, to.x + shadowOffset, to.y + shadowOffset);
+                }
+                else {
+                    /* Wire goes downwards, i.e. starts higher than it ends */
+                    DrawWire(g2, from.x - shadowOffset, from.y + shadowOffset, to.x - shadowOffset, to.y + shadowOffset);
+                }
+            }
+
             g2.setColor(c);
             DrawWire(g2, from.x, from.y, to.x, to.y);
 
