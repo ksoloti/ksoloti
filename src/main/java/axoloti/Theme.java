@@ -48,8 +48,9 @@ public class Theme {
     @Element
     public String Theme_Name = "Default";
 
-    int bgRGB = UIManager.getColor("Viewport.background").getRGB();
-    boolean isBgDark = (((bgRGB & 0xFF0000) >> 16) + ((bgRGB & 0x00FF00) >> 8) + ((bgRGB & 0x0000FF))) / 3 < 0x80;
+    private static int bgRGB = UIManager.getColor("Viewport.background").getRGB();
+    private static boolean isBgDark = (((bgRGB & 0xFF0000) >> 16) + ((bgRGB & 0x00FF00) >> 8) + ((bgRGB & 0x0000FF))) / 3 < 0x80;
+    private static int cable_opacity = 0xFF;
 
     /* UI */
     @Element
@@ -87,12 +88,12 @@ public class Theme {
     public Color Cable_Shadow_Highlighted = Color.DARK_GRAY;
 
     @Element
-    public Color Cable_Bool32 = new Color(0xEF, 0xEF, 0x50);
+    public Color Cable_Bool32 = new Color(0xEF, 0xEF, 0x50, cable_opacity);
     @Element
-    public Color Cable_Bool32_Highlighted = Cable_Bool32.brighter();
+    public Color Cable_Bool32_Highlighted = new Color(0xEF, 0xEF, 0x50).brighter();
 
     @Element
-    public Color Cable_CharPointer32 = Color.MAGENTA;
+    public Color Cable_CharPointer32 = new Color(0xFF, 0x00, 0xFF, cable_opacity);
     @Element
     public Color Cable_CharPointer32_Highlighted = new Color(0xFF, 0x90, 0xFF);
 
@@ -102,24 +103,24 @@ public class Theme {
     public Color Cable_Zombie_Highlighted = new Color(0x9F, 0x00, 0x00);
 
     @Element
-    public Color Cable_Frac32 = new Color(0x30, 0x50, 0xFF);
+    public Color Cable_Frac32 = new Color(0x30, 0x50, 0xFF, cable_opacity);
     @Element
-    public Color Cable_Frac32_Highlighted = Cable_Frac32.brighter().brighter();
+    public Color Cable_Frac32_Highlighted = new Color(0x30, 0x50, 0xFF).brighter().brighter();
 
     @Element
-    public Color Cable_Frac32Buffer = new Color(0xFF, 0x30, 0x50);
+    public Color Cable_Frac32Buffer = new Color(0xFF, 0x30, 0x50, cable_opacity);
     @Element
     public Color Cable_Frac32Buffer_Highlighted = new Color(0xFF, 0x70, 0x90);
 
     @Element
-    public Color Cable_Int32 = new Color(0x30, 0xFF, 0x50);
+    public Color Cable_Int32 = new Color(0x30, 0xFF, 0x50, cable_opacity);
     @Element
-    public Color Cable_Int32_Highlighted = Cable_Int32.brighter().brighter();
+    public Color Cable_Int32_Highlighted = new Color(0x30, 0xFF, 0x50).brighter().brighter();
 
     @Element
-    public Color Cable_Int32Pointer = Color.PINK;
+    public Color Cable_Int32Pointer = new Color(0xFF, 0xAF, 0xAF, cable_opacity);
     @Element
-    public Color Cable_Int32Pointer_Highlighted = Cable_Int32Pointer.brighter();
+    public Color Cable_Int32Pointer_Highlighted = new Color(0xFF, 0xAF, 0xAF).brighter();
 
     @Element
     public Color Cable_Int8Array = Cable_Int32Pointer;
