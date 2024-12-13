@@ -38,6 +38,7 @@ public class JackInputComponent extends JComponent {
 
     private static final int sz = 10;
     private static final int margin = 2;
+    private static final int doubleMargin = margin * 2;
     private static final Dimension dim = new Dimension(sz, sz);
     final InletInstance inlet;
 
@@ -60,12 +61,12 @@ public class JackInputComponent extends JComponent {
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         g2.setStroke(stroke);
         g2.setPaint(Color.BLACK);
-        g2.drawOval(margin + 1, margin + 1, sz - margin - margin, sz - margin - margin);
+        g2.drawOval(margin + 1, margin + 1, sz - doubleMargin, sz - doubleMargin);
         g2.setPaint(getForeground());
         if (inlet.isConnected()) {
-            g2.fillOval(margin, margin, sz - margin - margin +1 , sz - margin - margin + 1);
+            g2.fillOval(margin, margin, sz - doubleMargin +1 , sz - doubleMargin + 1);
         }
-        g2.drawOval(margin, margin, sz - margin - margin, sz - margin - margin);
+        g2.drawOval(margin, margin, sz - doubleMargin, sz - doubleMargin);
     }
     
     public InletInstance getInlet() {
