@@ -37,7 +37,6 @@ import static axoloti.MainFrame.prefs;
 
 import components.ScrollPaneComponent;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.ByteArrayOutputStream;

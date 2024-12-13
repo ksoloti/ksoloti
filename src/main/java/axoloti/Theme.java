@@ -3,7 +3,6 @@ package axoloti;
 import static axoloti.FileUtils.axtFileFilter;
 import static axoloti.MainFrame.fc;
 import static axoloti.MainFrame.prefs;
-import axoloti.object.AxoObjects;
 import axoloti.utils.ColorConverter;
 import java.awt.Color;
 import java.io.File;
