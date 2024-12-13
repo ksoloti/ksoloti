@@ -451,7 +451,7 @@ public class Preferences {
     }
 
     public void SavePrefs() {
-        Logger.getLogger(Preferences.class .getName()).log(Level.INFO, "Saving preferences...");
+        LOGGER.log(Level.INFO, "Saving preferences...");
         if (restartRequired) {
             LOGGER.log(Level.SEVERE, ">>> RESTART REQUIRED <<<");
         }
