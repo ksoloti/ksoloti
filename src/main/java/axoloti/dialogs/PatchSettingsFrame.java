@@ -249,6 +249,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         jLabelLicense.setText("License");
 
         jCheckBoxSaturate.setText("Saturate Audio Output");
+        jCheckBoxSaturate.setToolTipText("This is not saturation in the common sense of \"soft clip\" or \"overdrive\",\nbut more of a safety precaution in DSP so that values don't accidentally flip signs/get inverted when they shouldn't.\nNo idea in what situation anyone would want or need to disable this option.\nIf you happen to know why, please enlighten us!\nThis option is being kept here for backwards compatibility. When in doubt, just leave it on.");
         jCheckBoxSaturate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxSaturateActionPerformed(evt);
