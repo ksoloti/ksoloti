@@ -363,19 +363,39 @@ public class PatchGUI extends Patch {
                     ke.consume();
                 }
                 else if (ke.getKeyCode() == KeyEvent.VK_UP) {
-                    MoveSelectedAxoObjInstances(Direction.UP, xsteps, ysteps);
+                    if (ke.isAltDown()) {
+                        //TODO: Alt+arrows should scroll the patch canvas
+                    }
+                    else {
+                        MoveSelectedAxoObjInstances(Direction.UP, xsteps, ysteps);
+                    }
                     ke.consume();
                 }
                 else if (ke.getKeyCode() == KeyEvent.VK_DOWN) {
-                    MoveSelectedAxoObjInstances(Direction.DOWN, xsteps, ysteps);
+                    if (ke.isAltDown()) {
+                        //TODO: Alt+arrows should scroll the patch canvas
+                    }
+                    else {
+                        MoveSelectedAxoObjInstances(Direction.DOWN, xsteps, ysteps);
+                    }
                     ke.consume();
                 }
                 else if (ke.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    MoveSelectedAxoObjInstances(Direction.RIGHT, xsteps, ysteps);
+                    if (ke.isAltDown()) {
+                        //TODO: Alt+arrows should scroll the patch canvas
+                    }
+                    else {
+                        MoveSelectedAxoObjInstances(Direction.RIGHT, xsteps, ysteps);
+                    }
                     ke.consume();
                 }
                 else if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
-                    MoveSelectedAxoObjInstances(Direction.LEFT, xsteps, ysteps);
+                    if (ke.isAltDown()) {
+                        //TODO: Alt+arrows should scroll the patch canvas
+                    }
+                    else {
+                        MoveSelectedAxoObjInstances(Direction.LEFT, xsteps, ysteps);
+                    }
                     ke.consume();
                 }
                 else if ((ke.getKeyCode() == KeyEvent.VK_C) && ke.isShiftDown() && !KeyUtils.isControlOrCommandDown(ke)) {
