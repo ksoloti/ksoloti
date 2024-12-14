@@ -90,9 +90,9 @@ public class Theme {
     public Color Cable_Shadow_Highlighted = Color.DARK_GRAY;
 
     @Element
-    public Color Cable_Bool32 = new Color(0xEF, 0xEF, 0x50, cable_opacity);
+    public Color Cable_Bool32 = new Color(0xF7, 0xF7, 0x50, cable_opacity);
     @Element
-    public Color Cable_Bool32_Highlighted = new Color(0xEF, 0xEF, 0x50).brighter();
+    public Color Cable_Bool32_Highlighted = new Color(0xF7, 0xF7, 0x50).brighter();
 
     @Element
     public Color Cable_CharPointer32 = new Color(0xFF, 0x00, 0xFF, cable_opacity);
