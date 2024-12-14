@@ -811,7 +811,7 @@ public class Patch {
             while (cont) {
                 cont = false;
                 for (AxoObjectInstanceAbstract o : objectInstances) {
-                    if (o.IsSelected()) {
+                    if (o.isSelected()) {
                         this.delete(o);
                         cont = true;
                         break;

@@ -97,7 +97,7 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
                 if (patch != null) {
                     if (me.getClickCount() == 1) {
                         if (me.isShiftDown()) {
-                            SetSelected(!GetSelected());
+                            SetSelected(!isSelected());
                         } else if (Selected == false) {
                             ((PatchGUI) patch).SelectNone();
                             SetSelected(true);

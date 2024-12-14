@@ -253,7 +253,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         if (patch != null) {
             // if (me.getClickCount() == 1) {
                 if (me.isShiftDown()) {
-                    SetSelected(!GetSelected());
+                    SetSelected(!isSelected());
                     me.consume();
                 } else if (Selected == false) {
                     ((PatchGUI) patch).SelectNone();
@@ -331,9 +331,9 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
                 moveToDraggedLayer(this);
                 draggingObjects.add(this);
                 dragLocation = getLocation();
-                if (IsSelected()) {
+                if (isSelected()) {
                     for (AxoObjectInstanceAbstract o : patch.objectInstances) {
-                        if (o.IsSelected()) {
+                        if (o.isSelected()) {
                             moveToDraggedLayer(o);
                             draggingObjects.add(o);
                             o.dragLocation = o.getLocation();
@@ -538,10 +538,6 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     public void refreshIndex() {
     }
 
-    public boolean IsSelected() {
-        return Selected;
-    }
-
     static Border borderSelected = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Selected);
     static Border borderUnselected = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Unselected);
     static Border borderUnselectedLocked = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Unselected_Locked);
@@ -559,7 +555,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         this.Selected = Selected;
     }
 
-    public boolean GetSelected() {
+    public boolean isSelected() {
         return Selected;
     }
 

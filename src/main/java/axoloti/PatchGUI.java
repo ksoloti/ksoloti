@@ -566,7 +566,7 @@ public class PatchGUI extends Patch {
                     for (AxoObjectInstanceAbstract o : objectInstances) {
                         if (ev.isShiftDown()) {
                             /* Add objects within rectangle to current selection  */
-                            if (o.getBounds().intersects(r) && !o.GetSelected()) {
+                            if (o.getBounds().intersects(r) && !o.isSelected()) {
                                 o.SetSelected(true);
                             }
                         }
@@ -827,7 +827,7 @@ public class PatchGUI extends Patch {
     Patch GetSelectedObjects() {
         Patch p = new Patch();
         for (AxoObjectInstanceAbstract o : objectInstances) {
-            if (o.IsSelected()) {
+            if (o.isSelected()) {
                 p.objectInstances.add(o);
             }
         }
@@ -835,12 +835,12 @@ public class PatchGUI extends Patch {
         for (Net n : nets) {
             int sel = 0;
             for (InletInstance i : n.dest) {
-                if (i.GetObjectInstance().IsSelected()) {
+                if (i.GetObjectInstance().isSelected()) {
                     sel++;
                 }
             }
             for (OutletInstance i : n.source) {
-                if (i.GetObjectInstance().IsSelected()) {
+                if (i.GetObjectInstance().isSelected()) {
                     sel++;
                 }
             }
@@ -878,7 +878,7 @@ public class PatchGUI extends Patch {
             }
             boolean isUpdate = false;
             for (AxoObjectInstanceAbstract o : objectInstances) {
-                if (o.IsSelected()) {
+                if (o.isSelected()) {
                     isUpdate = true;
                     Point p = o.getLocation();
                     p.x = p.x + xstep;
