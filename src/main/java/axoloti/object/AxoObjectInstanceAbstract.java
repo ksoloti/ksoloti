@@ -251,7 +251,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     @Override
     public void mouseClicked(MouseEvent me) {
         if (patch != null) {
-            if (me.getClickCount() == 1) {
+            // if (me.getClickCount() == 1) {
                 if (me.isShiftDown()) {
                     SetSelected(!GetSelected());
                     me.consume();
@@ -260,11 +260,11 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
                     SetSelected(true);
                     me.consume();
                 }
-            }
-            if (me.getClickCount() == 2) {
-                ((PatchGUI) patch).ShowClassSelector(AxoObjectInstanceAbstract.this.getLocation(), AxoObjectInstanceAbstract.this, null, true);
-                me.consume();
-            }
+            // }
+            // if (me.getClickCount() == 2) {
+                // ((PatchGUI) patch).ShowClassSelector(AxoObjectInstanceAbstract.this.getLocation(), AxoObjectInstanceAbstract.this, null, true);
+                // me.consume();
+            // }
         }
     }
 
