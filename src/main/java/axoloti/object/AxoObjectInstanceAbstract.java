@@ -546,9 +546,11 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         if (this.Selected != Selected) {
             if (Selected) {
                 setBorder(borderSelected);
+                Titlebar.setBackground(Theme.getCurrentTheme().Object_Border_Selected);
             } else {
                 if (Locked) setBorder(borderUnselectedLocked);
                 else setBorder(borderUnselected);
+                Titlebar.setBackground(Theme.getCurrentTheme().Object_TitleBar_Background);
             }
             repaint();
         }
