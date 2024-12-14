@@ -250,7 +250,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
 
     @Override
     public void mouseClicked(MouseEvent me) {
-        if (patch != null) {
+        if (patch != null && me.getButton() == MouseEvent.BUTTON1) {
             // if (me.getClickCount() == 1) {
                 if (me.isShiftDown()) {
                     SetSelected(!isSelected());

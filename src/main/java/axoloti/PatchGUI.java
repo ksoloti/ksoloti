@@ -452,13 +452,16 @@ public class PatchGUI extends Patch {
             @Override
             public void mouseClicked(MouseEvent me) {
                 if (me.getButton() == MouseEvent.BUTTON1) {
-                    if (me.getClickCount() == 2 && !me.isShiftDown() && !KeyUtils.isControlOrCommandDown(me)) {
-                        ShowClassSelector(me.getPoint(), null, null, true);
-                    }
-                    else {
-                        if ((osf != null) && osf.isVisible()) {
-                            osf.Accept();
+                    if (!me.isShiftDown() && !KeyUtils.isControlOrCommandDown(me)) {
+                        if (me.getClickCount() == 2) {
+                            ShowClassSelector(me.getPoint(), null, null, true);
                         }
+                        else {
+                            if ((osf != null) && osf.isVisible()) {
+                                osf.Accept();
+                            }
+                        }
+                        
                         Layers.requestFocusInWindow();
                     }
                     me.consume();
