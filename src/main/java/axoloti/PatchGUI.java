@@ -180,7 +180,9 @@ public class PatchGUI extends Patch {
         /* Z */ null,
     };
 
-    final static int capitalLetterOffset = 26;
+    private final static int capitalLetterOffset = 26;
+
+    private int MousePressedBtn = 0;
 
     public JLayeredPane Layers = new JLayeredPane();
 
@@ -450,19 +452,18 @@ public class PatchGUI extends Patch {
             @Override
             public void mouseClicked(MouseEvent me) {
                 if (me.getButton() == MouseEvent.BUTTON1) {
-                    for (AxoObjectInstanceAbstract o : objectInstances) {
-                        o.SetSelected(false);
-                    }
-                    if (me.getClickCount() == 2) {
+                    if (me.getClickCount() == 2 && !me.isShiftDown() && !KeyUtils.isControlOrCommandDown(me)) {
                         ShowClassSelector(me.getPoint(), null, null, true);
-                    } else {
+                    }
+                    else {
                         if ((osf != null) && osf.isVisible()) {
                             osf.Accept();
                         }
                         Layers.requestFocusInWindow();
                     }
                     me.consume();
-                } else {
+                }
+                else {
                     if ((osf != null) && osf.isVisible()) {
                         osf.Cancel();
                     }
@@ -473,27 +474,26 @@ public class PatchGUI extends Patch {
 
             @Override
             public void mousePressed(MouseEvent me) {
-                if (me.getButton() == MouseEvent.BUTTON1) {
+                MousePressedBtn = me.getButton();
+                if (MousePressedBtn == MouseEvent.BUTTON1) {
+                    if (!me.isShiftDown()) {
+                        for (AxoObjectInstanceAbstract o : objectInstances) {
+                            o.SetSelected(false);
+                        }
+                    }
                     selectionRectStart = me.getPoint();
                     selectionrectangle.setBounds(me.getX(), me.getY(), 1, 1);
-                    selectionrectangle.setVisible(true);
+                    //selectionrectangle.setVisible(true);
 
                     Layers.requestFocusInWindow();
                     me.consume();
-                } else {
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent me) {
-                if (selectionrectangle.isVisible() | me.getButton() == MouseEvent.BUTTON1) {
-                    Rectangle r = selectionrectangle.getBounds();
-                    for (AxoObjectInstanceAbstract o : objectInstances) {
-                        o.SetSelected(o.getBounds().intersects(r));
-                    }
                     selectionrectangle.setVisible(false);
                     me.consume();
-                }
             }
 
             @Override
@@ -547,7 +547,7 @@ public class PatchGUI extends Patch {
         Layers.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent ev) {
-                if (selectionrectangle.isVisible()) {
+                if (MousePressedBtn == MouseEvent.BUTTON1) {
                     int x1 = selectionRectStart.x;
                     int y1 = selectionRectStart.y;
                     int x2 = ev.getX();
@@ -560,8 +560,23 @@ public class PatchGUI extends Patch {
                     int height = ymax - ymin;
                     selectionrectangle.setBounds(xmin, ymin, width, height);
                     selectionrectangle.setVisible(true);
-                    ev.consume();
+
+                    Rectangle r = selectionrectangle.getBounds();
+
+                    for (AxoObjectInstanceAbstract o : objectInstances) {
+                        if (ev.isShiftDown()) {
+                            /* Add objects within rectangle to current selection  */
+                            if (o.getBounds().intersects(r) && !o.GetSelected()) {
+                                o.SetSelected(true);
+                            }
+                        }
+                        else {
+                            /* Clear selection then add objects within rectangle to selection */
+                            o.SetSelected(o.getBounds().intersects(r));
+                        }
+                    }
                 }
+                ev.consume();
             }
         });
 
