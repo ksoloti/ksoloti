@@ -237,7 +237,7 @@ public class PatchGUI extends Patch {
         selectionRectLayerPanel.add(selectionrectangle);
         selectionrectangle.setLocation(100, 100);
         selectionrectangle.setSize(100, 100);
-        selectionrectangle.setOpaque(false);
+        selectionrectangle.setOpaque(true);
         selectionrectangle.setVisible(false);
 
         Layers.setSize(Constants.PATCH_SIZE, Constants.PATCH_SIZE);
