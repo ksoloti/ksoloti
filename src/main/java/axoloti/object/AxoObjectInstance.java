@@ -141,7 +141,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             tooltiptxt += "<p><i>Path: " + getType().sPath + "</p>";
         }
         if (IndexLabel != null && !IndexLabel.getText().equals("")) {
-            tooltiptxt += "<p><i>Execution order: " + (IndexLabel.getText()) + "/" + patch.objectInstances.size() + "</p>";
+            tooltiptxt += "<p><i>Execution order: " + (IndexLabel.getText()) + " / " + patch.objectInstances.size() + "</p>";
         }
         tooltiptxt += "</div>";
         Titlebar.setToolTipText(tooltiptxt);
