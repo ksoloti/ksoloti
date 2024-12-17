@@ -91,26 +91,6 @@ int main(void) {
     // chprintf((BaseSequentialStream * )&SD2,"Hello world!\r\n");
 #endif
 
-#if ANALYSE_ENABLE
-    palSetPadMode(GPIOG, 11, PAL_MODE_OUTPUT_PUSHPULL); 
-    palSetPadMode(GPIOG, 10, PAL_MODE_OUTPUT_PUSHPULL); 
-
-    palSetPadMode(GPIOD,  3, PAL_MODE_OUTPUT_PUSHPULL); 
-    palSetPadMode(GPIOD,  4, PAL_MODE_OUTPUT_PUSHPULL); 
-    palSetPadMode(GPIOD,  5, PAL_MODE_OUTPUT_PUSHPULL); 
-    palSetPadMode(GPIOD,  6, PAL_MODE_OUTPUT_PUSHPULL); 
-
-    palSetPadMode(GPIOA,  9, PAL_MODE_OUTPUT_PUSHPULL); 
-    palSetPadMode(GPIOB,  9, PAL_MODE_OUTPUT_PUSHPULL); 
-    palSetPadMode(GPIOB,  8, PAL_MODE_OUTPUT_PUSHPULL); 
-    palSetPadMode(GPIOB,  7, PAL_MODE_OUTPUT_PUSHPULL); 
-
-    palSetPadMode(GPIOB,  6, PAL_MODE_OUTPUT_PUSHPULL); 
-    palSetPadMode(GPIOB,  4, PAL_MODE_OUTPUT_PUSHPULL); 
-    palSetPadMode(GPIOB,  3, PAL_MODE_OUTPUT_PUSHPULL); 
-    palSetPadMode(GPIOC,  7, PAL_MODE_OUTPUT_PUSHPULL); 
-
-#endif
     exception_init();
 
     InitPatch0();
