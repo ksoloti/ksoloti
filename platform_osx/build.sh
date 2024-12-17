@@ -167,7 +167,7 @@ then
     lipo -create x86_64/bin/make i386/bin/make -output bin/make
 fi
 
-cp -v "${PLATFORM_ROOT}/lib/"*.dylib "${PLATFORM_ROOT}/bin/"
+#cp -v "${PLATFORM_ROOT}/lib/"*.dylib "${PLATFORM_ROOT}/bin/"
 
 file "${PLATFORM_ROOT}/bin/make"
 file "${PLATFORM_ROOT}/bin/dfu-util"

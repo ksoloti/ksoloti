@@ -1,4 +1,5 @@
 @ECHO OFF
+
 setlocal
 if not defined axoloti_runtime (
    @REM set axoloti_runtime=%~sdp0\.. ??
