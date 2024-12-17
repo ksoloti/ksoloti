@@ -383,6 +383,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                             tsuf += ", ";
                         }
                         tsuf += "Expert Mode";
+                        LOGGER.log(Level.WARNING,
+                            "Expert Mode is activated in ksoloti.prefs. The following options are now available:\n" + 
+                            "- Compile firmware, Refresh firmware ID (Board -> Firmware)\n" + 
+                            "- Generate and/or compile patch code, simulate lock/unloack, also while no Core is connected (Patch windows -> Patch)\n" + 
+                            "- Remove read-only restrictions: Edit and save to read-only libraries (axoloti-factory, *oloti-community, ksoloti-objects)\n" + 
+                            "- Test-compile all patches in all libraries, or all patches (recursively) in specified folder (File -> Test Compilation)\n" + 
+                            "- \"Adapt homonym\" option in object right-click menu (No idea what it does, guessing it was used to create those types of objects that would change their inlet/outlet type depending on what type of wire you connect (e.g. mix/mix))\n");
                     }
 
                     if (prefs.getFirmwareMode().contains("Axoloti Core")) {
