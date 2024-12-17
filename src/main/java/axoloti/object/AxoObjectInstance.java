@@ -432,16 +432,6 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             });
             popup.add(popm_help);
         }
-        if (MainFrame.prefs.getExpertMode()) {
-            JMenuItem popm_adapt = new JMenuItem("Adapt Homonym");
-            popm_adapt.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent ae) {
-                    PromoteToOverloadedObj();
-                }
-            });
-            popup.add(popm_adapt);
-        }
 
         if (type instanceof AxoObjectFromPatch) {
             JMenuItem popm_embed = new JMenuItem("Embed as Subpatch");
