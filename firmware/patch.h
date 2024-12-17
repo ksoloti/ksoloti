@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef __PATCH_H
 #define __PATCH_H
 #include <stdint.h>
