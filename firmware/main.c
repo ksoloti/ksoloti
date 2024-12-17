@@ -57,6 +57,7 @@
 
 extern void MY_USBH_Init(void);
 
+int32buffer AudioInputLeft, AudioInputRight, AudioOutputLeft, AudioOutputRight, UsbInputLeft, UsbInputRight, UsbOutputLeft, UsbOutputRight;
 
 int main(void) {
     /* copy vector table to SRAM1! */
@@ -83,17 +84,43 @@ int main(void) {
     palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7) | PAL_MODE_INPUT); /* RX */
     palSetPadMode(GPIOA, 2, PAL_MODE_OUTPUT_PUSHPULL); /* TX */
     palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7)); /* TX */
+
     /* 115200 baud */
     static const SerialConfig sd2Cfg = {115200, 0, 0, 0};
     sdStart(&SD2, &sd2Cfg);
     chprintf((BaseSequentialStream * )&SD2,"Hello world!\r\n");
 #endif
 
+#if ANALYSE_ENABLE
+    palSetPadMode(GPIOG, 11, PAL_MODE_OUTPUT_PUSHPULL); 
+    palSetPadMode(GPIOG, 10, PAL_MODE_OUTPUT_PUSHPULL); 
+
+    palSetPadMode(GPIOD,  3, PAL_MODE_OUTPUT_PUSHPULL); 
+    palSetPadMode(GPIOD,  4, PAL_MODE_OUTPUT_PUSHPULL); 
+    palSetPadMode(GPIOD,  5, PAL_MODE_OUTPUT_PUSHPULL); 
+    palSetPadMode(GPIOD,  6, PAL_MODE_OUTPUT_PUSHPULL); 
+
+    palSetPadMode(GPIOA,  9, PAL_MODE_OUTPUT_PUSHPULL); 
+    palSetPadMode(GPIOB,  9, PAL_MODE_OUTPUT_PUSHPULL); 
+    palSetPadMode(GPIOB,  8, PAL_MODE_OUTPUT_PUSHPULL); 
+    palSetPadMode(GPIOB,  7, PAL_MODE_OUTPUT_PUSHPULL); 
+
+    palSetPadMode(GPIOB,  6, PAL_MODE_OUTPUT_PUSHPULL); 
+    palSetPadMode(GPIOB,  4, PAL_MODE_OUTPUT_PUSHPULL); 
+    palSetPadMode(GPIOB,  3, PAL_MODE_OUTPUT_PUSHPULL); 
+    palSetPadMode(GPIOC,  7, PAL_MODE_OUTPUT_PUSHPULL); 
+
+#endif
     exception_init();
 
     InitPatch0();
 
+#if FW_USBAUDIO
+    InitUsbAudio();
+#endif
+
     InitPConnection();
+
 
     chThdSleepMilliseconds(10);
 
@@ -146,9 +173,48 @@ int main(void) {
         }
     }
 
+    //TestMemset();
+
+#if FW_USBAUDIO
+    EventListener audioEventListener;
+    chEvtRegisterMask(&ADU1.event, &audioEventListener, AUDIO_EVENT);
+
+    while (1) 
+    {
+        chEvtWaitOne(AUDIO_EVENT);
+        uint32_t  evt = chEvtGetAndClearFlags(&audioEventListener);
+
+        if(evt & AUDIO_EVENT_USB_CONGIGURED)
+            chprintf((BaseSequentialStream * )&SD2,"Audio USB Configured.\r\n");
+        else if(evt & AUDIO_EVENT_USB_SUSPEND)
+            chprintf((BaseSequentialStream * )&SD2,"Audio USB Suspend\r\n");
+        else if(evt & AUDIO_EVENT_USB_WAKEUP)
+            chprintf((BaseSequentialStream * )&SD2,"Audio USB Wakeup.\r\n");
+        else if(evt & AUDIO_EVENT_USB_STALLED)
+            chprintf((BaseSequentialStream * )&SD2,"Audio USB Stalled.\r\n");
+        else if(evt & AUDIO_EVENT_USB_RESET)
+            chprintf((BaseSequentialStream * )&SD2,"Audio USB Reset.\r\n");
+        else if(evt & AUDIO_EVENT_USB_ENABLE)
+            chprintf((BaseSequentialStream * )&SD2,"Audio USB Enable.\r\n");
+        else if(evt & AUDIO_EVENT_MUTE)
+            chprintf((BaseSequentialStream * )&SD2,"Audio mute changed.\r\n");
+        else if(evt & AUDIO_EVENT_VOLUME)
+            chprintf((BaseSequentialStream * )&SD2,"Audio volume changed.\r\n");
+        else if(evt & AUDIO_EVENT_INPUT)
+            chprintf((BaseSequentialStream * )&SD2,"Audio input state changed = %u\r\n", aduState.isInputActive);
+        else if(evt & AUDIO_EVENT_OUTPUT)
+            chprintf((BaseSequentialStream * )&SD2,"Audio output state changed = %u\r\n", aduState.isOutputActive);
+        else if(evt & AUDIO_EVENT_FORMAT)
+            chprintf((BaseSequentialStream * )&SD2,"Audio Format type changed = %u\r\n", aduState.currentSampleRate);
+
+        connectionFlags.usbActive = aduIsUsbInUse();
+        chprintf((BaseSequentialStream * )&SD2,"connectionFlags.usbActive = %u\r\n", connectionFlags.usbActive );
+    }
+#else
     while (1) {
         chThdSleepMilliseconds(1000);
     }
+#endif
 }
 
 

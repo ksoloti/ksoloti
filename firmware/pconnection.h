@@ -19,6 +19,20 @@
 #ifndef __PCONNECTION_H
 #define __PCONNECTION_H
 
+typedef  union{
+    struct {
+      bool dspOverload : 1;
+      bool usbBuild    : 1;
+      bool usbActive   : 1;
+      bool usbUnder    : 1;
+      bool usbOver     : 1;
+      bool usbError    : 1;
+    };
+    unsigned int value;
+} connectionflags_t;
+
+extern connectionflags_t connectionFlags;
+
 // void USBDMidiPoll(void);
 void PExTransmit(void);
 void PExReceive(void);

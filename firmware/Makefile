@@ -102,6 +102,10 @@ ifeq ($(FWOPTIONDEF),FW_SPILINK)
   PROJECT := $(PROJECT)_spilink
 endif
 
+ifeq ($(FWOPTIONDEF),FW_USBAUDIO)
+  PROJECT := $(PROJECT)_usbaudio
+endif
+
 # Imported source files and paths
 axoloti_runtime ?= ..
 axoloti_release ?= ..
@@ -119,11 +123,17 @@ MUTABLE_INSTRUMENTS = ${FIRMWARE}/mutable_instruments
 
 
 include board.mk
-include $(CHIBIOS)/os/hal/platforms/STM32F4xx/platform.mk
-include $(CHIBIOS)/os/hal/hal.mk
-include $(CHIBIOS)/os/ports/GCC/ARMCMx/STM32F4xx/port.mk
-include $(CHIBIOS)/os/kernel/kernel.mk
 
+# Startup files.
+include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
+# HAL-OSAL files (optional).
+include $(CHIBIOS)/os/hal/hal.mk
+include $(CHIBIOS)/os/hal/ports/STM32/STM32F4xx/platform.mk
+include $(CHIBIOS)/os/hal/osal/rt/osal.mk
+# RTOS files (optional).
+include $(CHIBIOS)/os/rt/rt.mk
+include $(CHIBIOS)/os/rt/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
+# FAT stuff
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 
 # get the same binary as openOCD flashes from elf
@@ -139,17 +149,17 @@ LDSCRIPT = STM32F427xG_ksoloti.ld
 else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
 LDSCRIPT = STM32F427xG_axoloti.ld
 endif
-
-
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
-CSRC = $(PORTSRC) \
+CSRC = $(STARTUPSRC) \
+       $(PORTSRC) \
        $(KERNSRC) \
        $(HALSRC) \
        $(PLATFORMSRC) \
        $(BOARDSRC) \
        $(FATFSSRC) \
-       $(CHIBIOS)/os/various/chprintf.c \
+       $(OSALSRC) \
+       $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
        $(CHIBIOS)/os/various/memstreams.c \
        ${FIRMWARE}/codec.c \
        ${FIRMWARE}/axoloti.c \
@@ -243,6 +253,7 @@ CSRC = $(PORTSRC) \
        ${FIRMWARE}/serial_midi.c \
        ${FIRMWARE}/bulk_usb.c \
        ${FIRMWARE}/midi_usb.c \
+       ${FIRMWARE}/audio_usb.c \
        ${FIRMWARE}/spilink.c \
        ${FIRMWARE}/spidb.c \
        ${FIRMWARE}/crc32.c \
@@ -356,14 +367,17 @@ TCSRC =
 TCPPSRC =
 
 # List ASM source files here
-ASMSRC = $(PORTASM) \
+ASMSRC = $(STARTUPASM) \
+         $(PORTASM) \
          ${CMSIS}/DSP/Source/TransformFunctions/arm_bitreversal2.s
 
 INCDIR = ${CMSIS}/Core/Include \
          ${CMSIS}/DSP/Include \
+         $(STARTUPINC) \
          $(PORTINC) $(KERNINC) $(TESTINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) \
          $(FATFSINC) \
+         $(OSALINC) \
          $(CHIBIOS)/os/various \
          ${FIRMWARE}/STM32_USB_Host_Library/Core/Inc \
          ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Inc \
@@ -373,7 +387,8 @@ INCDIR = ${CMSIS}/Core/Include \
          ${MUTABLE_INSTRUMENTS}/braids \
          ${MUTABLE_INSTRUMENTS}/rings \
          ${MUTABLE_INSTRUMENTS}/elements \
-         ${MUTABLE_INSTRUMENTS}/stmlib
+         ${MUTABLE_INSTRUMENTS}/stmlib \
+	  $(CHIBIOS)/os/hal/lib/streams
 
 #
 # Project, sources and paths
@@ -453,7 +468,9 @@ DLIBS =
 # List all user C define here, like -D_DEBUG=1
 UDEFS = \
     -DARM_MATH_CM4 \
-    -D__FPU_PRESENT
+    -D__FPU_PRESENT \
+    -DSTM32F429xx \
+    -DCRT1_AREAS_NUMBER=0 \
 
 # Define ASM defines here
 UADEFS =
@@ -471,5 +488,9 @@ ULIBS = -lm
 # End of user defines
 ##############################################################################
 
-RULESPATH = $(CHIBIOS)/os/ports/GCC/ARMCMx
+
+RULESPATH = $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC
 include $(RULESPATH)/rules.mk
+
+
+

@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include "axoloti_defines.h"
 #include "ch.h"
+#include "migration_v16.h"
 
 // double buffers for DMA, interleaved stereo
 extern int32_t buf[BUFSIZE * 2]; // *2 for stereo

@@ -1,5 +1,7 @@
 #include "usb_msd.h"
 
+#define CH_FAILED               TRUE
+
 /* Request types */
 #define MSD_REQ_RESET   0xFF
 #define MSD_GET_MAX_LUN 0xFE
@@ -231,10 +233,8 @@ static void msd_handle_end_point_notification(USBDriver *usbp, usbep_t ep) {
  * @brief Starts sending data
  */
 static void msd_start_transmit(USBMassStorageDriver *msdp, const uint8_t* buffer, size_t size) {
-
-    usbPrepareTransmit(msdp->config->usbp, msdp->config->bulk_ep, buffer, size);
     chSysLock();
-    usbStartTransmitI(msdp->config->usbp, msdp->config->bulk_ep);
+    usbStartTransmitI(msdp->config->usbp, msdp->config->bulk_ep, buffer, size);
     chSysUnlock();
 }
 
@@ -242,10 +242,8 @@ static void msd_start_transmit(USBMassStorageDriver *msdp, const uint8_t* buffer
  * @brief Starts receiving data
  */
 static void msd_start_receive(USBMassStorageDriver *msdp, uint8_t* buffer, size_t size) {
-
-    usbPrepareReceive(msdp->config->usbp, msdp->config->bulk_ep, buffer, size);
     chSysLock();
-    usbStartReceiveI(msdp->config->usbp, msdp->config->bulk_ep);
+    usbStartReceiveI(msdp->config->usbp, msdp->config->bulk_ep, buffer, size);
     chSysUnlock();
 }
 
@@ -737,7 +735,7 @@ static msg_t mass_storage_thread(void *arg) {
  */
 void msdInit(USBMassStorageDriver *msdp) {
 
-    chDbgCheck(msdp != NULL, "msdInit");
+    chDbgCheck(msdp != NULL);
 
     msdp->config = NULL;
     msdp->thread = NULL;
@@ -748,7 +746,7 @@ void msdInit(USBMassStorageDriver *msdp) {
     chEvtInit(&msdp->evt_ejected);
 
     /* initialise the binary semaphore as taken */
-    chBSemInit(&msdp->bsem, TRUE);
+    chBSemObjectInit(&msdp->bsem, TRUE);
 
     /* initialise the sense data structure */
     size_t i;
@@ -773,9 +771,9 @@ void msdInit(USBMassStorageDriver *msdp) {
  */
 int msdStart(USBMassStorageDriver *msdp, const USBMassStorageConfig *config) {
 
-    chDbgCheck(msdp != NULL, "msdStart");
-    chDbgCheck(config != NULL, "msdStart");
-    chDbgCheck(msdp->thread == NULL, "msdStart");
+    chDbgCheck(msdp != NULL);
+    chDbgCheck(config != NULL);
+    chDbgCheck(msdp->thread == NULL);
 
     /* save the configuration */
     msdp->config = config;
@@ -821,7 +819,7 @@ int msdStart(USBMassStorageDriver *msdp, const USBMassStorageConfig *config) {
  */
 void msdStop(USBMassStorageDriver *msdp) {
 
-    chDbgCheck(msdp->thread != NULL, "msdStop");
+    chDbgCheck(msdp->thread != NULL);
 
     /* notify the thread that it's over */
     chThdTerminate(msdp->thread);

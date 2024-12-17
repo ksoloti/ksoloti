@@ -63,6 +63,8 @@ static int pFileSize;
 static WORKING_AREA(waThreadUSBDMidi, 256);
 
 
+connectionflags_t connectionFlags;
+
 __attribute__((noreturn)) static msg_t ThreadUSBDMidi(void *arg) {
     (void)arg;
 
@@ -101,7 +103,13 @@ void InitPConnection(void) {
     usbStart(midiusbcfg.usbp, &usbcfg);
     usbConnectBus(midiusbcfg.usbp);
 
-    chThdCreateStatic(waThreadUSBDMidi, sizeof(waThreadUSBDMidi), NORMALPRIO, ThreadUSBDMidi, NULL);
+
+    connectionFlags.value = 0;
+#if FW_USBAUDIO
+    connectionFlags.usbBuild = 1;
+#endif
+
+    chThdCreateStatic(waThreadUSBDMidi, sizeof(waThreadUSBDMidi), MIDI_USB_PRIO, ThreadUSBDMidi, NULL);
 }
 
 
@@ -148,7 +156,7 @@ void PExTransmit(void) {
         if (AckPending) {
             uint32_t ack[7];
             ack[0] = 0x416F7841; /* "AxoA" */
-            ack[1] = 0; /* reserved */
+            ack[1] = connectionFlags.value; // flags for overload, USB audio etc
             ack[2] = dspLoad200;
             ack[3] = patchMeta.patchID;
             ack[4] = sysmon_getVoltage10() + (sysmon_getVoltage50()<<16);
@@ -160,6 +168,9 @@ void PExTransmit(void) {
             }
             ack[6] = fs_ready;
             chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&ack[0], 7 * 4);
+
+            // clear overload flag
+            connectionFlags.dspOverload = false;
 
 #ifdef DEBUG_SERIAL
             chprintf((BaseSequentialStream * )&SD2,"ack!\r\n");
@@ -501,6 +512,30 @@ void ReplySpilinkSynced(void) {
   chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&reply[0]), 5);
 }
 
+typedef struct _PCDebug
+{
+  uint8_t c;
+  int state;
+} PCDebug;
+
+#define PC_DBG_COUNT (0)
+#if PC_DBG_COUNT
+PCDebug dbg_received[PC_DBG_COUNT]  __attribute__ ((section (".sram3")));;
+uint16_t uCount = 0;
+
+void AddPCDebug(uint8_t c, int state)
+{
+  dbg_received[uCount].c = c;
+  dbg_received[uCount].state = state;
+  uCount++;
+  if(uCount==PC_DBG_COUNT)
+    uCount = 0;
+}
+#else
+  #define AddPCDebug(a,b)
+#endif
+
+
 
 void PExReceiveByte(unsigned char c) {
   static char header = 0;
@@ -513,6 +548,8 @@ void PExReceiveByte(unsigned char c) {
   static int a;
   static int b;
   static uint32_t patchid;
+
+  AddPCDebug(c, state);
 
   if (!header) {
     switch (state) {
@@ -565,6 +602,9 @@ void PExReceiveByte(unsigned char c) {
         state = 4;
       }
       else if (c == 'y') { /* generic read */
+        state = 4;
+      }
+      else if (c == 'U') { /* Set cpU safety*/
         state = 4;
       }
       else if (c == 'S') { /* stop patch */
@@ -679,6 +719,36 @@ void PExReceiveByte(unsigned char c) {
     default:
       state = 0;
       header = 0;
+    }
+  }
+  else if (header == 'U') {
+    static uint16_t uUIMidiCost = 0;
+    static uint8_t  uDspLimit200 = 0;
+    
+    switch (state) {
+    case 4:
+      uUIMidiCost = c;
+      state++;
+      break;
+    case 5:
+      uUIMidiCost += c << 8;
+      state++;
+      break;
+    case 6:
+      uDspLimit200 = c;
+
+      SetPatchSafety(uUIMidiCost, uDspLimit200);
+
+      // we have our values now so ack
+      header = 0;
+      state = 0;
+      AckPending = 1;
+      break;
+    default:
+      header = 0;
+      state = 0;
+      AckPending = 1;
+      break;
     }
   }
   else if (header == 'W') {

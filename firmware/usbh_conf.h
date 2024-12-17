@@ -43,7 +43,7 @@
 
 #include "ch.h"
 #include "chprintf.h"
-
+#include "migration_v16.h"
 
 /* Includes ------------------------------------------------------------------*/
 
@@ -87,7 +87,7 @@ extern void fakefree(void * p);
 
 #define osThreadDef(name, fn, prio, instances, stacksz) \
   static WORKING_AREA(wa##name, 640); \
-  Thread *name = chThdCreateStatic(wa##name, sizeof(wa##name), HIGHPRIO-2, fn, phost); \
+  Thread *name = chThdCreateStatic(wa##name, sizeof(wa##name), NORMALPRIO, fn, phost); \
   phost->os_event = name;
 #define osThreadCreate(x,y) x
 #define osThread(x) x

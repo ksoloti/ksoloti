@@ -49,6 +49,11 @@ DEFS = \
     -DTHUMB_PRESENT \
     -D__FPU_PRESENT
 
+ifneq ($(FWOPTIONDEF),)
+  DEFS := $(DEFS) -D$(FWOPTIONDEF)
+endif
+
+
 ELFNAME=
 ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
   RAMLINKOPT = -Tramlink_ksoloti.ld
@@ -60,7 +65,10 @@ endif
 
 ifeq ($(FWOPTIONDEF),FW_SPILINK)
   ELFNAME := $(ELFNAME)_spilink
-  DEFS := $(DEFS) -DFW_SPILINK
+endif
+
+ifeq ($(FWOPTIONDEF),FW_USBAUDIO)
+  ELFNAME := $(ELFNAME)_usbaudio
 endif
 
 LDFLAGS = \
@@ -99,16 +107,54 @@ SPACE := $(EMPTY) $(EMPTY)
 BUILDDIR=$(subst $(SPACE),\ ,${axoloti_libraries}/build)
 FIRMWARE=$(subst $(SPACE),\ ,${axoloti_firmware})
 
-include $(CHIBIOS)/os/hal/platforms/STM32F4xx/platform.mk
+
+# Startup files.
+include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
+# HAL-OSAL files (optional).
 include $(CHIBIOS)/os/hal/hal.mk
-include $(CHIBIOS)/os/ports/GCC/ARMCMx/STM32F4xx/port.mk
-include $(CHIBIOS)/os/kernel/kernel.mk
+include $(CHIBIOS)/os/hal/ports/STM32/STM32F4xx/platform.mk
+include $(CHIBIOS)/os/hal/osal/rt/osal.mk
+# RTOS files (optional).
+include $(CHIBIOS)/os/rt/rt.mk
+include $(CHIBIOS)/os/rt/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
+# FAT stuff
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 
-INCDIR = $(CMSIS)/Core/Include $(CMSIS)/DSP/Include \
+
+INCDIR = $(CMSIS)/Core/Include \
+	 $(CMSIS)/DSP/Include \
          $(PORTINC) $(KERNINC) $(TESTINC) \
-         $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) \
-         ${FIRMWARE} $(CHIBIOS) ${FIRMWARE}/mutable_instruments
+         $(HALINC) $(PLATFORMINC) $(BOARDINC) \
+	 $(FATFSINC) \
+         $(OSALINC) \
+         ${FIRMWARE} \
+	 $(CHIBIOS) \
+         $(CHIBIOS)/os/various \
+         ${FIRMWARE}/STM32F4xx_HAL_Driver/Inc \
+	 ${FIRMWARE}/mutable_instruments \
+	 $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC \
+         $(CHIBIOS)/os/common/ports/ARMCMx/devices/STM32F4xx \
+         $(CHIBIOS)/os/ext/CMSIS/include \
+         $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx
+
+# INCDIR = ${CMSIS}/Core/Include \
+#          ${CMSIS}/DSP/Include \
+#          $(STARTUPINC) \
+#          $(PORTINC) $(KERNINC) $(TESTINC) \
+#          $(HALINC) $(PLATFORMINC) $(BOARDINC) \
+#          $(FATFSINC) \
+#          $(OSALINC) \
+#          $(CHIBIOS)/os/various \
+#          ${FIRMWARE}/STM32_USB_Host_Library/Core/Inc \
+#          ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Inc \
+#          ${FIRMWARE}/STM32F4xx_HAL_Driver/Inc \
+#          ${MUTABLE_INSTRUMENTS} \
+#          ${MUTABLE_INSTRUMENTS}/warps \
+#          ${MUTABLE_INSTRUMENTS}/braids \
+#          ${MUTABLE_INSTRUMENTS}/rings \
+#          ${MUTABLE_INSTRUMENTS}/elements \
+#          ${MUTABLE_INSTRUMENTS}/stmlib \
+# 	     $(CHIBIOS)/os/hal/lib/streams
 
 # Paths
 IINCDIR = $(patsubst %,-I%,$(INCDIR) $(DINCDIR) $(UINCDIR))

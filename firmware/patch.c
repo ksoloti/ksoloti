@@ -31,6 +31,16 @@
 #ifdef FW_SPILINK
 #include "spilink.h"
 #endif
+#include "audio_usb.h"
+
+
+#if FW_USBAUDIO     
+extern void aduDataExchange (int32_t *in, int32_t *out);
+#endif
+
+#if USE_EXTERNAL_USB_FIFO_PUMP
+extern void usb_lld_external_pump(void);
+#endif 
 
 #define STACKSPACE_MARGIN 32
 // #define DEBUG_PATCH_INT_ON_GPIO 1
@@ -39,7 +49,8 @@ patchMeta_t patchMeta;
 
 volatile patchStatus_t patchStatus;
 
-uint32_t dspLoad200; // DSP load: Values 0-200 correspond to 0-100%
+uint32_t     dspLoad200; // DSP load: Values 0-200 correspond to 0-100%
+
 uint32_t DspTime;
 
 char loadFName[64] = "";
@@ -49,13 +60,67 @@ static const char* index_fn = "/index.axb";
 static int32_t inbuf[32];
 static int32_t* outbuf;
 
+#if FW_USBAUDIO
+static int32_t inbufUsb[32];
+static int32_t outbufUsb[32];
+void usb_clearbuffer(void)
+{
+    uint_fast8_t i; for(i=0; i<32; i++) {
+        outbufUsb[i] = 0;
+    }
+}
+#endif
+
+
 static int16_t nThreadsBeforePatch;
 static WORKING_AREA(waThreadDSP, 7200) __attribute__ ((section (".ccmramend")));
 static Thread* pThreadDSP = 0;
 
+// Default valued for safety preset `Normal`
+uint16_t uPatchUIMidiCost  = DSP_UI_MIDI_COST;
+uint8_t  uPatchUsbLimit200 = DSP_LIMIT200;
+
+void SetPatchSafety(uint16_t uUIMidiCost, uint8_t uDspLimit200)
+{
+    uPatchUIMidiCost = uUIMidiCost;
+    uPatchUsbLimit200 = uDspLimit200;
+
+    chprintf((BaseSequentialStream * )&SD2,"Patch Safety: UIMidiCost = %u, DspLimit = %u\r\n", uPatchUIMidiCost, uPatchUsbLimit200);
+
+}
+
+static void SetPatchStatus(patchStatus_t status)
+{
+    if(patchStatus != status)
+    {
+        if(status == RUNNING)
+        {
+            // DSP priority
+            chThdSetPriority(PATCH_DSP_PRIORITY);
+#if USE_EXTERNAL_USB_FIFO_PUMP
+            // Switch to external fifo pump
+            usb_lld_use_external_pump(true);
+#endif
+        }
+        else
+        {
+            // Normal priority
+            chThdSetPriority(PATCH_NORMAL_PRIORITY);
+
+#if USE_EXTERNAL_USB_FIFO_PUMP
+            if(patchStatus == RUNNING)
+            {
+                // switch to fifo pump thread.
+                usb_lld_use_external_pump(false);
+            }
+#endif
+        }
+    }
+    patchStatus = status;    
+}
 
 void InitPatch0(void) {
-    patchStatus = STOPPED;
+    SetPatchStatus(STOPPED);
     patchMeta.fptr_patch_init = 0;
     patchMeta.fptr_patch_dispose = 0;
     patchMeta.fptr_dsp_process = 0;
@@ -71,6 +136,19 @@ void InitPatch0(void) {
     patchMeta.patchID = 0;
 }
 
+#define USE_MOVING_AVERAGE 0
+
+#if USE_MOVING_AVERAGE
+#include "moving_average.h"
+float madata[100];
+static moving_average_data ma;
+#endif
+
+#if USE_PATCH_DSPTIME_SMOOTHING_MS
+#include "moving_average.h"
+float dsptimeSmoothingData[3 * USE_PATCH_DSPTIME_SMOOTHING_MS];
+static moving_average_data dsptimeSmoothing;
+#endif
 
 static int16_t GetNumberOfThreads(void) {
 #ifdef CH_USE_REGISTRY
@@ -189,30 +267,35 @@ static int StartPatch1(void) {
 
     if (patchMeta.fptr_dsp_process == 0) {
         report_patchLoadFail((const char*) &loadFName[0]);
-        patchStatus = STARTFAILED;
+        SetPatchStatus(STARTFAILED);
         return -1;
     }
 
     int32_t sdrem = sdram_get_free();
     if (sdrem < 0) {
         StopPatch1();
-        patchStatus = STARTFAILED;
+        SetPatchStatus(STARTFAILED);
         patchMeta.patchID = 0;
         report_patchLoadSDRamOverflow((const char*) &loadFName[0], -sdrem);
         return -1;
     }
 
-    patchStatus = RUNNING;
+    SetPatchStatus(RUNNING);
     return 0;
 }
 
 
  __attribute__((__noreturn__)) static msg_t ThreadDSP(void* arg) {
     (void)(arg);
+
 #if CH_USE_REGISTRY
     chRegSetThreadName("dsp");
 #endif
     codec_clearbuffer();
+
+#if FW_USBAUDIO
+    usb_clearbuffer();
+#endif
 
     while (1) {
 
@@ -223,42 +306,85 @@ static int StartPatch1(void) {
         /* Codec DSP cycle */
         eventmask_t evt = chEvtWaitOne((eventmask_t)7);
         if (evt == 1) {
+#if FW_USBAUDIO             
+            uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost - DSP_USB_AUDIO_FIRMWARE_COST;;
+            if(aduIsUsbInUse())
+                uDspTimeslice -= DSP_USB_AUDIO_STREAMING_COST;
+#else
+            uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost;
+#endif
             static uint32_t tStart;
             tStart = hal_lld_get_counter_value();
             watchdog_feed();
 
             if (patchStatus == RUNNING) {
                 /* Patch running */
+#if FW_USBAUDIO             
+                (patchMeta.fptr_dsp_process)(inbuf, outbuf, inbufUsb, outbufUsb);
+#else
                 (patchMeta.fptr_dsp_process)(inbuf, outbuf);
+#endif
             }
             else if (patchStatus == STOPPING) {
                 codec_clearbuffer();
+                #if FW_USBAUDIO
+                  usb_clearbuffer();
+                #endif
+
                 StopPatch1();
-                patchStatus = STOPPED;
+                SetPatchStatus(STOPPED);
                 codec_clearbuffer();
             }
             else if (patchStatus == STOPPED) {
                 codec_clearbuffer();
+                #if FW_USBAUDIO
+                  usb_clearbuffer();
+                #endif
             }
 
             adc_convert();
 
             DspTime = RTT2US(hal_lld_get_counter_value() - tStart);
-            dspLoad200 = (2000 * DspTime) / 3333;
-            if (dspLoad200 > 194) { /* 194=2*97, corresponds to 97% */
+
+#if USE_MOVING_AVERAGE
+            ma_add(&ma, DspTime);
+#endif
+
+#if USE_PATCH_DSPTIME_SMOOTHING_MS
+            ma_add(&dsptimeSmoothing, DspTime);
+            dspLoad200 = (2000 * ma_average(&dsptimeSmoothing)) / uDspTimeslice;
+#else
+            dspLoad200 = (2000 * DspTime) / uDspTimeslice;
+#endif
+
+
+            if (dspLoad200 > uPatchUsbLimit200) {
                 /* Overload: clear output buffers and give other processes a chance */
                 codec_clearbuffer();
+
+#if FW_USBAUDIO
+                // reset USB audio
+                aduReset();
+#endif
                 // LogTextMessage("DSP overrun");
+                connectionFlags.dspOverload = true;
 
                 /* DSP overrun penalty, keeping cooperative with lower priority threads */
                 chThdSleepMilliseconds(1);
             }
+#if USE_EXTERNAL_USB_FIFO_PUMP            
+            usb_lld_external_pump();
+#endif
         }
         else if (evt == 2) {
             /* load patch event */
             codec_clearbuffer();
+            #if FW_USBAUDIO
+                usb_clearbuffer();
+            #endif
+
             StopPatch1();
-            patchStatus = STOPPED;
+            SetPatchStatus(STOPPED);
 
             if (loadFName[0]) {
                 int res = sdcard_loadPatch1(loadFName);
@@ -370,6 +496,9 @@ static int StartPatch1(void) {
         else if (evt == 4) {
             /* Start patch */
             codec_clearbuffer();
+            #if FW_USBAUDIO
+                usb_clearbuffer();
+            #endif
             StartPatch1();
         }
 
@@ -384,7 +513,7 @@ static int StartPatch1(void) {
 
 void StopPatch(void) {
     if (!patchStatus) {
-        patchStatus = STOPPING;
+        SetPatchStatus(STOPPING);
 
         while (1) {
           chThdSleepMilliseconds(1);
@@ -394,7 +523,7 @@ void StopPatch(void) {
         }
 
         StopPatch1();
-        patchStatus = STOPPED;
+        SetPatchStatus(STOPPED);
     }
 }
 
@@ -407,7 +536,7 @@ int StartPatch(void) {
     }
 
     if (patchStatus == STARTFAILED) {
-        patchStatus = STOPPED;
+        SetPatchStatus(STOPPED);
         LogTextMessage("Patch start failed", patchStatus);
     }
 
@@ -416,8 +545,16 @@ int StartPatch(void) {
 
 
 void start_dsp_thread(void) {
+#if USE_MOVING_AVERAGE
+    ma_init(&ma, madata, sizeof(madata) / sizeof(float), false);
+#endif
+
+#if USE_PATCH_DSPTIME_SMOOTHING_MS
+    ma_init(&dsptimeSmoothing, dsptimeSmoothingData, sizeof(dsptimeSmoothingData) / sizeof(float), false);
+#endif
+
     if (!pThreadDSP)
-        pThreadDSP = chThdCreateStatic(waThreadDSP, sizeof(waThreadDSP), HIGHPRIO - 1, ThreadDSP, NULL);
+        pThreadDSP = chThdCreateStatic(waThreadDSP, sizeof(waThreadDSP), PATCH_DSP_PRIORITY, ThreadDSP, NULL);
 }
 
 
@@ -427,6 +564,10 @@ void computebufI(int32_t* inp, int32_t* outp) {
     }
 
     outbuf = outp;
+
+#if FW_USBAUDIO     
+    aduDataExchange(inbufUsb, outbufUsb);
+#endif    
 
     chSysLockFromIsr();
     chEvtSignalI(pThreadDSP, (eventmask_t)1);

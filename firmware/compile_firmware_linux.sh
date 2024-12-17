@@ -55,3 +55,14 @@ rm -f build/obj/*
 if ! make -j16 BOARDDEF=$1 FWOPTIONDEF=FW_SPILINK; then
     exit 1
 fi
+
+echo "Compiling firmware... $1 FW_USBAUDIO"
+mkdir -p .dep
+mkdir -p build/lst
+mkdir -p build/obj
+rm -f .dep/*
+rm -f build/lst/*
+rm -f build/obj/*
+if ! make -j16 BOARDDEF=$1 FWOPTIONDEF=FW_USBAUDIO; then
+    exit 1
+fi

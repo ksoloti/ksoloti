@@ -19,6 +19,8 @@
 #ifndef _BOARD_H_
 #define _BOARD_H_
 
+#include "migration_v16.h"
+
 /*
  * Board oscillators-related settings.
  * NOTE: LSE not fitted.
@@ -40,7 +42,7 @@
 /*
  * MCU type as defined in the ST header.
  */
-#define STM32F427xx
+#define STM32F427xx // TODO is this needed??
 #define STM32F427_437xx
 
 /*

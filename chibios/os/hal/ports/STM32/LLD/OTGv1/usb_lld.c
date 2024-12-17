@@ -1397,7 +1397,6 @@ void usb_lld_external_pump(void)
  *
  * @special
  */
-#include "analyse.h"
 void usb_lld_pump(void *p) {
   USBDriver *usbp = (USBDriver *)p;
   stm32_otg_t *otgp = usbp->otg;
@@ -1419,7 +1418,6 @@ void usb_lld_pump(void *p) {
     }
     osalSysUnlock();
 
-    Analyse(GPIOB, 8, 1);
     /* Checks if there are TXFIFOs to be filled.*/
     for (ep = 0; ep <= usbp->otgparams->num_endpoints; ep++) {
 
@@ -1453,7 +1451,6 @@ void usb_lld_pump(void *p) {
         osalSysUnlock();
       }
     }
-    Analyse(GPIOB, 8, 0);
     osalSysLock();
   }
 }

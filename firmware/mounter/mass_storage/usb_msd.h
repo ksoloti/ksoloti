@@ -8,6 +8,7 @@
 
 #include "ch.h"
 #include "hal.h"
+#include "migration_v16.h"
 
 /**
  * @brief Command Block Wrapper structure
@@ -120,7 +121,7 @@ typedef struct {
  */
 typedef struct {
     const USBMassStorageConfig* config;
-	BinarySemaphore bsem;
+	binary_semaphore_t bsem;
     Thread* thread;
 	EventSource evt_connected, evt_ejected;
 	BlockDeviceInfo block_dev_info;

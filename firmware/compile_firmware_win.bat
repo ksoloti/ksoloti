@@ -60,6 +60,15 @@ IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
 
+echo.&&echo Compiling firmware... %1 FW_USBAUDIO
+del /q .dep\*
+del /q build\lst\*
+del /q build\obj\*
+make -j16 BOARDDEF=%1 FWOPTIONDEF=FW_USBAUDIO
+IF %ERRORLEVEL% NEQ 0 (
+	exit /b 1
+)
+
 goto :eof
 
 rem --- path shortening

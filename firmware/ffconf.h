@@ -1,3 +1,4 @@
+
 /* CHIBIOS FIX */
 #include "ch.h"
 
@@ -10,7 +11,7 @@
 /
 /----------------------------------------------------------------------------*/
 #ifndef _FFCONF
-#define _FFCONF 6502	/* Revision ID */
+#define _FFCONF 8051	/* Revision ID */
 
 
 /*---------------------------------------------------------------------------/
@@ -131,7 +132,7 @@
 #define _VOLUMES	1
 /* Number of volumes (logical drives) to be used. */
 
-
+#define	_MIN_SS		512
 #define	_MAX_SS		512		/* 512, 1024, 2048 or 4096 */
 /* Maximum sector size to be handled.
 /  Always set 512 for memory card and hard disk but a larger value may be
@@ -174,8 +175,8 @@
 /  windows.h, ucos_ii.h and semphr.h, must be included prior to ff.h. */
 
 #define _FS_REENTRANT	1		/* 0:Disable or 1:Enable */
-#define _FS_TIMEOUT		1000	/* Timeout period in unit of time ticks */
-#define	_SYNC_t			Semaphore * /* O/S dependent type of sync object. e.g. HANDLE, OS_EVENT*, ID and etc.. */
+#define _FS_TIMEOUT		MS2ST(1000)	/* Timeout period in unit of time ticks */
+#define	_SYNC_t			semaphore_t*  /* O/S dependent type of sync object. e.g. HANDLE, OS_EVENT*, ID and etc.. */
 
 /* The _FS_REENTRANT option switches the reentrancy (thread safe) of the FatFs module.
 /

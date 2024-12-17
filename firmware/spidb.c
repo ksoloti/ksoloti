@@ -36,7 +36,7 @@ uint32_t spidb_interrupt_timestamp;
 
 static void dma_spidb_slave_interrupt(void* dat, uint32_t flags) {
     SPIDriver *spip = dat;
-    spidb_interrupt_timestamp = halGetCounterValue();
+    spidb_interrupt_timestamp = hal_lld_get_counter_value();
 
     if (flags & STM32_DMA_ISR_TCIF) {
         chSysLockFromIsr();
@@ -156,13 +156,13 @@ void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, Thread * thread
 #endif
 
     if (irq_priority == -1)
-        chSysHalt();
+        chSysHalt("spidbSlaveStart wrong irq_priority");
 
     bool_t b = dmaStreamAllocate(spip->dmarx, irq_priority, (stm32_dmaisr_t) dma_spidb_slave_interrupt, (void *) spip);
-    chDbgAssert(!b, "spi_lld_start(), #1", "stream already allocated");
+    chDbgAssert(!b, "spi_lld_start(), #1 stream already allocated");
 
     b = dmaStreamAllocate(spip->dmatx, irq_priority, (stm32_dmaisr_t) 0, (void *) spip);
-    chDbgAssert(!b, "spi_lld_start(), #2", "stream already allocated");
+    chDbgAssert(!b, "spi_lld_start(), #2 stream already allocated");
 
     spiSelect(spip);
 
@@ -179,7 +179,7 @@ static void dma_spidb_master_interrupt(void* dat, uint32_t flags) {
 #endif
     /* assume it is a transfer ready interrupt */
     SPIDriver *spip = dat;
-    spidb_interrupt_timestamp = halGetCounterValue();
+    spidb_interrupt_timestamp = hal_lld_get_counter_value();
 
     dmaStreamDisable(spip->dmarx);
     dmaStreamDisable(spip->dmatx);
@@ -225,16 +225,16 @@ void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config) {
 #endif
 
     if (irq_priority == -1)
-        chSysHalt();
+        chSysHalt("spidbMasterStart wrong irq_priority");
 
     spip->rxdmamode |= STM32_DMA_CR_MINC;
     spip->txdmamode |= STM32_DMA_CR_MINC;
 
     bool_t b = dmaStreamAllocate(spip->dmarx, irq_priority, (stm32_dmaisr_t) dma_spidb_master_interrupt, (void *) spip);
-    chDbgAssert(!b, "spi_lld_start(), #1", "stream already allocated");
+    chDbgAssert(!b, "spi_lld_start(), #1 stream already allocated");
 
     b = dmaStreamAllocate(spip->dmatx, irq_priority, (stm32_dmaisr_t) 0, (void *) spip);
-    chDbgAssert(!b, "spi_lld_start(), #2", "stream already allocated");
+    chDbgAssert(!b, "spi_lld_start(), #2 stream already allocated");
 
     dmaStreamSetMemory0(spip->dmarx, ((SPIDBConfig *) (spip->config))->rxbuf);
     dmaStreamSetTransactionSize(spip->dmarx, ((SPIDBConfig *) (spip->config))->size);
