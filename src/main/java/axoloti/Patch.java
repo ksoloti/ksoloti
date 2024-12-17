@@ -1640,13 +1640,23 @@ public class Patch {
 
     String GenerateDSPCodePlusPlus(String ClassName) {
         String c = "\n";
-        c = I + "/* Patch k-rate */\n"
-          + I + "void dsp(void) {\n"
-          + I+I + "uint8_t i;\n"
-          + I+I + "for (i = 0; i < BUFSIZE; i++) {\n"
-          + I+I+I + "AudioOutputLeft[i] = 0;\n"
-          + I+I+I + "AudioOutputRight[i] = 0;\n"
-          + I+I + "}\n";
+        c = I + "void __attribute__((optimize(\"O2\"))) clearBuffers(void) {\n"
+		+ I+I + "uint_fast8_t u;\n"
+        + I+I + "for(u=0; u < BUFSIZE; u++) {\n"
+        + I+I+I + "AudioOutputLeft[u] = 0;\n"
+        + I+I+I + "AudioOutputRight[u] = 0;\n"
+        + "#if FW_USBAUDIO\n"
+        + I+I+I + "UsbOutputLeft[u] = 0;\n"
+        + I+I+I + "UsbOutputRight[u] = 0;\n"
+        + "#endif\n"
+        + I+I + "}\n"
+        + I + "}\n\n"
+
+        + I + "/* Patch k-rate */\n"
+        + I + "void dsp(void) {\n"
+        + I+I + "uint8_t i;\n"
+        + I+I + "clearBuffers();\n";
+ 
         c += GenerateDSPCodePlusPlusSub(ClassName);
         c += I + "}\n\n";
         return c;
@@ -1665,7 +1675,11 @@ public class Patch {
         c += "};\n\n";
         c += "static rootc root;\n\n";
 
-        c += "void PatchProcess( int32_t* inbuf, int32_t* outbuf) {\n"
+        c += "#if FW_USBAUDIO\n";
+        c += "void PatchProcess(int32_t* inbuf, int32_t* outbuf, int32_t* inbufUsb, int32_t* outbufUsb) {\n";
+        c += "#else\n";
+        c += "void PatchProcess(int32_t* inbuf, int32_t* outbuf) {\n";
+        c += "#endif\n"
            + I + "uint8_t i;\n";
 
         /* audioInputMode and audioOutputMode are modified during
@@ -1676,14 +1690,22 @@ public class Patch {
            + I+I + "/* AudioInputMode == A_MONO */\n"
            + I+I + "AudioInputLeft[i] = inbuf[i * 2] >> 4;\n"
            + I+I + "AudioInputRight[i] = AudioInputLeft[i];\n"
+           + "#if FW_USBAUDIO\n"
+           + I+I + "UsbInputLeft[i]  = inbufUsb[i * 2] >> 4;\n"
+           + I+I + "UsbInputRight[i] = UsbInputLeft[i];\n"
+           + "#endif\n"
            + I + "}\n";
         }
         else if (audioInputMode == 2) {
         c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
            + I+I + "/* AudioInputMode == A_BALANCED */\n"
-           + I+I + "AudioInputLeft[i] = inbuf[i * 2]>>4;\n"
+           + I+I + "AudioInputLeft[i] = inbuf[i * 2] >> 4;\n"
            + I+I + "AudioInputLeft[i] = (AudioInputLeft[i] - (inbuf[i * 2 + 1] >> 4) ) >> 1;\n"
            + I+I + "AudioInputRight[i] = AudioInputLeft[i];\n"
+           + "#if FW_USBAUDIO\n"
+           + I+I + "UsbInputLeft[i] = (UsbInputLeft[i] - (inbufUsb[i * 2 + 1] >> 4) ) >> 1;\n"
+           + I+I + "UsbInputRight[i] = UsbInputLeft[i];\n"
+           + "#endif\n"
            + I + "}\n";
         }
         else {
@@ -1691,6 +1713,10 @@ public class Patch {
            + I+I + "/* AudioInputMode == A_STEREO */\n"
            + I+I + "AudioInputLeft[i] = inbuf[i * 2] >> 4;\n"
            + I+I + "AudioInputRight[i] = inbuf[i * 2 + 1] >> 4;\n"
+           + "#if FW_USBAUDIO\n"
+           + I+I + "UsbInputLeft[i] = inbufUsb[i * 2] >> 4;\n"
+           + I+I + "UsbInputRight[i] = inbufUsb[i * 2 + 1] >> 4;\n"
+           + "#endif\n"
            + I + "}\n";
 
         }
@@ -1703,6 +1729,10 @@ public class Patch {
                    + I+I + "/* AudioOutputMode == A_MONO */\n"
                    + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28) << 4;\n"
                    + I+I + "outbuf[i * 2 + 1] = 0;\n"
+                   + "#if FW_USBAUDIO\n"
+                   + I+I + "outbufUsb[i * 2] = __SSAT(UsbOutputLeft[i], 28) << 4;\n"
+                   + I+I + "outbufUsb[i * 2 + 1] = 0;\n"
+                   + "#endif\n"
                    + I + "}\n";
             }
             else if (audioOutputMode == 2) {
@@ -1710,6 +1740,10 @@ public class Patch {
                    + I+I + "/* AudioOutputMode == A_BALANCED */\n"
                    + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28) << 4;\n"
                    + I+I + "outbuf[i * 2 + 1] = ~outbuf[i * 2];\n"
+                   + "#if FW_USBAUDIO\n"
+                   + I+I + "outbufUsb[i * 2] = __SSAT(UsbOutputLeft[i], 28) << 4;\n"
+                   + I+I + "outbufUsb[i * 2 + 1] = ~outbuf[i * 2];\n"
+                   + "#endif\n"
                    + I + "}\n";
             }
             else {
@@ -1717,6 +1751,10 @@ public class Patch {
                    + I+I + "/* AudioOutputMode == A_STEREO */\n"
                    + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28) << 4;\n"
                    + I+I + "outbuf[i * 2 + 1] = __SSAT(AudioOutputRight[i], 28) << 4;\n"
+                   + "#if FW_USBAUDIO\n"
+                   + I+I + "outbufUsb[i * 2] = __SSAT(UsbOutputLeft[i], 28) << 4;\n"
+                   + I+I + "outbufUsb[i * 2 + 1] = __SSAT(UsbOutputRight[i], 28) << 4;\n"
+                   + "#endif\n"
                    + I + "}\n";
             }
         }
@@ -1726,6 +1764,10 @@ public class Patch {
                    + I+I + "/* AudioOutputMode == A_MONO, unsaturated */\n"
                    + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
                    + I+I + "outbuf[i * 2 + 1] = 0;\n"
+                   + "#if FW_USBAUDIO\n"
+                   + I+I + "outbufUsb[i * 2] = UsbOutputLeft[i];\n"
+                   + I+I + "outbufUsb[i * 2 + 1] = 0;\n"
+                   + "#endif\n"
                    + I + "}\n";
             }
             else if (audioOutputMode == 2) {
@@ -1733,6 +1775,10 @@ public class Patch {
                    + I+I + "/* AudioOutputMode == A_BALANCED, unsaturated */\n"
                    + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
                    + I+I + "outbuf[i * 2 + 1] = ~outbuf[i * 2];\n"
+                   + "#if FW_USBAUDIO\n"
+                   + I+I + "outbufUsb[i * 2] = UsbOutputLeft[i];\n"
+                   + I+I + "outbufUsb[i * 2 + 1] = ~outbufUsb[i * 2];\n"
+                   + "#endif\n"
                    + I + "}\n";
             }
             else {
@@ -1740,6 +1786,10 @@ public class Patch {
                    + I+I + "/* AudioOutputMode == A_STEREO, unsaturated */\n"
                    + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
                    + I+I + "outbuf[i * 2 + 1] = AudioOutputRight[i];\n"
+                   + "#if FW_USBAUDIO\n"
+                   + I+I + "outbufUsb[i * 2] = UsbOutputLeft[i];\n"
+                   + I+I + "outbufUsb[i * 2 + 1] = UsbOutputRight[i];\n"
+                   + "#endif\n"
                    + I + "}\n";
             }
         }
@@ -1865,7 +1915,11 @@ public class Patch {
             c += "#define MIDICHANNEL " + (settings.GetMidiChannel() - 1) + " // DEPRECATED\n\n";
         }
 
-        c += "int32buffer AudioInputLeft, AudioInputRight, AudioOutputLeft, AudioOutputRight;\n\n";
+        c += "#if FW_USBAUDIO\n";
+        c += "int32buffer AudioInputLeft, AudioInputRight, AudioOutputLeft, AudioOutputRight, UsbInputLeft, UsbInputRight, UsbOutputLeft, UsbOutputRight;\n";
+        c += "#else\n";
+        c += "int32buffer AudioInputLeft, AudioInputRight, AudioOutputLeft, AudioOutputRight;\n";
+        c += "#endif\n\n";
         // c += "typedef enum { A_STEREO, A_MONO, A_BALANCED } AudioModeType;\n";
         // c += "AudioModeType AudioInputMode = A_STEREO;\n";
         // c += "AudioModeType AudioOutputMode = A_STEREO;\n\n";
@@ -2739,7 +2793,7 @@ public class Patch {
     void invalidate() {
     }
 
-    void UpdateDSPLoad(int val200) {
+    void UpdateDSPLoad(int val200, boolean overload) {
     }
 
     public void repaint() {

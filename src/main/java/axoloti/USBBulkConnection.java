@@ -74,10 +74,12 @@ public class USBBulkConnection extends Connection {
     private DeviceHandle handle;
     private final short bulkVID = (short) 0x16C0;
     private final short bulkPIDAxoloti = (short) 0x0442;
+    private final short bulkPIDAxolotiUsbAudio = (short) 0x0447;
     private final short bulkPIDKsoloti = (short) 0x0444;
-    private final int interfaceNumber = 2;
+    private final short bulkPIDKsolotiUsbAudio = (short) 0x0446;
+    private int useBulkInterfaceNumber = 2;
 
-    protected USBBulkConnection() {
+	protected USBBulkConnection() {
         this.sync = new Sync();
         this.readsync = new Sync();
         this.patch = null;
@@ -149,7 +151,7 @@ public class USBBulkConnection extends Connection {
                 }
             }
             
-            int result = LibUsb.releaseInterface(handle, interfaceNumber);
+            int result = LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
             if (result != LibUsb.SUCCESS) {
                 throw new LibUsbException("Unable to release interface", result);
             }
@@ -180,8 +182,14 @@ public class USBBulkConnection extends Connection {
                 }
 
                 if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-                    if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDKsoloti) {
-                        LOGGER.log(Level.INFO, "Ksoloti Core found.");
+                    if (descriptor.idVendor() == bulkVID && ((descriptor.idProduct() == bulkPIDKsoloti) || (descriptor.idProduct() == bulkPIDKsolotiUsbAudio))) {
+                        if(descriptor.idProduct() == bulkPIDKsoloti) {
+                            useBulkInterfaceNumber = 2;
+                            LOGGER.log(Level.INFO, "Ksoloti Core found.");
+                        } else {
+                            useBulkInterfaceNumber = 4;
+                            LOGGER.log(Level.INFO, "Ksoloti Core USB Audio found.");
+                        }
                         DeviceHandle h = new DeviceHandle();
                         result = LibUsb.open(d, h);
                         if (result < 0) {
@@ -200,10 +208,16 @@ public class USBBulkConnection extends Connection {
                             LibUsb.close(h);
                         }
                     }
-                }
+                    }
                 else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                    if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDAxoloti) {
-                        LOGGER.log(Level.INFO, "Axoloti Core found.");
+                    if (descriptor.idVendor() == bulkVID && ((descriptor.idProduct() == bulkPIDAxoloti) || (descriptor.idProduct() == bulkPIDAxolotiUsbAudio))) {
+                        if(descriptor.idProduct() == bulkPIDAxoloti) {
+                            useBulkInterfaceNumber = 2;
+                            LOGGER.log(Level.INFO, "Axoloti Core found.");
+                        } else {
+                            useBulkInterfaceNumber = 4;
+                            LOGGER.log(Level.INFO, "Axoloti Core USB Audio found.");
+                        }
                         DeviceHandle h = new DeviceHandle();
                         result = LibUsb.open(d, h);
                         if (result < 0) {
@@ -301,7 +315,7 @@ public class USBBulkConnection extends Connection {
         try {
             // devicePath = Usb.DeviceToPath(device);
 
-            int result = LibUsb.claimInterface(handle, interfaceNumber);
+            int result = LibUsb.claimInterface(handle, useBulkInterfaceNumber);
             if (result != LibUsb.SUCCESS) {
                 throw new LibUsbException("Unable to claim interface", result);
             }
@@ -952,6 +966,25 @@ public class USBBulkConnection extends Connection {
         WaitSync();
     }
 
+    @Override
+    public void TransmitCosts() {
+        short uUIMidiCost = prefs.getUiMidiThreadCost();
+        byte  uDspLimit200 = (byte)(prefs.getDspLimitPercent()*2);
+
+        byte[] data = new byte[7];
+        data[0] = 'A';
+        data[1] = 'x';
+        data[2] = 'o';
+        data[3] = 'U';
+        data[4] = (byte) uUIMidiCost;
+        data[5] = (byte) (uUIMidiCost >> 8);
+        data[6] = uDspLimit200;
+        ClearSync();
+        writeBytes(data);
+        WaitSync();
+    }
+
+
     class Receiver implements Runnable {
 
         @Override
@@ -1020,12 +1053,26 @@ public class USBBulkConnection extends Connection {
         return isSDCardPresent;
     }
 
+    private int connectionFlags = 0;
+
+    public void SetConnectionFlags(int newConnectionFlags) {
+        if(newConnectionFlags != connectionFlags) {
+            connectionFlags = newConnectionFlags;
+            ShowConnectionFlags(connectionFlags);
+        }
+    }
+
+    @Override
+    public int GetConnectionFlags() {
+        return connectionFlags;
+    }
+
     int CpuId0 = 0;
     int CpuId1 = 0;
     int CpuId2 = 0;
     int fwcrc = -1;
 
-    void Acknowledge(final int DSPLoad, final int PatchID, final int Voltages, final int patchIndex, final int sdcardPresent) {
+    void Acknowledge(final int ConnectionFlags, final int DSPLoad, final int PatchID, final int Voltages, final int patchIndex, final int sdcardPresent) {
         synchronized (sync) {
             sync.Acked = true;
             sync.notifyAll();
@@ -1038,12 +1085,14 @@ public class USBBulkConnection extends Connection {
                         patch.Unlock();
                     }
                     else {
-                        patch.UpdateDSPLoad(DSPLoad);
+                        boolean dspOverload = 0 != (ConnectionFlags & 1);
+                        patch.UpdateDSPLoad(DSPLoad, dspOverload);
                     }
                 }
                 MainFrame.mainframe.showPatchIndex(patchIndex);
                 targetProfile.setVoltages(Voltages);
                 SetSDCardPresent(sdcardPresent!=0);
+                SetConnectionFlags(ConnectionFlags);
             }
         });
     }
@@ -1341,7 +1390,7 @@ public class USBBulkConnection extends Connection {
                 }
                 if (dataIndex == dataLength) {
                     // System.out.println("ack packet complete");
-                    Acknowledge(packetData[1], packetData[2], packetData[3], packetData[4], packetData[5]);
+                    Acknowledge(packetData[0], packetData[1], packetData[2], packetData[3], packetData[4], packetData[5]);
                     GoIdleState();
                 }
                 break;

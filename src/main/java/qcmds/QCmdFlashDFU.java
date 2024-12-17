@@ -65,6 +65,9 @@ public class QCmdFlashDFU extends QCmdShellTask {
         if (prefs.getFirmwareMode().contains("SPILink")) {
             bname += "_spilink";
         }
+        if (prefs.getFirmwareMode().contains("USBAudio")) {
+            bname += "_usbaudio";
+        }
 
         if (OSDetect.getOS() == OSDetect.OS.WIN) {
             return RuntimeDir() + "/platform_win/upload_fw_dfu.bat " + bname;

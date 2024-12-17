@@ -42,6 +42,8 @@ public class Usb {
     static final public short PID_AXOLOTI_SDCARD = (short) 0x0443;
     static final public short PID_KSOLOTI = (short) 0x0444;
     static final public short PID_KSOLOTI_SDCARD = (short) 0x0445;
+    static final public short PID_KSOLOTI_USBAUDIO = (short) 0x0446;
+    static final public short PID_AXOLOTI_USBAUDIO = (short) 0x0447;
 
     public Usb() {
     }

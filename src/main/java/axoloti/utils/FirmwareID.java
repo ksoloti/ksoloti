@@ -50,6 +50,9 @@ public class FirmwareID {
             if (prefs.getFirmwareMode().contains("SPILink")) {
                 boarddef += "_spilink";
             }
+            if (prefs.getFirmwareMode().contains("USBAudio")) {
+                boarddef += "_usbaudio";
+            }
             boarddef += ".bin";
             File f = new File(boarddef);
 

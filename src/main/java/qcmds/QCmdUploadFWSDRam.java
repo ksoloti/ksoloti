@@ -74,6 +74,9 @@ public class QCmdUploadFWSDRam implements QCmdSerialTask {
                 if (prefs.getFirmwareMode().contains("SPILink")) {
                     buildDir += "_spilink";
                 }
+                if (prefs.getFirmwareMode().contains("USBAudio")) {
+                    buildDir += "_usbaudio";
+                }
                 buildDir += ".bin";
                 f = new File(buildDir);
             }

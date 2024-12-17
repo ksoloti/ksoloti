@@ -76,6 +76,9 @@ public class QCmdCompilePatch extends QCmdShellTask {
             if (prefs.getFirmwareMode().contains("SPILink")) {
                 fwoptiondef += " FW_SPILINK";
             }
+            if (prefs.getFirmwareMode().contains("USBAudio")) {
+                fwoptiondef += " FW_USBAUDIO";
+            }
 
             if (OSDetect.getOS() == OSDetect.OS.WIN) {
                 return FirmwareDir() + "/compile_patch_win.bat " + boarddef + fwoptiondef;

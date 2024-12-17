@@ -109,6 +109,8 @@ public class PreferencesFrame extends JFrame {
 
         jComboBoxTheme.setSelectedItem(prefs.getTheme());
 
+        jComboBoxDspSafetyLimit.setSelectedIndex(prefs.getDspSafetyLimit());
+
         PopulateLibrary();
 
         setResizable(false);
@@ -135,6 +137,7 @@ public class PreferencesFrame extends JFrame {
         // Preferences prefs = Preferences.LoadPreferences();
 
         prefs.setPollInterval(Integer.parseInt(jTextFieldPollInterval.getText()));
+
         prefs.setCodeFontSize(Integer.parseInt(jTextFieldCodeFontSize.getText()));
         Constants.FONT_MONO = Constants.FONT_MONO.deriveFont((float)prefs.getCodeFontSize());
         MainFrame.mainframe.updateConsoleFont();
@@ -150,6 +153,8 @@ public class PreferencesFrame extends JFrame {
         prefs.setControllerObject(jTextFieldController.getText().trim());
         prefs.setControllerEnabled(jControllerEnabled.isSelected());
         prefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
+
+        prefs.setDspSafetyLimit(jComboBoxDspSafetyLimit.getSelectedIndex());
         prefs.applyTheme();
     }
 
@@ -174,9 +179,11 @@ public class PreferencesFrame extends JFrame {
     private void initComponents() {
 
         jTextFieldPollInterval = new JTextField();
+    
         jTextFieldCodeFontSize = new JTextField();
         jLabelLibraries = new JLabel();
         jLabelPollInterval = new JLabel();
+            
         jLabelCodeFontSize = new JLabel();
         jButtonSave = new JButton();
         jLabelDialMouseBehaviour = new JLabel();
@@ -208,6 +215,10 @@ public class PreferencesFrame extends JFrame {
         jLibStatus = new JButton();
         jLabelTheme = new JLabel();
         jComboBoxTheme = new JComboBox<String>();
+
+        jLabelDspSafetyLimit = new JLabel();
+        jComboBoxDspSafetyLimit = new JComboBox<String>();
+
         jCheckBoxNoMouseReCenter = new JCheckBox();
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -252,7 +263,14 @@ public class PreferencesFrame extends JFrame {
             }
         });
 
-        jComboBoxFirmwareMode.setModel(new DefaultComboBoxModel<String>(new String[] { "Ksoloti Core", "Ksoloti Core + SPILink", "Axoloti Core", "Axoloti Core + SPILink" }));
+        jComboBoxFirmwareMode.setModel(new DefaultComboBoxModel<String>(new String[] {
+            "Ksoloti Core",
+            "Ksoloti Core + SPILink",
+            "Ksoloti Core + USBAudio",
+            "Axoloti Core",
+            "Axoloti Core + SPILink",
+            "Axoloti Core + USBAudio"
+        }));
         jComboBoxFirmwareMode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxFirmwareModeActionPerformed(evt);
@@ -402,6 +420,25 @@ public class PreferencesFrame extends JFrame {
             }
         });
 
+        jLabelDspSafetyLimit.setText("DSP Safety Limit");
+        jLabelDspSafetyLimit.setToolTipText("Changes the DSP safety limits.");
+        jLabelDspSafetyLimit.setEnabled(true);
+
+        jComboBoxDspSafetyLimit.addItem("Original");
+        jComboBoxDspSafetyLimit.addItem("Very Safe");
+        jComboBoxDspSafetyLimit.addItem("Safe");
+        jComboBoxDspSafetyLimit.addItem("Normal");
+        jComboBoxDspSafetyLimit.addItem("Risky");
+        jComboBoxDspSafetyLimit.addItem("Very Risky");
+
+        jComboBoxDspSafetyLimit.setToolTipText(jLabelDspSafetyLimit.getToolTipText());
+        jComboBoxDspSafetyLimit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxDspSafetyLimitPerformed(evt);
+            }
+        });
+
+
         jCheckBoxNoMouseReCenter.setText("Touchscreen Mode");
         jCheckBoxNoMouseReCenter.setToolTipText("Makes the Patcher usable with touchscreens.\nAlso fixes abnormal mouse behaviour on some systems when turning knobs.");
         jCheckBoxNoMouseReCenter.addActionListener(new java.awt.event.ActionListener() {
@@ -496,6 +533,12 @@ public class PreferencesFrame extends JFrame {
                             )
 
                             .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabelDspSafetyLimit, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(ComponentPlacement.RELATED)
+                                .addComponent(jComboBoxDspSafetyLimit, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
+                            )
+
+                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelTheme, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(jComboBoxTheme, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
@@ -521,7 +564,7 @@ public class PreferencesFrame extends JFrame {
                                 .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(jTextFieldPollInterval, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
                             )
-
+                            
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelCodeFontSize, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED)
@@ -629,6 +672,12 @@ public class PreferencesFrame extends JFrame {
                             .addComponent(jTextFieldController, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
                         .addGap(15, 15, 15)
+
+                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                            .addComponent(jLabelDspSafetyLimit)
+                            .addComponent(jComboBoxDspSafetyLimit, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        )
+                        .addGap(5, 5, 5)
 
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelTheme)
@@ -763,6 +812,9 @@ public class PreferencesFrame extends JFrame {
         SwingUtilities.updateComponentTreeUI(this); /* Preview theme via preferences window */
     }
 
+    private void jComboBoxDspSafetyLimitPerformed(java.awt.event.ActionEvent evt) {
+    }
+
     private void jCheckBoxNoMouseReCenterActionPerformed(java.awt.event.ActionEvent evt) {
         prefs.setMouseDoNotRecenterWhenAdjustingControls(jCheckBoxNoMouseReCenter.isSelected());
     }
@@ -802,6 +854,8 @@ public class PreferencesFrame extends JFrame {
     private JButton jEditLib;
     private JLabel jLabelLibraries;
     private JLabel jLabelPollInterval;
+    private JLabel jLabelDspSafetyLimit;
+    private JComboBox<String> jComboBoxDspSafetyLimit;
     private JLabel jLabelCodeFontSize;
     private JLabel jLabelDialMouseBehaviour;
     private JLabel jLabelFirmwareMode;
