@@ -13,10 +13,11 @@
 
 <div class="para func">
 <h2>f_stat</h2>
+<p>ファイルまたはサブ・ディレクトリの存在を調べ、またその情報を取得します。</p>
 <pre>
 FRESULT f_stat (
-  const TCHAR* <em>FileName</em>,  <span class="c">/* ファイルまたはディレクトリ名へのポインタ */</span>
-  FILINFO* <em>FileInfo</em>       <span class="c">/* ファイル情報構造体へのポインタ */</span>
+  const TCHAR* <span class="arg">path</span>,  <span class="c">/* [IN] オブジェクト名へのポインタ */</span>
+  FILINFO* <span class="arg">fno</span>        <span class="c">/* [OUT] ファイル情報構造体へのポインタ */</span>
 );
 </pre>
 </div>
@@ -24,10 +25,10 @@ FRESULT f_stat (
 <div class="para arg">
 <h4>引数</h4>
 <dl class="par">
-<dt>FileName</dt>
-<dd>情報を得るファイルまたはディレクトリ名の<tt>'\0'</tt>で終わる文字列を指すポインタを指定します。</dd>
-<dt>FileInfo</dt>
-<dd>読み出したファイル情報を格納するファイル情報構造体へのポインタを指定します。</dd>
+<dt>path</dt>
+<dd>チェックするオブジェクト名を示すヌル文字<tt>'\0'</tt>終端の文字列を指すポインタを指定します。</dd>
+<dt>fno</dt>
+<dd>オブジェクトが存在したときにその情報を格納するファイル情報構造体へのポインタを指定します。この情報が不要なときはヌル・ポインタを指定してください。</dd>
 </dl>
 </div>
 
@@ -53,7 +54,7 @@ FRESULT f_stat (
 
 <div class="para desc">
 <h4>解説</h4>
-<p>ファイルまたはディレクトリに関する情報を得ます。得られるファイル情報の詳細については <tt>FILINFO</tt>構造体を参照してください。</p>
+<p>指定されたファイルまたはサブ・ディレクトリの存在を調べます。存在しない場合は、<tt>FR_NO_FILE</tt>が帰ります。存在する場合は<tt>FR_OK</tt>が帰り、ファイル情報構造体にそれ関する情報(サイズ、タイムスタンプおよび属性)がストアされます。</p>
 </div>
 
 

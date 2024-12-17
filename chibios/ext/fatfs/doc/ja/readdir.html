@@ -16,8 +16,8 @@
 <p>ディレクトリ項目を読み出します</p>
 <pre>
 FRESULT f_readdir (
-  DIR* <em>DirObject</em>,    <span class="c">/* ディレクトリ・ブジェクト構造体へのポインタ */</span>
-  FILINFO* <em>FileInfo</em>  <span class="c">/* ファイル情報構造体へのポインタ */</span>
+  DIR* <span class="arg">dp</span>,      <span class="c">/* [IN] ディレクトリ・ブジェクト構造体へのポインタ */</span>
+  FILINFO* <span class="arg">fno</span>  <span class="c">/* [OUT] ファイル情報構造体へのポインタ */</span>
 );
 </pre>
 </div>
@@ -25,9 +25,9 @@ FRESULT f_readdir (
 <div class="para arg">
 <h4>引数</h4>
 <dl class="par">
-<dt>DirObject</dt>
+<dt>dp</dt>
 <dd>有効なディレクトリ・オブジェクト構造体へのポインタを指定します。</dd>
-<dt>FileInfo</dt>
+<dt>fno</dt>
 <dd>読み出したディレクトリ項目を格納するファイル情報構造体へのポインタを指定します。</dd>
 </dl>
 </div>
@@ -49,14 +49,15 @@ FRESULT f_readdir (
 
 <div class="para desc">
 <h4>解説</h4>
-<p>ディレクトリ項目を順次読み出します。この関数を繰り返し実行することによりディレクトリの全ての項目を読み出すことができます。全ての項目を読み出し、読み出す項目がもう無いときは、<tt>f_name[]</tt>メンバにヌル文字列が返されます。ボリューム・ラベルは読み出すときに棄てられ、現れることはありません。"."、".."は、相対パスが有効なとき(<tt>_FS_RPATH == 1</tt>)にのみ現れます。得られるファイル情報の詳細については <tt>FILINFO</tt>構造体を参照してください。FileInfoにヌル・ポインタを指定すると、そのディレクトリのリード・インデックスを巻き戻します。</p>
-<p>LFN機能が有効な時は、f_readdir関数の呼び出しに先立ってFILINFO構造体の<tt>lfname</tt>と<tt>lfsize</tt>が有効な値で初期化されていなければなりません。<tt>lfname</tt>はLFNを格納するバッファで、<tt>lfsize</tt>はそのバッファ・サイズ(TCHAR)です。次の条件に一つでも該当する場合は、LFN格納バッファにヌル文字列が返されます。</p>
+<p>ディレクトリの項目(ファイルとディレクトリ)を順次読み出します。この関数を繰り返し実行することによりそのディレクトリの全ての項目を読み出すことができます。得られるファイル情報の詳細については <tt>FILINFO</tt>構造体を参照してください。全ての項目が読み出され、読み出す項目がもう無いときは、<tt>fname[]</tt>メンバにヌル文字列が返されます。<tt class="arg">fno</tt>にヌル・ポインタを指定すると、そのディレクトリのリード・インデックスを先頭に巻き戻します。また、この関数は次に示すように関連する構成オプションにより動作が変わります。</p>
+<p>ドット・エントリ("."、"..")は、相対パスが有効なとき(<tt>_FS_RPATH &gt;= 1</tt>)にのみ出力に現れます。</p>
+<p>LFN機能が有効な時は、この関数の呼び出しに先立って<tt>FILINFO</tt>構造体の<tt>lfname</tt>と<tt>lfsize</tt>が有効な値で初期化されていなければなりません。<tt>lfname</tt>はLFNを格納するバッファで、<tt>lfsize</tt>はそのバッファの要素数です。LFNを読み出す必要がないときは、<tt>lfname</tt>にヌル・ポインタをセットしてください。次の条件に一つでも該当する場合は、LFN格納バッファにヌル文字列が返されます。</p>
 <ul>
-<li>そのディレクトリ項目にLFNが存在しない。</li>
+<li>ディレクトリ項目にLFN情報が存在しない。</li>
 <li>LFNの長さに対してLFN格納バッファまたはLFN操作バッファのサイズが不十分。</li>
-<li>LFNに現在のOEMコードに存在しない文字が含まれている。(Unicode APIではないとき)</li>
+<li>LFNに現在のOEMコードに存在しない文字が含まれている。(非Unicode構成のとき)</li>
 </ul>
-<p>また、<tt>lfname</tt>にヌル・ポインタを指定した場合は、LFNに関して何も返されません。LFNが存在しないときは、<tt>f_name[]</tt>メンバのSFNにASCII英小文字が含まれる場合があります。</p>
+<p>また、ディレクトリ項目にLFN情報が存在しない場合は、<tt>fname[]</tt>に英小文字が含まれる場合があります。</p>
 </div>
 
 
@@ -81,7 +82,7 @@ FRESULT scan_files (
 <span class="k">#if</span> _USE_LFN
     static char lfn[_MAX_LFN + 1];
     fno.lfname = lfn;
-    fno.lfsize = sizeof(lfn);
+    fno.lfsize = sizeof lfn;
 <span class="k">#endif</span>
 
 
@@ -106,6 +107,7 @@ FRESULT scan_files (
                 printf("%s/%s\n", path, fn);
             }
         }
+        f_closedir(&amp;dir);
     }
 
     return res;
@@ -116,7 +118,7 @@ FRESULT scan_files (
 
 <div class="para ref">
 <h4>参照</h4>
-<p><tt><a href="opendir.html">f_opendir</a>, <a href="stat.html">f_stat</a>, <a href="sfileinfo.html">FILINFO</a>, <a href="sdir.html">DIR</a></tt></p>
+<p><tt><a href="opendir.html">f_opendir</a>, <a href="closedir.html">f_closedir</a>, <a href="stat.html">f_stat</a>, <a href="sfileinfo.html">FILINFO</a>, <a href="sdir.html">DIR</a></tt></p>
 </div>
 
 <p class="foot"><a href="../00index_j.html">戻る</a></p>

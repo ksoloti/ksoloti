@@ -13,11 +13,11 @@
 
 <div class="para func">
 <h2>f_rename</h2>
-<p>Renames an object.</p>
+<p>Renames a file or sub-directory.</p>
 <pre>
 FRESULT f_rename (
-  const TCHAR* <em>OldName</em>, <span class="c">/* Pointer to old object name */</span>
-  const TCHAR* <em>NewName</em>  <span class="c">/* Pointer to new object name */</span>
+  const TCHAR* <span class="arg">old_name</span>, <span class="c">/* [IN] Old object name */</span>
+  const TCHAR* <span class="arg">new_name</span>  <span class="c">/* [IN] New object name */</span>
 );
 </pre>
 </div>
@@ -25,10 +25,10 @@ FRESULT f_rename (
 <div class="para arg">
 <h4>Parameters</h4>
 <dl class="par">
-<dt>OldName</dt>
-<dd>Pointer to a null-terminated string specifies the old <a href="filename.html">object name</a> to be renamed.</dd>
-<dt>NewName</dt>
-<dd>Pointer to a null-terminated string specifies the new object name without drive number.</dd>
+<dt>old_name</dt>
+<dd>Pointer to a null-terminated string that specifies an existing <a href="filename.html">file or sub-directory</a> to be renamed.</dd>
+<dt>new_name</dt>
+<dd>Pointer to a null-terminated string that specifies the new object name. The drive number specified in this string is ignored and one determined by <tt class="arg">old_name</tt> is used instead.</dd>
 </dl>
 </div>
 
@@ -58,7 +58,7 @@ FRESULT f_rename (
 
 <div class="para desc">
 <h4>Description</h4>
-<p>Renames an object (file or directory) and can also move it to other directory. The logical drive number is determined by old name, new name must not contain a logical drive number. <em>Do not rename open objects</em>.</p>
+<p>Renames a file or sub-directory and can also move it to other directory within the same logical drive. <em>Do not rename open objects</em> or directry table can be broken.</p>
 </div>
 
 
@@ -78,6 +78,7 @@ FRESULT f_rename (
     f_rename("oldname.txt", "dir1/newname.txt");
 </pre>
 </div>
+
 
 <p class="foot"><a href="../00index_e.html">Return</a></p>
 </body>

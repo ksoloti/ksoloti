@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -13,14 +13,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-/*
-   Concepts and parts of this file have been contributed by Fabio Utzig and
-   Xo Wang.
- */
 
 /**
- * @file    templates/icu_lld.h
- * @brief   ICU Driver subsystem low level driver header template.
+ * @file    icu_lld.h
+ * @brief   PLATFORM ICU subsystem low level driver header.
  *
  * @addtogroup ICU
  * @{
@@ -29,7 +25,7 @@
 #ifndef _ICU_LLD_H_
 #define _ICU_LLD_H_
 
-#if HAL_USE_ICU || defined(__DOXYGEN__)
+#if (HAL_USE_ICU == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -40,15 +36,16 @@
 /*===========================================================================*/
 
 /**
- * @name    Configuration options
+ * @name    PLATFORM configuration options
  * @{
  */
 /**
- * @brief   ICU driver enable switch.
- * @details If set to @p TRUE the support for ICU1 is included.
+ * @brief   ICUD1 driver enable switch.
+ * @details If set to @p TRUE the support for ICUD1 is included.
+ * @note    The default is @p FALSE.
  */
 #if !defined(PLATFORM_ICU_USE_ICU1) || defined(__DOXYGEN__)
-#define PLATFORM_ICU_USE_ICU1               FALSE
+#define PLATFORM_ICU_USE_ICU1                  FALSE
 #endif
 /** @} */
 
@@ -61,11 +58,11 @@
 /*===========================================================================*/
 
 /**
- * @brief ICU driver mode.
+ * @brief   ICU driver mode.
  */
 typedef enum {
   ICU_INPUT_ACTIVE_HIGH = 0,        /**< Trigger on rising edge.            */
-  ICU_INPUT_ACTIVE_LOW = 1,         /**< Trigger on falling edge.           */
+  ICU_INPUT_ACTIVE_LOW = 1          /**< Trigger on falling edge.           */
 } icumode_t;
 
 /**
@@ -76,7 +73,7 @@ typedef uint32_t icufreq_t;
 /**
  * @brief   ICU counter type.
  */
-typedef uint16_t icucnt_t;
+typedef uint32_t icucnt_t;
 
 /**
  * @brief   Driver configuration structure.
@@ -130,11 +127,47 @@ struct ICUDriver {
 /* Driver macros.                                                            */
 /*===========================================================================*/
 
+/**
+ * @brief   Returns the width of the latest pulse.
+ * @details The pulse width is defined as number of ticks between the start
+ *          edge and the stop edge.
+ *
+ * @param[in] icup      pointer to the @p ICUDriver object
+ * @return              The number of ticks.
+ *
+ * @notapi
+ */
+#define icu_lld_get_width(icup) 0
+
+/**
+ * @brief   Returns the width of the latest cycle.
+ * @details The cycle width is defined as number of ticks between a start
+ *          edge and the next start edge.
+ *
+ * @param[in] icup      pointer to the @p ICUDriver object
+ * @return              The number of ticks.
+ *
+ * @notapi
+ */
+#define icu_lld_get_period(icup) 0
+
+/**
+ * @brief   Check on notifications status.
+ *
+ * @param[in] icup      pointer to the @p ICUDriver object
+ * @return              The notifications status.
+ * @retval false        if notifications are not enabled.
+ * @retval true         if notifications are enabled.
+ *
+ * @notapi
+ */
+#define icu_lld_are_notifications_enabled(icup) false
+
 /*===========================================================================*/
 /* External declarations.                                                    */
 /*===========================================================================*/
 
-#if PLATFORM_ICU_USE_ICU1 && !defined(__DOXYGEN__)
+#if (PLATFORM_ICU_USE_ICU1 == TRUE) && !defined(__DOXYGEN__)
 extern ICUDriver ICUD1;
 #endif
 
@@ -144,15 +177,16 @@ extern "C" {
   void icu_lld_init(void);
   void icu_lld_start(ICUDriver *icup);
   void icu_lld_stop(ICUDriver *icup);
-  void icu_lld_enable(ICUDriver *icup);
-  void icu_lld_disable(ICUDriver *icup);
-  icucnt_t icu_lld_get_width(ICUDriver *icup);
-  icucnt_t icu_lld_get_period(ICUDriver *icup);
+  void icu_lld_start_capture(ICUDriver *icup);
+  bool icu_lld_wait_capture(ICUDriver *icup);
+  void icu_lld_stop_capture(ICUDriver *icup);
+  void icu_lld_enable_notifications(ICUDriver *icup);
+  void icu_lld_disable_notifications(ICUDriver *icup);
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* HAL_USE_ICU */
+#endif /* HAL_USE_ICU == TRUE */
 
 #endif /* _ICU_LLD_H_ */
 

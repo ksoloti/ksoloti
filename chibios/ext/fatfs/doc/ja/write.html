@@ -16,10 +16,10 @@
 <p>ファイルにデータを書き込みます。</p>
 <pre>
 FRESULT f_write (
-  FIL* <em>FileObject</em>,     <span class="c">/* ファイル・オブジェクト */</span>
-  const void* <em>Buffer</em>,  <span class="c">/* 書き込みデータ */</span>
-  UINT <em>ByteToWrite</em>,    <span class="c">/* 書き込むバイト数 */</span>
-  UINT* <em>ByteWritten</em>    <span class="c">/* 書き込まれたバイト数 */</span>
+  FIL* <span class="arg">fp</span>,           <span class="c">/* [IN] ファイル・オブジェクト */</span>
+  const void* <span class="arg">buff</span>,  <span class="c">/* [IN] 書き込みデータ */</span>
+  UINT <span class="arg">btw</span>,          <span class="c">/* [IN] 書き込むバイト数 */</span>
+  UINT* <span class="arg">bw</span>           <span class="c">/* [OUT] 書き込まれたバイト数 */</span>
 );
 </pre>
 </div>
@@ -27,13 +27,13 @@ FRESULT f_write (
 <div class="para arg">
 <h4>引数</h4>
 <dl class="par">
-<dt>FileObject</dt>
+<dt>fp</dt>
 <dd>ファイル・オブジェクト構造体へのポインタを指定します。</dd>
-<dt>Buffer</dt>
+<dt>buff</dt>
 <dd>書き込むデータを格納したバッファを指すポインタを指定します。</dd>
-<dt>ByteToWrite</dt>
-<dd>書き込むバイト数(0～UINTの最大値)を指定します。</dd>
-<dt>ByteWritten</dt>
+<dt>btw</dt>
+<dd>書き込むバイト数(0～<tt>UINT</tt>型の最大値)を指定します。</dd>
+<dt>bw</dt>
 <dd>書き込まれたバイト数を格納する変数を指すポインタを指定します。戻り値は関数の成否にかかわらず常に有効です。</dd>
 </dl>
 </div>
@@ -55,7 +55,7 @@ FRESULT f_write (
 
 <div class="para desc">
 <h4>解説</h4>
-<p>書き込み開始位置は、リード/ライト・ポインタの位置からになります。リード/ライト・ポインタは実際に書き込まれたバイト数だけ進みます。関数が正常終了した後、要求したバイト数が書き込まれたかどうか<tt>*ByteWritten</tt>をチェックすべきです。<tt>*ByteWritten &lt; ByteToWrite</tt>のときは、ディスク・フルを意味します。ディスク・フルが発生しているときまたはそれに近いときは、制御が帰るまで時間がかかる場合があります。</p>
+<p>書き込み開始位置は、リード/ライト・ポインタの位置からになります。リード/ライト・ポインタは実際に書き込まれたバイト数だけ進みます。関数が正常終了した後、要求したバイト数が書き込まれたかどうか<tt class="arg">*bw</tt>をチェックすべきです。<tt class="arg">*bw</tt>が<tt class="arg">btw</tt>より小さいときは、ディスク・フルを意味します。ディスク・フルが発生しているときまたはそれに近いときは、制御が帰るまで時間がかかる場合があります。</p>
 </div>
 
 

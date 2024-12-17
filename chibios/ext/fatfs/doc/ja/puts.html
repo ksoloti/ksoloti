@@ -16,8 +16,8 @@
 <p>ファイルに文字列を書き込みます。</p>
 <pre>
 int f_puts (
-  const TCHAR* <em>Str</em>,  <span class="c">/* 書き込む文字列 */</span>
-  FIL* <em>FileObject</em>    <span class="c">/* ファイル・オブジェクト */</span>
+  const TCHAR* <span class="arg">str</span>,  <span class="c">/* [IN] 書き込む文字列 */</span>
+  FIL* <span class="arg">fp</span>            <span class="c">/* [IN] ファイル・オブジェクト */</span>
 );
 </pre>
 </div>
@@ -25,9 +25,9 @@ int f_puts (
 <div class="para arg">
 <h4>引数</h4>
 <dl class="par">
-<dt>Str</dt>
-<dd>書き込む'\0'で終わる文字列を指すポインタを指定します。'\0'は書き込まれません。</dd>
-<dt>FileObject</dt>
+<dt>str</dt>
+<dd>書き込むヌル文字<tt>'\0'</tt>終端の文字列を指すポインタを指定します。ヌル文字は書き込まれません。</dd>
+<dt>fp</dt>
 <dd>ファイル・オブジェクト構造体へのポインタを指定します。</dd>
 </dl>
 </div>
@@ -36,13 +36,13 @@ int f_puts (
 <div class="para ret">
 <h4>戻り値</h4>
 <p>文字列が正常に書き込まれると、書き込まれた文字数が返されます。ディスクが満杯またはエラーにより書き込みが中断されたときは<tt>EOF (-1)</tt>が返されます。</p>
-<p>APIにUnicodeが選択されている(<tt>_LFN_UNICODE</tt>が1)ときは、UTF-8エンコードでファイルに書き込みます。それ以外の時は無変換(1文字1バイト)で書き込みます。</p>
+<p>APIにUnicodeが選択(<tt>_LFN_UNICODE</tt>が1)されているときは、<span class="arg">str</span>はUTF-16文字列になりますが、ファイル上のエンコードは、<tt>_STRF_ENCODE</tt>オプションで選択できます。それ以外の時は無変換(1バイト/1文字)で書き込みます。</p>
 </div>
 
 
 <div class="para desc">
 <h4>解説</h4>
-<p>文字列をファイルに書き込みます。この関数は<a href="putc.html">f_putc()</a>のラッパー関数です。</p>
+<p>文字列をファイルに書き込みます。この関数は<a href="write.html"><tt>f_write()</tt></a>のラッパー関数です。</p>
 </div>
 
 

@@ -13,13 +13,13 @@
 
 <div class="para func">
 <h2>disk_read</h2>
-<p>The disk_read function reads sector(s) from the disk drive.</p>
+<p>The disk_read function reads sector(s) from the storage device.</p>
 <pre>
 DRESULT disk_read (
-  BYTE <em>Drive</em>,          <span class="c">/* Physical drive number */</span>
-  BYTE* <em>Buffer</em>,        <span class="c">/* Pointer to the read data buffer */</span>
-  DWORD <em>SectorNumber</em>,  <span class="c">/* Start sector number */</span>
-  BYTE <em>SectorCount</em>     <span class="c">/* Number of sectros to read */</span>
+  BYTE <span class="arg">pdrv</span>,     <span class="c">/* [IN] Physical drive number */</span>
+  BYTE* <span class="arg">buff</span>,    <span class="c">/* [OUT] Pointer to the read data buffer */</span>
+  DWORD <span class="arg">sector</span>,  <span class="c">/* [IN] Start sector number */</span>
+  UINT <span class="arg">count</span>     <span class="c">/* [IN] Number of sectros to read */</span>
 );
 </pre>
 </div>
@@ -27,14 +27,14 @@ DRESULT disk_read (
 <div class="para arg">
 <h4>Parameters</h4>
 <dl class="par">
-<dt>Drive</dt>
-<dd>Specifies the physical drive number.</dd>
-<dt>Buffer</dt>
-<dd>Pointer to the <em>byte array</em> to store the read data. The buffer size of number of bytes to be read, sector size * sector count, is required. Note that the specified memory address is not that always aligned to word boundary. If the hardware does not support misaligned data transfer, it must be solved in this function.</dd>
-<dt>SectorNumber</dt>
-<dd>Specifies the start sector number in logical block address (LBA).</dd>
-<dt>SectorCount</dt>
-<dd>Specifies number of sectors to read. The value can be 1 to 128. Generally, a multiple sector transfer request must not be split into single sector transactions to the device, or you may not get good read performance.</dd>
+<dt>pdrv</dt>
+<dd>Physical drive number to identify the target device.</dd>
+<dt>buff</dt>
+<dd>Pointer to the <em>byte array</em> to store the read data.</dd>
+<dt>sector</dt>
+<dd>Start sector number in logical block address (LBA).</dd>
+<dt>count</dt>
+<dd>Number of sectors to read. FatFs specifis it in range of from 1 to 128.</dd>
 </dl>
 </div>
 
@@ -49,8 +49,20 @@ DRESULT disk_read (
 <dt>RES_PARERR</dt>
 <dd>Invalid parameter.</dd>
 <dt>RES_NOTRDY</dt>
-<dd>The disk drive has not been initialized.</dd>
+<dd>The device has not been initialized.</dd>
 </dl>
+</div>
+
+
+<div class="para desc">
+<h4>Description</h4>
+<p>The memory address specified by <tt class="arg">buff</tt> is not that always aligned to word boundary because the type of argument is defined as <tt>BYTE*</tt>. The misaligned read/write request can occure at <a href="appnote.html#fs1">direct transfer</a>. If the bus architecture, especially DMA controller, does not allow misaligned memory access, it should be solved in this function. There are some workarounds described below to avoid this issue.</p>
+<ul>
+<li>Convert word transfer to byte transfer in this function. - Recommended.</li>
+<li>For <tt>f_read()</tt>, avoid long read request that includes a whole of sector. - Direct transfer will never occure.</li>
+<li>For <tt>f_read(fp, buff, btr, &amp;br)</tt>, make sure that <tt>(((UINT)buff &amp; 3) == (f_tell(fp) &amp; 3))</tt> is true. - Word aligned direct transfer is guaranteed.</li>
+</ul>
+<p>Generally, a multiple sector transfer request must not be split into single sector transactions to the storage device, or you will not get good read throughput.</p>
 </div>
 
 

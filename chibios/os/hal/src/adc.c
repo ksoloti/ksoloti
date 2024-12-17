@@ -1,28 +1,17 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
-                 2011,2012,2013 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
-    This file is part of ChibiOS/RT.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    ChibiOS/RT is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-    ChibiOS/RT is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes ChibiOS/RT, without being obliged to provide
-    the source code for any proprietary components. See the file exception.txt
-    for full details of how and when the exception can be applied.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 */
 
 /**
@@ -33,10 +22,9 @@
  * @{
  */
 
-#include "ch.h"
 #include "hal.h"
 
-#if HAL_USE_ADC || defined(__DOXYGEN__)
+#if (HAL_USE_ADC == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
@@ -84,16 +72,12 @@ void adcObjectInit(ADCDriver *adcp) {
   adcp->samples  = NULL;
   adcp->depth    = 0;
   adcp->grpp     = NULL;
-#if ADC_USE_WAIT
+#if ADC_USE_WAIT == TRUE
   adcp->thread   = NULL;
-#endif /* ADC_USE_WAIT */
-#if ADC_USE_MUTUAL_EXCLUSION
-#if CH_USE_MUTEXES
-  chMtxInit(&adcp->mutex);
-#else
-  chSemInit(&adcp->semaphore, 1);
 #endif
-#endif /* ADC_USE_MUTUAL_EXCLUSION */
+#if ADC_USE_MUTUAL_EXCLUSION == TRUE
+  osalMutexObjectInit(&adcp->mutex);
+#endif
 #if defined(ADC_DRIVER_EXT_INIT_HOOK)
   ADC_DRIVER_EXT_INIT_HOOK(adcp);
 #endif
@@ -110,15 +94,15 @@ void adcObjectInit(ADCDriver *adcp) {
  */
 void adcStart(ADCDriver *adcp, const ADCConfig *config) {
 
-  chDbgCheck(adcp != NULL, "adcStart");
+  osalDbgCheck(adcp != NULL);
 
-  chSysLock();
-  chDbgAssert((adcp->state == ADC_STOP) || (adcp->state == ADC_READY),
-              "adcStart(), #1", "invalid state");
+  osalSysLock();
+  osalDbgAssert((adcp->state == ADC_STOP) || (adcp->state == ADC_READY),
+                "invalid state");
   adcp->config = config;
   adc_lld_start(adcp);
   adcp->state = ADC_READY;
-  chSysUnlock();
+  osalSysUnlock();
 }
 
 /**
@@ -130,14 +114,14 @@ void adcStart(ADCDriver *adcp, const ADCConfig *config) {
  */
 void adcStop(ADCDriver *adcp) {
 
-  chDbgCheck(adcp != NULL, "adcStop");
+  osalDbgCheck(adcp != NULL);
 
-  chSysLock();
-  chDbgAssert((adcp->state == ADC_STOP) || (adcp->state == ADC_READY),
-              "adcStop(), #1", "invalid state");
+  osalSysLock();
+  osalDbgAssert((adcp->state == ADC_STOP) || (adcp->state == ADC_READY),
+                "invalid state");
   adc_lld_stop(adcp);
   adcp->state = ADC_STOP;
-  chSysUnlock();
+  osalSysUnlock();
 }
 
 /**
@@ -161,9 +145,9 @@ void adcStartConversion(ADCDriver *adcp,
                         adcsample_t *samples,
                         size_t depth) {
 
-  chSysLock();
+  osalSysLock();
   adcStartConversionI(adcp, grpp, samples, depth);
-  chSysUnlock();
+  osalSysUnlock();
 }
 
 /**
@@ -189,14 +173,13 @@ void adcStartConversionI(ADCDriver *adcp,
                          adcsample_t *samples,
                          size_t depth) {
 
-  chDbgCheckClassI();
-  chDbgCheck((adcp != NULL) && (grpp != NULL) && (samples != NULL) &&
-             ((depth == 1) || ((depth & 1) == 0)),
-             "adcStartConversionI");
-  chDbgAssert((adcp->state == ADC_READY) ||
-              (adcp->state == ADC_COMPLETE) ||
-              (adcp->state == ADC_ERROR),
-              "adcStartConversionI(), #1", "not ready");
+  osalDbgCheckClassI();
+  osalDbgCheck((adcp != NULL) && (grpp != NULL) && (samples != NULL) &&
+               ((depth == 1U) || ((depth & 1U) == 0U)));
+  osalDbgAssert((adcp->state == ADC_READY) ||
+                (adcp->state == ADC_COMPLETE) ||
+                (adcp->state == ADC_ERROR),
+                "not ready");
 
   adcp->samples  = samples;
   adcp->depth    = depth;
@@ -217,19 +200,18 @@ void adcStartConversionI(ADCDriver *adcp,
  */
 void adcStopConversion(ADCDriver *adcp) {
 
-  chDbgCheck(adcp != NULL, "adcStopConversion");
+  osalDbgCheck(adcp != NULL);
 
-  chSysLock();
-  chDbgAssert((adcp->state == ADC_READY) ||
-              (adcp->state == ADC_ACTIVE),
-              "adcStopConversion(), #1", "invalid state");
+  osalSysLock();
+  osalDbgAssert((adcp->state == ADC_READY) || (adcp->state == ADC_ACTIVE),
+                "invalid state");
   if (adcp->state != ADC_READY) {
     adc_lld_stop_conversion(adcp);
     adcp->grpp  = NULL;
     adcp->state = ADC_READY;
     _adc_reset_s(adcp);
   }
-  chSysUnlock();
+  osalSysUnlock();
 }
 
 /**
@@ -244,12 +226,12 @@ void adcStopConversion(ADCDriver *adcp) {
  */
 void adcStopConversionI(ADCDriver *adcp) {
 
-  chDbgCheckClassI();
-  chDbgCheck(adcp != NULL, "adcStopConversionI");
-  chDbgAssert((adcp->state == ADC_READY) ||
-              (adcp->state == ADC_ACTIVE) ||
-              (adcp->state == ADC_COMPLETE),
-              "adcStopConversionI(), #1", "invalid state");
+  osalDbgCheckClassI();
+  osalDbgCheck(adcp != NULL);
+  osalDbgAssert((adcp->state == ADC_READY) ||
+                (adcp->state == ADC_ACTIVE) ||
+                (adcp->state == ADC_COMPLETE),
+                "invalid state");
 
   if (adcp->state != ADC_READY) {
     adc_lld_stop_conversion(adcp);
@@ -259,7 +241,7 @@ void adcStopConversionI(ADCDriver *adcp) {
   }
 }
 
-#if ADC_USE_WAIT || defined(__DOXYGEN__)
+#if (ADC_USE_WAIT == TRUE) || defined(__DOXYGEN__)
 /**
  * @brief   Performs an ADC conversion.
  * @details Performs a synchronous conversion operation.
@@ -274,11 +256,11 @@ void adcStopConversionI(ADCDriver *adcp) {
  * @param[in] depth     buffer depth (matrix rows number). The buffer depth
  *                      must be one or an even number.
  * @return              The operation result.
- * @retval RDY_OK       Conversion finished.
- * @retval RDY_RESET    The conversion has been stopped using
+ * @retval MSG_OK       Conversion finished.
+ * @retval MSG_RESET    The conversion has been stopped using
  *                      @p acdStopConversion() or @p acdStopConversionI(),
  *                      the result buffer may contain incorrect data.
- * @retval RDY_TIMEOUT  The conversion has been stopped because an hardware
+ * @retval MSG_TIMEOUT  The conversion has been stopped because an hardware
  *                      error.
  *
  * @api
@@ -289,18 +271,16 @@ msg_t adcConvert(ADCDriver *adcp,
                  size_t depth) {
   msg_t msg;
 
-  chSysLock();
-  chDbgAssert(adcp->thread == NULL, "adcConvert(), #1", "already waiting");
+  osalSysLock();
+  osalDbgAssert(adcp->thread == NULL, "already waiting");
   adcStartConversionI(adcp, grpp, samples, depth);
-  adcp->thread = chThdSelf();
-  chSchGoSleepS(THD_STATE_SUSPENDED);
-  msg = chThdSelf()->p_u.rdymsg;
-  chSysUnlock();
+  msg = osalThreadSuspendS(&adcp->thread);
+  osalSysUnlock();
   return msg;
 }
-#endif /* ADC_USE_WAIT */
+#endif /* ADC_USE_WAIT == TRUE */
 
-#if ADC_USE_MUTUAL_EXCLUSION || defined(__DOXYGEN__)
+#if (ADC_USE_MUTUAL_EXCLUSION == TRUE) || defined(__DOXYGEN__)
 /**
  * @brief   Gains exclusive access to the ADC peripheral.
  * @details This function tries to gain ownership to the ADC bus, if the bus
@@ -314,13 +294,9 @@ msg_t adcConvert(ADCDriver *adcp,
  */
 void adcAcquireBus(ADCDriver *adcp) {
 
-  chDbgCheck(adcp != NULL, "adcAcquireBus");
+  osalDbgCheck(adcp != NULL);
 
-#if CH_USE_MUTEXES
-  chMtxLock(&adcp->mutex);
-#elif CH_USE_SEMAPHORES
-  chSemWait(&adcp->semaphore);
-#endif
+  osalMutexLock(&adcp->mutex);
 }
 
 /**
@@ -334,17 +310,12 @@ void adcAcquireBus(ADCDriver *adcp) {
  */
 void adcReleaseBus(ADCDriver *adcp) {
 
-  chDbgCheck(adcp != NULL, "adcReleaseBus");
+  osalDbgCheck(adcp != NULL);
 
-#if CH_USE_MUTEXES
-  (void)adcp;
-  chMtxUnlock();
-#elif CH_USE_SEMAPHORES
-  chSemSignal(&adcp->semaphore);
-#endif
+  osalMutexUnlock(&adcp->mutex);
 }
-#endif /* ADC_USE_MUTUAL_EXCLUSION */
+#endif /* ADC_USE_MUTUAL_EXCLUSION == TRUE */
 
-#endif /* HAL_USE_ADC */
+#endif /* HAL_USE_ADC == TRUE */
 
 /** @} */

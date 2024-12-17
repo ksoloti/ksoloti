@@ -13,16 +13,16 @@
 
 <div class="para">
 <h2>FIL</h2>
-<p>The FIL structure (file object) holds state of an open file. It is created by f_open function and discarded by f_close function. There is no member that can be changed by the application program except for <tt>cltbl</tt>. Note that a sector buffer is defined in this structure under non-tiny configuration so that the FIL structures should not be defined as auto variable.</p>
+<p>The <tt>FIL</tt> structure (file object) holds state of an open file. It is created by <tt>f_open()</tt> function and discarded by <tt>f_close()</tt> function. Application program must not modify any member in this structure except for <tt>cltbl</tt>. Note that a sector buffer is defined in this structure at non-tiny configuration, so that the <tt>FIL</tt> structures should not be defined as auto variable.</p>
 
 <pre>
 <span class="k">typedef</span> <span class="k">struct</span> {
     FATFS*  fs;           <span class="c">/* Pointer to the owner file system object */</span>
     WORD    id;           <span class="c">/* Owner file system mount ID */</span>
-    BYTE    flag;         <span class="c">/* File status flags */</span>
-    BYTE    pad1;
+    BYTE    flag;         <span class="c">/* File object status flags */</span>
+    BYTE    err;          <span class="c">/* Abort flag (error code) */</span>
     DWORD   fptr;         <span class="c">/* File read/write pointer (Byte offset origin from top of the file) */</span>
-    DWORD   fsize;        <span class="c">/* File size */</span>
+    DWORD   fsize;        <span class="c">/* File size in unit of byte */</span>
     DWORD   sclust;       <span class="c">/* File start cluster */</span>
     DWORD   clust;        <span class="c">/* Current cluster */</span>
     DWORD   dsect;        <span class="c">/* Current data sector */</span>
@@ -33,11 +33,11 @@
 <span class="k">#if</span> _USE_FASTSEEK
     DWORD*  cltbl;        <span class="c">/* Pointer to the cluster link map table (Nulled on file open) */</span>
 <span class="k">#endif</span>
-<span class="k">#if</span> _FS_SHARE
-    UINT    lockid;       <span class="c">/* File lock ID */</span>
+<span class="k">#if</span> _FS_LOCK
+    UINT    lockid;       <span class="c">/* Fle lock ID */</span>
 <span class="k">#endif</span>
 <span class="k">#if</span> !_FS_TINY
-    BYTE    buf[_MAX_SS]; <span class="c">/* Data read/write buffer */</span>
+    BYTE    buf[_MAX_SS]; <span class="c">/* File private data transfer buffer */</span>
 <span class="k">#endif</span>
 } FIL;
 </pre>

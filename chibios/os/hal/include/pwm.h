@@ -1,28 +1,17 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
-                 2011,2012,2013 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
-    This file is part of ChibiOS/RT.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    ChibiOS/RT is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-    ChibiOS/RT is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes ChibiOS/RT, without being obliged to provide
-    the source code for any proprietary components. See the file exception.txt
-    for full details of how and when the exception can be applied.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 */
 
 /**
@@ -36,7 +25,7 @@
 #ifndef _PWM_H_
 #define _PWM_H_
 
-#if HAL_USE_PWM || defined(__DOXYGEN__)
+#if (HAL_USE_PWM == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -49,22 +38,22 @@
 /**
  * @brief   Standard output modes mask.
  */
-#define PWM_OUTPUT_MASK                         0x0F
+#define PWM_OUTPUT_MASK                         0x0FU
 
 /**
  * @brief   Output not driven, callback only.
  */
-#define PWM_OUTPUT_DISABLED                     0x00
+#define PWM_OUTPUT_DISABLED                     0x00U
 
 /**
  * @brief   Positive PWM logic, active is logic level one.
  */
-#define PWM_OUTPUT_ACTIVE_HIGH                  0x01
+#define PWM_OUTPUT_ACTIVE_HIGH                  0x01U
 
 /**
  * @brief   Inverse PWM logic, active is logic level zero.
  */
-#define PWM_OUTPUT_ACTIVE_LOW                   0x02
+#define PWM_OUTPUT_ACTIVE_LOW                   0x02U
 /** @} */
 
 /*===========================================================================*/
@@ -85,7 +74,7 @@
 typedef enum {
   PWM_UNINIT = 0,                   /**< Not initialized.                   */
   PWM_STOP = 1,                     /**< Stopped.                           */
-  PWM_READY = 2,                    /**< Ready.                             */
+  PWM_READY = 2                     /**< Ready.                             */
 } pwmstate_t;
 
 /**
@@ -94,7 +83,7 @@ typedef enum {
 typedef struct PWMDriver PWMDriver;
 
 /**
- * @brief   PWM notification callback type.
+ * @brief   Type of a PWM notification callback.
  *
  * @param[in] pwmp      pointer to a @p PWMDriver object
  */
@@ -194,13 +183,15 @@ typedef void (*pwmcallback_t)(PWMDriver *pwmp);
  *          or immediately (fallback implementation).
  *
  * @param[in] pwmp      pointer to a @p PWMDriver object
- * @param[in] channel   PWM channel identifier (0...PWM_CHANNELS-1)
+ * @param[in] channel   PWM channel identifier (0...channels-1)
  * @param[in] width     PWM pulse width as clock pulses number
  *
  * @iclass
  */
-#define pwmEnableChannelI(pwmp, channel, width)                             \
-  pwm_lld_enable_channel(pwmp, channel, width)
+#define pwmEnableChannelI(pwmp, channel, width) do {                        \
+  (pwmp)->enabled |= ((pwmchnmsk_t)1U << (pwmchnmsk_t)(channel));           \
+  pwm_lld_enable_channel(pwmp, channel, width);                             \
+} while (false)
 
 /**
  * @brief   Disables a PWM channel.
@@ -212,24 +203,78 @@ typedef void (*pwmcallback_t)(PWMDriver *pwmp);
  *          or immediately (fallback implementation).
  *
  * @param[in] pwmp      pointer to a @p PWMDriver object
- * @param[in] channel   PWM channel identifier (0...PWM_CHANNELS-1)
+ * @param[in] channel   PWM channel identifier (0...channels-1)
  *
  * @iclass
  */
-#define pwmDisableChannelI(pwmp, channel)                                   \
-  pwm_lld_disable_channel(pwmp, channel)
+#define pwmDisableChannelI(pwmp, channel) do {                              \
+  (pwmp)->enabled &= ~((pwmchnmsk_t)1U << (pwmchnmsk_t)(channel));          \
+  pwm_lld_disable_channel(pwmp, channel);                                   \
+} while (false)
 
 /**
  * @brief   Returns a PWM channel status.
  * @pre     The PWM unit must have been activated using @p pwmStart().
  *
  * @param[in] pwmp      pointer to a @p PWMDriver object
- * @param[in] channel   PWM channel identifier (0...PWM_CHANNELS-1)
+ * @param[in] channel   PWM channel identifier (0...channels-1)
  *
  * @iclass
  */
 #define pwmIsChannelEnabledI(pwmp, channel)                                 \
-  pwm_lld_is_channel_enabled(pwmp, channel)
+  (((pwmp)->enabled & ((pwmchnmsk_t)1U << (pwmchnmsk_t)(channel))) != 0U)
+
+/**
+ * @brief   Enables the periodic activation edge notification.
+ * @pre     The PWM unit must have been activated using @p pwmStart().
+ * @note    If the notification is already enabled then the call has no effect.
+ *
+ * @param[in] pwmp      pointer to a @p PWMDriver object
+ *
+ * @iclass
+ */
+#define pwmEnablePeriodicNotificationI(pwmp)                                \
+  pwm_lld_enable_periodic_notification(pwmp)
+
+/**
+ * @brief   Disables the periodic activation edge notification.
+ * @pre     The PWM unit must have been activated using @p pwmStart().
+ * @note    If the notification is already disabled then the call has no effect.
+ *
+ * @param[in] pwmp      pointer to a @p PWMDriver object
+ *
+ * @iclass
+ */
+#define pwmDisablePeriodicNotificationI(pwmp)                               \
+  pwm_lld_disable_periodic_notification(pwmp)
+
+/**
+ * @brief   Enables a channel de-activation edge notification.
+ * @pre     The PWM unit must have been activated using @p pwmStart().
+ * @pre     The channel must have been activated using @p pwmEnableChannel().
+ * @note    If the notification is already enabled then the call has no effect.
+ *
+ * @param[in] pwmp      pointer to a @p PWMDriver object
+ * @param[in] channel   PWM channel identifier (0...channels-1)
+ *
+ * @iclass
+ */
+#define pwmEnableChannelNotificationI(pwmp, channel)                        \
+  pwm_lld_enable_channel_notification(pwmp, channel)
+
+/**
+ * @brief   Disables a channel de-activation edge notification.
+ * @pre     The PWM unit must have been activated using @p pwmStart().
+ * @pre     The channel must have been activated using @p pwmEnableChannel().
+ * @note    If the notification is already disabled then the call has no effect.
+ *
+ * @param[in] pwmp      pointer to a @p PWMDriver object
+ * @param[in] channel   PWM channel identifier (0...channels-1)
+ *
+ * @iclass
+ */
+#define pwmDisableChannelNotificationI(pwmp, channel)                       \
+  pwm_lld_disable_channel_notification(pwmp, channel)
 /** @} */
 
 /*===========================================================================*/
@@ -248,11 +293,15 @@ extern "C" {
                         pwmchannel_t channel,
                         pwmcnt_t width);
   void pwmDisableChannel(PWMDriver *pwmp, pwmchannel_t channel);
+  void pwmEnablePeriodicNotification(PWMDriver *pwmp);
+  void pwmDisablePeriodicNotification(PWMDriver *pwmp);
+  void pwmEnableChannelNotification(PWMDriver *pwmp, pwmchannel_t channel);
+  void pwmDisableChannelNotification(PWMDriver *pwmp, pwmchannel_t channel);
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* HAL_USE_PWM */
+#endif /* HAL_USE_PWM == TRUE */
 
 #endif /* _PWM_H_ */
 

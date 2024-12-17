@@ -1,11 +1,43 @@
-R0.09, Sep 6, 2011
+R0.10b, May 19, 2014
+  Fixed a hard error in the disk I/O layer can collapse the directory entry.
+  Fixed LFN entry is not deleted on delete/rename an object with its lossy converted SFN.
+
+R0.10a, Jan 15, 2014
+  Added arbitrary strings as drive number in the path name. (_STR_VOLUME_ID)
+  Added a configuration option of minimum sector size. (_MIN_SS)
+  2nd argument of f_rename() can have a drive number and it will be ignored.
+  Fixed f_mount() with forced mount fails when drive number is >= 1.
+  Fixed f_close() invalidates the file object without volume lock.
+  Fixed f_closedir() returns but the volume lock is left acquired.
+  Fixed creation of an entry with LFN fails on too many SFN collisions.
+
+R0.10, Oct 02, 2013
+  Added selection of character encoding on the file. (_STRF_ENCODE)
+  Added f_closedir().
+  Added forced full FAT scan for f_getfree(). (_FS_NOFSINFO)
+  Added forced mount feature with changes of f_mount().
+  Improved behavior of volume auto detection.
+  Improved write throughput of f_puts() and f_printf().
+  Changed argument of f_chdrive(), f_mkfs(), disk_read() and disk_write().
+  Fixed f_write() can be truncated when the file size is close to 4GB.
+  Fixed f_open(), f_mkdir() and f_setlabel() can return incorrect error code.
+
+R0.09b, Jan 24, 2013
+  Added f_getlabel() and f_setlabel(). (_USE_LABEL = 1)
+
+R0.09a, Aug 27, 2012
+  Fixed assertion failure due to OS/2 EA on FAT12/16.
+  Changed API rejects null object pointer to avoid crash.
+  Changed option name _FS_SHARE to _FS_LOCK.
+
+R0.09, Sep 06, 2011
   f_mkfs() supports multiple partition to finish the multiple partition feature.
   Added f_fdisk(). (_MULTI_PARTITION = 2)
 
 R0.08b, Jan 15, 2011
   Fast seek feature is also applied to f_read() and f_write().
   f_lseek() reports required table size on creating CLMP.
-  Extended format syntax of f_printf function.
+  Extended format syntax of f_printf().
   Ignores duplicated directory separators in given path names.
 
 R0.08a, Aug 16, 2010

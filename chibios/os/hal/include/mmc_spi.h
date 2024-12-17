@@ -1,28 +1,17 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
-                 2011,2012,2013 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
-    This file is part of ChibiOS/RT.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    ChibiOS/RT is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-    ChibiOS/RT is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes ChibiOS/RT, without being obliged to provide
-    the source code for any proprietary components. See the file exception.txt
-    for full details of how and when the exception can be applied.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 */
 
 /**
@@ -36,16 +25,16 @@
 #ifndef _MMC_SPI_H_
 #define _MMC_SPI_H_
 
-#if HAL_USE_MMC_SPI || defined(__DOXYGEN__)
+#if (HAL_USE_MMC_SPI == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
 /*===========================================================================*/
 
-#define MMC_CMD0_RETRY              10
-#define MMC_CMD1_RETRY              100
-#define MMC_ACMD41_RETRY            100
-#define MMC_WAIT_DATA               10000
+#define MMC_CMD0_RETRY              10U
+#define MMC_CMD1_RETRY              100U
+#define MMC_ACMD41_RETRY            100U
+#define MMC_WAIT_DATA               10000U
 
 /*===========================================================================*/
 /* Driver pre-compile time settings.                                         */
@@ -72,7 +61,7 @@
 /* Derived constants and error checks.                                       */
 /*===========================================================================*/
 
-#if !HAL_USE_SPI || !SPI_USE_WAIT
+#if (HAL_USE_SPI == FALSE) || (SPI_USE_WAIT == FALSE)
 #error "MMC_SPI driver requires HAL_USE_SPI and SPI_USE_WAIT"
 #endif
 
@@ -131,7 +120,7 @@ typedef struct {
   /***
    * @brief Addresses use blocks instead of bytes.
    */
-  bool_t                block_addresses;
+  bool                  block_addresses;
 } MMCDriver;
 
 /*===========================================================================*/
@@ -182,24 +171,24 @@ extern "C" {
   void mmcObjectInit(MMCDriver *mmcp);
   void mmcStart(MMCDriver *mmcp, const MMCConfig *config);
   void mmcStop(MMCDriver *mmcp);
-  bool_t mmcConnect(MMCDriver *mmcp);
-  bool_t mmcDisconnect(MMCDriver *mmcp);
-  bool_t mmcStartSequentialRead(MMCDriver *mmcp, uint32_t startblk);
-  bool_t mmcSequentialRead(MMCDriver *mmcp, uint8_t *buffer);
-  bool_t mmcStopSequentialRead(MMCDriver *mmcp);
-  bool_t mmcStartSequentialWrite(MMCDriver *mmcp, uint32_t startblk);
-  bool_t mmcSequentialWrite(MMCDriver *mmcp, const uint8_t *buffer);
-  bool_t mmcStopSequentialWrite(MMCDriver *mmcp);
-  bool_t mmcSync(MMCDriver *mmcp);
-  bool_t mmcGetInfo(MMCDriver *mmcp, BlockDeviceInfo *bdip);
-  bool_t mmcErase(MMCDriver *mmcp, uint32_t startblk, uint32_t endblk);
-  bool_t mmc_lld_is_card_inserted(MMCDriver *mmcp);
-  bool_t mmc_lld_is_write_protected(MMCDriver *mmcp);
+  bool mmcConnect(MMCDriver *mmcp);
+  bool mmcDisconnect(MMCDriver *mmcp);
+  bool mmcStartSequentialRead(MMCDriver *mmcp, uint32_t startblk);
+  bool mmcSequentialRead(MMCDriver *mmcp, uint8_t *buffer);
+  bool mmcStopSequentialRead(MMCDriver *mmcp);
+  bool mmcStartSequentialWrite(MMCDriver *mmcp, uint32_t startblk);
+  bool mmcSequentialWrite(MMCDriver *mmcp, const uint8_t *buffer);
+  bool mmcStopSequentialWrite(MMCDriver *mmcp);
+  bool mmcSync(MMCDriver *mmcp);
+  bool mmcGetInfo(MMCDriver *mmcp, BlockDeviceInfo *bdip);
+  bool mmcErase(MMCDriver *mmcp, uint32_t startblk, uint32_t endblk);
+  bool mmc_lld_is_card_inserted(MMCDriver *mmcp);
+  bool mmc_lld_is_write_protected(MMCDriver *mmcp);
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* HAL_USE_MMC_SPI */
+#endif /* HAL_USE_MMC_SPI == TRUE */
 
 #endif /* _MMC_SPI_H_ */
 

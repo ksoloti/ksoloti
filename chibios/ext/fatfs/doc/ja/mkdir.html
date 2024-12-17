@@ -16,7 +16,7 @@
 <p>ディレクトリを作成します。</p>
 <pre>
 FRESULT f_mkdir (
-  const TCHAR* <em>DirName</em> <span class="c">/* 作成するディレクトリ名へのポインタ */</span>
+  const TCHAR* <span class="arg">path</span> <span class="c">/* [IN] 作成するディレクトリ名へのポインタ */</span>
 );
 </pre>
 </div>
@@ -24,8 +24,8 @@ FRESULT f_mkdir (
 <div class="para arg">
 <h4>引数</h4>
 <dl class="par">
-<dt>DirName</dt>
-<dd>作成するディレクトリの<a href="filename.html">パス名</a>が入った<tt>'\0'</tt>で終わる文字列へのポインタを指定します。</dd>
+<dt>path</dt>
+<dd>作成するディレクトリの<a href="filename.html">パス名</a>を示すヌル文字<tt>'\0'</tt>終端の文字列へのポインタを指定します。</dd>
 </dl>
 </div>
 

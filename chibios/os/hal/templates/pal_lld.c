@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,17 +15,16 @@
 */
 
 /**
- * @file    templates/pal_lld.c
- * @brief   PAL subsystem low level driver template.
+ * @file    pal_lld.c
+ * @brief   PLATFORM PAL subsystem low level driver source.
  *
  * @addtogroup PAL
  * @{
  */
 
-#include "ch.h"
 #include "hal.h"
 
-#if HAL_USE_PAL || defined(__DOXYGEN__)
+#if (HAL_USE_PAL == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
@@ -86,6 +85,6 @@ void _pal_lld_setgroupmode(ioportid_t port,
 
 }
 
-#endif /* HAL_USE_PAL */
+#endif /* HAL_USE_PAL == TRUE */
 
 /** @} */

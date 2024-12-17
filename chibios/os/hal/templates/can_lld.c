@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,17 +15,16 @@
 */
 
 /**
- * @file    templates/can_lld.c
- * @brief   CAN Driver subsystem low level driver source template.
+ * @file    can_lld.c
+ * @brief   PLATFORM CAN subsystem low level driver source.
  *
  * @addtogroup CAN
  * @{
  */
 
-#include "ch.h"
 #include "hal.h"
 
-#if HAL_USE_CAN || defined(__DOXYGEN__)
+#if (HAL_USE_CAN == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
@@ -38,7 +37,7 @@
 /**
  * @brief   CAN1 driver identifier.
  */
-#if PLATFORM_CAN_USE_CAN1 || defined(__DOXYGEN__)
+#if (PLATFORM_CAN_USE_CAN1 == TRUE) || defined(__DOXYGEN__)
 CANDriver CAND1;
 #endif
 
@@ -65,10 +64,10 @@ CANDriver CAND1;
  */
 void can_lld_init(void) {
 
-#if PLATFORM_CAN_USE_CAN1
+#if PLATFORM_CAN_USE_CAN1 == TRUE
   /* Driver initialization.*/
   canObjectInit(&CAND1);
-#endif /* PLATFORM_CAN_USE_CAN1 */
+#endif
 }
 
 /**
@@ -82,11 +81,11 @@ void can_lld_start(CANDriver *canp) {
 
   if (canp->state == CAN_STOP) {
     /* Enables the peripheral.*/
-#if PLATFORM_CAN_USE_CAN1
+#if PLATFORM_CAN_USE_CAN1 == TRUE
     if (&CAND1 == canp) {
 
     }
-#endif /* PLATFORM_CAN_USE_CAN1 */
+#endif
   }
   /* Configures the peripheral.*/
 
@@ -105,11 +104,11 @@ void can_lld_stop(CANDriver *canp) {
     /* Resets the peripheral.*/
 
     /* Disables the peripheral.*/
-#if PLATFORM_CAN_USE_CAN1
+#if PLATFORM_CAN_USE_CAN1 == TRUE
     if (&CAND1 == canp) {
 
     }
-#endif /* PLATFORM_CAN_USE_CAN1 */
+#endif
   }
 }
 
@@ -125,21 +124,21 @@ void can_lld_stop(CANDriver *canp) {
  *
  * @notapi
  */
-bool_t can_lld_is_tx_empty(CANDriver *canp, canmbx_t mailbox) {
+bool can_lld_is_tx_empty(CANDriver *canp, canmbx_t mailbox) {
 
   (void)canp;
 
   switch (mailbox) {
   case CAN_ANY_MAILBOX:
-    return FALSE;
+    return false;
   case 1:
-    return FALSE;
+    return false;
   case 2:
-    return FALSE;
+    return false;
   case 3:
-    return FALSE;
+    return false;
   default:
-    return FALSE;
+    return false;
   }
 }
 
@@ -174,20 +173,20 @@ void can_lld_transmit(CANDriver *canp,
  *
  * @notapi
  */
-bool_t can_lld_is_rx_nonempty(CANDriver *canp, canmbx_t mailbox) {
+bool can_lld_is_rx_nonempty(CANDriver *canp, canmbx_t mailbox) {
 
   (void)canp;
   (void)mailbox;
 
   switch (mailbox) {
   case CAN_ANY_MAILBOX:
-    return FALSE;
+    return false;
   case 1:
-    return FALSE;
+    return false;
   case 2:
-    return FALSE;
+    return false;
   default:
-    return FALSE;
+    return false;
   }
 }
 
@@ -210,7 +209,7 @@ void can_lld_receive(CANDriver *canp,
 
 }
 
-#if CAN_USE_SLEEP_MODE || defined(__DOXYGEN__)
+#if (CAN_USE_SLEEP_MODE == TRUE) || defined(__DOXYGEN__)
 /**
  * @brief   Enters the sleep mode.
  *
@@ -236,8 +235,8 @@ void can_lld_wakeup(CANDriver *canp) {
   (void)canp;
 
 }
-#endif /* CAN_USE_SLEEP_MODE */
+#endif /* CAN_USE_SLEEP_MOD == TRUEE */
 
-#endif /* HAL_USE_CAN */
+#endif /* HAL_USE_CAN == TRUE */
 
 /** @} */

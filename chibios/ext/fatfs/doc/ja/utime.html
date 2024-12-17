@@ -13,11 +13,11 @@
 
 <div class="para func">
 <h2>f_utime</h2>
-<p>オブジェクトのタイムスタンプを変更します。</p>
+<p>ファイルまたはサブ・ディレクトリのタイムスタンプを変更します。</p>
 <pre>
 FRESULT f_utime (
-  const TCHAR* <em>FileName</em>,   <span class="c">/* オブジェクト名へのポインタ */</span>
-  const FILINFO* <em>TimeDate</em>  <span class="c">/* 設定する日付 */</span>
+  const TCHAR* <span class="arg">path</span>,  <span class="c">/* [IN] オブジェクト名へのポインタ */</span>
+  const FILINFO* <span class="arg">fno</span>  <span class="c">/* [IN] 設定する日付 */</span>
 );
 </pre>
 </div>
@@ -25,10 +25,10 @@ FRESULT f_utime (
 <div class="para arg">
 <h4>引数</h4>
 <dl class="par">
-<dt>FileName</dt>
-<dd>変更対象のファイルまたはディレクトリへの<a href="filename.html">パス名</a>の入った<tt>'\0'</tt>で終わる文字列を指定します。</dd>
-<dt>TimeDate</dt>
-<dd>設定する日付と時間をfdateとftimeメンバに設定されたFILINFO構造体へのポインタ。他のメンバはDon't careです。</dd>
+<dt>path</dt>
+<dd>変更対象のオブジェクトの<a href="filename.html">パス名</a>を示すヌル文字<tt>'\0'</tt>終端の文字列を指定します。</dd>
+<dt>fno</dt>
+<dd>設定する日付と時間を<tt>fdate</tt>と<tt>ftime</tt>メンバに設定された<tt>FILINFO</tt>構造体へのポインタ。他のメンバはこの関数では意味を持ちません。</dd>
 </dl>
 </div>
 

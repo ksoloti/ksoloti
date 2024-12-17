@@ -1,28 +1,17 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
-                 2011,2012,2013 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
-    This file is part of ChibiOS/RT.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    ChibiOS/RT is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-    ChibiOS/RT is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes ChibiOS/RT, without being obliged to provide
-    the source code for any proprietary components. See the file exception.txt
-    for full details of how and when the exception can be applied.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 */
 
 /**
@@ -33,10 +22,9 @@
  * @{
  */
 
-#include "ch.h"
 #include "hal.h"
 
-#if HAL_USE_SERIAL || defined(__DOXYGEN__)
+#if (HAL_USE_SERIAL == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
@@ -61,44 +49,44 @@
 
 static size_t write(void *ip, const uint8_t *bp, size_t n) {
 
-  return chOQWriteTimeout(&((SerialDriver *)ip)->oqueue, bp,
-                          n, TIME_INFINITE);
+  return oqWriteTimeout(&((SerialDriver *)ip)->oqueue, bp,
+                        n, TIME_INFINITE);
 }
 
 static size_t read(void *ip, uint8_t *bp, size_t n) {
 
-  return chIQReadTimeout(&((SerialDriver *)ip)->iqueue, bp,
-                         n, TIME_INFINITE);
+  return iqReadTimeout(&((SerialDriver *)ip)->iqueue, bp,
+                       n, TIME_INFINITE);
 }
 
 static msg_t put(void *ip, uint8_t b) {
 
-  return chOQPutTimeout(&((SerialDriver *)ip)->oqueue, b, TIME_INFINITE);
+  return oqPutTimeout(&((SerialDriver *)ip)->oqueue, b, TIME_INFINITE);
 }
 
 static msg_t get(void *ip) {
 
-  return chIQGetTimeout(&((SerialDriver *)ip)->iqueue, TIME_INFINITE);
+  return iqGetTimeout(&((SerialDriver *)ip)->iqueue, TIME_INFINITE);
 }
 
 static msg_t putt(void *ip, uint8_t b, systime_t timeout) {
 
-  return chOQPutTimeout(&((SerialDriver *)ip)->oqueue, b, timeout);
+  return oqPutTimeout(&((SerialDriver *)ip)->oqueue, b, timeout);
 }
 
 static msg_t gett(void *ip, systime_t timeout) {
 
-  return chIQGetTimeout(&((SerialDriver *)ip)->iqueue, timeout);
+  return iqGetTimeout(&((SerialDriver *)ip)->iqueue, timeout);
 }
 
-static size_t writet(void *ip, const uint8_t *bp, size_t n, systime_t time) {
+static size_t writet(void *ip, const uint8_t *bp, size_t n, systime_t timeout) {
 
-  return chOQWriteTimeout(&((SerialDriver *)ip)->oqueue, bp, n, time);
+  return oqWriteTimeout(&((SerialDriver *)ip)->oqueue, bp, n, timeout);
 }
 
-static size_t readt(void *ip, uint8_t *bp, size_t n, systime_t time) {
+static size_t readt(void *ip, uint8_t *bp, size_t n, systime_t timeout) {
 
-  return chIQReadTimeout(&((SerialDriver *)ip)->iqueue, bp, n, time);
+  return iqReadTimeout(&((SerialDriver *)ip)->iqueue, bp, n, timeout);
 }
 
 static const struct SerialDriverVMT vmt = {
@@ -140,10 +128,10 @@ void sdInit(void) {
 void sdObjectInit(SerialDriver *sdp, qnotify_t inotify, qnotify_t onotify) {
 
   sdp->vmt = &vmt;
-  chEvtInit(&sdp->event);
+  osalEventObjectInit(&sdp->event);
   sdp->state = SD_STOP;
-  chIQInit(&sdp->iqueue, sdp->ib, SERIAL_BUFFERS_SIZE, inotify, sdp);
-  chOQInit(&sdp->oqueue, sdp->ob, SERIAL_BUFFERS_SIZE, onotify, sdp);
+  iqObjectInit(&sdp->iqueue, sdp->ib, SERIAL_BUFFERS_SIZE, inotify, sdp);
+  oqObjectInit(&sdp->oqueue, sdp->ob, SERIAL_BUFFERS_SIZE, onotify, sdp);
 }
 
 /**
@@ -158,15 +146,14 @@ void sdObjectInit(SerialDriver *sdp, qnotify_t inotify, qnotify_t onotify) {
  */
 void sdStart(SerialDriver *sdp, const SerialConfig *config) {
 
-  chDbgCheck(sdp != NULL, "sdStart");
+  osalDbgCheck(sdp != NULL);
 
-  chSysLock();
-  chDbgAssert((sdp->state == SD_STOP) || (sdp->state == SD_READY),
-              "sdStart(), #1",
-              "invalid state");
+  osalSysLock();
+  osalDbgAssert((sdp->state == SD_STOP) || (sdp->state == SD_READY),
+                "invalid state");
   sd_lld_start(sdp, config);
   sdp->state = SD_READY;
-  chSysUnlock();
+  osalSysUnlock();
 }
 
 /**
@@ -180,18 +167,17 @@ void sdStart(SerialDriver *sdp, const SerialConfig *config) {
  */
 void sdStop(SerialDriver *sdp) {
 
-  chDbgCheck(sdp != NULL, "sdStop");
+  osalDbgCheck(sdp != NULL);
 
-  chSysLock();
-  chDbgAssert((sdp->state == SD_STOP) || (sdp->state == SD_READY),
-              "sdStop(), #1",
-              "invalid state");
+  osalSysLock();
+  osalDbgAssert((sdp->state == SD_STOP) || (sdp->state == SD_READY),
+                "invalid state");
   sd_lld_stop(sdp);
   sdp->state = SD_STOP;
-  chOQResetI(&sdp->oqueue);
-  chIQResetI(&sdp->iqueue);
-  chSchRescheduleS();
-  chSysUnlock();
+  oqResetI(&sdp->oqueue);
+  iqResetI(&sdp->iqueue);
+  osalOsRescheduleS();
+  osalSysUnlock();
 }
 
 /**
@@ -212,12 +198,12 @@ void sdStop(SerialDriver *sdp) {
  */
 void sdIncomingDataI(SerialDriver *sdp, uint8_t b) {
 
-  chDbgCheckClassI();
-  chDbgCheck(sdp != NULL, "sdIncomingDataI");
+  osalDbgCheckClassI();
+  osalDbgCheck(sdp != NULL);
 
-  if (chIQIsEmptyI(&sdp->iqueue))
+  if (iqIsEmptyI(&sdp->iqueue))
     chnAddFlagsI(sdp, CHN_INPUT_AVAILABLE);
-  if (chIQPutI(&sdp->iqueue, b) < Q_OK)
+  if (iqPutI(&sdp->iqueue, b) < Q_OK)
     chnAddFlagsI(sdp, SD_OVERRUN_ERROR);
 }
 
@@ -239,15 +225,65 @@ void sdIncomingDataI(SerialDriver *sdp, uint8_t b) {
 msg_t sdRequestDataI(SerialDriver *sdp) {
   msg_t  b;
 
-  chDbgCheckClassI();
-  chDbgCheck(sdp != NULL, "sdRequestDataI");
+  osalDbgCheckClassI();
+  osalDbgCheck(sdp != NULL);
 
-  b = chOQGetI(&sdp->oqueue);
+  b = oqGetI(&sdp->oqueue);
   if (b < Q_OK)
     chnAddFlagsI(sdp, CHN_OUTPUT_EMPTY);
   return b;
 }
 
-#endif /* HAL_USE_SERIAL */
+/**
+ * @brief   Direct output check on a @p SerialDriver.
+ * @note    This function bypasses the indirect access to the channel and
+ *          checks directly the output queue. This is faster but cannot
+ *          be used to check different channels implementations.
+ *
+ * @param[in] sdp       pointer to a @p SerialDriver structure
+ * @return              The queue status.
+ * @retval false        if the next write operation would not block.
+ * @retval true         if the next write operation would block.
+ *
+ * @deprecated
+ *
+ * @api
+ */
+bool sdPutWouldBlock(SerialDriver *sdp) {
+  bool b;
+
+  osalSysLock();
+  b = oqIsFullI(&sdp->oqueue);
+  osalSysUnlock();
+
+  return b;
+}
+
+/**
+ * @brief   Direct input check on a @p SerialDriver.
+ * @note    This function bypasses the indirect access to the channel and
+ *          checks directly the input queue. This is faster but cannot
+ *          be used to check different channels implementations.
+ *
+ * @param[in] sdp       pointer to a @p SerialDriver structure
+ * @return              The queue status.
+ * @retval false        if the next write operation would not block.
+ * @retval true         if the next write operation would block.
+ *
+ * @deprecated
+ *
+ * @api
+ */
+bool sdGetWouldBlock(SerialDriver *sdp) {
+  bool b;
+
+  osalSysLock();
+  b = iqIsEmptyI(&sdp->iqueue);
+  osalSysUnlock();
+
+  return b;
+}
+
+#endif /* HAL_USE_SERIAL == TRUE */
 
 /** @} */

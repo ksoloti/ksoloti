@@ -1,28 +1,17 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
-                 2011,2012,2013 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
-    This file is part of ChibiOS/RT.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    ChibiOS/RT is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-    ChibiOS/RT is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes ChibiOS/RT, without being obliged to provide
-    the source code for any proprietary components. See the file exception.txt
-    for full details of how and when the exception can be applied.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 */
 
 /**
@@ -36,51 +25,13 @@
 #ifndef _SERIAL_USB_H_
 #define _SERIAL_USB_H_
 
-#if HAL_USE_SERIAL_USB || defined(__DOXYGEN__)
+#if (HAL_USE_SERIAL_USB == TRUE) || defined(__DOXYGEN__)
+
+#include "usb_cdc.h"
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
 /*===========================================================================*/
-
-/**
- * @name    CDC specific messages.
- * @{
- */
-#define CDC_SEND_ENCAPSULATED_COMMAND   0x00
-#define CDC_GET_ENCAPSULATED_RESPONSE   0x01
-#define CDC_SET_COMM_FEATURE            0x02
-#define CDC_GET_COMM_FEATURE            0x03
-#define CDC_CLEAR_COMM_FEATURE          0x04
-#define CDC_SET_AUX_LINE_STATE          0x10
-#define CDC_SET_HOOK_STATE              0x11
-#define CDC_PULSE_SETUP                 0x12
-#define CDC_SEND_PULSE                  0x13
-#define CDC_SET_PULSE_TIME              0x14
-#define CDC_RING_AUX_JACK               0x15
-#define CDC_SET_LINE_CODING             0x20
-#define CDC_GET_LINE_CODING             0x21
-#define CDC_SET_CONTROL_LINE_STATE      0x22
-#define CDC_SEND_BREAK                  0x23
-#define CDC_SET_RINGER_PARMS            0x30
-#define CDC_GET_RINGER_PARMS            0x31
-#define CDC_SET_OPERATION_PARMS         0x32
-#define CDC_GET_OPERATION_PARMS         0x33
-/** @} */
-
-/**
- * @name    Line Control bit definitions.
- * @{
- */
-#define LC_STOP_1                       0
-#define LC_STOP_1P5                     1
-#define LC_STOP_2                       2
-
-#define LC_PARITY_NONE                  0
-#define LC_PARITY_ODD                   1
-#define LC_PARITY_EVEN                  2
-#define LC_PARITY_MARK                  3
-#define LC_PARITY_SPACE                 4
-/** @} */
 
 /*===========================================================================*/
 /* Driver pre-compile time settings.                                         */
@@ -100,30 +51,27 @@
 #if !defined(SERIAL_USB_BUFFERS_SIZE) || defined(__DOXYGEN__)
 #define SERIAL_USB_BUFFERS_SIZE     256
 #endif
+
+/**
+ * @brief   Serial over USB number of buffers.
+ * @note    The default is 2 buffers.
+ */
+#if !defined(SERIAL_USB_BUFFERS_NUMBER) || defined(__DOXYGEN__)
+#define SERIAL_USB_BUFFERS_NUMBER   2
+#endif
 /** @} */
 
 /*===========================================================================*/
 /* Derived constants and error checks.                                       */
 /*===========================================================================*/
 
-#if !HAL_USE_USB || !CH_USE_QUEUES || !CH_USE_EVENTS
-#error "Serial over USB Driver requires HAL_USE_USB, CH_USE_QUEUES, "
-       "CH_USE_EVENTS"
+#if HAL_USE_USB == FALSE
+#error "Serial over USB Driver requires HAL_USE_USB"
 #endif
 
 /*===========================================================================*/
 /* Driver data structures and types.                                         */
 /*===========================================================================*/
-
-/**
- * @brief   Type of Line Coding structure.
- */
-typedef struct {
-  uint8_t                       dwDTERate[4];
-  uint8_t                       bCharFormat;
-  uint8_t                       bParityType;
-  uint8_t                       bDataBits;
-} cdc_linecoding_t;
 
 /**
  * @brief Driver state machine possible states.
@@ -159,6 +107,8 @@ typedef struct {
   usbep_t                   bulk_out;
   /**
    * @brief   Interrupt IN endpoint used for notifications.
+   * @note    If set to zero then the INT endpoint is assumed to be not
+   *          present, USB descriptors must be changed accordingly.
    */
   usbep_t                   int_in;
 } SerialUSBConfig;
@@ -170,14 +120,16 @@ typedef struct {
   _base_asynchronous_channel_data                                           \
   /* Driver state.*/                                                        \
   sdustate_t                state;                                          \
-  /* Input queue.*/                                                         \
-  InputQueue                iqueue;                                         \
+  /* Input buffers queue.*/                                                 \
+  input_buffers_queue_t     ibqueue;                                        \
   /* Output queue.*/                                                        \
-  OutputQueue               oqueue;                                         \
+  output_buffers_queue_t    obqueue;                                        \
   /* Input buffer.*/                                                        \
-  uint8_t                   ib[SERIAL_USB_BUFFERS_SIZE];                    \
+  uint8_t                   ib[BQ_BUFFER_SIZE(SERIAL_USB_BUFFERS_NUMBER,    \
+                                              SERIAL_USB_BUFFERS_SIZE)];    \
   /* Output buffer.*/                                                       \
-  uint8_t                   ob[SERIAL_USB_BUFFERS_SIZE];                    \
+  uint8_t                   ob[BQ_BUFFER_SIZE(SERIAL_USB_BUFFERS_NUMBER,    \
+                                              SERIAL_USB_BUFFERS_SIZE)];    \
   /* End of the mandatory fields.*/                                         \
   /* Current configuration data.*/                                          \
   const SerialUSBConfig     *config;
@@ -222,11 +174,13 @@ struct SerialUSBDriver {
 extern "C" {
 #endif
   void sduInit(void);
-  void sduObjectInit(SerialUSBDriver *sdp);
+  void sduObjectInit(SerialUSBDriver *sdup);
   void sduStart(SerialUSBDriver *sdup, const SerialUSBConfig *config);
   void sduStop(SerialUSBDriver *sdup);
+  void sduDisconnectI(SerialUSBDriver *sdup);
   void sduConfigureHookI(SerialUSBDriver *sdup);
-  bool_t sduRequestsHook(USBDriver *usbp);
+  bool sduRequestsHook(USBDriver *usbp);
+  void sduSOFHookI(SerialUSBDriver *sdup);
   void sduDataTransmitted(USBDriver *usbp, usbep_t ep);
   void sduDataReceived(USBDriver *usbp, usbep_t ep);
   void sduInterruptTransmitted(USBDriver *usbp, usbep_t ep);
@@ -234,7 +188,7 @@ extern "C" {
 }
 #endif
 
-#endif /* HAL_USE_SERIAL_USB */
+#endif /* HAL_USE_SERIAL_USB == TRUE */
 
 #endif /* _SERIAL_USB_H_ */
 

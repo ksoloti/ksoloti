@@ -16,7 +16,7 @@
 <p>The f_truncate function truncates the file size.</p>
 <pre>
 FRESULT f_truncate (
-  FIL* <em>FileObject</em>     <span class="c">/* Pointer to the file object */</span>
+  FIL* <span class="arg">fp</span>     <span class="c">/* [IN] File object */</span>
 );
 </pre>
 </div>
@@ -24,7 +24,7 @@ FRESULT f_truncate (
 <div class="para arg">
 <h4>Parameter</h4>
 <dl class="par">
-<dt>FileObject</dt>
+<dt>fp</dt>
 <dd>Pointer to the open file object to be truncated.</dd>
 </dl>
 </div>
@@ -45,7 +45,7 @@ FRESULT f_truncate (
 
 <div class="para desc">
 <h4>Description</h4>
-<p>The f_truncate function truncates the file size to the current file read/write point. This function has no effect if the file read/write pointer is already pointing end of the file.</p>
+<p>The <tt>f_truncate()</tt> function truncates the file size to the current file read/write pointer. This function has no effect if the file read/write pointer is already pointing end of the file.</p>
 </div>
 
 

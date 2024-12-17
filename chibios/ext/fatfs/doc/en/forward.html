@@ -16,10 +16,10 @@
 <p>The f_forward function reads the file data and forward it to the data streaming device.</p>
 <pre>
 FRESULT f_forward (
-  FIL* <em>FileObject</em>,                 <span class="c">/* File object */</span>
-  UINT (*<em>Func</em>)(const BYTE*,UINT),  <span class="c">/* Data streaming function */</span>
-  UINT <em>ByteToFwd</em>,                  <span class="c">/* Number of bytes to forward */</span>
-  UINT* <em>ByteFwd</em>                    <span class="c">/* Number of bytes forwarded */</span>
+  FIL* <span class="arg">fp</span>,                        <span class="c">/* [IN] File object */</span>
+  UINT (*<span class="arg">func</span>)(const BYTE*,UINT), <span class="c">/* [IN] Data streaming function */</span>
+  UINT <span class="arg">btf</span>,                       <span class="c">/* [IN] Number of bytes to forward */</span>
+  UINT* <span class="arg">bf</span>                        <span class="c">/* [OUT] Number of bytes forwarded */</span>
 );
 </pre>
 </div>
@@ -27,14 +27,14 @@ FRESULT f_forward (
 <div class="para arg">
 <h4>Parameters</h4>
 <dl class="par">
-<dt>FileObject</dt>
+<dt>fp</dt>
 <dd>Pointer to the open file object.</dd>
-<dt>Func</dt>
+<dt>func</dt>
 <dd>Pointer to the user-defined data streaming function. For details, refer to the sample code.</dd>
-<dt>ByteToFwd</dt>
-<dd>Number of bytes to forward in range of UINT.</dd>
-<dt>ByteFwd</dt>
-<dd>Pointer to the UINT variable to return number of bytes forwarded.</dd>
+<dt>btf</dt>
+<dd>Number of bytes to forward in range of <tt>UINT</tt>.</dd>
+<dt>bf</dt>
+<dd>Pointer to the <tt>UINT</tt> variable to return number of bytes forwarded.</dd>
 </dl>
 </div>
 
@@ -54,7 +54,7 @@ FRESULT f_forward (
 
 <div class="para desc">
 <h4>Description</h4>
-<p>The f_forward function reads the data from the file and forward it to the outgoing stream without data buffer. This is suitable for small memory system because it does not require any data buffer at application module. The file pointer of the file object increases in number of bytes forwarded. In case of <tt>*ByteFwd &lt; ByteToFwd</tt> without error, it means the requested bytes could not be transferred due to end of file or stream goes busy during data transfer.</p>
+<p>The <tt>f_forward()</tt> function reads the data from the file and forward it to the outgoing stream without data buffer. This is suitable for small memory system because it does not require any data buffer at application module. The file pointer of the file object increases in number of bytes forwarded. In case of <tt class="arg">*bf</tt> is less than <tt class="arg">btf</tt> without error, it means the requested bytes could not be transferred due to end of file or stream goes busy during data transfer.</p>
 </div>
 
 

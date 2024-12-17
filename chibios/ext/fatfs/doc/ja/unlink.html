@@ -13,10 +13,10 @@
 
 <div class="para func">
 <h2>f_unlink</h2>
-<p>ファイルまたはディレクトリを削除します。</p>
+<p>ファイルまたはサブ・ディレクトリを削除します。</p>
 <pre>
 FRESULT f_unlink (
-  const TCHAR* <em>FileName</em>  <span class="c">/* オブジェクト名へのポインタ */</span>
+  const TCHAR* <span class="arg">path</span>  <span class="c">/* [IN] オブジェクト名へのポインタ */</span>
 );
 </pre>
 </div>
@@ -24,8 +24,8 @@ FRESULT f_unlink (
 <div class="para arg">
 <h4>引数</h4>
 <dl class="par">
-<dt>FileName</dt>
-<dd>削除対象の<a href="filename.html">パス名</a>の入った<tt>'\0'</tt>で終わる文字列へのポインタを指定します。</dd>
+<dt>path</dt>
+<dd>削除対象の<a href="filename.html">パス名</a>を示すヌル文字<tt>'\0'</tt>終端の文字列へのポインタを指定します。</dd>
 </dl>
 </div>
 
@@ -54,11 +54,11 @@ FRESULT f_unlink (
 
 <div class="para desc">
 <h4>解説</h4>
-<p>削除対象のオブジェクが次の条件に当てはまる場合、そのアクセスは拒否され関数は失敗します。
+<p>削除対象のオブジェクトが次の条件に当てはまる場合、そのアクセスは拒否され関数は失敗します。
 <ul>
-<li>リード・オンリー属性 (AM_RDO)を持っている。</li>
-<li>空でないディレクトリまたはカレント・ディレクトリ。</li>
-<li>開かれているファイル。この場合、<em>FAT構造が破壊される可能性</em>があります。<a href="appnote.html#dup">多重アクセス制御</a>が有効なときは、安全に拒否されます。</li>
+<li>リード・オンリー属性(<tt>AM_RDO</tt>)を持っている場合は、拒否(<tt>FR_DENIED</tt>)される。</li>
+<li>空でないサブ・ディレクトリまたはカレント・ディレクトリである場合は、拒否(<tt>FR_DENIED</tt>)される。</li>
+<li>開かれているファイルまたはサブ・ディレクトリである場合は、<a href="appnote.html#dup">多重アクセス制御</a>が有効なら安全に拒否(<tt>FR_LOCKED</tt>)されますが、そうでないときは不正な操作となり、<em>FAT構造が破壊される可能性</em>があります。</li>
 </ul>
 </p>
 </div>

@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,17 +15,16 @@
 */
 
 /**
- * @file    templates/uart_lld.c
- * @brief   UART Driver subsystem low level driver source template.
+ * @file    uart_lld.c
+ * @brief   PLATFORM UART subsystem low level driver source.
  *
  * @addtogroup UART
  * @{
  */
 
-#include "ch.h"
 #include "hal.h"
 
-#if HAL_USE_UART || defined(__DOXYGEN__)
+#if (HAL_USE_UART == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
@@ -38,7 +37,7 @@
 /**
  * @brief   UART1 driver identifier.
  */
-#if PLATFORM_UART_USE_UART1 || defined(__DOXYGEN__)
+#if (PLATFORM_UART_USE_UART1 == TRUE) || defined(__DOXYGEN__)
 UARTDriver UARTD1;
 #endif
 
@@ -65,10 +64,10 @@ UARTDriver UARTD1;
  */
 void uart_lld_init(void) {
 
-#if PLATFORM_UART_USE_UART1
+#if PLATFORM_UART_USE_UART1 == TRUE
   /* Driver initialization.*/
   uartObjectInit(&UARTD1);
-#endif /* PLATFORM_UART_USE_UART1 */
+#endif
 }
 
 /**
@@ -82,11 +81,11 @@ void uart_lld_start(UARTDriver *uartp) {
 
   if (uartp->state == UART_STOP) {
     /* Enables the peripheral.*/
-#if PLATFORM_UART_USE_UART1
+#if PLATFORM_UART_USE_UART1 == TRUE
     if (&UARTD1 == uartp) {
 
     }
-#endif /* PLATFORM_UART_USE_UART1 */
+#endif
   }
   /* Configures the peripheral.*/
 
@@ -105,11 +104,11 @@ void uart_lld_stop(UARTDriver *uartp) {
     /* Resets the peripheral.*/
 
     /* Disables the peripheral.*/
-#if PLATFORM_UART_USE_UART1
+#if PLATFORM_UART_USE_UART1 == TRUE
     if (&UARTD1 == uartp) {
 
     }
-#endif /* PLATFORM_UART_USE_UART1 */
+#endif
   }
 }
 
@@ -187,6 +186,6 @@ size_t uart_lld_stop_receive(UARTDriver *uartp) {
   return 0;
 }
 
-#endif /* HAL_USE_UART */
+#endif /* HAL_USE_UART == TRUE */
 
 /** @} */

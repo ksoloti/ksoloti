@@ -1,33 +1,22 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
-                 2011,2012,2013 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
-    This file is part of ChibiOS/RT.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    ChibiOS/RT is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-    ChibiOS/RT is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes ChibiOS/RT, without being obliged to provide
-    the source code for any proprietary components. See the file exception.txt
-    for full details of how and when the exception can be applied.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 */
 
-/*-*
+/**
  * @file    mii.h
- * @brief   MII Driver macros and structures.
+ * @brief   MII macros and structures.
  *
  * @addtogroup MII
  * @{
@@ -36,9 +25,9 @@
 #ifndef _MII_H_
 #define _MII_H_
 
-/*
- * Generic MII registers. Note, not all registers are present on all PHY
- * devices and some extra registers may be present.
+/**
+ * @name    Generic MII registers
+ * @{
  */
 #define MII_BMCR                0x00    /**< Basic mode control register.   */
 #define MII_BMSR                0x01    /**< Basic mode status register.    */
@@ -64,9 +53,11 @@
 #define MII_RESV2               0x1a    /**< Reserved.                      */
 #define MII_TPISTATUS           0x1b    /**< TPI status for 10Mbps.         */
 #define MII_NCONFIG             0x1c    /**< Network interface config.      */
+/** @} */
 
-/*
- * Basic mode control register.
+/**
+ * @name    Basic mode control register
+ * @{
  */
 #define BMCR_RESV               0x007f  /**< Unused.                        */
 #define BMCR_CTST               0x0080  /**< Collision test.                */
@@ -78,9 +69,11 @@
 #define BMCR_SPEED100           0x2000  /**< Select 100Mbps.                */
 #define BMCR_LOOPBACK           0x4000  /**< TXD loopback bit.              */
 #define BMCR_RESET              0x8000  /**< Reset.                         */
+/** @} */
 
-/*
- * Basic mode status register.
+/**
+ * @name    Basic mode status register
+ * @{
  */
 #define BMSR_ERCAP              0x0001  /**< Ext-reg capability.            */
 #define BMSR_JCD                0x0002  /**< Jabber detected.               */
@@ -95,9 +88,11 @@
 #define BMSR_100HALF            0x2000  /**< Can do 100mbps, half-duplex.   */
 #define BMSR_100FULL            0x4000  /**< Can do 100mbps, full-duplex.   */
 #define BMSR_100BASE4           0x8000  /**< Can do 100mbps, 4k packets.    */
+/** @} */
 
-/*
- * Advertisement control register.
+/**
+ * @name    Advertisement control register
+ * @{
  */
 #define ADVERTISE_SLCT          0x001f  /**< Selector bits.                 */
 #define ADVERTISE_CSMA          0x0001  /**< Only selector supported.       */
@@ -117,9 +112,11 @@
                         ADVERTISE_CSMA)
 #define ADVERTISE_ALL (ADVERTISE_10HALF | ADVERTISE_10FULL | \
                        ADVERTISE_100HALF | ADVERTISE_100FULL)
+/** @} */
 
-/*
- * Link partner ability register.
+/**
+ * @name    Link partner ability register
+ * @{
  */
 #define LPA_SLCT                0x001f  /**< Same as advertise selector.    */
 #define LPA_10HALF              0x0020  /**< Can do 10mbps half-duplex.     */
@@ -136,9 +133,11 @@
 
 #define LPA_DUPLEX              (LPA_10FULL | LPA_100FULL)
 #define LPA_100                 (LPA_100FULL | LPA_100HALF | LPA_100BASE4)
+/** @} */
 
-/*
- * Expansion register for auto-negotiation.
+/**
+ * @name    Expansion register for auto-negotiation
+ * @{
  */
 #define EXPANSION_NWAY          0x0001  /**< Can do N-way auto-nego.        */
 #define EXPANSION_LCWP          0x0002  /**< Got new RX page code word.     */
@@ -146,23 +145,30 @@
 #define EXPANSION_NPCAPABLE     0x0008  /**< Link partner supports npage.   */
 #define EXPANSION_MFAULTS       0x0010  /**< Multiple faults detected.      */
 #define EXPANSION_RESV          0xffe0  /**< Unused.                        */
+/** @} */
 
-/*
- * N-way test register.
+/**
+ * @name    N-way test register
+ * @{
  */
 #define NWAYTEST_RESV1          0x00ff  /**< Unused.                        */
 #define NWAYTEST_LOOPBACK       0x0100  /**< Enable loopback for N-way.     */
 #define NWAYTEST_RESV2          0xfe00  /**< Unused.                        */
+/** @} */
 
-/*
- * PHY identifiers.
+/**
+ * @name    PHY identifiers
+ * @{
  */
-#define MII_DM9161_ID     0x0181b8a0
-#define MII_AM79C875_ID   0x00225540
-#define MII_KS8721_ID     0x00221610
-#define MII_STE101P_ID    0x00061C50
-#define MII_DP83848I_ID   0x20005C90
-#define MII_LAN8710A_ID   0x0007C0F1
+#define MII_DM9161_ID           0x0181b8a0
+#define MII_AM79C875_ID         0x00225540
+#define MII_KS8721_ID           0x00221610
+#define MII_STE101P_ID          0x00061C50
+#define MII_DP83848I_ID         0x20005C90
+#define MII_LAN8710A_ID         0x0007C0F1
+#define MII_LAN8720_ID          0x0007C0F0
+#define MII_LAN8742A_ID         0x0007C130
+/** @} */
 
 #endif /* _MII_H_ */
 

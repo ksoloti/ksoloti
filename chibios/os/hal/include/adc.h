@@ -1,28 +1,17 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
-                 2011,2012,2013 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
-    This file is part of ChibiOS/RT.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    ChibiOS/RT is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-    ChibiOS/RT is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes ChibiOS/RT, without being obliged to provide
-    the source code for any proprietary components. See the file exception.txt
-    for full details of how and when the exception can be applied.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 */
 
 /**
@@ -36,7 +25,7 @@
 #ifndef _ADC_H_
 #define _ADC_H_
 
-#if HAL_USE_ADC || defined(__DOXYGEN__)
+#if (HAL_USE_ADC == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -71,10 +60,6 @@
 /* Derived constants and error checks.                                       */
 /*===========================================================================*/
 
-#if ADC_USE_MUTUAL_EXCLUSION && !CH_USE_MUTEXES && !CH_USE_SEMAPHORES
-#error "ADC_USE_MUTUAL_EXCLUSION requires CH_USE_MUTEXES and/or CH_USE_SEMAPHORES"
-#endif
-
 /*===========================================================================*/
 /* Driver data structures and types.                                         */
 /*===========================================================================*/
@@ -88,7 +73,7 @@ typedef enum {
   ADC_READY = 2,                            /**< Ready.                     */
   ADC_ACTIVE = 3,                           /**< Converting.                */
   ADC_COMPLETE = 4,                         /**< Conversion complete.       */
-  ADC_ERROR = 5                             /**< Conversion complete.       */
+  ADC_ERROR = 5                             /**< Conversion error.          */
 } adcstate_t;
 
 #include "adc_lld.h"
@@ -98,10 +83,10 @@ typedef enum {
 /*===========================================================================*/
 
 /**
- * @name    Low Level driver helper macros
+ * @name    Low level driver helper macros
  * @{
  */
-#if ADC_USE_WAIT || defined(__DOXYGEN__)
+#if (ADC_USE_WAIT == TRUE) || defined(__DOXYGEN__)
 /**
  * @brief   Resumes a thread waiting for a conversion completion.
  *
@@ -109,14 +94,8 @@ typedef enum {
  *
  * @notapi
  */
-#define _adc_reset_i(adcp) {                                                \
-  if ((adcp)->thread != NULL) {                                             \
-    Thread *tp = (adcp)->thread;                                            \
-    (adcp)->thread = NULL;                                                  \
-    tp->p_u.rdymsg  = RDY_RESET;                                            \
-    chSchReadyI(tp);                                                        \
-  }                                                                         \
-}
+#define _adc_reset_i(adcp)                                                  \
+  osalThreadResumeI(&(adcp)->thread, MSG_RESET)
 
 /**
  * @brief   Resumes a thread waiting for a conversion completion.
@@ -125,13 +104,8 @@ typedef enum {
  *
  * @notapi
  */
-#define _adc_reset_s(adcp) {                                                \
-  if ((adcp)->thread != NULL) {                                             \
-    Thread *tp = (adcp)->thread;                                            \
-    (adcp)->thread = NULL;                                                  \
-    chSchWakeupS(tp, RDY_RESET);                                            \
-  }                                                                         \
-}
+#define _adc_reset_s(adcp)                                                  \
+  osalThreadResumeS(&(adcp)->thread, MSG_RESET)
 
 /**
  * @brief   Wakes up the waiting thread.
@@ -141,15 +115,9 @@ typedef enum {
  * @notapi
  */
 #define _adc_wakeup_isr(adcp) {                                             \
-  chSysLockFromIsr();                                                       \
-  if ((adcp)->thread != NULL) {                                             \
-    Thread *tp;                                                             \
-    tp = (adcp)->thread;                                                    \
-    (adcp)->thread = NULL;                                                  \
-    tp->p_u.rdymsg = RDY_OK;                                                \
-    chSchReadyI(tp);                                                        \
-  }                                                                         \
-  chSysUnlockFromIsr();                                                     \
+  osalSysLockFromISR();                                                     \
+  osalThreadResumeI(&(adcp)->thread, MSG_OK);                               \
+  osalSysUnlockFromISR();                                                   \
 }
 
 /**
@@ -160,15 +128,9 @@ typedef enum {
  * @notapi
  */
 #define _adc_timeout_isr(adcp) {                                            \
-  chSysLockFromIsr();                                                       \
-  if ((adcp)->thread != NULL) {                                             \
-    Thread *tp;                                                             \
-    tp = (adcp)->thread;                                                    \
-    (adcp)->thread = NULL;                                                  \
-    tp->p_u.rdymsg = RDY_TIMEOUT;                                           \
-    chSchReadyI(tp);                                                        \
-  }                                                                         \
-  chSysUnlockFromIsr();                                                     \
+  osalSysLockFromISR();                                                     \
+  osalThreadResumeI(&(adcp)->thread, MSG_TIMEOUT);                          \
+  osalSysUnlockFromISR();                                                   \
 }
 
 #else /* !ADC_USE_WAIT */
@@ -268,8 +230,12 @@ typedef enum {
     (adcp)->grpp->error_cb(adcp, err);                                      \
     if ((adcp)->state == ADC_ERROR)                                         \
       (adcp)->state = ADC_READY;                                            \
+      (adcp)->grpp = NULL;                                                  \
   }                                                                         \
-  (adcp)->grpp = NULL;                                                      \
+  else {                                                                    \
+    (adcp)->state = ADC_READY;                                              \
+    (adcp)->grpp = NULL;                                                    \
+  }                                                                         \
   _adc_timeout_isr(adcp);                                                   \
 }
 /** @} */
@@ -295,21 +261,21 @@ extern "C" {
                            size_t depth);
   void adcStopConversion(ADCDriver *adcp);
   void adcStopConversionI(ADCDriver *adcp);
-#if ADC_USE_WAIT
+#if ADC_USE_WAIT == TRUE
   msg_t adcConvert(ADCDriver *adcp,
                    const ADCConversionGroup *grpp,
                    adcsample_t *samples,
                    size_t depth);
 #endif
-#if ADC_USE_MUTUAL_EXCLUSION || defined(__DOXYGEN__)
+#if ADC_USE_MUTUAL_EXCLUSION == TRUE
   void adcAcquireBus(ADCDriver *adcp);
   void adcReleaseBus(ADCDriver *adcp);
-#endif /* ADC_USE_MUTUAL_EXCLUSION */
+#endif
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* HAL_USE_ADC */
+#endif /* HAL_USE_ADC == TRUE */
 
 #endif /* _ADC_H_ */
 
