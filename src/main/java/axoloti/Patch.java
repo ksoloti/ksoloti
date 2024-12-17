@@ -27,6 +27,7 @@ import axoloti.inlets.InletFrac32Buffer;
 import axoloti.inlets.InletInstance;
 import axoloti.inlets.InletInt32;
 import axoloti.iolet.IoletAbstract;
+import static axoloti.MainFrame.prefs;
 import axoloti.object.AxoObject;
 import axoloti.object.AxoObjectAbstract;
 import axoloti.object.AxoObjectFile;
@@ -925,7 +926,7 @@ public class Patch {
 
         try {
             serializer.write(this, f);
-            MainFrame.prefs.addRecentFile(f.getAbsolutePath());
+            prefs.addRecentFile(f.getAbsolutePath());
             dirty = false;
         }
         catch (Exception ex) {
@@ -1876,7 +1877,6 @@ public class Patch {
     }
 
     String GenerateCode3() {
-        Preferences prefs = MainFrame.prefs;
         controllerInstance = null;
         String cobjstr = prefs.getControllerObject();
 

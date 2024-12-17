@@ -372,8 +372,7 @@ void mduDataTransmitted(USBDriver *usbp, usbep_t ep) {
   if (mdup == NULL)
     return;
 
-  chSysLockFromIsr()
-  ;
+  chSysLockFromIsr();
   chnAddFlagsI(mdup, CHN_OUTPUT_EMPTY);
 
   USBInEndpointState *pEpState = usbp->epc[ep]->in_state;
@@ -455,7 +454,7 @@ void mduDataReceived(USBDriver *usbp, usbep_t ep) {
 
   uQueueRemainingSize-= uSizeToCopy;
   
-  volatile size_t temp = uQueueRemainingSize;
+  // volatile size_t temp = uQueueRemainingSize;
   uQueueRemainingSize = (uQueueRemainingSize / maxsize) * maxsize;  // Make sure we get less packets
   
   if(uQueueRemainingSize!=0)

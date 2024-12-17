@@ -85,7 +85,7 @@ void SetPatchSafety(uint16_t uUIMidiCost, uint8_t uDspLimit200)
     uPatchUIMidiCost = uUIMidiCost;
     uPatchUsbLimit200 = uDspLimit200;
 
-    chprintf((BaseSequentialStream * )&SD2,"Patch Safety: UIMidiCost = %u, DspLimit = %u\r\n", uPatchUIMidiCost, uPatchUsbLimit200);
+    // chprintf((BaseSequentialStream * )&SD2,"Patch Safety: UIMidiCost = %u, DspLimit = %u\r\n", uPatchUIMidiCost, uPatchUsbLimit200);
 
 }
 

@@ -461,8 +461,8 @@ void bduDataReceived(USBDriver *usbp, usbep_t ep) {
   maxsize = usbp->epc[ep]->out_maxsize;
   uQueueRemainingSize = chIQGetEmptyI(&bdup->iqueue);
 
-  if(uReceivedCount > uQueueRemainingSize)
-   chprintf((BaseSequentialStream * )&SD2,"Very bad received = %u, space = %u\r\n", uReceivedCount, uQueueRemainingSize);
+  // if(uReceivedCount > uQueueRemainingSize)
+    // chprintf((BaseSequentialStream * )&SD2,"Very bad received = %u, space = %u\r\n", uReceivedCount, uQueueRemainingSize);
 
   size_t uSizeToCopy = MIN(uQueueRemainingSize, uReceivedCount);
   size_t u;

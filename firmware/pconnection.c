@@ -172,9 +172,9 @@ void PExTransmit(void) {
             // clear overload flag
             connectionFlags.dspOverload = false;
 
-#ifdef DEBUG_SERIAL
-            chprintf((BaseSequentialStream * )&SD2,"ack!\r\n");
-#endif
+// #ifdef DEBUG_SERIAL
+//            chprintf((BaseSequentialStream * )&SD2,"ack!\r\n");
+// #endif
 
             if (!patchStatus) {
                 TransmitDisplayPckt();
@@ -653,9 +653,9 @@ void PExReceiveByte(unsigned char c) {
       else if (c == 'p') { /* ping */
         state = 0;
         header = 0;
-#ifdef DEBUG_SERIAL
-        chprintf((BaseSequentialStream * )&SD2,"ping\r\n");
-#endif
+// #ifdef DEBUG_SERIAL
+//        chprintf((BaseSequentialStream * )&SD2,"ping\r\n");
+// #endif
         AckPending = 1;
       }
       else if (c == 'c') { /* close sdcard file */
