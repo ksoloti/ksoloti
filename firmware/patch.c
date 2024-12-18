@@ -417,7 +417,7 @@ int StartPatch(void) {
 
 void start_dsp_thread(void) {
     if (!pThreadDSP)
-        pThreadDSP = chThdCreateStatic(waThreadDSP, sizeof(waThreadDSP), HIGHPRIO - 1, ThreadDSP, NULL);
+        pThreadDSP = chThdCreateStatic(waThreadDSP, sizeof(waThreadDSP), HIGHPRIO - 1, (void*) ThreadDSP, NULL);
 }
 
 
