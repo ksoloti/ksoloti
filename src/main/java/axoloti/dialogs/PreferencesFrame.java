@@ -813,6 +813,7 @@ public class PreferencesFrame extends JFrame {
     }
 
     private void jComboBoxDspSafetyLimitPerformed(java.awt.event.ActionEvent evt) {
+        prefs.setDspSafetyLimit(jComboBoxDspSafetyLimit.getSelectedIndex());
     }
 
     private void jCheckBoxNoMouseReCenterActionPerformed(java.awt.event.ActionEvent evt) {
