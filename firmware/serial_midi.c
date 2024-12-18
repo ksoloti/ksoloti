@@ -161,5 +161,5 @@ void serial_midi_init(void) {
   // palSetPadMode(GPIOG, 14, PAL_MODE_ALTERNATE(8) | PAL_MODE_OUTPUT_PUSHPULL); // does not seem to work with some MIDI devices
 
   sdStart(&SDMIDI, &sdMidiCfg);
-  chThdCreateStatic(waThreadMidi, sizeof(waThreadMidi), NORMALPRIO, ThreadMidi, NULL);
+  chThdCreateStatic(waThreadMidi, sizeof(waThreadMidi), NORMALPRIO, (void*) ThreadMidi, NULL);
 }

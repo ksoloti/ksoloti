@@ -109,7 +109,7 @@ void InitPConnection(void) {
     connectionFlags.usbBuild = 1;
 #endif
 
-    chThdCreateStatic(waThreadUSBDMidi, sizeof(waThreadUSBDMidi), MIDI_USB_PRIO, ThreadUSBDMidi, NULL);
+    chThdCreateStatic(waThreadUSBDMidi, sizeof(waThreadUSBDMidi), MIDI_USB_PRIO, (void*) ThreadUSBDMidi, NULL);
 }
 
 
