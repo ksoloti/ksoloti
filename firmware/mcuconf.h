@@ -289,7 +289,7 @@
   #define STM32_USB_OTG_THREAD_PRIO           HIGHPRIO
   #define USE_BLOCKED_BULK_TX                 0
   #define USB_USE_WAIT                        USE_BLOCKED_BULK_TX
-  #define USE_PATCH_DSPTIME_SMOOTHING_MS      1
+  #define USE_PATCH_DSPTIME_SMOOTHING_MS      0
   #define MIDI_USB_PRIO                       HIGHPRIO-2
   #define UI_USB_PRIO                         HIGHPRIO-2
 #else
@@ -299,7 +299,7 @@
   #define STM32_USB_OTG_THREAD_PRIO           HIGHPRIO
   #define USE_BLOCKED_BULK_TX                 0
   #define USB_USE_WAIT                        USE_BLOCKED_BULK_TX
-  #define USE_PATCH_DSPTIME_SMOOTHING_MS      1
+  #define USE_PATCH_DSPTIME_SMOOTHING_MS      0
   #define MIDI_USB_PRIO                       HIGHPRIO-2
   #define UI_USB_PRIO                         HIGHPRIO-2
 #endif
