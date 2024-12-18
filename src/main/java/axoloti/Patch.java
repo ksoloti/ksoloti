@@ -1945,6 +1945,7 @@ public class Patch {
                 + GeneratePatchCodePlusPlus("rootc");
 
         c = c.replace("attr_poly", "1");
+        // c = c.replace("NORMALPRIO", "(NORMALPRIO+1)"); /* Hack so that object threads run smoothly in ChibiOS 16+ */
 
         if (settings == null) {
             c = c.replace("attr_midichannel", "0");
