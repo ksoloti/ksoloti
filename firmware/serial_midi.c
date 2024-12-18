@@ -138,7 +138,7 @@ static WORKING_AREA(waThreadMidi, 256) __attribute__ ((section (".ccmramend")));
 __attribute__((noreturn))
   static msg_t ThreadMidi(void *arg) {
   (void)arg;
-#if CH_USE_REGISTRY
+#if CH_CFG_USE_REGISTRY
   chRegSetThreadName("midi");
 #endif
   while (1) {

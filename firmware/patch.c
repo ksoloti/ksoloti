@@ -151,7 +151,7 @@ static moving_average_data dsptimeSmoothing;
 #endif
 
 static int16_t GetNumberOfThreads(void) {
-#ifdef CH_USE_REGISTRY
+#ifdef CH_CFG_USE_REGISTRY
     int16_t i = 1;
     Thread* thd1 = chRegFirstThread();
 
@@ -167,7 +167,7 @@ static int16_t GetNumberOfThreads(void) {
 
 
 void CheckStackOverflow(void) {
-#ifdef CH_USE_REGISTRY
+#ifdef CH_CFG_USE_REGISTRY
 #ifdef CH_DBG_FILL_THREADS
     Thread* thd = chRegFirstThread();
 
@@ -180,7 +180,7 @@ void CheckStackOverflow(void) {
         char* stk = (char*) (thd + 1);
         nfree = 0;
 
-        while (*stk == CH_STACK_FILL_VALUE) {
+        while (*stk == CH_DBG_STACK_FILL_VALUE) {
             nfree++;
             stk++;
             if (nfree >= STACKSPACE_MARGIN) {
@@ -288,7 +288,7 @@ static int StartPatch1(void) {
  __attribute__((__noreturn__)) static msg_t ThreadDSP(void* arg) {
     (void)(arg);
 
-#if CH_USE_REGISTRY
+#if CH_CFG_USE_REGISTRY
     chRegSetThreadName("dsp");
 #endif
     codec_clearbuffer();

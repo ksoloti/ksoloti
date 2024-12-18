@@ -281,7 +281,7 @@ void EnterMenuFormat(void) {
 static WORKING_AREA(waThreadUI, 1172);
     static msg_t ThreadUI(void *arg) {
     (void)(arg);
-#if CH_USE_REGISTRY
+#if CH_CFG_USE_REGISTRY
     chRegSetThreadName("ui");
 #endif
     while (1) {
