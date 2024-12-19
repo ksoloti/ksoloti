@@ -260,16 +260,7 @@ public class Axoloti {
             builddir.mkdir();
         }
 
-        /* Flush previous xpatch.h.gch build file on start */
-        File[] bfiles = builddir.listFiles();
-        if (bfiles != null) {
-            for (File bf : bfiles) {
-                /* Redundant check. Normally there would never be a subdirectory there. */
-                if (!bf.isDirectory()) {
-                    if (bf.getName().equals("xpatch.h.gch")) bf.delete();
-                }
-            }
-        }
+        deletePrecompiledHeaderFile();
         // checkFailSafeModeActive(); // do this as as possible after home dir setup
 
         BuildEnv(RELEASE_DIR, defaultRelease);
@@ -296,6 +287,20 @@ public class Axoloti {
                 + "Firmware = " + fwdir + "\n"
                 + "Libraries = " + System.getProperty(LIBRARIES_DIR)
         );
+    }
+
+    public static void deletePrecompiledHeaderFile() {
+        /* Flush previous xpatch.h.gch build file on start */
+        File builddir = new File(System.getProperty(LIBRARIES_DIR) + File.separator + "build");
+        File[] bfiles = builddir.listFiles();
+        if (bfiles != null) {
+            for (File f : bfiles) {
+                /* Redundant check. Normally there would never be a subdirectory there. */
+                if (!f.isDirectory()) {
+                    if (f.getName().equals("xpatch.h.gch")) f.delete();
+                }
+            }
+        }
     }
 
     private static void handleCommandLine(final String args[]) {
