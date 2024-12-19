@@ -831,7 +831,6 @@ public class PreferencesFrame extends JFrame {
     }
 
     private void jCheckBoxNoMouseReCenterActionPerformed(java.awt.event.ActionEvent evt) {
-        prefs.setMouseDoNotRecenterWhenAdjustingControls(jCheckBoxNoMouseReCenter.isSelected());
     }
 
     private void editLibraryRow(int idx) {
