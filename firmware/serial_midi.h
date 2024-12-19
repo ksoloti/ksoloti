@@ -26,6 +26,6 @@ void serial_MidiSend1(uint8_t b0);
 void serial_MidiSend2(uint8_t b0, uint8_t b1);
 void serial_MidiSend3(uint8_t b0, uint8_t b1, uint8_t b2);
 
-int  serial_MidiGetOutputBufferPending(void);
+int32_t  serial_MidiGetOutputBufferPending(void);
 
 #endif
