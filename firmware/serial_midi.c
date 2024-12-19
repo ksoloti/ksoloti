@@ -172,7 +172,7 @@ void serial_midi_init(void) {
      */
 
     palSetPadMode(GPIOG,  9, PAL_MODE_ALTERNATE(8) | PAL_MODE_INPUT_PULLUP); /* RX */
-    palSetPadMode(GPIOG, 14, PAL_MODE_ALTERNATE(8) | PAL_MODE_INPUT_PULLUP | PAL_MODE_OUTPUT_PUSHPULL); /* TX */ //TODO does adding PAL_MODE_OUTPUT_PUSHPULL work?
+    palSetPadMode(GPIOG, 14, PAL_MODE_ALTERNATE(8) | PAL_MODE_INPUT_PULLUP | PAL_STM32_OTYPE_PUSHPULL); /* TX */ //TODO does adding PAL_MODE_OUTPUT_PUSHPULL or PAL_STM32_OTYPE_PUSHPULL work?
 
     sdStart(&SDMIDI, &sdMidiCfg);
 
