@@ -535,7 +535,6 @@ public class Preferences {
             return;
         }
         this.FirmwareMode = FirmwareMode;
-        restartRequired = true;
         SetDirty();
     }
 

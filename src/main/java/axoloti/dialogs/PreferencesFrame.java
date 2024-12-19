@@ -19,6 +19,7 @@
 package axoloti.dialogs;
 
 import axoloti.MainFrame;
+import axoloti.USBBulkConnection;
 import axoloti.utils.AxoFileLibrary;
 import axoloti.utils.AxoGitLibrary;
 import axoloti.utils.AxolotiLibrary;
@@ -134,15 +135,25 @@ public class PreferencesFrame extends JFrame {
 
     void Apply() {
 
-        // Preferences prefs = Preferences.LoadPreferences();
-
         prefs.setPollInterval(Integer.parseInt(jTextFieldPollInterval.getText()));
 
         prefs.setCodeFontSize(Integer.parseInt(jTextFieldCodeFontSize.getText()));
         Constants.FONT_MONO = Constants.FONT_MONO.deriveFont((float)prefs.getCodeFontSize());
         MainFrame.mainframe.updateConsoleFont();
+
         prefs.setMouseDialAngular(jComboBoxDialMouseBehaviour.getSelectedItem().equals("Angular"));
-        prefs.setFirmwareMode(jComboBoxFirmwareMode.getSelectedItem().toString());
+
+        prefs.setMouseDoNotRecenterWhenAdjustingControls(jCheckBoxNoMouseReCenter.isSelected());
+
+        if (!jComboBoxFirmwareMode.getSelectedItem().toString().equals(prefs.getFirmwareMode())) {
+            prefs.setFirmwareMode(jComboBoxFirmwareMode.getSelectedItem().toString());
+            axoloti.Axoloti.deletePrecompiledHeaderFile();
+            /* Offer to reflash firmware now */
+            MainFrame.mainframe.updateLinkFirmwareID();
+            if (USBBulkConnection.GetConnection().isConnected()) {
+                MainFrame.mainframe.interactiveFirmwareUpdate();
+            }
+        }
 
         prefs.setUserShortcut(0, jTextFieldUserShortcut1.getText());
         prefs.setUserShortcut(1, jTextFieldUserShortcut2.getText());
@@ -150,12 +161,14 @@ public class PreferencesFrame extends JFrame {
         prefs.setUserShortcut(3, jTextFieldUserShortcut4.getText());
 
         prefs.setFavouriteDir(jTextFieldFavDir.getText());
+
         prefs.setControllerObject(jTextFieldController.getText().trim());
         prefs.setControllerEnabled(jControllerEnabled.isSelected());
-        prefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
 
-        prefs.setDspSafetyLimit(jComboBoxDspSafetyLimit.getSelectedIndex());
+        prefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
         prefs.applyTheme();
+        
+        prefs.setDspSafetyLimit(jComboBoxDspSafetyLimit.getSelectedIndex());
     }
 
     final void PopulateLibrary() {
@@ -253,7 +266,7 @@ public class PreferencesFrame extends JFrame {
                                                 "Angular: Circle the cursor around the control to change its value.");
 
         jLabelFirmwareMode.setText("Firmware Mode (restart required)");
-        jLabelFirmwareMode.setToolTipText("<html><div width=\"480px\">Several firmware modes are available, each supporting different boards and/or adding certain firmware features.<p/><p/><b>Ksoloti Core</b>: The default mode. The Patcher will (only!) detect and connect to Ksoloti Core boards.<p/><b>Axoloti Core</b>: \"Legacy mode\". The Patcher will (only!) detect and connect to Axoloti Core boards.<p/><p/><b>[BOARD] + SPILink</b>: Activates a link between two Cores which lets them sync up and exchange audio and data channels. Make the necessary hardware connections as described in the SPILink help patch, and flash this firmware mode on both Cores to be synced together. Follow the instructions in the SPILink help patch.<p/><p/><b>Make sure you restart the Patcher after changing the firmware mode. In the \"Firmware Mismatch\" popup, click \"Yes\" to let it update the Core's firmware automatically.</b></div>");
+        jLabelFirmwareMode.setToolTipText("<html><div width=\"480px\">Several firmware modes are available, each supporting different boards and/or adding certain firmware features.<p/><p/><b>Ksoloti Core</b>: The default mode. The Patcher will (only!) detect and connect to Ksoloti Core boards.<p/><b>Axoloti Core</b>: \"Legacy mode\". The Patcher will (only!) detect and connect to Axoloti Core boards.<p/><p/><b>[BOARD] + SPILink</b>: Activates a link between two Cores which lets them sync up and exchange audio and data channels. Make the necessary hardware connections as described in the SPILink help patch, and flash this firmware mode on both Cores to be synced together. Follow the instructions in the SPILink help patch.<p/><p/><b>In the resulting \"Firmware Mismatch\" popup, click \"Yes\" to let it update the Core's firmware automatically.</b></div>");
 
         jComboBoxDialMouseBehaviour.setToolTipText(jLabelDialMouseBehaviour.getToolTipText());
         jComboBoxDialMouseBehaviour.setModel(new DefaultComboBoxModel<String>(new String[] { "Vertical", "Angular" }));
@@ -420,16 +433,18 @@ public class PreferencesFrame extends JFrame {
             }
         });
 
+        jComboBoxDspSafetyLimit.setModel(new DefaultComboBoxModel<String>(new String[] {
+            "Original",
+            "Very Safe",
+            "Safe",
+            "Normal",
+            "Risky",
+            "Very Risky"
+        }));
         jLabelDspSafetyLimit.setText("DSP Safety Limit");
         jLabelDspSafetyLimit.setToolTipText("Changes the DSP safety limits.");
         jLabelDspSafetyLimit.setEnabled(true);
 
-        jComboBoxDspSafetyLimit.addItem("Original");
-        jComboBoxDspSafetyLimit.addItem("Very Safe");
-        jComboBoxDspSafetyLimit.addItem("Safe");
-        jComboBoxDspSafetyLimit.addItem("Normal");
-        jComboBoxDspSafetyLimit.addItem("Risky");
-        jComboBoxDspSafetyLimit.addItem("Very Risky");
 
         jComboBoxDspSafetyLimit.setToolTipText(jLabelDspSafetyLimit.getToolTipText());
         jComboBoxDspSafetyLimit.addActionListener(new java.awt.event.ActionListener() {
@@ -813,7 +828,6 @@ public class PreferencesFrame extends JFrame {
     }
 
     private void jComboBoxDspSafetyLimitPerformed(java.awt.event.ActionEvent evt) {
-        prefs.setDspSafetyLimit(jComboBoxDspSafetyLimit.getSelectedIndex());
     }
 
     private void jCheckBoxNoMouseReCenterActionPerformed(java.awt.event.ActionEvent evt) {
