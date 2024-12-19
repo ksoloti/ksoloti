@@ -24,7 +24,7 @@
 #include "serial_midi.h"
 #include "patch.h"
 
-static const uint8_t StatusLengthLookup[16] = { //TODO should be int8_t
+static const int8_t StatusLengthLookup[16] = {
     0, 0, 0, 0, 0, 0, 0, 0,
     3, /* 0x80 = note off, 3 bytes */
     3, /* 0x90 = note on, 3 bytes */
