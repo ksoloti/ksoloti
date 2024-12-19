@@ -939,6 +939,8 @@ static void USBH_Process_OS(void const * argument)
     {
       USBH_Process((USBH_HandleTypeDef *)argument);
     }
+
+    chThdYield();
    }
 }
 
