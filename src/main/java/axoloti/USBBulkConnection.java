@@ -1161,7 +1161,7 @@ public class USBBulkConnection extends Connection {
                        Integer.toHexString(i2)});
         }
         else {
-            // LOGGER.info("OK! " + Integer.toHexString(i1) + " / " + Integer.toHexString(i2));
+            // LOGGER.log(Level.INFO, "OK! " + Integer.toHexString(i1) + " / " + Integer.toHexString(i2));
         }
 
         if (i2 > 0) {
@@ -1177,7 +1177,7 @@ public class USBBulkConnection extends Connection {
     }
 
     void DistributeToDisplays(final ByteBuffer dispData) {
-        // LOGGER.info("Distr1");
+        // LOGGER.log(Level.INFO, "Distr1");
         try {
             if (patch == null) {
                 return;
@@ -1188,7 +1188,7 @@ public class USBBulkConnection extends Connection {
             if (patch.DisplayInstances == null) {
                 return;
             }
-            // LOGGER.info("Distr2");
+            // LOGGER.log(Level.INFO, "Distr2");
             SwingUtilities.invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
@@ -1402,7 +1402,7 @@ public class USBBulkConnection extends Connection {
                 if (dataIndex == dataLength) {
                     sdinfoRcvBuffer.rewind();
                     sdinfoRcvBuffer.order(ByteOrder.LITTLE_ENDIAN);
-                    // LOGGER.info("sdinfo: "
+                    // LOGGER.log(Level.INFO, "sdinfo: "
                     // + sdinfoRcvBuffer.asIntBuffer().get(0) + " "
                     // + sdinfoRcvBuffer.asIntBuffer().get(1) + " "
                     // + sdinfoRcvBuffer.asIntBuffer().get(2));
@@ -1430,7 +1430,7 @@ public class USBBulkConnection extends Connection {
                         fname = fname.substring(0, fname.length() - 1);
                     }
                     SDCardInfo.getInstance().AddFile(fname, size, timestamp);
-                    // LOGGER.info("fileinfo: " + cb.toString());                    
+                    // LOGGER.log(Level.INFO, "fileinfo: " + cb.toString());                    
                     GoIdleState();
                     if (fname.equals("/")) {
                         /* end of index */
@@ -1574,7 +1574,7 @@ public class USBBulkConnection extends Connection {
                         String sFwcrc = String.format("%08X", fwcrc);
 
                         System.out.println(String.format("Firmware version: %d.%d.%d.%d, CRC: 0x%s, entry point: 0x%08X", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc, patchentrypoint));
-                        LOGGER.info(String.format("Firmware version %d.%d.%d.%d | CRC 0x%s\n", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
+                        LOGGER.log(Level.INFO, String.format("Firmware version %d.%d.%d.%d | CRC 0x%s\n", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
                         MainFrame.mainframe.setFirmwareID(sFwcrc);
                         GoIdleState();
                         break;
