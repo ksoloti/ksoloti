@@ -171,8 +171,8 @@ void serial_midi_init(void) {
      * PA2(TX) and PA3(RX) are routed to USART2.
      */
 
-    palSetPadMode(GPIOG,  9, PAL_MODE_ALTERNATE(8) | PAL_MODE_INPUT_PULLUP); // RX
-    palSetPadMode(GPIOG, 14, PAL_MODE_ALTERNATE(8) | PAL_MODE_INPUT_PULLUP); // TX // TODO may add PAL_MODE_OUTPUT_PUSHPULL
+    palSetPadMode(GPIOG,  9, PAL_MODE_ALTERNATE(8) | PAL_MODE_INPUT_PULLUP); /* RX */
+    palSetPadMode(GPIOG, 14, PAL_MODE_ALTERNATE(8) | PAL_MODE_INPUT_PULLUP | PAL_MODE_OUTPUT_PUSHPULL); /* TX */ //TODO does adding PAL_MODE_OUTPUT_PUSHPULL work?
 
     sdStart(&SDMIDI, &sdMidiCfg);
 
