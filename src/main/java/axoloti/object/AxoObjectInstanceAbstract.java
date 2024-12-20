@@ -250,22 +250,6 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
 
     @Override
     public void mouseClicked(MouseEvent me) {
-        if (patch != null && me.getButton() == MouseEvent.BUTTON1) {
-            // if (me.getClickCount() == 1) {
-                if (me.isShiftDown()) {
-                    SetSelected(!isSelected());
-                    me.consume();
-                } else if (Selected == false) {
-                    ((PatchGUI) patch).SelectNone();
-                    SetSelected(true);
-                    me.consume();
-                }
-            // }
-            // if (me.getClickCount() == 2) {
-                // ((PatchGUI) patch).ShowClassSelector(AxoObjectInstanceAbstract.this.getLocation(), AxoObjectInstanceAbstract.this, null, true);
-                // me.consume();
-            // }
-        }
     }
 
     @Override
@@ -288,17 +272,23 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
 
     @Override
     public void mouseDragged(MouseEvent me) {
+
         if ((patch != null) && (draggingObjects != null)) {
+
             Point locOnScreen = me.getLocationOnScreen();
             int dx = locOnScreen.x - dragAnchor.x;
             int dy = locOnScreen.y - dragAnchor.y;
+
             for (AxoObjectInstanceAbstract o : draggingObjects) {
+
                 int nx = o.dragLocation.x + dx;
                 int ny = o.dragLocation.y + dy;
+
                 if (!me.isShiftDown()) {
                     nx = ((nx + (Constants.X_GRID / 2)) / Constants.X_GRID) * Constants.X_GRID;
                     ny = ((ny + (Constants.Y_GRID / 2)) / Constants.Y_GRID) * Constants.Y_GRID;
                 }
+
                 if (o.x != nx || o.y != ny) {
                     o.setLocation(nx, ny);
                 }
@@ -326,6 +316,22 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
                 p.show(Titlebar, 0, Titlebar.getHeight());
                 me.consume();
             } else if (!IsLocked()) {
+                if (me.getButton() == MouseEvent.BUTTON1) {
+                    // if (me.getClickCount() == 1) {
+                        if (me.isShiftDown()) {
+                            SetSelected(!isSelected());
+                            me.consume();
+                        } else if (Selected == false) {
+                            ((PatchGUI) patch).SelectNone();
+                            SetSelected(true);
+                            me.consume();
+                        }
+                    // }
+                    // if (me.getClickCount() == 2) {
+                        // ((PatchGUI) patch).ShowClassSelector(AxoObjectInstanceAbstract.this.getLocation(), AxoObjectInstanceAbstract.this, null, true);
+                        // me.consume();
+                    // }
+                }
                 draggingObjects = new ArrayList<AxoObjectInstanceAbstract>();
                 dragAnchor = me.getLocationOnScreen();
                 moveToDraggedLayer(this);
@@ -661,9 +667,10 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     public void resizeToGrid() {
         revalidate();
         Dimension d = getPreferredSize();
-        d.width = ((d.width + Constants.X_GRID - 1) / Constants.X_GRID) * Constants.X_GRID;
-        // d.height = ((d.height + Constants.Y_GRID - 1) / Constants.Y_GRID) * Constants.Y_GRID;
-        d.height = ((d.height + Constants.Y_GRID - 3) / Constants.Y_GRID) * Constants.Y_GRID;
+        // d.width = ((d.width + Constants.X_GRID - 1) / Constants.X_GRID) * Constants.X_GRID;
+        d.width = ((d.width * Constants.X_GRID - 1) / Constants.X_GRID);
+        // d.height = ((d.height + Constants.Y_GRID - 3) / Constants.Y_GRID) * Constants.Y_GRID;
+        d.height = ((d.height * Constants.Y_GRID - 3) / Constants.Y_GRID);
         setSize(d);
     }
 
