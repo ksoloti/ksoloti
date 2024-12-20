@@ -1641,7 +1641,7 @@ public class Patch {
 
     String GenerateDSPCodePlusPlus(String ClassName) {
         String c = "\n";
-        c = I + "void __attribute__((optimize(\"O2\"))) clearBuffers(void) {\n"
+        c = I + "void __attribute__((optimize(\"-O2\"))) clearBuffers(void) {\n"
 		+ I+I + "uint_fast8_t u;\n"
         + I+I + "for(u=0; u < BUFSIZE; u++) {\n"
         + I+I+I + "AudioOutputLeft[u] = 0;\n"

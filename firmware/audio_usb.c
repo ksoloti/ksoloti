@@ -103,7 +103,7 @@ void HandleError(void)
 }
 
 // Set the sample rate
-static void __attribute__((optimize("O0"))) aduSetSampleRate(USBDriver *usbp) 
+static void __attribute__((optimize("-O0"))) aduSetSampleRate(USBDriver *usbp) 
 {
   audio_control_cur_4_t const *pData = (audio_control_cur_4_t const *)&aduControlData[0];
   uint32_t uSampleRate = (uint32_t) pData->bCur;
@@ -119,18 +119,18 @@ static void __attribute__((optimize("O0"))) aduSetSampleRate(USBDriver *usbp)
 }
 
 // Set mute
-static void __attribute__((optimize("O0"))) aduSetMute(USBDriver *usbp) 
+static void __attribute__((optimize("-O0"))) aduSetMute(USBDriver *usbp) 
 {
   aduState.mute[aduControlChannel] = ((audio_control_cur_1_t const *)aduControlData)->bCur;
 }
 
 // Set mute
-static void __attribute__((optimize("O0"))) aduSetVolume(USBDriver *usbp) 
+static void __attribute__((optimize("-O0"))) aduSetVolume(USBDriver *usbp) 
 {
   aduState.volume[aduControlChannel] = ((audio_control_cur_2_t const *)aduControlData)->bCur;
 }
 
-bool __attribute__((optimize("O0"))) aduHandleVolumeRequest(USBDriver *usbp, audio_control_request_t *request)
+bool __attribute__((optimize("-O0"))) aduHandleVolumeRequest(USBDriver *usbp, audio_control_request_t *request)
 {
   // if(uLogCount < LOG_AMOUNT)
   //   memcpy(&requests[uLogCount++], request, sizeof(audio_control_request_t));
@@ -217,7 +217,7 @@ bool __attribute__((optimize("O0"))) aduHandleVolumeRequest(USBDriver *usbp, aud
   return bResult;
 }
 
-bool __attribute__((optimize("O0"))) aduHandleClockRequest(USBDriver *usbp, audio_control_request_t *request)
+bool __attribute__((optimize("-O0"))) aduHandleClockRequest(USBDriver *usbp, audio_control_request_t *request)
 {
   bool bResult = false;
 
@@ -281,7 +281,7 @@ bool __attribute__((optimize("O0"))) aduHandleClockRequest(USBDriver *usbp, audi
   return bResult;
 }
 
-bool __attribute__((optimize("O0"))) aduControl(USBDriver *usbp)
+bool __attribute__((optimize("-O0"))) aduControl(USBDriver *usbp)
 {
   audio_control_request_t *acrp = (audio_control_request_t *)usbp->setup;
 
@@ -308,7 +308,7 @@ bool __attribute__((optimize("O0"))) aduControl(USBDriver *usbp)
 
 
 //                                       4              5               1            (3 << 8) | 2     6
-bool __attribute__((optimize("O0"))) aduSwitchInterface(USBDriver *usbp, uint8_t iface, uint8_t entity, uint8_t req, uint16_t wValue, uint16_t length) 
+bool __attribute__((optimize("-O0"))) aduSwitchInterface(USBDriver *usbp, uint8_t iface, uint8_t entity, uint8_t req, uint16_t wValue, uint16_t length) 
 {
   bool bResult = false;
  
@@ -360,7 +360,7 @@ static void onotify(GenericQueue *qp)
  */
 
 // Note this is never called by halInit(), the above comment is incorrect
-void __attribute__((optimize("O0"))) aduInit(void) 
+void __attribute__((optimize("-O0"))) aduInit(void) 
 {
 }
  
@@ -373,7 +373,7 @@ void __attribute__((optimize("O0"))) aduInit(void)
  *
  * @init
  */
-void __attribute__((optimize("O0"))) aduObjectInit(AudioUSBDriver *adup)
+void __attribute__((optimize("-O0"))) aduObjectInit(AudioUSBDriver *adup)
 {
   // default sample rate
   aduState.currentSampleRate = 48000;
@@ -411,7 +411,7 @@ void __attribute__((optimize("O0"))) aduObjectInit(AudioUSBDriver *adup)
  *
  * @api
  */
-void __attribute__((optimize("O0"))) aduStart(AudioUSBDriver *adup, const AudioUSBConfig *config) 
+void __attribute__((optimize("-O0"))) aduStart(AudioUSBDriver *adup, const AudioUSBConfig *config) 
 {
   USBDriver *usbp = config->usbp;
 
@@ -439,7 +439,7 @@ void __attribute__((optimize("O0"))) aduStart(AudioUSBDriver *adup, const AudioU
  *
  * @api
  */
-void __attribute__((optimize("O0"))) aduStop(AudioUSBDriver *adup) 
+void __attribute__((optimize("-O0"))) aduStop(AudioUSBDriver *adup) 
 {
   USBDriver *usbp = adup->config->usbp;
 
@@ -473,7 +473,7 @@ void __attribute__((optimize("O0"))) aduStop(AudioUSBDriver *adup)
  *
  * @iclass
  */
-void __attribute__((optimize("O0"))) aduConfigureHookI(AudioUSBDriver *adup) 
+void __attribute__((optimize("-O0"))) aduConfigureHookI(AudioUSBDriver *adup) 
 {
   //USBDriver *usbp = adup->config->usbp;
 
@@ -497,19 +497,19 @@ void __attribute__((optimize("O0"))) aduConfigureHookI(AudioUSBDriver *adup)
  * @retval TRUE         Message handled internally.
  * @retval FALSE        Message not handled.
  */
-bool_t __attribute__((optimize("O0"))) aduRequestsHook(USBDriver *usbp) {
+bool_t __attribute__((optimize("-O0"))) aduRequestsHook(USBDriver *usbp) {
 
   (void)usbp;
   return FALSE;
 }
 
 
-void __attribute__((optimize("O0"))) aduSofHookI(AudioUSBDriver *adup)
+void __attribute__((optimize("-O0"))) aduSofHookI(AudioUSBDriver *adup)
 {
 }
 
 
-void __attribute__((optimize("O0"))) aduResetBuffers(void)
+void __attribute__((optimize("-O0"))) aduResetBuffers(void)
 {
   aduState.currentFrame               = 0;
   aduState.lastOverunFrame            = 0;
@@ -532,7 +532,7 @@ void __attribute__((optimize("O0"))) aduResetBuffers(void)
   AddOverunLog(ltResetForSync___);
 }
 
-void __attribute__((optimize("O0"))) aduEnable(USBDriver *usbp)
+void __attribute__((optimize("-O0"))) aduEnable(USBDriver *usbp)
 {
   if(aduIsUsbInUse())
   {
@@ -545,7 +545,7 @@ void __attribute__((optimize("O0"))) aduEnable(USBDriver *usbp)
   }
 }
 
-void __attribute__((optimize("O0"))) aduEnableInput(USBDriver *usbp, bool bEnable)
+void __attribute__((optimize("-O0"))) aduEnableInput(USBDriver *usbp, bool bEnable)
 {
   // this is ksoloti->host
   if(bEnable != aduState.isInputActive)
@@ -558,7 +558,7 @@ void __attribute__((optimize("O0"))) aduEnableInput(USBDriver *usbp, bool bEnabl
   }
 }
 
-void __attribute__((optimize("O0"))) aduEnableOutput(USBDriver *usbp, bool bEnable)
+void __attribute__((optimize("-O0"))) aduEnableOutput(USBDriver *usbp, bool bEnable)
 {
   // this is host->ksoloti
   if(bEnable != aduState.isOutputActive)
