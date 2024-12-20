@@ -24,7 +24,7 @@ import axoloti.atom.AtomInstance;
 import axoloti.datatypes.Value;
 import axoloti.object.AxoObjectInstance;
 import axoloti.realunits.NativeToReal;
-import axoloti.utils.CharEscape;
+import static axoloti.utils.CharEscape.charEscape;
 import components.AssignMidiCCComponent;
 import components.AssignPresetMenuItems;
 import components.LabelComponent;
@@ -354,7 +354,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     }
 
     public String getLegalName() {
-        return CharEscape.charEscape(name);
+        return charEscape(name);
     }
 
     public String KVPName(String vprefix) {

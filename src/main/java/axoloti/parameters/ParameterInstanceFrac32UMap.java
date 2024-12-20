@@ -21,7 +21,7 @@ package axoloti.parameters;
 import axoloti.Preset;
 import axoloti.Theme;
 import axoloti.datatypes.Value;
-import axoloti.utils.CharEscape;
+import static axoloti.utils.CharEscape.charEscape;
 import components.AssignMidiCCComponent;
 import components.AssignMidiCCMenuItems;
 import components.AssignModulatorComponent;
@@ -138,7 +138,7 @@ public class ParameterInstanceFrac32UMap<T extends ParameterFrac32> extends Para
             n = axoObj.getInstanceName() + ":" + name;
         }
         String s = PExName(vprefix) + ".pfunction = " + GetPFunction() + ";\n"
-                + I+I+I + "SetKVP_IPVP(&" + StructAccces + KVPName(vprefix) + ",ObjectKvpRoot, \"" + CharEscape.charEscape(n) + "\" ,"
+                + I+I+I + "SetKVP_IPVP(&" + StructAccces + KVPName(vprefix) + ",ObjectKvpRoot, \"" + charEscape(n) + "\" ,"
                 + "&" + PExName(vprefix) + ","
                 + " 0,"
                 + " 1<<27);\n"

@@ -23,7 +23,7 @@ import axoloti.atom.AtomInstance;
 import axoloti.datatypes.DataType;
 import axoloti.datatypes.SignalMetaData;
 import axoloti.object.AxoObjectInstance;
-import axoloti.utils.CharEscape;
+import static axoloti.utils.CharEscape.charEscape;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +61,7 @@ public abstract class Outlet implements AtomDefinition, Cloneable {
     }
 
     public String GetCName() {
-        return "outlet_" + CharEscape.charEscape(name);
+        return "outlet_" + charEscape(name);
     }
 
     SignalMetaData GetSignalMetaData() {

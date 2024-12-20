@@ -23,7 +23,7 @@ import axoloti.atom.AtomInstance;
 import axoloti.datatypes.DataType;
 import axoloti.datatypes.SignalMetaData;
 import axoloti.object.AxoObjectInstance;
-import axoloti.utils.CharEscape;
+import static axoloti.utils.CharEscape.charEscape;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +74,7 @@ public abstract class Inlet implements AtomDefinition, Cloneable {
     }
 
     public String GetCName() {
-        return "inlet_" + CharEscape.charEscape(name);
+        return "inlet_" + charEscape(name);
     }
 
     @Override

@@ -29,7 +29,7 @@ import axoloti.displays.DisplayInstance;
 import axoloti.inlets.InletInstance;
 import axoloti.outlets.OutletInstance;
 import axoloti.parameters.ParameterInstance;
-import axoloti.utils.CharEscape;
+import static axoloti.utils.CharEscape.charEscape;
 import axoloti.utils.Constants;
 import components.LabelComponent;
 import components.TextFieldComponent;
@@ -622,7 +622,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     }
 
     public String getLegalName() {
-        return CharEscape.charEscape(InstanceName);
+        return charEscape(InstanceName);
     }
 
     public String getCInstanceName() {

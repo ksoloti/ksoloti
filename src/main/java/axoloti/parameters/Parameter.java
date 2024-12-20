@@ -21,7 +21,7 @@ package axoloti.parameters;
 import axoloti.atom.AtomDefinition;
 import axoloti.datatypes.DataType;
 import axoloti.object.AxoObjectInstance;
-import axoloti.utils.CharEscape;
+import static axoloti.utils.CharEscape.charEscape;
 import generatedobjects.GeneratedObjects;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -65,7 +65,7 @@ public abstract class Parameter<T extends ParameterInstance> implements AtomDefi
     }
 
     public String GetCName() {
-        return "param_" + CharEscape.charEscape(name);
+        return "param_" + charEscape(name);
     }
 
     @Override
