@@ -280,17 +280,19 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
             int dy = locOnScreen.y - dragAnchor.y;
 
             for (AxoObjectInstanceAbstract o : draggingObjects) {
-
+                
                 int nx = o.dragLocation.x + dx;
                 int ny = o.dragLocation.y + dy;
-
+                
                 if (!me.isShiftDown()) {
                     nx = ((nx + (Constants.X_GRID / 2)) / Constants.X_GRID) * Constants.X_GRID;
                     ny = ((ny + (Constants.Y_GRID / 2)) / Constants.Y_GRID) * Constants.Y_GRID;
                 }
-
-                if (o.x != nx || o.y != ny) {
-                    o.setLocation(nx, ny);
+                
+                if (o.isSelected()) {
+                    if (o.x != nx || o.y != ny) {
+                        o.setLocation(nx, ny);
+                    }
                 }
             }
         }
@@ -668,9 +670,9 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         revalidate();
         Dimension d = getPreferredSize();
         // d.width = ((d.width + Constants.X_GRID - 1) / Constants.X_GRID) * Constants.X_GRID;
-        d.width = ((d.width * Constants.X_GRID - 1) / Constants.X_GRID);
+        d.width = ((d.width * Constants.X_GRID - 0) / Constants.X_GRID);
         // d.height = ((d.height + Constants.Y_GRID - 3) / Constants.Y_GRID) * Constants.Y_GRID;
-        d.height = ((d.height * Constants.Y_GRID - 3) / Constants.Y_GRID);
+        d.height = ((d.height * Constants.Y_GRID - 0) / Constants.Y_GRID);
         setSize(d);
     }
 
