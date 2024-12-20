@@ -91,18 +91,19 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         InstanceTextPane.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent me) {
-                if (me.getClickCount() == 2) {
-                    addInstanceNameEditor();
-                }
                 if (patch != null) {
-                    if (me.getClickCount() == 1) {
-                        if (me.isShiftDown()) {
-                            SetSelected(!isSelected());
-                        } else if (Selected == false) {
-                            ((PatchGUI) patch).SelectNone();
-                            SetSelected(true);
-                        }
+                    if (!me.isShiftDown() && me.getClickCount() == 2) {
+                        addInstanceNameEditor();
                     }
+                    // if (me.getClickCount() == 1) {
+                        // if (me.isShiftDown()) {
+                        //    SetSelected(!isSelected());
+                        // }
+                        // else if (Selected == false) {
+                        //    ((PatchGUI) patch).SelectNone();
+                        //    SetSelected(true);
+                        // }
+                    // }
                 }
             }
 
