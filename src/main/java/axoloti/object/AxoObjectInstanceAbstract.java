@@ -669,10 +669,8 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     public void resizeToGrid() {
         revalidate();
         Dimension d = getPreferredSize();
-        // d.width = ((d.width + Constants.X_GRID - 1) / Constants.X_GRID) * Constants.X_GRID;
-        d.width = ((d.width * Constants.X_GRID - 0) / Constants.X_GRID);
-        // d.height = ((d.height + Constants.Y_GRID - 3) / Constants.Y_GRID) * Constants.Y_GRID;
-        d.height = ((d.height * Constants.Y_GRID - 0) / Constants.Y_GRID);
+        d.width = ((d.width + Constants.X_GRID - 1) / Constants.X_GRID) * Constants.X_GRID;
+        d.height = ((d.height + Constants.Y_GRID - 3) / Constants.Y_GRID) * Constants.Y_GRID;
         setSize(d);
     }
 
