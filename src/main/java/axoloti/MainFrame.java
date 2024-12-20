@@ -1183,7 +1183,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
         String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
         if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-            fname += File.separator +  "ksoloti_flasher.bin";
+            fname += File.separator + "ksoloti_flasher.bin";
             pname += File.separator + "ksoloti";
         }
         else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
@@ -1213,7 +1213,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
         String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
         if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-            fname += File.separator +  "ksoloti_flasher.bin";
+            fname += File.separator + "ksoloti_flasher.bin";
             pname += File.separator + "ksoloti";
         }
         else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
