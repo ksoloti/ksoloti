@@ -65,11 +65,13 @@ typedef union {
 
 void axoloti_math_init(void);
 
+
 __attribute__((always_inline)) __STATIC_INLINE int32_t ___SMMUL (int32_t op1, int32_t op2) {
     int32_t result;
     __ASM volatile ("smmul %0, %1, %2" : "=r" (result): "r" (op1), "r" (op2));
     return result;
 }
+
 
 __attribute__((always_inline)) __STATIC_INLINE int32_t ___SMMLA (int32_t op1, int32_t op2, int32_t op3) {
     int32_t result;
@@ -77,9 +79,24 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t ___SMMLA (int32_t op1, in
     return result;
 }
 
+
 __attribute__((always_inline)) __STATIC_INLINE int32_t ___SMMLS (int32_t op1, int32_t op2, int32_t op3) {
     int32_t result;
     __ASM volatile ("smmls %0, %1, %2, %3" : "=r" (result): "r" (op1), "r" (op2), "r" (op3));
+    return result;
+}
+
+
+__attribute__((always_inline)) __STATIC_INLINE int32_t ___SDIV (int32_t op1, int32_t op2) {
+    int32_t result;
+    __ASM volatile ("sdiv %0, %1, %2" : "=r" (result): "r" (op1), "r" (op2));
+    return result;
+}
+
+
+__attribute__((always_inline)) __STATIC_INLINE uint32_t ___UDIV (uint32_t op1, uint32_t op2) {
+    uint32_t result;
+    __ASM volatile ("udiv %0, %1, %2" : "=r" (result): "r" (op1), "r" (op2));
     return result;
 }
 
