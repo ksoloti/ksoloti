@@ -296,7 +296,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             patch.Unlock();
         }
         jToggleButtonLive.setSelected(false);
-        // jToggleButtonLive.setForeground(null);
         jCheckBoxMenuItemLive.setSelected(false);
         ShowConnect1(false);
     }
@@ -305,14 +304,12 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     public void ShowConnect() {
         patch.Unlock();
         jToggleButtonLive.setSelected(false);
-        // jToggleButtonLive.setForeground(null);
         jCheckBoxMenuItemLive.setSelected(false);
         ShowConnect1(true);
     }
 
     public void ShowCompileFail() {
         jToggleButtonLive.setSelected(false);
-        // jToggleButtonLive.setForeground(null);
         jToggleButtonLive.setEnabled(true);
     }
 
@@ -1275,7 +1272,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             if(overload) {
                 jProgressBarDSPLoad.setForeground(Color.RED); 
             } else {
-                jProgressBarDSPLoad.setForeground(null); 
+                jProgressBarDSPLoad.setForeground(Theme.getCurrentTheme().Button_Accent_Background); 
             }
         }
         previousOverload = overload;
