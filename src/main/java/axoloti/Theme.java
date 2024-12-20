@@ -64,6 +64,9 @@ public class Theme {
     @Element
     public Color Button_Accent_Foreground = UIManager.getColor("ProgressBar.selectionForeground");
     @Element
+    // public Color ProgressBar_Overload_Foreground = new Color(0xA0, UIManager.getColor("Component.accentColor").darker().darker().getGreen(), UIManager.getColor("Component.accentColor").darker().darker().getBlue());
+    public Color ProgressBar_Overload_Foreground = new Color(0x90, 0, 0);
+    @Element
     public Color Button_Default_Background = UIManager.getColor("Button.background");
     @Element
     public Color Button_Default_Foreground = UIManager.getColor("Button.foreground");

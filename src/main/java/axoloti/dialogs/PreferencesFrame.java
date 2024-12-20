@@ -146,9 +146,12 @@ public class PreferencesFrame extends JFrame {
         prefs.setMouseDoNotRecenterWhenAdjustingControls(jCheckBoxNoMouseReCenter.isSelected());
 
         if (!jComboBoxFirmwareMode.getSelectedItem().toString().equals(prefs.getFirmwareMode())) {
+
             prefs.setFirmwareMode(jComboBoxFirmwareMode.getSelectedItem().toString());
+
             axoloti.Axoloti.deletePrecompiledHeaderFile();
-            /* Offer to reflash firmware now */
+
+            /* Offer to reflash firmware now */ //TODO force restart when switching between Kso / Axo
             MainFrame.mainframe.updateLinkFirmwareID();
             if (USBBulkConnection.GetConnection().isConnected()) {
                 MainFrame.mainframe.interactiveFirmwareUpdate();

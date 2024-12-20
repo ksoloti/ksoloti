@@ -1270,7 +1270,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         if(previousOverload != overload) {
             if(overload) {
-                jProgressBarDSPLoad.setForeground(Color.RED); 
+                jProgressBarDSPLoad.setForeground(Theme.getCurrentTheme().ProgressBar_Overload_Foreground);
             } else {
                 jProgressBarDSPLoad.setForeground(Theme.getCurrentTheme().Button_Accent_Background); 
             }
