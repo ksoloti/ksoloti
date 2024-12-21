@@ -620,7 +620,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jMenuItemNotes.setMnemonic('T');
         jMenuItemNotes.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyUtils.CONTROL_OR_CMD_MASK));
-        jMenuItemNotes.setText("Notes");
+        jMenuItemNotes.setText("Patch Notes");
         jMenuItemNotes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemNotesActionPerformed(evt);
