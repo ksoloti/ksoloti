@@ -786,7 +786,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 c = c.replaceAll(p.GetCName(), p.CValue());
             }
         }
-        return c;
+        return c + "\n";
     }
 
     @Override
@@ -894,7 +894,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     @Override
     public String GenerateDisposeCodePlusPlus(String classname) {
         String h = I+I + "public: void Dispose() {\n";
-        String c = "\n";
+        String c = "";
         if (getType().sDisposeCode != null) {
             c += I+I+I + "/* Object Dispose Code Tab */\n";
             String s = getType().sDisposeCode;

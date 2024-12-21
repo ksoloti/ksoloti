@@ -1921,7 +1921,7 @@ public class Patch {
             c += "int32buffer UsbInputLeft, UsbInputRight, UsbOutputLeft, UsbOutputRight;\n";
         }
 
-        c += "void xpatch_init2(uint32_t fwid);\n\n"
+        c += "\nvoid xpatch_init2(uint32_t fwid);\n\n"
                 + "extern \"C\" __attribute__ ((section(\".boot\"))) void xpatch_init(uint32_t fwid) {\n"
            + I + "xpatch_init2(fwid);\n"
                 + "}\n\n";
