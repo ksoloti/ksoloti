@@ -36,14 +36,14 @@ public class VisibleCablePanel extends javax.swing.JPanel {
         jCheckBoxBool32.setOpaque(true);
         jCheckBoxBool32.setSelected(true);
         jCheckBoxBool32.setRolloverEnabled(false);
-        jCheckBoxFrac32.setToolTipText("Control rate signals (true/false, on/off etc.), 3 kHz sampling rate.");
+        jCheckBoxFrac32.setToolTipText("Boolean signals (true/false, on/off etc.) at control rate, 3 kHz.");
 
         /* Green wires */
         jCheckBoxInt32.setBackground(Theme.getCurrentTheme().Cable_Int32);
         jCheckBoxInt32.setOpaque(true);
         jCheckBoxInt32.setSelected(true);
         jCheckBoxInt32.setRolloverEnabled(false);
-        jCheckBoxInt32.setToolTipText("Control rate signals (whole numbers), 3 kHz sampling rate.");
+        jCheckBoxInt32.setToolTipText("Integer signals (whole numbers) at control rate , 3 kHz.");
 
         
         /* Pink wires */
@@ -51,7 +51,7 @@ public class VisibleCablePanel extends javax.swing.JPanel {
         jCheckBoxCharPointer32.setOpaque(true);
         jCheckBoxCharPointer32.setSelected(true);
         jCheckBoxCharPointer32.setRolloverEnabled(false);
-        jCheckBoxCharPointer32.setToolTipText("String pointers (pointers to character arrays), 3 kHz sampling rate.");
+        jCheckBoxCharPointer32.setToolTipText("String pointers (strings, character arrays) at control rate, 3 kHz.");
         
         /* Rose... Salmon(?) wires (currently not used?) */
         // jCheckBoxInt32Pointer.setBackground(Theme.getCurrentTheme().Cable_Int32Pointer);
