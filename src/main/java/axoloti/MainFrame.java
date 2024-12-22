@@ -387,7 +387,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         LOGGER.log(Level.WARNING,
                             "Expert Mode is enabled in ksoloti.prefs. The following options are now available:\n" + 
                             "- Compile firmware, Refresh firmware ID (Board -> Firmware)\n" + 
-                            "- Generate and/or compile patch code, simulate lock/unlock, also while no Core is connected (Patch windows -> Patch)\n" + 
+                            "- Generate and/or compile patch code, simulate lock/unlock, also while no Core is connected (patch windows -> Patch)\n" + 
                             "- Remove read-only restrictions: Edit and save to read-only libraries (axoloti-factory, *oloti-community, ksoloti-objects)\n" + 
                             "- Test-compile all patches in all libraries, or all patches (recursively) in specified folder (File -> Test Compilation)\n"
                         );
