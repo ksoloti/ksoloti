@@ -19,6 +19,7 @@
 package axoloti.dialogs;
 
 import axoloti.MainFrame;
+import axoloti.USBBulkConnection;
 
 import static axoloti.MainFrame.mainframe;
 import static axoloti.MainFrame.prefs;
@@ -100,11 +101,11 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 int r = jTable1.getSelectedRow();
                 if (r >= 0) {
                     String devName = (String) model.getValueAt(r, 1);
-                    if (prefs.getFirmwareMode().contains("Ksoloti Core") && (devName.equals(sKsolotiCore) || devName.equals(sKsolotiCoreUsbAudio))) {
+                    if (!USBBulkConnection.GetConnection().isConnected() && prefs.getFirmwareMode().contains("Ksoloti Core") && (devName.equals(sKsolotiCore) || devName.equals(sKsolotiCoreUsbAudio))) {
                         jButtonOK.setEnabled(true);
                         cpuid = (String) model.getValueAt(r, 3);
                     }
-                    else if (prefs.getFirmwareMode().contains("Axoloti Core") && (devName.equals(sAxolotiCore) || devName.equals(sAxolotiCoreUsbAudio))) {
+                    else if (!USBBulkConnection.GetConnection().isConnected() && prefs.getFirmwareMode().contains("Axoloti Core") && (devName.equals(sAxolotiCore) || devName.equals(sAxolotiCoreUsbAudio))) {
                         jButtonOK.setEnabled(true);
                         cpuid = (String) model.getValueAt(r, 3);
                     } else {
