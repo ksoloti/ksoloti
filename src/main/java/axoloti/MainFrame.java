@@ -1355,7 +1355,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemFDisconnect.setEnabled(connect);
 
         jMenuItemFConnect.setEnabled(!connect);
-        //jMenuItemSelectCom.setEnabled(!connect);
+        jMenuItemSelectCom.setEnabled(!connect);
 
         jMenuItemEnterDFU.setEnabled(connect);
         jMenuItemMount.setEnabled(connect);
