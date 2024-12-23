@@ -39,8 +39,6 @@ import static axoloti.usb.Usb.VID_STM;
 import axoloti.utils.OSDetect;
 import static axoloti.utils.OSDetect.getOS;
 
-import java.util.logging.Logger;
-
 import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 
@@ -85,7 +83,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     public USBPortSelectionDlg(java.awt.Frame parent, boolean modal, String defCPUID) {
         super(parent, modal);
         initComponents();
-        setSize(540,200);
+        setSize(480,200);
         setTitle("Select Device");
         setLocation((int)mainframe.getLocation().getX() + 60, (int)mainframe.getLocation().getY() + 80);
         System.out.println("default cpuid: " + defCPUID);
@@ -138,7 +136,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             jTable1.getColumnModel().getColumn(0).setPreferredWidth(100);
             jTable1.getColumnModel().getColumn(1).setPreferredWidth(100);
             jTable1.getColumnModel().getColumn(2).setPreferredWidth(20);
-            jTable1.getColumnModel().getColumn(3).setPreferredWidth(50);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(40);
         }
         
         
@@ -146,26 +144,25 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
     public static String ErrorString(int result) {
         if (result < 0) {
-
             if (getOS() == OSDetect.OS.WIN) {
                 if (result == LibUsb.ERROR_NOT_FOUND) {
-                    Logger.getLogger(MainFrame.class.getName(), "You may need to install a compatible driver using Zadig. More info at https://ksoloti.github.io/3-4-rescue_mode.html#zadig_bootloader");
                     return "Not accessible: driver not installed";
-                }
-                else if (result == LibUsb.ERROR_ACCESS) {
+                } else if (result == LibUsb.ERROR_ACCESS) {
                     return "Not accessible: busy?";
+                } else {
+                    return "Not accessible: " + result;
                 }
-            }
-            else if (getOS() == OSDetect.OS.LINUX) {
+            } else if (getOS() == OSDetect.OS.LINUX) {
                 if (result == LibUsb.ERROR_ACCESS) {
-                    Logger.getLogger(MainFrame.class.getName(), "You may need to add permissions by running platform_linux/add_udev_rules.sh. More info at https://ksoloti.github.io/3-install.html#linux_permissions");
-                    return "Insufficient permissions";
+                    return "insufficient permissions";
+                    // log message:  - install udev rules by running axoloti/platform/linux/add_udev_rules.sh"
+                } else {
+                    return "Not accessible: " + result;
                 }
+            } else {
+                return "Not accessible: " + result;
             }
-
-            return "Not accessible: " + result; /* WIN and Linux fallthrough, MAC OS */
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -338,7 +335,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Name", "Device", "USB Port", "Board ID"
+                "Name", "Device", "Port", "Board ID"
             }
         ) {
             Class<?>[] types = new Class [] {
