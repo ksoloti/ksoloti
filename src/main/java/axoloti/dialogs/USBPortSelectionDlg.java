@@ -38,6 +38,8 @@ import static axoloti.usb.Usb.VID_STM;
 import axoloti.utils.OSDetect;
 import static axoloti.utils.OSDetect.getOS;
 
+import java.util.logging.Logger;
+
 import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 
@@ -145,6 +147,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         if (result < 0) {
             if (getOS() == OSDetect.OS.WIN) {
                 if (result == LibUsb.ERROR_NOT_FOUND) {
+                    Logger.getLogger(MainFrame.class.getName(), "You may need to install a compatible driver using Zadig. More info at https://ksoloti.github.io/3-4-rescue_mode.html#zadig_bootloader");
                     return "Not accessible: driver not installed";
                 } else if (result == LibUsb.ERROR_ACCESS) {
                     return "Not accessible: busy?";
@@ -153,8 +156,8 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 }
             } else if (getOS() == OSDetect.OS.LINUX) {
                 if (result == LibUsb.ERROR_ACCESS) {
-                    return "insufficient permissions";
-                    // log message:  - install udev rules by running axoloti/platform/linux/add_udev_rules.sh"
+                    Logger.getLogger(MainFrame.class.getName(), "You may need to add permissions by running platform_linux/add_udev_rules.sh. More info at https://ksoloti.github.io/3-install.html#linux_permissions");
+                    return "Insufficient permissions";
                 } else {
                     return "Not accessible: " + result;
                 }
