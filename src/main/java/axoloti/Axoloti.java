@@ -25,7 +25,7 @@ import axoloti.utils.OSDetect.OS;
 import static axoloti.MainFrame.prefs;
 
 import java.awt.EventQueue;
-import java.awt.SplashScreen;
+// import java.awt.SplashScreen;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -363,9 +363,9 @@ public class Axoloti {
                 objs.LoadAxoObjects();
                 System.out.println("Waiting...");
                 Thread.sleep(10000);
-                if (SplashScreen.getSplashScreen() != null) {
-                    SplashScreen.getSplashScreen().close();
-                }
+                // if (SplashScreen.getSplashScreen() != null) {
+                    // SplashScreen.getSplashScreen().close();
+                // }
 
                 System.out.println("Ksoloti command line initialised.");
                 int exitCode = 0;

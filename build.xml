@@ -92,7 +92,7 @@
                 <attribute name="Created-By" value="${built_by}"/>
                 <attribute name="Built-Date" value="${TODAY}"/>
                 <attribute name="Implementation-Version" value="${build.version}"/>
-                <attribute name="SplashScreen-Image" value="resources/ksoloti_splash.png"/>
+                <!-- <attribute name="SplashScreen-Image" value="resources/ksoloti_splash.png"/> -->
             </manifest>
 
             <!-- Compiled  class  -->
@@ -344,7 +344,7 @@
                 <attribute name="Built-By" value="${built_by}"/>
                 <attribute name="Created-By" value="${built_by}"/>
                 <attribute name="Built-Date" value="${TODAY}"/>
-                <attribute name="SplashScreen-Image" value="resources/ksoloti_splash.png"/>
+                <!-- <attribute name="SplashScreen-Image" value="resources/ksoloti_splash.png"/> -->
             </manifest>
         </fx:jar> 
 
@@ -355,7 +355,7 @@
                     license="GPL"
                     copyright="Axoloti.com" >
                 <fx:icon href="src/main/java/resources/ksoloti_icon_128.png"/>
-                <fx:splash href="src/main/java/resources/ksoloti_splash.png"/>
+                <!-- <fx:splash href="src/main/java/resources/ksoloti_splash.png"/> -->
                 <fx:association icon="src/main/java/resources/ksoloti_icon_128.png" mimetype="application/xml" extension="axp axs axh axo"/>
             </fx:info>
             <fx:application name="Ksoloti" mainClass="axoloti.Axoloti" version="${short.version}"/>
@@ -369,7 +369,7 @@
                     license="GPL"
                     copyright="Axoloti.com" >
                 <fx:icon href="src/main/java/resources/ksoloti_icon.icns"/>
-                <fx:splash href="src/main/java/resources/ksoloti_splash.png"/>
+                <!-- <fx:splash href="src/main/java/resources/ksoloti_splash.png"/> -->
                 <fx:association mimetype="application/xml" extension="axp axs axh axo"/>
             </fx:info>
             <fx:application name="Ksoloti" mainClass="axoloti.Axoloti" version="${short.version}"/>
@@ -391,7 +391,7 @@
                     license="GPL"
                     copyright="Axoloti.com" >
                 <fx:icon href="src/main/java/resources/ksoloti_icon.ico"/>
-                <fx:splash href="src/main/java/resources/ksoloti_splash.png"/>
+                <!-- <fx:splash href="src/main/java/resources/ksoloti_splash.png"/> -->
                 <fx:association icon="src/main/java/resources/ksoloti_icon.ico" mimetype="application/xml" extension="axp axs axh axo"/>
             </fx:info>
             <fx:application name="Ksoloti" mainClass="axoloti.Axoloti" version="${short.version}"/>
