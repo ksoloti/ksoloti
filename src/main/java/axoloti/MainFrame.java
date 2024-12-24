@@ -89,6 +89,7 @@ import com.formdev.flatlaf.FlatClientProperties;
 
 import qcmds.QCmdBringToDFUMode;
 import qcmds.QCmdCompilePatch;
+import qcmds.QCmdDisconnect;
 import qcmds.QCmdPing;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdStartFlasher;
@@ -590,19 +591,25 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     void flashUsingSDRam(String fname_flasher, String pname) {
+
         updateLinkFirmwareID();
+
         File f = new File(fname_flasher);
         File p = new File(pname);
+
         if (f.canRead()) {
             if (p.canRead()) {
                 qcmdprocessor.AppendToQueue(new QCmdStop());
                 qcmdprocessor.AppendToQueue(new QCmdUploadFWSDRam(p));
                 qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
                 qcmdprocessor.AppendToQueue(new QCmdStartFlasher());
-            } else {
+                qcmdprocessor.AppendToQueue(new QCmdDisconnect());
+            }
+            else {
                 LOGGER.log(Level.SEVERE, "Cannot read firmware, please compile firmware! (File: {0})", pname);
             }
-        } else {
+        }
+        else {
             LOGGER.log(Level.SEVERE, "Cannot read flasher, please compile firmware! (File: {0})", fname_flasher);
         }
     }
