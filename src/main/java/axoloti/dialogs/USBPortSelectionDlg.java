@@ -356,8 +356,6 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             }
         });
 
-        // jLabel1.setText("Select device:");
-
         jButtonCancel.setText("Cancel");
         jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
