@@ -348,6 +348,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         setName("Serial port selection"); // NOI18N
 
         jButtonOK.setText("OK");
+        jButtonOK.setEnabled(false);
         jButtonOK.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jButtonOK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
