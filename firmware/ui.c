@@ -343,7 +343,7 @@ void ui_init(void) {
     ObjectKvpRoot = &p[0];
 #endif
 
-    chThdCreateStatic(waThreadUI, sizeof(waThreadUI), UI_USB_PRIO, (void*) ThreadUI, NULL);
+    chThdCreateStatic(waThreadUI, sizeof(waThreadUI), UI_USB_PRIO, (tfunc_t) ThreadUI, NULL);
 }
 
 void KVP_ClearObjects(void) {

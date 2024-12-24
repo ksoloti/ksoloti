@@ -152,7 +152,7 @@ void sysmon_init(void) {
   v50_min = 0xFFFF;
   isEnabled = true;
 
-  chThdCreateStatic(waThreadSysmon, sizeof(waThreadSysmon), NORMALPRIO, (void*) ThreadSysmon, NULL);
+  chThdCreateStatic(waThreadSysmon, sizeof(waThreadSysmon), NORMALPRIO, (tfunc_t) ThreadSysmon, NULL);
 }
 
 void sysmon_disable_blinker(void) {

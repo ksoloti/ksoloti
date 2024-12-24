@@ -189,7 +189,7 @@ void spilink_init(bool_t isMaster) {
     else {
         /* Synced */
         Thread *_pThreadSpilink = chThdCreateStatic(waThreadSpilink,
-            sizeof(waThreadSpilink), HIGHPRIO - 1, ThreadSpilinkSlave, NULL);
+            sizeof(waThreadSpilink), HIGHPRIO - 1, (tfunc_t) ThreadSpilinkSlave, NULL);
 
         spidbSlaveStart(&SPILINKD, &spidbcfg_slave, _pThreadSpilink);
         pThreadSpilink = _pThreadSpilink;
