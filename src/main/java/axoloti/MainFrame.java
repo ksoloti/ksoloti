@@ -1602,22 +1602,24 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         StringBuilder flags = new StringBuilder();
 
-        if(usbBuild) {
-            flags.append("USB Audio ");
-            if(usbActive) {
-                flags.append("Active");
-                if(usbError) {
-                    flags.append("(Error)");
-                } else {
-                    if(usbUnder) {
+        if  (usbBuild) {
+            flags.append("USB Audio");
+            if (usbActive) {
+                flags.append(" Active");
+                if (usbError) {
+                    flags.append(" (Error)");
+                }
+                else {
+                    if (usbUnder) {
                         flags.append(", Underruns detected");
                     }
-                    if(usbOver) {
+                    if (usbOver) {
                         flags.append(", Overruns detected");
                     }
                 }
-            } else {
-                flags.append("Inactive");
+            }
+            else {
+                flags.append(" Inactive");
             }
         } 
 
