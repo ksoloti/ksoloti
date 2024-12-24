@@ -367,61 +367,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             @Override
             public void run() {
                 try {
-                    String tsuf = "";
-                    // if (Axoloti.isFailSafeMode()) {
-                    //     LOGGER.log(Level.WARNING, "Failsafe mode activated");
-                    //     tsuf = "Failsafe";
-                    // }
 
-                    if (Axoloti.isDeveloper()) {
-                        if (tsuf.length() > 0) {
-                            tsuf += ", ";
-                        }
-                        tsuf += "Developer";
-                    }
-
-                    if (prefs.getExpertMode()) {
-                        if (tsuf.length() > 0) {
-                            tsuf += ", ";
-                        }
-                        tsuf += "Expert Mode";
-                        LOGGER.log(Level.WARNING,
-                            "Expert Mode is enabled in ksoloti.prefs. The following options are now available:\n" + 
-                            "- Compile firmware, Refresh firmware ID (Board -> Firmware)\n" + 
-                            "- Generate and/or compile patch code, simulate lock/unlock, also while no Core is connected (patch windows -> Patch)\n" + 
-                            "- Remove read-only restrictions: Edit and save to read-only libraries (axoloti-factory, *oloti-community, ksoloti-objects)\n" + 
-                            "- Test-compile all patches in all libraries, or all patches (recursively) in specified folder (File -> Test Compilation)\n"
-                        );
-                    }
-
-                    if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                        if (tsuf.length() > 0) {
-                            tsuf += ", ";
-                        }
-                        tsuf += "Axoloti Legacy";
-                    }
-
-                    if (prefs.getFirmwareMode().contains("SPILink")) {
-                        if (tsuf.length() > 0) {
-                            tsuf += ", ";
-                        }
-                        tsuf += "SPILink";
-                    }
-
-                    if (prefs.getFirmwareMode().contains("USBAudio")) {
-                        if (tsuf.length() > 0) {
-                            tsuf += ", ";
-                        }
-                        tsuf += "USBAudio";
-                    } else {
-                        // remove USB Label
-                        jPanelColumn3.remove(jLabelFlags);
-                    }
-
-
-                    if (tsuf.length() > 0) {
-                        MainFrame.this.setTitle(MainFrame.this.getTitle() + " (" + tsuf + ")");
-                    }
+                    updateMainframeTitle();
 
                     LOGGER.log(Level.WARNING, "Patcher version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
 
@@ -572,6 +519,67 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     public void updateConsoleFont() {
         jTextPaneLog.setFont(Constants.FONT_MONO);
+    }
+
+    public void updateMainframeTitle() {
+
+        String tstring = "";
+        String tsuffix = "";
+
+        if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+            tstring = "Axoloti";
+        }
+        else {
+            tstring = "Ksoloti";
+        }
+
+        // if (Axoloti.isFailSafeMode()) {
+        //     LOGGER.log(Level.WARNING, "Failsafe mode activated");
+        //     tstring = "Failsafe";
+        // }
+
+        if (Axoloti.isDeveloper()) {
+            tsuffix += "Developer";
+        }
+
+        if (prefs.getExpertMode()) {
+            if (tsuffix.length() > 0) {
+                tsuffix += ", ";
+            }
+            tsuffix += "Expert Mode";
+            LOGGER.log(Level.WARNING,
+                "Expert Mode is enabled in ksoloti.prefs. The following options are now available:\n" + 
+                "- Compile firmware, Refresh firmware ID (Board -> Firmware)\n" + 
+                "- Generate and/or compile patch code, simulate lock/unlock, also while no Core is connected (patch windows -> Patch)\n" + 
+                "- Remove read-only restrictions: Edit and save to read-only libraries (axoloti-factory, *oloti-community, ksoloti-objects)\n" + 
+                "- Test-compile all patches in all libraries, or all patches (recursively) in specified folder (File -> Test Compilation)\n"
+            );
+        }
+
+        if (prefs.getFirmwareMode().contains("SPILink")) {
+            if (tsuffix.length() > 0) {
+                tsuffix += ", ";
+            }
+            tsuffix += "SPILink";
+        }
+
+        if (prefs.getFirmwareMode().contains("USBAudio")) {
+            if (tsuffix.length() > 0) {
+                tsuffix += ", ";
+            }
+            tsuffix += "USBAudio";
+        }
+        else {
+            // remove USB Label
+            jPanelColumn3.remove(jLabelFlags);
+        }
+
+        if (tsuffix.length() > 0) {
+            tstring += " (" + tsuffix + ")";
+        }
+        
+        MainFrame.this.setTitle(tstring);
+
     }
 
     static boolean TestDir(String var, boolean write) {

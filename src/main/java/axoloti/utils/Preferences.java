@@ -18,6 +18,7 @@
  */
 package axoloti.utils;
 
+import axoloti.MainFrame;
 // import axoloti.Axoloti;
 import axoloti.Version;
 
@@ -531,9 +532,19 @@ public class Preferences {
     }
 
     public void setFirmwareMode(String FirmwareMode) {
+
         if (this.FirmwareMode.equals(FirmwareMode)) {
             return;
         }
+
+        if (FirmwareMode.contains("Axoloti") && !this.FirmwareMode.contains("Axoloti") ||
+            FirmwareMode.contains("Ksoloti") && !this.FirmwareMode.contains("Ksoloti")) {
+                restartRequired = true;
+        }
+        else {
+            MainFrame.mainframe.updateMainframeTitle();
+        }
+
         this.FirmwareMode = FirmwareMode;
         SetDirty();
     }
