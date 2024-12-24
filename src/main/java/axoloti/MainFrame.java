@@ -1377,7 +1377,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             vdd00c = 0;
             patchIndex = -4;
             jLabelSDCardPresent.setText(" ");
-            jLabelFlags.setText("");
+            jLabelFlags.setText(" ");
         }
     }
 
