@@ -194,14 +194,18 @@ public class USBBulkConnection extends Connection {
                 }
 
                 if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+
                     if (descriptor.idVendor() == bulkVID && ((descriptor.idProduct() == bulkPIDKsoloti) || (descriptor.idProduct() == bulkPIDKsolotiUsbAudio))) {
-                        if(descriptor.idProduct() == bulkPIDKsoloti) {
-                            useBulkInterfaceNumber = 2;
-                            LOGGER.log(Level.INFO, "Ksoloti Core found.");
-                        } else {
+
+                        if (descriptor.idProduct() == bulkPIDKsolotiUsbAudio) {
                             useBulkInterfaceNumber = 4;
                             LOGGER.log(Level.INFO, "Ksoloti Core USB Audio found.");
                         }
+                        else {
+                            useBulkInterfaceNumber = 2;
+                            LOGGER.log(Level.INFO, "Ksoloti Core found.");
+                        }
+
                         DeviceHandle h = new DeviceHandle();
 
                         result = LibUsb.open(d, h);
@@ -228,13 +232,16 @@ public class USBBulkConnection extends Connection {
                 else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
 
                     if (descriptor.idVendor() == bulkVID && ((descriptor.idProduct() == bulkPIDAxoloti) || (descriptor.idProduct() == bulkPIDAxolotiUsbAudio))) {
-                        if(descriptor.idProduct() == bulkPIDAxoloti) {
-                            useBulkInterfaceNumber = 2;
-                            LOGGER.log(Level.INFO, "Axoloti Core found.");
-                        } else {
+
+                        if (descriptor.idProduct() == bulkPIDAxolotiUsbAudio) {
                             useBulkInterfaceNumber = 4;
                             LOGGER.log(Level.INFO, "Axoloti Core USB Audio found.");
                         }
+                        else {
+                            useBulkInterfaceNumber = 2;
+                            LOGGER.log(Level.INFO, "Axoloti Core found.");
+                        }
+
                         DeviceHandle h = new DeviceHandle();
 
                         result = LibUsb.open(d, h);
