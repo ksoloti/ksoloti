@@ -844,7 +844,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuBoard.add(jMenuItemPanic);
 
-        jMenuItemMount.setText("Enter Card Reader Mode (disconnects editor)");
+        jMenuItemMount.setText("Enter Card Reader Mode (Disconnects Patcher)");
         jMenuItemMount.setMnemonic('R');
         jMenuItemMount.setDisplayedMnemonicIndex(11);
         jMenuItemMount.addActionListener(new java.awt.event.ActionListener() {
