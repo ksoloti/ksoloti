@@ -1361,9 +1361,18 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private void ShowConnectDisconnect(boolean connect) {
         if (connect) {
             jToggleButtonConnect.setText("Connected");
+            ShowConnectionFlags(USBBulkConnection.GetConnection().GetConnectionFlags());
         }
         else {
             jToggleButtonConnect.setText("Connect");
+            setCpuID(null);
+            jLabelVoltages.setText(" ");
+            jLabelPatch.setText(" ");
+            v5000c = 0;
+            vdd00c = 0;
+            patchIndex = -4;
+            jLabelSDCardPresent.setText(" ");
+            jLabelFlags.setText(" ");
         }
 
         jToggleButtonConnect.setSelected(connect);
@@ -1377,16 +1386,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemFlashDefault.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
         jMenuItemFlashUser.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
 
-        if (!connect) {
-            setCpuID(null);
-            jLabelVoltages.setText(" ");
-            jLabelPatch.setText(" ");
-            v5000c = 0;
-            vdd00c = 0;
-            patchIndex = -4;
-            jLabelSDCardPresent.setText(" ");
-            jLabelFlags.setText(" ");
-        }
     }
 
     public void Quit() {
