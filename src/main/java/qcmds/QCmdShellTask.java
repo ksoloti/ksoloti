@@ -60,10 +60,7 @@ public abstract class QCmdShellTask implements QCmd {
             try {
                 line = br.readLine();
                 while (line != null) {
-                    if (line.contains("error:") || line.contains("#error")) {
-                        LOGGER.log(Level.SEVERE, "{0}",line);
-                    }
-                    else if (line.contains("overflowed by")) {
+                    if (line.contains("overflowed by")) {
                         LOGGER.log(Level.SEVERE, "{0}\n>>> Patch is too complex to fit in internal RAM. <<<", line);
                     }
                     else if (line.contains("has no member named \'objectinstance__i\'")) {
@@ -71,6 +68,9 @@ public abstract class QCmdShellTask implements QCmd {
                     }
                     else if (line.contains("one or more PCH files were found, but they were invalid")) {
                         LOGGER.log(Level.SEVERE, "{0}\n>>> Go to " + Axoloti.LIBRARIES_DIR + File.separator + "build and manually delete all files inside it. <<<", line);
+                    }
+                    else if (line.contains("error:") || line.contains("#error")) {
+                        LOGGER.log(Level.SEVERE, "{0}", line);
                     }
                     else if (line.contains("warning:")) {
                         LOGGER.log(Level.WARNING, "{0}", line);
