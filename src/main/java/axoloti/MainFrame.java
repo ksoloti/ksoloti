@@ -1409,7 +1409,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 jLabelCPUID.setText("Board ID:    " + lastSix);
                 jLabelCPUID.setToolTipText("Showing the last six digits of the full board ID.\n" +
                                            "You can name your Core by disconnecting it from\n" +
-                                           "the Patcher, then going to Board > Select Device... > Name.");
+                                           "the Patcher, then going to Board > Select Device... > Name.\n" + 
+                                           "Press Enter in the Name textfield to confirm the entry.");
             } else {
                 jLabelCPUID.setText("Board Name: " + name);
                 jLabelCPUID.setToolTipText("Showing the name defined in Board > Select Device... > Name.\n" +
