@@ -37,7 +37,7 @@ public class QCmdDisconnect implements QCmdGUITask {
     @Override
     public String GetDoneMessage() {
         MainFrame.mainframe.WarnedAboutFWCRCMismatch = false;
-        return "Done disconnecting.\n";
+        return null; /* too verbose */
     }
 
     @Override
