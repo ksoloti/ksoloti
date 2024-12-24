@@ -19,6 +19,7 @@
 package axoloti.dialogs;
 
 import axoloti.MainFrame;
+import axoloti.USBBulkConnection;
 
 import static axoloti.MainFrame.mainframe;
 import static axoloti.MainFrame.prefs;
@@ -87,7 +88,8 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         super(parent, modal);
 
         initComponents();
-        setSize(480,200);
+
+        setSize(560, 200);
         setTitle("Select Device");
         setLocation((int)mainframe.getLocation().getX() + 60, (int)mainframe.getLocation().getY() + 80);
 
@@ -110,11 +112,12 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
                 if (r >= 0) {
                     String devName = (String) model.getValueAt(r, 1);
-                    if (prefs.getFirmwareMode().contains("Ksoloti Core") && (devName.equals(sKsolotiCore) || devName.equals(sKsolotiCoreUsbAudio))) {
+
+                    if (!USBBulkConnection.GetConnection().isConnected() && prefs.getFirmwareMode().contains("Ksoloti Core") && (devName.equals(sKsolotiCore) || devName.equals(sKsolotiCoreUsbAudio))) {
                         jButtonOK.setEnabled(true);
                         cpuid = (String) model.getValueAt(r, 3);
                     }
-                    else if (prefs.getFirmwareMode().contains("Axoloti Core") && (devName.equals(sAxolotiCore) || devName.equals(sAxolotiCoreUsbAudio))) {
+                    else if (!USBBulkConnection.GetConnection().isConnected() && prefs.getFirmwareMode().contains("Axoloti Core") && (devName.equals(sAxolotiCore) || devName.equals(sAxolotiCoreUsbAudio))) {
                         jButtonOK.setEnabled(true);
                         cpuid = (String) model.getValueAt(r, 3);
                     }
@@ -373,7 +376,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Name", "Device", "Port", "Board ID"
+                "Board Name", "Device", "USB Port", "Board ID"
             }
         ) {
             Class<?>[] types = new Class [] {
