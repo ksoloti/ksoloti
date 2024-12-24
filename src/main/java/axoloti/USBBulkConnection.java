@@ -44,6 +44,7 @@ import java.util.zip.CRC32;
 import javax.swing.SwingUtilities;
 import org.usb4java.*;
 import qcmds.QCmd;
+import qcmds.QCmdDisconnect;
 import qcmds.QCmdMemRead;
 import qcmds.QCmdMemRead1Word;
 import qcmds.QCmdProcessor;
@@ -484,7 +485,11 @@ public class USBBulkConnection extends Connection {
                 case -6:  errstr = "Device busy"; break;
                 case -7:  errstr = "Operation timed out"; break;
                 case -8:  errstr = "Overflow"; break;
-                case -9:  errstr = "Pipe error"; break;
+                case -9:  {
+                    errstr = "Pipe error.";
+                    MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdDisconnect());
+                    break;
+                }
                 case -10: errstr = "System call interrupted"; break;
                 case -11: errstr = "Insufficient memory"; break;
                 case -12: errstr = "Operation not supported or unimplemented"; break;
@@ -493,8 +498,10 @@ public class USBBulkConnection extends Connection {
             LOGGER.log(Level.SEVERE, "USB connection failed: " + errstr);
         }
         else if (result == -99) {
-            /* show error -99 as regular text ... seems to pop up every now and then but does not lead to connection loss */
-            /* this "bug" will likely  be resolved after libusb update */
+            /*
+             * Show error -99 as regular text ... seems to pop up every now and then but does not lead to connection loss  
+             * this "bug" will likely  be resolved after libusb update
+             */
             LOGGER.log(Level.INFO, "USB connection not happy: " + result);
         }
     }
