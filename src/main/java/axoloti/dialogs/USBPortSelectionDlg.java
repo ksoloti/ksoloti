@@ -170,9 +170,6 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 else if (result == LibUsb.ERROR_ACCESS) {
                     return "Not accessible: busy?";
                 }
-                else {
-                    return "Not accessible: " + result;
-                }
             }
             else if (getOS() == OSDetect.OS.LINUX) {
 
@@ -180,13 +177,9 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                     Logger.getLogger(MainFrame.class.getName(), "You may need to add permissions by running platform_linux/add_udev_rules.sh. More info at https://ksoloti.github.io/3-install.html#linux_permissions");
                     return "Insufficient permissions";
                 }
-                else {
-                    return "Not accessible: " + result;
-                }
             }
-            else {
-                return "Not accessible: " + result;
-            }
+
+            return "Not accessible: " + result; /* Mac OS default, fallthrough for Windows and Linux */
         }
         else {
             return null;
