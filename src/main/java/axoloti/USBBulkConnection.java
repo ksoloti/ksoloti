@@ -511,6 +511,15 @@ public class USBBulkConnection extends Connection {
         int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 1000);
         if (result != LibUsb.SUCCESS && result != -99) { /* handle error -99 below */
 
+            if (result == -99) {
+                /*
+                * Filter out error -99 ... seems to pop up every now and then but does not lead to connection loss  
+                * this "bug" will likely  be resolved after libusb update
+                */
+                // LOGGER.log(Level.INFO, "USB connection not happy: " + result);
+                return;
+            }
+
             String errstr;
             switch (result) {
                 case -1:  errstr = "Input/output error"; break;
@@ -532,13 +541,6 @@ public class USBBulkConnection extends Connection {
                 default:  errstr = Integer.toString(result); break;
             }
             LOGGER.log(Level.SEVERE, "USB connection failed: " + errstr);
-        }
-        else if (result == -99) {
-            /*
-             * Show error -99 as regular text ... seems to pop up every now and then but does not lead to connection loss  
-             * this "bug" will likely  be resolved after libusb update
-             */
-            LOGGER.log(Level.INFO, "USB connection not happy: " + result);
         }
     }
 
