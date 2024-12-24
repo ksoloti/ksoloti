@@ -84,10 +84,12 @@ public class USBBulkConnection extends Connection {
         this.sync = new Sync();
         this.readsync = new Sync();
         this.patch = null;
+
         disconnectRequested = false;
         connected = false;
         queueSerialTask = new ArrayBlockingQueue<QCmdSerialTask>(10);
         context = new Context();
+
         int result = LibUsb.init(context);
         if (result != LibUsb.SUCCESS) {
             throw new LibUsbException("Unable to initialize libusb.", result);
@@ -122,21 +124,26 @@ public class USBBulkConnection extends Connection {
             isSDCardPresent = null;
             ShowDisconnect();
             queueSerialTask.clear();
+
             try {
                 Thread.sleep(100);
             }
             catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
+
             queueSerialTask.add(new QCmdSerialTaskNull());
             queueSerialTask.add(new QCmdSerialTaskNull());
+
             try {
                 Thread.sleep(100);
             }
             catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
+
             LOGGER.log(Level.WARNING, "Disconnected\n");
+
             synchronized (sync) {
                 sync.Acked = false;
                 sync.notifyAll();
@@ -144,6 +151,7 @@ public class USBBulkConnection extends Connection {
 
             if (receiverThread.isAlive()){
                 receiverThread.interrupt();
+
                 try {
                     receiverThread.join();
                 }
@@ -166,8 +174,10 @@ public class USBBulkConnection extends Connection {
     }
 
     public DeviceHandle OpenDeviceHandle() {
+
         /* Read the USB device list */
         DeviceList list = new DeviceList();
+
         int result = LibUsb.getDeviceList(context, list);
         if (result < 0) {
             throw new LibUsbException("Unable to get device list", result);
@@ -177,6 +187,7 @@ public class USBBulkConnection extends Connection {
             /* Iterate over all devices and scan for the right one */
             for (Device d : list) {
                 DeviceDescriptor descriptor = new DeviceDescriptor();
+
                 result = LibUsb.getDeviceDescriptor(d, descriptor);
                 if (result != LibUsb.SUCCESS) {
                     throw new LibUsbException("Unable to read device descriptor", result);
@@ -192,13 +203,16 @@ public class USBBulkConnection extends Connection {
                             LOGGER.log(Level.INFO, "Ksoloti Core USB Audio found.");
                         }
                         DeviceHandle h = new DeviceHandle();
+
                         result = LibUsb.open(d, h);
                         if (result < 0) {
                             LOGGER.log(Level.INFO, ErrorString(result));
                         }
                         else {
                             String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
+
                             if (cpuid != null) {
+
                                 if (serial.equals(cpuid)) {
                                     return h;
                                 }
@@ -206,11 +220,13 @@ public class USBBulkConnection extends Connection {
                             else {
                                 return h;
                             }
+
                             LibUsb.close(h);
                         }
                     }
-                    }
+                }
                 else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+
                     if (descriptor.idVendor() == bulkVID && ((descriptor.idProduct() == bulkPIDAxoloti) || (descriptor.idProduct() == bulkPIDAxolotiUsbAudio))) {
                         if(descriptor.idProduct() == bulkPIDAxoloti) {
                             useBulkInterfaceNumber = 2;
@@ -220,12 +236,14 @@ public class USBBulkConnection extends Connection {
                             LOGGER.log(Level.INFO, "Axoloti Core USB Audio found.");
                         }
                         DeviceHandle h = new DeviceHandle();
+
                         result = LibUsb.open(d, h);
                         if (result < 0) {
                             LOGGER.log(Level.INFO, ErrorString(result));
                         }
                         else {
                             String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
+
                             if (cpuid != null) {
                                 if (serial.equals(cpuid)) {
                                     return h;
@@ -234,14 +252,16 @@ public class USBBulkConnection extends Connection {
                             else {
                                 return h;
                             }
+
                             LibUsb.close(h);
                         }
                     }
                 }
             }
 
-            /* or else pick the first one */
+            /* Or else pick the first one */
             for (Device d : list) {
+
                 DeviceDescriptor descriptor = new DeviceDescriptor();
 
                 result = LibUsb.getDeviceDescriptor(d, descriptor);
@@ -250,9 +270,12 @@ public class USBBulkConnection extends Connection {
                 }
 
                 if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+
                     if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDKsoloti) {
+
                         LOGGER.log(Level.INFO, "Ksoloti Core found.");
                         DeviceHandle h = new DeviceHandle();
+
                         result = LibUsb.open(d, h);
                         if (result < 0) {
                             LOGGER.log(Level.INFO, ErrorString(result));
@@ -263,9 +286,12 @@ public class USBBulkConnection extends Connection {
                     }
                 }
                 else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+
                     if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDAxoloti) {
+
                         LOGGER.log(Level.INFO, "Axoloti Core found.");
                         DeviceHandle h = new DeviceHandle();
+
                         result = LibUsb.open(d, h);
                         if (result < 0) {
                             LOGGER.log(Level.INFO, ErrorString(result));
@@ -281,7 +307,9 @@ public class USBBulkConnection extends Connection {
             /* Ensure the allocated device list is freed */
             // LibUsb.freeDeviceList(list, true);
         }
+
         LOGGER.log(Level.SEVERE, "No matching USB devices found.");
+
         /* Device not found */
         return null;
     }
@@ -295,13 +323,17 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public boolean connect() {
+
         disconnect();
         disconnectRequested = false;
+
         synchronized (sync) {
             sync.Acked = true;
             sync.notifyAll();
         }
+
         GoIdleState();
+
         if (cpuid == null) {
             cpuid = MainFrame.prefs.getComPortName();
         }
@@ -341,12 +373,14 @@ public class USBBulkConnection extends Connection {
             ClearSync();
             TransmitPing();
             WaitSync();
+
             try {
                 Thread.sleep(100);
             }
             catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
+
             LOGGER.log(Level.WARNING, "Connected\n");
 
             try {
@@ -356,8 +390,8 @@ public class USBBulkConnection extends Connection {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
             QCmdProcessor qcmdp = MainFrame.mainframe.getQcmdprocessor();
-
             qcmdp.AppendToQueue(new QCmdTransmitGetFWVersion());
+
             try {
                 Thread.sleep(100);
             }
@@ -382,43 +416,31 @@ public class USBBulkConnection extends Connection {
 
             q = new QCmdMemRead(targetProfile.getOTPAddr() + 32, 256);
             qcmdp.AppendToQueue(q);
+
             ByteBuffer signature = q.getResult();
+
             boolean signaturevalid = false;
             if (signature == null) {
                 LOGGER.log(Level.INFO, "Cannot obtain signature, upgrade firmware?");
             }
-            // else if ((signature.getInt(0) == 0xFFFFFFFF) && (signature.getInt(1) == 0xFFFFFFFF)) {
-            //     LOGGER.log(Level.INFO, "Cannot validate authenticity, no signature present.");
-            // }
-            // else {
-            //     signaturevalid = HWSignature.Verify(targetProfile.getCPUSerial(), otpInfo, bb2ba(signature));
-            //     if (signaturevalid) {
-            //         String s = "";
-            //         otpInfo.rewind();
-            //         byte c = otpInfo.get();
-            //         while (c != 0) {
-            //             s += (char) (c & 0xFF);
-            //             c = otpInfo.get();
-            //         }
-            //         LOGGER.log(Level.INFO, "Authentic {0}", s);
-            //     } else {
-            //         LOGGER.log(Level.SEVERE, "Cannot validate authenticity, signature invalid.");
-            //     }
-            // }
 
             boolean signing = false;
+
             if (signing && !signaturevalid) {
+
                 qcmdp.WaitQueueFinished();
                 ByteBuffer writeotpinfo = targetProfile.CreateOTPInfo();
                 byte[] sign = HWSignature.Sign(targetProfile.getCPUSerial(), writeotpinfo);
                 qcmdp.AppendToQueue(new QCmdWriteMem(targetProfile.getBKPSRAMAddr(), bb2ba(writeotpinfo)));
                 qcmdp.AppendToQueue(new QCmdWriteMem(targetProfile.getBKPSRAMAddr() + 32, sign));
+
                 CRC32 zcrc = new CRC32();
                 writeotpinfo.rewind();
                 zcrc.update(bb2ba(writeotpinfo));
                 zcrc.update(sign);
                 int zcrcv = (int) zcrc.getValue();
                 System.out.println(String.format("Key crc: %08X", zcrcv));
+
                 byte crc[] = new byte[4];
                 crc[0] = (byte) (zcrcv & 0xFF);
                 crc[1] = (byte) ((zcrcv >> 8) & 0xFF);
@@ -426,7 +448,7 @@ public class USBBulkConnection extends Connection {
                 crc[3] = (byte) ((zcrcv >> 24) & 0xFF);
                 qcmdp.AppendToQueue(new QCmdWriteMem(targetProfile.getBKPSRAMAddr() + 32 + 256, crc));
 
-                /* validate from bkpsram */
+                /* Validate from bkpsram */
                 qcmdp.WaitQueueFinished();
                 q = new QCmdMemRead(targetProfile.getBKPSRAMAddr(), 32);
                 qcmdp.AppendToQueue(q);
@@ -444,6 +466,7 @@ public class USBBulkConnection extends Connection {
                     System.out.println("BPKSRAM signature invalid");
                     return false;
                 }
+
                 System.out.println("<otpinfo>");
                 HWSignature.printByteArray(bb2ba(otpInfo2));
                 System.out.println("</otpinfo>");
@@ -453,7 +476,9 @@ public class USBBulkConnection extends Connection {
                 System.out.println("</signature>");
 
             }
+
             ShowConnect();
+
             return true;
 
         }
@@ -470,11 +495,15 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public void writeBytes(byte[] data) {
+
         ByteBuffer buffer = ByteBuffer.allocateDirect(data.length);
         buffer.put(data);
+
         IntBuffer transfered = IntBuffer.allocate(1);
+
         int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 1000);
         if (result != LibUsb.SUCCESS && result != -99) { /* handle error -99 below */
+
             String errstr;
             switch (result) {
                 case -1:  errstr = "Input/output error"; break;
@@ -996,10 +1025,13 @@ public class USBBulkConnection extends Connection {
 
         @Override
         public void run() {
+
             ByteBuffer recvbuffer = ByteBuffer.allocateDirect(4096);
             IntBuffer transfered = IntBuffer.allocate(1);
+
             while (!disconnectRequested) {
                 int result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 1000);
+
                 if (result != LibUsb.SUCCESS) {
                     // LOGGER.log(Level.INFO, "Receive: " + result);
                 }
@@ -1013,7 +1045,9 @@ public class USBBulkConnection extends Connection {
                     }
                 }
             }
+
             // LOGGER.log(Level.INFO, "Receiver: thread stopped");
+
             MainFrame.mainframe.qcmdprocessor.Abort();
             MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdShowDisconnect());
         }
