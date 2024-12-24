@@ -149,12 +149,15 @@ public class PreferencesFrame extends JFrame {
 
             prefs.setFirmwareMode(jComboBoxFirmwareMode.getSelectedItem().toString());
 
+            /* Flush old .h.gch file (Will be recompiled for new firmware mode the next time a patch goes live) */
             axoloti.Axoloti.deletePrecompiledHeaderFile();
 
-            /* Offer to reflash firmware now */ //TODO force restart when switching between Kso / Axo
             MainFrame.mainframe.updateLinkFirmwareID();
+            
+            /* Disconnect automatically. Users can reconnect and click the firmware update popup */
             if (USBBulkConnection.GetConnection().isConnected()) {
-                MainFrame.mainframe.interactiveFirmwareUpdate();
+                USBBulkConnection.GetConnection().disconnect();
+                MainFrame.mainframe.ShowDisconnect();
             }
         }
 
