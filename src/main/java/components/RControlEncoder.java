@@ -123,7 +123,7 @@ public abstract class RControlEncoder extends JComponent {
     public abstract void DoRotation(int ticks);
 
     @Override
-    public void paint(Graphics g) {
+    public void paintComponent(Graphics g) {
         int height = getHeight();
         int width = getWidth();
 

@@ -41,7 +41,7 @@ public class RControlColorLed extends JComponent {
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paintComponent(Graphics g) {
         int height = getHeight();
         int width = getWidth();
 
