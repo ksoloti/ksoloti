@@ -66,12 +66,13 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     private final String defCPUID;
 
     private final String sDFUBootloader = "STM DFU Bootloader";
+
     private final String sAxolotiCore = "Axoloti Core";
-    private final String sAxolotiSDCard = "Axoloti SDCard reader";
+    private final String sAxolotiSDCard = "Axoloti SD Card Reader";
     private final String sAxolotiCoreUsbAudio = "Axoloti Core USB Audio";
 
     private final String sKsolotiCore = "Ksoloti Core";
-    private final String sKsolotiSDCard = "Ksoloti SDCard reader";
+    private final String sKsolotiSDCard = "Ksoloti SD Card Reader";
     private final String sKsolotiCoreUsbAudio = "Ksoloti Core USB Audio";
 
     /**
@@ -82,22 +83,31 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
      * @param defCPUID default port name
      */
     public USBPortSelectionDlg(java.awt.Frame parent, boolean modal, String defCPUID) {
+
         super(parent, modal);
+
         initComponents();
         setSize(480,200);
         setTitle("Select Device");
         setLocation((int)mainframe.getLocation().getX() + 60, (int)mainframe.getLocation().getY() + 80);
+
         System.out.println("default cpuid: " + defCPUID);
         this.defCPUID = defCPUID;
         cpuid = defCPUID;
+
         Populate();
+
         getRootPane().setDefaultButton(jButtonOK);
+
         jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
             @Override
             public void valueChanged(ListSelectionEvent e) {
+
                 DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
                 int r = jTable1.getSelectedRow();
+
                 if (r >= 0) {
                     String devName = (String) model.getValueAt(r, 1);
                     if (prefs.getFirmwareMode().contains("Ksoloti Core") && (devName.equals(sKsolotiCore) || devName.equals(sKsolotiCoreUsbAudio))) {
@@ -107,10 +117,12 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                     else if (prefs.getFirmwareMode().contains("Axoloti Core") && (devName.equals(sAxolotiCore) || devName.equals(sAxolotiCoreUsbAudio))) {
                         jButtonOK.setEnabled(true);
                         cpuid = (String) model.getValueAt(r, 3);
-                    } else {
+                    }
+                    else {
                         jButtonOK.setEnabled(false);
                     }
-                } else {
+                }
+                else {
                     cpuid = null;
                 }
             }
@@ -145,26 +157,35 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
     public static String ErrorString(int result) {
         if (result < 0) {
+
             if (getOS() == OSDetect.OS.WIN) {
+
                 if (result == LibUsb.ERROR_NOT_FOUND) {
                     Logger.getLogger(MainFrame.class.getName(), "You may need to install a compatible driver using Zadig. More info at https://ksoloti.github.io/3-4-rescue_mode.html#zadig_bootloader");
                     return "Not accessible: driver not installed";
-                } else if (result == LibUsb.ERROR_ACCESS) {
+                }
+                else if (result == LibUsb.ERROR_ACCESS) {
                     return "Not accessible: busy?";
-                } else {
+                }
+                else {
                     return "Not accessible: " + result;
                 }
-            } else if (getOS() == OSDetect.OS.LINUX) {
+            }
+            else if (getOS() == OSDetect.OS.LINUX) {
+
                 if (result == LibUsb.ERROR_ACCESS) {
                     Logger.getLogger(MainFrame.class.getName(), "You may need to add permissions by running platform_linux/add_udev_rules.sh. More info at https://ksoloti.github.io/3-install.html#linux_permissions");
                     return "Insufficient permissions";
-                } else {
+                }
+                else {
                     return "Not accessible: " + result;
                 }
-            } else {
+            }
+            else {
                 return "Not accessible: " + result;
             }
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -189,16 +210,23 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         try {
             /* Iterate over all devices and scan for the right one */
             for (Device device : list) {
-                DeviceDescriptor descriptor = new DeviceDescriptor();
-                result = LibUsb.getDeviceDescriptor(device, descriptor);
 
+                DeviceDescriptor descriptor = new DeviceDescriptor();
+                
+                result = LibUsb.getDeviceDescriptor(device, descriptor);
                 if (result == LibUsb.SUCCESS) {
+
                     if (descriptor.idVendor() == VID_STM) {
+
                         if (descriptor.idProduct() == PID_STM_DFU) {
+
                             DeviceHandle handle = new DeviceHandle();
+
                             result = LibUsb.open(device, handle);
                             if (result < 0) {
+
                                 if (getOS() == OSDetect.OS.WIN) {
+
                                     if (result == LibUsb.ERROR_NOT_SUPPORTED) {
                                         model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Not accessible: wrong driver installed"});
                                     }
@@ -219,15 +247,19 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             }
                         }
                     }
- 
                     else if (prefs.getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && ((descriptor.idProduct() == PID_KSOLOTI) || (descriptor.idProduct() == PID_KSOLOTI_USBAUDIO))) {
+
                         String sName;
+
                         if (descriptor.idProduct() == PID_KSOLOTI) {
                             sName = sKsolotiCore;
-                        } else {
+                        }
+                        else {
                             sName = sKsolotiCoreUsbAudio;
                         }
+
                         DeviceHandle handle = new DeviceHandle();
+
                         result = LibUsb.open(device, handle);
                         if (result < 0) {
                             model.addRow(new String[]{"", sName, DeviceToPath(device), ErrorString(result)});
@@ -240,22 +272,27 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             LibUsb.close(handle);
                         }
                     }
-
                     else if (prefs.getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD) {
                         model.addRow(new String[]{"",sKsolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
                     }
-
                     else if (prefs.getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && ((descriptor.idProduct() == PID_AXOLOTI) || (descriptor.idProduct() == PID_AXOLOTI_USBAUDIO))) {
+
                         String sName;
-                        if (descriptor.idProduct() == PID_KSOLOTI) {
+
+                        if (descriptor.idProduct() == PID_AXOLOTI) {
                             sName = sAxolotiCore;
-                        } else {
+                        }
+                        else {
                             sName = sAxolotiCoreUsbAudio;
                         }
+
                         DeviceHandle handle = new DeviceHandle();
+
                         result = LibUsb.open(device, handle);
+                        
                         if (result < 0) {
                             model.addRow(new String[]{"", sName, DeviceToPath(device), ErrorString(result)});
+
                         }
                         else {
                             String serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
@@ -265,12 +302,11 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             LibUsb.close(handle);
                         }
                     }
-
                     else if (prefs.getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI_SDCARD) {
                         model.addRow(new String[]{"",sAxolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
                     }
-
-                } else {
+                }
+                else {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
             }
