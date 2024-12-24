@@ -372,12 +372,24 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     LOGGER.log(Level.WARNING, "Patcher version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
 
+                    if (prefs.getExpertMode()) {
+                        LOGGER.log(Level.WARNING,
+                            "Expert Mode is enabled in ksoloti.prefs. The following options are now available:\n" + 
+                            "- Compile firmware, Refresh firmware ID (Board -> Firmware)\n" + 
+                            "- Generate and/or compile patch code, simulate lock/unlock, also while no Core is connected (patch windows -> Patch)\n" + 
+                            "- Remove read-only restrictions: Edit and save to read-only libraries (axoloti-factory, *oloti-community, ksoloti-objects)\n" + 
+                            "- Test-compile all patches in all libraries, or all patches (recursively) in specified folder (File -> Test Compilation)\n"
+                        );
+                    }
+
                     if (prefs.getFirmwareMode().contains("Axoloti Core")) {
                         LOGGER.log(Level.WARNING, ">>> Axoloti Legacy Mode <<<\n");
                     }
+
                     if (prefs.getFirmwareMode().contains("SPILink")) {
                         LOGGER.log(Level.WARNING, ">>> SPILink-enabled firmware <<<\nPins PB3, PB4, PD5, PD6 are occupied by SPILink communication in this firmware mode!\n");
                     }
+
                     if (prefs.getFirmwareMode().contains("USBAudio")) {
                         LOGGER.log(Level.WARNING, ">>> USBAudio-enabled firmware <<<\n");
                     }
@@ -547,13 +559,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 tsuffix += ", ";
             }
             tsuffix += "Expert Mode";
-            LOGGER.log(Level.WARNING,
-                "Expert Mode is enabled in ksoloti.prefs. The following options are now available:\n" + 
-                "- Compile firmware, Refresh firmware ID (Board -> Firmware)\n" + 
-                "- Generate and/or compile patch code, simulate lock/unlock, also while no Core is connected (patch windows -> Patch)\n" + 
-                "- Remove read-only restrictions: Edit and save to read-only libraries (axoloti-factory, *oloti-community, ksoloti-objects)\n" + 
-                "- Test-compile all patches in all libraries, or all patches (recursively) in specified folder (File -> Test Compilation)\n"
-            );
         }
 
         if (prefs.getFirmwareMode().contains("SPILink")) {
@@ -570,7 +575,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             tsuffix += "USBAudio";
         }
         else {
-            // remove USB Label
+            /* remove USB Label */
             jPanelColumn3.remove(jLabelFlags);
         }
 
@@ -1258,7 +1263,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.AppendToQueue(new QCmdStop());
             qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
             qcmdprocessor.AppendToQueue(new QCmdStartMounter());
-            LOGGER.log(Level.SEVERE, "Disconnecting from Patcher...");
+            qcmdprocessor.AppendToQueue(new QCmdDisconnect());
+            // LOGGER.log(Level.SEVERE, "Disconnecting from Patcher...");
         } else {
             LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first! (file: {0})", fname);
         }
@@ -1518,7 +1524,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 + "Update the firmware now?\n"
                 + "This process will cause a disconnect and the LEDs will blink for a while.\n"
                 + "Do not interrupt until the LEDs stop blinking.\n"
-                + "When the green LED lights up steady you can connect again.\n",
+                + "When only the green LED is steady lit, you can connect again.\n",
                 "Firmware Update",
                 JOptionPane.YES_NO_OPTION);
         if (s == 0) {
