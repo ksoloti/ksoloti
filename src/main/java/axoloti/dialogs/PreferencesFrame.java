@@ -19,7 +19,6 @@
 package axoloti.dialogs;
 
 import axoloti.MainFrame;
-import axoloti.USBBulkConnection;
 import axoloti.utils.AxoFileLibrary;
 import axoloti.utils.AxoGitLibrary;
 import axoloti.utils.AxolotiLibrary;
@@ -154,11 +153,6 @@ public class PreferencesFrame extends JFrame {
 
             MainFrame.mainframe.updateLinkFirmwareID();
             
-            /* Disconnect automatically. Users can reconnect and click the firmware update popup */
-            if (USBBulkConnection.GetConnection().isConnected()) {
-                USBBulkConnection.GetConnection().disconnect();
-                MainFrame.mainframe.ShowDisconnect();
-            }
         }
 
         prefs.setUserShortcut(0, jTextFieldUserShortcut1.getText());

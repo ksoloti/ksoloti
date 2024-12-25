@@ -19,7 +19,7 @@
 package axoloti.utils;
 
 import axoloti.MainFrame;
-// import axoloti.Axoloti;
+import axoloti.USBBulkConnection;
 import axoloti.Version;
 
 import java.io.File;
@@ -480,13 +480,11 @@ public class Preferences {
     }
 
     public void SavePrefs() {
+
         LOGGER.log(Level.INFO, "Saving preferences...");
-        if (restartRequired) {
-            LOGGER.log(Level.SEVERE, ">>> RESTART REQUIRED <<<");
-        }
+
         Serializer serializer = new Persister();
         File f = new File(GetPrefsFileLoc());
-
         System.out.println(f.getAbsolutePath());
 
         try {
@@ -495,6 +493,12 @@ public class Preferences {
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
+
+        if (restartRequired) {
+            MainFrame.mainframe.disableConnectUntilRestart();
+            LOGGER.log(Level.SEVERE, ">>> RESTART REQUIRED <<<");
+        }
+
         ClearDirty();
     }
 
@@ -537,15 +541,31 @@ public class Preferences {
             return;
         }
 
-        if (FirmwareMode.contains("Axoloti") && !this.FirmwareMode.contains("Axoloti") ||
-            FirmwareMode.contains("Ksoloti") && !this.FirmwareMode.contains("Ksoloti")) {
-                restartRequired = true;
+        if (FirmwareMode.contains("Axoloti") && !this.FirmwareMode.contains("Axoloti") || FirmwareMode.contains("Ksoloti") && !this.FirmwareMode.contains("Ksoloti")) {
+            /* If switching to another board model... */
+            
+            this.FirmwareMode = FirmwareMode;
+            MainFrame.mainframe.updateMainframeTitle();
+            MainFrame.mainframe.refreshAppIcon();
+
+            restartRequired = true;
+            
+            /* Disconnect automatically. User will have to restart the Patcher anyway. */
+            if (USBBulkConnection.GetConnection().isConnected()) {
+                USBBulkConnection.GetConnection().disconnect();
+            }
         }
         else {
+
+            this.FirmwareMode = FirmwareMode;
             MainFrame.mainframe.updateMainframeTitle();
+
+            /* If connected, offer automatic firmware update */
+            if (USBBulkConnection.GetConnection().isConnected()) {
+                MainFrame.mainframe.interactiveFirmwareUpdate();
+            }
         }
 
-        this.FirmwareMode = FirmwareMode;
         SetDirty();
     }
 

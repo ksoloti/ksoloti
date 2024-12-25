@@ -1593,6 +1593,20 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
 
+    public void disableConnectUntilRestart() {
+        jToggleButtonConnect.setText("RESTART APP");
+        jToggleButtonConnect.setEnabled(false);
+        jMenuItemFConnect.setEnabled(false);
+        jMenuItemFDisconnect.setEnabled(false);
+    }
+    
+    
+    public void refreshAppIcon() {
+        Constants.createAppIcon();
+        jLabelIcon.setIcon(Constants.APP_ICON);
+    }
+
+
     public QCmdProcessor getQcmdprocessor() {
         return qcmdprocessor;
     }
