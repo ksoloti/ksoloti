@@ -133,9 +133,9 @@ public class Preferences {
     boolean isDirty = false;
     private boolean restartRequired = false;
 
-    final int nRecentFiles = 16;
+    private final int nRecentFiles = 16;
 
-    final int minimumPollInterval = 20;
+    private final int minimumPollInterval = 20;
 
     public static final String THEMELIST[] = {
         // "Arc",
