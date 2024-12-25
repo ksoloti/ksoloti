@@ -130,7 +130,7 @@ public class Preferences {
 
     String[] ObjectPath;
 
-    boolean isDirty = false;
+    // private boolean isDirty = false;
     private boolean restartRequired = false;
 
     private final int nRecentFiles = 16;
@@ -248,13 +248,17 @@ public class Preferences {
         appVersion = Version.AXOLOTI_SHORT_VERSION;
     }
 
-    void SetDirty() {
-        isDirty = true;
-    }
+    // void SetDirty() {
+    //     isDirty = true;
+    // }
 
-    void ClearDirty() {
-        isDirty = false;
-    }
+    // void ClearDirty() {
+    //     isDirty = false;
+    // }
+
+    // boolean isDirty() {
+    //     return isDirty;
+    // }
 
     public ArrayList<AxolotiLibrary> getLibraries() {
         return libraries;
@@ -289,7 +293,7 @@ public class Preferences {
             libraries.add(newlib);
         }
         buildObjectSearchPatch();
-        SetDirty();
+        // SetDirty();
     }
 
     public void removeLibrary(String id) {
@@ -299,7 +303,7 @@ public class Preferences {
                 return;
             }
         }
-        SetDirty();
+        // SetDirty();
         buildObjectSearchPatch();
     }
 
@@ -309,7 +313,7 @@ public class Preferences {
                 lib.setEnabled(e);
             }
         }
-        SetDirty();
+        // SetDirty();
         buildObjectSearchPatch();
     }
 
@@ -329,7 +333,7 @@ public class Preferences {
             i = minimumPollInterval;
         }
         PollInterval = i;
-        SetDirty();
+        // SetDirty();
     }
 
     public short getUiMidiThreadCost() {
@@ -352,7 +356,7 @@ public class Preferences {
 
     public void setDspSafetyLimit(int i) {
         DspSafetyLimit = i;
-        SetDirty();
+        // SetDirty();
     }
 
     public void setCurrentFileDirectory(String CurrentFileDirectory) {
@@ -361,7 +365,7 @@ public class Preferences {
         }
         this.CurrentFileDirectory = CurrentFileDirectory;
         SavePrefs();
-        SetDirty();
+        // SetDirty();
     }
 
     public String getTheme() {
@@ -374,7 +378,7 @@ public class Preferences {
         }
         this.Theme = Theme;
         restartRequired = true;
-        SetDirty();
+        // SetDirty();
     }
 
     public String getCodeSyntaxTheme() {
@@ -387,7 +391,7 @@ public class Preferences {
         }
         this.codeSyntaxTheme = codeSyntaxTheme;
         restartRequired = true;
-        SetDirty();
+        // SetDirty();
     }
 
     public void applyTheme() {
@@ -432,7 +436,7 @@ public class Preferences {
             return;
         }
         this.CodeFontSize = sz;
-        SetDirty();
+        // SetDirty();
     }
 
     static String GetPrefsFileLoc() {
@@ -497,7 +501,7 @@ public class Preferences {
         if (restartRequired) {
             MainFrame.mainframe.disableConnectUntilRestart();
             LOGGER.log(Level.SEVERE, ">>> RESTART REQUIRED <<<");
-        }
+        // ClearDirty();
 
 
     public String[] getThemeList() {
@@ -534,7 +538,7 @@ public class Preferences {
             return;
         }
         this.MouseDialAngular = MouseDialAngular;
-        SetDirty();
+        // SetDirty();
     }
 
     public void setFirmwareMode(String FirmwareMode) {
@@ -568,7 +572,7 @@ public class Preferences {
             }
         }
 
-        SetDirty();
+        // SetDirty();
     }
 
     public void setUserShortcut(int index, String userShortcut) {
@@ -579,7 +583,7 @@ public class Preferences {
             return;
         }
         this.UserShortcuts[index] = userShortcut;
-        SetDirty();
+        // SetDirty();
     }
 
     public boolean getMouseDoNotRecenterWhenAdjustingControls() {
@@ -591,7 +595,7 @@ public class Preferences {
             return;
         }
         this.MouseDoNotRecenterWhenAdjustingControls = MouseDoNotRecenterWhenAdjustingControls;
-        SetDirty();
+        // SetDirty();
     }
 
     public Boolean getExpertMode() {
@@ -619,7 +623,7 @@ public class Preferences {
         }
         /* Add to top */
         recentFiles.add(filename);
-        SetDirty();
+        // SetDirty();
     }
 
     public void removeRecentFile(String filename) {
@@ -646,7 +650,7 @@ public class Preferences {
         }
         this.FavouriteDir = favouriteDir;
         restartRequired = true;
-        SetDirty();
+        // SetDirty();
     }
 
     public String getBoardName(String cpu) {
@@ -665,7 +669,7 @@ public class Preferences {
         } else {
             BoardNames.put(cpuid, name);
         }
-        SetDirty();
+        // SetDirty();
     }
 
     public String getControllerObject() {
