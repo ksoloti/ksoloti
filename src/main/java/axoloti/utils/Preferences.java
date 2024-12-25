@@ -499,9 +499,11 @@ public class Preferences {
         }
 
         if (restartRequired) {
-            MainFrame.mainframe.disableConnectUntilRestart();
             LOGGER.log(Level.SEVERE, ">>> RESTART REQUIRED <<<");
+        }
+
         // ClearDirty();
+    }
 
 
     public String[] getThemeList() {
@@ -560,6 +562,7 @@ public class Preferences {
             if (USBBulkConnection.GetConnection().isConnected()) {
                 USBBulkConnection.GetConnection().disconnect();
             }
+            MainFrame.mainframe.ShowDisconnect();
         }
         else {
 
@@ -573,6 +576,10 @@ public class Preferences {
         }
 
         // SetDirty();
+    }
+
+    public boolean getRestartRequired() {
+        return restartRequired;
     }
 
     public void setUserShortcut(int index, String userShortcut) {

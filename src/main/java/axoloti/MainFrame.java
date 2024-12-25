@@ -1293,7 +1293,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.AppendToQueue(new QCmdStop());
             qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
             qcmdprocessor.AppendToQueue(new QCmdStartMounter());
-            qcmdprocessor.AppendToQueue(new QCmdDisconnect());
+            // qcmdprocessor.AppendToQueue(new QCmdDisconnect());
+            ShowDisconnect();
             // LOGGER.log(Level.SEVERE, "Disconnecting from Patcher...");
         } else {
             LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first! (file: {0})", fname);
@@ -1401,6 +1402,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
 
     private void ShowConnectDisconnect(boolean connect) {
+
         if (connect) {
             jToggleButtonConnect.setText("Connected");
             ShowConnectionFlags(USBBulkConnection.GetConnection().GetConnectionFlags());
@@ -1427,6 +1429,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemMount.setEnabled(connect);
         jMenuItemFlashDefault.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
         jMenuItemFlashUser.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
+
+        if (prefs.getRestartRequired()) {
+            disableConnectUntilRestart();
+        }
 
     }
 
@@ -1595,6 +1601,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     public void disableConnectUntilRestart() {
         jToggleButtonConnect.setText("RESTART APP");
+        jToggleButtonConnect.setSelected(false);
         jToggleButtonConnect.setEnabled(false);
         jMenuItemFConnect.setEnabled(false);
         jMenuItemFDisconnect.setEnabled(false);
@@ -1603,6 +1610,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     
     public void refreshAppIcon() {
         Constants.createAppIcon();
+        setIconImage(Constants.APP_ICON.getImage());
         jLabelIcon.setIcon(Constants.APP_ICON);
     }
 
