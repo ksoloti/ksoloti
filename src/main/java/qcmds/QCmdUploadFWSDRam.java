@@ -81,7 +81,7 @@ public class QCmdUploadFWSDRam implements QCmdSerialTask {
                 f = new File(buildDir);
             }
 
-            LOGGER.log(Level.INFO, "Firmware file path: {0}", f.getAbsolutePath());
+            LOGGER.log(Level.INFO, "File path: {0}", f.getAbsolutePath());
             int tlength = (int) f.length();
             FileInputStream inputStream = new FileInputStream(f);
 
@@ -106,7 +106,7 @@ public class QCmdUploadFWSDRam implements QCmdSerialTask {
             }
             inputStream.close();
             inputStream = new FileInputStream(f);
-            LOGGER.log(Level.INFO, "Firmware file size: {0}", tlength);
+            LOGGER.log(Level.INFO, "File size: {0}", tlength);
 //            bb.order(ByteOrder.LITTLE_ENDIAN);
             CRC32 zcrc = new CRC32();
             zcrc.update(bb);
