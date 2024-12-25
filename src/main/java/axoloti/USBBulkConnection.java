@@ -342,7 +342,7 @@ public class USBBulkConnection extends Connection {
         GoIdleState();
 
         if (cpuid == null) {
-            cpuid = MainFrame.prefs.getComPortName();
+            cpuid = prefs.getComPortName();
         }
 
         targetProfile = new ksoloti_core();
@@ -621,7 +621,7 @@ public class USBBulkConnection extends Connection {
         USBPortSelectionDlg spsDlg = new USBPortSelectionDlg(null, true, cpuid);
         spsDlg.setVisible(true);
         cpuid = spsDlg.getCPUID();
-        String name = MainFrame.prefs.getBoardName(cpuid);
+        String name = prefs.getBoardName(cpuid);
         if (cpuid == null) return;
         if (name == null) {
             LOGGER.log(Level.INFO, "Selecting CPUID: {0} for connection.", cpuid);
