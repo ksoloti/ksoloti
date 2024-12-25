@@ -635,7 +635,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        // jLabel1 = new javax.swing.JLabel();
         jPanelHeader = new javax.swing.JPanel();
         jPanelColumn1 = new javax.swing.JPanel();
         jPanelColumn2 = new javax.swing.JPanel();
@@ -678,7 +678,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         windowMenu1 = new axoloti.menus.WindowMenu();
         helpMenu1 = new axoloti.menus.HelpMenu();
 
-        jLabel1.setText("jLabel1");
+        // jLabel1.setText(" ");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Ksoloti");
@@ -1342,7 +1342,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JButton jButtonClear;
     private javax.swing.JToggleButton jToggleButtonConnect;
     private javax.swing.JPopupMenu.Separator jDevSeparator;
-    private javax.swing.JLabel jLabel1;
+    // private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelCPUID;
     private javax.swing.JLabel jLabelFlags;
     private javax.swing.JLabel jLabelFirmwareID;
