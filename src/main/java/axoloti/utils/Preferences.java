@@ -137,7 +137,7 @@ public class Preferences {
 
     private final int minimumPollInterval = 20;
 
-    public static final String THEMELIST[] = {
+    private static final String ThemeList[] = {
         // "Arc",
         // "Arc - Orange",
         // "Arc Dark",
@@ -499,7 +499,9 @@ public class Preferences {
             LOGGER.log(Level.SEVERE, ">>> RESTART REQUIRED <<<");
         }
 
-        ClearDirty();
+
+    public String[] getThemeList() {
+        return ThemeList;
     }
 
     @Deprecated

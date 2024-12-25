@@ -422,7 +422,7 @@ public class PreferencesFrame extends JFrame {
         jLabelTheme.setEnabled(true);
 
 
-        for (String i : Preferences.THEMELIST) {
+        for (String i : prefs.getThemeList()) {
             jComboBoxTheme.addItem(i);
         }
 
