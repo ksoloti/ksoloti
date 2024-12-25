@@ -751,10 +751,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jLabelSDCardPresent.setText("No SD card");
         jPanelColumn3.add(jLabelSDCardPresent);
 
-        jLabelFlags.setText("Flags");
+        jLabelFlags.setText(" ");
         jPanelColumn3.add(jLabelFlags);
 
-        jLabelPatch.setText("Patch");
+        jLabelPatch.setText(" ");
         jPanelColumn3.add(jLabelPatch);
 
         jPanelHeader.add(jPanelColumn3);
