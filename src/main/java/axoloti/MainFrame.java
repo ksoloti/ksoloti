@@ -1464,7 +1464,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         LinkFirmwareID = FirmwareID.getFirmwareID();
         // TargetFirmwareID = LinkFirmwareID;
         // jLabelFirmwareID.setText("Firmware ID: " + LinkFirmwareID);
-        LOGGER.log(Level.INFO, "Link to firmware CRC {0}", LinkFirmwareID);
+        LOGGER.log(Level.INFO, "Patcher linked to firmware CRC {0}", LinkFirmwareID);
         WarnedAboutFWCRCMismatch = false;
     }
 
