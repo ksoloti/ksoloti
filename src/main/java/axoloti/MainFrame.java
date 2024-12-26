@@ -728,10 +728,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelInfoColumn.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jPanelInfoColumn.setLayout(new javax.swing.BoxLayout(jPanelInfoColumn, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jLabelCPUID.setText("Board ID");
-        jLabelVoltages.setText("Voltage Monitor");
+        jLabelCPUID.setText(" ");
+        jLabelVoltages.setText(" ");
         jLabelVoltages.putClientProperty(FlatClientProperties.STYLE, "disabledForeground:#FF0000"); /* "disabledForeground" color here means voltage warning, red */
-        jLabelSDCardPresent.setText("No SD Card");
+        jLabelSDCardPresent.setText(" ");
         jLabelFlags.setText(" ");
         jLabelPatch.setText(" ");
         
@@ -1602,7 +1602,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelInfoColumn.add(jLabelCPUID);
         jPanelInfoColumn.add(jLabelVoltages);
 
-        jLabelSDCardPresent.setText("No SD Card");
         jPanelInfoColumn.add(jLabelSDCardPresent);
 
         if (prefs.getFirmwareMode().contains("USBAudio")) {
@@ -1665,14 +1664,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     @Override
     public void ShowSDCardMounted() {
-        jLabelSDCardPresent.setText("SD card connected");
+        jLabelSDCardPresent.setText("SD Card Connected");
         jMenuItemMount.setEnabled(true);
     }
 
 
     @Override
     public void ShowSDCardUnmounted() {
-        jLabelSDCardPresent.setText("No SD card");
+        jLabelSDCardPresent.setText("No SD Card");
         jMenuItemMount.setEnabled(false);
     }
 
