@@ -553,7 +553,7 @@ public class Preferences {
             /* If switching to another board model... */
             
             this.FirmwareMode = FirmwareMode;
-            MainFrame.mainframe.updateMainframeTitle();
+            MainFrame.mainframe.populateMainframeTitle();
             MainFrame.mainframe.refreshAppIcon();
 
             restartRequired = true;
@@ -567,7 +567,7 @@ public class Preferences {
         else {
 
             this.FirmwareMode = FirmwareMode;
-            MainFrame.mainframe.updateMainframeTitle();
+            MainFrame.mainframe.populateMainframeTitle();
 
             /* If connected, offer automatic firmware update */
             if (USBBulkConnection.GetConnection().isConnected()) {

@@ -368,7 +368,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             public void run() {
                 try {
 
-                    updateMainframeTitle();
+                    populateMainframeTitle();
 
                     LOGGER.log(Level.WARNING, "Patcher version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
 
@@ -535,7 +535,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
 
-    public void updateMainframeTitle() {
+    public void populateMainframeTitle() {
 
         String tstring = "";
         String tsuffix = "";
@@ -546,11 +546,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         else {
             tstring = "Ksoloti";
         }
-
-        // if (Axoloti.isFailSafeMode()) {
-        //     LOGGER.log(Level.WARNING, "Failsafe mode activated");
-        //     tstring = "Failsafe";
-        // }
 
         if (Axoloti.isDeveloper()) {
             tsuffix += "Developer";
