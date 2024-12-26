@@ -575,6 +575,7 @@ public class Preferences {
             }
         }
 
+        MainFrame.mainframe.populateInfoColumn();
         // SetDirty();
     }
 

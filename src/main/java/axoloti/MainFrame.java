@@ -571,10 +571,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             }
             tsuffix += "USBAudio";
         }
-        else {
-            /* remove USB Label */
-            jPanelInfoColumn.remove(jLabelFlags);
-        }
 
         if (tsuffix.length() > 0) {
             tstring += " (" + tsuffix + ")";
@@ -732,25 +728,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelInfoColumn.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jPanelInfoColumn.setLayout(new javax.swing.BoxLayout(jPanelInfoColumn, javax.swing.BoxLayout.PAGE_AXIS));
 
-
         jLabelCPUID.setText("Board ID");
-        jPanelInfoColumn.add(jLabelCPUID);
-
-        // jLabelFirmwareID.setText("Firmware ID");
-        // jPanelInfoColumn.add(jLabelFirmwareID);
-
         jLabelVoltages.setText("Voltage Monitor");
         jLabelVoltages.putClientProperty(FlatClientProperties.STYLE, "disabledForeground:#FF0000"); /* "disabledForeground" color here means voltage warning, red */
-        jPanelInfoColumn.add(jLabelVoltages);
-
-        jLabelSDCardPresent.setText("No SD card");
-        jPanelInfoColumn.add(jLabelSDCardPresent);
-
+        jLabelSDCardPresent.setText("No SD Card");
         jLabelFlags.setText(" ");
-        jPanelInfoColumn.add(jLabelFlags);
-
         jLabelPatch.setText(" ");
-        jPanelInfoColumn.add(jLabelPatch);
+        
+        populateInfoColumn();
 
         jPanelHeader.add(jPanelInfoColumn);
         jPanelHeader.add(filler3);
@@ -1406,12 +1391,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             jToggleButtonConnect.setText("Connect");
             setCpuID(null);
             jLabelVoltages.setText(" ");
-            jLabelPatch.setText(" ");
             v5000c = 0;
             vdd00c = 0;
             patchIndex = -4;
             jLabelSDCardPresent.setText(" ");
             jLabelFlags.setText(" ");
+            jLabelPatch.setText(" ");
         }
 
         jToggleButtonConnect.setSelected(connect);
@@ -1464,7 +1449,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                                            "the Patcher, then going to Board > Select Device... > Name.\n" + 
                                            "Press Enter in the Name textfield to confirm the entry.");
             } else {
-                jLabelCPUID.setText("Board Name: " + name);
+                jLabelCPUID.setText("Board Name:    " + name);
                 jLabelCPUID.setToolTipText("Showing the name defined in Board > Select Device... > Name.\n" +
                                            "This setting is saved in the local ksoloti.prefs file.");
             }
@@ -1607,6 +1592,24 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         Constants.createAppIcon();
         setIconImage(Constants.APP_ICON.getImage());
         jLabelIcon.setIcon(Constants.APP_ICON);
+    }
+
+
+    public void populateInfoColumn() {
+
+        jPanelInfoColumn.removeAll();
+
+        jPanelInfoColumn.add(jLabelCPUID);
+        jPanelInfoColumn.add(jLabelVoltages);
+
+        jLabelSDCardPresent.setText("No SD Card");
+        jPanelInfoColumn.add(jLabelSDCardPresent);
+
+        if (prefs.getFirmwareMode().contains("USBAudio")) {
+            jPanelInfoColumn.add(jLabelFlags);
+        }
+
+        jPanelInfoColumn.add(jLabelPatch);
     }
 
 
