@@ -636,7 +636,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jToggleButtonConnect = new javax.swing.JToggleButton();
         jLabelCPUID = new javax.swing.JLabel();
         jLabelFlags = new javax.swing.JLabel();
-        jLabelFirmwareID = new javax.swing.JLabel();
+        // jLabelFirmwareID = new javax.swing.JLabel();
         jLabelVoltages = new javax.swing.JLabel();
         jLabelPatch = new javax.swing.JLabel();
         jLabelSDCardPresent = new javax.swing.JLabel();
@@ -1326,7 +1326,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     // private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelCPUID;
     private javax.swing.JLabel jLabelFlags;
-    private javax.swing.JLabel jLabelFirmwareID;
+    // private javax.swing.JLabel jLabelFirmwareID;
     private javax.swing.JLabel jLabelIcon;
     private javax.swing.JLabel jLabelPatch;
     private javax.swing.JLabel jLabelProgress;
@@ -1463,7 +1463,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     public void updateLinkFirmwareID() {
         LinkFirmwareID = FirmwareID.getFirmwareID();
         // TargetFirmwareID = LinkFirmwareID;
-        jLabelFirmwareID.setText("Firmware ID: " + LinkFirmwareID);
+        // jLabelFirmwareID.setText("Firmware ID: " + LinkFirmwareID);
         LOGGER.log(Level.INFO, "Link to firmware CRC {0}", LinkFirmwareID);
         WarnedAboutFWCRCMismatch = false;
     }
