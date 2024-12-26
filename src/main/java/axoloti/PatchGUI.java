@@ -478,7 +478,7 @@ public class PatchGUI extends Patch {
             @Override
             public void mousePressed(MouseEvent me) {
                 MousePressedBtn = me.getButton();
-                if (!locked && MousePressedBtn == MouseEvent.BUTTON1) {
+                if (MousePressedBtn == MouseEvent.BUTTON1) {
                     if (!me.isShiftDown()) {
                         for (AxoObjectInstanceAbstract o : objectInstances) {
                             o.SetSelected(false);
@@ -550,7 +550,7 @@ public class PatchGUI extends Patch {
         Layers.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent ev) {
-                if (!locked && MousePressedBtn == MouseEvent.BUTTON1) {
+                if (MousePressedBtn == MouseEvent.BUTTON1) {
                     int x1 = selectionRectStart.x;
                     int y1 = selectionRectStart.y;
                     int x2 = ev.getX();
@@ -567,15 +567,17 @@ public class PatchGUI extends Patch {
                     Rectangle r = selectionrectangle.getBounds();
 
                     for (AxoObjectInstanceAbstract o : objectInstances) {
-                        if (ev.isShiftDown()) {
-                            /* Add objects within rectangle to current selection  */
-                            if (o.getBounds().intersects(r) && !o.isSelected()) {
-                                o.SetSelected(true);
+                        if (!o.IsLocked()) {
+                            if (ev.isShiftDown()) {
+                                /* Add unlocked objects within rectangle to current selection  */
+                                if (o.getBounds().intersects(r) && !o.isSelected()) {
+                                    o.SetSelected(true);
+                                }
                             }
-                        }
-                        else {
-                            /* Clear selection then add objects within rectangle to selection */
-                            o.SetSelected(o.getBounds().intersects(r));
+                            else {
+                                /* Clear selection then add unlocked objects within rectangle to selection */
+                                o.SetSelected(o.getBounds().intersects(r));
+                            }
                         }
                     }
                 }
