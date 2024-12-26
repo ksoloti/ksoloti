@@ -548,7 +548,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
 
     static Border borderSelected = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Selected);
     static Border borderUnselected = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Unselected);
-    static Border borderUnselectedLocked = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Unselected_Locked);
+    // static Border borderUnselectedLocked = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Unselected_Locked);
 
     public void SetSelected(boolean Selected) {
         if (this.Selected != Selected) {
@@ -556,8 +556,8 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
                 setBorder(borderSelected);
                 Titlebar.setBackground(Theme.getCurrentTheme().Object_Border_Selected);
             } else {
-                if (Locked) setBorder(borderUnselectedLocked);
-                else setBorder(borderUnselected);
+                // if (Locked) setBorder(borderUnselectedLocked);
+                setBorder(borderUnselected);
                 Titlebar.setBackground(Theme.getCurrentTheme().Object_TitleBar_Background);
             }
             repaint();
@@ -570,7 +570,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     }
 
     public void Lock() {
-        if (!this.Selected) setBorder(borderUnselectedLocked);
+        SetSelected(false);
         Locked = true;
     }
 
