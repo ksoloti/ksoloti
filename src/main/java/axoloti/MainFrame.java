@@ -578,7 +578,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         else {
             /* remove USB Label */
-            jPanelColumn3.remove(jLabelFlags);
+            jPanelInfoColumn.remove(jLabelFlags);
         }
 
         if (tsuffix.length() > 0) {
@@ -637,9 +637,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         // jLabel1 = new javax.swing.JLabel();
         jPanelHeader = new javax.swing.JPanel();
-        jPanelColumn1 = new javax.swing.JPanel();
-        jPanelColumn2 = new javax.swing.JPanel();
-        jPanelColumn3 = new javax.swing.JPanel();
+        jPanelIconColumn = new javax.swing.JPanel();
+        jPanelButtonsColumn = new javax.swing.JPanel();
+        jPanelInfoColumn = new javax.swing.JPanel();
         jLabelIcon = new javax.swing.JLabel();
         jButtonClear = new javax.swing.JButton();
         jToggleButtonConnect = new javax.swing.JToggleButton();
@@ -694,17 +694,17 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelHeader.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jPanelHeader.setLayout(new javax.swing.BoxLayout(jPanelHeader, javax.swing.BoxLayout.LINE_AXIS));
 
-        jPanelColumn1.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
-        jPanelColumn1.setLayout(new javax.swing.BoxLayout(jPanelColumn1, javax.swing.BoxLayout.PAGE_AXIS));
+        jPanelIconColumn.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
+        jPanelIconColumn.setLayout(new javax.swing.BoxLayout(jPanelIconColumn, javax.swing.BoxLayout.PAGE_AXIS));
 
         jLabelIcon.setIcon(Constants.APP_ICON);
 
-        jPanelColumn1.add(jLabelIcon);
+        jPanelIconColumn.add(jLabelIcon);
 
-        jPanelHeader.add(jPanelColumn1);
+        jPanelHeader.add(jPanelIconColumn);
 
-        jPanelColumn2.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
-        jPanelColumn2.setLayout(new javax.swing.BoxLayout(jPanelColumn2, javax.swing.BoxLayout.PAGE_AXIS));
+        jPanelButtonsColumn.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
+        jPanelButtonsColumn.setLayout(new javax.swing.BoxLayout(jPanelButtonsColumn, javax.swing.BoxLayout.PAGE_AXIS));
 
         Dimension btndim = new Dimension(110,30);
         jToggleButtonConnect.setFocusable(false);
@@ -717,9 +717,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 jToggleButtonConnectActionPerformed(evt);
             }
         });
-        jPanelColumn2.add(jToggleButtonConnect);
+        jPanelButtonsColumn.add(jToggleButtonConnect);
         Dimension fll = new Dimension(0,4);
-        jPanelColumn2.add(new Filler(fll, fll, fll));
+        jPanelButtonsColumn.add(new Filler(fll, fll, fll));
 
         jButtonClear.setFocusable(false);
         jButtonClear.setText("Clear Log");
@@ -731,33 +731,33 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 jButtonClearActionPerformed(evt);
             }
         });
-        jPanelColumn2.add(jButtonClear);
-        jPanelHeader.add(jPanelColumn2);
+        jPanelButtonsColumn.add(jButtonClear);
+        jPanelHeader.add(jPanelButtonsColumn);
 
-        jPanelColumn3.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
-        jPanelColumn3.setLayout(new javax.swing.BoxLayout(jPanelColumn3, javax.swing.BoxLayout.PAGE_AXIS));
+        jPanelInfoColumn.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
+        jPanelInfoColumn.setLayout(new javax.swing.BoxLayout(jPanelInfoColumn, javax.swing.BoxLayout.PAGE_AXIS));
 
 
         jLabelCPUID.setText("Board ID");
-        jPanelColumn3.add(jLabelCPUID);
+        jPanelInfoColumn.add(jLabelCPUID);
 
         // jLabelFirmwareID.setText("Firmware ID");
-        // jPanelColumn3.add(jLabelFirmwareID);
+        // jPanelInfoColumn.add(jLabelFirmwareID);
 
         jLabelVoltages.setText("Voltage Monitor");
         jLabelVoltages.putClientProperty(FlatClientProperties.STYLE, "disabledForeground:#FF0000"); /* "disabledForeground" color here means voltage warning, red */
-        jPanelColumn3.add(jLabelVoltages);
+        jPanelInfoColumn.add(jLabelVoltages);
 
         jLabelSDCardPresent.setText("No SD card");
-        jPanelColumn3.add(jLabelSDCardPresent);
+        jPanelInfoColumn.add(jLabelSDCardPresent);
 
         jLabelFlags.setText(" ");
-        jPanelColumn3.add(jLabelFlags);
+        jPanelInfoColumn.add(jLabelFlags);
 
         jLabelPatch.setText(" ");
-        jPanelColumn3.add(jLabelPatch);
+        jPanelInfoColumn.add(jLabelPatch);
 
-        jPanelHeader.add(jPanelColumn3);
+        jPanelHeader.add(jPanelInfoColumn);
         jPanelHeader.add(filler3);
 
         getContentPane().add(jPanelHeader);
@@ -1370,9 +1370,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JMenuItem jMenuItemRefreshFWID;
     private javax.swing.JMenuItem jMenuItemSelectCom;
     private javax.swing.JPanel jPanelHeader;
-    private javax.swing.JPanel jPanelColumn1;
-    private javax.swing.JPanel jPanelColumn2;
-    private javax.swing.JPanel jPanelColumn3;
+    private javax.swing.JPanel jPanelIconColumn;
+    private javax.swing.JPanel jPanelButtonsColumn;
+    private javax.swing.JPanel jPanelInfoColumn;
     private javax.swing.JPanel jPanelProgress;
     private javax.swing.JProgressBar jProgressBar1;
     private ScrollPaneComponent jScrollPaneLog;
