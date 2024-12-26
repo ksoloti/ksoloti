@@ -199,12 +199,11 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         if (InstanceTextPane != null) {
             if (commentText.toLowerCase().contains(("<html>"))) {
                 InstanceTextPane.setContentType("text/html");
-                InstanceTextPane.setFont(UIManager.getFont("defaultFont"));
             }
             else {
                 InstanceTextPane.setContentType("text/plain");
-                InstanceTextPane.setFont(Constants.FONT);
             }
+            InstanceTextPane.setFont(Constants.FONT);
             InstanceTextPane.setText(commentText);
             InstanceTextPane.setSize((int)InstanceTextPane.getPreferredSize().getWidth(), InstanceTextPane.getHeight());
         }
