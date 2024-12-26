@@ -478,7 +478,7 @@ public class PatchGUI extends Patch {
             @Override
             public void mousePressed(MouseEvent me) {
                 MousePressedBtn = me.getButton();
-                if (MousePressedBtn == MouseEvent.BUTTON1) {
+                if (!locked && MousePressedBtn == MouseEvent.BUTTON1) {
                     if (!me.isShiftDown()) {
                         for (AxoObjectInstanceAbstract o : objectInstances) {
                             o.SetSelected(false);
@@ -550,7 +550,7 @@ public class PatchGUI extends Patch {
         Layers.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent ev) {
-                if (MousePressedBtn == MouseEvent.BUTTON1) {
+                if (!locked && MousePressedBtn == MouseEvent.BUTTON1) {
                     int x1 = selectionRectStart.x;
                     int y1 = selectionRectStart.y;
                     int x2 = ev.getX();
