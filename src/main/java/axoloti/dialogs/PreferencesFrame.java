@@ -151,7 +151,7 @@ public class PreferencesFrame extends JFrame {
             /* Flush old .h.gch file (Will be recompiled for new firmware mode the next time a patch goes live) */
             axoloti.Axoloti.deletePrecompiledHeaderFile();
 
-            MainFrame.mainframe.updateLinkFirmwareID();
+            // MainFrame.mainframe.updateLinkFirmwareID();
             
         }
 
