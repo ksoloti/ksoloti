@@ -95,15 +95,6 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
                     if (!me.isShiftDown() && me.getClickCount() == 2) {
                         addInstanceNameEditor();
                     }
-                    // if (me.getClickCount() == 1) {
-                        // if (me.isShiftDown()) {
-                        //    SetSelected(!isSelected());
-                        // }
-                        // else if (Selected == false) {
-                        //    ((PatchGUI) patch).SelectNone();
-                        //    SetSelected(true);
-                        // }
-                    // }
                 }
             }
 
