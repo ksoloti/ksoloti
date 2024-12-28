@@ -612,6 +612,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
                 qcmdprocessor.AppendToQueue(new QCmdStartFlasher());
                 qcmdprocessor.AppendToQueue(new QCmdDisconnect());
+                ShowDisconnect();
             }
             else {
                 LOGGER.log(Level.SEVERE, "Cannot read firmware, please compile firmware! (File: {0})", pname);
