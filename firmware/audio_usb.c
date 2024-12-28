@@ -1182,7 +1182,7 @@ FORCE_INLINE bool aduIsUsbOutputEnabled(void)
 #if DISREGARD_ACTIVE_PAIRING
   return (aduState.isInputActive || aduState.isOutputActive);
 #else
-  return aduState.isOutputActive);
+  return aduState.isOutputActive;
 #endif
 }
 
