@@ -22,6 +22,8 @@ import axoloti.MainFrame;
 import axoloti.USBBulkConnection;
 import axoloti.Version;
 
+import static axoloti.MainFrame.axoObjects;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -777,6 +779,9 @@ public class Preferences {
         }
 
         buildObjectSearchPatch();
+        
+        /* Reload objects ? */
+        axoObjects.LoadAxoObjects();
     }
 
     private void buildObjectSearchPatch() {
