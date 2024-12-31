@@ -1827,7 +1827,7 @@ public class Patch {
            + I + "if (fwid != 0x" + MainFrame.mainframe.LinkFirmwareID + ") {\n"
            + I+I + "// LogTextMessage(\"Patch firmware mismatch\");\n"
            + I+I + "/* Blink red LED a few times. */\n"
-           + I+I + "sysmon_blink_pattern(0xA0A0A0A0);\n" /* Magic number to ensure backwards compatibility */
+           + I+I + "sysmon_blink_pattern(0xA0A0A0A0);\n" /* Magic number (same as BLINK_PATCH_LOAD_FAIL) to ensure backwards compatibility */
            + I+I + "return;\n"
            + I + "}\n\n"
            + I + "extern uint32_t _pbss_start;\n"
