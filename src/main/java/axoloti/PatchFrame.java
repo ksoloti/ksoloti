@@ -366,6 +366,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jToggleButtonLive = new javax.swing.JToggleButton();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0));
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0));
+        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0));
         jLabelDSPLoad = new javax.swing.JLabel();
         jProgressBarDSPLoad = new javax.swing.JProgressBar();
         jUnitNameIndicator = new javax.swing.JLabel(" USB");
@@ -472,11 +473,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jProgressBarDSPLoad.setMaximum(200);
         jProgressBarDSPLoad.setStringPainted(true);
         jToolbarPanel.add(jProgressBarDSPLoad);
+        
+        filler2.setAlignmentX(LEFT_ALIGNMENT);
+        jToolbarPanel.add(filler2);
 
         jToolbarPanel.add(jUnitNameIndicator);
 
-        filler2.setAlignmentX(LEFT_ALIGNMENT);
-        jToolbarPanel.add(filler2);
+        filler3.setAlignmentX(LEFT_ALIGNMENT);
+        jToolbarPanel.add(filler3);
 
         getContentPane().add(jToolbarPanel);
 
@@ -1206,6 +1210,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private axoloti.menus.FileMenu fileMenuP;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
+    private javax.swing.Box.Filler filler3;
     private axoloti.menus.HelpMenu helpMenu1;
     private javax.swing.JToggleButton jToggleButtonLive;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemCordsInBackground;
@@ -1351,6 +1356,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     @Override
     public void ShowUnitName(String unitName) {
-        jUnitNameIndicator.setText(" " + unitName);
+        jUnitNameIndicator.setText(unitName);
     }
 }
