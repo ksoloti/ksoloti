@@ -61,7 +61,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+// import java.net.BindException;
 import java.net.MalformedURLException;
+// import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -126,6 +128,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     boolean bGrabFocusOnSevereErrors = true;
 
     private boolean doAutoScroll = true;
+
+    // ServerSocket instanceSocketHack;
 
     /**
      * Creates new form MainFrame
@@ -371,6 +375,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     populateMainframeTitle();
 
+
+                    // instanceSocketHack = new ServerSocket(1);
+
+
                     LOGGER.log(Level.WARNING, "Patcher version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
 
                     if (prefs.getExpertMode()) {
@@ -490,6 +498,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     axoObjects = new AxoObjects();
                     axoObjects.LoadAxoObjects();
 
+                // }
+                // catch (BindException e) {
+                    // e.printStackTrace();
+                    // System.exit(1);
                 }
                 catch (Exception e) {
                     e.printStackTrace();
