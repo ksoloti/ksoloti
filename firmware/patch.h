@@ -115,6 +115,14 @@ loadPatchIndex_t GetIndexOfCurrentPatch(void);
 
 void codec_clearbuffer(void);
 
+#if FW_USBAUDIO
+void usb_clearbuffer(void);
+#endif
+
+#if USE_EXTERNAL_USB_FIFO_PUMP
+extern void usb_lld_use_external_pump(bool use);
+#endif
+
 void SetPatchSafety(uint16_t uUIMidiCost, uint8_t uDspLimit200);
 
 
