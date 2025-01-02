@@ -401,7 +401,9 @@ public class PatchGUI extends Patch {
                 }
                 else if ((ke.getKeyCode() == KeyEvent.VK_C) && ke.isShiftDown() && !KeyUtils.isControlOrCommandDown(ke)) {
                     AxoObjectInstanceAbstract ao = AddObjectInstance(MainFrame.axoObjects.GetAxoObjectFromName("patch/comment", null).get(0), Layers.getMousePosition());
-                    ao.addInstanceNameEditor();
+                    if (ao != null) {
+                        ao.addInstanceNameEditor();
+                    }
                     ke.consume();
                 }
                 else if ((ke.getKeyCode() == KeyEvent.VK_M) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
