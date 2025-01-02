@@ -80,6 +80,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
@@ -102,7 +103,7 @@ import qcmds.QCmdUploadPatch;
  *
  * @author Johannes Taelman
  */
-public final class MainFrame extends javax.swing.JFrame implements ActionListener, ConnectionStatusListener, SDCardMountStatusListener , ConnectionFlagsListener{
+public final class MainFrame extends javax.swing.JFrame implements ActionListener, ConnectionStatusListener, SDCardMountStatusListener, ConnectionFlagsListener {
 
     private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
 
@@ -1453,7 +1454,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             }
         }
 
-        // update listeners
+        /* Update listeners */
         ShowUnitName(jLabelCPUID.getText());
     }
 
