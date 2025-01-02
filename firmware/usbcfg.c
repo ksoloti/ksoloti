@@ -687,6 +687,8 @@ static void usb_event(USBDriver *usbp, usbevent_t event) {
     chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_USB_ENABLE);
     chSysUnlockFromIsr();
 #endif
+  case USB_EVENT_UNCONFIGURED:
+  default:
     return;
   }
 
