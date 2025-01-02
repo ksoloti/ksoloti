@@ -1448,16 +1448,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             jLabelCPUID.setText(" ");
         } else {
             String name = MainFrame.prefs.getBoardName(cpuId);
-            // String txt;
             if (name == null) {
-                /*
-                 * For mere mortals, only display last five digits of Board ID.
-                 * Check Board > Select Device... for full Board ID.
-                 * Not sure what you would need it for tho...
-                 */
-                String lastSix = cpuId.length() > 6 ? cpuId.substring(cpuId.length() - 6) : cpuId;
-                jLabelCPUID.setText("Board ID:    " + lastSix);
-                jLabelCPUID.setToolTipText("Showing the last six digits of the full board ID.\n" +
+                jLabelCPUID.setText("Board ID:    " + cpuId);
+                jLabelCPUID.setToolTipText("Showing board ID of the currently connected Core.\n" +
                                            "You can name your Core by disconnecting it from\n" +
                                            "the Patcher, then going to Board > Select Device... > Name.\n" + 
                                            "Press Enter in the Name textfield to confirm the entry.");
