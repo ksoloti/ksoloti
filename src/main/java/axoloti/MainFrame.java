@@ -611,7 +611,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 qcmdprocessor.AppendToQueue(new QCmdUploadFWSDRam(p));
                 qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
                 qcmdprocessor.AppendToQueue(new QCmdStartFlasher());
-                qcmdprocessor.AppendToQueue(new QCmdDisconnect());
                 ShowDisconnect();
             }
             else {
@@ -1274,9 +1273,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.AppendToQueue(new QCmdStop());
             qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
             qcmdprocessor.AppendToQueue(new QCmdStartMounter());
-            // qcmdprocessor.AppendToQueue(new QCmdDisconnect());
             ShowDisconnect();
-            // LOGGER.log(Level.SEVERE, "Disconnecting from Patcher...");
         } else {
             LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first! (file: {0})", fname);
         }

@@ -532,7 +532,6 @@ public class USBBulkConnection extends Connection {
                 case -8:  errstr = "Overflow"; break;
                 case -9:  {
                     errstr = "Pipe error";
-                    // MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdDisconnect());
                     MainFrame.mainframe.ShowDisconnect();
                     break;
                 }
