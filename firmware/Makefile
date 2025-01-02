@@ -469,7 +469,6 @@ DLIBS =
 UDEFS = \
     -DARM_MATH_CM4 \
     -D__FPU_PRESENT \
-    -DSTM32F429xx \
     -DCRT1_AREAS_NUMBER=0 \
 
 # Define ASM defines here

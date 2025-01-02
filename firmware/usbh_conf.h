@@ -34,7 +34,8 @@
  */
 #pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
 
-#define STM32F429_439xx
+#define STM32F427xx
+#define STM32F427_437xx
 
 #include "stm32f4xx.h"
 #include <stdio.h>
