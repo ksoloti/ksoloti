@@ -499,7 +499,16 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         EventQueue.invokeLater(initr);
 
+
+        String argMessage = "";
         for (String arg : this.args) { //TODO check why always opening new instance
+
+            if (argMessage.isEmpty()) {
+                argMessage += "CLI arguments:";
+            }
+
+            argMessage += " " + arg;
+
             if (!arg.startsWith("-")) {
                 if (arg.endsWith(".axp") || arg.endsWith(".axs") || arg.endsWith(".axh")) {
                     final File f = new File(arg);
@@ -528,6 +537,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 }
             }
         }
+
+        if (!argMessage.isEmpty()) {
+            LOGGER.log(Level.WARNING, argMessage);
+        }
+
     }
 
 
