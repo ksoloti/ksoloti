@@ -92,7 +92,6 @@ import com.formdev.flatlaf.FlatClientProperties;
 
 import qcmds.QCmdBringToDFUMode;
 import qcmds.QCmdCompilePatch;
-import qcmds.QCmdDisconnect;
 import qcmds.QCmdPing;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdStartFlasher;
