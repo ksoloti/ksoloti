@@ -101,7 +101,7 @@ public class Spectral extends gentools {
                 + "for(i=0;i<" + n + ";i++) outbuf[i]=0;\n"
                 + "state = 0;\n"
                 + "  Thd = chThdCreateStatic(waThreadX, sizeof(waThreadX),\n"
-                + "                    NORMALPRIO, ThreadX, (void *)this);\n";
+                + "                    NORMALPRIO, (void*) ThreadX, (void *)this);\n";
         o.sDisposeCode = "chThdTerminate(Thd);\n";
         o.sKRateCode = "if (state<" + n + "){\n"
                 + "   int i;\n"
@@ -175,7 +175,7 @@ public class Spectral extends gentools {
                 + "for(i=0;i<" + n + ";i++) outbuf[i]=0;\n"
                 + "state = 0;\n"
                 + "  Thd = chThdCreateStatic(waThreadX, sizeof(waThreadX),\n"
-                + "                    NORMALPRIO, ThreadX, (void *)this);\n";
+                + "                    NORMALPRIO, (void*) ThreadX, (void *)this);\n";
         o.sDisposeCode = "chThdTerminate(Thd);\n";
         o.sKRateCode = "if (state<" + n + "){\n"
                 + "   int i;\n"
@@ -249,7 +249,7 @@ public class Spectral extends gentools {
                 + "for(i=0;i<" + n + ";i++) outbuf[i]=0;\n"
                 + "state = 0;\n"
                 + "  Thd = chThdCreateStatic(waThreadX, sizeof(waThreadX),\n"
-                + "                    LOWPRIO, ThreadX, (void *)this);\n";
+                + "                    LOWPRIO, (void*) ThreadX, (void *)this);\n";
         o.sDisposeCode = "chThdTerminate(Thd);\n";
         o.sKRateCode = "if (state<" + n + "){\n"
                 + "   int i;\n"

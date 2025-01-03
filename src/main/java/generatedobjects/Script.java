@@ -81,7 +81,7 @@ public class Script extends gentools {
                 + "Thread *Thd;\n";
         o.sInitCode = "in1=0;in2=0;out1=0;out2=0;\n"
                 + "  Thd = chThdCreateStatic(waThreadX, sizeof(waThreadX),\n"
-                + "                    NORMALPRIO, ThreadX, (void *)this);\n";
+                + "                    NORMALPRIO, (void*) ThreadX, (void *)this);\n";
         o.sDisposeCode = "chThdTerminate(Thd);\n"
                 + "chThdWait(Thd);\n";
         o.sKRateCode = "%out1_% = this->out1;\n"
@@ -116,7 +116,7 @@ public class Script extends gentools {
                 + "Thread *Thd;\n";
         o.sInitCode = "in1=0;in2=0;out1=0;out2=0;\n"
                 + "  Thd = chThdCreateStatic(waThreadX, sizeof(waThreadX),\n"
-                + "                    NORMALPRIO, ThreadX, (void *)this);\n";
+                + "                    NORMALPRIO, (void*) ThreadX, (void *)this);\n";
         o.sDisposeCode = "chThdTerminate(Thd);\n"
                 + "chThdWait(Thd);\n";
         o.sKRateCode = "%out1_% = this->out1;\n"

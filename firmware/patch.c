@@ -554,7 +554,7 @@ void start_dsp_thread(void) {
 #endif
 
     if (!pThreadDSP)
-        pThreadDSP = chThdCreateStatic(waThreadDSP, sizeof(waThreadDSP), PATCH_DSP_PRIORITY, (tfunc_t) ThreadDSP, NULL);
+        pThreadDSP = chThdCreateStatic(waThreadDSP, sizeof(waThreadDSP), PATCH_DSP_PRIORITY, (void*) ThreadDSP, NULL);
 }
 
 

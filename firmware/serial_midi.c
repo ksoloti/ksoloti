@@ -176,5 +176,5 @@ void serial_midi_init(void) {
 
     sdStart(&SDMIDI, &sdMidiCfg);
 
-    chThdCreateStatic(waThreadMidi, sizeof(waThreadMidi), NORMALPRIO, (tfunc_t) ThreadMidi, NULL);
+    chThdCreateStatic(waThreadMidi, sizeof(waThreadMidi), NORMALPRIO, (void*) ThreadMidi, NULL);
 }
