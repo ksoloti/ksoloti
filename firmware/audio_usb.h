@@ -1106,6 +1106,7 @@ void aduInitiateReceiveI(USBDriver *usbp);
 void aduInitiateTransmitI(USBDriver *usbp);
 void aduResetBuffers(void);
 void aduReset(void);
+void aduObjectInit(AudioUSBDriver *adup);
 
 
 #ifdef __cplusplus
