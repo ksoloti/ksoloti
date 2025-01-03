@@ -173,6 +173,11 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t hann_q31(int32_t phase) 
     return rr << 1;
 }
 
+
+/* Purposefully doing some "literal" float to integer conversion here */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+
 __attribute__((always_inline)) __STATIC_INLINE float q27_to_float(int32_t op1) {
     float fop1 = *(float*) (&op1);
     __ASM volatile ("VCVT.F32.S32 %0, %0, 27" : "+w" (fop1));
@@ -184,6 +189,8 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t float_to_q27(float fop1) 
     int32_t r = *(int32_t*) (&fop1);
     return r;
 }
+
+#pragma GCC diagnostic pop
 
 __attribute__((always_inline)) __STATIC_INLINE int32_t ConvertIntToFrac(int i) {
     return i << 21;
@@ -200,7 +207,7 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t ConvertFloatToFrac(float 
 }
 #define float_to_frac ConvertFloatToFrac
 
-__attribute__((always_inline)) __INLINE int32_t rand_s32(void) {
+__attribute__((always_inline)) __STATIC_INLINE int32_t rand_s32(void) {
     // This function differs from the standard C rand()definition, standard C
     // rand()only returns positive numbers, while rand_s32()returns the full
     // signed 32 bit range.
@@ -223,7 +230,7 @@ __attribute__((always_inline)) __INLINE int32_t rand_s32(void) {
 #undef rand
 #endif
 
-__attribute__((always_inline)) __INLINE int rand(void) {
+__attribute__((always_inline)) __STATIC_INLINE int rand(void) {
     // standard C rand()
     return ((uint32_t) rand_s32()) >> 1;
 }
