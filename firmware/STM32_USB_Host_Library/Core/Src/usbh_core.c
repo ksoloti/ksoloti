@@ -124,7 +124,7 @@ USBH_StatusTypeDef  USBH_Init(USBH_HandleTypeDef *phost, void (*pUsrFunc)(USBH_H
   
   /* Create USB Host Queue */
   osMessageQDef(USBH_Queue, 10, uint16_t);
-  phost->os_event = osMessageCreate (osMessageQ(USBH_Queue), NULL); 
+  phost->os_event = (thread_t*) osMessageCreate (osMessageQ(USBH_Queue), NULL); 
   
   /*Create USB Host Task */
 #if defined (USBH_PROCESS_STACK_SIZE)
