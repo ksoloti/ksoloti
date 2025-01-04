@@ -54,173 +54,173 @@ public class Theme {
 
     /* UI */
     @Element
-    public Color Console_Background = UIManager.getColor("Viewport.background");
+    public static final Color Console_Background = UIManager.getColor("Viewport.background");
     @Element
-    public Color Patch_Unlocked_Background = isBgDark ? UIManager.getColor("Viewport.background").brighter() : UIManager.getColor("Viewport.background").darker();
+    public static final Color Patch_Unlocked_Background = isBgDark ? UIManager.getColor("Viewport.background").brighter() : UIManager.getColor("Viewport.background").darker();
     @Element
-    public Color Patch_Locked_Background = isBgDark ? UIManager.getColor("Viewport.background").darker().darker() : UIManager.getColor("Viewport.background").darker().darker().darker();
+    public static final Color Patch_Locked_Background = isBgDark ? UIManager.getColor("Viewport.background").darker().darker() : UIManager.getColor("Viewport.background").darker().darker().darker();
     @Element
-    public Color Button_Accent_Background = UIManager.getColor("Component.accentColor");
+    public static final Color Button_Accent_Background = UIManager.getColor("Component.accentColor");
     @Element
-    public Color Button_Accent_Foreground = UIManager.getColor("ProgressBar.selectionForeground");
+    public static final Color Button_Accent_Foreground = UIManager.getColor("ProgressBar.selectionForeground");
     @Element
-    // public Color ProgressBar_Overload_Foreground = new Color(0xA0, UIManager.getColor("Component.accentColor").darker().darker().getGreen(), UIManager.getColor("Component.accentColor").darker().darker().getBlue());
-    public Color ProgressBar_Overload_Foreground = new Color(0x90, 0, 0);
+    // public static final Color ProgressBar_Overload_Foreground = new Color(0xA0, UIManager.getColor("Component.accentColor").darker().darker().getGreen(), UIManager.getColor("Component.accentColor").darker().darker().getBlue());
+    public static final Color ProgressBar_Overload_Foreground = new Color(0x90, 0, 0);
     @Element
-    public Color Button_Default_Background = UIManager.getColor("Button.background");
+    public static final Color Button_Default_Background = UIManager.getColor("Button.background");
     @Element
-    public Color Button_Default_Foreground = UIManager.getColor("Button.foreground");
+    public static final Color Button_Default_Foreground = UIManager.getColor("Button.foreground");
     @Element
-    public Color Selection_Rectangle_Fill = new Color(Patch_Unlocked_Background.brighter().getRed(), Patch_Unlocked_Background.brighter().getGreen(), Patch_Unlocked_Background.brighter().getBlue(), 0x40);
+    public static final Color Selection_Rectangle_Fill = new Color(Patch_Unlocked_Background.brighter().getRed(), Patch_Unlocked_Background.brighter().getGreen(), Patch_Unlocked_Background.brighter().getBlue(), 0x40);
 
     /* Text */
     @Element
-    public Color Error_Text = Color.RED;
+    public static final Color Error_Text = Color.RED;
     @Element
-    public Color Console_Normal_Text = UIManager.getColor("Viewport.foreground");
+    public static final Color Console_Normal_Text = UIManager.getColor("Viewport.foreground");
     @Element
-    public Color Console_Warning_Text = UIManager.getColor("Component.accentColor");
+    public static final Color Console_Warning_Text = UIManager.getColor("Component.accentColor");
 
     /* Nets */
     @Element
-    public Color Cable_Default = Color.DARK_GRAY;
+    public static final Color Cable_Default = Color.DARK_GRAY;
     @Element
-    public Color Cable_Default_Highlighted = Color.GRAY;
+    public static final Color Cable_Default_Highlighted = Color.GRAY;
 
     @Element
-    public Color Cable_Shadow = Color.BLACK;
+    public static final Color Cable_Shadow = Color.BLACK;
     @Element
-    public Color Cable_Shadow_Highlighted = Color.DARK_GRAY;
+    public static final Color Cable_Shadow_Highlighted = Color.DARK_GRAY;
 
     @Element
-    public Color Cable_Bool32 = new Color(0xF7, 0xF7, 0x50, cable_opacity);
+    public static final Color Cable_Bool32 = new Color(0xF7, 0xF7, 0x50, cable_opacity);
     @Element
-    public Color Cable_Bool32_Highlighted = new Color(0xF7, 0xF7, 0x50).brighter();
+    public static final Color Cable_Bool32_Highlighted = new Color(0xF7, 0xF7, 0x50).brighter();
 
     @Element
-    public Color Cable_CharPointer32 = new Color(0xFF, 0x00, 0xFF, cable_opacity);
+    public static final Color Cable_CharPointer32 = new Color(0xFF, 0x00, 0xFF, cable_opacity);
     @Element
-    public Color Cable_CharPointer32_Highlighted = new Color(0xFF, 0x90, 0xFF);
+    public static final Color Cable_CharPointer32_Highlighted = new Color(0xFF, 0x90, 0xFF);
 
     @Element
-    public Color Cable_Zombie = Color.WHITE;
+    public static final Color Cable_Zombie = Color.WHITE;
     @Element
-    public Color Cable_Zombie_Highlighted = new Color(0x9F, 0x00, 0x00);
+    public static final Color Cable_Zombie_Highlighted = new Color(0x9F, 0x00, 0x00);
 
     @Element
-    public Color Cable_Frac32 = new Color(0x30, 0x50, 0xFF, cable_opacity);
+    public static final Color Cable_Frac32 = new Color(0x30, 0x50, 0xFF, cable_opacity);
     @Element
-    public Color Cable_Frac32_Highlighted = new Color(0x30, 0x50, 0xFF).brighter().brighter();
+    public static final Color Cable_Frac32_Highlighted = new Color(0x30, 0x50, 0xFF).brighter().brighter();
 
     @Element
-    public Color Cable_Frac32Buffer = new Color(0xFF, 0x30, 0x50, cable_opacity);
+    public static final Color Cable_Frac32Buffer = new Color(0xFF, 0x30, 0x50, cable_opacity);
     @Element
-    public Color Cable_Frac32Buffer_Highlighted = new Color(0xFF, 0x70, 0x90);
+    public static final Color Cable_Frac32Buffer_Highlighted = new Color(0xFF, 0x70, 0x90);
 
     @Element
-    public Color Cable_Int32 = new Color(0x30, 0xFF, 0x50, cable_opacity);
+    public static final Color Cable_Int32 = new Color(0x30, 0xFF, 0x50, cable_opacity);
     @Element
-    public Color Cable_Int32_Highlighted = new Color(0x30, 0xFF, 0x50).brighter().brighter();
+    public static final Color Cable_Int32_Highlighted = new Color(0x30, 0xFF, 0x50).brighter().brighter();
 
     @Element
-    public Color Cable_Int32Pointer = new Color(0xFF, 0xAF, 0xAF, cable_opacity);
+    public static final Color Cable_Int32Pointer = new Color(0xFF, 0xAF, 0xAF, cable_opacity);
     @Element
-    public Color Cable_Int32Pointer_Highlighted = new Color(0xFF, 0xAF, 0xAF).brighter();
+    public static final Color Cable_Int32Pointer_Highlighted = new Color(0xFF, 0xAF, 0xAF).brighter();
 
     @Element
-    public Color Cable_Int8Array = Cable_Int32Pointer;
+    public static final Color Cable_Int8Array = Cable_Int32Pointer;
     @Element
-    public Color Cable_Int8Array_Highlighted = Cable_Int32Pointer_Highlighted;
+    public static final Color Cable_Int8Array_Highlighted = Cable_Int32Pointer_Highlighted;
 
     @Element
-    public Color Cable_Int8Pointer = Cable_Int32Pointer;
+    public static final Color Cable_Int8Pointer = Cable_Int32Pointer;
     @Element
-    public Color Cable_Int8Pointer_Highlighted = Cable_Int32Pointer_Highlighted;
+    public static final Color Cable_Int8Pointer_Highlighted = Cable_Int32Pointer_Highlighted;
 
     /* Objects */
     @Element
-    public Color Object_Label_Text = UIManager.getColor("Panel.foreground");
+    public static final Color Object_Label_Text = UIManager.getColor("Panel.foreground");
     @Element
-    public Color Object_Default_Background = UIManager.getColor("Panel.background");
+    public static final Color Object_Default_Background = UIManager.getColor("Panel.background");
     @Element
-    public Color Object_Default_Foreground = UIManager.getColor("Panel.foreground");
+    public static final Color Object_Default_Foreground = UIManager.getColor("Panel.foreground");
     @Element
-    public Color Object_TitleBar_Background = UIManager.getColor("Panel.foreground"); /* Titlebar Inverted */
+    public static final Color Object_TitleBar_Background = UIManager.getColor("Panel.foreground"); /* Titlebar Inverted */
     @Element
-    public Color Object_TitleBar_Subpatch_Background = new Color(
+    public static final Color Object_TitleBar_Subpatch_Background = new Color(
         Math.max(Object_TitleBar_Background.getRed()-0x20, 0x20),
         Math.max(Object_TitleBar_Background.getGreen()-0x20, 0x20),
         Math.min(Object_TitleBar_Background.getBlue()+0x80, 0xFF)
     );
     @Element
-    public Color Object_TitleBar_Embedded_Background = new Color(
+    public static final Color Object_TitleBar_Embedded_Background = new Color(
         Math.min(Object_TitleBar_Background.getRed()+0x60, 0xFF),
         Math.min(Object_TitleBar_Background.getGreen()+0x30, 0xFF),
         Math.max(Object_TitleBar_Background.getBlue()-0x20, 0x20) 
     );
     @Element
-    public Color Object_TitleBar_Foreground = UIManager.getColor("Panel.background"); /* Titlebar Inverted */
+    public static final Color Object_TitleBar_Foreground = UIManager.getColor("Panel.background"); /* Titlebar Inverted */
     @Element
-    public Color Object_Border_Unselected = Patch_Unlocked_Background;
+    public static final Color Object_Border_Unselected = Patch_Unlocked_Background;
     @Element
-    public Color Object_Border_Unselected_Locked = Patch_Locked_Background;
+    public static final Color Object_Border_Unselected_Locked = Patch_Locked_Background;
     @Element
-    // public Color Object_Border_Selected = new Color(0xFF, 0x80, 0x00); /* Juicy orange */
-    public Color Object_Border_Selected = UIManager.getColor("Component.accentColor");
+    // public static final Color Object_Border_Selected = new Color(0xFF, 0x80, 0x00); /* Juicy orange */
+    public static final Color Object_Border_Selected = UIManager.getColor("Component.accentColor");
     @Element
-    public Color Object_Zombie_Background = Color.RED;
+    public static final Color Object_Zombie_Background = Color.RED;
 
     @Element
-    public Color Parameter_Default_Background = Object_Default_Background;
+    public static final Color Parameter_Default_Background = Object_Default_Background;
     @Element
-    public Color Parameter_Default_Foreground = Object_Default_Foreground;
+    public static final Color Parameter_Default_Foreground = Object_Default_Foreground;
     @Element
-    public Color Parameter_On_Parent_Background = isBgDark ? new Color(0x00,0x00,0x60) : new Color(0xE0, 0xE0, 0xFF);
+    public static final Color Parameter_On_Parent_Background = isBgDark ? new Color(0x00,0x00,0x60) : new Color(0xE0, 0xE0, 0xFF);
     @Element
-    public Color Parameter_On_Parent_Foreground = isBgDark ? new Color(0x60, 0x60, 0xFF) : Color.BLUE;
+    public static final Color Parameter_On_Parent_Foreground = isBgDark ? new Color(0x60, 0x60, 0xFF) : Color.BLUE;
 
     @Element
-    public Color Parameter_Frozen_Background = isBgDark ? Parameter_Default_Background.brighter().brighter().brighter() : Parameter_Default_Background.darker();
+    public static final Color Parameter_Frozen_Background = isBgDark ? Parameter_Default_Background.brighter().brighter().brighter() : Parameter_Default_Background.darker();
     // @Element /* not used */
-    // public Color Parameter_Frozen_Foreground = isBgDark ? new Color(0x60, 0x60, 0xFF) : Color.ORANGE;
+    // public static final Color Parameter_Frozen_Foreground = isBgDark ? new Color(0x60, 0x60, 0xFF) : Color.ORANGE;
 
     @Element
-    public Color Component_Foreground = Object_Default_Foreground;
+    public static final Color Component_Foreground = Object_Default_Foreground;
     @Element
-    public Color Component_Mid_Dark = Color.getHSBColor(0.0f, 0.0f, isBgDark ? 0.66f : 0.33f); /* Invert grey values when dark theme is active */
+    public static final Color Component_Mid_Dark = Color.getHSBColor(0.0f, 0.0f, isBgDark ? 0.66f : 0.33f); /* Invert grey values when dark theme is active */
     @Element
-    public Color Component_Mid = Color.GRAY;
+    public static final Color Component_Mid = Color.GRAY;
     @Element
-    public Color Component_Mid_Light = Color.getHSBColor(0.0f, 0.0f, isBgDark ? 0.33f : 0.66f);
+    public static final Color Component_Mid_Light = Color.getHSBColor(0.0f, 0.0f, isBgDark ? 0.33f : 0.66f);
     @Element
-    public Color Component_Background = isBgDark ? Object_Default_Background.darker() : Object_Default_Background.brighter();
+    public static final Color Component_Background = isBgDark ? Object_Default_Background.darker() : Object_Default_Background.brighter();
     @Element
-    public Color Component_Illuminated = Color.ORANGE;
+    public static final Color Component_Illuminated = Color.ORANGE;
 
     @Element
-    public Color Keyboard_Light = Color.WHITE;
+    public static final Color Keyboard_Light = Color.WHITE;
     @Element
-    public Color Keyboard_Mid = Color.GRAY;
+    public static final Color Keyboard_Mid = Color.GRAY;
     @Element
-    public Color Keyboard_Dark = Color.BLACK;
+    public static final Color Keyboard_Dark = Color.BLACK;
 
     @Element
-    public Color Led_Strip_On = new Color(0.f, 1.f, 0.f, 1.0f);
+    public static final Color Led_Strip_On = new Color(0.f, 1.f, 0.f, 1.0f);
     @Element
-    public Color Led_Strip_Off = new Color(0.f, 0.f, 0.f, 0.5f);
+    public static final Color Led_Strip_Off = new Color(0.f, 0.f, 0.f, 0.5f);
 
     @Element
-    public Color VU_Dark_Green = new Color(0.0f, 0.3f, 0.0f);
+    public static final Color VU_Dark_Green = new Color(0.0f, 0.3f, 0.0f);
     @Element
-    public Color VU_Dark_Yellow = new Color(0.4f, 0.4f, 0.0f);
+    public static final Color VU_Dark_Yellow = new Color(0.4f, 0.4f, 0.0f);
     @Element
-    public Color VU_Dark_Red = new Color(0.4f, 0.0f, 0.0f);
+    public static final Color VU_Dark_Red = new Color(0.4f, 0.0f, 0.0f);
     @Element
-    public Color VU_Bright_Green = new Color(0.0f, 0.8f, 0.0f);
+    public static final Color VU_Bright_Green = new Color(0.0f, 0.8f, 0.0f);
     @Element
-    public Color VU_Bright_Yellow = new Color(0.8f, 0.8f, 0.0f);
+    public static final Color VU_Bright_Yellow = new Color(0.8f, 0.8f, 0.0f);
     @Element
-    public Color VU_Bright_Red = new Color(0.8f, 0.0f, 0.0f);
+    public static final Color VU_Bright_Red = new Color(0.8f, 0.0f, 0.0f);
 
     private File FileChooserSave(JFrame frame) {
         fc.resetChoosableFileFilters();
