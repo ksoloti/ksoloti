@@ -49,7 +49,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
     public void reportStatus() {
         File f = new File(getLocalLocation());
         if (!f.exists()) {
-            LOGGER.log(Level.WARNING, "Library status: {0} - Local directory missing ", logDetails());
+            LOGGER.log(Level.WARNING, "Local directory missing: {0}", logDetails());
         }
 
         Git git = getGit();
@@ -57,7 +57,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             reportStatus(git);
             git.getRepository().close();
         } else {
-            LOGGER.log(Level.WARNING, "Library status FAILED - Cannot find submodule: {0}", logDetails());
+            LOGGER.log(Level.WARNING, "Status FAILED - Cannot find submodule: {0}", logDetails());
         }
     }
 
@@ -98,7 +98,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             LOGGER.log(Level.INFO, "Sync successful: {0}", logDetails());
             git.getRepository().close();
         } else {
-            LOGGER.log(Level.WARNING, "Sync repo FAILED - Cannot find submodule: {0}", logDetails());
+            LOGGER.log(Level.WARNING, "Repo sync FAILED - Cannot find submodule: {0}", logDetails());
         }
     }
         
@@ -108,7 +108,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
 
         if (!usingSubmodule()) {
             if (getRemoteLocation() == null || getRemoteLocation().length() == 0) {
-                LOGGER.log(Level.WARNING, "Init FAILED - no remote specified: {0}", logDetails());
+                LOGGER.log(Level.WARNING, "Initialisation FAILED - no remote specified: {0}", logDetails());
                 return;
             }
 
@@ -312,7 +312,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             StashDropCommand cmd = git.stashDrop();
             cmd.setStashRef(idx);
             cmd.call();
-            LOGGER.log(Level.INFO, "Drop stash successfully: {0}", new Object[]{logDetails(), ref});
+            LOGGER.log(Level.INFO, "Drop stash successful: {0}", new Object[]{logDetails(), ref});
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "applyStash (dropStash) FAILED: {0}", logDetails());
@@ -481,7 +481,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
                 details.append("dirty");
             }
 
-            LOGGER.log(Level.INFO, "Library status: {0} - {1} ({2})", new Object[]{logDetails(), overallStatus, details.toString()});
+            LOGGER.log(Level.INFO, "Status {0}: {1} ({2})", new Object[]{overallStatus, logDetails(), details.toString()});
             if (!status.isClean()) {
                 LOGGER.log(Level.INFO, "Changes for: {0}", logDetails());
                 for (String f : status.getAdded()) {
@@ -515,10 +515,10 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
-            LOGGER.log(Level.INFO, "Library status: EXCEPTION {0}", logDetails());
+            LOGGER.log(Level.INFO, "Status EXCEPTION - {0}", logDetails());
         } catch (NoWorkTreeException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
-            LOGGER.log(Level.INFO, "Library status: EXCEPTION {0}", logDetails());
+            LOGGER.log(Level.INFO, "Status EXCEPTION - {0}", logDetails());
         }
         return false;
     }

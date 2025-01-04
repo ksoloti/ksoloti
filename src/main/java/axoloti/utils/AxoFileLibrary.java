@@ -26,9 +26,9 @@ public class AxoFileLibrary extends AxolotiLibrary {
     public void reportStatus() {
         File f = new File(getLocalLocation()); 
         if(!f.exists()) {
-           LOGGER.log(Level.WARNING, "Library status: {0} - Local directory missing", getId());
+           LOGGER.log(Level.WARNING, "Local directory missing: {0}", getId());
         }
-        LOGGER.log(Level.INFO, "Library status: {0} (local) - OK", getId());
+        LOGGER.log(Level.INFO, "Status OK: {0} (local)", getId());
     }
     
     @Override
