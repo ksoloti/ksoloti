@@ -484,15 +484,17 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     for (AxolotiLibrary lib : prefs.getLibraries()) {
                         if (lib.isAutoSync() && lib.getEnabled()) {
-                            if (!autoSyncMessageDone){
+                            if (!autoSyncMessageDone) {
                                 LOGGER.log(Level.INFO, "Auto-syncing libraries...");
                                 autoSyncMessageDone = true;
                             }
                             LOGGER.log(Level.INFO, lib.getId() + "...");
                             lib.sync();
                         }
+                        if (autoSyncMessageDone) {
+                            LOGGER.log(Level.INFO, "Done auto-syncing libraries.\n");
+                        }
                     }
-                    LOGGER.log(Level.INFO, "Done auto-syncing libraries.\n");
 
                     LOGGER.log(Level.INFO, "Reporting library status...");
                     for (AxolotiLibrary lib : prefs.getLibraries()) {
@@ -1139,7 +1141,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             patch1.GetQCmdProcessor().AppendToQueue(cp);
             qcmdprocessor.WaitQueueFinished();
             pf.Close();
-            Thread.sleep(3000);
+            Thread.sleep(1000);
             status = cp.success();
             if (status == false) {
                 LOGGER.log(Level.SEVERE, "COMPILATION FAILED: {0}\n", f.getPath());
