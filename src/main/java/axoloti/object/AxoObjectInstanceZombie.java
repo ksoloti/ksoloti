@@ -292,7 +292,7 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
     
     @Override
     public String GenerateClass(String ClassName) {
-        return "\n\"Unresolved (zombie) object: " + type.id + " (labeled: " + getInstanceName() + ") in patch: " + getPatch().getFileNamePath() + "\"\n";
+        return "#error \"Unresolved (zombie) object: " + type.id + " (labeled: " + getInstanceName() + ") in patch: " + getPatch().getFileNamePath() + "\"\n";
     }
 
     @Override
