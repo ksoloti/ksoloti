@@ -474,7 +474,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             } catch (IOException ex) {
                 details.append("branch error");
             }
-            details.append(",");
+            details.append(", ");
             if (status.isClean()) {
                 details.append("clean");
             } else {
@@ -571,9 +571,9 @@ public class AxoGitLibrary extends AxolotiLibrary {
         StringBuilder str = new StringBuilder();
         str.append(getId()).append(" (").append(getBranch());
         if (getUserId() == null || getUserId().length() == 0) {
-            str.append(",anon");
+            str.append(", anon");
         } else {
-            str.append(",").append(getUserId());
+            str.append(", ").append(getUserId());
         }
         str.append(")");
         return str.toString();

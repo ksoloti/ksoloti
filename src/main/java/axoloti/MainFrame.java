@@ -481,18 +481,21 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
 
                     // if (!Axoloti.isFailSafeMode()) {
+                        LOGGER.log(Level.INFO, "Auto-syncing libraries...");
                         for (AxolotiLibrary lib : prefs.getLibraries()) {
                             if (lib.isAutoSync() && lib.getEnabled()) {
+                                LOGGER.log(Level.INFO, lib.getId() + "...");
                                 lib.sync();
                             }
                         }
-                        LOGGER.log(Level.INFO, "");
+                        LOGGER.log(Level.INFO, "Done auto-syncing libraries.");
                     // }
 
+                    LOGGER.log(Level.INFO, "Checking libraries...");
                     for (AxolotiLibrary lib : prefs.getLibraries()) {
                         lib.reportStatus();
                     }
-                    LOGGER.log(Level.INFO, "");
+                    LOGGER.log(Level.INFO, "Done checking libraries.");
 
                     axoObjects = new AxoObjects();
                     axoObjects.LoadAxoObjects();
@@ -1597,7 +1600,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
 
     public void disableConnectUntilRestart() {
-        jToggleButtonConnect.setText("RESTART APP");
+        jToggleButtonConnect.setText("RESTART");
         jToggleButtonConnect.setSelected(false);
         jToggleButtonConnect.setEnabled(false);
         jMenuItemFConnect.setEnabled(false);

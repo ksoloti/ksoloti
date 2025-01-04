@@ -61,6 +61,8 @@ import javax.swing.table.DefaultTableModel;
  */
 public class PreferencesFrame extends JFrame {
 
+    private static final Logger LOGGER = Logger.getLogger(PreferencesFrame.class.getName());
+
     static PreferencesFrame singleton = null;
 
     Preferences prefs = Preferences.LoadPreferences();
@@ -816,9 +818,11 @@ public class PreferencesFrame extends JFrame {
     }
 
     private void jLibStatusActionPerformed(java.awt.event.ActionEvent evt) {
+        LOGGER.log(Level.INFO, "Checking libraries...");
         for (AxolotiLibrary lib : prefs.getLibraries()) {
             lib.reportStatus();
         }
+        LOGGER.log(Level.INFO, "Done checking libraries.");
     }
 
     private void jComboBoxThemeActionPerformed(java.awt.event.ActionEvent evt) {

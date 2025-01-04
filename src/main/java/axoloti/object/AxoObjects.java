@@ -346,20 +346,21 @@ public class AxoObjects {
         Runnable objloader = new Runnable() {
             @Override
             public void run() {
+                LOGGER.log(Level.INFO, "Loading objects...");
                 ObjectTree = new AxoObjectTreeNode("/");
                 ObjectList = new ArrayList<AxoObjectAbstract>();
                 ObjectUUIDMap = new HashMap<String, AxoObjectAbstract>();
                 String spath[] = MainFrame.prefs.getObjectSearchPath();
                 if (spath != null) {
                     for (String path : spath) {
-                        LOGGER.log(Level.INFO, "Object search path: {0}", path);
+                        LOGGER.log(Level.INFO, "Object path: {0}", path);
                         LoadAxoObjects(path);
                     }
                 }
                 else {
-                    LOGGER.log(Level.SEVERE, "Object search path empty!\n");
+                    LOGGER.log(Level.SEVERE, "Object path empty!\n");
                 }
-                LOGGER.log(Level.INFO, "Finished loading objects.\n");
+                LOGGER.log(Level.INFO, "Done loading objects.\n");
             }
         };
         LoaderThread = new Thread(objloader);

@@ -283,7 +283,7 @@ public class FileMenu extends JMenu {
     //             public void run() {
     //                 LOGGER.log(Level.WARNING, "Running object tests, please wait...");
     //                 mainframe.runObjectTests();
-    //                 LOGGER.log(Level.WARNING, "Finished running object tests.\n");
+    //                 LOGGER.log(Level.WARNING, "Done running object tests.\n");
     //             }
     //         }
     //         Thd thread = new Thd();
@@ -297,7 +297,7 @@ public class FileMenu extends JMenu {
     //             public void run() {
     //                 LOGGER.log(Level.WARNING, "Running patch tests, please wait...");
     //                 mainframe.runPatchTests();
-    //                 LOGGER.log(Level.WARNING, "Finished running patch tests.\n");
+    //                 LOGGER.log(Level.WARNING, "Done running patch tests.\n");
     //             }
     //         }
     //         Thd thread = new Thd();
@@ -313,7 +313,7 @@ public class FileMenu extends JMenu {
                 public void run() {
                     LOGGER.log(Level.WARNING, "Running tests, please wait...");
                     mainframe.runAllTests();
-                    LOGGER.log(Level.WARNING, "Finished running tests.\n");
+                    LOGGER.log(Level.WARNING, "Done running tests.\n");
                 }
             }
             Thd thread = new Thd();
@@ -332,7 +332,7 @@ public class FileMenu extends JMenu {
                         public void run() {
                             LOGGER.log(Level.WARNING, "Running tests, please wait...");
                             mainframe.runTestDir(f);
-                            LOGGER.log(Level.WARNING, "Finished running tests.\n");
+                            LOGGER.log(Level.WARNING, "Done running tests.\n");
                         }
                     }
                     Thd thread = new Thd();
@@ -384,11 +384,11 @@ public class FileMenu extends JMenu {
     private void jMenuSyncActionPerformed(java.awt.event.ActionEvent evt) {
         class Thd extends Thread {
             public void run() {
-                LOGGER.log(Level.INFO, "Syncing Libraries, please wait...");
+                LOGGER.log(Level.INFO, "Syncing Libraries...");
                 for (AxolotiLibrary lib : Preferences.LoadPreferences().getLibraries()) {
                     lib.sync();
                 }
-                LOGGER.log(Level.INFO, "Finished syncing Libraries.\n");
+                LOGGER.log(Level.INFO, "Done syncing Libraries.\n");
                 axoObjects.LoadAxoObjects();
             }
         }
