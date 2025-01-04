@@ -29,7 +29,6 @@ import static axoloti.MainFrame.fc;
 import static axoloti.MainFrame.mainframe;
 import static axoloti.MainFrame.prefs;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
