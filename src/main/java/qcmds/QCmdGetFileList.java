@@ -38,7 +38,7 @@ public class QCmdGetFileList implements QCmdSerialTask {
         if (done) {
             return "Done receiving SD card file list.\n";
         } else {
-            return "Incomplete SD card file list...";
+            return "Incomplete SD card file list.\n";
         }
     }
 

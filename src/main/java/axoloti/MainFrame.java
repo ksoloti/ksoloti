@@ -480,22 +480,25 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         }
                     }
 
-                    // if (!Axoloti.isFailSafeMode()) {
-                        LOGGER.log(Level.INFO, "Auto-syncing libraries...");
-                        for (AxolotiLibrary lib : prefs.getLibraries()) {
-                            if (lib.isAutoSync() && lib.getEnabled()) {
-                                LOGGER.log(Level.INFO, lib.getId() + "...");
-                                lib.sync();
-                            }
-                        }
-                        LOGGER.log(Level.INFO, "Done auto-syncing libraries.");
-                    // }
+                    boolean autoSyncMessageDone = false;
 
-                    LOGGER.log(Level.INFO, "Checking libraries...");
+                    for (AxolotiLibrary lib : prefs.getLibraries()) {
+                        if (lib.isAutoSync() && lib.getEnabled()) {
+                            if (!autoSyncMessageDone){
+                                LOGGER.log(Level.INFO, "Auto-syncing libraries...");
+                                autoSyncMessageDone = true;
+                            }
+                            LOGGER.log(Level.INFO, lib.getId() + "...");
+                            lib.sync();
+                        }
+                    }
+                    LOGGER.log(Level.INFO, "Done auto-syncing libraries.\n");
+
+                    LOGGER.log(Level.INFO, "Reporting library status...");
                     for (AxolotiLibrary lib : prefs.getLibraries()) {
                         lib.reportStatus();
                     }
-                    LOGGER.log(Level.INFO, "Done checking libraries.");
+                    LOGGER.log(Level.INFO, "Done reporting library status.\n");
 
                     axoObjects = new AxoObjects();
                     axoObjects.LoadAxoObjects();

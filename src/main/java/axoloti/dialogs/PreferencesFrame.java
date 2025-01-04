@@ -818,11 +818,11 @@ public class PreferencesFrame extends JFrame {
     }
 
     private void jLibStatusActionPerformed(java.awt.event.ActionEvent evt) {
-        LOGGER.log(Level.INFO, "Checking libraries...");
+        LOGGER.log(Level.INFO, "Reporting library status...");
         for (AxolotiLibrary lib : prefs.getLibraries()) {
             lib.reportStatus();
         }
-        LOGGER.log(Level.INFO, "Done checking libraries.");
+        LOGGER.log(Level.INFO, "Done reporting library status.\n");
     }
 
     private void jComboBoxThemeActionPerformed(java.awt.event.ActionEvent evt) {
