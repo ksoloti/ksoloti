@@ -76,7 +76,7 @@ public class ParameterInstanceFrac32UMap<T extends ParameterFrac32> extends Para
     public void PostConstructor() {
         super.PostConstructor();
         JPanel btns = new JPanel();
-        btns.setBackground(Theme.getCurrentTheme().Object_Default_Background);
+        btns.setBackground(Theme.Object_Default_Background);
         btns.setLayout(new BoxLayout(btns, BoxLayout.PAGE_AXIS));
 
         //lblCC = new LabelComponent("C");
@@ -98,11 +98,11 @@ public class ParameterInstanceFrac32UMap<T extends ParameterFrac32> extends Para
     public void setOnParent(Boolean b) {
         super.setOnParent(b);
         if ((b != null) && b) {
-            setForeground(Theme.getCurrentTheme().Parameter_On_Parent_Foreground);
-            setBackground(Theme.getCurrentTheme().Parameter_On_Parent_Background);
+            setForeground(Theme.Parameter_On_Parent_Foreground);
+            setBackground(Theme.Parameter_On_Parent_Background);
         } else {
-            setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
-            setBackground(Theme.getCurrentTheme().Parameter_Default_Background);
+            setForeground(Theme.Parameter_Default_Foreground);
+            setBackground(Theme.Parameter_Default_Background);
         }
     }
 
@@ -173,14 +173,14 @@ public class ParameterInstanceFrac32UMap<T extends ParameterFrac32> extends Para
         if (i > 0) {
             Preset p = GetPreset(presetEditActive);
             if (p != null) {
-                // setForeground(Theme.getCurrentTheme().Parameter_Preset_Highlight_Foreground);
+                // setForeground(Theme.Parameter_Preset_Highlight_Foreground);
                 ctrl.setValue(p.value.getDouble());
             } else {
-                // setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
+                // setForeground(Theme.Parameter_Default_Foreground);
                 ctrl.setValue(value.getDouble());
             }
         } else {
-            setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
+            setForeground(Theme.Parameter_Default_Foreground);
             ctrl.setValue(value.getDouble());
         }
         presetAssign.repaint();

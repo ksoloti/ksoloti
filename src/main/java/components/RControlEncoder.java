@@ -135,9 +135,9 @@ public abstract class RControlEncoder extends JComponent {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.setPaint(Theme.getCurrentTheme().Object_Default_Background);
+        g2.setPaint(Theme.Object_Default_Background);
         g2.fillRect(0, 0, width, height);
-        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+        g2.setPaint(Theme.Component_Foreground);
         g2.drawOval(hoffset, voffset, diameter, diameter);
 
         g2.fillOval(hoffset + diameter / 4, voffset + diameter / 4, diameter / 2, diameter / 2);

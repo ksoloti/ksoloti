@@ -36,7 +36,7 @@ public class LabelComponent extends JLabel {
         setMaximumSize(new Dimension(32768,13));
         setMinimumSize(new Dimension(12,13));
         setFont(Constants.FONT);
-        setBackground(Theme.getCurrentTheme().Object_Default_Background);
-        setForeground(Theme.getCurrentTheme().Object_Label_Text);
+        setBackground(Theme.Object_Default_Background);
+        setForeground(Theme.Object_Label_Text);
     }
 }

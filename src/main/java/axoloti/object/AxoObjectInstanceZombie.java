@@ -107,7 +107,7 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
 
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         setOpaque(true);
-        setBackground(Theme.getCurrentTheme().Object_Zombie_Background);
+        setBackground(Theme.Object_Zombie_Background);
 
         final PopupIcon popupIcon = new PopupIcon();
         popupIcon.setPopupIconListener(
@@ -139,7 +139,7 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
                 idlbl.setText("…/" + slbl);
             }
         }
-        idlbl.setForeground(Theme.getCurrentTheme().Object_TitleBar_Foreground);
+        idlbl.setForeground(Theme.Object_TitleBar_Foreground);
         idlbl.setAlignmentX(LEFT_ALIGNMENT);
         idlbl.setFont(Constants.FONT_BOLD);
         Titlebar.add(idlbl);

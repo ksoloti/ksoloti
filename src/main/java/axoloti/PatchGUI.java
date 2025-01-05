@@ -244,7 +244,7 @@ public class PatchGUI extends Patch {
 
         Layers.setSize(Constants.PATCH_SIZE, Constants.PATCH_SIZE);
         Layers.setVisible(true);
-        Layers.setBackground(Theme.getCurrentTheme().Patch_Unlocked_Background);
+        Layers.setBackground(Theme.Patch_Unlocked_Background);
         Layers.setOpaque(true);
         Layers.revalidate();
 
@@ -1048,14 +1048,14 @@ public class PatchGUI extends Patch {
     public void Lock() {
         super.Lock();
         patchframe.SetLive(true);
-        Layers.setBackground(Theme.getCurrentTheme().Patch_Locked_Background);
+        Layers.setBackground(Theme.Patch_Locked_Background);
     }
 
     @Override
     public void Unlock() {
         super.Unlock();
         patchframe.SetLive(false);
-        Layers.setBackground(Theme.getCurrentTheme().Patch_Unlocked_Background);
+        Layers.setBackground(Theme.Patch_Unlocked_Background);
     }
 
     @Override

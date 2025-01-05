@@ -403,9 +403,9 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 
     // void SetPresetState(boolean b) { // OBSOLETE
     //     if (b) {
-    //         setForeground(Theme.getCurrentTheme().Parameter_Preset_Highlight_Foreground);
+    //         setForeground(Theme.Parameter_Preset_Highlight_Foreground);
     //     } else {
-    //         setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
+    //         setForeground(Theme.Parameter_Default_Foreground);
     //     }
     // }
 
@@ -657,19 +657,19 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
             ctrl.setToolTipText("<html>" + parameter.name);
         }
 
-        ctrl.setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
-        ctrl.setBackground(Theme.getCurrentTheme().Parameter_Default_Background);
+        ctrl.setForeground(Theme.Parameter_Default_Foreground);
+        ctrl.setBackground(Theme.Parameter_Default_Background);
 
         if (isOnParent()) {
-            ctrl.setForeground(Theme.getCurrentTheme().Parameter_On_Parent_Foreground);
+            ctrl.setForeground(Theme.Parameter_On_Parent_Foreground);
             ctrl.setToolTipText(ctrl.getToolTipText() + "<p><b>This parameter is being controlled from the parent patch.</b>");
         }
         if (isFrozen()) {
-            ctrl.setBackground(Theme.getCurrentTheme().Parameter_Frozen_Background);
+            ctrl.setBackground(Theme.Parameter_Frozen_Background);
             ctrl.setToolTipText(ctrl.getToolTipText() + "<p><b>This parameter is currently frozen to save memory and DSP power.</b>");
         }
         else {
-            ctrl.setBackground(Theme.getCurrentTheme().Component_Background);
+            ctrl.setBackground(Theme.Component_Background);
         }
     }
 }

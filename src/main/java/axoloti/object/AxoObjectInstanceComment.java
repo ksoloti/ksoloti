@@ -131,14 +131,14 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         if (this.Selected != Selected) {
             if (Selected) {
                 this.setBorder(borderSelected);
-                this.setBackground(Theme.getCurrentTheme().Object_Border_Selected);
-                InstanceTextPane.setBackground(Theme.getCurrentTheme().Object_Border_Selected);
-                InstanceTextPane.setForeground(Theme.getCurrentTheme().Object_Default_Background);
+                this.setBackground(Theme.Object_Border_Selected);
+                InstanceTextPane.setBackground(Theme.Object_Border_Selected);
+                InstanceTextPane.setForeground(Theme.Object_Default_Background);
             } else {
                 this.setBorder(borderUnselected);
-                this.setBackground(Theme.getCurrentTheme().Object_Default_Background);
-                InstanceTextPane.setBackground(Theme.getCurrentTheme().Object_Default_Background);
-                InstanceTextPane.setForeground(Theme.getCurrentTheme().Object_Default_Foreground);
+                this.setBackground(Theme.Object_Default_Background);
+                InstanceTextPane.setBackground(Theme.Object_Default_Background);
+                InstanceTextPane.setForeground(Theme.Object_Default_Foreground);
             }
             repaint();
         }

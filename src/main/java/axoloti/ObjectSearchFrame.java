@@ -872,7 +872,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jSplitPaneRight.setTopComponent(jScrollPaneObjectInfo);
 
-        jPanelObjectPreview.setBackground(Theme.getCurrentTheme().Patch_Unlocked_Background);
+        jPanelObjectPreview.setBackground(Theme.Patch_Unlocked_Background);
         jPanelObjectPreview.setEnabled(false);
         jPanelObjectPreview.setFocusable(false);
 

@@ -29,8 +29,8 @@ public class SelectionRectangle extends JPanel {
 
     public SelectionRectangle() {
         setLayout(null);
-        setBackground(Theme.getCurrentTheme().Selection_Rectangle_Fill);
-        setBorder(BorderFactory.createLineBorder(Theme.getCurrentTheme().Button_Accent_Background));
+        setBackground(Theme.Selection_Rectangle_Fill);
+        setBorder(BorderFactory.createLineBorder(Theme.Button_Accent_Background));
     }
 
 }

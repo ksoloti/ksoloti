@@ -70,12 +70,12 @@ public class Frac32buffer extends DataTypeBuffer {
 
     @Override
     public Color GetColor() {
-        return Theme.getCurrentTheme().Cable_Frac32Buffer;
+        return Theme.Cable_Frac32Buffer;
     }
 
     @Override
     public Color GetColorHighlighted() {
-        return Theme.getCurrentTheme().Cable_Frac32Buffer_Highlighted;
+        return Theme.Cable_Frac32Buffer_Highlighted;
     }
 
     @Override

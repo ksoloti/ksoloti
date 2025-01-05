@@ -69,7 +69,7 @@ public abstract class ACtrlComponent extends JComponent {
 
     public ACtrlComponent() {
         setFocusable(true);
-        setBackground(Theme.getCurrentTheme().Component_Background); // this seems necessary, can't remember where though
+        setBackground(Theme.Component_Background); // this seems necessary, can't remember where though
 
         addFocusListener(new FocusListener() {
             @Override

@@ -52,12 +52,12 @@ public class CharPtr32 implements DataType {
 
     @Override
     public Color GetColor() {
-        return Theme.getCurrentTheme().Cable_CharPointer32;
+        return Theme.Cable_CharPointer32;
     }
 
     @Override
     public Color GetColorHighlighted() {
-        return Theme.getCurrentTheme().Cable_CharPointer32_Highlighted;
+        return Theme.Cable_CharPointer32_Highlighted;
     }
 
     @Override

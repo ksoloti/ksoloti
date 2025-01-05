@@ -217,7 +217,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
             idlbl.setText("…/" + slbl);
         }
-        idlbl.setForeground(Theme.getCurrentTheme().Object_TitleBar_Foreground);
+        idlbl.setForeground(Theme.Object_TitleBar_Foreground);
         idlbl.setAlignmentX(LEFT_ALIGNMENT);
         idlbl.setFont(Constants.FONT_BOLD);
         Titlebar.add(idlbl);
@@ -233,7 +233,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         IndexLabel = new LabelComponent("");
         IndexLabel.setSize(IndexLabel.getMinimumSize());
         refreshIndex();
-        IndexLabel.setForeground(Theme.getCurrentTheme().Object_TitleBar_Foreground);
+        IndexLabel.setForeground(Theme.Object_TitleBar_Foreground);
         // idlbl.setFont(Constants.FONT_BOLD);
         IndexLabel.setAlignmentX(RIGHT_ALIGNMENT);
         Titlebar.add(IndexLabel);
@@ -462,25 +462,25 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         parameterInstances = new ArrayList<ParameterInstance>();
         attributeInstances = new ArrayList<AttributeInstance>();
 
-        p_iolets.setBackground(Theme.getCurrentTheme().Object_Default_Background);
+        p_iolets.setBackground(Theme.Object_Default_Background);
         p_iolets.setLayout(new BoxLayout(p_iolets, BoxLayout.LINE_AXIS));
         p_iolets.setAlignmentX(LEFT_ALIGNMENT);
         p_iolets.setAlignmentY(TOP_ALIGNMENT);
 
-        p_inlets.setBackground(Theme.getCurrentTheme().Object_Default_Background);
+        p_inlets.setBackground(Theme.Object_Default_Background);
         p_inlets.setLayout(new BoxLayout(p_inlets, BoxLayout.PAGE_AXIS));
         p_inlets.setAlignmentX(LEFT_ALIGNMENT);
         p_inlets.setAlignmentY(TOP_ALIGNMENT);
 
-        p_outlets.setBackground(Theme.getCurrentTheme().Object_Default_Background);
+        p_outlets.setBackground(Theme.Object_Default_Background);
         p_outlets.setLayout(new BoxLayout(p_outlets, BoxLayout.PAGE_AXIS));
         p_outlets.setAlignmentX(RIGHT_ALIGNMENT);
         p_outlets.setAlignmentY(TOP_ALIGNMENT);
 
-        p_params.setBackground(Theme.getCurrentTheme().Object_Default_Background);
+        p_params.setBackground(Theme.Object_Default_Background);
         p_params.setAlignmentX(LEFT_ALIGNMENT);
 
-        p_displays.setBackground(Theme.getCurrentTheme().Object_Default_Background);
+        p_displays.setBackground(Theme.Object_Default_Background);
         p_displays.setAlignmentX(LEFT_ALIGNMENT);
     }
 

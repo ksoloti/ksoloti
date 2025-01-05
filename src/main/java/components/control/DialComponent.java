@@ -358,13 +358,13 @@ public class DialComponent extends ACtrlComponent {
             }
         }
         else {
-            g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
+            g2.setColor(Theme.Object_Default_Background);
         }
         g2.fillOval(1, 1, radius * 2 - 2, radius * 2 - 2);
         if (isEnabled()) {
             g2.setPaint(getForeground());
         } else {
-            g2.setPaint(Theme.getCurrentTheme().Component_Mid);
+            g2.setPaint(Theme.Component_Mid);
         }
         g2.drawOval(1, 1, radius * 2 - 2, radius * 2 - 2);
         if (isEnabled()) {
@@ -379,7 +379,7 @@ public class DialComponent extends ACtrlComponent {
                 g2.setFont(Constants.FONT);
                 g2.drawString(s, 0, getSize().height);
             } else {
-                g2.setColor(Theme.getCurrentTheme().Error_Text);
+                g2.setColor(Theme.Error_Text);
                 g2.setFont(Constants.FONT);
                 g2.drawString(keybBuffer, 0, getSize().height);
             }

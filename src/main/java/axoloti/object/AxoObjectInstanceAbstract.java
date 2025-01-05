@@ -225,14 +225,14 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         // setFocusable(true);
         Titlebar.removeAll();
         Titlebar.setLayout(new BoxLayout(Titlebar, BoxLayout.LINE_AXIS));
-        Titlebar.setBackground(Theme.getCurrentTheme().Object_TitleBar_Background);
+        Titlebar.setBackground(Theme.Object_TitleBar_Background);
         Titlebar.setMinimumSize(TitleBarMinimumSize);
         Titlebar.setMaximumSize(TitleBarMaximumSize);
 
         setBorder(borderUnselected);
         resolveType();
 
-        setBackground(Theme.getCurrentTheme().Object_Default_Background);
+        setBackground(Theme.Object_Default_Background);
 
         setVisible(true);
 
@@ -546,19 +546,19 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     public void refreshIndex() {
     }
 
-    static Border borderSelected = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Selected);
-    static Border borderUnselected = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Unselected);
-    // static Border borderUnselectedLocked = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Unselected_Locked);
+    static Border borderSelected = BorderFactory.createLineBorder(Theme.Object_Border_Selected);
+    static Border borderUnselected = BorderFactory.createLineBorder(Theme.Object_Border_Unselected);
+    // static Border borderUnselectedLocked = BorderFactory.createLineBorder(Theme.Object_Border_Unselected_Locked);
 
     public void SetSelected(boolean Selected) {
         if (this.Selected != Selected) {
             if (Selected) {
                 setBorder(borderSelected);
-                Titlebar.setBackground(Theme.getCurrentTheme().Object_Border_Selected);
+                Titlebar.setBackground(Theme.Object_Border_Selected);
             } else {
                 // if (Locked) setBorder(borderUnselectedLocked);
                 setBorder(borderUnselected);
-                Titlebar.setBackground(Theme.getCurrentTheme().Object_TitleBar_Background);
+                Titlebar.setBackground(Theme.Object_TitleBar_Background);
             }
             repaint();
         }

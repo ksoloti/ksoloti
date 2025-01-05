@@ -86,8 +86,8 @@ public class Axoloti {
             UIManager.put("ScrollBar.thumb", UIManager.getColor("ScrollBar.hoverThumbColor"));
             UIManager.put("Component.innerFocusWidth", 0);
             UIManager.put("Component.focusWidth", 0);
-            UIManager.put("ToggleButton.selectedForeground", Theme.getCurrentTheme().Button_Accent_Foreground);
-            UIManager.put("ToggleButton.selectedBackground", Theme.getCurrentTheme().Button_Accent_Background);
+            UIManager.put("ToggleButton.selectedForeground", Theme.Button_Accent_Foreground);
+            UIManager.put("ToggleButton.selectedBackground", Theme.Button_Accent_Background);
             UIManager.put("Objects.Grey", UIManager.getColor("Panel.foreground"));
 
         }

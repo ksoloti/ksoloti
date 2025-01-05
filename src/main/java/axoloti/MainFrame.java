@@ -155,10 +155,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         final Style styleSevere = jTextPaneLog.addStyle("severe", styleParent);
         final Style styleWarning = jTextPaneLog.addStyle("warning", styleParent);
         final Style styleInfo = jTextPaneLog.addStyle("info", styleParent);
-        jTextPaneLog.setBackground(Theme.getCurrentTheme().Console_Background);
-        StyleConstants.setForeground(styleSevere, Theme.getCurrentTheme().Error_Text);
-        StyleConstants.setForeground(styleWarning, Theme.getCurrentTheme().Console_Warning_Text);
-        StyleConstants.setForeground(styleInfo, Theme.getCurrentTheme().Console_Normal_Text);
+        jTextPaneLog.setBackground(Theme.Console_Background);
+        StyleConstants.setForeground(styleSevere, Theme.Error_Text);
+        StyleConstants.setForeground(styleWarning, Theme.Console_Warning_Text);
+        StyleConstants.setForeground(styleInfo, Theme.Console_Normal_Text);
 
         DefaultCaret caret = (DefaultCaret) jTextPaneLog.getCaret();
         caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);

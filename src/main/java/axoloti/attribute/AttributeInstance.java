@@ -57,7 +57,7 @@ public abstract class AttributeInstance<T extends AxoAttribute> extends JPanel i
 
     public void PostConstructor() {
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-        setBackground(Theme.getCurrentTheme().Object_Default_Background);
+        setBackground(Theme.Object_Default_Background);
         LabelComponent attrlbl = new LabelComponent(GetDefinition().getName());
         attrlbl.setBorder(new EmptyBorder(0,1,0,0));
         add(attrlbl);

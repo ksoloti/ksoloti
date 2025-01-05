@@ -87,17 +87,17 @@ public class AssignPresetComponent extends JComponent {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             g2.setFont(Constants.FONT);
-            g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
+            g2.setColor(Theme.Object_Default_Background);
             g2.fillRect(0, 1, getWidth(), getHeight());
             if ((param.getPresets() != null) && (!param.getPresets().isEmpty())) {
-                g2.setColor(Theme.getCurrentTheme().Object_Default_Foreground);
+                g2.setColor(Theme.Object_Default_Foreground);
                 g2.fillRect(0, 1, 9, getHeight());
-                g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
+                g2.setColor(Theme.Object_Default_Background);
             } else {
-                g2.setColor(Theme.getCurrentTheme().Object_Default_Foreground);
+                g2.setColor(Theme.Object_Default_Foreground);
             }
             g2.drawString("P", 1, getHeight() - 2);
-            g2.setColor(Theme.getCurrentTheme().Object_Default_Foreground);
+            g2.setColor(Theme.Object_Default_Foreground);
             final int rmargin = 2;
             final int htick = 2;
             int[] xp = new int[]{getWidth() - rmargin - htick * 2, getWidth() - rmargin, getWidth() - rmargin - htick};

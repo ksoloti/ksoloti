@@ -45,12 +45,12 @@ public class Int8Ptr implements DataType {
 
     @Override
     public Color GetColor() {
-        return Theme.getCurrentTheme().Cable_Int8Pointer;
+        return Theme.Cable_Int8Pointer;
     }
 
     @Override
     public Color GetColorHighlighted() {
-        return Theme.getCurrentTheme().Cable_Int8Pointer_Highlighted;
+        return Theme.Cable_Int8Pointer_Highlighted;
     }
 
     @Override

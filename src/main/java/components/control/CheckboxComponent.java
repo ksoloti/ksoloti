@@ -201,13 +201,13 @@ public class CheckboxComponent extends ACtrlComponent {
         if (isEnabled()) {
             g2.setColor(getBackground());
         } else {
-            g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
+            g2.setColor(Theme.Object_Default_Background);
         }
         g2.fillRect(0, 0, bsize * n, bsize + 1);
         if (isEnabled()) {
             g2.setPaint(getForeground());
         } else {
-            g2.setPaint(Theme.getCurrentTheme().Component_Mid);
+            g2.setPaint(Theme.Component_Mid);
         }
         if (isFocusOwner()) {
             g2.setStroke(strokeThick);

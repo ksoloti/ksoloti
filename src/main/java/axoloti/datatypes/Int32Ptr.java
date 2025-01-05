@@ -45,12 +45,12 @@ public class Int32Ptr implements DataType {
 
     @Override
     public Color GetColor() {
-        return Theme.getCurrentTheme().Cable_Int32Pointer;
+        return Theme.Cable_Int32Pointer;
     }
 
     @Override
     public Color GetColorHighlighted() {
-        return Theme.getCurrentTheme().Cable_Int32Pointer_Highlighted;
+        return Theme.Cable_Int32Pointer_Highlighted;
     }
 
     @Override

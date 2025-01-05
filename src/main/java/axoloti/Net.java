@@ -172,7 +172,7 @@ public class Net extends JComponent {
     Color GetColor() {
         Color c = GetDataType().GetColor();
         if (c == null) {
-            c = Theme.getCurrentTheme().Cable_Default;
+            c = Theme.Cable_Default;
         }
         return c;
     }
@@ -251,7 +251,7 @@ public class Net extends JComponent {
             if (GetDataType() != null) {
                 c = GetDataType().GetColor();
             } else {
-                c = Theme.getCurrentTheme().Cable_Shadow;
+                c = Theme.Cable_Shadow;
             }
 
             if (!source.isEmpty()) {
@@ -270,7 +270,7 @@ public class Net extends JComponent {
 
             Point to = SwingUtilities.convertPoint(getPatchGui().Layers, p1, this);
 
-            // g2.setColor(Theme.getCurrentTheme().Cable_Shadow);
+            // g2.setColor(Theme.Cable_Shadow);
             g2.setColor(c.darker().darker()); /* derive wire shadow color from actual color */
             if (from.x > to.x) {
                 /* Wire goes right-to-left */
@@ -303,7 +303,7 @@ public class Net extends JComponent {
 
             Point to = SwingUtilities.convertPoint(getPatchGui().Layers, p1, this);
 
-            // g2.setColor(Theme.getCurrentTheme().Cable_Shadow);
+            // g2.setColor(Theme.Cable_Shadow);
             g2.setColor(c.darker().darker()); /* derive wire shadow color from actual color */
             if (from.x > to.x) {
                 /* Wire goes right-to-left */

@@ -74,13 +74,13 @@ public class VUComponent extends ADispComponent {
         return h - i;
     }
 
-    static Color CDarkGreen = Theme.getCurrentTheme().VU_Dark_Green;
-    static Color CDarkYellow = Theme.getCurrentTheme().VU_Dark_Yellow;
-    static Color CDarkRed = Theme.getCurrentTheme().VU_Dark_Red;
+    static Color CDarkGreen = Theme.VU_Dark_Green;
+    static Color CDarkYellow = Theme.VU_Dark_Yellow;
+    static Color CDarkRed = Theme.VU_Dark_Red;
 
-    static Color CBrightGreen = Theme.getCurrentTheme().VU_Bright_Green;
-    static Color CBrightYellow = Theme.getCurrentTheme().VU_Bright_Yellow;
-    static Color CBrightRed = Theme.getCurrentTheme().VU_Bright_Red;
+    static Color CBrightGreen = Theme.VU_Bright_Green;
+    static Color CBrightYellow = Theme.VU_Bright_Yellow;
+    static Color CBrightRed = Theme.VU_Bright_Red;
 
     static int segmentsRed = 2;
     static int segmentsYellow = 3;

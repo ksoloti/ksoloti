@@ -317,7 +317,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         USBBulkConnection.GetConnection().removeConnectionStatusListener(this);
         USBBulkConnection.GetConnection().removeSDCardMountStatusListener(this);
         patch.Close();
-        dispose();
+        super.dispose();
     }
 
     @Override
@@ -1274,9 +1274,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         if(previousOverload != overload) {
             if(overload) {
-                jProgressBarDSPLoad.setForeground(Theme.getCurrentTheme().ProgressBar_Overload_Foreground);
+                jProgressBarDSPLoad.setForeground(Theme.ProgressBar_Overload_Foreground);
             } else {
-                jProgressBarDSPLoad.setForeground(Theme.getCurrentTheme().Button_Accent_Background); 
+                jProgressBarDSPLoad.setForeground(Theme.Button_Accent_Background); 
             }
         }
         previousOverload = overload;
