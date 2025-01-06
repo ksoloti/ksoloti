@@ -194,7 +194,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         if (type == null) {
             ArrayList<AxoObjectAbstract> types = MainFrame.axoObjects.GetAxoObjectFromName(typeName, patch.GetCurrentWorkingDirectory());
             if (types == null) {
-                LOGGER.log(Level.SEVERE, "Object name not found: \"{0}\"", typeName);
+                LOGGER.log(Level.SEVERE, "Object not found: \"{0}\"", typeName);
             }
             else {
                 // pick first
