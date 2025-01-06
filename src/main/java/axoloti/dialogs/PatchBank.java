@@ -537,8 +537,6 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     }
 
 
-    @SuppressWarnings("unchecked")
-    
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();

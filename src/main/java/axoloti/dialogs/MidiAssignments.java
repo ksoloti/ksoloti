@@ -85,8 +85,6 @@ public class MidiAssignments extends javax.swing.JDialog {
     }
 
 
-    @SuppressWarnings("unchecked")
-    
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();

@@ -325,8 +325,6 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     }
 
 
-    @SuppressWarnings("unchecked")
-    
     private void initComponents() {
 
         jButtonOK = new javax.swing.JButton();
