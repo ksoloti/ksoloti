@@ -316,6 +316,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         DocumentWindowList.UnregisterWindow(this);
         USBBulkConnection.GetConnection().removeConnectionStatusListener(this);
         USBBulkConnection.GetConnection().removeSDCardMountStatusListener(this);
+        mainframe.removeUnitNameListener(this);
         patch.Close();
         super.dispose();
     }
