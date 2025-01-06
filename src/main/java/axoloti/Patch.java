@@ -412,17 +412,21 @@ public class Patch {
 
         ArrayList<AxoObjectInstanceAbstract> obj2 = (ArrayList<AxoObjectInstanceAbstract>) objectInstances.clone();
         for (AxoObjectInstanceAbstract o : obj2) {
+
             AxoObjectAbstract t = o.getType();
-            boolean hasType = t != null;
-            boolean isNamedZombie = o.getName() != null && o.getName().equals("zombie");
+
+            boolean hasType = (t != null);
+            boolean isHardZombie = (o instanceof AxoObjectInstanceZombie);
+
             if (hasType && (!t.providesModulationSource())) {
                 o.patch = this;
                 o.PostConstructor();
                 // System.out.println("Obj added " + o.getInstanceName());
             }
-            else if (!hasType || isNamedZombie) {
-                if (isNamedZombie) {
-                    LOGGER.log(Level.SEVERE, "This patch was previously saved with zombies. You have to replace all zombies manually to be able to go live again.");
+            else if (!hasType || isHardZombie) {
+
+                if (isHardZombie) {
+                    LOGGER.log(Level.SEVERE, "The patch was previously saved while \"" + o.typeName + "\", labeled: \"" + o.getInstanceName() + "\", was a zombie. This has turned it into a \"hard\" zombie. You have to replace it manually to be able to go live again.\n");
                 }
                 objectInstances.remove(o);
                 AxoObjectInstanceZombie zombie = new AxoObjectInstanceZombie(new AxoObjectZombie(), this, o.getInstanceName(), new Point(o.getX(), o.getY()));
