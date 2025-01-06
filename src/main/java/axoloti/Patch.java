@@ -2638,6 +2638,8 @@ public class Patch {
     }
 
     public void WriteCode() {
+        LOGGER.log(Level.INFO, "\nGenerating code...");
+
         String c = GenerateCode3();
 
         try {
