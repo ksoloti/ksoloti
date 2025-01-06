@@ -96,7 +96,7 @@ static void SetPatchStatus(patchStatus_t status)
         if(status == RUNNING)
         {
             // DSP priority
-            chThdSetPriority(PATCH_DSP_PRIORITY);
+            chThdSetPriority(PATCH_DSP_PRIO);
 #if USE_EXTERNAL_USB_FIFO_PUMP
             // Switch to external fifo pump
             usb_lld_use_external_pump(true);
@@ -105,7 +105,7 @@ static void SetPatchStatus(patchStatus_t status)
         else
         {
             // Normal priority
-            chThdSetPriority(PATCH_NORMAL_PRIORITY);
+            chThdSetPriority(PATCH_NORMAL_PRIO);
 
 #if USE_EXTERNAL_USB_FIFO_PUMP
             if(patchStatus == RUNNING)
@@ -554,7 +554,7 @@ void start_dsp_thread(void) {
 #endif
 
     if (!pThreadDSP)
-        pThreadDSP = chThdCreateStatic(waThreadDSP, sizeof(waThreadDSP), PATCH_DSP_PRIORITY, (void*) ThreadDSP, NULL);
+        pThreadDSP = chThdCreateStatic(waThreadDSP, sizeof(waThreadDSP), PATCH_DSP_PRIO, (void*) ThreadDSP, NULL);
 }
 
 

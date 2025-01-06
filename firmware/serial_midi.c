@@ -20,6 +20,7 @@
 #include "ch.h"
 #include "hal.h"
 #include "axoloti_board.h"
+#include "mcuconf.h"
 #include "midi.h"
 #include "serial_midi.h"
 #include "patch.h"
@@ -176,5 +177,5 @@ void serial_midi_init(void) {
 
     sdStart(&SDMIDI, &sdMidiCfg);
 
-    chThdCreateStatic(waThreadMidi, sizeof(waThreadMidi), NORMALPRIO, (void*) ThreadMidi, NULL);
+    chThdCreateStatic(waThreadMidi, sizeof(waThreadMidi), SERIAL_MIDI_PRIO, (void*) ThreadMidi, NULL);
 }

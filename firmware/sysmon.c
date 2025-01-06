@@ -25,6 +25,7 @@
 #include "hal.h"
 #include "axoloti_board.h"
 #include "sysmon.h"
+#include "mcuconf.h"
 #include "pconnection.h"
 #include "patch.h"
 #include "sdcard.h"
@@ -152,7 +153,7 @@ void sysmon_init(void) {
   v50_min = 0xFFFF;
   isEnabled = true;
 
-  chThdCreateStatic(waThreadSysmon, sizeof(waThreadSysmon), NORMALPRIO, (void*) ThreadSysmon, NULL);
+  chThdCreateStatic(waThreadSysmon, sizeof(waThreadSysmon), SYSMON_PRIO, (void*) ThreadSysmon, NULL);
 }
 
 void sysmon_disable_blinker(void) {

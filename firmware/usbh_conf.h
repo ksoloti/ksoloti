@@ -45,6 +45,7 @@
 #include "ch.h"
 #include "chprintf.h"
 #include "migration_v16.h"
+#include "mcuconf.h"
 
 /* Includes ------------------------------------------------------------------*/
 
@@ -88,7 +89,7 @@ extern void fakefree(void * p);
 
 #define osThreadDef(name, fn, prio, instances, stacksz) \
   static WORKING_AREA(wa##name, 640); \
-  Thread *name = chThdCreateStatic(wa##name, sizeof(wa##name), NORMALPRIO, (void*) fn, phost); \
+  Thread *name = chThdCreateStatic(wa##name, sizeof(wa##name), USB_HOST_CONF_PRIO, (void*) fn, phost); \
   phost->os_event = name;
 #define osThreadCreate(x,y) x
 #define osThread(x) x
