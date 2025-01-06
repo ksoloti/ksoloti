@@ -426,7 +426,7 @@ public class Patch {
             else if (!hasType || isHardZombie) {
 
                 if (isHardZombie) {
-                    LOGGER.log(Level.SEVERE, "The patch was previously saved while \"" + o.typeName + "\", labeled: \"" + o.getInstanceName() + "\", was a zombie. This has turned it into a \"hard\" zombie. You have to replace it manually to be able to go live again.\n");
+                    LOGGER.log(Level.SEVERE, "The patch was previously saved while \"" + o.typeName + "\", labeled \"" + o.getInstanceName() + "\", was a zombie. This has turned it into a \"hard\" zombie. You have to replace it manually to be able to go live again.\n");
                 }
                 objectInstances.remove(o);
                 AxoObjectInstanceZombie zombie = new AxoObjectInstanceZombie(new AxoObjectZombie(), this, o.getInstanceName(), new Point(o.getX(), o.getY()));
