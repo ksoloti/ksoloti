@@ -485,7 +485,7 @@ public class Preferences {
 
     public void SavePrefs() {
 
-        LOGGER.log(Level.INFO, "Saving preferences...");
+        LOGGER.log(Level.INFO, "Saving preferences...\n");
 
         Serializer serializer = new Persister();
         File f = new File(GetPrefsFileLoc());
