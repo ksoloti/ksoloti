@@ -145,9 +145,6 @@ public class Patch {
     @Element(required = false)
     private String helpPatch;
 
-    // @Element(required = false)
-    private boolean hasZombies = false;
-
     /* Specifies the patch that this patch is contained in (as a subpatch) */
     private Patch container = null;
     private AxoObjectInstanceAbstract controllerInstance;
@@ -415,15 +412,15 @@ public class Patch {
 
             AxoObjectAbstract t = o.getType();
 
-            boolean hasType = (t != null);
+            boolean isTypeNull = (t == null);
             boolean isHardZombie = (o instanceof AxoObjectInstanceZombie);
 
-            if (hasType && (!t.providesModulationSource())) {
+            if (!isTypeNull && (!t.providesModulationSource())) {
                 o.patch = this;
                 o.PostConstructor();
                 // System.out.println("Obj added " + o.getInstanceName());
             }
-            else if (!hasType || isHardZombie) {
+            else if (isTypeNull || isHardZombie) {
 
                 if (isHardZombie) {
                     LOGGER.log(Level.SEVERE, "The patch was previously saved while \"" + o.typeName + "\", labeled \"" + o.getInstanceName() + "\", was a zombie. This has turned it into a \"hard\" zombie. You have to replace it manually to be able to go live again.\n");
@@ -439,7 +436,6 @@ public class Patch {
                 zombie.parameterInstances = o.getParameterInstances();
                 zombie.PostConstructor();
                 objectInstances.add(zombie);
-                hasZombies = true;
             }
         }
 
@@ -509,13 +505,20 @@ public class Patch {
         return dirty;
     }
 
-    public void setHasZombies(boolean has) {
-        if (has) {
-            hasZombies = true;
+    public boolean hasZombies() {
+
+        boolean result = false;
+        
+        for (AxoObjectInstanceAbstract o : objectInstances) {
+
+            AxoObjectAbstract t = o.getType();
+            boolean isTypeNull = (t == null);
+            boolean isHardZombie = (o instanceof AxoObjectInstanceZombie);
+
+            result |= (isTypeNull || isHardZombie);
         }
-        else {
-            hasZombies = false;
-        }
+
+        return result;
     }
 
     public void setAudioInputMode(int mode) {
@@ -896,7 +899,7 @@ public class Patch {
     }
 
     boolean save(File f) {
-        if (hasZombies) {
+        if (hasZombies()) {
             Object[] options = {"Save Anyway",
                 "Cancel"};
             int n = JOptionPane.showOptionDialog(
@@ -911,7 +914,6 @@ public class Patch {
             switch (n) {
                 case JOptionPane.YES_OPTION:
                     /* Save Anyway, do not display warning anymore */
-                    hasZombies = false;
                     break;
                 case JOptionPane.NO_OPTION:
                     /* Cancel */
