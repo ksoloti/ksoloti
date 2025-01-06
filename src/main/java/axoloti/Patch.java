@@ -135,10 +135,10 @@ public class Patch {
     private final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
 
     /*
-        0 = A_STEREO
-        1 = A_MONO
-        2 = A_BALANCED
-    */
+     *  0 = A_STEREO
+     *  1 = A_MONO
+     *  2 = A_BALANCED
+     */
     private int audioInputMode = 0;
     private int audioOutputMode = 0;
 
@@ -148,7 +148,7 @@ public class Patch {
     // @Element(required = false)
     private boolean hasZombies = false;
 
-    /* Patch this patch is contained in as a subpatch */
+    /* Specifies the patch that this patch is contained in (as a subpatch) */
     private Patch container = null;
     private AxoObjectInstanceAbstract controllerInstance;
 
