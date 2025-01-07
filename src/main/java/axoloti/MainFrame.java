@@ -496,11 +496,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         }
                     }
 
-                    LOGGER.log(Level.INFO, "Reporting library status...");
+                    LOGGER.log(Level.INFO, "Checking library status...");
                     for (AxolotiLibrary lib : prefs.getLibraries()) {
                         lib.reportStatus();
                     }
-                    LOGGER.log(Level.INFO, "Done reporting library status.\n");
+                    LOGGER.log(Level.INFO, "Done checking library status.\n");
 
                     axoObjects = new AxoObjects();
                     axoObjects.LoadAxoObjects();
