@@ -18,6 +18,7 @@
  */
 package qcmds;
 
+import axoloti.Axoloti;
 import axoloti.utils.OSDetect;
 
 import static axoloti.MainFrame.prefs;
@@ -68,6 +69,8 @@ public class QCmdFlashDFU extends QCmdShellTask {
         if (prefs.getFirmwareMode().contains("USBAudio")) {
             bname += "_usbaudio";
         }
+        bname += ".bin";
+        Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.INFO, "File path: " + System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build" + File.separator + bname);
 
         if (OSDetect.getOS() == OSDetect.OS.WIN) {
             return RuntimeDir() + "/platform_win/upload_fw_dfu.bat " + bname;
