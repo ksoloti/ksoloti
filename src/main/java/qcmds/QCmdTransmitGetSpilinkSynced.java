@@ -33,7 +33,7 @@ public class QCmdTransmitGetSpilinkSynced implements QCmdSerialTask {
 
     @Override
     public String GetDoneMessage() {
-        return "done hallo";
+        return "done hallo\n";
     }
 
     @Override

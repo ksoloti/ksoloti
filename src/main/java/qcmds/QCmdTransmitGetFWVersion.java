@@ -28,12 +28,12 @@ public class QCmdTransmitGetFWVersion implements QCmdSerialTask {
     
     @Override
     public String GetStartMessage() {
-        return "";
+        return null;
     }
 
     @Override
     public String GetDoneMessage() {
-        return "";
+        return null;
     }
 
     @Override

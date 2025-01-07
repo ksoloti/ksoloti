@@ -31,12 +31,12 @@ public class QCmdStop implements QCmdSerialTask {
     
     @Override
     public String GetStartMessage() {
-        return "";//Start stopping patch";
+        return null;//Start stopping patch";
     }
 
     @Override
     public String GetDoneMessage() {
-        return "";//Done stopping patch";
+        return null;//Done stopping patch";
     }
 
     @Override
