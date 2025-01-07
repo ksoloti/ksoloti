@@ -1098,6 +1098,8 @@ typedef struct
 /*===========================================================================*/
 extern AduState aduState;
 
+extern void usb_clearbuffer(void);
+
 void aduEnableInput(USBDriver *usbp, bool bEnable);
 void aduEnableOutput(USBDriver *usbp, bool bEnable);
 void aduDataTransmitted(USBDriver *usbp, usbep_t ep); 
