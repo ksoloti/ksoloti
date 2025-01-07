@@ -294,17 +294,17 @@
 #define USE_PATCH_DSPTIME_SMOOTHING_MS      0
 
 /*
- * Thread priority settings.
+ * Thread priority settings. v1.0.12 settings in comments for reference.
  */
-#define PATCH_DSP_PRIO                      HIGHPRIO-1
-#define SPILINK_PRIO                        HIGHPRIO-1
-#define STM32_USB_OTG_THREAD_PRIO           HIGHPRIO-1
-#define USB_HOST_CONF_PRIO                  HIGHPRIO-2
-#define PATCH_NORMAL_PRIO                   NORMALPRIO
-#define MIDI_USB_PRIO                       NORMALPRIO
-#define SYSMON_PRIO                         NORMALPRIO+1
-#define SERIAL_MIDI_PRIO                    NORMALPRIO
-#define UI_USB_PRIO                         NORMALPRIO
+#define STM32_USB_OTG_THREAD_PRIO           HIGHPRIO     /* HIGHPRIO-2 */
+#define PATCH_DSP_PRIO                      HIGHPRIO-1   /* HIGHPRIO-1 */
+#define SPILINK_PRIO                        HIGHPRIO-1   /* HIGHPRIO-1 */
+#define UI_USB_PRIO                         HIGHPRIO-2   /* NORMALPRIO */
+#define MIDI_USB_PRIO                       HIGHPRIO-2   /* NORMALPRIO*/
+#define USB_HOST_CONF_PRIO                  NORMALPRIO   /* HIGHPRIO-2 */
+#define PATCH_NORMAL_PRIO                   NORMALPRIO   /* N/A */
+#define SERIAL_MIDI_PRIO                    NORMALPRIO   /* NORMALPRIO */
+#define SYSMON_PRIO                         NORMALPRIO   /* NORMALPRIO*/
 
 /*
  * SDC settings.
