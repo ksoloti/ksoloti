@@ -66,6 +66,7 @@ static int32_t outbufUsb[32];
 void usb_clearbuffer(void)
 {
     uint_fast8_t i; for(i=0; i<32; i++) {
+        inbufUsb[i] = 0;
         outbufUsb[i] = 0;
     }
 }

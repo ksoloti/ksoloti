@@ -556,6 +556,10 @@ void __attribute__((optimize("-O0"))) aduEnableInput(USBDriver *usbp, bool bEnab
     aduEnable(usbp);
     chSysUnlockFromIsr();
   }
+
+  if (!bEnable) {
+    usb_clearbuffer();
+  }
 }
 
 void __attribute__((optimize("-O0"))) aduEnableOutput(USBDriver *usbp, bool bEnable)
@@ -568,6 +572,10 @@ void __attribute__((optimize("-O0"))) aduEnableOutput(USBDriver *usbp, bool bEna
     chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_OUTPUT);
     aduEnable(usbp);
     chSysUnlockFromIsr();
+  }
+
+  if (!bEnable) {
+    usb_clearbuffer();
   }
 }
 
