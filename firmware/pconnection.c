@@ -43,6 +43,9 @@
 #ifdef FW_SPILINK
 #include "spilink.h"
 #endif
+#include "analyse.h"
+#include "stdio.h"
+#include "memstreams.h"
 
 //#define DEBUG_SERIAL 1
 
@@ -61,6 +64,10 @@ static FIL pFile;
 static int pFileSize;
 
 static WORKING_AREA(waThreadUSBDMidi, 256);
+
+#define LOG_BUFFER_SIZE (256)
+uint8_t             LogBuffer[LOG_BUFFER_SIZE];
+uint8_t             LogBufferUsed = 0;
 
 
 connectionflags_t connectionFlags;
@@ -134,18 +141,30 @@ void TransmitDisplayPckt(void) {
 
 void LogTextMessage(const char* format, ...) {
     if ((usbGetDriverStateI(BDU1.config->usbp) == USB_ACTIVE) && (connected)) {
-        int h = 0x546F7841; /* "AxoT" */
+        if(LogBufferUsed == 0)
+        {
+          LogBuffer[0] = 'A';
+          LogBuffer[1] = 'x';
+          LogBuffer[2] = 'o';
+          LogBuffer[3] = 'T';
 
-        chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&h, 4);
+          MemoryStream ms;
+          msObjectInit(&ms, (uint8_t *)&LogBuffer[4], LOG_BUFFER_SIZE-4, 0);
 
-        va_list ap;
-        va_start(ap, format);
-        chvprintf((BaseSequentialStream *)&BDU1, format, ap);
-        va_end(ap);
-        chSequentialStreamPut((BaseSequentialStream * )&BDU1, 0);
+          va_list ap;
+          va_start(ap, format);
+          chvprintf((BaseSequentialStream *)&ms, format, ap);
+          va_end(ap);
+          chSequentialStreamPut((BaseSequentialStream * )&ms, 0);
+          LogBufferUsed = strlen(LogBuffer);
+        }
+        else
+        {
+          // overflow, will not display
+          chprintf((BaseSequentialStream * )&SD2,"Log Overflow\r\n");
+        }
     }
 }
-
 
 void PExTransmit(void) {
     if (!chOQIsEmptyI(&BDU1.oqueue)) {
@@ -153,6 +172,12 @@ void PExTransmit(void) {
         BDU1.oqueue.q_notify(&BDU1.oqueue);
     }
     else {
+        if(LogBufferUsed)
+        {
+          chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )LogBuffer, LogBufferUsed+1);
+          LogBufferUsed = 0;
+        }
+
         if (AckPending) {
             uint32_t ack[7];
             ack[0] = 0x416F7841; /* "AxoA" */
@@ -169,6 +194,7 @@ void PExTransmit(void) {
             ack[6] = fs_ready;
             chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&ack[0], 7 * 4);
 
+
             // clear overload flag
             connectionFlags.dspOverload = false;
 
@@ -184,6 +210,7 @@ void PExTransmit(void) {
             exception_checkandreport();
             AckPending = 0;
         }
+
         if (!patchStatus) {
             uint16_t i;
             for (i = 0; i < patchMeta.numPEx; i++) {
