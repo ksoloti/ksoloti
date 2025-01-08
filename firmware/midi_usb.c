@@ -376,7 +376,7 @@ void mduDataTransmitted(USBDriver *usbp, usbep_t ep) {
   chnAddFlagsI(mdup, CHN_OUTPUT_EMPTY);
 
   USBInEndpointState *pEpState = usbp->epc[ep]->in_state;
-  volatile uint32_t uTransmittedCount = pEpState->txcnt;
+  __attribute__((unused)) uint32_t uTransmittedCount = pEpState->txcnt;
 
   mduAddLog(blEndTransmit, uTransmittedCount);
   if ((n = chOQGetFullI(&mdup->oqueue)) > 0) {

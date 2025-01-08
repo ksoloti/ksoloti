@@ -393,7 +393,7 @@ void bduDataTransmitted(USBDriver *usbp, usbep_t ep) {
   chnAddFlagsI(bdup, CHN_OUTPUT_EMPTY);
 
   USBInEndpointState *pEpState = usbp->epc[ep]->in_state;
-  volatile uint32_t uTransmittedCount = pEpState->txcnt;
+  __attribute__((unused)) uint32_t uTransmittedCount = pEpState->txcnt;
 
   bduAddLog(blEndTransmit, uTransmittedCount);
 
@@ -472,7 +472,7 @@ void bduDataReceived(USBDriver *usbp, usbep_t ep) {
   }  
 
   uQueueRemainingSize-= uSizeToCopy;
-  volatile size_t temp = uQueueRemainingSize;
+  __attribute__((unused)) size_t temp = uQueueRemainingSize;
   uQueueRemainingSize = (uQueueRemainingSize / maxsize) * maxsize;  // Make sure we get less packets
   
   if(uQueueRemainingSize!=0)
