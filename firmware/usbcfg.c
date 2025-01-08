@@ -643,7 +643,7 @@ static void usb_event(USBDriver *usbp, usbevent_t event) {
 #if FW_USBAUDIO    
     aduConfigureHookI(&ADU1);
     // Notify USB state changes for AUDIO
-    chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_USB_CONGIGURED);
+    chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_USB_CONFIGURED);
 #endif
 
     chSysUnlockFromIsr();

@@ -164,7 +164,7 @@ int main(void) {
         chEvtWaitOne(AUDIO_EVENT);
         __attribute__((unused)) uint32_t  evt = chEvtGetAndClearFlags(&audioEventListener);
 
-        // if(evt & AUDIO_EVENT_USB_CONGIGURED)
+        // if(evt & AUDIO_EVENT_USB_CONFIGURED)
         //     chprintf((BaseSequentialStream * )&SD2,"Audio USB Configured.\r\n");
         // else if(evt & AUDIO_EVENT_USB_SUSPEND)
         //     chprintf((BaseSequentialStream * )&SD2,"Audio USB Suspend\r\n");
