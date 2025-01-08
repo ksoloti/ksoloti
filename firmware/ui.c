@@ -265,7 +265,7 @@ void EnterMenuLoad(void) {
 
 void EnterMenuFormat(void) {
     FRESULT err;
-    err = f_mkfs(0, 0, 0);
+    err = f_mkfs("", 0, 0);
     if (err != FR_OK) {
         // SetKVP_AVP(&TmpMenuKvps[0], &KvpsHead, "Format failed", 0, 0);
         // KvpsDisplay = &TmpMenuKvps[0];
