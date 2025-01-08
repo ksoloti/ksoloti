@@ -162,33 +162,33 @@ int main(void) {
     while (1) 
     {
         chEvtWaitOne(AUDIO_EVENT);
-        __attribute__((unused)) uint32_t  evt = chEvtGetAndClearFlags(&audioEventListener);
+        uint32_t  evt = chEvtGetAndClearFlags(&audioEventListener);
 
-        // if(evt & AUDIO_EVENT_USB_CONFIGURED)
-        //     chprintf((BaseSequentialStream * )&SD2,"Audio USB Configured.\r\n");
-        // else if(evt & AUDIO_EVENT_USB_SUSPEND)
-        //     chprintf((BaseSequentialStream * )&SD2,"Audio USB Suspend\r\n");
-        // else if(evt & AUDIO_EVENT_USB_WAKEUP)
-        //     chprintf((BaseSequentialStream * )&SD2,"Audio USB Wakeup.\r\n");
-        // else if(evt & AUDIO_EVENT_USB_STALLED)
-        //     chprintf((BaseSequentialStream * )&SD2,"Audio USB Stalled.\r\n");
-        // else if(evt & AUDIO_EVENT_USB_RESET)
-        //     chprintf((BaseSequentialStream * )&SD2,"Audio USB Reset.\r\n");
-        // else if(evt & AUDIO_EVENT_USB_ENABLE)
-        //     chprintf((BaseSequentialStream * )&SD2,"Audio USB Enable.\r\n");
-        // else if(evt & AUDIO_EVENT_MUTE)
-        //     chprintf((BaseSequentialStream * )&SD2,"Audio mute changed.\r\n");
-        // else if(evt & AUDIO_EVENT_VOLUME)
-        //     chprintf((BaseSequentialStream * )&SD2,"Audio volume changed.\r\n");
-        // else if(evt & AUDIO_EVENT_INPUT)
-        //     chprintf((BaseSequentialStream * )&SD2,"Audio input state changed = %u\r\n", aduState.isInputActive);
-        // else if(evt & AUDIO_EVENT_OUTPUT)
-        //     chprintf((BaseSequentialStream * )&SD2,"Audio output state changed = %u\r\n", aduState.isOutputActive);
-        // else if(evt & AUDIO_EVENT_FORMAT)
-        //     chprintf((BaseSequentialStream * )&SD2,"Audio Format type changed = %u\r\n", aduState.currentSampleRate);
+        if(evt & AUDIO_EVENT_USB_CONFIGURED)
+            LogTextMessage("Audio USB Configured.");
+        else if(evt & AUDIO_EVENT_USB_SUSPEND)
+            LogTextMessage("Audio USB Suspend");
+        else if(evt & AUDIO_EVENT_USB_WAKEUP)
+            LogTextMessage("Audio USB Wakeup.");
+        else if(evt & AUDIO_EVENT_USB_STALLED)
+            LogTextMessage("Audio USB Stalled.");
+        else if(evt & AUDIO_EVENT_USB_RESET)
+            LogTextMessage("Audio USB Reset.");
+        else if(evt & AUDIO_EVENT_USB_ENABLE)
+            LogTextMessage("Audio USB Enable.");
+        else if(evt & AUDIO_EVENT_MUTE)
+            LogTextMessage("Audio mute changed.");
+        else if(evt & AUDIO_EVENT_VOLUME)
+            LogTextMessage("Audio volume changed.");
+        else if(evt & AUDIO_EVENT_INPUT)
+            LogTextMessage("Audio input state changed = %u", aduState.isInputActive);
+        else if(evt & AUDIO_EVENT_OUTPUT)
+            LogTextMessage("Audio output state changed = %u", aduState.isOutputActive);
+        else if(evt & AUDIO_EVENT_FORMAT)
+            LogTextMessage("Audio Format type changed = %u", aduState.currentSampleRate);
 
         connectionFlags.usbActive = aduIsUsbInUse();
-        // chprintf((BaseSequentialStream * )&SD2,"connectionFlags.usbActive = %u\r\n", connectionFlags.usbActive );
+        LogTextMessage("connectionFlags.usbActive = %u", connectionFlags.usbActive );
     }
 #else
     while (1) {
