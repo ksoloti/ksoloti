@@ -724,7 +724,6 @@ void aduDataExchange (int32_t *in, int32_t *out)
 
     uint16_t uLen = 32;
     uint16_t uFeedbackLen = uLen;
-    uint_fast16_t u;
 
     /////////////////////////////////
     // codec -> USB
@@ -746,7 +745,8 @@ void aduDataExchange (int32_t *in, int32_t *out)
 #if NEW_CODE_TX
       aduMoveDataToTX(out, 2);
 #else
-      int u; for (u=0; u< 2; u++)
+      uint_fast16_t u;
+      for (u=0; u< 2; u++)
       {
         aduTxRingBuffer[aduState.txRingBufferWriteOffset] = out[u] >> 16;
         if (++(aduState.txRingBufferWriteOffset) == TX_RING_BUFFER_FULL_SIZE) 
