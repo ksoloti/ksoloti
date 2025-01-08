@@ -54,6 +54,7 @@ esac
 
 # ----- Compile firmware
 sh ./qlean.sh
+sh ./rrenew_permissions.sh
 sh ./kompile_shortcut.sh
 sh ./qlean.sh
 
