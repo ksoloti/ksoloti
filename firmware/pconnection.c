@@ -43,7 +43,6 @@
 #ifdef FW_SPILINK
 #include "spilink.h"
 #endif
-#include "analyse.h"
 #include "stdio.h"
 #include "memstreams.h"
 
