@@ -74,6 +74,8 @@ void adc_init(void) {
     adc3_init();
 #endif
 
+    // PWR->CR |= ((uint32_t)PWR_CR_ADCDC1);
+
     adcStart(&ADCD1, NULL);
 
 
