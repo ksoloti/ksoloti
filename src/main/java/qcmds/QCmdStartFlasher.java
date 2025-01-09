@@ -35,7 +35,7 @@ public class QCmdStartFlasher extends QCmdStart {
 
     @Override
     public String GetDoneMessage() {
-        return "\n>>> FIRMWARE UPDATE IN PROGRESS. DO NOT UNPLUG THE BOARD! <<<\nYou can connect again after the LEDs stop blinking.\n";
+        return "Done sending firmware packets.\n\n>>> FIRMWARE UPDATE IN PROGRESS. DO NOT UNPLUG THE BOARD! <<<\nYou can connect again after the LEDs stop blinking.\n";
     }
 
     @Override
