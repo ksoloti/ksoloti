@@ -235,7 +235,7 @@ void adc3_convert(void) {
     /* Retrieve sample from ADC3 (slower than ADC1 and no DMA available, but still adequate) */
     adcvalues[10 + adc3_ch] = (ADC3->DR); /* Store ADC3 results in adcvalues[14...18] */
 
-    if (++adc3_ch > 8) adc3_ch = 4; /* Wrap ADC3 channel from 4 to 8 */
+    if (++adc3_ch > 8) adc3_ch = 4; /* Increment and wrap ADC3 channel from 4 to 8 */
 
     ADC3->SQR3 = adc3_ch; /* Set next channel for conversion */
     ADC3->CR2 |= ADC_CR2_SWSTART; /* Start next conversion */
