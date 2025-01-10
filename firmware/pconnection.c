@@ -46,7 +46,7 @@
 #include "stdio.h"
 #include "memstreams.h"
 
-//#define DEBUG_SERIAL 1
+//#define DEBUG_SERIAL
 
 void BootLoaderInit(void);
 
@@ -159,8 +159,10 @@ void LogTextMessage(const char* format, ...) {
         }
         else
         {
-          // overflow, will not display
-          chprintf((BaseSequentialStream * )&SD2,"Log Overflow\r\n");
+          /* Overflow, will not display */
+// #ifdef DEBUG_SERIAL
+          //chprintf((BaseSequentialStream * )&SD2,"Log Overflow\r\n");
+// #endif
         }
     }
 }
