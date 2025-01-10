@@ -74,7 +74,15 @@ void adc_init(void) {
     adc3_init();
 #endif
 
-    // PWR->CR |= ((uint32_t)PWR_CR_ADCDC1);
+    /* See "Configuration options for ADC accuracy" in application note AN4073
+     * - old Axoloti settings (below bits cleared by default)
+     * - Option 1 (PWR->CR |= PWR_CR_ADCDC1;)
+     * - Option 2 (SYSCFG->PMC |= SYSCFG_PMC_ADC1DC2 | SYSCFG_PMC_ADC3DC2;)
+     *
+     * Option 1 seems to reduce the same amount of noise like Option 2 but performs more stably and predictably
+     * (even though we're violating some of the preconditions described in AN4073, e.g. Prefetch settings).
+     */
+    PWR->CR |= PWR_CR_ADCDC1;
 
     adcStart(&ADCD1, NULL);
 
