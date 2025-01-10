@@ -64,7 +64,10 @@ static int pFileSize;
 
 static WORKING_AREA(waThreadUSBDMidi, 256);
 
+// If you want more concurrent messages you can set this larger.
 #define LOG_BUFFER_SIZE (256)
+
+MUTEX_DECL(LogMutex);
 uint8_t             LogBuffer[LOG_BUFFER_SIZE];
 uint8_t             LogBufferUsed = 0;
 
@@ -115,6 +118,8 @@ void InitPConnection(void) {
     connectionFlags.usbBuild = 1;
 #endif
 
+    chMtxObjectInit(&LogMutex);
+
     chThdCreateStatic(waThreadUSBDMidi, sizeof(waThreadUSBDMidi), MIDI_USB_PRIO, (void*) ThreadUSBDMidi, NULL);
 }
 
@@ -140,29 +145,30 @@ void TransmitDisplayPckt(void) {
 
 void LogTextMessage(const char* format, ...) {
     if ((usbGetDriverStateI(BDU1.config->usbp) == USB_ACTIVE) && (connected)) {
-        if(LogBufferUsed == 0)
+        if(chMtxTryLock(&LogMutex))
         {
-          LogBuffer[0] = 'A';
-          LogBuffer[1] = 'x';
-          LogBuffer[2] = 'o';
-          LogBuffer[3] = 'T';
-
           MemoryStream ms;
-          msObjectInit(&ms, (uint8_t *)&LogBuffer[4], LOG_BUFFER_SIZE-4, 0);
+          uint8_t      tmp[256-5]; // nead AXOT and null
+
+          msObjectInit(&ms, (uint8_t *)tmp, 256-5, 0); 
 
           va_list ap;
           va_start(ap, format);
           chvprintf((BaseSequentialStream *)&ms, format, ap);
           va_end(ap);
           chSequentialStreamPut((BaseSequentialStream * )&ms, 0);
-          LogBufferUsed = strlen(LogBuffer);
-        }
-        else
-        {
-          /* Overflow, will not display */
-// #ifdef DEBUG_SERIAL
-          //chprintf((BaseSequentialStream * )&SD2,"Log Overflow\r\n");
-// #endif
+          size_t length = strlen((char *)tmp);
+          if((length) && (LogBufferUsed + 4 + length + 1) < LOG_BUFFER_SIZE)
+          {
+            LogBuffer[LogBufferUsed++] = 'A';
+            LogBuffer[LogBufferUsed++] = 'x';
+            LogBuffer[LogBufferUsed++] = 'o';
+            LogBuffer[LogBufferUsed++] = 'T';
+
+            memcpy(&LogBuffer[LogBufferUsed], tmp, length+1);
+            LogBufferUsed += length+1;
+          }
+          chMtxUnlock(&LogMutex);
         }
     }
 }
@@ -173,10 +179,14 @@ void PExTransmit(void) {
         BDU1.oqueue.q_notify(&BDU1.oqueue);
     }
     else {
-        if(LogBufferUsed)
+        if(chMtxTryLock(&LogMutex))
         {
-          chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )LogBuffer, LogBufferUsed+1);
-          LogBufferUsed = 0;
+          if(LogBufferUsed)
+          {
+            chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )LogBuffer, LogBufferUsed);
+            LogBufferUsed = 0;
+          }
+          chMtxUnlock(&LogMutex);
         }
 
         if (AckPending) {
