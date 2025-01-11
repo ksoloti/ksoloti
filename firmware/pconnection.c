@@ -68,8 +68,8 @@ static WORKING_AREA(waThreadUSBDMidi, 256);
 #define LOG_BUFFER_SIZE (256)
 
 MUTEX_DECL(LogMutex);
-uint8_t             LogBuffer[LOG_BUFFER_SIZE];
-uint8_t             LogBufferUsed = 0;
+char             LogBuffer[LOG_BUFFER_SIZE];
+uint8_t          LogBufferUsed = 0;
 
 
 connectionflags_t connectionFlags;
