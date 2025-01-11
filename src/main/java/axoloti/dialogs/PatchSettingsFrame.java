@@ -57,23 +57,23 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axp.png")).getImage());
         this.settings = settings;
         ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setValue(settings.GetMidiChannel());
-        ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setMinimum(1);
-        ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setMaximum(16);
+        // ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setMinimum(1);
+        // ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setMaximum(16);
         ((SpinnerNumberModel) jSpinnerMPENumberOfMemberChannels.getModel()).setValue(settings.getMPENumberOfMemberChannels());
-        ((SpinnerNumberModel) jSpinnerMPENumberOfMemberChannels.getModel()).setMinimum(1);
-        ((SpinnerNumberModel) jSpinnerMPENumberOfMemberChannels.getModel()).setMaximum(15);
+        // ((SpinnerNumberModel) jSpinnerMPENumberOfMemberChannels.getModel()).setMinimum(1);
+        // ((SpinnerNumberModel) jSpinnerMPENumberOfMemberChannels.getModel()).setMaximum(15);
         ((SpinnerNumberModel) jSpinnerNumPresets.getModel()).setValue(settings.GetNPresets());
-        ((SpinnerNumberModel) jSpinnerNumPresets.getModel()).setMinimum(0);
-        ((SpinnerNumberModel) jSpinnerNumPresets.getModel()).setMaximum(64);
+        // ((SpinnerNumberModel) jSpinnerNumPresets.getModel()).setMinimum(0);
+        // ((SpinnerNumberModel) jSpinnerNumPresets.getModel()).setMaximum(127);
         ((SpinnerNumberModel) jSpinnerPresetEntries.getModel()).setValue(settings.GetNPresetEntries());
-        ((SpinnerNumberModel) jSpinnerPresetEntries.getModel()).setMinimum(0);
-        ((SpinnerNumberModel) jSpinnerPresetEntries.getModel()).setMaximum(64);
+        // ((SpinnerNumberModel) jSpinnerPresetEntries.getModel()).setMinimum(0);
+        // ((SpinnerNumberModel) jSpinnerPresetEntries.getModel()).setMaximum(127);
         ((SpinnerNumberModel) jSpinnerModulationSources.getModel()).setValue(settings.GetNModulationSources());
-        ((SpinnerNumberModel) jSpinnerModulationSources.getModel()).setMinimum(0);
-        ((SpinnerNumberModel) jSpinnerModulationSources.getModel()).setMaximum(64);
+        // ((SpinnerNumberModel) jSpinnerModulationSources.getModel()).setMinimum(0);
+        // ((SpinnerNumberModel) jSpinnerModulationSources.getModel()).setMaximum(127);
         ((SpinnerNumberModel) jSpinnerModulationTargets.getModel()).setValue(settings.GetNModulationTargetsPerSource());
-        ((SpinnerNumberModel) jSpinnerModulationTargets.getModel()).setMinimum(0);
-        ((SpinnerNumberModel) jSpinnerModulationTargets.getModel()).setMaximum(64);
+        // ((SpinnerNumberModel) jSpinnerModulationTargets.getModel()).setMinimum(0);
+        // ((SpinnerNumberModel) jSpinnerModulationTargets.getModel()).setMaximum(127);
         jTextFieldAuthor.setText(settings.getAuthor());
         jComboBoxLicense.setSelectedItem(settings.getLicense());
         jTextFieldAttributions.setText(settings.getAttributions());
@@ -142,7 +142,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         jLabelMIDIChannel.setToolTipText("<html>Defines the MIDI channel the patch should listen on. For subpatches this can be overridden by enabling<br/>\"Show Advanced MIDI Settings\" and freely selecting a device, port, and channel via the subpatch's representation in the parent patch.<br/>Note that if subpatch mode \"MPE\" is selected, this setting is ignored to conform with MPE specs.<br/>See the MPE-related tooltips for more info.");
 
         jSpinnerMidiChannel.setToolTipText(jLabelMIDIChannel.getToolTipText());
-        jSpinnerMidiChannel.setModel(new javax.swing.SpinnerNumberModel(0, 0, 15, 1));
+        jSpinnerMidiChannel.setModel(new javax.swing.SpinnerNumberModel(1, 1, 16, 1));
         jSpinnerMidiChannel.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jSpinnerMidiChannelStateChanged(evt);
@@ -165,7 +165,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
             }
         });
 
-        jSpinnerNumPresets.setModel(new javax.swing.SpinnerNumberModel(0, 0, 64, 1));
+        jSpinnerNumPresets.setModel(new javax.swing.SpinnerNumberModel(0, 0, 127, 1));
         jSpinnerNumPresets.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jSpinnerNumPresetsStateChanged(evt);
@@ -192,7 +192,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
 
         jLabelEntriesPerPreset.setText("Entries per Preset");
 
-        jSpinnerPresetEntries.setModel(new javax.swing.SpinnerNumberModel(0, 0, 64, 1));
+        jSpinnerPresetEntries.setModel(new javax.swing.SpinnerNumberModel(0, 0, 127, 1));
         jSpinnerPresetEntries.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jSpinnerPresetEntriesStateChanged(evt);
@@ -205,7 +205,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         jLabelMaxModulationTargets.setText("Maximum Number of Targets per Source");
         jLabelMaxModulationTargets.setToolTipText("Set this to the maximum number of targets each modsource should be able to affect.");
 
-        jSpinnerModulationSources.setModel(new javax.swing.SpinnerNumberModel(0, 0, 15, 1));
+        jSpinnerModulationSources.setModel(new javax.swing.SpinnerNumberModel(0, 0, 127, 1));
         jSpinnerModulationSources.setToolTipText(jLabelMaxModulationSources.getToolTipText());
         jSpinnerModulationSources.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -213,7 +213,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
             }
         });
 
-        jSpinnerModulationTargets.setModel(new javax.swing.SpinnerNumberModel(0, 0, 15, 1));
+        jSpinnerModulationTargets.setModel(new javax.swing.SpinnerNumberModel(0, 0, 127, 1));
         jSpinnerModulationTargets.setToolTipText(jLabelMaxModulationTargets.getToolTipText());
         jSpinnerModulationTargets.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
