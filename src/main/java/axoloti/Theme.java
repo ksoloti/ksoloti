@@ -264,8 +264,8 @@ public class Theme {
                 fileToBeSaved = new File(fc.getSelectedFile().toString());
             } 
             else if (!ext.equals(filterext)) {
-                Object[] options = {"Yes",
-                    "No"};
+                Object[] options = {"Change",
+                    "Cancel"};
                 int n = JOptionPane.showOptionDialog(frame,
                         "File does not match filter. Change extension to " + filterext + "?",
                         "File Extension",
@@ -284,8 +284,8 @@ public class Theme {
             }
 
             if (fileToBeSaved.exists()) {
-                Object[] options = {"Yes",
-                    "No"};
+                Object[] options = {"Overwrite",
+                    "Cancel"};
                 int n = JOptionPane.showOptionDialog(frame,
                         "File exists! Overwrite?",
                         "File Exists",

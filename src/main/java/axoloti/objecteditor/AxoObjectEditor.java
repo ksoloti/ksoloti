@@ -465,7 +465,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         // warn if changes, and its not an embedded object
         if (hasChanged()) {
             if (!readonly) {
-                Object[] options = {"Yes", "No", "Cancel"};
+                Object[] options = {"Save", "Discard", "Cancel"};
                 int n = JOptionPane.showOptionDialog(
                         this,
                         "Save changes to \"" + editObj.getCName() + "\" ?",

@@ -434,7 +434,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 fileToBeSaved = new File(fc.getSelectedFile() + filterext);
 
             } else if (!ext.equals(filterext)) {
-                Object[] options = {"Yes",
+                Object[] options = {"Change",
                     "No"};
                 int n = JOptionPane.showOptionDialog(this,
                         "File does not match filter. Change extension to " + filterext + "?",
@@ -454,8 +454,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             }
 
             if (fileToBeSaved.exists()) {
-                Object[] options = {"Yes",
-                    "No"};
+                Object[] options = {"Overwrite",
+                    "Cancel"};
                 int n = JOptionPane.showOptionDialog(this,
                         "File exists! Overwrite?",
                         "File Exists",
@@ -501,8 +501,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     @Override
     public boolean AskClose() {
         if (isDirty()) {
-            Object[] options = {"Yes",
-                "No",
+            Object[] options = {"Save",
+                "Discard",
                 "Cancel"};
             String fn = FilenamePath;
             if (fn == null) {

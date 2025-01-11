@@ -324,8 +324,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     @Override
     public boolean AskClose() {
         if (patch.isDirty() && patch.container() == null) {
-            Object[] options = {"Yes",
-                "No",
+            Object[] options = {"Save",
+                "Discard",
                 "Cancel"};
             int n = JOptionPane.showOptionDialog(
                     this,
@@ -921,10 +921,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 fileToBeSaved = new File(fc.getSelectedFile() + filterext);
 
             } else if (!ext.equals(filterext)) {
-                Object[] options = {"Yes",
+                Object[] options = {"Change",
                     "No"};
                 int n = JOptionPane.showOptionDialog(this,
-                        "File does not match filter. Change extension to " + filterext + "?",
+                        "File extension does not match filter. Change extension to " + filterext + "?",
                         "File Extension",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
@@ -941,8 +941,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
 
             if (fileToBeSaved.exists()) {
-                Object[] options = {"Yes",
-                    "No"};
+                Object[] options = {"Overwrite",
+                    "Cancel"};
                 int n = JOptionPane.showOptionDialog(this,
                         "File exists! Overwrite?",
                         "File Exists",
@@ -1178,11 +1178,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private boolean GoLive() {
         if (patch.getFileNamePath().endsWith(".axs") || patch.container() != null) {
-            Object[] options = {"Yes",
-                "No"};
+            Object[] options = {"Go Live",
+                "Cancel"};
 
             int n = JOptionPane.showOptionDialog(this,
-                    "This is a subpatch intended to be placed in a main patch and possibly has no output.\nDo you still want to take it live?",
+                    "This is a subpatch intended to be placed inside a main patch and possibly has no input or output.\nDo you still want to take it live?",
                     "File is Subpatch",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
