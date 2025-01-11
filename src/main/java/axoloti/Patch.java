@@ -1688,120 +1688,92 @@ public class Patch {
             c += "void PatchProcess(int32_t* inbuf, int32_t* outbuf) {\n";
         }
 
-        c += I + "uint8_t i;\n";
+        c += I + "uint32_t i;\n";
 
         /* audioInputMode and audioOutputMode are modified during
            object init code generation in AxoObjectInstance.java.
            This saves a bit of memory and instructions in the patch. */
+
+        c += I + "for (i = 0; i < BUFSIZE; i++) {\n";
         if (audioInputMode == 1) {
-            c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
-              + I+I + "/* AudioInputMode == A_MONO */\n"
-              + I+I + "AudioInputLeft[i] = inbuf[i * 2] >> 4;\n"
-              + I+I + "AudioInputRight[i] = AudioInputLeft[i];\n";
-            if (prefs.getFirmwareMode().contains("USBAudio")) {
-                c += I+I + "UsbInputLeft[i] = inbufUsb[i * 2] >> 4;\n"
-                   + I+I + "UsbInputRight[i] = UsbInputLeft[i];\n";
-            }
-            c += I + "}\n";
+            c += I+I + "/* AudioInputMode == A_MONO */\n"
+               + I+I + "AudioInputLeft[i] = inbuf[i * 2] >> 4;\n"
+               + I+I + "AudioInputRight[i] = AudioInputLeft[i];\n";
         }
         else if (audioInputMode == 2) {
-            c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
-               + I+I + "/* AudioInputMode == A_BALANCED */\n"
+            c += I+I + "/* AudioInputMode == A_BALANCED */\n"
                + I+I + "AudioInputLeft[i] = inbuf[i * 2] >> 4;\n"
                + I+I + "AudioInputLeft[i] = (AudioInputLeft[i] - (inbuf[i * 2 + 1] >> 4) ) >> 1;\n"
                + I+I + "AudioInputRight[i] = AudioInputLeft[i];\n";
-            if (prefs.getFirmwareMode().contains("USBAudio")) {
-                c += I+I + "UsbInputLeft[i] = (UsbInputLeft[i] - (inbufUsb[i * 2 + 1] >> 4) ) >> 1;\n"
-                   + I+I + "UsbInputRight[i] = UsbInputLeft[i];\n";
-            }
-            c += I + "}\n";
         }
         else {
-            c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
-               + I+I + "/* AudioInputMode == A_STEREO */\n"
+            c += I+I + "/* AudioInputMode == A_STEREO */\n"
                + I+I + "AudioInputLeft[i] = inbuf[i * 2] >> 4;\n"
                + I+I + "AudioInputRight[i] = inbuf[i * 2 + 1] >> 4;\n";
-            if (prefs.getFirmwareMode().contains("USBAudio")) {
-                c += I+I + "UsbInputLeft[i] = inbufUsb[i * 2] >> 4;\n"
-                   + I+I + "UsbInputRight[i] = inbufUsb[i * 2 + 1] >> 4;\n";
-            }
-            c += I + "}\n";
         }
+
+        if (prefs.getFirmwareMode().contains("USBAudio")) {
+            c += "\n"
+               + I+I + "UsbInputLeft[i] = inbufUsb[i * 2] >> 4;\n"
+               + I+I + "UsbInputRight[i] = inbufUsb[i * 2 + 1] >> 4;\n";
+        }
+        c += I + "}\n";
 
         c += "\n" + I + "root.dsp();\n\n";
 
         if (settings.getSaturate()) {
+
+            c += I + "for (i = 0; i < BUFSIZE; i++) {\n";
             if (audioOutputMode == 1) {
-                c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
-                   + I+I + "/* AudioOutputMode == A_MONO */\n"
+                c += I+I + "/* AudioOutputMode == A_MONO */\n"
                    + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28) << 4;\n"
                    + I+I + "outbuf[i * 2 + 1] = 0;\n";
-                if (prefs.getFirmwareMode().contains("USBAudio")) {
-                    c += I+I + "outbufUsb[i * 2] = __SSAT(UsbOutputLeft[i], 28) << 4;\n"
-                       + I+I + "outbufUsb[i * 2 + 1] = 0;\n";
-                    }
-                c += I + "}\n";
             }
             else if (audioOutputMode == 2) {
-                c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
-                   + I+I + "/* AudioOutputMode == A_BALANCED */\n"
+                c += I+I + "/* AudioOutputMode == A_BALANCED */\n"
                    + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28) << 4;\n"
-                   + I+I + "outbuf[i * 2 + 1] = ~outbuf[i * 2];\n";
-                if (prefs.getFirmwareMode().contains("USBAudio")) {
-                    c += I+I + "outbufUsb[i * 2] = __SSAT(UsbOutputLeft[i], 28) << 4;\n"
-                       + I+I + "outbufUsb[i * 2 + 1] = ~outbuf[i * 2];\n";
-                }
-                c += I + "}\n";
+                    + I+I + "outbuf[i * 2 + 1] = ~outbuf[i * 2];\n";
             }
             else {
-                c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
-                   + I+I + "/* AudioOutputMode == A_STEREO */\n"
+                c += I+I + "/* AudioOutputMode == A_STEREO */\n"
                    + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28) << 4;\n"
                    + I+I + "outbuf[i * 2 + 1] = __SSAT(AudioOutputRight[i], 28) << 4;\n";
-                if (prefs.getFirmwareMode().contains("USBAudio")) {
-                    c += I+I + "outbufUsb[i * 2] = __SSAT(UsbOutputLeft[i], 28) << 4;\n"
-                       + I+I + "outbufUsb[i * 2 + 1] = __SSAT(UsbOutputRight[i], 28) << 4;\n";
-                }
-                    c += I + "}\n";
             }
+            
+            if (prefs.getFirmwareMode().contains("USBAudio")) {
+                c += "\n"
+                   + I+I + "outbufUsb[i * 2] = __SSAT(UsbOutputLeft[i], 28) << 4;\n"
+                   + I+I + "outbufUsb[i * 2 + 1] = __SSAT(UsbOutputRight[i], 28) << 4;\n";
+            }
+            c += I + "}\n";
         }
         else {
+            c += I + "for (i = 0; i < BUFSIZE; i++) {\n";
             if (audioOutputMode == 1) {
-                c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
-                   + I+I + "/* AudioOutputMode == A_MONO, unsaturated */\n"
-                   + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
-                   + I+I + "outbuf[i * 2 + 1] = 0;\n";
-                if (prefs.getFirmwareMode().contains("USBAudio")) {
-                    c += I+I + "outbufUsb[i * 2] = UsbOutputLeft[i];\n"
-                       + I+I + "outbufUsb[i * 2 + 1] = 0;\n";
-                }
-                c += I + "}\n";
+                    c += I+I + "/* AudioOutputMode == A_MONO, unsaturated */\n"
+                       + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
+                       + I+I + "outbuf[i * 2 + 1] = 0;\n";
             }
             else if (audioOutputMode == 2) {
-                c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
-                   + I+I + "/* AudioOutputMode == A_BALANCED, unsaturated */\n"
+                c += I+I + "/* AudioOutputMode == A_BALANCED, unsaturated */\n"
                    + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
                    + I+I + "outbuf[i * 2 + 1] = ~outbuf[i * 2];\n";
-                if (prefs.getFirmwareMode().contains("USBAudio")) {
-                    c += I+I + "outbufUsb[i * 2] = UsbOutputLeft[i];\n"
-                       + I+I + "outbufUsb[i * 2 + 1] = ~outbufUsb[i * 2];\n";
-                }
-                c += I + "}\n";
             }
             else {
-                c += I + "for (i = 0; i < BUFSIZE; i++) {\n"
-                   + I+I + "/* AudioOutputMode == A_STEREO, unsaturated */\n"
+                c += I+I + "/* AudioOutputMode == A_STEREO, unsaturated */\n"
                    + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
                    + I+I + "outbuf[i * 2 + 1] = AudioOutputRight[i];\n";
-                if (prefs.getFirmwareMode().contains("USBAudio")) {
-                    c += I+I + "outbufUsb[i * 2] = UsbOutputLeft[i];\n"
-                       + I+I + "outbufUsb[i * 2 + 1] = UsbOutputRight[i];\n";
-                }
-                c += I + "}\n";
             }
+                
+            if (prefs.getFirmwareMode().contains("USBAudio")) {
+                c += "\n"
+                   + I+I + "outbufUsb[i * 2] = UsbOutputLeft[i];\n"
+                   + I+I + "outbufUsb[i * 2 + 1] = UsbOutputRight[i];\n";
+            }
+            c += I + "}\n";
         }
         c += "}\n\n";
-
+        
         c += "void ApplyPreset(uint8_t i) {\n"
             + I + "root.ApplyPreset(i);\n"
             + "}\n\n";
@@ -1907,7 +1879,7 @@ public class Patch {
         String c = "/*\n"
         + " * Generated using Ksoloti Patcher v" + Version.AXOLOTI_VERSION + " on " + System.getProperty("os.name") + "\n"
         + " * File: " + getFileNamePath() + "\n"
-        + " * Compiled: " + DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()) + "\n"
+        + " * Generated: " + DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()) + "\n"
         + " */\n\n"
         + "#pragma GCC diagnostic ignored \"-Wunused-variable\"\n"
         + "#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n\n";
