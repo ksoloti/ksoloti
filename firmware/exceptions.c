@@ -35,7 +35,7 @@ __attribute__ ((naked)) static void report_exception(void) {
         " mrseq r0, msp                                             \n"
         " mrsne r0, psp                                             \n"
         " ldr r1, [r0, #24]                                         \n"
-        " ldr r2, handler2_address_const                            \n"
+        " ldr r2, =handler2_address_const                            \n"
         " bx r2                                                     \n"
         " handler2_address_const: .word prvGetRegistersFromStack    \n"
     );
@@ -472,7 +472,7 @@ __asm volatile
 " mrseq r0, msp                                             \n"
 " mrsne r0, psp                                             \n"
 " ldr r1, [r0, #24]                                         \n"
-" ldr r2, handler2_address_const                            \n"
+" ldr r2, =handler2_address_const                            \n"
 " bx r2                                                     \n"
 );
 }
