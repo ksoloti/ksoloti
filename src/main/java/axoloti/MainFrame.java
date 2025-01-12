@@ -1576,14 +1576,21 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
 
     public void interactiveFirmwareUpdate() {
-        int s = JOptionPane.showConfirmDialog(this,
+
+        Object[] options = {"Update", "Cancel"};
+        int s = JOptionPane.showOptionDialog(this,
                 "Firmware mismatch detected!\n"
                 + "Update the firmware now?\n"
                 + "This process will cause a disconnect and the LEDs will blink for a while.\n"
                 + "Do not interrupt until the LEDs stop blinking.\n"
                 + "When only the green LED is steady lit, you can connect again.\n",
                 "Firmware Update",
-                JOptionPane.YES_NO_OPTION);
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                options,
+                options[1]);
+
         if (s == 0) {
             String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
             String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
