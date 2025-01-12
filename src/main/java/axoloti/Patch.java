@@ -1311,7 +1311,7 @@ public class Patch {
         c += I + "void ApplyPreset(uint8_t index) {\n"
            + I+I + "if (!index) {\n"
            + I+I+I + "int32_t* p = GetInitParams();\n"
-           + I+I+I + "uint16_t i; for (i = 0; i < NPEXCH; i++) {\n"
+           + I+I+I + "uint32_t i; for (i = 0; i < NPEXCH; i++) {\n"
            + I+I+I+I + "PExParameterChange(&PExch[i], p[i], 0xFFEF);\n"
            + I+I+I + "}\n"
            + I+I + "}\n"
@@ -1319,7 +1319,7 @@ public class Patch {
            + I+I + "if (index < NPRESETS) {\n"
            + I+I+I + "PresetParamChange_t* pa = (PresetParamChange_t*) (GetPresets());\n"
            + I+I+I + "PresetParamChange_t* p = &pa[index * NPRESET_ENTRIES];\n"
-           + I+I+I + "uint8_t i; for (i = 0; i < NPRESET_ENTRIES; i++) {\n"
+           + I+I+I + "uint32_t i; for (i = 0; i < NPRESET_ENTRIES; i++) {\n"
            + I+I+I+I + "PresetParamChange_t* pp = &p[i];\n"
            + I+I+I+I + "if ((pp->pexIndex >= 0) && (pp->pexIndex < NPEXCH)) {\n"
            + I+I+I+I+I + "PExParameterChange(&PExch[pp->pexIndex], pp->value, 0xFFEF);\n"
@@ -1426,7 +1426,7 @@ public class Patch {
                 c += ");\n";
             }
         }
-        c += "\n" + I+I + "uint16_t k; for (k = 0; k < NPEXCH; k++) {\n"
+        c += "\n" + I+I + "uint32_t k; for (k = 0; k < NPEXCH; k++) {\n"
            + I+I+I + "if (PExch[k].pfunction) {\n"
            + I+I+I+I + "(PExch[k].pfunction)(&PExch[k]);\n"
            + I+I+I + "}\n"
@@ -1647,7 +1647,7 @@ public class Patch {
     String GenerateDSPCodePlusPlus(String ClassName) {
         String c = "\n";
         c = I + "void __attribute__((optimize(\"-O2\"))) clearBuffers(void) {\n"
-		+ I+I + "uint_fast8_t u;\n"
+        + I+I + "uint32_t u;\n"
         + I+I + "for(u=0; u < BUFSIZE; u++) {\n"
         + I+I+I + "AudioOutputLeft[u] = 0;\n"
         + I+I+I + "AudioOutputRight[u] = 0;\n";
@@ -1660,7 +1660,7 @@ public class Patch {
 
         + I + "/* Patch k-rate */\n"
         + I + "void dsp(void) {\n"
-        + I+I + "uint8_t i;\n"
+        + I+I + "uint32_t i;\n"
         + I+I + "clearBuffers();\n";
  
         c += GenerateDSPCodePlusPlusSub(ClassName);
@@ -1697,25 +1697,25 @@ public class Patch {
         c += I + "for (i = 0; i < BUFSIZE; i++) {\n";
         if (audioInputMode == 1) {
             c += I+I + "/* AudioInputMode == A_MONO */\n"
-               + I+I + "AudioInputLeft[i] = inbuf[i * 2] >> 4;\n"
+               + I+I + "AudioInputLeft[i] = inbuf[(i<<1)] >> 4;\n"
                + I+I + "AudioInputRight[i] = AudioInputLeft[i];\n";
         }
         else if (audioInputMode == 2) {
             c += I+I + "/* AudioInputMode == A_BALANCED */\n"
-               + I+I + "AudioInputLeft[i] = inbuf[i * 2] >> 4;\n"
-               + I+I + "AudioInputLeft[i] = (AudioInputLeft[i] - (inbuf[i * 2 + 1] >> 4) ) >> 1;\n"
+               + I+I + "AudioInputLeft[i] = inbuf[(i<<1)] >> 4;\n"
+               + I+I + "AudioInputLeft[i] = (AudioInputLeft[i] - (inbuf[(i<<1) + 1] >> 4) ) >> 1;\n"
                + I+I + "AudioInputRight[i] = AudioInputLeft[i];\n";
         }
         else {
             c += I+I + "/* AudioInputMode == A_STEREO */\n"
-               + I+I + "AudioInputLeft[i] = inbuf[i * 2] >> 4;\n"
-               + I+I + "AudioInputRight[i] = inbuf[i * 2 + 1] >> 4;\n";
+               + I+I + "AudioInputLeft[i] = inbuf[(i<<1)] >> 4;\n"
+               + I+I + "AudioInputRight[i] = inbuf[(i<<1) + 1] >> 4;\n";
         }
 
         if (prefs.getFirmwareMode().contains("USBAudio")) {
             c += "\n"
-               + I+I + "UsbInputLeft[i] = inbufUsb[i * 2] >> 4;\n"
-               + I+I + "UsbInputRight[i] = inbufUsb[i * 2 + 1] >> 4;\n";
+               + I+I + "UsbInputLeft[i] = inbufUsb[(i<<1)] >> 4;\n"
+               + I+I + "UsbInputRight[i] = inbufUsb[(i<<1) + 1] >> 4;\n";
         }
         c += I + "}\n";
 
@@ -1726,24 +1726,24 @@ public class Patch {
             c += I + "for (i = 0; i < BUFSIZE; i++) {\n";
             if (audioOutputMode == 1) {
                 c += I+I + "/* AudioOutputMode == A_MONO */\n"
-                   + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28) << 4;\n"
-                   + I+I + "outbuf[i * 2 + 1] = 0;\n";
+                   + I+I + "outbuf[(i<<1)] = __SSAT(AudioOutputLeft[i], 28) << 4;\n"
+                   + I+I + "outbuf[(i<<1) + 1] = 0;\n";
             }
             else if (audioOutputMode == 2) {
                 c += I+I + "/* AudioOutputMode == A_BALANCED */\n"
-                   + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28) << 4;\n"
-                    + I+I + "outbuf[i * 2 + 1] = ~outbuf[i * 2];\n";
+                   + I+I + "outbuf[(i<<1)] = __SSAT(AudioOutputLeft[i], 28) << 4;\n"
+                    + I+I + "outbuf[(i<<1) + 1] = ~outbuf[(i<<1)];\n";
             }
             else {
                 c += I+I + "/* AudioOutputMode == A_STEREO */\n"
-                   + I+I + "outbuf[i * 2] = __SSAT(AudioOutputLeft[i], 28) << 4;\n"
-                   + I+I + "outbuf[i * 2 + 1] = __SSAT(AudioOutputRight[i], 28) << 4;\n";
+                   + I+I + "outbuf[(i<<1)] = __SSAT(AudioOutputLeft[i], 28) << 4;\n"
+                   + I+I + "outbuf[(i<<1) + 1] = __SSAT(AudioOutputRight[i], 28) << 4;\n";
             }
             
             if (prefs.getFirmwareMode().contains("USBAudio")) {
                 c += "\n"
-                   + I+I + "outbufUsb[i * 2] = __SSAT(UsbOutputLeft[i], 28) << 4;\n"
-                   + I+I + "outbufUsb[i * 2 + 1] = __SSAT(UsbOutputRight[i], 28) << 4;\n";
+                   + I+I + "outbufUsb[(i<<1)] = __SSAT(UsbOutputLeft[i], 28) << 4;\n"
+                   + I+I + "outbufUsb[(i<<1) + 1] = __SSAT(UsbOutputRight[i], 28) << 4;\n";
             }
             c += I + "}\n";
         }
@@ -1751,24 +1751,24 @@ public class Patch {
             c += I + "for (i = 0; i < BUFSIZE; i++) {\n";
             if (audioOutputMode == 1) {
                     c += I+I + "/* AudioOutputMode == A_MONO, unsaturated */\n"
-                       + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
-                       + I+I + "outbuf[i * 2 + 1] = 0;\n";
+                       + I+I + "outbuf[(i<<1)] = AudioOutputLeft[i];\n"
+                       + I+I + "outbuf[(i<<1) + 1] = 0;\n";
             }
             else if (audioOutputMode == 2) {
                 c += I+I + "/* AudioOutputMode == A_BALANCED, unsaturated */\n"
-                   + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
-                   + I+I + "outbuf[i * 2 + 1] = ~outbuf[i * 2];\n";
+                   + I+I + "outbuf[(i<<1)] = AudioOutputLeft[i];\n"
+                   + I+I + "outbuf[(i<<1) + 1] = ~outbuf[(i<<1)];\n";
             }
             else {
                 c += I+I + "/* AudioOutputMode == A_STEREO, unsaturated */\n"
-                   + I+I + "outbuf[i * 2] = AudioOutputLeft[i];\n"
-                   + I+I + "outbuf[i * 2 + 1] = AudioOutputRight[i];\n";
+                   + I+I + "outbuf[(i<<1)] = AudioOutputLeft[i];\n"
+                   + I+I + "outbuf[(i<<1) + 1] = AudioOutputRight[i];\n";
             }
                 
             if (prefs.getFirmwareMode().contains("USBAudio")) {
                 c += "\n"
-                   + I+I + "outbufUsb[i * 2] = UsbOutputLeft[i];\n"
-                   + I+I + "outbufUsb[i * 2 + 1] = UsbOutputRight[i];\n";
+                   + I+I + "outbufUsb[(i<<1)] = UsbOutputLeft[i];\n"
+                   + I+I + "outbufUsb[(i<<1) + 1] = UsbOutputRight[i];\n";
             }
             c += I + "}\n";
         }
@@ -2002,7 +2002,7 @@ public class Patch {
             ao.sDescription = "no description";
         }
 
-        ao.sKRateCode = "uint8_t i;\n";
+        ao.sKRateCode = "uint32_t i;\n";
         for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("patch/inlet f") || o.typeName.equals("patch/inlet i") || o.typeName.equals("patch/inlet b")) {
                 ao.sKRateCode += I + o.getCInstanceName() + "_i._inlet = inlet_" + o.getLegalName() + ";\n";
@@ -2212,15 +2212,15 @@ public class Patch {
         ao.sLocalData += GenerateObjectCode("voice");
         ao.sLocalData += "  attr_parent* common;\n";
         ao.sLocalData += "  void Init(voice* parent) {\n";
-        ao.sLocalData += "    uint16_t i; for (i = 0; i < NPEXCH; i++) {\n"
+        ao.sLocalData += "    uint32_t i; for (i = 0; i < NPEXCH; i++) {\n"
                        + "      PExch[i].pfunction = 0;\n"
                        + "    }\n";
         ao.sLocalData += GenerateObjInitCodePlusPlusSub("voice", "parent");
         ao.sLocalData += "}\n\n";
-        ao.sLocalData += "void dsp(void) {\n int i;\n";
+        ao.sLocalData += "void dsp(void) {\n int32_t i;\n";
         ao.sLocalData += GenerateDSPCodePlusPlusSub("");
         ao.sLocalData += "}\n";
-        ao.sLocalData += "void dispose(void) {\n int i;\n";
+        ao.sLocalData += "void dispose(void) {\n int32_t i;\n";
         ao.sLocalData += GenerateDisposeCodePlusPlusSub("");
         ao.sLocalData += "}\n";
         ao.sLocalData += GenerateMidiCodePlusPlus("attr_parent");
@@ -2232,9 +2232,9 @@ public class Patch {
 
         ao.sLocalData += "static void PropagateToVoices(ParameterExchange_t* origin) {\n"
                        + "  ParameterExchange_t *pex = (ParameterExchange_t*) origin->finalvalue;\n"
-                       + "  uint8_t vi; for (vi = 0; vi < attr_poly; vi++) {\n"
+                       + "  uint32_t vi; for (vi = 0; vi < attr_poly; vi++) {\n"
                        + "    PExParameterChange(pex,origin->modvalue, 0xFFFFFFEE);\n"
-                       + "    pex = (ParameterExchange_t*) ((int) pex + sizeof(voice)); // dirty trick...\n"
+                       + "    pex = (ParameterExchange_t*) ((int32_t) pex + sizeof(voice)); // dirty trick...\n"
                        + "  }"
                        + "}\n";
 
@@ -2249,12 +2249,12 @@ public class Patch {
         ao.sLocalData = ao.sLocalData.replaceAll("parent->GetModulationTable", "parent->common->GetModulationTable");
 
         ao.sInitCode = GenerateParamInitCodePlusPlusSub("", "parent");
-        ao.sInitCode += "uint16_t k; for (k = 0; k < NPEXCH; k++) {\n"
+        ao.sInitCode += "uint32_t k; for (k = 0; k < NPEXCH; k++) {\n"
                      + "  PExch[k].pfunction = PropagateToVoices;\n"
                      + "  PExch[k].finalvalue = (int32_t) (&(getVoices()[0].PExch[k]));\n"
                      + "}\n\n";
 
-        ao.sInitCode += "uint8_t vi; for (vi = 0; vi < attr_poly; vi++) {\n"
+        ao.sInitCode += "uint32_t vi; for (vi = 0; vi < attr_poly; vi++) {\n"
                      + "  voice* v = &getVoices()[vi];\n"
                      + "  v->polyIndex = vi;\n"
                      + "  v->common = this;\n"
@@ -2277,7 +2277,7 @@ public class Patch {
                      + "priority = 0;\n"
                      + "sustain = 0;\n";
 
-        ao.sDisposeCode = "uint8_t vi; for (vi = 0; vi < attr_poly; vi++) {\n"
+        ao.sDisposeCode = "uint32_t vi; for (vi = 0; vi < attr_poly; vi++) {\n"
                      + "  voice* v = &getVoices()[vi];\n"
                      + "  v->dispose();\n"
                      + "}\n";
@@ -2291,11 +2291,11 @@ public class Patch {
             }
             else if (o.typeName.equals("patch/outlet a")) {
                 ao.sKRateCode += "{\n"
-                               + "  uint8_t j; for (j = 0; j < BUFSIZE; j++) outlet_" + o.getLegalName() + "[j] = 0;\n"
+                               + "  uint32_t j; for (j = 0; j < BUFSIZE; j++) outlet_" + o.getLegalName() + "[j] = 0;\n"
                                + "}\n";
             }
         }
-        ao.sKRateCode += "uint8_t vi; for (vi = 0; vi < attr_poly; vi++) {";
+        ao.sKRateCode += "uint32_t vi; for (vi = 0; vi < attr_poly; vi++) {";
 
         for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("inlet") || o.typeName.equals("inlet_i") || o.typeName.equals("inlet_b") || o.typeName.equals("inlet_")
@@ -2307,7 +2307,7 @@ public class Patch {
             }
             else if (o.typeName.equals("inlet~") || o.typeName.equals("patch/inlet a")) {
                 ao.sKRateCode += "{\n"
-                               + "  uint8_t j; for (j = 0; j < BUFSIZE; j++) getVoices()[vi]." + o.getCInstanceName() + "_i._inlet[j] = inlet_" + o.getLegalName() + "[j];\n"
+                               + "  uint32_t j; for (j = 0; j < BUFSIZE; j++) getVoices()[vi]." + o.getCInstanceName() + "_i._inlet[j] = inlet_" + o.getLegalName() + "[j];\n"
                                + "}\n";
             }
         }
@@ -2323,7 +2323,7 @@ public class Patch {
             }
             else if (o.typeName.equals("patch/outlet a")) {
                 ao.sKRateCode += "{\n"
-                               + "  uint8_t j; for (j = 0; j < BUFSIZE; j++) outlet_" + o.getLegalName() + "[j] += getVoices()[vi]." + o.getCInstanceName() + "_i._outlet[j];\n"
+                               + "  uint32_t j; for (j = 0; j < BUFSIZE; j++) outlet_" + o.getLegalName() + "[j] += getVoices()[vi]." + o.getCInstanceName() + "_i._outlet[j];\n"
                                + "}\n";
             }
         }
@@ -2333,9 +2333,9 @@ public class Patch {
                      + "if (attr_mididevice > 0 && dev > 0 && attr_mididevice != dev) return;\n"
                      + "if (attr_midiport > 0 && port > 0 && attr_midiport != port) return;\n\n"
                      + "if ((status == MIDI_NOTE_ON + attr_midichannel) && (data2)) {\n"
-                     + "  int min = 1<<30;\n"
-                     + "  int min_i = 0;\n"
-                     + "  uint8_t i; for (i = 0; i < attr_poly; i++) {\n"
+                     + "  int32_t min = 1<<30;\n"
+                     + "  int32_t min_i = 0;\n"
+                     + "  uint32_t i; for (i = 0; i < attr_poly; i++) {\n"
                      + "    if (voicePriority[i] < min) {\n"
                      + "      min = voicePriority[i];\n"
                      + "      min_i = i;\n"
@@ -2346,7 +2346,7 @@ public class Patch {
                      + "  pressed[min_i] = 1;\n\n"
                      + "  getVoices()[min_i].MidiInHandler(dev, port, status, data1, data2);\n"
                      + "} else if (((status == MIDI_NOTE_ON + attr_midichannel) && (!data2)) || (status == MIDI_NOTE_OFF + attr_midichannel)) {\n"
-                     + "  uint8_t i; for (i = 0; i < attr_poly; i++) {\n"
+                     + "  uint32_t i; for (i = 0; i < attr_poly; i++) {\n"
                      + "    if ((voiceNotePlaying[i] == data1) && pressed[i]) {\n"
                      + "      voicePriority[i] = priority++;\n"
                      + "      pressed[i] = 0;\n"
@@ -2355,7 +2355,7 @@ public class Patch {
                      + "      }\n"
                      + "  }\n"
                      + "} else if (status == attr_midichannel + MIDI_CONTROL_CHANGE) {\n"
-                     + "  uint8_t i; for (i = 0; i < attr_poly; i++) getVoices()[i].MidiInHandler(dev, port, status, data1, data2);\n"
+                     + "  uint32_t i; for (i = 0; i < attr_poly; i++) getVoices()[i].MidiInHandler(dev, port, status, data1, data2);\n"
                      + "  if (data1 == 64) {\n"
                      + "    if (data2>0) {\n"
                      + "      sustain = 1;\n"
@@ -2369,7 +2369,7 @@ public class Patch {
                      + "    }\n"
                      + "  }\n"
                      + "} else {"
-                     + "  uint8_t i; for (i = 0; i < attr_poly; i++) getVoices()[i].MidiInHandler(dev, port, status, data1, data2);\n"
+                     + "  uint32_t i; for (i = 0; i < attr_poly; i++) getVoices()[i].MidiInHandler(dev, port, status, data1, data2);\n"
                      + "}\n";
         return ao;
     }
@@ -2385,7 +2385,7 @@ public class Patch {
                 += "int8_t voiceChannel[attr_poly];\n";
 
         o.sInitCode
-                += "uint8_t vc; for (vc = 0; vc < attr_poly; vc++) {\n"
+                += "uint32_t vc; for (vc = 0; vc < attr_poly; vc++) {\n"
                 + "   voiceChannel[vc] = 0xFF;\n"
                 + "}\n";
 
@@ -2395,9 +2395,9 @@ public class Patch {
                 + "uint8_t msg = (status & 0xF0);\n"
                 + "uint8_t chnl = (status & 0x0F);\n"
                 + "if ((msg == MIDI_NOTE_ON) && (data2)) {\n"
-                + "  int min = 1<<30;\n"
-                + "  int min_i = 0;\n"
-                + "  uint8_t i; for (i = 0; i < attr_poly; i++) {\n"
+                + "  int32_t min = 1<<30;\n"
+                + "  int32_t min_i = 0;\n"
+                + "  uint32_t i; for (i = 0; i < attr_poly; i++) {\n"
                 + "    if (voicePriority[i] < min) {\n"
                 + "      min = voicePriority[i];\n"
                 + "      min_i = i;\n"
@@ -2410,7 +2410,7 @@ public class Patch {
                 + "  getVoices()[min_i].MidiInHandler(dev, port, msg, data1, data2);\n"
                 + "} else if (((msg == MIDI_NOTE_ON) && (!data2))||\n"
                 + "            (msg == MIDI_NOTE_OFF)) {\n"
-                + "  uint8_t i; for (i = 0; i < attr_poly; i++) {\n"
+                + "  uint32_t i; for (i = 0; i < attr_poly; i++) {\n"
                 + "    if (voiceNotePlaying[i] == data1) {\n"
                 + "      voicePriority[i] = priority++;\n"
                 + "      voiceChannel[i] = 0xFF;\n"
@@ -2420,7 +2420,7 @@ public class Patch {
                 + "      }\n"
                 + "  }\n"
                 + "} else if (msg == MIDI_CONTROL_CHANGE) {\n"
-                + "  uint8_t i; for (i = 0; i < attr_poly; i++) {\n"
+                + "  uint32_t i; for (i = 0; i < attr_poly; i++) {\n"
                 + "    if (voiceChannel[i] == chnl) {\n"
                 + "      getVoices()[i].MidiInHandler(dev, port, MIDI_CONTROL_CHANGE + attr_midichannel, data1, data2);\n"
                 + "    }\n"
@@ -2438,13 +2438,13 @@ public class Patch {
                 + "    }\n"
                 + "  }\n"
                 + "} else if (msg == MIDI_PITCH_BEND) {\n"
-                + "  uint8_t i; for (i = 0; i < attr_poly; i++) {\n"
+                + "  uint32_t i; for (i = 0; i < attr_poly; i++) {\n"
                 + "    if (voiceChannel[i] == chnl) {\n"
                 + "      getVoices()[i].MidiInHandler(dev, port, MIDI_PITCH_BEND + attr_midichannel, data1, data2);\n"
                 + "    }\n"
                 + "  }\n"
                 + "} else {"
-                + "  uint8_t i; for (i = 0; i < attr_poly; i++) {\n"
+                + "  uint32_t i; for (i = 0; i < attr_poly; i++) {\n"
                 + "    if (voiceChannel[i] == chnl) {\n"
                 + "         getVoices()[i].MidiInHandler(dev, port, msg + attr_midichannel, data1, data2);\n"
                 + "    }\n"
@@ -2473,7 +2473,7 @@ public class Patch {
                  + "uint8_t lastRPN_MSB;\n";
 
         o.sInitCode
-                += "uint8_t vc; for (vc = 0; vc < attr_poly; vc++) {\n"
+                += "uint32_t vc; for (vc = 0; vc < attr_poly; vc++) {\n"
                  + "  voiceChannel[vc] = 0xFF;\n"
                  + "}\n"
                  + "pitchbendRange = 48;\n"
@@ -2500,9 +2500,9 @@ public class Patch {
                 + "uint8_t chnl = (status & 0x0F);\n\n"
                 + "if ((msg == MIDI_NOTE_ON) && (data2)) {\n"
                 + "  if ((chnl == attr_midichannel) || (chnl < lowChannel) || (chnl > highChannel)) return;\n"
-                + "  int min = 1<<30;\n"
-                + "  int min_i = 0;\n"
-                + "  uint8_t i; for (i = 0; i < attr_poly; i++) {\n"
+                + "  int32_t min = 1<<30;\n"
+                + "  int32_t min_i = 0;\n"
+                + "  uint32_t i; for (i = 0; i < attr_poly; i++) {\n"
                 + "    if (voicePriority[i] < min) {\n"
                 + "      min = voicePriority[i];\n"
                 + "      min_i = i;\n"
@@ -2515,7 +2515,7 @@ public class Patch {
                 + "  getVoices()[min_i].MidiInHandler(dev, port, msg + attr_midichannel, data1, data2);\n\n"
                 + "} else if (((msg == MIDI_NOTE_ON) && (!data2)) || (msg == MIDI_NOTE_OFF)) {\n"
                 + "  if ((chnl == attr_midichannel) || (chnl < lowChannel) || (chnl > highChannel)) return;\n"
-                + "  uint8_t i; for (i = 0; i < attr_poly; i++) {\n"
+                + "  uint32_t i; for (i = 0; i < attr_poly; i++) {\n"
                 + "    if (data1 == voiceNotePlaying[i] && chnl == voiceChannel[i]) {\n"
                 + "      voicePriority[i] = priority++;\n"
                 + "      voiceChannel[i] = 0xFF;\n"
@@ -2535,7 +2535,7 @@ public class Patch {
                 + "        lowChannel = 15 - data2;\n"
                 + "        highChannel = 14;\n"
                 + "      }\n"
-                + "      uint8_t i; for (i = 0; i < attr_poly; i++) {\n"
+                + "      uint32_t i; for (i = 0; i < attr_poly; i++) {\n"
                 + "        getVoices()[i].MidiInHandler(dev, port, MIDI_CONTROL_CHANGE + attr_midichannel, MIDI_C_RPN_LSB, lastRPN_LSB);\n"
                 + "        getVoices()[i].MidiInHandler(dev, port, MIDI_CONTROL_CHANGE + attr_midichannel, MIDI_C_RPN_MSB, lastRPN_MSB);\n"
                 + "        getVoices()[i].MidiInHandler(dev, port, MIDI_CONTROL_CHANGE + attr_midichannel, MIDI_C_DATA_ENTRY, pitchbendRange);\n"
@@ -2546,7 +2546,7 @@ public class Patch {
                 + "    }\n"
                 + "  }\n"
                 + "  if ((chnl != attr_midichannel) && (chnl < lowChannel || chnl > highChannel)) return;\n"
-                + "  uint8_t i; for (i = 0; i < attr_poly; i++) {\n"
+                + "  uint32_t i; for (i = 0; i < attr_poly; i++) {\n"
                 + "    if ((chnl == voiceChannel[i]) || (chnl == attr_midichannel)) {\n"
                 + "      getVoices()[i].MidiInHandler(dev, port, MIDI_CONTROL_CHANGE + attr_midichannel, data1, data2);\n"
                 + "    }\n"
@@ -2557,7 +2557,7 @@ public class Patch {
                 + "      case MIDI_C_RPN_MSB: lastRPN_MSB = data2; break;\n"
                 + "      case MIDI_C_DATA_ENTRY: {\n"
                 + "        if ((lastRPN_LSB == 0) && (lastRPN_MSB == 0)) {\n"
-                + "          uint8_t i; for (i = 0; i < attr_poly; i++) {\n"
+                + "          uint32_t i; for (i = 0; i < attr_poly; i++) {\n"
                 + "            if (chnl != voiceChannel[i]) {\n" // because already sent above
                 + "              pitchbendRange = data2;\n"
                 + "              getVoices()[i].MidiInHandler(dev, port, MIDI_CONTROL_CHANGE + attr_midichannel, MIDI_C_RPN_LSB, lastRPN_LSB);\n"
@@ -2584,14 +2584,14 @@ public class Patch {
                 + "  }\n"
                 + "} else if (msg == MIDI_PITCH_BEND) {\n"
                 + "  if ((chnl != attr_midichannel) && (chnl < lowChannel || chnl > highChannel)) return;\n"
-                + "  uint8_t i; for (i = 0; i < attr_poly; i++) {\n"
+                + "  uint32_t i; for (i = 0; i < attr_poly; i++) {\n"
                 + "    if ((chnl == voiceChannel[i]) || (chnl == attr_midichannel)) {\n"
                 + "      getVoices()[i].MidiInHandler(dev, port, MIDI_PITCH_BEND + attr_midichannel, data1, data2);\n" /* Would have to send on chnl here to be able to isolate global pitch bend */
                 + "    }\n"
                 + "  }\n"
                 + "} else {" /* Any other MIDI messages: forward */
                 + "  if ((chnl != attr_midichannel) && (chnl < lowChannel || chnl > highChannel)) return;\n"
-                + "  uint8_t i; for (i = 0; i < attr_poly; i++) {\n"
+                + "  uint32_t i; for (i = 0; i < attr_poly; i++) {\n"
                 + "    if ((chnl == voiceChannel[i]) || (chnl == attr_midichannel)) {\n"
                 + "      getVoices()[i].MidiInHandler(dev, port, msg + attr_midichannel, data1, data2);\n"
                 + "    }\n"
