@@ -1471,7 +1471,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         } else {
             String name = MainFrame.prefs.getBoardName(cpuId);
             if (name == null) {
-                jLabelCPUID.setText("Board ID:    " + cpuId);
+                jLabelCPUID.setText("Board ID:    " + cpuId.substring(0, 8) + " " + cpuId.substring(8, 16) + " " + cpuId.substring(16, 24));
                 jLabelCPUID.setToolTipText("Showing board ID of the currently connected Core.\n" +
                                            "You can name your Core by disconnecting it from\n" +
                                            "the Patcher, then going to Board > Select Device... > Name.\n" + 
