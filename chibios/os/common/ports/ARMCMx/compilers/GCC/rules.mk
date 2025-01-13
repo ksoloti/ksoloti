@@ -65,7 +65,7 @@ OUTFILES := $(BUILDDIR)/$(PROJECT).elf \
             $(BUILDDIR)/$(PROJECT).hex \
             $(BUILDDIR)/$(PROJECT).bin \
             $(BUILDDIR)/$(PROJECT).dmp \
-            $(BUILDDIR)/$(PROJECT).list
+            # $(BUILDDIR)/$(PROJECT).list
 
 ifdef SREC
   OUTFILES += $(BUILDDIR)/$(PROJECT).srec
@@ -281,15 +281,15 @@ else
 	@$(SZ) $<
 endif
 
-%.list: %.elf
-ifeq ($(USE_VERBOSE_COMPILE),yes)
-	$(OD) -S $< > $@
-else
-	@echo Creating $@
-	@$(OD) -S $< > $@
-	@echo
-	@echo Done
-endif
+# %.list: %.elf
+# ifeq ($(USE_VERBOSE_COMPILE),yes)
+# 	$(OD) -S $< > $@
+# else
+# 	@echo Creating $@
+# 	@$(OD) -S $< > $@
+# 	@echo
+# 	@echo Done
+# endif
 
 lib: $(OBJS) $(BUILDDIR)/lib$(PROJECT).a
 
