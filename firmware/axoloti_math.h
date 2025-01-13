@@ -225,13 +225,8 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t rand_s32(void) {
 #endif
 #define RAND_MAX INT32_MAX
 
-/* Satisfy compiler by undefining standard C rand() and replacing it with below, bipolar version */
-#ifdef rand
-#undef rand
-#endif
-
-__attribute__((always_inline)) __INLINE int rand(void) {
-    // standard C rand()
+__attribute__((always_inline)) __STATIC_INLINE int rand_u32(void) {
+    /* like standard C rand() */
     return ((uint32_t) rand_s32()) >> 1;
 }
 
