@@ -1003,7 +1003,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             pb.setVisible(true);
         } catch (IOException ex) {
             pb.Close();
-            LOGGER.log(Level.SEVERE, "Patchbank file not found or not accessible: {0}", f.getName());
+            LOGGER.log(Level.SEVERE, "Patchbank file not found or inaccessible: {0}", f.getName());
         }
     }
 

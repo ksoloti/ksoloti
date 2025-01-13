@@ -165,10 +165,10 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
                 if (result == LibUsb.ERROR_NOT_FOUND) {
                     Logger.getLogger(MainFrame.class.getName(), "You may need to install a compatible driver using Zadig. More info at https://ksoloti.github.io/3-4-rescue_mode.html#zadig_bootloader");
-                    return "Not accessible: driver not installed";
+                    return "Inaccessible: driver not installed";
                 }
                 else if (result == LibUsb.ERROR_ACCESS) {
-                    return "Not accessible: busy?";
+                    return "Inaccessible: busy?";
                 }
             }
             else if (getOS() == OSDetect.OS.LINUX) {
@@ -179,7 +179,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 }
             }
 
-            return "Not accessible: " + result; /* Mac OS default, fallthrough for Windows and Linux */
+            return "Inaccessible: " + result; /* Mac OS default, fallthrough for Windows and Linux */
         }
         else {
             return null;
@@ -224,17 +224,17 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                                 if (getOS() == OSDetect.OS.WIN) {
 
                                     if (result == LibUsb.ERROR_NOT_SUPPORTED) {
-                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Not accessible: wrong driver installed"});
+                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Inaccessible: wrong driver installed"});
                                     }
                                     else if (result == LibUsb.ERROR_ACCESS) {
-                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Not accessible: busy?"});
+                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Inaccessible: busy?"});
                                     }
                                     else {
-                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Not accessible: " + result});
+                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Inaccessible: " + result});
                                     }
                                 }
                                 else {
-                                    model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Not accessible: " + result});
+                                    model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Inaccessible: " + result});
                                 }
                             }
                             else {
