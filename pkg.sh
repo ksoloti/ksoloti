@@ -75,11 +75,6 @@ case "$platform" in
             ant clean
             ant
             ant clean
-            # cd platform_win
-            # cmd "//C path.bat && apache-ant-1.10.14/bin/ant.bat clean"
-            # cmd "//C path.bat && apache-ant-1.10.14/bin/ant.bat"
-            # cmd "//C path.bat && apache-ant-1.10.14/bin/ant.bat clean"
-            # cd ..
         ;;
 esac
 
@@ -192,7 +187,11 @@ rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/jre/demo
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/jre/man
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/jre/lib/src.zip
 
-chmod +x ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/jre/lib/jspawnhelper
+chmod 755 ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/jre/lib/jspawnhelper
+chmod -R 755 ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/*.sh
+chmod -R 755 ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/*.mk
+chmod -R 755 ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/platform_osx/bin/*
+chmod -R 755 ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/platform_osx/**/bin/*
 
 cd ./packagetemp/mac && tar -czf ../ksoloti_patcher-mac-${CUSTOMLABEL}${VERSION_LONG}.tar.gz *
 cd ../..
