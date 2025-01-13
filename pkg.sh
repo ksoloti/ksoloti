@@ -259,7 +259,7 @@ case "$platform" in
         ;;
         windows)
             # apply icon
-            ./jdks/rcedit-x64.exe ./packagetemp/win/ksoloti-${VERSION}/Ksoloti.exe --set-icon ./src/main/java/resources/ksoloti_icon.ico
+            ./jdks/rcedit-x64.exe ./packagetemp/win/ksoloti-${VERSION}/Ksoloti.exe --set-icon ./src/main/java/resources/ksoloti_icon.ico --set-product-version "${VERSION}"
             # zip using 7-zip
             cd ./packagetemp/win && "C:/Program Files/7-Zip/7z.exe" a -tzip ../ksoloti_patcher-windows-${CUSTOMLABEL}${VERSION_LONG}.zip *
         ;;
