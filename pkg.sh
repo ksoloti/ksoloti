@@ -60,7 +60,6 @@ sh ./qlean.sh
 
 
 # ----- Compile jar
-ant clean
 case "$platform" in
         mac)
             ant clean
