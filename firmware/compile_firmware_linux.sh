@@ -15,7 +15,7 @@ rm -f .dep/*
 rm -f flasher_build/lst/*
 rm -f flasher_build/obj/*
 # FWOPTIONDEF currently not used in flasher
-if ! make -j16 BOARDDEF=$1; then
+if ! make -j8 BOARDDEF=$1; then
     exit 1
 fi
 cd ..
@@ -29,7 +29,7 @@ rm -f .dep/*
 rm -f mounter_build/lst/*
 rm -f mounter_build/obj/*
 # FWOPTIONDEF currently not used in mounter
-if ! make -j16 BOARDDEF=$1; then
+if ! make -j8 BOARDDEF=$1; then
     exit 1
 fi
 cd ..
@@ -41,7 +41,7 @@ mkdir -p build/obj
 rm -f .dep/*
 rm -f build/lst/*
 rm -f build/obj/*
-if ! make -j16 BOARDDEF=$1; then
+if ! make -j8 BOARDDEF=$1; then
     exit 1
 fi
 
@@ -52,7 +52,7 @@ mkdir -p build/obj
 rm -f .dep/*
 rm -f build/lst/*
 rm -f build/obj/*
-if ! make -j16 BOARDDEF=$1 FWOPTIONDEF=FW_SPILINK; then
+if ! make -j8 BOARDDEF=$1 FWOPTIONDEF=FW_SPILINK; then
     exit 1
 fi
 
@@ -63,6 +63,6 @@ mkdir -p build/obj
 rm -f .dep/*
 rm -f build/lst/*
 rm -f build/obj/*
-if ! make -j16 BOARDDEF=$1 FWOPTIONDEF=FW_USBAUDIO; then
+if ! make -j8 BOARDDEF=$1 FWOPTIONDEF=FW_USBAUDIO; then
     exit 1
 fi
