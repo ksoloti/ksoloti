@@ -30,7 +30,7 @@ public class QCmdGetFileList implements QCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "";
+        return "Receiving SD card file list...";
     }
 
     @Override
