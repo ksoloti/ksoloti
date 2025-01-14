@@ -1834,11 +1834,11 @@ public class Patch {
            + I + "sdram_init(&_sdram_dyn_start, &_sdram_dyn_end);\n\n"
            + I + "root.Init();\n\n";
 
-        c += I + "patchMeta.fptr_applyPreset = ApplyPreset;\n";
+        c += I + "patchMeta.fptr_applyPreset   = ApplyPreset;\n";
 
         c += I + "patchMeta.fptr_patch_dispose = PatchDispose;\n"
            + I + "patchMeta.fptr_MidiInHandler = PatchMidiInHandler;\n"
-           + I + "patchMeta.fptr_dsp_process = PatchProcess;\n"
+           + I + "patchMeta.fptr_dsp_process   = PatchProcess;\n"
            + "}\n";
         return c;
     }
@@ -1983,7 +1983,7 @@ public class Patch {
         }
         /* object structures */
         ao.sLocalData = GenerateStructCodePlusPlusSub("attr_parent")
-                + "static const uint8_t polyIndex = 0;\n";
+                + I + "static const uint8_t polyIndex = 0;\n\n";
         ao.sLocalData += GenerateParamInitCode3("");
 
         ao.sLocalData += GeneratePresetCode3("");
