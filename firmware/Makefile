@@ -25,8 +25,7 @@ ifeq ($(USE_OPT),)
     -mfpu=fpv4-sp-d16 \
     -mthumb \
     -mtune=cortex-m4 \
-    -mword-relocations \
-    -pipe 
+    -mword-relocations
 endif
 
 ifneq ($(FWOPTIONDEF),)
