@@ -405,7 +405,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 OpenEditor();
             }
         });
+        popm_edit.setMnemonic('E');
         popup.add(popm_edit);
+
         JMenuItem popm_editInstanceName = new JMenuItem("Edit instance name");
         popm_editInstanceName.addActionListener(new ActionListener() {
             @Override
@@ -413,15 +415,63 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 addInstanceNameEditor();
             }
         });
+        popm_editInstanceName.setMnemonic('N');
         popup.add(popm_editInstanceName);
-        JMenuItem popm_substitute = new JMenuItem("Replace");
-        popm_substitute.addActionListener(new ActionListener() {
+
+        JMenuItem popm_freezeAllParameters = new JMenuItem("Freeze all parameters");
+        if (getType().toString().equals("patch/patcher")) {
+            popm_freezeAllParameters.setEnabled(false);
+            popm_freezeAllParameters.setToolTipText("Parameters cannot be frozen because this object is a subpatch.\n" +
+                                    "You can freeze parameters from inside the subpatch. If you do so, they will\n" +
+                                    "temporarily disappear from the parent and their value will revert to the\n" + 
+                                    "knob position inside the subpatch. Unfreeze a parameter to make it reappear on\n" +
+                                    "the parent and become editable again.");
+        }
+        else {
+            popm_freezeAllParameters.setToolTipText("While frozen, a parameter consumes less memory and DSP but cannot be\n" +
+                                    "changed while the patch is live (essentially acting as an attribute).\n" +
+                                    "Any modulation, preset change, and MIDI assignments to the parameter\n" +
+                                    "will have no effect while it is frozen.");
+        }
+
+        if (getPatch().IsLocked()) {
+            popm_freezeAllParameters.setEnabled(false);
+        }
+        /* Check if all parameters are frozen, if yes change menu entry to unfreeze */
+        boolean isAllFrozen = true;
+        for (ParameterInstance pi : parameterInstances) {
+            isAllFrozen &= pi.isFrozen();
+        }
+        if (isAllFrozen) {
+            popm_freezeAllParameters.setText("Unfreeze all parameters");
+            popm_freezeAllParameters.setMnemonic('U');
+        }
+        else {
+            popm_freezeAllParameters.setMnemonic('F');
+        }
+        
+        final boolean f = isAllFrozen; /* "variable defined in an enclosing scope must be final" workaround */
+        popm_freezeAllParameters.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                for (ParameterInstance pi : parameterInstances) {
+                    pi.setFrozen(!f);
+                }
+            }
+        });
+        popup.add(popm_freezeAllParameters);
+
+        JMenuItem popm_replace = new JMenuItem("Replace");
+        popm_replace.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 ((PatchGUI) patch).ShowClassSelector(AxoObjectInstance.this.getLocation(), AxoObjectInstance.this, null, true);
             }
         });
-        popup.add(popm_substitute);
+        popm_replace.setMnemonic('R');
+        popup.add(popm_replace);
+
         if (getType().GetHelpPatchFile() != null) {
             JMenuItem popm_help = new JMenuItem("Help patch");
             popm_help.addActionListener(new ActionListener() {
@@ -430,6 +480,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     PatchGUI.OpenPatch(getType().GetHelpPatchFile());
                 }
             });
+            popm_help.setMnemonic('H');
             popup.add(popm_help);
         }
 
@@ -441,6 +492,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     ConvertToPatchPatcher();
                 }
             });
+            popm_embed.setMnemonic('B');
             popup.add(popm_embed);
         } else if (!(this instanceof AxoObjectInstancePatcherObject)) {
             JMenuItem popm_embed = new JMenuItem("Embed as Object");
@@ -450,6 +502,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     ConvertToEmbeddedObj();
                 }
             });
+            popm_embed.setMnemonic('B');
             popup.add(popm_embed);
         }
         return popup;
