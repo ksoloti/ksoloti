@@ -118,18 +118,17 @@ ifeq ($(FWOPTIONDEF),FW_USBAUDIO)
 endif
 
 # Imported source files and paths
-axoloti_runtime ?= ..
-axoloti_release ?= ..
 axoloti_home ?= ..
 axoloti_firmware ?= ../firmware
 
-CHIBIOS = ${axoloti_release}/chibios
-
-
 EMPTY := 
 SPACE := $(EMPTY) $(EMPTY)
-FIRMWARE=$(subst $(SPACE),\ ,${axoloti_firmware})
 
+HOME     = $(subst $(SPACE),\ ,${axoloti_home})
+FIRMWARE = $(subst $(SPACE),\ ,${axoloti_firmware})
+
+CHIBIOS             = ${HOME}/chibios
+CMSIS               = ${HOME}/CMSIS
 MUTABLE_INSTRUMENTS = ${FIRMWARE}/mutable_instruments
 
 
@@ -151,7 +150,6 @@ include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 override BIN = $(CP) -O binary --gap-fill 0xff
 override HEX = $(CP) -O ihex --gap-fill 0xff
 
-CMSIS = ${axoloti_release}/CMSIS
 
 
 # Define linker script file here
