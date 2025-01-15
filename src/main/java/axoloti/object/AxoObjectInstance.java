@@ -416,51 +416,54 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
         });
         popm_editInstanceName.setMnemonic('N');
+        popm_editInstanceName.setDisplayedMnemonicIndex(14);
         popup.add(popm_editInstanceName);
 
-        JMenuItem popm_freezeAllParameters = new JMenuItem("Freeze all parameters");
-        if (getType().toString().equals("patch/patcher")) {
-            popm_freezeAllParameters.setEnabled(false);
-            popm_freezeAllParameters.setToolTipText("Parameters cannot be frozen because this object is a subpatch.\n" +
-                                    "You can freeze parameters from inside the subpatch. If you do so, they will\n" +
-                                    "temporarily disappear from the parent and their value will revert to the\n" + 
-                                    "knob position inside the subpatch. Unfreeze a parameter to make it reappear on\n" +
-                                    "the parent and become editable again.");
-        }
-        else {
-            popm_freezeAllParameters.setToolTipText("While frozen, a parameter consumes less memory and DSP but cannot be\n" +
-                                    "changed while the patch is live (essentially acting as an attribute).\n" +
-                                    "Any modulation, preset change, and MIDI assignments to the parameter\n" +
-                                    "will have no effect while it is frozen.");
-        }
-
-        if (getPatch().IsLocked()) {
-            popm_freezeAllParameters.setEnabled(false);
-        }
-        /* Check if all parameters are frozen, if yes change menu entry to unfreeze */
-        boolean isAllFrozen = true;
-        for (ParameterInstance pi : parameterInstances) {
-            isAllFrozen &= pi.isFrozen();
-        }
-        if (isAllFrozen) {
-            popm_freezeAllParameters.setText("Unfreeze all parameters");
-            popm_freezeAllParameters.setMnemonic('U');
-        }
-        else {
-            popm_freezeAllParameters.setMnemonic('F');
-        }
-        
-        final boolean f = isAllFrozen; /* "variable defined in an enclosing scope must be final" workaround */
-        popm_freezeAllParameters.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                for (ParameterInstance pi : parameterInstances) {
-                    pi.setFrozen(!f);
-                }
+        if (parameterInstances.size() > 0) {
+            JMenuItem popm_freezeAllParameters = new JMenuItem("Freeze all parameters");
+            if (getType().toString().equals("patch/patcher")) {
+                popm_freezeAllParameters.setEnabled(false);
+                popm_freezeAllParameters.setToolTipText("Parameters cannot be frozen because this object is a subpatch.\n" +
+                                        "You can freeze parameters from inside the subpatch. If you do so, they will\n" +
+                                        "temporarily disappear from the parent and their value will revert to the\n" + 
+                                        "knob position inside the subpatch. Unfreeze a parameter to make it reappear on\n" +
+                                        "the parent and become editable again.");
             }
-        });
-        popup.add(popm_freezeAllParameters);
+            else {
+                popm_freezeAllParameters.setToolTipText("While frozen, a parameter consumes less memory and DSP but cannot be\n" +
+                                        "changed while the patch is live (essentially acting as an attribute).\n" +
+                                        "Any modulation, preset change, and MIDI assignments to the parameter\n" +
+                                        "will have no effect while it is frozen.");
+            }
+
+            if (getPatch().IsLocked()) {
+                popm_freezeAllParameters.setEnabled(false);
+            }
+            /* Check if all parameters are frozen, if yes change menu entry to unfreeze */
+            boolean isAllFrozen = true;
+            for (ParameterInstance pi : parameterInstances) {
+                isAllFrozen &= pi.isFrozen();
+            }
+            if (isAllFrozen) {
+                popm_freezeAllParameters.setText("Unfreeze all parameters");
+                popm_freezeAllParameters.setMnemonic('U');
+            }
+            else {
+                popm_freezeAllParameters.setMnemonic('F');
+            }
+            
+            final boolean f = isAllFrozen; /* "variable defined in an enclosing scope must be final" workaround */
+            popm_freezeAllParameters.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent ae) {
+                    for (ParameterInstance pi : parameterInstances) {
+                        pi.setFrozen(!f);
+                    }
+                }
+            });
+            popup.add(popm_freezeAllParameters);
+        }
 
         JMenuItem popm_replace = new JMenuItem("Replace");
         popm_replace.addActionListener(new ActionListener() {
