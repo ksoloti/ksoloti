@@ -9,20 +9,30 @@ FWOPTIONDEF=
 ifeq ($(USE_OPT),)
   USE_OPT = \
     -D$(BOARDDEF) \
-    --specs=nosys.specs \
     --specs=nano.specs \
+    --specs=nosys.specs \
+    -O2 \
     -Wno-implicit-fallthrough \
     -Wno-return-type \
     -Wno-unused-function \
     -Wno-unused-parameter \
-    -O2 \
     -falign-functions=16 \
+    -fcode-hoisting \
+    -fdata-sections \
+    -ffast-math \
+    -ffp-contract=off \
+    -ffunction-sections \
+    -fno-common \
     -fno-math-errno \
+    -fno-reorder-blocks \
+    -fno-signed-zeros \
+    -fno-unsafe-math-optimizations \
     -fomit-frame-pointer \
     -ggdb3 \
     -mcpu=cortex-m4 \
     -mfloat-abi=hard \
     -mfpu=fpv4-sp-d16 \
+    -mno-thumb-interwork \
     -mthumb \
     -mtune=cortex-m4 \
     -mword-relocations
@@ -41,7 +51,9 @@ endif
 ifeq ($(USE_CPPOPT),)
   USE_CPPOPT = \
     -fno-rtti \
-    -fno-threadsafe-statics
+    -fno-threadsafe-statics \
+    -fno-use-cxa-atexit \
+    -std=c++11
 endif
 
 # Enable this if you want the linker to remove unused code and data
@@ -466,9 +478,14 @@ DLIBS =
 
 # List all user C define here, like -D_DEBUG=1
 UDEFS = \
-    -DARM_MATH_CM4 \
-    -D__FPU_PRESENT \
-    -DCRT1_AREAS_NUMBER=0 \
+  -D$(BOARDDEF) \
+  -DARM_MATH_CM4 \
+  -DCORTEX_USE_FPU=TRUE \
+  -DCRT1_AREAS_NUMBER=0 \
+  -DTHUMB \
+  -DTHUMB_NO_INTERWORKING \
+  -DTHUMB_PRESENT \
+  -D__FPU_PRESENT
 
 # Define ASM defines here
 UADEFS =
