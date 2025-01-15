@@ -111,7 +111,7 @@ public class QCmdUploadFWSDRam implements QCmdSerialTask {
             CRC32 zcrc = new CRC32();
             zcrc.update(bb);
             int zcrcv = (int) zcrc.getValue();
-            LOGGER.log(Level.INFO, "Firmware CRC: 0x{0}", Integer.toHexString(zcrcv).toUpperCase());
+            LOGGER.log(Level.INFO, "Firmware CRC: {0}", Integer.toHexString(zcrcv).toUpperCase());
             header[12] = (byte) (zcrcv);
             header[13] = (byte) (zcrcv >> 8);
             header[14] = (byte) (zcrcv >> 16);

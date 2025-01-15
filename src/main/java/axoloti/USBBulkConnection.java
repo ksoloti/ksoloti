@@ -1673,7 +1673,7 @@ public class USBBulkConnection extends Connection {
                         String sFwcrc = String.format("%08X", fwcrc);
 
                         System.out.println(String.format("Firmware version: %d.%d.%d.%d, CRC: 0x%s, entry point: 0x%08X", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc, patchentrypoint));
-                        LOGGER.log(Level.INFO, String.format("Firmware version %d.%d.%d.%d | CRC 0x%s\n", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
+                        LOGGER.log(Level.INFO, String.format("Firmware version %d.%d.%d.%d | CRC %s\n", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
                         MainFrame.mainframe.setFirmwareID(sFwcrc);
                         GoIdleState();
                         break;
