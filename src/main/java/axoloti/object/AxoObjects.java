@@ -114,7 +114,7 @@ public class AxoObjects {
                         o.createdFromRelativePath = true;
                     }
                     o.sPath = f.getPath();
-                    LOGGER.log(Level.INFO, "Loaded: {0}", fnameP);
+                    LOGGER.log(Level.INFO, "Subpatch loaded: {0}", fnameP);
                     set.add(o);
                     return set;
                 }
@@ -137,7 +137,7 @@ public class AxoObjects {
                     AxoObjectAbstract o = new AxoObjectFromPatch(fs);
 //                    o.createdFromRelativePath = true;
                     o.sPath = n + ".axs";
-                    LOGGER.log(Level.INFO, "Loaded: {0}", fsname);
+                    LOGGER.log(Level.INFO, "Subpatch loaded: {0}", fsname);
                     set.add(o);
                     return set;
                 }
