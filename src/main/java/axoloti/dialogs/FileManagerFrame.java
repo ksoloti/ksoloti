@@ -70,7 +70,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
      * Creates new form FileManagerFrame
      */
     public FileManagerFrame() {
-        setPreferredSize(new Dimension(800,400));
+        setPreferredSize(new Dimension(640,400));
         initComponents();
         fileMenu1.initComponents();
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
@@ -147,7 +147,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     break;
                     case 3: {
                         Calendar c = SDCardInfo.getInstance().getFiles().get(rowIndex).getTimestamp();
-                        if (c.get(Calendar.YEAR) > 1979) {
+                        if (c.get(Calendar.YEAR) > 1980) {
                             returnValue = DateFormat.getDateTimeInstance().format(c.getTime());
                         } else {
                             returnValue = "";
@@ -210,7 +210,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         }
     }
     
-    void UpdateButtons(){
+    void UpdateButtons() {
         int rows[] = jFileTable.getSelectedRows();
         if (rows.length > 1) {
             jButtonDelete.setEnabled(true);
