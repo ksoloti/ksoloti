@@ -349,7 +349,7 @@ public class PreferencesFrame extends JFrame {
 
             },
             new String [] {
-                "Type", "Id", "Location", "Enabled"
+                "Type", "ID", "Location", "Enabled"
             }
         ) {
             Class<?>[] types = new Class [] {

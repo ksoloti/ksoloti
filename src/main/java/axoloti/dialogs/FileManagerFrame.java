@@ -450,15 +450,23 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             String txt;
 
             if (rows.length > 1) {
-                txt = "Are you sure you want to delete all selected items?";
+                txt = "Delete selected items?";
             }
             else {
                 SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rows[0]);
                 String ff = f.getFilename();
-                txt = "Are you sure you want to delete \"" + ff + "\"?";
+                txt = "Delete \"" + ff + "\"?";
             }
 
-            int n = JOptionPane.showConfirmDialog(this, txt, "Confirm Delete", JOptionPane.YES_NO_OPTION);
+            Object[] options = {"Delete", "Cancel"};
+            int n = JOptionPane.showOptionDialog(this,
+                                                 txt,
+                                                 "Confirm Delete",
+                                                 JOptionPane.YES_NO_OPTION,
+                                                 JOptionPane.WARNING_MESSAGE,
+                                                 null,
+                                                 options,
+                                                 options[1]);
             switch (n) {
                 case JOptionPane.YES_OPTION: {
                     QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
@@ -495,7 +503,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 dir = f.getFilename();
             }
         }
-        String fn = JOptionPane.showInputDialog(this, "Enter Folder name:");
+        String fn = JOptionPane.showInputDialog(this, "Enter folder name:");
         if (fn != null && !fn.isEmpty()) {
             QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
             processor.AppendToQueue(new QCmdCreateDirectory(dir + fn));

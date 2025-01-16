@@ -434,8 +434,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 fileToBeSaved = new File(fc.getSelectedFile() + filterext);
 
             } else if (!ext.equals(filterext)) {
-                Object[] options = {"Change",
-                    "No"};
+                Object[] options = {"Change", "No"};
                 int n = JOptionPane.showOptionDialog(this,
                         "File does not match filter. Change extension to " + filterext + "?",
                         "File Extension",
