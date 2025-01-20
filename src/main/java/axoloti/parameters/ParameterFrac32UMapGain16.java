@@ -39,7 +39,7 @@ public class ParameterFrac32UMapGain16 extends ParameterFrac32UMap {
     @Override
     public ParameterInstanceFrac32UMap InstanceFactory() {
         ParameterInstanceFrac32UMap p = super.InstanceFactory();
-        NativeToReal convs[] = {new LinRatio(16.0), new LinDB(10.0 * Math.log10(16.0))};
+        NativeToReal convs[] = {new LinRatio(16.0), new LinDB(20.0 * Math.log10(16.0))};
         p.SetPFunction("pfun_signed_clamp_fullrange");
         p.convs = convs;
         return p;
