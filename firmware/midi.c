@@ -100,8 +100,16 @@ void MidiSend3(midi_device_t dev, uint8_t port, uint8_t b0, uint8_t b1, uint8_t 
 
 void MidiSendSysEx(midi_device_t dev, uint8_t port, uint8_t bytes[], uint8_t len) {
     switch (dev) {
+        case MIDI_DEVICE_DIN: {
+            sdWrite(&SDMIDI, bytes, len);
+            break;
+        }
         case MIDI_DEVICE_USB_HOST: {
-            usbh_MidiSendSysEx(port,bytes,len);
+            usbh_MidiSendSysEx(port, bytes, len);
+            break;
+        }
+        case MIDI_DEVICE_USB_DEVICE: {
+            midi_usb_MidiSendSysEx(port, bytes, len);
             break;
         }
         default: {

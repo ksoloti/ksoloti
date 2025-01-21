@@ -505,6 +505,53 @@ void midi_usb_MidiSend3(uint8_t port, uint8_t b0, uint8_t b1, uint8_t b2) {
   write(&MDU1, &tx[0], 4);
 }
 
+#define CIN_SYSEX_START 0x04
+#define CIN_SYSEX_END_1 0x05
+#define CIN_SYSEX_END_2 0x06
+#define CIN_SYSEX_END_3 0x07
+
+void midi_usb_MidiSendSysEx(uint8_t port, uint8_t bytes[], uint8_t len) {
+
+  if (len < 3 || sizeof(bytes) < 3) return;
+
+  const uint8_t cn = (( port - 1) & 0x0F) << 4;
+
+  uint8_t tx[4];
+
+  uint8_t i = 0;
+  for (i = 0; i < (len - 3); i += 3) {
+    tx[0] = CIN_SYSEX_START | cn;
+    tx[1] = bytes[i];
+    tx[2] = bytes[i + 1];
+    tx[3] = bytes[i + 2];
+    write(&MDU1, &tx[0], 4);
+  }
+
+  uint8_t remain = len - i;
+
+  if (remain == 1) {
+    tx[0] = CIN_SYSEX_END_1 | cn;
+    tx[1] = bytes[i];
+    tx[2] = 0;
+    tx[3] = 0;
+    write(&MDU1, &tx[0], 4);
+  }
+  else if (remain == 2) {
+    tx[0] = CIN_SYSEX_END_2 | cn;
+    tx[1] = bytes[i];
+    tx[2] = bytes[i + 1];
+    tx[3] = 0;
+    write(&MDU1, &tx[0], 4);
+  }
+  else if (remain == 3) {
+    tx[0] = CIN_SYSEX_END_3 | cn;
+    tx[1] = bytes[i];
+    tx[2] = bytes[i + 1];
+    tx[3] = bytes[i + 2];
+    write(&MDU1, &tx[0], 4);
+  }
+}
+
 #endif /* HAL_USE_BULK_USB */
 
 /** @} */

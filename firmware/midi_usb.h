@@ -174,6 +174,7 @@ extern "C" {
   void midi_usb_MidiSend1(uint8_t port, uint8_t b0);
   void midi_usb_MidiSend2(uint8_t port, uint8_t b0, uint8_t b1);
   void midi_usb_MidiSend3(uint8_t port, uint8_t b0, uint8_t b1, uint8_t b2);
+  void midi_usb_MidiSendSysEx(uint8_t port, uint8_t bytes[], uint8_t len);
 #ifdef __cplusplus
 }
 #endif
