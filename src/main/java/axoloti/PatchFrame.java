@@ -323,7 +323,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     @Override
     public boolean AskClose() {
-        if (patch.isDirty() && patch.container() == null) {
+        if (patch.isDirty() && patch.getContainer() == null) {
             Object[] options = {"Save",
                 "Discard",
                 "Cancel"};
@@ -1177,7 +1177,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private boolean GoLive() {
-        if (patch.getFileNamePath().endsWith(".axs") || patch.container() != null) {
+        if (patch.getFileNamePath().endsWith(".axs") || patch.getContainer() != null) {
             Object[] options = {"Go Live",
                 "Cancel"};
 

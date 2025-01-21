@@ -68,7 +68,7 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
             ao.sDescription = pg.getNotes();
             ao.sLicense = pg.getSettings().getLicense();
             ao.sAuthor = pg.getSettings().getAuthor();
-            pg.container(patch);
+            pg.setContainer(patch);
         }
     }
 

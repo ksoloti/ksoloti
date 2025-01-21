@@ -541,11 +541,11 @@ public class Patch {
         }
     }
 
-    public Patch container() {
+    public Patch getContainer() {
         return container;
     }
 
-    public void container(Patch c) {
+    public void setContainer(Patch c) {
         container = c;
     }
 
