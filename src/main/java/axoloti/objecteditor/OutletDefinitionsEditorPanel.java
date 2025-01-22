@@ -39,6 +39,6 @@ public class OutletDefinitionsEditorPanel extends AtomDefinitionsEditor<Outlet> 
 
     @Override
     String getDefaultName() {
-        return "o";
+        return "out";
     }
 }
