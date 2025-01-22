@@ -56,7 +56,7 @@ public class Lfo extends gentools {
         o.sLocalData = "uint32_t Phase;";
         o.sInitCode = "Phase = 0;";
         o.sKRateCode = "Phase += inlet_freq;\n"
-                + "%out%= sinet[Phase>>22]<<12;";
+                + "%out%= sine2t[Phase>>20]<<12;";
         return o;
     }
 

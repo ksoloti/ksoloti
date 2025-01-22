@@ -34,8 +34,8 @@
 //#include "core_cm4_simd.h"
 //#pragma GCC diagnostic pop
 
-#define SINETSIZE 1024
-extern int16_t sinet[SINETSIZE + 1];
+// #define SINETSIZE 1024
+// extern int16_t sinet[SINETSIZE + 1];
 
 #define SINE2TSIZE 4096
 extern int32_t sine2t[SINE2TSIZE + 1];
