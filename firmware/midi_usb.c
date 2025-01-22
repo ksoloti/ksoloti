@@ -512,7 +512,7 @@ void midi_usb_MidiSend3(uint8_t port, uint8_t b0, uint8_t b1, uint8_t b2) {
 
 void midi_usb_MidiSendSysEx(uint8_t port, uint8_t bytes[], uint8_t len) {
 
-  if (len < 3 || sizeof(bytes) < 3) return;
+  if (len < 3) return;
 
   const uint8_t cn = (( port - 1) & 0x0F) << 4;
 
