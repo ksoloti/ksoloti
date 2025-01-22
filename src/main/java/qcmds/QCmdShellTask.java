@@ -75,6 +75,10 @@ public abstract class QCmdShellTask implements QCmd {
                     else if (line.contains("warning:")) {
                         LOGGER.log(Level.WARNING, "{0}", line);
                     }
+                    else if (line.contains("          0 GB")) {
+                        /* little modification for --print-memory-usage format */
+                        LOGGER.log(Level.INFO, "{0}", line.replaceAll("          0 GB", "           0 B"));
+                    }
                     else {
                         LOGGER.log(Level.INFO, "{0}", line);
                     }
