@@ -6,6 +6,20 @@ BOARDDEF=
 FWOPTIONDEF=
 
 # Compiler options here.
+
+
+# O3 would turn on the six additional flags below:
+
+# These three flags DO NOT work:
+#-funswitch-loops
+#-finline-functions
+#-fipa-cp-clone
+
+# These three flags work but make little/no difference:
+#-fpredictive-commoning
+#-fgcse-after-reload
+#-ftree-vectorize
+
 ifeq ($(USE_OPT),)
   USE_OPT = \
     -D$(BOARDDEF) \
