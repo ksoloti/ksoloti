@@ -25,7 +25,6 @@ esac
 case "$platform" in
     mac)
         rm -f ./firmware/build/*.*
-        sh ./qlean.sh
 
         # compile board mode and firmware options
         sh ./platform_osx/compile_firmware.sh BOARD_AXOLOTI_CORE 2>&1 | tee firmware.log
@@ -55,12 +54,10 @@ case "$platform" in
 
         ./platform_osx/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/build/ksoloti_usbaudio.elf > ./firmware/build/ksoloti_usbaudio.lst
 
-        sh ./qlean.sh
     ;;
 
     linux)
         rm -f ./firmware/build/*.*
-        sh ./qlean.sh
 
         # compile board mode and firmware options
         sh ./platform_linux/compile_firmware.sh BOARD_AXOLOTI_CORE 2>&1 | tee firmware.log
@@ -89,12 +86,10 @@ case "$platform" in
 
         ./platform_linux/bin/arm-none-eabi-objdump --source-comment --demangle --disassemble ./firmware/build/ksoloti_usbaudio.elf > ./firmware/build/ksoloti_usbaudio.lst
 
-        sh ./qlean.sh
     ;;
 
     windows)
         rm -f ./firmware/build/*.*
-        sh ./qlean.sh
         cd platform_win
 
         # compile board mode and firmware options
@@ -126,6 +121,5 @@ case "$platform" in
 
         ./platform_win/bin/arm-none-eabi-objdump.exe --source-comment --demangle --disassemble ./firmware/build/ksoloti_usbaudio.elf > ./firmware/build/ksoloti_usbaudio.lst
 
-        sh ./qlean.sh
     ;;
 esac
