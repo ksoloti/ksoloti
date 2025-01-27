@@ -46,9 +46,12 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+
 import qcmds.QCmdCreateDirectory;
 import qcmds.QCmdDeleteFile;
 import qcmds.QCmdGetFileList;
@@ -66,10 +69,12 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
     private static final Logger LOGGER = Logger.getLogger(FileManagerFrame.class.getName());
 
+    private static DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
     /**
      * Creates new form FileManagerFrame
      */
     public FileManagerFrame() {
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         setPreferredSize(new Dimension(640,400));
         initComponents();
         fileMenu1.initComponents();
@@ -203,10 +208,15 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
         jScrollPane1.setViewportView(jFileTable);
         if (jFileTable.getColumnModel().getColumnCount() > 0) {
-            jFileTable.getColumnModel().getColumn(0).setPreferredWidth(360);
-            jFileTable.getColumnModel().getColumn(1).setPreferredWidth(30);
+            jFileTable.getColumnModel().getColumn(0).setPreferredWidth(320);
+
+            jFileTable.getColumnModel().getColumn(1).setPreferredWidth(80);
+            jFileTable.getColumnModel().getColumn(1).setMaxWidth(80);
+            jFileTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+
             jFileTable.getColumnModel().getColumn(2).setPreferredWidth(90);
-            jFileTable.getColumnModel().getColumn(3).setPreferredWidth(120);
+
+            jFileTable.getColumnModel().getColumn(3).setPreferredWidth(140);
         }
     }
     
