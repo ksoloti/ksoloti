@@ -188,8 +188,7 @@ rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/jre/man
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/jre/lib/src.zip
 
 chmod 755 ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/jre/lib/jspawnhelper
-chmod -R 755 ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/*.sh
-chmod -R 755 ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/*.mk
+chmod 755 ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/*.mk
 chmod -R 755 ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/platform_osx/bin/*
 chmod -R 755 ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/platform_osx/**/bin/*
 
