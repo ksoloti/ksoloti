@@ -84,6 +84,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         jLabelSDInfo.setText("");
 
         jFileTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        jFileTable.setRowHeight(24);
         jFileTable.setModel(new AbstractTableModel() {
             private final String[] columnNames = {"Name", "Type", "Size", "Modified"};
 

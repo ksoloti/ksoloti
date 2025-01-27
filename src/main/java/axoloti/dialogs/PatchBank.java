@@ -215,6 +215,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             }
         });
         jTable1.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        jTable1.setRowHeight(24);
 
 
         jScrollPane1.setDropTarget(new DropTarget() {

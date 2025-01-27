@@ -123,6 +123,7 @@ public class PreferencesFrame extends JFrame {
             @Override
             public void mousePressed(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
+                table.setRowHeight(24);
                 Point p = me.getPoint();
                 int idx = table.rowAtPoint(p);
                 if (me.getClickCount() == 2) {
@@ -344,6 +345,7 @@ public class PreferencesFrame extends JFrame {
         });
 
         jLibraryTable.getTableHeader().setReorderingAllowed(false);
+        jLibraryTable.setRowHeight(24);
         jLibraryTable.setModel(new DefaultTableModel(
             new Object [][] {
 
@@ -372,6 +374,7 @@ public class PreferencesFrame extends JFrame {
         jScrollPaneLibraryTable.setViewportView(jLibraryTable);
         jLibraryTable.getTableHeader().setReorderingAllowed(false);
         jLibraryTable.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jLibraryTable.setRowHeight(24);
         if (jLibraryTable.getColumnModel().getColumnCount() > 0) {
             jLibraryTable.getColumnModel().getColumn(0).setPreferredWidth(60);
             jLibraryTable.getColumnModel().getColumn(1).setPreferredWidth(140);
