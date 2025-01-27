@@ -118,11 +118,9 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 switch (columnIndex) {
                     case 0: {
                         SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
-                        // if (f.isDirectory()) {
+                        if (f != null) {
                             returnValue = f.getFilename();
-                        // } else {
-                            // returnValue = f.getFilenameNoExtension();
-                        // }
+                        }
                     }
                     break;
                     case 1: {
@@ -222,28 +220,39 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     
     void UpdateButtons() {
         int rows[] = jFileTable.getSelectedRows();
+
         if (rows.length > 1) {
             jButtonDelete.setEnabled(true);
             jButtonUpload.setEnabled(false);
             jButtonCreateDir.setEnabled(false);
             ButtonUploadDefaultName();
         }
-        else {
+        else if (rows.length == 1) {
             jButtonUpload.setEnabled(true);
             jButtonCreateDir.setEnabled(true);
+
             if (rows[0] < 0) {
                 jButtonDelete.setEnabled(false);
                 ButtonUploadDefaultName();
-            } else {
+            }
+            else {
                 jButtonDelete.setEnabled(true);
                 SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rows[0]);
+
                 if (f != null && f.isDirectory()) {
-                    jButtonUpload.setText("Upload to Selected...");// + f.getFilename() + " ...");
-                    jButtonCreateDir.setText("New Folder in Selected...");// + f.getFilename() + " ...");
-                } else {
+                    jButtonUpload.setText("Upload to Selected...");
+                    jButtonCreateDir.setText("New Folder in Selected...");
+                }
+                else {
                     ButtonUploadDefaultName();
                 }
             }        
+        }
+        else {
+            jButtonDelete.setEnabled(false);
+            jButtonUpload.setEnabled(false);
+            jButtonCreateDir.setEnabled(false);
+            ButtonUploadDefaultName();
         }
     }
 
