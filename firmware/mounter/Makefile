@@ -94,7 +94,7 @@ else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
   PROJECT = axoloti_mounter
 endif
 
-BUILDDIR = mounter_build
+BUILDDIR = mounter_build/$(PROJECT)
 
 # Imported source files and paths
 CHIBIOS = ${axoloti_release}/chibios

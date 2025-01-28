@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-export PATH=${axoloti_runtime}/platform_linux/bin:$PATH
+export PATH=${axoloti_runtime}/platform_win/bin:$PATH
 
 BUILD_NORMAL=$2
 BUILD_USBAUDIO=$3 
@@ -28,7 +28,7 @@ if [ $BUILD_FLASHER -eq 1 ]; then
     mkdir -p .dep
     mkdir -p flasher_build/$FLASHER_PROJECT/lst
     mkdir -p flasher_build/$FLASHER_PROJECT/obj
-    if ! make -j8 BOARDDEF=$1; then
+    if !make -j8 BOARDDEF=$1; then
         exit 1
     fi
     cp flasher_build/$FLASHER_PROJECT/$FLASHER_PROJECT.* flasher_build/

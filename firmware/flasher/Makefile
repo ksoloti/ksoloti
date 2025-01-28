@@ -93,7 +93,7 @@ else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
   PROJECT = axoloti_flasher
 endif
 
-BUILDDIR = flasher_build
+BUILDDIR = flasher_build/$(PROJECT)
 
 # Imported source files and paths
 CHIBIOS = ${axoloti_release}/chibios
