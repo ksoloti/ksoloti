@@ -27,14 +27,14 @@
 
 static const int8_t StatusLengthLookup[16] = {
     0, 0, 0, 0, 0, 0, 0, 0,
-    3, /* 0x80 = note off, 3 bytes */
-    3, /* 0x90 = note on, 3 bytes */
-    3, /* 0xA0 = poly pressure, 3 bytes */
-    3, /* 0xB0 = control change, 3 bytes */
-    2, /* 0xC0 = program change, 2 bytes */
-    2, /* 0xD0 = channel pressure, 2 bytes */
-    3, /* 0xE0 = pitch bend, 3 bytes */
-    -1 /* 0xF0 = other things. may vary */
+    3,  /* 0x80 = note off, 3 bytes */
+    3,  /* 0x90 = note on, 3 bytes */
+    3,  /* 0xA0 = poly pressure, 3 bytes */
+    3,  /* 0xB0 = control change, 3 bytes */
+    2,  /* 0xC0 = program change, 2 bytes */
+    2,  /* 0xD0 = channel pressure, 2 bytes */
+    3,  /* 0xE0 = pitch bend, 3 bytes */
+    -1  /* 0xF0 = other things. may vary */
 };
 
 static const int8_t SysMsgLengthLookup[16] = {
@@ -45,7 +45,7 @@ static const int8_t SysMsgLengthLookup[16] = {
     1,  /* 0xF4 = undefined */
     1,  /* 0xF5 = undefined */
     1,  /* 0xF6 = TUNE Request */
-    1,  /* 0xF7 = sysex end */
+    -1, /* 0xF7 = sysex end */
     1,  /* 0xF8 = timing clock 1 byte */
     1,  /* 0xF9 = proposed measure end? */
     1,  /* 0xFA = start 1 byte */
@@ -78,7 +78,7 @@ void serial_MidiInByteHandler(uint8_t data) {
         len = StatusLengthLookup[data >> 4];
 
         if (len == -1) {
-            len = SysMsgLengthLookup[data - 0xF0];
+            len = SysMsgLengthLookup[data & 0x0F];
 
             if (len == 1) {
                 MidiInMsgHandler(MIDI_DEVICE_DIN, 1, data, 0, 0);
@@ -168,8 +168,7 @@ __attribute__((noreturn)) static msg_t ThreadMidi(void *arg) {
 
 void serial_midi_init(void) {
     /*
-     * Activates the serial driver 2 using the driver default configuration.
-     * PA2(TX) and PA3(RX) are routed to USART2.
+     * Activates the serial driver 6 using the driver default configuration.
      */
 
     palSetPadMode(GPIOG,  9, PAL_MODE_ALTERNATE(8) | PAL_MODE_INPUT_PULLUP); /* RX */
