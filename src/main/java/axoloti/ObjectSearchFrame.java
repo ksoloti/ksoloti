@@ -748,7 +748,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jTextFieldObjName = new javax.swing.JTextField();
         jButtonCancel = new javax.swing.JButton();
         jButtonAccept = new javax.swing.JButton();
-        jResultList = new javax.swing.JList<>();
+        jResultList = new javax.swing.JList<AxoObjectAbstract>();
 
         jObjectTree = new javax.swing.JTree();
 
@@ -795,26 +795,26 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         });
         jPanelSearchField.add(jTextFieldObjName);
 
-        jButtonAccept.setText("☑");
+        jButtonAccept.setText("OK");
         jButtonAccept.setToolTipText("Accept");
         jButtonAccept.setActionCommand("");
         jButtonAccept.setDefaultCapable(false);
         jButtonAccept.setFocusable(false);
-        // jButtonAccept.setMargin(new java.awt.Insets(-7, -7, -7, -7));
+        jButtonAccept.setMargin(new java.awt.Insets(4, 0, 4, 0));
         jButtonAccept.setMinimumSize(new java.awt.Dimension(30, 30));
         jButtonAccept.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonAcceptActionPerformed(evt);
             }
         });
-
         jPanelSearchField.add(jButtonAccept);
-        jButtonCancel.setText("☒");
+
+        jButtonCancel.setText("x");
         jButtonCancel.setToolTipText("Cancel");
         jButtonCancel.setActionCommand("");
         jButtonCancel.setDefaultCapable(false);
         jButtonCancel.setFocusable(false);
-        // jButtonCancel.setMargin(new java.awt.Insets(-7, -7, -7, -7));
+        jButtonCancel.setMargin(new java.awt.Insets(4, 0, 4, 0));
         jButtonCancel.setMinimumSize(new java.awt.Dimension(30, 30));
         jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
