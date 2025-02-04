@@ -511,7 +511,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL,   0x02);
     ADAU1961_WriteRegister(ADAU1961_REG_R32_PLRVOL,   0x02);
     ADAU1961_WriteRegister(ADAU1961_REG_R33_PMONO,    0x02);
-    ADAU1961_WriteRegister(ADAU1961_REG_R34_POPCLICK, 0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R34_POPCLICK, 0x02); /* ASLEW = 1: 42ms slew rate for audio volume controls */
     ADAU1961_WriteRegister(ADAU1961_REG_R35_PWRMGMT,  0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R36_DACC0,    0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R37_DACC1,    0x00);
