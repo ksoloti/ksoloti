@@ -27,7 +27,7 @@ case "$unamestr" in
         rootdir="$(cd $(dirname $0); pwd -P)"
     ;;
     *)
-        echo "Unknown OS: $unamestr - aborting..."
+        printf "\nUnknown OS: $unamestr - aborting...\n"
         exit
     ;;
 esac
@@ -37,11 +37,10 @@ case "$platform" in
         rm -f ./firmware/build/*.*
         rm -f ./firmware.log
 
-        if [ $BUILD_AXOLOTI -eq 1 ] 
-        then
-            echo "********************"
-            echo "* Building Axoloti *"
-            echo "********************"
+        if [[ $BUILD_AXOLOTI -eq 1 ]]; then
+            printf "********************\n"
+            printf "* Building Axoloti *\n"
+            printf "********************\n"
 
             # compile board mode and firmware options
             sh ./platform_osx/compile_firmware.sh BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER 2>&1 | tee -a firmware.log
@@ -54,11 +53,10 @@ case "$platform" in
             # ./platform_osx/bin/arm-none-eabi-objdump $ODFLAGS ./firmware/build/axoloti/usbaudio/axoloti_usbaudio.elf > ./firmware/build/axoloti_usbaudio.lst
         fi
 
-        if [ $BUILD_KSOLOTI -eq 1 ] 
-        then
-            echo "********************"
-            echo "* Building Ksoloti *"
-            echo "********************"
+        if [[ $BUILD_KSOLOTI -eq 1 ]]; then
+            printf "********************\n"
+            printf "* Building Ksoloti *\n"
+            printf "********************\n"
 
             # compile board mode and firmware options
             sh ./platform_osx/compile_firmware.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER 2>&1 | tee -a firmware.log
@@ -77,11 +75,10 @@ case "$platform" in
         rm -f ./firmware/build/*.*
         rm -f ./firmware.log
 
-        if [ $BUILD_AXOLOTI -eq 1 ] 
-        then
-            echo "********************"
-            echo "* Building Axoloti *"
-            echo "********************"
+        if [[ $BUILD_AXOLOTI -eq 1 ]]; then
+            printf "********************\n"
+            printf "* Building Axoloti *\n"
+            printf "********************\n"
 
             # compile board mode and firmware options
             sh ./platform_linux/compile_firmware.sh BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER 2>&1 | tee -a firmware.log
@@ -94,11 +91,10 @@ case "$platform" in
             # ./platform_linux/bin/arm-none-eabi-objdump $ODFLAGS ./firmware/build/axoloti/usbaudio/axoloti_usbaudio.elf > ./firmware/build/axoloti_usbaudio.lst
         fi
 
-        if [ $BUILD_KSOLOTI -eq 1 ] 
-        then
-            echo "********************"
-            echo "* Building Ksoloti *"
-            echo "********************"
+        if [[ $BUILD_KSOLOTI -eq 1 ]]; then
+            printf "********************\n"
+            printf "* Building Ksoloti *\n"
+            printf "********************\n"
 
             # compile board mode and firmware options
             sh ./platform_linux/compile_firmware.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER 2>&1 | tee -a firmware.log
@@ -117,16 +113,14 @@ case "$platform" in
         rm -f ./firmware/build/*.*
         rm -f ./firmware.log
 
-        cd platform_win
+        # cd platform_win
 
-        if [ $BUILD_AXOLOTI -eq 1 ] 
-        then
-            echo "********************"
-            echo "* Building Axoloti *"
-            echo "********************"
+        if [[ $BUILD_AXOLOTI -eq 1 ]]; then
+            printf "********************\n"
+            printf "* Building Axoloti *\n"
+            printf "********************\n"
 
             # compile board mode and firmware options
-            # cmd "//C path.bat && compile_firmware.bat BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER 2>&1 | tee -a ..\firmware.log"
             sh ./platform_win/compile_firmware.sh BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER 2>&1 | tee -a firmware.log
 
             # create .lst files
@@ -137,14 +131,12 @@ case "$platform" in
             # ./platform_win/bin/arm-none-eabi-objdump.exe $ODFLAGS ./firmware/build/axoloti/usbaudio/axoloti_usbaudio.elf > ./firmware/build/axoloti_usbaudio.lst
         fi
 
-        if [ $BUILD_KSOLOTI -eq 1 ] 
-        then
-            echo "********************"
-            echo "* Building Ksoloti *"
-            echo "********************"
+        if [[ $BUILD_KSOLOTI -eq 1 ]]; then
+            printf "********************\n"
+            printf "* Building Ksoloti *\n"
+            printf "********************\n"
 
             # compile board mode and firmware options
-            #cmd "//C path.bat && compile_firmware.bat BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER 2>&1 | tee -a ..\firmware.log"
             sh ./platform_win/compile_firmware.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER 2>&1 | tee -a firmware.log
 
             # create .lst files
@@ -155,7 +147,7 @@ case "$platform" in
             # ./platform_win/bin/arm-none-eabi-objdump.exe $ODFLAGS ./firmware/build/ksoloti/usbaudio/ksoloti_usbaudio.elf > ./firmware/build/ksoloti_usbaudio.lst
         fi
 
-        cd ..
+        # cd ..
 
     ;;
 esac

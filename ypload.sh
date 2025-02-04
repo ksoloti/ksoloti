@@ -2,10 +2,8 @@
 #!/bin/bash
 set -e
 
-echo ""
-echo "Warning! This script is only for testing upload of Ksoloti Core firmware!"
-echo "Do not use this script for Axoloti Core or any SPILink-enabled or otherwise customized firmware."
-echo ""
+printf "\nWarning! This script is only for testing upload of Ksoloti Core firmware!\n"
+printf "Do not use this script for Axoloti Core or any SPILink-enabled or otherwise customized firmware.\n"
 
 platform='unknown'
 unamestr=`uname`
@@ -23,21 +21,20 @@ case "$unamestr" in
         rootdir="$(cd $(dirname $0); pwd -P)"
     ;;
     *)
-        echo "Unknown OS: $unamestr - aborting..."
+        printf "\nUnknown OS: $unamestr - aborting...\n"
         exit
     ;;
 esac
 
 case "$platform" in
     mac)
-        sh ./platform_osx/upload_fw_dfu.sh ksoloti
+        sh ./platform_osx/upload_fw_dfu.sh ksoloti.bin
     ;;
     linux)
-        sh ./platform_linux/upload_fw_dfu.sh ksoloti
+        sh ./platform_linux/upload_fw_dfu.sh ksoloti.bin
     ;;
     windows)
-        cd platform_win
-        cmd "//C path.bat && upload_fw_dfu.bat ksoloti"
+        sh ./platform_win/upload_fw_dfu.sh ksoloti.bin
         cd ..
     ;;
 esac

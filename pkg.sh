@@ -17,7 +17,7 @@ case "$unamestr" in
 		rootdir="$(cd $(dirname $0); pwd -P)"
 	;;
         *)
-                echo "Unknown OS: $unamestr - aborting..."
+                printf "\nUnknown OS: $unamestr - aborting...\n"
                 exit
         ;;
 esac
@@ -28,25 +28,24 @@ VERSION="$(git describe --tags | grep -Po '\d*\.\d*\.\d*' 2>&1)"
 VERSION_LONG="$(git describe --long --always --tags 2>&1)"
 CUSTOMLABEL=
 
-if [ $# -eq 1 ]
-  then
+if [[ $# -eq 1 ]]; then
     VERSION=$1
     DASH="-"
     CUSTOMLABEL=$1${DASH}
 fi
 
-echo $VERSION
-echo $VERSION_LONG
+printf "$VERSION\n"
+printf "$VERSION_LONG\n"
 
 # ----- Windows: Check if 7-Zip is installed
 case "$platform" in
     windows)
-        #echo "Java build currently not supported on Windows."
+        #printf "\nJava build currently not supported on Windows.\n"
         DIRECTORY="C:\Program Files\7-Zip"
         if [ -d "$DIRECTORY" ]; then
-            echo "$DIRECTORY found."
+            printf "\n$DIRECTORY found.\n"
         else
-            echo "$DIRECTORY does not exist. Please install 7-Zip in the standard location."
+            printf "\n$DIRECTORY does not exist. Please install 7-Zip in the standard location.\n"
             exit 1
         fi
     ;;
@@ -276,4 +275,4 @@ rm -rf ./packagetemp/win
 
 
 END=$(date +%s)
-echo "All done! Elapsed time: $(((END - START) / 60)) min $(((END - START) % 60)) sec."
+printf "\nAll done! Elapsed time: $(((END - START) / 60)) min $(((END - START) % 60)) sec.\n"
