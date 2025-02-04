@@ -127,7 +127,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     case 1: {
                         SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
                         if (f.isDirectory()) {
-                            returnValue = "[DIR]";
+                            returnValue = "[ F ]";
                         } else {
                             returnValue = f.getExtension();
                         }
