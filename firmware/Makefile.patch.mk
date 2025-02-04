@@ -158,14 +158,10 @@ ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
 #	@echo Creating binary
 	@$(CP) -O binary ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin
 
-#	@echo Creating SIZe statistic file for debugging
-#	@$(SIZ) --format=sysv ${BUILDDIR}/xpatch.elf > ${BUILDDIR}/xpatch.siz
-#	@$(SIZ) --format=berkeley ${BUILDDIR}/xpatch.elf >> ${BUILDDIR}/xpatch.siz
-
 #	@echo Creating LST file for debugging
-	@$(DMP) $(DMPFLAGS) ${BUILDDIR}/xpatch.elf > ${BUILDDIR}/xpatch.lst
+	@$(DMP) $(DMPFLAGS) "${BUILDDIR}/xpatch.elf" > "${BUILDDIR}/xpatch.lst"
 
 clean:
-	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.list ${BUILDDIR}/xpatch.h.gch
+	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.lst ${BUILDDIR}/xpatch.h.gch
 
 .PHONY: all clean
