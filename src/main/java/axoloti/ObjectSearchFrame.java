@@ -746,9 +746,12 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jTextPaneObjectInfo = new javax.swing.JTextPane();
         jTextFieldObjName = new javax.swing.JTextField();
-        jButtonCancel = new javax.swing.JButton();
         jButtonAccept = new javax.swing.JButton();
+        jButtonCancel = new javax.swing.JButton();
         jResultList = new javax.swing.JList<AxoObjectAbstract>();
+
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 32767));
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 32767));
 
         jObjectTree = new javax.swing.JTree();
 
@@ -794,8 +797,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         });
         jPanelSearchField.add(jTextFieldObjName);
-
-        jButtonAccept.setText("OK");
+        jPanelSearchField.add(filler1);
+        jButtonAccept.setText("✔");
         jButtonAccept.setToolTipText("Accept");
         jButtonAccept.setActionCommand("");
         jButtonAccept.setDefaultCapable(false);
@@ -808,8 +811,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         });
         jPanelSearchField.add(jButtonAccept);
+        jPanelSearchField.add(filler2);
 
-        jButtonCancel.setText("x");
+        jButtonCancel.setText("✖");
         jButtonCancel.setToolTipText("Cancel");
         jButtonCancel.setActionCommand("");
         jButtonCancel.setDefaultCapable(false);
@@ -942,6 +946,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     private javax.swing.JList jResultList;
     private javax.swing.JTree jObjectTree;
     private javax.swing.JTextPane jTextPaneObjectInfo;
+
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.Box.Filler filler2;
 
     private ScrollPaneComponent jScrollPaneObjectSearch;
     private ScrollPaneComponent jScrollPaneObjectTree;
