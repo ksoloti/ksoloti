@@ -82,7 +82,7 @@ public class VUComponentHorizontal extends ADispComponent {
         double dB = Math.log10(Math.abs(v) + 0.000000001);
         int i = (int) (-dB * 12);
         
-        Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "dB:" + dB + " i:" + i);
+        // Logger.getLogger(MainFrame.class.getName()).log(Level.WARNING, "dB:" + dB + " i:" + i);
         // 12 pixels per 10 dB
         // with w = 44 this is 50dB range
         if (i > w) {
