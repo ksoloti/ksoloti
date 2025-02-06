@@ -140,7 +140,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         } else {
                             int size = f.getSize();
                             if (size < 10240) {
-                                returnValue = "" + size + " bytes";
+                                returnValue = "" + (size / 1024) + "." + (size % 1024) / 103 + " kB";
                             } else if (size < 10240 * 1024) {
                                 returnValue = "" + (size / 1024) + " kB";
                             } else {
@@ -213,9 +213,11 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             jFileTable.getColumnModel().getColumn(1).setMaxWidth(80);
             jFileTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
 
-            jFileTable.getColumnModel().getColumn(2).setPreferredWidth(90);
+            jFileTable.getColumnModel().getColumn(2).setPreferredWidth(120);
+            jFileTable.getColumnModel().getColumn(2).setMaxWidth(120);
 
-            jFileTable.getColumnModel().getColumn(3).setPreferredWidth(140);
+            jFileTable.getColumnModel().getColumn(3).setPreferredWidth(180);
+            jFileTable.getColumnModel().getColumn(3).setMaxWidth(180);
         }
     }
     
