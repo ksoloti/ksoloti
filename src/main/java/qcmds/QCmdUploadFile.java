@@ -95,7 +95,7 @@ public class QCmdUploadFile implements QCmdSerialTask {
                 }
                 inputStream = new FileInputStream(file);
             }
-            LOGGER.log(Level.INFO, "Uploading: {0}", filename);
+            // LOGGER.log(Level.INFO, "Uploading: {0}", filename);
             Calendar ts;
             if (cal != null) {
                 ts = cal;
