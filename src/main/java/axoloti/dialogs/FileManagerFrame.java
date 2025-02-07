@@ -70,12 +70,9 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
     private static final Logger LOGGER = Logger.getLogger(FileManagerFrame.class.getName());
 
-    private static DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-    /**
-     * Creates new form FileManagerFrame
-     */
+    private static char decimalSeparator = new DecimalFormatSymbols(Locale.getDefault(Locale.Category.FORMAT)).getDecimalSeparator();
+
     public FileManagerFrame() {
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         setPreferredSize(new Dimension(640,400));
         initComponents();
         fileMenu1.initComponents();
@@ -85,6 +82,29 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         jLabelSDInfo.setText("");
 
         jFileTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+        /* Center Type, Size, Modified columns, add some tooltips */
+        jFileTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+                final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                SDFileInfo f = SDCardInfo.getInstance().getFiles().get(row);
+
+                /* Align names left, all other columns center */
+                if (column == 0) {
+                    setHorizontalAlignment(SwingConstants.LEFT);
+                    setToolTipText(f.getFilename());
+                }
+                else {
+                    setHorizontalAlignment(SwingConstants.CENTER);
+                    setToolTipText("");
+                }
+
+                return c;
+            }
+        });
+
         jFileTable.setRowHeight(24);
         jFileTable.setModel(new AbstractTableModel() {
             private final String[] columnNames = {"Name", "Type", "Size", "Modified"};
@@ -220,7 +240,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
             jFileTable.getColumnModel().getColumn(1).setPreferredWidth(80);
             jFileTable.getColumnModel().getColumn(1).setMaxWidth(80);
-            jFileTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
 
             jFileTable.getColumnModel().getColumn(2).setPreferredWidth(120);
             jFileTable.getColumnModel().getColumn(2).setMaxWidth(120);
