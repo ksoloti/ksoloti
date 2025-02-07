@@ -29,6 +29,7 @@ import axoloti.USBBulkConnection;
 import axoloti.utils.Constants;
 import components.ScrollPaneComponent;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -42,6 +43,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
