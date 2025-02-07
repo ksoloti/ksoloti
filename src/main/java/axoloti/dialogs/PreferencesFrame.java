@@ -382,7 +382,7 @@ public class PreferencesFrame extends JFrame {
             jLibraryTable.getColumnModel().getColumn(3).setPreferredWidth(60);
         }
 
-        jAddLibBtn.setText("+");
+        jAddLibBtn.setText("＋");
         jAddLibBtn.setToolTipText("Add a library.");
         jAddLibBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -390,7 +390,7 @@ public class PreferencesFrame extends JFrame {
             }
         });
 
-        jDelLibBtn.setText("-");
+        jDelLibBtn.setText("🗑");
         jDelLibBtn.setToolTipText("Delete the selected library.");
         jDelLibBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
