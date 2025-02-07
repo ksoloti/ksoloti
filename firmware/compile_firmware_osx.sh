@@ -28,7 +28,7 @@ if [[ $BUILD_FLASHER -eq 1 ]]; then
     mkdir -p .dep
     mkdir -p flasher_build/$FLASHER_PROJECT/lst
     mkdir -p flasher_build/$FLASHER_PROJECT/obj
-    if !make -j8 BOARDDEF=$1; then
+    if ! make -j8 BOARDDEF=$1; then
         exit 1
     fi
     cp flasher_build/$FLASHER_PROJECT/$FLASHER_PROJECT.* flasher_build/
