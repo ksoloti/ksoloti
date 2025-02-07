@@ -510,7 +510,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             }
             int n = JOptionPane.showOptionDialog(
                     this,
-                    "Save changes to " + fn + "?",
+                    "Save changes to \"" + fn + "\"?",
                     "Unsaved Changes",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
