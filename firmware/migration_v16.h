@@ -20,7 +20,7 @@
 
 #define hal_lld_get_counter_value port_rt_get_counter_value
 
-#define RTT2US(ticks) ((ticks) / (168000000 / 1000000UL))
+#define RTT2US(ticks) ((ticks) / (STM32_SYSCLK / 1000000UL))
 
 
 // V16 here down
