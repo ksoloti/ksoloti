@@ -38,6 +38,7 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
