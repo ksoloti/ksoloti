@@ -402,7 +402,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         fc.addChoosableFileFilter(axb);
         String fn = FilenamePath;
         if (fn == null) {
-            fn = "untitled";
+            fn = "untitled patchbank";
         }
         File f = new File(fn);
         fc.setSelectedFile(f);
@@ -506,7 +506,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 "Cancel"};
             String fn = FilenamePath;
             if (fn == null) {
-                fn = "untitled";
+                fn = "untitled patchbank";
             }
             int n = JOptionPane.showOptionDialog(
                     this,
