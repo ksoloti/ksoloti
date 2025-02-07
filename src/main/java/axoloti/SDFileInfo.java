@@ -69,4 +69,12 @@ public class SDFileInfo {
             return "";
         }
     }
+
+    public String getPatchFileName() {
+        if (!isDirectory()) {
+            int i = filename.lastIndexOf('/');
+            return filename.substring(i + 1);
+        }
+        return "";
+    }
 }
