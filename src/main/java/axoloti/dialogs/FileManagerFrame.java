@@ -127,7 +127,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     case 1: {
                         SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
                         if (f.isDirectory()) {
-                            returnValue = "[ F ]";
+                            returnValue = "[ D ]";
                         } else {
                             returnValue = f.getExtension();
                         }
@@ -139,11 +139,19 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                             returnValue = "";
                         } else {
                             int size = f.getSize();
-                            if (size < 10240) {
-                                returnValue = "" + (size / 1024) + "." + (size % 1024) / 103 + " kB";
-                            } else if (size < 10240 * 1024) {
+                            if (size < 1024) {
+                                returnValue = "" + size + " B";
+                            }
+                            else if (size < 1024 * 1024 / 10) {
+                                returnValue = "" + (size / 1024) + decimalSeparator + (size % 1024) / 103 + " kB";
+                            }
+                            else if (size < 1024 * 1024) {
                                 returnValue = "" + (size / 1024) + " kB";
-                            } else {
+                            }
+                            else if (size < 10240 * 1024 * 10) {
+                                returnValue = "" + (size / (1024 * 1024)) + decimalSeparator + (size % (1024 * 1024)) / (1024 * 1024 / 10) + " MB";
+                            }
+                            else {
                                 returnValue = "" + (size / (1024 * 1024)) + " MB";
                             }
                         }
