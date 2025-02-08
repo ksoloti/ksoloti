@@ -455,7 +455,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     ADAU1961_WriteRegister(ADAU1961_REG_R14_ALC3,    0x00);
 
 #if defined(BOARD_KSOLOTI_CORE) && defined(USING_ADAU1761)
-    ADAU1961_WriteRegister(ADAU1761_REG_R3_RECPWRMNG, 0x00);
+    ADAU1961_WriteRegister(ADAU1761_REG_R3_RECPWMGMT, 0x00);
     ADAU1961_WriteRegister(ADAU1761_REG_R58_SERINRT,  0x01);
     ADAU1961_WriteRegister(ADAU1761_REG_R59_SEROUTRT, 0x01);
     ADAU1961_WriteRegister(ADAU1761_REG_R64_SERSR,    0x00);
@@ -526,8 +526,8 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC,     0x13); /* ADC enable */
     ADAU1961_WriteRegister(ADAU1961_REG_R36_DACC0,    0x03); /* DAC enable */
 
-    ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL,   0xE7); /* Playback Line Output Left Volume */
-    ADAU1961_WriteRegister(ADAU1961_REG_R32_PLRVOL,   0xE7); /* Playback Line Output Right Volume */
+    ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL,   0xE7); /* Playback Line Output Left, Volume 0dB, unmute, headphone out */
+    ADAU1961_WriteRegister(ADAU1961_REG_R32_PLRVOL,   0xE7); /* Playback Line Output Right, Volume 0dB, unmute, headphone out */
 
     ADAU1961_WriteRegister(ADAU1961_REG_R26_PLRML,    0x05); /* unmute Mixer5, 6dB gain */
     ADAU1961_WriteRegister(ADAU1961_REG_R27_PLRMR,    0x11); /* unmute Mixer6, 6dB gain */

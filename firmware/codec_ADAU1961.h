@@ -71,7 +71,7 @@ extern uint32_t codec_interrupt_timestamp;
 
 /* If using an ADAU1761 the following registers have to be configured: */
 #ifdef USING_ADAU1761
-#define ADAU1761_REG_R3_RECPWRMNG  0x4009
+#define ADAU1761_REG_R3_RECPWMGMT  0x4009
 #define ADAU1761_REG_R58_SERINRT   0x40F2 /* Set this to 0x01 */
 #define ADAU1761_REG_R59_SEROUTRT  0x40F3 /* Set this to 0x01 */
 #define ADAU1761_REG_R64_SERSR     0x40F8 /* Might have to change SPRS[2:0]. Usually default 0x00 is fine */
