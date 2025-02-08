@@ -349,7 +349,7 @@ public class PreferencesFrame extends JFrame {
         });
 
         jLabelBackupPatchesOnSD.setText("Backup Patches to SD Card");
-        jLabelBackupPatchesOnSD.setToolTipText("Whenever a patch is \'uploaded to SD card\' or \'uploaded to SD card as startup\',\na backup patch file with timestamp is created in the respective folder on SD card.\nIf you ever lose a patch file you previously uploaded to SD card,\nyou can recover a working version from the backup history.\nBackup files in the root directory can hint at the startup patch currently set up on SD card.\n\nRun \'Board > Enter Card Reader Mode\' to get access to the backup files.");
+        jLabelBackupPatchesOnSD.setToolTipText("Whenever a patch is \'uploaded to SD card\' or \'uploaded to SD card as startup\',\na backup patch file with timestamp is created in the respective folder on SD card.\nExample: \'myCoolPatch.axp.backup_2025-01-31_09-21-58.axp\'\nIf you ever lose a patch file you previously uploaded to SD card,\nyou can recover a working version from the backup history.\nBackup files in the root directory can hint at the startup patch currently set up on SD card.\n\nRun \'Board > Enter Card Reader Mode\' to get access to the backup files.");
 
         jBackupPatchesOnSDEnabled.setText("Enabled");
         jBackupPatchesOnSDEnabled.setToolTipText(jLabelBackupPatchesOnSD.getToolTipText());
@@ -454,7 +454,7 @@ public class PreferencesFrame extends JFrame {
         });
 
         jComboBoxDspSafetyLimit.setModel(new DefaultComboBoxModel<String>(new String[] {
-            "Original",
+            "Legacy",
             "Very Safe",
             "Safe",
             "Normal",
@@ -462,7 +462,7 @@ public class PreferencesFrame extends JFrame {
             "Very Risky"
         }));
         jLabelDspSafetyLimit.setText("DSP Safety Limit");
-        jLabelDspSafetyLimit.setToolTipText("Changes the DSP safety limits.");
+        jLabelDspSafetyLimit.setToolTipText("Changes the DSP safety limits.\nThe \'very safe\' and \'safe\' settings ensure a stricter DSP overload threshold and make sure all features in your patches work stable.\nIf you encounter frequent USB disconnects from your computer, try a safer setting.\nThe \'risky\' and \'very risky\' settings set the DSP overload threshold a bit higher,\nallowing you to push your patch load further, but with higher risk of glitches and USB disconnects.\nThe \'Legacy\' setting replicates the original Axoloti Patcher behaviour.");
         jLabelDspSafetyLimit.setEnabled(true);
 
 
