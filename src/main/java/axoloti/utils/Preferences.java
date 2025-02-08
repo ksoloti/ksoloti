@@ -107,6 +107,8 @@ public class Preferences {
     @Element(required = false)
     Boolean ControllerEnabled;
     @Element(required = false)
+    Boolean BackupPatchesOnSDEnabled;
+    @Element(required = false)
     String themePath;
     @Element(required = false)
     String Theme;
@@ -227,6 +229,9 @@ public class Preferences {
         if (ControllerObject == null) {
             ControllerObject = "";
             ControllerEnabled = false;
+        }
+        if (BackupPatchesOnSDEnabled == null) {
+            BackupPatchesOnSDEnabled = true;
         }
         if (Theme == null) {
             Theme = "FlatLaf Light";
@@ -694,6 +699,14 @@ public class Preferences {
 
     public boolean isControllerEnabled() {
         return ControllerEnabled;
+    }
+
+    public void setBackupPatchesOnSDEnabled(boolean b) {
+        BackupPatchesOnSDEnabled = b;
+    }
+
+    public boolean isBackupPatchesOnSDEnabled() {
+        return BackupPatchesOnSDEnabled;
     }
 
     public final void ResetLibraries(boolean delete) {
