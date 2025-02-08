@@ -2907,15 +2907,15 @@ public class Patch {
         }
 
         qcmdprocessor.WaitQueueFinished();
-
+        
         Calendar cal;
+        File f = new File(FileNamePath);
         if (dirty) {
             cal = Calendar.getInstance();
         }
         else {
             cal = Calendar.getInstance();
             if (FileNamePath != null && !FileNamePath.isEmpty()) {
-                File f = new File(FileNamePath);
                 if (f.exists()) {
                     cal.setTimeInMillis(f.lastModified());
                 }
@@ -2931,7 +2931,20 @@ public class Patch {
         else {
             dir = "";
         }
+
         UploadDependentFiles(dir);
+
+        if (prefs.isBackupPatchesOnSDEnabled() && getBinFile().exists() && FileNamePath != null && !FileNamePath.isEmpty()) {
+            if (f.exists()) {
+                qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadFile(f,
+                    dir + "/" +
+                    f.getName() + ".backup" +
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(ZonedDateTime.now()) +
+                    f.getName().substring(f.getName().lastIndexOf(".")),
+                    cal));
+            }
+        }
+
     }
 
     public void UploadToSDCard() {

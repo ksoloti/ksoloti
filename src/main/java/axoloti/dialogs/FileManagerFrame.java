@@ -85,22 +85,22 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
         jFileTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-        /* Center Type, Size, Modified columns, add some tooltips */
+        /* Center Type, Size, Modified columns, TODO: add some tooltips? */
         jFileTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
                 final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                SDFileInfo f = SDCardInfo.getInstance().getFiles().get(row);
+                // SDFileInfo f = SDCardInfo.getInstance().getFiles().get(row);
 
                 /* Align names left, all other columns center */
                 if (column == 0) {
                     setHorizontalAlignment(SwingConstants.LEFT);
-                    setToolTipText(f.getFilename());
+                    // setToolTipText(f.getFilename());
                 }
                 else {
                     setHorizontalAlignment(SwingConstants.CENTER);
-                    setToolTipText("");
+                    // setToolTipText("");
                 }
 
                 return c;
@@ -143,7 +143,18 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     case 0: {
                         SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
                         if (f != null) {
-                            returnValue = f.getFilename();
+                            if (f.isDirectory()) {
+                                /* is directory: print full path */
+                                returnValue = f.getFilename();
+                            }
+                            else if (f.getFilename().lastIndexOf("/") > 0) {
+                                /* is file in sub directory: print file name with indent */
+                                returnValue = "    " + f.getPatchFileName();
+                            }
+                            else {
+                                /* is file in root directory: print file name with slash and without indent */
+                                returnValue = "/" + f.getPatchFileName();
+                            }
                         }
                     }
                     break;
@@ -161,7 +172,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         if (f.isDirectory()) {
                             returnValue = "";
                         } else {
-                            int size = f.getSize();
+                            long size = f.getSize();
                             if (size < 1024) {
                                 returnValue = "" + size + " B";
                             }
@@ -217,12 +228,43 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     @SuppressWarnings("unchecked")
                     List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
                     QCmdProcessor processor = MainFrame.mainframe.getQcmdprocessor();
+
                     if (USBBulkConnection.GetConnection().isConnected()) {
-                        for (File f : droppedFiles) {
+                        if (droppedFiles.size() > 1) {
+                            Object[] options = {"Upload", "Cancel"};
+                            int n = JOptionPane.showOptionDialog(null,
+                                                                "Upload " + droppedFiles.size() + " files to SD card?",
+                                                                "Upload multiple Files",
+                                                                JOptionPane.YES_NO_OPTION,
+                                                                JOptionPane.WARNING_MESSAGE,
+                                                                null,
+                                                                options,
+                                                                options[1]);
+                            switch (n) {
+                                case JOptionPane.YES_OPTION: {
+                                    for (File f : droppedFiles) {
+                                        System.out.println(f.getName());
+                                        if (!f.canRead()) {
+                                            LOGGER.log(Level.SEVERE, "Cannot read file: " + f.getName());
+                                        }
+                                        else {
+                                            processor.AppendToQueue(new QCmdUploadFile(f, f.getName()));
+                                        }
+                                    }
+                                }
+                                break;
+
+                                case JOptionPane.NO_OPTION:
+                                break;
+                            }
+                        }
+                        else if (droppedFiles.size() == 1) {
+                            File f = droppedFiles.get(0);
                             System.out.println(f.getName());
                             if (!f.canRead()) {
-                               LOGGER.log(Level.SEVERE, "Cannot read file");
-                            } else {
+                                LOGGER.log(Level.SEVERE, "Cannot read file: " + f.getName());
+                            }
+                            else {
                                 processor.AppendToQueue(new QCmdUploadFile(f, f.getName()));
                             }
                         }
@@ -525,16 +567,40 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     
                     for (int row : rows) {
                         SDFileInfo f = SDCardInfo.getInstance().getFiles().get(row);
-                        String ff = f.getFilename();
 
-                        if (!f.isDirectory()) {
-                            processor.AppendToQueue(new QCmdDeleteFile(f.getFilename()));
-                        }
-                        else {
+                        if (f.isDirectory()) {
+                            
+                            String ff = f.getFilename();
+
+                            for (SDFileInfo subf : SDCardInfo.getInstance().getFiles()) {
+                                String sf = subf.getFilename();
+                                if (sf.startsWith(ff)) {
+                                    if (!subf.isDirectory()) {
+                                        /* delete files contained in all subfolders */
+                                        processor.AppendToQueue(new QCmdDeleteFile(sf));
+                                    }
+                                }
+                                processor.WaitQueueFinished();
+                            }
+                            for (SDFileInfo subf : SDCardInfo.getInstance().getFiles()) {
+                                String sf = subf.getFilename();
+                                if (sf.startsWith(ff)) {
+                                    if (subf.isDirectory()) {
+                                        /* then delete (hopefully empty) subfolders */
+                                        processor.AppendToQueue(new QCmdDeleteFile(sf));
+                                    }
+                                }
+                                processor.WaitQueueFinished();
+                            }
+                            
+                            /* then delete empty main folder */
                             if (ff.endsWith("/")) {
                                 ff = ff.substring(0, ff.length() - 1);
                             }
                             processor.AppendToQueue(new QCmdDeleteFile(ff));
+                        }
+                        else {
+                            processor.AppendToQueue(new QCmdDeleteFile(f.getFilename()));
                         }
                     }
                 }

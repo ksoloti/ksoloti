@@ -100,6 +100,7 @@ public class PreferencesFrame extends JFrame {
         jTextFieldUserShortcut4.setText(prefs.getUserShortcut(3));
 
         jControllerEnabled.setSelected(prefs.isControllerEnabled());
+        jBackupPatchesOnSDEnabled.setSelected(prefs.isBackupPatchesOnSDEnabled());
         jTextFieldController.setText(prefs.getControllerObject());
         jTextFieldController.setEnabled(prefs.isControllerEnabled());
 
@@ -167,6 +168,7 @@ public class PreferencesFrame extends JFrame {
 
         prefs.setControllerObject(jTextFieldController.getText().trim());
         prefs.setControllerEnabled(jControllerEnabled.isSelected());
+        prefs.setBackupPatchesOnSDEnabled(jBackupPatchesOnSDEnabled.isSelected());
 
         prefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
         prefs.applyTheme();
@@ -222,6 +224,8 @@ public class PreferencesFrame extends JFrame {
         jLabelController = new JLabel();
         jTextFieldController = new JTextField();
         jControllerEnabled = new JCheckBox();
+        jBackupPatchesOnSDEnabled = new JCheckBox();
+        jLabelBackupPatchesOnSD = new JLabel();
         jScrollPaneLibraryTable = new ScrollPaneComponent();
         jLibraryTable = new JTable();
         jAddLibBtn = new JButton();
@@ -341,6 +345,17 @@ public class PreferencesFrame extends JFrame {
         jControllerEnabled.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jControllerEnabledActionPerformed(evt);
+            }
+        });
+
+        jLabelBackupPatchesOnSD.setText("Backup Patches to SD Card");
+        jLabelBackupPatchesOnSD.setToolTipText("Whenever a patch is \'uploaded to SD card\' or \'uploaded to SD card as startup\',\na backup patch file with timestamp is created in the respective folder on SD card.\nIf you ever lose a patch file you previously uploaded to SD card,\nyou can recover a working version from the backup history.\nBackup files in the root directory can hint at the startup patch currently set up on SD card.\n\nRun \'Board > Enter Card Reader Mode\' to get access to the backup files.");
+
+        jBackupPatchesOnSDEnabled.setText("Enabled");
+        jBackupPatchesOnSDEnabled.setToolTipText(jLabelBackupPatchesOnSD.getToolTipText());
+        jBackupPatchesOnSDEnabled.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBackupPatchesOnSDEnabledActionPerformed(evt);
             }
         });
 
@@ -544,11 +559,17 @@ public class PreferencesFrame extends JFrame {
                         .addGroup(layout.createParallelGroup(Alignment.LEADING)
 
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelController, GroupLayout.PREFERRED_SIZE, 144, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabelController, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(jControllerEnabled)
-                                .addGap(10, 10, 10)
+                                .addComponent(jControllerEnabled, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jTextFieldController, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)
+                            )
+
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabelBackupPatchesOnSD, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(ComponentPlacement.RELATED)
+                                .addComponent(jBackupPatchesOnSDEnabled, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE)
                             )
 
@@ -594,7 +615,7 @@ public class PreferencesFrame extends JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelDialMouseBehaviour, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(jComboBoxDialMouseBehaviour, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jComboBoxDialMouseBehaviour, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
                                 .addGap(10, 10, 10)
                                 .addComponent(jCheckBoxNoMouseReCenter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                             )
@@ -694,6 +715,12 @@ public class PreferencesFrame extends JFrame {
                         .addGap(15, 15, 15)
 
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                            .addComponent(jLabelBackupPatchesOnSD)
+                            .addComponent(jBackupPatchesOnSDEnabled, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        )
+
+                        .addGap(15, 15, 15)
+                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelDspSafetyLimit)
                             .addComponent(jComboBoxDspSafetyLimit, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
@@ -754,6 +781,9 @@ public class PreferencesFrame extends JFrame {
 
     private void jControllerEnabledActionPerformed(java.awt.event.ActionEvent evt) {
         jTextFieldController.setEnabled(jControllerEnabled.isSelected());
+    }
+
+    private void jBackupPatchesOnSDEnabledActionPerformed(java.awt.event.ActionEvent evt) {
     }
 
     private void jAddLibBtnActionPerformed(java.awt.event.ActionEvent evt) {
@@ -871,6 +901,7 @@ public class PreferencesFrame extends JFrame {
     private JComboBox<String> jComboBoxDialMouseBehaviour;
     private JComboBox<String> jComboBoxFirmwareMode;
     private JCheckBox jControllerEnabled;
+    private JCheckBox jBackupPatchesOnSDEnabled;
     private JButton jDelLibBtn;
     private JButton jEditLib;
     private JLabel jLabelLibraries;
@@ -888,6 +919,7 @@ public class PreferencesFrame extends JFrame {
     private JLabel jLabelUserShortcut4;
 
     private JLabel jLabelController;
+    private JLabel jLabelBackupPatchesOnSD;
     private JLabel jLabelTheme;
     private JComboBox<String> jComboBoxTheme;
     private JButton jLibStatus;
