@@ -430,7 +430,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC,     0x0F); /* Enable core, PLL as clksrc, 1024*FS */
 
 #else
-    ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC,     0x09); /* PLL = clksrc */
+    ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC,     0x09); /* PLL as clksrc */
 
 #endif
 
@@ -442,7 +442,6 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     */
 
     ADAU1961_WriteRegister(ADAU1961_REG_R2_DMICJ,    0x20); /* Enable digital mic function via pin JACKDET/MICIN */
-    ADAU1961_WriteRegister(ADAU1961_REG_R3_RES,      0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R4_RMIXL0,   0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R5_RMIXL1,   0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R6_RMIXR0,   0x00);
@@ -456,6 +455,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     ADAU1961_WriteRegister(ADAU1961_REG_R14_ALC3,    0x00);
 
 #if defined(BOARD_KSOLOTI_CORE) && defined(USING_ADAU1761)
+    ADAU1961_WriteRegister(ADAU1761_REG_R3_RECPWRMNG, 0x00);
     ADAU1961_WriteRegister(ADAU1761_REG_R58_SERINRT,  0x01);
     ADAU1961_WriteRegister(ADAU1761_REG_R59_SEROUTRT, 0x01);
     ADAU1961_WriteRegister(ADAU1761_REG_R64_SERSR,    0x00);
@@ -508,8 +508,8 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     ADAU1961_WriteRegister(ADAU1961_REG_R28_PLRMM,    0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R29_PHPLVOL,  0x02);
     ADAU1961_WriteRegister(ADAU1961_REG_R30_PHPRVOL,  0x02);
-    ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL,   0x02);
-    ADAU1961_WriteRegister(ADAU1961_REG_R32_PLRVOL,   0x02);
+    ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL,   0x02); /* Mute Playback Line Output Left */
+    ADAU1961_WriteRegister(ADAU1961_REG_R32_PLRVOL,   0x02); /* Mute Playback Line Output Right */
     ADAU1961_WriteRegister(ADAU1961_REG_R33_PMONO,    0x02);
     ADAU1961_WriteRegister(ADAU1961_REG_R34_POPCLICK, 0x02); /* ASLEW = 1: 42ms slew rate for audio volume controls */
     ADAU1961_WriteRegister(ADAU1961_REG_R35_PWRMGMT,  0x00);
