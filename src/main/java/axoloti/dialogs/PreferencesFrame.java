@@ -306,7 +306,7 @@ public class PreferencesFrame extends JFrame {
         jLabelUserShortcut4.setText("Object Finder Shortcut 4");
 
         jTextFieldFavDir.setText("test");
-        jTextFieldFavDir.setToolTipText("Select a folder/subfolder with patch files to conveniently access them via the file menu.");
+        jTextFieldFavDir.setToolTipText("Select a folder/subfolder with patch files to conveniently access them via \'File > Favourites\'.");
         jTextFieldFavDir.setEditable(false);
         jTextFieldFavDir.setCaretColor(new Color(0,0,0,0));
 
