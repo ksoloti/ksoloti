@@ -115,6 +115,8 @@ case "$platform" in
 
     windows)
         rm -f ./firmware/build/*.*
+        rm -f ./firmware/flasher/flasher_build/*.*
+        rm -f ./firmware/mounter/mounter_build/*.*
         rm -f ./firmware.log
 
         # cd platform_win
