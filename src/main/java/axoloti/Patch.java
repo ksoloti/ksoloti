@@ -1653,7 +1653,11 @@ public class Patch {
         + I+I+I + "AudioOutputRight[u] = 0;\n";
         if (prefs.getFirmwareMode().contains("USBAudio")) {
             c += I+I+I + "UsbOutputLeft[u] = 0;\n"
-               + I+I+I + "UsbOutputRight[u] = 0;\n";
+               + I+I+I + "UsbOutputRight[u] = 0;\n"
+               + "#if USB_AUDIO_CHANNELS == 4\n"
+               + I+I+I + "UsbOutput2Left[u] = 0;\n"
+               + I+I+I + "UsbOutput2Right[u] = 0;\n"
+               + "#endif\n";
         }
         c += I+I + "}\n"
         + I + "}\n\n"
@@ -1713,9 +1717,18 @@ public class Patch {
         }
 
         if (prefs.getFirmwareMode().contains("USBAudio")) {
-            c += "\n"
-               + I+I + "UsbInputLeft[i] = inbufUsb[(i<<1)] >> 4;\n"
-               + I+I + "UsbInputRight[i] = inbufUsb[(i<<1) + 1] >> 4;\n";
+            c += "\n";
+            c += "#if USB_AUDIO_CHANNELS == 2\n"
+            + I+I + "UsbInputLeft[i]  = inbufUsb[i*2]>>4;\n"
+            + I+I + "UsbInputRight[i] = inbufUsb[i*2+1]>>4;\n"
+            + "#endif\n\n";
+
+            c += "#if USB_AUDIO_CHANNELS == 4\n"
+            + I+I + "UsbInputLeft[i]   = inbufUsb[i*4]>>4;\n"
+            + I+I + "UsbInputRight[i]  = inbufUsb[i*4+1]>>4;\n"
+            + I+I + "UsbInput2Left[i]  = inbufUsb[i*4+2]>>4;\n"
+            + I+I + "UsbInput2Right[i] = inbufUsb[i*4+3]>>4;\n"
+            + "#endif\n\n";
         }
         c += I + "}\n";
 
@@ -1741,9 +1754,18 @@ public class Patch {
             }
             
             if (prefs.getFirmwareMode().contains("USBAudio")) {
-                c += "\n"
-                   + I+I + "outbufUsb[(i<<1)] = __SSAT(UsbOutputLeft[i], 28) << 4;\n"
-                   + I+I + "outbufUsb[(i<<1) + 1] = __SSAT(UsbOutputRight[i], 28) << 4;\n";
+                c += "\n";
+                c += "#if USB_AUDIO_CHANNELS == 2\n"
+                + I+I + "outbufUsb[i*2]   = __SSAT(UsbOutputLeft[i],28)<<4;\n"
+                + I+I + "outbufUsb[i*2+1] = __SSAT(UsbOutputRight[i],28)<<4;\n"
+                + "#endif\n";
+    
+                c += "#if USB_AUDIO_CHANNELS == 4\n"
+                + I+I + "outbufUsb[i*4]   = __SSAT(UsbOutputLeft[i],28)<<4;\n"
+                + I+I + "outbufUsb[i*4+1] = __SSAT(UsbOutputRight[i],28)<<4;\n"
+                + I+I + "outbufUsb[i*4+2] = __SSAT(UsbOutput2Left[i],28)<<4;\n"
+                + I+I + "outbufUsb[i*4+3] = __SSAT(UsbOutput2Right[i],28)<<4;\n"
+                + "#endif\n";
             }
             c += I + "}\n";
         }
@@ -1766,9 +1788,18 @@ public class Patch {
             }
                 
             if (prefs.getFirmwareMode().contains("USBAudio")) {
-                c += "\n"
-                   + I+I + "outbufUsb[(i<<1)] = UsbOutputLeft[i];\n"
-                   + I+I + "outbufUsb[(i<<1) + 1] = UsbOutputRight[i];\n";
+                c += "\n";
+                c += "#if USB_AUDIO_CHANNELS == 2\n"
+                + I+I + "outbufUsb[i*2]   = UsbOutputLeft[i];\n"
+                + I+I + "outbufUsb[i*2+1] = UsbOutputRight[i];\n"
+                + "#endif\n";
+    
+                c += "#if USB_AUDIO_CHANNELS == 4\n"
+                + I+I + "outbufUsb[i*4]   = UsbOutputLeft[i];\n"
+                + I+I + "outbufUsb[i*4+1] = UsbOutputRight[i];\n"
+                + I+I + "outbufUsb[i*4+2] = UsbOutput2Left[i];\n"
+                + I+I + "outbufUsb[i*4+3] = UsbOutput2Right[i];\n"
+                + "#endif\n";
             }
             c += I + "}\n";
         }
@@ -1895,7 +1926,11 @@ public class Patch {
 
         c += "int32buffer AudioInputLeft, AudioInputRight, AudioOutputLeft, AudioOutputRight;\n";
         if (prefs.getFirmwareMode().contains("USBAudio")) {
-            c += "int32buffer UsbInputLeft, UsbInputRight, UsbOutputLeft, UsbOutputRight;\n";
+            c += "#if USB_AUDIO_CHANNELS==2\n";
+            c += "  int32buffer UsbInputLeft, UsbInputRight, UsbOutputLeft, UsbOutputRight;\n";
+            c += "#elif USB_AUDIO_CHANNELS==4\n";
+            c += "  int32buffer UsbInputLeft, UsbInputRight, UsbOutputLeft, UsbOutputRight, UsbInput2Left, UsbInput2Right, UsbOutput2Left, UsbOutput2Right;\n";
+            c += "#endif\n";
         }
 
         c += "\nvoid xpatch_init2(uint32_t fwid);\n\n"

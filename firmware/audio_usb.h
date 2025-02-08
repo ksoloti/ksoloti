@@ -727,8 +727,8 @@ typedef struct __attribute__ ((packed))
 #define USBD_DESC_ENDPOINT 0x05
 #define USBD_DESC_CS_ENDPOINT 0x25
 
-#define CFG_USBD_AUDIO_FUNC_1_N_CHANNELS_TX  2
-#define CFG_USBD_AUDIO_FUNC_1_N_CHANNELS_RX  2
+#define CFG_USBD_AUDIO_FUNC_1_N_CHANNELS_TX  USB_AUDIO_CHANNELS
+#define CFG_USBD_AUDIO_FUNC_1_N_CHANNELS_RX  USB_AUDIO_CHANNELS
 
 
 #define CFG_USBD_AUDIO_FUNC_1_MAX_SAMPLE_RATE 48000
@@ -856,7 +856,7 @@ typedef struct __attribute__ ((packed))
 // 4 - Channels
 #define USBD_AUDIO_DESC_FEATURE_UNIT_FOUR_CHANNEL_LEN (6+(4+1)*4)
 #define USBD_AUDIO_DESC_FEATURE_UNIT_FOUR_CHANNEL(_unitid, _srcid, _ctrlch0master, _ctrlch1, _ctrlch2, _ctrlch3, _ctrlch4, _stridx) \
-                    USBD_AUDIO_DESC_FEATURE_UNIT_FOUR_CHANNEL_LEN, TUSB_DESC_CS_INTERFACE, AUDIO_CS_AC_INTERFACE_FEATURE_UNIT, _unitid, _srcid, U32_TO_U8S_LE(_ctrlch0master), U32_TO_U8S_LE(_ctrlch1), U32_TO_U8S_LE(_ctrlch2), U32_TO_U8S_LE(_ctrlch3), U32_TO_U8S_LE(_ctrlch4), _stridx
+                    USBD_AUDIO_DESC_FEATURE_UNIT_FOUR_CHANNEL_LEN, USBD_DESC_CS_INTERFACE, AUDIO_CS_AC_INTERFACE_FEATURE_UNIT, _unitid, _srcid, U32_TO_U8S_LE(_ctrlch0master), U32_TO_U8S_LE(_ctrlch1), U32_TO_U8S_LE(_ctrlch2), U32_TO_U8S_LE(_ctrlch3), U32_TO_U8S_LE(_ctrlch4), _stridx
 
 /* Standard AS Interface Descriptor(4.9.1) */
 #define USBD_AUDIO_DESC_STD_AS_INT_LEN 9
@@ -892,12 +892,10 @@ typedef struct __attribute__ ((packed))
 
 #define MAX_AUDIO_SAMPLING_FREQUENCY    96000U
 #define MAX_AUDIO_RESOLUTION            32U
-#define MAX_AUDIO_CHANNELS              2U
 #define MAX_AUDIO_SAMPLES_PER_FRAME     (MAX_AUDIO_SAMPLING_FREQUENCY / 1000)
-#define MAX_AUDIO_PACKET_SIZE           (MAX_AUDIO_SAMPLES_PER_FRAME * MAX_AUDIO_CHANNELS \
+#define MAX_AUDIO_PACKET_SIZE           (MAX_AUDIO_SAMPLES_PER_FRAME * USE_AUDIO_CHANNELS \
                                          * MAX_AUDIO_RESOLUTION / 8)
 #define AUDIO_MAX_PACKET_SIZE           (MAX_AUDIO_PACKET_SIZE)
-#define ADU_AUDIO_CHANNELS              2U
 
 #define AUDIO_EVENT                 EVENT_MASK(0)
 #define AUDIO_EVENT_OUTPUT          EVENT_MASK(1)
@@ -911,13 +909,23 @@ typedef struct __attribute__ ((packed))
 #define AUDIO_EVENT_USB_RESET       EVENT_MASK(9)
 #define AUDIO_EVENT_USB_ENABLE      EVENT_MASK(10)
 #define AUDIO_EVENT_FORMAT          EVENT_MASK(11)
+#define AUDIO_EVENT_UNCONFIGURED    EVENT_MASK(12)
 
 
-// samples to try to keep in buffer
-#define TX_RING_BUFFER_UNDERFLOW_SIZE (96)
 
-// normal ring buffer sample size
-#define TX_RING_BUFFER_NORMAL_SIZE    (96*2)
+#if USB_AUDIO_CHANNELS == 2
+  // samples to try to keep in buffer
+  #define TX_RING_BUFFER_UNDERFLOW_SIZE (96)
+
+  // normal ring buffer sample size
+  #define TX_RING_BUFFER_NORMAL_SIZE    (96*2)
+#elif USB_AUDIO_CHANNELS == 4
+  // samples to try to keep in buffer
+  #define TX_RING_BUFFER_UNDERFLOW_SIZE (192)
+
+  // normal ring buffer sample size
+  #define TX_RING_BUFFER_NORMAL_SIZE    (192*2)
+#endif
 
 // Total allocated size in samples
 #define TX_RING_BUFFER_FULL_SIZE (TX_RING_BUFFER_UNDERFLOW_SIZE + TX_RING_BUFFER_NORMAL_SIZE)
@@ -926,15 +934,15 @@ typedef struct __attribute__ ((packed))
 #define ADU_LOGGING 0
 #define CODEC_METICS_MS (100)
 //#define ADU_TRANSFER_LOG_SIZE 4000
-//#define CHECK_USB_DATA 1
+#define CHECK_USB_DATA 1
 //#define ADU_OVERRUN_LOG_SIZE 2600
 
 #define USE_TRANSFER_SAMPLE_SIZE 2
-#define USE_TRANSFER_CHANNEL_SIZE 2
-#define USE_TRANSFER_SAMPLES_MS 48
+#define USE_TRANSFER_CHANNEL_SIZE USB_AUDIO_CHANNELS
+#define USE_TRANSFER_CHANNEL_SAMPLES_PER_MS 48
 
-#define USE_TRANSFER_SIZE_SAMPLES (USE_TRANSFER_CHANNEL_SIZE * USE_TRANSFER_SAMPLES_MS)
-#define USE_TRANSFER_SIZE_BYTES   (USE_TRANSFER_SAMPLE_SIZE * USE_TRANSFER_CHANNEL_SIZE * USE_TRANSFER_SAMPLES_MS)
+#define USE_TRANSFER_SIZE_SAMPLES (USE_TRANSFER_CHANNEL_SIZE * USE_TRANSFER_CHANNEL_SAMPLES_PER_MS)
+#define USE_TRANSFER_SIZE_BYTES   (USE_TRANSFER_SAMPLE_SIZE * USE_TRANSFER_CHANNEL_SIZE * USE_TRANSFER_CHANNEL_SAMPLES_PER_MS)
 
 
 /*===========================================================================*/
@@ -953,7 +961,7 @@ typedef struct __attribute__ ((packed))
  *          buffers.
  */
 #if !defined(AUDIO_USB_BUFFERS_SIZE) || defined(__DOXYGEN__)
-#define AUDIO_USB_BUFFERS_SIZE          (MAX_AUDIO_SAMPLES_PER_FRAME * MAX_AUDIO_CHANNELS * 4)
+#define AUDIO_USB_BUFFERS_SIZE          (MAX_AUDIO_SAMPLES_PER_FRAME * USB_AUDIO_CHANNELS * 4)
 #endif
 /** @} */
 
@@ -1010,14 +1018,6 @@ typedef struct {
   _base_asynchronous_channel_data                                           \
   /* Driver state.*/                                                        \
   adustate_t                state;                                          \
-  /* Input queue.*/                                                         \
-  InputQueue                iqueue;                                         \
-  /* Output queue.*/                                                        \
-  OutputQueue               oqueue;                                         \
-  /* Input buffer.*/                                                        \
-  uint8_t                   ib[AUDIO_USB_BUFFERS_SIZE];                     \
-  /* Output buffer.*/                                                       \
-  uint8_t                   ob[AUDIO_USB_BUFFERS_SIZE];                     \
   /* End of the mandatory fields.*/                                         \
   /* Current configuration data.*/                                          \
   const AudioUSBConfig     *config;
@@ -1064,8 +1064,8 @@ typedef enum _adustate
 typedef struct 
 {
   uint_fast32_t currentSampleRate;
-  int_fast8_t   mute[ADU_AUDIO_CHANNELS + 1];
-  int_fast16_t  volume[ADU_AUDIO_CHANNELS + 1];
+  int_fast8_t   mute[USB_AUDIO_CHANNELS + 1];
+  int_fast16_t  volume[USB_AUDIO_CHANNELS + 1];
   bool          isOutputActive;
   bool          isInputActive;
   size_t        lastTransferSize;
