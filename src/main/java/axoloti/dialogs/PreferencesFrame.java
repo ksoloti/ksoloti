@@ -209,6 +209,7 @@ public class PreferencesFrame extends JFrame {
         jComboBoxDialMouseBehaviour = new JComboBox<String>();
         jComboBoxFirmwareMode = new JComboBox<String>();
         jLabelFavouritesDir = new JLabel();
+        jLabelUserShortcutTitle = new JLabel();
         jLabelUserShortcut1 = new JLabel();
         jLabelUserShortcut2 = new JLabel();
         jLabelUserShortcut3 = new JLabel();
@@ -300,10 +301,11 @@ public class PreferencesFrame extends JFrame {
 
         jLabelFavouritesDir.setText("Favourites Dir");
 
-        jLabelUserShortcut1.setText("Object Finder Shortcut 1");
-        jLabelUserShortcut2.setText("Object Finder Shortcut 2");
-        jLabelUserShortcut3.setText("Object Finder Shortcut 3");
-        jLabelUserShortcut4.setText("Object Finder Shortcut 4");
+        jLabelUserShortcutTitle.setText("Object Finder Shortcuts");
+        jLabelUserShortcut1.setText("Shift + 1");
+        jLabelUserShortcut2.setText("Shift + 2");
+        jLabelUserShortcut3.setText("Shift + 3");
+        jLabelUserShortcut4.setText("Shift + 4");
 
         jTextFieldFavDir.setText("test");
         jTextFieldFavDir.setToolTipText("Select a folder/subfolder with patch files to conveniently access them via \'File > Favourites\'.");
@@ -319,6 +321,8 @@ public class PreferencesFrame extends JFrame {
         jTextFieldUserShortcut2.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
         jTextFieldUserShortcut3.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
         jTextFieldUserShortcut4.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
+        
+        jLabelUserShortcutTitle.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
         jLabelUserShortcut1.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
         jLabelUserShortcut2.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
         jLabelUserShortcut3.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
@@ -498,6 +502,7 @@ public class PreferencesFrame extends JFrame {
 
                         .addGroup(layout.createParallelGroup(Alignment.LEADING)
                             .addComponent(jLabelFavouritesDir)
+                            .addComponent(jLabelUserShortcutTitle)
                             .addComponent(jLabelUserShortcut1)
                             .addComponent(jLabelUserShortcut2)
                             .addComponent(jLabelUserShortcut3)
@@ -641,22 +646,27 @@ public class PreferencesFrame extends JFrame {
                 )
                 .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jTextFieldUserShortcut1)
+                    .addComponent(jLabelUserShortcutTitle)
+                )
+                .addGap(5, 5, 5)
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jLabelUserShortcut1)
+                    .addComponent(jTextFieldUserShortcut1)
                 )
                 .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jTextFieldUserShortcut2)
                     .addComponent(jLabelUserShortcut2)
+                    .addComponent(jTextFieldUserShortcut2)
                 )
                 .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jTextFieldUserShortcut3)
                     .addComponent(jLabelUserShortcut3)
+                    .addComponent(jTextFieldUserShortcut3)
                 )
+                .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jTextFieldUserShortcut4)
                     .addComponent(jLabelUserShortcut4)
+                    .addComponent(jTextFieldUserShortcut4)
                 )
                 .addGap(15, 15, 15)
                 .addPreferredGap(ComponentPlacement.UNRELATED)
@@ -915,6 +925,7 @@ public class PreferencesFrame extends JFrame {
     private JLabel jLabelFirmwareMode;
     private JLabel jLabelFavouritesDir;
     
+    private JLabel jLabelUserShortcutTitle;
     private JLabel jLabelUserShortcut1;
     private JLabel jLabelUserShortcut2;
     private JLabel jLabelUserShortcut3;
