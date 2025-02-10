@@ -526,12 +526,12 @@ public class PreferencesFrame extends JFrame {
                                 .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             )
                         )
-                        .addGap(12, 12, 12)
+                        .addGap(15, 15, 15)
 
                         .addGroup(layout.createParallelGroup(Alignment.LEADING)
                             .addComponent(btnFavDir, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
                         )
-                        .addGap(16, 16, 16)
+                        .addGap(15, 15, 15)
                     )
 
                     .addGroup(layout.createSequentialGroup()
@@ -639,15 +639,17 @@ public class PreferencesFrame extends JFrame {
                     .addComponent(jLabelFavouritesDir)
                     .addComponent(btnFavDir)
                 )
-                .addGap(5, 5, 5)
+                .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jTextFieldUserShortcut1)
                     .addComponent(jLabelUserShortcut1)
                 )
+                .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jTextFieldUserShortcut2)
                     .addComponent(jLabelUserShortcut2)
                 )
+                .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jTextFieldUserShortcut3)
                     .addComponent(jLabelUserShortcut3)
@@ -656,10 +658,10 @@ public class PreferencesFrame extends JFrame {
                     .addComponent(jTextFieldUserShortcut4)
                     .addComponent(jLabelUserShortcut4)
                 )
+                .addGap(15, 15, 15)
                 .addPreferredGap(ComponentPlacement.UNRELATED)
                 .addComponent(jLabelLibraries)
-                .addGap(10, 10, 10)
-
+                .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(Alignment.LEADING)
 
                     .addGroup(layout.createSequentialGroup()
@@ -705,7 +707,7 @@ public class PreferencesFrame extends JFrame {
                             .addComponent(jLabelDialMouseBehaviour)
                             .addComponent(jCheckBoxNoMouseReCenter)
                         )
-                        .addGap(5, 5, 5)
+                        .addGap(15, 15, 15)
 
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelController)
@@ -740,7 +742,7 @@ public class PreferencesFrame extends JFrame {
                     )
 
                 )
-                .addGap(14,14,14)
+                .addGap(15,15,15)
             )
         );
 
