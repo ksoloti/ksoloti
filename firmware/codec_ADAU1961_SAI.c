@@ -526,8 +526,8 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC,     0x13); /* ADC enable */
     ADAU1961_WriteRegister(ADAU1961_REG_R36_DACC0,    0x03); /* DAC enable */
 
-    ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL,   0xE7); /* Playback Line Output Left, Volume 0dB, unmute, headphone out */
-    ADAU1961_WriteRegister(ADAU1961_REG_R32_PLRVOL,   0xE7); /* Playback Line Output Right, Volume 0dB, unmute, headphone out */
+    ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL,   0xE6); /* Playback Line Output Left, Volume 0dB, unmute, line out */
+    ADAU1961_WriteRegister(ADAU1961_REG_R32_PLRVOL,   0xE6); /* Playback Line Output Right, Volume 0dB, unmute, line out */
 
     ADAU1961_WriteRegister(ADAU1961_REG_R26_PLRML,    0x05); /* unmute Mixer5, 6dB gain */
     ADAU1961_WriteRegister(ADAU1961_REG_R27_PLRMR,    0x11); /* unmute Mixer6, 6dB gain */
@@ -547,8 +547,8 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     /* capless headphone config */
     ADAU1961_WriteRegister(ADAU1961_REG_R33_PMONO,    0x03); /* MONOM + MOMODE */
     ADAU1961_WriteRegister(ADAU1961_REG_R28_PLRMM,    0x01); /* MX7EN, COMMON MODE OUT */
-    ADAU1961_WriteRegister(ADAU1961_REG_R29_PHPLVOL,  0xC3);
-    ADAU1961_WriteRegister(ADAU1961_REG_R30_PHPRVOL,  0xC3);
+    ADAU1961_WriteRegister(ADAU1961_REG_R29_PHPLVOL,  0xC3); /* Left -12dB */
+    ADAU1961_WriteRegister(ADAU1961_REG_R30_PHPRVOL,  0xC3); /* Right -12dB */
 
     chThdSleepMilliseconds(10);
 }
