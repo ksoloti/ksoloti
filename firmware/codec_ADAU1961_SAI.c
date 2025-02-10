@@ -517,8 +517,8 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     ADAU1961_WriteRegister(ADAU1961_REG_R37_DACC1,    0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R38_DACC2,    0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R39_SERPP,    0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R40_CPORTP0,  0xAA);
-    ADAU1961_WriteRegister(ADAU1961_REG_R41_CPORTP1,  0xAA);
+    ADAU1961_WriteRegister(ADAU1961_REG_R40_CPORTP0,  0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R41_CPORTP1,  0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R42_JACKDETP, 0x00);
 
     chThdSleepMilliseconds(10);
