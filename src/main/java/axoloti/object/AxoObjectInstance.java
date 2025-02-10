@@ -1041,7 +1041,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         for (DisplayInstance i : displayInstances) {
             if (i.display.getLength() > 0) {
                 if (comma) {
-                    s += ",";
+                    s += ", ";
                 }
                 if (i.display.getDatatype().isPointer()) {
                     s += i.display.getDatatype().CType() + " " + i.GetCName();

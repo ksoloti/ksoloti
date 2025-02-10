@@ -422,7 +422,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     String GenerateMidiCCCodeSub(String vprefix, String value) {
         if (!isFrozen() && MidiCC != null) {
             return "        if ((status == attr_midichannel + MIDI_CONTROL_CHANGE)&&(data1 == " + MidiCC + ")) {\n"
-                    + "            PExParameterChange(&parent->" + PExName(vprefix) + "," + value + ", 0xFFFD);\n"
+                    + "            PExParameterChange(&parent->" + PExName(vprefix) + ", " + value + ", 0xFFFD);\n"
                     + "        }\n";
         } else {
             return "";

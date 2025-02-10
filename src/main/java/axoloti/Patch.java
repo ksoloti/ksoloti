@@ -1289,7 +1289,7 @@ public class Patch {
             int[] dp = DistillPreset(i + 1);
             c += I+I+I + "{\n";
             for (int j = 0; j < settings.GetNPresetEntries(); j++) {
-                c += I+I+I + "{" + dp[j * 2] + "," + dp[j * 2 + 1] + "}";
+                c += I+I+I + "{" + dp[j * 2] + ", " + dp[j * 2 + 1] + "}";
                 if (j != settings.GetNPresetEntries() - 1) {
                     c += ",\n";
                 }
@@ -1354,7 +1354,7 @@ public class Patch {
                         s += "{-1, 0}";
                     }
                     if (j != settings.GetNModulationTargetsPerSource() - 1) {
-                        s += ",";
+                        s += ", ";
                     }
                     else {
                         s += "\n}";
@@ -1363,7 +1363,7 @@ public class Patch {
             }
             else {
                 for (int j = 0; j < settings.GetNModulationTargetsPerSource() - 1; j++) {
-                    s += "{-1, 0},";
+                    s += "{-1, 0}, ";
                 }
                 s += "{-1, 0}}";
             }
@@ -1381,7 +1381,7 @@ public class Patch {
     String GenerateParamInitCode3(String ClassName) {
         int s = ParameterInstances.size();
         String c = I + "static int32_t* GetInitParams(void) {\n"
-                 + I+I + "static const int32_t p[" + /*s*/ "NPEXCH" + "] = {\n";
+                 + I+I + "static const int32_t p[NPEXCH] = {\n";
         for (int i = 0; i < s; i++) {
             c += I+I+I + ParameterInstances.get(i).GetValueRaw();
             if (i != s - 1) {
@@ -1442,7 +1442,7 @@ public class Patch {
         c += I+I + "uint32_t i, j;\n";
         c += I+I + "const int32_t* p;\n";
         c += I+I + "p = GetInitParams();\n\n";
-        c += I+I + "for (j = 0; j < " + /*ParameterInstances.size()*/ "NPEXCH" + "; j++) {\n";
+        c += I+I + "for (j = 0; j < NPEXCH; j++) {\n";
         c += I+I+I + "PExch[j].value = p[j];\n";
         c += I+I+I + "PExch[j].modvalue = p[j];\n";
         c += I+I+I + "PExch[j].signals = 0;\n";

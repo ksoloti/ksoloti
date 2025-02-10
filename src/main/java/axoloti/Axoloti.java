@@ -69,8 +69,8 @@ public class Axoloti {
                 System.setProperty("apple.awt.transparentTitleBar", "true");
             }
 
-            System.setProperty("awt.useSystemAAFontSettings","gasp");
-            System.setProperty("swing.aatext","true");
+            System.setProperty("awt.useSystemAAFontSettings", "gasp");
+            System.setProperty("swing.aatext", "true");
 
             /* Set tooltip delay and duration */
             javax.swing.ToolTipManager.sharedInstance().setDismissDelay(600000);
