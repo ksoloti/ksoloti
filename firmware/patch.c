@@ -560,7 +560,7 @@ void start_dsp_thread(void) {
 
 
 void computebufI(int32_t* inp, int32_t* outp) {
-    uint8_t i; for (i = 0; i < 32; i++) {
+    uint_fast8_t i; for (i = 0; i < 32; i++) {
         inbuf[i] = inp[i];
     }
 
