@@ -790,6 +790,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
         getContentPane().add(jPanel2);
 
+        fileMenu1.setMnemonic('F');
         fileMenu1.setText("File");
         fileMenu1.add(jSeparator1);
 
@@ -811,6 +812,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
         jMenuBar1.add(fileMenu1);
 
+        jMenu2.setMnemonic('E');
         jMenu2.setText("Edit");
         jMenu2.setDelay(300);
         jMenuBar1.add(jMenu2);

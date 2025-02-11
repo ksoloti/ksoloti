@@ -909,6 +909,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         getContentPane().add(jPanel1);
 
+        fileMenu1.setMnemonic('F');
         fileMenu1.setText("File");
         fileMenu1.add(jSeparator1);
 
@@ -939,6 +940,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         jMenuBar1.add(fileMenu1);
         jMenuBar1.add(windowMenu1);
 
+        helpMenu1.setMnemonic('H');
         helpMenu1.setText("Help");
         jMenuBar1.add(helpMenu1);
 

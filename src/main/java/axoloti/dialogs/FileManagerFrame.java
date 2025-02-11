@@ -418,9 +418,11 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
         });
 
+        fileMenu1.setMnemonic('F');
         fileMenu1.setText("File");
         jMenuBar1.add(fileMenu1);
 
+        jMenu2.setMnemonic('E');
         jMenu2.setText("Edit");
         jMenu2.setDelay(300);
         jMenuBar1.add(jMenu2);

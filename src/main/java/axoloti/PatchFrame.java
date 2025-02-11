@@ -654,14 +654,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuView.add(jCheckBoxMenuItemCordsInBackground);
 
         jMenuItemAdjScroll.setMnemonic('J');
-        jMenuItemAdjScroll.setText("Adjust Scroll");
+        jMenuItemAdjScroll.setText("Refresh Scroll");
         jMenuItemAdjScroll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemAdjScrollActionPerformed(evt);
             }
         });
         jMenuView.add(jMenuItemAdjScroll);
-        jMenuView.add(jSeparator5);
+        // jMenuView.add(jSeparator5);
 
         jMenuBar1.add(jMenuView);
 
@@ -795,6 +795,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuBar1.add(jMenuPreset);
         jMenuBar1.add(windowMenu1);
 
+        helpMenu1.setMnemonic('H');
         helpMenu1.setText("Help");
         jMenuBar1.add(helpMenu1);
 
