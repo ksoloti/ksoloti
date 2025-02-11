@@ -43,8 +43,10 @@
 #ifdef FW_SPILINK
 #include "spilink.h"
 #endif
+#include "stdio.h"
+#include "memstreams.h"
 
-//#define DEBUG_SERIAL 1
+//#define DEBUG_SERIAL
 
 void BootLoaderInit(void);
 
@@ -62,11 +64,20 @@ static int pFileSize;
 
 static WORKING_AREA(waThreadUSBDMidi, 256);
 
+// If you want more concurrent messages you can set this larger.
+#define LOG_BUFFER_SIZE (256)
+
+MUTEX_DECL(LogMutex);
+char             LogBuffer[LOG_BUFFER_SIZE];
+uint8_t          LogBufferUsed = 0;
+
+
+connectionflags_t connectionFlags;
 
 __attribute__((noreturn)) static msg_t ThreadUSBDMidi(void *arg) {
     (void)arg;
 
-#if CH_USE_REGISTRY
+#if CH_CFG_USE_REGISTRY
     chRegSetThreadName("usbdmidi");
 #endif
 
@@ -101,7 +112,15 @@ void InitPConnection(void) {
     usbStart(midiusbcfg.usbp, &usbcfg);
     usbConnectBus(midiusbcfg.usbp);
 
-    chThdCreateStatic(waThreadUSBDMidi, sizeof(waThreadUSBDMidi), NORMALPRIO, (void*) ThreadUSBDMidi, NULL);
+
+    connectionFlags.value = 0;
+#if FW_USBAUDIO
+    connectionFlags.usbBuild = 1;
+#endif
+
+    chMtxObjectInit(&LogMutex);
+
+    chThdCreateStatic(waThreadUSBDMidi, sizeof(waThreadUSBDMidi), MIDI_USB_PRIO, (void*) ThreadUSBDMidi, NULL);
 }
 
 
@@ -126,18 +145,33 @@ void TransmitDisplayPckt(void) {
 
 void LogTextMessage(const char* format, ...) {
     if ((usbGetDriverStateI(BDU1.config->usbp) == USB_ACTIVE) && (connected)) {
-        int h = 0x546F7841; /* "AxoT" */
+        if(chMtxTryLock(&LogMutex))
+        {
+          MemoryStream ms;
+          uint8_t      tmp[256-5]; // nead AXOT and null
 
-        chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&h, 4);
+          msObjectInit(&ms, (uint8_t *)tmp, 256-5, 0); 
 
-        va_list ap;
-        va_start(ap, format);
-        chvprintf((BaseSequentialStream *)&BDU1, format, ap);
-        va_end(ap);
-        chSequentialStreamPut((BaseSequentialStream * )&BDU1, 0);
+          va_list ap;
+          va_start(ap, format);
+          chvprintf((BaseSequentialStream *)&ms, format, ap);
+          va_end(ap);
+          chSequentialStreamPut((BaseSequentialStream * )&ms, 0);
+          size_t length = strlen((char *)tmp);
+          if((length) && (LogBufferUsed + 4 + length + 1) < LOG_BUFFER_SIZE)
+          {
+            LogBuffer[LogBufferUsed++] = 'A';
+            LogBuffer[LogBufferUsed++] = 'x';
+            LogBuffer[LogBufferUsed++] = 'o';
+            LogBuffer[LogBufferUsed++] = 'T';
+
+            memcpy(&LogBuffer[LogBufferUsed], tmp, length+1);
+            LogBufferUsed += length+1;
+          }
+          chMtxUnlock(&LogMutex);
+        }
     }
 }
-
 
 void PExTransmit(void) {
     if (!chOQIsEmptyI(&BDU1.oqueue)) {
@@ -145,10 +179,20 @@ void PExTransmit(void) {
         BDU1.oqueue.q_notify(&BDU1.oqueue);
     }
     else {
+        if(chMtxTryLock(&LogMutex))
+        {
+          if(LogBufferUsed)
+          {
+            chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )LogBuffer, LogBufferUsed);
+            LogBufferUsed = 0;
+          }
+          chMtxUnlock(&LogMutex);
+        }
+
         if (AckPending) {
             uint32_t ack[7];
             ack[0] = 0x416F7841; /* "AxoA" */
-            ack[1] = 0; /* reserved */
+            ack[1] = connectionFlags.value; // flags for overload, USB audio etc
             ack[2] = dspLoad200;
             ack[3] = patchMeta.patchID;
             ack[4] = sysmon_getVoltage10() + (sysmon_getVoltage50()<<16);
@@ -161,9 +205,13 @@ void PExTransmit(void) {
             ack[6] = fs_ready;
             chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&ack[0], 7 * 4);
 
-#ifdef DEBUG_SERIAL
-            chprintf((BaseSequentialStream * )&SD2,"ack!\r\n");
-#endif
+
+            // clear overload flag
+            connectionFlags.dspOverload = false;
+
+// #ifdef DEBUG_SERIAL
+//            chprintf((BaseSequentialStream * )&SD2,"ack!\r\n");
+// #endif
 
             if (!patchStatus) {
                 TransmitDisplayPckt();
@@ -173,6 +221,7 @@ void PExTransmit(void) {
             exception_checkandreport();
             AckPending = 0;
         }
+
         if (!patchStatus) {
             uint16_t i;
             for (i = 0; i < patchMeta.numPEx; i++) {
@@ -501,6 +550,30 @@ void ReplySpilinkSynced(void) {
   chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&reply[0]), 5);
 }
 
+typedef struct _PCDebug
+{
+  uint8_t c;
+  int state;
+} PCDebug;
+
+#define PC_DBG_COUNT (0)
+#if PC_DBG_COUNT
+PCDebug dbg_received[PC_DBG_COUNT]  __attribute__ ((section (".sram3")));;
+uint16_t uCount = 0;
+
+void AddPCDebug(uint8_t c, int state)
+{
+  dbg_received[uCount].c = c;
+  dbg_received[uCount].state = state;
+  uCount++;
+  if(uCount==PC_DBG_COUNT)
+    uCount = 0;
+}
+#else
+  #define AddPCDebug(a,b)
+#endif
+
+
 
 void PExReceiveByte(unsigned char c) {
   static char header = 0;
@@ -513,6 +586,8 @@ void PExReceiveByte(unsigned char c) {
   static int a;
   static int b;
   static uint32_t patchid;
+
+  AddPCDebug(c, state);
 
   if (!header) {
     switch (state) {
@@ -567,6 +642,9 @@ void PExReceiveByte(unsigned char c) {
       else if (c == 'y') { /* generic read */
         state = 4;
       }
+      else if (c == 'U') { /* Set cpU safety*/
+        state = 4;
+      }
       else if (c == 'S') { /* stop patch */
         state = 0;
         header = 0;
@@ -613,9 +691,9 @@ void PExReceiveByte(unsigned char c) {
       else if (c == 'p') { /* ping */
         state = 0;
         header = 0;
-#ifdef DEBUG_SERIAL
-        chprintf((BaseSequentialStream * )&SD2,"ping\r\n");
-#endif
+// #ifdef DEBUG_SERIAL
+//        chprintf((BaseSequentialStream * )&SD2,"ping\r\n");
+// #endif
         AckPending = 1;
       }
       else if (c == 'c') { /* close sdcard file */
@@ -679,6 +757,36 @@ void PExReceiveByte(unsigned char c) {
     default:
       state = 0;
       header = 0;
+    }
+  }
+  else if (header == 'U') {
+    static uint16_t uUIMidiCost = 0;
+    static uint8_t  uDspLimit200 = 0;
+    
+    switch (state) {
+    case 4:
+      uUIMidiCost = c;
+      state++;
+      break;
+    case 5:
+      uUIMidiCost += c << 8;
+      state++;
+      break;
+    case 6:
+      uDspLimit200 = c;
+
+      SetPatchSafety(uUIMidiCost, uDspLimit200);
+
+      // we have our values now so ack
+      header = 0;
+      state = 0;
+      AckPending = 1;
+      break;
+    default:
+      header = 0;
+      state = 0;
+      AckPending = 1;
+      break;
     }
   }
   else if (header == 'W') {

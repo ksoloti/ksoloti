@@ -27,7 +27,7 @@
 #else
 #define ADC_GRP1_NUM_CHANNELS   16
 #define ADC_GRP2_NUM_CHANNELS   0
-#endif
+#endif /* BOARD_KSOLOTI_CORE */
 
 #define ADC_GRP1_BUF_DEPTH      1
 
@@ -64,7 +64,7 @@ void adc_convert(void);
 #define SW2_PORT GPIOA
 #define SW2_PIN 0
 
-#endif
+#endif /* BOARD_* */
 
 #if defined(BOARD_KSOLOTI_CORE)
 #define SPILINK_JUMPER_PORT GPIOD
@@ -72,13 +72,12 @@ void adc_convert(void);
 #elif defined(BOARD_AXOLOTI_CORE)
 #define SPILINK_JUMPER_PORT GPIOB
 #define SPILINK_JUMPER_PIN 10
-#endif
-
+#endif /* BOARD_*OLOTI_CORE */
 
 #if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
 #define SDMIDI SD6
 #elif defined(BOARD_STM32F4_DISCOVERY)
 #define SDMIDI SD1
-#endif
+#endif /* BOARD_* */
 
-#endif
+#endif /* __AXOBOARD_H */

@@ -18,43 +18,43 @@ public class VisibleCablePanel extends javax.swing.JPanel {
         initComponents();
 
         /* Red wires */
-        jCheckBoxFrac32Buffer.setBackground(Theme.getCurrentTheme().Cable_Frac32Buffer);
+        jCheckBoxFrac32Buffer.setBackground(Theme.Cable_Frac32Buffer);
         jCheckBoxFrac32Buffer.setOpaque(true);
         jCheckBoxFrac32Buffer.setSelected(true);
         jCheckBoxFrac32Buffer.setRolloverEnabled(false);
         jCheckBoxFrac32Buffer.setToolTipText("Audio rate signals, 48 kHz sampling rate.");
 
         /* Blue wires */
-        jCheckBoxFrac32.setBackground(Theme.getCurrentTheme().Cable_Frac32);
+        jCheckBoxFrac32.setBackground(Theme.Cable_Frac32);
         jCheckBoxFrac32.setOpaque(true);
         jCheckBoxFrac32.setSelected(true);
         jCheckBoxFrac32.setRolloverEnabled(false);
         jCheckBoxFrac32.setToolTipText("Control rate signals, 3 kHz sampling rate.");
 
         /* Yellow wires */
-        jCheckBoxBool32.setBackground(Theme.getCurrentTheme().Cable_Bool32);
+        jCheckBoxBool32.setBackground(Theme.Cable_Bool32);
         jCheckBoxBool32.setOpaque(true);
         jCheckBoxBool32.setSelected(true);
         jCheckBoxBool32.setRolloverEnabled(false);
-        jCheckBoxFrac32.setToolTipText("Control rate signals (true/false, on/off etc.), 3 kHz sampling rate.");
+        jCheckBoxFrac32.setToolTipText("Boolean signals (true/false, on/off etc.) at control rate, 3 kHz.");
 
         /* Green wires */
-        jCheckBoxInt32.setBackground(Theme.getCurrentTheme().Cable_Int32);
+        jCheckBoxInt32.setBackground(Theme.Cable_Int32);
         jCheckBoxInt32.setOpaque(true);
         jCheckBoxInt32.setSelected(true);
         jCheckBoxInt32.setRolloverEnabled(false);
-        jCheckBoxInt32.setToolTipText("Control rate signals (whole numbers), 3 kHz sampling rate.");
+        jCheckBoxInt32.setToolTipText("Integer signals (whole numbers) at control rate , 3 kHz.");
 
         
         /* Pink wires */
-        jCheckBoxCharPointer32.setBackground(Theme.getCurrentTheme().Cable_CharPointer32);
+        jCheckBoxCharPointer32.setBackground(Theme.Cable_CharPointer32);
         jCheckBoxCharPointer32.setOpaque(true);
         jCheckBoxCharPointer32.setSelected(true);
         jCheckBoxCharPointer32.setRolloverEnabled(false);
-        jCheckBoxCharPointer32.setToolTipText("String pointers (pointers to character arrays), 3 kHz sampling rate.");
+        jCheckBoxCharPointer32.setToolTipText("String pointers (strings, character arrays) at control rate, 3 kHz.");
         
         /* Rose... Salmon(?) wires (currently not used?) */
-        // jCheckBoxInt32Pointer.setBackground(Theme.getCurrentTheme().Cable_Int32Pointer);
+        // jCheckBoxInt32Pointer.setBackground(Theme.Cable_Int32Pointer);
         // jCheckBoxInt32Pointer.setOpaque(true);
         // jCheckBoxInt32Pointer.setSelected(true);
         // jCheckBoxInt32Pointer.setRolloverEnabled(false);

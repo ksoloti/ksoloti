@@ -29,11 +29,15 @@
 #include "exceptions.h"
 #include "ff.h"
 
-typedef void (*fptr_patch_init_t)(uint32_t fwID);
-typedef void (*fptr_patch_dispose_t)(void);
-typedef void (*fptr_patch_dsp_process_t)(int32_t *, int32_t *);
-typedef void (*fptr_patch_midi_in_handler_t)(midi_device_t dev, uint8_t port, uint8_t, uint8_t, uint8_t);
-typedef void (*fptr_patch_applyPreset_t)(uint8_t);
+typedef void (*fptr_patch_init_t) (uint32_t fwID);
+typedef void (*fptr_patch_dispose_t) (void);
+#if FW_USBAUDIO
+typedef void (*fptr_patch_dsp_process_t) (int32_t*, int32_t*, int32_t*, int32_t*);
+#else
+typedef void (*fptr_patch_dsp_process_t) (int32_t*, int32_t*);
+#endif
+typedef void (*fptr_patch_midi_in_handler_t) (midi_device_t dev, uint8_t port, uint8_t, uint8_t, uint8_t);
+typedef void (*fptr_patch_applyPreset_t) (uint8_t);
 
 typedef struct {
   int32_t pexIndex;
@@ -47,19 +51,22 @@ typedef struct {
   fptr_patch_midi_in_handler_t fptr_MidiInHandler;
   fptr_patch_applyPreset_t fptr_applyPreset;
   uint32_t numPEx;
-  ParameterExchange_t *pPExch;
-  int32_t *pDisplayVector;
+  ParameterExchange_t* pPExch;
+  int32_t* pDisplayVector;
   uint32_t patchID;
   uint32_t initpreset_size;
-  void *pInitpreset;
+  void* pInitpreset;
   uint32_t npresets;
   uint32_t npreset_entries;
-  PresetParamChange_t *pPresets; // is a npreset array of npreset_entries of PresetParamChange_t
+  PresetParamChange_t* pPresets; // is a npreset array of npreset_entries of PresetParamChange_t
 } patchMeta_t;
+
 
 extern patchMeta_t patchMeta;
 
-extern uint32_t dspLoad200; // DSP load: Values 0-200 correspond to 0-100%
+extern uint32_t     dspLoad200; // DSP load: Values 0-200 correspond to 0-100%
+
+extern bool     dspOverload;
 
 typedef enum {
   START_SD = -1,
@@ -100,13 +107,24 @@ void start_dsp_thread(void);
 #define PATCHFLASHSIZE 0xB000
 
 void StartLoadPatchTread(void);
-void LoadPatch(const char *name);
+void LoadPatch(const char* name);
 void LoadPatchStartSD(void);
 void LoadPatchStartFlash(void);
 void LoadPatchIndexed(uint32_t index);
 loadPatchIndex_t GetIndexOfCurrentPatch(void);
 
 void codec_clearbuffer(void);
+
+#if FW_USBAUDIO
+void usb_clearbuffer(void);
+#endif
+
+#if USE_EXTERNAL_USB_FIFO_PUMP
+extern void usb_lld_use_external_pump(bool use);
+#endif
+
+void SetPatchSafety(uint16_t uUIMidiCost, uint8_t uDspLimit200);
+
 
 int get_USBH_LL_GetURBState(void);
 int get_USBH_LL_SubmitURB(void);

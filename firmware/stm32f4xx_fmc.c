@@ -37,7 +37,7 @@
 #include "ch.h"
 //#include "stm32f4xx_rcc.h"
 
-#define assert_param(expr) chDbgAssert(expr,"STPeriph FMC","")
+#define assert_param(expr) chDbgAssert(expr,"STPeriph FMC")
 
 /** @addtogroup STM32F4xx_StdPeriph_Driver
   * @{
@@ -130,24 +130,24 @@
   *            @arg FMC_Bank1_NORSRAM4: FMC Bank1 NOR/SRAM4 
   * @retval None
   */
-void FMC_NORSRAMDeInit(uint32_t FMC_Bank)
-{
-  /* Check the parameter */
-  assert_param(IS_FMC_NORSRAM_BANK(FMC_Bank));
+// void FMC_NORSRAMDeInit(uint32_t FMC_Bank)
+// {
+//   /* Check the parameter */
+//   assert_param(IS_FMC_NORSRAM_BANK(FMC_Bank));
   
-  /* FMC_Bank1_NORSRAM1 */
-  if(FMC_Bank == FMC_Bank1_NORSRAM1)
-  {
-    FMC_Bank1->BTCR[FMC_Bank] = 0x000030DB;    
-  }
-  /* FMC_Bank1_NORSRAM2,  FMC_Bank1_NORSRAM3 or FMC_Bank1_NORSRAM4 */
-  else
-  {   
-    FMC_Bank1->BTCR[FMC_Bank] = 0x000030D2; 
-  }
-  FMC_Bank1->BTCR[FMC_Bank + 1] = 0x0FFFFFFF;
-  FMC_Bank1E->BWTR[FMC_Bank] = 0x0FFFFFFF;  
-}
+//   /* FMC_Bank1_NORSRAM1 */
+//   if(FMC_Bank == FMC_Bank1_NORSRAM1)
+//   {
+//     FMC_Bank1->BTCR[FMC_Bank] = 0x000030DB;    
+//   }
+//   /* FMC_Bank1_NORSRAM2,  FMC_Bank1_NORSRAM3 or FMC_Bank1_NORSRAM4 */
+//   else
+//   {   
+//     FMC_Bank1->BTCR[FMC_Bank] = 0x000030D2; 
+//   }
+//   FMC_Bank1->BTCR[FMC_Bank + 1] = 0x0FFFFFFF;
+//   FMC_Bank1E->BWTR[FMC_Bank] = 0x0FFFFFFF;  
+// }
 
 /**
   * @brief  Initializes the FMC NOR/SRAM Banks according to the specified
@@ -157,99 +157,99 @@ void FMC_NORSRAMDeInit(uint32_t FMC_Bank)
   *         specified Banks.                       
   * @retval None
   */
-void FMC_NORSRAMInit(FMC_NORSRAMInitTypeDef* FMC_NORSRAMInitStruct)
-{
-  uint32_t tmpr = 0;
+// void FMC_NORSRAMInit(FMC_NORSRAMInitTypeDef* FMC_NORSRAMInitStruct)
+// {
+//   uint32_t tmpr = 0;
   
-  /* Check the parameters */
-  assert_param(IS_FMC_NORSRAM_BANK(FMC_NORSRAMInitStruct->FMC_Bank));
-  assert_param(IS_FMC_MUX(FMC_NORSRAMInitStruct->FMC_DataAddressMux));
-  assert_param(IS_FMC_MEMORY(FMC_NORSRAMInitStruct->FMC_MemoryType));
-  assert_param(IS_FMC_NORSRAM_MEMORY_WIDTH(FMC_NORSRAMInitStruct->FMC_MemoryDataWidth));
-  assert_param(IS_FMC_BURSTMODE(FMC_NORSRAMInitStruct->FMC_BurstAccessMode));
-  assert_param(IS_FMC_WAIT_POLARITY(FMC_NORSRAMInitStruct->FMC_WaitSignalPolarity));
-  assert_param(IS_FMC_WRAP_MODE(FMC_NORSRAMInitStruct->FMC_WrapMode));
-  assert_param(IS_FMC_WAIT_SIGNAL_ACTIVE(FMC_NORSRAMInitStruct->FMC_WaitSignalActive));
-  assert_param(IS_FMC_WRITE_OPERATION(FMC_NORSRAMInitStruct->FMC_WriteOperation));
-  assert_param(IS_FMC_WAITE_SIGNAL(FMC_NORSRAMInitStruct->FMC_WaitSignal));
-  assert_param(IS_FMC_EXTENDED_MODE(FMC_NORSRAMInitStruct->FMC_ExtendedMode));
-  assert_param(IS_FMC_ASYNWAIT(FMC_NORSRAMInitStruct->FMC_AsynchronousWait));
-  assert_param(IS_FMC_WRITE_BURST(FMC_NORSRAMInitStruct->FMC_WriteBurst));
-  assert_param(IS_FMC_CONTINOUS_CLOCK(FMC_NORSRAMInitStruct->FMC_ContinousClock));  
-  assert_param(IS_FMC_ADDRESS_SETUP_TIME(FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_AddressSetupTime));
-  assert_param(IS_FMC_ADDRESS_HOLD_TIME(FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_AddressHoldTime));
-  assert_param(IS_FMC_DATASETUP_TIME(FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_DataSetupTime));
-  assert_param(IS_FMC_TURNAROUND_TIME(FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_BusTurnAroundDuration));
-  assert_param(IS_FMC_CLK_DIV(FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_CLKDivision));
-  assert_param(IS_FMC_DATA_LATENCY(FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_DataLatency));
-  assert_param(IS_FMC_ACCESS_MODE(FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_AccessMode)); 
+//   /* Check the parameters */
+//   assert_param(IS_FMC_NORSRAM_BANK(FMC_NORSRAMInitStruct->FMC_Bank));
+//   assert_param(IS_FMC_MUX(FMC_NORSRAMInitStruct->FMC_DataAddressMux));
+//   assert_param(IS_FMC_MEMORY(FMC_NORSRAMInitStruct->FMC_MemoryType));
+//   assert_param(IS_FMC_NORSRAM_MEMORY_WIDTH(FMC_NORSRAMInitStruct->FMC_MemoryDataWidth));
+//   assert_param(IS_FMC_BURSTMODE(FMC_NORSRAMInitStruct->FMC_BurstAccessMode));
+//   assert_param(IS_FMC_WAIT_POLARITY(FMC_NORSRAMInitStruct->FMC_WaitSignalPolarity));
+//   assert_param(IS_FMC_WRAP_MODE(FMC_NORSRAMInitStruct->FMC_WrapMode));
+//   assert_param(IS_FMC_WAIT_SIGNAL_ACTIVE(FMC_NORSRAMInitStruct->FMC_WaitSignalActive));
+//   assert_param(IS_FMC_WRITE_OPERATION(FMC_NORSRAMInitStruct->FMC_WriteOperation));
+//   assert_param(IS_FMC_WAITE_SIGNAL(FMC_NORSRAMInitStruct->FMC_WaitSignal));
+//   assert_param(IS_FMC_EXTENDED_MODE(FMC_NORSRAMInitStruct->FMC_ExtendedMode));
+//   assert_param(IS_FMC_ASYNWAIT(FMC_NORSRAMInitStruct->FMC_AsynchronousWait));
+//   assert_param(IS_FMC_WRITE_BURST(FMC_NORSRAMInitStruct->FMC_WriteBurst));
+//   assert_param(IS_FMC_CONTINOUS_CLOCK(FMC_NORSRAMInitStruct->FMC_ContinousClock));  
+//   assert_param(IS_FMC_ADDRESS_SETUP_TIME(FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_AddressSetupTime));
+//   assert_param(IS_FMC_ADDRESS_HOLD_TIME(FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_AddressHoldTime));
+//   assert_param(IS_FMC_DATASETUP_TIME(FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_DataSetupTime));
+//   assert_param(IS_FMC_TURNAROUND_TIME(FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_BusTurnAroundDuration));
+//   assert_param(IS_FMC_CLK_DIV(FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_CLKDivision));
+//   assert_param(IS_FMC_DATA_LATENCY(FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_DataLatency));
+//   assert_param(IS_FMC_ACCESS_MODE(FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_AccessMode)); 
   
-  /* NOR/SRAM Bank control register configuration */ 
-  FMC_Bank1->BTCR[FMC_NORSRAMInitStruct->FMC_Bank] =   
-            (uint32_t)FMC_NORSRAMInitStruct->FMC_DataAddressMux |
-            FMC_NORSRAMInitStruct->FMC_MemoryType |
-            FMC_NORSRAMInitStruct->FMC_MemoryDataWidth |
-            FMC_NORSRAMInitStruct->FMC_BurstAccessMode |
-            FMC_NORSRAMInitStruct->FMC_WaitSignalPolarity |
-            FMC_NORSRAMInitStruct->FMC_WrapMode |
-            FMC_NORSRAMInitStruct->FMC_WaitSignalActive |
-            FMC_NORSRAMInitStruct->FMC_WriteOperation |
-            FMC_NORSRAMInitStruct->FMC_WaitSignal |
-            FMC_NORSRAMInitStruct->FMC_ExtendedMode |
-            FMC_NORSRAMInitStruct->FMC_AsynchronousWait |
-            FMC_NORSRAMInitStruct->FMC_WriteBurst |
-            FMC_NORSRAMInitStruct->FMC_ContinousClock;
+//   /* NOR/SRAM Bank control register configuration */ 
+//   FMC_Bank1->BTCR[FMC_NORSRAMInitStruct->FMC_Bank] =   
+//             (uint32_t)FMC_NORSRAMInitStruct->FMC_DataAddressMux |
+//             FMC_NORSRAMInitStruct->FMC_MemoryType |
+//             FMC_NORSRAMInitStruct->FMC_MemoryDataWidth |
+//             FMC_NORSRAMInitStruct->FMC_BurstAccessMode |
+//             FMC_NORSRAMInitStruct->FMC_WaitSignalPolarity |
+//             FMC_NORSRAMInitStruct->FMC_WrapMode |
+//             FMC_NORSRAMInitStruct->FMC_WaitSignalActive |
+//             FMC_NORSRAMInitStruct->FMC_WriteOperation |
+//             FMC_NORSRAMInitStruct->FMC_WaitSignal |
+//             FMC_NORSRAMInitStruct->FMC_ExtendedMode |
+//             FMC_NORSRAMInitStruct->FMC_AsynchronousWait |
+//             FMC_NORSRAMInitStruct->FMC_WriteBurst |
+//             FMC_NORSRAMInitStruct->FMC_ContinousClock;
 
             
-  if(FMC_NORSRAMInitStruct->FMC_MemoryType == FMC_MemoryType_NOR)
-  {
-    FMC_Bank1->BTCR[FMC_NORSRAMInitStruct->FMC_Bank] |= (uint32_t)BCR_FACCEN_SET;
-  }
+//   if(FMC_NORSRAMInitStruct->FMC_MemoryType == FMC_MemoryType_NOR)
+//   {
+//     FMC_Bank1->BTCR[FMC_NORSRAMInitStruct->FMC_Bank] |= (uint32_t)BCR_FACCEN_SET;
+//   }
 
-  /* Configure Continuous clock feature when bank2..4 is used */
-  if((FMC_NORSRAMInitStruct->FMC_ContinousClock == FMC_CClock_SyncAsync) && (FMC_NORSRAMInitStruct->FMC_Bank != FMC_Bank1_NORSRAM1))
-  {
-    tmpr = (uint32_t)((FMC_Bank1->BTCR[FMC_Bank1_NORSRAM1+1]) & ~(((uint32_t)0x0F) << 20));    
+//   /* Configure Continuous clock feature when bank2..4 is used */
+//   if((FMC_NORSRAMInitStruct->FMC_ContinousClock == FMC_CClock_SyncAsync) && (FMC_NORSRAMInitStruct->FMC_Bank != FMC_Bank1_NORSRAM1))
+//   {
+//     tmpr = (uint32_t)((FMC_Bank1->BTCR[FMC_Bank1_NORSRAM1+1]) & ~(((uint32_t)0x0F) << 20));    
     
-    FMC_Bank1->BTCR[FMC_Bank1_NORSRAM1]  |= FMC_NORSRAMInitStruct->FMC_ContinousClock;
-    FMC_Bank1->BTCR[FMC_Bank1_NORSRAM1]  |= FMC_BurstAccessMode_Enable;
-    FMC_Bank1->BTCR[FMC_Bank1_NORSRAM1+1] = (uint32_t)(tmpr | (((FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_CLKDivision)-1) << 20));
-  }
+//     FMC_Bank1->BTCR[FMC_Bank1_NORSRAM1]  |= FMC_NORSRAMInitStruct->FMC_ContinousClock;
+//     FMC_Bank1->BTCR[FMC_Bank1_NORSRAM1]  |= FMC_BurstAccessMode_Enable;
+//     FMC_Bank1->BTCR[FMC_Bank1_NORSRAM1+1] = (uint32_t)(tmpr | (((FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_CLKDivision)-1) << 20));
+//   }
   
-  /* NOR/SRAM Bank timing register configuration */
-  FMC_Bank1->BTCR[FMC_NORSRAMInitStruct->FMC_Bank+1] =   
-            (uint32_t)FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_AddressSetupTime |
-            (FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_AddressHoldTime << 4) |
-            (FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_DataSetupTime << 8) |
-            (FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_BusTurnAroundDuration << 16) |
-            ((FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_CLKDivision) << 20) |
-            ((FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_DataLatency) << 24) |
-             FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_AccessMode;
+//   /* NOR/SRAM Bank timing register configuration */
+//   FMC_Bank1->BTCR[FMC_NORSRAMInitStruct->FMC_Bank+1] =   
+//             (uint32_t)FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_AddressSetupTime |
+//             (FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_AddressHoldTime << 4) |
+//             (FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_DataSetupTime << 8) |
+//             (FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_BusTurnAroundDuration << 16) |
+//             ((FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_CLKDivision) << 20) |
+//             ((FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_DataLatency) << 24) |
+//              FMC_NORSRAMInitStruct->FMC_ReadWriteTimingStruct->FMC_AccessMode;
      
-  /* NOR/SRAM Bank timing register for write configuration, if extended mode is used */
-  if(FMC_NORSRAMInitStruct->FMC_ExtendedMode == FMC_ExtendedMode_Enable)
-  {
-    assert_param(IS_FMC_ADDRESS_SETUP_TIME(FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_AddressSetupTime));
-    assert_param(IS_FMC_ADDRESS_HOLD_TIME(FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_AddressHoldTime));
-    assert_param(IS_FMC_DATASETUP_TIME(FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_DataSetupTime));
-    assert_param(IS_FMC_CLK_DIV(FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_CLKDivision));
-    assert_param(IS_FMC_DATA_LATENCY(FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_DataLatency));
-    assert_param(IS_FMC_ACCESS_MODE(FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_AccessMode));
+//   /* NOR/SRAM Bank timing register for write configuration, if extended mode is used */
+//   if(FMC_NORSRAMInitStruct->FMC_ExtendedMode == FMC_ExtendedMode_Enable)
+//   {
+//     assert_param(IS_FMC_ADDRESS_SETUP_TIME(FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_AddressSetupTime));
+//     assert_param(IS_FMC_ADDRESS_HOLD_TIME(FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_AddressHoldTime));
+//     assert_param(IS_FMC_DATASETUP_TIME(FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_DataSetupTime));
+//     assert_param(IS_FMC_CLK_DIV(FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_CLKDivision));
+//     assert_param(IS_FMC_DATA_LATENCY(FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_DataLatency));
+//     assert_param(IS_FMC_ACCESS_MODE(FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_AccessMode));
     
-    FMC_Bank1E->BWTR[FMC_NORSRAMInitStruct->FMC_Bank] =   
-               (uint32_t)FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_AddressSetupTime |
-               (FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_AddressHoldTime << 4 )|
-               (FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_DataSetupTime << 8) |
-               ((FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_CLKDivision) << 20) |
-               ((FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_DataLatency) << 24) |
-               FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_AccessMode;
-  }
-  else
-  {
-    FMC_Bank1E->BWTR[FMC_NORSRAMInitStruct->FMC_Bank] = 0x0FFFFFFF;
-  }
+//     FMC_Bank1E->BWTR[FMC_NORSRAMInitStruct->FMC_Bank] =   
+//                (uint32_t)FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_AddressSetupTime |
+//                (FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_AddressHoldTime << 4 )|
+//                (FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_DataSetupTime << 8) |
+//                ((FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_CLKDivision) << 20) |
+//                ((FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_DataLatency) << 24) |
+//                FMC_NORSRAMInitStruct->FMC_WriteTimingStruct->FMC_AccessMode;
+//   }
+//   else
+//   {
+//     FMC_Bank1E->BWTR[FMC_NORSRAMInitStruct->FMC_Bank] = 0x0FFFFFFF;
+//   }
   
-}
+// }
 
 /**
   * @brief  Fills each FMC_NORSRAMInitStruct member with its default value.
@@ -302,22 +302,22 @@ void FMC_NORSRAMStructInit(FMC_NORSRAMInitTypeDef* FMC_NORSRAMInitStruct)
   * @param  NewState: new state of the FMC_Bank. This parameter can be: ENABLE or DISABLE.
   * @retval None
   */
-void FMC_NORSRAMCmd(uint32_t FMC_Bank, FunctionalState NewState)
-{
-  assert_param(IS_FMC_NORSRAM_BANK(FMC_Bank));
-  assert_param(IS_FUNCTIONAL_STATE(NewState));
+// void FMC_NORSRAMCmd(uint32_t FMC_Bank, FunctionalState NewState)
+// {
+//   assert_param(IS_FMC_NORSRAM_BANK(FMC_Bank));
+//   assert_param(IS_FUNCTIONAL_STATE(NewState));
   
-  if (NewState != DISABLE)
-  {
-    /* Enable the selected NOR/SRAM Bank by setting the PBKEN bit in the BCRx register */
-    FMC_Bank1->BTCR[FMC_Bank] |= BCR_MBKEN_SET;
-  }
-  else
-  {
-    /* Disable the selected NOR/SRAM Bank by clearing the PBKEN bit in the BCRx register */
-    FMC_Bank1->BTCR[FMC_Bank] &= BCR_MBKEN_RESET;
-  }
-}
+//   if (NewState != DISABLE)
+//   {
+//     /* Enable the selected NOR/SRAM Bank by setting the PBKEN bit in the BCRx register */
+//     FMC_Bank1->BTCR[FMC_Bank] |= BCR_MBKEN_SET;
+//   }
+//   else
+//   {
+//     /* Disable the selected NOR/SRAM Bank by clearing the PBKEN bit in the BCRx register */
+//     FMC_Bank1->BTCR[FMC_Bank] &= BCR_MBKEN_RESET;
+//   }
+// }
 /**
   * @}
   */
@@ -375,29 +375,29 @@ void FMC_NORSRAMCmd(uint32_t FMC_Bank, FunctionalState NewState)
   *            @arg FMC_Bank3_NAND: FMC Bank3 NAND 
   * @retval None
   */
-void FMC_NANDDeInit(uint32_t FMC_Bank)
-{
-  /* Check the parameter */
-  assert_param(IS_FMC_NAND_BANK(FMC_Bank));
+// void FMC_NANDDeInit(uint32_t FMC_Bank)
+// {
+//   /* Check the parameter */
+//   assert_param(IS_FMC_NAND_BANK(FMC_Bank));
   
-  if(FMC_Bank == FMC_Bank2_NAND)
-  {
-    /* Set the FMC_Bank2 registers to their reset values */
-    FMC_Bank2->PCR2 = 0x00000018;
-    FMC_Bank2->SR2 = 0x00000040;
-    FMC_Bank2->PMEM2 = 0xFCFCFCFC;
-    FMC_Bank2->PATT2 = 0xFCFCFCFC;  
-  }
-  /* FMC_Bank3_NAND */  
-  else
-  {
-    /* Set the FMC_Bank3 registers to their reset values */
-    FMC_Bank3->PCR3 = 0x00000018;
-    FMC_Bank3->SR3 = 0x00000040;
-    FMC_Bank3->PMEM3 = 0xFCFCFCFC;
-    FMC_Bank3->PATT3 = 0xFCFCFCFC; 
-  }  
-}
+//   if(FMC_Bank == FMC_Bank2_NAND)
+//   {
+//     /* Set the FMC_Bank2 registers to their reset values */
+//     FMC_Bank2->PCR2 = 0x00000018;
+//     FMC_Bank2->SR2 = 0x00000040;
+//     FMC_Bank2->PMEM2 = 0xFCFCFCFC;
+//     FMC_Bank2->PATT2 = 0xFCFCFCFC;  
+//   }
+//   /* FMC_Bank3_NAND */  
+//   else
+//   {
+//     /* Set the FMC_Bank3 registers to their reset values */
+//     FMC_Bank3->PCR3 = 0x00000018;
+//     FMC_Bank3->SR3 = 0x00000040;
+//     FMC_Bank3->PMEM3 = 0xFCFCFCFC;
+//     FMC_Bank3->PATT3 = 0xFCFCFCFC; 
+//   }  
+// }
 
 /**
   * @brief  Initializes the FMC NAND Banks according to the specified parameters
@@ -406,63 +406,63 @@ void FMC_NANDDeInit(uint32_t FMC_Bank)
   *         contains the configuration information for the FMC NAND specified Banks.                       
   * @retval None
   */
-void FMC_NANDInit(FMC_NANDInitTypeDef* FMC_NANDInitStruct)
-{
-  uint32_t tmppcr = 0x00000000, tmppmem = 0x00000000, tmppatt = 0x00000000; 
+// void FMC_NANDInit(FMC_NANDInitTypeDef* FMC_NANDInitStruct)
+// {
+//   uint32_t tmppcr = 0x00000000, tmppmem = 0x00000000, tmppatt = 0x00000000; 
     
-  /* Check the parameters */
-  assert_param(IS_FMC_NAND_BANK(FMC_NANDInitStruct->FMC_Bank));
-  assert_param(IS_FMC_WAIT_FEATURE(FMC_NANDInitStruct->FMC_Waitfeature));
-  assert_param(IS_FMC_NAND_MEMORY_WIDTH(FMC_NANDInitStruct->FMC_MemoryDataWidth));
-  assert_param(IS_FMC_ECC_STATE(FMC_NANDInitStruct->FMC_ECC));
-  assert_param(IS_FMC_ECCPAGE_SIZE(FMC_NANDInitStruct->FMC_ECCPageSize));
-  assert_param(IS_FMC_TCLR_TIME(FMC_NANDInitStruct->FMC_TCLRSetupTime));
-  assert_param(IS_FMC_TAR_TIME(FMC_NANDInitStruct->FMC_TARSetupTime));
-  assert_param(IS_FMC_SETUP_TIME(FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_SetupTime));
-  assert_param(IS_FMC_WAIT_TIME(FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_WaitSetupTime));
-  assert_param(IS_FMC_HOLD_TIME(FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HoldSetupTime));
-  assert_param(IS_FMC_HIZ_TIME(FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HiZSetupTime));
-  assert_param(IS_FMC_SETUP_TIME(FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_SetupTime));
-  assert_param(IS_FMC_WAIT_TIME(FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_WaitSetupTime));
-  assert_param(IS_FMC_HOLD_TIME(FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HoldSetupTime));
-  assert_param(IS_FMC_HIZ_TIME(FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HiZSetupTime));
+//   /* Check the parameters */
+//   assert_param(IS_FMC_NAND_BANK(FMC_NANDInitStruct->FMC_Bank));
+//   assert_param(IS_FMC_WAIT_FEATURE(FMC_NANDInitStruct->FMC_Waitfeature));
+//   assert_param(IS_FMC_NAND_MEMORY_WIDTH(FMC_NANDInitStruct->FMC_MemoryDataWidth));
+//   assert_param(IS_FMC_ECC_STATE(FMC_NANDInitStruct->FMC_ECC));
+//   assert_param(IS_FMC_ECCPAGE_SIZE(FMC_NANDInitStruct->FMC_ECCPageSize));
+//   assert_param(IS_FMC_TCLR_TIME(FMC_NANDInitStruct->FMC_TCLRSetupTime));
+//   assert_param(IS_FMC_TAR_TIME(FMC_NANDInitStruct->FMC_TARSetupTime));
+//   assert_param(IS_FMC_SETUP_TIME(FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_SetupTime));
+//   assert_param(IS_FMC_WAIT_TIME(FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_WaitSetupTime));
+//   assert_param(IS_FMC_HOLD_TIME(FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HoldSetupTime));
+//   assert_param(IS_FMC_HIZ_TIME(FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HiZSetupTime));
+//   assert_param(IS_FMC_SETUP_TIME(FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_SetupTime));
+//   assert_param(IS_FMC_WAIT_TIME(FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_WaitSetupTime));
+//   assert_param(IS_FMC_HOLD_TIME(FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HoldSetupTime));
+//   assert_param(IS_FMC_HIZ_TIME(FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HiZSetupTime));
   
-  /* Set the tmppcr value according to FMC_NANDInitStruct parameters */
-  tmppcr = (uint32_t)FMC_NANDInitStruct->FMC_Waitfeature |
-            PCR_MEMORYTYPE_NAND |
-            FMC_NANDInitStruct->FMC_MemoryDataWidth |
-            FMC_NANDInitStruct->FMC_ECC |
-            FMC_NANDInitStruct->FMC_ECCPageSize |
-            (FMC_NANDInitStruct->FMC_TCLRSetupTime << 9 )|
-            (FMC_NANDInitStruct->FMC_TARSetupTime << 13);
+//   /* Set the tmppcr value according to FMC_NANDInitStruct parameters */
+//   tmppcr = (uint32_t)FMC_NANDInitStruct->FMC_Waitfeature |
+//             PCR_MEMORYTYPE_NAND |
+//             FMC_NANDInitStruct->FMC_MemoryDataWidth |
+//             FMC_NANDInitStruct->FMC_ECC |
+//             FMC_NANDInitStruct->FMC_ECCPageSize |
+//             (FMC_NANDInitStruct->FMC_TCLRSetupTime << 9 )|
+//             (FMC_NANDInitStruct->FMC_TARSetupTime << 13);
             
-  /* Set tmppmem value according to FMC_CommonSpaceTimingStructure parameters */
-  tmppmem = (uint32_t)FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_SetupTime |
-            (FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_WaitSetupTime << 8) |
-            (FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HoldSetupTime << 16)|
-            (FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HiZSetupTime << 24); 
+//   /* Set tmppmem value according to FMC_CommonSpaceTimingStructure parameters */
+//   tmppmem = (uint32_t)FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_SetupTime |
+//             (FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_WaitSetupTime << 8) |
+//             (FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HoldSetupTime << 16)|
+//             (FMC_NANDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HiZSetupTime << 24); 
             
-  /* Set tmppatt value according to FMC_AttributeSpaceTimingStructure parameters */
-  tmppatt = (uint32_t)FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_SetupTime |
-            (FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_WaitSetupTime << 8) |
-            (FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HoldSetupTime << 16)|
-            (FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HiZSetupTime << 24);
+//   /* Set tmppatt value according to FMC_AttributeSpaceTimingStructure parameters */
+//   tmppatt = (uint32_t)FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_SetupTime |
+//             (FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_WaitSetupTime << 8) |
+//             (FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HoldSetupTime << 16)|
+//             (FMC_NANDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HiZSetupTime << 24);
   
-  if(FMC_NANDInitStruct->FMC_Bank == FMC_Bank2_NAND)
-  {
-    /* FMC_Bank2_NAND registers configuration */
-    FMC_Bank2->PCR2 = tmppcr;
-    FMC_Bank2->PMEM2 = tmppmem;
-    FMC_Bank2->PATT2 = tmppatt;
-  }
-  else
-  {
-    /* FMC_Bank3_NAND registers configuration */
-    FMC_Bank3->PCR3 = tmppcr;
-    FMC_Bank3->PMEM3 = tmppmem;
-    FMC_Bank3->PATT3 = tmppatt;
-  }
-}
+//   if(FMC_NANDInitStruct->FMC_Bank == FMC_Bank2_NAND)
+//   {
+//     /* FMC_Bank2_NAND registers configuration */
+//     FMC_Bank2->PCR2 = tmppcr;
+//     FMC_Bank2->PMEM2 = tmppmem;
+//     FMC_Bank2->PATT2 = tmppatt;
+//   }
+//   else
+//   {
+//     /* FMC_Bank3_NAND registers configuration */
+//     FMC_Bank3->PCR3 = tmppcr;
+//     FMC_Bank3->PMEM3 = tmppmem;
+//     FMC_Bank3->PATT3 = tmppatt;
+//   }
+// }
 
 
 /**
@@ -500,36 +500,36 @@ void FMC_NANDStructInit(FMC_NANDInitTypeDef* FMC_NANDInitStruct)
   * @param  NewState: new state of the FMC_Bank. This parameter can be: ENABLE or DISABLE.
   * @retval None
   */
-void FMC_NANDCmd(uint32_t FMC_Bank, FunctionalState NewState)
-{
-  assert_param(IS_FMC_NAND_BANK(FMC_Bank));
-  assert_param(IS_FUNCTIONAL_STATE(NewState));
+// void FMC_NANDCmd(uint32_t FMC_Bank, FunctionalState NewState)
+// {
+//   assert_param(IS_FMC_NAND_BANK(FMC_Bank));
+//   assert_param(IS_FUNCTIONAL_STATE(NewState));
   
-  if (NewState != DISABLE)
-  {
-    /* Enable the selected NAND Bank by setting the PBKEN bit in the PCRx register */
-    if(FMC_Bank == FMC_Bank2_NAND)
-    {
-      FMC_Bank2->PCR2 |= PCR_PBKEN_SET;
-    }
-    else
-    {
-      FMC_Bank3->PCR3 |= PCR_PBKEN_SET;
-    }
-  }
-  else
-  {
-    /* Disable the selected NAND Bank by clearing the PBKEN bit in the PCRx register */
-    if(FMC_Bank == FMC_Bank2_NAND)
-    {
-      FMC_Bank2->PCR2 &= PCR_PBKEN_RESET;
-    }
-    else
-    {
-      FMC_Bank3->PCR3 &= PCR_PBKEN_RESET;
-    }
-  }
-}
+//   if (NewState != DISABLE)
+//   {
+//     /* Enable the selected NAND Bank by setting the PBKEN bit in the PCRx register */
+//     if(FMC_Bank == FMC_Bank2_NAND)
+//     {
+//       FMC_Bank2->PCR2 |= PCR_PBKEN_SET;
+//     }
+//     else
+//     {
+//       FMC_Bank3->PCR3 |= PCR_PBKEN_SET;
+//     }
+//   }
+//   else
+//   {
+//     /* Disable the selected NAND Bank by clearing the PBKEN bit in the PCRx register */
+//     if(FMC_Bank == FMC_Bank2_NAND)
+//     {
+//       FMC_Bank2->PCR2 &= PCR_PBKEN_RESET;
+//     }
+//     else
+//     {
+//       FMC_Bank3->PCR3 &= PCR_PBKEN_RESET;
+//     }
+//   }
+// }
 /**
   * @brief  Enables or disables the FMC NAND ECC feature.
   * @param  FMC_Bank: specifies the FMC Bank to be used
@@ -540,36 +540,36 @@ void FMC_NANDCmd(uint32_t FMC_Bank, FunctionalState NewState)
   *          This parameter can be: ENABLE or DISABLE.
   * @retval None
   */
-void FMC_NANDECCCmd(uint32_t FMC_Bank, FunctionalState NewState)
-{
-  assert_param(IS_FMC_NAND_BANK(FMC_Bank));
-  assert_param(IS_FUNCTIONAL_STATE(NewState));
+// void FMC_NANDECCCmd(uint32_t FMC_Bank, FunctionalState NewState)
+// {
+//   assert_param(IS_FMC_NAND_BANK(FMC_Bank));
+//   assert_param(IS_FUNCTIONAL_STATE(NewState));
   
-  if (NewState != DISABLE)
-  {
-    /* Enable the selected NAND Bank ECC function by setting the ECCEN bit in the PCRx register */
-    if(FMC_Bank == FMC_Bank2_NAND)
-    {
-      FMC_Bank2->PCR2 |= PCR_ECCEN_SET;
-    }
-    else
-    {
-      FMC_Bank3->PCR3 |= PCR_ECCEN_SET;
-    }
-  }
-  else
-  {
-    /* Disable the selected NAND Bank ECC function by clearing the ECCEN bit in the PCRx register */
-    if(FMC_Bank == FMC_Bank2_NAND)
-    {
-      FMC_Bank2->PCR2 &= PCR_ECCEN_RESET;
-    }
-    else
-    {
-      FMC_Bank3->PCR3 &= PCR_ECCEN_RESET;
-    }
-  }
-}
+//   if (NewState != DISABLE)
+//   {
+//     /* Enable the selected NAND Bank ECC function by setting the ECCEN bit in the PCRx register */
+//     if(FMC_Bank == FMC_Bank2_NAND)
+//     {
+//       FMC_Bank2->PCR2 |= PCR_ECCEN_SET;
+//     }
+//     else
+//     {
+//       FMC_Bank3->PCR3 |= PCR_ECCEN_SET;
+//     }
+//   }
+//   else
+//   {
+//     /* Disable the selected NAND Bank ECC function by clearing the ECCEN bit in the PCRx register */
+//     if(FMC_Bank == FMC_Bank2_NAND)
+//     {
+//       FMC_Bank2->PCR2 &= PCR_ECCEN_RESET;
+//     }
+//     else
+//     {
+//       FMC_Bank3->PCR3 &= PCR_ECCEN_RESET;
+//     }
+//   }
+// }
 
 /**
   * @brief  Returns the error correction code register value.
@@ -579,23 +579,23 @@ void FMC_NANDECCCmd(uint32_t FMC_Bank, FunctionalState NewState)
   *            @arg FMC_Bank3_NAND: FMC Bank3 NAND
   * @retval The Error Correction Code (ECC) value.
   */
-uint32_t FMC_GetECC(uint32_t FMC_Bank)
-{
-  uint32_t eccval = 0x00000000;
+// uint32_t FMC_GetECC(uint32_t FMC_Bank)
+// {
+//   uint32_t eccval = 0x00000000;
   
-  if(FMC_Bank == FMC_Bank2_NAND)
-  {
-    /* Get the ECCR2 register value */
-    eccval = FMC_Bank2->ECCR2;
-  }
-  else
-  {
-    /* Get the ECCR3 register value */
-    eccval = FMC_Bank3->ECCR3;
-  }
-  /* Return the error correction code value */
-  return(eccval);
-}
+//   if(FMC_Bank == FMC_Bank2_NAND)
+//   {
+//     /* Get the ECCR2 register value */
+//     eccval = FMC_Bank2->ECCR2;
+//   }
+//   else
+//   {
+//     /* Get the ECCR3 register value */
+//     eccval = FMC_Bank3->ECCR3;
+//   }
+//   /* Return the error correction code value */
+//   return(eccval);
+// }
 /**
   * @}
   */
@@ -643,15 +643,15 @@ uint32_t FMC_GetECC(uint32_t FMC_Bank)
   * @param  None                       
   * @retval None
   */
-void FMC_PCCARDDeInit(void)
-{
-  /* Set the FMC_Bank4 registers to their reset values */
-  FMC_Bank4->PCR4 = 0x00000018; 
-  FMC_Bank4->SR4 = 0x00000000;	
-  FMC_Bank4->PMEM4 = 0xFCFCFCFC;
-  FMC_Bank4->PATT4 = 0xFCFCFCFC;
-  FMC_Bank4->PIO4 = 0xFCFCFCFC;
-}
+// void FMC_PCCARDDeInit(void)
+// {
+//   /* Set the FMC_Bank4 registers to their reset values */
+//   FMC_Bank4->PCR4 = 0x00000018; 
+//   FMC_Bank4->SR4 = 0x00000000;	
+//   FMC_Bank4->PMEM4 = 0xFCFCFCFC;
+//   FMC_Bank4->PATT4 = 0xFCFCFCFC;
+//   FMC_Bank4->PIO4 = 0xFCFCFCFC;
+// }
 
 /**
   * @brief  Initializes the FMC PCCARD Bank according to the specified parameters
@@ -660,51 +660,51 @@ void FMC_PCCARDDeInit(void)
   *         that contains the configuration information for the FMC PCCARD Bank.                       
   * @retval None
   */
-void FMC_PCCARDInit(FMC_PCCARDInitTypeDef* FMC_PCCARDInitStruct)
-{
-  /* Check the parameters */
-  assert_param(IS_FMC_WAIT_FEATURE(FMC_PCCARDInitStruct->FMC_Waitfeature));
-  assert_param(IS_FMC_TCLR_TIME(FMC_PCCARDInitStruct->FMC_TCLRSetupTime));
-  assert_param(IS_FMC_TAR_TIME(FMC_PCCARDInitStruct->FMC_TARSetupTime));
+// void FMC_PCCARDInit(FMC_PCCARDInitTypeDef* FMC_PCCARDInitStruct)
+// {
+//   /* Check the parameters */
+//   assert_param(IS_FMC_WAIT_FEATURE(FMC_PCCARDInitStruct->FMC_Waitfeature));
+//   assert_param(IS_FMC_TCLR_TIME(FMC_PCCARDInitStruct->FMC_TCLRSetupTime));
+//   assert_param(IS_FMC_TAR_TIME(FMC_PCCARDInitStruct->FMC_TARSetupTime));
  
-  assert_param(IS_FMC_SETUP_TIME(FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_SetupTime));
-  assert_param(IS_FMC_WAIT_TIME(FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_WaitSetupTime));
-  assert_param(IS_FMC_HOLD_TIME(FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HoldSetupTime));
-  assert_param(IS_FMC_HIZ_TIME(FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HiZSetupTime));
+//   assert_param(IS_FMC_SETUP_TIME(FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_SetupTime));
+//   assert_param(IS_FMC_WAIT_TIME(FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_WaitSetupTime));
+//   assert_param(IS_FMC_HOLD_TIME(FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HoldSetupTime));
+//   assert_param(IS_FMC_HIZ_TIME(FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HiZSetupTime));
   
-  assert_param(IS_FMC_SETUP_TIME(FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_SetupTime));
-  assert_param(IS_FMC_WAIT_TIME(FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_WaitSetupTime));
-  assert_param(IS_FMC_HOLD_TIME(FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HoldSetupTime));
-  assert_param(IS_FMC_HIZ_TIME(FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HiZSetupTime));
-  assert_param(IS_FMC_SETUP_TIME(FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_SetupTime));
-  assert_param(IS_FMC_WAIT_TIME(FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_WaitSetupTime));
-  assert_param(IS_FMC_HOLD_TIME(FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_HoldSetupTime));
-  assert_param(IS_FMC_HIZ_TIME(FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_HiZSetupTime));
+//   assert_param(IS_FMC_SETUP_TIME(FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_SetupTime));
+//   assert_param(IS_FMC_WAIT_TIME(FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_WaitSetupTime));
+//   assert_param(IS_FMC_HOLD_TIME(FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HoldSetupTime));
+//   assert_param(IS_FMC_HIZ_TIME(FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HiZSetupTime));
+//   assert_param(IS_FMC_SETUP_TIME(FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_SetupTime));
+//   assert_param(IS_FMC_WAIT_TIME(FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_WaitSetupTime));
+//   assert_param(IS_FMC_HOLD_TIME(FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_HoldSetupTime));
+//   assert_param(IS_FMC_HIZ_TIME(FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_HiZSetupTime));
   
-  /* Set the PCR4 register value according to FMC_PCCARDInitStruct parameters */
-  FMC_Bank4->PCR4 = (uint32_t)FMC_PCCARDInitStruct->FMC_Waitfeature |
-                     FMC_NAND_MemoryDataWidth_16b |  
-                     (FMC_PCCARDInitStruct->FMC_TCLRSetupTime << 9) |
-                     (FMC_PCCARDInitStruct->FMC_TARSetupTime << 13);
+//   /* Set the PCR4 register value according to FMC_PCCARDInitStruct parameters */
+//   FMC_Bank4->PCR4 = (uint32_t)FMC_PCCARDInitStruct->FMC_Waitfeature |
+//                      FMC_NAND_MemoryDataWidth_16b |  
+//                      (FMC_PCCARDInitStruct->FMC_TCLRSetupTime << 9) |
+//                      (FMC_PCCARDInitStruct->FMC_TARSetupTime << 13);
             
-  /* Set PMEM4 register value according to FMC_CommonSpaceTimingStructure parameters */
-  FMC_Bank4->PMEM4 = (uint32_t)FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_SetupTime |
-                      (FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_WaitSetupTime << 8) |
-                      (FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HoldSetupTime << 16)|
-                      (FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HiZSetupTime << 24); 
+//   /* Set PMEM4 register value according to FMC_CommonSpaceTimingStructure parameters */
+//   FMC_Bank4->PMEM4 = (uint32_t)FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_SetupTime |
+//                       (FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_WaitSetupTime << 8) |
+//                       (FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HoldSetupTime << 16)|
+//                       (FMC_PCCARDInitStruct->FMC_CommonSpaceTimingStruct->FMC_HiZSetupTime << 24); 
             
-  /* Set PATT4 register value according to FMC_AttributeSpaceTimingStructure parameters */
-  FMC_Bank4->PATT4 = (uint32_t)FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_SetupTime |
-                      (FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_WaitSetupTime << 8) |
-                      (FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HoldSetupTime << 16)|
-                      (FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HiZSetupTime << 24);	
+//   /* Set PATT4 register value according to FMC_AttributeSpaceTimingStructure parameters */
+//   FMC_Bank4->PATT4 = (uint32_t)FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_SetupTime |
+//                       (FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_WaitSetupTime << 8) |
+//                       (FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HoldSetupTime << 16)|
+//                       (FMC_PCCARDInitStruct->FMC_AttributeSpaceTimingStruct->FMC_HiZSetupTime << 24);	
             
-  /* Set PIO4 register value according to FMC_IOSpaceTimingStructure parameters */
-  FMC_Bank4->PIO4 = (uint32_t)FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_SetupTime |
-                     (FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_WaitSetupTime << 8) |
-                     (FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_HoldSetupTime << 16)|
-                     (FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_HiZSetupTime << 24);             
-}
+//   /* Set PIO4 register value according to FMC_IOSpaceTimingStructure parameters */
+//   FMC_Bank4->PIO4 = (uint32_t)FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_SetupTime |
+//                      (FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_WaitSetupTime << 8) |
+//                      (FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_HoldSetupTime << 16)|
+//                      (FMC_PCCARDInitStruct->FMC_IOSpaceTimingStruct->FMC_HiZSetupTime << 24);             
+// }
 
 /**
   * @brief  Fills each FMC_PCCARDInitStruct member with its default value.
@@ -738,21 +738,21 @@ void FMC_PCCARDStructInit(FMC_PCCARDInitTypeDef* FMC_PCCARDInitStruct)
   *          This parameter can be: ENABLE or DISABLE.
   * @retval None
   */
-void FMC_PCCARDCmd(FunctionalState NewState)
-{
-  assert_param(IS_FUNCTIONAL_STATE(NewState));
+// void FMC_PCCARDCmd(FunctionalState NewState)
+// {
+//   assert_param(IS_FUNCTIONAL_STATE(NewState));
   
-  if (NewState != DISABLE)
-  {
-    /* Enable the PCCARD Bank by setting the PBKEN bit in the PCR4 register */
-    FMC_Bank4->PCR4 |= PCR_PBKEN_SET;
-  }
-  else
-  {
-    /* Disable the PCCARD Bank by clearing the PBKEN bit in the PCR4 register */
-    FMC_Bank4->PCR4 &= PCR_PBKEN_RESET;
-  }
-}
+//   if (NewState != DISABLE)
+//   {
+//     /* Enable the PCCARD Bank by setting the PBKEN bit in the PCR4 register */
+//     FMC_Bank4->PCR4 |= PCR_PBKEN_SET;
+//   }
+//   else
+//   {
+//     /* Disable the PCCARD Bank by clearing the PBKEN bit in the PCR4 register */
+//     FMC_Bank4->PCR4 &= PCR_PBKEN_RESET;
+//   }
+// }
 
 /**
   * @}
@@ -810,17 +810,17 @@ void FMC_PCCARDCmd(FunctionalState NewState)
   *            @arg FMC_Bank2_SDRAM: FMC Bank2 SDRAM 
   * @retval None
   */
-void FMC_SDRAMDeInit(uint32_t FMC_Bank)
-{
-  /* Check the parameter */
-  assert_param(IS_FMC_SDRAM_BANK(FMC_Bank));
+// void FMC_SDRAMDeInit(uint32_t FMC_Bank)
+// {
+//   /* Check the parameter */
+//   assert_param(IS_FMC_SDRAM_BANK(FMC_Bank));
   
-  FMC_Bank5_6->SDCR[FMC_Bank] = 0x000002D0;
-  FMC_Bank5_6->SDTR[FMC_Bank] = 0x0FFFFFFF;    
-  FMC_Bank5_6->SDCMR = 0x00000000;
-  FMC_Bank5_6->SDRTR = 0x00000000;
-  FMC_Bank5_6->SDSR = 0x00000000; 
-}  
+//   FMC_Bank5_6->SDCR[FMC_Bank] = 0x000002D0;
+//   FMC_Bank5_6->SDTR[FMC_Bank] = 0x0FFFFFFF;    
+//   FMC_Bank5_6->SDCMR = 0x00000000;
+//   FMC_Bank5_6->SDRTR = 0x00000000;
+//   FMC_Bank5_6->SDSR = 0x00000000; 
+// }  
 
 /**
   * @brief  Initializes the FMC SDRAM Banks according to the specified
@@ -1084,62 +1084,62 @@ void FMC_SDRAMWriteProtectionConfig(uint32_t SDRAM_Bank, FunctionalState NewStat
   *          This parameter can be: ENABLE or DISABLE.
   * @retval None
   */
-void FMC_ITConfig(uint32_t FMC_Bank, uint32_t FMC_IT, FunctionalState NewState)
-{
-  assert_param(IS_FMC_IT_BANK(FMC_Bank));
-  assert_param(IS_FMC_IT(FMC_IT));	
-  assert_param(IS_FUNCTIONAL_STATE(NewState));
+// void FMC_ITConfig(uint32_t FMC_Bank, uint32_t FMC_IT, FunctionalState NewState)
+// {
+//   assert_param(IS_FMC_IT_BANK(FMC_Bank));
+//   assert_param(IS_FMC_IT(FMC_IT));	
+//   assert_param(IS_FUNCTIONAL_STATE(NewState));
   
-  if (NewState != DISABLE)
-  {
-    /* Enable the selected FMC_Bank2 interrupts */
-    if(FMC_Bank == FMC_Bank2_NAND)
-    {
-      FMC_Bank2->SR2 |= FMC_IT;
-    }
-    /* Enable the selected FMC_Bank3 interrupts */
-    else if (FMC_Bank == FMC_Bank3_NAND)
-    {
-      FMC_Bank3->SR3 |= FMC_IT;
-    }
-    /* Enable the selected FMC_Bank4 interrupts */
-    else if (FMC_Bank == FMC_Bank4_PCCARD)
-    {
-      FMC_Bank4->SR4 |= FMC_IT;    
-    }
-    /* Enable the selected FMC_Bank5_6 interrupt */
-    else
-    {
-      /* Enables the interrupt if the refresh error flag is set */
-      FMC_Bank5_6->SDRTR |= FMC_IT; 
-    }
-  }
-  else
-  {
-    /* Disable the selected FMC_Bank2 interrupts */
-    if(FMC_Bank == FMC_Bank2_NAND)
-    {
+//   if (NewState != DISABLE)
+//   {
+//     /* Enable the selected FMC_Bank2 interrupts */
+//     if(FMC_Bank == FMC_Bank2_NAND)
+//     {
+//       FMC_Bank2->SR2 |= FMC_IT;
+//     }
+//     /* Enable the selected FMC_Bank3 interrupts */
+//     else if (FMC_Bank == FMC_Bank3_NAND)
+//     {
+//       FMC_Bank3->SR3 |= FMC_IT;
+//     }
+//     /* Enable the selected FMC_Bank4 interrupts */
+//     else if (FMC_Bank == FMC_Bank4_PCCARD)
+//     {
+//       FMC_Bank4->SR4 |= FMC_IT;    
+//     }
+//     /* Enable the selected FMC_Bank5_6 interrupt */
+//     else
+//     {
+//       /* Enables the interrupt if the refresh error flag is set */
+//       FMC_Bank5_6->SDRTR |= FMC_IT; 
+//     }
+//   }
+//   else
+//   {
+//     /* Disable the selected FMC_Bank2 interrupts */
+//     if(FMC_Bank == FMC_Bank2_NAND)
+//     {
       
-      FMC_Bank2->SR2 &= (uint32_t)~FMC_IT;
-    }
-    /* Disable the selected FMC_Bank3 interrupts */
-    else if (FMC_Bank == FMC_Bank3_NAND)
-    {
-      FMC_Bank3->SR3 &= (uint32_t)~FMC_IT;
-    }
-    /* Disable the selected FMC_Bank4 interrupts */
-    else if(FMC_Bank == FMC_Bank4_PCCARD)
-    {
-      FMC_Bank4->SR4 &= (uint32_t)~FMC_IT;    
-    }
-    /* Disable the selected FMC_Bank5_6 interrupt */
-    else
-    {
-      /* Disables the interrupt if the refresh error flag is not set */
-      FMC_Bank5_6->SDRTR &= (uint32_t)~FMC_IT; 
-    }
-  }
-}
+//       FMC_Bank2->SR2 &= (uint32_t)~FMC_IT;
+//     }
+//     /* Disable the selected FMC_Bank3 interrupts */
+//     else if (FMC_Bank == FMC_Bank3_NAND)
+//     {
+//       FMC_Bank3->SR3 &= (uint32_t)~FMC_IT;
+//     }
+//     /* Disable the selected FMC_Bank4 interrupts */
+//     else if(FMC_Bank == FMC_Bank4_PCCARD)
+//     {
+//       FMC_Bank4->SR4 &= (uint32_t)~FMC_IT;    
+//     }
+//     /* Disable the selected FMC_Bank5_6 interrupt */
+//     else
+//     {
+//       /* Disables the interrupt if the refresh error flag is not set */
+//       FMC_Bank5_6->SDRTR &= (uint32_t)~FMC_IT; 
+//     }
+//   }
+// }
 
 /**
   * @brief  Checks whether the specified FMC flag is set or not.
@@ -1170,22 +1170,22 @@ FlagStatus FMC_GetFlagStatus(uint32_t FMC_Bank, uint32_t FMC_FLAG)
   assert_param(IS_FMC_GETFLAG_BANK(FMC_Bank));
   assert_param(IS_FMC_GET_FLAG(FMC_FLAG));
   
-  if(FMC_Bank == FMC_Bank2_NAND)
-  {
-    tmpsr = FMC_Bank2->SR2;
-  }  
-  else if(FMC_Bank == FMC_Bank3_NAND)
-  {
-    tmpsr = FMC_Bank3->SR3;
-  }
-  else if(FMC_Bank == FMC_Bank4_PCCARD)
-  {
-    tmpsr = FMC_Bank4->SR4;
-  }
-  else 
-  {
-    tmpsr = FMC_Bank5_6->SDSR;
-  }
+  // if(FMC_Bank == FMC_Bank2_NAND)
+  // {
+  //   tmpsr = FMC_Bank2->SR2;
+  // }  
+  // else if(FMC_Bank == FMC_Bank3_NAND)
+  // {
+  //   tmpsr = FMC_Bank3->SR3;
+  // }
+  // else if(FMC_Bank == FMC_Bank4_PCCARD)
+  // {
+  //   tmpsr = FMC_Bank4->SR4;
+  // }
+  // else 
+  // {
+  //   tmpsr = FMC_Bank5_6->SDSR;
+  // }
   
   /* Get the flag status */
   if ((tmpsr & FMC_FLAG) != FMC_FLAG )
@@ -1223,20 +1223,20 @@ void FMC_ClearFlag(uint32_t FMC_Bank, uint32_t FMC_FLAG)
   assert_param(IS_FMC_GETFLAG_BANK(FMC_Bank));
   assert_param(IS_FMC_CLEAR_FLAG(FMC_FLAG)) ;
     
-  if(FMC_Bank == FMC_Bank2_NAND)
-  {
-    FMC_Bank2->SR2 &= (~FMC_FLAG); 
-  }  
-  else if(FMC_Bank == FMC_Bank3_NAND)
-  {
-    FMC_Bank3->SR3 &= (~FMC_FLAG);
-  }
-  else if(FMC_Bank == FMC_Bank4_PCCARD)
-  {
-    FMC_Bank4->SR4 &= (~FMC_FLAG);
-  }
-  /* FMC_Bank5_6 SDRAM*/
-  else
+  // if(FMC_Bank == FMC_Bank2_NAND)
+  // {
+  //   FMC_Bank2->SR2 &= (~FMC_FLAG); 
+  // }  
+  // else if(FMC_Bank == FMC_Bank3_NAND)
+  // {
+  //   FMC_Bank3->SR3 &= (~FMC_FLAG);
+  // }
+  // else if(FMC_Bank == FMC_Bank4_PCCARD)
+  // {
+  //   FMC_Bank4->SR4 &= (~FMC_FLAG);
+  // }
+  // /* FMC_Bank5_6 SDRAM*/
+  // else
   {
     FMC_Bank5_6->SDRTR &= (~FMC_FLAG);
   }
@@ -1272,20 +1272,20 @@ ITStatus FMC_GetITStatus(uint32_t FMC_Bank, uint32_t FMC_IT)
   assert_param(IS_FMC_IT_BANK(FMC_Bank));
   assert_param(IS_FMC_GET_IT(FMC_IT));
   
-  if(FMC_Bank == FMC_Bank2_NAND)
-  {
-    tmpsr = FMC_Bank2->SR2;
-  }  
-  else if(FMC_Bank == FMC_Bank3_NAND)
-  {
-    tmpsr = FMC_Bank3->SR3;
-  }
-  else if(FMC_Bank == FMC_Bank4_PCCARD)
-  {
-    tmpsr = FMC_Bank4->SR4;
-  }
-  /* FMC_Bank5_6 SDRAM*/
-  else
+  // if(FMC_Bank == FMC_Bank2_NAND)
+  // {
+  //   tmpsr = FMC_Bank2->SR2;
+  // }  
+  // else if(FMC_Bank == FMC_Bank3_NAND)
+  // {
+  //   tmpsr = FMC_Bank3->SR3;
+  // }
+  // else if(FMC_Bank == FMC_Bank4_PCCARD)
+  // {
+  //   tmpsr = FMC_Bank4->SR4;
+  // }
+  // /* FMC_Bank5_6 SDRAM*/
+  // else
   {
     tmpsr = FMC_Bank5_6->SDRTR;
     tmpsr2 = FMC_Bank5_6->SDSR;
@@ -1338,20 +1338,20 @@ void FMC_ClearITPendingBit(uint32_t FMC_Bank, uint32_t FMC_IT)
   assert_param(IS_FMC_IT_BANK(FMC_Bank));
   assert_param(IS_FMC_IT(FMC_IT));
     
-  if(FMC_Bank == FMC_Bank2_NAND)
-  {
-    FMC_Bank2->SR2 &= ~(FMC_IT >> 3); 
-  }  
-  else if(FMC_Bank == FMC_Bank3_NAND)
-  {
-    FMC_Bank3->SR3 &= ~(FMC_IT >> 3);
-  }
-  else if(FMC_Bank == FMC_Bank4_PCCARD)
-  {
-    FMC_Bank4->SR4 &= ~(FMC_IT >> 3);
-  }
-  /* FMC_Bank5_6 SDRAM*/
-  else
+  // if(FMC_Bank == FMC_Bank2_NAND)
+  // {
+  //   FMC_Bank2->SR2 &= ~(FMC_IT >> 3); 
+  // }  
+  // else if(FMC_Bank == FMC_Bank3_NAND)
+  // {
+  //   FMC_Bank3->SR3 &= ~(FMC_IT >> 3);
+  // }
+  // else if(FMC_Bank == FMC_Bank4_PCCARD)
+  // {
+  //   FMC_Bank4->SR4 &= ~(FMC_IT >> 3);
+  // }
+  // /* FMC_Bank5_6 SDRAM*/
+  // else
   {
     FMC_Bank5_6->SDRTR |= FMC_SDRTR_CRE;
   }

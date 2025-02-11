@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import axoloti.Axoloti;
 
 /**
  *
@@ -66,13 +67,17 @@ public abstract class QCmdShellTask implements QCmd {
                         LOGGER.log(Level.SEVERE, "{0}\n>>> A required reference text field in the patch has been left empty. (table, delay read/write, filename, ...) <<<", line);
                     }
                     else if (line.contains("one or more PCH files were found, but they were invalid")) {
-                        LOGGER.log(Level.SEVERE, "{0}\n>>> Outdated PCH (precompiled header) file. Find the file \"xpatch.h.gch\" via the path shown above and delete it manually. <<<", line);
+                        LOGGER.log(Level.SEVERE, "{0}\n>>> Go to " + Axoloti.LIBRARIES_DIR + File.separator + "build and manually delete all files inside it. <<<", line);
                     }
                     else if (line.contains("error:") || line.contains("#error")) {
-                        LOGGER.log(Level.SEVERE, "{0}",line);
+                        LOGGER.log(Level.SEVERE, "{0}", line);
                     }
                     else if (line.contains("warning:")) {
                         LOGGER.log(Level.WARNING, "{0}", line);
+                    }
+                    else if (line.contains("          0 GB")) {
+                        /* little modification for --print-memory-usage format */
+                        LOGGER.log(Level.INFO, "{0}", line.replaceAll("          0 GB", "           0 B"));
                     }
                     else {
                         LOGGER.log(Level.INFO, "{0}", line);
@@ -129,8 +134,7 @@ public abstract class QCmdShellTask implements QCmd {
     }
 
     public File GetWorkingDir() {
-        //TODO: should this be LibrariesDir()?
-        return new File(HomeDir()+"/build");
+        return new File(HomeDir()+ File.separator + "build");
     }
 
     public QCmd Do(QCmdProcessor shellProcessor) {

@@ -1,28 +1,17 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
-                 2011,2012,2013 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
-    This file is part of ChibiOS/RT.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    ChibiOS/RT is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-    ChibiOS/RT is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes ChibiOS/RT, without being obliged to provide
-    the source code for any proprietary components. See the file exception.txt
-    for full details of how and when the exception can be applied.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 */
 /*
    Concepts and parts of this file have been contributed by Uladzimir Pylinsky
@@ -40,25 +29,26 @@
 #ifndef _I2C_H_
 #define _I2C_H_
 
-#if HAL_USE_I2C || defined(__DOXYGEN__)
+#if (HAL_USE_I2C == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
 /*===========================================================================*/
 
+/* TODO: To be reviewed, too STM32-centric.*/
 /**
  * @name    I2C bus error conditions
  * @{
  */
-#define I2CD_NO_ERROR               0x00   /**< @brief No error.            */
-#define I2CD_BUS_ERROR              0x01   /**< @brief Bus Error.           */
-#define I2CD_ARBITRATION_LOST       0x02   /**< @brief Arbitration Lost.    */
-#define I2CD_ACK_FAILURE            0x04   /**< @brief Acknowledge Failure. */
-#define I2CD_OVERRUN                0x08   /**< @brief Overrun/Underrun.    */
-#define I2CD_PEC_ERROR              0x10   /**< @brief PEC Error in
+#define I2C_NO_ERROR               0x00    /**< @brief No error.            */
+#define I2C_BUS_ERROR              0x01    /**< @brief Bus Error.           */
+#define I2C_ARBITRATION_LOST       0x02    /**< @brief Arbitration Lost.    */
+#define I2C_ACK_FAILURE            0x04    /**< @brief Acknowledge Failure. */
+#define I2C_OVERRUN                0x08    /**< @brief Overrun/Underrun.    */
+#define I2C_PEC_ERROR              0x10    /**< @brief PEC Error in
                                                 reception.                  */
-#define I2CD_TIMEOUT                0x20   /**< @brief Hardware timeout.    */
-#define I2CD_SMB_ALERT              0x40   /**< @brief SMBus Alert.         */
+#define I2C_TIMEOUT                0x20    /**< @brief Hardware timeout.    */
+#define I2C_SMB_ALERT              0x40    /**< @brief SMBus Alert.         */
 /** @} */
 
 /*===========================================================================*/
@@ -75,10 +65,6 @@
 /*===========================================================================*/
 /* Derived constants and error checks.                                       */
 /*===========================================================================*/
-
-#if I2C_USE_MUTUAL_EXCLUSION && !CH_USE_MUTEXES && !CH_USE_SEMAPHORES
-#error "I2C_USE_MUTUAL_EXCLUSION requires CH_USE_MUTEXES and/or CH_USE_SEMAPHORES"
-#endif
 
 /*===========================================================================*/
 /* Driver data structures and types.                                         */
@@ -101,6 +87,32 @@ typedef enum {
 /*===========================================================================*/
 /* Driver macros.                                                            */
 /*===========================================================================*/
+
+/**
+ * @brief   Wakes up the waiting thread notifying no errors.
+ *
+ * @param[in] i2cp      pointer to the @p I2CDriver object
+ *
+ * @notapi
+ */
+#define _i2c_wakeup_isr(i2cp) do {                                          \
+  osalSysLockFromISR();                                                     \
+  osalThreadResumeI(&(i2cp)->thread, MSG_OK);                               \
+  osalSysUnlockFromISR();                                                   \
+} while(0)
+
+/**
+ * @brief   Wakes up the waiting thread notifying errors.
+ *
+ * @param[in] i2cp      pointer to the @p I2CDriver object
+ *
+ * @notapi
+ */
+#define _i2c_wakeup_error_isr(i2cp) do {                                    \
+  osalSysLockFromISR();                                                     \
+  osalThreadResumeI(&(i2cp)->thread, MSG_RESET);                            \
+  osalSysUnlockFromISR();                                                   \
+} while(0)
 
 /**
  * @brief   Wrap i2cMasterTransmitTimeout function with TIME_INFINITE timeout.
@@ -138,16 +150,16 @@ extern "C" {
                                 i2caddr_t addr,
                                 uint8_t *rxbuf, size_t rxbytes,
                                 systime_t timeout);
-#if I2C_USE_MUTUAL_EXCLUSION
+#if I2C_USE_MUTUAL_EXCLUSION == TRUE
   void i2cAcquireBus(I2CDriver *i2cp);
   void i2cReleaseBus(I2CDriver *i2cp);
-#endif /* I2C_USE_MUTUAL_EXCLUSION */
+#endif
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* HAL_USE_I2C */
+#endif /* HAL_USE_I2C == TRUE */
 
 #endif /* _I2C_H_ */
 

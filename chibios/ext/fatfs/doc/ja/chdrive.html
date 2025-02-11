@@ -16,7 +16,7 @@
 <p>カレント・ドライブを変更します。</p>
 <pre>
 FRESULT f_chdrive (
-  BYTE <em>Drive</em> <span class="c">/* 論理ドライブ番号 */</span>
+  const TCHAR* <span class="arg">path</span>  <span class="c">/* [IN] 対象ドライブを指定します */</span>
 );
 </pre>
 </div>
@@ -24,8 +24,8 @@ FRESULT f_chdrive (
 <div class="para arg">
 <h4>引数</h4>
 <dl class="par">
-<dt>Drive</dt>
-<dd>カレント・ドライブに設定する<a href="filename.html">論理ドライブ番号</a>を指定します。</dd>
+<dt>path</dt>
+<dd>カレント・ドライブに設定する<a href="filename.html">論理ドライブ番号</a>を指定するパス名を指定します。</dd>
 </dl>
 </div>
 
@@ -41,13 +41,13 @@ FRESULT f_chdrive (
 
 <div class="para desc">
 <h4>解説</h4>
-<p>f_chdrive関数はカレント・ドライブを変更します。システム起動時の初期値は0です。この設定はFatFsモジュールの静的変数に記録されるため、全てのタスクに対して影響を与えます。</p>
+<p>カレント・ドライブを変更します。システム起動時の初期値はドライブ0です。この設定はFatFsモジュールの静的変数に記録されるため、全てのタスクに対して影響を与えます。</p>
 </div>
 
 
 <div class="para comp">
 <h4>対応情報</h4>
-<p><tt>_FS_RPATH == 1</tt>のときに使用可能となります。</p>
+<p><tt>_FS_RPATH == 1</tt>で、且つ<tt>_VOLUMES &gt; 1</tt>のときに使用可能となります。</p>
 </div>
 
 

@@ -28,7 +28,7 @@ const PALConfig pal_default_config = {
      VAL_GPIOH_ODR, VAL_GPIOH_AFRL, VAL_GPIOH_AFRH},
     {VAL_GPIOI_MODER, VAL_GPIOI_OTYPER, VAL_GPIOI_OSPEEDR, VAL_GPIOI_PUPDR,
      VAL_GPIOI_ODR, VAL_GPIOI_AFRL, VAL_GPIOI_AFRH}};
-#endif
+#endif /* HAL_USE_PAL */
 
 /**
  * @brief   Early initialization code.

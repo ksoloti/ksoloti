@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 */
 
 /**
- * @file    templates/pwm_lld.h
- * @brief   PWM Driver subsystem low level driver header template.
+ * @file    pwm_lld.h
+ * @brief   PLATFORM PWM subsystem low level driver header.
  *
  * @addtogroup PWM
  * @{
@@ -25,7 +25,7 @@
 #ifndef _PWM_LLD_H_
 #define _PWM_LLD_H_
 
-#if HAL_USE_PWM || defined(__DOXYGEN__)
+#if (HAL_USE_PWM == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -34,27 +34,28 @@
 /**
  * @brief   Number of PWM channels per PWM driver.
  */
-#define PWM_CHANNELS                        4
+#define PWM_CHANNELS                            4
 
 /*===========================================================================*/
 /* Driver pre-compile time settings.                                         */
 /*===========================================================================*/
 
 /**
- * @name    Configuration options
+ * @name    PLATFORM configuration options
  * @{
  */
 /**
- * @brief   PWM driver enable switch.
+ * @brief   PWMD1 driver enable switch.
  * @details If set to @p TRUE the support for PWM1 is included.
+ * @note    The default is @p FALSE.
  */
 #if !defined(PLATFORM_PWM_USE_PWM1) || defined(__DOXYGEN__)
-#define PLATFORM_PWM_USE_PWM1               FALSE
+#define PLATFORM_PWM_USE_PWM1                  FALSE
 #endif
 /** @} */
 
 /*===========================================================================*/
-/* Derived constants and error checks.                                       */
+/* Configuration checks.                                                     */
 /*===========================================================================*/
 
 /*===========================================================================*/
@@ -62,24 +63,27 @@
 /*===========================================================================*/
 
 /**
- * @brief PWM mode type.
+ * @brief   Type of a PWM mode.
  */
 typedef uint32_t pwmmode_t;
 
 /**
- * @brief   PWM channel type.
+ * @brief   Type of a PWM channel.
  */
 typedef uint8_t pwmchannel_t;
 
 /**
- * @brief   PWM counter type.
+ * @brief   Type of a channels mask.
  */
-typedef uint16_t pwmcnt_t;
+typedef uint32_t pwmchnmsk_t;
 
 /**
- * @brief   PWM driver channel configuration structure.
- * @note    Some architectures may not be able to support the channel mode
- *          or the callback, in this case the fields are ignored.
+ * @brief   Type of a PWM counter.
+ */
+typedef uint32_t pwmcnt_t;
+
+/**
+ * @brief   Type of a PWM driver channel configuration structure.
  */
 typedef struct {
   /**
@@ -96,9 +100,7 @@ typedef struct {
 } PWMChannelConfig;
 
 /**
- * @brief   Driver configuration structure.
- * @note    Implementations may extend this structure to contain more,
- *          architecture dependent, fields.
+ * @brief   Type of a PWM driver configuration structure.
  */
 typedef struct {
   /**
@@ -127,9 +129,7 @@ typedef struct {
 } PWMConfig;
 
 /**
- * @brief   Structure representing an PWM driver.
- * @note    Implementations may extend this structure to contain more,
- *          architecture dependent, fields.
+ * @brief   Structure representing a PWM driver.
  */
 struct PWMDriver {
   /**
@@ -137,13 +137,21 @@ struct PWMDriver {
    */
   pwmstate_t                state;
   /**
-   * @brief Current configuration data.
+   * @brief Current driver configuration data.
    */
   const PWMConfig           *config;
   /**
    * @brief   Current PWM period in ticks.
    */
   pwmcnt_t                  period;
+  /**
+   * @brief   Mask of the enabled channels.
+   */
+  pwmchnmsk_t               enabled;
+  /**
+   * @brief   Number of channels in this instance.
+   */
+  pwmchannel_t              channels;
 #if defined(PWM_DRIVER_EXT_FIELDS)
   PWM_DRIVER_EXT_FIELDS
 #endif
@@ -155,21 +163,28 @@ struct PWMDriver {
 /*===========================================================================*/
 
 /**
- * @brief   Returns a PWM channel status.
+ * @brief   Changes the period the PWM peripheral.
+ * @details This function changes the period of a PWM unit that has already
+ *          been activated using @p pwmStart().
  * @pre     The PWM unit must have been activated using @p pwmStart().
+ * @post    The PWM unit period is changed to the new value.
+ * @note    The function has effect at the next cycle start.
+ * @note    If a period is specified that is shorter than the pulse width
+ *          programmed in one of the channels then the behavior is not
+ *          guaranteed.
  *
  * @param[in] pwmp      pointer to a @p PWMDriver object
- * @param[in] channel   PWM channel identifier (0...PWM_CHANNELS-1)
+ * @param[in] period    new cycle time in ticks
  *
  * @notapi
  */
-#define pwm_lld_is_channel_enabled(pwmp, channel) FALSE
+#define pwm_lld_change_period(pwmp, period)
 
 /*===========================================================================*/
 /* External declarations.                                                    */
 /*===========================================================================*/
 
-#if PLATFORM_PWM_USE_PWM1 && !defined(__DOXYGEN__)
+#if (PLATFORM_PWM_USE_PWM1 == TRUE) && !defined(__DOXYGEN__)
 extern PWMDriver PWMD1;
 #endif
 
@@ -179,16 +194,21 @@ extern "C" {
   void pwm_lld_init(void);
   void pwm_lld_start(PWMDriver *pwmp);
   void pwm_lld_stop(PWMDriver *pwmp);
-  void pwm_lld_change_period(PWMDriver *pwmp, pwmcnt_t period);
   void pwm_lld_enable_channel(PWMDriver *pwmp,
                               pwmchannel_t channel,
                               pwmcnt_t width);
   void pwm_lld_disable_channel(PWMDriver *pwmp, pwmchannel_t channel);
+  void pwm_lld_enable_periodic_notification(PWMDriver *pwmp);
+  void pwm_lld_disable_periodic_notification(PWMDriver *pwmp);
+  void pwm_lld_enable_channel_notification(PWMDriver *pwmp,
+                                           pwmchannel_t channel);
+  void pwm_lld_disable_channel_notification(PWMDriver *pwmp,
+                                            pwmchannel_t channel);
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* HAL_USE_PWM */
+#endif /* HAL_USE_PWM == TRUE */
 
 #endif /* _PWM_LLD_H_ */
 

@@ -21,7 +21,7 @@ package axoloti.attribute;
 import axoloti.SubPatchMode;
 import axoloti.attributedefinition.AxoAttributeObjRef;
 import axoloti.object.AxoObjectInstance;
-import axoloti.utils.CharEscape;
+import static axoloti.utils.CharEscape.charEscape;
 import axoloti.utils.Constants;
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
@@ -150,9 +150,9 @@ public class AttributeInstanceObjRef extends AttributeInstanceString<AxoAttribut
         String ao[] = o.split("/");
         String o3 = "";
         for (int i = 1; i < ao.length; i++) {
-            o3 = o3 + ".objectinstance_" + CharEscape.charEscape(ao[i]) + "_i";
+            o3 = o3 + ".objectinstance_" + charEscape(ao[i]) + "_i";
         }
-        o2 = o2 + "objectinstance_" + CharEscape.charEscape(ao[0]) + "_i" + o3;
+        o2 = o2 + "objectinstance_" + charEscape(ao[0]) + "_i" + o3;
         return o2;
     }
 

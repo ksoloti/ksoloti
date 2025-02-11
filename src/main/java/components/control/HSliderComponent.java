@@ -269,7 +269,7 @@ public class HSliderComponent extends ACtrlComponent {
             g2.drawString(s, bwidth + (margin / 2) - (int) (0.5 + r.getWidth() / 2), getHeight());
         }
         else {
-            g2.setColor(Theme.getCurrentTheme().Error_Text);
+            g2.setColor(Theme.Error_Text);
             g2.setFont(Constants.FONT);
             g2.drawString(keybBuffer, bwidth + (margin / 2) - (int) (0.5 + r.getWidth() / 2), getHeight());
         }

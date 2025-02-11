@@ -16,10 +16,10 @@
 <p>The f_read function reads data from a file.</p>
 <pre>
 FRESULT f_read (
-  FIL* <em>FileObject</em>,    <span class="c">/* Pointer to the file object structure */</span>
-  void* <em>Buffer</em>,       <span class="c">/* Pointer to the buffer to store read data */</span>
-  UINT <em>ByteToRead</em>,    <span class="c">/* Number of bytes to read */</span>
-  UINT* <em>ByteRead</em>      <span class="c">/* Pointer to the variable to return number of bytes read */</span>
+  FIL* <span class="arg">fp</span>,     <span class="c">/* [IN] File object */</span>
+  void* <span class="arg">buff</span>,  <span class="c">/* [OUT] Buffer to store read data */</span>
+  UINT <span class="arg">btr</span>,    <span class="c">/* [IN] Number of bytes to read */</span>
+  UINT* <span class="arg">br</span>     <span class="c">/* [OUT] Number of bytes read */</span>
 );
 </pre>
 </div>
@@ -27,14 +27,14 @@ FRESULT f_read (
 <div class="para arg">
 <h4>Parameters</h4>
 <dl class="par">
-<dt>FileObject</dt>
+<dt>fp</dt>
 <dd>Pointer to the open file object.</dd>
-<dt>Buffer</dt>
-<dd>Pointer to the buffer to store read data</dd>
-<dt>ByteToRead</dt>
-<dd>Number of bytes to read in range of UINT.</dd>
-<dt>ByteRead</dt>
-<dd>Pointer to the UINT variable to return number of bytes read. The value is always valid after the function call regardless of the result.</dd>
+<dt>buff</dt>
+<dd>Pointer to the buffer to store read data.</dd>
+<dt>btr</dt>
+<dd>Number of bytes to read in range of <tt>UINT</tt> type.</dd>
+<dt>br</dt>
+<dd>Pointer to the <tt>UINT</tt> variable to return number of bytes read. The value is always valid after the function call regardless of the result.</dd>
 </dl>
 </div>
 
@@ -54,7 +54,7 @@ FRESULT f_read (
 
 <div class="para desc">
 <h4>Description</h4>
-<p>The file pointer of the file object increases in number of bytes read. After the function succeeded, <tt>*ByteRead</tt> should be checked to detect the end of file. In case of <tt>*ByteRead &lt; ByteToRead</tt>, it means the read/write pointer reached end of the file during read operation.</p>
+<p>The file read/write pointer of the file object advances number of bytes read. After the function succeeded, <tt class="arg">*br</tt> should be checked to detect the end of file. In case of <tt class="arg">*br</tt> is less than <tt class="arg">btr</tt>, it means the read/write pointer reached end of the file during read operation.</p>
 </div>
 
 

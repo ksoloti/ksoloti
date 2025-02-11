@@ -25,7 +25,7 @@ package axoloti.attributedefinition;
 import axoloti.atom.AtomDefinition;
 import axoloti.attribute.AttributeInstance;
 import axoloti.object.AxoObjectInstance;
-import axoloti.utils.CharEscape;
+import static axoloti.utils.CharEscape.charEscape;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +95,7 @@ public abstract class AxoAttribute implements AtomDefinition, Cloneable {
     }
 
     public String GetCName() {
-        return "attr_" + CharEscape.charEscape(name);
+        return "attr_" + charEscape(name);
     }
 
     @Override

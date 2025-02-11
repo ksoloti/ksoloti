@@ -64,17 +64,12 @@ public class Constants {
         createFontMenu();
         createFontMono();
         createFontPatchGUI();
+        createAppIcon();
         FONT_BOLD = FONT.deriveFont(Font.BOLD);
         ge.registerFont(FONT_MONO);
         ge.registerFont(FONT);
         ge.registerFont(FONT_BOLD);
         ge.registerFont(FONT_MENU);
-        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-            APP_ICON = new ImageIcon(Constants.class.getResource("/resources/ksoloti_icon.png"));
-        }
-        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-            APP_ICON = new ImageIcon(Constants.class.getResource("/resources/axoloti_icon.png"));
-        }
     }
 
     public static void createFontPatchGUI() {
@@ -115,5 +110,14 @@ public class Constants {
         // catch (FontFormatException e) {
         //     e.printStackTrace();
         // }
+    }
+
+    public static void createAppIcon() {
+        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+            APP_ICON = new ImageIcon(Constants.class.getResource("/resources/ksoloti_icon.png"));
+        }
+        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+            APP_ICON = new ImageIcon(Constants.class.getResource("/resources/axoloti_icon.png"));
+        }
     }
 }

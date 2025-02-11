@@ -16,7 +16,7 @@
 <p>The f_size function gets the size of a file.</p>
 <pre>
 DWORD f_size (
-  FIL* <em>FileObject</em>   <span class="c">/* File object */</span>
+  FIL* <span class="arg">fp</span>   <span class="c">/* [IN] File object */</span>
 );
 </pre>
 </div>
@@ -25,7 +25,7 @@ DWORD f_size (
 <div class="para arg">
 <h4>Parameters</h4>
 <dl class="par">
-<dt>FileObject</dt>
+<dt>fp</dt>
 <dd>Pointer to the open file object structure.</dd>
 </dl>
 </div>
@@ -39,7 +39,7 @@ DWORD f_size (
 
 <div class="para desc">
 <h4>Description</h4>
-<p>In this revision, the f_size function is implemented as a macro.</p>
+<p>In this revision, the <tt>f_size()</tt> function is implemented as a macro.</p>
 <pre>
 <span class="k">#define</span> f_size(fp) ((fp)->fsize)
 </pre>

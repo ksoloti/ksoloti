@@ -71,7 +71,7 @@ public class Wave extends gentools {
                 + "starttrig = 0;\n"
                 + "stoptrig = 0;\n"
                 + "stream->pThreadSD = chThdCreateStatic(waThreadSD, sizeof(waThreadSD),\n"
-                + "                    HIGHPRIO, ThreadSD, (void *)stream);\n";
+                + "                    HIGHPRIO, (void*) ThreadSD, (void *)stream);\n";
         o.sKRateCode = "     int32_t i;\n"
                 + "     if ((%start%>0) && !starttrig) {\n"
                 + "        sdOpenStream(stream,%filename%);\n"
@@ -124,7 +124,7 @@ public class Wave extends gentools {
                 + "stoptrig = 0;\n"
                 + "strcpy(&c[0],\"%fn%\");\n"
                 + "stream->pThreadSD = chThdCreateStatic(waThreadSD, sizeof(waThreadSD),\n"
-                + "                    HIGHPRIO, ThreadSD, (void *)stream);\n";
+                + "                    HIGHPRIO, (void*) ThreadSD, (void *)stream);\n";
         o.sKRateCode = "     int32_t i;\n"
                 + "     if ((%start%>0) && !starttrig) {\n"
                 + "        sdOpenStream(stream,&c[0]);\n"
@@ -176,7 +176,7 @@ public class Wave extends gentools {
                 + "starttrig = 0;\n"
                 + "stoptrig = 0;\n"
                 + "stream->pThreadSD = chThdCreateStatic(waThreadSD, sizeof(waThreadSD),\n"
-                + "                    HIGHPRIO, ThreadSD, (void *)stream);\n";
+                + "                    HIGHPRIO, (void*) ThreadSD, (void *)stream);\n";
         o.sKRateCode = "     int32_t i;\n"
                 + "     if ((%start%>0) && !starttrig) {\n"
                 + "        sdOpenStream(stream,%filename%);\n"
@@ -236,7 +236,7 @@ public class Wave extends gentools {
                 + "stoptrig = 0;\n"
                 + "strcpy(&c[0],\"%fn%\");\n"
                 + "stream->pThreadSD = chThdCreateStatic(waThreadSD, sizeof(waThreadSD),\n"
-                + "                    HIGHPRIO, ThreadSD, (void *)stream);\n";
+                + "                    HIGHPRIO, (void*) ThreadSD, (void *)stream);\n";
         o.sKRateCode = "     int32_t i;\n"
                 + "     if ((%start%>0) && !starttrig) {\n"
                 + "        sdOpenStream(stream,&c[0]);\n"
@@ -296,7 +296,7 @@ public class Wave extends gentools {
                 + "stoptrig = 0;\n"
                 + "strcpy(&c[0],\"%fn%\");\n"
                 + "stream->pThreadSD = chThdCreateStatic(waThreadSD, sizeof(waThreadSD),\n"
-                + "                    HIGHPRIO, ThreadSD, (void *)stream);\n";
+                + "                    HIGHPRIO, (void*) ThreadSD, (void *)stream);\n";
         o.sKRateCode = "     int32_t i;\n"
                 + "     if ((%start%>0) && !starttrig) {\n"
                 + "        sdOpenStream(stream,&c[0]);\n"
@@ -366,7 +366,7 @@ public class Wave extends gentools {
                 + "starttrig = 0;\n"
                 + "stoptrig = 0;\n"
                 + "stream->pThreadSD = chThdCreateStatic(waThreadSD, sizeof(waThreadSD),\n"
-                + "                    HIGHPRIO, ThreadSD, (void *)stream);\n";
+                + "                    HIGHPRIO, (void*) ThreadSD, (void *)stream);\n";
         o.sKRateCode = "     int32_t i;\n"
                 + "     if ((%start%>0) && !starttrig) {\n"
                 + "        sdOpenStream(stream,%filename%);\n"
@@ -462,7 +462,7 @@ public class Wave extends gentools {
                 + "recording_active = 0;\n"
                 + "strcpy(&c[0],\"%fn%\");\n"
                 + "stream->pThreadSD = chThdCreateStatic(waThreadSD, sizeof(waThreadSD),\n"
-                + "                    HIGHPRIO, ThreadSD, (void *)stream);\n";
+                + "                    HIGHPRIO, (void*) ThreadSD, (void *)stream);\n";
         o.sKRateCode = "     int32_t i;\n"
                 + "     if ((%open%>0) && !open_prev) {\n"
                 + "        recording_active = 0;\n"

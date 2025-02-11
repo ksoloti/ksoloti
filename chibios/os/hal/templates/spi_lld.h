@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 */
 
 /**
- * @file    templates/spi_lld.h
- * @brief   SPI Driver subsystem low level driver header template.
+ * @file    spi_lld.h
+ * @brief   PLATFORM SPI subsystem low level driver header.
  *
  * @addtogroup SPI
  * @{
@@ -25,7 +25,7 @@
 #ifndef _SPI_LLD_H_
 #define _SPI_LLD_H_
 
-#if HAL_USE_SPI || defined(__DOXYGEN__)
+#if (HAL_USE_SPI == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -36,15 +36,16 @@
 /*===========================================================================*/
 
 /**
- * @name    Configuration options
+ * @name    PLATFORM configuration options
  * @{
  */
 /**
- * @brief   SPI driver enable switch.
+ * @brief   SPI1 driver enable switch.
  * @details If set to @p TRUE the support for SPI1 is included.
+ * @note    The default is @p FALSE.
  */
 #if !defined(PLATFORM_SPI_USE_SPI1) || defined(__DOXYGEN__)
-#define PLATFORM_SPI_USE_SPI1               FALSE
+#define PLATFORM_SPI_USE_SPI1                  FALSE
 #endif
 /** @} */
 
@@ -76,9 +77,9 @@ typedef void (*spicallback_t)(SPIDriver *spip);
  */
 typedef struct {
   /**
-   * @brief Operation complete callback.
+   * @brief Operation complete callback or @p NULL.
    */
-  spicallback_t         end_cb;
+  spicallback_t             end_cb;
   /* End of the mandatory fields.*/
 } SPIConfig;
 
@@ -91,27 +92,23 @@ struct SPIDriver {
   /**
    * @brief Driver state.
    */
-  spistate_t            state;
+  spistate_t                state;
   /**
    * @brief Current configuration data.
    */
-  const SPIConfig       *config;
-#if SPI_USE_WAIT || defined(__DOXYGEN__)
+  const SPIConfig           *config;
+#if (SPI_USE_WAIT == TRUE) || defined(__DOXYGEN__)
   /**
-   * @brief Waiting thread.
+   * @brief   Waiting thread.
    */
-  Thread                *thread;
-#endif /* SPI_USE_WAIT */
-#if SPI_USE_MUTUAL_EXCLUSION || defined(__DOXYGEN__)
-#if CH_USE_MUTEXES || defined(__DOXYGEN__)
-  /**
-   * @brief Mutex protecting the bus.
-   */
-  Mutex                 mutex;
-#elif CH_USE_SEMAPHORES
-  Semaphore             semaphore;
+  thread_reference_t        thread;
 #endif
-#endif /* SPI_USE_MUTUAL_EXCLUSION */
+#if (SPI_USE_MUTUAL_EXCLUSION == TRUE) || defined(__DOXYGEN__)
+  /**
+   * @brief   Mutex protecting the peripheral.
+   */
+  mutex_t                   mutex;
+#endif
 #if defined(SPI_DRIVER_EXT_FIELDS)
   SPI_DRIVER_EXT_FIELDS
 #endif
@@ -126,7 +123,7 @@ struct SPIDriver {
 /* External declarations.                                                    */
 /*===========================================================================*/
 
-#if PLATFORM_SPI_USE_SPI1 && !defined(__DOXYGEN__)
+#if (PLATFORM_SPI_USE_SPI1 == TRUE) && !defined(__DOXYGEN__)
 extern SPIDriver SPID1;
 #endif
 
@@ -148,7 +145,7 @@ extern "C" {
 }
 #endif
 
-#endif /* HAL_USE_SPI */
+#endif /* HAL_USE_SPI == TRUE */
 
 #endif /* _SPI_LLD_H_ */
 

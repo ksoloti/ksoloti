@@ -33,6 +33,7 @@ public class DisplayTypes {
         new DisplayFrac32VBar(),
         new DisplayFrac32VBarDB(),
         new DisplayFrac32VU(),
+        new DisplayFrac32VUHorizontal(),
         new DisplayFrac4ByteVBar(),
         new DisplayFrac4UByteVBar(),
         new DisplayFrac8S128VBar(),

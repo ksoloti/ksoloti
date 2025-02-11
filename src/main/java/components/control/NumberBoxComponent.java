@@ -289,14 +289,14 @@ public class NumberBoxComponent extends ACtrlComponent {
         if (isEnabled()) {
             g2.setColor(getBackground());
         } else {
-            g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
+            g2.setColor(Theme.Object_Default_Background);
         }
 
         g2.fillRect(0, 0, getWidth()-1, getHeight()-1);
         if (isEnabled()) {
             g2.setPaint(getForeground());
         } else {
-            g2.setPaint(Theme.getCurrentTheme().Component_Mid);
+            g2.setPaint(Theme.Component_Mid);
         }
         g2.drawRect(0, 0, getWidth()-2, getHeight()-2);
 
@@ -320,7 +320,7 @@ public class NumberBoxComponent extends ACtrlComponent {
             g2.setFont(Constants.FONT);
             g2.drawString(s, h, getSize().height - v - 1);
         } else {
-            g2.setColor(Theme.getCurrentTheme().Error_Text);
+            g2.setColor(Theme.Error_Text);
             g2.setFont(Constants.FONT);
             g2.drawString(keybBuffer, h, getSize().height - v - 1);
         }

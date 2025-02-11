@@ -50,11 +50,14 @@ public class FirmwareID {
             if (prefs.getFirmwareMode().contains("SPILink")) {
                 boarddef += "_spilink";
             }
+            if (prefs.getFirmwareMode().contains("USBAudio")) {
+                boarddef += "_usbaudio";
+            }
             boarddef += ".bin";
             File f = new File(boarddef);
 
             if (f == null || !f.canRead()) {
-                return "Please compile the firmware first";
+                return "- Couldn\'t find " + boarddef + ".\nPlease compile the firmware first.";
             }
             int tlength = (int) f.length();
             FileInputStream inputStream = new FileInputStream(f);

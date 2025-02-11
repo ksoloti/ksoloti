@@ -17,7 +17,7 @@ case "$unamestr" in
 		rootdir="$(cd $(dirname $0); pwd -P)"
 	;;
         *)
-                echo "Unknown OS: $unamestr - aborting..."
+                printf "\nUnknown OS: $unamestr - aborting...\n"
                 exit
         ;;
 esac
@@ -28,25 +28,24 @@ VERSION="$(git describe --tags | grep -Po '\d*\.\d*\.\d*' 2>&1)"
 VERSION_LONG="$(git describe --long --always --tags 2>&1)"
 CUSTOMLABEL=
 
-if [ $# -eq 1 ]
-  then
+if [[ $# -eq 1 ]]; then
     VERSION=$1
     DASH="-"
     CUSTOMLABEL=$1${DASH}
 fi
 
-echo $VERSION
-echo $VERSION_LONG
+printf "$VERSION\n"
+printf "$VERSION_LONG\n"
 
 # ----- Windows: Check if 7-Zip is installed
 case "$platform" in
     windows)
-        #echo "Java build currently not supported on Windows."
+        #printf "\nJava build currently not supported on Windows.\n"
         DIRECTORY="C:\Program Files\7-Zip"
         if [ -d "$DIRECTORY" ]; then
-            echo "$DIRECTORY found."
+            printf "\n$DIRECTORY found.\n"
         else
-            echo "$DIRECTORY does not exist. Please install 7-Zip in the standard location."
+            printf "\n$DIRECTORY does not exist. Please install 7-Zip in the standard location.\n"
             exit 1
         fi
     ;;
@@ -54,12 +53,12 @@ esac
 
 # ----- Compile firmware
 sh ./qlean.sh
+sh ./rrenew_permissions.sh
 sh ./kompile_shortcut.sh
 sh ./qlean.sh
 
 
 # ----- Compile jar
-ant clean
 case "$platform" in
         mac)
             ant clean
@@ -75,11 +74,6 @@ case "$platform" in
             ant clean
             ant
             ant clean
-            # cd platform_win
-            # cmd "//C path.bat && apache-ant-1.10.14/bin/ant.bat clean"
-            # cmd "//C path.bat && apache-ant-1.10.14/bin/ant.bat"
-            # cmd "//C path.bat && apache-ant-1.10.14/bin/ant.bat clean"
-            # cd ..
         ;;
 esac
 
@@ -101,25 +95,28 @@ rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/.settings
 
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/build/lst
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/build/obj
+rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/build/*oloti
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/build/*.dmp
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/build/*.hex
-# rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/build/*.list
+# rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/build/*.lst
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/build/*.map
 
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/.dep
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/lst
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/obj
+rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/*oloti_flasher
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.dmp
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.hex
-# rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.list
+rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.lst
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.map
 
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/.dep
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/lst
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/obj
+rm -rf ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/*oloti_mounter
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.dmp
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.hex
-# rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.list
+rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.lst
 rm     ./packagetemp/linux/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.map
 
 rm -rf ./packagetemp/linux/ksoloti-${VERSION}/platform_linux/share
@@ -155,25 +152,28 @@ rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/.set
 
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/build/lst
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/build/obj
+rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/build/*oloti
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/build/*.dmp
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/build/*.hex
-# rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/build/*.list
+# rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/build/*.lst
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/build/*.map
 
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/.dep
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/flasher_build/lst
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/flasher_build/obj
+rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/flasher_build/*oloti_flasher
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/flasher_build/*.dmp
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/flasher_build/*.hex
-# rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/flasher_build/*.list
+rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/flasher_build/*.lst
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/flasher/flasher_build/*.map
 
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/.dep
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/mounter_build/lst
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/mounter_build/obj
+rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/mounter_build/*oloti_mounter
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/mounter_build/*.dmp
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/mounter_build/*.hex
-# rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/mounter_build/*.list
+rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/mounter_build/*.lst
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/mounter/mounter_build/*.map
 
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/platform_osx/share
@@ -192,7 +192,10 @@ rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/jre/demo
 rm -rf ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/jre/man
 rm     ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/jre/lib/src.zip
 
-chmod +x ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/jre/lib/jspawnhelper
+chmod 755 ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/jre/lib/jspawnhelper
+chmod 755 ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/firmware/*.mk
+chmod -R 755 ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/platform_osx/bin/*
+chmod -R 755 ./packagetemp/mac/Ksoloti-${VERSION}.app/Contents/Resources/platform_osx/**/bin/*
 
 cd ./packagetemp/mac && tar -czf ../ksoloti_patcher-mac-${CUSTOMLABEL}${VERSION_LONG}.tar.gz *
 cd ../..
@@ -211,25 +214,28 @@ rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/.settings
 
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/build/lst
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/build/obj
+rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/build/*oloti
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/build/*.dmp
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/build/*.hex
-# rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/build/*.list
+# rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/build/*.lst
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/build/*.map
 
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/.dep
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/flasher_build/lst
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/flasher_build/obj
+rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/flasher_build/*oloti_flasher
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.dmp
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.hex
-# rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.list
+rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.lst
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/flasher/flasher_build/*.map
 
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/.dep
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/lst
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/obj
+rm -rf ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/*oloti_mounter
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.dmp
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.hex
-# rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.list
+rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.lst
 rm     ./packagetemp/win/ksoloti-${VERSION}/firmware/mounter/mounter_build/*.map
 
 rm -rf ./packagetemp/win/ksoloti-${VERSION}/platform_win/apache-ant-1.10.14
@@ -259,7 +265,7 @@ case "$platform" in
         ;;
         windows)
             # apply icon
-            ./jdks/rcedit-x64.exe ./packagetemp/win/ksoloti-${VERSION}/Ksoloti.exe --set-icon ./src/main/java/resources/ksoloti_icon.ico
+            ./jdks/rcedit-x64.exe ./packagetemp/win/ksoloti-${VERSION}/Ksoloti.exe --set-icon ./src/main/java/resources/ksoloti_icon.ico --set-product-version "${VERSION}"
             # zip using 7-zip
             cd ./packagetemp/win && "C:/Program Files/7-Zip/7z.exe" a -tzip ../ksoloti_patcher-windows-${CUSTOMLABEL}${VERSION_LONG}.zip *
         ;;
@@ -269,4 +275,4 @@ rm -rf ./packagetemp/win
 
 
 END=$(date +%s)
-echo "All done! Elapsed time: $(((END - START) / 60)) min $(((END - START) % 60)) sec."
+printf "\nAll done! Elapsed time: $(((END - START) / 60)) min $(((END - START) % 60)) sec.\n"

@@ -68,7 +68,7 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
             ao.sDescription = pg.getNotes();
             ao.sLicense = pg.getSettings().getLicense();
             ao.sAuthor = pg.getSettings().getAuthor();
-            pg.container(patch);
+            pg.setContainer(patch);
         }
     }
 
@@ -105,22 +105,23 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
         if (pf == null) {
             pf = new PatchFrame((PatchGUI) pg, MainFrame.mainframe.getQcmdprocessor());
             pg.setFileNamePath(getInstanceName());
+            pf.setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axs.png")).getImage());
             pg.PostContructor();
         }
-        pf.setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axs.png")).getImage());
         pf.setState(java.awt.Frame.NORMAL);
         pf.setVisible(true);
+        pf.repositionIfOutsideScreen();
     }
 
     @Override
     public void PostConstructor() {
         super.PostConstructor();
-        Titlebar.setBackground(Theme.getCurrentTheme().Object_TitleBar_Subpatch_Background);
+        Titlebar.setBackground(Theme.Object_TitleBar_Subpatch_Background);
 
         //updateObj();
         ButtonComponent BtnEdit = new ButtonComponent("Open");
-        BtnEdit.setForeground(Theme.getCurrentTheme().Component_Foreground);
-        BtnEdit.setBackground(Theme.getCurrentTheme().Component_Background);
+        BtnEdit.setForeground(Theme.Component_Foreground);
+        BtnEdit.setBackground(Theme.Component_Background);
         BtnEdit.setAlignmentX(LEFT_ALIGNMENT);
         BtnEdit.setAlignmentY(TOP_ALIGNMENT);
         BtnEdit.addActListener(new ActListener() {
@@ -132,8 +133,8 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
         add(BtnEdit);
 
         BtnUpdate = new ButtonComponent("Update");
-        BtnUpdate.setForeground(Theme.getCurrentTheme().Component_Foreground);
-        BtnUpdate.setBackground(Theme.getCurrentTheme().Component_Background);
+        BtnUpdate.setForeground(Theme.Component_Foreground);
+        BtnUpdate.setBackground(Theme.Component_Background);
         BtnUpdate.setAlignmentX(LEFT_ALIGNMENT);
         BtnUpdate.setAlignmentY(TOP_ALIGNMENT);
         BtnUpdate.addActListener(new ActListener() {

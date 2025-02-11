@@ -35,7 +35,7 @@ public class QCmdStartMounter extends QCmdStart {
 
     @Override
     public String GetDoneMessage() {
-        return "Done mounting SD card.\nUnmount/eject the SD card in your file manager to re-enable Patcher connection.";
+        return "Unmount/eject the SD card in your OS file manager to re-enable Patcher connection.\n";
     }
 
     // @Override

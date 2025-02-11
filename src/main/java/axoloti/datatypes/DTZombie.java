@@ -54,12 +54,12 @@ public class DTZombie implements DataType {
 
     @Override
     public Color GetColor() {
-        return Theme.getCurrentTheme().Cable_Zombie;
+        return Theme.Cable_Zombie;
     }
 
     @Override
     public Color GetColorHighlighted() {
-        return Theme.getCurrentTheme().Cable_Zombie_Highlighted;
+        return Theme.Cable_Zombie_Highlighted;
     }
 
     @Override

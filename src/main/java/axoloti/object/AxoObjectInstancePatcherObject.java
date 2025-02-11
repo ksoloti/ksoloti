@@ -60,7 +60,7 @@ public class AxoObjectInstancePatcherObject extends AxoObjectInstance {
          if (pg != null) {
          AxoObject ao = pg.GenerateAxoObj();
          setType(ao);
-         pg.container(patch);
+         pg.setContainer(patch);
          }
          */
     }
@@ -128,11 +128,11 @@ public class AxoObjectInstancePatcherObject extends AxoObjectInstance {
     @Override
     public void PostConstructor() {
         super.PostConstructor();
-        Titlebar.setBackground(Theme.getCurrentTheme().Object_TitleBar_Embedded_Background);
+        Titlebar.setBackground(Theme.Object_TitleBar_Embedded_Background);
         //updateObj();
         BtnEdit = new ButtonComponent("Edit");
-        BtnEdit.setForeground(Theme.getCurrentTheme().Component_Foreground);
-        BtnEdit.setBackground(Theme.getCurrentTheme().Component_Background);
+        BtnEdit.setForeground(Theme.Component_Foreground);
+        BtnEdit.setBackground(Theme.Component_Background);
         BtnEdit.setAlignmentX(LEFT_ALIGNMENT);
         BtnEdit.setAlignmentY(TOP_ALIGNMENT);
         BtnEdit.addActListener(new ActListener() {

@@ -16,7 +16,7 @@
 <p>The f_chdir function changes the current directory of a drive.</p>
 <pre>
 FRESULT f_chdir (
-  const TCHAR* <em>Path</em> <span class="c">/* Pointer to the path name */</span>
+  const TCHAR* <span class="arg">path</span> <span class="c">/* [IN] Path name */</span>
 );
 </pre>
 </div>
@@ -24,7 +24,7 @@ FRESULT f_chdir (
 <div class="para arg">
 <h4>Parameters</h4>
 <dl class="par">
-<dt>Path</dt>
+<dt>path</dt>
 <dd>Pointer to the null-terminated string that specifies a <a href="filename.html">directory</a> to go.</dd>
 </dl>
 </div>
@@ -50,7 +50,7 @@ FRESULT f_chdir (
 
 <div class="para desc">
 <h4>Description</h4>
-<p>The f_chdir function changes the current directory of the logical drive. The current directory of a drive is initialized to the root directory when the drive is auto-mounted. Note that the current directory is retained in the each file system object so that it also affects other tasks that using the drive.</p>
+<p>The <tt>f_chdir()</tt> function changes the current directory of the logical drive. The current directory of a drive is initialized to the root directory when the drive is auto-mounted. Note that the current directory is retained in the each file system object so that it also affects other tasks that using the volume.</p>
 </div>
 
 

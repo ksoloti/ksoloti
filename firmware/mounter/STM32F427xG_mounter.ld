@@ -21,7 +21,6 @@
  * ST32F427xG mounter memory setup.
  */
 
-ENTRY(ResetHandler)
 
 MEMORY
 {
@@ -32,6 +31,12 @@ MEMORY
 __main_stack_size__     = 0x400;
 __process_stack_size__  = 0x400;
 
+__ram_start__   = ORIGIN(SRAM);
+__ram_size__    = LENGTH(SRAM);
+__ram_end__     = __ram_start__ + __ram_size__;
+
+ENTRY(Reset_Handler)
+
 SECTIONS
 {
     . = 0;
@@ -39,9 +44,8 @@ SECTIONS
 
     .text : ALIGN(16) SUBALIGN(16)
     {
-        *(.text.ResetHandler)
-        *(.text.startup.*)
         *(.text)
+        *(.text.startup.*)
         *(.text.*)
         *(.rodata)
         *(.rodata.*)
@@ -73,9 +77,9 @@ SECTIONS
         * (.rodata.*);
     } > SRAM
 
-    .startup : ALIGN(16) SUBALIGN(16)
+    startup : ALIGN(16) SUBALIGN(16)
     {
-        KEEP(*(vectors))
+        KEEP(*(.vectors))
     } > SRAM
 
     _etext = .;
@@ -85,6 +89,8 @@ SECTIONS
     {
         . = ALIGN(4);
         PROVIDE(_data = .);
+        _textdata_start = LOADADDR(.data);
+        _data_start = .;
         *(.data)
         . = ALIGN(4);
         *(.data.*)
@@ -92,6 +98,7 @@ SECTIONS
         *(.ramtext)
         . = ALIGN(4);
         PROVIDE(_edata = .);
+        _data_end = .;
     } > SRAM
 
     .stacks :
@@ -125,3 +132,6 @@ SECTIONS
 
 PROVIDE(end = .);
 _end = .;
+
+__heap_base__ = _end;
+__heap_end__  = __ram_end__;

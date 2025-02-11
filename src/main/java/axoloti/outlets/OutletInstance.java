@@ -93,7 +93,7 @@ public class OutletInstance<T extends Outlet> extends IoletAbstract implements C
     public final void PostConstructor() {
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
         setMaximumSize(new Dimension(32767, 14));
-        setBackground(Theme.getCurrentTheme().Object_Default_Background);
+        setBackground(Theme.Object_Default_Background);
         add(Box.createHorizontalGlue());
         if (axoObj.getType().GetOutlets().size() > 1) {
             LabelComponent olbl = new LabelComponent(outlet.name);

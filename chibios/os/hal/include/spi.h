@@ -1,28 +1,17 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
-                 2011,2012,2013 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
-    This file is part of ChibiOS/RT.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    ChibiOS/RT is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-    ChibiOS/RT is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes ChibiOS/RT, without being obliged to provide
-    the source code for any proprietary components. See the file exception.txt
-    for full details of how and when the exception can be applied.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 */
 
 /**
@@ -36,7 +25,7 @@
 #ifndef _SPI_H_
 #define _SPI_H_
 
-#if HAL_USE_SPI || defined(__DOXYGEN__)
+#if (HAL_USE_SPI == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -70,10 +59,6 @@
 /*===========================================================================*/
 /* Derived constants and error checks.                                       */
 /*===========================================================================*/
-
-#if SPI_USE_MUTUAL_EXCLUSION && !CH_USE_MUTEXES && !CH_USE_SEMAPHORES
-#error "SPI_USE_MUTUAL_EXCLUSION requires CH_USE_MUTEXES and/or CH_USE_SEMAPHORES"
-#endif
 
 /*===========================================================================*/
 /* Driver data structures and types.                                         */
@@ -220,29 +205,10 @@ typedef enum {
 /** @} */
 
 /**
- * @name    Low Level driver helper macros
+ * @name    Low level driver helper macros
  * @{
  */
-#if SPI_USE_WAIT || defined(__DOXYGEN__)
-/**
- * @brief   Waits for operation completion.
- * @details This function waits for the driver to complete the current
- *          operation.
- * @pre     An operation must be running while the function is invoked.
- * @note    No more than one thread can wait on a SPI driver using
- *          this function.
- *
- * @param[in] spip      pointer to the @p SPIDriver object
- *
- * @notapi
- */
-#define _spi_wait_s(spip) {                                                 \
-  chDbgAssert((spip)->thread == NULL,                                       \
-              "_spi_wait(), #1", "already waiting");                        \
-  (spip)->thread = chThdSelf();                                             \
-  chSchGoSleepS(THD_STATE_SUSPENDED);                                       \
-}
-
+#if (SPI_USE_WAIT == TRUE) || defined(__DOXYGEN__)
 /**
  * @brief   Wakes up the waiting thread.
  *
@@ -251,17 +217,11 @@ typedef enum {
  * @notapi
  */
 #define _spi_wakeup_isr(spip) {                                             \
-  chSysLockFromIsr();                                                       \
-  if ((spip)->thread != NULL) {                                             \
-    Thread *tp = (spip)->thread;                                            \
-    (spip)->thread = NULL;                                                  \
-    tp->p_u.rdymsg = RDY_OK;                                                \
-    chSchReadyI(tp);                                                        \
-  }                                                                         \
-  chSysUnlockFromIsr();                                                     \
+  osalSysLockFromISR();                                                     \
+  osalThreadResumeI(&(spip)->thread, MSG_OK);                               \
+  osalSysUnlockFromISR();                                                   \
 }
 #else /* !SPI_USE_WAIT */
-#define _spi_wait_s(spip)
 #define _spi_wakeup_isr(spip)
 #endif /* !SPI_USE_WAIT */
 
@@ -310,21 +270,21 @@ extern "C" {
                         const void *txbuf, void *rxbuf);
   void spiStartSend(SPIDriver *spip, size_t n, const void *txbuf);
   void spiStartReceive(SPIDriver *spip, size_t n, void *rxbuf);
-#if SPI_USE_WAIT
+#if SPI_USE_WAIT == TRUE
   void spiIgnore(SPIDriver *spip, size_t n);
   void spiExchange(SPIDriver *spip, size_t n, const void *txbuf, void *rxbuf);
   void spiSend(SPIDriver *spip, size_t n, const void *txbuf);
   void spiReceive(SPIDriver *spip, size_t n, void *rxbuf);
-#endif /* SPI_USE_WAIT */
-#if SPI_USE_MUTUAL_EXCLUSION
+#endif
+#if SPI_USE_MUTUAL_EXCLUSION == TRUE
   void spiAcquireBus(SPIDriver *spip);
   void spiReleaseBus(SPIDriver *spip);
-#endif /* SPI_USE_MUTUAL_EXCLUSION */
+#endif
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* HAL_USE_SPI */
+#endif /* HAL_USE_SPI == TRUE */
 
 #endif /* _SPI_H_ */
 

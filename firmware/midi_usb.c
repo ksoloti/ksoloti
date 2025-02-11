@@ -33,9 +33,41 @@
 
 #if 1 // HAL_USE_MIDI_USB || defined(__DOXYGEN__)
 
+#define MDU_LOG_COUNT 0
+
+#if MDU_LOG_COUNT 
+typedef enum _BLType {blStartTransmit, blStartReceive, blEndTransmit, blEndReceive} BLType;
+
+typedef struct _DBGLOG
+{
+  BLType    type;
+  uint16_t  uSize;
+} DBGLOG;
+
+DBGLOG mduLog[MDU_LOG_COUNT] __attribute__ ((section (".sram3")));
+uint16_t umduLogCount = 0;
+
+void mduAddLog(BLType type, uint16_t uSize)
+{
+  if(umduLogCount == 0)
+    memset(mduLog, 0, sizeof(mduLog));
+
+  mduLog[umduLogCount].type = type;
+  mduLog[umduLogCount].uSize = uSize;
+  umduLogCount++;
+  if(umduLogCount == MDU_LOG_COUNT)
+    umduLogCount = 0;
+}
+#else
+  #define mduAddLog(a,b)
+#endif
+
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
 /*===========================================================================*/
+
+uint8_t mduReceiveBuffer[MIDI_USB_BUFFERS_SIZE];
+uint8_t mduTransmitBuffer[MIDI_USB_BUFFERS_SIZE];
 
 /*===========================================================================*/
 /* Driver exported variables.                                                */
@@ -96,6 +128,35 @@ static size_t readt(void *ip, uint8_t *bp, size_t n, systime_t time) {
 static const struct MidiUSBDriverVMT vmt = {write, read, put, get, putt, gett,
                                             writet, readt};
 
+
+void mduInitiateReceiveI(MidiUSBDriver *mdup, size_t uCount)
+{
+  USBDriver *usbp = mdup->config->usbp;
+
+  size_t uRequestCount = MIN(uCount, MIDI_USB_BUFFERS_SIZE);
+  usbStartReceiveI(usbp, mdup->config->bulk_out, mduReceiveBuffer, uRequestCount);
+  mduAddLog(blStartReceive, uRequestCount);
+}
+
+void mduInitiateTransmitI(MidiUSBDriver *mdup, size_t uCount)
+{
+  USBDriver *usbp = mdup->config->usbp;
+
+  // we need to copy from queue to buffer
+  size_t uQueueCount = chOQGetFullI(&mdup->oqueue);
+  size_t uTransmitCount = MIN(uCount, MIN(uQueueCount, MIDI_USB_BUFFERS_SIZE));
+
+  size_t u;
+  for(u = 0; u < uTransmitCount; u++)
+  {
+    mduTransmitBuffer[u] = chOQGetI(&mdup->oqueue);
+  }
+
+  size_t uRequestCount = MIN(uTransmitCount, MIDI_USB_BUFFERS_SIZE);
+  usbStartTransmitI(usbp, mdup->config->bulk_in, mduTransmitBuffer, uRequestCount);
+  mduAddLog(blStartTransmit, uRequestCount);
+}
+
 /**
  * @brief   Notification of data removed from the input queue.
  */
@@ -119,12 +180,12 @@ static void inotify(GenericQueue *qp) {
     ;
 
     n = (n / maxsize) * maxsize;
-    usbPrepareQueuedReceive(mdup->config->usbp, mdup->config->bulk_out,
-                            &mdup->iqueue, n);
-
+    //CH16 usbPrepareQueuedReceive(mdup->config->usbp, mdup->config->bulk_out,
+    //                        &mdup->iqueue, n);
+    mduInitiateReceiveI(mdup, n);
     chSysLock()
     ;
-    usbStartReceiveI(mdup->config->usbp, mdup->config->bulk_out);
+    //CH16 usbStartReceiveI(mdup->config->usbp, mdup->config->bulk_out);
   }
 }
 
@@ -150,12 +211,13 @@ static void onotify(GenericQueue *qp) {
       chSysUnlock()
       ;
 
-      usbPrepareQueuedTransmit(mdup->config->usbp, mdup->config->bulk_in,
-                               &mdup->oqueue, n);
+      //CH16 usbPrepareQueuedTransmit(mdup->config->usbp, mdup->config->bulk_in,
+      //                         &mdup->oqueue, n);
+      mduInitiateTransmitI(mdup, n);
 
       chSysLock()
       ;
-      usbStartTransmitI(mdup->config->usbp, mdup->config->bulk_in);
+      //CH16 usbStartTransmitI(mdup->config->usbp, mdup->config->bulk_in);
     }
   }
 }
@@ -195,7 +257,7 @@ void mduObjectInit(MidiUSBDriver *mdup) {
 /**
  * @brief   Configures and starts the driver.
  *
- * @param[in] bdup      pointer to a @p MidiUSBDriver object
+ * @param[in] mdup      pointer to a @p MidiUSBDriver object
  * @param[in] config    the Bulk USB driver configuration
  *
  * @api
@@ -203,12 +265,12 @@ void mduObjectInit(MidiUSBDriver *mdup) {
 void mduStart(MidiUSBDriver *mdup, const MidiUSBConfig *config) {
   USBDriver *usbp = config->usbp;
 
-  chDbgCheck(mdup != NULL, "mduStart");
+  chDbgCheck(mdup != NULL);
 
   chSysLock()
   ;
   chDbgAssert((mdup->state == MDU_STOP) || (mdup->state == MDU_READY),
-              "mduStart(), #1", "invalid state");
+              "mduStart(), #1 invalid state");
   usbp->in_params[config->bulk_in - 1] = mdup;
   usbp->out_params[config->bulk_out - 1] = mdup;
   mdup->config = config;
@@ -222,20 +284,20 @@ void mduStart(MidiUSBDriver *mdup, const MidiUSBConfig *config) {
  * @details Any thread waiting on the driver's queues will be awakened with
  *          the message @p Q_RESET.
  *
- * @param[in] bdup      pointer to a @p MidiUSBDriver object
+ * @param[in] mdup      pointer to a @p MidiUSBDriver object
  *
  * @api
  */
 void mduStop(MidiUSBDriver *mdup) {
   USBDriver *usbp = mdup->config->usbp;
 
-  chDbgCheck(mdup != NULL, "sdStop");
+  chDbgCheck(mdup != NULL);
 
   chSysLock()
   ;
 
   chDbgAssert((mdup->state == MDU_STOP) || (mdup->state == MDU_READY),
-              "mduStop(), #1", "invalid state");
+              "mduStop(), #1 invalid state");
 
   /* Driver in stopped state.*/
   usbp->in_params[mdup->config->bulk_in - 1] = NULL;
@@ -252,10 +314,11 @@ void mduStop(MidiUSBDriver *mdup) {
   ;
 }
 
+
 /**
  * @brief   USB device configured handler.
  *
- * @param[in] bdup      pointer to a @p MidiUSBDriver object
+ * @param[in] mdup      pointer to a @p MidiUSBDriver object
  *
  * @iclass
  */
@@ -267,9 +330,10 @@ void mduConfigureHookI(MidiUSBDriver *mdup) {
   chnAddFlagsI(mdup, CHN_CONNECTED);
 
   /* Starts the first OUT transaction immediately.*/
-  usbPrepareQueuedReceive(usbp, mdup->config->bulk_out, &mdup->iqueue,
-                          usbp->epc[mdup->config->bulk_out]->out_maxsize);
-  usbStartReceiveI(usbp, mdup->config->bulk_out);
+  //CH16 usbPrepareQueuedReceive(usbp, mdup->config->bulk_out, &mdup->iqueue,
+  //                        usbp->epc[mdup->config->bulk_out]->out_maxsize);
+  //CH16 usbStartReceiveI(usbp, mdup->config->bulk_out);
+  mduInitiateReceiveI(mdup, usbp->epc[mdup->config->bulk_out]->out_maxsize);
 }
 
 /**
@@ -303,26 +367,31 @@ bool_t mduRequestsHook(USBDriver *usbp) {
  */
 void mduDataTransmitted(USBDriver *usbp, usbep_t ep) {
   size_t n;
-  MidiUSBDriver *bdup = usbp->in_params[ep - 1];
+  MidiUSBDriver *mdup = usbp->in_params[ep - 1];
 
-  if (bdup == NULL)
+  if (mdup == NULL)
     return;
 
-  chSysLockFromIsr()
-  ;
-  chnAddFlagsI(bdup, CHN_OUTPUT_EMPTY);
+  chSysLockFromIsr();
+  chnAddFlagsI(mdup, CHN_OUTPUT_EMPTY);
 
-  if ((n = chOQGetFullI(&bdup->oqueue)) > 0) {
+  USBInEndpointState *pEpState = usbp->epc[ep]->in_state;
+  __attribute__((unused)) uint32_t uTransmittedCount = pEpState->txcnt;
+
+  mduAddLog(blEndTransmit, uTransmittedCount);
+  if ((n = chOQGetFullI(&mdup->oqueue)) > 0) {
     /* The endpoint cannot be busy, we are in the context of the callback,
      so it is safe to transmit without a check.*/
-    chSysUnlockFromIsr()
-    ;
+    //chSysUnlockFromIsr()
+    //;
 
-    usbPrepareQueuedTransmit(usbp, ep, &bdup->oqueue, n);
+    //CH16 usbPrepareQueuedTransmit(usbp, ep, &mdup->oqueue, n);
+	if(n) // do we need blocks of 4
+	    mduInitiateTransmitI(mdup, n);
 
-    chSysLockFromIsr()
-    ;
-    usbStartTransmitI(usbp, ep);
+    //chSysLockFromIsr()
+    //;
+    //CH16 usbStartTransmitI(usbp, ep);
   }
   else if ((usbp->epc[ep]->in_state->txsize > 0)
       && !(usbp->epc[ep]->in_state->txsize & (usbp->epc[ep]->in_maxsize - 1))) {
@@ -330,14 +399,15 @@ void mduDataTransmitted(USBDriver *usbp, usbep_t ep) {
      size. Otherwise the recipient may expect more data coming soon and
      not return buffered data to app. See section 5.8.3 Bulk Transfer
      Packet Size Constraints of the USB Specification document.*/
-    chSysUnlockFromIsr()
-    ;
+    //chSysUnlockFromIsr()
+    //;
 
-    usbPrepareQueuedTransmit(usbp, ep, &bdup->oqueue, 0);
+    //CH16 usbPrepareQueuedTransmit(usbp, ep, &mdup->oqueue, 0);
+    mduInitiateTransmitI(mdup, 0);
 
-    chSysLockFromIsr()
-    ;
-    usbStartTransmitI(usbp, ep);
+    //chSysLockFromIsr()
+    //;
+    //CH16 usbStartTransmitI(usbp, ep);
   }
 
   chSysUnlockFromIsr()
@@ -353,32 +423,42 @@ void mduDataTransmitted(USBDriver *usbp, usbep_t ep) {
  * @param[in] ep        endpoint number
  */
 void mduDataReceived(USBDriver *usbp, usbep_t ep) {
-  size_t n, maxsize;
-  MidiUSBDriver *bdup = usbp->out_params[ep - 1];
+  volatile size_t uQueueRemainingSize, maxsize;
+  MidiUSBDriver *mdup = usbp->out_params[ep - 1];
 
-  if (bdup == NULL)
+  if (mdup == NULL)
     return;
 
+  // CH16 we need to transfer data from our buffer to the queue
+  // this all needs a rewrite to get rid of the queues and
+  // use buffers instead.
+  USBOutEndpointState *pEpState = usbp->epc[ep]->out_state;
+  volatile uint32_t uReceivedCount = pEpState->rxcnt;
+  
   chSysLockFromIsr()
   ;
-  chnAddFlagsI(bdup, CHN_INPUT_AVAILABLE);
 
-  /* Writes to the input queue can only happen when there is enough space
-   to hold at least one packet.*/
+  chnAddFlagsI(mdup, CHN_INPUT_AVAILABLE);
+
+  mduAddLog(blEndReceive, uReceivedCount);
+
   maxsize = usbp->epc[ep]->out_maxsize;
-  if ((n = chIQGetEmptyI(&bdup->iqueue)) >= maxsize) {
-    /* The endpoint cannot be busy, we are in the context of the callback,
-     so a packet is in the buffer for sure.*/
-    chSysUnlockFromIsr()
-    ;
+  uQueueRemainingSize = chIQGetEmptyI(&mdup->iqueue);
 
-    n = (n / maxsize) * maxsize;
-    usbPrepareQueuedReceive(usbp, ep, &bdup->iqueue, n);
+  size_t uSizeToCopy = MIN(uQueueRemainingSize, uReceivedCount);
+  size_t u;
+  for(u = 0; u < uSizeToCopy; u++)
+  {
+    chIQPutI(&mdup->iqueue, mduReceiveBuffer[u]);
+  }  
 
-    chSysLockFromIsr()
-    ;
-    usbStartReceiveI(usbp, ep);
-  }
+  uQueueRemainingSize-= uSizeToCopy;
+  
+  // volatile size_t temp = uQueueRemainingSize;
+  uQueueRemainingSize = (uQueueRemainingSize / maxsize) * maxsize;  // Make sure we get less packets
+  
+  if(uQueueRemainingSize!=0)
+    mduInitiateReceiveI(mdup, uQueueRemainingSize);
 
   chSysUnlockFromIsr()
   ;
@@ -423,6 +503,53 @@ void midi_usb_MidiSend3(uint8_t port, uint8_t b0, uint8_t b1, uint8_t b2) {
   tx[2] = b1;
   tx[3] = b2;
   write(&MDU1, &tx[0], 4);
+}
+
+#define CIN_SYSEX_START 0x04
+#define CIN_SYSEX_END_1 0x05
+#define CIN_SYSEX_END_2 0x06
+#define CIN_SYSEX_END_3 0x07
+
+void midi_usb_MidiSendSysEx(uint8_t port, uint8_t bytes[], uint8_t len) {
+
+  if (len < 3) return;
+
+  const uint8_t cn = (( port - 1) & 0x0F) << 4;
+
+  uint8_t tx[4];
+
+  uint8_t i = 0;
+  for (i = 0; i < (len - 3); i += 3) {
+    tx[0] = CIN_SYSEX_START | cn;
+    tx[1] = bytes[i];
+    tx[2] = bytes[i + 1];
+    tx[3] = bytes[i + 2];
+    write(&MDU1, &tx[0], 4);
+  }
+
+  uint8_t remain = len - i;
+
+  if (remain == 1) {
+    tx[0] = CIN_SYSEX_END_1 | cn;
+    tx[1] = bytes[i];
+    tx[2] = 0;
+    tx[3] = 0;
+    write(&MDU1, &tx[0], 4);
+  }
+  else if (remain == 2) {
+    tx[0] = CIN_SYSEX_END_2 | cn;
+    tx[1] = bytes[i];
+    tx[2] = bytes[i + 1];
+    tx[3] = 0;
+    write(&MDU1, &tx[0], 4);
+  }
+  else if (remain == 3) {
+    tx[0] = CIN_SYSEX_END_3 | cn;
+    tx[1] = bytes[i];
+    tx[2] = bytes[i + 1];
+    tx[3] = bytes[i + 2];
+    write(&MDU1, &tx[0], 4);
+  }
 }
 
 #endif /* HAL_USE_BULK_USB */

@@ -59,7 +59,7 @@ public class DispComponent extends ADispComponent {
         int tick = 1;
         int radius = Math.min(getSize().width - 2, getSize().height) / 2 - tick;
         g2.setStroke(strokeThin);
-        g2.setColor(Theme.getCurrentTheme().Component_Background);
+        g2.setColor(Theme.Component_Background);
         g2.setPaint(getForeground());
         int b = radius / 2;
         g.drawArc(b, b, 2 * (radius - b), 2 * (radius - b), -45, 270);
@@ -67,7 +67,7 @@ public class DispComponent extends ADispComponent {
         int x = (int) (Math.cos(th) * radius);
         int y = (int) (Math.sin(th) * radius);
         if (overflow) {
-            g2.setColor(Theme.getCurrentTheme().Error_Text);
+            g2.setColor(Theme.Error_Text);
         }
         g2.setStroke(strokeThick);
         g2.drawLine(radius, radius, radius + x, radius + y);

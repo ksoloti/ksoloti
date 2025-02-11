@@ -290,7 +290,7 @@ public class VSliderComponent extends ACtrlComponent {
             //Rectangle2D r = g2.getFontMetrics().getStringBounds(s, g);
             //g2.drawString(s, bwidth+(margin/2)-(int)(0.5 + r.getWidth()/2), getHeight());
         } else {
-            g2.setColor(Theme.getCurrentTheme().Object_Default_Background);
+            g2.setColor(Theme.Object_Default_Background);
             g2.fillRect(0, 0, getWidth(), height);
             g2.setPaint(getForeground());
             g2.setStroke(strokeThin);

@@ -23,7 +23,7 @@ import axoloti.Theme;
 import axoloti.atom.AtomInstance;
 import axoloti.attributedefinition.AxoAttribute;
 import axoloti.object.AxoObjectInstance;
-import axoloti.utils.CharEscape;
+import static axoloti.utils.CharEscape.charEscape;
 import components.LabelComponent;
 import java.util.ArrayList;
 import javax.swing.BoxLayout;
@@ -57,7 +57,7 @@ public abstract class AttributeInstance<T extends AxoAttribute> extends JPanel i
 
     public void PostConstructor() {
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-        setBackground(Theme.getCurrentTheme().Object_Default_Background);
+        setBackground(Theme.Object_Default_Background);
         LabelComponent attrlbl = new LabelComponent(GetDefinition().getName());
         attrlbl.setBorder(new EmptyBorder(0,1,0,0));
         add(attrlbl);
@@ -81,7 +81,7 @@ public abstract class AttributeInstance<T extends AxoAttribute> extends JPanel i
     public abstract void CopyValueFrom(AttributeInstance a1);
 
     public String GetCName() {
-        return "attr_" + CharEscape.charEscape(attributeName);
+        return "attr_" + charEscape(attributeName);
     }
 
     @Override

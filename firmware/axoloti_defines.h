@@ -34,6 +34,7 @@
  * The defines are handled via the Patcher and passed to the Makefile and compiler
  * depending on the board setting in the Patcher preferences.
  * #define FW_SPILINK 
+ * #define FW_USBAUDIO 
  */
 
 #define PI_F 3.14159265359f
@@ -53,4 +54,4 @@ typedef int32_t int32buffer[BUFSIZE];
 
 #define BOARD_OTG_NOVBUSSENS
 
-#endif
+#endif /* __AXOLOTI_DEFINES_H */

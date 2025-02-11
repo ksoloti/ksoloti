@@ -85,8 +85,6 @@ public class MidiAssignments extends javax.swing.JDialog {
     }
 
 
-    @SuppressWarnings("unchecked")
-    
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
@@ -135,6 +133,7 @@ public class MidiAssignments extends javax.swing.JDialog {
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         jTable1.setDefaultRenderer(Integer.class, centerRenderer);
+        jTable1.setRowHeight(24);
 
         jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         if (jTable1.getColumnModel().getColumnCount() > 0) {

@@ -20,7 +20,7 @@ package axoloti.parameters;
 
 import org.simpleframework.xml.Attribute;
 
-import axoloti.utils.CharEscape;
+import static axoloti.utils.CharEscape.charEscape;
 
 /**
  *
@@ -69,10 +69,10 @@ public class ParameterInstanceFrac32SMap extends ParameterInstanceFrac32UMap<Par
             n = axoObj.getInstanceName() + ":" + name;
         }
         String s = PExName(vprefix) + ".pfunction = " + GetPFunction() + ";\n"
-                + I+I+I + "SetKVP_IPVP(&" + StructAccces + KVPName(vprefix) + ",ObjectKvpRoot, \"" + CharEscape.charEscape(n) + "\" ,"
-                + "&" + PExName(vprefix) + ","
-                + " -1<<27,"
-                + " 1<<27);\n"
+                + I+I+I + "SetKVP_IPVP(&" + StructAccces + KVPName(vprefix) + ", ObjectKvpRoot, \"" + charEscape(n) + "\", "
+                + "&" + PExName(vprefix) + ", "
+                + "-1<<27, "
+                + "1<<27);\n"
                 + I+I+I + "KVP_RegisterObject(&" + StructAccces + KVPName(vprefix) + ");\n";
         return s;
     }

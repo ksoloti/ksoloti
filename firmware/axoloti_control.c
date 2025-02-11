@@ -23,81 +23,11 @@
 #include "ui.h"
 #include <string.h>
 
+#define _BV(bit) (1 << (bit))
+
 uint8_t lcd_buffer[(AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) * AXOLOTI_CONTROL_LCDROWS] __attribute__ ((section (".sram2")));
 uint8_t led_buffer[AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH] __attribute__ ((section (".sram2")));
 
-
-#if 0
-/*
- * Low speed SPI configuration (328.125kHz, CPHA=0, CPOL=0, MSb first).
- */
-static const SPIConfig ls_spicfg =
-    {NULL, GPIOA, 15, SPI_CR1_BR_0 | SPI_CR1_BR_1};
-
-uint8_t row_update_index;
-uint8_t k;
-
-void do_axoloti_control(void) {
-  row_update_index++;
-  if (row_update_index == ((AXOLOTI_CONTROL_LCDROWS) + 1)) {
-    row_update_index = 0;
-    k++;
-  }
-  // chMtxLock(&Mutex_DMAStream_1_7);
-  spiAcquireBus(&SPID3); /* Acquire ownership of the bus.    */
-  spiStart(&SPID3, &ls_spicfg); /* Setup transfer parameters.       */
-  spiSelect(&SPID3); /* Slave Select assertion.          */
-  chThdSleepMilliseconds(2);
-  if (row_update_index != (AXOLOTI_CONTROL_LCDROWS))
-    spiExchange(&SPID3, AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH,
-                &lcd_buffer[(AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) * row_update_index],
-                control_rx_buffer);
-  else
-    spiExchange(&SPID3, AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH, &led_buffer[0],
-                control_rx_buffer);
-  spiUnselect(&SPID3); /* Slave Select de-assertion.       */
-  spiReleaseBus(&SPID3); /* Ownership release.               */
-  spiStop(&SPID3);
-  chMtxUnlock();
-  if ((control_rx_buffer[0] == 'B') && (control_rx_buffer[1] == 'T')
-      && (control_rx_buffer[2] == 'N')) {
-    Btn_Nav_Or.word |= ((int32_t *)control_rx_buffer)[1];
-    Btn_Nav_And.word &= ((int32_t *)control_rx_buffer)[2];
-    EncBuffer[0] += control_rx_buffer[12];
-    EncBuffer[1] += control_rx_buffer[13];
-    EncBuffer[2] += control_rx_buffer[14];
-    EncBuffer[3] += control_rx_buffer[15];
-  }
-}
-
-void axoloti_control_init(void) {
-  /*
-   *  Commm to FP test...
-   */
-  // row_update_index = 0;
-  palSetPadMode(GPIOA, 15, PAL_MODE_OUTPUT_PUSHPULL);
-  // NSS
-  palSetPadMode(GPIOB, 5, PAL_MODE_ALTERNATE(6));
-  // MOSI
-  palSetPadMode(GPIOB, 4, PAL_MODE_ALTERNATE(6));
-  // MISO
-  palSetPadMode(GPIOB, 3, PAL_MODE_ALTERNATE(6));
-  // SCK
-  palClearPad(GPIOB, 3);
-  // SCK
-  int i;
-  // clear
-  for (i = 0; i < (AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) * AXOLOTI_CONTROL_LCDROWS; i++)
-    lcd_buffer[i] = 0;
-  // fill header
-  led_buffer[0] = 'A';
-  led_buffer[1] = 'x';
-  led_buffer[2] = 'o';
-  led_buffer[3] = '0' + i;
-}
-#endif
-
-#define _BV(bit) (1 << (bit))
 
 void LCD_updateBoundingBox(int x, int y, int x2, int y2) {
   (void)x;

@@ -13,11 +13,11 @@
 
 <div class="para func">
 <h2>f_rename</h2>
-<p>オブジェクトの名前の変更または移動。</p>
+<p>ファイルまたはサブ・ディレクトリの名前の変更または移動。</p>
 <pre>
 FRESULT f_rename (
-  const TCHAR* <em>OldName</em>, <span class="c">/* 古いオブジェクト名 */</span>
-  const TCHAR* <em>NewName</em>  <span class="c">/* 新しいオブジェクト名 */</span>
+  const TCHAR* <span class="arg">old_name</span>, <span class="c">/* [IN] 古いオブジェクト名 */</span>
+  const TCHAR* <span class="arg">new_name</span>  <span class="c">/* [IN] 新しいオブジェクト名 */</span>
 );
 </pre>
 </div>
@@ -25,10 +25,10 @@ FRESULT f_rename (
 <div class="para arg">
 <h4>引数</h4>
 <dl class="par">
-<dt>OldName</dt>
-<dd>変更対象のオブジェクト(ファイルまたはディレクトリ)への<a href="filename.html">パス名</a>の入った<tt>'\0'</tt>で終わる文字列へのポインタを指定します。</dd>
-<dt>NewName</dt>
-<dd>新しいオブジェクトのフルパス名の入った<tt>'\0'</tt>で終わる文字列へのポインタを指定します。既に存在する名前は使えません。また、ドライブ番号は指定できず、<tt>OldName</tt>で指定された論理ドライブ上のオブジェクトとして扱われます。<br>
+<dt>old_name</dt>
+<dd>変更対象のファイルまたはサブ・ディレクトリの<a href="filename.html">パス名</a>を示すヌル文字<tt>'\0'</tt>終端の文字列へのポインタを指定します。</dd>
+<dt>new_name</dt>
+<dd>新しいパス名を示すヌル文字<tt>'\0'</tt>終端の文字列へのポインタを指定します。既に存在するオブジェクトと同じ名前は使えません。また、ドライブ番号は指定しても無視され、<tt class="arg">old_name</tt>で決められた論理ドライブ上のオブジェクトとして扱われます。</dd>
 </dl>
 </div>
 
@@ -56,7 +56,7 @@ FRESULT f_rename (
 
 <div class="para desc">
 <h4>解説</h4>
-<p>オブジェクトの名前を変更します。また、別のディレクトリへの移動も可能です。<em>開かれているオブジェクトに対して使用してはなりません</em>。</p>
+<p>ファイルまたはサブ・ディレクトリの名前を変更します。また、同時に別のディレクトリへの移動も可能ですが、異なるドライブへの移動はできません。<em>開かれているオブジェクトに対して使用してはなりません</em>。</p>
 </div>
 
 

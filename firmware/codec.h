@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include "axoloti_defines.h"
 #include "ch.h"
+#include "migration_v16.h"
 
 // double buffers for DMA, interleaved stereo
 extern int32_t buf[BUFSIZE * 2]; // *2 for stereo
@@ -29,10 +30,10 @@ extern int32_t buf2[BUFSIZE * 2];
 extern int32_t rbuf[BUFSIZE * 2];
 extern int32_t rbuf2[BUFSIZE * 2];
 
-extern void codec_init(bool_t isMaster);
+void codec_init(bool_t isMaster);
+
+void codec_clearbuffer(void);
 
 extern void computebufI(int32_t *inp, int32_t *outp);
-
-extern void codec_clearbuffer(void);
 
 #endif /* __CODEC_H */

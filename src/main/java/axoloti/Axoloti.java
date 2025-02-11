@@ -25,7 +25,7 @@ import axoloti.utils.OSDetect.OS;
 import static axoloti.MainFrame.prefs;
 
 import java.awt.EventQueue;
-import java.awt.SplashScreen;
+// import java.awt.SplashScreen;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -69,8 +69,8 @@ public class Axoloti {
                 System.setProperty("apple.awt.transparentTitleBar", "true");
             }
 
-            System.setProperty("awt.useSystemAAFontSettings","gasp");
-            System.setProperty("swing.aatext","true");
+            System.setProperty("awt.useSystemAAFontSettings", "gasp");
+            System.setProperty("swing.aatext", "true");
 
             /* Set tooltip delay and duration */
             javax.swing.ToolTipManager.sharedInstance().setDismissDelay(600000);
@@ -86,8 +86,8 @@ public class Axoloti {
             UIManager.put("ScrollBar.thumb", UIManager.getColor("ScrollBar.hoverThumbColor"));
             UIManager.put("Component.innerFocusWidth", 0);
             UIManager.put("Component.focusWidth", 0);
-            UIManager.put("ToggleButton.selectedForeground", Theme.getCurrentTheme().Button_Accent_Foreground);
-            UIManager.put("ToggleButton.selectedBackground", Theme.getCurrentTheme().Button_Accent_Background);
+            UIManager.put("ToggleButton.selectedForeground", Theme.Button_Accent_Foreground);
+            UIManager.put("ToggleButton.selectedBackground", Theme.Button_Accent_Background);
             UIManager.put("Objects.Grey", UIManager.getColor("Panel.foreground"));
 
         }
@@ -363,9 +363,9 @@ public class Axoloti {
                 objs.LoadAxoObjects();
                 System.out.println("Waiting...");
                 Thread.sleep(10000);
-                if (SplashScreen.getSplashScreen() != null) {
-                    SplashScreen.getSplashScreen().close();
-                }
+                // if (SplashScreen.getSplashScreen() != null) {
+                    // SplashScreen.getSplashScreen().close();
+                // }
 
                 System.out.println("Ksoloti command line initialised.");
                 int exitCode = 0;

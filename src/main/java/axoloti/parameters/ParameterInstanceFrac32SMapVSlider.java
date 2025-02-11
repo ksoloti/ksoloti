@@ -51,9 +51,9 @@ public class ParameterInstanceFrac32SMapVSlider extends ParameterInstanceFrac32S
 
     @Override
     public String GenerateCodeInit(String vprefix, String StructAccces) {
-        String s = /*I+I+I + "SetKVP_IPVP(&" + StructAccces + KVPName(vprefix) + ",ObjectKvpRoot, \"" + KVPName(vprefix) + "\" ,"
-                 + "&" + PExName(vprefix) + ","
-                 + (((ParameterFrac32SMapVSlider) parameter).MinValue.getRaw()) + ","
+        String s = /*I+I+I + "SetKVP_IPVP(&" + StructAccces + KVPName(vprefix) + ", ObjectKvpRoot, \"" + KVPName(vprefix) + "\", "
+                 + "&" + PExName(vprefix) + ", "
+                 + (((ParameterFrac32SMapVSlider) parameter).MinValue.getRaw()) + ", "
                  + (((ParameterFrac32SMapVSlider) parameter).MaxValue.getRaw()) + ");\n"
                  + I+I+I + "KVP_RegisterObject(&" + StructAccces + KVPName(vprefix) + ");\n"*/ "";
         return s;
@@ -78,14 +78,14 @@ public class ParameterInstanceFrac32SMapVSlider extends ParameterInstanceFrac32S
         if (i > 0) {
             Preset p = GetPreset(presetEditActive);
             if (p != null) {
-                // setForeground(Theme.getCurrentTheme().Parameter_Preset_Highlight_Foreground);
+                // setForeground(Theme.Parameter_Preset_Highlight_Foreground);
                 ctrl.setValue(p.value.getDouble());
             } else {
-                // setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
+                // setForeground(Theme.Parameter_Default_Foreground);
                 ctrl.setValue(value.getDouble());
             }
         } else {
-            setBackground(Theme.getCurrentTheme().Parameter_Default_Background);
+            setBackground(Theme.Parameter_Default_Background);
             ctrl.setValue(value.getDouble());
         }
         if ((presets != null) && (!presets.isEmpty())) {

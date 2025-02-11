@@ -57,6 +57,8 @@ public class QCmdStart implements QCmdSerialTask {
 
         connection.setPatch(p);
 
+        connection.TransmitCosts();
+        
         connection.TransmitStart();
         if (connection.WaitSync(patch_start_timeout)) {
             return this;

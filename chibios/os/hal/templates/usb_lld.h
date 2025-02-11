@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 */
 
 /**
- * @file    templates/usb_lld.h
- * @brief   USB Driver subsystem low level driver header template.
+ * @file    usb_lld.h
+ * @brief   PLATFORM USB subsystem low level driver header.
  *
  * @addtogroup USB
  * @{
@@ -25,7 +25,7 @@
 #ifndef _USB_LLD_H_
 #define _USB_LLD_H_
 
-#if HAL_USE_USB || defined(__DOXYGEN__)
+#if (HAL_USE_USB == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -44,7 +44,7 @@
 /**
  * @brief   The address can be changed immediately upon packet reception.
  */
-#define USB_SET_ADDRESS_MODE                USB_EARLY_SET_ADDRESS
+#define USB_SET_ADDRESS_MODE                USB_LATE_SET_ADDRESS
 
 /**
  * @brief   Method for set address acknowledge.
@@ -56,15 +56,16 @@
 /*===========================================================================*/
 
 /**
- * @name    Configuration options
+ * @name    PLATFORM configuration options
  * @{
  */
 /**
  * @brief   USB driver enable switch.
  * @details If set to @p TRUE the support for USB1 is included.
+ * @note    The default is @p FALSE.
  */
 #if !defined(PLATFORM_USB_USE_USB1) || defined(__DOXYGEN__)
-#define PLATFORM_USB_USE_USB1               FALSE
+#define PLATFORM_USB_USE_USB1                  FALSE
 #endif
 /** @} */
 
@@ -81,10 +82,6 @@
  */
 typedef struct {
   /**
-   * @brief   Buffer mode, queue or linear.
-   */
-  bool_t                        txqueued;
-  /**
    * @brief   Requested transmit transfer size.
    */
   size_t                        txsize;
@@ -92,30 +89,23 @@ typedef struct {
    * @brief   Transmitted bytes so far.
    */
   size_t                        txcnt;
-  union {
-    struct {
-      /**
-       * @brief   Pointer to the transmission linear buffer.
-       */
-      const uint8_t             *txbuf;
-    } linear;
-    struct {
-      /**
-       * @brief   Pointer to the output queue.
-       */
-      OutputQueue               *txqueue;
-    } queue;
-  } mode;
+  /**
+   * @brief   Pointer to the transmission linear buffer.
+   */
+  const uint8_t                 *txbuf;
+#if (USB_USE_WAIT == TRUE) || defined(__DOXYGEN__)
+  /**
+   * @brief   Waiting thread.
+   */
+  thread_reference_t            thread;
+#endif
+    /* End of the mandatory fields.*/
 } USBInEndpointState;
 
 /**
  * @brief   Type of an OUT endpoint state structure.
  */
 typedef struct {
-  /**
-   * @brief   Buffer mode, queue or linear.
-   */
-  bool_t                        rxqueued;
   /**
    * @brief   Requested receive transfer size.
    */
@@ -124,20 +114,17 @@ typedef struct {
    * @brief   Received bytes so far.
    */
   size_t                        rxcnt;
-  union {
-    struct {
-      /**
-       * @brief   Pointer to the receive linear buffer.
-       */
-      uint8_t                   *rxbuf;
-    } linear;
-    struct {
-      /**
-       * @brief   Pointer to the input queue.
-       */
-      InputQueue               *rxqueue;
-    } queue;
-  } mode;
+  /**
+   * @brief   Pointer to the receive linear buffer.
+   */
+  uint8_t                       *rxbuf;
+#if (USB_USE_WAIT == TRUE) || defined(__DOXYGEN__)
+  /**
+   * @brief   Waiting thread.
+   */
+  thread_reference_t            thread;
+#endif
+  /* End of the mandatory fields.*/
 } USBOutEndpointState;
 
 /**
@@ -294,6 +281,10 @@ struct USBDriver {
    * @brief   Current USB device configuration.
    */
   uint8_t                       configuration;
+  /**
+   * @brief   State of the driver when a suspend happened.
+   */
+  usbstate_t                    saved_state;
 #if defined(USB_DRIVER_EXT_FIELDS)
   USB_DRIVER_EXT_FIELDS
 #endif
@@ -303,6 +294,16 @@ struct USBDriver {
 /*===========================================================================*/
 /* Driver macros.                                                            */
 /*===========================================================================*/
+
+/**
+ * @brief   Returns the current frame number.
+ *
+ * @param[in] usbp      pointer to the @p USBDriver object
+ * @return              The current frame number.
+ *
+ * @notapi
+ */
+#define usb_lld_get_frame_number(usbp) 0
 
 /**
  * @brief   Returns the exact size of a receive transaction.
@@ -339,7 +340,7 @@ struct USBDriver {
 /* External declarations.                                                    */
 /*===========================================================================*/
 
-#if PLATFORM_USB_USE_USB1 && !defined(__DOXYGEN__)
+#if (PLATFORM_USB_USE_USB1 == TRUE) && !defined(__DOXYGEN__)
 extern USBDriver USBD1;
 #endif
 
@@ -368,7 +369,7 @@ extern "C" {
 }
 #endif
 
-#endif /* HAL_USE_USB */
+#endif /* HAL_USE_USB == TRUE */
 
 #endif /* _USB_LLD_H_ */
 

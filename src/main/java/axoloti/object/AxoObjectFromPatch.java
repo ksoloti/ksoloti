@@ -112,6 +112,7 @@ public class AxoObjectFromPatch extends AxoObject {
         }
         pf.setState(java.awt.Frame.NORMAL);
         pf.setVisible(true);
+        pf.repositionIfOutsideScreen();
     }
 
 }

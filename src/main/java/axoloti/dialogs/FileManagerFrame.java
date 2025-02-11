@@ -29,6 +29,7 @@ import axoloti.USBBulkConnection;
 import axoloti.utils.Constants;
 import components.ScrollPaneComponent;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -38,17 +39,22 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+
 import qcmds.QCmdCreateDirectory;
 import qcmds.QCmdDeleteFile;
 import qcmds.QCmdGetFileList;
@@ -66,11 +72,10 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
     private static final Logger LOGGER = Logger.getLogger(FileManagerFrame.class.getName());
 
-    /**
-     * Creates new form FileManagerFrame
-     */
+    private static char decimalSeparator = new DecimalFormatSymbols(Locale.getDefault(Locale.Category.FORMAT)).getDecimalSeparator();
+
     public FileManagerFrame() {
-        setPreferredSize(new Dimension(800,400));
+        setPreferredSize(new Dimension(640,400));
         initComponents();
         fileMenu1.initComponents();
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
@@ -79,6 +84,30 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         jLabelSDInfo.setText("");
 
         jFileTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+        /* Center Type, Size, Modified columns, TODO: add some tooltips? */
+        jFileTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+                final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                // SDFileInfo f = SDCardInfo.getInstance().getFiles().get(row);
+
+                /* Align names left, all other columns center */
+                if (column == 0) {
+                    setHorizontalAlignment(SwingConstants.LEFT);
+                    // setToolTipText(f.getFilename());
+                }
+                else {
+                    setHorizontalAlignment(SwingConstants.CENTER);
+                    // setToolTipText("");
+                }
+
+                return c;
+            }
+        });
+
+        jFileTable.setRowHeight(24);
         jFileTable.setModel(new AbstractTableModel() {
             private final String[] columnNames = {"Name", "Type", "Size", "Modified"};
 
@@ -113,19 +142,28 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 switch (columnIndex) {
                     case 0: {
                         SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
-                        // if (f.isDirectory()) {
-                            returnValue = f.getFilename();
-                        // } else {
-                            // returnValue = f.getFilenameNoExtension();
-                        // }
+                        if (f != null) {
+                            if (f.isDirectory()) {
+                                /* is directory: print full path */
+                                returnValue = f.getFilename();
+                            }
+                            else if (f.getFilename().lastIndexOf("/") > 0) {
+                                /* is file in sub directory: print file name with indent */
+                                returnValue = "    " + f.getPatchFileName();
+                            }
+                            else {
+                                /* is file in root directory: print file name with slash and without indent */
+                                returnValue = "/" + f.getPatchFileName();
+                            }
+                        }
                     }
                     break;
                     case 1: {
                         SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
                         if (f.isDirectory()) {
-                            returnValue = "🗀";
+                            returnValue = "[ D ]";
                         } else {
-                            returnValue = "." + f.getExtension();
+                            returnValue = f.getExtension();
                         }
                     }
                     break;
@@ -134,12 +172,20 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         if (f.isDirectory()) {
                             returnValue = "";
                         } else {
-                            int size = f.getSize();
-                            if (size < 10240) {
-                                returnValue = "" + size + " bytes";
-                            } else if (size < 10240 * 1024) {
+                            long size = f.getSize();
+                            if (size < 1024) {
+                                returnValue = "" + size + " B";
+                            }
+                            else if (size < 1024 * 1024 / 10) {
+                                returnValue = "" + (size / 1024) + decimalSeparator + (size % 1024) / 103 + " kB";
+                            }
+                            else if (size < 1024 * 1024) {
                                 returnValue = "" + (size / 1024) + " kB";
-                            } else {
+                            }
+                            else if (size < 10240 * 1024 * 10) {
+                                returnValue = "" + (size / (1024 * 1024)) + decimalSeparator + (size % (1024 * 1024)) / (1024 * 1024 / 10) + " MB";
+                            }
+                            else {
                                 returnValue = "" + (size / (1024 * 1024)) + " MB";
                             }
                         }
@@ -147,7 +193,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     break;
                     case 3: {
                         Calendar c = SDCardInfo.getInstance().getFiles().get(rowIndex).getTimestamp();
-                        if (c.get(Calendar.YEAR) > 1979) {
+                        if (c.get(Calendar.YEAR) > 1980) {
                             returnValue = DateFormat.getDateTimeInstance().format(c.getTime());
                         } else {
                             returnValue = "";
@@ -182,12 +228,43 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     @SuppressWarnings("unchecked")
                     List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
                     QCmdProcessor processor = MainFrame.mainframe.getQcmdprocessor();
+
                     if (USBBulkConnection.GetConnection().isConnected()) {
-                        for (File f : droppedFiles) {
+                        if (droppedFiles.size() > 1) {
+                            Object[] options = {"Upload", "Cancel"};
+                            int n = JOptionPane.showOptionDialog(null,
+                                                                "Upload " + droppedFiles.size() + " files to SD card?",
+                                                                "Upload multiple Files",
+                                                                JOptionPane.YES_NO_OPTION,
+                                                                JOptionPane.WARNING_MESSAGE,
+                                                                null,
+                                                                options,
+                                                                options[1]);
+                            switch (n) {
+                                case JOptionPane.YES_OPTION: {
+                                    for (File f : droppedFiles) {
+                                        System.out.println(f.getName());
+                                        if (!f.canRead()) {
+                                            LOGGER.log(Level.SEVERE, "Cannot read file: " + f.getName());
+                                        }
+                                        else {
+                                            processor.AppendToQueue(new QCmdUploadFile(f, f.getName()));
+                                        }
+                                    }
+                                }
+                                break;
+
+                                case JOptionPane.NO_OPTION:
+                                break;
+                            }
+                        }
+                        else if (droppedFiles.size() == 1) {
+                            File f = droppedFiles.get(0);
                             System.out.println(f.getName());
                             if (!f.canRead()) {
-                               LOGGER.log(Level.SEVERE, "Cannot read file");
-                            } else {
+                                LOGGER.log(Level.SEVERE, "Cannot read file: " + f.getName());
+                            }
+                            else {
                                 processor.AppendToQueue(new QCmdUploadFile(f, f.getName()));
                             }
                         }
@@ -203,37 +280,54 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
         jScrollPane1.setViewportView(jFileTable);
         if (jFileTable.getColumnModel().getColumnCount() > 0) {
-            jFileTable.getColumnModel().getColumn(0).setPreferredWidth(360);
-            jFileTable.getColumnModel().getColumn(1).setPreferredWidth(30);
-            jFileTable.getColumnModel().getColumn(2).setPreferredWidth(90);
-            jFileTable.getColumnModel().getColumn(3).setPreferredWidth(120);
+            jFileTable.getColumnModel().getColumn(0).setPreferredWidth(320);
+
+            jFileTable.getColumnModel().getColumn(1).setPreferredWidth(80);
+            jFileTable.getColumnModel().getColumn(1).setMaxWidth(80);
+
+            jFileTable.getColumnModel().getColumn(2).setPreferredWidth(120);
+            jFileTable.getColumnModel().getColumn(2).setMaxWidth(120);
+
+            jFileTable.getColumnModel().getColumn(3).setPreferredWidth(180);
+            jFileTable.getColumnModel().getColumn(3).setMaxWidth(180);
         }
     }
     
-    void UpdateButtons(){
+    void UpdateButtons() {
         int rows[] = jFileTable.getSelectedRows();
+
         if (rows.length > 1) {
             jButtonDelete.setEnabled(true);
             jButtonUpload.setEnabled(false);
             jButtonCreateDir.setEnabled(false);
             ButtonUploadDefaultName();
         }
-        else {
+        else if (rows.length == 1) {
             jButtonUpload.setEnabled(true);
             jButtonCreateDir.setEnabled(true);
+
             if (rows[0] < 0) {
                 jButtonDelete.setEnabled(false);
                 ButtonUploadDefaultName();
-            } else {
+            }
+            else {
                 jButtonDelete.setEnabled(true);
                 SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rows[0]);
+
                 if (f != null && f.isDirectory()) {
-                    jButtonUpload.setText("Upload to Selected...");// + f.getFilename() + " ...");
-                    jButtonCreateDir.setText("New Folder in Selected...");// + f.getFilename() + " ...");
-                } else {
+                    jButtonUpload.setText("Upload to Selected...");
+                    jButtonCreateDir.setText("New Folder in Selected...");
+                }
+                else {
                     ButtonUploadDefaultName();
                 }
             }        
+        }
+        else {
+            jButtonDelete.setEnabled(false);
+            jButtonUpload.setEnabled(false);
+            jButtonCreateDir.setEnabled(false);
+            ButtonUploadDefaultName();
         }
     }
 
@@ -324,9 +418,11 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
         });
 
+        fileMenu1.setMnemonic('F');
         fileMenu1.setText("File");
         jMenuBar1.add(fileMenu1);
 
+        jMenu2.setMnemonic('E');
         jMenu2.setText("Edit");
         jMenu2.setDelay(300);
         jMenuBar1.add(jMenu2);
@@ -340,6 +436,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jButtonSDRefresh)
                 .addGap(29, 29, 29)
                 .addComponent(jLabelSDInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -449,31 +546,63 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             String txt;
 
             if (rows.length > 1) {
-                txt = "Are you sure you want to delete all selected items?";
+                txt = "Delete selected items?";
             }
             else {
                 SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rows[0]);
                 String ff = f.getFilename();
-                txt = "Are you sure you want to delete \"" + ff + "\"?";
+                txt = "Delete \"" + ff + "\"?";
             }
 
-            int n = JOptionPane.showConfirmDialog(this, txt, "Confirm Delete", JOptionPane.YES_NO_OPTION);
+            Object[] options = {"Delete", "Cancel"};
+            int n = JOptionPane.showOptionDialog(this,
+                                                 txt,
+                                                 "Confirm Delete",
+                                                 JOptionPane.YES_NO_OPTION,
+                                                 JOptionPane.WARNING_MESSAGE,
+                                                 null,
+                                                 options,
+                                                 options[1]);
             switch (n) {
                 case JOptionPane.YES_OPTION: {
                     QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
                     
                     for (int row : rows) {
                         SDFileInfo f = SDCardInfo.getInstance().getFiles().get(row);
-                        String ff = f.getFilename();
 
-                        if (!f.isDirectory()) {
-                            processor.AppendToQueue(new QCmdDeleteFile(f.getFilename()));
-                        }
-                        else {
+                        if (f.isDirectory()) {
+                            
+                            String ff = f.getFilename();
+
+                            for (SDFileInfo subf : SDCardInfo.getInstance().getFiles()) {
+                                String sf = subf.getFilename();
+                                if (sf.startsWith(ff)) {
+                                    if (!subf.isDirectory()) {
+                                        /* delete files contained in all subfolders */
+                                        processor.AppendToQueue(new QCmdDeleteFile(sf));
+                                    }
+                                }
+                                processor.WaitQueueFinished();
+                            }
+                            for (SDFileInfo subf : SDCardInfo.getInstance().getFiles()) {
+                                String sf = subf.getFilename();
+                                if (sf.startsWith(ff)) {
+                                    if (subf.isDirectory()) {
+                                        /* then delete (hopefully empty) subfolders */
+                                        processor.AppendToQueue(new QCmdDeleteFile(sf));
+                                    }
+                                }
+                                processor.WaitQueueFinished();
+                            }
+                            
+                            /* then delete empty main folder */
                             if (ff.endsWith("/")) {
                                 ff = ff.substring(0, ff.length() - 1);
                             }
                             processor.AppendToQueue(new QCmdDeleteFile(ff));
+                        }
+                        else {
+                            processor.AppendToQueue(new QCmdDeleteFile(f.getFilename()));
                         }
                     }
                 }
@@ -494,7 +623,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 dir = f.getFilename();
             }
         }
-        String fn = JOptionPane.showInputDialog(this, "Enter Folder name:");
+        String fn = JOptionPane.showInputDialog(this, "Enter folder name:");
         if (fn != null && !fn.isEmpty()) {
             QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
             processor.AppendToQueue(new QCmdCreateDirectory(dir + fn));
@@ -520,7 +649,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         int clusters = SDCardInfo.getInstance().getClusters();
         int clustersize = SDCardInfo.getInstance().getClustersize();
         int sectorsize = SDCardInfo.getInstance().getSectorsize();
-        jLabelSDInfo.setText("Free: " + ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)) + "MB");
+        jLabelSDInfo.setText("Free: " + ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)) + " MB");
         // System.out.println(String.format("SD free: %d MB, Cluster size: %d", ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)), (clustersize * sectorsize)));
     }
 

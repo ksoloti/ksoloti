@@ -18,7 +18,8 @@
  */
 package axoloti.utils;
 
-// import axoloti.Axoloti;
+import axoloti.MainFrame;
+import axoloti.USBBulkConnection;
 import axoloti.Version;
 
 import java.io.File;
@@ -91,6 +92,8 @@ public class Preferences {
     Boolean MouseDoNotRecenterWhenAdjustingControls;
     @Element(required = false)
     Boolean ExpertMode;
+    @Element(required = false)
+    Integer DspSafetyLimit;
     @ElementList(required = false)
     ArrayList<String> recentFiles = new ArrayList<String>();
 
@@ -103,6 +106,8 @@ public class Preferences {
     String ControllerObject;
     @Element(required = false)
     Boolean ControllerEnabled;
+    @Element(required = false)
+    Boolean BackupPatchesOnSDEnabled;
     @Element(required = false)
     String themePath;
     @Element(required = false)
@@ -127,14 +132,14 @@ public class Preferences {
 
     String[] ObjectPath;
 
-    boolean isDirty = false;
+    // private boolean isDirty = false;
     private boolean restartRequired = false;
 
-    final int nRecentFiles = 16;
+    private final int nRecentFiles = 16;
 
-    final int minimumPollInterval = 20;
+    private final int minimumPollInterval = 20;
 
-    public static final String THEMELIST[] = {
+    private static final String ThemeList[] = {
         // "Arc",
         // "Arc - Orange",
         // "Arc Dark",
@@ -225,6 +230,9 @@ public class Preferences {
             ControllerObject = "";
             ControllerEnabled = false;
         }
+        if (BackupPatchesOnSDEnabled == null) {
+            BackupPatchesOnSDEnabled = true;
+        }
         if (Theme == null) {
             Theme = "FlatLaf Light";
         }
@@ -234,6 +242,9 @@ public class Preferences {
         if (libraries == null) {
             libraries = new ArrayList<AxolotiLibrary>();
         }
+        if(DspSafetyLimit == null) {
+            DspSafetyLimit = 3; // Normal setting
+        }
     }
 
     @Persist
@@ -242,13 +253,17 @@ public class Preferences {
         appVersion = Version.AXOLOTI_SHORT_VERSION;
     }
 
-    void SetDirty() {
-        isDirty = true;
-    }
+    // void SetDirty() {
+    //     isDirty = true;
+    // }
 
-    void ClearDirty() {
-        isDirty = false;
-    }
+    // void ClearDirty() {
+    //     isDirty = false;
+    // }
+
+    // boolean isDirty() {
+    //     return isDirty;
+    // }
 
     public ArrayList<AxolotiLibrary> getLibraries() {
         return libraries;
@@ -283,7 +298,7 @@ public class Preferences {
             libraries.add(newlib);
         }
         buildObjectSearchPatch();
-        SetDirty();
+        // SetDirty();
     }
 
     public void removeLibrary(String id) {
@@ -293,7 +308,7 @@ public class Preferences {
                 return;
             }
         }
-        SetDirty();
+        // SetDirty();
         buildObjectSearchPatch();
     }
 
@@ -303,7 +318,7 @@ public class Preferences {
                 lib.setEnabled(e);
             }
         }
-        SetDirty();
+        // SetDirty();
         buildObjectSearchPatch();
     }
 
@@ -323,7 +338,30 @@ public class Preferences {
             i = minimumPollInterval;
         }
         PollInterval = i;
-        SetDirty();
+        // SetDirty();
+    }
+
+    public short getUiMidiThreadCost() {
+        short costs[] = {0, 280, 150, 100, 80, 60};
+        return costs[DspSafetyLimit];
+    }
+
+
+    public byte getDspLimitPercent() {
+        if(DspSafetyLimit == 0) {
+            return 97;
+        } else {
+            return 100;
+        }
+    }
+
+    public int getDspSafetyLimit() {
+        return DspSafetyLimit;
+    }
+
+    public void setDspSafetyLimit(int i) {
+        DspSafetyLimit = i;
+        // SetDirty();
     }
 
     public void setCurrentFileDirectory(String CurrentFileDirectory) {
@@ -332,7 +370,7 @@ public class Preferences {
         }
         this.CurrentFileDirectory = CurrentFileDirectory;
         SavePrefs();
-        SetDirty();
+        // SetDirty();
     }
 
     public String getTheme() {
@@ -345,7 +383,7 @@ public class Preferences {
         }
         this.Theme = Theme;
         restartRequired = true;
-        SetDirty();
+        // SetDirty();
     }
 
     public String getCodeSyntaxTheme() {
@@ -358,7 +396,7 @@ public class Preferences {
         }
         this.codeSyntaxTheme = codeSyntaxTheme;
         restartRequired = true;
-        SetDirty();
+        // SetDirty();
     }
 
     public void applyTheme() {
@@ -403,7 +441,7 @@ public class Preferences {
             return;
         }
         this.CodeFontSize = sz;
-        SetDirty();
+        // SetDirty();
     }
 
     static String GetPrefsFileLoc() {
@@ -451,13 +489,11 @@ public class Preferences {
     }
 
     public void SavePrefs() {
-        LOGGER.log(Level.INFO, "Saving preferences...");
-        if (restartRequired) {
-            LOGGER.log(Level.SEVERE, ">>> RESTART REQUIRED <<<");
-        }
+
+        LOGGER.log(Level.INFO, "Saving preferences...\n");
+
         Serializer serializer = new Persister();
         File f = new File(GetPrefsFileLoc());
-
         System.out.println(f.getAbsolutePath());
 
         try {
@@ -466,7 +502,17 @@ public class Preferences {
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
-        ClearDirty();
+
+        if (restartRequired) {
+            LOGGER.log(Level.SEVERE, ">>> RESTART REQUIRED <<<");
+        }
+
+        // ClearDirty();
+    }
+
+
+    public String[] getThemeList() {
+        return ThemeList;
     }
 
     @Deprecated
@@ -499,15 +545,47 @@ public class Preferences {
             return;
         }
         this.MouseDialAngular = MouseDialAngular;
-        SetDirty();
+        // SetDirty();
     }
 
     public void setFirmwareMode(String FirmwareMode) {
+
         if (this.FirmwareMode.equals(FirmwareMode)) {
             return;
         }
-        this.FirmwareMode = FirmwareMode;
-        SetDirty();
+
+        if (FirmwareMode.contains("Axoloti") && !this.FirmwareMode.contains("Axoloti") || FirmwareMode.contains("Ksoloti") && !this.FirmwareMode.contains("Ksoloti")) {
+            /* If switching to another board model... */
+            
+            this.FirmwareMode = FirmwareMode;
+            MainFrame.mainframe.populateMainframeTitle();
+            MainFrame.mainframe.refreshAppIcon();
+
+            restartRequired = true;
+            
+            /* Disconnect automatically. User will have to restart the Patcher anyway. */
+            if (USBBulkConnection.GetConnection().isConnected()) {
+                USBBulkConnection.GetConnection().disconnect();
+            }
+            MainFrame.mainframe.ShowDisconnect();
+        }
+        else {
+
+            this.FirmwareMode = FirmwareMode;
+            MainFrame.mainframe.populateMainframeTitle();
+
+            /* If connected, offer automatic firmware update */
+            if (USBBulkConnection.GetConnection().isConnected()) {
+                MainFrame.mainframe.interactiveFirmwareUpdate();
+            }
+        }
+
+        MainFrame.mainframe.populateInfoColumn();
+        // SetDirty();
+    }
+
+    public boolean getRestartRequired() {
+        return restartRequired;
     }
 
     public void setUserShortcut(int index, String userShortcut) {
@@ -518,7 +596,7 @@ public class Preferences {
             return;
         }
         this.UserShortcuts[index] = userShortcut;
-        SetDirty();
+        // SetDirty();
     }
 
     public boolean getMouseDoNotRecenterWhenAdjustingControls() {
@@ -530,7 +608,7 @@ public class Preferences {
             return;
         }
         this.MouseDoNotRecenterWhenAdjustingControls = MouseDoNotRecenterWhenAdjustingControls;
-        SetDirty();
+        // SetDirty();
     }
 
     public Boolean getExpertMode() {
@@ -558,7 +636,7 @@ public class Preferences {
         }
         /* Add to top */
         recentFiles.add(filename);
-        SetDirty();
+        // SetDirty();
     }
 
     public void removeRecentFile(String filename) {
@@ -585,7 +663,7 @@ public class Preferences {
         }
         this.FavouriteDir = favouriteDir;
         restartRequired = true;
-        SetDirty();
+        // SetDirty();
     }
 
     public String getBoardName(String cpu) {
@@ -604,7 +682,7 @@ public class Preferences {
         } else {
             BoardNames.put(cpuid, name);
         }
-        SetDirty();
+        // SetDirty();
     }
 
     public String getControllerObject() {
@@ -621,6 +699,14 @@ public class Preferences {
 
     public boolean isControllerEnabled() {
         return ControllerEnabled;
+    }
+
+    public void setBackupPatchesOnSDEnabled(boolean b) {
+        BackupPatchesOnSDEnabled = b;
+    }
+
+    public boolean isBackupPatchesOnSDEnabled() {
+        return BackupPatchesOnSDEnabled;
     }
 
     public final void ResetLibraries(boolean delete) {

@@ -81,13 +81,13 @@ public class RControlButtonWithLed extends Component {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.setPaint(Theme.getCurrentTheme().Object_Default_Background);
+        g2.setPaint(Theme.Object_Default_Background);
         g2.fillRect(0, 0, width, height);
         if (illuminated) {
-            g2.setPaint(Theme.getCurrentTheme().Component_Illuminated);
+            g2.setPaint(Theme.Component_Illuminated);
             g2.fillRoundRect(0, 0, width, height, arc, arc);
         }
-        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+        g2.setPaint(Theme.Component_Foreground);
         if (pressed) {
             g2.fillRoundRect(inset, inset, width - inset * 2, height - inset * 2, arc, arc);
         } else {

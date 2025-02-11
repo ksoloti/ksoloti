@@ -16,7 +16,7 @@ case "$unamestr" in
 	    rootdir="$(cd $(dirname $0); pwd -P)"
 	;;
     *)
-        echo "Unknown OS: $unamestr - aborting..."
+        printf "\nUnknown OS: $unamestr - aborting...\n"
         exit
     ;;
 esac
@@ -26,7 +26,7 @@ export axoloti_runtime=${axoloti_runtime:="$rootdir"}
 export axoloti_firmware=${axoloti_firmware:="$axoloti_release/firmware"}
 export axoloti_home=${axoloti_home:="$rootdir"}
 
-which java >/dev/null || echo "Java not found in path" 
+which java >/dev/null || printf "\nJava not found in path\n"
 
 heap_jvmargs='-Xms256m -Xmx2g'
 marlin_jvmargs='-Xbootclasspath/a:lib/marlin-0.9.4.8-Unsafe-OpenJDK11.jar -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine -Dsun.java2d.d3d=false'
@@ -45,5 +45,5 @@ then
         ;;
     esac
 else
-    echo "Ksoloti.jar does not exist."
+    printf "\nKsoloti.jar does not exist.\n"
 fi

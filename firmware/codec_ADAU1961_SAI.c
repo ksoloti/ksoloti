@@ -67,9 +67,6 @@
 
 #endif
 
-extern void computebufI(int32_t *inp, int32_t *outp);
-
-
 const stm32_dma_stream_t* sai_a_dma;
 const stm32_dma_stream_t* sai_b_dma;
 
@@ -206,14 +203,14 @@ static void ADAU_I2C_Init(void) {
 #if defined(BOARD_KSOLOTI_CORE)
         ADAU1961_i2c_handle.Instance = I2C2;
         /* SCL: PB10, SDA: PB11 */
-        palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
-        palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
+        palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
+        palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
         rccEnableI2C2(FALSE);
 #elif defined(BOARD_AXOLOTI_CORE)
         ADAU1961_i2c_handle.Instance = I2C3;
         /* SCL: PH7, SDA: PH8 */
-        palSetPadMode(GPIOH, 7, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
-        palSetPadMode(GPIOH, 8, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_PUDR_PULLUP);
+        palSetPadMode(GPIOH, 7, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
+        palSetPadMode(GPIOH, 8, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
         rccEnableI2C3(FALSE);
 #elif defined(BOARD_STM32F4_DISCOVERY)
 //TODO
@@ -382,7 +379,17 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     }
 
 #else
+
+#if USB_CODEC_TESTING == 1
+    // USB Underrun
+    uint8_t pllreg[6] = {0x00, 127, 0x00, 0x12, 0x31, 0x01};
+#elif USB_CODEC_TESTING==2
+    // USB Overrun
+    uint8_t pllreg[6] = {0x00, 123, 0x00, 0x12, 0x31, 0x01};
+#else
     uint8_t pllreg[6] = {0x00, 0x7D, 0x00, 0x12, 0x31, 0x01};
+#endif
+
     /* reg setting 0x007D 0012 3101
      * pllreg[0] = 0x00;
      * pllreg[1] = 0x7D; PLL denominator M = 125
@@ -420,7 +427,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC,     0x0F); /* Enable core, PLL as clksrc, 1024*FS */
 
 #else
-    ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC,     0x09); /* PLL = clksrc */
+    ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC,     0x09); /* PLL as clksrc */
 
 #endif
 
@@ -432,7 +439,6 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     */
 
     ADAU1961_WriteRegister(ADAU1961_REG_R2_DMICJ,    0x20); /* Enable digital mic function via pin JACKDET/MICIN */
-    ADAU1961_WriteRegister(ADAU1961_REG_R3_RES,      0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R4_RMIXL0,   0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R5_RMIXL1,   0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R6_RMIXR0,   0x00);
@@ -446,6 +452,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     ADAU1961_WriteRegister(ADAU1961_REG_R14_ALC3,    0x00);
 
 #if defined(BOARD_KSOLOTI_CORE) && defined(USING_ADAU1761)
+    ADAU1961_WriteRegister(ADAU1761_REG_R3_RECPWMGMT, 0x00);
     ADAU1961_WriteRegister(ADAU1761_REG_R58_SERINRT,  0x01);
     ADAU1961_WriteRegister(ADAU1761_REG_R59_SEROUTRT, 0x01);
     ADAU1961_WriteRegister(ADAU1761_REG_R64_SERSR,    0x00);
@@ -498,17 +505,17 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     ADAU1961_WriteRegister(ADAU1961_REG_R28_PLRMM,    0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R29_PHPLVOL,  0x02);
     ADAU1961_WriteRegister(ADAU1961_REG_R30_PHPRVOL,  0x02);
-    ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL,   0x02);
-    ADAU1961_WriteRegister(ADAU1961_REG_R32_PLRVOL,   0x02);
+    ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL,   0x02); /* Mute Playback Line Output Left */
+    ADAU1961_WriteRegister(ADAU1961_REG_R32_PLRVOL,   0x02); /* Mute Playback Line Output Right */
     ADAU1961_WriteRegister(ADAU1961_REG_R33_PMONO,    0x02);
-    ADAU1961_WriteRegister(ADAU1961_REG_R34_POPCLICK, 0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R34_POPCLICK, 0x02); /* ASLEW = 1: 42ms slew rate for audio volume controls */
     ADAU1961_WriteRegister(ADAU1961_REG_R35_PWRMGMT,  0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R36_DACC0,    0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R37_DACC1,    0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R38_DACC2,    0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R39_SERPP,    0x00);
-    ADAU1961_WriteRegister(ADAU1961_REG_R40_CPORTP0,  0xAA);
-    ADAU1961_WriteRegister(ADAU1961_REG_R41_CPORTP1,  0xAA);
+    ADAU1961_WriteRegister(ADAU1961_REG_R40_CPORTP0,  0x00);
+    ADAU1961_WriteRegister(ADAU1961_REG_R41_CPORTP1,  0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R42_JACKDETP, 0x00);
 
     chThdSleepMilliseconds(10);
@@ -516,8 +523,8 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     ADAU1961_WriteRegister(ADAU1961_REG_R19_ADCC,     0x13); /* ADC enable */
     ADAU1961_WriteRegister(ADAU1961_REG_R36_DACC0,    0x03); /* DAC enable */
 
-    ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL,   0xE7); /* Playback Line Output Left Volume */
-    ADAU1961_WriteRegister(ADAU1961_REG_R32_PLRVOL,   0xE7); /* Playback Line Output Right Volume */
+    ADAU1961_WriteRegister(ADAU1961_REG_R31_PLLVOL,   0xE6); /* Playback Line Output Left, Volume 0dB, unmute, line out */
+    ADAU1961_WriteRegister(ADAU1961_REG_R32_PLRVOL,   0xE6); /* Playback Line Output Right, Volume 0dB, unmute, line out */
 
     ADAU1961_WriteRegister(ADAU1961_REG_R26_PLRML,    0x05); /* unmute Mixer5, 6dB gain */
     ADAU1961_WriteRegister(ADAU1961_REG_R27_PLRMR,    0x11); /* unmute Mixer6, 6dB gain */
@@ -537,8 +544,8 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     /* capless headphone config */
     ADAU1961_WriteRegister(ADAU1961_REG_R33_PMONO,    0x03); /* MONOM + MOMODE */
     ADAU1961_WriteRegister(ADAU1961_REG_R28_PLRMM,    0x01); /* MX7EN, COMMON MODE OUT */
-    ADAU1961_WriteRegister(ADAU1961_REG_R29_PHPLVOL,  0xC3);
-    ADAU1961_WriteRegister(ADAU1961_REG_R30_PHPRVOL,  0xC3);
+    ADAU1961_WriteRegister(ADAU1961_REG_R29_PHPLVOL,  0xC3); /* Left -12dB */
+    ADAU1961_WriteRegister(ADAU1961_REG_R30_PHPRVOL,  0xC3); /* Right -12dB */
 
     chThdSleepMilliseconds(10);
 }

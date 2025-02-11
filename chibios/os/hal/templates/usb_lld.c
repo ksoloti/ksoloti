@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,17 +15,16 @@
 */
 
 /**
- * @file    templates/usb_lld.c
- * @brief   USB Driver subsystem low level driver source template.
+ * @file    usb_lld.c
+ * @brief   PLATFORM USB subsystem low level driver source.
  *
  * @addtogroup USB
  * @{
  */
 
-#include "ch.h"
 #include "hal.h"
 
-#if HAL_USE_USB || defined(__DOXYGEN__)
+#if (HAL_USE_USB == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
@@ -38,7 +37,7 @@
 /**
  * @brief   USB1 driver identifier.
  */
-#if PLATFORM_USB_USE_USB1 || defined(__DOXYGEN__)
+#if (PLATFORM_USB_USE_USB1 == TRUE) || defined(__DOXYGEN__)
 USBDriver USBD1;
 #endif
 
@@ -99,10 +98,10 @@ static const USBEndpointConfig ep0config = {
  */
 void usb_lld_init(void) {
 
-#if PLATFORM_USB_USE_USB1
+#if PLATFORM_USB_USE_USB1 == TRUE
   /* Driver initialization.*/
   usbObjectInit(&USBD1);
-#endif /* PLATFORM_USB_USE_USB1 */
+#endif
 }
 
 /**
@@ -116,11 +115,11 @@ void usb_lld_start(USBDriver *usbp) {
 
   if (usbp->state == USB_STOP) {
     /* Enables the peripheral.*/
-#if PLATFORM_USB_USE_USB1
+#if PLATFORM_USB_USE_USB1 == TRUE
     if (&USBD1 == usbp) {
 
     }
-#endif /* PLATFORM_USB_USE_USB1 */
+#endif
   }
   /* Configures the peripheral.*/
 
@@ -139,11 +138,11 @@ void usb_lld_stop(USBDriver *usbp) {
     /* Resets the peripheral.*/
 
     /* Disables the peripheral.*/
-#if PLATFORM_USB_USE_USB1
+#if PLATFORM_USB_USE_USB1 == TRUE
     if (&USBD1 == usbp) {
 
     }
-#endif /* PLATFORM_USB_USE_USB1 */
+#endif
   }
 }
 
@@ -386,6 +385,6 @@ void usb_lld_clear_in(USBDriver *usbp, usbep_t ep) {
 
 }
 
-#endif /* HAL_USE_USB */
+#endif /* HAL_USE_USB == TRUE */
 
 /** @} */

@@ -50,4 +50,4 @@ void LCD_drawIBAR(int x, int y, int v, int N);
 void LCD_drawIBARInv(int x, int y, int v, int N);
 void LCD_drawIBARadd(int x, int y, int v);
 
-#endif
+#endif /* __AXOLOTI_CONTROL_H */

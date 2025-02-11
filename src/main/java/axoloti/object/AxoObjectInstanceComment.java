@@ -19,7 +19,7 @@
 package axoloti.object;
 
 import axoloti.Patch;
-import axoloti.PatchGUI;
+import axoloti.Theme;
 import axoloti.utils.Constants;
 import components.TextPaneComponent;
 import components.TextFieldComponent;
@@ -91,17 +91,9 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         InstanceTextPane.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent me) {
-                if (me.getClickCount() == 2) {
-                    addInstanceNameEditor();
-                }
                 if (patch != null) {
-                    if (me.getClickCount() == 1) {
-                        if (me.isShiftDown()) {
-                            SetSelected(!isSelected());
-                        } else if (Selected == false) {
-                            ((PatchGUI) patch).SelectNone();
-                            SetSelected(true);
-                        }
+                    if (!me.isShiftDown() && me.getClickCount() == 2) {
+                        addInstanceNameEditor();
                     }
                 }
             }
@@ -132,6 +124,25 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         
         setLocation(x, y);
         resizeToGrid();
+    }
+
+    @Override
+    public void SetSelected(boolean Selected) {
+        if (this.Selected != Selected) {
+            if (Selected) {
+                this.setBorder(borderSelected);
+                this.setBackground(Theme.Object_Border_Selected);
+                InstanceTextPane.setBackground(Theme.Object_Border_Selected);
+                InstanceTextPane.setForeground(Theme.Object_Default_Background);
+            } else {
+                this.setBorder(borderUnselected);
+                this.setBackground(Theme.Object_Default_Background);
+                InstanceTextPane.setBackground(Theme.Object_Default_Background);
+                InstanceTextPane.setForeground(Theme.Object_Default_Foreground);
+            }
+            repaint();
+        }
+        this.Selected = Selected;
     }
 
     @Override
@@ -188,12 +199,11 @@ public class AxoObjectInstanceComment extends AxoObjectInstanceAbstract {
         if (InstanceTextPane != null) {
             if (commentText.toLowerCase().contains(("<html>"))) {
                 InstanceTextPane.setContentType("text/html");
-                InstanceTextPane.setFont(UIManager.getFont("defaultFont"));
             }
             else {
                 InstanceTextPane.setContentType("text/plain");
-                InstanceTextPane.setFont(Constants.FONT);
             }
+            InstanceTextPane.setFont(Constants.FONT);
             InstanceTextPane.setText(commentText);
             InstanceTextPane.setSize((int)InstanceTextPane.getPreferredSize().getWidth(), InstanceTextPane.getHeight());
         }

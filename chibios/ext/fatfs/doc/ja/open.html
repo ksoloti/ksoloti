@@ -16,9 +16,9 @@
 <p>ファイルをオープンまたは作成します。</p>
 <pre>
 FRESULT f_open (
-  FIL* <em>FileObject</em>,       <span class="c">/* 空のファイル・オブジェクト構造体へのポインタ */</span>
-  const TCHAR* <em>FileName</em>, <span class="c">/* ファイルのフルパス名へのポインタ */</span>
-  BYTE <em>ModeFlags</em>         <span class="c">/* モードフラグ */</span>
+  FIL* <span class="arg">fp</span>,           <span class="c">/* [OUT] 空のファイル・オブジェクト構造体へのポインタ */</span>
+  const TCHAR* <span class="arg">path</span>, <span class="c">/* [IN] ファイルのフルパス名へのポインタ */</span>
+  BYTE <span class="arg">mode</span>          <span class="c">/* [IN] モードフラグ */</span>
 );
 </pre>
 </div>
@@ -26,18 +26,18 @@ FRESULT f_open (
 <div class="para arg">
 <h4>引数</h4>
 <dl class="par">
-<dt>FileObject</dt>
+<dt>fp</dt>
 <dd>新しく作成するファイル・オブジェクト構造体へのポインタを指定します。以降、そのファイルを閉じるまでこのファイル・オブジェクトを使用してファイル操作をします。</dd>
-<dt>FileName</dt>
-<dd>開く(または作成する)ファイルの <a href="filename.html">ファイル名</a>が入った<tt>'\0'</tt>で終わる文字列へのポインタを指定します。</dd>
-<dt>ModeFlags</dt>
+<dt>path</dt>
+<dd>開く(または作成する)ファイルの <a href="filename.html">ファイル名</a>を示すヌル文字<tt>'\0'</tt>終端の文字列へのポインタを指定します。</dd>
+<dt>mode</dt>
 <dd>ファイルのアクセス方法やオープン方法を決めるフラグです。このパラメータには次の組み合わせを指定します。<br>
 <table class="lst">
 <tr><th>値</th><th>意味</th></tr>
 <tr><td>FA_READ</td><td>読み出しモードで開きます。読み書きする場合は<tt>FA_WRITE</tt>と共に指定します。</td></tr>
 <tr><td>FA_WRITE</td><td>書き込みモードで開きます。読み書きする場合は<tt>FA_READ</tt>と共に指定します。</td></tr>
 <tr><td>FA_OPEN_EXISTING</td><td>既存のファイルを開きます。ファイルが無いときはエラーになります。(デフォルト)</td></tr>
-<tr><td>FA_OPEN_ALWAYS</td><td>既存のファイルを開きます。ファイルが無いときはファイルを作成します。追記の場合は、この方法でオープンした後、<a href="lseek.html">f_lseek()</a>でファイルの最後尾に移動してください。</td></tr>
+<tr><td>FA_OPEN_ALWAYS</td><td>既存のファイルを開きます。ファイルが無いときはファイルを作成します。追記の場合は、この方法でオープンした後、<a href="lseek.html"><tt>f_lseek()</tt></a>でファイルの最後尾に移動してください。</td></tr>
 <tr><td>FA_CREATE_NEW</td><td>ファイルを作成します。同名のファイルがある場合は、<tt>FR_EXIST</tt>で失敗します。</td></tr>
 <tr><td>FA_CREATE_ALWAYS</td><td>ファイルを作成します。同名のファイルがある場合は、サイズを0にしてから開きます。</td></tr>
 </table>
@@ -58,6 +58,7 @@ FRESULT f_open (
 <a href="rc.html#in">FR_INVALID_NAME</a>,
 <a href="rc.html#de">FR_DENIED</a>,
 <a href="rc.html#ex">FR_EXIST</a>,
+<a href="rc.html#io">FR_INVALID_OBJECT</a>,
 <a href="rc.html#wp">FR_WRITE_PROTECTED</a>,
 <a href="rc.html#id">FR_INVALID_DRIVE</a>,
 <a href="rc.html#ne">FR_NOT_ENABLED</a>,
@@ -72,9 +73,9 @@ FRESULT f_open (
 
 <div class="para desc">
 <h4>解説</h4>
-<p>既存のファイルを開いたり、新しいファイルを作成します。関数が成功するとファイル・オブジェクトが作成され、以降そのファイルに対するアクセスに使用します。ファイルを閉じるときは、<a href="close.html">f_close()</a>を使用します。何らかの変更が行われたファイルがその後正しく閉じられなかった場合、そのファイルが破損する場合があります。</p>
-<p>もしも既に開かれているファイルを開く必要がある場合は、<a href="appnote.html#dup">多重アクセス制御</a>を参照してください。</p>
-<p>ファイル・アクセスを開始する前に、<a href="mount.html">f_mount()</a>を使ってそれぞれの論理ドライブにワーク・エリア(ファイル・システム・オブジェクト)を与える必要があります。この初期化の後、その論理ドライブに対して全てのファイル関数が使えるようになります。</p>
+<p>既存のファイルを開いたり、新しいファイルを作成します。関数が成功するとファイル・オブジェクトが作成され、以降そのファイルに対するアクセスに使用します。ファイルを閉じるときは、<a href="close.html"><tt>f_close()</tt></a>を使用します。何らかの変更が行われたファイルがその後正しく閉じられなかった場合、そのファイルが破損する場合があります。</p>
+<p>既に開かれているファイルを開く必要がある場合は、<a href="appnote.html#dup">多重アクセス制御</a>を参照してください。しかし、一つのファイルに対する書き込みモードを含む重複オープンは常に禁止です。</p>
+<p>ファイル・アクセスを開始する前に、<a href="mount.html"><tt>f_mount()</tt></a>を使ってそれぞれの論理ドライブにワーク・エリア(ファイル・システム・オブジェクト)を与える必要があります。この初期化の後、その論理ドライブに対して全てのファイル関数が使えるようになります。</p>
 </div>
 
 
@@ -85,33 +86,64 @@ FRESULT f_open (
 
 
 <div class="para use">
-<h4>使用例（ファイル・コピー）</h4>
+<h4>使用例</h4>
 <pre>
-void main (void)
+<span class="c">/* テキストファイルを読み出して表示 */</span>
+
+FATFS FatFs;   <span class="c">/* 論理ドライブのワーク・エリア(ファイル・システム・オブジェクト) */</span>
+
+int main (void)
 {
-    FATFS fs[2];         <span class="c">/* 論理ドライブのワーク・エリア(ファイル・システム・オブジェクト) */</span>
+    FIL fil;       <span class="c">/* ファイル・オブジェクト */</span>
+    char line[82]; <span class="c">/* 行バッファ */</span>
+    FRESULT fr;    <span class="c">/* 戻り値 */</span>
+
+
+    <span class="c">/* デフォルト・ドライブにワークエリアを与える */</span>
+    f_mount(&amp;FatFs, "", 0);
+
+    <span class="c">/* テキスト・ファイルを開く */</span>
+    fr = f_open(&amp;fil, "message.txt", FA_READ);
+    if (fr) return (int)fr;
+
+    <span class="c">/* 1行ずつ読み出して表示 */</span>
+    while (f_gets(line, sizeof line, &amp;fil))
+        printf(line);
+
+    <span class="c">/* ファイルを閉じる */</span>
+    f_close(&amp;fil);
+
+    return 0;
+}
+</pre>
+<pre>
+<span class="c">/* ドライブ1のファイル "file.bin" をドライブ0へコピー */</span>
+
+int main (void)
+{
+    FATFS fs[2];         <span class="c">/* 論理ドライブのワークエリア(ファイル・システム・オブジェクト) */</span>
     FIL fsrc, fdst;      <span class="c">/* ファイル・オブジェクト */</span>
-    BYTE buffer[4096];   <span class="c">/* file copy buffer */</span>
-    FRESULT res;         <span class="c">/* FatFs function common result code */</span>
+    BYTE buffer[4096];   <span class="c">/* File copy buffer */</span>
+    FRESULT fr;          <span class="c">/* FatFs function common result code */</span>
     UINT br, bw;         <span class="c">/* File R/W count */</span>
 
-    <span class="c">/* ドライブ0,1にワーク・エリアを与える (常に成功する) */</span>
-    f_mount(0, &amp;fs[0]);
-    f_mount(1, &amp;fs[1]);
+    <span class="c">/* ドライブ0,1にワーク・エリアを与える */</span>
+    f_mount(&amp;fs[0], "0:", 0);
+    f_mount(&amp;fs[1], "1:", 0);
 
-    <span class="c">/* ドライブ1のソース・ファイルを開く */</span>
-    res = f_open(&amp;fsrc, "1:srcfile.dat", FA_OPEN_EXISTING | FA_READ);
-    if (res) die(res);
+    <span class="c">/* ドライブ1のコピー元ファイルを開く */</span>
+    res = f_open(&amp;fsrc, "1:file.dat", FA_OPEN_EXISTING | FA_READ);
+    if (fr) return (int)fr;
 
-    <span class="c">/* ドライブ0にデスティネーション・ファイルを作成する */</span>
-    res = f_open(&amp;fdst, "0:dstfile.dat", FA_CREATE_ALWAYS | FA_WRITE);
-    if (res) die(res);
+    <span class="c">/* ドライブ0にコピー先ファイルを作成する */</span>
+    res = f_open(&amp;fdst, "0:file.dat", FA_CREATE_ALWAYS | FA_WRITE);
+    if (fr) return (int)fr;
 
-    <span class="c">/* ソースからデスティネーションにコピーする */</span>
+    <span class="c">/* コピー元からコピー先にデータ転送する */</span>
     for (;;) {
-        res = f_read(&amp;fsrc, buffer, sizeof(buffer), &amp;br);
+        res = f_read(&amp;fsrc, buffer, sizeof buffer, &amp;br); <span class="c">/* コピー元からから読み出す */</span>
         if (res || br == 0) break;   <span class="c">/* エラーかファイル終端 */</span>
-        res = f_write(&amp;fdst, buffer, br, &amp;bw);
+        res = f_write(&amp;fdst, buffer, br, &amp;bw);           <span class="c">/* それをコピー先に書き込む */</span>
         if (res || bw &lt; br) break;   <span class="c">/* エラーかディスク満杯 */</span>
     }
 
@@ -120,8 +152,10 @@ void main (void)
     f_close(&amp;fdst);
 
     <span class="c">/* ワーク・エリアを開放する */</span>
-    f_mount(0, NULL);
-    f_mount(1, NULL);
+    f_mount(NULL, "0:", 0);
+    f_mount(NULL, "1:", 0);
+
+    return (int)fr;
 }
 </pre>
 </div>

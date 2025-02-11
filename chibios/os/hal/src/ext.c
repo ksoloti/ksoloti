@@ -1,28 +1,17 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
-                 2011,2012,2013 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
-    This file is part of ChibiOS/RT.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    ChibiOS/RT is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-    ChibiOS/RT is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes ChibiOS/RT, without being obliged to provide
-    the source code for any proprietary components. See the file exception.txt
-    for full details of how and when the exception can be applied.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 */
 
 /**
@@ -33,10 +22,9 @@
  * @{
  */
 
-#include "ch.h"
 #include "hal.h"
 
-#if HAL_USE_EXT || defined(__DOXYGEN__)
+#if (HAL_USE_EXT == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
@@ -95,15 +83,15 @@ void extObjectInit(EXTDriver *extp) {
  */
 void extStart(EXTDriver *extp, const EXTConfig *config) {
 
-  chDbgCheck((extp != NULL) && (config != NULL), "extStart");
+  osalDbgCheck((extp != NULL) && (config != NULL));
 
-  chSysLock();
-  chDbgAssert((extp->state == EXT_STOP) || (extp->state == EXT_ACTIVE),
-              "extStart(), #1", "invalid state");
+  osalSysLock();
+  osalDbgAssert((extp->state == EXT_STOP) || (extp->state == EXT_ACTIVE),
+                "invalid state");
   extp->config = config;
   ext_lld_start(extp);
   extp->state = EXT_ACTIVE;
-  chSysUnlock();
+  osalSysUnlock();
 }
 
 /**
@@ -115,14 +103,14 @@ void extStart(EXTDriver *extp, const EXTConfig *config) {
  */
 void extStop(EXTDriver *extp) {
 
-  chDbgCheck(extp != NULL, "extStop");
+  osalDbgCheck(extp != NULL);
 
-  chSysLock();
-  chDbgAssert((extp->state == EXT_STOP) || (extp->state == EXT_ACTIVE),
-              "extStop(), #1", "invalid state");
+  osalSysLock();
+  osalDbgAssert((extp->state == EXT_STOP) || (extp->state == EXT_ACTIVE),
+                "invalid state");
   ext_lld_stop(extp);
   extp->state = EXT_STOP;
-  chSysUnlock();
+  osalSysUnlock();
 }
 
 /**
@@ -136,16 +124,15 @@ void extStop(EXTDriver *extp) {
  */
 void extChannelEnable(EXTDriver *extp, expchannel_t channel) {
 
-  chDbgCheck((extp != NULL) && (channel < EXT_MAX_CHANNELS),
-             "extChannelEnable");
+  osalDbgCheck((extp != NULL) && (channel < (expchannel_t)EXT_MAX_CHANNELS));
 
-  chSysLock();
-  chDbgAssert((extp->state == EXT_ACTIVE) &&
-              ((extp->config->channels[channel].mode &
-                EXT_CH_MODE_EDGES_MASK) != EXT_CH_MODE_DISABLED),
-              "extChannelEnable(), #1", "invalid state");
+  osalSysLock();
+  osalDbgAssert((extp->state == EXT_ACTIVE) &&
+                ((extp->config->channels[channel].mode &
+                  EXT_CH_MODE_EDGES_MASK) != EXT_CH_MODE_DISABLED),
+                "invalid state");
   extChannelEnableI(extp, channel);
-  chSysUnlock();
+  osalSysUnlock();
 }
 
 /**
@@ -159,16 +146,15 @@ void extChannelEnable(EXTDriver *extp, expchannel_t channel) {
  */
 void extChannelDisable(EXTDriver *extp, expchannel_t channel) {
 
-  chDbgCheck((extp != NULL) && (channel < EXT_MAX_CHANNELS),
-             "extChannelDisable");
+  osalDbgCheck((extp != NULL) && (channel < (expchannel_t)EXT_MAX_CHANNELS));
 
-  chSysLock();
-  chDbgAssert((extp->state == EXT_ACTIVE) &&
-              ((extp->config->channels[channel].mode &
-                EXT_CH_MODE_EDGES_MASK) != EXT_CH_MODE_DISABLED),
-              "extChannelDisable(), #1", "invalid state");
+  osalSysLock();
+  osalDbgAssert((extp->state == EXT_ACTIVE) &&
+                ((extp->config->channels[channel].mode &
+                  EXT_CH_MODE_EDGES_MASK) != EXT_CH_MODE_DISABLED),
+                "invalid state");
   extChannelDisableI(extp, channel);
-  chSysUnlock();
+  osalSysUnlock();
 }
 
 /**
@@ -193,22 +179,24 @@ void extSetChannelModeI(EXTDriver *extp,
                         const EXTChannelConfig *extcp) {
   EXTChannelConfig *oldcp;
 
-  chDbgCheck((extp != NULL) && (channel < EXT_MAX_CHANNELS) &&
-             (extcp != NULL), "extSetChannelModeI");
+  osalDbgCheck((extp != NULL) &&
+               (channel < (expchannel_t)EXT_MAX_CHANNELS) &&
+               (extcp != NULL));
 
-  chDbgAssert(extp->state == EXT_ACTIVE,
-              "extSetChannelModeI(), #1", "invalid state");
+  osalDbgAssert(extp->state == EXT_ACTIVE, "invalid state");
 
   /* Note that here the access is enforced as non-const, known access
      violation.*/
+  /*lint -save -e9005 [11.8] Known issue, the driver needs rework here.*/
   oldcp = (EXTChannelConfig *)&extp->config->channels[channel];
+  /*lint -restore*/
 
-  /* Overwiting the old channels configuration then the channel is reconfigured
-     by the low level driver.*/
+  /* Overwriting the old channels configuration then the channel is
+     reconfigured by the low level driver.*/
   *oldcp = *extcp;
   ext_lld_channel_enable(extp, channel);
 }
 
-#endif /* HAL_USE_EXT */
+#endif /* HAL_USE_EXT == TRUE */
 
 /** @} */

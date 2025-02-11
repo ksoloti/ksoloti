@@ -24,6 +24,18 @@
 __main_stack_size__     = 0x400;
 __process_stack_size__  = 0x400;
 
+/*
+TODO look at these
+MEMORY
+{
+    flash (rx) : org = 0x08000000, len = 896k
+    ram : org = 0x20000200, len = 67k
+    SRAM2 : org = 0x2001E000, len = 0x00002000
+    SRAM3 : org = 0x20020000, len = 0x00010000
+    CCMRAMEND : org = 0x1000C000, len = 16k
+    sdram : org = 0xC0000000, len = 0x002000000
+}
+*/ 
 MEMORY
 {
     FLASH (rx) : org = 0x08000000, len = 896k       /* last 128kB for patch storage*/
@@ -37,12 +49,14 @@ MEMORY
 __ram_start__   = ORIGIN(RAM);
 __ram_size__    = LENGTH(RAM);
 __ram_end__     = __ram_start__ + __ram_size__;
-
+__ccram_start__ = ORIGIN(CCMRAMEND);
+__ccram_size__ = LENGTH(CCMRAMEND);
+__ccram_end__ = __ccram_start__ + __ccram_size__;
 __sdram_start__ = ORIGIN(SDRAM);
 __sdram_size__  = LENGTH(SDRAM);
 __sdram_end__   = __sdram_start__ + __sdram_size__;
 
-ENTRY(ResetHandler)
+ENTRY(Reset_Handler)
 
 SECTIONS
 {
@@ -51,7 +65,7 @@ SECTIONS
 
     startup : ALIGN(16) SUBALIGN(16)
     {
-        KEEP(*(vectors))
+        KEEP(*(.vectors))
     } > FLASH
 
     constructors : ALIGN(4) SUBALIGN(4)
@@ -136,6 +150,8 @@ SECTIONS
     {
         . = ALIGN(4);
         PROVIDE(_data = .);
+        _textdata_start = LOADADDR(.data);
+        _data_start = .;
         *(.data)
         . = ALIGN(4);
         *(.data.*)
@@ -143,9 +159,8 @@ SECTIONS
         *(.ramtext)
         . = ALIGN(4);
         PROVIDE(_edata = .);
+        _data_end = .;
     } > RAM AT > FLASH
-
-
     .flashend :
     {
         . = ALIGN(4);

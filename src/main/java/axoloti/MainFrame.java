@@ -61,9 +61,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+// import java.net.BindException;
 import java.net.MalformedURLException;
+// import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -79,6 +82,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
@@ -88,6 +92,7 @@ import com.formdev.flatlaf.FlatClientProperties;
 
 import qcmds.QCmdBringToDFUMode;
 import qcmds.QCmdCompilePatch;
+import qcmds.QCmdDisconnect;
 import qcmds.QCmdPing;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdStartFlasher;
@@ -100,7 +105,7 @@ import qcmds.QCmdUploadPatch;
  *
  * @author Johannes Taelman
  */
-public final class MainFrame extends javax.swing.JFrame implements ActionListener, ConnectionStatusListener, SDCardMountStatusListener {
+public final class MainFrame extends javax.swing.JFrame implements ActionListener, ConnectionStatusListener, SDCardMountStatusListener, ConnectionFlagsListener {
 
     private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
 
@@ -123,6 +128,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     boolean bGrabFocusOnSevereErrors = true;
 
     private boolean doAutoScroll = true;
+
+    // ServerSocket instanceSocketHack;
 
     /**
      * Creates new form MainFrame
@@ -149,10 +156,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         final Style styleSevere = jTextPaneLog.addStyle("severe", styleParent);
         final Style styleWarning = jTextPaneLog.addStyle("warning", styleParent);
         final Style styleInfo = jTextPaneLog.addStyle("info", styleParent);
-        jTextPaneLog.setBackground(Theme.getCurrentTheme().Console_Background);
-        StyleConstants.setForeground(styleSevere, Theme.getCurrentTheme().Error_Text);
-        StyleConstants.setForeground(styleWarning, Theme.getCurrentTheme().Console_Warning_Text);
-        StyleConstants.setForeground(styleInfo, Theme.getCurrentTheme().Console_Normal_Text);
+        jTextPaneLog.setBackground(Theme.Console_Background);
+        StyleConstants.setForeground(styleSevere, Theme.Error_Text);
+        StyleConstants.setForeground(styleWarning, Theme.Console_Warning_Text);
+        StyleConstants.setForeground(styleInfo, Theme.Console_Normal_Text);
 
         DefaultCaret caret = (DefaultCaret) jTextPaneLog.getCaret();
         caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
@@ -365,58 +372,35 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             @Override
             public void run() {
                 try {
-                    String tsuf = "";
-                    // if (Axoloti.isFailSafeMode()) {
-                    //     LOGGER.log(Level.WARNING, "Failsafe mode activated");
-                    //     tsuf = "Failsafe";
-                    // }
 
-                    if (Axoloti.isDeveloper()) {
-                        if (tsuf.length() > 0) {
-                            tsuf += ", ";
-                        }
-                        tsuf += "Developer";
-                    }
+                    populateMainframeTitle();
+
+
+                    // instanceSocketHack = new ServerSocket(1);
+
+
+                    LOGGER.log(Level.WARNING, "Patcher version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
 
                     if (prefs.getExpertMode()) {
-                        if (tsuf.length() > 0) {
-                            tsuf += ", ";
-                        }
-                        tsuf += "Expert Mode";
                         LOGGER.log(Level.WARNING,
-                            "Expert Mode is activated in ksoloti.prefs. The following options are now available:\n" + 
+                            "Expert Mode is enabled in ksoloti.prefs. The following options are now available:\n" + 
                             "- Compile firmware, Refresh firmware ID (Board -> Firmware)\n" + 
-                            "- Generate and/or compile patch code, simulate lock/unlock, also while no Core is connected (Patch windows -> Patch)\n" + 
+                            "- Generate and/or compile patch code, simulate lock/unlock, also while no Core is connected (patch windows -> Patch)\n" + 
                             "- Remove read-only restrictions: Edit and save to read-only libraries (axoloti-factory, *oloti-community, ksoloti-objects)\n" + 
                             "- Test-compile all patches in all libraries, or all patches (recursively) in specified folder (File -> Test Compilation)\n"
                         );
                     }
 
                     if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                        if (tsuf.length() > 0) {
-                            tsuf += ", ";
-                        }
-                        tsuf += "Axoloti Legacy";
-                    }
-
-                    if (prefs.getFirmwareMode().contains("SPILink")) {
-                        if (tsuf.length() > 0) {
-                            tsuf += ", ";
-                        }
-                        tsuf += "SPILink";
-                    }
-
-                    if (tsuf.length() > 0) {
-                        MainFrame.this.setTitle(MainFrame.this.getTitle() + " (" + tsuf + ")");
-                    }
-
-                    LOGGER.log(Level.WARNING, "Patcher version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
-
-                    if (prefs.getFirmwareMode().contains("Axoloti Core")) {
                         LOGGER.log(Level.WARNING, ">>> Axoloti Legacy Mode <<<\n");
                     }
+
                     if (prefs.getFirmwareMode().contains("SPILink")) {
                         LOGGER.log(Level.WARNING, ">>> SPILink-enabled firmware <<<\nPins PB3, PB4, PD5, PD6 are occupied by SPILink communication in this firmware mode!\n");
+                    }
+
+                    if (prefs.getFirmwareMode().contains("USBAudio")) {
+                        LOGGER.log(Level.WARNING, ">>> USBAudio-enabled firmware <<<\n");
                     }
 
                     updateLinkFirmwareID();
@@ -427,6 +411,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     qcmdprocessorThread.start();
                     USBBulkConnection.GetConnection().addConnectionStatusListener(MainFrame.this);
                     USBBulkConnection.GetConnection().addSDCardMountStatusListener(MainFrame.this);
+                    USBBulkConnection.GetConnection().addConnectionFlagsListener(MainFrame.this);
 
                     ShowDisconnect();
                     // if (!Axoloti.isFailSafeMode()) {
@@ -496,24 +481,37 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         }
                     }
 
-                    // if (!Axoloti.isFailSafeMode()) {
-                        for (AxolotiLibrary lib : prefs.getLibraries()) {
-                            if (lib.isAutoSync() && lib.getEnabled()) {
-                                lib.sync();
-                            }
-                        }
-                        LOGGER.log(Level.INFO, "");
-                    // }
+                    boolean autoSyncMessageDone = false;
 
+                    for (AxolotiLibrary lib : prefs.getLibraries()) {
+                        if (lib.isAutoSync() && lib.getEnabled()) {
+                            if (!autoSyncMessageDone) {
+                                LOGGER.log(Level.INFO, "Auto-syncing libraries...");
+                                autoSyncMessageDone = true;
+                            }
+                            LOGGER.log(Level.INFO, lib.getId() + "...");
+                            lib.sync();
+                        }
+                        if (autoSyncMessageDone) {
+                            LOGGER.log(Level.INFO, "Done auto-syncing libraries.\n");
+                        }
+                    }
+
+                    LOGGER.log(Level.INFO, "Checking library status...");
                     for (AxolotiLibrary lib : prefs.getLibraries()) {
                         lib.reportStatus();
                     }
-                    LOGGER.log(Level.INFO, "");
+                    LOGGER.log(Level.INFO, "Done checking library status.\n");
 
                     axoObjects = new AxoObjects();
                     axoObjects.LoadAxoObjects();
 
-                } catch (Exception e) {
+                // }
+                // catch (BindException e) {
+                    // e.printStackTrace();
+                    // System.exit(1);
+                }
+                catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -521,7 +519,16 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         EventQueue.invokeLater(initr);
 
+
+        String argMessage = "";
         for (String arg : this.args) { //TODO check why always opening new instance
+
+            if (argMessage.isEmpty()) {
+                argMessage += "CLI arguments:";
+            }
+
+            argMessage += " " + arg;
+
             if (!arg.startsWith("-")) {
                 if (arg.endsWith(".axp") || arg.endsWith(".axs") || arg.endsWith(".axh")) {
                     final File f = new File(arg);
@@ -550,11 +557,64 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 }
             }
         }
+
+        if (!argMessage.isEmpty()) {
+            LOGGER.log(Level.WARNING, argMessage);
+        }
+
     }
+
 
     public void updateConsoleFont() {
         jTextPaneLog.setFont(Constants.FONT_MONO);
     }
+
+
+    public void populateMainframeTitle() {
+
+        String tstring = "";
+        String tsuffix = "";
+
+        if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+            tstring = "Axoloti";
+        }
+        else {
+            tstring = "Ksoloti";
+        }
+
+        if (Axoloti.isDeveloper()) {
+            tsuffix += "Developer";
+        }
+
+        if (prefs.getExpertMode()) {
+            if (tsuffix.length() > 0) {
+                tsuffix += ", ";
+            }
+            tsuffix += "Expert Mode";
+        }
+
+        if (prefs.getFirmwareMode().contains("SPILink")) {
+            if (tsuffix.length() > 0) {
+                tsuffix += ", ";
+            }
+            tsuffix += "SPILink";
+        }
+
+        if (prefs.getFirmwareMode().contains("USBAudio")) {
+            if (tsuffix.length() > 0) {
+                tsuffix += ", ";
+            }
+            tsuffix += "USBAudio";
+        }
+
+        if (tsuffix.length() > 0) {
+            tstring += " (" + tsuffix + ")";
+        }
+        
+        MainFrame.this.setTitle(tstring);
+
+    }
+
 
     static boolean TestDir(String var, boolean write) {
         String ev = System.getProperty(var);
@@ -572,37 +632,47 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         return true;
     }
 
+
     void flashUsingSDRam(String fname_flasher, String pname) {
+
         updateLinkFirmwareID();
+
         File f = new File(fname_flasher);
         File p = new File(pname);
+
         if (f.canRead()) {
             if (p.canRead()) {
                 qcmdprocessor.AppendToQueue(new QCmdStop());
                 qcmdprocessor.AppendToQueue(new QCmdUploadFWSDRam(p));
                 qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
                 qcmdprocessor.AppendToQueue(new QCmdStartFlasher());
-            } else {
+                qcmdprocessor.AppendToQueue(new QCmdDisconnect());
+                ShowDisconnect();
+            }
+            else {
                 LOGGER.log(Level.SEVERE, "Cannot read firmware, please compile firmware! (File: {0})", pname);
             }
-        } else {
+        }
+        else {
             LOGGER.log(Level.SEVERE, "Cannot read flasher, please compile firmware! (File: {0})", fname_flasher);
         }
     }
 
 
+
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        // jLabel1 = new javax.swing.JLabel();
         jPanelHeader = new javax.swing.JPanel();
-        jPanelColumn1 = new javax.swing.JPanel();
-        jPanelColumn2 = new javax.swing.JPanel();
-        jPanelColumn3 = new javax.swing.JPanel();
+        jPanelIconColumn = new javax.swing.JPanel();
+        jPanelButtonsColumn = new javax.swing.JPanel();
+        jPanelInfoColumn = new javax.swing.JPanel();
         jLabelIcon = new javax.swing.JLabel();
         jButtonClear = new javax.swing.JButton();
         jToggleButtonConnect = new javax.swing.JToggleButton();
         jLabelCPUID = new javax.swing.JLabel();
-        jLabelFirmwareID = new javax.swing.JLabel();
+        jLabelFlags = new javax.swing.JLabel();
+        // jLabelFirmwareID = new javax.swing.JLabel();
         jLabelVoltages = new javax.swing.JLabel();
         jLabelPatch = new javax.swing.JLabel();
         jLabelSDCardPresent = new javax.swing.JLabel();
@@ -635,7 +705,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         windowMenu1 = new axoloti.menus.WindowMenu();
         helpMenu1 = new axoloti.menus.HelpMenu();
 
-        jLabel1.setText("jLabel1");
+        // jLabel1.setText(" ");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Ksoloti");
@@ -651,17 +721,17 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelHeader.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jPanelHeader.setLayout(new javax.swing.BoxLayout(jPanelHeader, javax.swing.BoxLayout.LINE_AXIS));
 
-        jPanelColumn1.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
-        jPanelColumn1.setLayout(new javax.swing.BoxLayout(jPanelColumn1, javax.swing.BoxLayout.PAGE_AXIS));
+        jPanelIconColumn.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
+        jPanelIconColumn.setLayout(new javax.swing.BoxLayout(jPanelIconColumn, javax.swing.BoxLayout.PAGE_AXIS));
 
         jLabelIcon.setIcon(Constants.APP_ICON);
 
-        jPanelColumn1.add(jLabelIcon);
+        jPanelIconColumn.add(jLabelIcon);
 
-        jPanelHeader.add(jPanelColumn1);
+        jPanelHeader.add(jPanelIconColumn);
 
-        jPanelColumn2.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
-        jPanelColumn2.setLayout(new javax.swing.BoxLayout(jPanelColumn2, javax.swing.BoxLayout.PAGE_AXIS));
+        jPanelButtonsColumn.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
+        jPanelButtonsColumn.setLayout(new javax.swing.BoxLayout(jPanelButtonsColumn, javax.swing.BoxLayout.PAGE_AXIS));
 
         Dimension btndim = new Dimension(110,30);
         jToggleButtonConnect.setFocusable(false);
@@ -674,9 +744,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 jToggleButtonConnectActionPerformed(evt);
             }
         });
-        jPanelColumn2.add(jToggleButtonConnect);
+        jPanelButtonsColumn.add(jToggleButtonConnect);
         Dimension fll = new Dimension(0,4);
-        jPanelColumn2.add(new Filler(fll, fll, fll));
+        jPanelButtonsColumn.add(new Filler(fll, fll, fll));
 
         jButtonClear.setFocusable(false);
         jButtonClear.setText("Clear Log");
@@ -688,29 +758,22 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 jButtonClearActionPerformed(evt);
             }
         });
-        jPanelColumn2.add(jButtonClear);
-        jPanelHeader.add(jPanelColumn2);
+        jPanelButtonsColumn.add(jButtonClear);
+        jPanelHeader.add(jPanelButtonsColumn);
 
-        jPanelColumn3.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
-        jPanelColumn3.setLayout(new javax.swing.BoxLayout(jPanelColumn3, javax.swing.BoxLayout.PAGE_AXIS));
+        jPanelInfoColumn.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
+        jPanelInfoColumn.setLayout(new javax.swing.BoxLayout(jPanelInfoColumn, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jLabelCPUID.setText("Board ID");
-        jPanelColumn3.add(jLabelCPUID);
-
-        // jLabelFirmwareID.setText("Firmware ID");
-        // jPanelColumn3.add(jLabelFirmwareID);
-
-        jLabelVoltages.setText("Voltage Monitor");
+        jLabelCPUID.setText(" ");
+        jLabelVoltages.setText(" ");
         jLabelVoltages.putClientProperty(FlatClientProperties.STYLE, "disabledForeground:#FF0000"); /* "disabledForeground" color here means voltage warning, red */
-        jPanelColumn3.add(jLabelVoltages);
+        jLabelSDCardPresent.setText(" ");
+        jLabelFlags.setText(" ");
+        jLabelPatch.setText(" ");
+        
+        populateInfoColumn();
 
-        jLabelSDCardPresent.setText("No SD card");
-        jPanelColumn3.add(jLabelSDCardPresent);
-
-        jLabelPatch.setText("Patch");
-        jPanelColumn3.add(jLabelPatch);
-
-        jPanelHeader.add(jPanelColumn3);
+        jPanelHeader.add(jPanelInfoColumn);
         jPanelHeader.add(filler3);
 
         getContentPane().add(jPanelHeader);
@@ -721,7 +784,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         getContentPane().add(jScrollPaneLog);
 
-        jPanelProgress.setMaximumSize(new java.awt.Dimension(605, 16));
+        jPanelProgress.setMaximumSize(new java.awt.Dimension(8000, 16));
         jPanelProgress.setLayout(new javax.swing.BoxLayout(jPanelProgress, javax.swing.BoxLayout.LINE_AXIS));
 
         jProgressBar1.setAlignmentX(LEFT_ALIGNMENT);
@@ -807,7 +870,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuBoard.add(jMenuItemPanic);
 
-        jMenuItemMount.setText("Enter Card Reader Mode (disconnects editor)");
+        jMenuItemMount.setText("Enter Card Reader Mode (Disconnects Patcher)");
         jMenuItemMount.setMnemonic('R');
         jMenuItemMount.setDisplayedMnemonicIndex(11);
         jMenuItemMount.addActionListener(new java.awt.event.ActionListener() {
@@ -890,29 +953,36 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         pack();
     }
 
+
     private void jButtonClearActionPerformed(java.awt.event.ActionEvent evt) {
         jTextPaneLog.setText("");
     }
+
 
     private void jMenuItemPanicActionPerformed(java.awt.event.ActionEvent evt) {
         qcmdprocessor.Panic();
     }
 
+
     private void jMenuItemPingActionPerformed(java.awt.event.ActionEvent evt) {
         qcmdprocessor.AppendToQueue(new QCmdPing());
     }
+
 
     private void jMenuItemFDisconnectActionPerformed(java.awt.event.ActionEvent evt) {
         USBBulkConnection.GetConnection().disconnect();
     }
 
+
     private void jMenuItemFConnectActionPerformed(java.awt.event.ActionEvent evt) {
         USBBulkConnection.GetConnection().connect();
     }
 
+
     private void jMenuItemSelectComActionPerformed(java.awt.event.ActionEvent evt) {
         USBBulkConnection.GetConnection().SelectPort();
     }
+
 
     private void jToggleButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {
         if (!jToggleButtonConnect.isSelected()) {
@@ -926,11 +996,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
+
     PreferencesFrame pp;
     /* usually we run all tests, as many may fail for same reason and you want
        a list of all affected files, but if you want to stop on first failure,
        flip this flag */
     public static boolean stopOnFirstFail = false;
+
 
     public boolean runAllTests() {
         boolean r1 = runPatchTests();
@@ -943,6 +1015,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         return r1 && r2;
     }
+
 
     public boolean runPatchTests() {
         SetGrabFocusOnSevereErrors(false);
@@ -980,6 +1053,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         return result;
     }
 
+
     public boolean runObjectTests() {
         boolean result;
 
@@ -1010,9 +1084,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         return result;
     }
 
+
     public boolean runFileTest(String patchName) {
         return runTestDir(new File(patchName));
     }
+
 
     public boolean runTestDir(File f) {
         if (!f.exists()) {
@@ -1046,6 +1122,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         return runTestCompile(f);
     }
 
+
     private boolean runTestCompile(File f) {
         SetGrabFocusOnSevereErrors(false);
         LOGGER.log(Level.INFO, "----- Testing {0} -----", f.getPath());
@@ -1061,12 +1138,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             patch1.PostContructor();
             patch1.WriteCode();
             qcmdprocessor.WaitQueueFinished();
-            Thread.sleep(1000);
+            Thread.sleep(500);
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1);
             patch1.GetQCmdProcessor().AppendToQueue(cp);
             qcmdprocessor.WaitQueueFinished();
             pf.Close();
-            Thread.sleep(3000);
+            Thread.sleep(1500);
             status = cp.success();
             if (status == false) {
                 LOGGER.log(Level.SEVERE, "COMPILATION FAILED: {0}\n", f.getPath());
@@ -1080,9 +1157,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
+
     public boolean runFileUpgrade(String patchName) {
         return runUpgradeDir(new File(patchName));
     }
+
 
     private boolean runUpgradeDir(File f) {
         if (!f.exists()) {
@@ -1116,6 +1195,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         return runUpgradeFile(f);
     }
 
+
     private boolean runUpgradeFile(File f) {
         LOGGER.log(Level.INFO, "Upgrading {0}", f.getPath());
 
@@ -1138,13 +1218,16 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
+
     private void formWindowClosing(java.awt.event.WindowEvent evt) {
         Quit();
     }
 
+
     private void jMenuItemRefreshFWIDActionPerformed(java.awt.event.ActionEvent evt) {
         updateLinkFirmwareID();
     }
+
 
     private void jMenuItemFlashDFUActionPerformed(java.awt.event.ActionEvent evt) {
         if (Usb.isDFUDeviceAvailable()) {
@@ -1157,11 +1240,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
+
     private void jMenuItemFlashUserActionPerformed(java.awt.event.ActionEvent evt) {
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
         String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
         if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-            fname += File.separator +  "ksoloti_flasher.bin";
+            fname += File.separator + "ksoloti_flasher.bin";
             pname += File.separator + "ksoloti";
         }
         else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
@@ -1171,24 +1255,30 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (prefs.getFirmwareMode().contains("SPILink")) {
             pname += "_spilink";
         }
+        if (prefs.getFirmwareMode().contains("USBAudio")) {
+            pname += "_usbaudio";
+        }
         pname += ".bin";
         flashUsingSDRam(fname, pname);
     }
+
 
     private void jMenuItemFCompileActionPerformed(java.awt.event.ActionEvent evt) {
         qcmdprocessor.AppendToQueue(new qcmds.QCmdCompileFirmware());
     }
 
+
     private void jMenuItemEnterDFUActionPerformed(java.awt.event.ActionEvent evt) {
         qcmdprocessor.AppendToQueue(new QCmdBringToDFUMode());
     }
+
 
     private void jMenuItemFlashDefaultActionPerformed(java.awt.event.ActionEvent evt) {
 
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
         String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
         if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-            fname += File.separator +  "ksoloti_flasher.bin";
+            fname += File.separator + "ksoloti_flasher.bin";
             pname += File.separator + "ksoloti";
         }
         else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
@@ -1198,9 +1288,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (prefs.getFirmwareMode().contains("SPILink")) {
             pname += "_spilink";
         }
+        if (prefs.getFirmwareMode().contains("USBAudio")) {
+            pname += "_usbaudio";
+        }
         pname += ".bin";
         flashUsingSDRam(fname, pname);
     }
+
 
     private void jMenuItemMountActionPerformed(java.awt.event.ActionEvent evt) {
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "mounter" + File.separator + "mounter_build";
@@ -1215,12 +1309,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.AppendToQueue(new QCmdStop());
             qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
             qcmdprocessor.AppendToQueue(new QCmdStartMounter());
-            LOGGER.log(Level.SEVERE, "Disconnecting from Patcher...");
+            qcmdprocessor.AppendToQueue(new QCmdDisconnect());
+            ShowDisconnect();
         } else {
             LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first! (file: {0})", fname);
         }
 
     }
+
 
     public void OpenURL() {
         String uri = JOptionPane.showInputDialog(this, "Enter URL:");
@@ -1239,6 +1335,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             LOGGER.log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{uri, ex});
         }
     }
+
 
     public void NewPatch() {
         PatchGUI patch1 = new PatchGUI();
@@ -1261,9 +1358,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JButton jButtonClear;
     private javax.swing.JToggleButton jToggleButtonConnect;
     private javax.swing.JPopupMenu.Separator jDevSeparator;
-    private javax.swing.JLabel jLabel1;
+    // private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelCPUID;
-    private javax.swing.JLabel jLabelFirmwareID;
+    private javax.swing.JLabel jLabelFlags;
+    // private javax.swing.JLabel jLabelFirmwareID;
     private javax.swing.JLabel jLabelIcon;
     private javax.swing.JLabel jLabelPatch;
     private javax.swing.JLabel jLabelProgress;
@@ -1287,9 +1385,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JMenuItem jMenuItemRefreshFWID;
     private javax.swing.JMenuItem jMenuItemSelectCom;
     private javax.swing.JPanel jPanelHeader;
-    private javax.swing.JPanel jPanelColumn1;
-    private javax.swing.JPanel jPanelColumn2;
-    private javax.swing.JPanel jPanelColumn3;
+    private javax.swing.JPanel jPanelIconColumn;
+    private javax.swing.JPanel jPanelButtonsColumn;
+    private javax.swing.JPanel jPanelInfoColumn;
     private javax.swing.JPanel jPanelProgress;
     private javax.swing.JProgressBar jProgressBar1;
     private ScrollPaneComponent jScrollPaneLog;
@@ -1300,49 +1398,59 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jProgressBar1.setValue(i);
     }
 
+
     public void SetProgressMessage(String s) {
         jLabelProgress.setText(s);
     }
+
 
     @Override
     public void ShowDisconnect() {
         ShowConnectDisconnect(false);
     }
 
+
     @Override
     public void ShowConnect() {
         ShowConnectDisconnect(true);
     }
 
+
     private void ShowConnectDisconnect(boolean connect) {
+
         if (connect) {
             jToggleButtonConnect.setText("Connected");
+            ShowConnectionFlags(USBBulkConnection.GetConnection().GetConnectionFlags());
         }
         else {
             jToggleButtonConnect.setText("Connect");
+            setCpuID(null);
+            jLabelVoltages.setText(" ");
+            v5000c = 0;
+            vdd00c = 0;
+            patchIndex = -4;
+            jLabelSDCardPresent.setText(" ");
+            jLabelFlags.setText(" ");
+            jLabelPatch.setText(" ");
         }
 
         jToggleButtonConnect.setSelected(connect);
         jMenuItemFDisconnect.setEnabled(connect);
 
         jMenuItemFConnect.setEnabled(!connect);
-        jMenuItemSelectCom.setEnabled(!connect);
+        // jMenuItemSelectCom.setEnabled(!connect);
 
         jMenuItemEnterDFU.setEnabled(connect);
         jMenuItemMount.setEnabled(connect);
         jMenuItemFlashDefault.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
         jMenuItemFlashUser.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
 
-        if (!connect) {
-            setCpuID(null);
-            jLabelVoltages.setText(" ");
-            jLabelPatch.setText(" ");
-            v5000c = 0;
-            vdd00c = 0;
-            patchIndex = -4;
-            jLabelSDCardPresent.setText(" ");
+        if (prefs.getRestartRequired()) {
+            disableConnectUntilRestart();
         }
+
     }
+
 
     public void Quit() {
         while (!DocumentWindowList.GetList().isEmpty()) {
@@ -1356,38 +1464,38 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
+
     public void setCpuID(String cpuId) {
         if (cpuId == null) {
             jLabelCPUID.setText(" ");
         } else {
             String name = MainFrame.prefs.getBoardName(cpuId);
-            // String txt;
             if (name == null) {
-                /*
-                 * For mere mortals, only display last five digits of Board ID.
-                 * Check Board > Select Device... for full Board ID.
-                 * Not sure what you would need it for tho...
-                 */
-                String lastSix = cpuId.length() > 6 ? cpuId.substring(cpuId.length() - 6) : cpuId;
-                jLabelCPUID.setText("Board ID:    " + lastSix);
-                jLabelCPUID.setToolTipText("Showing the last six digits of the full board ID.\n" +
+                jLabelCPUID.setText("Board ID:    " + cpuId.substring(0, 8) + " " + cpuId.substring(8, 16) + " " + cpuId.substring(16, 24));
+                jLabelCPUID.setToolTipText("Showing board ID of the currently connected Core.\n" +
                                            "You can name your Core by disconnecting it from\n" +
-                                           "the Patcher, then going to Board > Select Device... > Name.");
+                                           "the Patcher, then going to Board > Select Device... > Name.\n" + 
+                                           "Press Enter in the Name textfield to confirm the entry.");
             } else {
-                jLabelCPUID.setText("Board Name: " + name);
+                jLabelCPUID.setText("Board Name:    " + name);
                 jLabelCPUID.setToolTipText("Showing the name defined in Board > Select Device... > Name.\n" +
                                            "This setting is saved in the local ksoloti.prefs file.");
             }
         }
+
+        /* Update listeners */
+        ShowUnitName(jLabelCPUID.getText());
     }
+
 
     public void updateLinkFirmwareID() {
         LinkFirmwareID = FirmwareID.getFirmwareID();
         // TargetFirmwareID = LinkFirmwareID;
-        jLabelFirmwareID.setText("Firmware ID: " + LinkFirmwareID);
-        LOGGER.log(Level.INFO, "Link to firmware CRC {0}", LinkFirmwareID);
+        // jLabelFirmwareID.setText("Firmware ID: " + LinkFirmwareID);
+        LOGGER.log(Level.INFO, "Patcher linked to firmware CRC {0}", LinkFirmwareID);
         WarnedAboutFWCRCMismatch = false;
     }
+
 
     public boolean WarnedAboutFWCRCMismatch = false;
 
@@ -1395,8 +1503,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         TargetFirmwareID = firmwareId;
         if (!firmwareId.equals(this.LinkFirmwareID)) {
             if (!WarnedAboutFWCRCMismatch) {
-                LOGGER.log(Level.SEVERE, "Firmware version mismatch! Please flash the firmware first!");
-                LOGGER.log(Level.SEVERE, "Hardware CRC {0} <-> Software CRC {1}", new Object[]{firmwareId, this.LinkFirmwareID});
+                LOGGER.log(Level.WARNING, "Firmware version mismatch! Please update the firmware.");
+                LOGGER.log(Level.WARNING, "Hardware CRC {0} <-> Software CRC {1}", new Object[]{firmwareId, this.LinkFirmwareID});
                 WarnedAboutFWCRCMismatch = true;
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
@@ -1407,6 +1515,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             }
         }
     }
+
 
     private int patchIndex = -3;
 
@@ -1437,6 +1546,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
+
     private int v5000c = 0;
     private int vdd00c = 0;
 
@@ -1464,15 +1574,23 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
+
     public void interactiveFirmwareUpdate() {
-        int s = JOptionPane.showConfirmDialog(this,
+
+        Object[] options = {"Update", "Cancel"};
+        int s = JOptionPane.showOptionDialog(this,
                 "Firmware mismatch detected!\n"
                 + "Update the firmware now?\n"
                 + "This process will cause a disconnect and the LEDs will blink for a while.\n"
                 + "Do not interrupt until the LEDs stop blinking.\n"
-                + "When the green LED lights up steady you can connect again.\n",
+                + "When only the green LED is steady lit, you can connect again.\n",
                 "Firmware Update",
-                JOptionPane.YES_NO_OPTION);
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                options,
+                options[1]);
+
         if (s == 0) {
             String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
             String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
@@ -1487,14 +1605,52 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             if (prefs.getFirmwareMode().contains("SPILink")) {
                 pname += "_spilink";
             }
+            if (prefs.getFirmwareMode().contains("USBAudio")) {
+                pname += "_usbaudio";
+            }
             pname += ".bin";
             flashUsingSDRam(fname, pname);
         }
     }
 
+
+    public void disableConnectUntilRestart() {
+        jToggleButtonConnect.setText("RESTART");
+        jToggleButtonConnect.setSelected(false);
+        jToggleButtonConnect.setEnabled(false);
+        jMenuItemFConnect.setEnabled(false);
+        jMenuItemFDisconnect.setEnabled(false);
+    }
+    
+    
+    public void refreshAppIcon() {
+        Constants.createAppIcon();
+        setIconImage(Constants.APP_ICON.getImage());
+        jLabelIcon.setIcon(Constants.APP_ICON);
+    }
+
+
+    public void populateInfoColumn() {
+
+        jPanelInfoColumn.removeAll();
+
+        jPanelInfoColumn.add(jLabelCPUID);
+        jPanelInfoColumn.add(jLabelVoltages);
+
+        jPanelInfoColumn.add(jLabelSDCardPresent);
+
+        if (prefs.getFirmwareMode().contains("USBAudio")) {
+            jPanelInfoColumn.add(jLabelFlags);
+        }
+
+        jPanelInfoColumn.add(jLabelPatch);
+    }
+
+
     public QCmdProcessor getQcmdprocessor() {
         return qcmdprocessor;
     }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1520,31 +1676,93 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
+
     public FileManagerFrame getFilemanager() {
         return filemanager;
     }
+
 
     // public AxolotiRemoteControl getRemote() {
     //     return remote;
     // }
 
+
     public KeyboardFrame getKeyboard() {
         return keyboard;
     }
+
 
     public void SetGrabFocusOnSevereErrors(boolean b) {
         bGrabFocusOnSevereErrors = b;
     }
 
+
     @Override
     public void ShowSDCardMounted() {
-        jLabelSDCardPresent.setText("SD card connected");
+        jLabelSDCardPresent.setText("SD Card Connected");
         jMenuItemMount.setEnabled(true);
     }
 
+
     @Override
     public void ShowSDCardUnmounted() {
-        jLabelSDCardPresent.setText("No SD card");
+        jLabelSDCardPresent.setText("No SD Card");
         jMenuItemMount.setEnabled(false);
+    }
+
+
+    @Override
+    public void ShowConnectionFlags(int connectionFlags) {
+        //boolean dspOverload = 0 != (connectionFlags & 1);
+        boolean usbBuild    = 0 != (connectionFlags & 2);
+        boolean usbActive   = 0 != (connectionFlags & 4);
+        boolean usbUnder    = 0 != (connectionFlags & 8);
+        boolean usbOver     = 0 != (connectionFlags & 16);
+        boolean usbError    = 0 != (connectionFlags & 32);
+
+        StringBuilder flags = new StringBuilder();
+
+        if  (usbBuild) {
+            flags.append("USB Audio");
+            if (usbActive) {
+                flags.append(" Active");
+                if (usbError) {
+                    flags.append(" (Error)");
+                }
+                else {
+                    if (usbUnder) {
+                        flags.append(", Underruns detected");
+                    }
+                    if (usbOver) {
+                        flags.append(", Overruns detected");
+                    }
+                }
+            }
+            else {
+                flags.append(" Inactive");
+            }
+        } 
+
+        jLabelFlags.setText(flags.toString());
+    }
+
+
+    private ArrayList<UnitNameListener> uncmls = new ArrayList<UnitNameListener>();
+
+    public void addUnitNameListener(UnitNameListener uncml) {
+        uncmls.add(uncml);
+        uncml.ShowUnitName(jLabelCPUID.getText());
+    }
+
+
+    public void removeUnitNameListener(UnitNameListener uncml) {
+        uncmls.remove(uncml);
+    }
+
+
+    public void ShowUnitName(String unitName) {
+        for (UnitNameListener uncml : uncmls) {
+            uncml.ShowUnitName(unitName);
+        }
     }
 }

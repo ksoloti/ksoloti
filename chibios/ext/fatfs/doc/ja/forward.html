@@ -16,10 +16,10 @@
 <p>ファイルからデータを読み出し、送信ストリームに直接転送します。</p>
 <pre>
 FRESULT f_forward (
-  FIL* <em>FileObject</em>,                 <span class="c">/* ファイル・オブジェクト構造体 */</span>
-  UINT (*<em>Func</em>)(const BYTE*,UINT),  <span class="c">/* データ転送関数 */</span>
-  UINT <em>ByteToFwd</em>,                  <span class="c">/* 転送するバイト数 */</span>
-  UINT* <em>ByteFwd</em>                    <span class="c">/* 転送されたバイト数 */</span>
+  FIL* <span class="arg">fp</span>,                         <span class="c">/* [IN] ファイル・オブジェクト構造体 */</span>
+  UINT (*<span class="arg">func</span>)(const BYTE*,UINT),  <span class="c">/* [IN] データ転送関数 */</span>
+  UINT <span class="arg">btf</span>,                        <span class="c">/* [IN] 転送するバイト数 */</span>
+  UINT* <span class="arg">bf</span>                         <span class="c">/* [OUT] 転送されたバイト数 */</span>
 );
 </pre>
 </div>
@@ -27,13 +27,13 @@ FRESULT f_forward (
 <div class="para arg">
 <h4>引数</h4>
 <dl class="par">
-<dt>FileObject</dt>
+<dt>fp</dt>
 <dd>ファイル・オブジェクト構造体へのポインタを指定します。</dd>
-<dt>Func</dt>
+<dt>func</dt>
 <dd>データを渡すユーザ定義関数へのポインタを指定します。この関数の仕様はサンプルを参照してください。</dd>
-<dt>ByteToRead</dt>
+<dt>btf</dt>
 <dd>転送するバイト数(0～UINTの最大値)を指定します。</dd>
-<dt>ByteRead</dt>
+<dt>bf</dt>
 <dd>実際に転送されたバイト数を格納する変数を指すポインタを指定します。</dd>
 </dl>
 </div>
@@ -55,7 +55,7 @@ FRESULT f_forward (
 
 <div class="para desc">
 <h4>解説</h4>
-<p>ファイルのデータをバッファに読み出さずに送信ストリームに直接転送します。アプリケーション側でデータ・バッファを必要としないので、メモリの限られた環境で有効です。リード/ライト・ポインタは転送されたバイト数だけ進みます。指定されたバイト数の転送中にファイルの終端に達した場合や送信ストリームがビジーになった場合、<tt>*ByteFwd</tt>は<tt>ByteToFwd</tt>よりも小さくなります。</p>
+<p>ファイルのデータをバッファに読み出さずに送信ストリームに直接転送します。アプリケーション側でデータ・バッファを必要としないので、メモリの限られた環境で有効です。リード/ライト・ポインタは転送されたバイト数だけ進みます。指定されたバイト数の転送中にファイルの終端に達した場合や送信ストリームがビジーになった場合、<tt class="arg">*bf</tt>は<tt class="arg">btf</tt>よりも小さくなります。</p>
 </div>
 
 

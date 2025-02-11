@@ -60,13 +60,13 @@ public class VBarComponent extends ADispComponent {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.setPaint(Theme.getCurrentTheme().Component_Background);
+        g2.setPaint(Theme.Component_Background);
         g2.fillRect(0, 0, getWidth(), height);
-        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+        g2.setPaint(Theme.Component_Foreground);
         g2.drawRect(0, 0, getWidth(), height);
         int p = ValToPos(value);
         int p1 = ValToPos(0);
-        g2.setPaint(Theme.getCurrentTheme().Component_Mid);
+        g2.setPaint(Theme.Component_Mid);
         g2.fillRect(margin, p, width - margin * 2, p1 - p);
         //String s = String.format("%5.2f", value);
         //Rectangle2D r = g2.getFontMetrics().getStringBounds(s, g);

@@ -41,8 +41,8 @@ public class TextPaneComponent extends JTextPane {
         // setContentType("text/plain");
         setMinimumSize(new Dimension(14,14));
         // setFont(Constants.FONT);
-        setBackground(Theme.getCurrentTheme().Object_Default_Background);
-        setForeground(Theme.getCurrentTheme().Object_Label_Text);
+        setBackground(Theme.Object_Default_Background);
+        setForeground(Theme.Object_Label_Text);
         setEditable(false);
         setFocusable(false);
     }

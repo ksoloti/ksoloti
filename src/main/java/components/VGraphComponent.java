@@ -73,11 +73,11 @@ public class VGraphComponent extends JComponent {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         g2.setStroke(strokeThick);
-        g2.setColor(Theme.getCurrentTheme().Component_Background);
+        g2.setColor(Theme.Component_Background);
         g2.fillRect(0, 0, length + 0, vsize + 1);
-        g2.setPaint(Theme.getCurrentTheme().Component_Mid_Light);
+        g2.setPaint(Theme.Component_Mid_Light);
         g2.drawLine(0, y0, length, y0);
-        g2.setPaint(Theme.getCurrentTheme().Component_Foreground);
+        g2.setPaint(Theme.Component_Foreground);
         g2.drawRect(0, 0, length + 0, vsize + 1);
         g2.setStroke(strokeThin);
         //if (index > 1) {

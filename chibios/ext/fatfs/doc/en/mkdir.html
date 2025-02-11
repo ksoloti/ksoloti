@@ -16,7 +16,7 @@
 <p>The f_mkdir function creates a new directory.</p>
 <pre>
 FRESULT f_mkdir (
-  const TCHAR* <em>DirName</em> <span class="c">/* Pointer to the directory name */</span>
+  const TCHAR* <span class="arg">path</span> <span class="c">/* [IN] Directory name */</span>
 );
 </pre>
 </div>
@@ -24,7 +24,7 @@ FRESULT f_mkdir (
 <div class="para arg">
 <h4>Parameter</h4>
 <dl class="par">
-<dt>DirName</dt>
+<dt>path</dt>
 <dd>Pointer to the null-terminated string that specifies the <a href="filename.html">directory name</a> to create. </dd>
 </dl>
 </div>
@@ -53,7 +53,7 @@ FRESULT f_mkdir (
 
 <div class="para desc">
 <h4>Description</h4>
-<p>The f_mkdir function creates a new directory.</p>
+<p>This function creates a new directory.</p>
 </div>
 
 

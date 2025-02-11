@@ -24,7 +24,7 @@ import axoloti.atom.AtomInstance;
 import axoloti.datatypes.Value;
 import axoloti.object.AxoObjectInstance;
 import axoloti.realunits.NativeToReal;
-import axoloti.utils.CharEscape;
+import static axoloti.utils.CharEscape.charEscape;
 import components.AssignMidiCCComponent;
 import components.AssignPresetMenuItems;
 import components.LabelComponent;
@@ -354,7 +354,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     }
 
     public String getLegalName() {
-        return CharEscape.charEscape(name);
+        return charEscape(name);
     }
 
     public String KVPName(String vprefix) {
@@ -403,9 +403,9 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 
     // void SetPresetState(boolean b) { // OBSOLETE
     //     if (b) {
-    //         setForeground(Theme.getCurrentTheme().Parameter_Preset_Highlight_Foreground);
+    //         setForeground(Theme.Parameter_Preset_Highlight_Foreground);
     //     } else {
-    //         setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
+    //         setForeground(Theme.Parameter_Default_Foreground);
     //     }
     // }
 
@@ -422,7 +422,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     String GenerateMidiCCCodeSub(String vprefix, String value) {
         if (!isFrozen() && MidiCC != null) {
             return "        if ((status == attr_midichannel + MIDI_CONTROL_CHANGE)&&(data1 == " + MidiCC + ")) {\n"
-                    + "            PExParameterChange(&parent->" + PExName(vprefix) + "," + value + ", 0xFFFD);\n"
+                    + "            PExParameterChange(&parent->" + PExName(vprefix) + ", " + value + ", 0xFFFD);\n"
                     + "        }\n";
         } else {
             return "";
@@ -556,7 +556,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
             m_frozen.setToolTipText("This parameter cannot be frozen because it belongs to the subpatch.\n" +
                                     "You can freeze it from inside the subpatch. If you do so, it will\n" +
                                     "temporarily disappear from the parent and its value will revert to the\n" + 
-                                    "knob position in the subpatch. Unfreeze it to make it reappear on\n" +
+                                    "knob position inside the subpatch. Unfreeze it to make it reappear on\n" +
                                     "the parent and become editable again.");
 
         }
@@ -657,19 +657,19 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
             ctrl.setToolTipText("<html>" + parameter.name);
         }
 
-        ctrl.setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
-        ctrl.setBackground(Theme.getCurrentTheme().Parameter_Default_Background);
+        ctrl.setForeground(Theme.Parameter_Default_Foreground);
+        ctrl.setBackground(Theme.Parameter_Default_Background);
 
         if (isOnParent()) {
-            ctrl.setForeground(Theme.getCurrentTheme().Parameter_On_Parent_Foreground);
+            ctrl.setForeground(Theme.Parameter_On_Parent_Foreground);
             ctrl.setToolTipText(ctrl.getToolTipText() + "<p><b>This parameter is being controlled from the parent patch.</b>");
         }
         if (isFrozen()) {
-            ctrl.setBackground(Theme.getCurrentTheme().Parameter_Frozen_Background);
+            ctrl.setBackground(Theme.Parameter_Frozen_Background);
             ctrl.setToolTipText(ctrl.getToolTipText() + "<p><b>This parameter is currently frozen to save memory and DSP power.</b>");
         }
         else {
-            ctrl.setBackground(Theme.getCurrentTheme().Component_Background);
+            ctrl.setBackground(Theme.Component_Background);
         }
     }
 }

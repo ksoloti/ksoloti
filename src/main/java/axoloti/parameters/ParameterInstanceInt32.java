@@ -74,11 +74,11 @@ public abstract class ParameterInstanceInt32<T extends Parameter> extends Parame
     public void setOnParent(Boolean b) {
         super.setOnParent(b);
         if ((b != null) && b) {
-            setForeground(Theme.getCurrentTheme().Parameter_On_Parent_Foreground);
-            setBackground(Theme.getCurrentTheme().Parameter_On_Parent_Background);
+            setForeground(Theme.Parameter_On_Parent_Foreground);
+            setBackground(Theme.Parameter_On_Parent_Background);
         } else {
-            setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
-            setBackground(Theme.getCurrentTheme().Parameter_Default_Background);
+            setForeground(Theme.Parameter_Default_Foreground);
+            setBackground(Theme.Parameter_Default_Background);
         }
     }
 
@@ -88,14 +88,14 @@ public abstract class ParameterInstanceInt32<T extends Parameter> extends Parame
         if (i > 0) {
             Preset p = GetPreset(presetEditActive);
             if (p != null) {
-                // setForeground(Theme.getCurrentTheme().Parameter_Preset_Highlight_Foreground);
+                // setForeground(Theme.Parameter_Preset_Highlight_Foreground);
                 getControlComponent().setValue(p.value.getDouble());
             } else {
-                // setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
+                // setForeground(Theme.Parameter_Default_Foreground);
                 getControlComponent().setValue(value.getDouble());
             }
         } else {
-            setForeground(Theme.getCurrentTheme().Parameter_Default_Foreground);
+            setForeground(Theme.Parameter_Default_Foreground);
             getControlComponent().setValue(value.getDouble());
         }
     }

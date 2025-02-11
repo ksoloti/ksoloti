@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,17 +15,16 @@
 */
 
 /**
- * @file    templates/serial_lld.c
- * @brief   Serial Driver subsystem low level driver source template.
+ * @file    serial_lld.c
+ * @brief   PLATFORM serial subsystem low level driver source.
  *
  * @addtogroup SERIAL
  * @{
  */
 
-#include "ch.h"
 #include "hal.h"
 
-#if HAL_USE_SERIAL || defined(__DOXYGEN__)
+#if (HAL_USE_SERIAL == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
@@ -35,10 +34,8 @@
 /* Driver exported variables.                                                */
 /*===========================================================================*/
 
-/**
- * @brief   SD1 driver identifier.
- */
-#if PLATFORM_SERIAL_USE_SD1 || defined(__DOXYGEN__)
+/** @brief USART1 serial driver identifier.*/
+#if (PLATFORM_SERIAL_USE_USART1 == TRUE) || defined(__DOXYGEN__)
 SerialDriver SD1;
 #endif
 
@@ -72,10 +69,9 @@ static const SerialConfig default_config = {
  */
 void sd_lld_init(void) {
 
-#if PLATFORM_SERIAL_USE_SD1
-  /* Driver initialization.*/
-  sdObjectInit(&SD1);
-#endif /* PLATFORM_SERIAL_USE_SD1 */
+#if PLATFORM_SERIAL_USE_USART1 == TRUE
+  sdObjectInit(&SD1, NULL, notify1);
+#endif
 }
 
 /**
@@ -90,19 +86,20 @@ void sd_lld_init(void) {
  */
 void sd_lld_start(SerialDriver *sdp, const SerialConfig *config) {
 
-  if (config == NULL)
+  if (config == NULL) {
     config = &default_config;
+  }
+
 
   if (sdp->state == SD_STOP) {
-    /* Enables the peripheral.*/
-#if PLATFORM_SERIAL_USE_SD1
+#if PLATFORM_SERIAL_USE_USART1 == TRUE
     if (&SD1 == sdp) {
 
     }
-#endif /* PLATFORM_SD_USE_SD1 */
+#endif
   }
   /* Configures the peripheral.*/
-
+  (void)config; /* Warning suppression, remove this.*/
 }
 
 /**
@@ -117,17 +114,14 @@ void sd_lld_start(SerialDriver *sdp, const SerialConfig *config) {
 void sd_lld_stop(SerialDriver *sdp) {
 
   if (sdp->state == SD_READY) {
-    /* Resets the peripheral.*/
-
-    /* Disables the peripheral.*/
-#if PLATFORM_SERIAL_USE_SD1
+#if PLATFORM_SERIAL_USE_USART1 == TRUE
     if (&SD1 == sdp) {
 
     }
-#endif /* PLATFORM_SERIAL_USE_SD1 */
+#endif
   }
 }
 
-#endif /* HAL_USE_SERIAL */
+#endif /* HAL_USE_SERIAL == TRUE */
 
 /** @} */

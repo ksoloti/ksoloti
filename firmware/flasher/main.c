@@ -22,10 +22,6 @@
 #include "chprintf.h"
 #include "ui.h"
 #include "axoloti_board.h"
-#if 0
-#include "sdcard.h"
-#include "ff.h"
-#endif
 #include "crc32.h"
 #include "sdram.h"
 #include "exceptions.h"
@@ -63,7 +59,8 @@ void dbgPrintHexDigit(uint8_t b)
 #else
 #define DBGPRINTCHAR(x)
 #define DBGPRINTHEX(x)
-#endif
+
+#endif /* SERIALDEBUG */
 
 #define FLASH_BASE_ADDR 0x08000000
 
@@ -122,7 +119,7 @@ int main(void)
     static const SerialConfig sd2Cfg = {115200, 0, 0, 0};
 
     sdStart(&SD2, &sd2Cfg);
-#endif
+#endif /* SERIALDEBUG */
 
     DBGPRINTCHAR('a');
     uint32_t pbuf[16];

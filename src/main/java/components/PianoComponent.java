@@ -157,22 +157,22 @@ public abstract class PianoComponent extends JComponent {
             if (y == 0) {
                 if (selection[i]) {
                     // selected
-                    g2.setColor(Theme.getCurrentTheme().Keyboard_Mid);
+                    g2.setColor(Theme.Keyboard_Mid);
                     g2.fillRect(x, 0, 2 * KeyWidth, height);
                     if (isEnabled()) {
-                        g2.setColor(Theme.getCurrentTheme().Keyboard_Dark);
+                        g2.setColor(Theme.Keyboard_Dark);
                     } else {
-                        g2.setColor(Theme.getCurrentTheme().Keyboard_Mid);
+                        g2.setColor(Theme.Keyboard_Mid);
                     }
                     g2.drawRect(x, 0, 2 * KeyWidth, height);
                 } else {
                     // not selected
-                    g2.setColor(Theme.getCurrentTheme().Keyboard_Light);
+                    g2.setColor(Theme.Keyboard_Light);
                     g2.fillRect(x, 0, 2 * KeyWidth, height);
                     if (isEnabled()) {
-                        g2.setColor(Theme.getCurrentTheme().Keyboard_Dark);
+                        g2.setColor(Theme.Keyboard_Dark);
                     } else {
-                        g2.setColor(Theme.getCurrentTheme().Keyboard_Mid);
+                        g2.setColor(Theme.Keyboard_Mid);
                     }
                     g2.drawRect(x, 0, 2 * KeyWidth, height);
                 }
@@ -184,19 +184,19 @@ public abstract class PianoComponent extends JComponent {
             int x = keyToX(i);
             if (y == 1) {
                 if (selection[i]) {
-                    g2.setColor(Theme.getCurrentTheme().Keyboard_Mid);
+                    g2.setColor(Theme.Keyboard_Mid);
                     g2.fillRect(x - 1, 0, KeyWidth + 2, blackKeyHeight);
                     if (isEnabled()) {
-                        g2.setColor(Theme.getCurrentTheme().Keyboard_Dark);
+                        g2.setColor(Theme.Keyboard_Dark);
                     } else {
-                        g2.setColor(Theme.getCurrentTheme().Keyboard_Mid);
+                        g2.setColor(Theme.Keyboard_Mid);
                     }
                     g2.drawRect(x - 1, 0, KeyWidth + 2, blackKeyHeight);
                 } else {
                     if (isEnabled()) {
-                        g2.setColor(Theme.getCurrentTheme().Keyboard_Dark);
+                        g2.setColor(Theme.Keyboard_Dark);
                     } else {
-                        g2.setColor(Theme.getCurrentTheme().Keyboard_Mid);
+                        g2.setColor(Theme.Keyboard_Mid);
                     }
                     g2.fillRect(x - 1, 0, KeyWidth + 2, blackKeyHeight);
                     g2.drawRect(x - 1, 0, KeyWidth + 2, blackKeyHeight);
@@ -217,10 +217,10 @@ public abstract class PianoComponent extends JComponent {
                 g2.setFont(Constants.FONT);
                 /* Mark keyboard-playable area with accent color */
                 if (i >= baseTranspose && i < baseTranspose + 25) {
-                    g2.setPaint(Theme.getCurrentTheme().Button_Accent_Background);
+                    g2.setPaint(Theme.Button_Accent_Background);
                 }
                 else {
-                    g2.setPaint(Theme.getCurrentTheme().Object_Default_Foreground);
+                    g2.setPaint(Theme.Object_Default_Foreground);
                 }
                 AffineTransform t = g2.getTransform();
                 g2.rotate(-3.14159 / 2);
@@ -230,7 +230,7 @@ public abstract class PianoComponent extends JComponent {
             }
         }
         int x = keyToX(64);
-        g2.setColor(Theme.getCurrentTheme().Keyboard_Mid);
+        g2.setColor(Theme.Keyboard_Mid);
         g2.fillOval(x + 3, height - (KeyWidth + 2), KeyWidth, KeyWidth);
         g2.dispose();
     }

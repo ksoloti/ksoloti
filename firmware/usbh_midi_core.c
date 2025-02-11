@@ -625,14 +625,6 @@ USBH_StatusTypeDef USBH_MIDI_ProcessOutput(USBH_HandleTypeDef *phost) {
                         send_ring_buffer.read_ptr =(send_ring_buffer.read_ptr + 1) % RING_BUFFER_SIZE;
                         USBH_DbgLog("USB Host Output sending data @ %i", send_ring_buffer.read_ptr  );
 
-#if 0
-                        USBH_DbgLog("USB Host Output sending data : %x, %x, %x %x",
-                                    send_ring_buffer.event[send_ring_buffer.read_ptr].data[0],
-                                    send_ring_buffer.event[send_ring_buffer.read_ptr].data[1],
-                                    send_ring_buffer.event[send_ring_buffer.read_ptr].data[2],
-                                    send_ring_buffer.event[send_ring_buffer.read_ptr].data[3]);
-#endif
-
                         MIDI_Handle->buff_out[MIDI_Handle->buff_out_len + 0] =  send_ring_buffer.event[send_ring_buffer.read_ptr].data[0];
                         MIDI_Handle->buff_out[MIDI_Handle->buff_out_len + 1] =  send_ring_buffer.event[send_ring_buffer.read_ptr].data[1];
                         MIDI_Handle->buff_out[MIDI_Handle->buff_out_len + 2] =  send_ring_buffer.event[send_ring_buffer.read_ptr].data[2];

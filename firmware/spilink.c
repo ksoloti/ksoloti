@@ -21,6 +21,7 @@
 #include "hal.h"
 #include "axoloti_board.h"
 #include "axoloti.h"
+#include "mcuconf.h"
 #include "spilink.h"
 #include "spidb.h"
 #include "sysmon.h"
@@ -85,7 +86,7 @@ static msg_t ThreadSpilinkSlave(void *arg)
 {
     (void) arg;
 
-#if CH_USE_REGISTRY
+#if CH_CFG_USE_REGISTRY
     chRegSetThreadName("spilink");
 #endif
 
@@ -189,7 +190,7 @@ void spilink_init(bool_t isMaster) {
     else {
         /* Synced */
         Thread *_pThreadSpilink = chThdCreateStatic(waThreadSpilink,
-            sizeof(waThreadSpilink), HIGHPRIO - 1, ThreadSpilinkSlave, NULL);
+            sizeof(waThreadSpilink), SPILINK_PRIO, (void*) ThreadSpilinkSlave, NULL);
 
         spidbSlaveStart(&SPILINKD, &spidbcfg_slave, _pThreadSpilink);
         pThreadSpilink = _pThreadSpilink;

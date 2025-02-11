@@ -279,7 +279,7 @@ public class AxolotiLibraryEditor extends JDialog {
                         .addPreferredGap(ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
 
                         .addGroup(layout.createParallelGroup(Alignment.LEADING)
-                            .addComponent(jInitRepo, Alignment.TRAILING)
+                            .addComponent(jInitRepo, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
                             .addComponent(jSyncBtn, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
                         )
                     )
@@ -491,8 +491,15 @@ public class AxolotiLibraryEditor extends JDialog {
 
     private void jInitRepoActionPerformed(java.awt.event.ActionEvent evt) {
         boolean delete;
-        int options = JOptionPane.OK_CANCEL_OPTION;
-        int res = JOptionPane.showConfirmDialog(this, "Init will delete/overwrite the existing directory.\nContinue?", "Warning", options);
+        Object[] options = {"Init", "Cancel"};
+        int res = JOptionPane.showOptionDialog(this,
+                                               "The existing directory will be replaced/overwritten.\nContinue?",
+                                               "Initialise Library",
+                                               JOptionPane.OK_CANCEL_OPTION,
+                                               JOptionPane.WARNING_MESSAGE,
+                                               null,
+                                               options,
+                                               options[1]);
         if (res == JOptionPane.CANCEL_OPTION) {
             return;
         }

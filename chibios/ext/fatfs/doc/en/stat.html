@@ -13,11 +13,11 @@
 
 <div class="para func">
 <h2>f_stat</h2>
-<p>The f_stat gets the file status.</p>
+<p>The f_stat function checks the existence of a file or sub-directory.</p>
 <pre>
 FRESULT f_stat (
-  const TCHAR* <em>FileName</em>,  <span class="c">/* Pointer to the file or directory name */</span>
-  FILINFO* <em>FileInfo</em>       <span class="c">/* Pointer to the FILINFO structure */</span>
+  const TCHAR* <span class="arg">path</span>,  <span class="c">/* [IN] Object name */</span>
+  FILINFO* <span class="arg">fno</span>        <span class="c">/* [OUT] FILINFO structure */</span>
 );
 </pre>
 </div>
@@ -25,10 +25,10 @@ FRESULT f_stat (
 <div class="para arg">
 <h4>Parameters</h4>
 <dl class="par">
-<dt>FileName</dt>
-<dd>Pointer to the null-terminated string that specifies the <a href="filename.html">file or directory</a> to get its information.</dd>
-<dt>FileInfo</dt>
-<dd>Pointer to the blank <tt>FILINFO</tt> structure to store the information.</dd>
+<dt>path</dt>
+<dd>Pointer to the null-terminated string that specifies the <a href="filename.html">object</a> to get its information.</dd>
+<dt>fno</dt>
+<dd>Pointer to the blank <tt>FILINFO</tt> structure to store the information of the object. Set null pointer if it is not needed.</dd>
 </dl>
 </div>
 
@@ -54,7 +54,13 @@ FRESULT f_stat (
 
 <div class="para desc">
 <h4>Description</h4>
-<p>The f_stat gets the information of a file or directory. For details of the infomation, refer to the <tt>FILINFO</tt> structure and <a href="readdir.html">f_readdir</a> function. This function is not supported in minimization level of &gt;= 1.</p>
+<p>The <tt>f_stat()</tt> function checks the existence of a file or sub-directory. If not exist, the function returns with <tt>FR_NO_FILE</tt>. If exist, the function returns with <tt>FR_OK</tt> and the informations of the object, size, timestamp and attribute, are stored to the file information structure. For details, refer to the <tt>FILINFO</tt> structure and <a href="readdir.html"><tt>f_readdir()</tt></a> function. </p>
+</div>
+
+
+<div class="para comp">
+<h4>QuickInfo</h4>
+<p>Available when <tt>_FS_MINIMIZE == 0</tt>.</p>
 </div>
 
 

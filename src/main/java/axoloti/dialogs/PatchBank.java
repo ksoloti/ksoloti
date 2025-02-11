@@ -63,11 +63,13 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import qcmds.QCmdProcessor;
 import qcmds.QCmdUploadFile;
@@ -79,6 +81,8 @@ import qcmds.QCmdUploadFile;
 public class PatchBank extends javax.swing.JFrame implements DocumentWindow, ConnectionStatusListener, SDCardMountStatusListener {
 
     private static final Logger LOGGER = Logger.getLogger(PatchBank.class.getName());
+
+    private static DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 
     String FilenamePath = null;
 
@@ -92,6 +96,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
      * Creates new form PatchBank
      */
     public PatchBank() {
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         setPreferredSize(new Dimension(800, 600));
         initComponents();
         fileMenu1.initComponents();
@@ -178,7 +183,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                         if (f != null) {
                             boolean en = f.exists();
                             if (en) {
-                                returnValue = "Found locally";
+                                returnValue = "✔";
                             } else {
                                 returnValue = "NOT found locally";
                             }
@@ -196,7 +201,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                             SDFileInfo sdfi = SDCardInfo.getInstance().find("/" + fn + "/patch.bin");
                             // LOGGER.log(Level.INFO, "/" + fn + "/patch.bin");
                             if (sdfi != null) {
-                                returnValue = "Found on SD card";
+                                returnValue = "✔";
                             }
                             else {
                                 returnValue = "NOT on SD card";
@@ -215,6 +220,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             }
         });
         jTable1.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        jTable1.setRowHeight(24);
 
 
         jScrollPane1.setDropTarget(new DropTarget() {
@@ -225,12 +231,46 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                     @SuppressWarnings("unchecked")
                     List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
                     for (File f : droppedFiles) {
-                        System.out.println(f.getName());
-                        if (!f.canRead()) {
-                            LOGGER.log(Level.SEVERE, "Cannot read file");
+                        if (f.isDirectory()) {
+                            /* non-recursive add */
+                            for (File fsubf : f.listFiles()) {
+                                String fn = fsubf.getName();
+                                System.out.println(fn);
+                                boolean isValidFile = fn.endsWith(".axp") || fn.endsWith(".axs") || fn.endsWith(".axh");
+                                if (!isValidFile) {
+                                    if (f.isDirectory()) {
+                                        LOGGER.log(Level.WARNING, "Skipping subfolder: " + fn);
+                                    }
+                                    else {
+                                        LOGGER.log(Level.WARNING, "Skipping invalid file format: " + fn);
+                                    }
+                                }
+                                else if (!fsubf.canRead()) {
+                                    LOGGER.log(Level.SEVERE, "Cannot read file: " + fn);
+                                }
+                                else {
+                                    files.add(fsubf);
+                                }
+                            }
                         }
                         else {
-                            files.add(f);
+                            String fn = f.getName();
+                            System.out.println(fn);
+                            boolean isValidFile = fn.endsWith(".axp") || fn.endsWith(".axs") || fn.endsWith(".axh");
+                            if (!isValidFile) {
+                                if (f.isDirectory()) {
+                                    LOGGER.log(Level.WARNING, "Skipping subfolder: " + fn);
+                                }
+                                else {
+                                    LOGGER.log(Level.WARNING, "Skipping invalid file format: " + fn);
+                                }
+                            }
+                            else if (!f.canRead()) {
+                                LOGGER.log(Level.SEVERE, "Cannot read file: " + fn);
+                            }
+                            else {
+                                files.add(f);
+                            }
                         }
                     }
 
@@ -246,10 +286,21 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         });
 
         if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setPreferredWidth(20);
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(40);
+            jTable1.getColumnModel().getColumn(0).setMinWidth(60);
+            jTable1.getColumnModel().getColumn(0).setMaxWidth(60);
+            jTable1.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+
             jTable1.getColumnModel().getColumn(1).setPreferredWidth(300);
+
             jTable1.getColumnModel().getColumn(2).setPreferredWidth(60);
+            jTable1.getColumnModel().getColumn(2).setMinWidth(140);
+            jTable1.getColumnModel().getColumn(2).setMaxWidth(140);
+            jTable1.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
             jTable1.getColumnModel().getColumn(3).setPreferredWidth(60);
+            jTable1.getColumnModel().getColumn(3).setMinWidth(140);
+            jTable1.getColumnModel().getColumn(3).setMaxWidth(140);
+            jTable1.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
         }
 
         jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -401,7 +452,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         fc.addChoosableFileFilter(axb);
         String fn = FilenamePath;
         if (fn == null) {
-            fn = "untitled";
+            fn = "untitled patchbank";
         }
         File f = new File(fn);
         fc.setSelectedFile(f);
@@ -434,8 +485,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 fileToBeSaved = new File(fc.getSelectedFile() + filterext);
 
             } else if (!ext.equals(filterext)) {
-                Object[] options = {"Yes",
-                    "No"};
+                Object[] options = {"Change", "No"};
                 int n = JOptionPane.showOptionDialog(this,
                         "File does not match filter. Change extension to " + filterext + "?",
                         "File Extension",
@@ -454,8 +504,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             }
 
             if (fileToBeSaved.exists()) {
-                Object[] options = {"Yes",
-                    "No"};
+                Object[] options = {"Overwrite",
+                    "Cancel"};
                 int n = JOptionPane.showOptionDialog(this,
                         "File exists! Overwrite?",
                         "File Exists",
@@ -501,16 +551,16 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     @Override
     public boolean AskClose() {
         if (isDirty()) {
-            Object[] options = {"Yes",
-                "No",
+            Object[] options = {"Save",
+                "Discard",
                 "Cancel"};
             String fn = FilenamePath;
             if (fn == null) {
-                fn = "untitled";
+                fn = "untitled patchbank";
             }
             int n = JOptionPane.showOptionDialog(
                     this,
-                    "Save changes to " + fn + "?",
+                    "Save changes to \"" + fn + "\"?",
                     "Unsaved Changes",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
@@ -537,8 +587,6 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     }
 
 
-    @SuppressWarnings("unchecked")
-    
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
@@ -742,6 +790,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
         getContentPane().add(jPanel2);
 
+        fileMenu1.setMnemonic('F');
         fileMenu1.setText("File");
         fileMenu1.add(jSeparator1);
 
@@ -763,6 +812,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
         jMenuBar1.add(fileMenu1);
 
+        jMenu2.setMnemonic('E');
         jMenu2.setText("Edit");
         jMenu2.setDelay(300);
         jMenuBar1.add(jMenu2);
@@ -941,7 +991,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 }
 
                 for (File f : files) {
-                    LOGGER.log(Level.INFO, "Compiling and uploading: {0}...", f.getName());
+                    LOGGER.log(Level.INFO, "Compiling and uploading: {0}", f.getName());
                     UploadOneFile(f);
                 }
                 LOGGER.log(Level.INFO, "Done uploading index and patches.");
@@ -1005,7 +1055,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             pb.setVisible(true);
         } catch (IOException ex) {
             pb.Close();
-            LOGGER.log(Level.SEVERE, "Patchbank file not found or not accessible: {0}", f.getName());
+            LOGGER.log(Level.SEVERE, "Patchbank file not found or inaccessible: {0}", f.getName());
         }
     }
 

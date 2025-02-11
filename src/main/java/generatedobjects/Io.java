@@ -668,8 +668,8 @@ public class Io extends gentools {
     static AxoObject I2CBegin() {
         AxoObject o = new AxoObject("config", "Configures a I2C interface. PB8=SCL PB9=SDA");
         o.sInitCode = "// setup the pins\n"
-                + "palSetPadMode(GPIOB, 8, PAL_MODE_ALTERNATE(4)|PAL_STM32_PUDR_PULLUP|PAL_STM32_OTYPE_OPENDRAIN);// SCL\n"
-                + "palSetPadMode(GPIOB, 9, PAL_MODE_ALTERNATE(4)|PAL_STM32_PUDR_PULLUP|PAL_STM32_OTYPE_OPENDRAIN);// SDA\n"
+                + "palSetPadMode(GPIOB, 8, PAL_MODE_ALTERNATE(4)|PAL_MODE_INPUT_PULLUP|PAL_STM32_OTYPE_OPENDRAIN);// SCL\n"
+                + "palSetPadMode(GPIOB, 9, PAL_MODE_ALTERNATE(4)|PAL_MODE_INPUT_PULLUP|PAL_STM32_OTYPE_OPENDRAIN);// SDA\n"
                 + "static const I2CConfig i2cfg = {\n"
                 + "    OPMODE_I2C,\n"
                 + "    400000,\n"

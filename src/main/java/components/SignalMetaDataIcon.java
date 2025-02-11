@@ -43,7 +43,7 @@ public class SignalMetaDataIcon extends JComponent {
         setMinimumSize(d);
         setMaximumSize(d);
         setPreferredSize(d);
-        setBackground(Theme.getCurrentTheme().Object_Default_Background);
+        setBackground(Theme.Object_Default_Background);
     }
     private final int x1 = 2;
     private final int x2 = 4;

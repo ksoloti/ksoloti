@@ -34,8 +34,8 @@
 //#include "core_cm4_simd.h"
 //#pragma GCC diagnostic pop
 
-#define SINETSIZE 1024
-extern int16_t sinet[SINETSIZE + 1];
+// #define SINETSIZE 1024
+// extern int16_t sinet[SINETSIZE + 1];
 
 #define SINE2TSIZE 4096
 extern int32_t sine2t[SINE2TSIZE + 1];
@@ -65,11 +65,13 @@ typedef union {
 
 void axoloti_math_init(void);
 
+
 __attribute__((always_inline)) __STATIC_INLINE int32_t ___SMMUL (int32_t op1, int32_t op2) {
     int32_t result;
     __ASM volatile ("smmul %0, %1, %2" : "=r" (result): "r" (op1), "r" (op2));
     return result;
 }
+
 
 __attribute__((always_inline)) __STATIC_INLINE int32_t ___SMMLA (int32_t op1, int32_t op2, int32_t op3) {
     int32_t result;
@@ -77,9 +79,24 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t ___SMMLA (int32_t op1, in
     return result;
 }
 
+
 __attribute__((always_inline)) __STATIC_INLINE int32_t ___SMMLS (int32_t op1, int32_t op2, int32_t op3) {
     int32_t result;
     __ASM volatile ("smmls %0, %1, %2, %3" : "=r" (result): "r" (op1), "r" (op2), "r" (op3));
+    return result;
+}
+
+
+__attribute__((always_inline)) __STATIC_INLINE int32_t ___SDIV (int32_t op1, int32_t op2) {
+    int32_t result;
+    __ASM volatile ("sdiv %0, %1, %2" : "=r" (result): "r" (op1), "r" (op2));
+    return result;
+}
+
+
+__attribute__((always_inline)) __STATIC_INLINE uint32_t ___UDIV (uint32_t op1, uint32_t op2) {
+    uint32_t result;
+    __ASM volatile ("udiv %0, %1, %2" : "=r" (result): "r" (op1), "r" (op2));
     return result;
 }
 
@@ -156,6 +173,11 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t hann_q31(int32_t phase) 
     return rr << 1;
 }
 
+
+/* Purposefully doing some "literal" float to integer conversion here */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+
 __attribute__((always_inline)) __STATIC_INLINE float q27_to_float(int32_t op1) {
     float fop1 = *(float*) (&op1);
     __ASM volatile ("VCVT.F32.S32 %0, %0, 27" : "+w" (fop1));
@@ -167,6 +189,8 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t float_to_q27(float fop1) 
     int32_t r = *(int32_t*) (&fop1);
     return r;
 }
+
+#pragma GCC diagnostic pop
 
 __attribute__((always_inline)) __STATIC_INLINE int32_t ConvertIntToFrac(int i) {
     return i << 21;
@@ -201,13 +225,8 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t rand_s32(void) {
 #endif
 #define RAND_MAX INT32_MAX
 
-/* Satisfy compiler by undefining standard C rand() and replacing it with below, bipolar version */
-#ifdef rand
-#undef rand
-#endif
-
-__attribute__((always_inline)) __INLINE int rand(void) {
-    // standard C rand()
+__attribute__((always_inline)) __STATIC_INLINE int rand_u32(void) {
+    /* like standard C rand() */
     return ((uint32_t) rand_s32()) >> 1;
 }
 

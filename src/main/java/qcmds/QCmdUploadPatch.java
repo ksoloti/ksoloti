@@ -60,7 +60,7 @@ public class QCmdUploadPatch implements QCmdSerialTask {
         connection.ClearSync();
         try {
             if (f == null) {
-                String buildDir=System.getProperty(Axoloti.LIBRARIES_DIR)+ File.separator + "build";
+                String buildDir=System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build";
                 f = new File(buildDir + File.separator + "xpatch.bin");
             }
             LOGGER.log(Level.INFO, "{0}", f.getAbsolutePath());

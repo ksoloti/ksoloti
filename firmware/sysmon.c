@@ -25,6 +25,7 @@
 #include "hal.h"
 #include "axoloti_board.h"
 #include "sysmon.h"
+#include "mcuconf.h"
 #include "pconnection.h"
 #include "patch.h"
 #include "sdcard.h"
@@ -46,7 +47,7 @@ __attribute__((noreturn))
 static msg_t ThreadSysmon(void *arg) {
   (void)arg;
 
-#if CH_USE_REGISTRY
+#if CH_CFG_USE_REGISTRY
   chRegSetThreadName("sysmon");
 #endif
 
@@ -152,7 +153,7 @@ void sysmon_init(void) {
   v50_min = 0xFFFF;
   isEnabled = true;
 
-  chThdCreateStatic(waThreadSysmon, sizeof(waThreadSysmon), NORMALPRIO, (void*) ThreadSysmon, NULL);
+  chThdCreateStatic(waThreadSysmon, sizeof(waThreadSysmon), SYSMON_PRIO, (void*) ThreadSysmon, NULL);
 }
 
 void sysmon_disable_blinker(void) {

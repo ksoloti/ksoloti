@@ -16,10 +16,10 @@
 <p>ファイルからデータを読み出します。</p>
 <pre>
 FRESULT f_read (
-  FIL* <em>FileObject</em>,    <span class="c">/* ファイル・オブジェクト構造体 */</span>
-  void* <em>Buffer</em>,       <span class="c">/* 読み出したデータを格納するバッファ */</span>
-  UINT <em>ByteToRead</em>,    <span class="c">/* 読み出すバイト数 */</span>
-  UINT* <em>ByteRead</em>      <span class="c">/* 読み出されたバイト数 */</span>
+  FIL* <span class="arg">fp</span>,     <span class="c">/* [IN] ファイル・オブジェクト構造体 */</span>
+  void* <span class="arg">buff</span>,  <span class="c">/* [OUT] 読み出したデータを格納するバッファ */</span>
+  UINT <span class="arg">btr</span>,    <span class="c">/* [IN] 読み出すバイト数 */</span>
+  UINT* <span class="arg">br</span>     <span class="c">/* [OUT] 読み出されたバイト数 */</span>
 );
 </pre>
 </div>
@@ -27,13 +27,13 @@ FRESULT f_read (
 <div class="para arg">
 <h4>引数</h4>
 <dl class="par">
-<dt>FileObject</dt>
+<dt>fp</dt>
 <dd>ファイル・オブジェクト構造体へのポインタを指定します。</dd>
-<dt>Buffer</dt>
+<dt>buff</dt>
 <dd>読み出したデータを格納するバッファを指すポインタを指定します。</dd>
-<dt>ByteToRead</dt>
-<dd>読み出すバイト数(0～UINTの最大値)を指定します。</dd>
-<dt>ByteRead</dt>
+<dt>btr</dt>
+<dd>読み出すバイト数(0～<tt>UINT</tt>型の最大値)を指定します。</dd>
+<dt>br</dt>
 <dd>実際に読み出されたバイト数を格納する変数を指すポインタを指定します。戻り値は関数の成否にかかわらず常に有効です。</dd>
 </dl>
 </div>
@@ -55,7 +55,7 @@ FRESULT f_read (
 
 <div class="para desc">
 <h4>解説</h4>
-<p>読み込み開始位置は、現在のリード/ライト・ポインタからになります。リード/ライト・ポインタは読み込まれたバイト数だけ進みます。関数が正常終了した後は、<tt>*ByteRead</tt>の値をチェックすべきです。<tt>*ByteRead</tt>が<tt>ByteToRead</tt>よりも小さいときは、読み込み中にファイルの終端に達したことを示しています。</p>
+<p>読み込み開始位置は、現在のリード/ライト・ポインタからになります。リード/ライト・ポインタは読み込まれたバイト数だけ進みます。関数が正常終了した後は、<tt class="arg">*br</tt>の値をチェックすべきです。<tt class="arg">*br</tt>が<tt class="arg">btr</tt>よりも小さいときは、読み込み中にファイルの終端に達したことを示しています。</p>
 </div>
 
 

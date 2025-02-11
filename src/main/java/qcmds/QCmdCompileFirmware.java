@@ -61,13 +61,13 @@ public class QCmdCompileFirmware extends QCmdShellTask {
         }
 
         if (OSDetect.getOS() == OSDetect.OS.WIN) {
-            return FirmwareDir()+"/compile_firmware_win.bat " + boarddef;
+            return RuntimeDir() + "/platform_win/bin/sh.exe " + FirmwareDir() +"/compile_firmware_win.sh " + boarddef + " 1 1 1 1 1";
         }
         else if (OSDetect.getOS() == OSDetect.OS.MAC) {
-            return "/bin/sh ./compile_firmware_osx.sh " + boarddef;
+            return "/bin/sh " + FirmwareDir() + "/compile_firmware_osx.sh " + boarddef + " 1 1 1 1 1";
         }
         else if (OSDetect.getOS() == OSDetect.OS.LINUX) {
-            return "/bin/sh ./compile_firmware_linux.sh " + boarddef;
+            return "/bin/sh " + FirmwareDir() + "/compile_firmware_linux.sh " + boarddef + " 1 1 1 1 1";
         }
         else {
             Logger.getLogger(QCmdCompileFirmware.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");

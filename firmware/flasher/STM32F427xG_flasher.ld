@@ -21,7 +21,6 @@
  * ST32F427xG flasher memory setup.
  */
 
-ENTRY(ResetHandler)
 
 MEMORY
 {
@@ -29,8 +28,14 @@ MEMORY
     CCMSRAM (rwx) : ORIGIN = 0x10000000, LENGTH = 0x0000E000 /* CCM - ccmramend */
 }
 
-__main_stack_size__     = 0x200;
-__process_stack_size__  = 0x200;
+__main_stack_size__     = 0x400;
+__process_stack_size__  = 0x400;
+
+__ram_start__   = ORIGIN(SRAM);
+__ram_size__    = LENGTH(SRAM);
+__ram_end__     = __ram_start__ + __ram_size__;
+
+ENTRY(Reset_Handler)
 
 SECTIONS
 {
@@ -39,9 +44,8 @@ SECTIONS
     
     .text : ALIGN(16) SUBALIGN(16)
     {
-        *(.text.ResetHandler)
-        *(.text.startup.*)
         *(.text)
+        *(.text.startup.*)
         *(.text.*)
         *(.rodata)
         *(.rodata.*)
@@ -75,7 +79,7 @@ SECTIONS
 
     .startup : ALIGN(16) SUBALIGN(16)
     {
-        KEEP(*(vectors))
+        KEEP(*(.vectors))
     } > SRAM
 
     .data : ALIGN(4) SUBALIGN(4)
@@ -107,6 +111,8 @@ SECTIONS
     {
         . = ALIGN(4);
         PROVIDE(_data = .);
+	_textdata_start = LOADADDR(.data);
+        _data_start = .;
         *(.data)
         . = ALIGN(4);
         *(.data.*)
@@ -114,6 +120,7 @@ SECTIONS
         *(.ramtext)
         . = ALIGN(4);
         PROVIDE(_edata = .);
+	_data_end = .;
     } > SRAM
 
     .bss :
@@ -132,4 +139,7 @@ SECTIONS
 }
 
 PROVIDE(end = .);
-_end            = .;
+_end = .;
+
+__heap_base__ = _end;
+__heap_end__  = __ram_end__;

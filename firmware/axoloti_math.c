@@ -21,7 +21,7 @@
 #include "math.h"
 #include "axoloti_defines.h"
 
-int16_t sinet[SINETSIZE + 1];
+// int16_t sinet[SINETSIZE + 1];
 int32_t sine2t[SINE2TSIZE + 1];
 int16_t windowt[WINDOWSIZE + 1];
 uint32_t pitcht[PITCHTSIZE];
@@ -31,16 +31,16 @@ uint16_t logt[LOGTSIZE];
 void axoloti_math_init(void) {
   volatile short *p;
   volatile uint32_t i;
-  p = (short *)sinet;
-  for (i = 0; i < SINETSIZE + 1; i++) {
-    /* Use PI defined in arm_math.h instead of PI_F from axoloti_defines.h */
-//    volatile float f = i * 2 * PI / (float)SINETSIZE;
-//    volatile float sin_f = sinf(f);
-//    volatile int isinf = (32767.0f*sin_f);
-//    float f2 = (sin_f*sin_f*sin_f);
-    volatile int q = arm_sin_q31(i << 21);
-    *p++ = (int16_t)(q >> 16);
-  }
+//   p = (short *)sinet;
+//   for (i = 0; i < SINETSIZE + 1; i++) {
+//     /* Use PI defined in arm_math.h instead of PI_F from axoloti_defines.h */
+// //    volatile float f = i * 2 * PI / (float)SINETSIZE;
+// //    volatile float sin_f = sinf(f);
+// //    volatile int isinf = (32767.0f*sin_f);
+// //    float f2 = (sin_f*sin_f*sin_f);
+//     volatile int q = arm_sin_q31(i << 21);
+//     *p++ = (int16_t)(q >> 16);
+//   }
 
   int32_t *p32 = (int32_t *)sine2t;
   for (i = 0; i < SINE2TSIZE + 1; i++) {

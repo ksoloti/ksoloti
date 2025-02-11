@@ -29,7 +29,8 @@
 #endif
 
 //FIXME this should not be needed
-#define STM32F429_439xx
+#define STM32F427_437xx
+#define STM32F427xx
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx.h"

@@ -1,28 +1,17 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
-                 2011,2012,2013 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
-    This file is part of ChibiOS/RT.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    ChibiOS/RT is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-    ChibiOS/RT is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes ChibiOS/RT, without being obliged to provide
-    the source code for any proprietary components. See the file exception.txt
-    for full details of how and when the exception can be applied.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 */
 
 /**
@@ -33,10 +22,9 @@
  * @{
  */
 
-#include "ch.h"
 #include "hal.h"
 
-#if HAL_USE_UART || defined(__DOXYGEN__)
+#if (HAL_USE_UART == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
@@ -79,10 +67,19 @@ void uartInit(void) {
  */
 void uartObjectInit(UARTDriver *uartp) {
 
-  uartp->state   = UART_STOP;
-  uartp->txstate = UART_TX_IDLE;
-  uartp->rxstate = UART_RX_IDLE;
-  uartp->config  = NULL;
+  uartp->state      = UART_STOP;
+  uartp->txstate    = UART_TX_IDLE;
+  uartp->rxstate    = UART_RX_IDLE;
+  uartp->config     = NULL;
+#if UART_USE_WAIT == TRUE
+  uartp->early      = false;
+  uartp->threadrx   = NULL;
+  uartp->threadtx   = NULL;
+#endif /* UART_USE_WAIT */
+#if UART_USE_MUTUAL_EXCLUSION == TRUE
+  osalMutexObjectInit(&uartp->mutex);
+#endif /* UART_USE_MUTUAL_EXCLUSION */
+
   /* Optional, user-defined initializer.*/
 #if defined(UART_DRIVER_EXT_INIT_HOOK)
   UART_DRIVER_EXT_INIT_HOOK(uartp);
@@ -99,16 +96,16 @@ void uartObjectInit(UARTDriver *uartp) {
  */
 void uartStart(UARTDriver *uartp, const UARTConfig *config) {
 
-  chDbgCheck((uartp != NULL) && (config != NULL), "uartStart");
+  osalDbgCheck((uartp != NULL) && (config != NULL));
 
-  chSysLock();
-  chDbgAssert((uartp->state == UART_STOP) || (uartp->state == UART_READY),
-              "uartStart(), #1", "invalid state");
+  osalSysLock();
+  osalDbgAssert((uartp->state == UART_STOP) || (uartp->state == UART_READY),
+                "invalid state");
 
   uartp->config = config;
   uart_lld_start(uartp);
   uartp->state = UART_READY;
-  chSysUnlock();
+  osalSysUnlock();
 }
 
 /**
@@ -120,17 +117,17 @@ void uartStart(UARTDriver *uartp, const UARTConfig *config) {
  */
 void uartStop(UARTDriver *uartp) {
 
-  chDbgCheck(uartp != NULL, "uartStop");
+  osalDbgCheck(uartp != NULL);
 
-  chSysLock();
-  chDbgAssert((uartp->state == UART_STOP) || (uartp->state == UART_READY),
-              "uartStop(), #1", "invalid state");
+  osalSysLock();
+  osalDbgAssert((uartp->state == UART_STOP) || (uartp->state == UART_READY),
+                "invalid state");
 
   uart_lld_stop(uartp);
   uartp->state = UART_STOP;
   uartp->txstate = UART_TX_IDLE;
   uartp->rxstate = UART_RX_IDLE;
-  chSysUnlock();
+  osalSysUnlock();
 }
 
 /**
@@ -146,18 +143,15 @@ void uartStop(UARTDriver *uartp) {
  */
 void uartStartSend(UARTDriver *uartp, size_t n, const void *txbuf) {
 
-  chDbgCheck((uartp != NULL) && (n > 0) && (txbuf != NULL),
-             "uartStartSend");
+  osalDbgCheck((uartp != NULL) && (n > 0U) && (txbuf != NULL));
              
-  chSysLock();
-  chDbgAssert(uartp->state == UART_READY,
-              "uartStartSend(), #1", "is active");
-  chDbgAssert(uartp->txstate != UART_TX_ACTIVE,
-              "uartStartSend(), #2", "tx active");
+  osalSysLock();
+  osalDbgAssert(uartp->state == UART_READY, "is active");
+  osalDbgAssert(uartp->txstate != UART_TX_ACTIVE, "tx active");
 
   uart_lld_start_send(uartp, n, txbuf);
   uartp->txstate = UART_TX_ACTIVE;
-  chSysUnlock();
+  osalSysUnlock();
 }
 
 /**
@@ -174,13 +168,10 @@ void uartStartSend(UARTDriver *uartp, size_t n, const void *txbuf) {
  */
 void uartStartSendI(UARTDriver *uartp, size_t n, const void *txbuf) {
 
-  chDbgCheckClassI();
-  chDbgCheck((uartp != NULL) && (n > 0) && (txbuf != NULL),
-             "uartStartSendI");
-  chDbgAssert(uartp->state == UART_READY,
-              "uartStartSendI(), #1", "is active");
-  chDbgAssert(uartp->txstate != UART_TX_ACTIVE,
-              "uartStartSendI(), #2", "tx active");
+  osalDbgCheckClassI();
+  osalDbgCheck((uartp != NULL) && (n > 0U) && (txbuf != NULL));
+  osalDbgAssert(uartp->state == UART_READY, "is active");
+  osalDbgAssert(uartp->txstate != UART_TX_ACTIVE, "tx active");
 
   uart_lld_start_send(uartp, n, txbuf);
   uartp->txstate = UART_TX_ACTIVE;
@@ -201,18 +192,20 @@ void uartStartSendI(UARTDriver *uartp, size_t n, const void *txbuf) {
 size_t uartStopSend(UARTDriver *uartp) {
   size_t n;
 
-  chDbgCheck(uartp != NULL, "uartStopSend");
+  osalDbgCheck(uartp != NULL);
 
-  chSysLock();
-  chDbgAssert(uartp->state == UART_READY, "uartStopSend(), #1", "not active");
+  osalSysLock();
+  osalDbgAssert(uartp->state == UART_READY, "not active");
 
   if (uartp->txstate == UART_TX_ACTIVE) {
     n = uart_lld_stop_send(uartp);
     uartp->txstate = UART_TX_IDLE;
   }
-  else
+  else {
     n = 0;
-  chSysUnlock();
+  }
+  osalSysUnlock();
+
   return n;
 }
 
@@ -231,9 +224,9 @@ size_t uartStopSend(UARTDriver *uartp) {
  */
 size_t uartStopSendI(UARTDriver *uartp) {
 
-  chDbgCheckClassI();
-  chDbgCheck(uartp != NULL, "uartStopSendI");
-  chDbgAssert(uartp->state == UART_READY, "uartStopSendI(), #1", "not active");
+  osalDbgCheckClassI();
+  osalDbgCheck(uartp != NULL);
+  osalDbgAssert(uartp->state == UART_READY, "not active");
 
   if (uartp->txstate == UART_TX_ACTIVE) {
     size_t n = uart_lld_stop_send(uartp);
@@ -249,25 +242,22 @@ size_t uartStopSendI(UARTDriver *uartp) {
  *          or equal to 8 bits else it is organized as uint16_t arrays.
  *
  * @param[in] uartp     pointer to the @p UARTDriver object
- * @param[in] n         number of data frames to send
+ * @param[in] n         number of data frames to receive
  * @param[in] rxbuf     the pointer to the receive buffer
  *
  * @api
  */
 void uartStartReceive(UARTDriver *uartp, size_t n, void *rxbuf) {
 
-  chDbgCheck((uartp != NULL) && (n > 0) && (rxbuf != NULL),
-             "uartStartReceive");
+  osalDbgCheck((uartp != NULL) && (n > 0U) && (rxbuf != NULL));
 
-  chSysLock();
-  chDbgAssert(uartp->state == UART_READY,
-              "uartStartReceive(), #1", "is active");
-  chDbgAssert(uartp->rxstate != UART_RX_ACTIVE,
-              "uartStartReceive(), #2", "rx active");
+  osalSysLock();
+  osalDbgAssert(uartp->state == UART_READY, "is active");
+  osalDbgAssert(uartp->rxstate != UART_RX_ACTIVE, "rx active");
 
   uart_lld_start_receive(uartp, n, rxbuf);
   uartp->rxstate = UART_RX_ACTIVE;
-  chSysUnlock();
+  osalSysUnlock();
 }
 
 /**
@@ -277,20 +267,17 @@ void uartStartReceive(UARTDriver *uartp, size_t n, void *rxbuf) {
  * @note    This function has to be invoked from a lock zone.
  *
  * @param[in] uartp     pointer to the @p UARTDriver object
- * @param[in] n         number of data frames to send
+ * @param[in] n         number of data frames to receive
  * @param[out] rxbuf    the pointer to the receive buffer
  *
  * @iclass
  */
 void uartStartReceiveI(UARTDriver *uartp, size_t n, void *rxbuf) {
 
-  chDbgCheckClassI();
-  chDbgCheck((uartp != NULL) && (n > 0) && (rxbuf != NULL),
-             "uartStartReceiveI");
-  chDbgAssert(uartp->state == UART_READY,
-              "uartStartReceiveI(), #1", "is active");
-  chDbgAssert(uartp->rxstate != UART_RX_ACTIVE,
-              "uartStartReceiveI(), #2", "rx active");
+  osalDbgCheckClassI();
+  osalDbgCheck((uartp != NULL) && (n > 0U) && (rxbuf != NULL));
+  osalDbgAssert(uartp->state == UART_READY, "is active");
+  osalDbgAssert(uartp->rxstate != UART_RX_ACTIVE, "rx active");
 
   uart_lld_start_receive(uartp, n, rxbuf);
   uartp->rxstate = UART_RX_ACTIVE;
@@ -311,19 +298,20 @@ void uartStartReceiveI(UARTDriver *uartp, size_t n, void *rxbuf) {
 size_t uartStopReceive(UARTDriver *uartp) {
   size_t n;
 
-  chDbgCheck(uartp != NULL, "uartStopReceive");
+  osalDbgCheck(uartp != NULL);
 
-  chSysLock();
-  chDbgAssert(uartp->state == UART_READY,
-              "uartStopReceive(), #1", "not active");
+  osalSysLock();
+  osalDbgAssert(uartp->state == UART_READY, "not active");
 
   if (uartp->rxstate == UART_RX_ACTIVE) {
     n = uart_lld_stop_receive(uartp);
     uartp->rxstate = UART_RX_IDLE;
   }
-  else
+  else {
     n = 0;
-  chSysUnlock();
+  }
+  osalSysUnlock();
+
   return n;
 }
 
@@ -332,7 +320,7 @@ size_t uartStopReceive(UARTDriver *uartp) {
  * @note    Stopping a receive operation also suppresses the receive callbacks.
  * @note    This function has to be invoked from a lock zone.
  *
- * @param[in] uartp      pointer to the @p UARTDriver object
+ * @param[in] uartp     pointer to the @p UARTDriver object
  *
  * @return              The number of data frames not received by the
  *                      stopped receive operation.
@@ -342,10 +330,9 @@ size_t uartStopReceive(UARTDriver *uartp) {
  */
 size_t uartStopReceiveI(UARTDriver *uartp) {
 
-  chDbgCheckClassI();
-  chDbgCheck(uartp != NULL, "uartStopReceiveI");
-  chDbgAssert(uartp->state == UART_READY,
-              "uartStopReceiveI(), #1", "not active");
+  osalDbgCheckClassI();
+  osalDbgCheck(uartp != NULL);
+  osalDbgAssert(uartp->state == UART_READY, "not active");
 
   if (uartp->rxstate == UART_RX_ACTIVE) {
     size_t n = uart_lld_stop_receive(uartp);
@@ -355,6 +342,174 @@ size_t uartStopReceiveI(UARTDriver *uartp) {
   return 0;
 }
 
-#endif /* HAL_USE_UART */
+#if (UART_USE_WAIT == TRUE) || defined(__DOXYGEN__)
+/**
+ * @brief   Performs a transmission on the UART peripheral.
+ * @note    The function returns when the specified number of frames have been
+ *          sent to the UART or on timeout.
+ * @note    The buffers are organized as uint8_t arrays for data sizes below
+ *          or equal to 8 bits else it is organized as uint16_t arrays.
+ *
+ * @param[in] uartp     pointer to the @p UARTDriver object
+ * @param[in,out] np    number of data frames to transmit, on exit the number
+ *                      of frames actually transmitted
+ * @param[in] txbuf     the pointer to the transmit buffer
+ * @param[in] timeout   operation timeout
+ * @return              The operation status.
+ * @retval MSG_OK       if the operation completed successfully.
+ * @retval MSG_TIMEOUT  if the operation timed out.
+ *
+ * @api
+ */
+msg_t uartSendTimeout(UARTDriver *uartp, size_t *np,
+                      const void *txbuf, systime_t timeout) {
+  msg_t msg;
+
+  osalDbgCheck((uartp != NULL) && (*np > 0U) && (txbuf != NULL));
+
+  osalSysLock();
+  osalDbgAssert(uartp->state == UART_READY, "is active");
+  osalDbgAssert(uartp->txstate != UART_TX_ACTIVE, "tx active");
+
+  /* Transmission start.*/
+  uartp->early = true;
+  uart_lld_start_send(uartp, *np, txbuf);
+  uartp->txstate = UART_TX_ACTIVE;
+
+  /* Waiting for result.*/
+  msg = osalThreadSuspendTimeoutS(&uartp->threadtx, timeout);
+  if (msg != MSG_OK) {
+    *np -= uartStopSendI(uartp);
+  }
+  osalSysUnlock();
+
+  return msg;
+}
+
+/**
+ * @brief   Performs a transmission on the UART peripheral.
+ * @note    The function returns when the specified number of frames have been
+ *          physically transmitted or on timeout.
+ * @note    The buffers are organized as uint8_t arrays for data sizes below
+ *          or equal to 8 bits else it is organized as uint16_t arrays.
+ *
+ * @param[in] uartp     pointer to the @p UARTDriver object
+ * @param[in,out] np    number of data frames to transmit, on exit the number
+ *                      of frames actually transmitted
+ * @param[in] txbuf     the pointer to the transmit buffer
+ * @param[in] timeout   operation timeout
+ * @return              The operation status.
+ * @retval MSG_OK       if the operation completed successfully.
+ * @retval MSG_TIMEOUT  if the operation timed out.
+ *
+ * @api
+ */
+msg_t uartSendFullTimeout(UARTDriver *uartp, size_t *np,
+                          const void *txbuf, systime_t timeout) {
+  msg_t msg;
+
+  osalDbgCheck((uartp != NULL) && (*np > 0U) && (txbuf != NULL));
+
+  osalSysLock();
+  osalDbgAssert(uartp->state == UART_READY, "is active");
+  osalDbgAssert(uartp->txstate != UART_TX_ACTIVE, "tx active");
+
+  /* Transmission start.*/
+  uartp->early = false;
+  uart_lld_start_send(uartp, *np, txbuf);
+  uartp->txstate = UART_TX_ACTIVE;
+
+  /* Waiting for result.*/
+  msg = osalThreadSuspendTimeoutS(&uartp->threadtx, timeout);
+  if (msg != MSG_OK) {
+    *np = uartStopSendI(uartp);
+  }
+  osalSysUnlock();
+
+  return msg;
+}
+
+/**
+ * @brief   Performs a receive operation on the UART peripheral.
+ * @note    The function returns when the specified number of frames have been
+ *          received or on error/timeout.
+ * @note    The buffers are organized as uint8_t arrays for data sizes below
+ *          or equal to 8 bits else it is organized as uint16_t arrays.
+ *
+ * @param[in] uartp     pointer to the @p UARTDriver object
+ * @param[in,out] np    number of data frames to receive, on exit the number
+ *                      of frames actually received
+ * @param[in] rxbuf     the pointer to the receive buffer
+ * @param[in] timeout   operation timeout
+ *
+ * @return              The operation status.
+ * @retval MSG_OK       if the operation completed successfully.
+ * @retval MSG_TIMEOUT  if the operation timed out.
+ * @retval MSG_RESET    in case of a receive error.
+ *
+ * @api
+ */
+msg_t uartReceiveTimeout(UARTDriver *uartp, size_t *np,
+                         void *rxbuf, systime_t timeout) {
+  msg_t msg;
+
+  osalDbgCheck((uartp != NULL) && (*np > 0U) && (rxbuf != NULL));
+
+  osalSysLock();
+  osalDbgAssert(uartp->state == UART_READY, "is active");
+  osalDbgAssert(uartp->rxstate != UART_RX_ACTIVE, "rx active");
+
+  /* Receive start.*/
+  uart_lld_start_receive(uartp, *np, rxbuf);
+  uartp->rxstate = UART_RX_ACTIVE;
+
+  /* Waiting for result.*/
+  msg = osalThreadSuspendTimeoutS(&uartp->threadrx, timeout);
+  if (msg != MSG_OK) {
+    *np -= uartStopReceiveI(uartp);
+  }
+  osalSysUnlock();
+
+  return msg;
+}
+#endif
+
+#if (UART_USE_MUTUAL_EXCLUSION == TRUE) || defined(__DOXYGEN__)
+/**
+ * @brief   Gains exclusive access to the UART bus.
+ * @details This function tries to gain ownership to the UART bus, if the bus
+ *          is already being used then the invoking thread is queued.
+ * @pre     In order to use this function the option @p UART_USE_MUTUAL_EXCLUSION
+ *          must be enabled.
+ *
+ * @param[in] uartp     pointer to the @p UARTDriver object
+ *
+ * @api
+ */
+void uartAcquireBus(UARTDriver *uartp) {
+
+  osalDbgCheck(uartp != NULL);
+
+  osalMutexLock(&uartp->mutex);
+}
+
+/**
+ * @brief   Releases exclusive access to the UART bus.
+ * @pre     In order to use this function the option @p UART_USE_MUTUAL_EXCLUSION
+ *          must be enabled.
+ *
+ * @param[in] uartp     pointer to the @p UARTDriver object
+ *
+ * @api
+ */
+void uartReleaseBus(UARTDriver *uartp) {
+
+  osalDbgCheck(uartp != NULL);
+
+  osalMutexUnlock(&uartp->mutex);
+}
+#endif
+
+#endif /* HAL_USE_UART == TRUE */
 
 /** @} */

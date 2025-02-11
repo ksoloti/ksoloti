@@ -75,7 +75,7 @@ import qcmds.QCmdUploadPatch;
  *
  * @author Johannes Taelman
  */
-public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, ConnectionStatusListener, SDCardMountStatusListener {
+public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, ConnectionStatusListener, SDCardMountStatusListener, ConnectionFlagsListener, UnitNameListener {
 
     private static final Logger LOGGER = Logger.getLogger(PatchFrame.class.getName());
     /**
@@ -211,7 +211,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             jMenuItemUnlock.setVisible(false);
         }
         jMenuPreset.setVisible(false);
-        jMenuItemAdjScroll.setVisible(false);
+        jMenuItemAdjScroll.setVisible(true);
         patch.Layers.requestFocus();
         if (USBBulkConnection.GetConnection().isConnected()) {
             ShowConnect();
@@ -227,6 +227,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         createBufferStrategy(2);
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
         USBBulkConnection.GetConnection().addSDCardMountStatusListener(this);
+        mainframe.addUnitNameListener(this);
     }
     
     public void repositionIfOutsideScreen() {
@@ -294,7 +295,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             patch.Unlock();
         }
         jToggleButtonLive.setSelected(false);
-        // jToggleButtonLive.setForeground(null);
         jCheckBoxMenuItemLive.setSelected(false);
         ShowConnect1(false);
     }
@@ -303,14 +303,12 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     public void ShowConnect() {
         patch.Unlock();
         jToggleButtonLive.setSelected(false);
-        // jToggleButtonLive.setForeground(null);
         jCheckBoxMenuItemLive.setSelected(false);
         ShowConnect1(true);
     }
 
     public void ShowCompileFail() {
         jToggleButtonLive.setSelected(false);
-        // jToggleButtonLive.setForeground(null);
         jToggleButtonLive.setEnabled(true);
     }
 
@@ -318,15 +316,16 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         DocumentWindowList.UnregisterWindow(this);
         USBBulkConnection.GetConnection().removeConnectionStatusListener(this);
         USBBulkConnection.GetConnection().removeSDCardMountStatusListener(this);
+        mainframe.removeUnitNameListener(this);
         patch.Close();
-        dispose();
+        super.dispose();
     }
 
     @Override
     public boolean AskClose() {
-        if (patch.isDirty() && patch.container() == null) {
-            Object[] options = {"Yes",
-                "No",
+        if (patch.isDirty() && patch.getContainer() == null) {
+            Object[] options = {"Save",
+                "Discard",
                 "Cancel"};
             int n = JOptionPane.showOptionDialog(
                     this,
@@ -367,8 +366,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jToggleButtonLive = new javax.swing.JToggleButton();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0));
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0));
+        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0));
         jLabelDSPLoad = new javax.swing.JLabel();
         jProgressBarDSPLoad = new javax.swing.JProgressBar();
+        jUnitNameIndicator = new javax.swing.JLabel(" USB");
         jScrollPane1 = new ScrollPaneComponent();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenuP = new axoloti.menus.FileMenu();
@@ -472,9 +473,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jProgressBarDSPLoad.setMaximum(200);
         jProgressBarDSPLoad.setStringPainted(true);
         jToolbarPanel.add(jProgressBarDSPLoad);
-
+        
         filler2.setAlignmentX(LEFT_ALIGNMENT);
         jToolbarPanel.add(filler2);
+
+        jToolbarPanel.add(jUnitNameIndicator);
+
+        filler3.setAlignmentX(LEFT_ALIGNMENT);
+        jToolbarPanel.add(filler3);
 
         getContentPane().add(jToolbarPanel);
 
@@ -618,7 +624,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jMenuItemNotes.setMnemonic('T');
         jMenuItemNotes.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyUtils.CONTROL_OR_CMD_MASK));
-        jMenuItemNotes.setText("Notes");
+        jMenuItemNotes.setText("Patch Notes");
         jMenuItemNotes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemNotesActionPerformed(evt);
@@ -647,15 +653,15 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuView.add(jCheckBoxMenuItemCordsInBackground);
 
-        jMenuItemAdjScroll.setMnemonic('J');
-        jMenuItemAdjScroll.setText("Adjust Scroll");
+        jMenuItemAdjScroll.setMnemonic('R');
+        jMenuItemAdjScroll.setText("Refresh Scrollbars");
         jMenuItemAdjScroll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemAdjScrollActionPerformed(evt);
             }
         });
         jMenuView.add(jMenuItemAdjScroll);
-        jMenuView.add(jSeparator5);
+        // jMenuView.add(jSeparator5);
 
         jMenuBar1.add(jMenuView);
 
@@ -789,6 +795,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuBar1.add(jMenuPreset);
         jMenuBar1.add(windowMenu1);
 
+        helpMenu1.setMnemonic('H');
         helpMenu1.setText("Help");
         jMenuBar1.add(helpMenu1);
 
@@ -915,10 +922,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 fileToBeSaved = new File(fc.getSelectedFile() + filterext);
 
             } else if (!ext.equals(filterext)) {
-                Object[] options = {"Yes",
+                Object[] options = {"Change",
                     "No"};
                 int n = JOptionPane.showOptionDialog(this,
-                        "File does not match filter. Change extension to " + filterext + "?",
+                        "File extension does not match filter. Change extension to " + filterext + "?",
                         "File Extension",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
@@ -935,8 +942,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
 
             if (fileToBeSaved.exists()) {
-                Object[] options = {"Yes",
-                    "No"};
+                Object[] options = {"Overwrite",
+                    "Cancel"};
                 int n = JOptionPane.showOptionDialog(this,
                         "File exists! Overwrite?",
                         "File Exists",
@@ -1171,12 +1178,12 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private boolean GoLive() {
-        if (patch.getFileNamePath().endsWith(".axs") || patch.container() != null) {
-            Object[] options = {"Yes",
-                "No"};
+        if (patch.getFileNamePath().endsWith(".axs") || patch.getContainer() != null) {
+            Object[] options = {"Go Live",
+                "Cancel"};
 
             int n = JOptionPane.showOptionDialog(this,
-                    "This is a subpatch intended to be placed in a main patch and possibly has no output.\nDo you still want to take it live?",
+                    "This is a subpatch intended to be placed inside a main patch and possibly has no input or output.\nDo you still want to take it live?",
                     "File is Subpatch",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
@@ -1204,6 +1211,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private axoloti.menus.FileMenu fileMenuP;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
+    private javax.swing.Box.Filler filler3;
     private axoloti.menus.HelpMenu helpMenu1;
     private javax.swing.JToggleButton jToggleButtonLive;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemCordsInBackground;
@@ -1239,6 +1247,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JMenuItem jMenuUploadCode;
     private javax.swing.JMenu jMenuView;
     private javax.swing.JProgressBar jProgressBarDSPLoad;
+    private javax.swing.JLabel jUnitNameIndicator;
     private ScrollPaneComponent jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
@@ -1251,7 +1260,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JMenuItem undoItem;
     private axoloti.menus.WindowMenu windowMenu1;
 
-    void ShowDSPLoad(int val200) {
+    private boolean previousOverload;
+
+    void ShowDSPLoad(int val200, boolean overload) {
         int pv = jProgressBarDSPLoad.getValue();
         if (val200 == pv) {
             return;
@@ -1262,6 +1273,15 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         else if (pv != 0) {
             jProgressBarDSPLoad.setValue(0);
         }
+
+        if(previousOverload != overload) {
+            if(overload) {
+                jProgressBarDSPLoad.setForeground(Theme.ProgressBar_Overload_Foreground);
+            } else {
+                jProgressBarDSPLoad.setForeground(Theme.Button_Accent_Background); 
+            }
+        }
+        previousOverload = overload;
     }
 
     @Override
@@ -1329,5 +1349,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     public void ShowSDCardUnmounted() {
         jMenuItemUploadSD.setEnabled(false);
         jMenuItemUploadSDStart.setEnabled(false);
+    }
+
+    @Override
+    public void ShowConnectionFlags(int connectionFlags) {
+    }
+
+    @Override
+    public void ShowUnitName(String unitName) {
+        jUnitNameIndicator.setText(unitName);
     }
 }

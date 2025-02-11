@@ -17,7 +17,7 @@ case "$unamestr" in
 		rootdir="$(cd $(dirname $0); pwd -P)"
 	;;
     *)
-        echo "Unknown OS: $unamestr - aborting..."
+        printf "\nUnknown OS: $unamestr - aborting...\n"
         exit
     ;;
 esac

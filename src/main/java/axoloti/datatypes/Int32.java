@@ -61,12 +61,12 @@ public class Int32 implements DataType {
 
     @Override
     public Color GetColor() {
-        return Theme.getCurrentTheme().Cable_Int32;
+        return Theme.Cable_Int32;
     }
 
     @Override
     public Color GetColorHighlighted() {
-        return Theme.getCurrentTheme().Cable_Int32_Highlighted;
+        return Theme.Cable_Int32_Highlighted;
     }
 
     @Override

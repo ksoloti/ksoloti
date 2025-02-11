@@ -29,7 +29,7 @@ import axoloti.displays.DisplayInstance;
 import axoloti.inlets.InletInstance;
 import axoloti.outlets.OutletInstance;
 import axoloti.parameters.ParameterInstance;
-import axoloti.utils.CharEscape;
+import static axoloti.utils.CharEscape.charEscape;
 import axoloti.utils.Constants;
 import components.LabelComponent;
 import components.TextFieldComponent;
@@ -194,7 +194,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         if (type == null) {
             ArrayList<AxoObjectAbstract> types = MainFrame.axoObjects.GetAxoObjectFromName(typeName, patch.GetCurrentWorkingDirectory());
             if (types == null) {
-                LOGGER.log(Level.SEVERE, "Object name not found: \"{0}\"", typeName);
+                LOGGER.log(Level.SEVERE, "Object not found: \"" + typeName + "\", labeled \"" + InstanceName + "\"");
             }
             else {
                 // pick first
@@ -225,14 +225,14 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         // setFocusable(true);
         Titlebar.removeAll();
         Titlebar.setLayout(new BoxLayout(Titlebar, BoxLayout.LINE_AXIS));
-        Titlebar.setBackground(Theme.getCurrentTheme().Object_TitleBar_Background);
+        Titlebar.setBackground(Theme.Object_TitleBar_Background);
         Titlebar.setMinimumSize(TitleBarMinimumSize);
         Titlebar.setMaximumSize(TitleBarMaximumSize);
 
         setBorder(borderUnselected);
         resolveType();
 
-        setBackground(Theme.getCurrentTheme().Object_Default_Background);
+        setBackground(Theme.Object_Default_Background);
 
         setVisible(true);
 
@@ -250,22 +250,6 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
 
     @Override
     public void mouseClicked(MouseEvent me) {
-        if (patch != null && me.getButton() == MouseEvent.BUTTON1) {
-            // if (me.getClickCount() == 1) {
-                if (me.isShiftDown()) {
-                    SetSelected(!isSelected());
-                    me.consume();
-                } else if (Selected == false) {
-                    ((PatchGUI) patch).SelectNone();
-                    SetSelected(true);
-                    me.consume();
-                }
-            // }
-            // if (me.getClickCount() == 2) {
-                // ((PatchGUI) patch).ShowClassSelector(AxoObjectInstanceAbstract.this.getLocation(), AxoObjectInstanceAbstract.this, null, true);
-                // me.consume();
-            // }
-        }
     }
 
     @Override
@@ -288,19 +272,27 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
 
     @Override
     public void mouseDragged(MouseEvent me) {
+
         if ((patch != null) && (draggingObjects != null)) {
+
             Point locOnScreen = me.getLocationOnScreen();
             int dx = locOnScreen.x - dragAnchor.x;
             int dy = locOnScreen.y - dragAnchor.y;
+
             for (AxoObjectInstanceAbstract o : draggingObjects) {
+                
                 int nx = o.dragLocation.x + dx;
                 int ny = o.dragLocation.y + dy;
+                
                 if (!me.isShiftDown()) {
                     nx = ((nx + (Constants.X_GRID / 2)) / Constants.X_GRID) * Constants.X_GRID;
                     ny = ((ny + (Constants.Y_GRID / 2)) / Constants.Y_GRID) * Constants.Y_GRID;
                 }
-                if (o.x != nx || o.y != ny) {
-                    o.setLocation(nx, ny);
+                
+                if (o.isSelected()) {
+                    if (o.x != nx || o.y != ny) {
+                        o.setLocation(nx, ny);
+                    }
                 }
             }
         }
@@ -326,6 +318,22 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
                 p.show(Titlebar, 0, Titlebar.getHeight());
                 me.consume();
             } else if (!IsLocked()) {
+                if (me.getButton() == MouseEvent.BUTTON1) {
+                    // if (me.getClickCount() == 1) {
+                        if (me.isShiftDown()) {
+                            SetSelected(!isSelected());
+                            me.consume();
+                        } else if (Selected == false) {
+                            ((PatchGUI) patch).SelectNone();
+                            SetSelected(true);
+                            me.consume();
+                        }
+                    // }
+                    // if (me.getClickCount() == 2) {
+                        // ((PatchGUI) patch).ShowClassSelector(AxoObjectInstanceAbstract.this.getLocation(), AxoObjectInstanceAbstract.this, null, true);
+                        // me.consume();
+                    // }
+                }
                 draggingObjects = new ArrayList<AxoObjectInstanceAbstract>();
                 dragAnchor = me.getLocationOnScreen();
                 moveToDraggedLayer(this);
@@ -538,19 +546,19 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     public void refreshIndex() {
     }
 
-    static Border borderSelected = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Selected);
-    static Border borderUnselected = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Unselected);
-    static Border borderUnselectedLocked = BorderFactory.createLineBorder(Theme.getCurrentTheme().Object_Border_Unselected_Locked);
+    static Border borderSelected = BorderFactory.createLineBorder(Theme.Object_Border_Selected);
+    static Border borderUnselected = BorderFactory.createLineBorder(Theme.Object_Border_Unselected);
+    // static Border borderUnselectedLocked = BorderFactory.createLineBorder(Theme.Object_Border_Unselected_Locked);
 
     public void SetSelected(boolean Selected) {
         if (this.Selected != Selected) {
             if (Selected) {
                 setBorder(borderSelected);
-                Titlebar.setBackground(Theme.getCurrentTheme().Object_Border_Selected);
+                Titlebar.setBackground(Theme.Object_Border_Selected);
             } else {
-                if (Locked) setBorder(borderUnselectedLocked);
-                else setBorder(borderUnselected);
-                Titlebar.setBackground(Theme.getCurrentTheme().Object_TitleBar_Background);
+                // if (Locked) setBorder(borderUnselectedLocked);
+                setBorder(borderUnselected);
+                Titlebar.setBackground(Theme.Object_TitleBar_Background);
             }
             repaint();
         }
@@ -562,7 +570,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     }
 
     public void Lock() {
-        if (!this.Selected) setBorder(borderUnselectedLocked);
+        SetSelected(false);
         Locked = true;
     }
 
@@ -614,7 +622,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     }
 
     public String getLegalName() {
-        return CharEscape.charEscape(InstanceName);
+        return charEscape(InstanceName);
     }
 
     public String getCInstanceName() {
@@ -662,7 +670,6 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         revalidate();
         Dimension d = getPreferredSize();
         d.width = ((d.width + Constants.X_GRID - 1) / Constants.X_GRID) * Constants.X_GRID;
-        // d.height = ((d.height + Constants.Y_GRID - 1) / Constants.Y_GRID) * Constants.Y_GRID;
         d.height = ((d.height + Constants.Y_GRID - 3) / Constants.Y_GRID) * Constants.Y_GRID;
         setSize(d);
     }

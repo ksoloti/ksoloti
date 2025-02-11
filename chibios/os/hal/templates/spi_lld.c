@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,17 +15,16 @@
 */
 
 /**
- * @file    templates/spi_lld.c
- * @brief   SPI Driver subsystem low level driver source template.
+ * @file    spi_lld.c
+ * @brief   PLATFORM SPI subsystem low level driver source.
  *
  * @addtogroup SPI
  * @{
  */
 
-#include "ch.h"
 #include "hal.h"
 
-#if HAL_USE_SPI || defined(__DOXYGEN__)
+#if (HAL_USE_SPI == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
@@ -38,7 +37,7 @@
 /**
  * @brief   SPI1 driver identifier.
  */
-#if PLATFORM_SPI_USE_SPI1 || defined(__DOXYGEN__)
+#if (PLATFORM_SPI_USE_SPI1 == TRUE) || defined(__DOXYGEN__)
 SPIDriver SPID1;
 #endif
 
@@ -65,10 +64,10 @@ SPIDriver SPID1;
  */
 void spi_lld_init(void) {
 
-#if PLATFORM_SPI_USE_SPI1
+#if PLATFORM_SPI_USE_SPI1 == TRUE
   /* Driver initialization.*/
   spiObjectInit(&SPID1);
-#endif /* PLATFORM_SPI_USE_SPI1 */
+#endif
 }
 
 /**
@@ -82,11 +81,11 @@ void spi_lld_start(SPIDriver *spip) {
 
   if (spip->state == SPI_STOP) {
     /* Enables the peripheral.*/
-#if PLATFORM_SPI_USE_SPI1
+#if PLATFORM_SPI_USE_SPI1 == TRUE
     if (&SPID1 == spip) {
 
     }
-#endif /* PLATFORM_SPI_USE_SPI1 */
+#endif
   }
   /* Configures the peripheral.*/
 
@@ -102,14 +101,12 @@ void spi_lld_start(SPIDriver *spip) {
 void spi_lld_stop(SPIDriver *spip) {
 
   if (spip->state == SPI_READY) {
-    /* Resets the peripheral.*/
-
     /* Disables the peripheral.*/
-#if PLATFORM_SPI_USE_SPI1
+#if PLATFORM_SPI_USE_SPI1 == TRUE
     if (&SPID1 == spip) {
 
     }
-#endif /* PLATFORM_SPI_USE_SPI1 */
+#endif
   }
 }
 
@@ -245,6 +242,6 @@ uint16_t spi_lld_polled_exchange(SPIDriver *spip, uint16_t frame) {
   return 0;
 }
 
-#endif /* HAL_USE_SPI */
+#endif /* HAL_USE_SPI == TRUE */
 
 /** @} */

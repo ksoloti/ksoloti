@@ -62,6 +62,8 @@ import javax.swing.table.DefaultTableModel;
  */
 public class PreferencesFrame extends JFrame {
 
+    private static final Logger LOGGER = Logger.getLogger(PreferencesFrame.class.getName());
+
     static PreferencesFrame singleton = null;
 
     Preferences prefs = Preferences.LoadPreferences();
@@ -99,6 +101,7 @@ public class PreferencesFrame extends JFrame {
         jTextFieldUserShortcut4.setText(prefs.getUserShortcut(3));
 
         jControllerEnabled.setSelected(prefs.isControllerEnabled());
+        jBackupPatchesOnSDEnabled.setSelected(prefs.isBackupPatchesOnSDEnabled());
         jTextFieldController.setText(prefs.getControllerObject());
         jTextFieldController.setEnabled(prefs.isControllerEnabled());
 
@@ -110,6 +113,8 @@ public class PreferencesFrame extends JFrame {
 
         jComboBoxTheme.setSelectedItem(prefs.getTheme());
 
+        jComboBoxDspSafetyLimit.setSelectedIndex(prefs.getDspSafetyLimit());
+
         PopulateLibrary();
 
         setResizable(false);
@@ -120,6 +125,7 @@ public class PreferencesFrame extends JFrame {
             @Override
             public void mousePressed(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
+                table.setRowHeight(24);
                 Point p = me.getPoint();
                 int idx = table.rowAtPoint(p);
                 if (me.getClickCount() == 2) {
@@ -134,6 +140,7 @@ public class PreferencesFrame extends JFrame {
     void Apply() {
 
         prefs.setPollInterval(Integer.parseInt(jTextFieldPollInterval.getText()));
+
         prefs.setCodeFontSize(Integer.parseInt(jTextFieldCodeFontSize.getText()));
         Constants.FONT_MONO = Constants.FONT_MONO.deriveFont((float)prefs.getCodeFontSize());
         MainFrame.mainframe.updateConsoleFont();
@@ -143,13 +150,14 @@ public class PreferencesFrame extends JFrame {
         prefs.setMouseDoNotRecenterWhenAdjustingControls(jCheckBoxNoMouseReCenter.isSelected());
 
         if (!jComboBoxFirmwareMode.getSelectedItem().toString().equals(prefs.getFirmwareMode())) {
+
             prefs.setFirmwareMode(jComboBoxFirmwareMode.getSelectedItem().toString());
+
+            /* Flush old .h.gch file (Will be recompiled for new firmware mode the next time a patch goes live) */
             axoloti.Axoloti.deletePrecompiledHeaderFile();
-            /* Offer to reflash firmware now */
+
             MainFrame.mainframe.updateLinkFirmwareID();
-            if (USBBulkConnection.GetConnection().isConnected()) {
-                MainFrame.mainframe.interactiveFirmwareUpdate();
-            }
+            
         }
 
         prefs.setUserShortcut(0, jTextFieldUserShortcut1.getText());
@@ -161,9 +169,12 @@ public class PreferencesFrame extends JFrame {
 
         prefs.setControllerObject(jTextFieldController.getText().trim());
         prefs.setControllerEnabled(jControllerEnabled.isSelected());
+        prefs.setBackupPatchesOnSDEnabled(jBackupPatchesOnSDEnabled.isSelected());
 
         prefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
         prefs.applyTheme();
+        
+        prefs.setDspSafetyLimit(jComboBoxDspSafetyLimit.getSelectedIndex());
     }
 
     final void PopulateLibrary() {
@@ -187,9 +198,11 @@ public class PreferencesFrame extends JFrame {
     private void initComponents() {
 
         jTextFieldPollInterval = new JTextField();
+    
         jTextFieldCodeFontSize = new JTextField();
         jLabelLibraries = new JLabel();
         jLabelPollInterval = new JLabel();
+            
         jLabelCodeFontSize = new JLabel();
         jButtonSave = new JButton();
         jLabelDialMouseBehaviour = new JLabel();
@@ -197,6 +210,7 @@ public class PreferencesFrame extends JFrame {
         jComboBoxDialMouseBehaviour = new JComboBox<String>();
         jComboBoxFirmwareMode = new JComboBox<String>();
         jLabelFavouritesDir = new JLabel();
+        jLabelUserShortcutTitle = new JLabel();
         jLabelUserShortcut1 = new JLabel();
         jLabelUserShortcut2 = new JLabel();
         jLabelUserShortcut3 = new JLabel();
@@ -212,6 +226,8 @@ public class PreferencesFrame extends JFrame {
         jLabelController = new JLabel();
         jTextFieldController = new JTextField();
         jControllerEnabled = new JCheckBox();
+        jBackupPatchesOnSDEnabled = new JCheckBox();
+        jLabelBackupPatchesOnSD = new JLabel();
         jScrollPaneLibraryTable = new ScrollPaneComponent();
         jLibraryTable = new JTable();
         jAddLibBtn = new JButton();
@@ -221,6 +237,10 @@ public class PreferencesFrame extends JFrame {
         jLibStatus = new JButton();
         jLabelTheme = new JLabel();
         jComboBoxTheme = new JComboBox<String>();
+
+        jLabelDspSafetyLimit = new JLabel();
+        jComboBoxDspSafetyLimit = new JComboBox<String>();
+
         jCheckBoxNoMouseReCenter = new JCheckBox();
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -265,7 +285,14 @@ public class PreferencesFrame extends JFrame {
             }
         });
 
-        jComboBoxFirmwareMode.setModel(new DefaultComboBoxModel<String>(new String[] { "Ksoloti Core", "Ksoloti Core + SPILink", "Axoloti Core", "Axoloti Core + SPILink" }));
+        jComboBoxFirmwareMode.setModel(new DefaultComboBoxModel<String>(new String[] {
+            "Ksoloti Core",
+            "Ksoloti Core + SPILink",
+            "Ksoloti Core + USBAudio",
+            "Axoloti Core",
+            "Axoloti Core + SPILink",
+            "Axoloti Core + USBAudio"
+        }));
         jComboBoxFirmwareMode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxFirmwareModeActionPerformed(evt);
@@ -275,13 +302,14 @@ public class PreferencesFrame extends JFrame {
 
         jLabelFavouritesDir.setText("Favourites Dir");
 
-        jLabelUserShortcut1.setText("Object Finder Shortcut 1");
-        jLabelUserShortcut2.setText("Object Finder Shortcut 2");
-        jLabelUserShortcut3.setText("Object Finder Shortcut 3");
-        jLabelUserShortcut4.setText("Object Finder Shortcut 4");
+        jLabelUserShortcutTitle.setText("Object Finder Shortcuts");
+        jLabelUserShortcut1.setText("Shift + 1");
+        jLabelUserShortcut2.setText("Shift + 2");
+        jLabelUserShortcut3.setText("Shift + 3");
+        jLabelUserShortcut4.setText("Shift + 4");
 
         jTextFieldFavDir.setText("test");
-        jTextFieldFavDir.setToolTipText("Select a folder/subfolder with patch files to conveniently access them via the file menu.");
+        jTextFieldFavDir.setToolTipText("Select a folder/subfolder with patch files to conveniently access them via \'File > Favourites\'.");
         jTextFieldFavDir.setEditable(false);
         jTextFieldFavDir.setCaretColor(new Color(0,0,0,0));
 
@@ -294,6 +322,8 @@ public class PreferencesFrame extends JFrame {
         jTextFieldUserShortcut2.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
         jTextFieldUserShortcut3.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
         jTextFieldUserShortcut4.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
+        
+        jLabelUserShortcutTitle.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
         jLabelUserShortcut1.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
         jLabelUserShortcut2.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
         jLabelUserShortcut3.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
@@ -323,13 +353,25 @@ public class PreferencesFrame extends JFrame {
             }
         });
 
+        jLabelBackupPatchesOnSD.setText("Backup Patches to SD Card");
+        jLabelBackupPatchesOnSD.setToolTipText("Whenever a patch is \'uploaded to SD card\' or \'uploaded to SD card as startup\',\na backup patch file with timestamp is created in the respective folder on SD card.\nExample: \'myCoolPatch.axp.backup_2025-01-31_09-21-58.axp\'\nIf you ever lose a patch file you previously uploaded to SD card,\nyou can recover a working version from the backup history.\nBackup files in the root directory can hint at the startup patch currently set up on SD card.\n\nRun \'Board > Enter Card Reader Mode\' to get access to the backup files.");
+
+        jBackupPatchesOnSDEnabled.setText("Enabled");
+        jBackupPatchesOnSDEnabled.setToolTipText(jLabelBackupPatchesOnSD.getToolTipText());
+        jBackupPatchesOnSDEnabled.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBackupPatchesOnSDEnabledActionPerformed(evt);
+            }
+        });
+
         jLibraryTable.getTableHeader().setReorderingAllowed(false);
+        jLibraryTable.setRowHeight(24);
         jLibraryTable.setModel(new DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Type", "Id", "Location", "Enabled"
+                "Type", "ID", "Location", "Enabled"
             }
         ) {
             Class<?>[] types = new Class [] {
@@ -352,6 +394,7 @@ public class PreferencesFrame extends JFrame {
         jScrollPaneLibraryTable.setViewportView(jLibraryTable);
         jLibraryTable.getTableHeader().setReorderingAllowed(false);
         jLibraryTable.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jLibraryTable.setRowHeight(24);
         if (jLibraryTable.getColumnModel().getColumnCount() > 0) {
             jLibraryTable.getColumnModel().getColumn(0).setPreferredWidth(60);
             jLibraryTable.getColumnModel().getColumn(1).setPreferredWidth(140);
@@ -359,7 +402,7 @@ public class PreferencesFrame extends JFrame {
             jLibraryTable.getColumnModel().getColumn(3).setPreferredWidth(60);
         }
 
-        jAddLibBtn.setText("+");
+        jAddLibBtn.setText("＋");
         jAddLibBtn.setToolTipText("Add a library.");
         jAddLibBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -367,7 +410,7 @@ public class PreferencesFrame extends JFrame {
             }
         });
 
-        jDelLibBtn.setText("-");
+        jDelLibBtn.setText("🗑");
         jDelLibBtn.setToolTipText("Delete the selected library.");
         jDelLibBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -404,7 +447,7 @@ public class PreferencesFrame extends JFrame {
         jLabelTheme.setEnabled(true);
 
 
-        for (String i : Preferences.THEMELIST) {
+        for (String i : prefs.getThemeList()) {
             jComboBoxTheme.addItem(i);
         }
 
@@ -414,6 +457,27 @@ public class PreferencesFrame extends JFrame {
                 jComboBoxThemeActionPerformed(evt);
             }
         });
+
+        jComboBoxDspSafetyLimit.setModel(new DefaultComboBoxModel<String>(new String[] {
+            "Legacy",
+            "Very Safe",
+            "Safe",
+            "Normal",
+            "Risky",
+            "Very Risky"
+        }));
+        jLabelDspSafetyLimit.setText("DSP Safety Limit");
+        jLabelDspSafetyLimit.setToolTipText("Changes the DSP safety limits.\nThe \'very safe\' and \'safe\' settings ensure a stricter DSP overload threshold and make sure all features in your patches work stable.\nIf you encounter frequent USB disconnects from your computer, try a safer setting.\nThe \'risky\' and \'very risky\' settings set the DSP overload threshold a bit higher,\nallowing you to push your patch load further, but with higher risk of glitches and USB disconnects.\nThe \'Legacy\' setting replicates the original Axoloti Patcher behaviour.");
+        jLabelDspSafetyLimit.setEnabled(true);
+
+
+        jComboBoxDspSafetyLimit.setToolTipText(jLabelDspSafetyLimit.getToolTipText());
+        jComboBoxDspSafetyLimit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxDspSafetyLimitPerformed(evt);
+            }
+        });
+
 
         jCheckBoxNoMouseReCenter.setText("Touchscreen Mode");
         jCheckBoxNoMouseReCenter.setToolTipText("Makes the Patcher usable with touchscreens.\nAlso fixes abnormal mouse behaviour on some systems when turning knobs.");
@@ -439,6 +503,7 @@ public class PreferencesFrame extends JFrame {
 
                         .addGroup(layout.createParallelGroup(Alignment.LEADING)
                             .addComponent(jLabelFavouritesDir)
+                            .addComponent(jLabelUserShortcutTitle)
                             .addComponent(jLabelUserShortcut1)
                             .addComponent(jLabelUserShortcut2)
                             .addComponent(jLabelUserShortcut3)
@@ -459,20 +524,20 @@ public class PreferencesFrame extends JFrame {
                             .addGroup(layout.createSequentialGroup()
 
                                 .addGroup(layout.createParallelGroup(Alignment.LEADING)
-                                    .addComponent(jTextFieldUserShortcut1, GroupLayout.PREFERRED_SIZE, 201, GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextFieldUserShortcut2, GroupLayout.PREFERRED_SIZE, 201, GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextFieldUserShortcut3, GroupLayout.PREFERRED_SIZE, 201, GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextFieldUserShortcut4, GroupLayout.PREFERRED_SIZE, 201, GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextFieldUserShortcut1, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextFieldUserShortcut2, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextFieldUserShortcut3, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextFieldUserShortcut4, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
                                 )
                                 .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             )
                         )
-                        .addGap(12, 12, 12)
+                        .addGap(15, 15, 15)
 
                         .addGroup(layout.createParallelGroup(Alignment.LEADING)
                             .addComponent(btnFavDir, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
                         )
-                        .addGap(16, 16, 16)
+                        .addGap(15, 15, 15)
                     )
 
                     .addGroup(layout.createSequentialGroup()
@@ -500,12 +565,24 @@ public class PreferencesFrame extends JFrame {
                         .addGroup(layout.createParallelGroup(Alignment.LEADING)
 
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelController, GroupLayout.PREFERRED_SIZE, 144, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabelController, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(jControllerEnabled)
-                                .addGap(10, 10, 10)
+                                .addComponent(jControllerEnabled, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jTextFieldController, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE)
+                            )
+
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabelBackupPatchesOnSD, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(ComponentPlacement.RELATED)
+                                .addComponent(jBackupPatchesOnSDEnabled, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)
+                            )
+
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabelDspSafetyLimit, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(ComponentPlacement.RELATED)
+                                .addComponent(jComboBoxDspSafetyLimit, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
                             )
 
                             .addGroup(layout.createSequentialGroup()
@@ -534,7 +611,7 @@ public class PreferencesFrame extends JFrame {
                                 .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(jTextFieldPollInterval, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
                             )
-
+                            
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelCodeFontSize, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED)
@@ -544,7 +621,7 @@ public class PreferencesFrame extends JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelDialMouseBehaviour, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(jComboBoxDialMouseBehaviour, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jComboBoxDialMouseBehaviour, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
                                 .addGap(10, 10, 10)
                                 .addComponent(jCheckBoxNoMouseReCenter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                             )
@@ -568,27 +645,34 @@ public class PreferencesFrame extends JFrame {
                     .addComponent(jLabelFavouritesDir)
                     .addComponent(btnFavDir)
                 )
+                .addGap(15, 15, 15)
+                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jLabelUserShortcutTitle)
+                )
                 .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jTextFieldUserShortcut1)
                     .addComponent(jLabelUserShortcut1)
+                    .addComponent(jTextFieldUserShortcut1)
                 )
+                .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jTextFieldUserShortcut2)
                     .addComponent(jLabelUserShortcut2)
+                    .addComponent(jTextFieldUserShortcut2)
                 )
+                .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jTextFieldUserShortcut3)
                     .addComponent(jLabelUserShortcut3)
+                    .addComponent(jTextFieldUserShortcut3)
                 )
+                .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jTextFieldUserShortcut4)
                     .addComponent(jLabelUserShortcut4)
+                    .addComponent(jTextFieldUserShortcut4)
                 )
+                .addGap(15, 15, 15)
                 .addPreferredGap(ComponentPlacement.UNRELATED)
                 .addComponent(jLabelLibraries)
-                .addGap(10, 10, 10)
-
+                .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(Alignment.LEADING)
 
                     .addGroup(layout.createSequentialGroup()
@@ -634,7 +718,7 @@ public class PreferencesFrame extends JFrame {
                             .addComponent(jLabelDialMouseBehaviour)
                             .addComponent(jCheckBoxNoMouseReCenter)
                         )
-                        .addGap(5, 5, 5)
+                        .addGap(15, 15, 15)
 
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelController)
@@ -642,6 +726,18 @@ public class PreferencesFrame extends JFrame {
                             .addComponent(jTextFieldController, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
                         .addGap(15, 15, 15)
+
+                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                            .addComponent(jLabelBackupPatchesOnSD)
+                            .addComponent(jBackupPatchesOnSDEnabled, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        )
+
+                        .addGap(15, 15, 15)
+                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                            .addComponent(jLabelDspSafetyLimit)
+                            .addComponent(jComboBoxDspSafetyLimit, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        )
+                        .addGap(5, 5, 5)
 
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelTheme)
@@ -657,7 +753,7 @@ public class PreferencesFrame extends JFrame {
                     )
 
                 )
-                .addGap(14,14,14)
+                .addGap(15,15,15)
             )
         );
 
@@ -698,6 +794,9 @@ public class PreferencesFrame extends JFrame {
 
     private void jControllerEnabledActionPerformed(java.awt.event.ActionEvent evt) {
         jTextFieldController.setEnabled(jControllerEnabled.isSelected());
+    }
+
+    private void jBackupPatchesOnSDEnabledActionPerformed(java.awt.event.ActionEvent evt) {
     }
 
     private void jAddLibBtnActionPerformed(java.awt.event.ActionEvent evt) {
@@ -765,15 +864,20 @@ public class PreferencesFrame extends JFrame {
     }
 
     private void jLibStatusActionPerformed(java.awt.event.ActionEvent evt) {
+        LOGGER.log(Level.INFO, "Checking library status...");
         for (AxolotiLibrary lib : prefs.getLibraries()) {
             lib.reportStatus();
         }
+        LOGGER.log(Level.INFO, "Done checking library status.\n");
     }
 
     private void jComboBoxThemeActionPerformed(java.awt.event.ActionEvent evt) {
         prefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
         prefs.applyTheme();
         SwingUtilities.updateComponentTreeUI(this); /* Preview theme via preferences window */
+    }
+
+    private void jComboBoxDspSafetyLimitPerformed(java.awt.event.ActionEvent evt) {
     }
 
     private void jCheckBoxNoMouseReCenterActionPerformed(java.awt.event.ActionEvent evt) {
@@ -810,21 +914,26 @@ public class PreferencesFrame extends JFrame {
     private JComboBox<String> jComboBoxDialMouseBehaviour;
     private JComboBox<String> jComboBoxFirmwareMode;
     private JCheckBox jControllerEnabled;
+    private JCheckBox jBackupPatchesOnSDEnabled;
     private JButton jDelLibBtn;
     private JButton jEditLib;
     private JLabel jLabelLibraries;
     private JLabel jLabelPollInterval;
+    private JLabel jLabelDspSafetyLimit;
+    private JComboBox<String> jComboBoxDspSafetyLimit;
     private JLabel jLabelCodeFontSize;
     private JLabel jLabelDialMouseBehaviour;
     private JLabel jLabelFirmwareMode;
     private JLabel jLabelFavouritesDir;
     
+    private JLabel jLabelUserShortcutTitle;
     private JLabel jLabelUserShortcut1;
     private JLabel jLabelUserShortcut2;
     private JLabel jLabelUserShortcut3;
     private JLabel jLabelUserShortcut4;
 
     private JLabel jLabelController;
+    private JLabel jLabelBackupPatchesOnSD;
     private JLabel jLabelTheme;
     private JComboBox<String> jComboBoxTheme;
     private JButton jLibStatus;

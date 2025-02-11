@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 */
 
 /**
- * @file    templates/ext_lld.h
- * @brief   EXT Driver subsystem low level driver header template.
+ * @file    ext_lld.h
+ * @brief   PLATFORM EXT subsystem low level driver header.
  *
  * @addtogroup EXT
  * @{
@@ -25,7 +25,7 @@
 #ifndef _EXT_LLD_H_
 #define _EXT_LLD_H_
 
-#if HAL_USE_EXT || defined(__DOXYGEN__)
+#if (HAL_USE_EXT == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -41,12 +41,13 @@
 /*===========================================================================*/
 
 /**
- * @name    Configuration options
+ * @name    PLATFORM configuration options
  * @{
  */
 /**
  * @brief   EXT driver enable switch.
  * @details If set to @p TRUE the support for EXT1 is included.
+ * @note    The default is @p FALSE.
  */
 #if !defined(PLATFORM_EXT_USE_EXT1) || defined(__DOXYGEN__)
 #define PLATFORM_EXT_USE_EXT1               FALSE
@@ -126,7 +127,7 @@ struct EXTDriver {
 /* External declarations.                                                    */
 /*===========================================================================*/
 
-#if PLATFORM_EXT_USE_EXT1 && !defined(__DOXYGEN__)
+#if (PLATFORM_EXT_USE_EXT1 == TRUE) && !defined(__DOXYGEN__)
 extern EXTDriver EXTD1;
 #endif
 
@@ -142,7 +143,7 @@ extern "C" {
 }
 #endif
 
-#endif /* HAL_USE_EXT */
+#endif /* HAL_USE_EXT == TRUE */
 
 #endif /* _EXT_LLD_H_ */
 

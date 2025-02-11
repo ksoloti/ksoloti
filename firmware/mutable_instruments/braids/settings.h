@@ -323,7 +323,7 @@ class Settings {
     return metadata_[setting];
   }
 
-  static const Setting setting_at_index(int16_t index) {
+  static Setting setting_at_index(int16_t index) {
     return settings_order_[index];
   }
   
@@ -336,7 +336,7 @@ class Settings {
   bool paques_;
   
   static const SettingMetadata metadata_[SETTING_LAST];
-  static const Setting settings_order_[SETTING_LAST];
+  static Setting settings_order_[SETTING_LAST];
 
   DISALLOW_COPY_AND_ASSIGN(Settings);
 };

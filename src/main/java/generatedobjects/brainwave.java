@@ -265,7 +265,7 @@ public class brainwave extends gentools {
                 + "_delta = 0;\n"
                 + "_theta = 0;\n"
                 + "  Thd = chThdCreateStatic(waThreadX, sizeof(waThreadX),\n"
-                + "                    NORMALPRIO, ThreadX, (void *)this);\n";
+                + "                    NORMALPRIO, (void*) ThreadX, (void *)this);\n";
         o.sDisposeCode = "chThdTerminate(Thd);\n"
                 + "chThdWait(Thd);\n";
         o.sKRateCode

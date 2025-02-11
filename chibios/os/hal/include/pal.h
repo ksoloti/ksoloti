@@ -1,28 +1,17 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
-                 2011,2012,2013 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
-    This file is part of ChibiOS/RT.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    ChibiOS/RT is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-    ChibiOS/RT is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes ChibiOS/RT, without being obliged to provide
-    the source code for any proprietary components. See the file exception.txt
-    for full details of how and when the exception can be applied.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 */
 
 /**
@@ -36,7 +25,7 @@
 #ifndef _PAL_H_
 #define _PAL_H_
 
-#if HAL_USE_PAL || defined(__DOXYGEN__)
+#if (HAL_USE_PAL == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -52,7 +41,7 @@
  *          it is guaranteed to be equal to the after-reset state. It is
  *          usually an input state.
  */
-#define PAL_MODE_RESET                  0
+#define PAL_MODE_RESET                  0U
 
 /**
  * @brief   Safe state for <b>unconnected</b> pads.
@@ -61,37 +50,37 @@
  *          @p PAL_MODE_INPUT_PULLDOWN or @p PAL_MODE_OUTPUT_PUSHPULL for
  *          example.
  */
-#define PAL_MODE_UNCONNECTED            1
+#define PAL_MODE_UNCONNECTED            1U
 
 /**
  * @brief   Regular input high-Z pad.
  */
-#define PAL_MODE_INPUT                  2
+#define PAL_MODE_INPUT                  2U
 
 /**
  * @brief   Input pad with weak pull up resistor.
  */
-#define PAL_MODE_INPUT_PULLUP           3
+#define PAL_MODE_INPUT_PULLUP           3U
 
 /**
  * @brief   Input pad with weak pull down resistor.
  */
-#define PAL_MODE_INPUT_PULLDOWN         4
+#define PAL_MODE_INPUT_PULLDOWN         4U
 
 /**
  * @brief   Analog input mode.
  */
-#define PAL_MODE_INPUT_ANALOG           5
+#define PAL_MODE_INPUT_ANALOG           5U
 
 /**
  * @brief   Push-pull output pad.
  */
-#define PAL_MODE_OUTPUT_PUSHPULL        6
+#define PAL_MODE_OUTPUT_PUSHPULL        6U
 
 /**
  * @brief   Open-drain output pad.
  */
-#define PAL_MODE_OUTPUT_OPENDRAIN       7
+#define PAL_MODE_OUTPUT_OPENDRAIN       7U
 /** @} */
 
 /**
@@ -101,12 +90,12 @@
 /**
  * @brief   Logical low state.
  */
-#define PAL_LOW                         0
+#define PAL_LOW                         0U
 
 /**
  * @brief   Logical high state.
  */
-#define PAL_HIGH                        1
+#define PAL_HIGH                        1U
 /** @} */
 
 /*===========================================================================*/
@@ -137,7 +126,7 @@ typedef struct {
   ioportid_t            portid;
   /**
    * @brief Bus mask aligned to port bit 0.
-   * @note  The bus mask implicitly define the bus width. A logical AND is
+   * @note  The bus mask implicitly define the bus width. A logic AND is
    *        performed on the bus data.
    */
   ioportmask_t          mask;
@@ -159,7 +148,7 @@ typedef struct {
  * @return              The bit mask.
  */
 #if !defined(PAL_PORT_BIT) || defined(__DOXYGEN__)
-#define PAL_PORT_BIT(n) ((ioportmask_t)(1 << (n)))
+#define PAL_PORT_BIT(n) ((ioportmask_t)(1U << (n)))
 #endif
 
 /**
@@ -170,7 +159,7 @@ typedef struct {
  * @return                  The group mask.
  */
 #if !defined(PAL_GROUP_MASK) || defined(__DOXYGEN__)
-#define PAL_GROUP_MASK(width) ((ioportmask_t)(1 << (width)) - 1)
+#define PAL_GROUP_MASK(width) ((ioportmask_t)(1U << (width)) - 1U)
 #endif
 
 /**
@@ -221,12 +210,12 @@ typedef struct {
  * @note    The function can be called from any context.
  *
  * @param[in] port      port identifier
- * @return              The port logical states.
+ * @return              The port logic states.
  *
  * @special
  */
 #if !defined(pal_lld_readport) || defined(__DOXYGEN__)
-#define palReadPort(port) ((void)(port), 0)
+#define palReadPort(port) ((void)(port), 0U)
 #else
 #define palReadPort(port) pal_lld_readport(port)
 #endif
@@ -240,12 +229,12 @@ typedef struct {
  * @note    The function can be called from any context.
  *
  * @param[in] port      port identifier
- * @return              The latched logical states.
+ * @return              The latched logic states.
  *
  * @special
  */
 #if !defined(pal_lld_readlatch) || defined(__DOXYGEN__)
-#define palReadLatch(port) ((void)(port), 0)
+#define palReadLatch(port) ((void)(port), 0U)
 #else
 #define palReadLatch(port) pal_lld_readlatch(port)
 #endif
@@ -271,8 +260,8 @@ typedef struct {
  * @brief   Sets a bits mask on a I/O port.
  * @note    The operation is not guaranteed to be atomic on all the
  *          architectures, for atomicity and/or portability reasons you may
- *          need to enclose port I/O operations between @p chSysLock() and
- *          @p chSysUnlock().
+ *          need to enclose port I/O operations between @p osalSysLock() and
+ *          @p osalSysUnlock().
  * @note    The default implementation is non atomic and not necessarily
  *          optimal. Low level drivers may  optimize the function by using
  *          specific hardware or coding.
@@ -294,8 +283,8 @@ typedef struct {
  * @brief   Clears a bits mask on a I/O port.
  * @note    The operation is not guaranteed to be atomic on all the
  *          architectures,  for atomicity and/or portability reasons you may
- *          need to enclose port I/O operations between @p chSysLock() and
- *          @p chSysUnlock().
+ *          need to enclose port I/O operations between @p osalSysLock() and
+ *          @p osalSysUnlock().
  * @note    The default implementation is non atomic and not necessarily
  *          optimal. Low level drivers may  optimize the function by using
  *          specific hardware or coding.
@@ -317,8 +306,8 @@ typedef struct {
  * @brief   Toggles a bits mask on a I/O port.
  * @note    The operation is not guaranteed to be atomic on all the
  *          architectures, for atomicity and/or portability reasons you may
- *          need to enclose port I/O operations between @p chSysLock() and
- *          @p chSysUnlock().
+ *          need to enclose port I/O operations between @p osalSysLock() and
+ *          @p osalSysUnlock().
  * @note    The default implementation is non atomic and not necessarily
  *          optimal. Low level drivers may  optimize the function by using
  *          specific hardware or coding.
@@ -341,10 +330,10 @@ typedef struct {
  * @note    The function can be called from any context.
  *
  * @param[in] port      port identifier
- * @param[in] mask      group mask, a logical AND is performed on the input
+ * @param[in] mask      group mask, a logic AND is performed on the input
  *                      data
  * @param[in] offset    group bit offset within the port
- * @return              The group logical states.
+ * @return              The group logic states.
  *
  * @special
  */
@@ -360,7 +349,7 @@ typedef struct {
  * @note    The function can be called from any context.
  *
  * @param[in] port      port identifier
- * @param[in] mask      group mask, a logical AND is performed on the
+ * @param[in] mask      group mask, a logic AND is performed on the
  *                      output  data
  * @param[in] offset    group bit offset within the port
  * @param[in] bits      bits to be written. Values exceeding the group
@@ -400,7 +389,7 @@ typedef struct {
 #endif
 
 /**
- * @brief   Reads an input pad logical state.
+ * @brief   Reads an input pad logic state.
  * @note    The default implementation not necessarily optimal. Low level
  *          drivers may  optimize the function by using specific hardware
  *          or coding.
@@ -409,24 +398,24 @@ typedef struct {
  *
  * @param[in] port      port identifier
  * @param[in] pad       pad number within the port
- * @return              The logical state.
- * @retval PAL_LOW      low logical state.
- * @retval PAL_HIGH     high logical state.
+ * @return              The logic state.
+ * @retval PAL_LOW      low logic state.
+ * @retval PAL_HIGH     high logic state.
  *
  * @special
  */
 #if !defined(pal_lld_readpad) || defined(__DOXYGEN__)
-#define palReadPad(port, pad) ((palReadPort(port) >> (pad)) & 1)
+#define palReadPad(port, pad) ((palReadPort(port) >> (pad)) & 1U)
 #else
 #define palReadPad(port, pad) pal_lld_readpad(port, pad)
 #endif
 
 /**
- * @brief   Writes a logical state on an output pad.
+ * @brief   Writes a logic state on an output pad.
  * @note    The operation is not guaranteed to be atomic on all the
  *          architectures, for atomicity and/or portability reasons you may
- *          need to enclose port I/O operations between @p chSysLock() and
- *          @p chSysUnlock().
+ *          need to enclose port I/O operations between @p osalSysLock() and
+ *          @p osalSysUnlock().
  * @note    The default implementation is non atomic and not necessarily
  *          optimal. Low level drivers may  optimize the function by using
  *          specific hardware or coding.
@@ -436,7 +425,7 @@ typedef struct {
  *
  * @param[in] port      port identifier
  * @param[in] pad       pad number within the port
- * @param[in] bit       logical value, the value must be @p PAL_LOW or
+ * @param[in] bit       logic value, the value must be @p PAL_LOW or
  *                      @p PAL_HIGH
  *
  * @special
@@ -444,17 +433,17 @@ typedef struct {
 #if !defined(pal_lld_writepad) || defined(__DOXYGEN__)
 #define palWritePad(port, pad, bit)                                         \
   palWritePort(port, (palReadLatch(port) & ~PAL_PORT_BIT(pad)) |            \
-                     (((bit) & 1) << pad))
+                     (((bit) & 1U) << pad))
 #else
 #define palWritePad(port, pad, bit) pal_lld_writepad(port, pad, bit)
 #endif
 
 /**
- * @brief   Sets a pad logical state to @p PAL_HIGH.
+ * @brief   Sets a pad logic state to @p PAL_HIGH.
  * @note    The operation is not guaranteed to be atomic on all the
  *          architectures, for atomicity and/or portability reasons you may
- *          need to enclose port I/O operations between @p chSysLock() and
- *          @p chSysUnlock().
+ *          need to enclose port I/O operations between @p osalSysLock() and
+ *          @p osalSysUnlock().
  * @note    The default implementation is non atomic and not necessarily
  *          optimal. Low level drivers may  optimize the function by using
  *          specific hardware or coding.
@@ -473,11 +462,11 @@ typedef struct {
 #endif
 
 /**
- * @brief   Clears a pad logical state to @p PAL_LOW.
+ * @brief   Clears a pad logic state to @p PAL_LOW.
  * @note    The operation is not guaranteed to be atomic on all the
  *          architectures, for atomicity and/or portability reasons you may
- *          need to enclose port I/O operations between @p chSysLock() and
- *          @p chSysUnlock().
+ *          need to enclose port I/O operations between @p osalSysLock() and
+ *          @p osalSysUnlock().
  * @note    The default implementation is non atomic and not necessarily
  *          optimal. Low level drivers may  optimize the function by using
  *          specific hardware or coding.
@@ -496,11 +485,11 @@ typedef struct {
 #endif
 
 /**
- * @brief   Toggles a pad logical state.
+ * @brief   Toggles a pad logic state.
  * @note    The operation is not guaranteed to be atomic on all the
  *          architectures, for atomicity and/or portability reasons you may
- *          need to enclose port I/O operations between @p chSysLock() and
- *          @p chSysUnlock().
+ *          need to enclose port I/O operations between @p osalSysLock() and
+ *          @p osalSysUnlock().
  * @note    The default implementation is non atomic and not necessarily
  *          optimal. Low level drivers may  optimize the function by using
  *          specific hardware or coding.
@@ -535,9 +524,100 @@ typedef struct {
  */
 #if !defined(pal_lld_setpadmode) || defined(__DOXYGEN__)
 #define palSetPadMode(port, pad, mode)                                      \
-  palSetGroupMode(port, PAL_PORT_BIT(pad), 0, mode)
+  palSetGroupMode(port, PAL_PORT_BIT(pad), 0U, mode)
 #else
 #define palSetPadMode(port, pad, mode) pal_lld_setpadmode(port, pad, mode)
+#endif
+
+/**
+ * @brief   Reads an input line logic state.
+ * @note    The function can be called from any context.
+ *
+ * @param[in] line      line identifier
+ * @return              The logic state.
+ * @retval PAL_LOW      low logic state.
+ * @retval PAL_HIGH     high logic state.
+ *
+ * @special
+ */
+#if !defined(pal_lld_readline) || defined(__DOXYGEN__)
+#define palReadLine(line) palReadPad(PAL_PORT(line), PAL_PAD(line))
+#else
+#define palReadLine(line) pal_lld_readline(line)
+#endif
+
+/**
+ * @brief   Writes a logic state on an output line.
+ * @note    The function can be called from any context.
+ *
+ * @param[in] line      line identifier
+ * @param[in] bit       logic value, the value must be @p PAL_LOW or
+ *                      @p PAL_HIGH
+ *
+ * @special
+ */
+#if !defined(pal_lld_writeline) || defined(__DOXYGEN__)
+#define palWriteLine(line, bit) palWritePad(PAL_PORT(line), PAL_PAD(line), bit)
+#else
+#define palWriteLine(line, bit) pal_lld_writeline(line, bit)
+#endif
+
+/**
+ * @brief   Sets a line logic state to @p PAL_HIGH.
+ * @note    The function can be called from any context.
+ *
+ * @param[in] line      line identifier
+ *
+ * @special
+ */
+#if !defined(pal_lld_setline) || defined(__DOXYGEN__)
+#define palSetLine(line) palSetPad(PAL_PORT(line), PAL_PAD(line))
+#else
+#define palSetLine(line) pal_lld_setline(line)
+#endif
+
+/**
+ * @brief   Clears a line logic state to @p PAL_LOW.
+ * @note    The function can be called from any context.
+ *
+ * @param[in] line      line identifier
+ *
+ * @special
+ */
+#if !defined(pal_lld_clearline) || defined(__DOXYGEN__)
+#define palClearLine(line) palClearPad(PAL_PORT(line), PAL_PAD(line))
+#else
+#define palClearLine(line) pal_lld_clearline(line)
+#endif
+
+/**
+ * @brief   Toggles a line logic state.
+ * @note    The function can be called from any context.
+ *
+ * @param[in] line      line identifier
+ *
+ * @special
+ */
+#if !defined(pal_lld_toggleline) || defined(__DOXYGEN__)
+#define palToggleLine(line) palTogglePad(PAL_PORT(line), PAL_PAD(line))
+#else
+#define palToggleLine(line) pal_lld_toggleline(line)
+#endif
+
+/**
+ * @brief   Line mode setup.
+ * @note    The function can be called from any context.
+ *
+ * @param[in] line      line identifier
+ * @param[in] mode      pad mode
+ *
+ * @special
+ */
+#if !defined(pal_lld_setlinemode) || defined(__DOXYGEN__)
+#define palSetLineMode(line, mode)                                          \
+  palSetPadMode(PAL_PORT(line), PAL_PAD(line), mode)
+#else
+#define palSetLineMode(line, mode) pal_lld_setlinemode(line, mode)
 #endif
 /** @} */
 
@@ -557,6 +637,6 @@ extern "C" {
 
 #endif /* _PAL_H_ */
 
-#endif /* HAL_USE_PAL */
+#endif /* HAL_USE_PAL == TRUE */
 
 /** @} */

@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 */
 
 /**
- * @file    templates/i2c_lld.h
- * @brief   I2C Driver subsystem low level driver header template.
+ * @file    i2c_lld.h
+ * @brief   PLATFORM I2C subsystem low level driver header.
  *
  * @addtogroup I2C
  * @{
@@ -25,7 +25,7 @@
 #ifndef _I2C_LLD_H_
 #define _I2C_LLD_H_
 
-#if HAL_USE_I2C || defined(__DOXYGEN__)
+#if (HAL_USE_I2C == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -36,7 +36,7 @@
 /*===========================================================================*/
 
 /**
- * @name    Configuration options
+ * @name    PLATFORM configuration options
  * @{
  */
 /**
@@ -45,7 +45,7 @@
  * @note    The default is @p FALSE.
  */
 #if !defined(PLATFORM_I2C_USE_I2C1) || defined(__DOXYGEN__)
-#define PLATFORM_I2C_USE_I2C1               FALSE
+#define PLATFORM_I2C_USE_I2C1                  FALSE
 #endif
 /** @} */
 
@@ -58,7 +58,7 @@
 /*===========================================================================*/
 
 /**
- * @brief   Type representing I2C address.
+ * @brief   Type representing an I2C address.
  */
 typedef uint16_t i2caddr_t;
 
@@ -68,15 +68,12 @@ typedef uint16_t i2caddr_t;
 typedef uint32_t i2cflags_t;
 
 /**
- * @brief   Driver configuration structure.
+ * @brief   Type of I2C driver configuration structure.
  * @note    Implementations may extend this structure to contain more,
  *          architecture dependent, fields.
  */
-
-/**
- * @brief Driver configuration structure.
- */
 typedef struct {
+  /* End of the mandatory fields.*/
   uint32_t                  dummy;
 } I2CConfig;
 
@@ -86,7 +83,7 @@ typedef struct {
 typedef struct I2CDriver I2CDriver;
 
 /**
- * @brief Structure representing an I2C driver.
+ * @brief   Structure representing an I2C driver.
  */
 struct I2CDriver {
   /**
@@ -101,16 +98,9 @@ struct I2CDriver {
    * @brief   Error flags.
    */
   i2cflags_t                errors;
-#if I2C_USE_MUTUAL_EXCLUSION || defined(__DOXYGEN__)
-#if CH_USE_MUTEXES || defined(__DOXYGEN__)
-  /**
-   * @brief   Mutex protecting the bus.
-   */
-  Mutex                     mutex;
-#elif CH_USE_SEMAPHORES
-  Semaphore                 semaphore;
+#if (I2C_USE_MUTUAL_EXCLUSION == TRUE) || defined(__DOXYGEN__)
+  mutex_t                   mutex;
 #endif
-#endif /* I2C_USE_MUTUAL_EXCLUSION */
 #if defined(I2C_DRIVER_EXT_FIELDS)
   I2C_DRIVER_EXT_FIELDS
 #endif
@@ -134,10 +124,8 @@ struct I2CDriver {
 /* External declarations.                                                    */
 /*===========================================================================*/
 
-#if !defined(__DOXYGEN__)
-#if PLATFORM_I2C_USE_I2C1
+#if (PLATFORM_I2C_USE_I2C1 == TRUE) && !defined(__DOXYGEN__)
 extern I2CDriver I2CD1;
-#endif
 #endif
 
 #ifdef __cplusplus
@@ -157,7 +145,7 @@ extern "C" {
 }
 #endif
 
-#endif /* HAL_USE_I2C */
+#endif /* HAL_USE_I2C == TRUE */
 
 #endif /* _I2C_LLD_H_ */
 

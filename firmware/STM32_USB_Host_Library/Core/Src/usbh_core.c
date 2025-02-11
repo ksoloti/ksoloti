@@ -124,7 +124,7 @@ USBH_StatusTypeDef  USBH_Init(USBH_HandleTypeDef *phost, void (*pUsrFunc)(USBH_H
   
   /* Create USB Host Queue */
   osMessageQDef(USBH_Queue, 10, uint16_t);
-  phost->os_event = osMessageCreate (osMessageQ(USBH_Queue), NULL); 
+  phost->os_event = (thread_t*) osMessageCreate (osMessageQ(USBH_Queue), NULL); 
   
   /*Create USB Host Task */
 #if defined (USBH_PROCESS_STACK_SIZE)
@@ -925,7 +925,7 @@ USBH_StatusTypeDef  USBH_LL_Disconnect  (USBH_HandleTypeDef *phost)
   */
 static void USBH_Process_OS(void const * argument)
 {
-#if CH_USE_REGISTRY
+#if CH_CFG_USE_REGISTRY
   chRegSetThreadName("usbh");
 #endif
 
@@ -933,13 +933,15 @@ static void USBH_Process_OS(void const * argument)
   
   for(;;)
   {
-    event = osMessageGet(((USBH_HandleTypeDef *)argument)->os_event, 0 );
+    event = osMessageGet(((USBH_HandleTypeDef *)argument)->os_event, osWaitForever);
     
 //    if( event.status == osEventMessage )
-    {
+//    {
       USBH_Process((USBH_HandleTypeDef *)argument);
-    }
-   }
+//    }
+
+    chThdYield();
+  }
 }
 
 /**

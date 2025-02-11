@@ -45,12 +45,12 @@ public class Int8Array implements DataType {
 
     @Override
     public Color GetColor() {
-        return Theme.getCurrentTheme().Cable_Int8Array;
+        return Theme.Cable_Int8Array;
     }
 
     @Override
     public Color GetColorHighlighted() {
-        return Theme.getCurrentTheme().Cable_Int8Array_Highlighted;
+        return Theme.Cable_Int8Array_Highlighted;
     }
 
     @Override

@@ -32,10 +32,10 @@ then
     ARCHIVE=${ARDIR}.zip
     if [ ! -f ${ARCHIVE} ]; 
     then
-        echo "downloading ${ARCHIVE}"
+        printf "\ndownloading ${ARCHIVE}\n"
 		curl -L https://github.com/ChibiOS/ChibiOS/archive/ver${CH_VERSION}.zip > ${ARCHIVE}
     else
-        echo "${ARCHIVE} already downloaded"
+        printf "\n${ARCHIVE} already downloaded\n"
     fi
     unzip -q -o ${ARCHIVE}
     mv ${ARDIR} chibios
@@ -44,7 +44,7 @@ then
     cd ../../
     mv chibios ../..
 else
-    echo "chibios directory already present, skipping..."
+    printf "\nchibios directory already present, skipping...\n"
 fi
 
 if [ ! -f "$PLATFORM_ROOT/bin/arm-none-eabi-gcc" ]; 
@@ -53,16 +53,16 @@ then
     ARCHIVE=gcc-arm-none-eabi-9-2020-q2-update-mac.tar.bz2
     if [ ! -f ${ARCHIVE} ]; 
     then
-        echo "downloading ${ARCHIVE}"
+        printf "\ndownloading ${ARCHIVE}\n"
         curl -L https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/$ARCHIVE > $ARCHIVE
     else
-        echo "${ARCHIVE} already downloaded"
+        printf "\n${ARCHIVE} already downloaded\n"
     fi
     tar xfj ${ARCHIVE}
     cp -r gcc-arm-none-eabi-9-2020-q2-update/* ..
     rm -r gcc-arm-none-eabi-9-2020-q2-update
 else
-    echo "bin/arm-none-eabi-gcc already present, skipping..."
+    printf "\nbin/arm-none-eabi-gcc already present, skipping...\n"
 fi
 
 
@@ -73,10 +73,10 @@ then
     ARCHIVE=${ARDIR}.tar.bz2
     if [ ! -f ${ARCHIVE} ]; 
     then
-        echo "downloading ${ARCHIVE}"
+        printf "\ndownloading ${ARCHIVE}\n"
         curl -L http://sourceforge.net/projects/libusb/files/libusb-1.0/$ARDIR/$ARCHIVE/download > $ARCHIVE
     else
-        echo "${ARCHIVE} already downloaded"
+        printf "\n${ARCHIVE} already downloaded\n"
     fi
     tar xfj ${ARCHIVE}
     
@@ -99,7 +99,7 @@ then
     cd $PLATFORM_ROOT/lib
     install_name_tool -id libusb-1.0.0.dylib libusb-1.0.0.dylib
 else
-    echo "libusb already present, skipping..."
+    printf "\nlibusb already present, skipping...\n"
 fi
 
 if [ ! -f "${PLATFORM_ROOT}/bin/dfu-util" ]; 
@@ -109,10 +109,10 @@ then
     ARCHIVE=${ARDIR}.tar.gz
     if [ ! -f $ARCHIVE ]; 
     then
-        echo "downloading ${ARCHIVE}"
+        printf "\ndownloading ${ARCHIVE}\n"
         curl -L http://dfu-util.sourceforge.net/releases/$ARCHIVE > $ARCHIVE
     else
-        echo "$ARCHIVE already downloaded"
+        printf "\n$ARCHIVE already downloaded\n"
     fi
     tar xfz ${ARCHIVE}
 
@@ -132,7 +132,7 @@ then
     cd "$PLATFORM_ROOT"
     lipo -create x86_64/bin/dfu-util i386/bin/dfu-util -output bin/dfu-util
 else
-    echo "dfu-util already present, skipping..."
+    printf "\ndfu-util already present, skipping...\n"
 fi
 
 if [ ! -f "$PLATFORM_ROOT/bin/make" ]; 
@@ -143,10 +143,10 @@ then
 
     if [ ! -f ${ARCHIVE} ]; 
     then
-        echo "downloading ${ARCHIVE}"
+        printf "\ndownloading ${ARCHIVE}\n"
         curl -L http://ftp.gnu.org/gnu/make/$ARCHIVE > $ARCHIVE
     else
-        echo "${ARCHIVE} already downloaded"
+        printf "\n${ARCHIVE} already downloaded\n"
     fi
 
     tar xfz $ARCHIVE
@@ -167,19 +167,19 @@ then
     lipo -create x86_64/bin/make i386/bin/make -output bin/make
 fi
 
-cp -v "${PLATFORM_ROOT}/lib/"*.dylib "${PLATFORM_ROOT}/bin/"
+#cp -v "${PLATFORM_ROOT}/lib/"*.dylib "${PLATFORM_ROOT}/bin/"
 
 file "${PLATFORM_ROOT}/bin/make"
 file "${PLATFORM_ROOT}/bin/dfu-util"
 file "${PLATFORM_ROOT}/bin/libusb-1.0.0.dylib"
 
-echo "##### building firmware... #####"
+printf "\n##### building firmware... #####\n"
 cd "$PLATFORM_ROOT"
 ./compile_firmware.sh BOARD_AXOLOTI_CORE
 ./compile_firmware.sh BOARD_KSOLOTI_CORE
 
-echo "##### building GUI... #####"
+printf "\n##### building GUI... #####\n"
 cd "${PLATFORM_ROOT}"/..
 ant
 
-echo "DONE!"
+printf "\nDONE!\n"

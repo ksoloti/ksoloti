@@ -71,11 +71,7 @@ public class QCmdUploadFile implements QCmdSerialTask {
 
     @Override
     public String GetDoneMessage() {
-        if (success) {
-            return "Done uploading file.\n";
-        } else {
-            return "Failed uploading file.\n";
-        }
+        return null;
     }
 
     @Override
@@ -83,19 +79,24 @@ public class QCmdUploadFile implements QCmdSerialTask {
         connection.ClearSync();
         try {
             if (inputStream == null) {
-                if (!file.isFile()) {
-                    LOGGER.log(Level.INFO, "File does not exist: {0}", filename);
+                if (!file.exists()) {
+                    LOGGER.log(Level.WARNING, "File does not exist: " + filename + "\n");
+                    success = false;
+                    return this;
+                }
+                if (file.isDirectory()) {
+                    LOGGER.log(Level.WARNING, "Cannot upload directories: " + filename + "\n");
                     success = false;
                     return this;
                 }
                 if (!file.canRead()) {
-                    LOGGER.log(Level.INFO, "Cannot read file: {0}", filename);
+                    LOGGER.log(Level.WARNING, "Cannot read file: " + filename + "\n");
                     success = false;
                     return this;
                 }
                 inputStream = new FileInputStream(file);
             }
-            LOGGER.log(Level.INFO, "Uploading: {0}", filename);
+            // LOGGER.log(Level.INFO, "Uploading: {0}", filename);
             Calendar ts;
             if (cal != null) {
                 ts = cal;
@@ -110,7 +111,7 @@ public class QCmdUploadFile implements QCmdSerialTask {
             size = tlength;
             connection.TransmitCreateFile(filename, tlength, ts);
             int MaxBlockSize = 32768;
-            int pct = 0;
+            long pct = 0;
             do {
                 int l;
                 if (remLength > MaxBlockSize) {
@@ -121,14 +122,14 @@ public class QCmdUploadFile implements QCmdSerialTask {
                     remLength = 0;
                 }
                 byte[] buffer = new byte[l];
-                int nRead = inputStream.read(buffer, 0, l);
+                long nRead = inputStream.read(buffer, 0, l);
                 if (nRead != l) {
-                    LOGGER.log(Level.SEVERE, "File size wrong?{0}", nRead);
+                    LOGGER.log(Level.SEVERE, "Wrong file size? " + nRead);
                 }
                 connection.TransmitAppendFile(buffer);
-                int newpct = (100 * (tlength - remLength) / tlength);
+                long newpct = (100 * ((long) tlength - (long) remLength)) / (long) tlength;
                 if (newpct != pct) {
-                    LOGGER.log(Level.INFO, "Uploading: {0}%", newpct);
+                    LOGGER.log(Level.INFO, "Uploading: " + newpct + "%");
                 }
                 pct = newpct;
                 remLength = inputStream.available();
@@ -138,13 +139,14 @@ public class QCmdUploadFile implements QCmdSerialTask {
             connection.TransmitCloseFile();
 
             SDCardInfo.getInstance().AddFile(filename, (int) size, ts);
+            LOGGER.log(Level.INFO, "Done uploading file.\n");
             success = true;
             return this;
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "IOException", ex);
+            LOGGER.log(Level.SEVERE, ex.getMessage());
         }
+        LOGGER.log(Level.WARNING, "File upload failed: " + filename + "\n");
         success = false;
         return this;
     }
-
 }

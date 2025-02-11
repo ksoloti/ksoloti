@@ -61,12 +61,12 @@ public class Bool32 implements DataType {
 
     @Override
     public Color GetColor() {
-        return Theme.getCurrentTheme().Cable_Bool32;
+        return Theme.Cable_Bool32;
     }
 
     @Override
     public Color GetColorHighlighted() {
-        return Theme.getCurrentTheme().Cable_Bool32_Highlighted;
+        return Theme.Cable_Bool32_Highlighted;
     }
 
     @Override

@@ -13,31 +13,31 @@
 
 <div class="para">
 <h2>FIL</h2>
-<p><tt>FIL</tt>構造体(ファイル・オブジェクト)は、f_open関数で初期化され、以後そのファイルの状態を保持します。また、f_close関数でファイルが閉じられると無効化されます。アプリケーションからの書き換えが可能なメンバは<tt>cltbl</tt>のみです。非タイニー構成では内部にセクタ・バッファが確保されるので、サイズに注意が必要です。</p>
+<p><tt>FIL</tt>構造体(ファイル・オブジェクト)は、<tt>f_open()</tt>で初期化され、以後そのファイルの状態を保持します。また、<tt>f_close()</tt>でファイルが閉じられると無効化されます。アプリケーションは、この構造体のメンバを書き換えてはなりません(<tt>cltbl</tt>は例外)。非タイニー構成では、内部にセクタ・バッファが確保されるので、占有サイズに注意が必要です。</p>
 
 <pre>
 <span class="k">typedef</span> <span class="k">struct</span> {
     FATFS*  fs;           <span class="c">/* 親ファイル・システム・オブジェクトへのポインタ */</span>
     WORD    id;           <span class="c">/* 親ファイル・システム・オブジェクトのマウントID */</span>
     BYTE    flag;         <span class="c">/* ファイル・ステータス・フラグ */</span>
-    BYTE    pad1;
+    BYTE    err;          <span class="c">/* エラー中断フラグ */</span>
     DWORD   fptr;         <span class="c">/* ファイル読み書きポインタ (ファイル先頭からのバイト・オフセット) */</span>
     DWORD   fsize;        <span class="c">/* ファイル・サイズ(バイト単位) */</span>
-    DWORD   sclust;       <span class="c">/* ファイル開始クラスタ番号 (0 on fsize==0) */</span>
+    DWORD   sclust;       <span class="c">/* ファイル開始クラスタ番号 (0:割り当て無し) */</span>
     DWORD   clust;        <span class="c">/* 現在のクラスタ */</span>
     DWORD   dsect;        <span class="c">/* 現在のデータ・セクタ */</span>
-<span class="k">#if</span> _FS_READONLY == 0
+<span class="k">#if</span> !_FS_READONLY
     DWORD   dir_sect;     <span class="c">/* このファイルのディレクトリ・エントリのあるセクタ */</span>
     BYTE*   dir_ptr;      <span class="c">/* このファイルのディレクトリへのポインタ */</span>
 <span class="k">#endif</span>
 <span class="k">#if</span> _USE_FASTSEEK
-    DWORD*  cltbl;        <span class="c">/* ファイルのクラスタ・リンク情報へのポインタ (Nulled on file open) */</span>
+    DWORD*  cltbl;        <span class="c">/* ファイルのクラスタ・リンク情報へのポインタ (オープン時にNULLがセットされる) */</span>
 <span class="k">#endif</span>
-<span class="k">#if</span> _FS_SHARE
+<span class="k">#if</span> _FS_LOCK
     UINT    lockid;       <span class="c">/* ファイル・ロックID */</span>
 <span class="k">#endif</span>
 <span class="k">#if</span> !_FS_TINY
-    BYTE    buf[_MAX_SS]; <span class="c">/* データ転送バッファ */</span>
+    BYTE    buf[_MAX_SS]; <span class="c">/* ファイル・プライベート・データ転送バッファ */</span>
 <span class="k">#endif</span>
 } FIL;
 </pre>

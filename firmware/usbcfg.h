@@ -17,26 +17,45 @@
 #ifndef _USBCFG_H_
 #define _USBCFG_H_
 
+#define MIN(X,Y) ((X) < (Y) ? (X) : (Y))
+#define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
+
 #include "bulk_usb.h"
 #include "midi_usb.h"
 
+#if FW_USBAUDIO
+#include "audio_usb.h"
+#endif
 
 /*
  * Endpoints to be used for USBD1.
  */
+#if FW_USBAUDIO
+#define AUDIO_ENDPPOINT_OUT 0x03
+#define AUDIO_ENDPPOINT_IN  0x83
+#endif
+
 #define USBD1_DATA_REQUEST_EP           1
 #define USBD1_DATA_AVAILABLE_EP         1
+
 #define USBD2_DATA_REQUEST_EP           2
 #define USBD2_DATA_AVAILABLE_EP         2
 
 
-extern MidiUSBDriver MDU1;
-extern BulkUSBDriver BDU1;
+
+extern MidiUSBDriver  MDU1;
+extern BulkUSBDriver  BDU1;
+#if FW_USBAUDIO
+extern AudioUSBDriver ADU1;
+#endif
 
 extern const USBConfig usbcfg;
 extern const MidiUSBConfig midiusbcfg;
 extern const BulkUSBConfig bulkusbcfg;
-
+#if FW_USBAUDIO
+extern const AudioUSBConfig audiousbcfg;
+extern void InitUsbAudio(void);
+#endif
 
 #endif  /* _USBCFG_H_ */
 
