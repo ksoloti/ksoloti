@@ -156,7 +156,7 @@ void LogTextMessage(const char* format, ...) {
           va_start(ap, format);
           chvprintf((BaseSequentialStream *)&ms, format, ap);
           va_end(ap);
-          chSequentialStreamPut((BaseSequentialStream * )&ms, 0);
+          chSequentialStreamPut(&ms, 0);
           size_t length = strlen((char *)tmp);
           if((length) && (LogBufferUsed + 4 + length + 1) < LOG_BUFFER_SIZE)
           {
