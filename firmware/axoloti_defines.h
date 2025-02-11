@@ -54,4 +54,4 @@ typedef int32_t int32buffer[BUFSIZE];
 
 #define BOARD_OTG_NOVBUSSENS
 
-#endif
+#endif /* __AXOLOTI_DEFINES_H */

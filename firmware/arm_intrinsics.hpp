@@ -213,4 +213,4 @@ namespace arm
 
 }
 
-#endif
+#endif /* ARM_INTRINSICS_H_ */

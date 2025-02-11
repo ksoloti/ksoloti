@@ -25,7 +25,7 @@
 
 #if defined(BOARD_KSOLOTI_CORE)
 uint8_t adc3_ch = 8; /* We start with the conversion of channel 8 (voltage supervisor) */
-#endif
+#endif /* BOARD_KSOLOTI_CORE */
 
 void axoloti_board_init(void) {
     /* initialize DMA2D engine */
@@ -64,7 +64,7 @@ void adc3_init(void) {
     ADC3->SQR3 = adc3_ch; /* No DMA available! Incrementing the channel manually. Starting with ADC3_IN_8 (the 5V supervisor). */
     ADC3->CR2 |= ADC_CR2_SWSTART;
 }
-#endif
+#endif /* BOARD_KSOLOTI_CORE */
 
 void adc_init(void) {
 
@@ -72,7 +72,7 @@ void adc_init(void) {
 
 #if defined(BOARD_KSOLOTI_CORE)
     adc3_init();
-#endif
+#endif /* BOARD_KSOLOTI_CORE */
 
     /* See "Configuration options for ADC accuracy" in application note AN4073
      * - old Axoloti settings (below bits cleared by default)
@@ -98,7 +98,7 @@ void adc_configpads(void) {
 #ifndef ENABLE_SERIAL_DEBUG
     palSetPadMode(GPIOA, 2, PAL_MODE_INPUT_ANALOG);
     palSetPadMode(GPIOA, 3, PAL_MODE_INPUT_ANALOG);
-#endif
+#endif /* ENABLE_SERIAL_DEBUG */
     palSetPadMode(GPIOA, 4, PAL_MODE_INPUT_ANALOG);
     palSetPadMode(GPIOA, 5, PAL_MODE_INPUT_ANALOG);
     palSetPadMode(GPIOA, 6, PAL_MODE_INPUT_ANALOG);
@@ -125,7 +125,7 @@ void adc_configpads(void) {
 #ifndef ENABLE_SERIAL_DEBUG
     palSetPadMode(GPIOA, 2, PAL_MODE_INPUT_ANALOG);
     palSetPadMode(GPIOA, 3, PAL_MODE_INPUT_ANALOG);
-#endif
+#endif /* ENABLE_SERIAL_DEBUG */
     palSetPadMode(GPIOA, 4, PAL_MODE_INPUT_ANALOG);
     palSetPadMode(GPIOA, 5, PAL_MODE_INPUT_ANALOG);
     palSetPadMode(GPIOA, 6, PAL_MODE_INPUT_ANALOG);
@@ -147,7 +147,7 @@ void adc_configpads(void) {
 #ifdef ENABLE_SERIAL_DEBUG
   palSetPadMode(GPIOA, 2, PAL_MODE_INPUT_ANALOG);
   palSetPadMode(GPIOA, 3, PAL_MODE_INPUT_ANALOG);
-#endif
+#endif /* ENABLE_SERIAL_DEBUG */
   /* skip GPIOA4: LRCLK */
   /* skip GPIOA5,GPIOA6,GPIOA7: accelerometer */
   palSetPadMode(GPIOB, 0, PAL_MODE_INPUT_ANALOG);
@@ -158,7 +158,7 @@ void adc_configpads(void) {
   palSetPadMode(GPIOC, 3, PAL_MODE_INPUT_ANALOG);
   palSetPadMode(GPIOC, 4, PAL_MODE_INPUT_ANALOG);
   palSetPadMode(GPIOC, 5, PAL_MODE_INPUT_ANALOG);
-#endif
+#endif /* BOARD_* */
 
 }
 
@@ -227,7 +227,7 @@ static const ADCConversionGroup adcgrpcfg1 = {
         | ADC_SQR3_SQ3_N(ADC_CHANNEL_IN2) | ADC_SQR3_SQ4_N(ADC_CHANNEL_IN3)
         | ADC_SQR3_SQ5_N(ADC_CHANNEL_IN4) | ADC_SQR3_SQ6_N(ADC_CHANNEL_IN5) //SQR3: Conversion group sequence 1...6
 
-#endif
+#endif /* BOARD_*OLOTI_CORE */
 };
 
 #if defined(BOARD_KSOLOTI_CORE)
@@ -240,14 +240,14 @@ void adc3_convert(void) {
     ADC3->SQR3 = adc3_ch; /* Set next channel for conversion */
     ADC3->CR2 |= ADC_CR2_SWSTART; /* Start next conversion */
 }
-#endif
+#endif /* BOARD_KSOLOTI_CORE */
 
 void adc_convert(void) {
 
     adcStopConversion(&ADCD1); /* restart ADC1 sampling sequence */
 #if defined(BOARD_KSOLOTI_CORE)
     adc3_convert();
-#endif
+#endif /* BOARD_KSOLOTI_CORE */
     adcStartConversion(&ADCD1, &adcgrpcfg1, adcvalues, ADC_GRP1_BUF_DEPTH);
 
 }

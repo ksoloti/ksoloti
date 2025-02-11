@@ -169,4 +169,4 @@ static void __attribute__ ((noinline)) biquad_hp_coefs(biquad_coefficients *coef
   coefs->cxn_2 = coefs->cxn_0;
 }
 
-#endif
+#endif /* _AXOLOTI_FILTERS_H */

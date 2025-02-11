@@ -59,7 +59,8 @@ void dbgPrintHexDigit(uint8_t b)
 #else
 #define DBGPRINTCHAR(x)
 #define DBGPRINTHEX(x)
-#endif
+
+#endif /* SERIALDEBUG */
 
 #define FLASH_BASE_ADDR 0x08000000
 
@@ -118,7 +119,7 @@ int main(void)
     static const SerialConfig sd2Cfg = {115200, 0, 0, 0};
 
     sdStart(&SD2, &sd2Cfg);
-#endif
+#endif /* SERIALDEBUG */
 
     DBGPRINTCHAR('a');
     uint32_t pbuf[16];

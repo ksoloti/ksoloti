@@ -347,100 +347,87 @@ public class PatchGUI extends Patch {
                     ysteps = 1;
                 }
 
-                if ((ke.getKeyCode() == KeyEvent.VK_SPACE) && !KeyUtils.isControlOrCommandDown(ke)) {
-                    if (!ke.isShiftDown()) {
-                        Point p = Layers.getMousePosition();
-                        ke.consume();
-                        if (p != null) {
-                            ShowClassSelector(p, null, null, true);
+                if (ke.isAltDown()) {
+                    //TODO: Alt+arrows should scroll the patch canvas
+                    /* do not ke.consume() so the menu will be triggered */
+                }
+                else {
+
+                    if ((ke.getKeyCode() == KeyEvent.VK_SPACE) && !KeyUtils.isControlOrCommandDown(ke)) {
+                        if (!ke.isShiftDown()) {
+                            Point p = Layers.getMousePosition();
+                            ke.consume();
+                            if (p != null) {
+                                ShowClassSelector(p, null, null, true);
+                            }
+                        }
+                        else {
+                            // shift + space ...
                         }
                     }
-                    else {
-                        // shift + space ...
+                    else if ((ke.getKeyCode() == KeyEvent.VK_DELETE) || (ke.getKeyCode() == KeyEvent.VK_BACK_SPACE)) {
+                        deleteSelectedAxoObjInstances();
+                        ke.consume();
                     }
-                }
-                else if ((ke.getKeyCode() == KeyEvent.VK_DELETE) || (ke.getKeyCode() == KeyEvent.VK_BACK_SPACE)) {
-                    deleteSelectedAxoObjInstances();
-                    ke.consume();
-                }
-                else if (ke.getKeyCode() == KeyEvent.VK_UP) {
-                    if (ke.isAltDown()) {
-                        //TODO: Alt+arrows should scroll the patch canvas
+                    else if (ke.getKeyCode() == KeyEvent.VK_UP) {
+                            MoveSelectedAxoObjInstances(Direction.UP, xsteps, ysteps);
+                        ke.consume();
                     }
-                    else {
-                        MoveSelectedAxoObjInstances(Direction.UP, xsteps, ysteps);
-                    }
-                    ke.consume();
-                }
-                else if (ke.getKeyCode() == KeyEvent.VK_DOWN) {
-                    if (ke.isAltDown()) {
-                        //TODO: Alt+arrows should scroll the patch canvas
-                    }
-                    else {
+                    else if (ke.getKeyCode() == KeyEvent.VK_DOWN) {
                         MoveSelectedAxoObjInstances(Direction.DOWN, xsteps, ysteps);
+                        ke.consume();
                     }
-                    ke.consume();
-                }
-                else if (ke.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    if (ke.isAltDown()) {
-                        //TODO: Alt+arrows should scroll the patch canvas
-                    }
-                    else {
+                    else if (ke.getKeyCode() == KeyEvent.VK_RIGHT) {
                         MoveSelectedAxoObjInstances(Direction.RIGHT, xsteps, ysteps);
+                        ke.consume();
                     }
-                    ke.consume();
-                }
-                else if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
-                    if (ke.isAltDown()) {
-                        //TODO: Alt+arrows should scroll the patch canvas
-                    }
-                    else {
+                    else if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
                         MoveSelectedAxoObjInstances(Direction.LEFT, xsteps, ysteps);
+                        ke.consume();
                     }
-                    ke.consume();
-                }
-                else if ((ke.getKeyCode() == KeyEvent.VK_C) && ke.isShiftDown() && !KeyUtils.isControlOrCommandDown(ke)) {
-                    AxoObjectInstanceAbstract ao = AddObjectInstance(MainFrame.axoObjects.GetAxoObjectFromName("patch/comment", null).get(0), Layers.getMousePosition());
-                    if (ao != null) {
-                        ao.addInstanceNameEditor();
+                    else if ((ke.getKeyCode() == KeyEvent.VK_C) && ke.isShiftDown() && !KeyUtils.isControlOrCommandDown(ke)) {
+                        AxoObjectInstanceAbstract ao = AddObjectInstance(MainFrame.axoObjects.GetAxoObjectFromName("patch/comment", null).get(0), Layers.getMousePosition());
+                        if (ao != null) {
+                            ao.addInstanceNameEditor();
+                        }
+                        ke.consume();
                     }
-                    ke.consume();
-                }
-                else if ((ke.getKeyCode() == KeyEvent.VK_M) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
-                    MainFrame.mainframe.setVisible(true);
-                    ke.consume();
-                }
-                else if ((ke.getKeyCode() == KeyEvent.VK_Y) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
-                    MainFrame.mainframe.getKeyboard().setVisible(true);
-                    ke.consume();
-                }
-                else if ((ke.getKeyCode() == KeyEvent.VK_F) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
-                    MainFrame.mainframe.getFilemanager().setVisible(true);
-                    ke.consume();
-                }
-                else if (ke.isShiftDown() && ke.getKeyCode() > KeyEvent.VK_0 && ke.getKeyCode() < KeyEvent.VK_5 && !KeyUtils.isControlOrCommandDown(ke)) {
-
-                    /* SHIFT+1...4: user shortcuts 1-4 */
-                    Point p = Layers.getMousePosition();
-                    String userstr = prefs.getUserShortcut(ke.getKeyCode() - KeyEvent.VK_1);
-                    ke.consume();
-
-                    if (p != null && userstr != null && !userstr.equals("")) {
-                        ShowClassSelector(p, null, userstr, false);
+                    else if ((ke.getKeyCode() == KeyEvent.VK_M) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
+                        MainFrame.mainframe.setVisible(true);
+                        ke.consume();
                     }
-                }
-                else if (!KeyUtils.isControlOrCommandDown(ke) && ke.getKeyCode() >= KeyEvent.VK_A && ke.getKeyCode() <= KeyEvent.VK_Z) {
-
-                    /* Trigger stock shortcut list */
-                    int i = ke.getKeyCode() - KeyEvent.VK_A;
-                    Point p = Layers.getMousePosition();
-                    if (ke.isShiftDown()) {
-                        i += capitalLetterOffset;
+                    else if ((ke.getKeyCode() == KeyEvent.VK_Y) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
+                        MainFrame.mainframe.getKeyboard().setVisible(true);
+                        ke.consume();
                     }
-                    ke.consume();
+                    else if ((ke.getKeyCode() == KeyEvent.VK_F) && KeyUtils.isControlOrCommandDown(ke) && ke.isShiftDown()) {
+                        MainFrame.mainframe.getFilemanager().setVisible(true);
+                        ke.consume();
+                    }
+                    else if (ke.isShiftDown() && ke.getKeyCode() > KeyEvent.VK_0 && ke.getKeyCode() < KeyEvent.VK_5 && !KeyUtils.isControlOrCommandDown(ke)) {
 
-                    if (p != null && shortcutList[i] != null) {
-                        ShowClassSelector(p, null, shortcutList[i], false);
+                        /* SHIFT+1...4: user shortcuts 1-4 */
+                        Point p = Layers.getMousePosition();
+                        String userstr = prefs.getUserShortcut(ke.getKeyCode() - KeyEvent.VK_1);
+                        ke.consume();
+
+                        if (p != null && userstr != null && !userstr.equals("")) {
+                            ShowClassSelector(p, null, userstr, false);
+                        }
+                    }
+                    else if (!KeyUtils.isControlOrCommandDown(ke) && ke.getKeyCode() >= KeyEvent.VK_A && ke.getKeyCode() <= KeyEvent.VK_Z) {
+
+                        /* Trigger stock shortcut list */
+                        int i = ke.getKeyCode() - KeyEvent.VK_A;
+                        Point p = Layers.getMousePosition();
+                        if (ke.isShiftDown()) {
+                            i += capitalLetterOffset;
+                        }
+                        ke.consume();
+
+                        if (p != null && shortcutList[i] != null) {
+                            ShowClassSelector(p, null, shortcutList[i], false);
+                        }
                     }
                 }
             }
