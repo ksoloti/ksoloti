@@ -1911,7 +1911,7 @@ public class Patch {
                 + "}\n\n";
 
         c += GenerateStructCodePlusPlus("rootc", "rootc")
-                + I + "static const uint8_t polyIndex = 0;\n\n"
+                + I + "static const uint32_t polyIndex = 0;\n\n"
                 + GenerateParamInitCode3("rootc")
                 + GeneratePresetCode3("rootc")
                 + GenerateModulationCode3()
@@ -1983,7 +1983,7 @@ public class Patch {
         }
         /* object structures */
         ao.sLocalData = GenerateStructCodePlusPlusSub("attr_parent")
-                + I + "static const uint8_t polyIndex = 0;\n\n";
+                + I + "static const uint32_t polyIndex = 0;\n\n";
         ao.sLocalData += GenerateParamInitCode3("");
 
         ao.sLocalData += GeneratePresetCode3("");
@@ -2207,7 +2207,7 @@ public class Patch {
         ao.sLocalData += GenerateModulationCode3();
         ao.sLocalData += "class voice {\n";
         ao.sLocalData += "  public:\n";
-        ao.sLocalData += "  uint8_t polyIndex;\n";
+        ao.sLocalData += "  uint32_t polyIndex;\n";
         ao.sLocalData += GeneratePexchAndDisplayCodeV();
         ao.sLocalData += GenerateObjectCode("voice");
         ao.sLocalData += "  attr_parent* common;\n";
