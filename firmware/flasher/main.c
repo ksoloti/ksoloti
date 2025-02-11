@@ -22,10 +22,6 @@
 #include "chprintf.h"
 #include "ui.h"
 #include "axoloti_board.h"
-#if 0
-#include "sdcard.h"
-#include "ff.h"
-#endif
 #include "crc32.h"
 #include "sdram.h"
 #include "exceptions.h"
