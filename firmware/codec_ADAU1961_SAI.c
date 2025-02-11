@@ -67,9 +67,6 @@
 
 #endif
 
-extern void computebufI(int32_t *inp, int32_t *outp);
-
-
 const stm32_dma_stream_t* sai_a_dma;
 const stm32_dma_stream_t* sai_b_dma;
 
