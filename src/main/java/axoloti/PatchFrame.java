@@ -211,7 +211,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             jMenuItemUnlock.setVisible(false);
         }
         jMenuPreset.setVisible(false);
-        jMenuItemAdjScroll.setVisible(false);
+        jMenuItemAdjScroll.setVisible(true);
         patch.Layers.requestFocus();
         if (USBBulkConnection.GetConnection().isConnected()) {
             ShowConnect();
@@ -653,8 +653,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuView.add(jCheckBoxMenuItemCordsInBackground);
 
-        jMenuItemAdjScroll.setMnemonic('J');
-        jMenuItemAdjScroll.setText("Refresh Scroll");
+        jMenuItemAdjScroll.setMnemonic('R');
+        jMenuItemAdjScroll.setText("Refresh Scrollbars");
         jMenuItemAdjScroll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemAdjScrollActionPerformed(evt);
