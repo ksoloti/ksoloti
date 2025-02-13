@@ -19,12 +19,14 @@
 
 #define STM32_I2S3_TX_DMA_STREAM STM32_DMA_STREAM_ID(1, 7)
 #define STM32_I2S3_RX_DMA_STREAM STM32_DMA_STREAM_ID(1, 0)
-#define STM32_I2S3_TX_DMA_CHANNEL 0
-#define STM32_I2S3_RX_DMA_CHANNEL 1
-#define STM32_I2S3_TX_DMA_PRIORITY 1
-#define STM32_I2S3_RX_DMA_PRIORITY 1
-#define STM32_I2S3_TX_IRQ_PRIORITY 2
-#define STM32_I2S3_RX_IRQ_PRIORITY 2
+
+#define I2S3_TX_DMA_CHANNEL (STM32_DMA_GETCHANNEL(STM32_I2S3_TX_DMA_STREAM, STM32_SPI3_TX_DMA_CHN))
+#define I2S3_RX_DMA_CHANNEL (STM32_DMA_GETCHANNEL(STM32_I2S3_RX_DMA_STREAM, STM32_SPI3_RX_DMA_CHN))
+
+#define STM32_I2S_TX_DMA_PRIORITY 1
+#define STM32_I2S_RX_DMA_PRIORITY 1
+#define STM32_I2S_TX_IRQ_PRIORITY 2
+#define STM32_I2S_RX_IRQ_PRIORITY 2
 
 #define I2S3_WS_PORT GPIOA
 #define I2S3_WS_PIN 15
@@ -111,8 +113,11 @@ void i2s_hw_init(void) {
     wait_codec_fsync();
     chSysUnlock();
 
-    I2S3->I2SCFGR |= SPI_I2SCFGR_I2SE;
-    I2S3ext->I2SCFGR |= SPI_I2SCFGR_I2SE;
+    I2S3->I2SCFGR    = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_1; /* I2S master transmit, Philips standard, 16-bit data and channel length */
+    I2S3ext->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_0; /* I2S slave receive, Philips standard, 16-bit data and channel length */
+
+    I2S3->I2SPR = 0x0C | SPI_I2SPR_ODD;
+    // I2S3ext->I2SPR = 0x0C | SPI_I2SPR_ODD; /* not used in slave mode */
 
     chThdSleepMilliseconds(1);
 }
@@ -134,11 +139,11 @@ void i2s_periph_init() {
 
     chThdSleepMilliseconds(1);
 
-    /* reassign SAI */
-    palSetPadMode(SAI1_FS_PORT, SAI1_FS_PIN, PAL_MODE_ALTERNATE(6));
-    palSetPadMode(SAI1_SD_A_PORT, SAI1_SD_A_PIN, PAL_MODE_ALTERNATE(6));
-    palSetPadMode(SAI1_SD_B_PORT, SAI1_SD_B_PIN, PAL_MODE_ALTERNATE(6));
-    palSetPadMode(SAI1_SCK_PORT, SAI1_SCK_PIN, PAL_MODE_ALTERNATE(6));
+    /* reassign I2S3 */
+    palSetPadMode(I2S3_WS_PORT, I2S3_WS_PIN, PAL_MODE_ALTERNATE());
+    palSetPadMode(I2S3_BCLK_PORT, I2S3_BCLK_PIN, PAL_MODE_ALTERNATE());
+    palSetPadMode(I2S3_SDIN_PORT, I2S3_SDIN_PIN, PAL_MODE_ALTERNATE());
+    palSetPadMode(I2S3_SDOUT_PORT, I2S3_SDOUT_PIN, PAL_MODE_ALTERNATE());
 
     /* initialize DMA */
     sai_a_dma = STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM);
