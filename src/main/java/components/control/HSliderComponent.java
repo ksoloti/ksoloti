@@ -196,6 +196,12 @@ public class HSliderComponent extends ACtrlComponent {
             default:
         }
         switch (ke.getKeyChar()) {
+            case ',': /* German decimal "dot" - convert to '.' */
+                if (!KeyUtils.isControlOrCommandDown(ke)) {
+                    keybBuffer += '.';
+                    ke.consume();
+                }
+                break;
             case '-':
             case '1':
             case '2':

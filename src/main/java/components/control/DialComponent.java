@@ -253,6 +253,12 @@ public class DialComponent extends ACtrlComponent {
                 default:
             }
             switch (ke.getKeyChar()) {
+                case ',': /* German decimal "dot" - convert to '.' */
+                    if (!KeyUtils.isControlOrCommandDown(ke)) {
+                        keybBuffer += '.';
+                        ke.consume();
+                    }
+                    break;
                 case '-':
                 case '1':
                 case '2':
@@ -265,43 +271,43 @@ public class DialComponent extends ACtrlComponent {
                 case '9':
                 case '0':
                 case '.':
-                case ' ':
-                case '+':
-                case '*':
-                case '/':
-                case '#':
-                case 'a':
-                case 'A':
-                case 'b':
-                case 'B':
-                case 'c':
-                case 'C':
-                case 'd':
-                case 'D':
-                case 'e':
-                case 'E':
-                case 'f':
-                case 'F':
-                case 'g':
-                case 'G':
-                case 'h':
-                case 'H':
-                case 'i':
-                case 'I':
-                case 'k':
-                case 'K':
-                case 'm':
-                case 'M':
-                case 'n':
-                case 'N':
-                case 'q':
-                case 'Q':
-                case 's':
-                case 'S':
-                case 'x':
-                case 'X':
-                case 'z':
-                case 'Z':
+                // case ' ':
+                // case '+':
+                // case '*':
+                // case '/':
+                // case '#':
+                // case 'a':
+                // case 'A':
+                // case 'b':
+                // case 'B':
+                // case 'c':
+                // case 'C':
+                // case 'd':
+                // case 'D':
+                // case 'e':
+                // case 'E':
+                // case 'f':
+                // case 'F':
+                // case 'g':
+                // case 'G':
+                // case 'h':
+                // case 'H':
+                // case 'i':
+                // case 'I':
+                // case 'k':
+                // case 'K':
+                // case 'm':
+                // case 'M':
+                // case 'n':
+                // case 'N':
+                // case 'q':
+                // case 'Q':
+                // case 's':
+                // case 'S':
+                // case 'x':
+                // case 'X':
+                // case 'z':
+                // case 'Z':
                     if (!KeyUtils.isControlOrCommandDown(ke)) {
                         keybBuffer += ke.getKeyChar();
                         ke.consume();
