@@ -268,8 +268,6 @@ void i2s_init(void) {
     I2S3ext->CR2 = SPI_CR2_RXDMAEN;
     SPI3->I2SCFGR |= SPI_I2SCFGR_I2SE;
     I2S3ext->I2SCFGR |= SPI_I2SCFGR_I2SE;
-    (STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM))->stream->CR &= 0xFFFFFFFE;
-    (STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM))->stream->CR |= 1;
 
     chSysUnlock();
 }
