@@ -175,8 +175,6 @@ void i2s_peripheral_init(void)  {
     I2S3ext->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_0 | SPI_I2SCFGR_DATLEN_1; /* I2S slave receive, Philips standard, 32-bit data length, 32-bit channel length */
     I2S3ext->I2SPR = 0x0002; // 0x000C | SPI_I2SPR_ODD; /* not used in slave mode */
 
-
-
     /* release I2S3 */
     palSetPadMode(I2S3_WS_PORT, I2S3_WS_PIN, PAL_MODE_INPUT);
     palSetPadMode(I2S3_BCLK_PORT, I2S3_BCLK_PIN, PAL_MODE_INPUT);
@@ -257,9 +255,9 @@ void i2s_init(void) {
     i2s_dma_init();
 
     /* sync I2S WS falling edge with SAI (codec) WS falling edge (will sync to around 10-50 ns) */
-    chSysLock();
     //wait_sai_fsync(falling);
     //wait_sai_dma_tc_sync();
+    chSysLock();
     dmaStreamEnable(i2s_tx_dma);
     dmaStreamEnable(i2s_rx_dma);
     SPI3->CR2 = SPI_CR2_TXDMAEN;
