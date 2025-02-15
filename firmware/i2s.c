@@ -117,9 +117,9 @@ void wait_sai_fsync(edge_t edge) {
 }
 
 
-void wait_sai_dma_buffersync(void) {
-    volatile int i;
-    i = 100000000;
+void wait_sai_dma_tc_sync(void) {
+    /* wait for SAI DMA transfer complete flag */
+    volatile int i = 100000000;
 
     while (--i) {
         if ((STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM))->stream->CR & STM32_DMA_CR_CT) {
@@ -261,7 +261,7 @@ void i2s_init(void) {
     /* sync I2S WS falling edge with SAI (codec) WS falling edge (will sync to around 10-50 ns) */
     chSysLock();
     //wait_sai_fsync(falling);
-    //wait_sai_dma_buffersync();
+    //wait_sai_dma_tc_sync();
     dmaStreamEnable(i2s_tx_dma);
     dmaStreamEnable(i2s_rx_dma);
     SPI3->CR2 = SPI_CR2_TXDMAEN;
