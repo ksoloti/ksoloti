@@ -28,6 +28,8 @@
 
 #ifdef FW_I2S
 
+#define I2S_DEBUG
+
 #define STM32_I2S3_TX_DMA_CHANNEL (STM32_DMA_GETCHANNEL(STM32_SPI_SPI3_TX_DMA_STREAM, STM32_SPI3_TX_DMA_CHN))
 #define STM32_I2S3_RX_DMA_CHANNEL (STM32_DMA_GETCHANNEL(STM32_SPI_SPI3_RX_DMA_STREAM, STM32_SPI3_RX_DMA_CHN))
 
@@ -139,6 +141,7 @@ static void dma_i2s_tx_interrupt(void* dat, uint32_t flags) {
     i2s_interrupt_timestamp = hal_lld_get_counter_value();
 
     if ((i2s_tx_dma)->stream->CR & STM32_DMA_CR_CT) {
+#ifdef I2S_DEBUG
         palSetPad(GPIOA, 1);
         __asm("nop");
         __asm("nop");
@@ -147,6 +150,7 @@ static void dma_i2s_tx_interrupt(void* dat, uint32_t flags) {
         __asm("nop");
         __asm("nop");
         palClearPad(GPIOA, 1);
+#endif
     }
     dmaStreamClearInterrupt(i2s_tx_dma);
 }
@@ -159,7 +163,7 @@ static void dma_i2s_rx_interrupt(void* dat, uint32_t flags) {
 
 void i2s_peripheral_init(void)  {
 
-#if 1
+#ifdef I2S_DEBUG
     palSetPadMode(GPIOA, 1, PAL_MODE_OUTPUT_PUSHPULL);
 #endif
 
