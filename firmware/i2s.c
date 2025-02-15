@@ -38,8 +38,8 @@
 #define STM32_I2S_TX_IRQ_PRIORITY 3
 #define STM32_I2S_RX_IRQ_PRIORITY 3
 
+/* Required by wait_sai_dma_tc_sync(): access to SAI DMA's transfer complete flag */
 #define STM32_SAI_A_DMA_STREAM STM32_DMA_STREAM_ID(2, 1)
-#define STM32_SAI_B_DMA_STREAM STM32_DMA_STREAM_ID(2, 4)
 
 #define I2S3_WS_PORT GPIOA
 #define I2S3_WS_PIN 15
