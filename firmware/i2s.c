@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2013, 2014 Johannes Taelman
- * Edited 2023 - 2024 by Ksoloti
+ * Edited 2024 - 2025 by Ksoloti
  *
  * This file is part of Axoloti.
  *
@@ -38,7 +38,7 @@
 #define STM32_I2S_TX_IRQ_PRIORITY 3
 #define STM32_I2S_RX_IRQ_PRIORITY 3
 
-/* Required by wait_sai_dma_tc_sync(): access to SAI DMA's transfer complete flag */
+/* Required by wait_sai_dma_tc_flag(): access to SAI DMA's transfer complete flag */
 #define STM32_SAI_A_DMA_STREAM STM32_DMA_STREAM_ID(2, 1)
 
 #define I2S3_WS_PORT GPIOA
@@ -58,7 +58,6 @@
 const stm32_dma_stream_t* i2s_tx_dma;
 const stm32_dma_stream_t* i2s_rx_dma;
 
-
 uint32_t i2s_interrupt_timestamp;
 
 int32_t i2s_buf[BUFSIZE*2]   __attribute__ ((section (".sram2")));
@@ -66,70 +65,32 @@ int32_t i2s_buf2[BUFSIZE*2]  __attribute__ ((section (".sram2")));
 int32_t i2s_rbuf[BUFSIZE*2]  __attribute__ ((section (".sram2")));
 int32_t i2s_rbuf2[BUFSIZE*2] __attribute__ ((section (".sram2")));
 
-typedef enum {
-    falling=0,
-    rising=1
-} edge_t;
 
+void wait_sai_dma_tc_flag(void) {
+    volatile uint32_t i = 10000000;
+    /* j may have to be changed for any other MCU than STM32F42x! */
+    volatile float j = 36.9f * (STM32_SYSCLK / 1000000.f); /* Magic number - see below */
+    volatile uint32_t k = (uint32_t) j;
 
-void wait_sai_fsync(edge_t edge) {
-    /* sync on ADAU codec LRCLK = WS. */
-    while (1) {
-        volatile int i, j, k;
-        k = 427; /* magic number found through trial and error - see below */
-
-        i = 1000000;
-        while(--i) {
-            /* wait till LRCLK goes low (or already is) */
-            if (edge ^ !palReadPad(SAI1_FS_PORT, SAI1_FS_PIN)) {
-                break;
-            }
-        }
-
-        j = 1000000;
-        while(--j) {
-            /* wait till LRCLK goes high */
-            if (edge ^ palReadPad(SAI1_FS_PORT, SAI1_FS_PIN)) {
-                break;
-            }
-        }
-
-        i = 1000000;
-        while(--i) {
-            /* wait till LRCLK goes low again */
-            if (edge ^ !palReadPad(SAI1_FS_PORT, SAI1_FS_PIN)) {
-                /* When turning the I2S on after syncing it in chSysLock state, its WS
-                 * and other clocks  will run ca. 1 us late compared to the SAI.
-                 * This is actually not a problem but might be at high patch load?
-                 * Enter the k hack:
-                 * We make the MCU spin and waste time until the next WS cycle,
-                 * making it run so late it's punctual again.
-                 * Somewhere between 10 and 50 ns now.
-                 */
-                while(--k) {
-                    __asm("nop");
-                }
-                break;
-            }
-        }
-        break; /* time out if pulse edge not found */
-    }
-}
-
-
-void wait_sai_dma_tc_sync(void) {
-    /* wait for SAI DMA transfer complete flag */
-    volatile int i = 100000000;
-
+    chSysLock();
+    /* Wait for SAI DMA Transfer Complete flag
+     * which marks the beginning of the next 16*2-sample buffer transfer
+     */
     while (--i) {
         if ((STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM))->stream->CR & STM32_DMA_CR_CT) {
             break;
         }
-        //if (DMA2_Stream1->NDTR == 0) {
-        //    break;
-        //}
     }
-    /* Or time out */
+
+    /* Once the SAI DMA TC flag has been detected, we know a definite timing point.
+     * From here we just waste the "exact" amount of time it takes to sync the
+     * I2S DMA interrupts to the SAI ones.
+     */
+    while(--k) {
+        __asm("nop");
+        __asm("nop");
+    }
+    chSysUnlock();
 }
 
 
@@ -254,18 +215,14 @@ void i2s_init(void) {
 
     i2s_dma_init();
 
-    /* sync I2S WS falling edge with SAI (codec) WS falling edge (will sync to around 10-50 ns) */
-    //wait_sai_fsync(falling);
-    //wait_sai_dma_tc_sync();
-    chSysLock();
+    /* sync I2S interrupt to SAI... */
+    wait_sai_dma_tc_flag();
     dmaStreamEnable(i2s_tx_dma);
     dmaStreamEnable(i2s_rx_dma);
     SPI3->CR2 = SPI_CR2_TXDMAEN;
     I2S3ext->CR2 = SPI_CR2_RXDMAEN;
     SPI3->I2SCFGR |= SPI_I2SCFGR_I2SE;
     I2S3ext->I2SCFGR |= SPI_I2SCFGR_I2SE;
-
-    chSysUnlock();
 }
 
 
