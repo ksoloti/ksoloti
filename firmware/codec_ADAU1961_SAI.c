@@ -31,6 +31,9 @@
 #include "spilink_lld.h"
 #endif
 
+
+#define I2S_DEBUG
+
 #define ADAU1961_I2C_ADDR 0x70 /* (0x38<<1) */
 #define TIMEOUT 1000000
 
@@ -333,7 +336,13 @@ static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
     codec_interrupt_timestamp = hal_lld_get_counter_value();
 
     if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
+#if I2S_DEBUG
+        palSetPad(GPIOA, 0);
+#endif
         computebufI(rbuf2, buf);
+#if I2S_DEBUG
+        palClearPad(GPIOA, 0);
+#endif
     }
     else {
         computebufI(rbuf, buf2);
@@ -432,11 +441,6 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
 #endif
 
     chThdSleepMilliseconds(1);
-
-    /*
-    * i2s2_sd (dac) is a confirmed connection, i2s2_ext_sd (adc) is not however
-    * bclk and lrclk are ok too
-    */
 
     ADAU1961_WriteRegister(ADAU1961_REG_R2_DMICJ,    0x20); /* Enable digital mic function via pin JACKDET/MICIN */
     ADAU1961_WriteRegister(ADAU1961_REG_R4_RMIXL0,   0x00);
@@ -553,6 +557,9 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
 
 void codec_ADAU1961_SAI_init(uint16_t samplerate, bool_t isMaster) {
 
+#if I2S_DEBUG
+    palSetPadMode(GPIOA, 0, PAL_MODE_OUTPUT_PUSHPULL);
+#endif
 
 #ifdef FW_SPILINK
     /*configure MCO */
