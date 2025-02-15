@@ -184,7 +184,6 @@ void i2s_peripheral_init(void)  {
     palSetPadMode(I2S3_SDIN_PORT, I2S3_SDIN_PIN, PAL_MODE_INPUT);
     palSetPadMode(I2S3_SDOUT_PORT, I2S3_SDOUT_PIN, PAL_MODE_INPUT);
 
-    chThdSleepMilliseconds(1);
 
     /* reassign I2S3 */
     palSetPadMode(I2S3_WS_PORT, I2S3_WS_PIN, PAL_MODE_ALTERNATE(6));
@@ -193,7 +192,6 @@ void i2s_peripheral_init(void)  {
     palSetPadMode(I2S3_SDIN_PORT, I2S3_SDIN_PIN, PAL_MODE_ALTERNATE(7));
     palSetPadMode(I2S3_SDOUT_PORT, I2S3_SDOUT_PIN, PAL_MODE_ALTERNATE(5));
 
-    chThdSleepMilliseconds(1);
 }
 
 
