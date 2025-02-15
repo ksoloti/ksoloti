@@ -1684,6 +1684,9 @@ public class Patch {
         if (prefs.getFirmwareMode().contains("USBAudio")) {
             c += "void PatchProcess(int32_t* inbuf, int32_t* outbuf, int32_t* inbufUsb, int32_t* outbufUsb) {\n";
         }
+        else if (true /*prefs.getFirmwareMode().contains("Multichannel???")*/) {
+            c += "void PatchProcess(int32_t* inbuf, int32_t* outbuf, int32_t* i2s_inbuf, int32_t* i2s_outbuf) {\n";
+        }
         else {
             c += "void PatchProcess(int32_t* inbuf, int32_t* outbuf) {\n";
         }
@@ -1717,6 +1720,12 @@ public class Patch {
                + I+I + "UsbInputLeft[i] = inbufUsb[(i<<1)] >> 4;\n"
                + I+I + "UsbInputRight[i] = inbufUsb[(i<<1) + 1] >> 4;\n";
         }
+        if (true /*prefs.getFirmwareMode().contains("Multichannel???")*/) {
+            c += "\n"
+               + I+I + "i2sInputLeft[i] = i2s_inbuf[(i<<1)] >> 4;\n"
+               + I+I + "i2sInputRight[i] = i2s_inbuf[(i<<1) + 1] >> 4;\n";
+
+        }
         c += I + "}\n";
 
         c += "\n" + I + "root.dsp();\n\n";
@@ -1745,6 +1754,11 @@ public class Patch {
                    + I+I + "outbufUsb[(i<<1)] = __SSAT(UsbOutputLeft[i], 28) << 4;\n"
                    + I+I + "outbufUsb[(i<<1) + 1] = __SSAT(UsbOutputRight[i], 28) << 4;\n";
             }
+            if (true /*prefs.getFirmwareMode().contains("Multichannel???")*/) {
+                c += "\n"
+                   + I+I + "i2s_outbuf[(i<<1)] = __SSAT(i2sOutputLeft[i], 28) << 4;\n"
+                   + I+I + "i2s_outbuf[(i<<1) + 1] = __SSAT(i2sOutputRight[i], 28) << 4;\n";
+            }
             c += I + "}\n";
         }
         else {
@@ -1769,6 +1783,11 @@ public class Patch {
                 c += "\n"
                    + I+I + "outbufUsb[(i<<1)] = UsbOutputLeft[i];\n"
                    + I+I + "outbufUsb[(i<<1) + 1] = UsbOutputRight[i];\n";
+            }
+            if (true) {
+                c += "\n"
+                   + I+I + "i2s_outbuf[(i<<1)] = i2sOutputLeft[i];\n"
+                   + I+I + "i2s_outbuf[(i<<1) + 1] = i2sOutputRight[i];\n";
             }
             c += I + "}\n";
         }
@@ -1896,6 +1915,9 @@ public class Patch {
         c += "int32buffer AudioInputLeft, AudioInputRight, AudioOutputLeft, AudioOutputRight;\n";
         if (prefs.getFirmwareMode().contains("USBAudio")) {
             c += "int32buffer UsbInputLeft, UsbInputRight, UsbOutputLeft, UsbOutputRight;\n";
+        }
+        if (true) {
+            c += "int32buffer i2sInputLeft, i2sInputRight, i2sOutputLeft, i2sOutputRight;\n";
         }
 
         c += "\nvoid xpatch_init2(uint32_t fwid);\n\n"

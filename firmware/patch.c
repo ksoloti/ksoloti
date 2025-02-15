@@ -28,11 +28,15 @@
 #include "sysmon.h"
 #include "codec.h"
 #include "axoloti_memory.h"
+#include "axoloti_defines.h"
 #ifdef FW_SPILINK
 #include "spilink.h"
 #endif
 #include "audio_usb.h"
 
+#ifdef FW_I2S
+#include "i2s.h"
+#endif
 
 #if FW_USBAUDIO     
 extern void aduDataExchange (int32_t *in, int32_t *out);
@@ -60,6 +64,11 @@ static const char* index_fn = "/index.axb";
 static int32_t inbuf[32];
 static int32_t* outbuf;
 
+#ifdef FW_I2S
+static int32_t i2s_inbuf[32];
+static int32_t i2s_outbuf[32];
+#endif
+
 #if FW_USBAUDIO
 static int32_t inbufUsb[32];
 static int32_t outbufUsb[32];
@@ -74,7 +83,7 @@ void usb_clearbuffer(void)
 
 
 static int16_t nThreadsBeforePatch;
-static WORKING_AREA(waThreadDSP, 7200) __attribute__ ((section (".ccmramend")));
+static WORKING_AREA(waThreadDSP, 7300) __attribute__ ((section (".ccmramend")));
 static Thread* pThreadDSP = 0;
 
 // Default valued for safety preset `Normal`
@@ -322,6 +331,8 @@ static int StartPatch1(void) {
                 /* Patch running */
 #if FW_USBAUDIO             
                 (patchMeta.fptr_dsp_process)(inbuf, outbuf, inbufUsb, outbufUsb);
+#elif defined(FW_I2S)
+                (patchMeta.fptr_dsp_process)(inbuf, outbuf, i2s_inbuf, i2s_outbuf);
 #else
                 (patchMeta.fptr_dsp_process)(inbuf, outbuf);
 #endif
@@ -559,6 +570,25 @@ void start_dsp_thread(void) {
 }
 
 
+#ifdef FW_I2S
+void computebufI(int32_t* inp, int32_t* outp, int32_t* i2s_inp, int32_t* i2s_outp) {
+    uint_fast8_t i; for (i = 0; i < 32; i++) {
+        inbuf[i] = inp[i];
+        i2s_inbuf[i] = i2s_inp[i];
+        i2s_outbuf[i] = i2s_outp[i];
+    }
+
+    outbuf = outp;
+
+#if FW_USBAUDIO     
+    aduDataExchange(inbufUsb, outbufUsb);
+#endif
+
+    chSysLockFromIsr();
+    chEvtSignalI(pThreadDSP, (eventmask_t)1);
+    chSysUnlockFromIsr();
+}
+#else
 void computebufI(int32_t* inp, int32_t* outp) {
     uint_fast8_t i; for (i = 0; i < 32; i++) {
         inbuf[i] = inp[i];
@@ -568,12 +598,14 @@ void computebufI(int32_t* inp, int32_t* outp) {
 
 #if FW_USBAUDIO     
     aduDataExchange(inbufUsb, outbufUsb);
-#endif    
+#endif
 
     chSysLockFromIsr();
     chEvtSignalI(pThreadDSP, (eventmask_t)1);
     chSysUnlockFromIsr();
 }
+#endif
+
 
 
 void MidiInMsgHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t data1, uint8_t data2) {

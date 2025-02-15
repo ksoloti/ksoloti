@@ -32,11 +32,6 @@ int32_t buf2[BUFSIZE*2]  __attribute__ ((section (".sram2")));
 int32_t rbuf[BUFSIZE*2]  __attribute__ ((section (".sram2")));
 int32_t rbuf2[BUFSIZE*2] __attribute__ ((section (".sram2")));
 
-int32_t i2s_buf[BUFSIZE*2]   __attribute__ ((section (".sram2")));
-int32_t i2s_buf2[BUFSIZE*2]   __attribute__ ((section (".sram2")));
-int32_t i2s_rbuf[BUFSIZE*2]  __attribute__ ((section (".sram2")));
-int32_t i2s_rbuf2[BUFSIZE*2]  __attribute__ ((section (".sram2")));
-
 
 void codec_init(bool_t isMaster) {
     codec_ADAU1961_SAI_init(SAMPLERATE, isMaster);
@@ -47,7 +42,12 @@ void codec_clearbuffer(void) {
     int i; for(i=0; i<BUFSIZE*2; i++) {
         buf[i] = 0;
         buf2[i] = 0;
+#ifdef FW_I2S
+        i2s_buf[i] = 0;
+        i2s_buf2[i] = 0;
+#endif
     }
+
 
 #ifdef FW_SPILINK
     spilink_clear_audio_tx();

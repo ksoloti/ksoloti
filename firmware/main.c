@@ -46,6 +46,10 @@
 #include "spilink.h"
 #endif
 
+#ifdef FW_I2S
+#include "i2s.h"
+#endif
+
 #include "sdram.c"
 #include "stm32f4xx_fmc.c"
 
@@ -56,6 +60,9 @@
 // #define ENABLE_SERIAL_DEBUG 1
 
 extern void MY_USBH_Init(void);
+#ifdef FW_I2S
+extern void i2s_init(void);
+#endif
 
 int32buffer AudioInputLeft, AudioInputRight, AudioOutputLeft, AudioOutputRight, UsbInputLeft, UsbInputRight, UsbOutputLeft, UsbOutputRight;
 
@@ -122,6 +129,9 @@ int main(void) {
     codec_init(is_master);
 #ifdef FW_SPILINK
     spilink_init(is_master);
+#endif
+#ifdef FW_I2S
+    i2s_init();
 #endif
 
     if (!palReadPad(SW2_PORT, SW2_PIN)) {

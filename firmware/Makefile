@@ -189,6 +189,7 @@ CSRC = $(STARTUPSRC) \
   $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
   $(CHIBIOS)/os/various/memstreams.c \
   ${FIRMWARE}/codec.c \
+  ${FIRMWARE}/i2s.c \
   ${FIRMWARE}/axoloti.c \
   ${FIRMWARE}/axoloti_filters.c \
   ${FIRMWARE}/axoloti_math.c \
