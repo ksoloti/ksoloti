@@ -28,7 +28,7 @@
 
 #ifdef FW_I2S
 
-#define I2S_DEBUG
+// #define I2S_DEBUG
 
 #define STM32_I2S3_TX_DMA_CHANNEL (STM32_DMA_GETCHANNEL(STM32_SPI_SPI3_TX_DMA_STREAM, STM32_SPI3_TX_DMA_CHN))
 #define STM32_I2S3_RX_DMA_CHANNEL (STM32_DMA_GETCHANNEL(STM32_SPI_SPI3_RX_DMA_STREAM, STM32_SPI3_RX_DMA_CHN))
@@ -170,7 +170,7 @@ void i2s_dma_init(void) {
         STM32_DMA_CR_TEIE |
         STM32_DMA_CR_TCIE;
 
-    bool_t b = dmaStreamAllocate(i2s_tx_dma, STM32_I2S_TX_DMA_PRIORITY, (stm32_dmaisr_t) dma_i2s_tx_interrupt, (void*) 0);
+    bool_t b = dmaStreamAllocate(i2s_tx_dma, STM32_I2S_TX_DMA_PRIORITY, (stm32_dmaisr_t) 0, (void*) 0);
 
     dmaStreamSetMode(i2s_tx_dma, i2s_tx_dma_mode);
     dmaStreamSetPeripheral(i2s_tx_dma, &(SPI3->DR));

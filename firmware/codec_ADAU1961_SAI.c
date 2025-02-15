@@ -36,7 +36,7 @@
 #endif
 
 
-#define I2S_DEBUG
+// #define I2S_DEBUG
 
 #define ADAU1961_I2C_ADDR 0x70 /* (0x38<<1) */
 #define TIMEOUT 1000000
