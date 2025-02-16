@@ -66,7 +66,7 @@ static int32_t* outbuf;
 
 #ifdef FW_I2S
 static int32_t i2s_inbuf[32];
-static int32_t i2s_outbuf[32];
+static int32_t* i2s_outbuf;
 #endif
 
 #if FW_USBAUDIO
@@ -575,9 +575,9 @@ void computebufI(int32_t* inp, int32_t* outp, int32_t* i2s_inp, int32_t* i2s_out
     uint_fast8_t i; for (i = 0; i < 32; i++) {
         inbuf[i] = inp[i];
         i2s_inbuf[i] = i2s_inp[i];
-        i2s_outbuf[i] = i2s_outp[i];
     }
 
+    i2s_outbuf = i2s_outp;
     outbuf = outp;
 
 #if FW_USBAUDIO     
