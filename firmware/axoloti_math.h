@@ -66,6 +66,13 @@ typedef union {
 void axoloti_math_init(void);
 
 
+__attribute__((always_inline)) __STATIC_INLINE int32_t ___ROR (int32_t op1, int32_t op2) {
+    int32_t result;
+    __ASM volatile ("ror %0, %1, %2" : "=r" (result): "r" (op1), "r" (op2));
+    return result;
+}
+
+
 __attribute__((always_inline)) __STATIC_INLINE int32_t ___SMMUL (int32_t op1, int32_t op2) {
     int32_t result;
     __ASM volatile ("smmul %0, %1, %2" : "=r" (result): "r" (op1), "r" (op2));
