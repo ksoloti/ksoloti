@@ -1501,7 +1501,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     void setFirmwareID(String firmwareId) {
         TargetFirmwareID = firmwareId;
-        if (!firmwareId.equals(this.LinkFirmwareID)) {
+        /* If LinkfirmwareID is a valid 8-digit hex number but not equal to the new firmwareId */
+        if (this.LinkFirmwareID.length() == 8 && !firmwareId.equals(this.LinkFirmwareID)) {
             if (!WarnedAboutFWCRCMismatch) {
                 LOGGER.log(Level.WARNING, "Firmware version mismatch! Please update the firmware.");
                 LOGGER.log(Level.WARNING, "Hardware CRC {0} <-> Software CRC {1}", new Object[]{firmwareId, this.LinkFirmwareID});
