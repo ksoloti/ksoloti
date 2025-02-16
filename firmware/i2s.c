@@ -82,9 +82,8 @@ void wait_sai_dma_tc_flag(void) {
      * From here we just waste the "exact" amount of time it takes to sync the
      * I2S DMA interrupts to the SAI ones.
      */
-    while(--k) {
-        __asm("nop");
-        __asm("nop");
+    while(k) {
+        --k;
     }
     chSysUnlock();
 }
