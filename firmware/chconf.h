@@ -97,10 +97,6 @@
 #define CH_CFG_NO_IDLE_THREAD               FALSE
 #endif
 
-#define PORT_INT_REQUIRED_STACK         32
-#define PORT_IDLE_THREAD_STACK_SIZE     32
-
-
 /** @} */
 
 /*===========================================================================*/
