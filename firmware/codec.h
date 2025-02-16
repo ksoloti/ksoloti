@@ -30,12 +30,6 @@ extern int32_t buf2[BUFSIZE * 2];
 extern int32_t rbuf[BUFSIZE * 2];
 extern int32_t rbuf2[BUFSIZE * 2];
 
-#ifdef FW_I2S
-extern int32_t i2s_buf[BUFSIZE * 2]; // *2 for stereo
-extern int32_t i2s_buf2[BUFSIZE * 2];
-extern int32_t i2s_rbuf[BUFSIZE * 2];
-extern int32_t i2s_rbuf2[BUFSIZE * 2];
-#endif
 
 void codec_init(bool_t isMaster);
 

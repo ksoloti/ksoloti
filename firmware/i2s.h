@@ -20,6 +20,11 @@
 #ifndef _I2S_H_
 #define _I2S_H_
 
+extern int32_t i2s_buf[BUFSIZE * 2]; // *2 for stereo
+extern int32_t i2s_buf2[BUFSIZE * 2];
+extern int32_t i2s_rbuf[BUFSIZE * 2];
+extern int32_t i2s_rbuf2[BUFSIZE * 2];
+
 extern void i2s_init(void);
 extern void i2s_stop(void);
 

@@ -24,8 +24,10 @@
 #include "ch.h"
 #include "spilink.h"
 #endif
+#ifdef FW_I2S
+#include "i2s.h"
+#endif
 #include "codec_ADAU1961.h"
-
 
 int32_t buf[BUFSIZE*2]   __attribute__ ((section (".sram2")));
 int32_t buf2[BUFSIZE*2]  __attribute__ ((section (".sram2")));
