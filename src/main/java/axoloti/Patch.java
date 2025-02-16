@@ -1655,6 +1655,10 @@ public class Patch {
             c += I+I+I + "UsbOutputLeft[u] = 0;\n"
                + I+I+I + "UsbOutputRight[u] = 0;\n";
         }
+        if (prefs.getFirmwareMode().contains("oloti")) { /* TODO: placeholder */
+            c += I+I+I + "i2sOutputLeft[u] = 0;\n"
+               + I+I+I + "i2sOutputRight[u] = 0;\n";
+        }
         c += I+I + "}\n"
         + I + "}\n\n"
 
@@ -1684,7 +1688,7 @@ public class Patch {
         if (prefs.getFirmwareMode().contains("USBAudio")) {
             c += "void PatchProcess(int32_t* inbuf, int32_t* outbuf, int32_t* inbufUsb, int32_t* outbufUsb) {\n";
         }
-        else if (true /*prefs.getFirmwareMode().contains("Multichannel???")*/) {
+        else if (prefs.getFirmwareMode().contains("oloti")) { /* TODO: placeholder */
             c += "void PatchProcess(int32_t* inbuf, int32_t* outbuf, int32_t* i2s_inbuf, int32_t* i2s_outbuf) {\n";
         }
         else {
@@ -1720,7 +1724,7 @@ public class Patch {
                + I+I + "UsbInputLeft[i] = inbufUsb[(i<<1)] >> 4;\n"
                + I+I + "UsbInputRight[i] = inbufUsb[(i<<1) + 1] >> 4;\n";
         }
-        if (true /*prefs.getFirmwareMode().contains("Multichannel???")*/) {
+        if (prefs.getFirmwareMode().contains("oloti")) { /* TODO: placeholder */
             c += "\n"
                + I+I + "i2sInputLeft[i] = i2s_inbuf[(i<<1)] >> 4;\n"
                + I+I + "i2sInputRight[i] = i2s_inbuf[(i<<1) + 1] >> 4;\n";
@@ -1754,7 +1758,7 @@ public class Patch {
                    + I+I + "outbufUsb[(i<<1)] = __SSAT(UsbOutputLeft[i], 28) << 4;\n"
                    + I+I + "outbufUsb[(i<<1) + 1] = __SSAT(UsbOutputRight[i], 28) << 4;\n";
             }
-            if (true /*prefs.getFirmwareMode().contains("Multichannel???")*/) {
+            if (prefs.getFirmwareMode().contains("oloti")) { /* TODO: placeholder */
                 c += "\n"
                    + I+I + "i2s_outbuf[(i<<1)] = __SSAT(i2sOutputLeft[i], 28) << 4;\n"
                    + I+I + "i2s_outbuf[(i<<1) + 1] = __SSAT(i2sOutputRight[i], 28) << 4;\n";
@@ -1784,7 +1788,7 @@ public class Patch {
                    + I+I + "outbufUsb[(i<<1)] = UsbOutputLeft[i];\n"
                    + I+I + "outbufUsb[(i<<1) + 1] = UsbOutputRight[i];\n";
             }
-            if (true) {
+            if (prefs.getFirmwareMode().contains("oloti")) { /* TODO: placeholder */
                 c += "\n"
                    + I+I + "i2s_outbuf[(i<<1)] = i2sOutputLeft[i];\n"
                    + I+I + "i2s_outbuf[(i<<1) + 1] = i2sOutputRight[i];\n";
@@ -1916,7 +1920,7 @@ public class Patch {
         if (prefs.getFirmwareMode().contains("USBAudio")) {
             c += "int32buffer UsbInputLeft, UsbInputRight, UsbOutputLeft, UsbOutputRight;\n";
         }
-        if (true) {
+        if (prefs.getFirmwareMode().contains("oloti")) { /* TODO: placeholder */
             c += "int32buffer i2sInputLeft, i2sInputRight, i2sOutputLeft, i2sOutputRight;\n";
         }
 
