@@ -161,7 +161,7 @@ void i2s_dma_init(void) {
         STM32_DMA_CR_DIR_M2P |
         STM32_DMA_CR_MINC |
         STM32_DMA_CR_MSIZE_WORD |
-        STM32_DMA_CR_PSIZE_WORD |
+        STM32_DMA_CR_PSIZE_HWORD |
         STM32_DMA_CR_TEIE |
         STM32_DMA_CR_TCIE;
 
@@ -187,7 +187,7 @@ void i2s_dma_init(void) {
         STM32_DMA_CR_DIR_P2M |
         STM32_DMA_CR_MINC |
         STM32_DMA_CR_MSIZE_WORD |
-        STM32_DMA_CR_PSIZE_WORD;
+        STM32_DMA_CR_PSIZE_HWORD;
         //STM32_DMA_CR_TEIE |
         //STM32_DMA_CR_TCIE;
 
