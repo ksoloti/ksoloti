@@ -33,8 +33,10 @@ typedef void (*fptr_patch_init_t) (uint32_t fwID);
 typedef void (*fptr_patch_dispose_t) (void);
 #if FW_USBAUDIO
 typedef void (*fptr_patch_dsp_process_t) (int32_t*, int32_t*, int32_t*, int32_t*);
-#else
+#elif defined(FW_I2S)
 typedef void (*fptr_patch_dsp_process_t) (int32_t*, int32_t*, int32_t*, int32_t*);
+#else
+typedef void (*fptr_patch_dsp_process_t) (int32_t*, int32_t*);
 #endif
 typedef void (*fptr_patch_midi_in_handler_t) (midi_device_t dev, uint8_t port, uint8_t, uint8_t, uint8_t);
 typedef void (*fptr_patch_applyPreset_t) (uint8_t);
