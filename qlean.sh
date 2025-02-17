@@ -14,7 +14,3 @@ rm -f ./firmware/*/*/obj/*.*
 rm -f ./firmware/*/*/*/.dep/*.*
 rm -f ./firmware/*/*/*/lst/*.*
 rm -f ./firmware/*/*/*/obj/*.*
-
-rm -f ./firmware/*/*/*/*/.dep/*.*
-rm -f ./firmware/*/*/*/*/lst/*.*
-rm -f ./firmware/*/*/*/*/obj/*.*
