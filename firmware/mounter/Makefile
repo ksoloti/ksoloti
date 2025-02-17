@@ -94,7 +94,7 @@ else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
   PROJECT = axoloti_mounter
 endif
 
-BUILDDIR = mounter_build/$(PROJECT)
+# BUILDDIR = mounter_build/$(PROJECT)
 
 # Imported source files and paths
 CHIBIOS = ${axoloti_release}/chibios
@@ -279,6 +279,7 @@ VPATH = .
 # End of user defines
 ##############################################################################
 
-RULESPATH = $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC
-include $(RULESPATH)/rules.mk
+# RULESPATH = $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC
+# include $(RULESPATH)/rules.mk
 
+include ../rules.mk

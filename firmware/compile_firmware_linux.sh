@@ -25,26 +25,28 @@ MOUNTER_PROJECT="$NAME"_mounter
 if [[ $BUILD_FLASHER -eq 1 ]]; then
     printf "\nCompiling $1 - $FLASHER_PROJECT\n"
     cd flasher
-    mkdir -p flasher_build/.dep
-    mkdir -p flasher_build/$FLASHER_PROJECT/lst
-    mkdir -p flasher_build/$FLASHER_PROJECT/obj
+    export BUILDDIR=flasher_build/$FLASHER_PROJECT
+    mkdir -p $BUILDDIR/.dep
+    mkdir -p $BUILDDIR/lst
+    mkdir -p $BUILDDIR/obj
     if ! make -j8 BOARDDEF=$1; then
         exit 1
     fi
-    cp flasher_build/$FLASHER_PROJECT/$FLASHER_PROJECT.* flasher_build/
+    cp $BUILDDIR/$FLASHER_PROJECT.* flasher_build/
     cd ..
 fi
 
 if [[ $BUILD_MOUNTER -eq 1 ]]; then
     printf "\nCompiling $1 - $MOUNTER_PROJECT\n"
     cd mounter
-    mkdir -p mounter_build/.dep
-    mkdir -p mounter_build/$MOUNTER_PROJECT/lst
-    mkdir -p mounter_build/$MOUNTER_PROJECT/obj
+    export BUILDDIR=mounter_build/$MOUNTER_PROJECT
+    mkdir -p $BUILDDIR/.dep
+    mkdir -p $BUILDDIR/lst
+    mkdir -p $BUILDDIR/obj
     if ! make -j8 BOARDDEF=$1; then
         exit 1
     fi
-    cp mounter_build/$MOUNTER_PROJECT/$MOUNTER_PROJECT.* mounter_build/
+    cp $BUILDDIR/$MOUNTER_PROJECT.* mounter_build/
     cd ..
 fi
 
