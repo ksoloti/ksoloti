@@ -658,15 +658,25 @@ void codec_ADAU1961_SAI_init(uint16_t samplerate, bool_t isMaster) {
     sai_a_dma = STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM);
     sai_b_dma = STM32_DMA_STREAM(STM32_SAI_B_DMA_STREAM);
 
-    uint32_t sai_a_dma_mode = STM32_DMA_CR_CHSEL(SAI_A_DMA_CHANNEL)
-        | STM32_DMA_CR_PL(STM32_SAI_A_DMA_PRIORITY) | STM32_DMA_CR_DIR_M2P
-        | STM32_DMA_CR_TEIE | STM32_DMA_CR_TCIE | STM32_DMA_CR_DBM /* double buffer mode */
-        | STM32_DMA_CR_PSIZE_WORD | STM32_DMA_CR_MSIZE_WORD;
+    uint32_t sai_a_dma_mode =
+        STM32_DMA_CR_CHSEL(SAI_A_DMA_CHANNEL) |
+        STM32_DMA_CR_PL(STM32_SAI_A_DMA_PRIORITY) |
+        STM32_DMA_CR_DBM | /* double buffer mode */
+        STM32_DMA_CR_DIR_M2P |
+        STM32_DMA_CR_MSIZE_WORD |
+        STM32_DMA_CR_PSIZE_WORD |
+        STM32_DMA_CR_TCIE |
+        STM32_DMA_CR_TEIE;
 
-    uint32_t sai_b_dma_mode = STM32_DMA_CR_CHSEL(SAI_B_DMA_CHANNEL)
-        | STM32_DMA_CR_PL(STM32_SAI_B_DMA_PRIORITY) | STM32_DMA_CR_DIR_P2M
-        | STM32_DMA_CR_TEIE | STM32_DMA_CR_TCIE | STM32_DMA_CR_DBM /* double buffer mode */
-        | STM32_DMA_CR_PSIZE_WORD | STM32_DMA_CR_MSIZE_WORD;
+    uint32_t sai_b_dma_mode = 
+        STM32_DMA_CR_CHSEL(SAI_B_DMA_CHANNEL) |
+        STM32_DMA_CR_PL(STM32_SAI_B_DMA_PRIORITY) |
+        STM32_DMA_CR_DBM | /* double buffer mode */
+        STM32_DMA_CR_DIR_P2M |
+        STM32_DMA_CR_MSIZE_WORD |
+        STM32_DMA_CR_PSIZE_WORD |
+        STM32_DMA_CR_TCIE |
+        STM32_DMA_CR_TEIE;
 
     bool_t b;
 
