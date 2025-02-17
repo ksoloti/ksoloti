@@ -67,7 +67,7 @@ static int32_t* outbuf;
 
 #ifdef FW_I2S
 static int32_t i2s_inbuf[32];
-static int32_t* i2s_outbuf;
+static int32_t i2s_outbuf[32];
 #endif
 
 #if FW_USBAUDIO
