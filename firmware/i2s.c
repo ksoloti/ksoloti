@@ -19,7 +19,6 @@
 
 #include <stdint.h>
 #include "axoloti_defines.h"
-#include "i2s.h"
 #include "ch.h"
 #include "hal.h"
 #include "sysmon.h"
@@ -156,7 +155,7 @@ void i2s_dma_init(void) {
 
     uint32_t i2s_tx_dma_mode =
         STM32_DMA_CR_CHSEL(STM32_I2S3_TX_DMA_CHANNEL) |
-        STM32_DMA_CR_PL(STM32_SPI_SPI3_DMA_PRIORITY) |
+        STM32_DMA_CR_PL(STM32_SPI_I2S3_DMA_PRIORITY) |
         STM32_DMA_CR_DBM /* double buffer mode */ |
         STM32_DMA_CR_DIR_M2P |
         STM32_DMA_CR_MINC |
@@ -166,9 +165,9 @@ void i2s_dma_init(void) {
         STM32_DMA_CR_TCIE;
 
 #ifdef I2S_DEBUG
-    bool_t b = dmaStreamAllocate(i2s_tx_dma, STM32_SPI_SPI3_IRQ_PRIORITY, (stm32_dmaisr_t) dma_i2s_tx_interrupt, (void*) 0);
+    bool_t b = dmaStreamAllocate(i2s_tx_dma, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t) dma_i2s_tx_interrupt, (void*) 0);
 #else
-    bool_t b = dmaStreamAllocate(i2s_tx_dma, STM32_SPI_SPI3_IRQ_PRIORITY, (stm32_dmaisr_t) 0, (void*) 0);
+    bool_t b = dmaStreamAllocate(i2s_tx_dma, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t) 0, (void*) 0);
 #endif
 
     dmaStreamSetMode(i2s_tx_dma, i2s_tx_dma_mode);
@@ -182,7 +181,7 @@ void i2s_dma_init(void) {
 
     uint32_t i2s_rx_dma_mode =
         STM32_DMA_CR_CHSEL(STM32_I2S3_RX_DMA_CHANNEL) |
-        STM32_DMA_CR_PL(STM32_SPI_SPI3_DMA_PRIORITY) |
+        STM32_DMA_CR_PL(STM32_SPI_I2S3_DMA_PRIORITY) |
         STM32_DMA_CR_DBM /* double buffer mode */ |
         STM32_DMA_CR_DIR_P2M |
         STM32_DMA_CR_MINC |
@@ -191,7 +190,7 @@ void i2s_dma_init(void) {
         //STM32_DMA_CR_TEIE |
         //STM32_DMA_CR_TCIE;
 
-    b |= dmaStreamAllocate(i2s_rx_dma, STM32_SPI_SPI3_IRQ_PRIORITY, (stm32_dmaisr_t) 0, (void*) 0);
+    b |= dmaStreamAllocate(i2s_rx_dma, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t) 0, (void*) 0);
 
     if (b) {
         setErrorFlag(ERROR_CODEC_I2C);

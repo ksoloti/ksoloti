@@ -234,12 +234,11 @@
 #define STM32_SPI_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 0)
 #define STM32_SPI_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 7)
 #ifdef FW_I2S
-#define STM32_SPI_SPI3_DMA_PRIORITY         1
-#define STM32_SPI_SPI3_IRQ_PRIORITY         2
-#else
+#define STM32_SPI_I2S3_DMA_PRIORITY         1
+#define STM32_SPI_I2S3_IRQ_PRIORITY         2
+#endif
 #define STM32_SPI_SPI3_DMA_PRIORITY         3
 #define STM32_SPI_SPI3_IRQ_PRIORITY         3
-#endif
 
 #define STM32_SPI_DMA_ERROR_HOOK(spip)      chSysHalt("SPI_DMA_ERROR")
 
