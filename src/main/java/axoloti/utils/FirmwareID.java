@@ -57,7 +57,8 @@ public class FirmwareID {
             File f = new File(boarddef);
 
             if (f == null || !f.canRead()) {
-                return "- Couldn\'t find " + boarddef + ".\nPlease compile the firmware first.";
+                LOGGER.log(Level.WARNING, "Could not find " + boarddef + ".\nPlease compile the firmware first.");
+                return "(not found)";
             }
             int tlength = (int) f.length();
             FileInputStream inputStream = new FileInputStream(f);
