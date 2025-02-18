@@ -64,7 +64,7 @@ int32_t i2s_rbuf2[BUFSIZE*2] __attribute__ ((section (".sram2")));
 void wait_sai_dma_tc_flag(void) {
     volatile uint32_t i = 10000000;
     /* j may have to be changed for any other MCU than STM32F42x! */
-    volatile float j = 34.9f * (STM32_SYSCLK / 1000000.f); /* Magic number - see below */
+    volatile float j = 35.2f * (STM32_SYSCLK / 1000000.f); /* Magic number - see below */
     volatile uint32_t k = (uint32_t) j;
 
     /* Wait for SAI DMA Transfer Complete flag
