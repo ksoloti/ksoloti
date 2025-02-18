@@ -57,9 +57,6 @@
 
 extern void MY_USBH_Init(void);
 
-int32buffer AudioInputLeft, AudioInputRight, AudioOutputLeft, AudioOutputRight, 
-            UsbInputLeft, UsbInputRight, UsbOutputLeft, UsbOutputRight,
-            UsbInput2Left, UsbInput2Right, UsbOutput2Left, UsbOutput2Right;
 
 int main(void) {
     /* copy vector table to SRAM1! */
