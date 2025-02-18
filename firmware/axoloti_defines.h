@@ -29,6 +29,7 @@
  * #define BOARD_AXOLOTI_CORE
  */
 #define FW_I2S
+#define I2S_DEBUG
 
 /* Currenty supported firmware add-on options: 
  * Do not uncomment any of the defines here!

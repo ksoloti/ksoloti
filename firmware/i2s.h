@@ -20,6 +20,10 @@
 #ifndef _I2S_H_
 #define _I2S_H_
 
+#include "axoloti_defines.h"
+
+#ifdef FW_I2S
+
 extern int32_t i2s_buf[BUFSIZE * 2]; // *2 for stereo
 extern int32_t i2s_buf2[BUFSIZE * 2];
 extern int32_t i2s_rbuf[BUFSIZE * 2];
@@ -28,5 +32,5 @@ extern int32_t i2s_rbuf2[BUFSIZE * 2];
 extern void i2s_init(void);
 extern void i2s_stop(void);
 
-
+#endif /* FW_I2S */
 #endif /* _I2S_H_ */
