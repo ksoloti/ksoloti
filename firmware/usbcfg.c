@@ -72,7 +72,12 @@ static const USBDescriptor vcom_device_descriptor = {
 
 #if FW_USBAUDIO
 //#define DESC_SIZE 140 + USBD_AUDIO_HEADSET_STEREO_DESC_LEN
-#define DESC_SIZE 426
+#if USB_AUDIO_CHANNELS == 2
+  #define DESC_SIZE 426
+#elif USB_AUDIO_CHANNELS == 4
+  #define DESC_SIZE 426 + (USBD_AUDIO_DESC_FEATURE_UNIT_FOUR_CHANNEL_LEN - USBD_AUDIO_DESC_FEATURE_UNIT_TWO_CHANNEL_LEN)
+#endif
+
 #define NUM_INTERFACE 0x05
 static const uint8_t vcom_configuration_descriptor_data[]=
 {
@@ -104,8 +109,25 @@ static const uint8_t vcom_configuration_descriptor_data[]=
     // Input Terminal Descriptor(4.7.2.4) - Input Terminal USB Streaming
     USBD_AUDIO_DESC_INPUT_TERM(UAC2_ENTITY_SPK_INPUT_TERMINAL, AUDIO_TERM_TYPE_USB_STREAMING, 0x00, UAC2_ENTITY_CLOCK, 0x02, AUDIO_CHANNEL_CONFIG_NON_PREDEFINED, 0x00, 0 * (AUDIO_CTRL_R << AUDIO_IN_TERM_CTRL_CONNECTOR_POS), 0x00),\
 
+#if USB_AUDIO_CHANNELS == 2
     // Feature Unit Descriptor(4.7.2.8) - Feature Unit (Mute & volume)
-    USBD_AUDIO_DESC_FEATURE_UNIT_TWO_CHANNEL(UAC2_ENTITY_SPK_FEATURE_UNIT, UAC2_ENTITY_SPK_INPUT_TERMINAL, (AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_MUTE_POS | AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_VOLUME_POS), /*_ctrlch1*/ (AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_MUTE_POS | AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_VOLUME_POS), (AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_MUTE_POS | AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_VOLUME_POS), 0x00),
+    USBD_AUDIO_DESC_FEATURE_UNIT_TWO_CHANNEL(
+      UAC2_ENTITY_SPK_FEATURE_UNIT, 
+      UAC2_ENTITY_SPK_INPUT_TERMINAL, 
+      (AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_MUTE_POS | AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_VOLUME_POS), 
+      (AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_MUTE_POS | AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_VOLUME_POS), 
+      (AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_MUTE_POS | AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_VOLUME_POS), 0x00),
+#elif USB_AUDIO_CHANNELS == 4
+    // Feature Unit Descriptor(4.7.2.8) - Feature Unit (Mute & volume)
+    USBD_AUDIO_DESC_FEATURE_UNIT_FOUR_CHANNEL(
+      UAC2_ENTITY_SPK_FEATURE_UNIT, 
+      UAC2_ENTITY_SPK_INPUT_TERMINAL, 
+      (AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_MUTE_POS | AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_VOLUME_POS), 
+      (AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_MUTE_POS | AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_VOLUME_POS), 
+      (AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_MUTE_POS | AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_VOLUME_POS), 
+      (AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_MUTE_POS | AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_VOLUME_POS), 
+      (AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_MUTE_POS | AUDIO_CTRL_RW << AUDIO_FEATURE_UNIT_CTRL_VOLUME_POS), 0x00),
+#endif
 
     // Output Terminal Descriptor(4.7.2.5) - Output Terminal Headphones
     USBD_AUDIO_DESC_OUTPUT_TERM(UAC2_ENTITY_SPK_OUTPUT_TERMINAL, AUDIO_TERM_TYPE_OUT_HEADPHONES, 0x00, UAC2_ENTITY_SPK_FEATURE_UNIT, UAC2_ENTITY_CLOCK, 0x0000, 0x00),
@@ -124,7 +146,7 @@ static const uint8_t vcom_configuration_descriptor_data[]=
   // Interface 1, Alternate 1 - alternate interface for data streaming with one endpoint at 16 bits
   USBD_AUDIO_DESC_STD_AS_INT((uint8_t)(ITF_NUM_AUDIO_STREAMING_SPEAKER), 0x01, 0x01, 0x00),
 
-		// Class-Specific AS Interface Descriptor(4.9.2) - Speaker Terminal PCM 2 channels
+		// Class-Specific AS Interface Descriptor(4.9.2) - Speaker Terminal PCM 2/4 channels
     USBD_AUDIO_DESC_CS_AS_INT(UAC2_ENTITY_SPK_INPUT_TERMINAL, AUDIO_CTRL_NONE, AUDIO_FORMAT_TYPE_I, AUDIO_DATA_FORMAT_TYPE_I_PCM, CFG_USBD_AUDIO_FUNC_1_N_CHANNELS_RX, AUDIO_CHANNEL_CONFIG_NON_PREDEFINED, 0x00),
 
 		// Type I Format Type Descriptor(2.3.1.6 - Audio Formats) - FORMAT_TYPE 16 bit
@@ -139,7 +161,7 @@ static const uint8_t vcom_configuration_descriptor_data[]=
   // Interface 1, Alternate 2 - alternate interface for data streaming with one endpoint at 24 bits
   USBD_AUDIO_DESC_STD_AS_INT((uint8_t)(ITF_NUM_AUDIO_STREAMING_SPEAKER), 0x02, 0x01, 0x00),\
 
-		// Class-Specific AS Interface Descriptor(4.9.2) - Speaker Terminal PCM 2 channels
+		// Class-Specific AS Interface Descriptor(4.9.2) - Speaker Terminal PCM 2/4 channels
     USBD_AUDIO_DESC_CS_AS_INT(UAC2_ENTITY_SPK_INPUT_TERMINAL, AUDIO_CTRL_NONE, AUDIO_FORMAT_TYPE_I, AUDIO_DATA_FORMAT_TYPE_I_PCM, CFG_USBD_AUDIO_FUNC_1_N_CHANNELS_RX, AUDIO_CHANNEL_CONFIG_NON_PREDEFINED, 0x00),
 
 		// Type I Format Type Descriptor(2.3.1.6 - Audio Formats) - FORMAT_TYPE 24 bits
@@ -160,7 +182,7 @@ static const uint8_t vcom_configuration_descriptor_data[]=
   // Interface 2, Alternate 1 - alternate interface for data streaming with one endpoint at 16 bits
   USBD_AUDIO_DESC_STD_AS_INT((uint8_t)(ITF_NUM_AUDIO_STREAMING_MICROPHONE), 0x01, 0x01, 0x00),
 
-		// Class-Specific AS Interface Descriptor(4.9.2) - Microphone terminal PCM 2 channels
+		// Class-Specific AS Interface Descriptor(4.9.2) - Microphone terminal PCM 2/4 channels
     USBD_AUDIO_DESC_CS_AS_INT(UAC2_ENTITY_MIC_OUTPUT_TERMINAL, AUDIO_CTRL_NONE, AUDIO_FORMAT_TYPE_I, AUDIO_DATA_FORMAT_TYPE_I_PCM, CFG_USBD_AUDIO_FUNC_1_N_CHANNELS_TX, AUDIO_CHANNEL_CONFIG_NON_PREDEFINED, 0x00),
 
 		// Type I Format Type Descriptor(2.3.1.6 - Audio Formats) - FORMAT_TYPE 16 bit
@@ -176,7 +198,7 @@ static const uint8_t vcom_configuration_descriptor_data[]=
   // Interface 2, Alternate 2 - alternate interface for data streaming with one endpoint at 24 bits
   USBD_AUDIO_DESC_STD_AS_INT((uint8_t)(ITF_NUM_AUDIO_STREAMING_MICROPHONE), 0x02, 0x01, 0x00),
 
-		// Class-Specific AS Interface Descriptor(4.9.2) - Microphone terminal PCM 2 channels
+		// Class-Specific AS Interface Descriptor(4.9.2) - Microphone terminal PCM 2/4 channels
     USBD_AUDIO_DESC_CS_AS_INT(UAC2_ENTITY_MIC_OUTPUT_TERMINAL, AUDIO_CTRL_NONE, AUDIO_FORMAT_TYPE_I, AUDIO_DATA_FORMAT_TYPE_I_PCM, CFG_USBD_AUDIO_FUNC_1_N_CHANNELS_TX, AUDIO_CHANNEL_CONFIG_NON_PREDEFINED, 0x00),
 		
     // Type I Format Type Descriptor(2.3.1.6 - Audio Formats) - FORMAT_TYPE 24 bit
@@ -610,8 +632,13 @@ static const USBEndpointConfig ep3config = {
   NULL,
   aduDataTransmitted,
   aduDataReceived,
+#if USB_AUDIO_CHANNELS == 2
   192,
   192,
+#elif USB_AUDIO_CHANNELS == 4
+  384,
+  384,
+#endif  
   &ep3instate,
   &ep3outstate,
   1,
@@ -687,8 +714,14 @@ static void usb_event(USBDriver *usbp, usbevent_t event) {
     chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_USB_ENABLE);
     chSysUnlockFromIsr();
 #endif
+    return;
   case USB_EVENT_UNCONFIGURED:
-  default:
+#if FW_USBAUDIO    
+    // Notify USB state changes for AUDIO
+    chSysUnlockFromIsr();
+    chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_UNCONFIGURED);
+    chSysUnlockFromIsr();
+#endif
     return;
   }
 
