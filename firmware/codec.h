@@ -35,10 +35,7 @@ void codec_init(bool_t isMaster);
 
 void codec_clearbuffer(void);
 
-#ifdef FW_I2S
-extern void computebufI(int32_t *inp, int32_t *outp, int32_t* i2s_inp, int32_t* i2s_outp);
-#else
 extern void computebufI(int32_t *inp, int32_t *outp);
-#endif
+
 
 #endif /* __CODEC_H */

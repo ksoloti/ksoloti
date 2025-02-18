@@ -48,6 +48,8 @@
 #define SAI1_FS_PORT GPIOE
 #define SAI1_FS_PIN 4
 
+extern void i2s_computebufI(int32_t* i2s_inp, int32_t* i2s_outp);
+
 const stm32_dma_stream_t* i2s_tx_dma;
 const stm32_dma_stream_t* i2s_rx_dma;
 
@@ -62,10 +64,9 @@ int32_t i2s_rbuf2[BUFSIZE*2] __attribute__ ((section (".sram2")));
 void wait_sai_dma_tc_flag(void) {
     volatile uint32_t i = 10000000;
     /* j may have to be changed for any other MCU than STM32F42x! */
-    volatile float j = 36.9f * (STM32_SYSCLK / 1000000.f); /* Magic number - see below */
+    volatile float j = 34.9f * (STM32_SYSCLK / 1000000.f); /* Magic number - see below */
     volatile uint32_t k = (uint32_t) j;
 
-    chSysLock();
     /* Wait for SAI DMA Transfer Complete flag
      * which marks the beginning of the next 16*2-sample buffer transfer
      */
@@ -82,7 +83,6 @@ void wait_sai_dma_tc_flag(void) {
     while(k) {
         --k;
     }
-    chSysUnlock();
 }
 
 
@@ -96,16 +96,16 @@ static void dma_i2s_tx_interrupt(void* dat, uint32_t flags) {
     if ((i2s_tx_dma)->stream->CR & STM32_DMA_CR_CT) {
 #ifdef I2S_DEBUG
         palSetPad(GPIOA, 1);
-        __asm("nop");
-        __asm("nop");
-        __asm("nop");
-        __asm("nop");
-        __asm("nop");
-        __asm("nop");
-        palClearPad(GPIOA, 1);
 #endif
+        i2s_computebufI(i2s_rbuf2, i2s_buf);
+    }
+    else {
+        i2s_computebufI(i2s_rbuf, i2s_buf2);
     }
     dmaStreamClearInterrupt(i2s_tx_dma);
+#ifdef I2S_DEBUG
+    palClearPad(GPIOA, 1);
+#endif
 }
 
 static void dma_i2s_rx_interrupt(void* dat, uint32_t flags) {
@@ -169,12 +169,11 @@ void i2s_dma_init(void) {
     bool_t b = dmaStreamAllocate(i2s_tx_dma, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t) 0, (void*) 0);
 #endif
 
-    dmaStreamSetMode(i2s_tx_dma, i2s_tx_dma_mode);
     dmaStreamSetPeripheral(i2s_tx_dma, &(SPI3->DR));
     dmaStreamSetMemory0(i2s_tx_dma, i2s_buf);
     dmaStreamSetMemory1(i2s_tx_dma, i2s_buf2);
     dmaStreamSetTransactionSize(i2s_tx_dma, 64);
-    dmaStreamClearInterrupt(i2s_tx_dma);
+    dmaStreamSetMode(i2s_tx_dma, i2s_tx_dma_mode);
 
     i2s_rx_dma = STM32_DMA_STREAM(STM32_SPI_SPI3_RX_DMA_STREAM);
 
@@ -185,9 +184,9 @@ void i2s_dma_init(void) {
         STM32_DMA_CR_DIR_P2M |
         STM32_DMA_CR_MINC |
         STM32_DMA_CR_MSIZE_WORD |
-        STM32_DMA_CR_PSIZE_HWORD;
-        //STM32_DMA_CR_TEIE |
-        //STM32_DMA_CR_TCIE;
+        STM32_DMA_CR_PSIZE_HWORD |
+        STM32_DMA_CR_TEIE;
+        // STM32_DMA_CR_TCIE;
 
     b |= dmaStreamAllocate(i2s_rx_dma, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t) 0, (void*) 0);
 
@@ -196,12 +195,11 @@ void i2s_dma_init(void) {
         while (1);
     }
 
-    dmaStreamSetMode(i2s_rx_dma, i2s_rx_dma_mode);
     dmaStreamSetPeripheral(i2s_rx_dma, &(I2S3ext->DR));
     dmaStreamSetMemory0(i2s_rx_dma, i2s_rbuf);
     dmaStreamSetMemory1(i2s_rx_dma, i2s_rbuf2);
-    dmaStreamSetTransactionSize(i2s_rx_dma, 64);
-    dmaStreamClearInterrupt(i2s_rx_dma);
+    dmaStreamSetTransactionSize(i2s_rx_dma, 32);
+    dmaStreamSetMode(i2s_rx_dma, i2s_rx_dma_mode);
 
 }
 
@@ -213,18 +211,23 @@ void i2s_init(void) {
     i2s_dma_init();
 
     /* Sync I2S DMA pointer to SAI... */
+    chSysLock();
     wait_sai_dma_tc_flag();
+    dmaStreamClearInterrupt(i2s_tx_dma);
     dmaStreamEnable(i2s_tx_dma);
+    dmaStreamClearInterrupt(i2s_rx_dma);
     dmaStreamEnable(i2s_rx_dma);
-    SPI3->CR2 = SPI_CR2_TXDMAEN;
-    I2S3ext->CR2 = SPI_CR2_RXDMAEN;
+    //SPI3->CR2 = SPI_CR2_TXDMAEN;
+    //I2S3ext->CR2 = SPI_CR2_RXDMAEN;
     SPI3->I2SCFGR |= SPI_I2SCFGR_I2SE;
     I2S3ext->I2SCFGR |= SPI_I2SCFGR_I2SE;
+    chSysUnlock();
 }
 
 
 void i2s_dma_stop(void) {
 }
+
 
 void i2s_stop(void) {
     SPI3->I2SCFGR = 0;

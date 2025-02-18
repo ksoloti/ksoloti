@@ -308,18 +308,10 @@ static void dma_sai_a_interrupt_spilink_master(void* dat, uint32_t flags) {
     chSysUnlockFromIsr();
 
     if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
-#ifdef FW_I2S
-        computebufI(rbuf2, buf, i2s_rbuf2, i2s_buf);
-#else
         computebufI(rbuf2, buf);
-#endif
     }
     else {
-#ifdef FW_I2S
-        computebufI(rbuf, buf2, i2s_rbuf, i2s_buf2);
-#else
         computebufI(rbuf, buf2);
-#endif
     }
 }
 
@@ -332,59 +324,38 @@ static void dma_sai_a_interrupt_spilink_slave(void* dat, uint32_t flags) {
     codec_interrupt_timestamp = hal_lld_get_counter_value();
     spilink_slave_process();
 
-    if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT)
-#ifdef FW_I2S
-        computebufI(rbuf2, buf, i2s_rbuf2, i2s_buf);
-#else
+    if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
         computebufI(rbuf2, buf);
-#endif
-    else
-#ifdef FW_I2S
-        computebufI(rbuf, buf2, i2s_rbuf, i2s_buf2);
-#else
+    }
+    else {
         computebufI(rbuf, buf2);
-#endif
+    }
 }
 
 #else
 static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
+
     (void)dat;
     (void)flags;
-
-#ifdef I2S_DEBUG
-        palSetPad(GPIOA, 0);
-#endif
 
     codec_interrupt_timestamp = hal_lld_get_counter_value();
 
     if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
 
-#ifdef FW_I2S
-        computebufI(rbuf2, buf, i2s_rbuf2, i2s_buf);
-#else
-        computebufI(rbuf2, buf);
+#ifdef I2S_DEBUG
+        palSetPad(GPIOA, 0);
 #endif
-
-
+        computebufI(rbuf2, buf);
     }
     else {
-
-#ifdef FW_I2S
-        computebufI(rbuf, buf2, i2s_rbuf, i2s_buf2);
-#else
         computebufI(rbuf, buf2);
-#endif
-
     }
     dmaStreamClearInterrupt(sai_a_dma);
-
 #ifdef I2S_DEBUG
     palClearPad(GPIOA, 0);
 #endif
 }
-
-
-#endif
+#endif /* FW_SPILINK */
 
 
 void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {

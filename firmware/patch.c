@@ -571,30 +571,10 @@ void start_dsp_thread(void) {
 }
 
 
-#ifdef FW_I2S
-void computebufI(int32_t* inp, int32_t* outp, int32_t* i2s_inp, int32_t* i2s_outp) {
-    uint_fast8_t i; for (i = 0; i < 32; i++) {
-        inbuf[i] = inp[i];
-        i2s_inbuf[i] = ___ROR(i2s_inp[i], 16);
-        i2s_outbuf[i] = ___ROR(i2s_outp[i], 16);
-    }
-
-    outbuf = outp;
-
-#if FW_USBAUDIO     
-    aduDataExchange(inbufUsb, outbufUsb);
-#endif
-
-    chSysLockFromIsr();
-    chEvtSignalI(pThreadDSP, (eventmask_t)1);
-    chSysUnlockFromIsr();
-}
-#else
 void computebufI(int32_t* inp, int32_t* outp) {
     uint_fast8_t i; for (i = 0; i < 32; i++) {
         inbuf[i] = inp[i];
     }
-
     outbuf = outp;
 
 #if FW_USBAUDIO     
@@ -605,8 +585,15 @@ void computebufI(int32_t* inp, int32_t* outp) {
     chEvtSignalI(pThreadDSP, (eventmask_t)1);
     chSysUnlockFromIsr();
 }
-#endif
 
+#ifdef FW_I2S
+void i2s_computebufI(int32_t* i2s_inp, int32_t* i2s_outp) {
+    uint_fast8_t i; for (i = 0; i < 32; i++) {
+        i2s_inbuf[i] = ___ROR(i2s_inp[i], 16);
+        i2s_outbuf[i] = ___ROR(i2s_outp[i], 16);
+    }
+}
+#endif
 
 
 void MidiInMsgHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t data1, uint8_t data2) {
