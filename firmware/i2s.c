@@ -217,8 +217,8 @@ void i2s_init(void) {
     dmaStreamEnable(i2s_tx_dma);
     dmaStreamClearInterrupt(i2s_rx_dma);
     dmaStreamEnable(i2s_rx_dma);
-    //SPI3->CR2 = SPI_CR2_TXDMAEN;
-    //I2S3ext->CR2 = SPI_CR2_RXDMAEN;
+    SPI3->CR2 = SPI_CR2_TXDMAEN;
+    I2S3ext->CR2 = SPI_CR2_RXDMAEN;
     SPI3->I2SCFGR |= SPI_I2SCFGR_I2SE;
     I2S3ext->I2SCFGR |= SPI_I2SCFGR_I2SE;
     chSysUnlock();
