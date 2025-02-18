@@ -92,13 +92,13 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef *hHCD) {
     GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /* This for ID line debug */
-    GPIO_InitStruct.Pin = GPIO_PIN_10;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    /* This for ID line debug */ /* Ksoloti Core: deactivated since PA10 is used for Switch 1 */
+    // GPIO_InitStruct.Pin = GPIO_PIN_10;
+    // GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+    // GPIO_InitStruct.Pull = GPIO_PULLUP;
+    // GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+    // GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
+    // HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     /* Configure Power Switch Vbus Pin */
     GPIO_InitStruct.Pin = HOST_POWERSW_VBUS;
@@ -133,13 +133,13 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef *hHCD) {
     GPIO_InitStruct.Alternate = GPIO_AF12_OTG_HS_FS;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    /* This for ID line debug */
-    GPIO_InitStruct.Pin = GPIO_PIN_12;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
-    GPIO_InitStruct.Alternate = GPIO_AF12_OTG_HS_FS;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    /* This for ID line debug */ /* Ksoloti Core: deactivated since PB12 is used as GPIO */
+    // GPIO_InitStruct.Pin = GPIO_PIN_12;
+    // GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+    // GPIO_InitStruct.Pull = GPIO_PULLUP;
+    // GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+    // GPIO_InitStruct.Alternate = GPIO_AF12_OTG_HS_FS;
+    // HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 
     /* Configure Power Switch Vbus Pin */
