@@ -61,15 +61,27 @@ static int32_t inbuf[32];
 static int32_t* outbuf;
 
 #if FW_USBAUDIO
-static int32_t inbufUsb[32];
-static int32_t outbufUsb[32];
-void usb_clearbuffer(void)
-{
-    uint_fast8_t i; for(i=0; i<32; i++) {
-        inbufUsb[i] = 0;
-        outbufUsb[i] = 0;
-    }
-}
+    #if USB_AUDIO_CHANNELS == 2
+        static int32_t inbufUsb[32];
+        static int32_t outbufUsb[32];
+        void usb_clearbuffer(void)
+        {
+            uint_fast8_t i; for(i=0; i<32; i++) {
+            	inbufUsb[i] = 0;
+                outbufUsb[i] = 0;
+            }
+        }
+    #elif USB_AUDIO_CHANNELS == 4
+        static int32_t inbufUsb[64];
+        static int32_t outbufUsb[64];
+        void usb_clearbuffer(void)
+        {
+            uint_fast8_t i; for(i=0; i<64; i++) {
+            	inbufUsb[i] = 0;
+                outbufUsb[i] = 0;
+            }
+        }
+    #endif
 #endif
 
 
@@ -85,9 +97,10 @@ void SetPatchSafety(uint16_t uUIMidiCost, uint8_t uDspLimit200)
 {
     uPatchUIMidiCost = uUIMidiCost;
     uPatchUsbLimit200 = uDspLimit200;
-
-    // chprintf((BaseSequentialStream * )&SD2,"Patch Safety: UIMidiCost = %u, DspLimit = %u\r\n", uPatchUIMidiCost, uPatchUsbLimit200);
-
+#if USB_AUDIO_CHANNELS == 4
+    // we have some extra overhead
+    uPatchUIMidiCost += 60;
+#endif
 }
 
 static void SetPatchStatus(patchStatus_t status)

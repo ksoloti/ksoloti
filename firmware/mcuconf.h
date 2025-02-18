@@ -292,6 +292,8 @@
 #define USE_BLOCKED_BULK_TX                 1
 #define USB_USE_WAIT                        USE_BLOCKED_BULK_TX
 #define USE_PATCH_DSPTIME_SMOOTHING_MS      0
+// USB_AUDIO_CHANNELS must be 2 or 4
+#define USB_AUDIO_CHANNELS                  4
 
 /*
  * Thread priority settings. v1.0.12 settings in comments for reference.
