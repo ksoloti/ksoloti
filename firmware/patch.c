@@ -27,7 +27,6 @@
 #include "pconnection.h"
 #include "sysmon.h"
 #include "codec.h"
-#include "axoloti_math.h"
 #include "axoloti_memory.h"
 #include "axoloti_defines.h"
 #ifdef FW_SPILINK
@@ -67,7 +66,7 @@ static int32_t* outbuf;
 
 #ifdef FW_I2S
 static int32_t i2s_inbuf[32];
-static int32_t i2s_outbuf[32];
+static int32_t* i2s_outbuf;
 #endif
 
 #if FW_USBAUDIO
@@ -593,9 +592,9 @@ void i2s_computebufI(int32_t* i2s_inp, int32_t* i2s_outp) {
     uint_fast8_t i;
 #pragma GCC unroll 32
     for (i = 0; i < 32; i++) {
-        i2s_inbuf[i] = ___ROR(i2s_inp[i], 16);
-        i2s_outbuf[i] = ___ROR(i2s_outp[i], 16);
+        i2s_inbuf[i] = i2s_inp[i];
     }
+    i2s_outbuf = i2s_outp;
 }
 #endif
 

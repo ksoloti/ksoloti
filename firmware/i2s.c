@@ -55,10 +55,10 @@ const stm32_dma_stream_t* i2s_rx_dma;
 
 uint32_t i2s_interrupt_timestamp;
 
-int32_t i2s_buf[BUFSIZE*2]   __attribute__ ((section (".sram2")));
-int32_t i2s_buf2[BUFSIZE*2]  __attribute__ ((section (".sram2")));
-int32_t i2s_rbuf[BUFSIZE*2]  __attribute__ ((section (".sram2")));
-int32_t i2s_rbuf2[BUFSIZE*2] __attribute__ ((section (".sram2")));
+extern int32_t i2s_buf[BUFSIZE*2];
+extern int32_t i2s_buf2[BUFSIZE*2];
+extern int32_t i2s_rbuf[BUFSIZE*2];
+extern int32_t i2s_rbuf2[BUFSIZE*2];
 
 
 void wait_sai_dma_tc_flag(void) {
@@ -156,7 +156,6 @@ void i2s_dma_init(void) {
         STM32_DMA_CR_PL(STM32_SPI_I2S3_DMA_PRIORITY) |
         STM32_DMA_CR_DBM /* double buffer mode */ |
         STM32_DMA_CR_DIR_M2P |
-        STM32_DMA_CR_MINC |
         STM32_DMA_CR_MSIZE_WORD |
         STM32_DMA_CR_PSIZE_HWORD |
         STM32_DMA_CR_TEIE |
@@ -172,7 +171,7 @@ void i2s_dma_init(void) {
     dmaStreamSetMemory0(i2s_tx_dma, i2s_buf);
     dmaStreamSetMemory1(i2s_tx_dma, i2s_buf2);
     dmaStreamSetTransactionSize(i2s_tx_dma, 64);
-    dmaStreamSetMode(i2s_tx_dma, i2s_tx_dma_mode);
+    dmaStreamSetMode(i2s_tx_dma, i2s_tx_dma_mode | STM32_DMA_CR_MINC);
 
     i2s_rx_dma = STM32_DMA_STREAM(STM32_SPI_SPI3_RX_DMA_STREAM);
 
@@ -181,7 +180,6 @@ void i2s_dma_init(void) {
         STM32_DMA_CR_PL(STM32_SPI_I2S3_DMA_PRIORITY) |
         STM32_DMA_CR_DBM /* double buffer mode */ |
         STM32_DMA_CR_DIR_P2M |
-        STM32_DMA_CR_MINC |
         STM32_DMA_CR_MSIZE_WORD |
         STM32_DMA_CR_PSIZE_HWORD |
         STM32_DMA_CR_TEIE;
@@ -198,7 +196,7 @@ void i2s_dma_init(void) {
     dmaStreamSetMemory0(i2s_rx_dma, i2s_rbuf);
     dmaStreamSetMemory1(i2s_rx_dma, i2s_rbuf2);
     dmaStreamSetTransactionSize(i2s_rx_dma, 32);
-    dmaStreamSetMode(i2s_rx_dma, i2s_rx_dma_mode);
+    dmaStreamSetMode(i2s_rx_dma, i2s_rx_dma_mode | STM32_DMA_CR_MINC);
 
 }
 

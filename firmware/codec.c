@@ -34,6 +34,12 @@ int32_t buf2[BUFSIZE*2]  __attribute__ ((section (".sram2")));
 int32_t rbuf[BUFSIZE*2]  __attribute__ ((section (".sram2")));
 int32_t rbuf2[BUFSIZE*2] __attribute__ ((section (".sram2")));
 
+#ifdef FW_I2S
+int32_t i2s_buf[BUFSIZE*2]   __attribute__ ((section (".sram2")));
+int32_t i2s_buf2[BUFSIZE*2]  __attribute__ ((section (".sram2")));
+int32_t i2s_rbuf[BUFSIZE*2]  __attribute__ ((section (".sram2")));
+int32_t i2s_rbuf2[BUFSIZE*2] __attribute__ ((section (".sram2")));
+#endif
 
 void codec_init(bool_t isMaster) {
     codec_ADAU1961_SAI_init(SAMPLERATE, isMaster);
