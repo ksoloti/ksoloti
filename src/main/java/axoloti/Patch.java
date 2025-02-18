@@ -1726,8 +1726,8 @@ public class Patch {
         }
         if (prefs.getFirmwareMode().contains("oloti")) { /* TODO: placeholder */
             c += "\n"
-               + I+I + "i2sInputLeft[i] = i2s_inbuf[(i<<1)] >> 4;\n"
-               + I+I + "i2sInputRight[i] = i2s_inbuf[(i<<1) + 1] >> 4;\n";
+               + I+I + "i2sInputLeft[i] = ___ROR(i2s_inbuf[(i<<1)], 16) >> 4;\n"
+               + I+I + "i2sInputRight[i] = ___ROR(i2s_inbuf[(i<<1) + 1], 16) >> 4;\n";
 
         }
         c += I + "}\n";
@@ -1760,8 +1760,8 @@ public class Patch {
             }
             if (prefs.getFirmwareMode().contains("oloti")) { /* TODO: placeholder */
                 c += "\n"
-                   + I+I + "i2s_outbuf[(i<<1)] = __SSAT(i2sOutputLeft[i], 28) << 4;\n"
-                   + I+I + "i2s_outbuf[(i<<1) + 1] = __SSAT(i2sOutputRight[i], 28) << 4;\n";
+                   + I+I + "i2s_outbuf[(i<<1)] = ___ROR(__SSAT(i2sOutputLeft[i], 28) << 4, 16);\n"
+                   + I+I + "i2s_outbuf[(i<<1) + 1] = ___ROR(__SSAT(i2sOutputRight[i], 28) << 4, 16);\n";
             }
             c += I + "}\n";
         }
@@ -1790,8 +1790,8 @@ public class Patch {
             }
             if (prefs.getFirmwareMode().contains("oloti")) { /* TODO: placeholder */
                 c += "\n"
-                   + I+I + "i2s_outbuf[(i<<1)] = i2sOutputLeft[i];\n"
-                   + I+I + "i2s_outbuf[(i<<1) + 1] = i2sOutputRight[i];\n";
+                   + I+I + "i2s_outbuf[(i<<1)] = ___ROR(i2sOutputLeft[i], 16);\n"
+                   + I+I + "i2s_outbuf[(i<<1) + 1] = ___ROR(i2sOutputRight[i], 16);\n";
             }
             c += I + "}\n";
         }
