@@ -88,7 +88,6 @@ void wait_sai_dma_tc_flag(void) {
 
 static void dma_i2s_tx_interrupt(void* dat, uint32_t flags) {
 
-    /* This interrupt is not being used, using SAI interrupt instead */
     (void) dat;
     (void) flags;
     i2s_interrupt_timestamp = hal_lld_get_counter_value();
