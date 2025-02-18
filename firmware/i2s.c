@@ -117,6 +117,7 @@ static void dma_i2s_rx_interrupt(void* dat, uint32_t flags) {
 void i2s_peripheral_init(void)  {
 
 #ifdef I2S_DEBUG
+    palSetPadMode(GPIOA, 0, PAL_MODE_OUTPUT_PUSHPULL);
     palSetPadMode(GPIOA, 1, PAL_MODE_OUTPUT_PUSHPULL);
 #endif
 
