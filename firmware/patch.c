@@ -572,7 +572,9 @@ void start_dsp_thread(void) {
 
 
 void computebufI(int32_t* inp, int32_t* outp) {
-    uint_fast8_t i; for (i = 0; i < 32; i++) {
+    uint_fast8_t i;
+#pragma GCC unroll 32
+    for (i = 0; i < 32; i++) {
         inbuf[i] = inp[i];
     }
     outbuf = outp;
@@ -588,7 +590,9 @@ void computebufI(int32_t* inp, int32_t* outp) {
 
 #ifdef FW_I2S
 void i2s_computebufI(int32_t* i2s_inp, int32_t* i2s_outp) {
-    uint_fast8_t i; for (i = 0; i < 32; i++) {
+    uint_fast8_t i;
+#pragma GCC unroll 32
+    for (i = 0; i < 32; i++) {
         i2s_inbuf[i] = ___ROR(i2s_inp[i], 16);
         i2s_outbuf[i] = ___ROR(i2s_outp[i], 16);
     }
