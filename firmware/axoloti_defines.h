@@ -49,10 +49,11 @@ typedef int32_t int32buffer[BUFSIZE];
 #define USING_ADAU1761 1 /* Works with ADAU1961/1761/1361 so we just leave this defined */
 
 /* Firmware version 1.0.0.4 - Ksoloti v0.4+ */
+/* Firmware version 1.1.0.0 - Ksoloti Patcher 1.1.0 */
 #define FWVERSION1 1
-#define FWVERSION2 0
+#define FWVERSION2 1
 #define FWVERSION3 0
-#define FWVERSION4 4
+#define FWVERSION4 0
 
 #define BOARD_OTG_NOVBUSSENS
 
