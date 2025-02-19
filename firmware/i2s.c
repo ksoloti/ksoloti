@@ -155,6 +155,7 @@ void i2s_dma_init(void) {
         STM32_DMA_CR_PL(STM32_SPI_I2S3_DMA_PRIORITY) |
         STM32_DMA_CR_DBM /* double buffer mode */ |
         STM32_DMA_CR_DIR_M2P |
+        STM32_DMA_CR_MINC |
         STM32_DMA_CR_MSIZE_WORD |
         STM32_DMA_CR_PSIZE_HWORD |
         STM32_DMA_CR_TEIE |
@@ -162,11 +163,11 @@ void i2s_dma_init(void) {
 
     bool_t b = dmaStreamAllocate(i2s_tx_dma, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t) dma_i2s_tx_interrupt, (void*) 0);
 
+    dmaStreamSetMode(i2s_tx_dma, i2s_tx_dma_mode);
     dmaStreamSetPeripheral(i2s_tx_dma, &(SPI3->DR));
     dmaStreamSetMemory0(i2s_tx_dma, i2s_buf);
     dmaStreamSetMemory1(i2s_tx_dma, i2s_buf2);
     dmaStreamSetTransactionSize(i2s_tx_dma, 64);
-    dmaStreamSetMode(i2s_tx_dma, i2s_tx_dma_mode | STM32_DMA_CR_MINC);
 
     i2s_rx_dma = STM32_DMA_STREAM(STM32_SPI_SPI3_RX_DMA_STREAM);
 
@@ -175,6 +176,7 @@ void i2s_dma_init(void) {
         STM32_DMA_CR_PL(STM32_SPI_I2S3_DMA_PRIORITY) |
         STM32_DMA_CR_DBM /* double buffer mode */ |
         STM32_DMA_CR_DIR_P2M |
+        STM32_DMA_CR_MINC |
         STM32_DMA_CR_MSIZE_WORD |
         STM32_DMA_CR_PSIZE_HWORD |
         STM32_DMA_CR_TEIE |
@@ -187,11 +189,11 @@ void i2s_dma_init(void) {
         while (1);
     }
 
+    dmaStreamSetMode(i2s_rx_dma, i2s_rx_dma_mode);
     dmaStreamSetPeripheral(i2s_rx_dma, &(I2S3ext->DR));
     dmaStreamSetMemory0(i2s_rx_dma, i2s_rbuf);
     dmaStreamSetMemory1(i2s_rx_dma, i2s_rbuf2);
     dmaStreamSetTransactionSize(i2s_rx_dma, 32);
-    dmaStreamSetMode(i2s_rx_dma, i2s_rx_dma_mode | STM32_DMA_CR_MINC);
 
 }
 
