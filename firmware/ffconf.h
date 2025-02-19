@@ -1,4 +1,3 @@
-
 /* CHIBIOS FIX */
 #include "ch.h"
 
@@ -10,9 +9,18 @@
 / the configuration options.
 /
 /----------------------------------------------------------------------------*/
-#ifndef _FFCONF
-#define _FFCONF 8051	/* Revision ID */
-
+#ifndef FFCONF_DEF
+#define FFCONF_DEF 86604	/* Revision ID */
+#define FF_MAX_SS 512
+#define FF_MIN_SS 512
+#define FF_VOLUMES 1
+#define FF_FS_EXFAT 0
+#define FF_FS_RPATH 2
+#define FF_LFN_BUF		255
+#define FF_SFN_BUF		12
+#define FF_USE_LFN		0
+#define FF_FS_READONLY	0
+#define FF_USE_CHMOD	1
 
 /*---------------------------------------------------------------------------/
 / Functions and Buffer Configurations

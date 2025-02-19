@@ -108,15 +108,17 @@ CHIBIOS  = $(subst $(SPACE),\ ,${axoloti_home}/chibios)
 CMSIS    = $(subst $(SPACE),\ ,${axoloti_home}/CMSIS)
 
 
+# Licensing files.
+include $(CHIBIOS)/os/license/license.mk
 # Startup files.
-include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
+include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
 # HAL-OSAL files (optional).
 include $(CHIBIOS)/os/hal/hal.mk
 include $(CHIBIOS)/os/hal/ports/STM32/STM32F4xx/platform.mk
-include $(CHIBIOS)/os/hal/osal/rt/osal.mk
+include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
 # RTOS files (optional).
 include $(CHIBIOS)/os/rt/rt.mk
-include $(CHIBIOS)/os/rt/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
+include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # FAT stuff
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 
@@ -138,7 +140,7 @@ INCDIR = $(CMSIS)/Core/Include \
   $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx
 
 # Paths
-IINCDIR = $(patsubst %,-I%,$(INCDIR) $(DINCDIR) $(UINCDIR))
+IINCDIR = $(patsubst %,-I%,$(INCDIR) $(DINCDIR) $(UINCDIR) $(CONFDIR) $(ALLINC))
 LLIBDIR = $(patsubst %,-L%,$(DLIBDIR) $(ULIBDIR))
 
 all: ${BUILDDIR}/xpatch.bin

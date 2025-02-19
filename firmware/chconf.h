@@ -31,6 +31,13 @@
 #ifndef _CHCONF_H_
 #define _CHCONF_H_
 
+#define _CHIBIOS_RT_CONF_
+#define _CHIBIOS_RT_CONF_VER_6_1_
+#define _CHIBIOS_HAL_CONF_
+#define _CHIBIOS_HAL_CONF_VER_7_1_
+
+#define SHELL_CMD_MEM_ENABLED               FALSE
+#define SHELL_CMD_TEST_ENABLED              FALSE
 /*===========================================================================*/
 /**
  * @name Kernel parameters and options
@@ -40,6 +47,185 @@
 
 #define CH_CFG_ST_RESOLUTION                32
 #define CH_CFG_ST_FREQUENCY                 10000
+#define CH_CFG_INTERVALS_SIZE               32
+#define CH_CFG_ST_TIMEDELTA                 0
+#define CH_CFG_TIME_TYPES_SIZE              32
+#define CH_CFG_USE_TM                       TRUE
+#define CH_DBG_STATISTICS                   FALSE
+#define CH_DBG_TRACE_MASK                   CH_DBG_TRACE_MASK_DISABLED
+#define CH_CFG_USE_MUTEXES_RECURSIVE        FALSE
+#define CH_DBG_TRACE_BUFFER_SIZE            128
+#define CH_CFG_SYSTEM_EXTRA_FIELDS                                          \
+  /* Add threads custom fields here.*/
+#define CH_CFG_SYSTEM_INIT_HOOK() {                                         \
+  /* Add threads initialization code here.*/                                \
+}
+#define CH_CFG_THREAD_EXTRA_FIELDS                                          \
+  /* Add threads custom fields here.*/
+#define CH_CFG_THREAD_INIT_HOOK(tp) {                                       \
+  /* Add threads initialization code here.*/                                \
+}
+#define CH_CFG_THREAD_EXIT_HOOK(tp) {                                       \
+  /* Add threads finalization code here.*/                                  \
+}
+#define CH_CFG_IRQ_PROLOGUE_HOOK() {                                        \
+  /* IRQ prologue code here.*/                                              \
+}
+#define CH_CFG_IRQ_EPILOGUE_HOOK() {                                        \
+  /* IRQ epilogue code here.*/                                              \
+}
+#define CH_CFG_IDLE_ENTER_HOOK() {                                          \
+  /* Idle-enter code here.*/                                                \
+}
+#define CH_CFG_IDLE_LEAVE_HOOK() {                                          \
+  /* Idle-leave code here.*/                                                \
+}
+#define CH_CFG_SYSTEM_TICK_HOOK() {                                         \
+  /* System tick event code here.*/                                         \
+}
+#define CH_CFG_SYSTEM_HALT_HOOK(reason) {                                   \
+  /* System halt code here.*/                                               \
+}
+#define CH_CFG_TRACE_HOOK(tep) {                                            \
+  /* Trace code here.*/                                                     \
+}
+
+
+ 
+#if !defined(CH_CFG_USE_OBJ_FIFOS)
+#define CH_CFG_USE_OBJ_FIFOS                FALSE
+#endif
+
+/**
+ * @brief   Pipes APIs.
+ * @details If enabled then the pipes APIs are included
+ *          in the kernel.
+ *
+ * @note    The default is @p TRUE.
+ */
+#if !defined(CH_CFG_USE_PIPES)
+#define CH_CFG_USE_PIPES                    FALSE
+#endif
+
+/**
+ * @brief   Objects Caches APIs.
+ * @details If enabled then the objects caches APIs are included
+ *          in the kernel.
+ *
+ * @note    The default is @p TRUE.
+ */
+#if !defined(CH_CFG_USE_OBJ_CACHES)
+#define CH_CFG_USE_OBJ_CACHES               FALSE
+#endif
+
+/**
+ * @brief   Delegate threads APIs.
+ * @details If enabled then the delegate threads APIs are included
+ *          in the kernel.
+ *
+ * @note    The default is @p TRUE.
+ */
+#if !defined(CH_CFG_USE_DELEGATES)
+#define CH_CFG_USE_DELEGATES                FALSE
+#endif
+
+/**
+ * @brief   Jobs Queues APIs.
+ * @details If enabled then the jobs queues APIs are included
+ *          in the kernel.
+ *
+ * @note    The default is @p TRUE.
+ */
+#if !defined(CH_CFG_USE_JOBS)
+#define CH_CFG_USE_JOBS                     FALSE
+#endif
+
+/** @} */
+
+/*===========================================================================*/
+/**
+ * @name Objects factory options
+ * @{
+ */
+/*===========================================================================*/
+
+/**
+ * @brief   Objects Factory APIs.
+ * @details If enabled then the objects factory APIs are included in the
+ *          kernel.
+ *
+ * @note    The default is @p FALSE.
+ */
+#if !defined(CH_CFG_USE_FACTORY)
+#define CH_CFG_USE_FACTORY                  FALSE
+#endif
+
+/**
+ * @brief   Maximum length for object names.
+ * @details If the specified length is zero then the name is stored by
+ *          pointer but this could have unintended side effects.
+ */
+#if !defined(CH_CFG_FACTORY_MAX_NAMES_LENGTH)
+#define CH_CFG_FACTORY_MAX_NAMES_LENGTH     8
+#endif
+
+/**
+ * @brief   Enables the registry of generic objects.
+ */
+#if !defined(CH_CFG_FACTORY_OBJECTS_REGISTRY)
+#define CH_CFG_FACTORY_OBJECTS_REGISTRY     FALSE
+#endif
+
+/**
+ * @brief   Enables factory for generic buffers.
+ */
+#if !defined(CH_CFG_FACTORY_GENERIC_BUFFERS)
+#define CH_CFG_FACTORY_GENERIC_BUFFERS      FALSE
+#endif
+
+/**
+ * @brief   Enables factory for semaphores.
+ */
+#if !defined(CH_CFG_FACTORY_SEMAPHORES)
+#define CH_CFG_FACTORY_SEMAPHORES           FALSE
+#endif
+
+/**
+ * @brief   Enables factory for mailboxes.
+ */
+#if !defined(CH_CFG_FACTORY_MAILBOXES)
+#define CH_CFG_FACTORY_MAILBOXES            FALSE
+#endif
+
+/**
+ * @brief   Enables factory for objects FIFOs.
+ */
+#if !defined(CH_CFG_FACTORY_OBJ_FIFOS)
+#define CH_CFG_FACTORY_OBJ_FIFOS            FALSE
+#endif
+
+/**
+ * @brief   Memory Pools Allocator APIs.
+ * @details If enabled then the memory pools allocator APIs are included
+ *          in the kernel.
+ *
+ * @note    The default is @p TRUE.
+ */
+#if !defined(CH_CFG_USE_MEMPOOLS)
+#define CH_CFG_USE_MEMPOOLS                 FALSE
+#endif
+
+/**
+ * @brief   Mailboxes APIs.
+ * @details If enabled then the asynchronous messages (mailboxes) APIs are
+ *          included in the kernel.
+ *
+ * @note    The default is @p TRUE.
+ * @note    Requires @p CH_CFG_USE_SEMAPHORES.
+ */
+#if !defined(CH_CFG_USE_MAILBOXES)
+#define CH_CFG_USE_MAILBOXES                FALSE
+#endif
 
 /**
  * @brief   System tick frequency.

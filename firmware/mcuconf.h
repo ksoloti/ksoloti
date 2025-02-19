@@ -288,7 +288,7 @@
 #define DSP_USB_AUDIO_STREAMING_COST        65
 #define DSP_LIMIT200                        200
 
-#define USE_EXTERNAL_USB_FIFO_PUMP          1
+#define USE_EXTERNAL_USB_FIFO_PUMP          0
 #define USE_BLOCKED_BULK_TX                 1
 #define USB_USE_WAIT                        USE_BLOCKED_BULK_TX
 #define USE_PATCH_DSPTIME_SMOOTHING_MS      0

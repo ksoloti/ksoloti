@@ -46,7 +46,7 @@
 #include "stdio.h"
 #include "memstreams.h"
 
-//#define DEBUG_SERIAL
+//#define DEBUG_SERIAL 1
 
 void BootLoaderInit(void);
 
@@ -139,7 +139,7 @@ void TransmitDisplayPckt(void) {
         return; // FIXME
     }
 
-    chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&patchMeta.pDisplayVector[0], length);
+    chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&patchMeta.pDisplayVector[0], length);
 }
 
 
@@ -156,7 +156,7 @@ void LogTextMessage(const char* format, ...) {
           va_start(ap, format);
           chvprintf((BaseSequentialStream *)&ms, format, ap);
           va_end(ap);
-          chSequentialStreamPut(&ms, 0);
+          streamPut((BaseSequentialStream * )&ms, 0);
           size_t length = strlen((char *)tmp);
           if((length) && (LogBufferUsed + 4 + length + 1) < LOG_BUFFER_SIZE)
           {
@@ -174,7 +174,7 @@ void LogTextMessage(const char* format, ...) {
 }
 
 void PExTransmit(void) {
-    if (!chOQIsEmptyI(&BDU1.oqueue)) {
+    if (!oqGetEmptyI(&BDU1.oqueue)) {
         chThdSleepMilliseconds(1);
         BDU1.oqueue.q_notify(&BDU1.oqueue);
     }
@@ -183,7 +183,7 @@ void PExTransmit(void) {
         {
           if(LogBufferUsed)
           {
-            chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )LogBuffer, LogBufferUsed);
+            chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )LogBuffer, LogBufferUsed);
             LogBufferUsed = 0;
           }
           chMtxUnlock(&LogMutex);
@@ -203,7 +203,7 @@ void PExTransmit(void) {
                 ack[5] = loadPatchIndex;
             }
             ack[6] = fs_ready;
-            chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&ack[0], 7 * 4);
+            chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&ack[0], 7 * 4);
 
 
             // clear overload flag
@@ -233,7 +233,7 @@ void PExTransmit(void) {
                     msg.patchID = patchMeta.patchID;
                     msg.index = i;
                     msg.value = v;
-                    chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&msg, sizeof(msg));
+                    chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&msg, sizeof(msg));
                 }
             }
         }
@@ -243,65 +243,65 @@ void PExTransmit(void) {
 
 static FRESULT scan_files(char *path) {
   FRESULT res;
-  FILINFO fno;
-  DIR dir;
-  int i;
-  char *fn;
-  char *msg = &((char*)fbuff)[64];
-  fno.lfname = &FileName[0];
-  fno.lfsize = sizeof(FileName);
-  res = f_opendir(&dir, path);
-  if (res == FR_OK) {
-    i = strlen(path);
-    for (;;) {
-      res = f_readdir(&dir, &fno);
-      if (res != FR_OK || fno.fname[0] == 0)
-        break;
-      if (fno.fname[0] == '.')
-        continue;
-#if _USE_LFN
-      fn = *fno.lfname ? fno.lfname : fno.fname;
-#else
-      fn = fno.fname;
-#endif
-      if (fn[0] == '.')
-        continue;
-      if (fno.fattrib & AM_HID)
-        continue;
-      if (fno.fattrib & AM_DIR) {
-        path[i] = '/';
-        strcpy(&path[i+1], fn);
-        msg[0] = 'A';
-        msg[1] = 'x';
-        msg[2] = 'o';
-        msg[3] = 'f';
-        *(int32_t *)(&msg[4]) = fno.fsize;
-        *(int32_t *)(&msg[8]) = fno.fdate + (fno.ftime<<16);
-        strcpy(&msg[12], &path[1]);
-        int l = strlen(&msg[12]);
-        msg[12+l] = '/';
-        msg[13+l] = 0;
-        chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+14);
-        res = scan_files(path);
-        path[i] = 0;
-        if (res != FR_OK) break;
-      } else {
-        msg[0] = 'A';
-        msg[1] = 'x';
-        msg[2] = 'o';
-        msg[3] = 'f';
-        *(int32_t *)(&msg[4]) = fno.fsize;
-        *(int32_t *)(&msg[8]) = fno.fdate + (fno.ftime<<16);
-        strcpy(&msg[12], &path[1]);
-        msg[12+i-1] = '/';
-        strcpy(&msg[12+i], fn);
-        int l = strlen(&msg[12]);
-        chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+13);
-      }
-    }
-  } else {
-	  report_fatfs_error(res,0);
-  }
+//   FILINFO fno;
+//   DIR dir;
+//   int i;
+//   char *fn;
+//   char *msg = &((char*)fbuff)[64];
+//   fno.lfname = &FileName[0];
+//   fno.lfsize = sizeof(FileName);
+//   res = f_opendir(&dir, path);
+//   if (res == FR_OK) {
+//     i = strlen(path);
+//     for (;;) {
+//       res = f_readdir(&dir, &fno);
+//       if (res != FR_OK || fno.fname[0] == 0)
+//         break;
+//       if (fno.fname[0] == '.')
+//         continue;
+// #if _USE_LFN
+//       fn = *fno.lfname ? fno.lfname : fno.fname;
+// #else
+//       fn = fno.fname;
+// #endif
+//       if (fn[0] == '.')
+//         continue;
+//       if (fno.fattrib & AM_HID)
+//         continue;
+//       if (fno.fattrib & AM_DIR) {
+//         path[i] = '/';
+//         strcpy(&path[i+1], fn);
+//         msg[0] = 'A';
+//         msg[1] = 'x';
+//         msg[2] = 'o';
+//         msg[3] = 'f';
+//         *(int32_t *)(&msg[4]) = fno.fsize;
+//         *(int32_t *)(&msg[8]) = fno.fdate + (fno.ftime<<16);
+//         strcpy(&msg[12], &path[1]);
+//         int l = strlen(&msg[12]);
+//         msg[12+l] = '/';
+//         msg[13+l] = 0;
+//         chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+14);
+//         res = scan_files(path);
+//         path[i] = 0;
+//         if (res != FR_OK) break;
+//       } else {
+//         msg[0] = 'A';
+//         msg[1] = 'x';
+//         msg[2] = 'o';
+//         msg[3] = 'f';
+//         *(int32_t *)(&msg[4]) = fno.fsize;
+//         *(int32_t *)(&msg[8]) = fno.fdate + (fno.ftime<<16);
+//         strcpy(&msg[12], &path[1]);
+//         msg[12+i-1] = '/';
+//         strcpy(&msg[12+i], fn);
+//         int l = strlen(&msg[12]);
+//         chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+13);
+//       }
+//     }
+//   } else {
+// 	  report_fatfs_error(res,0);
+//   }
   return res;
 }
 
@@ -329,7 +329,7 @@ void ReadDirectoryListing(void) {
   fbuff[1] = clusters;
   fbuff[2] = fsp->csize;
   fbuff[3] = MMCSD_BLOCK_SIZE;
-  chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&fbuff[0]), 16);
+  chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&fbuff[0]), 16);
   chThdSleepMilliseconds(10);
   fbuff[0] = '/';
   fbuff[1] = 0;
@@ -344,7 +344,7 @@ void ReadDirectoryListing(void) {
   *(int32_t *)(&msg[8]) = 0;
   msg[12] = '/';
   msg[13] = 0;
-  chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, 14);
+  chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, 14);
 }
 
 
@@ -435,25 +435,26 @@ static void ManipulateFile(void) {
       if (err != FR_OK) {
         report_fatfs_error(err,&FileName[6]);
       }
-    } else if (FileName[1]=='I') {
-      /* get file info */
-      FRESULT err;
-      FILINFO fno;
-      fno.lfname = &((char*)fbuff)[0];
-      fno.lfsize = 256;
-      err =  f_stat(&FileName[6],&fno);
-      if (err == FR_OK) {
-        char *msg = &((char*)fbuff)[0];
-        msg[0] = 'A';
-        msg[1] = 'x';
-        msg[2] = 'o';
-        msg[3] = 'f';
-        *(int32_t *)(&msg[4]) = fno.fsize;
-        *(int32_t *)(&msg[8]) = fno.fdate + (fno.ftime<<16);
-        strcpy(&msg[12], &FileName[6]);
-        int l = strlen(&msg[12]);
-        chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+13);
-      }
+    } else if (FileName[1]=='I') 
+    {
+      // /* get file info */
+      // FRESULT err;
+      // FILINFO fno;
+      // fno.lfname = &((char*)fbuff)[0];
+      // fno.lfsize = 256;
+      // err =  f_stat(&FileName[6],&fno);
+      // if (err == FR_OK) {
+      //   char *msg = &((char*)fbuff)[0];
+      //   msg[0] = 'A';
+      //   msg[1] = 'x';
+      //   msg[2] = 'o';
+      //   msg[3] = 'f';
+      //   *(int32_t *)(&msg[4]) = fno.fsize;
+      //   *(int32_t *)(&msg[8]) = fno.fdate + (fno.ftime<<16);
+      //   strcpy(&msg[12], &FileName[6]);
+      //   int l = strlen(&msg[12]);
+      //   chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+13);
+      // }
     }
   }
 }
@@ -535,7 +536,7 @@ void ReplyFWVersion(void) {
   reply[13] = (uint8_t)(PATCHMAINLOC>>16);
   reply[14] = (uint8_t)(PATCHMAINLOC>>8);
   reply[15] = (uint8_t)(PATCHMAINLOC);
-  chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&reply[0]), 16);
+  chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&reply[0]), 16);
 }
 
 
@@ -547,7 +548,7 @@ void ReplySpilinkSynced(void) {
   reply[3] = 'Y';
   /* SPILINK pin high means Core is master (default), else synced */
   reply[4] = !palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN);
-  chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&reply[0]), 5);
+  chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&reply[0]), 5);
 }
 
 typedef struct _PCDebug
@@ -1168,8 +1169,8 @@ void PExReceiveByte(unsigned char c) {
       ((char*)read_repy_header)[3] = 'r';
       read_repy_header[1] = offset;
       read_repy_header[2] = value;
-      chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&read_repy_header[0]), 3 * 4);
-      chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(offset), value);
+      chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&read_repy_header[0]), 3 * 4);
+      chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(offset), value);
 
       AckPending = 1;
       header = 0;
@@ -1201,7 +1202,7 @@ void PExReceiveByte(unsigned char c) {
       ((char*)read_repy_header)[3] = 'y';
       read_repy_header[1] = offset;
       read_repy_header[2] = *((uint32_t*)offset);
-      chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&read_repy_header[0]), 3 * 4);
+      chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&read_repy_header[0]), 3 * 4);
 
       AckPending = 1;
       header = 0;
