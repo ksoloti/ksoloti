@@ -69,6 +69,15 @@ IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
 
+echo.&&echo Compiling firmware... %1 FW_I2SCODEC
+del /q .dep\*
+del /q build\lst\*
+del /q build\obj\*
+make -j8 BOARDDEF=%1 FWOPTIONDEF=FW_I2SCODEC
+IF %ERRORLEVEL% NEQ 0 (
+	exit /b 1
+)
+
 goto :eof
 
 rem --- path shortening

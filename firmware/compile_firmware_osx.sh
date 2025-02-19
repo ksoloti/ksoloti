@@ -8,6 +8,7 @@ BUILD_USBAUDIO=$3
 BUILD_SPILINK=$4 
 BUILD_FLASHER=$5 
 BUILD_MOUNTER=$6
+BUILD_I2SCODEC=$7
 
 cd "${axoloti_firmware}"
 make BOARDDEF=$1 -f Makefile.patch.mk clean
@@ -84,4 +85,16 @@ if [[ $BUILD_USBAUDIO -eq 1 ]]; then
         exit 1
     fi
     cp $BUILDDIR/"$NAME"_usbaudio.* build
+fi
+
+if [[ $BUILD_I2SCODEC -eq 1 ]]; then
+    printf "\nCompiling $1 FW_I2SCODEC\n"
+    export BUILDDIR=build/$NAME/i2scodec
+    mkdir -p $BUILDDIR/.dep
+    mkdir -p $BUILDDIR/lst
+    mkdir -p $BUILDDIR/obj
+    if ! make -j8 BOARDDEF=$1 FWOPTIONDEF=FW_I2SCODEC; then
+        exit 1
+    fi
+    cp $BUILDDIR/"$NAME"_i2scodec.* build
 fi

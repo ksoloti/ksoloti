@@ -68,6 +68,10 @@ ifeq ($(FWOPTIONDEF),FW_USBAUDIO)
   ELFNAME := $(ELFNAME)_usbaudio
 endif
 
+ifeq ($(FWOPTIONDEF),FW_I2SCODEC)
+  ELFNAME := $(ELFNAME)_i2scodec
+endif
+
 LDFLAGS = \
   $(RAMLINKOPT) \
   -Bsymbolic \
