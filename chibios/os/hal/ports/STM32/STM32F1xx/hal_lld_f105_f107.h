@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -404,10 +404,10 @@
 
 #if (STM32_MCOSEL == STM32_MCOSEL_HSE) ||                                   \
     (((STM32_MCOSEL == STM32_MCOSEL_PLLDIV2) ||                             \
-		  (STM32_MCOSEL == STM32_MCOSEL_PLL2) ||                                \
-			(STM32_MCOSEL == STM32_MCOSEL_PLL3) ||                                \
-			(STM32_MCOSEL == STM32_MCOSEL_PLL3DIV2)) &&                           \
-		 (STM32_PLLSRC == STM32_PLLSRC_HSE)) ||                                 \
+      (STM32_MCOSEL == STM32_MCOSEL_PLL2) ||                                \
+      (STM32_MCOSEL == STM32_MCOSEL_PLL3) ||                                \
+      (STM32_MCOSEL == STM32_MCOSEL_PLL3DIV2)) &&                           \
+     (STM32_PLLSRC == STM32_PLLSRC_HSE)) ||                                 \
     (STM32_MCOSEL == STM32_MCOSEL_XT1)
 #error "HSE not enabled, required by STM32_MCOSEL"
 #endif

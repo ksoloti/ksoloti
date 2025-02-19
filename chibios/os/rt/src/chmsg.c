@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
@@ -18,7 +18,7 @@
 */
 
 /**
- * @file    chmsg.c
+ * @file    rt/src/chmsg.c
  * @brief   Messages code.
  *
  * @addtogroup messages
@@ -90,14 +90,13 @@ msg_t chMsgSend(thread_t *tp, msg_t msg) {
   chDbgCheck(tp != NULL);
 
   chSysLock();
-  ctp->p_msg = msg;
-  ctp->p_u.wtobjp = &tp->p_msgqueue;
-  msg_insert(ctp, &tp->p_msgqueue);
-  if (tp->p_state == CH_STATE_WTMSG) {
+  ctp->u.sentmsg = msg;
+  msg_insert(ctp, &tp->msgqueue);
+  if (tp->state == CH_STATE_WTMSG) {
     (void) chSchReadyI(tp);
   }
   chSchGoSleepS(CH_STATE_SNDMSGQ);
-  msg = ctp->p_u.rdymsg;
+  msg = ctp->u.rdymsg;
   chSysUnlock();
 
   return msg;
@@ -112,21 +111,89 @@ msg_t chMsgSend(thread_t *tp, msg_t msg) {
  * @note    If the message is a pointer then you can assume that the data
  *          pointed by the message is stable until you invoke @p chMsgRelease()
  *          because the sending thread is suspended until then.
+ * @note    The reference counter of the sender thread is not increased, the
+ *          returned pointer is a temporary reference.
  *
- * @return              A reference to the thread carrying the message.
+ * @return              A pointer to the thread carrying the message.
  *
- * @api
+ * @sclass
  */
-thread_t *chMsgWait(void) {
+thread_t *chMsgWaitS(void) {
   thread_t *tp;
 
-  chSysLock();
+  chDbgCheckClassS();
+
   if (!chMsgIsPendingI(currp)) {
     chSchGoSleepS(CH_STATE_WTMSG);
   }
-  tp = queue_fifo_remove(&currp->p_msgqueue);
-  tp->p_state = CH_STATE_SNDMSG;
-  chSysUnlock();
+  tp = queue_fifo_remove(&currp->msgqueue);
+  tp->state = CH_STATE_SNDMSG;
+
+  return tp;
+}
+
+/**
+ * @brief   Suspends the thread and waits for an incoming message or a
+ *          timeout to occur.
+ * @post    After receiving a message the function @p chMsgGet() must be
+ *          called in order to retrieve the message and then @p chMsgRelease()
+ *          must be invoked in order to acknowledge the reception and send
+ *          the answer.
+ * @note    If the message is a pointer then you can assume that the data
+ *          pointed by the message is stable until you invoke @p chMsgRelease()
+ *          because the sending thread is suspended until then.
+ * @note    The reference counter of the sender thread is not increased, the
+ *          returned pointer is a temporary reference.
+ *
+ * @param[in] timeout   the number of ticks before the operation timeouts,
+ *                      the following special values are allowed:
+ *                      - @a TIME_INFINITE no timeout.
+ *                      .
+ * @return              A pointer to the thread carrying the message.
+ * @retval NULL         if a timeout occurred.
+ *
+ * @sclass
+ */
+thread_t *chMsgWaitTimeoutS(sysinterval_t timeout) {
+  thread_t *tp;
+
+  chDbgCheckClassS();
+
+  if (!chMsgIsPendingI(currp)) {
+    if (chSchGoSleepTimeoutS(CH_STATE_WTMSG, timeout) != MSG_OK) {
+      return NULL;
+    }
+  }
+  tp = queue_fifo_remove(&currp->msgqueue);
+  tp->state = CH_STATE_SNDMSG;
+
+  return tp;
+}
+
+/**
+ * @brief   Poll to check for an incoming message.
+ * @post    If a message is available the function @p chMsgGet() must be
+ *          called in order to retrieve the message and then @p chMsgRelease()
+ *          must be invoked in order to acknowledge the reception and send
+ *          the answer.
+ * @note    If the message is a pointer then you can assume that the data
+ *          pointed by the message is stable until you invoke @p chMsgRelease()
+ *          because the sending thread is suspended until then.
+ * @note    The reference counter of the sender thread is not increased, the
+ *          returned pointer is a temporary reference.
+ *
+ * @return              Result of the poll.
+ * @retval  NULL        if no incoming message waiting.
+ *
+ * @sclass
+ */
+thread_t *chMsgPollS(void) {
+  thread_t *tp = NULL;
+
+  if (chMsgIsPendingI(currp)) {
+    tp = queue_fifo_remove(&currp->msgqueue);
+    tp->state = CH_STATE_SNDMSG;
+  }
 
   return tp;
 }
@@ -144,7 +211,7 @@ thread_t *chMsgWait(void) {
 void chMsgRelease(thread_t *tp, msg_t msg) {
 
   chSysLock();
-  chDbgAssert(tp->p_state == CH_STATE_SNDMSG, "invalid state");
+  chDbgAssert(tp->state == CH_STATE_SNDMSG, "invalid state");
   chMsgReleaseS(tp, msg);
   chSysUnlock();
 }

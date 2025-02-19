@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
@@ -28,22 +28,37 @@
  * @ingroup NIL
  */
 
-/**
+/*-*
  * @defgroup NIL_TYPES Kernel Types
  * @ingroup NIL
  */
 
 /**
- * @defgroup NIL_KERNEL API
+ * @defgroup NIL_KERNEL Base API
  * @ingroup NIL
  */
 
 /**
+ * @defgroup NIL_SEMAPHORES Semaphores
+ * @ingroup NIL
+ */
+
+/**
+ * @defgroup NIL_EVENTS Events
+ * @ingroup NIL
+ */
+
+/**
+ * @defgroup NIL_MESSAGES Synchronous Messages
+ * @ingroup NIL
+ */
+
+/*-*
  * @defgroup NIL_CORE Port Layer
  * @ingroup NIL
  */
 
-/**
+/*-*
  * @defgroup NIL_TIMER Timer Interface
  * @ingroup NIL
  */

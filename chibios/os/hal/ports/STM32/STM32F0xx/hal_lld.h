@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@
  *          - STM32_HSE_BYPASS (optionally).
  *          .
  *          One of the following macros must also be defined:
- *          - STM32F030x6, STM32F030x8, STM32F030xC, STM32F070x6,
- *            STM32F070xB for Value Line devices.
+ *          - STM32F030x4, STM32F030x6, STM32F030x8, STM32F030xC,
+ *            STM32F070x6, STM32F070xB for Value Line devices.
  *          - STM32F031x6, STM32F051x8, STM32F071xB, STM32F091xC
  *            for Access Line devices.
  *          - STM32F042x6, STM32F072xB for USB Line devices.
@@ -39,8 +39,8 @@
  * @{
  */
 
-#ifndef _HAL_LLD_H_
-#define _HAL_LLD_H_
+#ifndef HAL_LLD_H
+#define HAL_LLD_H
 
 /*
  * Registry definitions.
@@ -55,7 +55,10 @@
  * @name    Platform identification macros
  * @{
  */
-#if defined(STM32F030x6) || defined(__DOXYGEN__)
+#if defined(STM32F030x4) || defined(__DOXYGEN__)
+#define PLATFORM_NAME           "STM32F030x4 Entry Level Value Line devices"
+
+#elif defined(STM32F030x6)
 #define PLATFORM_NAME           "STM32F030x6 Entry Level Value Line devices"
 
 #elif defined(STM32F030x8)
@@ -933,6 +936,16 @@
 #define STM32_USART6CLK             STM32_PCLK
 
 /**
+ * @brief USART7 frequency.
+ */
+#define STM32_UART7CLK              STM32_PCLK
+
+/**
+ * @brief USART8 frequency.
+ */
+#define STM32_UART8CLK              STM32_PCLK
+
+/**
  * @brief   Timers clock.
  */
 #if (STM32_PPRE == STM32_PPRE_DIV1) || defined(__DOXYGEN__)
@@ -972,9 +985,12 @@
 
 /* Various helpers.*/
 #include "nvic.h"
+#include "cache.h"
 #include "stm32_isr.h"
 #include "stm32_dma.h"
+#include "stm32_exti.h"
 #include "stm32_rcc.h"
+#include "stm32_tim.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -985,6 +1001,6 @@ extern "C" {
 }
 #endif
 
-#endif /* _HAL_LLD_H_ */
+#endif /* HAL_LLD_H */
 
 /** @} */

@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -26,16 +26,18 @@
  *          - STM32_HSE_BYPASS (optionally).
  *          .
  *          One of the following macros must also be defined:
- *          - STM32L051xx, STM32L052xx, STM32L053xx,
- *            STM32L061xx, STM32L062xx, STM32L063xx for ultra-low-power MCUs.
+ *          - STM32L011xx, STM32L031xx,
+ *            STM32L051xx, STM32L052xx, STM32L053xx,
+ *            STM32L061xx, STM32L062xx, STM32L063xx,
+ *            STM32L071xx, STM32L072xx, STM32L073xx for ultra-low-power MCUs.
  *          .
  *
  * @addtogroup HAL
  * @{
  */
 
-#ifndef _HAL_LLD_H_
-#define _HAL_LLD_H_
+#ifndef HAL_LLD_H
+#define HAL_LLD_H
 
 /*
  * Registry definitions.
@@ -50,7 +52,13 @@
  * @name    Platform identification macros
  * @{
  */
-#if defined(STM32L051xx) || defined(__DOXYGEN__)
+#if defined(STM32L011xx) || defined(__DOXYGEN__)
+#define PLATFORM_NAME           "STM32L011xx ultra-low-power MCU"
+
+#elif defined(STM32L031xx)
+#define PLATFORM_NAME           "STM32L031xx ultra-low-power MCU"
+
+#elif defined(STM32L051xx)
 #define PLATFORM_NAME           "STM32L051xx ultra-low-power MCU"
 
 #elif defined(STM32L052xx)
@@ -67,6 +75,15 @@
 
 #elif defined(STM32L063xx)
 #define PLATFORM_NAME           "STM32L063xx ultra-low-power MCU"
+
+#elif defined(STM32L071xx)
+#define PLATFORM_NAME           "STM32L071xx ultra-low-power MCU"
+
+#elif defined(STM32L072xx)
+#define PLATFORM_NAME           "STM32L073xx ultra-low-power MCU"
+
+#elif defined(STM32L073xx)
+#define PLATFORM_NAME           "STM32L073xx ultra-low-power MCU"
 
 #else
 #error "STM32L0xx device not specified"
@@ -251,15 +268,27 @@
 #define STM32_I2C1SEL_SYSCLK    (1 << 12)   /**< I2C1 clock is SYSCLK.      */
 #define STM32_I2C1SEL_HSI16     (2 << 12)   /**< I2C1 clock is HSI16.       */
 
+#define STM32_I2C3SEL_MASK      (3 << 16)   /**< I2C3 clock source mask.    */
+#define STM32_I2C3SEL_APB       (0 << 16)   /**< I2C3 clock is APB.         */
+#define STM32_I2C3SEL_SYSCLK    (1 << 16)   /**< I2C3 clock is SYSCLK.      */
+#define STM32_I2C3SEL_HSI16     (2 << 16)   /**< I2C3 clock is HSI16.       */
+
 #define STM32_LPTIM1SEL_MASK    (3 << 18)   /**< LPTIM1 clock source mask.  */
-#define STM32_LPTIM1SEL_APB     (0 << 18)   /**< LPTIM1 clock is LSI.       */
-#define STM32_LPTIM1SEL_LSI     (1 << 18)   /**< LPTIM1 clock is SYSCLK.    */
+#define STM32_LPTIM1SEL_APB     (0 << 18)   /**< LPTIM1 clock is APB.       */
+#define STM32_LPTIM1SEL_LSI     (1 << 18)   /**< LPTIM1 clock is LSI.       */
 #define STM32_LPTIM1SEL_HSI16   (2 << 18)   /**< LPTIM1 clock is HSI16.     */
 #define STM32_LPTIM1SEL_LSE     (3 << 18)   /**< LPTIM1 clock is LSE.       */
 
 #define STM32_HSI48SEL_MASK     (1 << 26)   /**< HSI48SEL clock source mask.*/
 #define STM32_HSI48SEL_USBPLL   (0 << 26)   /**< USB48 clock is PLL/2.      */
 #define STM32_HSI48SEL_HSI48    (1 << 26)   /**< USB48 clock is HSI48.      */
+/** @} */
+
+/**
+ * @name    SYSCFG_CFGR3_ register bits definitions
+ * @{
+ */
+#define STM32_VREFINT_EN        (1 << 0)    /**< VREFINT enable switch.     */
 /** @} */
 
 /*===========================================================================*/
@@ -306,6 +335,13 @@
  */
 #if !defined(STM32_HSI16_ENABLED) || defined(__DOXYGEN__)
 #define STM32_HSI16_ENABLED                 TRUE
+#endif
+
+/**
+ * @brief   Enables or disables the HSI16 clock divider.
+ */
+#if !defined(STM32_HSI16_DIVIDER_ENABLED) || defined(__DOXYGEN__)
+#define STM32_HSI16_DIVIDER_ENABLED         FALSE
 #endif
 
 /**
@@ -475,14 +511,14 @@
  * @brief   LPTIM1 clock source.
  */
 #if !defined(STM32_LPTIM1SEL) || defined(__DOXYGEN__)
-#define STM32_LPTIM1SEL                     STM32_LPTIM1SEL_LSI
+#define STM32_LPTIM1SEL                     STM32_LPTIM1SEL_APB
 #endif
 
 /**
  * @bief    USB/RNG clock source.
  */
 #if !defined(STM32_HSI48SEL) || defined(__DOXYGEN__)
-#define STM32_HSI48SEL                      STM32_HSI48SEL_HSI48
+#define STM32_HSI48SEL                      STM32_HSI48SEL_USBPLL
 #endif
 /** @} */
 
@@ -495,6 +531,20 @@
  */
 #if !defined(STM32L0xx_MCUCONF)
 #error "Using a wrong mcuconf.h file, STM32L0xx_MCUCONF not defined"
+#endif
+
+#if defined(STM32L052xx) && !defined(STM32L052_MCUCONF)
+#error "Using a wrong mcuconf.h file, STM32G052_MCUCONF not defined"
+
+#elif defined(STM32L053xx) && !defined(STM32L053_MCUCONF)
+#error "Using a wrong mcuconf.h file, STM32L053_MCUCONF not defined"
+
+#elif defined(STM32L072xx) && !defined(STM32L072_MCUCONF)
+#error "Using a wrong mcuconf.h file, STM32G072_MCUCONF not defined"
+
+#elif defined(STM32L073xx) && !defined(STM32L073_MCUCONF)
+#error "Using a wrong mcuconf.h file, STM32L073_MCUCONF not defined"
+
 #endif
 
 /*
@@ -659,6 +709,15 @@
 
 #endif /* !STM32_HSI16_ENABLED */
 
+/*
+ * @brief   Divided HSI16 clock.
+ */
+#if STM32_HSI16_DIVIDER_ENABLED || defined(__DOXYGEN__)
+#define STM32_HSI16DIVCLK           (STM32_HSI16CLK / 4)
+#else
+#define STM32_HSI16DIVCLK           STM32_HSI16CLK
+#endif
+
 /* HSE related checks.*/
 #if STM32_HSE_ENABLED
 #if STM32_HSECLK == 0
@@ -726,9 +785,8 @@
 #endif /* !STM32_LSE_ENABLED */
 
 /* PLL related checks.*/
-#if STM32_USB_CLOCK_ENABLED ||                                              \
-    (STM32_SW == STM32_SW_PLL) ||                                           \
-    (STM32_MCOSEL == STM32_MCOSEL_PLL) ||                                   \
+#if (STM32_SW == STM32_SW_PLL) || (STM32_MCOSEL == STM32_MCOSEL_PLL) ||       \
+    (STM32_USB_CLOCK_ENABLED && (STM32_HSI48SEL == STM32_HSI48SEL_USBPLL)) || \
     defined(__DOXYGEN__)
 /**
  * @brief   PLL activation flag.
@@ -736,6 +794,17 @@
 #define STM32_ACTIVATE_PLL          TRUE
 #else
 #define STM32_ACTIVATE_PLL          FALSE
+#endif
+
+/* HSI48 related checks.*/
+#if (STM32_USB_CLOCK_ENABLED && (STM32_HSI48SEL == STM32_HSI48SEL_HSI48)) ||  \
+    defined(__DOXYGEN__)
+/**
+ * @brief   HSI48 activation flag.
+ */
+#define STM32_ACTIVATE_HSI48        TRUE
+#else
+#define STM32_ACTIVATE_HSI48        FALSE
 #endif
 
 /**
@@ -782,7 +851,7 @@
 #if (STM32_PLLSRC == STM32_PLLSRC_HSE) || defined(__DOXYGEN__)
 #define STM32_PLLCLKIN              STM32_HSECLK
 #elif STM32_PLLSRC == STM32_PLLSRC_HSI16
-#define STM32_PLLCLKIN              STM32_HSI16CLK
+#define STM32_PLLCLKIN              STM32_HSI16DIVCLK
 #else
 #error "invalid STM32_PLLSRC value specified"
 #endif
@@ -842,7 +911,7 @@
 #elif (STM32_SW == STM32_SW_MSI)
 #define STM32_SYSCLK                STM32_MSICLK
 #elif (STM32_SW == STM32_SW_HSI16)
-#define STM32_SYSCLK                STM32_HSI16CLK
+#define STM32_SYSCLK                STM32_HSI16DIVCLK
 #elif (STM32_SW == STM32_SW_HSE)
 #define STM32_SYSCLK                STM32_HSECLK
 #elif (STM32_SW == STM32_SW_PLL)
@@ -938,7 +1007,7 @@
 #elif STM32_MCOSEL == STM32_MCOSEL_SYSCLK
 #define STM32_MCODIVCLK             STM32_SYSCLK
 #elif STM32_MCOSEL == STM32_MCOSEL_HSI16
-#define STM32_MCODIVCLK             STM32_HSI16CLK
+#define STM32_MCODIVCLK             STM32_HSI16DIVCLK
 #elif STM32_MCOSEL == STM32_MCOSEL_MSI
 #define STM32_MCODIVCLK             STM32_MSICLK
 #elif STM32_MCOSEL == STM32_MCOSEL_HSE
@@ -1010,7 +1079,7 @@
 #elif STM32_USART1SEL == STM32_USART1SEL_SYSCLK
 #define STM32_USART1CLK             STM32_SYSCLK
 #elif STM32_USART1SEL == STM32_USART1SEL_HSI16
-#define STM32_USART1CLK             STM32_HSI16CLK
+#define STM32_USART1CLK             STM32_HSI16DIVCLK
 #elif STM32_USART1SEL == STM32_USART1SEL_LSE
 #define STM32_USART1CLK             STM32_LSECLK
 #else
@@ -1025,12 +1094,22 @@
 #elif STM32_USART2SEL == STM32_USART2SEL_SYSCLK
 #define STM32_USART2CLK             STM32_SYSCLK
 #elif STM32_USART2SEL == STM32_USART2SEL_HSI16
-#define STM32_USART2CLK             STM32_HSI16CLK
+#define STM32_USART2CLK             STM32_HSI16DIVCLK
 #elif STM32_USART2SEL == STM32_USART2SEL_LSE
 #define STM32_USART2CLK             STM32_LSECLK
 #else
 #error "invalid source selected for USART2 clock"
 #endif
+
+/**
+ * @brief   USART4 frequency.
+ */
+#define STM32_UART4CLK              STM32_PCLK1
+
+/**
+ * @brief   USART5 frequency.
+ */
+#define STM32_UART5CLK              STM32_PCLK1
 
 /**
  * @brief   LPUART1 frequency.
@@ -1040,7 +1119,7 @@
 #elif STM32_LPUART1SEL == STM32_LPUART1SEL_SYSCLK
 #define STM32_LPUART1CLK            STM32_SYSCLK
 #elif STM32_LPUART1SEL == STM32_LPUART1SEL_HSI16
-#define STM32_LPUART1CLK            STM32_HSI16CLK
+#define STM32_LPUART1CLK            STM32_HSI16DIVCLK
 #elif STM32_LPUART1SEL == STM32_LPUART1SEL_LSE
 #define STM32_LPUART1CLK            STM32_LSECLK
 #else
@@ -1055,7 +1134,7 @@
 #elif STM32_I2C1SEL == STM32_I2C1SEL_SYSCLK
 #define STM32_I2C1CLK               STM32_SYSCLK
 #elif STM32_I2C1SEL == STM32_I2C1SEL_HSI16
-#define STM32_I2C1CLK               STM32_HSI16CLK
+#define STM32_I2C1CLK               STM32_HSI16DIVCLK
 #else
 #error "invalid source selected for I2C1 clock"
 #endif
@@ -1068,7 +1147,7 @@
 #elif STM32_LPTIM1SEL == STM32_LPTIM1SEL_LSI
 #define STM32_LPTIM1CLK             STM32_LSICLK
 #elif STM32_LPTIM1SEL == STM32_LPTIM1SEL_HSI16
-#define STM32_LPTIM1CLK             STM32_HSI16CLK
+#define STM32_LPTIM1CLK             STM32_HSI16DIVCLK
 #elif STM32_LPTIM1SEL == STM32_LPTIM1SEL_LSE
 #define STM32_LPTIM1CLK             STM32_LSECLK
 #else
@@ -1076,7 +1155,7 @@
 #endif
 
 /**
- * @brief   USB/RNG frequency.
+ * @brief   USB clock point.
  */
 #if (STM32_HSI48SEL == STM32_HSI48SEL_HSI48) || defined(__DOXYGEN__)
 #define STM32_USBCLK                STM32_HSI48CLK
@@ -1085,6 +1164,11 @@
 #else
 #error "invalid STM32_HSI48SEL value specified"
 #endif
+
+/**
+ * @brief   RNG clock point.
+ */
+#define STM32_RNGCLK                STM32_USBCLK
 
 /**
  * @brief   Timers LPTIM1, TIM2, TIM6 clock.
@@ -1129,8 +1213,12 @@
 
 /* Various helpers.*/
 #include "nvic.h"
+#include "cache.h"
+#include "stm32_isr.h"
 #include "stm32_dma.h"
+#include "stm32_exti.h"
 #include "stm32_rcc.h"
+#include "stm32_tim.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -1141,6 +1229,6 @@ extern "C" {
 }
 #endif
 
-#endif /* _HAL_LLD_H_ */
+#endif /* HAL_LLD_H */
 
 /** @} */

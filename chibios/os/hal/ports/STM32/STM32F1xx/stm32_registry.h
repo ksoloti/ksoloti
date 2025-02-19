@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@
  * @{
  */
 
-#ifndef _STM32_REGISTRY_H_
-#define _STM32_REGISTRY_H_
+#ifndef STM32_REGISTRY_H
+#define STM32_REGISTRY_H
 
 #if defined(STM32F100xB)
 #define STM32F10X_MD_VL
@@ -72,6 +72,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      FALSE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               0
 
 /* DAC attributes.*/
@@ -86,6 +87,7 @@
 
 /* DMA attributes.*/
 #define STM32_ADVANCED_DMA                  FALSE
+#define STM32_DMA_SUPPORTS_DMAMUX           FALSE
 #define STM32_DMA_SUPPORTS_CSELR            FALSE
 
 #define STM32_DMA1_NUM_CHANNELS             7
@@ -113,6 +115,13 @@
 #define STM32_EXTI_NUM_LINES                19
 #define STM32_EXTI_IMR_MASK                 0x00000000U
 
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#define STM32_FLASH_SECTOR_SIZE             1024U
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        32 /* Maximum, can be redefined.*/
+#endif
+
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
 #define STM32_HAS_GPIOB                     TRUE
@@ -137,6 +146,9 @@
 
 #define STM32_HAS_I2C3                      FALSE
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -195,11 +207,11 @@
 
 #define STM32_HAS_TIM16                     TRUE
 #define STM32_TIM16_IS_32BITS               FALSE
-#define STM32_TIM16_CHANNELS                2
+#define STM32_TIM16_CHANNELS                1
 
 #define STM32_HAS_TIM17                     TRUE
 #define STM32_TIM17_IS_32BITS               FALSE
-#define STM32_TIM17_CHANNELS                2
+#define STM32_TIM17_CHANNELS                1
 
 #define STM32_HAS_TIM5                      FALSE
 #define STM32_HAS_TIM8                      FALSE
@@ -277,6 +289,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -287,6 +300,7 @@
 
 /* DMA attributes.*/
 #define STM32_ADVANCED_DMA                  FALSE
+#define STM32_DMA_SUPPORTS_DMAMUX           FALSE
 #define STM32_DMA_SUPPORTS_CSELR            FALSE
 
 #define STM32_DMA1_NUM_CHANNELS             7
@@ -314,6 +328,13 @@
 #define STM32_EXTI_NUM_LINES                19
 #define STM32_EXTI_IMR_MASK                 0x00000000U
 
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#define STM32_FLASH_SECTOR_SIZE             1024U
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        32 /* Maximum, can be redefined.*/
+#endif
+
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
 #define STM32_HAS_GPIOB                     TRUE
@@ -335,6 +356,9 @@
 #define STM32_HAS_I2C2                      FALSE
 #define STM32_HAS_I2C3                      FALSE
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -450,6 +474,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -460,6 +485,7 @@
 
 /* DMA attributes.*/
 #define STM32_ADVANCED_DMA                  FALSE
+#define STM32_DMA_SUPPORTS_DMAMUX           FALSE
 #define STM32_DMA_SUPPORTS_CSELR            FALSE
 
 #define STM32_DMA1_NUM_CHANNELS             7
@@ -487,6 +513,13 @@
 #define STM32_EXTI_NUM_LINES                19
 #define STM32_EXTI_IMR_MASK                 0x00000000U
 
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#define STM32_FLASH_SECTOR_SIZE             1024U
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        128 /* Maximum, can be redefined.*/
+#endif
+
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
 #define STM32_HAS_GPIOB                     TRUE
@@ -511,6 +544,9 @@
 
 #define STM32_HAS_I2C3                      FALSE
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -639,6 +675,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -653,6 +690,7 @@
 
 /* DMA attributes.*/
 #define STM32_ADVANCED_DMA                  FALSE
+#define STM32_DMA_SUPPORTS_DMAMUX           FALSE
 #define STM32_DMA_SUPPORTS_CSELR            FALSE
 
 #define STM32_DMA1_NUM_CHANNELS             7
@@ -693,6 +731,13 @@
 #define STM32_EXTI_NUM_LINES                19
 #define STM32_EXTI_IMR_MASK                 0x00000000U
 
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#define STM32_FLASH_SECTOR_SIZE             2048U
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        256 /* Maximum, can be redefined.*/
+#endif
+
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
 #define STM32_HAS_GPIOB                     TRUE
@@ -717,6 +762,9 @@
 
 #define STM32_HAS_I2C3                      FALSE
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -784,30 +832,12 @@
 #define STM32_TIM8_IS_32BITS                FALSE
 #define STM32_TIM8_CHANNELS                 4
 
-#define STM32_HAS_TIM9                      TRUE
-#define STM32_TIM9_IS_32BITS                FALSE
-#define STM32_TIM9_CHANNELS                 2
-
-#define STM32_HAS_TIM10                     TRUE
-#define STM32_TIM10_IS_32BITS               FALSE
-#define STM32_TIM10_CHANNELS                2
-
-#define STM32_HAS_TIM11                     TRUE
-#define STM32_TIM11_IS_32BITS               FALSE
-#define STM32_TIM11_CHANNELS                2
-
-#define STM32_HAS_TIM12                     TRUE
-#define STM32_TIM12_IS_32BITS               FALSE
-#define STM32_TIM12_CHANNELS                2
-
-#define STM32_HAS_TIM13                     TRUE
-#define STM32_TIM13_IS_32BITS               FALSE
-#define STM32_TIM13_CHANNELS                2
-
-#define STM32_HAS_TIM14                     TRUE
-#define STM32_TIM14_IS_32BITS               FALSE
-#define STM32_TIM14_CHANNELS                2
-
+#define STM32_HAS_TIM9                      FALSE
+#define STM32_HAS_TIM10                     FALSE
+#define STM32_HAS_TIM11                     FALSE
+#define STM32_HAS_TIM12                     FALSE
+#define STM32_HAS_TIM13                     FALSE
+#define STM32_HAS_TIM14                     FALSE
 #define STM32_HAS_TIM15                     FALSE
 #define STM32_HAS_TIM16                     FALSE
 #define STM32_HAS_TIM17                     FALSE
@@ -888,6 +918,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -902,6 +933,7 @@
 
 /* DMA attributes.*/
 #define STM32_ADVANCED_DMA                  FALSE
+#define STM32_DMA_SUPPORTS_DMAMUX           FALSE
 #define STM32_DMA_SUPPORTS_CSELR            FALSE
 
 #define STM32_DMA1_NUM_CHANNELS             7
@@ -939,6 +971,13 @@
 #define STM32_EXTI_NUM_LINES                19
 #define STM32_EXTI_IMR_MASK                 0x00000000U
 
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         2
+#define STM32_FLASH_SECTOR_SIZE             2048U
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        256 /* Maximum, can be redefined.*/
+#endif
+
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
 #define STM32_HAS_GPIOB                     TRUE
@@ -963,6 +1002,9 @@
 
 #define STM32_HAS_I2C3                      FALSE
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -1036,11 +1078,11 @@
 
 #define STM32_HAS_TIM10                     TRUE
 #define STM32_TIM10_IS_32BITS               FALSE
-#define STM32_TIM10_CHANNELS                2
+#define STM32_TIM10_CHANNELS                1
 
 #define STM32_HAS_TIM11                     TRUE
 #define STM32_TIM11_IS_32BITS               FALSE
-#define STM32_TIM11_CHANNELS                2
+#define STM32_TIM11_CHANNELS                1
 
 #define STM32_HAS_TIM12                     TRUE
 #define STM32_TIM12_IS_32BITS               FALSE
@@ -1048,11 +1090,11 @@
 
 #define STM32_HAS_TIM13                     TRUE
 #define STM32_TIM13_IS_32BITS               FALSE
-#define STM32_TIM13_CHANNELS                2
+#define STM32_TIM13_CHANNELS                1
 
 #define STM32_HAS_TIM14                     TRUE
 #define STM32_TIM14_IS_32BITS               FALSE
-#define STM32_TIM14_CHANNELS                2
+#define STM32_TIM14_CHANNELS                1
 
 #define STM32_HAS_TIM15                     FALSE
 #define STM32_HAS_TIM16                     FALSE
@@ -1134,6 +1176,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      TRUE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               28
 
 /* DAC attributes.*/
@@ -1148,6 +1191,7 @@
 
 /* DMA attributes.*/
 #define STM32_ADVANCED_DMA                  FALSE
+#define STM32_DMA_SUPPORTS_DMAMUX           FALSE
 #define STM32_DMA_SUPPORTS_CSELR            FALSE
 
 #define STM32_DMA1_NUM_CHANNELS             7
@@ -1187,6 +1231,13 @@
 #define STM32_EXTI_NUM_LINES                20
 #define STM32_EXTI_IMR_MASK                 0x00000000U
 
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#define STM32_FLASH_SECTOR_SIZE             2048U
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        128 /* Maximum, can be redefined.*/
+#endif
+
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
 #define STM32_HAS_GPIOB                     TRUE
@@ -1211,6 +1262,9 @@
 
 #define STM32_HAS_I2C3                      FALSE
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -1340,6 +1394,6 @@
 /** @} */
 #endif /* defined(STM32F10X_CL) */
 
-#endif /* _STM32_REGISTRY_H_ */
+#endif /* STM32_REGISTRY_H */
 
 /** @} */
