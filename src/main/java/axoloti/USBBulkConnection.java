@@ -508,7 +508,7 @@ public class USBBulkConnection extends Connection {
         IntBuffer transfered = IntBuffer.allocate(1);
 
         int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 1000);
-        if (result != LibUsb.SUCCESS && result != -99) { /* handle error -99 below */
+        if (result != LibUsb.SUCCESS) { /* handle error -99 below */
 
             if (result == -99) {
                 /*
