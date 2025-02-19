@@ -28,8 +28,6 @@
  * #define BOARD_KSOLOTI_CORE
  * #define BOARD_AXOLOTI_CORE
  */
-#define FW_I2S
-// #define I2S_DEBUG
 
 /* Currenty supported firmware add-on options: 
  * Do not uncomment any of the defines here!
@@ -37,6 +35,7 @@
  * depending on the board setting in the Patcher preferences.
  * #define FW_SPILINK 
  * #define FW_USBAUDIO 
+ * #define FW_I2SCODEC (#define I2S_DEBUG for debugging)
  */
 
 #define PI_F 3.14159265359f

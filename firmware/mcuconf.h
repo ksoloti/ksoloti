@@ -233,7 +233,7 @@
 #define STM32_SPI_USE_SPI3                  TRUE
 #define STM32_SPI_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 0)
 #define STM32_SPI_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 7)
-#ifdef FW_I2S
+#ifdef FW_I2SCODEC
 #define STM32_SPI_I2S3_DMA_PRIORITY         1
 #define STM32_SPI_I2S3_IRQ_PRIORITY         2
 #endif

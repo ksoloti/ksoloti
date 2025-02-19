@@ -46,7 +46,7 @@
 #include "spilink.h"
 #endif
 
-#ifdef FW_I2S
+#ifdef FW_I2SCODEC
 #include "i2s.h"
 #endif
 
@@ -60,7 +60,7 @@
 // #define ENABLE_SERIAL_DEBUG 1
 
 extern void MY_USBH_Init(void);
-#ifdef FW_I2S
+#ifdef FW_I2SCODEC
 extern void i2s_init(void);
 #endif
 
@@ -129,7 +129,7 @@ int main(void) {
 #ifdef FW_SPILINK
     spilink_init(is_master);
 #endif
-#ifdef FW_I2S
+#ifdef FW_I2SCODEC
     i2s_init();
 #endif
 

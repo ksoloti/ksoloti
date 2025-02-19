@@ -25,7 +25,7 @@
 #include "stm32f4xx.h"
 #include "stm32f427xx.h"
 
-#ifdef FW_I2S
+#ifdef FW_I2SCODEC
 
 #define STM32_I2S3EXT_RX_DMA_CHN 3 /* SPI3 RX channel is 0, however when it is setup as I2S3 for RX, it runs on channel 3 */
 #define STM32_I2S3_TX_DMA_CHANNEL (STM32_DMA_GETCHANNEL(STM32_SPI_SPI3_TX_DMA_STREAM, STM32_SPI3_TX_DMA_CHN))
@@ -233,4 +233,4 @@ void i2s_stop(void) {
     I2S3ext->CR2 = 0;
 }
 
-#endif /* FW_I2S */
+#endif /* FW_I2SCODEC */

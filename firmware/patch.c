@@ -34,7 +34,7 @@
 #endif
 #include "audio_usb.h"
 
-#ifdef FW_I2S
+#ifdef FW_I2SCODEC
 #include "i2s.h"
 #endif
 
@@ -64,7 +64,7 @@ static const char* index_fn = "/index.axb";
 static int32_t inbuf[32];
 static int32_t* outbuf;
 
-#ifdef FW_I2S
+#ifdef FW_I2SCODEC
 static int32_t i2s_inbuf[32];
 static int32_t* i2s_outbuf;
 #endif
@@ -331,7 +331,7 @@ static int StartPatch1(void) {
                 /* Patch running */
 #if FW_USBAUDIO             
                 (patchMeta.fptr_dsp_process)(inbuf, outbuf, inbufUsb, outbufUsb);
-#elif defined(FW_I2S)
+#elif defined(FW_I2SCODEC)
                 (patchMeta.fptr_dsp_process)(inbuf, outbuf, i2s_inbuf, i2s_outbuf);
 #else
                 (patchMeta.fptr_dsp_process)(inbuf, outbuf);
@@ -587,7 +587,7 @@ void computebufI(int32_t* inp, int32_t* outp) {
     chSysUnlockFromIsr();
 }
 
-#ifdef FW_I2S
+#ifdef FW_I2SCODEC
 void i2s_computebufI(int32_t* i2s_inp, int32_t* i2s_outp) {
     uint_fast8_t i;
 #pragma GCC unroll 32

@@ -18,7 +18,7 @@
  */
 
 #include "axoloti_defines.h"
-#ifdef FW_I2S
+#ifdef FW_I2SCODEC
 #include "i2s.h"
 #endif
 #include "codec_ADAU1961.h"

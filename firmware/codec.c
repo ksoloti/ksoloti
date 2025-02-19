@@ -24,7 +24,7 @@
 #include "ch.h"
 #include "spilink.h"
 #endif
-#ifdef FW_I2S
+#ifdef FW_I2SCODEC
 #include "i2s.h"
 #endif
 #include "codec_ADAU1961.h"
@@ -34,7 +34,7 @@ int32_t buf2[BUFSIZE*2]  __attribute__ ((section (".sram2")));
 int32_t rbuf[BUFSIZE*2]  __attribute__ ((section (".sram2")));
 int32_t rbuf2[BUFSIZE*2] __attribute__ ((section (".sram2")));
 
-#ifdef FW_I2S
+#ifdef FW_I2SCODEC
 int32_t i2s_buf[BUFSIZE*2]   __attribute__ ((section (".sram2")));
 int32_t i2s_buf2[BUFSIZE*2]  __attribute__ ((section (".sram2")));
 int32_t i2s_rbuf[BUFSIZE*2]  __attribute__ ((section (".sram2")));
@@ -50,7 +50,7 @@ void codec_clearbuffer(void) {
     int i; for(i=0; i<BUFSIZE*2; i++) {
         buf[i] = 0;
         buf2[i] = 0;
-#ifdef FW_I2S
+#ifdef FW_I2SCODEC
         i2s_buf[i] = 0;
         i2s_buf2[i] = 0;
 #endif
