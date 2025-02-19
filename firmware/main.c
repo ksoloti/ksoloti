@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
-
+ 
 #include "axoloti_defines.h"
 
 #include "sdram.h"
@@ -49,14 +49,17 @@
 #include "sdram.c"
 #include "stm32f4xx_fmc.c"
 
+#include "board.h"
+
 /*===========================================================================*/
 /* Initialization and main thread.                                           */
 /*===========================================================================*/
 
-// #define ENABLE_SERIAL_DEBUG 1
+
+
 
 extern void MY_USBH_Init(void);
-
+extern void BoardPalInit(void);
  
 int main(void) {
     /* copy vector table to SRAM1! */
@@ -69,6 +72,7 @@ int main(void) {
     SYSCFG->MEMRMP |= 0x03;
 
     halInit();
+    BoardPalInit();
     chSysInit();
 
 #ifdef FW_SPILINK
@@ -87,7 +91,6 @@ int main(void) {
     /* 115200 baud */
     static const SerialConfig sd2Cfg = {115200, 0, 0, 0};
     sdStart(&SD2, &sd2Cfg);
-    // chprintf((BaseSequentialStream * )&SD2,"Hello world!\r\n");
 #endif
 
     exception_init();
