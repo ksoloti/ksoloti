@@ -611,6 +611,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             tsuffix += "USBAudio";
         }
 
+        if (prefs.getFirmwareMode().contains("I2SCodec")) {
+            if (tsuffix.length() > 0) {
+                tsuffix += ", ";
+            }
+            tsuffix += "I2SCodec";
+        }
+
         if (tsuffix.length() > 0) {
             tstring += " (" + tsuffix + ")";
         }
@@ -1262,6 +1269,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (prefs.getFirmwareMode().contains("USBAudio")) {
             pname += "_usbaudio";
         }
+        if (prefs.getFirmwareMode().contains("I2SCodec")) {
+            pname += "_i2scodec";
+        }
         pname += ".bin";
         flashUsingSDRam(fname, pname);
     }
@@ -1294,6 +1304,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         if (prefs.getFirmwareMode().contains("USBAudio")) {
             pname += "_usbaudio";
+        }
+        if (prefs.getFirmwareMode().contains("I2SCodec")) {
+            pname += "_i2scodec";
         }
         pname += ".bin";
         flashUsingSDRam(fname, pname);
@@ -1617,6 +1630,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             }
             if (prefs.getFirmwareMode().contains("USBAudio")) {
                 pname += "_usbaudio";
+            }
+            if (prefs.getFirmwareMode().contains("I2SCodec")) {
+                pname += "_i2scodec";
             }
             pname += ".bin";
             flashUsingSDRam(fname, pname);

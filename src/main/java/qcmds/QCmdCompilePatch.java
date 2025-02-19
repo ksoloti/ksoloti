@@ -79,6 +79,9 @@ public class QCmdCompilePatch extends QCmdShellTask {
             if (prefs.getFirmwareMode().contains("USBAudio")) {
                 fwoptiondef += " FW_USBAUDIO";
             }
+            if (prefs.getFirmwareMode().contains("I2SCodec")) {
+                fwoptiondef += " FW_I2SCODEC";
+            }
 
             if (OSDetect.getOS() == OSDetect.OS.WIN) {
                 return RuntimeDir() + "/platform_win/bin/sh.exe " + FirmwareDir() + "/compile_patch_win.sh " + boarddef + fwoptiondef;

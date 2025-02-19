@@ -289,9 +289,11 @@ public class PreferencesFrame extends JFrame {
             "Ksoloti Core",
             "Ksoloti Core + SPILink",
             "Ksoloti Core + USBAudio",
+            "Ksoloti Core + I2SCodec",
             "Axoloti Core",
             "Axoloti Core + SPILink",
-            "Axoloti Core + USBAudio"
+            "Axoloti Core + USBAudio",
+            "Axoloti Core + I2SCodec"
         }));
         jComboBoxFirmwareMode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

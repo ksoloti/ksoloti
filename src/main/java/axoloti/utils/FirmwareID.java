@@ -53,6 +53,9 @@ public class FirmwareID {
             if (prefs.getFirmwareMode().contains("USBAudio")) {
                 boarddef += "_usbaudio";
             }
+            if (prefs.getFirmwareMode().contains("I2SCodec")) {
+                boarddef += "_i2scodec";
+            }
             boarddef += ".bin";
             File f = new File(boarddef);
 
