@@ -38,6 +38,7 @@
 #define STM32F427_437xx
 
 #include "stm32f4xx.h"
+#include "stm32f4xx_hal_hcd.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -111,13 +112,14 @@ extern void fakefree(void * p);
 
 // osThreadId
 #define osMessageQDef(name, queue_sz, type) \
-  static type buf[queue_sz]; \
-  INPUTQUEUE_DECL(name, &buf, sizeof(buf), NULL, NULL)
-#define osMessageCreate(queue_def, thread_id)  &queue_def
+  static int buf[queue_sz]; \
+  MAILBOX_DECL(name, &buf, queue_sz)
+#define osMessageCreate(queue_def, thread_id)  thread_id /*&queue_def*/
 #define osMessageQ(x) x
 #define osWaitForever TIME_INFINITE
 #define osEventMessage 1
-typedef uint8_t osEvent;
+typedef int osEvent;
+
 
 //#define DEBUG_ON_GPIO
 
