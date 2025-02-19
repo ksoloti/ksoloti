@@ -4,6 +4,7 @@
     "version": "0.2.0",
     "projectName": "ksoloti",
     "configurations": [
+
         {
             "type": "java",
             "name": "Debug Patcher!",
@@ -20,7 +21,7 @@
             "device": "STM32F429ZG",
             "interface": "swd",
             "runToEntryPoint": "main",
-            "preLaunchTask": "kompile_shortcut",
+            // "preLaunchTask": "kompile_shortcut",
             "svdFile": "./debug/STM32F429.svd",
             "swoConfig": {}
         },
@@ -47,7 +48,7 @@
             "device": "STM32F429ZG",
             "interface": "swd",
             "runToEntryPoint": "main",
-            "preLaunchTask": "kompile_shortcut",
+            // "preLaunchTask": "kompile_shortcut",
             "svdFile": "./debug/STM32F429.svd",
             "swoConfig": {}
         },
@@ -74,7 +75,7 @@
             "device": "STM32F429ZG",
             "interface": "swd",
             "runToEntryPoint": "main",
-            "preLaunchTask": "kompile_shortcut",
+            // "preLaunchTask": "kompile_shortcut",
             "svdFile": "./debug/STM32F429.svd",
             "swoConfig": {}
         },
@@ -101,7 +102,7 @@
             "device": "STM32F429ZG",
             "interface": "swd",
             "runToEntryPoint": "main",
-            "preLaunchTask": "kompile_shortcut",
+            // "preLaunchTask": "kompile_shortcut",
             "svdFile": "./debug/STM32F429.svd",
             "swoConfig": {}
         },
@@ -109,6 +110,60 @@
             "name": "Axoloti SPILink attach",
             "cwd": "${workspaceRoot}",
             "executable": "./firmware/build/axoloti_spilink.elf",
+            "request": "attach",
+            "type": "cortex-debug",
+            "servertype": "stlink",
+            "device": "STM32F429ZG",
+            "interface": "swd",
+            "runToEntryPoint": "main",
+            "svdFile": "./debug/STM32F429.svd",
+            "swoConfig": {}
+        }
+        {
+            "name": "Ksoloti I2SCodec launch",
+            "cwd": "${workspaceRoot}",
+            "executable": "./firmware/build/ksoloti_i2scodec.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "stlink",
+            "device": "STM32F429ZG",
+            "interface": "swd",
+            "runToEntryPoint": "main",
+            // "preLaunchTask": "kompile_shortcut",
+            "svdFile": "./debug/STM32F429.svd",
+            "swoConfig": {}
+        },
+        {
+            "name": "Ksoloti I2SCodec attach",
+            "cwd": "${workspaceRoot}",
+            "executable": "./firmware/build/ksoloti_i2scodec.elf",
+            "request": "attach",
+            "type": "cortex-debug",
+            "servertype": "stlink",
+            "device": "STM32F429ZG",
+            "interface": "swd",
+            "runToEntryPoint": "main",
+            "svdFile": "./debug/STM32F429.svd",
+            "swoConfig": {}
+        },
+        {
+            "name": "Axoloti I2SCodec launch",
+            "cwd": "${workspaceRoot}",
+            "executable": "./firmware/build/axoloti_i2scodec.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "stlink",
+            "device": "STM32F429ZG",
+            "interface": "swd",
+            "runToEntryPoint": "main",
+            // "preLaunchTask": "kompile_shortcut",
+            "svdFile": "./debug/STM32F429.svd",
+            "swoConfig": {}
+        },
+        {
+            "name": "Axoloti I2SCodec attach",
+            "cwd": "${workspaceRoot}",
+            "executable": "./firmware/build/axoloti_i2scodec.elf",
             "request": "attach",
             "type": "cortex-debug",
             "servertype": "stlink",
