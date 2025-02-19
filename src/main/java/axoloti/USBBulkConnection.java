@@ -44,7 +44,6 @@ import java.util.zip.CRC32;
 import javax.swing.SwingUtilities;
 import org.usb4java.*;
 import qcmds.QCmd;
-import qcmds.QCmdDisconnect;
 import qcmds.QCmdMemRead;
 import qcmds.QCmdMemRead1Word;
 import qcmds.QCmdProcessor;
