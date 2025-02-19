@@ -120,14 +120,6 @@ void i2s_peripheral_init(void)  {
     palSetPadMode(GPIOA, 1, PAL_MODE_OUTPUT_PUSHPULL);
 #endif
 
-    rccEnableSPI3(false);
-    /* configure I2S peripheral */
-    SPI3->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_1 | SPI_I2SCFGR_DATLEN_1; /* I2S master transmit, Philips standard, 32-bit data length, 32-bit channel length */
-    SPI3->I2SPR = 0x000C | SPI_I2SPR_ODD;
-
-    I2S3ext->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_0 | SPI_I2SCFGR_DATLEN_1; /* I2S slave receive, Philips standard, 32-bit data length, 32-bit channel length */
-    I2S3ext->I2SPR = 0x0002; // 0x000C | SPI_I2SPR_ODD; /* not used in slave mode */
-
     /* release I2S3 */
     palSetPadMode(I2S3_WS_PORT, I2S3_WS_PIN, PAL_MODE_INPUT);
     palSetPadMode(I2S3_BCLK_PORT, I2S3_BCLK_PIN, PAL_MODE_INPUT);
@@ -135,6 +127,13 @@ void i2s_peripheral_init(void)  {
     palSetPadMode(I2S3_SDIN_PORT, I2S3_SDIN_PIN, PAL_MODE_INPUT);
     palSetPadMode(I2S3_SDOUT_PORT, I2S3_SDOUT_PIN, PAL_MODE_INPUT);
 
+    rccEnableSPI3(false);
+    /* configure I2S peripheral */
+    SPI3->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_1 | SPI_I2SCFGR_DATLEN_1; /* I2S master transmit, Philips standard, 32-bit data length, 32-bit channel length */
+    SPI3->I2SPR = 0x000C | SPI_I2SPR_ODD;
+
+    I2S3ext->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_0 | SPI_I2SCFGR_DATLEN_1; /* I2S slave receive, Philips standard, 32-bit data length, 32-bit channel length */
+    I2S3ext->I2SPR = 0x0002; // 0x000C | SPI_I2SPR_ODD; /* not used in slave mode */
 
     /* reassign I2S3 */
     palSetPadMode(I2S3_WS_PORT, I2S3_WS_PIN, PAL_MODE_ALTERNATE(6));
