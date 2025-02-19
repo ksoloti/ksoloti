@@ -41,6 +41,7 @@
 #define PI_F 3.14159265359f
 #define SAMPLERATE 48000
 #define BUFSIZE 16
+#define DOUBLE_BUFSIZE 32
 #define BUFSIZE_POW 4
 
 typedef int32_t int32buffer[BUFSIZE];

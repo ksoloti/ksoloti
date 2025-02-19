@@ -25,10 +25,10 @@
 #include "migration_v16.h"
 
 // double buffers for DMA, interleaved stereo
-extern int32_t buf[BUFSIZE * 2]; // *2 for stereo
-extern int32_t buf2[BUFSIZE * 2];
-extern int32_t rbuf[BUFSIZE * 2];
-extern int32_t rbuf2[BUFSIZE * 2];
+extern int32_t buf[DOUBLE_BUFSIZE]; // *2 for stereo
+extern int32_t buf2[DOUBLE_BUFSIZE];
+extern int32_t rbuf[DOUBLE_BUFSIZE];
+extern int32_t rbuf2[DOUBLE_BUFSIZE];
 
 
 void codec_init(bool_t isMaster);

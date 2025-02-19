@@ -24,10 +24,10 @@
 
 #ifdef FW_I2SCODEC
 
-extern int32_t i2s_buf[BUFSIZE * 2]; // *2 for stereo
-extern int32_t i2s_buf2[BUFSIZE * 2];
-extern int32_t i2s_rbuf[BUFSIZE * 2];
-extern int32_t i2s_rbuf2[BUFSIZE * 2];
+extern int32_t i2s_buf[DOUBLE_BUFSIZE]; // *2 for stereo
+extern int32_t i2s_buf2[DOUBLE_BUFSIZE];
+extern int32_t i2s_rbuf[DOUBLE_BUFSIZE];
+extern int32_t i2s_rbuf2[DOUBLE_BUFSIZE];
 
 extern void i2s_init(void);
 extern void i2s_stop(void);

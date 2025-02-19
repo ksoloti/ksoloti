@@ -55,10 +55,10 @@ const stm32_dma_stream_t* i2s_rx_dma;
 
 uint32_t i2s_interrupt_timestamp;
 
-extern int32_t i2s_buf[BUFSIZE*2];
-extern int32_t i2s_buf2[BUFSIZE*2];
-extern int32_t i2s_rbuf[BUFSIZE*2];
-extern int32_t i2s_rbuf2[BUFSIZE*2];
+extern int32_t i2s_buf[DOUBLE_BUFSIZE];
+extern int32_t i2s_buf2[DOUBLE_BUFSIZE];
+extern int32_t i2s_rbuf[DOUBLE_BUFSIZE];
+extern int32_t i2s_rbuf2[DOUBLE_BUFSIZE];
 
 
 void wait_sai_dma_tc_flag(void) {
