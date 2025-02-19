@@ -85,7 +85,8 @@ LDFLAGS = \
 DMPFLAGS = \
   --demangle \
   --disassemble \
-  --source-comment
+  --source-comment \
+  --syms
 
 TRGT = arm-none-eabi-
 CC   = $(TRGT)gcc
@@ -159,7 +160,7 @@ ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
 	@$(CP) -O binary ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin
 
 #	@echo Creating LST file for debugging
-	@$(DMP) $(DMPFLAGS) "${BUILDDIR}/xpatch.elf" > "${BUILDDIR}/xpatch.lst"
+#	@$(DMP) $(DMPFLAGS) "${BUILDDIR}/xpatch.elf" > "${BUILDDIR}/xpatch.lst"
 
 clean:
 	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.lst ${BUILDDIR}/xpatch.h.gch
