@@ -160,11 +160,7 @@ void i2s_dma_init(void) {
         STM32_DMA_CR_TEIE |
         STM32_DMA_CR_TCIE;
 
-#ifdef I2S_DEBUG
     bool_t b = dmaStreamAllocate(i2s_tx_dma, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t) dma_i2s_tx_interrupt, (void*) 0);
-#else
-    bool_t b = dmaStreamAllocate(i2s_tx_dma, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t) 0, (void*) 0);
-#endif
 
     dmaStreamSetPeripheral(i2s_tx_dma, &(SPI3->DR));
     dmaStreamSetMemory0(i2s_tx_dma, i2s_buf);
@@ -181,8 +177,8 @@ void i2s_dma_init(void) {
         STM32_DMA_CR_DIR_P2M |
         STM32_DMA_CR_MSIZE_WORD |
         STM32_DMA_CR_PSIZE_HWORD |
-        STM32_DMA_CR_TEIE;
-        // STM32_DMA_CR_TCIE;
+        STM32_DMA_CR_TEIE |
+        STM32_DMA_CR_TCIE;
 
     b |= dmaStreamAllocate(i2s_rx_dma, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t) 0, (void*) 0);
 
