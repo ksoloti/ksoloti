@@ -71,11 +71,10 @@ static const USBDescriptor vcom_device_descriptor = {
 
 
 #if FW_USBAUDIO
-//#define DESC_SIZE 140 + USBD_AUDIO_HEADSET_STEREO_DESC_LEN
 #if USB_AUDIO_CHANNELS == 2
-  #define DESC_SIZE 426
+  #define DESC_SIZE 334
 #elif USB_AUDIO_CHANNELS == 4
-  #define DESC_SIZE 426 + (USBD_AUDIO_DESC_FEATURE_UNIT_FOUR_CHANNEL_LEN - USBD_AUDIO_DESC_FEATURE_UNIT_TWO_CHANNEL_LEN)
+  #define DESC_SIZE 334 + (USBD_AUDIO_DESC_FEATURE_UNIT_FOUR_CHANNEL_LEN - USBD_AUDIO_DESC_FEATURE_UNIT_TWO_CHANNEL_LEN)
 #endif
 
 #define NUM_INTERFACE 0x05
@@ -158,20 +157,6 @@ static const uint8_t vcom_configuration_descriptor_data[]=
 		// Class-Specific AS Isochronous Audio Data Endpoint Descriptor(4.10.1.2) - Audio streaming endpoint, delay of 1ms
     USBD_AUDIO_DESC_CS_AS_ISO_EP(AUDIO_CS_AS_ISO_DATA_EP_ATT_NON_MAX_PACKETS_OK, AUDIO_CTRL_NONE, AUDIO_CS_AS_ISO_DATA_EP_LOCK_DELAY_UNIT_MILLISEC, 0x0001),
 
-  // Interface 1, Alternate 2 - alternate interface for data streaming with one endpoint at 24 bits
-  USBD_AUDIO_DESC_STD_AS_INT((uint8_t)(ITF_NUM_AUDIO_STREAMING_SPEAKER), 0x02, 0x01, 0x00),\
-
-		// Class-Specific AS Interface Descriptor(4.9.2) - Speaker Terminal PCM 2/4 channels
-    USBD_AUDIO_DESC_CS_AS_INT(UAC2_ENTITY_SPK_INPUT_TERMINAL, AUDIO_CTRL_NONE, AUDIO_FORMAT_TYPE_I, AUDIO_DATA_FORMAT_TYPE_I_PCM, CFG_USBD_AUDIO_FUNC_1_N_CHANNELS_RX, AUDIO_CHANNEL_CONFIG_NON_PREDEFINED, 0x00),
-
-		// Type I Format Type Descriptor(2.3.1.6 - Audio Formats) - FORMAT_TYPE 24 bits
-    USBD_AUDIO_DESC_TYPE_I_FORMAT(CFG_USBD_AUDIO_FUNC_1_FORMAT_2_N_BYTES_PER_SAMPLE_RX, CFG_USBD_AUDIO_FUNC_1_FORMAT_2_RESOLUTION_RX),
-
-		// Standard AS Isochronous Audio Data Endpoint Descriptor(4.10.1.1) - Adaptive data iso endpoint 3
-    USBD_AUDIO_DESC_STD_AS_ISO_EP(AUDIO_ENDPPOINT_OUT, (uint8_t) (USBD_XFER_ISOCHRONOUS | USBD_ISO_EP_ATT_ADAPTIVE | USBD_ISO_EP_ATT_DATA), USBD_AUDIO_EP_SIZE(CFG_USBD_AUDIO_FUNC_1_MAX_SAMPLE_RATE, CFG_USBD_AUDIO_FUNC_1_FORMAT_2_N_BYTES_PER_SAMPLE_RX, CFG_USBD_AUDIO_FUNC_1_N_CHANNELS_RX),  0x01),
-
-		// Class-Specific AS Isochronous Audio Data Endpoint Descriptor(4.10.1.2) - Audio streaming endpoint, delay of 1ms
-    USBD_AUDIO_DESC_CS_AS_ISO_EP(AUDIO_CS_AS_ISO_DATA_EP_ATT_NON_MAX_PACKETS_OK, AUDIO_CTRL_NONE, AUDIO_CS_AS_ISO_DATA_EP_LOCK_DELAY_UNIT_MILLISEC, 0x0001),
 
 
   // interface 2 - Audio Microphone (Ksoloti -> PC)
@@ -195,20 +180,6 @@ static const uint8_t vcom_configuration_descriptor_data[]=
     USBD_AUDIO_DESC_CS_AS_ISO_EP(AUDIO_CS_AS_ISO_DATA_EP_ATT_NON_MAX_PACKETS_OK, AUDIO_CTRL_NONE, AUDIO_CS_AS_ISO_DATA_EP_LOCK_DELAY_UNIT_UNDEFINED, 0x0000),
 
 
-  // Interface 2, Alternate 2 - alternate interface for data streaming with one endpoint at 24 bits
-  USBD_AUDIO_DESC_STD_AS_INT((uint8_t)(ITF_NUM_AUDIO_STREAMING_MICROPHONE), 0x02, 0x01, 0x00),
-
-		// Class-Specific AS Interface Descriptor(4.9.2) - Microphone terminal PCM 2/4 channels
-    USBD_AUDIO_DESC_CS_AS_INT(UAC2_ENTITY_MIC_OUTPUT_TERMINAL, AUDIO_CTRL_NONE, AUDIO_FORMAT_TYPE_I, AUDIO_DATA_FORMAT_TYPE_I_PCM, CFG_USBD_AUDIO_FUNC_1_N_CHANNELS_TX, AUDIO_CHANNEL_CONFIG_NON_PREDEFINED, 0x00),
-		
-    // Type I Format Type Descriptor(2.3.1.6 - Audio Formats) - FORMAT_TYPE 24 bit
-    USBD_AUDIO_DESC_TYPE_I_FORMAT(CFG_USBD_AUDIO_FUNC_1_FORMAT_2_N_BYTES_PER_SAMPLE_TX, CFG_USBD_AUDIO_FUNC_1_FORMAT_2_RESOLUTION_TX),
-
-		// Standard AS Isochronous Audio Data Endpoint Descriptor(4.10.1.1) - Async data iso endpoint 3
-    USBD_AUDIO_DESC_STD_AS_ISO_EP(AUDIO_ENDPPOINT_IN, (uint8_t) (USBD_XFER_ISOCHRONOUS | USBD_ISO_EP_ATT_ASYNCHRONOUS | USBD_ISO_EP_ATT_DATA), USBD_AUDIO_EP_SIZE(CFG_USBD_AUDIO_FUNC_1_MAX_SAMPLE_RATE, CFG_USBD_AUDIO_FUNC_1_FORMAT_2_N_BYTES_PER_SAMPLE_TX, CFG_USBD_AUDIO_FUNC_1_N_CHANNELS_TX), 0x01),
-
-		// Class-Specific AS Isochronous Audio Data Endpoint Descriptor(4.10.1.2) - Audio streaming endpoint no delay
-    USBD_AUDIO_DESC_CS_AS_ISO_EP(AUDIO_CS_AS_ISO_DATA_EP_ATT_NON_MAX_PACKETS_OK, AUDIO_CTRL_NONE, AUDIO_CS_AS_ISO_DATA_EP_LOCK_DELAY_UNIT_UNDEFINED, 0x0000),
 
   // interface 3 - midi - endpoint 1
   0x09, 0x04, 0x03, 0x00, 0x02, 0x01, 0x03, 0x00, 0x00, // Interface 3             INTERFACE DESC (bLength bDescType bInterfaceNumber bAltSetting bNumEndpoints bInterfaceClass bInterfaceSubClass bInterfaceProtocol iInterface)
