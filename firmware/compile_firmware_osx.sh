@@ -3,19 +3,29 @@ set -e
 
 export PATH=${axoloti_runtime}/platform_osx/bin:$PATH
 
-BUILD_NORMAL=$2
-BUILD_USBAUDIO=$3 
-BUILD_SPILINK=$4 
-BUILD_FLASHER=$5 
-BUILD_MOUNTER=$6
-BUILD_I2SCODEC=$7
+if [[ "$#" -eq 1 ]]; then
+  printf "Building all firmware modes and helpers for the current board.\n"
+  BUILD_NORMAL=1
+  BUILD_USBAUDIO=1 
+  BUILD_SPILINK=1 
+  BUILD_FLASHER=1 
+  BUILD_MOUNTER=1
+  BUILD_I2SCODEC=1
+else
+  BUILD_NORMAL=$2
+  BUILD_USBAUDIO=$3 
+  BUILD_SPILINK=$4 
+  BUILD_FLASHER=$5 
+  BUILD_MOUNTER=$6
+  BUILD_I2SCODEC=$7
+fi
 
 cd "${axoloti_firmware}"
 make BOARDDEF=$1 -f Makefile.patch.mk clean
 
-if [ $1 = "BOARD_KSOLOTI_CORE" ]; then
+if [[ $1 = "BOARD_KSOLOTI_CORE" ]]; then
   NAME=ksoloti
-else if [ $1 = "BOARD_AXOLOTI_CORE" ]; then
+else if [[ $1 = "BOARD_AXOLOTI_CORE" ]]; then
   NAME=axoloti
 fi
 fi
