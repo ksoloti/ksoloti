@@ -193,7 +193,7 @@ void i2s_dma_init(void) {
     dmaStreamSetPeripheral(i2s_rx_dma, &(I2S3ext->DR));
     dmaStreamSetMemory0(i2s_rx_dma, i2s_rbuf);
     dmaStreamSetMemory1(i2s_rx_dma, i2s_rbuf2);
-    dmaStreamSetTransactionSize(i2s_rx_dma, 32);
+    dmaStreamSetTransactionSize(i2s_rx_dma, 64);
 
 }
 
