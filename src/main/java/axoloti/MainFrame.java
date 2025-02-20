@@ -404,7 +404,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
 
                     if (prefs.getFirmwareMode().contains("I2SCodec")) {
-                        LOGGER.log(Level.WARNING, ">>> I2SCodec-enabled firmware <<<\nPins PA15, PB3, PB4, PD6 are occupied by I2S communication in this firmware mode!\nPA15:LRCLK  PB3:BCLK  PB4:SDIN  PD6:SDOUT");
+                        LOGGER.log(Level.WARNING, ">>> I2SCodec-enabled firmware <<<\nPins PA15, PB3, PB4, PD6 are occupied by I2S communication in this firmware mode!\n");
                     }
 
                     updateLinkFirmwareID();
