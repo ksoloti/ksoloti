@@ -171,11 +171,11 @@ void i2s_dma_init(void) {
 
     bool_t b = dmaStreamAllocate(i2s_tx_dma, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t) dma_i2s_tx_interrupt, (void*) 0);
 
-    dmaStreamSetMode(i2s_tx_dma, i2s_tx_dma_mode);
     dmaStreamSetPeripheral(i2s_tx_dma, &(SPI3->DR));
     dmaStreamSetMemory0(i2s_tx_dma, i2s_buf);
     dmaStreamSetMemory1(i2s_tx_dma, i2s_buf2);
     dmaStreamSetTransactionSize(i2s_tx_dma, 64);
+    dmaStreamSetMode(i2s_tx_dma, i2s_tx_dma_mode);
 
     i2s_rx_dma = STM32_DMA_STREAM(STM32_SPI_I2S3_RX_DMA_STREAM);
 
@@ -197,11 +197,11 @@ void i2s_dma_init(void) {
         while (1);
     }
 
-    dmaStreamSetMode(i2s_rx_dma, i2s_rx_dma_mode);
     dmaStreamSetPeripheral(i2s_rx_dma, &(I2S3ext->DR));
     dmaStreamSetMemory0(i2s_rx_dma, i2s_rbuf);
     dmaStreamSetMemory1(i2s_rx_dma, i2s_rbuf2);
     dmaStreamSetTransactionSize(i2s_rx_dma, 64);
+    dmaStreamSetMode(i2s_rx_dma, i2s_rx_dma_mode);
 
 }
 
