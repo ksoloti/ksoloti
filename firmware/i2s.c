@@ -29,18 +29,15 @@
 
 /* SPI3 in I2S3 mode - TX: DMA1, Stream 7, Channel 0 */
 #define STM32_SPI_I2S3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 7)
-#define STM32_I2S3_TX_DMA_CHN 0
+#define STM32_I2S3_TX_DMA_CHANNEL 0
 
 /* I2S3_EXT          - RX: DMA1, Stream 0, Channel 3 */
 #define STM32_SPI_I2S3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 0)
-#define STM32_I2S3EXT_RX_DMA_CHN 3
+#define STM32_I2S3EXT_RX_DMA_CHANNEL 3
 
 /* Overriding generic SPI3 priorities here */
 #define STM32_SPI_I2S3_DMA_PRIORITY         1
 #define STM32_SPI_I2S3_IRQ_PRIORITY         2
-
-#define STM32_I2S3_TX_DMA_CHANNEL           (STM32_DMA_GETCHANNEL(STM32_SPI_I2S3_TX_DMA_STREAM, STM32_I2S3_TX_DMA_CHN))
-#define STM32_I2S3_RX_DMA_CHANNEL           (STM32_DMA_GETCHANNEL(STM32_SPI_I2S3_RX_DMA_STREAM, STM32_I2S3EXT_RX_DMA_CHN))
 
 /* Required by wait_sai_dma_tc_flag(): access to SAI DMA's transfer complete flag */
 #define STM32_SAI_A_DMA_STREAM              STM32_DMA_STREAM_ID(2, 1)
@@ -180,7 +177,7 @@ void i2s_dma_init(void) {
     i2s_rx_dma = STM32_DMA_STREAM(STM32_SPI_I2S3_RX_DMA_STREAM);
 
     uint32_t i2s_rx_dma_mode =
-        STM32_DMA_CR_CHSEL(STM32_I2S3_RX_DMA_CHANNEL) |
+        STM32_DMA_CR_CHSEL(STM32_I2S3EXT_RX_DMA_CHANNEL) |
         STM32_DMA_CR_PL(STM32_SPI_I2S3_DMA_PRIORITY) |
         STM32_DMA_CR_DBM /* double buffer mode */ |
         STM32_DMA_CR_DIR_P2M |
