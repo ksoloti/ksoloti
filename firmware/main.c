@@ -47,7 +47,7 @@
 #endif
 
 #ifdef FW_I2SCODEC
-#include "i2s.h"
+#include "i2scodec.h"
 #endif
 
 #include "sdram.c"

@@ -25,7 +25,7 @@
 #include "spilink.h"
 #endif
 #ifdef FW_I2SCODEC
-#include "i2s.h"
+#include "i2scodec.h"
 #endif
 #include "codec_ADAU1961.h"
 
