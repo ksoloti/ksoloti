@@ -29,6 +29,7 @@
 
 #ifdef FW_SPILINK
 
+
 uint32_t spidb_interrupt_timestamp;
 
 // #define DEBUG_SPIDB_INT_ON_GPIO 1
@@ -135,8 +136,8 @@ void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, Thread * thread
     spip->spi->CR1 &= ~SPI_CR1_SSM;
     spip->spi->CR1 &= ~SPI_CR1_SSI;
 
-    dmaStreamRelease(spip->dmarx);
-    dmaStreamRelease(spip->dmatx);
+    dmaStreamFree(spip->dmarx);
+    dmaStreamFree(spip->dmatx);
 
     int irq_priority = -1;
 
@@ -158,11 +159,21 @@ void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, Thread * thread
     if (irq_priority == -1)
         chSysHalt("spidbSlaveStart wrong irq_priority");
 
-    bool_t b = dmaStreamAllocate(spip->dmarx, irq_priority, (stm32_dmaisr_t) dma_spidb_slave_interrupt, (void *) spip);
-    chDbgAssert(!b, "spi_lld_start(), #1 stream already allocated");
+    spip->dmarx = dmaStreamAlloc( STM32_SPI_SPI3_RX_DMA_STREAM,
+                                  irq_priority,
+                                  (stm32_dmaisr_t)dma_spidb_slave_interrupt,
+                                  (void *)spip);
 
-    b = dmaStreamAllocate(spip->dmatx, irq_priority, (stm32_dmaisr_t) 0, (void *) spip);
-    chDbgAssert(!b, "spi_lld_start(), #2 stream already allocated");
+    spip->dmatx = dmaStreamAlloc( STM32_SPI_SPI3_TX_DMA_STREAM,
+                                  irq_priority,
+                                  (stm32_dmaisr_t)0,
+                                  (void *)spip);
+  
+    // bool_t b = dmaStreamAllocate(spip->dmarx, irq_priority, (stm32_dmaisr_t) dma_spidb_slave_interrupt, (void *) spip);
+    // chDbgAssert(!b, "spi_lld_start(), #1 stream already allocated");
+
+    // b = dmaStreamAllocate(spip->dmatx, irq_priority, (stm32_dmaisr_t) 0, (void *) spip);
+    // chDbgAssert(!b, "spi_lld_start(), #2 stream already allocated");
 
     spiSelect(spip);
 
@@ -204,8 +215,8 @@ void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config) {
     spip->spi->CR1 |= SPI_CR1_MSTR;
     spip->spi->CR1 |= SPI_CR1_SPE;
 
-    dmaStreamRelease(spip->dmarx);
-    dmaStreamRelease(spip->dmatx);
+    dmaStreamFree(spip->dmarx);
+    dmaStreamFree(spip->dmatx);
 
     int irq_priority = -1;
 
@@ -230,11 +241,22 @@ void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config) {
     spip->rxdmamode |= STM32_DMA_CR_MINC;
     spip->txdmamode |= STM32_DMA_CR_MINC;
 
-    bool_t b = dmaStreamAllocate(spip->dmarx, irq_priority, (stm32_dmaisr_t) dma_spidb_master_interrupt, (void *) spip);
-    chDbgAssert(!b, "spi_lld_start(), #1 stream already allocated");
 
-    b = dmaStreamAllocate(spip->dmatx, irq_priority, (stm32_dmaisr_t) 0, (void *) spip);
-    chDbgAssert(!b, "spi_lld_start(), #2 stream already allocated");
+    spip->dmarx = dmaStreamAlloc( STM32_SPI_SPI3_RX_DMA_STREAM,
+                                  irq_priority,
+                                  (stm32_dmaisr_t)dma_spidb_master_interrupt,
+                                  (void *)spip);
+
+    spip->dmatx = dmaStreamAlloc( STM32_SPI_SPI3_TX_DMA_STREAM,
+                                  irq_priority,
+                                  (stm32_dmaisr_t)0,
+                                  (void *)spip);
+
+    // bool_t b = dmaStreamAllocate(spip->dmarx, irq_priority, (stm32_dmaisr_t) dma_spidb_master_interrupt, (void *) spip);
+    // chDbgAssert(!b, "spi_lld_start(), #1 stream already allocated");
+
+    // b = dmaStreamAllocate(spip->dmatx, irq_priority, (stm32_dmaisr_t) 0, (void *) spip);
+    // chDbgAssert(!b, "spi_lld_start(), #2 stream already allocated");
 
     dmaStreamSetMemory0(spip->dmarx, ((SPIDBConfig *) (spip->config))->rxbuf);
     dmaStreamSetTransactionSize(spip->dmarx, ((SPIDBConfig *) (spip->config))->size);
@@ -254,7 +276,7 @@ void spidbStop(SPIDriver *spip) {
     if (!palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN)) {
         chSysLock();
         dmaStreamDisable(spip->dmatx);
-        dmaStreamRelease(spip->dmatx);
+        dmaStreamFree(spip->dmatx);
 
         /* Wait till buffer is empty */
         while (!(spip->spi->SR & SPI_SR_TXE));
@@ -265,7 +287,7 @@ void spidbStop(SPIDriver *spip) {
         spip->spi->CR1 &= ~SPI_CR1_SPE;
 
         dmaStreamDisable(spip->dmarx);
-        dmaStreamRelease(spip->dmarx);
+        dmaStreamFree(spip->dmarx);
 
         spiStop(spip);
         chSysUnlock();
