@@ -18,7 +18,10 @@
 #define FF_FS_RPATH 2
 #define FF_LFN_BUF		255
 #define FF_SFN_BUF		12
-#define FF_USE_LFN		0
+#define FF_USE_LFN		1
+#define FF_MAX_LFN      255
+#define FF_LFN_UNICODE	0
+#define FF_CODE_PAGE    437
 #define FF_FS_READONLY	0
 #define FF_USE_CHMOD	1
 

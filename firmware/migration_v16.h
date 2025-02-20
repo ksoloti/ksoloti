@@ -49,6 +49,4 @@
 #define MS2ST TIME_MS2I
 
 // 20.3 notes.
-// 1. fatfs stuff commented out
-// 2. host usb search for "Create USB Host Queue"
-// 3. external pump
+// 1. external pump - looks like this is not needed nymore as chibios is now not using a thread for this.

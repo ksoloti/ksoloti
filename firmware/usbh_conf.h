@@ -38,12 +38,12 @@
 #define STM32F427_437xx
 
 #include "stm32f4xx.h"
-#include "stm32f4xx_hal_hcd.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "ch.h"
+#include "hal_usb.h"
 
 //#include "chprintf.h"
 #include "migration_v16.h"

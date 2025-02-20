@@ -126,7 +126,7 @@ static size_t readt(void *ip, uint8_t *bp, size_t n, systime_t time) {
 }
 
 static const struct MidiUSBDriverVMT vmt = {0, write, read, put, get, putt, gett,
-                                            writet, readt};
+                                            writet, readt, 0};
 
 
 void mduInitiateReceiveI(MidiUSBDriver *mdup, size_t uCount)

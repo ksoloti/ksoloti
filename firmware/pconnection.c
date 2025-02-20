@@ -57,7 +57,7 @@ static uint8_t AckPending = 0;
 
 static uint8_t connected = 0;
 
-static char FileName[256];
+static char FileName[FF_LFN_BUF];
 
 static FIL pFile;
 static int pFileSize;
@@ -156,7 +156,7 @@ void LogTextMessage(const char* format, ...) {
           va_start(ap, format);
           chvprintf((BaseSequentialStream *)&ms, format, ap);
           va_end(ap);
-          streamPut((BaseSequentialStream * )&ms, 0);
+          streamPut(&ms, 0);
           size_t length = strlen((char *)tmp);
           if((length) && (LogBufferUsed + 4 + length + 1) < LOG_BUFFER_SIZE)
           {
@@ -242,66 +242,63 @@ void PExTransmit(void) {
 
 
 static FRESULT scan_files(char *path) {
+  static FILINFO fno; // just one as we recurse and run out of stack
+
   FRESULT res;
-//   FILINFO fno;
-//   DIR dir;
-//   int i;
-//   char *fn;
-//   char *msg = &((char*)fbuff)[64];
-//   fno.lfname = &FileName[0];
-//   fno.lfsize = sizeof(FileName);
-//   res = f_opendir(&dir, path);
-//   if (res == FR_OK) {
-//     i = strlen(path);
-//     for (;;) {
-//       res = f_readdir(&dir, &fno);
-//       if (res != FR_OK || fno.fname[0] == 0)
-//         break;
-//       if (fno.fname[0] == '.')
-//         continue;
-// #if _USE_LFN
-//       fn = *fno.lfname ? fno.lfname : fno.fname;
-// #else
-//       fn = fno.fname;
-// #endif
-//       if (fn[0] == '.')
-//         continue;
-//       if (fno.fattrib & AM_HID)
-//         continue;
-//       if (fno.fattrib & AM_DIR) {
-//         path[i] = '/';
-//         strcpy(&path[i+1], fn);
-//         msg[0] = 'A';
-//         msg[1] = 'x';
-//         msg[2] = 'o';
-//         msg[3] = 'f';
-//         *(int32_t *)(&msg[4]) = fno.fsize;
-//         *(int32_t *)(&msg[8]) = fno.fdate + (fno.ftime<<16);
-//         strcpy(&msg[12], &path[1]);
-//         int l = strlen(&msg[12]);
-//         msg[12+l] = '/';
-//         msg[13+l] = 0;
-//         chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+14);
-//         res = scan_files(path);
-//         path[i] = 0;
-//         if (res != FR_OK) break;
-//       } else {
-//         msg[0] = 'A';
-//         msg[1] = 'x';
-//         msg[2] = 'o';
-//         msg[3] = 'f';
-//         *(int32_t *)(&msg[4]) = fno.fsize;
-//         *(int32_t *)(&msg[8]) = fno.fdate + (fno.ftime<<16);
-//         strcpy(&msg[12], &path[1]);
-//         msg[12+i-1] = '/';
-//         strcpy(&msg[12+i], fn);
-//         int l = strlen(&msg[12]);
-//         chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+13);
-//       }
-//     }
-//   } else {
-// 	  report_fatfs_error(res,0);
-//   }
+  DIR dir;
+  int i;
+  char *fn;
+  char *msg = &((char*)fbuff)[64];
+  // fno.lfname = &FileName[0];
+  // fno.lfsize = sizeof(FileName);
+  res = f_opendir(&dir, path);
+  if (res == FR_OK) {
+    i = strlen(path);
+    for (;;) {
+      res = f_readdir(&dir, &fno);
+      if (res != FR_OK || fno.fname[0] == 0)
+        break;
+      if (fno.fname[0] == '.')
+        continue;
+      fn = fno.fname;
+      if (fn[0] == '.')
+        continue;
+      if (fno.fattrib & AM_HID)
+        continue;
+      if (fno.fattrib & AM_DIR) {
+        path[i] = '/';
+        strcpy(&path[i+1], fn);
+        msg[0] = 'A';
+        msg[1] = 'x';
+        msg[2] = 'o';
+        msg[3] = 'f';
+        *(int32_t *)(&msg[4]) = fno.fsize;
+        *(int32_t *)(&msg[8]) = fno.fdate + (fno.ftime<<16);
+        strcpy(&msg[12], &path[1]);
+        int l = strlen(&msg[12]);
+        msg[12+l] = '/';
+        msg[13+l] = 0;
+        chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+14);
+        res = scan_files(path);
+        path[i] = 0;
+        if (res != FR_OK) break;
+      } else {
+        msg[0] = 'A';
+        msg[1] = 'x';
+        msg[2] = 'o';
+        msg[3] = 'f';
+        *(int32_t *)(&msg[4]) = fno.fsize;
+        *(int32_t *)(&msg[8]) = fno.fdate + (fno.ftime<<16);
+        strcpy(&msg[12], &path[1]);
+        msg[12+i-1] = '/';
+        strcpy(&msg[12+i], fn);
+        int l = strlen(&msg[12]);
+        chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+13);
+      }
+    }
+  } else {
+	  report_fatfs_error(res,0);
+  }
   return res;
 }
 
@@ -400,6 +397,7 @@ static void ManipulateFile(void) {
       }
       /* and set timestamp */
       FILINFO fno;
+      strncpy(fno.fname, &FileName[6], FF_LFN_BUF);
       fno.fdate = FileName[2] + (FileName[3]<<8);
       fno.ftime = FileName[4] + (FileName[5]<<8);
       err = f_utime(&FileName[6],&fno);
@@ -437,24 +435,25 @@ static void ManipulateFile(void) {
       }
     } else if (FileName[1]=='I') 
     {
-      // /* get file info */
-      // FRESULT err;
-      // FILINFO fno;
-      // fno.lfname = &((char*)fbuff)[0];
-      // fno.lfsize = 256;
-      // err =  f_stat(&FileName[6],&fno);
-      // if (err == FR_OK) {
-      //   char *msg = &((char*)fbuff)[0];
-      //   msg[0] = 'A';
-      //   msg[1] = 'x';
-      //   msg[2] = 'o';
-      //   msg[3] = 'f';
-      //   *(int32_t *)(&msg[4]) = fno.fsize;
-      //   *(int32_t *)(&msg[8]) = fno.fdate + (fno.ftime<<16);
-      //   strcpy(&msg[12], &FileName[6]);
-      //   int l = strlen(&msg[12]);
-      //   chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+13);
-      // }
+      /* get file info */
+      FRESULT err;
+      FILINFO fno;
+      //fno.lfname = &((char*)fbuff)[0];
+      fno.fsize = 256;
+      err =  f_stat(&FileName[6],&fno);
+      if (err == FR_OK) {
+        strncpy((char *)fbuff, fno.fname, sizeof(fbuff));
+        char *msg = &((char*)fbuff)[0];
+        msg[0] = 'A';
+        msg[1] = 'x';
+        msg[2] = 'o';
+        msg[3] = 'f';
+        *(int32_t *)(&msg[4]) = fno.fsize;
+        *(int32_t *)(&msg[8]) = fno.fdate + (fno.ftime<<16);
+        strcpy(&msg[12], &FileName[6]);
+        int l = strlen(&msg[12]);
+        chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+13);
+      }
     }
   }
 }

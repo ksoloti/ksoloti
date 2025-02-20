@@ -634,8 +634,6 @@ void codec_ADAU1961_SAI_init(uint16_t samplerate, bool_t isMaster) {
         | STM32_DMA_CR_TEIE | STM32_DMA_CR_TCIE | STM32_DMA_CR_DBM /* double buffer mode */
         | STM32_DMA_CR_PSIZE_WORD | STM32_DMA_CR_MSIZE_WORD;
 
-    bool_t b;
-
 #ifdef FW_SPILINK
     if  (isMaster) {
         sai_a_dma = dmaStreamAlloc( STM32_SAI_A_DMA_STREAM,
