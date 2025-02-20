@@ -27,26 +27,34 @@
 
 #ifdef FW_I2SCODEC
 
-#define STM32_I2S3EXT_RX_DMA_CHN 3 /* SPI3 RX channel is 0, however when it is setup as I2S3 for RX, it runs on channel 3 */
-#define STM32_I2S3_TX_DMA_CHANNEL (STM32_DMA_GETCHANNEL(STM32_SPI_SPI3_TX_DMA_STREAM, STM32_SPI3_TX_DMA_CHN))
-#define STM32_I2S3_RX_DMA_CHANNEL (STM32_DMA_GETCHANNEL(STM32_SPI_SPI3_RX_DMA_STREAM, STM32_I2S3EXT_RX_DMA_CHN))
+/* SPI3 in I2S3 mode - TX: DMA1, Stream 7, Channel 0 */
+#define STM32_SPI_I2S3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 7)
+#define STM32_I2S3_TX_DMA_CHN 0
+
+/* I2S3_EXT          - RX: DMA1, Stream 0, Channel 3 */
+#define STM32_SPI_I2S3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 0)
+#define STM32_I2S3EXT_RX_DMA_CHN 3
+
+/* Overriding generic SPI3 priorities here */
+#define STM32_SPI_I2S3_DMA_PRIORITY         1
+#define STM32_SPI_I2S3_IRQ_PRIORITY         2
+
+#define STM32_I2S3_TX_DMA_CHANNEL           (STM32_DMA_GETCHANNEL(STM32_SPI_I2S3_TX_DMA_STREAM, STM32_I2S3_TX_DMA_CHN))
+#define STM32_I2S3_RX_DMA_CHANNEL           (STM32_DMA_GETCHANNEL(STM32_SPI_I2S3_RX_DMA_STREAM, STM32_I2S3EXT_RX_DMA_CHN))
 
 /* Required by wait_sai_dma_tc_flag(): access to SAI DMA's transfer complete flag */
-#define STM32_SAI_A_DMA_STREAM STM32_DMA_STREAM_ID(2, 1)
+#define STM32_SAI_A_DMA_STREAM              STM32_DMA_STREAM_ID(2, 1)
 
-#define I2S3_WS_PORT GPIOA
-#define I2S3_WS_PIN 15
-#define I2S3_BCLK_PORT GPIOB
-#define I2S3_BCLK_PIN 3
-// #define I2S3_MCLK_PORT GPIOC
-// #define I2S3_MCLK_PIN 7
-#define I2S3_SDOUT_PORT GPIOD
-#define I2S3_SDOUT_PIN 6
-#define I2S3_SDIN_PORT GPIOB
-#define I2S3_SDIN_PIN 4
-
-#define SAI1_FS_PORT GPIOE
-#define SAI1_FS_PIN 4
+#define I2S3_WS_PORT       GPIOA
+#define I2S3_WS_PIN        15
+#define I2S3_BCLK_PORT     GPIOB
+#define I2S3_BCLK_PIN      3
+#define I2S3_SDIN_PORT     GPIOB
+#define I2S3_SDIN_PIN      4
+// #define I2S3_MCLK_PORT     GPIOC
+// #define I2S3_MCLK_PIN      7
+#define I2S3_SDOUT_PORT    GPIOD
+#define I2S3_SDOUT_PIN     6
 
 extern void i2s_computebufI(int32_t* i2s_inp, int32_t* i2s_outp);
 
@@ -148,7 +156,7 @@ void i2s_peripheral_init(void)  {
 void i2s_dma_init(void) {
 
     /* initialize DMA */
-    i2s_tx_dma = STM32_DMA_STREAM(STM32_SPI_SPI3_TX_DMA_STREAM);
+    i2s_tx_dma = STM32_DMA_STREAM(STM32_SPI_I2S3_TX_DMA_STREAM);
 
     uint32_t i2s_tx_dma_mode =
         STM32_DMA_CR_CHSEL(STM32_I2S3_TX_DMA_CHANNEL) |
@@ -169,7 +177,7 @@ void i2s_dma_init(void) {
     dmaStreamSetMemory1(i2s_tx_dma, i2s_buf2);
     dmaStreamSetTransactionSize(i2s_tx_dma, 64);
 
-    i2s_rx_dma = STM32_DMA_STREAM(STM32_SPI_SPI3_RX_DMA_STREAM);
+    i2s_rx_dma = STM32_DMA_STREAM(STM32_SPI_I2S3_RX_DMA_STREAM);
 
     uint32_t i2s_rx_dma_mode =
         STM32_DMA_CR_CHSEL(STM32_I2S3_RX_DMA_CHANNEL) |
