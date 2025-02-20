@@ -59,7 +59,6 @@
 
 
 extern void MY_USBH_Init(void);
-extern void BoardPalInit(void);
  
 int main(void) {
     /* copy vector table to SRAM1! */
@@ -72,7 +71,6 @@ int main(void) {
     SYSCFG->MEMRMP |= 0x03;
 
     halInit();
-    BoardPalInit();
     chSysInit();
 
 #ifdef FW_SPILINK

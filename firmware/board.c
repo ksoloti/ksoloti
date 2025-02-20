@@ -20,7 +20,7 @@
 #include "hal.h"
 #include "exceptions.h"
 #include "hal_pal_lld.h"
-#if HAL_USE_PAL || defined(__DOXYGEN__)
+
 /**
  * @brief   PAL setup.
  * @details Digital I/O ports static configuration as defined in @p board.h.
@@ -141,7 +141,7 @@ static void initgpio(stm32_gpio_t *gpiop, const stm32_gpio_setup_t *config)
 }
 
 
-void BoardPalInit(void) 
+void stm32_gpio_init(void) 
 {
   const PALConfig *config = &pal_default_config;
 
@@ -200,7 +200,6 @@ void BoardPalInit(void)
   initgpio(GPIOK, &config->PKData);
 #endif
 }
-#endif
 
 /**
  * @brief   Early initialization code.
@@ -209,6 +208,7 @@ void BoardPalInit(void)
  */
 void __early_init(void)
 {
+    stm32_gpio_init();
     exception_check_DFU();
     stm32_clock_init();
 }

@@ -99,17 +99,23 @@ BUILDDIR = flasher_build/$(PROJECT)
 CHIBIOS = ${axoloti_release}/chibios
 
 include board.mk
+
+# Licensing files.
+include $(CHIBIOS)/os/license/license.mk
 # Startup files.
-include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
+include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
 # HAL-OSAL files (optional).
 include $(CHIBIOS)/os/hal/hal.mk
 include $(CHIBIOS)/os/hal/ports/STM32/STM32F4xx/platform.mk
-include $(CHIBIOS)/os/hal/osal/rt/osal.mk
+include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
 # RTOS files (optional).
 include $(CHIBIOS)/os/rt/rt.mk
-include $(CHIBIOS)/os/rt/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
+include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # FAT stuff
-include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+# include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+# include $(CHIBIOS)/os/various/shell/shell.mk
+	
+
 	
 	
 # Define linker script file here
@@ -117,21 +123,14 @@ LDSCRIPT= STM32F427xG_flasher.ld
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
-CSRC = $(STARTUPSRC) \
-      $(PORTSRC) \
-      $(KERNSRC) \
-      $(HALSRC) \
-      $(PLATFORMSRC) \
-      $(BOARDSRC) \
-      $(CHIBIOS)/os/various/shell.c \
-      $(CHIBIOS)/os/various/memstreams.c \
-      $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
+CSRC = $(ALLCSRC) \
       ../axoloti_board.c \
       ../sdram.c \
       ../crc32.c \
       ../flash.c \
       ../watchdog.c \
       ../stm32f4xx_fmc.c \
+      board.c \
       main.c  
 
        
@@ -160,31 +159,26 @@ TCSRC =
 TCPPSRC =
 
 # List ASM source files here
-ASMSRC = $(STARTUPASM) \
-        $(PORTASM)
+ASMSRC = $(ALLASMSRC)
 
-INCDIR = ../ \
-		 $(PORTINC) $(KERNINC) $(TESTINC) \
-         $(HALINC) $(PLATFORMINC) $(BOARDINC) \
-         $(FATFSINC) \
-         $(CHIBIOS)/os/various \
-         ../STM32F4xx_HAL_Driver/Inc 
+# List ASM with preprocessor source files here.
+ASMXSRC = $(ALLXASMSRC)
+
 INCDIR = ../ \
   $(CMSIS)/Core/Include \
   $(CMSIS)/DSP/Include \
-        $(PORTINC) $(KERNINC) $(TESTINC) \
-        $(HALINC) $(PLATFORMINC) $(BOARDINC) \
-        $(FATFSINC) \
+  $(PORTINC) $(KERNINC) $(TESTINC) \
+  $(HALINC) $(PLATFORMINC) $(BOARDINC) \
   $(FATFSINC) \
-        $(OSALINC) \
+  $(OSALINC) \
   $(CHIBIOS) \
-        $(CHIBIOS)/os/various \
+  $(CHIBIOS)/os/various \
   $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC \
-        $(CHIBIOS)/os/common/ports/ARMCMx/devices/STM32F4xx \
-        $(CHIBIOS)/os/ext/CMSIS/include \
-        $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx \
-        $(CHIBIOS)/os/hal/lib/streams \
-
+  $(CHIBIOS)/os/common/ports/ARMCMx/devices/STM32F4xx \
+  $(CHIBIOS)/os/ext/CMSIS/include \
+  $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx \
+  $(CHIBIOS)/os/hal/lib/streams \
+  $(CONFDIR) $(ALLINC) \
 #
 # Project, sources and paths
 ##############################################################################
@@ -263,7 +257,6 @@ DLIBS =
 # List all user C define here, like -D_DEBUG=1
 UDEFS = \
     -DARM_MATH_CM4 \
-    -D__FPU_PRESENT \
     -DCRT1_AREAS_NUMBER=0 
 # Define ASM defines here
 UADEFS =
@@ -283,5 +276,9 @@ VPATH = .
 # End of user defines
 ##############################################################################
 
-RULESPATH = $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC
+# Set DEPDIR to location for dependencies inside build folder
+DEPDIR := $(BUILDDIR)/.dep
+
+RULESPATH = $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk
+include $(RULESPATH)/arm-none-eabi.mk
 include $(RULESPATH)/rules.mk
