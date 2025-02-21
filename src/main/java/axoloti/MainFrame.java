@@ -1520,7 +1520,18 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         TargetFirmwareID = firmwareId;
         /* If LinkfirmwareID is a valid 8-digit hex number but not equal to the new firmwareId */
         if (this.LinkFirmwareID.length() != 8) {
-            /* Patcher currently does not have a valid firmware bin to compare Core to. Disconnect. */
+            LOGGER.log( Level.WARNING, 
+                "The Patcher currently does not contain a valid binary to check the firmware against.\n"
+                + "If you are currently modifying the firmware:\n"
+                + "- Activate \'Expert Mode\' (see below).\n"
+                + "- Run \'Board > Firmware > Compile\' and make sure there are no compilation errors.\n"
+                + "\nTo activate Expert Mode:\n"
+                + "- Close the Patcher.\n"
+                + "- Go inside the Patcher folder (or on Mac: Ksoloti.app/Contents/Resources/)\n"
+                + "  and open \'ksoloti.prefs\' in a text editor.\n"
+                + "- Replace the line <ExpertMode>false</ExpertMode> with <ExpertMode>true</ExpertMode>.\n"
+                + "- Restart the Patcher.\n"
+            );
             qcmdprocessor.AppendToQueue(new QCmdDisconnect());
             ShowDisconnect();
         }
