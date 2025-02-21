@@ -1518,7 +1518,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         LinkFirmwareID = FirmwareID.getFirmwareID();
         // TargetFirmwareID = LinkFirmwareID;
         // jLabelFirmwareID.setText("Firmware ID: " + LinkFirmwareID);
-        LOGGER.log(Level.INFO, "Patcher linked to firmware CRC {0}", LinkFirmwareID);
+        LOGGER.log(Level.INFO, "Patcher linked to firmware {0}", LinkFirmwareID);
         WarnedAboutFWCRCMismatch = false;
     }
 
@@ -1541,13 +1541,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 + "- Replace the line <ExpertMode>false</ExpertMode> with <ExpertMode>true</ExpertMode>.\n"
                 + "- Restart the Patcher.\n"
             );
+            WarnedAboutFWCRCMismatch = true;
             qcmdprocessor.AppendToQueue(new QCmdDisconnect());
             ShowDisconnect();
         }
         else if (!firmwareId.equals(this.LinkFirmwareID)) {
             if (!WarnedAboutFWCRCMismatch) {
                 LOGGER.log(Level.WARNING, "Firmware version mismatch! Please update the firmware.");
-                LOGGER.log(Level.WARNING, "Hardware CRC {0} <-> Software CRC {1}", new Object[]{firmwareId, this.LinkFirmwareID});
+                LOGGER.log(Level.WARNING, "Core running {0} <-> Patcher linked to {1}", new Object[]{firmwareId, this.LinkFirmwareID});
                 WarnedAboutFWCRCMismatch = true;
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
