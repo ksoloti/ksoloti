@@ -42,7 +42,7 @@ MEMORY
     RAM        : org = 0x20000200, len = 0x0000AE00 /* 44k - first 0x200 for vector table */
     SRAM2      : org = 0x2001E000, len = 0x00002000 /* second half (8kB) of SRAM2 for DMA*/
     SRAM3      : org = 0x20020000, len = 0x00010000 /* 64 kB */
-    CCMRAMEND  : org = 0x1000C000, len = 12k        /* for stacks */
+    CCMRAMEND  : org = 0x1000C800, len = 14k        /* for stacks */
     SDRAM      : org = 0xC0000000, len = 0x02000000 /* 32MB */
 }
 

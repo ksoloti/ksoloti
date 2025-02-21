@@ -40,7 +40,7 @@
 #define SHELL_CMD_TEST_ENABLED              FALSE
 
 #define CH_CFG_SMP_MODE                     FALSE
-#define CH_CFG_USE_TIMESTAMP                TRUE
+#define CH_CFG_USE_TIMESTAMP                FALSE
 
 /*===========================================================================*/
 /**
@@ -55,7 +55,7 @@
 #define CH_CFG_ST_TIMEDELTA                 0
 #define CH_CFG_TIME_TYPES_SIZE              32
 #define CH_CFG_USE_TM                       TRUE
-#define CH_DBG_STATISTICS                   FALSE
+#define CH_DBG_STATISTICS                   TRUE
 #define CH_DBG_TRACE_MASK                   CH_DBG_TRACE_MASK_DISABLED
 #define CH_CFG_USE_MUTEXES_RECURSIVE        FALSE
 #define CH_DBG_TRACE_BUFFER_SIZE            128
@@ -560,7 +560,7 @@
  * @note    The default is @p FALSE.
  */
 #if !defined(CH_DBG_SYSTEM_STATE_CHECK) || defined(__DOXYGEN__)
-#define CH_DBG_SYSTEM_STATE_CHECK       FALSE
+#define CH_DBG_SYSTEM_STATE_CHECK       TRUE
 #endif
 
 /**
@@ -608,7 +608,7 @@
  *          @p panic_msg variable set to @p NULL.
  */
 #if !defined(CH_DBG_ENABLE_STACK_CHECK) || defined(__DOXYGEN__)
-#define CH_DBG_ENABLE_STACK_CHECK       FALSE
+#define CH_DBG_ENABLE_STACK_CHECK       TRUE
 #endif
 
 /**

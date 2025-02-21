@@ -120,7 +120,7 @@ void InitPConnection(void) {
 
     chMtxObjectInit(&LogMutex);
 
-    chThdCreateStatic(waThreadUSBDMidi, sizeof(waThreadUSBDMidi), MIDI_USB_PRIO, (void*) ThreadUSBDMidi, NULL);
+    //ARCFATAL chThdCreateStatic(waThreadUSBDMidi, sizeof(waThreadUSBDMidi), MIDI_USB_PRIO, (void*) ThreadUSBDMidi, NULL);
 }
 
 
