@@ -82,8 +82,10 @@ void wait_sai_dma_tc_flag(void) {
     }
 
     /* Once the SAI DMA TC flag has been detected, we know a definite timing point.
+     * Since the patch DSP process is triggered by the SAI TC interrupt, the I2S buffer transfer
+     * must be completed before the SAI interrupt is triggered.
      * From here we just waste the "exact" amount of time it takes to sync the
-     * I2S DMA interrupts to the SAI ones.
+     * I2S DMA interrupts to the SAI ones - in other words, it's so late it's punctual again.
      */
     while(k) {
         --k;
