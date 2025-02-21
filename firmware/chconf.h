@@ -32,12 +32,16 @@
 #define _CHCONF_H_
 
 #define _CHIBIOS_RT_CONF_
-#define _CHIBIOS_RT_CONF_VER_6_1_
+#define _CHIBIOS_RT_CONF_VER_7_0_
 #define _CHIBIOS_HAL_CONF_
-#define _CHIBIOS_HAL_CONF_VER_7_1_
+#define _CHIBIOS_HAL_CONF_VER_8_4_
 
 #define SHELL_CMD_MEM_ENABLED               FALSE
 #define SHELL_CMD_TEST_ENABLED              FALSE
+
+#define CH_CFG_SMP_MODE                     FALSE
+#define CH_CFG_USE_TIMESTAMP                TRUE
+
 /*===========================================================================*/
 /**
  * @name Kernel parameters and options
@@ -89,8 +93,15 @@
 #define CH_CFG_TRACE_HOOK(tep) {                                            \
   /* Trace code here.*/                                                     \
 }
-
-
+#define CH_CFG_OS_INSTANCE_INIT_HOOK(oip) {                                 \
+  /* Add OS instance initialization code here.*/                            \
+}
+#define CH_CFG_OS_INSTANCE_EXTRA_FIELDS                                     \
+  /* Add OS instance custom fields here.*/
+#define CH_CFG_RUNTIME_FAULTS_HOOK(mask) {                                  \
+  /* Faults handling code here.*/                                           \
+}
+  
  
 #if !defined(CH_CFG_USE_OBJ_FIFOS)
 #define CH_CFG_USE_OBJ_FIFOS                FALSE

@@ -10,7 +10,7 @@
 /
 /----------------------------------------------------------------------------*/
 #ifndef FFCONF_DEF
-#define FFCONF_DEF 86604	/* Revision ID */
+#define FFCONF_DEF 86631	/* Revision ID */
 #define FF_MAX_SS 512
 #define FF_MIN_SS 512
 #define FF_VOLUMES 1
@@ -25,6 +25,9 @@
 #define FF_FS_READONLY	0
 #define FF_USE_CHMOD	1
 
+// 0 = dos, 1 = dos/windows, 2 = linux
+#define FF_STR_VOLUME_ID 0
+#define FF_MULTI_PARTITION 0
 /*---------------------------------------------------------------------------/
 / Functions and Buffer Configurations
 /----------------------------------------------------------------------------*/

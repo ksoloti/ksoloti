@@ -65,7 +65,7 @@ static EventSource inserted_event, removed_event;
  *
  * @notapi
  */
-static void tmrfunc(void *p) {
+static void tmrfunc(struct ch_virtual_timer *vt, void *p) {
   BaseBlockDevice *bbdp = p;
 
   chSysLockFromIsr();
