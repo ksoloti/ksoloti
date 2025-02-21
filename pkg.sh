@@ -41,11 +41,11 @@ printf "$VERSION_LONG\n"
 case "$platform" in
     windows)
         #printf "\nJava build currently not supported on Windows.\n"
-        DIRECTORY="C:\Program Files\7-Zip"
+        DIRECTORY="C:/Program Files/7-Zip"
         if [ -d "$DIRECTORY" ]; then
             printf "\n$DIRECTORY found.\n"
         else
-            printf "\n$DIRECTORY does not exist. Please install 7-Zip in the standard location.\n"
+            printf "\n$DIRECTORY does not exist. Please install 7-Zip in the default location.\n"
             exit 1
         fi
     ;;
