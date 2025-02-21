@@ -65,7 +65,7 @@ OUTFILES := $(BUILDDIR)/$(PROJECT).elf \
             $(BUILDDIR)/$(PROJECT).hex \
             $(BUILDDIR)/$(PROJECT).bin \
             $(BUILDDIR)/$(PROJECT).dmp \
-            $(BUILDDIR)/$(PROJECT).list
+            # $(BUILDDIR)/$(PROJECT).list
 
 ifdef SREC
   OUTFILES += $(BUILDDIR)/$(PROJECT).srec
