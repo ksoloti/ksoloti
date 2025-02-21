@@ -346,7 +346,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         jMenuItemFlashUser.setVisible(Axoloti.isDeveloper());
         jMenuItemFCompile.setVisible(Axoloti.isDeveloper() || prefs.getExpertMode());
-        jDevSeparator.setVisible(true);
 
         if (!TestDir(HOME_DIR, true)) {
             LOGGER.log(Level.SEVERE, "Invalid home directory: {0} - Does it exist? Can it be written to?", System.getProperty(Axoloti.HOME_DIR));
@@ -710,6 +709,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemFlashDFU = new javax.swing.JMenuItem();
         jMenuItemRefreshFWID = new javax.swing.JMenuItem();
         jDevSeparator = new javax.swing.JPopupMenu.Separator();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
         jMenuItemFCompile = new javax.swing.JMenuItem();
         jMenuItemEnterDFU = new javax.swing.JMenuItem();
         jMenuItemFlashUser = new javax.swing.JMenuItem();
@@ -862,6 +864,19 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             }
         });
         jMenuBoard.add(jMenuItemFDisconnect);
+        jMenuBoard.add(jSeparator1);
+
+        
+        jMenuItemMount.setText("Enter Card Reader Mode (Disconnects Patcher)");
+        jMenuItemMount.setMnemonic('R');
+        jMenuItemMount.setDisplayedMnemonicIndex(11);
+        jMenuItemMount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemMountActionPerformed(evt);
+            }
+        });
+        jMenuBoard.add(jMenuItemMount);
+        jMenuBoard.add(jSeparator2);
 
         jMenuItemPing.setText("Ping");
         jMenuItemPing.setEnabled(false);
@@ -880,16 +895,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             }
         });
         jMenuBoard.add(jMenuItemPanic);
-
-        jMenuItemMount.setText("Enter Card Reader Mode (Disconnects Patcher)");
-        jMenuItemMount.setMnemonic('R');
-        jMenuItemMount.setDisplayedMnemonicIndex(11);
-        jMenuItemMount.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemMountActionPerformed(evt);
-            }
-        });
-        jMenuBoard.add(jMenuItemMount);
+        jMenuBoard.add(jSeparator3);
 
         jMenuFirmware.setMnemonic('F');
         jMenuFirmware.setDelay(300);
@@ -1375,6 +1381,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JButton jButtonClear;
     private javax.swing.JToggleButton jToggleButtonConnect;
     private javax.swing.JPopupMenu.Separator jDevSeparator;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
     // private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelCPUID;
     private javax.swing.JLabel jLabelFlags;
