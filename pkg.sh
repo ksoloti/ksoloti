@@ -61,19 +61,16 @@ sh ./qlean.sh
 # ----- Compile jar
 case "$platform" in
         mac)
-            ant clean
-            ant
-            ant clean
+            ant -q clean
+            ant -q
         ;;
         linux)
-            ant clean
-            ant
-            ant clean
+            ant -q clean
+            ant -q
         ;;
         windows)
-            ant clean
-            ant
-            ant clean
+            ant -q clean
+            ant -q
         ;;
 esac
 
