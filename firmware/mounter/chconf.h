@@ -38,6 +38,9 @@
 
 #define SHELL_CMD_MEM_ENABLED               FALSE
 #define SHELL_CMD_TEST_ENABLED              FALSE
+
+
+
 /*===========================================================================*/
 /**
  * @name Kernel parameters and options

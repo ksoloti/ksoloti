@@ -188,12 +188,16 @@ void __early_init(void)
     rccResetAHB1(~0);
     rccResetAHB2(~0);
     rccResetAPB1(~0);
-    rccResetAPB2(~0x10000000); // RCC_APB1RSTR_PWRRST
-    OTG_HS->GINTMSK = 0;       // disable OTG_HS interrupts!
-    extern uint32_t _vectors[0x200];  // copy vector table. Trick compiler into believing us it is 0x200 bytes long.
-
-    memcpy((char *)0x20000000, (const char *)&_vectors, 0x200);
-    SYSCFG->MEMRMP |= 0x03;    // remap SRAM1 to 0x00000000
+    NVIC->ICER[0] = 0xFFFFFFFF;
+    NVIC->ICER[1] = 0xFFFFFFFF;
+    NVIC->ICER[2] = 0xFFFFFFFF;
+    NVIC->ICER[3] = 0xFFFFFFFF;
+    NVIC->ICER[4] = 0xFFFFFFFF;
+    NVIC->ICER[5] = 0xFFFFFFFF;
+    NVIC->ICER[6] = 0xFFFFFFFF;
+    NVIC->ICER[7] = 0xFFFFFFFF;
+    rccResetAPB2(~0x10000000); //RCC_APB1RSTR_PWRRST
+    OTG_HS->GINTMSK = 0; // disable OTG_HS interrupts!
     stm32_gpio_init();
     stm32_clock_init();
 }
