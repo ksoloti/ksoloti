@@ -928,6 +928,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuFirmware.add(jMenuItemFlashDFU);
 
+        jMenuItemRefreshFWID.setMnemonic('I');
         jMenuItemRefreshFWID.setText("Refresh Firmware ID");
         jMenuItemRefreshFWID.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
