@@ -148,9 +148,9 @@
 /*===========================================================================*/
 
 /**
- * @brief   Type of a structure representing an CAN driver.
+ * @brief   Type of a CAN driver.
  */
-typedef struct CANDriver CANDriver;
+typedef struct hal_can_driver CANDriver;
 
 /**
  * @brief   Type of a transmission mailbox index.
@@ -181,14 +181,19 @@ typedef struct {
   union {
     struct {
       union {
-        uint32_t            EID:29;     /**< @brief Extended identifier.    */
+        struct {
+          uint32_t          EID:29;     /**< @brief Extended identifier.    */
+        } ext;
         struct {
           uint32_t          _R1:18;     /**< @brief Reserved for offset.    */
           uint32_t          SID:11;     /**< @brief Standard identifier.    */
+        } std;
+        struct {
+          uint32_t          _R1:29;     /**< @brief Reserved for offset.    */
           uint32_t          RTR:1;      /**< @brief Remote transmit request.*/
           uint32_t          XTD:1;      /**< @brief Extended identifier.    */
           uint32_t          ESI:1;      /**< @brief Error state indicator.  */
-        };
+        } common;
       };
       uint32_t              _R2:16;
       uint32_t              DLC:4;      /**< @brief Data length code.       */
@@ -221,27 +226,34 @@ typedef struct {
   /**
    * @brief   Frame header.
    */
-  struct {
-    union {
-      uint32_t              EID:29;     /**< @brief Extended Identifier.    */
-      struct {
-        uint32_t            _R1:18;
-        uint32_t            SID:11;     /**< @brief Standard identifier.    */
-        uint32_t            RTR:1;      /**< @brief Remote transmit request.*/
-        uint32_t            XTD:1;      /**< @brief Extended identifier.    */
-        uint32_t            ESI:1;      /**< @brief Error state indicator.  */
+  union {
+    struct {
+      union {
+        struct {
+          uint32_t          EID:29;     /**< @brief Extended identifier.    */
+        } ext;
+        struct {
+          uint32_t          _R1:18;
+          uint32_t          SID:11;     /**< @brief Standard identifier.    */
+        } std;
+        struct {
+          uint32_t          _R1:29;     /**< @brief Reserved for offset.    */
+          uint32_t          RTR:1;      /**< @brief Remote transmit request.*/
+          uint32_t          XTD:1;      /**< @brief Extended identifier.    */
+          uint32_t          ESI:1;      /**< @brief Error state indicator.  */
+        } common;
       };
-    };
-    uint16_t                RXTS:16;    /**< @brief TX time stamp.          */
-    uint8_t                 DLC:4;      /**< @brief Data length code.       */
-    uint8_t                 BRS:1;      /**< @brief Bit rate switch.        */
-    uint8_t                 FDF:1;      /**< @brief FDCAN frame format.     */
-    uint8_t                 _R2:2;
-    uint8_t                 FIDX:7;     /**< @brief Filter index.           */
-    uint8_t                 ANMF:1;     /**< @brief Accepted non-matching
+      uint32_t              RXTS:16;    /**< @brief TX time stamp.          */
+      uint32_t              DLC:4;      /**< @brief Data length code.       */
+      uint32_t              BRS:1;      /**< @brief Bit rate switch.        */
+      uint32_t              FDF:1;      /**< @brief FDCAN frame format.     */
+      uint32_t              _R2:2;
+      uint32_t              FIDX:7;     /**< @brief Filter index.           */
+      uint32_t              ANMF:1;     /**< @brief Accepted non-matching
                                                     frame.                  */
+    };
+    uint32_t                header32[2];
   };
-  uint32_t                  header32[2];
   /**
    * @brief   Frame data.
    */
@@ -275,7 +287,6 @@ typedef struct {
   };
 } CANRxStandardFilter;
 
-
 /**
  * @brief   CAN extended filter.
  * @note    Accessing the frame data as word16 or word32 is not portable
@@ -299,11 +310,14 @@ typedef struct {
   };
 } CANRxExtendedFilter;
 
-
 /**
- * @brief   Driver configuration structure.
+ * @brief   Type of a CAN configuration structure.
  */
-typedef struct {
+typedef struct hal_can_config {
+  /**
+   * @brief   Nominal bit timing and prescaler register.
+   */
+  uint32_t                  NBTP;
   /**
    * @brief   Data bit timing and prescaler register.
    */
@@ -316,12 +330,16 @@ typedef struct {
    * @brief   Test configuration register.
    */
   uint32_t                  TEST;
+  /**
+   * @brief   Global filter configuration register.
+   */
+  uint32_t                  RXGFC;
 } CANConfig;
 
 /**
  * @brief   Structure representing an CAN driver.
  */
-struct CANDriver {
+struct hal_can_driver {
   /**
    * @brief   Driver state.
    */

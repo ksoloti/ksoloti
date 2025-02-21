@@ -1,12 +1,12 @@
 /*
-    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006,2007,2008,2009,2010,2011,2012,2013,2014,
+              2015,2016,2017,2018,2019,2020,2021 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -63,12 +63,6 @@
 /* Module local functions.                                                   */
 /*===========================================================================*/
 
-#if CH_CFG_USE_MESSAGES_PRIORITY == TRUE
-#define msg_insert(tp, qp) queue_prio_insert(tp, qp)
-#else
-#define msg_insert(tp, qp) queue_insert(tp, qp)
-#endif
-
 /*===========================================================================*/
 /* Module exported functions.                                                */
 /*===========================================================================*/
@@ -85,18 +79,18 @@
  * @api
  */
 msg_t chMsgSend(thread_t *tp, msg_t msg) {
-  thread_t *ctp = currp;
+  thread_t *currtp = chThdGetSelfX();
 
   chDbgCheck(tp != NULL);
 
   chSysLock();
-  ctp->u.sentmsg = msg;
-  msg_insert(ctp, &tp->msgqueue);
+  currtp->u.sentmsg = msg;
+  __ch_msg_insert(&tp->msgqueue, currtp);
   if (tp->state == CH_STATE_WTMSG) {
     (void) chSchReadyI(tp);
   }
   chSchGoSleepS(CH_STATE_SNDMSGQ);
-  msg = ctp->u.rdymsg;
+  msg = currtp->u.rdymsg;
   chSysUnlock();
 
   return msg;
@@ -119,14 +113,15 @@ msg_t chMsgSend(thread_t *tp, msg_t msg) {
  * @sclass
  */
 thread_t *chMsgWaitS(void) {
+  thread_t *currtp = chThdGetSelfX();
   thread_t *tp;
 
   chDbgCheckClassS();
 
-  if (!chMsgIsPendingI(currp)) {
+  if (!chMsgIsPendingI(currtp)) {
     chSchGoSleepS(CH_STATE_WTMSG);
   }
-  tp = queue_fifo_remove(&currp->msgqueue);
+  tp = threadref(ch_queue_fifo_remove(&currtp->msgqueue));
   tp->state = CH_STATE_SNDMSG;
 
   return tp;
@@ -155,16 +150,17 @@ thread_t *chMsgWaitS(void) {
  * @sclass
  */
 thread_t *chMsgWaitTimeoutS(sysinterval_t timeout) {
+  thread_t *currtp = chThdGetSelfX();
   thread_t *tp;
 
   chDbgCheckClassS();
 
-  if (!chMsgIsPendingI(currp)) {
+  if (!chMsgIsPendingI(currtp)) {
     if (chSchGoSleepTimeoutS(CH_STATE_WTMSG, timeout) != MSG_OK) {
       return NULL;
     }
   }
-  tp = queue_fifo_remove(&currp->msgqueue);
+  tp = threadref(ch_queue_fifo_remove(&currtp->msgqueue));
   tp->state = CH_STATE_SNDMSG;
 
   return tp;
@@ -188,10 +184,11 @@ thread_t *chMsgWaitTimeoutS(sysinterval_t timeout) {
  * @sclass
  */
 thread_t *chMsgPollS(void) {
+  thread_t *currtp = chThdGetSelfX();
   thread_t *tp = NULL;
 
-  if (chMsgIsPendingI(currp)) {
-    tp = queue_fifo_remove(&currp->msgqueue);
+  if (chMsgIsPendingI(currtp)) {
+    tp = threadref(ch_queue_fifo_remove(&currtp->msgqueue));
     tp->state = CH_STATE_SNDMSG;
   }
 

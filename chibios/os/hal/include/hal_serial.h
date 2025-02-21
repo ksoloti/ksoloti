@@ -32,15 +32,15 @@
 /*===========================================================================*/
 
 /**
- * @name    Serial status flags
+ * @name    Serial status flags (legacy)
  * @{
  */
-#define SD_PARITY_ERROR         (eventflags_t)32    /**< @brief Parity.     */
-#define SD_FRAMING_ERROR        (eventflags_t)64    /**< @brief Framing.    */
-#define SD_OVERRUN_ERROR        (eventflags_t)128   /**< @brief Overflow.   */
-#define SD_NOISE_ERROR          (eventflags_t)256   /**< @brief Line noise. */
-#define SD_BREAK_DETECTED       (eventflags_t)512   /**< @brief LIN Break.  */
-#define SD_QUEUE_FULL_ERROR     (eventflags_t)1024  /**< @brief Queue full. */
+#define SD_PARITY_ERROR         CHN_PARITY_ERROR
+#define SD_FRAMING_ERROR        CHN_FRAMING_ERROR
+#define SD_OVERRUN_ERROR        CHN_OVERRUN_ERROR
+#define SD_NOISE_ERROR          CHN_NOISE_ERROR
+#define SD_BREAK_DETECTED       CHN_BREAK_DETECTED
+#define SD_QUEUE_FULL_ERROR     CHN_BUFFER_FULL_ERROR
 /** @} */
 
 /*===========================================================================*/
@@ -94,7 +94,7 @@ typedef enum {
 /**
  * @brief   Structure representing a serial driver.
  */
-typedef struct SerialDriver SerialDriver;
+typedef struct hal_serial_driver SerialDriver;
 
 #include "hal_serial_lld.h"
 
@@ -120,7 +120,7 @@ struct SerialDriverVMT {
  * @details This class extends @p BaseAsynchronousChannel by adding physical
  *          I/O queues.
  */
-struct SerialDriver {
+struct hal_serial_driver {
   /** @brief Virtual Methods Table.*/
   const struct SerialDriverVMT *vmt;
   _serial_driver_data
@@ -195,7 +195,7 @@ struct SerialDriver {
 #define sdGetTimeout(sdp, t) iqGetTimeout(&(sdp)->iqueue, t)
 
 /**
- * @brief   Direct blocking write to a @p SerialDriver.
+ * @brief   Direct non-blocking write to a @p SerialDriver.
  * @note    This function bypasses the indirect access to the channel and
  *          writes directly to the output queue. This is faster but cannot
  *          be used to write from different channels implementations.
@@ -238,14 +238,14 @@ struct SerialDriver {
   oqWriteTimeout(&(sdp)->oqueue, b, n, TIME_IMMEDIATE)
 
 /**
- * @brief   Direct blocking read from a @p SerialDriver.
+ * @brief   Direct non-blocking read from a @p SerialDriver.
  * @note    This function bypasses the indirect access to the channel and
  *          reads directly from the input queue. This is faster but cannot
  *          be used to read from different channels implementations.
  *
  * @iclass
  */
-#define sdReadI(sdp, b, n) iqReadI(&(sdp)->iqueue, b, n, TIME_INFINITE)
+#define sdReadI(sdp, b, n) iqReadI(&(sdp)->iqueue, b, n)
 
 /**
  * @brief   Direct blocking read from a @p SerialDriver.
@@ -294,7 +294,7 @@ extern "C" {
 #else
   void sdObjectInit(SerialDriver *sdp);
 #endif
-  void sdStart(SerialDriver *sdp, const SerialConfig *config);
+  msg_t sdStart(SerialDriver *sdp, const SerialConfig *config);
   void sdStop(SerialDriver *sdp);
   void sdIncomingDataI(SerialDriver *sdp, uint8_t b);
   msg_t sdRequestDataI(SerialDriver *sdp);

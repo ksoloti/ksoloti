@@ -101,17 +101,16 @@ static msg_t _ctl(void *ip, unsigned int operation, void *arg) {
     osalDbgCheck(arg == NULL);
     break;
   case CHN_CTL_INVALID:
-    osalDbgAssert(false, "invalid CTL operation");
-    break;
+    return HAL_RET_UNKNOWN_CTL;
   default:
 #if defined(SD_LLD_IMPLEMENTS_CTL)
     /* Delegating to the LLD if supported.*/
     return sd_lld_control(sdp, operation, arg);
 #else
-    break;
+    return HAL_RET_UNKNOWN_CTL;
 #endif
   }
-  return MSG_OK;
+  return HAL_RET_SUCCESS;
 }
 
 static const struct SerialDriverVMT vmt = {
@@ -179,19 +178,35 @@ void sdObjectInit(SerialDriver *sdp) {
  * @param[in] config    the architecture-dependent serial driver configuration.
  *                      If this parameter is set to @p NULL then a default
  *                      configuration is used.
+ * @return              The operation status.
  *
  * @api
  */
-void sdStart(SerialDriver *sdp, const SerialConfig *config) {
+msg_t sdStart(SerialDriver *sdp, const SerialConfig *config) {
+  msg_t msg;
 
   osalDbgCheck(sdp != NULL);
 
   osalSysLock();
   osalDbgAssert((sdp->state == SD_STOP) || (sdp->state == SD_READY),
                 "invalid state");
+
+#if defined(SD_LLD_ENHANCED_API)
+  msg = sd_lld_start(sdp, config);
+#else
   sd_lld_start(sdp, config);
-  sdp->state = SD_READY;
+  msg = HAL_RET_SUCCESS;
+#endif
+  if (msg == HAL_RET_SUCCESS) {
+    sdp->state = SD_READY;
+  }
+  else {
+    sdp->state = SD_STOP;
+  }
+
   osalSysUnlock();
+
+  return msg;
 }
 
 /**

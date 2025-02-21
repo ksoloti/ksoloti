@@ -15,7 +15,7 @@
 */
 
 /**
- * @file    crt0.S
+ * @file    ARMCMx/compilers/GCC/crt0.S
  * @brief   Generic ARM startup file.
  *
  * @addtogroup ARM_GCC_STARTUP
@@ -78,6 +78,8 @@ Reset_Handler:
                 mov     sp, r0
 //                ldr     r1, =__sys_stack_size__
 //                sub     r0, r0, r1
+                /* Core initialization.*/
+                bl      __cpu_init
                 /*
                  * Early initialization.
                  */
@@ -109,7 +111,6 @@ bssloop:
                 /*
                  * Late initialization.
                  */
-                bl      __core_init
                 bl      __late_init
 
                 /*

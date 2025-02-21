@@ -129,9 +129,9 @@ void spi_lld_start(SPIDriver *spip) {
   if (&SPID1 == spip) {
     /* Configures the peripheral. */
     /* Note that some bits are forced:
-	   SPI interrupt disabled,
-	   SPI enabled,
-	   SPI master enabled. */
+    SPI interrupt disabled,
+    SPI enabled,
+    SPI master enabled. */
     SPCR = (spip->config->spcr & ~(SPI_CR_SPIE)) | SPI_CR_MSTR | SPI_CR_SPE;
     SPSR = spip->config->spsr;
 
@@ -206,7 +206,6 @@ void spi_lld_unselect(SPIDriver *spip) {
 
 }
 
-
 /**
  * @brief   Exchanges data on the SPI bus.
  * @details This asynchronous function starts a simultaneous transmit/receive
@@ -231,6 +230,20 @@ void spi_lld_exchange(SPIDriver *spip, size_t n, const void *txbuf, void *rxbuf)
   SPDR = (spip->txbuf ? spip->txbuf[0] : DUMMY_SPI_SEND_VALUE);
 }
 
+#if (SPI_SUPPORTS_CIRCULAR == TRUE) || defined(__DOXYGEN__)
+/**
+ * @brief   Aborts the ongoing SPI operation, if any.
+ *
+ * @param[in] spip      pointer to the @p SPIDriver object
+ *
+ * @notapi
+ */
+void spi_lld_abort(SPIDriver *spip) {
+
+  /* Stopping SPI.*/
+
+}
+#endif /* SPI_SUPPORTS_CIRCULAR == TRUE */
 
 /**
  * @brief   Exchanges one frame using a polled wait.
@@ -255,11 +268,11 @@ uint16_t spi_lld_polled_exchange(SPIDriver *spip, uint16_t frame) {
   SPCR &= ~(SPI_CR_SPIE);
 
   SPDR = frame >> 8;
-  while (!(SPSR & SPI_SR_SPIF)) ;
+  while (!(SPSR & SPI_SR_SPIF));
   spdr = SPDR << 8;
 
   SPDR = frame & 0xFF;
-  while (!(SPSR & SPI_SR_SPIF)) ;
+  while (!(SPSR & SPI_SR_SPIF));
   spdr |= SPDR;
 
   dummy = SPSR;
@@ -280,7 +293,7 @@ uint8_t spi_lld_polled_exchange(SPIDriver *spip, uint8_t frame) {
   SPCR &= ~(SPI_CR_SPIE);
 
   SPDR = frame;
-  while (!(SPSR & SPI_SR_SPIF)) ;
+  while (!(SPSR & SPI_SR_SPIF));
   spdr = SPDR;
 
   dummy = SPSR;

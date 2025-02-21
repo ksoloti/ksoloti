@@ -1,12 +1,12 @@
 /*
-    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006,2007,2008,2009,2010,2011,2012,2013,2014,
+              2015,2016,2017,2018,2019,2020,2021 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -334,6 +334,17 @@ typedef struct {
 } mfs_transaction_op_t;
 
 /**
+ * @brief   Type of an non-cacheable MFS buffer.
+ */
+typedef union mfs_nocache_buffer {
+  mfs_data_header_t       dhdr;
+  mfs_bank_header_t       bhdr;
+  uint8_t                 data8[MFS_CFG_BUFFER_SIZE];
+  uint16_t                data16[MFS_CFG_BUFFER_SIZE / sizeof (uint16_t)];
+  uint32_t                data32[MFS_CFG_BUFFER_SIZE / sizeof (uint32_t)];
+} mfs_nocache_buffer_t;
+
+/**
  * @brief   Type of an MFS instance.
  */
 typedef struct {
@@ -385,15 +396,9 @@ typedef struct {
   mfs_transaction_op_t      tr_ops[MFS_CFG_TRANSACTION_MAX];
 #endif
   /**
-   * @brief   Transient buffer.
+   * @brief   Associated non-cacheable buffer.
    */
-  union {
-    mfs_data_header_t       dhdr;
-    mfs_bank_header_t       bhdr;
-    uint8_t                 data8[MFS_CFG_BUFFER_SIZE];
-    uint16_t                data16[MFS_CFG_BUFFER_SIZE / sizeof (uint16_t)];
-    uint32_t                data32[MFS_CFG_BUFFER_SIZE / sizeof (uint32_t)];
-  } buffer;
+  mfs_nocache_buffer_t      *ncbuf;
 } MFSDriver;
 
 /*===========================================================================*/
@@ -426,7 +431,7 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif
-  void mfsObjectInit(MFSDriver *devp);
+  void mfsObjectInit(MFSDriver *devp, mfs_nocache_buffer_t *ncbuf);
   mfs_error_t mfsStart(MFSDriver *devp, const MFSConfig *config);
   void mfsStop(MFSDriver *devp);
   mfs_error_t mfsErase(MFSDriver *mfsp);

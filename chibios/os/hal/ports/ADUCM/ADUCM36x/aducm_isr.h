@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2019 Rocco Marco Guglielmi
+    ChibiOS - Copyright (C) 2006..2020 Rocco Marco Guglielmi
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -62,6 +62,14 @@
 #define ADUCM_UART0_HANDLER         Vector84
 
 #define ADUCM_UART0_NUMBER          17
+/** @} */
+
+/*
+ * Wake Up timer.
+ */
+#define ADUCM_WUT_HANDLER           Vector40
+
+#define ADUCM_WUT_NUMBER            0
 /** @} */
 
 /*===========================================================================*/

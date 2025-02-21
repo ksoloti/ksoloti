@@ -94,7 +94,22 @@ static void wspi_lld_serve_interrupt(WSPIDriver *wspip) {
      operation. Race condition hidden here.*/
   while (dmaStreamGetTransactionSize(wspip->dma) > 0U)
     ;
+
+  /* Clearing DMA interrupts here because the DMA ISR is not called on
+     transfer complete.*/
+  dmaStreamClearInterrupt(wspip->dma);
   dmaStreamDisable(wspip->dma);
+
+#if defined(STM32L471xx) || defined(STM32L475xx) ||                         \
+    defined(STM32L476xx) || defined(STM32L486xx)
+  /* Handling of errata: Extra data written in the FIFO at the end of a
+     read transfer.*/
+  if (wspip->state == WSPI_RECEIVE) {
+    while ((wspip->qspi->SR & QUADSPI_SR_BUSY) != 0U) {
+      (void) wspip->qspi->DR;
+    }
+  }
+#endif
 }
 
 /*===========================================================================*/
@@ -245,9 +260,6 @@ void wspi_lld_command(WSPIDriver *wspip, const wspi_command_t *cmdp) {
   if ((cmdp->cfg & WSPI_CFG_ADDR_MODE_MASK) != WSPI_CFG_ADDR_MODE_NONE) {
     wspip->qspi->AR  = cmdp->addr;
   }
-
-  /* Waiting for the previous operation to complete.*/
-  wspi_lld_sync(wspip);
 }
 
 /**

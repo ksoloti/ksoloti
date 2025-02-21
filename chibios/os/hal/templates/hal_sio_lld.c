@@ -74,10 +74,11 @@ void sio_lld_init(void) {
  * @brief   Configures and activates the SIO peripheral.
  *
  * @param[in] siop      pointer to the @p SIODriver object
+ * @return              The operation status.
  *
  * @notapi
  */
-void sio_lld_start(SIODriver *siop) {
+msg_t sio_lld_start(SIODriver *siop) {
 
   if (siop->state == SIO_STOP) {
     /* Enables the peripheral.*/
@@ -87,8 +88,10 @@ void sio_lld_start(SIODriver *siop) {
     }
 #endif
   }
+
   /* Configures the peripheral.*/
 
+  return HAL_RET_SUCCESS;
 }
 
 /**
@@ -113,6 +116,134 @@ void sio_lld_stop(SIODriver *siop) {
 }
 
 /**
+ * @brief   Enable flags change notification.
+ *
+ * @param[in] siop      pointer to the @p SIODriver object
+ */
+void sio_lld_update_enable_flags(SIODriver *siop) {
+
+  (void)siop;
+ }
+
+/**
+ * @brief   Get and clears SIO error event flags.
+ *
+ * @param[in] siop      pointer to the @p SIODriver object
+ * @return              The pending event flags.
+ *
+ * @notapi
+ */
+sioevents_t sio_lld_get_and_clear_errors(SIODriver *siop) {
+  sioevents_t errors = 0U;
+
+  (void)siop;
+
+  return errors;
+}
+
+/**
+ * @brief   Get and clears SIO event flags.
+ *
+ * @param[in] siop      pointer to the @p SIODriver object
+ * @return              The pending event flags.
+ *
+ * @notapi
+ */
+sioevents_t sio_lld_get_and_clear_events(SIODriver *siop) {
+  sioevents_t events = 0U;
+
+  (void)siop;
+
+  return events;
+}
+
+/**
+ * @brief   Returns the pending SIO event flags.
+ *
+ * @param[in] siop      pointer to the @p SIODriver object
+ * @return              The pending event flags.
+ *
+ * @notapi
+ */
+sioevents_t sio_lld_get_events(SIODriver *siop) {
+  sioevents_t events = 0U;
+
+  (void)siop;
+
+  return events;
+}
+
+/**
+ * @brief   Reads data from the RX FIFO.
+ * @details The function is not blocking, it writes frames until there
+ *          is space available without waiting.
+ *
+ * @param[in] siop          pointer to an @p SIODriver structure
+ * @param[in] buffer        pointer to the buffer for read frames
+ * @param[in] n             maximum number of frames to be read
+ * @return                  The number of frames copied from the buffer.
+ * @retval 0                if the TX FIFO is full.
+ */
+size_t sio_lld_read(SIODriver *siop, uint8_t *buffer, size_t n) {
+
+  (void)siop;
+  (void)buffer;
+
+  return n;
+}
+
+/**
+ * @brief   Writes data into the TX FIFO.
+ * @details The function is not blocking, it writes frames until there
+ *          is space available without waiting.
+ *
+ * @param[in] siop          pointer to an @p SIODriver structure
+ * @param[in] buffer        pointer to the buffer for read frames
+ * @param[in] n             maximum number of frames to be written
+ * @return                  The number of frames copied from the buffer.
+ * @retval 0                if the TX FIFO is full.
+ */
+size_t sio_lld_write(SIODriver *siop, const uint8_t *buffer, size_t n) {
+
+  (void)siop;
+  (void)buffer;
+
+  return n;
+}
+
+/**
+ * @brief   Returns one frame from the RX FIFO.
+ * @note    If the FIFO is empty then the returned value is unpredictable.
+ *
+ * @param[in] siop      pointer to the @p SIODriver object
+ * @return              The frame from RX FIFO.
+ *
+ * @notapi
+ */
+msg_t sio_lld_get(SIODriver *siop) {
+  msg_t msg = (msg_t)0;
+
+  (void)siop;
+
+  return msg;
+}
+
+/**
+ * @brief   Pushes one frame into the TX FIFO.
+ * @note    If the FIFO is full then the behavior is unpredictable.
+ *
+ * @param[in] siop      pointer to the @p SIODriver object
+ * @param[in] data      frame to be written
+ *
+ * @notapi
+ */
+void sio_lld_put(SIODriver *siop, uint_fast16_t data) {
+
+  (void)siop;
+  (void)data;
+}
+
+/**
  * @brief   Control operation on a serial port.
  *
  * @param[in] siop      pointer to the @p SIODriver object
@@ -133,6 +264,18 @@ msg_t sio_lld_control(SIODriver *siop, unsigned int operation, void *arg) {
   (void)arg;
 
   return MSG_OK;
+}
+
+/**
+ * @brief   Serves an UART interrupt.
+ *
+ * @param[in] siop      pointer to the @p SIODriver object
+ *
+ * @notapi
+ */
+void sio_lld_serve_interrupt(SIODriver *siop) {
+
+  (void)siop;
 }
 
 #endif /* HAL_USE_SIO == TRUE */

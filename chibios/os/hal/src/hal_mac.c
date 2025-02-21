@@ -77,10 +77,13 @@ void macObjectInit(MACDriver *macp) {
 
   macp->state  = MAC_STOP;
   macp->config = NULL;
+  macp->flags  = 0U;
+  macp->cb     = NULL;
+  macp->arg    = NULL;
   osalThreadQueueObjectInit(&macp->tdqueue);
   osalThreadQueueObjectInit(&macp->rdqueue);
 #if MAC_USE_EVENTS == TRUE
-  osalEventObjectInit(&macp->rdevent);
+  osalEventObjectInit(&macp->es);
 #endif
 }
 
@@ -89,20 +92,37 @@ void macObjectInit(MACDriver *macp) {
  *
  * @param[in] macp      pointer to the @p MACDriver object
  * @param[in] config    pointer to the @p MACConfig object
+ * @return              The operation status.
  *
  * @api
  */
-void macStart(MACDriver *macp, const MACConfig *config) {
+msg_t macStart(MACDriver *macp, const MACConfig *config) {
+  msg_t msg;
 
   osalDbgCheck((macp != NULL) && (config != NULL));
 
   osalSysLock();
   osalDbgAssert(macp->state == MAC_STOP,
                 "invalid state");
+
   macp->config = config;
+
+#if defined(MAC_LLD_ENHANCED_API)
+  msg = mac_lld_start(macp);
+#else
   mac_lld_start(macp);
-  macp->state = MAC_ACTIVE;
+  msg = HAL_RET_SUCCESS;
+#endif
+  if (msg == HAL_RET_SUCCESS) {
+    macp->state = MAC_ACTIVE;
+  }
+  else {
+    macp->state = MAC_STOP;
+  }
+
   osalSysUnlock();
+
+  return msg;
 }
 
 /**
@@ -126,6 +146,23 @@ void macStop(MACDriver *macp) {
   macp->state  = MAC_STOP;
 
   osalSysUnlock();
+}
+
+/**
+ * @brief   Get and clears SIO event flags.
+ *
+ * @param[in] macp      pointer to the @p MACDriver object
+ * @return              The pending event flags.
+ *
+ * @iclass
+ */
+eventflags_t macGetAndClearEventsI(MACDriver *macp) {
+  eventflags_t flags;
+
+  flags = macp->flags;
+  macp->flags = (eventflags_t)0;
+
+  return flags;
 }
 
 /**
@@ -157,8 +194,7 @@ msg_t macWaitTransmitDescriptor(MACDriver *macp,
 
   osalSysLock();
 
-  while (((msg = mac_lld_get_transmit_descriptor(macp, tdp)) != MSG_OK) &&
-         (timeout > (sysinterval_t)0)) {
+  while ((msg = macGetTransmitDescriptorX(macp, tdp)) != MSG_OK) {
     msg = osalThreadEnqueueTimeoutS(&macp->tdqueue, timeout);
     if (msg == MSG_TIMEOUT) {
       break;
@@ -168,21 +204,6 @@ msg_t macWaitTransmitDescriptor(MACDriver *macp,
   osalSysUnlock();
 
   return msg;
-}
-
-/**
- * @brief   Releases a transmit descriptor and starts the transmission of the
- *          enqueued data as a single frame.
- *
- * @param[in] tdp       the pointer to the @p MACTransmitDescriptor structure
- *
- * @api
- */
-void macReleaseTransmitDescriptor(MACTransmitDescriptor *tdp) {
-
-  osalDbgCheck(tdp != NULL);
-
-  mac_lld_release_transmit_descriptor(tdp);
 }
 
 /**
@@ -214,7 +235,7 @@ msg_t macWaitReceiveDescriptor(MACDriver *macp,
 
   osalSysLock();
 
-  while (((msg = mac_lld_get_receive_descriptor(macp, rdp)) != MSG_OK)) {
+  while (((msg = macGetReceiveDescriptorX(macp, rdp)) != MSG_OK)) {
     msg = osalThreadEnqueueTimeoutS(&macp->rdqueue, timeout);
     if (msg == MSG_TIMEOUT) {
       break;
@@ -224,22 +245,6 @@ msg_t macWaitReceiveDescriptor(MACDriver *macp,
   osalSysUnlock();
 
   return msg;
-}
-
-/**
- * @brief   Releases a receive descriptor.
- * @details The descriptor and its buffer are made available for more incoming
- *          frames.
- *
- * @param[in] rdp       the pointer to the @p MACReceiveDescriptor structure
- *
- * @api
- */
-void macReleaseReceiveDescriptor(MACReceiveDescriptor *rdp) {
-
-  osalDbgCheck(rdp != NULL);
-
-  mac_lld_release_receive_descriptor(rdp);
 }
 
 /**

@@ -35,7 +35,8 @@
 #error "STM32_IRQ_EXTI1921_PRIORITY not defined in mcuconf.h"
 #endif
 
-#if !OSAL_IRQ_IS_VALID_PRIORITY(STM32_IRQ_EXTI1921_PRIORITY)
+#if !defined(STM32_DISABLE_EXTI1921_HANDLER) &&                             \
+    !OSAL_IRQ_IS_VALID_PRIORITY(STM32_IRQ_EXTI1921_PRIORITY)
 #error "Invalid IRQ priority assigned to STM32_IRQ_EXTI1921_PRIORITY"
 #endif
 
@@ -86,10 +87,10 @@ OSAL_IRQ_HANDLER(STM32_EXTI1921_HANDLER) {
   (void)pr;
 
 #if defined(STM32_EXTI19_ISR)
-  STM32_EXTI16_ISR(pr, 19);
+  STM32_EXTI19_ISR(pr, 19);
 #endif
 #if defined(STM32_EXTI21_ISR)
-  STM32_EXTI16_ISR(pr, 21);
+  STM32_EXTI19_ISR(pr, 21);
 #endif
 
   OSAL_IRQ_EPILOGUE();

@@ -35,7 +35,8 @@
 #error "STM32_IRQ_EXTI1635_38_PRIORITY not defined in mcuconf.h"
 #endif
 
-#if !OSAL_IRQ_IS_VALID_PRIORITY(STM32_IRQ_EXTI1635_38_PRIORITY)
+#if !defined(STM32_DISABLE_EXTI1635_38_HANDLER) &&                          \
+    !OSAL_IRQ_IS_VALID_PRIORITY(STM32_IRQ_EXTI1635_38_PRIORITY)
 #error "Invalid IRQ priority assigned to STM32_IRQ_EXTI1635_38_PRIORITY"
 #endif
 
@@ -80,7 +81,7 @@ static inline void exti16_exti35_38_irq_deinit(void) {
  *
  * @isr
  */
-OSAL_IRQ_HANDLER(STM32_EXTI163538_HANDLER) {
+OSAL_IRQ_HANDLER(STM32_EXTI1635_38_HANDLER) {
   uint32_t pr;
 
   OSAL_IRQ_PROLOGUE();
@@ -108,10 +109,10 @@ OSAL_IRQ_HANDLER(STM32_EXTI163538_HANDLER) {
   STM32_EXTI35_ISR(pr, 35);
 #endif
 #if defined(STM32_EXTI36_ISR)
-  STM32_EXTI35_ISR(pr, 36);
+  STM32_EXTI36_ISR(pr, 36);
 #endif
 #if defined(STM32_EXTI37_ISR)
-  STM32_EXTI35_ISR(pr, 37);
+  STM32_EXTI37_ISR(pr, 37);
 #endif
 #if defined(STM32_EXTI38_ISR)
   STM32_EXTI38_ISR(pr, 38);

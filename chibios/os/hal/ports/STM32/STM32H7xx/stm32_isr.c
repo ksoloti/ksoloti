@@ -67,12 +67,17 @@
 #include "stm32_fdcan1.inc"
 #include "stm32_fdcan2.inc"
 
+#if defined(HAL_LLD_TYPE1_H)
 #include "stm32_quadspi1.inc"
+#elif defined(HAL_LLD_TYPE2_H)
+#include "stm32_octospi1.inc"
+#include "stm32_octospi2.inc"
+#endif
 
 #include "stm32_sdmmc1.inc"
 #include "stm32_sdmmc2.inc"
 
-#include <stm32_usart1.inc>
+#include "stm32_usart1.inc"
 #include "stm32_usart2.inc"
 #include "stm32_usart3.inc"
 #include "stm32_uart4.inc"
@@ -80,6 +85,8 @@
 #include "stm32_usart6.inc"
 #include "stm32_uart7.inc"
 #include "stm32_uart8.inc"
+#include "stm32_uart9.inc"
+#include "stm32_usart10.inc"
 #include "stm32_lpuart1.inc"
 
 #include "stm32_tim1.inc"
@@ -120,7 +127,12 @@ void irqInit(void) {
 
   mdma_irq_init();
 
+#if defined(HAL_LLD_TYPE1_H)
   quadspi1_irq_init();
+#elif defined(HAL_LLD_TYPE2_H)
+  octospi1_irq_init();
+  octospi2_irq_init();
+#endif
 
   sdmmc1_irq_init();
   sdmmc2_irq_init();
@@ -141,7 +153,10 @@ void irqInit(void) {
   uart5_irq_init();
   usart6_irq_init();
   uart7_irq_init();
-  uart5_irq_init();
+  uart8_irq_init();
+  uart9_irq_init();
+  usart10_irq_init();
+  lpuart1_irq_init();
 }
 
 /**
@@ -169,7 +184,12 @@ void irqDeinit(void) {
 
   mdma_irq_deinit();
 
+#if defined(HAL_LLD_TYPE1_H)
   quadspi1_irq_deinit();
+#elif defined(HAL_LLD_TYPE2_H)
+  octospi1_irq_deinit();
+  octospi2_irq_deinit();
+#endif
 
   sdmmc1_irq_deinit();
   sdmmc2_irq_deinit();
@@ -190,7 +210,10 @@ void irqDeinit(void) {
   uart5_irq_deinit();
   usart6_irq_deinit();
   uart7_irq_deinit();
-  uart5_irq_deinit();
+  uart8_irq_deinit();
+  uart9_irq_deinit();
+  usart10_irq_deinit();
+  lpuart1_irq_deinit();
 }
 
 /** @} */

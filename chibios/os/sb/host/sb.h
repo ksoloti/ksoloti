@@ -1,12 +1,12 @@
 /*
-    ChibiOS - Copyright (C) 2006..2019 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006,2007,2008,2009,2010,2011,2012,2013,2014,
+              2015,2016,2017,2018,2019,2020,2021 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,7 +19,7 @@
 
 /**
  * @file    sb/host/sb.h
- * @brief   ARM sandbox macros and structures.
+ * @brief   ARM SandBox macros and structures.
  *
  * @addtogroup ARM_SANDBOX
  * @{
@@ -35,7 +35,7 @@
 /**
  * @brief   ChibiOS/SB identification macro.
  */
-#define _CHIBIOS_SB_
+#define __CHIBIOS_SB__
 
 /**
  * @brief   Stable release flag.
@@ -49,12 +49,12 @@
 /**
  * @brief   Safety Extensions version string.
  */
-#define CH_SB_VERSION           "1.0.0"
+#define CH_SB_VERSION           "2.0.0"
 
 /**
  * @brief   Safety Extensions version major number.
  */
-#define CH_SB_MAJOR             1
+#define CH_SB_MAJOR             2
 
 /**
  * @brief   Safety Extensions version minor number.
@@ -115,6 +115,11 @@
 
 #if (SB_NUM_REGIONS < 1) || (SB_NUM_REGIONS > 4)
 #error "invalid SB_NUM_REGIONS value"
+#endif
+
+#if (PORT_SWITCHED_REGIONS_NUMBER > 0) &&                                   \
+    (PORT_SWITCHED_REGIONS_NUMBER != SB_NUM_REGIONS)
+#error "SB_NUM_REGIONS not matching PORT_SWITCHED_REGIONS_NUMBER"
 #endif
 
 /*===========================================================================*/

@@ -38,7 +38,7 @@
 /* Module exported variables.                                                */
 /*===========================================================================*/
 
-#if !defined(_CHIBIOS_NIL_) || defined(__DOXYGEN__)
+#if !defined(__CHIBIOS_NIL__) || defined(__DOXYGEN__)
 /**
  * @brief   Shell termination event source.
  */
@@ -340,7 +340,7 @@ THD_FUNCTION(shellThread, p) {
   char *lp, *cmd, *tokp, line[SHELL_MAX_LINE_LENGTH];
   char *args[SHELL_MAX_ARGUMENTS + 1];
 
-#if !defined(_CHIBIOS_NIL_)
+#if !defined(__CHIBIOS_NIL__)
   chRegSetThreadName(SHELL_THREAD_NAME);
 #endif
 
@@ -360,14 +360,14 @@ THD_FUNCTION(shellThread, p) {
 
   chprintf(chp, SHELL_NEWLINE_STR);
   chprintf(chp, "ChibiOS/RT Shell" SHELL_NEWLINE_STR);
-#if !defined(_CHIBIOS_NIL_)
+#if !defined(__CHIBIOS_NIL__)
   while (!chThdShouldTerminateX()) {
 #else
   while (true) {
 #endif
     chprintf(chp, SHELL_PROMPT_STR);
     if (shellGetLine(scfg, line, sizeof(line), shp)) {
-#if (SHELL_CMD_EXIT_ENABLED == TRUE) && !defined(_CHIBIOS_NIL_)
+#if (SHELL_CMD_EXIT_ENABLED == TRUE) && !defined(__CHIBIOS_NIL__)
       chprintf(chp, SHELL_NEWLINE_STR);
       chprintf(chp, "logout");
       break;
@@ -375,6 +375,7 @@ THD_FUNCTION(shellThread, p) {
       /* Putting a delay in order to avoid an endless loop trying to read
          an unavailable stream.*/
       osalThreadSleepMilliseconds(100);
+      continue;
 #endif
     }
     lp = parse_arguments(line, &tokp);
@@ -408,7 +409,7 @@ THD_FUNCTION(shellThread, p) {
       }
     }
   }
-#if !defined(_CHIBIOS_NIL_)
+#if !defined(__CHIBIOS_NIL__)
   shellExit(MSG_OK);
 #endif
 }
@@ -420,12 +421,12 @@ THD_FUNCTION(shellThread, p) {
  */
 void shellInit(void) {
 
-#if !defined(_CHIBIOS_NIL_)
+#if !defined(__CHIBIOS_NIL__)
   chEvtObjectInit(&shell_terminated);
 #endif
 }
 
-#if !defined(_CHIBIOS_NIL_) || defined(__DOXYGEN__)
+#if !defined(__CHIBIOS_NIL__) || defined(__DOXYGEN__)
 /**
  * @brief   Terminates the shell.
  * @note    Must be invoked from the command handlers.
@@ -527,7 +528,7 @@ bool shellGetLine(ShellConfig *scfg, char *line, unsigned size, ShellHistory *sh
       continue;
     }
 #endif
-#if (SHELL_CMD_EXIT_ENABLED == TRUE) && !defined(_CHIBIOS_NIL_)
+#if (SHELL_CMD_EXIT_ENABLED == TRUE) && !defined(__CHIBIOS_NIL__)
     if (c == 4) {
       chprintf(chp, "^D");
       return true;

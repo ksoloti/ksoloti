@@ -32,6 +32,15 @@
 /*===========================================================================*/
 
 /**
+ * @name    Possible ADC errors mask bits.
+ * @{
+ */
+#define ADC_ERR_DMAFAILURE      1U  /**< DMA operations failure.            */
+#define ADC_ERR_OVERFLOW        2U  /**< ADC overflow condition.            */
+#define ADC_ERR_AWD1            4U  /**< Watchdog triggered.                */
+/** @} */
+
+/**
  * @name    Sampling rates
  * @{
  */
@@ -44,7 +53,7 @@
 #define ADC_SMPR_SMP_55P5       5U  /**< @brief 68 cycles conversion time.  */
 #define ADC_SMPR_SMP_71P5       6U  /**< @brief 84 cycles conversion time.  */
 #define ADC_SMPR_SMP_239P5      7U  /**< @brief 252 cycles conversion time. */
-#elif defined(STM32L0XX) || defined(STM32G0XX)
+#elif defined(STM32L0XX)
 #define ADC_SMPR_SMP_1P5        0U  /**< @brief 14 cycles conversion time   */
 #define ADC_SMPR_SMP_3P5        1U  /**< @brief 16 cycles conversion time.  */
 #define ADC_SMPR_SMP_7P5        2U  /**< @brief 20 cycles conversion time.  */
@@ -79,11 +88,11 @@
  * @name    CFGR2 register configuration helpers
  * @{
  */
-#define STM32_ADC_CKMODE_MASK           (3U << 30U)
-#define STM32_ADC_CKMODE_ADCCLK         (0U << 30U)
-#define STM32_ADC_CKMODE_PCLK_DIV2      (1U << 30U)
-#define STM32_ADC_CKMODE_PCLK_DIV4      (2U << 30U)
-#define STM32_ADC_CKMODE_PCLK           (3U << 30U)
+#define ADC_CFGR2_CKMODE_MASK           (3U << 30U)
+#define ADC_CFGR2_CKMODE_ADCCLK         (0U << 30U)
+#define ADC_CFGR2_CKMODE_PCLK_DIV2      (1U << 30U)
+#define ADC_CFGR2_CKMODE_PCLK_DIV4      (2U << 30U)
+#define ADC_CFGR2_CKMODE_PCLK           (3U << 30U)
 
 #if (STM32_ADC_SUPPORTS_OVERSAMPLING == TRUE) || defined(__DOXYGEN__)
 #define ADC_CFGR2_OVSR_MASK             (7U << 2U)
@@ -127,10 +136,10 @@
 #endif
 
 /**
- * @brief   ADC1 clock source selection.
+ * @brief   ADC1 CRFG2 initialization.
  */
-#if !defined(STM32_ADC_ADC1_CKMODE) || defined(__DOXYGEN__)
-#define STM32_ADC_ADC1_CKMODE               STM32_ADC_CKMODE_ADCCLK
+#if !defined(STM32_ADC_ADC1_CFGR2) || defined(__DOXYGEN__)
+#define STM32_ADC_ADC1_CFGR2               ADC_CFGR2_CKMODE_ADCCLK
 #endif
 
 /**
@@ -172,12 +181,11 @@
 /*===========================================================================*/
 
 /* Supported devices checks.*/
-#if !defined(STM32F0XX) && !defined(STM32L0XX) && !defined(STM32G0XX)
-#error "ADCv1 only supports F0, L0 and G0 STM32 devices"
+#if !defined(STM32F0XX) && !defined(STM32L0XX)
+#error "ADCv1 only supports F0 and L0 STM32 devices"
 #endif
 
-#if defined(STM32L0XX) || defined(STM32G0XX) ||                             \
-    defined(__DOXYGEN__)
+#if defined(STM32L0XX) || defined(__DOXYGEN__)
 #define STM32_ADCV1_OVERSAMPLING            TRUE
 #else
 #define STM32_ADCV1_OVERSAMPLING            FALSE
@@ -250,7 +258,9 @@
 
 /* ADC clock source checks.*/
 #if STM32_ADC_SUPPORTS_PRESCALER == TRUE
-#if STM32_ADC_PRESCALER_VALUE == 2
+#if STM32_ADC_PRESCALER_VALUE == 1
+#define STM32_ADC_PRESC                     0U
+#elif STM32_ADC_PRESCALER_VALUE == 2
 #define STM32_ADC_PRESC                     1U
 #elif STM32_ADC_PRESCALER_VALUE == 4
 #define STM32_ADC_PRESC                     2U
@@ -296,15 +306,9 @@ typedef uint16_t adcsample_t;
 typedef uint16_t adc_channels_num_t;
 
 /**
- * @brief   Possible ADC failure causes.
- * @note    Error codes are architecture dependent and should not relied
- *          upon.
+ * @brief   Type of an ADC error mask.
  */
-typedef enum {
-  ADC_ERR_DMAFAILURE = 0,                   /**< DMA operations failure.    */
-  ADC_ERR_OVERFLOW = 1,                     /**< ADC overflow condition.    */
-  ADC_ERR_AWD = 2                           /**< Analog watchdog triggered. */
-} adcerror_t;
+typedef uint32_t adcerror_t;
 
 /*===========================================================================*/
 /* Driver macros.                                                            */
@@ -331,28 +335,6 @@ typedef enum {
 /**
  * @brief   Low level fields of the ADC configuration structure.
  */
-#if (STM32_ADC_SUPPORTS_OVERSAMPLING == TRUE) || defined(__DOXYGEN__)
-#define adc_lld_configuration_group_fields                                  \
-  /* ADC CFGR1 register initialization data.                                \
-     NOTE: The bits DMAEN and DMACFG are enforced internally                \
-           to the driver, keep them to zero.                                \
-     NOTE: The bits @p ADC_CFGR1_CONT or @p ADC_CFGR1_DISCEN must be        \
-           specified in continuous more or if the buffer depth is           \
-           greater than one.*/                                              \
-  uint32_t                  cfgr1;                                          \
-  /* ADC CFGR2 register initialization data.                                \
-     NOTE: CKMODE bits must not be specified in this field and left to      \
-           zero.*/                                                          \
-  uint32_t                  cfgr2;                                          \
-  /* ADC TR register initialization data.*/                                 \
-  uint32_t                  tr;                                             \
-  /* ADC SMPR register initialization data.*/                               \
-  uint32_t                  smpr;                                           \
-  /* ADC CHSELR register initialization data.                               \
-     NOTE: The number of bits at logic level one in this register must      \
-           be equal to the number in the @p num_channels field.*/           \
-  uint32_t                  chselr
-#else
 #define adc_lld_configuration_group_fields                                  \
   /* ADC CFGR1 register initialization data.                                \
      NOTE: The bits DMAEN and DMACFG are enforced internally                \
@@ -369,7 +351,6 @@ typedef enum {
      NOTE: The number of bits at logic level one in this register must      \
            be equal to the number in the @p num_channels field.*/           \
   uint32_t                  chselr
-#endif
 
 /**
  * @brief   Changes the value of the ADC CCR register.

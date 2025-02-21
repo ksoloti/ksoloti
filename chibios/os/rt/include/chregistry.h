@@ -1,12 +1,12 @@
 /*
-    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006,2007,2008,2009,2010,2011,2012,2013,2014,
+              2015,2016,2017,2018,2019,2020,2021 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -66,8 +66,25 @@ typedef struct {
   uint8_t   off_state;              /**< @brief Offset of @p state field.   */
   uint8_t   off_flags;              /**< @brief Offset of @p flags field.   */
   uint8_t   off_refs;               /**< @brief Offset of @p refs field.    */
-  uint8_t   off_preempt;            /**< @brief Offset of @p preempt field. */
+  uint8_t   off_preempt;            /**< @brief Offset of @p ticks field.   */
   uint8_t   off_time;               /**< @brief Offset of @p time field.    */
+  uint8_t   off_reserved[4];
+  uint8_t   intctxsize;             /**< @brief Size of a @p port_intctx.   */
+  uint8_t   intervalsize;           /**< @brief Size of a @p sysinterval_t. */
+  uint8_t   instancesnum;           /**< @brief Number of instances.        */
+  uint8_t   off_sys_state;          /**< @brief Offset of @p state field.   */
+  uint8_t   off_sys_instances;      /**< @brief Offset of @p instances array
+                                                field.                      */
+  uint8_t   off_sys_reglist;        /**< @brief Offset of @p reglist field. */
+  uint8_t   off_sys_rfcu;           /**< @brief Offset of @p rfcu field.    */
+  uint8_t   off_sys_reserved[4];
+  uint8_t   off_inst_rlist_current; /**< @brief Offset of @p rlist.current
+                                                field.                      */
+  uint8_t   off_inst_rlist;         /**< @brief Offset of @p rlist field.   */
+  uint8_t   off_inst_vtlist;        /**< @brief Offset of @p vtlist field.  */
+  uint8_t   off_inst_reglist;       /**< @brief Offset of @p reglist field. */
+  uint8_t   off_inst_core_id;       /**< @brief Offset of @p core_id field. */
+  uint8_t   off_inst_rfcu;          /**< @brief Offset of @p rfcu field.    */
 } chdebug_t;
 
 /*===========================================================================*/
@@ -75,28 +92,30 @@ typedef struct {
 /*===========================================================================*/
 
 /**
+ * @brief   Access to the registry list header.
+ */
+#if (CH_CFG_SMP_MODE == TRUE) || defined(__DOXYGEN__)
+#define REG_HEADER(oip) (&ch_system.reglist.queue)
+#else
+#define REG_HEADER(oip) (&(oip)->reglist.queue)
+#endif
+
+/**
  * @brief   Removes a thread from the registry list.
  * @note    This macro is not meant for use in application code.
  *
  * @param[in] tp        thread to remove from the registry
  */
-#define REG_REMOVE(tp) {                                                    \
-  (tp)->older->newer = (tp)->newer;                                         \
-  (tp)->newer->older = (tp)->older;                                         \
-}
+#define REG_REMOVE(tp) (void) ch_queue_dequeue(&(tp)->rqueue)
 
 /**
  * @brief   Adds a thread to the registry list.
  * @note    This macro is not meant for use in application code.
  *
+ * @param[in] oip       pointer to the OS instance
  * @param[in] tp        thread to add to the registry
  */
-#define REG_INSERT(tp) {                                                    \
-  (tp)->newer = (thread_t *)&ch.rlist;                                      \
-  (tp)->older = ch.rlist.older;                                           \
-  (tp)->older->newer = (tp);                                                \
-  ch.rlist.older = (tp);                                                  \
-}
+#define REG_INSERT(oip, tp) ch_queue_insert(REG_HEADER(oip), &(tp)->rqueue)
 
 /*===========================================================================*/
 /* External declarations.                                                    */
@@ -122,6 +141,19 @@ extern "C" {
 /*===========================================================================*/
 
 /**
+ * @brief   Initializes a registry.
+ * @note    Internal use only.
+ *
+ * @param[out] rp       pointer to a @p registry_t structure
+ *
+ * @init
+ */
+static inline void __reg_object_init(registry_t *rp) {
+
+  ch_queue_init(&rp->queue);
+}
+
+/**
  * @brief   Sets the current thread name.
  * @pre     This function only stores the pointer to the name if the option
  *          @p CH_CFG_USE_REGISTRY is enabled else no action is performed.
@@ -133,7 +165,7 @@ extern "C" {
 static inline void chRegSetThreadName(const char *name) {
 
 #if CH_CFG_USE_REGISTRY == TRUE
-  ch.rlist.current->name = name;
+  __sch_get_currthread()->name = name;
 #else
   (void)name;
 #endif

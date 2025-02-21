@@ -1,12 +1,12 @@
 /*
-    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006,2007,2008,2009,2010,2011,2012,2013,2014,
+              2015,2016,2017,2018,2019,2020,2021 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,7 +39,7 @@
 /**
  * @brief   ChibiOS/NIL identification macro.
  */
-#define _CHIBIOS_NIL_
+#define __CHIBIOS_NIL__
 
 /**
  * @brief   Stable release flag.
@@ -53,7 +53,7 @@
 /**
  * @brief   Kernel version string.
  */
-#define CH_KERNEL_VERSION       "4.0.0"
+#define CH_KERNEL_VERSION       "4.1.2"
 
 /**
  * @brief   Kernel version major number.
@@ -63,23 +63,24 @@
 /**
  * @brief   Kernel version minor number.
  */
-#define CH_KERNEL_MINOR         0
+#define CH_KERNEL_MINOR         1
 
 /**
  * @brief   Kernel version patch number.
  */
-#define CH_KERNEL_PATCH         0
+#define CH_KERNEL_PATCH         2
 /** @} */
 
 /**
  * @name    Constants for configuration options
+ * @{
  */
 /**
  * @brief   Generic 'false' preprocessor boolean constant.
  * @note    It is meant to be used in configuration files as switch.
  */
 #if !defined(FALSE) || defined(__DOXYGEN__)
-#define FALSE               0
+#define FALSE                   0
 #endif
 
 /**
@@ -87,7 +88,7 @@
  * @note    It is meant to be used in configuration files as switch.
  */
 #if !defined(TRUE) || defined(__DOXYGEN__)
-#define TRUE                1
+#define TRUE                    1
 #endif
 /** @} */
 
@@ -166,6 +167,13 @@
 #define CH_STATE_NAMES                                                      \
   "WTSTART", "READY", "SLEEPING", "SUSPENDED", "WTEXIT", "WTQUEUE",         \
   "WTOREVT", "WTANDEVT", "SNDMSGQ", "SNDMSG", "WTMSG", "FINAL"
+/** @} */
+
+/**
+ * @name    RT options not existing in NIL
+ * @{
+ */
+#define CH_CFG_USE_REGISTRY         FALSE
 /** @} */
 
 /*===========================================================================*/
@@ -370,6 +378,48 @@
 /* Module data structures and types.                                         */
 /*===========================================================================*/
 
+#if defined(PORT_DOES_NOT_PROVIDE_TYPES) || defined(__DOXYGEN__)
+/**
+ * @name    Kernel types
+ * @{
+ */
+typedef port_rtcnt_t    rtcnt_t;            /**< Realtime counter.          */
+typedef port_syssts_t   syssts_t;           /**< System status word.        */
+typedef port_stkalign_t stkalign_t;         /**< Stack alignment type.      */
+
+#if (PORT_ARCH_REGISTERS_WIDTH == 32) || defined(__DOXYGEN__)
+typedef uint8_t         tstate_t;           /**< Thread state.              */
+typedef uint32_t        tprio_t;            /**< Thread priority.           */
+typedef int32_t         msg_t;              /**< Inter-thread message.      */
+typedef int32_t         eventid_t;          /**< Numeric event identifier.  */
+typedef uint32_t        eventmask_t;        /**< Mask of event identifiers. */
+typedef uint32_t        eventflags_t;       /**< Mask of event flags.       */
+typedef int32_t         cnt_t;              /**< Generic signed counter.    */
+typedef uint32_t        ucnt_t;             /**< Generic unsigned counter.  */
+#elif PORT_ARCH_REGISTERS_WIDTH == 16
+typedef uint8_t         tstate_t;           /**< Thread state.              */
+typedef uint16_t        tprio_t;            /**< Thread priority.           */
+typedef int16_t         msg_t;              /**< Inter-thread message.      */
+typedef int16_t         eventid_t;          /**< Numeric event identifier.  */
+typedef uint16_t        eventmask_t;        /**< Mask of event identifiers. */
+typedef uint16_t        eventflags_t;       /**< Mask of event flags.       */
+typedef int16_t         cnt_t;              /**< Generic signed counter.    */
+typedef uint16_t        ucnt_t;             /**< Generic unsigned counter.  */
+#elif PORT_ARCH_REGISTERS_WIDTH == 8
+typedef uint8_t         tstate_t;           /**< Thread state.              */
+typedef uint8_t         tprio_t;            /**< Thread priority.           */
+typedef int16_t         msg_t;              /**< Inter-thread message.      */
+typedef int8_t          eventid_t;          /**< Numeric event identifier.  */
+typedef uint8_t         eventmask_t;        /**< Mask of event identifiers. */
+typedef uint8_t         eventflags_t;       /**< Mask of event flags.       */
+typedef int8_t          cnt_t;              /**< Generic signed counter.    */
+typedef uint8_t         ucnt_t;             /**< Generic unsigned counter.  */
+#else
+#error "unsupported PORT_ARCH_REGISTERS_WIDTH value"
+#endif
+/** @} */
+#endif
+
 #if (CH_CFG_ST_RESOLUTION == 32) || defined(__DOXYGEN__)
 /**
  * @brief   Type of system time.
@@ -399,7 +449,7 @@ typedef uint32_t time_conv_t;
 /**
  * @brief   Type of a structure representing the system.
  */
-typedef struct nil_system nil_system_t;
+typedef struct nil_os_instance os_instance_t;
 
 /**
  * @brief Thread function.
@@ -469,7 +519,7 @@ struct nil_thread {
   union {
     msg_t               msg;        /**< @brief Wake-up/exit message.       */
     void                *p;         /**< @brief Generic pointer.            */
-    nil_system_t        *nsp;       /**< @brief Pointer to nil base struct. */
+    os_instance_t       *nsp;       /**< @brief Pointer to nil base struct. */
     thread_reference_t  *trp;       /**< @brief Pointer to thread reference.*/
     threads_queue_t     *tqp;       /**< @brief Pointer to thread queue.    */
     thread_t            *tp;        /**< @brief Pointer to thread.          */
@@ -500,7 +550,7 @@ struct nil_thread {
  * @note    This structure contain all the data areas used by the OS except
  *          stacks.
  */
-struct nil_system {
+struct nil_os_instance {
   /**
    * @brief   Pointer to the running thread.
    */
@@ -558,8 +608,8 @@ struct nil_system {
 /*===========================================================================*/
 
 #if CH_DBG_SYSTEM_STATE_CHECK == TRUE
-#define _dbg_enter_lock() (nil.lock_cnt = (cnt_t)1)
-#define _dbg_leave_lock() (nil.lock_cnt = (cnt_t)0)
+#define __dbg_enter_lock() (nil.lock_cnt = (cnt_t)1)
+#define __dbg_leave_lock() (nil.lock_cnt = (cnt_t)0)
 #endif
 
 /**
@@ -607,6 +657,7 @@ struct nil_system {
 
 /**
  * @name    Memory alignment support macros
+ * @{
  */
 /**
  * @brief   Alignment mask constant.
@@ -652,6 +703,7 @@ struct nil_system {
 
 /**
  * @name    Working Areas
+ * @{
  */
 /**
  * @brief   Calculates the total Working Area size.
@@ -691,6 +743,7 @@ struct nil_system {
 
 /**
  * @name    Threads abstraction macros
+ * @{
  */
 /**
  * @brief   Thread declaration macro.
@@ -702,6 +755,7 @@ struct nil_system {
 
 /**
  * @name    ISRs abstraction macros
+ * @{
  */
 /**
  * @brief   Priority level validation macro.
@@ -748,7 +802,7 @@ struct nil_system {
  */
 #define CH_IRQ_PROLOGUE()                                                   \
   PORT_IRQ_PROLOGUE();                                                      \
-  _dbg_check_enter_isr()
+  __dbg_check_enter_isr()
 
 /**
  * @brief   IRQ handler exit code.
@@ -757,7 +811,7 @@ struct nil_system {
  * @special
  */
 #define CH_IRQ_EPILOGUE()                                                   \
-  _dbg_check_leave_isr();                                                   \
+  __dbg_check_leave_isr();                                                  \
   PORT_IRQ_EPILOGUE()
 
 /**
@@ -772,6 +826,7 @@ struct nil_system {
 
 /**
  * @name    Fast ISRs abstraction macros
+ * @{
  */
 /**
  * @brief   Standard fast IRQ handler declaration.
@@ -890,13 +945,14 @@ struct nil_system {
  * @api
  */
 #define TIME_I2US(interval)                                                 \
-    (time_msecs_t)((((time_conv_t)(interval) * (time_conv_t)1000000) +      \
+    (time_usecs_t)((((time_conv_t)(interval) * (time_conv_t)1000000) +      \
                     (time_conv_t)CH_CFG_ST_FREQUENCY - (time_conv_t)1) /    \
                    (time_conv_t)CH_CFG_ST_FREQUENCY)
 /** @} */
 
 /**
  * @name    Threads queues
+ * @{
  */
 /**
  * @brief   Data part of a static threads queue object initializer.
@@ -905,7 +961,7 @@ struct nil_system {
  *
  * @param[in] name      the name of the threads queue variable
  */
-#define _THREADS_QUEUE_DATA(name) {(cnt_t)0}
+#define __THREADS_QUEUE_DATA(name) {(cnt_t)0}
 
 /**
  * @brief   Static threads queue object initializer.
@@ -914,35 +970,8 @@ struct nil_system {
  *
  * @param[in] name      the name of the threads queue variable
  */
-#define _THREADS_QUEUE_DECL(name)                                           \
-  threads_queue_t name = _THREADS_QUEUE_DATA(name)
-/** @} */
-
-/**
- * @name    Semaphores macros
- * @{
- */
-/**
- * @brief   Data part of a static semaphore initializer.
- * @details This macro should be used when statically initializing a semaphore
- *          that is part of a bigger structure.
- *
- * @param[in] name      the name of the semaphore variable
- * @param[in] n         the counter initial value, this value must be
- *                      non-negative
- */
-#define _SEMAPHORE_DATA(name, n) {n}
-
-/**
- * @brief   Static semaphore initializer.
- * @details Statically initialized semaphores require no explicit
- *          initialization using @p chSemInit().
- *
- * @param[in] name      the name of the semaphore variable
- * @param[in] n         the counter initial value, this value must be
- *                      non-negative
- */
-#define SEMAPHORE_DECL(name, n) semaphore_t name = _SEMAPHORE_DATA(name, n)
+#define THREADS_QUEUE_DECL(name)                                            \
+  threads_queue_t name = __THREADS_QUEUE_DATA(name)
 /** @} */
 
 /**
@@ -973,7 +1002,7 @@ struct nil_system {
  */
 #define chSysDisable() {                                                    \
   port_disable();                                                           \
-  _dbg_check_disable();                                                     \
+  __dbg_check_disable();                                                    \
 }
 
 /**
@@ -989,7 +1018,7 @@ struct nil_system {
  */
 #define chSysSuspend() {                                                    \
   port_suspend();                                                           \
-  _dbg_check_suspend();                                                     \
+  __dbg_check_suspend();                                                    \
 }
 
 /**
@@ -1002,7 +1031,7 @@ struct nil_system {
  * @special
  */
 #define chSysEnable() {                                                     \
-  _dbg_check_enable();                                                      \
+  __dbg_check_enable();                                                     \
   port_enable();                                                            \
 }
 
@@ -1013,7 +1042,7 @@ struct nil_system {
  */
 #define chSysLock() {                                                       \
   port_lock();                                                              \
-  _dbg_check_lock();                                                        \
+  __dbg_check_lock();                                                       \
 }
 
 /**
@@ -1022,7 +1051,7 @@ struct nil_system {
  * @special
  */
 #define chSysUnlock() {                                                     \
-  _dbg_check_unlock();                                                      \
+  __dbg_check_unlock();                                                     \
   port_unlock();                                                            \
 }
 
@@ -1040,7 +1069,7 @@ struct nil_system {
  */
 #define chSysLockFromISR() {                                                \
   port_lock_from_isr();                                                     \
-  _dbg_check_lock_from_isr();                                               \
+  __dbg_check_lock_from_isr();                                              \
 }
 
 /**
@@ -1057,7 +1086,7 @@ struct nil_system {
  * @special
  */
 #define chSysUnlockFromISR() {                                              \
-  _dbg_check_unlock_from_isr();                                             \
+  __dbg_check_unlock_from_isr();                                            \
   port_unlock_from_isr();                                                   \
 }
 
@@ -1329,17 +1358,17 @@ struct nil_system {
 
 /* Empty macros if the state checker is not enabled.*/
 #if CH_DBG_SYSTEM_STATE_CHECK == FALSE
-#define _dbg_enter_lock()
-#define _dbg_leave_lock()
-#define _dbg_check_disable()
-#define _dbg_check_suspend()
-#define _dbg_check_enable()
-#define _dbg_check_lock()
-#define _dbg_check_unlock()
-#define _dbg_check_lock_from_isr()
-#define _dbg_check_unlock_from_isr()
-#define _dbg_check_enter_isr()
-#define _dbg_check_leave_isr()
+#define __dbg_enter_lock()
+#define __dbg_leave_lock()
+#define __dbg_check_disable()
+#define __dbg_check_suspend()
+#define __dbg_check_enable()
+#define __dbg_check_lock()
+#define __dbg_check_unlock()
+#define __dbg_check_lock_from_isr()
+#define __dbg_check_unlock_from_isr()
+#define __dbg_check_enter_isr()
+#define __dbg_check_leave_isr()
 #define chDbgCheckClassI()
 #define chDbgCheckClassS()
 #endif
@@ -1352,7 +1381,7 @@ struct nil_system {
 #if (CH_DBG_ENABLE_STACK_CHECK == TRUE) || defined(__DOXYGEN__)
 extern stkalign_t __main_thread_stack_base__, __main_thread_stack_end__;
 #endif
-extern nil_system_t nil;
+extern os_instance_t nil;
 extern const thread_descriptor_t nil_thd_configs[];
 #endif
 
@@ -1372,7 +1401,7 @@ extern "C" {
   void chSysRestoreStatusX(syssts_t sts);
   thread_t *chSchReadyI(thread_t *tp, msg_t msg);
   bool chSchIsPreemptionRequired(void);
-  void chSchDoReschedule(void);
+  void chSchDoPreemption(void);
   void chSchRescheduleS(void);
   msg_t chSchGoSleepTimeoutS(tstate_t newstate, sysinterval_t timeout);
   bool chTimeIsInRangeX(systime_t time, systime_t start, systime_t end);
@@ -1392,15 +1421,15 @@ extern "C" {
   void chThdDequeueNextI(threads_queue_t *tqp, msg_t msg);
   void chThdDequeueAllI(threads_queue_t *tqp, msg_t msg);
 #if CH_DBG_SYSTEM_STATE_CHECK == TRUE
-  void _dbg_check_disable(void);
-  void _dbg_check_suspend(void);
-  void _dbg_check_enable(void);
-  void _dbg_check_lock(void);
-  void _dbg_check_unlock(void);
-  void _dbg_check_lock_from_isr(void);
-  void _dbg_check_unlock_from_isr(void);
-  void _dbg_check_enter_isr(void);
-  void _dbg_check_leave_isr(void);
+  void __dbg_check_disable(void);
+  void __dbg_check_suspend(void);
+  void __dbg_check_enable(void);
+  void __dbg_check_lock(void);
+  void __dbg_check_unlock(void);
+  void __dbg_check_lock_from_isr(void);
+  void __dbg_check_unlock_from_isr(void);
+  void __dbg_check_enter_isr(void);
+  void __dbg_check_leave_isr(void);
   void chDbgCheckClassI(void);
   void chDbgCheckClassS(void);
 #endif

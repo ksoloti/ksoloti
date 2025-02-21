@@ -55,7 +55,7 @@
 /**
  * @brief   Size of one block data, always 128-bits (16 bytes).
  */
-#define AES_BLOCK_SIZE	16
+#define AES_BLOCK_SIZE  16
 
 /*==========================================================================*/
 /* Driver pre-compile time settings.                                        */
@@ -65,6 +65,7 @@
  * @name    AVR configuration options
  * @{
  */
+
 /**
  * @brief   CRY1 driver enable switch.
  * @details If set to @p TRUE the support for CRY1 is included.
@@ -98,8 +99,8 @@ typedef struct CRYDriver CRYDriver;
  * @note    It could be empty on some architectures.
  */
 typedef struct {
-  bool                      autof;  // Auto start feature
-  bool                      xorf;   // XOR feature
+  bool                      autof;  /* Auto start feature.  */
+  bool                      xorf;   /* XOR feature.         */
 } CRYConfig;
 
 /**
@@ -152,18 +153,27 @@ extern "C" {
   void cry_lld_init(void);
   void cry_lld_start(CRYDriver *cryp);
   void cry_lld_stop(CRYDriver *cryp);
-  cryerror_t cry_lld_loadkey(CRYDriver *cryp,
-                             cryalgorithm_t algorithm,
-                             size_t size,
-                             const uint8_t *keyp);
+#if (CRY_LLD_SUPPORTS_AES == TRUE) ||                                       \
+    (CRY_LLD_SUPPORTS_AES_ECB == TRUE) ||                                   \
+    (CRY_LLD_SUPPORTS_AES_CBC == TRUE) ||                                   \
+    (CRY_LLD_SUPPORTS_AES_CFB == TRUE) ||                                   \
+    (CRY_LLD_SUPPORTS_AES_CTR == TRUE) ||                                   \
+    (CRY_LLD_SUPPORTS_AES_GCM == TRUE) ||                                   \
+    defined(__DOXYGEN__)
+  cryerror_t cry_lld_aes_loadkey(CRYDriver *cryp,
+                                 size_t size,
+                                 const uint8_t *keyp);
+#endif
+#if (CRY_LLD_SUPPORTS_AES == TRUE) || defined(__DOXYGEN__)
   cryerror_t cry_lld_encrypt_AES(CRYDriver *cryp,
                                  crykey_t key_id,
-                                 const uint8_t *src,
-                                 uint8_t *dest);
+                                 const uint8_t *in,
+                                 uint8_t *outi);
   cryerror_t cry_lld_decrypt_AES(CRYDriver *cryp,
                                  crykey_t key_id,
-                                 const uint8_t *src,
-                                 uint8_t *dest);
+                                 const uint8_t *in,
+                                 uint8_t *out);
+#endif
 
 #ifdef __cplusplus
 }

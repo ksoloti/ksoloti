@@ -1,12 +1,12 @@
 /*
-    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006,2007,2008,2009,2010,2011,2012,2013,2014,
+              2015,2016,2017,2018,2019,2020,2021 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -142,16 +142,6 @@
  */
 #if !defined(PORT_INT_REQUIRED_STACK) || defined(__DOXYGEN__)
 #define PORT_INT_REQUIRED_STACK         256
-#endif
-
-/**
- * @brief   Enables an alternative timer implementation.
- * @details Usually the port uses a timer interface defined in the file
- *          @p chcore_timer.h, if this option is enabled then the file
- *          @p chcore_timer_alt.h is included instead.
- */
-#if !defined(PORT_USE_ALT_TIMER) || defined(__DOXYGEN__)
-#define PORT_USE_ALT_TIMER              FALSE
 #endif
 
 /**
@@ -447,7 +437,7 @@ struct port_context {
 #else
 #define port_switch(ntp, otp) {                                             \
   register struct port_intctx *sp asm ("%r1");                              \
-  if ((stkalign_t *)(sp - 1) < otp->wabase)                                 \
+  if ((stkalign_t *)(void *)(sp - 1) < otp->wabase)                         \
     chSysHalt("stack overflow");                                            \
   _port_switch(ntp, otp);                                                   \
 }
@@ -515,9 +505,11 @@ extern void _IVOR10(void);
  * @brief   Kernel port layer initialization.
  * @details IVOR4 and IVOR10 initialization.
  */
-static inline void port_init(void) {
+static inline void port_init(os_instance_t *oip) {
   uint32_t n;
   unsigned i;
+
+  (void)oip;
 
   /* Initializing the SPRG0 register to zero, it is required for interrupts
      handling.*/
@@ -708,11 +700,7 @@ static inline rtcnt_t port_rt_get_counter_value(void) {
 #if !defined(_FROM_ASM_)
 
 #if CH_CFG_ST_TIMEDELTA > 0
-#if !PORT_USE_ALT_TIMER
 #include "chcore_timer.h"
-#else /* PORT_USE_ALT_TIMER */
-#include "chcore_timer_alt.h"
-#endif /* PORT_USE_ALT_TIMER */
 #endif /* CH_CFG_ST_TIMEDELTA > 0 */
 
 #endif /* !defined(_FROM_ASM_) */

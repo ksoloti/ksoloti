@@ -77,6 +77,33 @@
 
 #if defined(STM32L552xx) || defined(__DOXYGEN__)
 
+/* ICACHE attributes.*/
+#define STM32_HAS_ICACHE                    TRUE
+
+/* RCC attributes.*/
+#define STM32_RCC_HAS_HSI16                 TRUE
+#define STM32_RCC_HAS_HSI48                 TRUE
+#define STM32_RCC_HAS_MSI                   TRUE
+#define STM32_RCC_HAS_LSI                   TRUE
+#define STM32_RCC_HAS_LSI_PRESCALER         FALSE
+#define STM32_RCC_HAS_LSE                   TRUE
+#define STM32_RCC_HAS_HSE                   TRUE
+
+#define STM32_RCC_HAS_PLL                   TRUE
+#define STM32_RCC_PLL_HAS_P                 TRUE
+#define STM32_RCC_PLL_HAS_Q                 TRUE
+#define STM32_RCC_PLL_HAS_R                 TRUE
+
+#define STM32_RCC_HAS_PLLSAI1               TRUE
+#define STM32_RCC_PLLSAI1_HAS_P             TRUE
+#define STM32_RCC_PLLSAI1_HAS_Q             TRUE
+#define STM32_RCC_PLLSAI1_HAS_R             TRUE
+
+#define STM32_RCC_HAS_PLLSAI2               TRUE
+#define STM32_RCC_PLLSAI2_HAS_P             TRUE
+#define STM32_RCC_PLLSAI2_HAS_Q             FALSE
+#define STM32_RCC_PLLSAI2_HAS_R             FALSE
+
 /* ADC attributes.*/
 #define STM32_HAS_ADC1                      TRUE
 #define STM32_HAS_ADC2                      TRUE
@@ -84,9 +111,9 @@
 #define STM32_HAS_ADC4                      FALSE
 
 /* CAN attributes.*/
-#define STM32_HAS_CAN1                      FALSE
-#define STM32_HAS_CAN2                      FALSE
-#define STM32_HAS_CAN3                      FALSE
+#define STM32_HAS_FDCAN1                    TRUE
+#define STM32_HAS_FDCAN2                    FALSE
+#define STM32_HAS_FDCAN3                    FALSE
 
 /* DAC attributes.*/
 #define STM32_HAS_DAC1_CH1                  TRUE

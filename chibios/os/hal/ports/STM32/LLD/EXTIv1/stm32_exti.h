@@ -46,7 +46,8 @@
 
 /* Handling differences in ST headers.*/
 #if !defined(STM32H7XX) && !defined(STM32L4XX) && !defined(STM32L4XXP) &&   \
-    !defined(STM32G0XX) && !defined(STM32G4XX)
+    !defined(STM32G0XX) && !defined(STM32G4XX) && !defined(STM32WBXX) &&    \
+    !defined(STM32WLXX)
 #define EMR1    EMR
 #define IMR1    IMR
 #define PR1     PR
@@ -77,14 +78,16 @@
 #endif
 #endif /* !defined(STM32_EXTI_HAS_GROUP2) */
 
-/* If not defined then it is a classic EXTI (without EXTICR and separate PR
-   registers for raising and falling edges.*/
-#if !defined(STM32_EXTI_TYPE)
-#define STM32_EXTI_TYPE             0
+/* Determines if EXTI has dedicated CR register or if it is done in
+   SYSCFG (old style).*/
+#if !defined(STM32_EXTI_HAS_CR)
+#define STM32_EXTI_HAS_CR           FALSE
 #endif
 
-#if (STM32_EXTI_TYPE < 0) || (STM32_EXTI_TYPE > 1)
-#error "invalid STM32_EXTI_TYPE"
+/* Determines if EXTI has dedicated separate registers for raising and
+   falling edges.*/
+#if !defined(STM32_EXTI_SEPARATE_RF)
+#define STM32_EXTI_SEPARATE_RF      FALSE
 #endif
 
 #if (STM32_EXTI_NUM_LINES < 0) || (STM32_EXTI_NUM_LINES > 63)
@@ -140,7 +143,7 @@ typedef uint32_t extimode_t;
  *
  * @special
  */
-#if (STM32_EXTI_TYPE == 0) || defined(__DOXYGEN__)
+#if (STM32_EXTI_SEPARATE_RF == FALSE) || defined(__DOXYGEN__)
 #define extiClearGroup1(mask) do {                                          \
   osalDbgAssert(((mask) & STM32_EXTI_IMR1_MASK) == 0U, "fixed lines");      \
   EXTI->PR1 = (uint32_t)(mask);                                             \
@@ -161,7 +164,7 @@ typedef uint32_t extimode_t;
  *
  * @special
  */
-#if (STM32_EXTI_TYPE == 0) || defined(__DOXYGEN__)
+#if (STM32_EXTI_SEPARATE_RF == FALSE) || defined(__DOXYGEN__)
 #define extiClearGroup2(mask) do {                                          \
   osalDbgAssert(((mask) & STM32_EXTI_IMR2_MASK) == 0U, "fixed lines");      \
   EXTI->PR2 = (uint32_t)(mask);                                             \
@@ -183,7 +186,7 @@ typedef uint32_t extimode_t;
  *
  * @special
  */
-#if (STM32_EXTI_TYPE == 0) || defined(__DOXYGEN__)
+#if (STM32_EXTI_SEPARATE_RF == FALSE) || defined(__DOXYGEN__)
 #define extiGetAndClearGroup1(mask, out) do {                               \
   uint32_t pr1;                                                             \
                                                                             \
@@ -212,7 +215,7 @@ typedef uint32_t extimode_t;
  *
  * @special
  */
-#if (STM32_EXTI_TYPE == 0) || defined(__DOXYGEN__)
+#if (STM32_EXTI_SEPARATE_RF == FALSE) || defined(__DOXYGEN__)
 #define extiGetAndClearGroup2(mask, out) do {                               \
   uint32_t pr2;                                                             \
                                                                             \

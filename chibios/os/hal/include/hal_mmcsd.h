@@ -71,6 +71,7 @@
 #define MMCSD_CMD_INIT                  1U
 #define MMCSD_CMD_ALL_SEND_CID          2U
 #define MMCSD_CMD_SEND_RELATIVE_ADDR    3U
+#define MMCSD_CMD_SET_RELATIVE_ADDR     MMCSD_CMD_SEND_RELATIVE_ADDR
 #define MMCSD_CMD_SET_BUS_WIDTH         6U
 #define MMCSD_CMD_SWITCH                MMCSD_CMD_SET_BUS_WIDTH
 #define MMCSD_CMD_SEL_DESEL_CARD        7U
@@ -97,9 +98,7 @@
 
 /**
  * @name   CSD record offsets
- */
-/**
- * @brief  Slice position of values in CSD register.
+ * @{
  */
 /* CSD for MMC */
 #define MMCSD_CSD_MMC_CSD_STRUCTURE_SLICE       127U, 126U
@@ -196,9 +195,7 @@
 
 /**
  * @name   CID record offsets
- */
-/**
- * @brief  Slice position of values in CID register.
+ * @{
  */
 /* CID for SDC */
 #define MMCSD_CID_SDC_CRC_SLICE                 7U, 1U

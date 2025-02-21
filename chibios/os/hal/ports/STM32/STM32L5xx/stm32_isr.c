@@ -126,7 +126,7 @@ void irqInit(void) {
   exti19_irq_init();
   exti21_22_irq_init();
 
-  tim1_tim15_tim16_tim17_irq_init();
+  tim1_irq_init();
   tim2_irq_init();
   tim3_irq_init();
   tim4_irq_init();
@@ -172,7 +172,7 @@ void irqDeinit(void) {
   exti19_irq_deinit();
   exti21_22_irq_deinit();
 
-  tim1_tim15_tim16_tim17_irq_deinit();
+  tim1_irq_deinit();
   tim2_irq_deinit();
   tim3_irq_deinit();
   tim4_irq_deinit();

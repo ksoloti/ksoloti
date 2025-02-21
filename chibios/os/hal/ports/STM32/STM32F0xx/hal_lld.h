@@ -52,6 +52,11 @@
 /*===========================================================================*/
 
 /**
+ * @brief   Requires use of SPIv2 driver model.
+ */
+#define HAL_LLD_SELECT_SPI_V2           TRUE
+
+/**
  * @name    Platform identification macros
  * @{
  */
@@ -616,7 +621,7 @@
 #if STM32_LSI_ENABLED
 #else /* !STM32_LSI_ENABLED */
 
-#if STM32_RTCSEL == STM32_RTCSEL_LSI
+#if HAL_USE_RTC && (STM32_RTCSEL == STM32_RTCSEL_LSI)
 #error "LSI not enabled, required by STM32_RTCSEL"
 #endif
 

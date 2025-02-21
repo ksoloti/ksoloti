@@ -91,10 +91,12 @@ void uartObjectInit(UARTDriver *uartp) {
  *
  * @param[in] uartp     pointer to the @p UARTDriver object
  * @param[in] config    pointer to the @p UARTConfig object
+ * @return              The operation status.
  *
  * @api
  */
-void uartStart(UARTDriver *uartp, const UARTConfig *config) {
+msg_t uartStart(UARTDriver *uartp, const UARTConfig *config) {
+  msg_t msg;
 
   osalDbgCheck((uartp != NULL) && (config != NULL));
 
@@ -103,9 +105,23 @@ void uartStart(UARTDriver *uartp, const UARTConfig *config) {
                 "invalid state");
 
   uartp->config = config;
+
+#if defined(UART_LLD_ENHANCED_API)
+  msg = uart_lld_start(uartp);
+#else
   uart_lld_start(uartp);
-  uartp->state = UART_READY;
+  msg = HAL_RET_SUCCESS;
+#endif
+  if (msg == HAL_RET_SUCCESS) {
+    uartp->state = UART_READY;
+  }
+  else {
+    uartp->state = UART_STOP;
+  }
+
   osalSysUnlock();
+
+  return msg;
 }
 
 /**

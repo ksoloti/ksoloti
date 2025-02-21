@@ -112,6 +112,24 @@
 #endif
 
 /**
+ * @brief   UART driver on UART9 enable switch.
+ * @details If set to @p TRUE the support for UART9 is included.
+ * @note    The default is @p FALSE.
+ */
+#if !defined(STM32_UART_USE_UART9) || defined(__DOXYGEN__)
+#define STM32_UART_USE_UART9                FALSE
+#endif
+
+/**
+ * @brief   UART driver on UART10 enable switch.
+ * @details If set to @p TRUE the support for UART10 is included.
+ * @note    The default is @p FALSE.
+ */
+#if !defined(STM32_UART_USE_UART10) || defined(__DOXYGEN__)
+#define STM32_UART_USE_UART10               FALSE
+#endif
+
+/**
  * @brief   USART1 interrupt priority level setting.
  */
 #if !defined(STM32_UART_USART1_IRQ_PRIORITY) || defined(__DOXYGEN__)
@@ -165,6 +183,20 @@
  */
 #if !defined(STM32_UART_UART8_IRQ_PRIORITY) || defined(__DOXYGEN__)
 #define STM32_UART_UART8_IRQ_PRIORITY       12
+#endif
+
+/**
+ * @brief   UART9 interrupt priority level setting.
+ */
+#if !defined(STM32_UART_UART9_IRQ_PRIORITY) || defined(__DOXYGEN__)
+#define STM32_UART_UART9_IRQ_PRIORITY       12
+#endif
+
+/**
+ * @brief   UART10 interrupt priority level setting.
+ */
+#if !defined(STM32_UART_UART10_IRQ_PRIORITY) || defined(__DOXYGEN__)
+#define STM32_UART_UART10_IRQ_PRIORITY      12
 #endif
 
 /**
@@ -248,6 +280,26 @@
 #endif
 
 /**
+ * @brief   UART9 DMA priority (0..3|lowest..highest).
+ * @note    The priority level is used for both the TX and RX DMA channels but
+ *          because of the channels ordering the RX channel has always priority
+ *          over the TX channel.
+ */
+#if !defined(STM32_UART_UART9_DMA_PRIORITY) || defined(__DOXYGEN__)
+#define STM32_UART_UART9_DMA_PRIORITY       0
+#endif
+
+/**
+ * @brief   UART10 DMA priority (0..3|lowest..highest).
+ * @note    The priority level is used for both the TX and RX DMA channels but
+ *          because of the channels ordering the RX channel has always priority
+ *          over the TX channel.
+ */
+#if !defined(STM32_UART_UART10_DMA_PRIORITY) || defined(__DOXYGEN__)
+#define STM32_UART_UART10_DMA_PRIORITY      0
+#endif
+
+/**
  * @brief   USART DMA error hook.
  * @note    The default action for DMA errors is a system halt because DMA
  *          error can only happen because programming errors.
@@ -307,10 +359,19 @@
 #error "UART8 not present in the selected device"
 #endif
 
+#if STM32_UART_USE_UART9 && !STM32_HAS_UART9
+#error "UART9 not present in the selected device"
+#endif
+
+#if STM32_UART_USE_UART10 && !STM32_HAS_UART10
+#error "UART10 not present in the selected device"
+#endif
+
 #if !STM32_UART_USE_USART1 && !STM32_UART_USE_USART2 &&                     \
     !STM32_UART_USE_USART3 && !STM32_UART_USE_UART4 &&                      \
     !STM32_UART_USE_UART5  && !STM32_UART_USE_USART6 &&                     \
-    !STM32_UART_USE_UART7  && !STM32_UART_USE_UART8
+    !STM32_UART_USE_UART7  && !STM32_UART_USE_UART8 &&                      \
+    !STM32_UART_USE_UART9  && !STM32_UART_USE_UART10
 #error "UART driver activated but no USART/UART peripheral assigned"
 #endif
 
@@ -354,6 +415,16 @@
 #error "Invalid IRQ priority assigned to UART8"
 #endif
 
+#if STM32_UART_USE_UART9 &&                                                 \
+    !OSAL_IRQ_IS_VALID_PRIORITY(STM32_UART_UART9_IRQ_PRIORITY)
+#error "Invalid IRQ priority assigned to UART9"
+#endif
+
+#if STM32_UART_USE_UART10 &&                                                \
+    !OSAL_IRQ_IS_VALID_PRIORITY(STM32_UART_UART10_IRQ_PRIORITY)
+#error "Invalid IRQ priority assigned to UART10"
+#endif
+
 #if STM32_UART_USE_USART1 &&                                                \
     !STM32_DMA_IS_VALID_PRIORITY(STM32_UART_USART1_DMA_PRIORITY)
 #error "Invalid DMA priority assigned to USART1"
@@ -392,6 +463,16 @@
 #if STM32_UART_USE_UART8 &&                                                 \
     !STM32_DMA_IS_VALID_PRIORITY(STM32_UART_UART8_DMA_PRIORITY)
 #error "Invalid DMA priority assigned to UART8"
+#endif
+
+#if STM32_UART_USE_UART9 &&                                                 \
+    !STM32_DMA_IS_VALID_PRIORITY(STM32_UART_UART9_DMA_PRIORITY)
+#error "Invalid DMA priority assigned to UART9"
+#endif
+
+#if STM32_UART_USE_UART10 &&                                                \
+    !STM32_DMA_IS_VALID_PRIORITY(STM32_UART_UART10_DMA_PRIORITY)
+#error "Invalid DMA priority assigned to UART10"
 #endif
 
 /* The following checks are only required when there is a DMA able to
@@ -436,6 +517,16 @@
 #if STM32_UART_USE_UART8 && (!defined(STM32_UART_UART8_RX_DMA_STREAM) ||    \
                              !defined(STM32_UART_UART8_TX_DMA_STREAM))
 #error "UART8 DMA streams not defined"
+#endif
+
+#if STM32_UART_USE_UART9 && (!defined(STM32_UART_UART9_RX_DMA_STREAM) ||    \
+                             !defined(STM32_UART_UART9_TX_DMA_STREAM))
+#error "UART9 DMA streams not defined"
+#endif
+
+#if STM32_UART_USE_UART10 && (!defined(STM32_UART_UART10_RX_DMA_STREAM) ||   \
+                              !defined(STM32_UART_UART10_TX_DMA_STREAM))
+#error "UART10 DMA streams not defined"
 #endif
 
 /* Check on the validity of the assigned DMA channels.*/
@@ -536,8 +627,113 @@
 #error "invalid DMA stream associated to UART8 TX"
 #endif
 
+#if STM32_UART_USE_UART9 &&                                                 \
+    !STM32_DMA_IS_VALID_ID(STM32_UART_UART9_RX_DMA_STREAM,                  \
+                           STM32_UART9_RX_DMA_MSK)
+#error "invalid DMA stream associated to UART9 RX"
+#endif
+
+#if STM32_UART_USE_UART9 &&                                                 \
+    !STM32_DMA_IS_VALID_ID(STM32_UART_UART9_TX_DMA_STREAM,                  \
+                           STM32_UART9_TX_DMA_MSK)
+#error "invalid DMA stream associated to UART9 TX"
+#endif
+
+#if STM32_UART_USE_UART10 &&                                                \
+    !STM32_DMA_IS_VALID_ID(STM32_UART_UART10_RX_DMA_STREAM,                 \
+                           STM32_UART10_RX_DMA_MSK)
+#error "invalid DMA stream associated to UART10 RX"
+#endif
+
+#if STM32_UART_USE_UART10 &&                                                \
+    !STM32_DMA_IS_VALID_ID(STM32_UART_UART10_TX_DMA_STREAM,                 \
+                           STM32_UART10_TX_DMA_MSK)
+#error "invalid DMA stream associated to UART10 TX"
+#endif
+
 #if !defined(STM32_DMA_REQUIRED)
 #define STM32_DMA_REQUIRED
+#endif
+
+/* Checks on allocation of USARTx units.*/
+#if STM32_UART_USE_USART1
+#if defined(STM32_USART1_IS_USED)
+#error "UARTD1 requires USART1 but it is already used"
+#else
+#define STM32_USART1_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_USART2
+#if defined(STM32_USART2_IS_USED)
+#error "UARTD2 requires USART2 but it is already used"
+#else
+#define STM32_USART2_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_USART3
+#if defined(STM32_USART3_IS_USED)
+#error "UARTD3 requires USART3 but it is already used"
+#else
+#define STM32_USART3_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_UART4
+#if defined(STM32_UART4_IS_USED)
+#error "UARTD4 requires UART4 but it is already used"
+#else
+#define STM32_UART4_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_UART5
+#if defined(STM32_UART5_IS_USED)
+#error "UARTD5 requires UART5 but it is already used"
+#else
+#define STM32_UART5_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_USART6
+#if defined(STM32_USART6_IS_USED)
+#error "UARTD6 requires USART6 but it is already used"
+#else
+#define STM32_USART6_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_UART7
+#if defined(STM32_UART7_IS_USED)
+#error "UARTD7 requires UART7 but it is already used"
+#else
+#define STM32_UART7_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_UART8
+#if defined(STM32_UART8_IS_USED)
+#error "UARTD8 requires UART8 but it is already used"
+#else
+#define STM32_UART8_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_UART9
+#if defined(STM32_UART9_IS_USED)
+#error "UARTD9 requires UART9 but it is already used"
+#else
+#define STM32_UART9_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_UART10
+#if defined(STM32_UART10_IS_USED)
+#error "UARTD10 requires UART10 but it is already used"
+#else
+#define STM32_UART10_IS_USED
+#endif
 #endif
 
 /*===========================================================================*/
@@ -550,9 +746,9 @@
 typedef uint32_t uartflags_t;
 
 /**
- * @brief   Structure representing an UART driver.
+ * @brief   Type of an UART driver.
  */
-typedef struct UARTDriver UARTDriver;
+typedef struct hal_uart_driver UARTDriver;
 
 /**
  * @brief   Generic UART notification callback type.
@@ -578,10 +774,10 @@ typedef void (*uartccb_t)(UARTDriver *uartp, uint16_t c);
 typedef void (*uartecb_t)(UARTDriver *uartp, uartflags_t e);
 
 /**
- * @brief   Driver configuration structure.
+ * @brief   Type of an UART configuration structure.
  * @note    It could be empty on some architectures.
  */
-typedef struct {
+typedef struct hal_uart_config {
   /**
    * @brief End of transmission buffer callback.
    */
@@ -630,7 +826,7 @@ typedef struct {
 /**
  * @brief   Structure representing an UART driver.
  */
-struct UARTDriver {
+struct hal_uart_driver {
   /**
    * @brief Driver state.
    */
@@ -675,6 +871,10 @@ struct UARTDriver {
    * @brief Pointer to the USART registers block.
    */
   USART_TypeDef             *usart;
+  /**
+   * @brief   Clock frequency for the associated USART/UART.
+   */
+  uint32_t                  clock;
   /**
    * @brief Receive DMA mode bit mask.
    */
@@ -737,6 +937,14 @@ extern UARTDriver UARTD7;
 extern UARTDriver UARTD8;
 #endif
 
+#if STM32_UART_USE_UART9 && !defined(__DOXYGEN__)
+extern UARTDriver UARTD9;
+#endif
+
+#if STM32_UART_USE_UART10 && !defined(__DOXYGEN__)
+extern UARTDriver UARTD10;
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -747,6 +955,7 @@ extern "C" {
   size_t uart_lld_stop_send(UARTDriver *uartp);
   void uart_lld_start_receive(UARTDriver *uartp, size_t n, void *rxbuf);
   size_t uart_lld_stop_receive(UARTDriver *uartp);
+  void uart_lld_serve_interrupt(UARTDriver *uartp);
 #ifdef __cplusplus
 }
 #endif

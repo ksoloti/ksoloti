@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2021 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -35,11 +35,37 @@
 /*===========================================================================*/
 
 /*===========================================================================*/
-/* Driver local variables and types.                                         */
+/* Driver local functions.                                                   */
 /*===========================================================================*/
 
+static flash_error_t efl_acquire_exclusive(void *instance) {
+#if (EFL_USE_MUTUAL_EXCLUSION == TRUE)
+  EFlashDriver *devp = (EFlashDriver *)instance;
+
+  osalMutexLock(&devp->mutex);
+  return FLASH_NO_ERROR;
+#else
+  (void)instance;
+  osalDbgAssert(false, "mutual exclusion not enabled");
+  return FLASH_ERROR_UNIMPLEMENTED;
+#endif
+}
+
+static flash_error_t efl_release_exclusive(void *instance) {
+#if (EFL_USE_MUTUAL_EXCLUSION == TRUE)
+  EFlashDriver *devp = (EFlashDriver *)instance;
+
+  osalMutexUnlock(&devp->mutex);
+  return FLASH_NO_ERROR;
+#else
+  (void)instance;
+  osalDbgAssert(false, "mutual exclusion not enabled");
+  return FLASH_ERROR_UNIMPLEMENTED;
+#endif
+}
+
 /*===========================================================================*/
-/* Driver local functions.                                                   */
+/* Driver local variables and types.                                         */
 /*===========================================================================*/
 
 static const struct EFlashDriverVMT vmt = {
@@ -50,7 +76,9 @@ static const struct EFlashDriverVMT vmt = {
   efl_lld_start_erase_all,
   efl_lld_start_erase_sector,
   efl_lld_query_erase,
-  efl_lld_verify_erase
+  efl_lld_verify_erase,
+  efl_acquire_exclusive,
+  efl_release_exclusive
 };
 
 /*===========================================================================*/
@@ -80,6 +108,9 @@ void eflObjectInit(EFlashDriver *eflp) {
 
   eflp->vmt = &vmt;
   eflp->state = FLASH_STOP;
+#if EFL_USE_MUTUAL_EXCLUSION == TRUE
+  osalMutexObjectInit(&eflp->mutex);
+#endif
 }
 
 /**
@@ -89,10 +120,12 @@ void eflObjectInit(EFlashDriver *eflp) {
  * @param[in] config    pointer to a configuration structure.
  *                      If this parameter is set to @p NULL then a default
  *                      configuration is used.
+ * @return              The operation status.
  *
  * @api
  */
-void eflStart(EFlashDriver *eflp, const EFlashConfig *config) {
+msg_t eflStart(EFlashDriver *eflp, const EFlashConfig *config) {
+  msg_t msg;
 
   osalDbgCheck(eflp != NULL);
 
@@ -100,11 +133,25 @@ void eflStart(EFlashDriver *eflp, const EFlashConfig *config) {
 
   osalDbgAssert((eflp->state == FLASH_STOP) || (eflp->state == FLASH_READY),
                 "invalid state");
+
   eflp->config = config;
+
+#if defined(EFL_LLD_ENHANCED_API)
+  msg = efl_lld_start(eflp);
+#else
   efl_lld_start(eflp);
-  eflp->state = FLASH_READY;
+  msg = HAL_RET_SUCCESS;
+#endif
+  if (msg == HAL_RET_SUCCESS) {
+    eflp->state = FLASH_READY;
+  }
+  else {
+    eflp->state = FLASH_STOP;
+  }
 
   osalSysUnlock();
+
+  return msg;
 }
 
 /**

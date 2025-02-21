@@ -1,12 +1,12 @@
 /*
-    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006,2007,2008,2009,2010,2011,2012,2013,2014,
+              2015,2016,2017,2018,2019,2020,2021 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -122,6 +122,11 @@ typedef uint32_t sysinterval_t;
 #elif CH_CFG_INTERVALS_SIZE == 16
 typedef uint16_t sysinterval_t;
 #endif
+
+/**
+ * @brief   Type of a time stamp.
+ */
+typedef uint64_t systimestamp_t;
 
 #if (CH_CFG_TIME_TYPES_SIZE == 32) || defined(__DOXYGEN__)
 /**
@@ -266,18 +271,15 @@ typedef uint32_t time_conv_t;
  * @api
  */
 #define TIME_I2US(interval)                                                 \
-    (time_msecs_t)((((time_conv_t)(interval) * (time_conv_t)1000000) +      \
-                    (time_conv_t)CH_CFG_ST_FREQUENCY - (time_conv_t)1) /    \
-                   (time_conv_t)CH_CFG_ST_FREQUENCY)
+  (time_usecs_t)((((time_conv_t)(interval) * (time_conv_t)1000000) +        \
+                  (time_conv_t)CH_CFG_ST_FREQUENCY - (time_conv_t)1) /      \
+                 (time_conv_t)CH_CFG_ST_FREQUENCY)
 /** @} */
 
 /*===========================================================================*/
 /* External declarations.                                                    */
 /*===========================================================================*/
 
-/*
- * Virtual Timers APIs.
- */
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -472,8 +474,10 @@ static inline sysinterval_t chTimeDiffX(systime_t start, systime_t end) {
  * @param[in] time      the time to be verified
  * @param[in] start     the start of the time window (inclusive)
  * @param[in] end       the end of the time window (non inclusive)
- * @retval true         current time within the specified time window.
- * @retval false        current time not within the specified time window.
+ * @retval true         if the current time is within the specified
+ *                      time window.
+ * @retval false        if the current time is not within the specified
+ *                      time window.
  *
  * @xclass
  */
@@ -485,6 +489,73 @@ static inline bool chTimeIsInRangeX(systime_t time,
                 (systime_t)((systime_t)end - (systime_t)start));
 }
 
+/**
+ * @brief   Adds an interval to a time stamp returning a time stamp.
+ *
+ * @param[in] stamp     base time stamp
+ * @param[in] interval  interval to be added
+ * @return              The new time stamp.
+ *
+ * @xclass
+ */
+static inline systimestamp_t chTimeStampAddX(systimestamp_t stamp,
+                                             sysinterval_t interval) {
+
+  return stamp + (systimestamp_t)interval;
+}
+
+/**
+ * @brief   Subtracts two time stamps returning an interval.
+ * @note    Intervals can then be used for converting in absolute time.
+ *
+ * @param[in] start     first time stamp
+ * @param[in] end       second time stamp
+ * @return              The interval representing the time stamps difference.
+ *
+ * @xclass
+ */
+static inline sysinterval_t chTimeStampDiffX(systimestamp_t start,
+                                             systimestamp_t end) {
+  systimestamp_t diff;
+
+  /* Time difference as a wide time stamp.*/
+  diff = end - start;
+
+  /*lint -save -e685 [14.3] This condition becomes always true when both
+    types have the same width, it is fine, this is an assertion.*/
+  chDbgAssert(diff <= (systimestamp_t)((sysinterval_t)-1),
+              "conversion overflow");
+  /*lint -restore*/
+
+  /*lint -save -e9033 [10.8] This cast is required by the operation, it is
+    known that the destination type can be wider.*/
+  return (sysinterval_t)diff;
+  /*lint -restore*/
+}
+
+/**
+ * @brief   Checks if the specified time stamp is within the specified time
+ *          stamps range.
+ * @note    When start==end then the function returns always false because the
+ *          time window has zero size.
+ *
+ * @param[in] stamp     the time stamp to be verified
+ * @param[in] start     the start of the time stamp window (inclusive)
+ * @param[in] end       the end of the time stamp window (non inclusive)
+ * @retval true         if the current time stamp is within the specified
+ *                      time stamp window.
+ * @retval false        if the current time stamp is not within the specified
+ *                      time stamp window.
+ *
+ * @xclass
+ */
+static inline bool chTimeStampIsInRangeX(systimestamp_t stamp,
+                                         systimestamp_t start,
+                                         systimestamp_t end) {
+
+  return (bool)((systimestamp_t)((systimestamp_t)stamp - (systimestamp_t)start) <
+                (systimestamp_t)((systimestamp_t)end - (systimestamp_t)start));
+}
 /** @} */
 
 #endif /* CHTIME_H */

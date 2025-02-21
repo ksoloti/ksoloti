@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2020 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -38,11 +38,10 @@
 
 /*
  * Board oscillators-related settings.
- * NOTE: LSE not fitted.
  * NOTE: HSE not fitted.
  */
 #if !defined(STM32_LSECLK)
-#define STM32_LSECLK                0U
+#define STM32_LSECLK                32768U
 #endif
 
 #define STM32_LSEDRV                (3U << 3U)

@@ -18,9 +18,12 @@ ENTRY(Reset_Handler)
 
 SECTIONS
 {
-    .vectors : ALIGN(16)
+    .vectors : ALIGN(1024)
     {
+        __textvectors_base__ = LOADADDR(.vectors);
+        __vectors_base__ = .;
         KEEP(*(.vectors))
+        __vectors_end__ = .;
     } > VECTORS_FLASH AT > VECTORS_FLASH_LMA
 
     .xtors : ALIGN(4)

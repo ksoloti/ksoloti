@@ -31,7 +31,7 @@
  * @brief   Number of the available endpoints.
  * @details This value does not include the endpoint 0 which is always present.
  */
-#define USB_ENDOPOINTS_NUMBER           7
+#define USB_ENDPOINTS_NUMBER            7
 
 /**
  * @brief   Width of USB packet memory accesses.
@@ -49,7 +49,7 @@ typedef struct {
   /**
    * @brief   Endpoint registers.
    */
-  volatile uint32_t             EPR[USB_ENDOPOINTS_NUMBER + 1];
+  volatile uint32_t             EPR[USB_ENDPOINTS_NUMBER + 1];
   /*
    * @brief   Reserved space.
    */
@@ -121,19 +121,25 @@ typedef struct {
 /**
  * @brief USB registers block numeric address.
  */
-#if defined(USB_BASE) || defined(__DOXYGEN__)
-#define STM32_USB_BASE          USB_BASE
+#if defined(USB1_BASE) || defined(__DOXYGEN__)
+  #define STM32_USB_BASE        USB1_BASE
+#elif defined(USB_BASE)
+  #define STM32_USB_BASE        USB_BASE
 #else
-#define STM32_USB_BASE          (APB1PERIPH_BASE + 0x5C00)
+  #define STM32_USB_BASE        (APB1PERIPH_BASE + 0x5C00)
 #endif
 
 /**
  * @brief USB RAM numeric address.
  */
-#if defined(USB_PMAADDR) || defined(__DOXYGEN__)
-#define STM32_USBRAM_BASE       USB_PMAADDR
+#if defined(USB1_PMAADDR) || defined(__DOXYGEN__)
+  #define STM32_USBRAM_BASE     USB1_PMAADDR
+#elif defined(USB_PMAADDR)
+  #define STM32_USBRAM_BASE     USB_PMAADDR
+#elif defined(USB_DRD_PMAADDR)
+#define STM32_USBRAM_BASE       USB_DRD_PMAADDR
 #else
-#define STM32_USBRAM_BASE       (APB1PERIPH_BASE + 0x6000)
+  #define STM32_USBRAM_BASE     (APB1PERIPH_BASE + 0x6000)
 #endif
 
 /**
@@ -218,13 +224,6 @@ typedef struct {
 #define TXCOUNT_COUNT_MASK      0x03FF
 
 #define EPR_CTR_MASK            (EPR_CTR_TX | EPR_CTR_RX)
-
-#define EPR_SET(ep, epr)                                                    \
-  STM32_USB->EPR[ep] = ((epr) & ~EPR_TOGGLE_MASK) | EPR_CTR_MASK
-
-#define EPR_TOGGLE(ep, epr)                                                 \
-  STM32_USB->EPR[ep] = (STM32_USB->EPR[ep] ^ ((epr) & EPR_TOGGLE_MASK))     \
-                       | EPR_CTR_MASK
 
 #define EPR_SET_STAT_RX(ep, epr)                                            \
   STM32_USB->EPR[ep] = ((STM32_USB->EPR[ep] &                               \

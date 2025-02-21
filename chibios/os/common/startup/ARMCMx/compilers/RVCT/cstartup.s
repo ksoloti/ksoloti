@@ -15,7 +15,7 @@
 */
 
 /**
- * @file    ARMCMx/RVCT/cstartup.s
+ * @file    ARMCMx/compilers/RVCT/cstartup.s
  * @brief   Generic RVCT Cortex-Mx startup file.
  *
  * @addtogroup ARMCMx_RVCT_STARTUP
@@ -49,6 +49,8 @@ __initial_msp
                 AREA    CSTACK, NOINIT, READWRITE, ALIGN=3
 __main_thread_stack_base__
                 EXPORT  __main_thread_stack_base__
+__main_thread_stack_end__
+                EXPORT  __main_thread_stack_end__
 proc_stack_mem  SPACE   proc_stack_size
                 EXPORT  __initial_sp
 __initial_sp
@@ -82,7 +84,7 @@ Reset_Handler   PROC
                 isb
                 bl      __early_init
 
-                IF      {CPU} = "Cortex-M4.fp.sp"
+                IF      {TARGET_FPU_SOFTVFP} == {FALSE}
                 LDR     R0, =0xE000ED88           ; Enable CP10,CP11
                 LDR     R1, [R0]
                 ORR     R1, R1, #(0xF << 20)
@@ -104,11 +106,11 @@ __early_init    PROC
  * User Initial Stack & Heap.
  */
                 IF      :DEF:__MICROLIB
-                
+
                 EXPORT  __initial_sp
                 EXPORT  __heap_base
                 EXPORT  __heap_limit
-                
+
                 ELSE
 
                 IMPORT  __use_two_region_memory

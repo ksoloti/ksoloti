@@ -52,7 +52,11 @@
 /*===========================================================================*/
 
 #include "stm32_dma1_ch23.inc"
+#if STM32_DMA2_NUM_CHANNELS > 0
+#include "stm32_dma1_ch4567_dma2_ch12345.inc"
+#else
 #include "stm32_dma1_ch4567.inc"
+#endif
 
 #include "stm32_exti0_1.inc"
 #include "stm32_exti2_3.inc"
@@ -60,12 +64,32 @@
 #include "stm32_exti19-21.inc"
 
 #include "stm32_usart1.inc"
+#if STM32_HAS_USART2 && STM32_HAS_LPUART2
+#include "stm32_usart2_lp2.inc"
+#elif STM32_HAS_USART2
 #include "stm32_usart2.inc"
+#else
+#error "unknown USARTs combination"
+#endif
+#if STM32_HAS_USART3 && STM32_HAS_UART4 && STM32_HAS_UART5 && STM32_HAS_USART6 && STM32_HAS_LPUART1
+#include "stm32_usart3_4_5_6_lp1.inc"
+#elif STM32_HAS_USART3 && STM32_HAS_UART4 && STM32_HAS_LPUART1
 #include "stm32_usart3_4_lp1.inc"
+#elif STM32_HAS_LPUART1
+#include "stm32_lpuart1.inc"
+#else
+#error "unknown USARTs combination"
+#endif
 
 #include "stm32_tim1.inc"
 #include "stm32_tim2.inc"
+#if STM32_HAS_TIM3 && STM32_HAS_TIM4
+#include "stm32_tim3_4.inc"
+#elif STM32_HAS_TIM3
 #include "stm32_tim3.inc"
+#else
+#error "unknown TIMs combination"
+#endif
 #include "stm32_tim6.inc"
 #include "stm32_tim7.inc"
 #include "stm32_tim14.inc"
@@ -91,7 +115,11 @@ void irqInit(void) {
 
   tim1_irq_init();
   tim2_irq_init();
+#if STM32_HAS_TIM3 && STM32_HAS_TIM4
+  tim3_tim4_irq_init();
+#elif STM32_HAS_TIM3
   tim3_irq_init();
+#endif
   tim6_irq_init();
   tim7_irq_init();
   tim14_irq_init();
@@ -100,8 +128,18 @@ void irqInit(void) {
   tim17_irq_init();
 
   usart1_irq_init();
+#if STM32_HAS_USART2 && STM32_HAS_LPUART2
+  usart2_lpuart2_irq_init();
+#elif STM32_HAS_USART2
   usart2_irq_init();
+#endif
+#if STM32_HAS_USART3 && STM32_HAS_UART4 && STM32_HAS_UART5 && STM32_HAS_USART6 && STM32_HAS_LPUART1
+  usart3_usart4_usart5_usart6_lpuart1_irq_init();
+#elif STM32_HAS_USART3 && STM32_HAS_UART4 && STM32_HAS_LPUART1
   usart3_usart4_lpuart1_irq_init();
+#elif STM32_HAS_LPUART1
+  lpuart1_irq_init();
+#endif
 }
 
 /**
@@ -118,7 +156,11 @@ void irqDeinit(void) {
 
   tim1_irq_deinit();
   tim2_irq_deinit();
+#if STM32_HAS_TIM3 && STM32_HAS_TIM4
+  tim3_tim4_irq_deinit();
+#elif STM32_HAS_TIM3
   tim3_irq_deinit();
+#endif
   tim6_irq_deinit();
   tim7_irq_deinit();
   tim14_irq_deinit();
@@ -127,8 +169,18 @@ void irqDeinit(void) {
   tim17_irq_deinit();
 
   usart1_irq_deinit();
+#if STM32_HAS_USART2 && STM32_HAS_LPUART2
+  usart2_lpuart2_irq_deinit();
+#elif STM32_HAS_USART2
   usart2_irq_deinit();
+#endif
+#if STM32_HAS_USART3 && STM32_HAS_UART4 && STM32_HAS_UART5 && STM32_HAS_USART6 && STM32_HAS_LPUART1
+  usart3_usart4_usart5_usart6_lpuart1_irq_deinit();
+#elif STM32_HAS_USART3 && STM32_HAS_UART4 && STM32_HAS_LPUART1
   usart3_usart4_lpuart1_irq_deinit();
+#elif STM32_HAS_LPUART1
+  lpuart1_irq_deinit();
+#endif
 }
 
 /** @} */

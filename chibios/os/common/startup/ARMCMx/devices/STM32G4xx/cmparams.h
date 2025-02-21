@@ -18,7 +18,7 @@
  * @file    STM32G4xx/cmparams.h
  * @brief   ARM Cortex-M4 parameters for the STM32G4xx.
  *
- * @defgroup ARMCMx_STM32FGxx STM32FGxx Specific Parameters
+ * @defgroup ARMCMx_STM32Gxx STM32Gxx Specific Parameters
  * @ingroup ARMCMx_SPECIFIC
  * @details This file contains the Cortex-M4 specific parameters for the
  *          STM32G4xx platform.
@@ -49,7 +49,8 @@
 #if !defined(STM32G431xx) && !defined(STM32G441xx) &&                       \
     !defined(STM32G471xx) && !defined(STM32G473xx) &&                       \
     !defined(STM32G474xx) && !defined(STM32G483xx) &&                       \
-    !defined(STM32G484xx) && !defined(STM32GBK1CB)
+    !defined(STM32G484xx) && !defined(STM32GBK1CB) &&                       \
+    !defined(STM32G91xx)
 #include "board.h"
 #endif
 

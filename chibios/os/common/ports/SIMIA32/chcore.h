@@ -1,12 +1,12 @@
 /*
-    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006,2007,2008,2009,2010,2011,2012,2013,2014,
+              2015,2016,2017,2018,2019,2020,2021 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -113,16 +113,6 @@
 #define PORT_INT_REQUIRED_STACK         16384
 #endif
 
-/**
- * @brief   Enables an alternative timer implementation.
- * @details Usually the port uses a timer interface defined in the file
- *          @p chcore_timer.h, if this option is enabled then the file
- *          @p chcore_timer_alt.h is included instead.
- */
-#if !defined(PORT_USE_ALT_TIMER) || defined(__DOXYGEN__)
-#define PORT_USE_ALT_TIMER              FALSE
-#endif
-
 /*===========================================================================*/
 /* Derived constants and error checks.                                       */
 /*===========================================================================*/
@@ -189,7 +179,7 @@ struct port_context {
 
 #define APUSH(p, a) do {                                                    \
   (p) -= sizeof(void *);                                                    \
-  *(void **)(p) = (void*)(a);                                               \
+  *(void **)(void *)(p) = (void*)(a);                                       \
 } while (false)
 
 /* Darwin requires the stack to be aligned to a 16-byte boundary at
@@ -197,7 +187,7 @@ struct port_context {
  * to save MMX registers). This aligns to 'mod' module 16, so that we'll end
  * up with the right alignment after pushing the args. */
 #define AALIGN(p, mask, mod)                                                \
-  p = (void *)((((uint32_t)(p) - (uint32_t)(mod)) & ~(uint32_t)(mask)) + (uint32_t)(mod)) \
+  p = (void *)((((uint32_t)(p) - (uint32_t)(mod)) & ~(uint32_t)(mask)) + (uint32_t)(mod))
 
 /**
  * @brief   Platform dependent part of the @p chThdCreateI() API.
@@ -214,19 +204,19 @@ struct port_context {
   APUSH(esp, pf);                                                           \
   APUSH(esp, 0);                                                            \
   esp -= sizeof(struct port_intctx);                                        \
-  ((struct port_intctx *)esp)->eip = (void *)_port_thread_start;            \
-  ((struct port_intctx *)esp)->ebx = NULL;                                  \
-  ((struct port_intctx *)esp)->edi = NULL;                                  \
-  ((struct port_intctx *)esp)->esi = NULL;                                  \
-  ((struct port_intctx *)esp)->ebp = (void *)savebp;                        \
-  (tp)->ctx.sp = (struct port_intctx *)esp;                                 \
+  ((struct port_intctx *)(void *)esp)->eip = (void *)_port_thread_start;    \
+  ((struct port_intctx *)(void *)esp)->ebx = NULL;                          \
+  ((struct port_intctx *)(void *)esp)->edi = NULL;                          \
+  ((struct port_intctx *)(void *)esp)->esi = NULL;                          \
+  ((struct port_intctx *)(void *)esp)->ebp = (void *)savebp;                \
+  (tp)->ctx.sp = (struct port_intctx *)(void *)esp;                         \
   /*lint -restore*/                                                         \
 }
 
- /**
+/**
  * @brief   Computes the thread working area global size.
  * @note    There is no need to perform alignments in this macro.
-  */
+ */
 #define PORT_WA_SIZE(n) ((sizeof (void *) * 4U) +                           \
                          sizeof (struct port_intctx) +                      \
                          ((size_t)(n)) +                                    \
@@ -242,6 +232,16 @@ struct port_context {
  */
 #define PORT_WORKING_AREA(s, n)                                             \
   stkalign_t s[THD_WORKING_AREA_SIZE(n) / sizeof (stkalign_t)]
+
+/**
+ * @brief   Priority level verification macro.
+ */
+#define PORT_IRQ_IS_VALID_PRIORITY(n) false
+
+/**
+ * @brief   Priority level verification macro.
+ */
+#define PORT_IRQ_IS_VALID_KERNEL_PRIORITY(n) false
 
 /**
  * @brief   IRQ prologue code.
@@ -321,7 +321,9 @@ extern "C" {
 /**
  * @brief   Port-related initialization code.
  */
-static inline void port_init(void) {
+static inline void port_init(os_instance_t *oip) {
+
+  (void)oip;
 
   port_irq_sts = (syssts_t)0;
   port_isr_context_flag = false;
@@ -447,11 +449,7 @@ static inline void port_wait_for_interrupt(void) {
 #if !defined(_FROM_ASM_)
 
 #if CH_CFG_ST_TIMEDELTA > 0
-#if !PORT_USE_ALT_TIMER
 #include "chcore_timer.h"
-#else /* PORT_USE_ALT_TIMER */
-#include "chcore_timer_alt.h"
-#endif /* PORT_USE_ALT_TIMER */
 #endif /* CH_CFG_ST_TIMEDELTA > 0 */
 
 #endif /* !defined(_FROM_ASM_) */

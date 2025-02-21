@@ -218,6 +218,7 @@ void adc_lld_start(ADCDriver *adcp) {
                                      (stm32_dmaisr_t)adc_lld_serve_rx_interrupt,
                                      (void *)adcp);
       osalDbgAssert(adcp->dmastp != NULL, "unable to allocate stream");
+      rccResetADC1();
       rccEnableADC1(true);
 
       /* DMA setup.*/
@@ -227,7 +228,7 @@ void adc_lld_start(ADCDriver *adcp) {
 #endif
 
       /* Clock settings.*/
-      adcp->adc->CFGR2 = STM32_ADC_ADC1_CKMODE;
+      adcp->adc->CFGR2 = STM32_ADC_ADC1_CFGR2;
     }
 #endif /* STM32_ADC_USE_ADC1 */
 
@@ -321,12 +322,6 @@ void adc_lld_start_conversion(ADCDriver *adcp) {
 
   /* ADC configuration and start.*/
   adcp->adc->CFGR1  = cfgr1;
-#if STM32_ADC_SUPPORTS_OVERSAMPLING == TRUE
-  {
-    uint32_t cfgr2 = adcp->adc->CFGR2 & STM32_ADC_CKMODE_MASK;
-    adcp->adc->CFGR2 = cfgr2 | grpp->cfgr2;
-  }
-#endif
 
   /* ADC conversion start.*/
   adcp->adc->CR |= ADC_CR_ADSTART;
@@ -361,17 +356,22 @@ void adc_lld_serve_interrupt(ADCDriver *adcp) {
   /* It could be a spurious interrupt caused by overflows after DMA disabling,
      just ignore it in this case.*/
   if (adcp->grpp != NULL) {
-    /* Note, an overflow may occur after the conversion ended before the driver
+    adcerror_t emask = 0U;
+
+   /* Note, an overflow may occur after the conversion ended before the driver
        is able to stop the ADC, this is why the DMA channel is checked too.*/
     if ((isr & ADC_ISR_OVR) &&
         (dmaStreamGetTransactionSize(adcp->dmastp) > 0)) {
       /* ADC overflow condition, this could happen only if the DMA is unable
          to read data fast enough.*/
-      _adc_isr_error_code(adcp, ADC_ERR_OVERFLOW);
+      emask |= ADC_ERR_OVERFLOW;
     }
     if (isr & ADC_ISR_AWD1) {
       /* Analog watchdog error.*/
-      _adc_isr_error_code(adcp, ADC_ERR_AWD);
+      emask |= ADC_ERR_AWD1;
+    }
+    if (emask != 0U) {
+      _adc_isr_error_code(adcp, emask);
     }
   }
 }

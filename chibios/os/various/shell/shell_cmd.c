@@ -55,7 +55,7 @@
 /* Module local functions.                                                   */
 /*===========================================================================*/
 
-#if ((SHELL_CMD_EXIT_ENABLED == TRUE) && !defined(_CHIBIOS_NIL_)) ||        \
+#if ((SHELL_CMD_EXIT_ENABLED == TRUE) && !defined(__CHIBIOS_NIL__)) ||        \
     defined(__DOXYGEN__)
 static void cmd_exit(BaseSequentialStream *chp, int argc, char *argv[]) {
 
@@ -123,7 +123,7 @@ static void cmd_systime(BaseSequentialStream *chp, int argc, char *argv[]) {
     shellUsage(chp, "systime");
     return;
   }
-  chprintf(chp, "%lu" SHELL_NEWLINE_STR, (unsigned long)chVTGetSystemTime());
+  chprintf(chp, "%lu" SHELL_NEWLINE_STR, (unsigned long)chVTGetSystemTimeX());
 }
 #endif
 
@@ -154,17 +154,29 @@ static void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]) {
     shellUsage(chp, "threads");
     return;
   }
-  chprintf(chp, "stklimit    stack     addr refs prio     state         name\r\n" SHELL_NEWLINE_STR);
+  chprintf(chp, "core stklimit    stack     addr refs prio     state         name" SHELL_NEWLINE_STR);
   tp = chRegFirstThread();
   do {
+    core_id_t core_id;
+
+#if !defined(__CHIBIOS_NIL__)
+    core_id = tp->owner->core_id;
+#else
+    core_id = 0U;
+#endif
 #if (CH_DBG_ENABLE_STACK_CHECK == TRUE) || (CH_CFG_USE_DYNAMIC == TRUE)
     uint32_t stklimit = (uint32_t)tp->wabase;
 #else
     uint32_t stklimit = 0U;
 #endif
-    chprintf(chp, "%08lx %08lx %08lx %4lu %4lu %9s %12s" SHELL_NEWLINE_STR,
-             stklimit, (uint32_t)tp->ctx.sp, (uint32_t)tp,
-             (uint32_t)tp->refs - 1, (uint32_t)tp->prio, states[tp->state],
+    chprintf(chp, "%4lu %08lx %08lx %08lx %4lu %4lu %9s %12s" SHELL_NEWLINE_STR,
+             core_id,
+             stklimit,
+             (uint32_t)tp->ctx.sp,
+             (uint32_t)tp,
+             (uint32_t)tp->refs - 1,
+             (uint32_t)tp->hdr.pqueue.prio,
+             states[tp->state],
              tp->name == NULL ? "" : tp->name);
     tp = chRegNextThread(tp);
   } while (tp != NULL);
@@ -220,7 +232,7 @@ static void cmd_test(BaseSequentialStream *chp, int argc, char *argv[]) {
  * @brief   Array of the default commands.
  */
 const ShellCommand shell_local_commands[] = {
-#if (SHELL_CMD_EXIT_ENABLED == TRUE) && !defined(_CHIBIOS_NIL_)
+#if (SHELL_CMD_EXIT_ENABLED == TRUE) && !defined(__CHIBIOS_NIL__)
   {"exit", cmd_exit},
 #endif
 #if SHELL_CMD_INFO_ENABLED == TRUE

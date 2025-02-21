@@ -1,12 +1,12 @@
 /*
-    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006,2007,2008,2009,2010,2011,2012,2013,2014,
+              2015,2016,2017,2018,2019,2020,2021 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -121,16 +121,6 @@
 #endif
 
 /**
- * @brief   Enables an alternative timer implementation.
- * @details Usually the port uses a timer interface defined in the file
- *          @p chcore_timer.h, if this option is enabled then the file
- *          @p chcore_timer_alt.h is included instead.
- */
-#if !defined(PORT_USE_ALT_TIMER) || defined(__DOXYGEN__)
-#define PORT_USE_ALT_TIMER              FALSE
-#endif
-
-/**
  * @brief   Enables a "wait for interrupt" instruction in the idle loop.
  */
 #if !defined(PORT_XXX_WFI_SLEEP_IDLE) || defined(__DOXYGEN__)
@@ -148,12 +138,6 @@
 /* The following code is not processed when the file is included from an
    asm module.*/
 #if !defined(_FROM_ASM_)
-
-/**
- * @brief   Type of stack and memory alignment enforcement.
- * @note    In this architecture the stack alignment is enforced to 64 bits.
- */
-typedef uint64_t stkalign_t;
 
 /**
  * @brief   Interrupt saved context.
@@ -191,6 +175,11 @@ struct port_context {
 /*===========================================================================*/
 /* Module macros.                                                            */
 /*===========================================================================*/
+
+/**
+ * @brief   Optimized thread function declaration macro.
+ */
+#define PORT_THD_FUNCTION(tname, arg) void tname(void *arg)
 
 /**
  * @brief   Platform dependent part of the @p chThdCreateI() API.
@@ -441,16 +430,10 @@ static inline rtcnt_t port_rt_get_counter_value(void) {
 /* Module late inclusions.                                                   */
 /*===========================================================================*/
 
-/* The following code is not processed when the file is included from an
-   asm module.*/
 #if !defined(_FROM_ASM_)
 
 #if CH_CFG_ST_TIMEDELTA > 0
-#if !PORT_USE_ALT_TIMER
 #include "chcore_timer.h"
-#else /* PORT_USE_ALT_TIMER */
-#include "chcore_timer_alt.h"
-#endif /* PORT_USE_ALT_TIMER */
 #endif /* CH_CFG_ST_TIMEDELTA > 0 */
 
 #endif /* !defined(_FROM_ASM_) */

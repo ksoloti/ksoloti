@@ -1,12 +1,12 @@
 /*
-    ChibiOS - Copyright (C) 2006..2019 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006,2007,2008,2009,2010,2011,2012,2013,2014,
+              2015,2016,2017,2018,2019,2020,2021 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,9 +19,9 @@
 
 /**
  * @file    sb/user/sbuser.c
- * @brief   ARMv7-M sandbox user API code.
+ * @brief   ARM SandBox user API code.
  *
- * @addtogroup ARMV7M_SANDBOX_API
+ * @addtogroup ARM_SANDBOX_USER_API
  * @{
  */
 
@@ -39,11 +39,6 @@
 /* Module exported variables.                                                */
 /*===========================================================================*/
 
-/**
- * @brief   Sandbox API internal state.
- */
-sbapi_state_t sb;
-
 /*===========================================================================*/
 /* Module local types.                                                       */
 /*===========================================================================*/
@@ -59,16 +54,5 @@ sbapi_state_t sb;
 /*===========================================================================*/
 /* Module exported functions.                                                */
 /*===========================================================================*/
-
-/**
- * @brief   API layer initialization.
- * @note    To be called before any other call to the "sb" functions.
- *
- * @init
- */
-void sbApiInit(void) {
-
-  sb.frequency = (time_conv_t)sbGetFrequency();
-}
 
 /** @} */

@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2019 Rocco Marco Guglielmi
+    ChibiOS - Copyright (C) 2006..2020 Rocco Marco Guglielmi
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -82,15 +82,16 @@ static void spi_lld_serve_interrupt(SPIDriver *spip) {
     }
     
     /* Pushing the new TX: this will start a new transfer. */
-    if((spip->txbuf != NULL) && (spip->size > 0)) {
-      (spip->txbuf)++;
-      spip->spi->SPITX = *(spip->txbuf);
+    if(spip->size > 0) {
+      if(spip->txbuf != NULL) {
+        (spip->txbuf)++;
+        spip->spi->SPITX = *(spip->txbuf);
+      }
+      else {
+        spip->spi->SPITX = dummy_tx;
+      }
     }
     else {
-      spip->spi->SPITX = dummy_tx;
-    }
-
-    if(spip->size == 0) {
       /* Portable SPI ISR code defined in the high level driver, note, it is
          a macro.*/
       _spi_isr_code(spip);

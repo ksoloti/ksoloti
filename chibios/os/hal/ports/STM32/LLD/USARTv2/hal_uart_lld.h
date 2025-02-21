@@ -613,6 +613,71 @@
 #define STM32_DMA_REQUIRED
 #endif
 
+/* Checks on allocation of USARTx units.*/
+#if STM32_UART_USE_USART1
+#if defined(STM32_USART1_IS_USED)
+#error "UARTD1 requires USART1 but it is already used"
+#else
+#define STM32_USART1_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_USART2
+#if defined(STM32_USART2_IS_USED)
+#error "UARTD2 requires USART2 but it is already used"
+#else
+#define STM32_USART2_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_USART3
+#if defined(STM32_USART3_IS_USED)
+#error "UARTD3 requires USART3 but it is already used"
+#else
+#define STM32_USART3_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_UART4
+#if defined(STM32_UART4_IS_USED)
+#error "UARTD4 requires UART4 but it is already used"
+#else
+#define STM32_UART4_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_UART5
+#if defined(STM32_UART5_IS_USED)
+#error "UARTD5 requires UART5 but it is already used"
+#else
+#define STM32_UART5_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_USART6
+#if defined(STM32_USART6_IS_USED)
+#error "UARTD6 requires USART6 but it is already used"
+#else
+#define STM32_USART6_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_UART7
+#if defined(STM32_UART7_IS_USED)
+#error "UARTD7 requires UART7 but it is already used"
+#else
+#define STM32_UART7_IS_USED
+#endif
+#endif
+
+#if STM32_UART_USE_UART8
+#if defined(STM32_UART8_IS_USED)
+#error "UARTD8 requires UART8 but it is already used"
+#else
+#define STM32_UART8_IS_USED
+#endif
+#endif
+
 /*===========================================================================*/
 /* Driver data structures and types.                                         */
 /*===========================================================================*/
@@ -623,9 +688,9 @@
 typedef uint32_t uartflags_t;
 
 /**
- * @brief   Structure representing an UART driver.
+ * @brief   Type of an UART driver.
  */
-typedef struct UARTDriver UARTDriver;
+typedef struct hal_uart_driver UARTDriver;
 
 /**
  * @brief   Generic UART notification callback type.
@@ -651,10 +716,10 @@ typedef void (*uartccb_t)(UARTDriver *uartp, uint16_t c);
 typedef void (*uartecb_t)(UARTDriver *uartp, uartflags_t e);
 
 /**
- * @brief   Driver configuration structure.
+ * @brief   Type of an UART configuration structure.
  * @note    It could be empty on some architectures.
  */
-typedef struct {
+typedef struct hal_uart_config {
   /**
    * @brief   End of transmission buffer callback.
    */
@@ -709,7 +774,7 @@ typedef struct {
 /**
  * @brief   Structure representing an UART driver.
  */
-struct UARTDriver {
+struct hal_uart_driver {
   /**
    * @brief   Driver state.
    */

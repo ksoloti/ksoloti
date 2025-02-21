@@ -114,4 +114,36 @@ caddr_t _sbrk_r(struct _reent *r, int incr) {
   return (caddr_t)prevp;
 }
 
+__attribute__((used))
+int _kill(int pid, int sig) {
+
+  (void) pid;
+  (void) sig;
+
+  errno = EINVAL;
+  return -1;
+}
+
+__attribute__((used))
+void _exit(int code) {
+
+  sbExit((msg_t)code);
+  abort();
+}
+
+__attribute__((used))
+int _getpid(void) {
+
+  return 1;
+  abort();
+}
+
+#ifdef __cplusplus
+extern "C" {
+  void __cxa_pure_virtual(void) {
+    osalSysHalt("pure virtual");
+  }
+}
+#endif
+
 /*** EOF ***/

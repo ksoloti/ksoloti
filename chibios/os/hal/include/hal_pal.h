@@ -327,31 +327,34 @@ typedef struct {
  */
 #if ((PAL_USE_CALLBACKS == TRUE) && (PAL_USE_WAIT == TRUE)) ||              \
     defined(__DOXYGEN__)
-#define _pal_isr_code(e) do {                                               \
-  if (_pal_events[e].cb != NULL) {                                          \
-    _pal_events[e].cb(_pal_events[e].arg);                                  \
-  }                                                                         \
-  osalSysLockFromISR();                                                     \
-  osalThreadDequeueAllI(&_pal_events[e].threads, MSG_OK);                   \
-  osalSysUnlockFromISR();                                                   \
-} while (false)
+#define _pal_isr_code(e)                                                    \
+  do {                                                                      \
+    if (_pal_events[e].cb != NULL) {                                        \
+      _pal_events[e].cb(_pal_events[e].arg);                                \
+    }                                                                       \
+    osalSysLockFromISR();                                                   \
+    osalThreadDequeueAllI(&_pal_events[e].threads, MSG_OK);                 \
+    osalSysUnlockFromISR();                                                 \
+  } while (false)
 #endif /* (PAL_USE_CALLBACKS == TRUE) && (PAL_USE_WAIT == TRUE) */
 
 #if (PAL_USE_CALLBACKS == TRUE) && (PAL_USE_WAIT == FALSE)
-#define _pal_isr_code(e) do {                                               \
-  if (_pal_events[e].cb != NULL) {                                          \
-    _pal_events[e].cb(_pal_events[e].arg);                                  \
-  }                                                                         \
-} while (false)
+#define _pal_isr_code(e)                                                    \
+  do {                                                                      \
+    if (_pal_events[e].cb != NULL) {                                        \
+      _pal_events[e].cb(_pal_events[e].arg);                                \
+    }                                                                       \
+  } while (false)
 #endif /* (PAL_USE_CALLBACKS == TRUE) && (PAL_USE_WAIT == FALSE) */
 
 #if ((PAL_USE_CALLBACKS == FALSE) && (PAL_USE_WAIT == TRUE)) ||             \
     defined(__DOXYGEN__)
-#define _pal_isr_code(e) do {                                               \
-  osalSysLockFromISR();                                                     \
-  osalThreadDequeueAllI(&_pal_events[e].threads, MSG_OK);                   \
-  osalSysUnlockFromISR();                                                   \
-} while (false)
+#define _pal_isr_code(e)                                                    \
+  do {                                                                      \
+    osalSysLockFromISR();                                                   \
+    osalThreadDequeueAllI(&_pal_events[e].threads, MSG_OK);                 \
+    osalSysUnlockFromISR();                                                 \
+  } while (false)
 #endif /* (PAL_USE_CALLBACKS == FALSE) && (PAL_USE_WAIT == TRUE) */
 
 /** @} */
@@ -501,6 +504,25 @@ typedef struct {
 #endif
 
 /**
+ * @brief   Reads the group latch.
+ * @note    The function can be called from any context.
+ *
+ * @param[in] port      port identifier
+ * @param[in] mask      group mask, a logic AND is performed on the input
+ *                      data
+ * @param[in] offset    group bit offset within the port
+ * @return              The group logic states.
+ *
+ * @special
+ */
+#if !defined(pal_lld_readgrouplatch) || defined(__DOXYGEN__)
+#define palReadGroupLatch(port, mask, offset)                               \
+  ((palReadLatch(port) >> (offset)) & (mask))
+#else
+#define palReadGroupLatch(port, mask, offset) pal_lld_readgrouplatch(port, mask, offset)
+#endif
+
+/**
  * @brief   Writes a group of bits.
  * @note    The operation is not guaranteed to be atomic on all the
  *          architectures, for atomicity and/or portability reasons you may
@@ -545,7 +567,13 @@ typedef struct {
  * @special
  */
 #if !defined(pal_lld_setgroupmode) || defined(__DOXYGEN__)
-#define palSetGroupMode(port, mask, offset, mode)
+#define palSetGroupMode(port, mask, offset, mode)                           \
+  do {                                                                      \
+    (void)(port);                                                           \
+    (void)(mask);                                                           \
+    (void)(offset);                                                         \
+    (void)(port);                                                           \
+  } while (mode)
 #else
 #define palSetGroupMode(port, mask, offset, mode)                           \
   pal_lld_setgroupmode(port, mask, offset, mode)

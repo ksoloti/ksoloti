@@ -140,6 +140,12 @@
 #define STM32_EXTI_IMR1_MASK                0x1F800000U
 #define STM32_EXTI_IMR2_MASK                0xFFFFFFFCU
 
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        128 /* Maximum, can be redefined.*/
+#endif
+
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
 #define STM32_HAS_GPIOB                     TRUE
@@ -208,12 +214,16 @@
 #define STM32_SPI2_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
 #define STM32_SPI_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
+#define STM32_I2S_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
+#define STM32_I2C_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
 
 #define STM32_HAS_SPI3                      TRUE
 #define STM32_SPI3_SUPPORTS_I2S             TRUE
 #define STM32_SPI3_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 1)
 #define STM32_SPI_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 2)
+#define STM32_I2S_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 1)
+#define STM32_I2S_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 2)
 
 #define STM32_HAS_SPI4                      FALSE
 #define STM32_HAS_SPI5                      FALSE
@@ -417,6 +427,12 @@
 #define STM32_EXTI_IMR1_MASK                0x1F800000U
 #define STM32_EXTI_IMR2_MASK                0xFFFFFFFCU
 
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        256 /* Maximum, can be redefined.*/
+#endif
+
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
 #define STM32_HAS_GPIOB                     TRUE
@@ -491,12 +507,16 @@
 #define STM32_SPI2_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
 #define STM32_SPI_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
+#define STM32_I2S_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
+#define STM32_I2C_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
 
 #define STM32_HAS_SPI3                      TRUE
 #define STM32_SPI3_SUPPORTS_I2S             TRUE
 #define STM32_SPI3_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 1)
 #define STM32_SPI_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 2)
+#define STM32_I2S_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 1)
+#define STM32_I2S_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 2)
 
 #define STM32_HAS_SPI4                      TRUE
 #define STM32_SPI4_SUPPORTS_I2S             FALSE
@@ -687,6 +707,12 @@
 #define STM32_EXTI_NUM_LINES                33
 #define STM32_EXTI_IMR1_MASK                0x1F800000U
 #define STM32_EXTI_IMR2_MASK                0xFFFFFFFCU
+
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        32 /* Maximum, can be redefined.*/
+#endif
 
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
@@ -914,6 +940,12 @@
 #define STM32_EXTI_IMR1_MASK                0x1F800000U
 #define STM32_EXTI_IMR2_MASK                0xFFFFFFFCU
 
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        32 /* Maximum, can be redefined.*/
+#endif
+
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
 #define STM32_HAS_GPIOB                     TRUE
@@ -980,12 +1012,16 @@
 #define STM32_SPI2_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
 #define STM32_SPI_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
+#define STM32_I2S_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
+#define STM32_I2C_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
 
 #define STM32_HAS_SPI3                      TRUE
 #define STM32_SPI3_SUPPORTS_I2S             TRUE
 #define STM32_SPI3_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 2)
 #define STM32_SPI_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 3)
+#define STM32_I2S_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 2)
+#define STM32_I2S_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 3)
 
 #define STM32_HAS_SPI1                      FALSE
 #define STM32_HAS_SPI4                      FALSE
@@ -1143,6 +1179,12 @@
 #define STM32_EXTI_IMR1_MASK                0x1F800000U
 #define STM32_EXTI_IMR2_MASK                0xFFFFFFFCU
 
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        32 /* Maximum, can be redefined.*/
+#endif
+
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
 #define STM32_HAS_GPIOB                     TRUE
@@ -1209,12 +1251,16 @@
 #define STM32_SPI2_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
 #define STM32_SPI_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
+#define STM32_I2S_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
+#define STM32_I2C_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
 
 #define STM32_HAS_SPI3                      TRUE
 #define STM32_SPI3_SUPPORTS_I2S             TRUE
 #define STM32_SPI3_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 2)
 #define STM32_SPI_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 3)
+#define STM32_I2S_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 2)
+#define STM32_I2S_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 3)
 
 #define STM32_HAS_SPI1                      FALSE
 #define STM32_HAS_SPI4                      FALSE
@@ -1391,6 +1437,12 @@
 #define STM32_EXTI_IMR1_MASK                0x1F800000U
 #define STM32_EXTI_IMR2_MASK                0xFFFFFFFCU
 
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        128 /* Maximum, can be redefined.*/
+#endif
+
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
 #define STM32_HAS_GPIOB                     TRUE
@@ -1460,12 +1512,16 @@
 #define STM32_SPI2_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
 #define STM32_SPI_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
+#define STM32_I2S_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
+#define STM32_I2C_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
 
 #define STM32_HAS_SPI3                      TRUE
 #define STM32_SPI3_SUPPORTS_I2S             TRUE
 #define STM32_SPI3_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 1)
 #define STM32_SPI_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 2)
+#define STM32_I2S_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 1)
+#define STM32_I2S_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 2)
 
 #define STM32_HAS_SPI4                      FALSE
 #define STM32_HAS_SPI5                      FALSE
@@ -1651,6 +1707,12 @@
 #define STM32_EXTI_IMR1_MASK                0x1F800000U
 #define STM32_EXTI_IMR2_MASK                0xFFFFFFFCU
 
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        256 /* Maximum, can be redefined.*/
+#endif
+
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
 #define STM32_HAS_GPIOB                     TRUE
@@ -1725,12 +1787,16 @@
 #define STM32_SPI2_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
 #define STM32_SPI_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
+#define STM32_I2S_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
+#define STM32_I2C_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
 
 #define STM32_HAS_SPI3                      TRUE
 #define STM32_SPI3_SUPPORTS_I2S             TRUE
 #define STM32_SPI3_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 1)
 #define STM32_SPI_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 2)
+#define STM32_I2S_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 1)
+#define STM32_I2S_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 2)
 
 #define STM32_HAS_SPI4                      TRUE
 #define STM32_SPI4_SUPPORTS_I2S             FALSE
@@ -1904,6 +1970,12 @@
 #define STM32_EXTI_IMR1_MASK                0x1F800000U
 #define STM32_EXTI_IMR2_MASK                0xFFFFFFFCU
 
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        32 /* Maximum, can be redefined.*/
+#endif
+
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
 #define STM32_HAS_GPIOB                     TRUE
@@ -1969,12 +2041,16 @@
 #define STM32_SPI2_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
 #define STM32_SPI_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
+#define STM32_I2S_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
+#define STM32_I2C_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
 
 #define STM32_HAS_SPI3                      TRUE
 #define STM32_SPI3_SUPPORTS_I2S             TRUE
 #define STM32_SPI3_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 2)
 #define STM32_SPI_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 3)
+#define STM32_I2S_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 2)
+#define STM32_I2S_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 3)
 
 #define STM32_HAS_SPI1                      FALSE
 #define STM32_HAS_SPI4                      FALSE
@@ -2141,6 +2217,12 @@
 #define STM32_EXTI_NUM_LINES                33
 #define STM32_EXTI_IMR1_MASK                0x1F800000U
 #define STM32_EXTI_IMR2_MASK                0xFFFFFFFCU
+
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        32 /* Maximum, can be redefined.*/
+#endif
 
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
@@ -2383,6 +2465,12 @@
 #define STM32_EXTI_IMR1_MASK                0x1F800000U
 #define STM32_EXTI_IMR2_MASK                0xFFFFFFFCU
 
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        128 /* Maximum, can be redefined.*/
+#endif
+
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
 #define STM32_HAS_GPIOB                     TRUE
@@ -2452,12 +2540,16 @@
 #define STM32_SPI2_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
 #define STM32_SPI_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
+#define STM32_I2S_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
+#define STM32_I2C_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
 
 #define STM32_HAS_SPI3                      TRUE
 #define STM32_SPI3_SUPPORTS_I2S             TRUE
 #define STM32_SPI3_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 1)
 #define STM32_SPI_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 2)
+#define STM32_I2S_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 1)
+#define STM32_I2S_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 2)
 
 #define STM32_HAS_SPI4                      FALSE
 #define STM32_HAS_SPI5                      FALSE
@@ -2636,6 +2728,12 @@
 #define STM32_EXTI_NUM_LINES                33
 #define STM32_EXTI_IMR1_MASK                0x1F800000U
 #define STM32_EXTI_IMR2_MASK                0xFFFFFFFCU
+
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        32 /* Maximum, can be redefined.*/
+#endif
 
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
@@ -2891,6 +2989,12 @@
 #define STM32_EXTI_IMR1_MASK                0x1F800000U
 #define STM32_EXTI_IMR2_MASK                0xFFFFFFFCU
 
+/* Flash attributes.*/
+#define STM32_FLASH_NUMBER_OF_BANKS         1
+#if !defined(STM32_FLASH_SECTORS_PER_BANK) || defined(__DOXYGEN__)
+#define STM32_FLASH_SECTORS_PER_BANK        256 /* Maximum, can be redefined.*/
+#endif
+
 /* GPIO attributes.*/
 #define STM32_HAS_GPIOA                     TRUE
 #define STM32_HAS_GPIOB                     TRUE
@@ -2965,12 +3069,16 @@
 #define STM32_SPI2_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
 #define STM32_SPI_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
+#define STM32_I2S_SPI2_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 4)
+#define STM32_I2C_SPI2_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 5)
 
 #define STM32_HAS_SPI3                      TRUE
 #define STM32_SPI3_SUPPORTS_I2S             TRUE
 #define STM32_SPI3_I2S_FULLDUPLEX           TRUE
 #define STM32_SPI_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 1)
 #define STM32_SPI_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 2)
+#define STM32_I2S_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 1)
+#define STM32_I2S_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(2, 2)
 
 #define STM32_HAS_SPI4                      TRUE
 #define STM32_SPI4_SUPPORTS_I2S             FALSE

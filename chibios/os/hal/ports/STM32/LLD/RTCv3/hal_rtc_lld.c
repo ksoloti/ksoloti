@@ -212,10 +212,10 @@ static ps_error_t _read(void *instance, ps_offset_t offset,
   volatile uint32_t *bkpr = &((RTCDriver *)instance)->tamp->BKP0R;
   unsigned i;
 
-  chDbgCheck((instance != NULL) && (rp != NULL));
-  chDbgCheck((n > 0U) && (n <= STM32_RTC_STORAGE_SIZE));
-  chDbgCheck((offset < STM32_RTC_STORAGE_SIZE) &&
-             (offset + n <= STM32_RTC_STORAGE_SIZE));
+  osalDbgCheck((instance != NULL) && (rp != NULL));
+  osalDbgCheck((n > 0U) && (n <= STM32_RTC_STORAGE_SIZE));
+  osalDbgCheck((offset < STM32_RTC_STORAGE_SIZE) &&
+               (offset + n <= STM32_RTC_STORAGE_SIZE));
 
   for (i = 0; i < (unsigned)n; i++) {
     unsigned index = ((unsigned)offset + i) / sizeof (uint32_t);
@@ -231,10 +231,10 @@ static ps_error_t _write(void *instance, ps_offset_t offset,
   volatile uint32_t *bkpr = &((RTCDriver *)instance)->tamp->BKP0R;
   unsigned i;
 
-  chDbgCheck((instance != NULL) && (wp != NULL));
-  chDbgCheck((n > 0U) && (n <= STM32_RTC_STORAGE_SIZE));
-  chDbgCheck((offset < STM32_RTC_STORAGE_SIZE) &&
-             (offset + n <= STM32_RTC_STORAGE_SIZE));
+  osalDbgCheck((instance != NULL) && (wp != NULL));
+  osalDbgCheck((n > 0U) && (n <= STM32_RTC_STORAGE_SIZE));
+  osalDbgCheck((offset < STM32_RTC_STORAGE_SIZE) &&
+               (offset + n <= STM32_RTC_STORAGE_SIZE));
 
   for (i = 0; i < (unsigned)n; i++) {
     unsigned index = ((unsigned)offset + i) / sizeof (uint32_t);
@@ -577,8 +577,10 @@ void rtc_lld_set_alarm(RTCDriver *rtcp,
   if (alarm == 0) {
     if (alarmspec != NULL) {
       rtcp->rtc->CR &= ~RTC_CR_ALRAE;
+#if defined(RTC_ICSR_ALRAWF)
       while (!(rtcp->rtc->ICSR & RTC_ICSR_ALRAWF))
         ;
+#endif
       rtcp->rtc->ALRMAR = alarmspec->alrmr;
       rtcp->rtc->CR |= RTC_CR_ALRAE;
       rtcp->rtc->CR |= RTC_CR_ALRAIE;
@@ -592,8 +594,10 @@ void rtc_lld_set_alarm(RTCDriver *rtcp,
   else {
     if (alarmspec != NULL) {
       rtcp->rtc->CR &= ~RTC_CR_ALRBE;
+#if defined(RTC_ICSR_ALRBWF)
       while (!(rtcp->rtc->ICSR & RTC_ICSR_ALRBWF))
         ;
+#endif
       rtcp->rtc->ALRMBR = alarmspec->alrmr;
       rtcp->rtc->CR |= RTC_CR_ALRBE;
       rtcp->rtc->CR |= RTC_CR_ALRBIE;

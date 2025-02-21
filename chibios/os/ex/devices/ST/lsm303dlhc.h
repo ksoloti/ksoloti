@@ -286,6 +286,7 @@
 #define LSM303DLHC_CRB_REG_M_GN0            (1 << 5)
 #define LSM303DLHC_CRB_REG_M_GN1            (1 << 6)
 #define LSM303DLHC_CRB_REG_M_GN2            (1 << 7)
+/** @} */
 
 /**
  * @name    LSM303DLHC_CRB_REG_M register bits definitions
@@ -467,6 +468,7 @@ typedef enum {
   LSM303DLHC_ACC_END_LITTLE = 0x00, /**< Little Endian                      */
   LSM303DLHC_ACC_END_BIG = 0x40     /**< Big Endian                         */
 } lsm303dlhc_acc_end_t;
+/** @} */
 
 /**
  * @name    LSM303DLHC compass subsystem data structures and types.
@@ -507,6 +509,7 @@ typedef enum {
   LSM303DLHC_COMP_MD_BLOCK = 0x01,  /**< Single-Conversion Mode             */
   LSM303DLHC_COMP_MD_SLEEP = 0x02   /**< Sleep Mode                         */
 } lsm303dlhc_comp_md_t;
+/** @} */
 
 /**
  * @name    LSM303DLHC main system data structures and types.
@@ -548,7 +551,7 @@ typedef struct {
   /**
    * @brief LSM303DLHC accelerometer subsystem output data rate.
    */
-  lsm303dlhc_acc_odr_t      accoutdatarate;
+  lsm303dlhc_acc_odr_t      accodr;
 #if LSM303DLHC_USE_ADVANCED || defined(__DOXYGEN__)
   /**
    * @brief LSM303DLHC accelerometer subsystem low power mode.
@@ -561,7 +564,7 @@ typedef struct {
   /**
    * @brief LSM303DLHC accelerometer subsystem block data update.
    */
-  lsm303dlhc_acc_bdu_t      accblockdataupdate;
+  lsm303dlhc_acc_bdu_t      accbdu;
   /**
    * @brief  LSM303DLHC accelerometer endianness.
    */
@@ -582,7 +585,7 @@ typedef struct {
   /**
    * @brief LSM303DLHC compass subsystem output data rate.
    */
-  lsm303dlhc_comp_odr_t     compoutputdatarate;
+  lsm303dlhc_comp_odr_t     compodr;
 #if LSM303DLHC_USE_ADVANCED || defined(__DOXYGEN__)
   /**
    * @brief LSM303DLHC compass subsystem working mode.

@@ -37,6 +37,7 @@
 
 /**
  * @name    Implementation capabilities
+ * @{
  */
 /**
  * @brief   Callback support int the driver.
@@ -123,7 +124,7 @@
  * @note    On some devices this values goes in the similar TAFCR register.
  */
 #if !defined(STM32_TAMP_CR1_INIT) || defined(__DOXYGEN__)
-#define STM32_TAMP_CR1_INIT               0
+#define STM32_TAMP_CR1_INIT                 0
 #endif
 
 /**
@@ -133,7 +134,7 @@
  * @note    On some devices this values goes in the similar TAFCR register.
  */
 #if !defined(STM32_TAMP_CR2_INIT) || defined(__DOXYGEN__)
-#define STM32_TAMP_CR2_INIT               0
+#define STM32_TAMP_CR2_INIT                 0
 #endif
 
 /**
@@ -153,7 +154,7 @@
  * @note    On some devices this values goes in the similar TAFCR register.
  */
 #if !defined(STM32_TAMP_IER_INIT) || defined(__DOXYGEN__)
-#define STM32_TAMP_IER_INIT               0
+#define STM32_TAMP_IER_INIT                 0
 #endif
 /** @} */
 
@@ -247,7 +248,6 @@ typedef struct hal_rtc_wakeup {
   rtccb_t                   callback;                                       \
   /* Pointer to TAMPER registers block. */                                  \
   TAMP_TypeDef              *tamp
-
 
 /*===========================================================================*/
 /* Driver macros.                                                            */

@@ -1,12 +1,12 @@
 /*
-    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006,2007,2008,2009,2010,2011,2012,2013,2014,
+              2015,2016,2017,2018,2019,2020,2021 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,7 +38,7 @@
 /**
  * @brief   ChibiOS/LIB identification macro.
  */
-#define _CHIBIOS_OSLIB_
+#define __CHIBIOS_OSLIB__
 
 /**
  * @brief   Stable release flag.
@@ -52,7 +52,7 @@
 /**
  * @brief   OS Library version string.
  */
-#define CH_OSLIB_VERSION        "1.2.0"
+#define CH_OSLIB_VERSION        "1.3.1"
 
 /**
  * @brief   OS Library version major number.
@@ -62,12 +62,12 @@
 /**
  * @brief   OS Library version minor number.
  */
-#define CH_OSLIB_MINOR          2
+#define CH_OSLIB_MINOR          3
 
 /**
  * @brief   OS Library version patch number.
  */
-#define CH_OSLIB_PATCH          0
+#define CH_OSLIB_PATCH          1
 /** @} */
 
 /*===========================================================================*/
@@ -79,7 +79,7 @@
 /*===========================================================================*/
 
 /* Host OS checks.*/
-#if !defined(_CHIBIOS_RT_) && !defined(_CHIBIOS_NIL_)
+#if !defined(__CHIBIOS_RT__) && !defined(__CHIBIOS_NIL__)
 #error "OS check failed, must be included after ch.h"
 #endif
 
@@ -246,16 +246,16 @@
  *
  * @notapi
  */
-static inline void _oslib_init(void) {
+static inline void __oslib_init(void) {
 
 #if CH_CFG_USE_MEMCORE == TRUE
-  _core_init();
+  __core_init();
 #endif
 #if CH_CFG_USE_HEAP == TRUE
-  _heap_init();
+  __heap_init();
 #endif
 #if CH_CFG_USE_FACTORY == TRUE
-  _factory_init();
+  __factory_init();
 #endif
 }
 

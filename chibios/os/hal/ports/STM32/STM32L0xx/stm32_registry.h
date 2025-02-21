@@ -574,7 +574,6 @@
 #define STM32_HAS_CRC                       TRUE
 #define STM32_CRC_PROGRAMMABLE              TRUE
 
-
 /*===========================================================================*/
 /* STM32L052xx, STM32L062xx, STM32L053xx, STM32L063xx.                       */
 /*===========================================================================*/
@@ -599,13 +598,13 @@
 #define STM32_HAS_CAN3                      FALSE
 
 /* DAC attributes.*/
-#define STM32_HAS_DAC1_CH1                  FALSE
+#define STM32_HAS_DAC1_CH1                  TRUE
 #define STM32_DAC1_CH1_DMA_MSK              (STM32_DMA_STREAM_ID_MSK(1, 2))
 #define STM32_DAC1_CH1_DMA_CHN              0x00000090
 
-#define STM32_HAS_DAC1_CH2                  FALSE
-#define STM32_HAS_DAC2_CH1                  FALSE
-#define STM32_HAS_DAC2_CH2                  FALSE
+#define STM32_HAS_DAC1_CH2                  TRUE
+#define STM32_HAS_DAC2_CH1                  TRUE
+#define STM32_HAS_DAC2_CH2                  TRUE
 
 /* DMA attributes.*/
 #define STM32_ADVANCED_DMA                  TRUE
@@ -853,10 +852,10 @@
 #define STM32_HAS_I2C3                      TRUE
 #define STM32_I2C3_RX_DMA_MSK               (STM32_DMA_STREAM_ID_MSK(1, 3) |\
                                              STM32_DMA_STREAM_ID_MSK(1, 5))
-#define STM32_I2C3_RX_DMA_CHN               0x00E0E000
-#define STM32_I2C3_TX_DMA_MSK               (STM32_DMA_STREAM_ID_MSK(1, 4) |\
-                                             STM32_DMA_STREAM_ID_MSK(1, 6))
-#define STM32_I2C3_TX_DMA_CHN               0x0E0E0000
+#define STM32_I2C3_RX_DMA_CHN               0x000E0E00
+#define STM32_I2C3_TX_DMA_MSK               (STM32_DMA_STREAM_ID_MSK(1, 2) |\
+                                             STM32_DMA_STREAM_ID_MSK(1, 4))
+#define STM32_I2C3_TX_DMA_CHN               0x0000E0E0
 
 /* SDIO attributes.*/
 #define STM32_HAS_SDIO                      FALSE
@@ -1071,10 +1070,10 @@
 #define STM32_HAS_I2C3                      TRUE
 #define STM32_I2C3_RX_DMA_MSK               (STM32_DMA_STREAM_ID_MSK(1, 3) |\
                                              STM32_DMA_STREAM_ID_MSK(1, 5))
-#define STM32_I2C3_RX_DMA_CHN               0x00E0E000
-#define STM32_I2C3_TX_DMA_MSK               (STM32_DMA_STREAM_ID_MSK(1, 4) |\
-                                             STM32_DMA_STREAM_ID_MSK(1, 6))
-#define STM32_I2C3_TX_DMA_CHN               0x0E0E0000
+#define STM32_I2C3_RX_DMA_CHN               0x000E0E00
+#define STM32_I2C3_TX_DMA_MSK               (STM32_DMA_STREAM_ID_MSK(1, 2) |\
+                                             STM32_DMA_STREAM_ID_MSK(1, 4))
+#define STM32_I2C3_TX_DMA_CHN               0x0000E0E0
 
 /* SDIO attributes.*/
 #define STM32_HAS_SDIO                      FALSE

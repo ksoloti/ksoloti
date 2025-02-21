@@ -49,6 +49,11 @@
 /*===========================================================================*/
 
 /**
+ * @brief   Requires use of SPIv2 driver model.
+ */
+#define HAL_LLD_SELECT_SPI_V2           TRUE
+
+/**
  * @name    Platform identification macros
  * @{
  */
@@ -534,13 +539,13 @@
 #endif
 
 #if defined(STM32L052xx) && !defined(STM32L052_MCUCONF)
-#error "Using a wrong mcuconf.h file, STM32G052_MCUCONF not defined"
+#error "Using a wrong mcuconf.h file, STM32L052_MCUCONF not defined"
 
 #elif defined(STM32L053xx) && !defined(STM32L053_MCUCONF)
 #error "Using a wrong mcuconf.h file, STM32L053_MCUCONF not defined"
 
 #elif defined(STM32L072xx) && !defined(STM32L072_MCUCONF)
-#error "Using a wrong mcuconf.h file, STM32G072_MCUCONF not defined"
+#error "Using a wrong mcuconf.h file, STM32L072_MCUCONF not defined"
 
 #elif defined(STM32L073xx) && !defined(STM32L073_MCUCONF)
 #error "Using a wrong mcuconf.h file, STM32L073_MCUCONF not defined"
@@ -758,7 +763,7 @@
 #error "LSI not enabled, required by STM32_MCOSEL"
 #endif
 
-#if STM32_RTCSEL == STM32_RTCSEL_LSI
+#if HAL_USE_RTC && (STM32_RTCSEL == STM32_RTCSEL_LSI)
 #error "LSI not enabled, required by STM32_RTCSEL"
 #endif
 

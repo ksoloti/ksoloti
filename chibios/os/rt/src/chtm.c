@@ -1,12 +1,12 @@
 /*
-    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006,2007,2008,2009,2010,2011,2012,2013,2014,
+              2015,2016,2017,2018,2019,2020,2021 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,13 +33,6 @@
 /*===========================================================================*/
 /* Module local definitions.                                                 */
 /*===========================================================================*/
-
-/**
- * @brief   Number of iterations in the calibration loop.
- * @note    This is required in order to assess the best result in
- *          architectures with instruction cache.
- */
-#define TM_CALIBRATION_LOOP             4U
 
 /*===========================================================================*/
 /* Module exported variables.                                                */
@@ -75,29 +68,6 @@ static inline void tm_stop(time_measurement_t *tmp,
 /*===========================================================================*/
 /* Module exported functions.                                                */
 /*===========================================================================*/
-
-/**
- * @brief   Initializes the time measurement unit.
- *
- * @init
- */
-void _tm_init(void) {
-  time_measurement_t tm;
-  unsigned i;
-
-  /* Time Measurement subsystem calibration, it does a null measurement
-     and calculates the call overhead which is subtracted to real
-     measurements.*/
-  ch.tm.offset = (rtcnt_t)0;
-  chTMObjectInit(&tm);
-  i = TM_CALIBRATION_LOOP;
-  do {
-    chTMStartMeasurementX(&tm);
-    chTMStopMeasurementX(&tm);
-    i--;
-  } while (i > 0U);
-  ch.tm.offset = tm.best;
-}
 
 /**
  * @brief   Initializes a @p TimeMeasurement object.
@@ -138,7 +108,7 @@ NOINLINE void chTMStartMeasurementX(time_measurement_t *tmp) {
  */
 NOINLINE void chTMStopMeasurementX(time_measurement_t *tmp) {
 
-  tm_stop(tmp, chSysGetRealtimeCounterX(), ch.tm.offset);
+  tm_stop(tmp, chSysGetRealtimeCounterX(), ch_system.tmc.offset);
 }
 
 /**

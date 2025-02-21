@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2019 Rocco Marco Guglielmi
+    ChibiOS - Copyright (C) 2006..2020 Rocco Marco Guglielmi
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@
 
 #ifndef HAL_PAL_LLD_H
 #define HAL_PAL_LLD_H
-
 
 #include "aducm_gp.h"
 

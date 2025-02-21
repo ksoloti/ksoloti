@@ -178,19 +178,6 @@
 #error "STM32_OTGx_NUMBER not defined in registry"
 #endif
 
-/**
- * @brief   Maximum endpoint address.
- */
-#if (STM32_HAS_OTG2 && STM32_USB_USE_OTG2) || defined(__DOXYGEN__)
-#if (STM32_OTG1_ENDPOINTS < STM32_OTG2_ENDPOINTS) || defined(__DOXYGEN__)
-#define USB_MAX_ENDPOINTS                   STM32_OTG2_ENDPOINTS
-#else
-#define USB_MAX_ENDPOINTS                   STM32_OTG1_ENDPOINTS
-#endif
-#else
-#define USB_MAX_ENDPOINTS                   STM32_OTG1_ENDPOINTS
-#endif
-
 #if STM32_USB_USE_OTG1 && !STM32_HAS_OTG1
 #error "OTG1 not present in the selected device"
 #endif
@@ -201,6 +188,19 @@
 
 #if !STM32_USB_USE_OTG1 && !STM32_USB_USE_OTG2
 #error "USB driver activated but no USB peripheral assigned"
+#endif
+
+/* Maximum endpoint address.*/
+#if STM32_HAS_OTG1 && STM32_USB_USE_OTG1 && STM32_HAS_OTG2 && STM32_USB_USE_OTG2
+  #if STM32_OTG1_ENDPOINTS < STM32_OTG2_ENDPOINTS
+    #define USB_MAX_ENDPOINTS               STM32_OTG2_ENDPOINTS
+  #else
+    #define USB_MAX_ENDPOINTS               STM32_OTG1_ENDPOINTS
+  #endif
+#elif STM32_HAS_OTG1 && STM32_USB_USE_OTG1
+  #define USB_MAX_ENDPOINTS                 STM32_OTG1_ENDPOINTS
+#elif STM32_HAS_OTG2 && STM32_USB_USE_OTG2
+  #define USB_MAX_ENDPOINTS                 STM32_OTG2_ENDPOINTS
 #endif
 
 #if STM32_USB_USE_OTG1 &&                                                \
@@ -229,9 +229,9 @@
 #define STM32_USBCLK                        STM32_48CLK
 #elif  defined(STM32H7XX)
 /* Defines directly STM32_USBCLK.*/
-#define rccEnableOTG_FS                     rccEnableUSB2_OTG_HS
-#define rccDisableOTG_FS                    rccDisableUSB2_OTG_HS
-#define rccResetOTG_FS                      rccResetUSB2_OTG_HS
+#define rccEnableOTG_FS                     rccEnableUSB2_OTG_FS
+#define rccDisableOTG_FS                    rccDisableUSB2_OTG_FS
+#define rccResetOTG_FS                      rccResetUSB2_OTG_FS
 #define rccEnableOTG_HS                     rccEnableUSB1_OTG_HS
 #define rccDisableOTG_HS                    rccDisableUSB1_OTG_HS
 #define rccResetOTG_HS                      rccResetUSB1_OTG_HS

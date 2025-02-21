@@ -25,9 +25,116 @@
 #ifndef HAL_H
 #define HAL_H
 
+#include "ccportab.h"
+
 #include "osal.h"
 #include "board.h"
 #include "halconf.h"
+
+/*===========================================================================*/
+/* Driver constants.                                                         */
+/*===========================================================================*/
+
+/**
+ * @brief   ChibiOS/HAL identification macro.
+ */
+#define __CHIBIOS_HAL__
+
+/**
+ * @brief   Stable release flag.
+ */
+#define CH_HAL_STABLE           1
+
+/**
+ * @name    ChibiOS/HAL version identification
+ * @{
+ */
+/**
+ * @brief   HAL version string.
+ */
+#define CH_HAL_VERSION          "8.4.0"
+
+/**
+ * @brief   HAL version major number.
+ */
+#define CH_HAL_MAJOR            8
+
+/**
+ * @brief   HAL version minor number.
+ */
+#define CH_HAL_MINOR            4
+
+/**
+ * @brief   HAL version patch number.
+ */
+#define CH_HAL_PATCH            0
+/** @} */
+
+/**
+ * @name    Return codes
+ * @{
+ */
+/**
+ * @brief HAL operation success.
+ * @deprecated
+ */
+#define HAL_SUCCESS             false
+/**
+ * @brief HAL operation failed.
+ * @deprecated
+ */
+#define HAL_FAILED              true
+/** @} */
+
+/**
+ * @name    Return codes for HAL functions
+ * @{
+ */
+#define HAL_RET_SUCCESS         MSG_OK
+/**
+ * @brief   Configuration error.
+ * @details An error has been detected in the driver configuration structure.
+ */
+#define HAL_RET_CONFIG_ERROR    (msg_t)-16
+/**
+ * @brief   A required resource is not available.
+ * @details One of the resources required for driver operations is not
+ *          available.
+ */
+#define HAL_RET_NO_RESOURCE     (msg_t)-17
+/**
+ * @brief   The peripheral is busy.
+ * @details The peripheral is not available or taken by some other system
+ *          actor.
+ */
+#define HAL_RET_HW_BUSY         (msg_t)-18
+/**
+ * @brief   Peripheral failure.
+ * @details Peripheral failed, for example HW timeouts.
+ */
+#define HAL_RET_HW_FAILURE      (msg_t)-19
+/**
+ * @brief   Unknown control code.
+ */
+#define HAL_RET_UNKNOWN_CTL     (msg_t)-20
+/** @} */
+
+/*===========================================================================*/
+/* Driver pre-compile time settings.                                         */
+/*===========================================================================*/
+
+/*===========================================================================*/
+/* Derived constants and error checks.                                       */
+/*===========================================================================*/
+
+/* Configuration file checks.*/
+#if !defined(_CHIBIOS_HAL_CONF_)
+#error "invalid configuration file"
+#endif
+
+#if !defined(_CHIBIOS_HAL_CONF_VER_8_4_)
+#error "obsolete or unknown configuration file"
+#endif
 
 /* Error checks on the configuration header file.*/
 #if !defined(HAL_USE_PAL)
@@ -118,8 +225,67 @@
 #define HAL_USE_WSPI                        FALSE
 #endif
 
+/*===========================================================================*/
+/* Driver data structures and types.                                         */
+/*===========================================================================*/
+
+/*===========================================================================*/
+/* Driver macros.                                                            */
+/*===========================================================================*/
+
+/*===========================================================================*/
+/* External declarations.                                                    */
+/*===========================================================================*/
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+  void halInit(void);
+#ifdef __cplusplus
+}
+#endif
+
 /* Low Level HAL support.*/
 #include "hal_lld.h"
+
+/*===========================================================================*/
+/* Driver inline functions.                                                  */
+/*===========================================================================*/
+
+#if defined(HAL_LLD_USE_CLOCK_MANAGEMENT) || defined(__DOXYGEN__)
+/**
+ * @brief   Switches to a different clock configuration
+ *
+ * @param[in] ccp       pointer to clock a @p halclkcfg_t structure
+ * @return              The clock switch result.
+ * @retval false        if the clock switch succeeded
+ * @retval true         if the clock switch failed
+ *
+ * @special
+ */
+static inline bool halClockSwitchMode(const halclkcfg_t *ccp) {
+
+  return hal_lld_clock_switch_mode(ccp);
+}
+
+/**
+ * @brief   Returns the frequency of a clock point in Hz.
+ *
+ * @param[in] clkpt     clock point to be returned
+ * @return              The clock point frequency in Hz or zero if the
+ *                      frequency is unknown.
+ *
+ * @xclass
+ */
+static inline halfreq_t halClockGetPointX(halclkpt_t clkpt) {
+
+  return hal_lld_get_clock_point(clkpt);
+}
+#endif /* defined(HAL_LLD_USE_CLOCK_MANAGEMENT) */
+
+/*===========================================================================*/
+/* Driver late inclusions.                                                   */
+/*===========================================================================*/
 
 /* Abstract interfaces.*/
 #include "hal_objects.h"
@@ -134,6 +300,7 @@
 /* Shared headers.*/
 #include "hal_buffers.h"
 #include "hal_queues.h"
+#include "hal_buffered_serial.h"
 
 /* Normal drivers.*/
 #include "hal_pal.h"
@@ -176,90 +343,6 @@
 #if (HAL_USE_COMMUNITY == TRUE) || defined(__DOXYGEN__)
 #include "hal_community.h"
 #endif
-#endif
-
-/*===========================================================================*/
-/* Driver constants.                                                         */
-/*===========================================================================*/
-
-/**
- * @brief   ChibiOS/HAL identification macro.
- */
-#define _CHIBIOS_HAL_
-
-/**
- * @brief   Stable release flag.
- */
-#define CH_HAL_STABLE           1
-
-/**
- * @name    ChibiOS/HAL version identification
- * @{
- */
-/**
- * @brief   HAL version string.
- */
-#define HAL_VERSION             "7.1.2"
-
-/**
- * @brief   HAL version major number.
- */
-#define CH_HAL_MAJOR            7
-
-/**
- * @brief   HAL version minor number.
- */
-#define CH_HAL_MINOR            1
-
-/**
- * @brief   HAL version patch number.
- */
-#define CH_HAL_PATCH            2
-/** @} */
-
-/**
- * @name    Return codes
- * @{
- */
-#define HAL_SUCCESS             false
-#define HAL_FAILED              true
-/** @} */
-
-/*===========================================================================*/
-/* Driver pre-compile time settings.                                         */
-/*===========================================================================*/
-
-/*===========================================================================*/
-/* Derived constants and error checks.                                       */
-/*===========================================================================*/
-
-/* Configuration file checks.*/
-#if !defined(_CHIBIOS_HAL_CONF_)
-#error "invalid configuration file"
-#endif
-
-#if !defined(_CHIBIOS_HAL_CONF_VER_7_1_)
-#error "obsolete or unknown configuration file"
-#endif
-
-/*===========================================================================*/
-/* Driver data structures and types.                                         */
-/*===========================================================================*/
-
-/*===========================================================================*/
-/* Driver macros.                                                            */
-/*===========================================================================*/
-
-/*===========================================================================*/
-/* External declarations.                                                    */
-/*===========================================================================*/
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-  void halInit(void);
-#ifdef __cplusplus
-}
 #endif
 
 #endif /* HAL_H */

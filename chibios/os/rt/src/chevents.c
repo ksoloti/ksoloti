@@ -1,12 +1,12 @@
 /*
-    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006,2007,2008,2009,2010,2011,2012,2013,2014,
+              2015,2016,2017,2018,2019,2020,2021 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -98,6 +98,38 @@
  *                      the event source is broadcasted
  * @param[in] wflags    mask of flags the listening thread is interested in
  *
+ * @iclass
+ */
+void chEvtRegisterMaskWithFlagsI(event_source_t *esp,
+                                 event_listener_t *elp,
+                                 eventmask_t events,
+                                 eventflags_t wflags) {
+  thread_t *currtp = chThdGetSelfX();
+
+  chDbgCheckClassI();
+  chDbgCheck((esp != NULL) && (elp != NULL));
+
+  elp->next     = esp->next;
+  esp->next     = elp;
+  elp->listener = currtp;
+  elp->events   = events;
+  elp->flags    = (eventflags_t)0;
+  elp->wflags   = wflags;
+}
+
+/**
+ * @brief   Registers an Event Listener on an Event Source.
+ * @details Once a thread has registered as listener on an event source it
+ *          will be notified of all events broadcasted there.
+ * @note    Multiple Event Listeners can specify the same bits to be ORed to
+ *          different threads.
+ *
+ * @param[in] esp       pointer to the  @p event_source_t structure
+ * @param[in] elp       pointer to the @p event_listener_t structure
+ * @param[in] events    events to be ORed to the thread when
+ *                      the event source is broadcasted
+ * @param[in] wflags    mask of flags the listening thread is interested in
+ *
  * @api
  */
 void chEvtRegisterMaskWithFlags(event_source_t *esp,
@@ -105,15 +137,8 @@ void chEvtRegisterMaskWithFlags(event_source_t *esp,
                                 eventmask_t events,
                                 eventflags_t wflags) {
 
-  chDbgCheck((esp != NULL) && (elp != NULL));
-
   chSysLock();
-  elp->next     = esp->next;
-  esp->next     = elp;
-  elp->listener = currp;
-  elp->events   = events;
-  elp->flags    = (eventflags_t)0;
-  elp->wflags   = wflags;
+  chEvtRegisterMaskWithFlagsI(esp, elp, events, wflags);
   chSysUnlock();
 }
 
@@ -160,10 +185,13 @@ void chEvtUnregister(event_source_t *esp, event_listener_t *elp) {
  * @iclass
  */
 eventmask_t chEvtGetAndClearEventsI(eventmask_t events) {
+  thread_t *currtp = chThdGetSelfX();
   eventmask_t m;
 
-  m = currp->epending & events;
-  currp->epending &= ~events;
+  chDbgCheckClassI();
+
+  m = currtp->epending & events;
+  currtp->epending &= ~events;
 
   return m;
 }
@@ -206,6 +234,99 @@ eventmask_t chEvtAddEvents(eventmask_t events) {
 }
 
 /**
+ * @brief   Returns the unmasked flags associated to an @p event_listener_t.
+ * @details The flags are returned and the @p event_listener_t flags mask is
+ *          cleared.
+ *
+ * @param[in] elp       pointer to the @p event_listener_t structure
+ * @return              The flags added to the listener by the associated
+ *                      event source.
+ *
+ * @iclass
+ */
+eventflags_t chEvtGetAndClearFlagsI(event_listener_t *elp) {
+  eventflags_t flags;
+
+  chDbgCheckClassI();
+  chDbgCheck(elp != NULL);
+
+  flags = elp->flags;
+  elp->flags = (eventflags_t)0;
+
+  return flags & elp->wflags;
+}
+
+/**
+ * @brief   Returns the flags associated to an @p event_listener_t.
+ * @details The flags are returned and the @p event_listener_t flags mask is
+ *          cleared.
+ *
+ * @param[in] elp       pointer to the @p event_listener_t structure
+ * @return              The flags added to the listener by the associated
+ *                      event source.
+ *
+ * @api
+ */
+eventflags_t chEvtGetAndClearFlags(event_listener_t *elp) {
+  eventflags_t flags;
+
+  chDbgCheck(elp != NULL);
+
+  chSysLock();
+  flags = elp->flags;
+  elp->flags = (eventflags_t)0;
+  chSysUnlock();
+
+  return flags & elp->wflags;
+}
+
+/**
+ * @brief   Adds a set of event flags directly to the specified @p thread_t.
+ * @post    This function does not reschedule so a call to a rescheduling
+ *          function must be performed before unlocking the kernel. Note that
+ *          interrupt handlers always reschedule on exit so an explicit
+ *          reschedule must not be performed in ISRs.
+ *
+ * @param[in] tp        the thread to be signaled
+ * @param[in] events    the events set to be ORed
+ *
+ * @iclass
+ */
+void chEvtSignalI(thread_t *tp, eventmask_t events) {
+
+  chDbgCheckClassI();
+  chDbgCheck(tp != NULL);
+
+  tp->epending |= events;
+  /* Test on the AND/OR conditions wait states.*/
+  if (((tp->state == CH_STATE_WTOREVT) &&
+       ((tp->epending & tp->u.ewmask) != (eventmask_t)0)) ||
+      ((tp->state == CH_STATE_WTANDEVT) &&
+       ((tp->epending & tp->u.ewmask) == tp->u.ewmask))) {
+    tp->u.rdymsg = MSG_OK;
+    (void) chSchReadyI(tp);
+  }
+}
+
+/**
+ * @brief   Adds a set of event flags directly to the specified @p thread_t.
+ *
+ * @param[in] tp        the thread to be signaled
+ * @param[in] events    the events set to be ORed
+ *
+ * @api
+ */
+void chEvtSignal(thread_t *tp, eventmask_t events) {
+
+  chDbgCheck(tp != NULL);
+
+  chSysLock();
+  chEvtSignalI(tp, events);
+  chSchRescheduleS();
+  chSysUnlock();
+}
+
+/**
  * @brief   Signals all the Event Listeners registered on the specified Event
  *          Source.
  * @details This function variants ORs the specified event flags to all the
@@ -244,74 +365,6 @@ void chEvtBroadcastFlagsI(event_source_t *esp, eventflags_t flags) {
 }
 
 /**
- * @brief   Returns the flags associated to an @p event_listener_t.
- * @details The flags are returned and the @p event_listener_t flags mask is
- *          cleared.
- *
- * @param[in] elp       pointer to the @p event_listener_t structure
- * @return              The flags added to the listener by the associated
- *                      event source.
- *
- * @api
- */
-eventflags_t chEvtGetAndClearFlags(event_listener_t *elp) {
-  eventflags_t flags;
-
-  chSysLock();
-  flags = elp->flags;
-  elp->flags = (eventflags_t)0;
-  chSysUnlock();
-
-  return flags & elp->wflags;
-}
-
-/**
- * @brief   Adds a set of event flags directly to the specified @p thread_t.
- *
- * @param[in] tp        the thread to be signaled
- * @param[in] events    the events set to be ORed
- *
- * @api
- */
-void chEvtSignal(thread_t *tp, eventmask_t events) {
-
-  chDbgCheck(tp != NULL);
-
-  chSysLock();
-  chEvtSignalI(tp, events);
-  chSchRescheduleS();
-  chSysUnlock();
-}
-
-/**
- * @brief   Adds a set of event flags directly to the specified @p thread_t.
- * @post    This function does not reschedule so a call to a rescheduling
- *          function must be performed before unlocking the kernel. Note that
- *          interrupt handlers always reschedule on exit so an explicit
- *          reschedule must not be performed in ISRs.
- *
- * @param[in] tp        the thread to be signaled
- * @param[in] events    the events set to be ORed
- *
- * @iclass
- */
-void chEvtSignalI(thread_t *tp, eventmask_t events) {
-
-  chDbgCheckClassI();
-  chDbgCheck(tp != NULL);
-
-  tp->epending |= events;
-  /* Test on the AND/OR conditions wait states.*/
-  if (((tp->state == CH_STATE_WTOREVT) &&
-       ((tp->epending & tp->u.ewmask) != (eventmask_t)0)) ||
-      ((tp->state == CH_STATE_WTANDEVT) &&
-       ((tp->epending & tp->u.ewmask) == tp->u.ewmask))) {
-    tp->u.rdymsg = MSG_OK;
-    (void) chSchReadyI(tp);
-  }
-}
-
-/**
  * @brief   Signals all the Event Listeners registered on the specified Event
  *          Source.
  * @details This function variants ORs the specified event flags to all the
@@ -330,26 +383,6 @@ void chEvtBroadcastFlags(event_source_t *esp, eventflags_t flags) {
   chEvtBroadcastFlagsI(esp, flags);
   chSchRescheduleS();
   chSysUnlock();
-}
-
-/**
- * @brief   Returns the unmasked flags associated to an @p event_listener_t.
- * @details The flags are returned and the @p event_listener_t flags mask is
- *          cleared.
- *
- * @param[in] elp       pointer to the @p event_listener_t structure
- * @return              The flags added to the listener by the associated
- *                      event source.
- *
- * @iclass
- */
-eventflags_t chEvtGetAndClearFlagsI(event_listener_t *elp) {
-  eventflags_t flags;
-
-  flags = elp->flags;
-  elp->flags = (eventflags_t)0;
-
-  return flags & elp->wflags;
 }
 
 /**
@@ -397,18 +430,18 @@ void chEvtDispatch(const evhandler_t *handlers, eventmask_t events) {
  * @api
  */
 eventmask_t chEvtWaitOne(eventmask_t events) {
-  thread_t *ctp = currp;
+  thread_t *currtp = chThdGetSelfX();
   eventmask_t m;
 
   chSysLock();
-  m = ctp->epending & events;
+  m = currtp->epending & events;
   if (m == (eventmask_t)0) {
-    ctp->u.ewmask = events;
+    currtp->u.ewmask = events;
     chSchGoSleepS(CH_STATE_WTOREVT);
-    m = ctp->epending & events;
+    m = currtp->epending & events;
   }
   m ^= m & (m - (eventmask_t)1);
-  ctp->epending &= ~m;
+  currtp->epending &= ~m;
   chSysUnlock();
 
   return m;
@@ -427,17 +460,17 @@ eventmask_t chEvtWaitOne(eventmask_t events) {
  * @api
  */
 eventmask_t chEvtWaitAny(eventmask_t events) {
-  thread_t *ctp = currp;
+  thread_t *currtp = chThdGetSelfX();
   eventmask_t m;
 
   chSysLock();
-  m = ctp->epending & events;
+  m = currtp->epending & events;
   if (m == (eventmask_t)0) {
-    ctp->u.ewmask = events;
+    currtp->u.ewmask = events;
     chSchGoSleepS(CH_STATE_WTOREVT);
-    m = ctp->epending & events;
+    m = currtp->epending & events;
   }
-  ctp->epending &= ~m;
+  currtp->epending &= ~m;
   chSysUnlock();
 
   return m;
@@ -455,14 +488,14 @@ eventmask_t chEvtWaitAny(eventmask_t events) {
  * @api
  */
 eventmask_t chEvtWaitAll(eventmask_t events) {
-  thread_t *ctp = currp;
+  thread_t *currtp = chThdGetSelfX();
 
   chSysLock();
-  if ((ctp->epending & events) != events) {
-    ctp->u.ewmask = events;
+  if ((currtp->epending & events) != events) {
+    currtp->u.ewmask = events;
     chSchGoSleepS(CH_STATE_WTANDEVT);
   }
-  ctp->epending &= ~events;
+  currtp->epending &= ~events;
   chSysUnlock();
 
   return events;
@@ -493,25 +526,25 @@ eventmask_t chEvtWaitAll(eventmask_t events) {
  * @api
  */
 eventmask_t chEvtWaitOneTimeout(eventmask_t events, sysinterval_t timeout) {
-  thread_t *ctp = currp;
+  thread_t *currtp = chThdGetSelfX();
   eventmask_t m;
 
   chSysLock();
-  m = ctp->epending & events;
+  m = currtp->epending & events;
   if (m == (eventmask_t)0) {
     if (TIME_IMMEDIATE == timeout) {
       chSysUnlock();
       return (eventmask_t)0;
     }
-    ctp->u.ewmask = events;
+    currtp->u.ewmask = events;
     if (chSchGoSleepTimeoutS(CH_STATE_WTOREVT, timeout) < MSG_OK) {
       chSysUnlock();
       return (eventmask_t)0;
     }
-    m = ctp->epending & events;
+    m = currtp->epending & events;
   }
   m ^= m & (m - (eventmask_t)1);
-  ctp->epending &= ~m;
+  currtp->epending &= ~m;
   chSysUnlock();
 
   return m;
@@ -536,24 +569,24 @@ eventmask_t chEvtWaitOneTimeout(eventmask_t events, sysinterval_t timeout) {
  * @api
  */
 eventmask_t chEvtWaitAnyTimeout(eventmask_t events, sysinterval_t timeout) {
-  thread_t *ctp = currp;
+  thread_t *currtp = chThdGetSelfX();
   eventmask_t m;
 
   chSysLock();
-  m = ctp->epending & events;
+  m = currtp->epending & events;
   if (m == (eventmask_t)0) {
     if (TIME_IMMEDIATE == timeout) {
       chSysUnlock();
       return (eventmask_t)0;
     }
-    ctp->u.ewmask = events;
+    currtp->u.ewmask = events;
     if (chSchGoSleepTimeoutS(CH_STATE_WTOREVT, timeout) < MSG_OK) {
       chSysUnlock();
       return (eventmask_t)0;
     }
-    m = ctp->epending & events;
+    m = currtp->epending & events;
   }
-  ctp->epending &= ~m;
+  currtp->epending &= ~m;
   chSysUnlock();
 
   return m;
@@ -577,21 +610,21 @@ eventmask_t chEvtWaitAnyTimeout(eventmask_t events, sysinterval_t timeout) {
  * @api
  */
 eventmask_t chEvtWaitAllTimeout(eventmask_t events, sysinterval_t timeout) {
-  thread_t *ctp = currp;
+  thread_t *currtp = chThdGetSelfX();
 
   chSysLock();
-  if ((ctp->epending & events) != events) {
+  if ((currtp->epending & events) != events) {
     if (TIME_IMMEDIATE == timeout) {
       chSysUnlock();
       return (eventmask_t)0;
     }
-    ctp->u.ewmask = events;
+    currtp->u.ewmask = events;
     if (chSchGoSleepTimeoutS(CH_STATE_WTANDEVT, timeout) < MSG_OK) {
       chSysUnlock();
       return (eventmask_t)0;
     }
   }
-  ctp->epending &= ~events;
+  currtp->epending &= ~events;
   chSysUnlock();
 
   return events;
