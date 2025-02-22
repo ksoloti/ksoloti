@@ -125,13 +125,13 @@ int main(void) {
     spilink_init(is_master);
 #endif
 
-    // if (!palReadPad(SW2_PORT, SW2_PIN)) {
-    //     /* button S2 not pressed */
-    //     // watchdog_init();
-    //     chThdSleepMilliseconds(1);
-    // }
+    if (!palReadPad(SW2_PORT, SW2_PIN)) {
+        /* button S2 not pressed */
+        // watchdog_init();
+        chThdSleepMilliseconds(1);
+    }
 
-    //MY_USBH_Init();
+    MY_USBH_Init();
 
     if (!exception_check()) {
         /* Only try mounting SD and booting a patch when no exception is reported */
