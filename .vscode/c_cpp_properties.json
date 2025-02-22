@@ -1,0 +1,31 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "macFrameworkPath": [
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+            ],
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "macos-clang-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
+        },
+        {
+            "name": "Ksoloti",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": ["HAL_USE_USB=1", "THUMB", "FW_USBAUDIO=1", "KSOLOTI_H7=1", "STM32H755xx=1", "KSOLOTI_H7=1"],
+            "macFrameworkPath": [],
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "macos-gcc-arm",
+            "configurationProvider": "ms-vscode.makefile-tools"       
+        }
+    ],
+    "version": 4
+}
