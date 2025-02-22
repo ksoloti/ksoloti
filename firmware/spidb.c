@@ -47,7 +47,7 @@ static void dma_spidb_slave_interrupt(void* dat, uint32_t flags) {
         palSetPad(GPIOA, 1);
 #endif
 
-        chEvtSignalI(spip->thread, full_transfer_complete);
+        chEvtSignalI(spip->sync_transfer, full_transfer_complete);
 
 #ifdef DEBUG_SPIDB_INT_ON_GPIO
         palClearPad(GPIOA, 1);
@@ -63,7 +63,7 @@ static void dma_spidb_slave_interrupt(void* dat, uint32_t flags) {
         palSetPad(GPIOA, 2);
 #endif
 
-        chEvtSignalI(spip->thread, half_transfer_complete);
+        chEvtSignalI(spip->sync_transfer, half_transfer_complete);
 
 #ifdef DEBUG_SPIDB_INT_ON_GPIO
         palClearPad(GPIOA, 2);
@@ -130,7 +130,7 @@ void spidbSlaveResync(SPIDriver *spip) {
 void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, Thread * thread) {
     spiStart(spip, &config->spiconfig);
 
-    spip->thread = thread;
+    spip->sync_transfer = thread;
     spip->spi->CR1 &= ~SPI_CR1_SPE;
     spip->spi->CR1 &= ~SPI_CR1_MSTR;
     spip->spi->CR1 &= ~SPI_CR1_SSM;
