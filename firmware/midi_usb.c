@@ -200,17 +200,7 @@ static void onotify(GenericQueue *qp) {
   if (!usbGetTransmitStatusI(mdup->config->usbp, mdup->config->bulk_in)) {
     n = oqGetFullI(&mdup->oqueue);
     if ((n > 0) && !(n & 3)) {
-
-      chSysUnlock()
-      ;
-
-      //CH16 usbPrepareQueuedTransmit(mdup->config->usbp, mdup->config->bulk_in,
-      //                         &mdup->oqueue, n);
       mduInitiateTransmitI(mdup, n);
-
-      chSysLock()
-      ;
-      //CH16 usbStartTransmitI(mdup->config->usbp, mdup->config->bulk_in);
     }
   }
 }
