@@ -1,10 +1,17 @@
 #include "ch.h"
 #include "hal.h"
+#include "stm32_rcc.h"
 #include <string.h>
 #include "stm32_otg.h"
+/**
+ * @brief   PAL setup.
+ * @details Digital I/O ports static configuration as defined in @p board.h.
+ *          This variable is used by the HAL when initializing the PAL driver.
+ */
 
-#define AHB1_EN_MASK    STM32_GPIO_EN_MASK
-#define AHB1_LPEN_MASK  AHB1_EN_MASK
+
+ #define AHB1_EN_MASK    STM32_GPIO_EN_MASK
+ #define AHB1_LPEN_MASK  AHB1_EN_MASK
  
  /**
   * @brief   GPIO port setup info.
@@ -176,7 +183,6 @@
  #endif
  }
  
-
 /**
  * @brief   Early initialization code.
  * @details This initialization must be performed just after stack setup
@@ -184,22 +190,31 @@
  */
 void __early_init(void)
 {
-    /* Reset of all peripherals.*/
-    rccResetAHB1(~0);
-    rccResetAHB2(~0);
-    rccResetAPB1(~0);
-    NVIC->ICER[0] = 0xFFFFFFFF;
-    NVIC->ICER[1] = 0xFFFFFFFF;
-    NVIC->ICER[2] = 0xFFFFFFFF;
-    NVIC->ICER[3] = 0xFFFFFFFF;
-    NVIC->ICER[4] = 0xFFFFFFFF;
-    NVIC->ICER[5] = 0xFFFFFFFF;
-    NVIC->ICER[6] = 0xFFFFFFFF;
-    NVIC->ICER[7] = 0xFFFFFFFF;
-    rccResetAPB2(~0x10000000); //RCC_APB1RSTR_PWRRST
-    OTG_HS->GINTMSK = 0; // disable OTG_HS interrupts!
-    stm32_gpio_init();
-    stm32_clock_init();
+  /* Reset of all peripherals.*/
+  // volatile bool bPause = true;
+  // while(bPause)
+  //     ;
+
+  rccResetAHB1(~0);
+  rccResetAHB2(~0);
+  rccResetAPB1(~0);
+  NVIC->ICER[0] = 0xFFFFFFFF;
+  NVIC->ICER[1] = 0xFFFFFFFF;
+  NVIC->ICER[2] = 0xFFFFFFFF;
+  NVIC->ICER[3] = 0xFFFFFFFF;
+  NVIC->ICER[4] = 0xFFFFFFFF;
+  NVIC->ICER[5] = 0xFFFFFFFF;
+  NVIC->ICER[6] = 0xFFFFFFFF;
+  NVIC->ICER[7] = 0xFFFFFFFF;
+  rccResetAPB2(~0x10000000); //RCC_APB1RSTR_PWRRST
+  OTG_HS->GINTMSK = 0; // disable OTG_HS interrupts!
+
+  // extern uint32_t _vectors[0x200];  // copy vector table. Trick compiler into believing us it is 0x200 bytes long.
+  // memcpy((char *)0x20000000, (const char *)&_vectors, 0x200);
+  // SYSCFG->MEMRMP |= 0x03;    // remap SRAM1 to 0x00000000
+
+  stm32_clock_init();
+  stm32_gpio_init();
 }
 
 #if HAL_USE_SDC || defined(__DOXYGEN__)
@@ -234,5 +249,5 @@ void boardInit(void)
 
 void STM32_OTG2_HANDLER(void)
 {
-    /* Catch spurious interrupts... */
+    /* catch spurious interrupts... */
 }

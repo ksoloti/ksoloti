@@ -18,14 +18,14 @@
  */
 
 /*
- * ST32F427xG flasher memory setup.
+ * ST32F427xG mounter memory setup.
  */
 
 
 MEMORY
 {
-    SRAM (rwx) : ORIGIN = 0x20011000, LENGTH = 0x00009000 
-    CCMSRAM (rwx) : ORIGIN = 0x10000000, LENGTH = 0x0000E000 /* CCM - ccmramend */
+    SRAM (rwx) : ORIGIN = 0x20011000, LENGTH = 0x00009000
+    CCMSRAM    : ORIGIN = 0x10000000, LENGTH = 0x0000C800 /* CCM - ccmramend */
 }
 
 __main_stack_size__     = 0x400;
@@ -41,7 +41,7 @@ SECTIONS
 {
     . = 0;
     _text = .;
-    
+
     .text : ALIGN(16) SUBALIGN(16)
     {
         *(.text)
@@ -75,16 +75,19 @@ SECTIONS
         PROVIDE(__fini_array_end__ = .);
     } > SRAM
 
-    .rodata : ALIGN(4) SUBALIGN(4) 
+    .rodata : ALIGN(4) SUBALIGN(4)
     {
         * (.rodata);
         * (.rodata.*);
     } > SRAM
 
-    .startup : ALIGN(16) SUBALIGN(16)
+    startup : ALIGN(16) SUBALIGN(16)
     {
         KEEP(*(.vectors))
     } > SRAM
+
+    _etext = .;
+    _textdata = _etext;
 
     .data : ALIGN(4) SUBALIGN(4)
     {
@@ -105,9 +108,6 @@ SECTIONS
 	__data_end__ = .;
     } > SRAM
 
-    _etext = .;
-    _textdata = _etext;
-
     .stacks :
     {
         . = ALIGN(8);
@@ -123,7 +123,6 @@ SECTIONS
         __main_thread_stack_end__ = .;
     } > CCMSRAM
 
-
     .bss :
     {
         . = ALIGN(4);
@@ -137,8 +136,7 @@ SECTIONS
         . = ALIGN(4);
         __bss_end__ = .;           
         PROVIDE(_bss_end = .);
-    } > SRAM    
- 
+    } > SRAM
 }
 
 PROVIDE(end = .);

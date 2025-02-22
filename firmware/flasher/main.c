@@ -94,9 +94,13 @@ void DisplayAbortErr(int err)
 int main(void)
 {
     // small sleep required before watchdog_feed() & halInit();
-    chThdSleepMilliseconds(100);
+//    chThdSleepMilliseconds(100);
 
-    watchdog_feed();
+    volatile bool bPause = true;
+    while(bPause)
+        ;
+
+    //watchdog_feed();
     halInit();
 
     /* Float USB inputs, hope the host notices detach... */

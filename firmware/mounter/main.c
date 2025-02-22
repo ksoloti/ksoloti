@@ -224,9 +224,17 @@ static const USBMassStorageConfig msdConfig = {
 
 int main(void) {
     /* system & hardware initialization */
-
     // small sleep required before halInit();        
-    chThdSleepMilliseconds(100);
+ //   chThdSleepMilliseconds(100);
+// #if (CH_DBG_SYSTEM_STATE_CHECK == TRUE)
+//     // avoid trapping into _dbg_check_enable
+//     ch0.dbg.isr_cnt = 0;
+//     ch0.dbg.lock_cnt = 0;
+// #endif     
+
+    volatile bool bPause = true;
+    while(bPause)
+        ;
 
     halInit();
 
@@ -240,26 +248,23 @@ int main(void) {
     palClearPad(LED1_PORT, LED1_PIN);
     palClearPad(LED2_PORT, LED2_PIN);
 
-#if (CH_DBG_SYSTEM_STATE_CHECK == TRUE)
-    // avoid trapping into _dbg_check_enable
-    ch.dbg.isr_cnt = 0;
-    ch.dbg.lock_cnt = 0;
-#endif    
     chSysInit();
 
     palSetPadMode(GPIOA, 11, PAL_MODE_ALTERNATE(10));
     palSetPadMode(GPIOA, 12, PAL_MODE_ALTERNATE(10));
 
-    palSetPadMode(GPIOC, 8,  PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
-    palSetPadMode(GPIOC, 9,  PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
+    palSetPadMode(GPIOC, 8, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
+    palSetPadMode(GPIOC, 9, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
     palSetPadMode(GPIOC, 10, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
     palSetPadMode(GPIOC, 11, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
     palSetPadMode(GPIOC, 12, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
-    palSetPadMode(GPIOD, 2,  PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
-    chThdSleepMilliseconds(50);
+    palSetPadMode(GPIOD, 2, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
 
+    chThdSleepMicroseconds(1);
     /* initialize the SD card */
     sdcStart(&SDCD1, NULL);
+    chThdSleepMilliseconds(50);
+
     sdcConnect(&SDCD1);
 
     /* initialize the USB mass storage driver */
