@@ -62,6 +62,7 @@ remove_temp_files()
     rm -rf ./chibios/test
     rm -rf ./chibios/testhal
 
+    rm -rf ./firmware/.settings
     rm -rf ./firmware/build/*oloti
     rm -rf ./firmware/flasher/flasher_build/*oloti_flasher
     rm -rf ./firmware/mounter/mounter_build/*oloti_mounter
@@ -102,7 +103,7 @@ sh ./rrenew_permissions.sh
 sh ./kompile_shortcut.sh
 
 
-# ----- Compile jar
+# ----- Compile jar (OS differentiation in case of necessary changes on certain systems)
 case "$platform" in
         mac)
             ant -q clean
@@ -119,7 +120,7 @@ case "$platform" in
 esac
 
 
-# ----- Init
+# ----- Init, clean temp folder
 mkdir -p packagetemp
 rm -rf packagetemp/*
 
@@ -161,6 +162,7 @@ java -jar ./jdks/packr-all-4.0.0.jar --verbose --output ./packagetemp/win/ksolot
 
 cd ./packagetemp/win/ksoloti-${VERSION} 
 remove_temp_files
+rm -rf ./platform_win/apache-ant-*
 cd ..
 
 # ----- Compress win package (depending on what system we're building on)
