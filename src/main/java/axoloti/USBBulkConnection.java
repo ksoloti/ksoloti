@@ -732,6 +732,8 @@ public class USBBulkConnection extends Connection {
     private final byte[] pingPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('p')};
     private final byte[] getFileListPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('d')};
     private final byte[] copyToFlashPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('F')};
+    private final byte[] startMounterPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('m')};
+    private final byte[] startFlasherPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('l')};
 
     @Override
     public void TransmitStart() {
@@ -756,6 +758,16 @@ public class USBBulkConnection extends Connection {
     @Override
     public void TransmitCopyToFlash() {
         writeBytes(copyToFlashPckt);
+    }
+
+    @Override
+    public void TransmitStartMounter() {
+        writeBytes(startMounterPckt);
+    }
+
+    @Override
+    public void TransmitStartFlasher() {
+        writeBytes(startFlasherPckt);
     }
 
     @Override

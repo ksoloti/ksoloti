@@ -76,7 +76,7 @@ void StartFlasher(void)
 
 void StartMounter(void)
 {
-    g_startup_flags = FLASHER_MAGIC;
+    g_startup_flags = MOUNTER_MAGIC;
     NVIC_SystemReset();
 }
 
@@ -87,7 +87,7 @@ int main(void) {
 #if INBUILT_MOUNTER_FLASHER
     // shall we run the flasher?
     // the flasher needs to run from ram and does not use chibios
-    if(true)//g_startup_flags == FLASHER_MAGIC)
+    if(g_startup_flags == FLASHER_MAGIC)
     {
         g_startup_flags=0;
         flasher();
@@ -200,16 +200,16 @@ int main(void) {
     //TestMemset();
 
     // Test mounter reboot
-#if INBUILT_MOUNTER_TEST
-    g_startup_flags = MOUNTER_MAGIC;
-    NVIC_SystemReset();
-#endif
+// #if INBUILT_MOUNTER_TEST
+//     g_startup_flags = MOUNTER_MAGIC;
+//     NVIC_SystemReset();
+// #endif
 
-    // Test flasher reboot
-#if INBUILT_FLASHER_TEST
-    g_startup_flags = FLASHER_MAGIC;
-    NVIC_SystemReset();
-#endif
+//     // Test flasher reboot
+// #if INBUILT_FLASHER_TEST
+//     g_startup_flags = FLASHER_MAGIC;
+//     NVIC_SystemReset();
+// #endif
 
 
 #if FW_USBAUDIO

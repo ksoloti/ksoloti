@@ -17,6 +17,9 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 package qcmds;
+import axoloti.Connection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,8 +27,16 @@ package qcmds;
  */
 public class QCmdStartMounter extends QCmdStart {
 
+    boolean inbuiltMounterFlasher;
+
     public QCmdStartMounter() {
         super(null);
+        inbuiltMounterFlasher = false;
+    }
+
+    public QCmdStartMounter(boolean useInbuiltMounterFlasher) {
+        super(null);
+        inbuiltMounterFlasher = useInbuiltMounterFlasher;
     }
 
     @Override
@@ -43,4 +54,19 @@ public class QCmdStartMounter extends QCmdStart {
     //     return "Unmount/eject the SD card volume in your file manager to enable Patcher connection.";
     // }
 
+    public QCmd Do(Connection connection) {
+        if(inbuiltMounterFlasher) {
+            connection.ClearSync();
+            connection.TransmitStartMounter();
+        }
+        
+        return this;
+        // if (connection.WaitSync(patch_start_timeout)) {
+        //    return this;
+        // } else {
+        //    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, this.GetTimeOutMessage());
+        //    return new QCmdDisconnect();
+        // }
+     }
+ 
 }

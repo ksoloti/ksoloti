@@ -114,6 +114,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     public static MainFrame mainframe;
     public static AxoJFileChooser fc;
 
+    // change this for flasher and mounter built into firmware
+    boolean inbuiltMounterFlasher = true;
+
     boolean even = false;
     String LinkFirmwareID;
     String TargetFirmwareID;
@@ -1297,24 +1300,30 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
 
     private void jMenuItemMountActionPerformed(java.awt.event.ActionEvent evt) {
-        String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "mounter" + File.separator + "mounter_build";
-        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-            fname += File.separator + "ksoloti_mounter.bin";
-        }
-        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-            fname += File.separator + "axoloti_mounter.bin";
-        }
-        File f = new File(fname);
-        if (f.canRead()) {
+        if(inbuiltMounterFlasher) {
             qcmdprocessor.AppendToQueue(new QCmdStop());
-            qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
-            qcmdprocessor.AppendToQueue(new QCmdStartMounter());
+            qcmdprocessor.AppendToQueue(new QCmdStartMounter(true));
             qcmdprocessor.AppendToQueue(new QCmdDisconnect());
-            ShowDisconnect();
-        } else {
-            LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first! (file: {0})", fname);
         }
-
+        else {
+            String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "mounter" + File.separator + "mounter_build";
+            if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+                fname += File.separator + "ksoloti_mounter.bin";
+            }
+            else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+                fname += File.separator + "axoloti_mounter.bin";
+            }
+            File f = new File(fname);
+            if (f.canRead()) {
+                qcmdprocessor.AppendToQueue(new QCmdStop());
+                qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
+                qcmdprocessor.AppendToQueue(new QCmdStartMounter());
+                qcmdprocessor.AppendToQueue(new QCmdDisconnect());
+                ShowDisconnect();
+            } else {
+                LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first! (file: {0})", fname);
+            }
+        }
     }
 
 

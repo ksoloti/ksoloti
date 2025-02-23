@@ -51,6 +51,8 @@ public abstract class Connection {
     abstract public int getMemRead1Word();
     abstract public boolean GetSDCardPresent();
     abstract public int GetConnectionFlags();
+    abstract public void TransmitStartMounter();
+    abstract public void TransmitStartFlasher();
     
     private ArrayList<ConnectionStatusListener> csls = new ArrayList<ConnectionStatusListener>();
 
