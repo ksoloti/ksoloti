@@ -66,7 +66,7 @@ extern void MY_USBH_Init(void);
 #define FLASHER_MAGIC 0x2a464c4153484552 /* *FLASHER */
 volatile uint64_t g_startup_flags __attribute__ ((section (".noinit")));
 extern int mounter(void);
-extern int flasher(void);
+extern void flasher(void);
 
 void StartFlasher(void)
 {
@@ -84,16 +84,6 @@ void StartMounter(void)
 
 int main(void) {
 
-#if INBUILT_MOUNTER_FLASHER
-    // shall we run the flasher?
-    // the flasher needs to run from ram and does not use chibios
-    if(g_startup_flags == FLASHER_MAGIC)
-    {
-        g_startup_flags=0;
-        flasher();
-    }
-#endif
-
     /* copy vector table to SRAM1! */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnonnull"
@@ -102,6 +92,16 @@ int main(void) {
 
     /* remap SRAM1 to 0x00000000 */
     SYSCFG->MEMRMP |= 0x03;
+
+    #if INBUILT_MOUNTER_FLASHER
+    // shall we run the flasher?
+    // the flasher needs to run from ram and does not use chibios
+    if(g_startup_flags == FLASHER_MAGIC)
+    {
+        g_startup_flags=0;
+        flasher();
+    }
+#endif
 
     halInit();
     chSysInit();
@@ -160,6 +160,13 @@ int main(void) {
     ui_init();
     configSDRAM();
     // memTest();
+
+    #define SDRAM_BANK_ADDR     ((uint32_t)0xC0000000)        
+    volatile uint32_t *sdram32 = (uint32_t *)SDRAM_BANK_ADDR;
+
+    volatile uint32_t flength = sdram32[2];
+    volatile uint32_t ccrc = CalcCRC32((uint8_t *)(SDRAM_BANK_ADDR + 0x010), flength);
+    volatile uint32_t fcrc = sdram32[3];
 
     bool_t is_master = palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN);
 

@@ -18,14 +18,24 @@
  */
 package qcmds;
 
+import axoloti.Connection;
+
 /**
  *
  * @author Johannes Taelman
  */
 public class QCmdStartFlasher extends QCmdStart {
 
+    boolean inbuiltMounterFlasher;
+
     public QCmdStartFlasher() {
         super(null);
+        inbuiltMounterFlasher = false;
+    }
+
+    public QCmdStartFlasher(boolean useInbuiltMounterFlasher) {
+        super(null);
+        inbuiltMounterFlasher = useInbuiltMounterFlasher;
     }
 
     @Override
@@ -43,4 +53,20 @@ public class QCmdStartFlasher extends QCmdStart {
         /* Should never get here */
         return "\n>>> FIRMWARE UPDATE IN PROGRESS, DO NOT UNPLUG THE BOARD! <<<\nYou can connect again after the LEDs stop blinking.\n";
     }
+
+    public QCmd Do(Connection connection) {
+    if(inbuiltMounterFlasher) {
+        connection.ClearSync();
+        connection.TransmitStartFlasher();
+    }
+    
+    return this;
+    // if (connection.WaitSync(patch_start_timeout)) {
+    //    return this;
+    // } else {
+    //    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, this.GetTimeOutMessage());
+    //    return new QCmdDisconnect();
+    // }
+    }
+
 }
