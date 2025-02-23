@@ -5,6 +5,7 @@
 BOARDDEF=
 FWOPTIONDEF=
 USE_VERBOSE_COMPILE=no
+INBUILT_MOUNTER_FLASHER=yes
 
 # Compiler options here.
 
@@ -26,7 +27,7 @@ ifeq ($(USE_OPT),)
     -D$(BOARDDEF) \
     --specs=nano.specs \
     --specs=nosys.specs \
-    -O2 \
+    -Og \
     -Wno-implicit-fallthrough \
     -Wno-return-type \
     -Wno-unused-function \
@@ -286,7 +287,14 @@ CSRC = $(ALLCSRC) \
   ${FIRMWARE}/exceptions.c \
   ${FIRMWARE}/watchdog.c \
   ${FIRMWARE}/sysmon.c \
-  ${FIRMWARE}/axoloti_memory.c
+  ${FIRMWARE}/axoloti_memory.c 
+
+ifeq ($(INBUILT_MOUNTER_FLASHER),yes)  
+  CSRC += ${FIRMWARE}/mounter.c \
+          ${FIRMWARE}/mass_storage/usb_msd.c \
+          ${FIRMWARE}/flasher.c 
+  USE_OPT += -DINBUILT_MOUNTER_FLASHER=1
+endif
 
 #optional modules
 ifneq (,$(findstring BRAIDS,$(AXO_OPT_MODULES)))

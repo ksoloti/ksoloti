@@ -1,4 +1,4 @@
-#include "usb_msd.h"
+#include "mass_storage/usb_msd.h"
 #include "ch.h"
 #include "hal.h"
 #include <stdio.h>
@@ -165,7 +165,7 @@ static const USBDescriptor *getDescriptor(USBDriver *usbp, uint8_t type, uint8_t
 }
 
 /* USB mass storage driver */
-USBMassStorageDriver UMSD1;
+USBMassStorageDriver UMSD1 ;
 
 /* Handles global events of the USB driver */
 static void usbEvent(USBDriver *usbp, usbevent_t event) {
@@ -223,37 +223,18 @@ static const USBMassStorageConfig msdConfig = {
 };
 
 
-CH_FAST_IRQ_HANDLER(STM32_EXTI18_HANDLER)
-{
+// CH_FAST_IRQ_HANDLER(STM32_EXTI18_HANDLER)
+// {
 
-}
+// }
 
-CH_FAST_IRQ_HANDLER(STM32_EXTI17_HANDLER)
-{
+// CH_FAST_IRQ_HANDLER(STM32_EXTI17_HANDLER)
+// {
 
-}
+// }
 
 
-int main(void) {
-    /* system & hardware initialization */
-    // small sleep required before halInit();        
-//    chThdSleepMilliseconds(100);
-// #if (CH_DBG_SYSTEM_STATE_CHECK == TRUE)
-//     // avoid trapping into _dbg_check_enable
-//     ch0.dbg.isr_cnt = 0;
-//     ch0.dbg.lock_cnt = 0;
-// #endif     
-
-    volatile bool bPause = true;
-    while(bPause)
-        ;
-
-    halInit();
-    __disable_irq();
-    chSysInit();
-
-    chSysIntegrityCheckI(0xffffffff);
-
+int mounter(void) {
     /* float usb inputs, hope the host notices detach... */
     palSetPadMode(GPIOA, 11, PAL_MODE_INPUT);
     palSetPadMode(GPIOA, 12, PAL_MODE_INPUT);
@@ -264,7 +245,6 @@ int main(void) {
     palClearPad(LED1_PORT, LED1_PIN);
     palClearPad(LED2_PORT, LED2_PIN);
 
-//    chSysInit();
 
     palSetPadMode(GPIOA, 11, PAL_MODE_ALTERNATE(10));
     palSetPadMode(GPIOA, 12, PAL_MODE_ALTERNATE(10));
@@ -277,6 +257,7 @@ int main(void) {
     palSetPadMode(GPIOD, 2, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
 
     chThdSleepMicroseconds(1);
+
     /* initialize the SD card */
     sdcStart(&SDCD1, NULL);
     chThdSleepMilliseconds(50);

@@ -157,6 +157,15 @@ SECTIONS
         __data_end__ = .;
     } > RAM AT > FLASH
 
+   .sram3_text :
+    {
+        . = ALIGN(4);
+        PROVIDE(_sram3_text = .);
+        _sram3_start = LOADADDR(.sram3_text);
+        _sram3_text_start = .;
+        *(.ram3text)
+        _sram3_text_end = .;
+    } > SRAM3 AT > FLASH
 
     .flashend :
     {

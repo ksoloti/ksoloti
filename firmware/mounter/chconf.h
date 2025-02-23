@@ -573,7 +573,7 @@
  * @note    The default is @p FALSE.
  */
 #if !defined(CH_DBG_ENABLE_CHECKS) || defined(__DOXYGEN__)
-#define CH_DBG_ENABLE_CHECKS            TRUE
+#define CH_DBG_ENABLE_CHECKS            FALSE
 #endif
 
 /**

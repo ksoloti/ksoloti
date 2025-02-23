@@ -60,7 +60,27 @@
 
 extern void MY_USBH_Init(void);
 
+#if INBUILT_MOUNTER_FLASHER
+#define INBUILT_FLASHER_TEST 1
+#define MOUNTER_MAGIC 0x2a4d4f554e544552 /* *MOUNTER */
+#define FLASHER_MAGIC 0x2a464c4153484552 /* *FLASHER */
+volatile uint64_t g_startup_flags __attribute__ ((section (".noinit")));
+extern int mounter(void);
+extern int flasher(void);
+#endif
+
 int main(void) {
+
+#if INBUILT_MOUNTER_FLASHER
+    // shall we run the flasher?
+    // the flasher needs to run from ram and does not use chibios
+    if(true)//g_startup_flags == FLASHER_MAGIC)
+    {
+        g_startup_flags=0;
+        flasher();
+    }
+#endif
+
     /* copy vector table to SRAM1! */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnonnull"
@@ -72,6 +92,16 @@ int main(void) {
 
     halInit();
     chSysInit();
+
+#if INBUILT_MOUNTER_FLASHER
+    // shall we run the mounter?
+    // the mounter uses the chibios we have here running from flash
+    if(g_startup_flags == MOUNTER_MAGIC)
+    {
+        g_startup_flags=0;
+        mounter();
+    }
+#endif
 
 #ifdef FW_SPILINK
     pThreadSpilink = 0;
@@ -155,6 +185,19 @@ int main(void) {
     }
 
     //TestMemset();
+
+    // Test mounter reboot
+#if INBUILT_MOUNTER_TEST
+    g_startup_flags = MOUNTER_MAGIC;
+    NVIC_SystemReset();
+#endif
+
+    // Test flasher reboot
+#if INBUILT_FLASHER_TEST
+    g_startup_flags = FLASHER_MAGIC;
+    NVIC_SystemReset();
+#endif
+
 
 #if FW_USBAUDIO
     EventListener audioEventListener;

@@ -366,6 +366,8 @@ void ReadDirectoryListing(void) {
  * "Axoc" close file on SD card
  * "AxoA (int length) (byte[] data)" append data on open file on SD card
  * "AxoB (int or) (int and)" buttons for virtual Axoloti Control
+ * "Axom" -> start mounter
+ * "Axol" -> start flasher
  */
 
 

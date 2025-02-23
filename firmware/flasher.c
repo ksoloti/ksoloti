@@ -1,22 +1,22 @@
 /*
- * Copyright (C) 2013, 2014 Johannes Taelman
- * Edited 2023 - 2024 by Ksoloti
- *
- * This file is part of Axoloti.
- *
- * Axoloti is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * Axoloti is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * Axoloti. If not, see <http://www.gnu.org/licenses/>.
- */
- 
+* Copyright (C) 2013, 2014 Johannes Taelman
+* Edited 2023 - 2024 by Ksoloti
+*
+* This file is part of Axoloti.
+*
+* Axoloti is free software: you can redistribute it and/or modify it under the
+* terms of the GNU General Public License as published by the Free Software
+* Foundation, either version 3 of the License, or (at your option) any later
+* version.
+*
+* Axoloti is distributed in the hope that it will be useful, but WITHOUT ANY
+* WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+* A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* Axoloti. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
@@ -91,16 +91,16 @@ void DisplayAbortErr(int err)
     NVIC_SystemReset();
 }
 
-int main(void)
+bool CheckValidData(void)
 {
-    // small sleep required before watchdog_feed() & halInit();
-    //chThdSleepMilliseconds(100);
+    bool bResult = false;
 
-    volatile bool bPause = true;
-    while(bPause)
-        ;
+    
+}
 
-//    watchdog_feed();
+static int __attribute__((optimize("-O0"))) __attribute__ ((noinline)) __attribute__ ((section (".ram3text"))) flasher_ram(void)
+{
+    watchdog_feed();
     halInit();
     __disable_irq();
     chSysInit();
@@ -269,4 +269,27 @@ int main(void)
     NVIC_SystemReset();
 
     return 0;
+}
+
+extern void *_sram3_text;
+extern void *_sram3_start;
+extern void *_sram3_text_start;
+extern void *_sram3_text_end;
+
+int __attribute__((optimize("-O0"))) __attribute__ ((noinline)) flasher(void)
+{
+  // first copy to ram
+  volatile uint32_t *pSrc = (uint32_t *)&_sram3_start;
+  volatile uint32_t *pDst = (uint32_t *)&_sram3_text_start;
+  volatile uint32_t *pEnd = (uint32_t *)&_sram3_text_end;
+  
+  while(pDst < pEnd)
+  {
+    *pDst = *pSrc;
+    pDst++;
+    pSrc++;
+  }
+
+  // now execute from ram
+  flasher_ram();
 }
