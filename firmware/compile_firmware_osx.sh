@@ -3,7 +3,7 @@ set -e
 
 export PATH=${axoloti_runtime}/platform_osx/bin:$PATH
 
-if [[ "$#" -eq 1 ]]; then
+if [ "$#" -eq 1 ]; then
   printf "Building all firmware modes and helpers for the current board.\n"
   BUILD_NORMAL=1
   BUILD_USBAUDIO=1 
@@ -23,9 +23,9 @@ fi
 cd "${axoloti_firmware}"
 make BOARDDEF=$1 -f Makefile.patch.mk clean
 
-if [[ $1 = "BOARD_KSOLOTI_CORE" ]]; then
+if [ $1 = "BOARD_KSOLOTI_CORE" ]; then
   NAME=ksoloti
-else if [[ $1 = "BOARD_AXOLOTI_CORE" ]]; then
+else if [ $1 = "BOARD_AXOLOTI_CORE" ]; then
   NAME=axoloti
 fi
 fi
@@ -33,7 +33,7 @@ fi
 FLASHER_PROJECT="$NAME"_flasher
 MOUNTER_PROJECT="$NAME"_mounter
 
-if [[ $BUILD_FLASHER -eq 1 ]]; then
+if [ $BUILD_FLASHER -eq 1 ]; then
     printf "\nCompiling $1 - $FLASHER_PROJECT\n"
     cd flasher
     export BUILDDIR=flasher_build/$FLASHER_PROJECT
@@ -47,7 +47,7 @@ if [[ $BUILD_FLASHER -eq 1 ]]; then
     cd ..
 fi
 
-if [[ $BUILD_MOUNTER -eq 1 ]]; then
+if [ $BUILD_MOUNTER -eq 1 ]; then
     printf "\nCompiling $1 - $MOUNTER_PROJECT\n"
     cd mounter
     export BUILDDIR=mounter_build/$MOUNTER_PROJECT
@@ -61,7 +61,7 @@ if [[ $BUILD_MOUNTER -eq 1 ]]; then
     cd ..
 fi
 
-if [[ $BUILD_NORMAL -eq 1 ]]; then
+if [ $BUILD_NORMAL -eq 1 ]; then
     printf "\nCompiling $1\n"
     export BUILDDIR=build/$NAME/normal
     mkdir -p $BUILDDIR/.dep
@@ -73,7 +73,7 @@ if [[ $BUILD_NORMAL -eq 1 ]]; then
     cp $BUILDDIR/$NAME.* build
 fi
 
-if [[ $BUILD_SPILINK -eq 1 ]]; then
+if [ $BUILD_SPILINK -eq 1 ]; then
     printf "\nCompiling $1 FW_SPILINK\n"
     export BUILDDIR=build/$NAME/spilink
     mkdir -p $BUILDDIR/.dep
@@ -85,7 +85,7 @@ if [[ $BUILD_SPILINK -eq 1 ]]; then
     cp $BUILDDIR/"$NAME"_spilink.* build
 fi
 
-if [[ $BUILD_USBAUDIO -eq 1 ]]; then
+if [ $BUILD_USBAUDIO -eq 1 ]; then
     printf "\nCompiling $1 FW_USBAUDIO\n"
     export BUILDDIR=build/$NAME/usbaudio
     mkdir -p $BUILDDIR/.dep
@@ -97,7 +97,7 @@ if [[ $BUILD_USBAUDIO -eq 1 ]]; then
     cp $BUILDDIR/"$NAME"_usbaudio.* build
 fi
 
-if [[ $BUILD_I2SCODEC -eq 1 ]]; then
+if [ $BUILD_I2SCODEC -eq 1 ]; then
     printf "\nCompiling $1 FW_I2SCODEC\n"
     export BUILDDIR=build/$NAME/i2scodec
     mkdir -p $BUILDDIR/.dep
