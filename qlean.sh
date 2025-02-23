@@ -1,4 +1,7 @@
 #!/bin/bash
+
+printf "Cleaning firmware build...\n"
+
 rm -f ./firmware/.dep/*.*
 rm -f ./firmware/build/lst/*.*
 rm -f ./firmware/build/obj/*.*

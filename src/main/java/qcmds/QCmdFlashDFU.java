@@ -69,6 +69,9 @@ public class QCmdFlashDFU extends QCmdShellTask {
         if (prefs.getFirmwareMode().contains("USBAudio")) {
             bname += "_usbaudio";
         }
+        if (prefs.getFirmwareMode().contains("I2SCodec")) {
+            bname += "_i2scodec";
+        }
         bname += ".bin";
         Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.INFO, "File path: " + System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build" + File.separator + bname);
 

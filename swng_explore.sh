@@ -24,21 +24,18 @@ esac
 
 case "$platform" in
         mac)
-            ant clean
-            ant
-            ant clean
+            ant -q clean
+            ant -q
             ./jdks/SwingExplorer-1.8.0-SNAPSHOT/bin/swexpl -cp ./dist/Ksoloti.jar axoloti.Axoloti
         ;;
         linux)
-            ant clean
-            ant
-            ant clean
+            ant -q clean
+            ant -q
             ./jdks/SwingExplorer-1.8.0-SNAPSHOT/bin/swexpl -cp ./dist/Ksoloti.jar axoloti.Axoloti
         ;;
         windows)
-            ./platform_win/apache-ant-1.10.14/bin/ant.bat clean
-            ./platform_win/apache-ant-1.10.14/bin/ant.bat 
-            ./platform_win/apache-ant-1.10.14/bin/ant.bat clean
+            ant -q clean
+            ant -q
             ./jdks/SwingExplorer-1.8.0-SNAPSHOT/bin/swexpl.bat -cp ./dist/Ksoloti.jar axoloti.Axoloti
         ;;
 esac

@@ -35,11 +35,13 @@
  * depending on the board setting in the Patcher preferences.
  * #define FW_SPILINK 
  * #define FW_USBAUDIO 
+ * #define FW_I2SCODEC (#define I2S_DEBUG for debugging)
  */
 
 #define PI_F 3.14159265359f
 #define SAMPLERATE 48000
 #define BUFSIZE 16
+#define DOUBLE_BUFSIZE 32
 #define BUFSIZE_POW 4
 
 typedef int32_t int32buffer[BUFSIZE];
@@ -47,10 +49,11 @@ typedef int32_t int32buffer[BUFSIZE];
 #define USING_ADAU1761 1 /* Works with ADAU1961/1761/1361 so we just leave this defined */
 
 /* Firmware version 1.0.0.4 - Ksoloti v0.4+ */
+/* Firmware version 1.1.0.0 - Ksoloti Patcher 1.1.0 */
 #define FWVERSION1 1
-#define FWVERSION2 0
+#define FWVERSION2 1
 #define FWVERSION3 0
-#define FWVERSION4 4
+#define FWVERSION4 0
 
 #define BOARD_OTG_NOVBUSSENS
 

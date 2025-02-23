@@ -20,6 +20,7 @@
 #ifndef __PATCH_H
 #define __PATCH_H
 #include <stdint.h>
+#include "axoloti_defines.h"
 #include "ch.h"
 #include "hal.h"
 #include "ui.h"
@@ -32,6 +33,8 @@
 typedef void (*fptr_patch_init_t) (uint32_t fwID);
 typedef void (*fptr_patch_dispose_t) (void);
 #if FW_USBAUDIO
+typedef void (*fptr_patch_dsp_process_t) (int32_t*, int32_t*, int32_t*, int32_t*);
+#elif defined(FW_I2SCODEC)
 typedef void (*fptr_patch_dsp_process_t) (int32_t*, int32_t*, int32_t*, int32_t*);
 #else
 typedef void (*fptr_patch_dsp_process_t) (int32_t*, int32_t*);

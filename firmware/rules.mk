@@ -109,7 +109,7 @@ LIBS      := $(DLIBS) $(ULIBS)
 
 # Various settings
 MCFLAGS   := -mcpu=$(MCU)
-ODFLAGS	  = -x --syms
+ODFLAGS	  = -x --syms --demangle --disassemble --source-comment
 ASFLAGS   = $(MCFLAGS) -Wa,-amhls=$(LSTDIR)/$(notdir $(<:.s=.lst)) $(ADEFS)
 ASXFLAGS  = $(MCFLAGS) -Wa,-amhls=$(LSTDIR)/$(notdir $(<:.S=.lst)) $(ADEFS)
 CFLAGS    = $(MCFLAGS) $(OPT) $(COPT) $(CWARN) -Wa,-alms=$(LSTDIR)/$(notdir $(<:.c=.lst)) $(DEFS)
@@ -281,15 +281,15 @@ else
 	@$(SZ) $<
 endif
 
-# %.list: %.elf
-# ifeq ($(USE_VERBOSE_COMPILE),yes)
-# 	$(OD) -S $< > $@
-# else
-# 	@echo Creating $@
-# 	@$(OD) -S $< > $@
-# 	@echo
-# 	@echo Done
-# endif
+%.list: %.elf
+ifeq ($(USE_VERBOSE_COMPILE),yes)
+	$(OD) $(ODFLAGS) $< > $@
+else
+	@echo Creating $@
+	@$(OD) $(ODFLAGS) -S $< > $@
+	@echo
+	@echo Done
+endif
 
 lib: $(OBJS) $(BUILDDIR)/lib$(PROJECT).a
 
@@ -307,6 +307,6 @@ clean:
 #
 # Include the dependency files, should be the last of the makefile
 #
--include $(shell mkdir .dep 2>/dev/null) $(wildcard $(BUILDDIR)/.dep/*)
+-include $(wildcard $(BUILDDIR)/.dep/*)
 
 # *** EOF ***

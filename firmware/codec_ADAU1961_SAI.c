@@ -17,6 +17,10 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "axoloti_defines.h"
+#ifdef FW_I2SCODEC
+#include "i2scodec.h"
+#endif
 #include "codec_ADAU1961.h"
 #include "ch.h"
 #include "hal.h"
@@ -30,6 +34,7 @@
 #include "spilink.h"
 #include "spilink_lld.h"
 #endif
+
 
 #define ADAU1961_I2C_ADDR 0x70 /* (0x38<<1) */
 #define TIMEOUT 1000000
@@ -319,10 +324,12 @@ static void dma_sai_a_interrupt_spilink_slave(void* dat, uint32_t flags) {
     codec_interrupt_timestamp = hal_lld_get_counter_value();
     spilink_slave_process();
 
-    if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT)
+    if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
         computebufI(rbuf2, buf);
-    else
+    }
+    else {
         computebufI(rbuf, buf2);
+    }
 }
 
 #else
@@ -330,19 +337,25 @@ static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
 
     (void)dat;
     (void)flags;
+
     codec_interrupt_timestamp = hal_lld_get_counter_value();
 
     if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
+
+#ifdef I2S_DEBUG
+        palSetPad(GPIOA, 0);
+#endif
         computebufI(rbuf2, buf);
     }
     else {
         computebufI(rbuf, buf2);
     }
-
     dmaStreamClearInterrupt(sai_a_dma);
-}
-
+#ifdef I2S_DEBUG
+    palClearPad(GPIOA, 0);
 #endif
+}
+#endif /* FW_SPILINK */
 
 
 void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
@@ -432,11 +445,6 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
 #endif
 
     chThdSleepMilliseconds(1);
-
-    /*
-    * i2s2_sd (dac) is a confirmed connection, i2s2_ext_sd (adc) is not however
-    * bclk and lrclk are ok too
-    */
 
     ADAU1961_WriteRegister(ADAU1961_REG_R2_DMICJ,    0x20); /* Enable digital mic function via pin JACKDET/MICIN */
     ADAU1961_WriteRegister(ADAU1961_REG_R4_RMIXL0,   0x00);
@@ -624,15 +632,25 @@ void codec_ADAU1961_SAI_init(uint16_t samplerate, bool_t isMaster) {
     sai_a_dma = STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM);
     sai_b_dma = STM32_DMA_STREAM(STM32_SAI_B_DMA_STREAM);
 
-    uint32_t sai_a_dma_mode = STM32_DMA_CR_CHSEL(SAI_A_DMA_CHANNEL)
-        | STM32_DMA_CR_PL(STM32_SAI_A_DMA_PRIORITY) | STM32_DMA_CR_DIR_M2P
-        | STM32_DMA_CR_TEIE | STM32_DMA_CR_TCIE | STM32_DMA_CR_DBM /* double buffer mode */
-        | STM32_DMA_CR_PSIZE_WORD | STM32_DMA_CR_MSIZE_WORD;
+    uint32_t sai_a_dma_mode =
+        STM32_DMA_CR_CHSEL(SAI_A_DMA_CHANNEL) |
+        STM32_DMA_CR_PL(STM32_SAI_A_DMA_PRIORITY) |
+        STM32_DMA_CR_DBM | /* double buffer mode */
+        STM32_DMA_CR_DIR_M2P |
+        STM32_DMA_CR_MSIZE_WORD |
+        STM32_DMA_CR_PSIZE_WORD |
+        STM32_DMA_CR_TCIE |
+        STM32_DMA_CR_TEIE;
 
-    uint32_t sai_b_dma_mode = STM32_DMA_CR_CHSEL(SAI_B_DMA_CHANNEL)
-        | STM32_DMA_CR_PL(STM32_SAI_B_DMA_PRIORITY) | STM32_DMA_CR_DIR_P2M
-        | STM32_DMA_CR_TEIE | STM32_DMA_CR_TCIE | STM32_DMA_CR_DBM /* double buffer mode */
-        | STM32_DMA_CR_PSIZE_WORD | STM32_DMA_CR_MSIZE_WORD;
+    uint32_t sai_b_dma_mode = 
+        STM32_DMA_CR_CHSEL(SAI_B_DMA_CHANNEL) |
+        STM32_DMA_CR_PL(STM32_SAI_B_DMA_PRIORITY) |
+        STM32_DMA_CR_DBM | /* double buffer mode */
+        STM32_DMA_CR_DIR_P2M |
+        STM32_DMA_CR_MSIZE_WORD |
+        STM32_DMA_CR_PSIZE_WORD |
+        STM32_DMA_CR_TCIE |
+        STM32_DMA_CR_TEIE;
 
     bool_t b;
 
