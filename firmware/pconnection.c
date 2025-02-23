@@ -46,6 +46,11 @@
 #include "stdio.h"
 #include "memstreams.h"
 
+#if INBUILT_MOUNTER_FLASHER
+extern void StartFlasher(void);
+extern void StartMounter(void);
+#endif
+
 //#define DEBUG_SERIAL 1
 
 void BootLoaderInit(void);
@@ -704,6 +709,20 @@ void PExReceiveByte(unsigned char c) {
         CloseFile();
         AckPending = 1;
       }
+#if INBUILT_MOUNTER_FLASHER
+      else if (c == 'm') { /* start mounter*/
+        state = 0;
+        header = 0;
+        StopPatch();
+        StartMounter();
+      }
+      else if (c == 'l') { /* start flasher*/
+        state = 0;
+        header = 0;
+        StopPatch();
+        StartFlasher();
+      }
+#endif
       else
         state = 0;
       break;

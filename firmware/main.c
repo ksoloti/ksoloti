@@ -67,6 +67,19 @@ extern void MY_USBH_Init(void);
 volatile uint64_t g_startup_flags __attribute__ ((section (".noinit")));
 extern int mounter(void);
 extern int flasher(void);
+
+void StartFlasher(void)
+{
+    g_startup_flags = FLASHER_MAGIC;
+    NVIC_SystemReset();
+}
+
+void StartMounter(void)
+{
+    g_startup_flags = FLASHER_MAGIC;
+    NVIC_SystemReset();
+}
+
 #endif
 
 int main(void) {
