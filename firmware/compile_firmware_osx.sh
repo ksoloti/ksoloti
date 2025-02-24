@@ -3,7 +3,7 @@ set -e
 
 export PATH=${axoloti_runtime}/platform_osx/bin:$PATH
 
-if [ "$#" -eq 1 ]; then
+if [ "$#" -eq 2 ]; then
   printf "Building all firmware modes and helpers for the current board.\n"
   BUILD_NORMAL=1
   BUILD_USBAUDIO=1 
@@ -12,12 +12,12 @@ if [ "$#" -eq 1 ]; then
   BUILD_MOUNTER=1
   BUILD_I2SCODEC=1
 else
-  BUILD_NORMAL=$2
-  BUILD_USBAUDIO=$3 
-  BUILD_SPILINK=$4 
-  BUILD_FLASHER=$5 
-  BUILD_MOUNTER=$6
-  BUILD_I2SCODEC=$7
+  BUILD_NORMAL=$3
+  BUILD_USBAUDIO=$4 
+  BUILD_SPILINK=$5
+  BUILD_FLASHER=$6 
+  BUILD_MOUNTER=$7
+  BUILD_I2SCODEC=$8
 fi
 
 cd "${axoloti_firmware}"

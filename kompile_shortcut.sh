@@ -3,8 +3,8 @@ set -e
 
 # supported boards
 BUILD_AXOLOTI=0
-BUILD_KSOLOTI=0
-BUILD_KSOLOTI_H7=1
+BUILD_KSOLOTI_F427=0
+BUILD_KSOLOTI_H743=1
 
 # supported firmware modes
 BUILD_NORMAL=1
@@ -53,7 +53,7 @@ if [[ $BUILD_AXOLOTI -eq 1 ]]; then
     sh $builddir/compile_firmware.sh BOARD_AXOLOTI_CORE BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 fi
 
-if [[ $BUILD_KSOLOTI -eq 1 ]]; then
+if [[ $BUILD_KSOLOTI_F427 -eq 1 ]]; then
     printf "\n\n"
     printf "********************\n"
     printf "* Building Ksoloti *\n"
@@ -63,7 +63,7 @@ if [[ $BUILD_KSOLOTI -eq 1 ]]; then
     sh $builddir/compile_firmware.sh BOARD_KSOLOTI_CORE BOARD_KSOLOTI_CORE_F427 $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 fi
 
-if [[ $BUILD_KSOLOTI_H7 -eq 1 ]]; then
+if [[ $BUILD_KSOLOTI_H743 -eq 1 ]]; then
     printf "\n\n"
     printf "***********************\n"
     printf "* Building Ksoloti H7 *\n"
