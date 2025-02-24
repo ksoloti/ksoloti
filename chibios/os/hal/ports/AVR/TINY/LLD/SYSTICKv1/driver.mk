@@ -1,3 +1,0 @@
-PLATFORMSRC += $(CHIBIOS)/os/hal/ports/AVR/TINY/LLD/SYSTICKv1/hal_st_lld.c
-
-PLATFORMINC += $(CHIBIOS)/os/hal/ports/AVR/TINY/LLD/SYSTICKv1
