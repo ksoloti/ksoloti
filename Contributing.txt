@@ -10,6 +10,7 @@ overlapping efforts.
 
 If the ownership rules (below) are an issue, please contribute to the separate 
 "contrib" repository I will set up soon.
+(Note: axoloti-contrib has been forked by ksoloti and is mostly read-only. ksoloti-contrib repository is open to submissions!)
 
 == Legal Details
 

@@ -150,6 +150,7 @@ public class FileMenu extends JMenu {
         insert(favouriteMenu1, pos++);
 
         add(jSeparator1);
+        pos++;
 
         jMenuSync.setMnemonic('Y');
         jMenuSync.setText("Sync Libraries");

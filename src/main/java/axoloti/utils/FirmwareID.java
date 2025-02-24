@@ -53,11 +53,15 @@ public class FirmwareID {
             if (prefs.getFirmwareMode().contains("USBAudio")) {
                 boarddef += "_usbaudio";
             }
+            if (prefs.getFirmwareMode().contains("I2SCodec")) {
+                boarddef += "_i2scodec";
+            }
             boarddef += ".bin";
             File f = new File(boarddef);
 
             if (f == null || !f.canRead()) {
-                return "- Couldn\'t find " + boarddef + ".\nPlease compile the firmware first.";
+                LOGGER.log(Level.WARNING, "Could not find " + boarddef + ".\nPlease compile the firmware first.");
+                return "(not found)";
             }
             int tlength = (int) f.length();
             FileInputStream inputStream = new FileInputStream(f);

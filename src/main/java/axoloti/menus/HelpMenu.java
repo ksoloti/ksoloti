@@ -47,6 +47,7 @@ public class HelpMenu extends JMenu {
     // private javax.swing.JMenuItem jMenuUpdates;
     private javax.swing.JMenuItem jMenuCommunity;
     private javax.swing.JMenuItem jMenuAxolotiCommunityBackup;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private axoloti.menus.HelpLibraryMenu helpLibraryMenu1;
 
     public HelpMenu() {
@@ -77,6 +78,7 @@ public class HelpMenu extends JMenu {
         jMenuCommunity = new javax.swing.JMenuItem();
         jMenuAxolotiCommunityBackup = new javax.swing.JMenuItem();
         helpLibraryMenu1 = new axoloti.menus.HelpLibraryMenu();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
 
         jMenuHelpContents.setMnemonic('H');
         jMenuHelpContents.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
@@ -133,6 +135,7 @@ public class HelpMenu extends JMenu {
             }
         });
         add(jMenuAxolotiCommunityBackup);
+        add(jSeparator1);
 
         // jMenuUpdates.setMnemonic('U');
         // jMenuUpdates.setText("Check for Updates...");

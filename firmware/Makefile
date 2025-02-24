@@ -137,6 +137,10 @@ ifeq ($(FWOPTIONDEF),FW_USBAUDIO)
   PROJECT := $(PROJECT)_usbaudio
 endif
 
+ifeq ($(FWOPTIONDEF),FW_I2SCODEC)
+  PROJECT := $(PROJECT)_i2scodec
+endif
+
 # Imported source files and paths
 axoloti_home ?= ..
 axoloti_firmware ?= ../firmware
@@ -187,6 +191,7 @@ CSRC = $(ALLCSRC) \
   $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
   $(CHIBIOS)/os/various/memstreams.c \
   ${FIRMWARE}/codec.c \
+  ${FIRMWARE}/i2scodec.c \
   ${FIRMWARE}/axoloti.c \
   ${FIRMWARE}/axoloti_filters.c \
   ${FIRMWARE}/axoloti_math.c \

@@ -46,6 +46,10 @@
 #include "spilink.h"
 #endif
 
+#ifdef FW_I2SCODEC
+#include "i2scodec.h"
+#endif
+
 #include "sdram.c"
 #include "stm32f4xx_fmc.c"
 
@@ -59,6 +63,9 @@
 
 
 extern void MY_USBH_Init(void);
+#ifdef FW_I2SCODEC
+extern void i2s_init(void);
+#endif
 
 #if INBUILT_MOUNTER_FLASHER
 #define INBUILT_FLASHER_TEST 1
@@ -173,6 +180,9 @@ int main(void) {
     codec_init(is_master);
 #ifdef FW_SPILINK
     spilink_init(is_master);
+#endif
+#ifdef FW_I2SCODEC
+    i2s_init();
 #endif
 
     if (!palReadPad(SW2_PORT, SW2_PIN)) {

@@ -26,12 +26,12 @@ __process_stack_size__  = 0x400;
 
 MEMORY
 {
-    FLASH (rx) : org = 0x08000000, len = 896k       /* last 128kB for patch storage*/
-    RAM        : org = 0x20000200, len = 0x0AE00    /* 44k - first 0x200 for vector table */
-    SRAM2      : org = 0x2001E000, len = 0x00002000 /* second half (8kB) of SRAM2 for DMA */
-    SRAM3      : org = 0x20020000, len = 0x00010000 /* 64kB */
-    CCMRAMEND  : org = 0x1000C800, len = 14k        /* for stacks */
-    SDRAM      : org = 0xC0000000, len = 0x00800000  /* 8 MB */
+    FLASH (rx) : org = 0x08000000, len = 896k       /* 896 kB (minus last 128 kB for patch storage) */
+    RAM        : org = 0x20000200, len = 0x0AE00    /* 44 kB (minus first 0x200 for vector table) */
+    SRAM2      : org = 0x2001E000, len = 0x00002000 /* 8 kB (minus second half (8 kB) for DMA) */
+    SRAM3      : org = 0x20020000, len = 0x00010000 /* 64 kB */
+    CCMRAMEND  : org = 0x1000C800, len = 0x00003800 /* 14 kB for stacks (minus first 50 kB for patch RAM) */
+    SDRAM      : org = 0xC0000000, len = 0x00800000 /* 32 MB */
 }
 
 __ram_start__   = ORIGIN(RAM);

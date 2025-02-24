@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2013, 2014 Johannes Taelman
- * Edited 2023 - 2024 by Ksoloti
+ * Edited 2024 - 2025 by Ksoloti
  *
  * This file is part of Axoloti.
  *
@@ -17,25 +17,20 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CODEC_H
-#define __CODEC_H
-#include <stdint.h>
+#ifndef _I2S_H_
+#define _I2S_H_
+
 #include "axoloti_defines.h"
-#include "ch.h"
-#include "migration_v16.h"
 
-// double buffers for DMA, interleaved stereo
-extern int32_t buf[DOUBLE_BUFSIZE]; // *2 for stereo
-extern int32_t buf2[DOUBLE_BUFSIZE];
-extern int32_t rbuf[DOUBLE_BUFSIZE];
-extern int32_t rbuf2[DOUBLE_BUFSIZE];
+#ifdef FW_I2SCODEC
 
+extern int32_t i2s_buf[DOUBLE_BUFSIZE]; // *2 for stereo
+extern int32_t i2s_buf2[DOUBLE_BUFSIZE];
+extern int32_t i2s_rbuf[DOUBLE_BUFSIZE];
+extern int32_t i2s_rbuf2[DOUBLE_BUFSIZE];
 
-void codec_init(bool_t isMaster);
+extern void i2s_init(void);
+extern void i2s_stop(void);
 
-void codec_clearbuffer(void);
-
-extern void computebufI(int32_t *inp, int32_t *outp);
-
-
-#endif /* __CODEC_H */
+#endif /* FW_I2SCODEC */
+#endif /* _I2S_H_ */

@@ -24,22 +24,19 @@ esac
 
 case "$platform" in
         mac)
-            ant clean
-            ant
-            ant clean
+            ant -q clean
+            ant -q
             ./Ksoloti.sh
         ;;
         linux)
-            ant clean
+            ant -q clean
             #./platform_linux/compile_java.sh #outdated java8 define?
-            ant
-            ant clean
+            ant -q
             ./Ksoloti.sh
         ;;
         windows)
-            ./platform_win/apache-ant-1.10.14/bin/ant.bat clean
-            ./platform_win/apache-ant-1.10.14/bin/ant.bat 
-            ./platform_win/apache-ant-1.10.14/bin/ant.bat clean
+            ant -q clean
+            ant -q
             ./Ksoloti.sh
         ;;
 esac

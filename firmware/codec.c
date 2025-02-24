@@ -24,13 +24,22 @@
 #include "ch.h"
 #include "spilink.h"
 #endif
+#ifdef FW_I2SCODEC
+#include "i2scodec.h"
+#endif
 #include "codec_ADAU1961.h"
 
+int32_t buf[DOUBLE_BUFSIZE]   __attribute__ ((section (".sram2")));
+int32_t buf2[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
+int32_t rbuf[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
+int32_t rbuf2[DOUBLE_BUFSIZE] __attribute__ ((section (".sram2")));
 
-int32_t buf[BUFSIZE*2]   __attribute__ ((section (".sram2")));
-int32_t buf2[BUFSIZE*2]  __attribute__ ((section (".sram2")));
-int32_t rbuf[BUFSIZE*2]  __attribute__ ((section (".sram2")));
-int32_t rbuf2[BUFSIZE*2] __attribute__ ((section (".sram2")));
+#ifdef FW_I2SCODEC
+int32_t i2s_buf[DOUBLE_BUFSIZE]   __attribute__ ((section (".sram2")));
+int32_t i2s_buf2[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
+int32_t i2s_rbuf[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
+int32_t i2s_rbuf2[DOUBLE_BUFSIZE] __attribute__ ((section (".sram2")));
+#endif
 
 void codec_init(bool_t isMaster) {
     codec_ADAU1961_SAI_init(SAMPLERATE, isMaster);
@@ -38,10 +47,15 @@ void codec_init(bool_t isMaster) {
 
 
 void codec_clearbuffer(void) {
-    int i; for(i=0; i<BUFSIZE*2; i++) {
+    int i; for(i=0; i<DOUBLE_BUFSIZE; i++) {
         buf[i] = 0;
         buf2[i] = 0;
+#ifdef FW_I2SCODEC
+        i2s_buf[i] = 0;
+        i2s_buf2[i] = 0;
+#endif
     }
+
 
 #ifdef FW_SPILINK
     spilink_clear_audio_tx();
