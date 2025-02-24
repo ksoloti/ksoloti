@@ -1122,15 +1122,11 @@ void aduDataTransmitted(USBDriver *usbp, usbep_t ep)
  */
 void aduInitiateReceiveI(USBDriver *usbp)
 {
-  chSysLockFromIsr();
-
   AddOverunLog(ltStartReceive___);
   int16_t *pRxLocation = aduRxRingBuffer + aduState.rxRingBufferWriteOffset;
 
   usbStartReceiveI(usbp, 3, (uint8_t *)pRxLocation, USE_TRANSFER_SIZE_BYTES);
   aduAddTransferLog(blStartReceive, USE_TRANSFER_SIZE_BYTES);
-
-  chSysUnlockFromIsr();
 }
 
 /**

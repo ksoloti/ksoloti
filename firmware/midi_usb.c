@@ -175,17 +175,10 @@ static void inotify(GenericQueue *qp) {
    the available space.*/
   maxsize = mdup->config->usbp->epc[mdup->config->bulk_out]->out_maxsize;
   if (!usbGetReceiveStatusI(mdup->config->usbp, mdup->config->bulk_out) && ((n =
-      chIQGetEmptyI(&mdup->iqueue)) >= maxsize)) {
-    chSysUnlock()
-    ;
-
+      iqGetEmptyI(&mdup->iqueue)) >= maxsize)) 
+  {
     n = (n / maxsize) * maxsize;
-    //CH16 usbPrepareQueuedReceive(mdup->config->usbp, mdup->config->bulk_out,
-    //                        &mdup->iqueue, n);
     mduInitiateReceiveI(mdup, n);
-    chSysLock()
-    ;
-    //CH16 usbStartReceiveI(mdup->config->usbp, mdup->config->bulk_out);
   }
 }
 
@@ -205,19 +198,9 @@ static void onotify(GenericQueue *qp) {
   /* If there is not an ongoing transaction and the output queue contains
    data then a new transaction is started.*/
   if (!usbGetTransmitStatusI(mdup->config->usbp, mdup->config->bulk_in)) {
-    n = chOQGetFullI(&mdup->oqueue);
+    n = oqGetFullI(&mdup->oqueue);
     if ((n > 0) && !(n & 3)) {
-
-      chSysUnlock()
-      ;
-
-      //CH16 usbPrepareQueuedTransmit(mdup->config->usbp, mdup->config->bulk_in,
-      //                         &mdup->oqueue, n);
       mduInitiateTransmitI(mdup, n);
-
-      chSysLock()
-      ;
-      //CH16 usbStartTransmitI(mdup->config->usbp, mdup->config->bulk_in);
     }
   }
 }

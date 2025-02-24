@@ -196,19 +196,10 @@ static void inotify(GenericQueue *qp) {
      the available space.*/
   maxsize = bdup->config->usbp->epc[bdup->config->bulk_out]->out_maxsize;
   if (!usbGetReceiveStatusI(bdup->config->usbp, bdup->config->bulk_out) &&
-      ((n = chIQGetEmptyI(&bdup->iqueue)) >= maxsize)) {
-    chSysUnlock();
-
+      ((n = iqGetEmptyI(&bdup->iqueue)) >= maxsize)) 
+  {
     n = (n / maxsize) * maxsize;
-    //CH16 usbPrepareQueuedReceive(bdup->config->usbp,
-    //                        bdup->config->bulk_out,
-    //                        &bdup->iqueue, n);
-    //CH16 usbStartReceiveI(bdup->config->usbp,
-    //                        bdup->config->bulk_out,
-    //                        &bdup->iqueue, n);
     bduInitiateReceiveI(bdup, n);
-    chSysLock();
-    //CH16 usbStartReceiveI(bdup->config->usbp, bdup->config->bulk_out);
   }
 }
 
