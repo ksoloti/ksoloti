@@ -36,7 +36,7 @@
 #define STM32_I2S3EXT_RX_DMA_CHANNEL 3
 
 /* Overriding generic SPI3 priorities here */
-#define STM32_SPI_I2S3_DMA_PRIORITY         3
+#define STM32_SPI_I2S3_DMA_PRIORITY         1
 #define STM32_SPI_I2S3_IRQ_PRIORITY         3
 
 /* Required by wait_sai_dma_tc_flag(): access to SAI DMA's transfer complete flag */
