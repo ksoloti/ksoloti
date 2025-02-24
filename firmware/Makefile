@@ -3,6 +3,7 @@
 # NOTE: Can be overridden externally.
 #
 BOARDDEF=
+SUBBOARDDEF=
 FWOPTIONDEF=
 USE_VERBOSE_COMPILE=no
 INBUILT_MOUNTER_FLASHER=yes
@@ -25,6 +26,7 @@ INBUILT_MOUNTER_FLASHER=yes
 ifeq ($(USE_OPT),)
   USE_OPT = \
     -D$(BOARDDEF) \
+    -D$(SUBBOARDDEF) \
     --specs=nano.specs \
     --specs=nosys.specs \
     -Og \
@@ -124,7 +126,11 @@ endif
 
 # Define project name here
 ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
-  PROJECT = ksoloti
+  ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_F427)
+    PROJECT = ksoloti
+  else ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
+    PROJECT = ksoloti_743
+  endif
 else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
   PROJECT = axoloti
 endif
@@ -181,6 +187,8 @@ override HEX = $(CP) -O ihex --gap-fill 0xff
 
 # Define linker script file here
 ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
+LDSCRIPT = STM32F427xG_ksoloti.ld
+else ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE_H7)
 LDSCRIPT = STM32F427xG_ksoloti.ld
 else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
 LDSCRIPT = STM32F427xG_axoloti.ld
