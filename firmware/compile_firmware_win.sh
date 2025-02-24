@@ -1,7 +1,11 @@
 #!/bin/sh
 set -e
 
-export PATH=${axoloti_runtime}/platform_win/bin:$PATH
+firmwaredir="$(dirname $(readlink -f $0))"
+
+export axoloti_home=${axoloti_home:="$firmwaredir/.."}
+export axoloti_firmware=${axoloti_firmware:="$firmwaredir"}
+export PATH="${axoloti_home}/platform_win/bin:$PATH"
 
 if [[ "$#" -eq 1 ]]; then
   printf "Building all firmware modes and helpers for the current board.\n"

@@ -61,7 +61,7 @@ public class QCmdCompileFirmware extends QCmdShellTask {
         }
 
         if (OSDetect.getOS() == OSDetect.OS.WIN) {
-            return RuntimeDir() + "/platform_win/bin/sh.exe " + FirmwareDir() +"/compile_firmware_win.sh " + boarddef;
+            return HomeDir() + "/platform_win/bin/sh.exe " + FirmwareDir() +"/compile_firmware_win.sh " + boarddef;
         }
         else if (OSDetect.getOS() == OSDetect.OS.MAC) {
             return "/bin/sh " + FirmwareDir() + "/compile_firmware_osx.sh " + boarddef;

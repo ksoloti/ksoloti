@@ -1,13 +1,13 @@
 @ECHO OFF
 CALL %~sdp0\path.bat
 
-DIR %axoloti_release%\chibios > NUL 2> NUL
+DIR %axoloti_home%\chibios > NUL 2> NUL
 IF %ERRORLEVEL% NEQ 0 (
 	ECHO error: chibios directory missing
 	GOTO fail
 )
 
-DIR %axoloti_release%\chibios\ext\fatfs > NUL 2> NUL
+DIR %axoloti_home%\chibios\ext\fatfs > NUL 2> NUL
 IF %ERRORLEVEL% NEQ 0 (
 	ECHO error: fatfs not found in chibios
 	GOTO fail

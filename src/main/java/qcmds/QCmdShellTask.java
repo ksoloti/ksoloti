@@ -94,10 +94,6 @@ public abstract class QCmdShellTask implements QCmd {
         return success;
     }
     
-    public String RuntimeDir() {
-        return System.getProperty(axoloti.Axoloti.RUNTIME_DIR);
-    }
-
     public String HomeDir() {
         return System.getProperty(axoloti.Axoloti.HOME_DIR);
     }
@@ -106,10 +102,6 @@ public abstract class QCmdShellTask implements QCmd {
         return System.getProperty(axoloti.Axoloti.LIBRARIES_DIR);
     }
             
-    public String ReleaseDir() {
-        return System.getProperty(axoloti.Axoloti.RELEASE_DIR);
-    }
-
     public String FirmwareDir() {
         String str = System.getProperty(axoloti.Axoloti.FIRMWARE_DIR);
         return str;
@@ -122,10 +114,8 @@ public abstract class QCmdShellTask implements QCmd {
         for (String v : env.keySet()) {
             list.add((v + "=" + env.get(v)));
         }
-        list.add((axoloti.Axoloti.RUNTIME_DIR + "=" + RuntimeDir()));
         list.add((axoloti.Axoloti.HOME_DIR + "=" + HomeDir()));
         list.add((axoloti.Axoloti.LIBRARIES_DIR + "=" + LibrariesDir()));
-        list.add((axoloti.Axoloti.RELEASE_DIR + "=" + ReleaseDir()));
         list.add((axoloti.Axoloti.FIRMWARE_DIR + "=" + FirmwareDir()));
 
         String vars[] = new String[list.size()];

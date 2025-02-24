@@ -84,7 +84,7 @@ public class QCmdCompilePatch extends QCmdShellTask {
             }
 
             if (OSDetect.getOS() == OSDetect.OS.WIN) {
-                return RuntimeDir() + "/platform_win/bin/sh.exe " + FirmwareDir() + "/compile_patch_win.sh " + boarddef + fwoptiondef;
+                return HomeDir() + "/platform_win/bin/sh.exe " + FirmwareDir() + "/compile_patch_win.sh " + boarddef + fwoptiondef;
             } else if (OSDetect.getOS() == OSDetect.OS.MAC) {
                 return "/bin/sh " + FirmwareDir() + "/compile_patch_osx.sh " + boarddef + fwoptiondef;
             } else if (OSDetect.getOS() == OSDetect.OS.LINUX) {

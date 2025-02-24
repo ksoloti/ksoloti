@@ -96,7 +96,7 @@ endif
 # BUILDDIR = flasher_build/$(PROJECT)
 
 # Imported source files and paths
-CHIBIOS = ${axoloti_release}/chibios
+CHIBIOS = ${axoloti_home}/chibios
 
 include board.mk
 # Startup files.
