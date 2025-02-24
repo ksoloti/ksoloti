@@ -1,6 +1,6 @@
 /*
 * Copyright (C) 2013, 2014 Johannes Taelman
-* Edited 2023 - 2024 by Ksoloti
+* Edited 2023 - 2025 by Ksoloti
 *
 * This file is part of Axoloti.
 *
@@ -17,17 +17,20 @@
 * Axoloti. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ch.h"
 #include "hal.h"
-#include "chprintf.h"
+#include "sdram.h"
 #include "ui.h"
 #include "axoloti_board.h"
-#include "crc32.h"
-#include "sdram.h"
 #include "exceptions.h"
-#include "flash.h"
 
-extern uint32_t _vectors[0x200]; // Trick compiler into believing us it is 0x200 bytes long.
+
+void  __attribute__ ((section (".ram3text"))) KsolotiSleepMilliseconds(uint32_t uMiliseconds)
+{ 
+    uint32_t uTotalTicks = MS2RTT(uMiliseconds); 
+    uint32_t uStartTick = DWT->CYCCNT; 
+    while (DWT->CYCCNT - uStartTick < uTotalTicks) 
+        ; 
+}
 
 // #define SERIALDEBUG
 
@@ -64,15 +67,23 @@ void dbgPrintHexDigit(uint8_t b)
 
 #define FLASH_BASE_ADDR 0x08000000
 
-/* Dummy ui hooks... */
-// Btn_Nav_States_struct Btn_Nav_CurStates;
-// Btn_Nav_States_struct Btn_Nav_PrevStates;
-// Btn_Nav_States_struct Btn_Nav_Or;
-// Btn_Nav_States_struct Btn_Nav_And;
+void __attribute__ ((section (".ram3text"))) FlashSystemReset(void)
+{
+  __DSB();                                                          /* Ensure all outstanding memory accesses included
+                                                                       buffered write are completed before reset */
+  SCB->AIRCR  = (uint32_t)((0x5FAUL << SCB_AIRCR_VECTKEY_Pos)    |
+                           (SCB->AIRCR & SCB_AIRCR_PRIGROUP_Msk) |
+                            SCB_AIRCR_SYSRESETREQ_Msk    );         /* Keep priority group unchanged */
+  __DSB();                                                          /* Ensure completion of memory access */
 
-// int8_t EncBuffer[4];
+  for(;;)                                                           /* wait until reset */
+  {
+    __NOP();
+  }
+}
 
-void DisplayAbortErr(int err)
+
+void __attribute__ ((section (".ram3text"))) DisplayAbortErr(int err)
 {
     DBGPRINTCHAR('0' + err);
 
@@ -83,27 +94,110 @@ void DisplayAbortErr(int err)
     while (i--)
     {
         palWritePad(LED2_PORT, LED2_PIN, 1);
-        chThdSleepMilliseconds(1000);
+        KsolotiSleepMilliseconds(1000);
         palWritePad(LED2_PORT, LED2_PIN, 0);
-        chThdSleepMilliseconds(1000);
+        KsolotiSleepMilliseconds(1000);
     }
 
-    NVIC_SystemReset();
+    FlashSystemReset();
 }
 
-bool CheckValidData(void)
+static uint32_t  __attribute__ ((section (".ram3text"))) revbit(uint32_t data) 
 {
-    bool bResult = false;
+    uint32_t result;
+    __ASM
+    volatile ("rbit %0, %1" : "=r" (result) : "r" (data));
+    return result;
+}
+  
+uint32_t  __attribute__ ((section (".ram3text"))) FlashCalcCRC32(uint8_t *buffer, uint32_t size) 
+{
+    uint32_t i, j;
+    uint32_t ui32x;
 
-    
+    RCC->AHB1ENR |= RCC_AHB1ENR_CRCEN;
+    CRC->CR = 1;
+    asm("NOP");
+    asm("NOP");
+    asm("NOP");
+    //delay for hardware ready
+
+    i = size >> 2;
+
+    while (i--) {
+        ui32x = *((uint32_t *)buffer);
+        buffer += 4;
+        ui32x = revbit(ui32x); //reverse the bit order of input data
+        CRC->DR = ui32x;
+        if ((i && 0xFFF) == 0)
+        watchdog_feed();
+    }
+    ui32x = CRC->DR;
+
+    ui32x = revbit(ui32x); //reverse the bit order of output data
+    i = size & 3;
+    while (i--) {
+        ui32x ^= (uint32_t) * buffer++;
+
+        for (j = 0; j < 8; j++)
+        if (ui32x & 1)
+            ui32x = (ui32x >> 1) ^ 0xEDB88320;
+        else
+            ui32x >>= 1;
+    }
+    ui32x ^= 0xffffffff; //xor with 0xffffffff
+    return ui32x; //now the output is compatible with windows/winzip/winrar
+}
+  
+static int __attribute__ ((section (".ram3text"))) FlashWaitForLastOperation(void) 
+{
+    while (FLASH->SR & FLASH_SR_BSY) {
+        WWDG->CR = WWDG_CR_T;
+    }
+    return FLASH->SR;
 }
 
-static int __attribute__((optimize("-O0"))) __attribute__ ((noinline)) __attribute__ ((section (".ram3text"))) flasher_ram(void)
+static void  __attribute__ ((section (".ram3text"))) FlashEraseSector(int sector) 
 {
-    watchdog_feed();
+    // assume VDD>2.7V
+    FLASH->CR &= ~FLASH_CR_PSIZE;
+    FLASH->CR |= FLASH_CR_PSIZE_1;
+    FLASH->CR &= ~FLASH_CR_SNB;
+    FLASH->CR |= FLASH_CR_SER | (sector << 3);
+    FLASH->CR |= FLASH_CR_STRT;
+    FlashWaitForLastOperation();
+
+    FLASH->CR &= (~FLASH_CR_SER);
+    FLASH->CR &= ~FLASH_CR_SER;
+    FlashWaitForLastOperation();
+}
+
+int  __attribute__ ((section (".ram3text"))) FlashProgramWord(uint32_t Address, uint32_t Data) 
+{
+    int status;
+
+    FlashWaitForLastOperation();
+
+    /* if the previous operation is completed, proceed to program the new data */
+    FLASH->CR &= ~FLASH_CR_PSIZE;
+    FLASH->CR |= FLASH_CR_PSIZE_1;
+    FLASH->CR |= FLASH_CR_PG;
+
+    *(__IO uint32_t*)Address = Data;
+
+    /* Wait for last operation to be completed */
+    status = FlashWaitForLastOperation();
+
+    /* if the program operation is completed, disable the PG Bit */
+    FLASH->CR &= (~FLASH_CR_PG);
+
+    /* Return the Program Status */
+    return status;
+}
+
+static void  __attribute__ ((section (".ram3text"))) FlashRamFunction(void)
+{
     halInit();
-    __disable_irq();
-    chSysInit();
 
     /* Float USB inputs, hope the host notices detach... */
     palSetPadMode(GPIOA, 11, PAL_MODE_INPUT);
@@ -113,9 +207,6 @@ static int __attribute__((optimize("-O0"))) __attribute__ ((noinline)) __attribu
     palSetPadMode(LED1_PORT, LED1_PIN, PAL_MODE_OUTPUT_PUSHPULL);
     palSetPad(LED1_PORT, LED1_PIN);
     palSetPadMode(LED2_PORT, LED2_PIN, PAL_MODE_OUTPUT_PUSHPULL);
-
-    watchdog_feed();
-    configSDRAM();
 
 #ifdef SERIALDEBUG
     /* SD2 for serial debug output */
@@ -134,7 +225,6 @@ static int __attribute__((optimize("-O0"))) __attribute__ ((noinline)) __attribu
     SDRAM_ReadBuffer(&pbuf[0], 0 + 0x050000, 16);
     DBGPRINTCHAR('x');
 
-    watchdog_feed();
 
     uint32_t *sdram32 = (uint32_t *)SDRAM_BANK_ADDR;
     uint8_t *sdram8 = (uint8_t *)SDRAM_BANK_ADDR;
@@ -158,7 +248,7 @@ static int __attribute__((optimize("-O0"))) __attribute__ ((noinline)) __attribu
 
     DBGPRINTHEX(flength);
 
-    uint32_t ccrc = CalcCRC32((uint8_t *)(SDRAM_BANK_ADDR + 0x010), flength);
+    uint32_t ccrc = FlashCalcCRC32((uint8_t *)(SDRAM_BANK_ADDR + 0x010), flength);
 
     DBGPRINTCHAR('d');
 
@@ -179,11 +269,9 @@ static int __attribute__((optimize("-O0"))) __attribute__ ((noinline)) __attribu
     uint32_t i;
     for (i = 0; i < 12; i++)
     {
-        flash_Erase_sector(i);
+        FlashEraseSector(i);
 
-        palWritePad(LED2_PORT, LED2_PIN, 1);
-        chThdSleepMilliseconds(100);
-        palWritePad(LED2_PORT, LED2_PIN, 0);
+        palWritePad(LED2_PORT, LED2_PIN, i%2);
 
         DBGPRINTCHAR('f');
         DBGPRINTHEX(i);
@@ -191,30 +279,15 @@ static int __attribute__((optimize("-O0"))) __attribute__ ((noinline)) __attribu
 
     DBGPRINTCHAR('g');
 
-    DBGPRINTHEX(flength);
-
-    ccrc = CalcCRC32((uint8_t *)(SDRAM_BANK_ADDR + 0x010), flength);
-
-    DBGPRINTCHAR('h');
-
-    DBGPRINTHEX(ccrc);
-    DBGPRINTHEX(fcrc);
-
-    if (ccrc != fcrc)
-    {
-        DisplayAbortErr(4);
-    }
-
-    DBGPRINTCHAR('i');
-
     int destptr = FLASH_BASE_ADDR;                            /* flash base adress */
     uint32_t *srcptr = (uint32_t *)(SDRAM_BANK_ADDR + 0x010); /* sdram base adress + header offset */
 
+    bool ledOn = false;
     for (i = 0; i < (flength + 3) / 4; i++)
     {
         uint32_t d = *srcptr;
 
-        flash_ProgramWord(destptr, d);
+        FlashProgramWord(destptr, d);
 
         if ((FLASH->SR != 0) && (FLASH->SR != 1))
         {
@@ -222,13 +295,10 @@ static int __attribute__((optimize("-O0"))) __attribute__ ((noinline)) __attribu
             DBGPRINTHEX(FLASH->SR);
         }
 
-        // DBGPRINTHEX(f);
-
         if ((i & 0xFFF) == 0)
         {
-            palWritePad(LED2_PORT, LED2_PIN, 1);
-            chThdSleepMilliseconds(100);
-            palWritePad(LED2_PORT, LED2_PIN, 0);
+            ledOn = !ledOn;
+            palWritePad(LED2_PORT, LED2_PIN, ledOn);
 
             DBGPRINTCHAR('j');
             DBGPRINTHEX(destptr);
@@ -239,9 +309,12 @@ static int __attribute__((optimize("-O0"))) __attribute__ ((noinline)) __attribu
         srcptr++;
     }
 
+    palWritePad(LED1_PORT, LED1_PIN, 1);
+    palWritePad(LED2_PORT, LED2_PIN, 1);
+
     DBGPRINTCHAR('k');
 
-    ccrc = CalcCRC32((uint8_t *)(FLASH_BASE_ADDR), flength);
+    ccrc = FlashCalcCRC32((uint8_t *)(FLASH_BASE_ADDR), flength);
 
     DBGPRINTCHAR('l');
 
@@ -265,10 +338,9 @@ static int __attribute__((optimize("-O0"))) __attribute__ ((noinline)) __attribu
     DBGPRINTCHAR('\r');
     DBGPRINTCHAR('\n');
 
-    chThdSleepMilliseconds(1000);
-    NVIC_SystemReset();
+    KsolotiSleepMilliseconds(1000);
 
-    return 0;
+    FlashSystemReset();
 }
 
 extern void *_sram3_text;
@@ -276,9 +348,12 @@ extern void *_sram3_start;
 extern void *_sram3_text_start;
 extern void *_sram3_text_end;
 
-int __attribute__((optimize("-O0"))) __attribute__ ((noinline)) flasher(void)
+void flasher(void)
 {
-  // first copy to ram
+  // enable SDRAM
+  configSDRAM();
+
+  // copy code to ram
   volatile uint32_t *pSrc = (uint32_t *)&_sram3_start;
   volatile uint32_t *pDst = (uint32_t *)&_sram3_text_start;
   volatile uint32_t *pEnd = (uint32_t *)&_sram3_text_end;
@@ -291,5 +366,5 @@ int __attribute__((optimize("-O0"))) __attribute__ ((noinline)) flasher(void)
   }
 
   // now execute from ram
-  flasher_ram();
+  FlashRamFunction();
 }
