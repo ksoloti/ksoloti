@@ -100,7 +100,7 @@ case "$platform" in
         rm -f ./firmware/build/*.*
         rm -f ./firmware.log
 
-        if [[ $BUILD_AXOLOTI -eq 1 ]]; then
+        if [ $BUILD_AXOLOTI -eq 1 ]; then
             printf "\n\n"
             printf "********************\n"
             printf "* Building Axoloti *\n"
@@ -111,7 +111,7 @@ case "$platform" in
 
         fi
 
-        if [[ $BUILD_KSOLOTI -eq 1 ]]; then
+        if [ $BUILD_KSOLOTI -eq 1 ]; then
             printf "\n\n"
             printf "********************\n"
             printf "* Building Ksoloti *\n"

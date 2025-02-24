@@ -16,7 +16,7 @@ function print_region() {
     max_size=$2
     name=$3
 
-    if [[ $max_size == 0x* ]];
+    if [ $max_size == 0x* ];
     then
         max_size=$(echo ${max_size:2})
         max_size=$(( 16#$max_size ))

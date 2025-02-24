@@ -32,7 +32,7 @@ VERSION="$(git describe --tags | grep -Po '\d*\.\d*\.\d*' 2>&1)"
 VERSION_LONG="$(git describe --long --always --tags 2>&1)"
 CUSTOMLABEL=
 
-if [[ $# -eq 1 ]]; then
+if [ $# -eq 1 ]; then
     VERSION=$1
     DASH="-"
     CUSTOMLABEL=$1${DASH}
