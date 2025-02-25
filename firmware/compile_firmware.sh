@@ -58,7 +58,7 @@ FLASHER_PROJECT="$NAME"_flasher
 MOUNTER_PROJECT="$NAME"_mounter
 
 if [ $BUILD_FLASHER -eq 1 ]; then
-    printf "\nCompiling $1 - $FLASHER_PROJECT\n"
+    printf "\nCompiling $FLASHER_PROJECT\n"
     cd flasher
     export BUILDDIR=flasher_build/$FLASHER_PROJECT
     mkdir -p $BUILDDIR/.dep
@@ -72,7 +72,7 @@ if [ $BUILD_FLASHER -eq 1 ]; then
 fi
 
 if [ $BUILD_MOUNTER -eq 1 ]; then
-    printf "\nCompiling $1 - $MOUNTER_PROJECT\n"
+    printf "\nCompiling $MOUNTER_PROJECT\n"
     cd mounter
     export BUILDDIR=mounter_build/$MOUNTER_PROJECT
     mkdir -p $BUILDDIR/.dep

@@ -8,17 +8,14 @@ unamestr=`uname`
 case "$unamestr" in
 	Linux)
 		platform='linux'
-		rootdir="$(dirname $(readlink -f $0))"
 	;;
 
 	Darwin)
 		platform='mac'
-		rootdir="$(cd $(dirname $0); pwd -P)"
 	;;
 
 	MINGW*)
 		platform='windows'
-		rootdir="$(cd $(dirname $0); pwd -P)"
 	;;
 
     *)
