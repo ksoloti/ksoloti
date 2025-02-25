@@ -31,6 +31,7 @@ More info:
 
 [Ksoloti resources, schematics, build guides](https://ksoloti.github.io)
 
+
 [Ksoloti Forum](https://ksoloti.discourse.group)
 
 
