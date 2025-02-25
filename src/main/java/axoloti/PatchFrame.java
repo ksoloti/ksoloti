@@ -465,9 +465,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jProgressBarDSPLoad.setToolTipText("CPU load of currently running patch");
         jProgressBarDSPLoad.setAlignmentX(LEFT_ALIGNMENT);
-        jProgressBarDSPLoad.setMaximumSize(new java.awt.Dimension(200, 20));
-        jProgressBarDSPLoad.setMinimumSize(new java.awt.Dimension(60, 20));
-        jProgressBarDSPLoad.setPreferredSize(new java.awt.Dimension(200, 20));
+        jProgressBarDSPLoad.setMaximumSize(new java.awt.Dimension(200, 18));
+        jProgressBarDSPLoad.setMinimumSize(new java.awt.Dimension(60, 18));
+        jProgressBarDSPLoad.setPreferredSize(new java.awt.Dimension(200, 18));
         jProgressBarDSPLoad.setName(""); // NOI18N
         jProgressBarDSPLoad.setMaximum(200);
         jProgressBarDSPLoad.setStringPainted(true);
