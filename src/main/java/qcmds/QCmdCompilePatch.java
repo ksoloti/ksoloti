@@ -84,11 +84,9 @@ public class QCmdCompilePatch extends QCmdShellTask {
             }
 
             if (OSDetect.getOS() == OSDetect.OS.WIN) {
-                return HomeDir() + "/platform_win/bin/sh.exe " + FirmwareDir() + "/compile_patch_win.sh " + boarddef + fwoptiondef;
-            } else if (OSDetect.getOS() == OSDetect.OS.MAC) {
-                return "/bin/sh " + FirmwareDir() + "/compile_patch_osx.sh " + boarddef + fwoptiondef;
-            } else if (OSDetect.getOS() == OSDetect.OS.LINUX) {
-                return "/bin/sh " + FirmwareDir() + "/compile_patch_linux.sh " + boarddef + fwoptiondef;
+                return HomeDir() + "/platform_win/bin/sh.exe " + FirmwareDir() + "/compile_patch.sh " + boarddef + fwoptiondef;
+            } else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {
+                return "/bin/sh " + FirmwareDir() + "/compile_patch.sh " + boarddef + fwoptiondef;
             } else {
                 Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");
                 return null;
