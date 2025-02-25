@@ -36,7 +36,7 @@ public class VisibleCablePanel extends javax.swing.JPanel {
         jCheckBoxBool32.setOpaque(true);
         jCheckBoxBool32.setSelected(true);
         jCheckBoxBool32.setRolloverEnabled(false);
-        jCheckBoxFrac32.setToolTipText("Boolean signals (true/false, on/off etc.) at control rate, 3 kHz.");
+        jCheckBoxBool32.setToolTipText("Boolean signals (true/false, on/off etc.) at control rate, 3 kHz.");
 
         /* Green wires */
         jCheckBoxInt32.setBackground(Theme.Cable_Int32);
