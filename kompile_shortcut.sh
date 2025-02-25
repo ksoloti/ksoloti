@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-
 # supported boards
 BUILD_AXOLOTI=1
 BUILD_KSOLOTI=1
@@ -16,22 +15,18 @@ BUILD_I2SCODEC=1
 BUILD_FLASHER=1
 BUILD_MOUNTER=1
 
-ODFLAGS="--source-comment --demangle --disassemble"
 
 platform='unknown'
 unamestr=`uname`
 case "$unamestr" in
     Linux)
         platform='linux'
-        rootdir="$(dirname $(readlink -f $0))"
     ;;
     Darwin)
         platform='mac'
-        rootdir="$(cd $(dirname $0); pwd -P)"
     ;;
     MINGW*)
         platform='windows'
-        rootdir="$(cd $(dirname $0); pwd -P)"
     ;;
     *)
         printf "\nUnknown OS: $unamestr - aborting...\n"
@@ -51,7 +46,7 @@ case "$platform" in
             printf "********************\n"
 
             # compile board mode and firmware options
-            sh ./firmware/compile_firmware_osx.sh BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+            sh ./firmware/compile_firmware.sh BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 
@@ -62,7 +57,7 @@ case "$platform" in
             printf "********************\n"
 
             # compile board mode and firmware options
-            sh ./firmware/compile_firmware_osx.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+            sh ./firmware/compile_firmware.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 
@@ -79,7 +74,7 @@ case "$platform" in
             printf "********************\n"
 
             # compile board mode and firmware options
-            sh ./firmware/compile_firmware_linux.sh BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+            sh ./firmware/compile_firmware.sh BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 
@@ -90,7 +85,7 @@ case "$platform" in
             printf "********************\n"
 
             # compile board mode and firmware options
-            sh ./firmware/compile_firmware_linux.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+            sh ./firmware/compile_firmware.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 
@@ -107,7 +102,7 @@ case "$platform" in
             printf "********************\n"
 
             # compile board mode and firmware options
-            sh ./firmware/compile_firmware_win.sh BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+            sh ./firmware/compile_firmware.sh BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 
@@ -118,7 +113,7 @@ case "$platform" in
             printf "********************\n"
 
             # compile board mode and firmware options
-            sh ./firmware/compile_firmware_win.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+            sh ./firmware/compile_firmware.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 

@@ -1,14 +1,34 @@
 #!/bin/sh
 set -e
 
-firmwaredir="$(dirname $(readlink -f $0))"
-
-export axoloti_home=${axoloti_home:="$firmwaredir/.."}
-export axoloti_firmware=${axoloti_firmware:="$firmwaredir"}
-export PATH="${axoloti_home}/platform_win/bin:$PATH"
+unamestr=`uname`
+case "$unamestr" in
+    Linux)
+        currentdir="$(dirname $(readlink -f $0))"
+        export axoloti_home=${axoloti_home:="$currentdir/.."}
+        export axoloti_firmware=${axoloti_firmware:="$currentdir"}
+        export PATH="${axoloti_home}/platform_linux/bin:$PATH"
+    ;;
+    Darwin)
+        currentdir="$(cd $(dirname $0); pwd -P)"
+        export axoloti_home=${axoloti_home:="$currentdir/.."}
+        export axoloti_firmware=${axoloti_firmware:="$currentdir"}
+        export PATH="${axoloti_home}/platform_osx/bin:$PATH"
+    ;;
+    MINGW*)
+        currentdir="$(cd $(dirname $0); pwd -P)"
+        export axoloti_home=${axoloti_home:="$currentdir/.."}
+        export axoloti_firmware=${axoloti_firmware:="$currentdir"}
+        export PATH="${axoloti_home}/platform_win/bin:$PATH"
+    ;;
+    *)
+        printf "\nUnknown OS: $unamestr - aborting...\n"
+        exit
+    ;;
+esac
 
 if [ "$#" -eq 1 ]; then
-  printf "Building all firmware modes and helpers for the current board.\n"
+  printf "Building all firmware modes for the current board.\n"
   BUILD_NORMAL=1
   BUILD_USBAUDIO=1 
   BUILD_SPILINK=1 
