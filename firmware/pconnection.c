@@ -486,6 +486,9 @@ static void CloseFile(void) {
 
 
 static void CopyPatchToFlash(void) {
+#if BOARD_KSOLOTI_CORE_H743
+    FlashPatch(0);
+#else    
     flash_unlock();
     flash_Erase_sector(11);
 
@@ -518,7 +521,7 @@ static void CopyPatchToFlash(void) {
     if (err) {
         while (1); /* Flash verify failed */
     }
-
+#endif
     AckPending = 1;
 }
 
@@ -717,13 +720,6 @@ void PExReceiveByte(unsigned char c) {
         StartMounter();
       }
       else if (c == 'l') { /* start flasher*/
-        #define SDRAM_BANK_ADDR     ((uint32_t)0xC0000000)        
-        volatile uint32_t *sdram32 = (uint32_t *)SDRAM_BANK_ADDR;
-
-        volatile uint32_t flength = sdram32[2];
-        volatile uint32_t ccrc = CalcCRC32((uint8_t *)(SDRAM_BANK_ADDR + 0x010), flength);
-        volatile uint32_t fcrc = sdram32[3];
-    
         state = 0;
         header = 0;
         StopPatch();

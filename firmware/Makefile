@@ -23,10 +23,9 @@ INBUILT_MOUNTER_FLASHER=yes
 #-fgcse-after-reload
 #-ftree-vectorize
 
+
 ifeq ($(USE_OPT),)
   USE_OPT = \
-    -D$(BOARDDEF) \
-    -D$(SUBBOARDDEF) \
     --specs=nano.specs \
     --specs=nosys.specs \
     -Og \
@@ -45,13 +44,22 @@ ifeq ($(USE_OPT),)
     -fno-unsafe-math-optimizations \
     -fomit-frame-pointer \
     -ggdb3 \
-    -mcpu=cortex-m4 \
     -mfloat-abi=hard \
-    -mfpu=fpv4-sp-d16 \
     -mno-thumb-interwork \
     -mthumb \
-    -mtune=cortex-m4 \
     -mword-relocations
+endif
+
+ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
+  # Ksoloti h747
+  USE_OPT +=  -mcpu=cortex-m7 \
+              -mfpu=fpv5-sp-d16 \
+              -mtune=cortex-m7 
+else
+  # Axoloti and Ksoloti f427
+  USE_OPT +=  -mcpu=cortex-m4 \
+              -mfpu=fpv4-sp-d16 \
+              -mtune=cortex-m4 
 endif
 
 ifneq ($(FWOPTIONDEF),)
@@ -164,20 +172,42 @@ MUTABLE_INSTRUMENTS = ${FIRMWARE}/mutable_instruments
 
 include board.mk
 
-# Licensing files.
-include $(CHIBIOS)/os/license/license.mk
-# Startup files.
-include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
-# HAL-OSAL files (optional).
-include $(CHIBIOS)/os/hal/hal.mk
-include $(CHIBIOS)/os/hal/ports/STM32/STM32F4xx/platform.mk
-include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
-# RTOS files (optional).
-include $(CHIBIOS)/os/rt/rt.mk
-include $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC/mk/port.mk
-# FAT stuff
-include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
-include $(CHIBIOS)/os/various/shell/shell.mk
+ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
+  # Ksoloti h747
+
+  # Licensing files.
+  include $(CHIBIOS)/os/license/license.mk
+  # Startup files.
+  include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32h7xx.mk
+  # HAL-OSAL files (optional).
+  include $(CHIBIOS)/os/hal/hal.mk
+  include $(CHIBIOS)/os/hal/ports/STM32/STM32H7xx/platform.mk
+  include $(CHIBIOS)/os/hal/boards/ST_NUCLEO144_H743ZI/board.mk
+  include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
+  # RTOS files (optional).
+  include $(CHIBIOS)/os/rt/rt.mk
+  include $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC/mk/port.mk
+  # FAT stuff
+  include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+  include $(CHIBIOS)/os/various/shell/shell.mk
+else
+  # Axoloti and Ksoloti f427
+
+  # Licensing files.
+  include $(CHIBIOS)/os/license/license.mk
+  # Startup files.
+  include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
+  # HAL-OSAL files (optional).
+  include $(CHIBIOS)/os/hal/hal.mk
+  include $(CHIBIOS)/os/hal/ports/STM32/STM32F4xx/platform.mk
+  include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
+  # RTOS files (optional).
+  include $(CHIBIOS)/os/rt/rt.mk
+  include $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC/mk/port.mk
+  # FAT stuff
+  include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+  include $(CHIBIOS)/os/various/shell/shell.mk
+endif
 
 # get the same binary as openOCD flashes from elf
 override BIN = $(CP) -O binary --gap-fill 0xff
@@ -189,7 +219,7 @@ override HEX = $(CP) -O ihex --gap-fill 0xff
 ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
 LDSCRIPT = STM32F427xG_ksoloti.ld
 else ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE_H7)
-LDSCRIPT = STM32F427xG_ksoloti.ld
+LDSCRIPT= $(STARTUPLD)/STM32H743.ld
 else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
 LDSCRIPT = STM32F427xG_axoloti.ld
 endif
@@ -214,7 +244,6 @@ CSRC = $(ALLCSRC) \
   ${FIRMWARE}/main.c \
   ${FIRMWARE}/patch.c \
   ${FIRMWARE}/flash.c \
-  ${FIRMWARE}/board.c \
   ${CMSIS}/DSP/Source/TransformFunctions/arm_bitreversal.c \
   ${CMSIS}/DSP/Source/TransformFunctions/arm_bitreversal2.c \
   ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_f32.c \
@@ -274,22 +303,6 @@ CSRC = $(ALLCSRC) \
   ${CMSIS}/DSP/Source/FilteringFunctions/arm_iir_lattice_q31.c\
   ${CMSIS}/DSP/Source/CommonTables/arm_common_tables.c \
   ${CMSIS}/DSP/Source/CommonTables/arm_const_structs.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_core.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_pipes.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c \
-  ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c \
-  ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c \
-  ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
-  ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c \
-  ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c \
-  ${FIRMWARE}/usbh_midi_core.c \
-  ${FIRMWARE}/usbh_vendor.c \
-  ${FIRMWARE}/usbh_conf.c \
   ${FIRMWARE}/serial_midi.c \
   ${FIRMWARE}/bulk_usb.c \
   ${FIRMWARE}/midi_usb.c \
@@ -297,10 +310,50 @@ CSRC = $(ALLCSRC) \
   ${FIRMWARE}/spilink.c \
   ${FIRMWARE}/spidb.c \
   ${FIRMWARE}/crc32.c \
-  ${FIRMWARE}/exceptions.c \
   ${FIRMWARE}/watchdog.c \
   ${FIRMWARE}/sysmon.c \
-  ${FIRMWARE}/axoloti_memory.c 
+  ${FIRMWARE}/axoloti_memory.c \
+  ${FIRMWARE}/exceptions.c 
+
+ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
+  # Ksoloti h747
+  CSRC += ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash.c \
+          ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash_ex.c 
+
+  # TODO H7 
+          # ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_core.c \
+          # ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c \
+          # ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c \
+          # ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_pipes.c \
+          # ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c \
+          # ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c \
+          # ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c \
+          # ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c \
+          # ${FIRMWARE}/usbh_midi_core.c \
+          # ${FIRMWARE}/usbh_vendor.c \
+          # ${FIRMWARE}/usbh_conf.c 
+
+else
+  # Axoloti and Ksoloti f427
+  CSRC += ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c \
+          ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c \
+          ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
+          ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c \
+          ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c \
+          ${FIRMWARE}/board.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_core.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_pipes.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c \
+          ${FIRMWARE}/usbh_midi_core.c \
+          ${FIRMWARE}/usbh_vendor.c \
+          ${FIRMWARE}/usbh_conf.c 
+endif
+
 
 ifeq ($(INBUILT_MOUNTER_FLASHER),yes)  
   CSRC += ${FIRMWARE}/mounter.c \
@@ -432,7 +485,6 @@ INCDIR = \
   $(CHIBIOS)/os/various \
   ${FIRMWARE}/STM32_USB_Host_Library/Core/Inc \
   ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Inc \
-  ${FIRMWARE}/STM32F4xx_HAL_Driver/Inc \
   ${MUTABLE_INSTRUMENTS} \
   ${MUTABLE_INSTRUMENTS}/warps \
   ${MUTABLE_INSTRUMENTS}/braids \
@@ -442,6 +494,13 @@ INCDIR = \
   $(CONFDIR) $(ALLINC) \
 	$(CHIBIOS)/os/hal/lib/streams
 
+ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
+  # Ksoloti h747
+  INCDIR += ${FIRMWARE}/STM32H7xx_HAL_Driver/Inc 
+else
+  # Axoloti and Ksoloti f427
+  INCDIR += ${FIRMWARE}/STM32F4xx_HAL_Driver/Inc 
+endif
 #
 # Project, sources and paths
 ##############################################################################
@@ -520,15 +579,28 @@ DLIBS =
 
 # List all user C define here, like -D_DEBUG=1
 UDEFS = \
-  -D$(BOARDDEF) \
-  -DARM_MATH_CM4 \
+  -D$(BOARDDEF)=1 \
+  -D$(SUBBOARDDEF)=1 \
   -DCORTEX_USE_FPU=TRUE \
   -DCRT1_AREAS_NUMBER=0 \
   -DCRT0_AREAS_NUMBER=0 \
   -DTHUMB \
   -DTHUMB_NO_INTERWORKING \
   -DTHUMB_PRESENT \
-  # -DCH_DBG_SYSTEM_STATE_CHECK=1 \
+
+ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
+  # Ksoloti h747
+  UDEFS += -DPATCH_ITCM=1 \
+           -DSTM32H755xx \
+           -DARM_MATH_CM7 \
+           -DCORE_CM7 
+else
+  # Axoloti and Ksoloti f427
+  UDEFS += -DPATCH_ITCM=1 \
+           -DSTM32H755xx \
+           -DARM_MATH_CM4
+endif
+
 
 # Define ASM defines here
 UADEFS =

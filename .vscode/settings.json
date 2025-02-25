@@ -83,7 +83,8 @@
         "codec_adau1961.h": "c",
         "*.inc": "c",
         "thread": "c",
-        "usb_msd.h": "c"
+        "usb_msd.h": "c",
+        "stm32h7xx_hal.h": "c"
     },
     "C_Cpp.default.compilerPath": "/Applications/ARM/bin/arm-none-eabi-gcc",
     "C_Cpp.default.cppStandard": "c++11",

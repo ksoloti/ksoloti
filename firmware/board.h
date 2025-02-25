@@ -29,6 +29,10 @@
 #define STM32_LSECLK                0U
 #endif
 
+#if !defined(STM32_LSEDRV)
+#define STM32_LSEDRV                (3U << 3U)
+#endif
+
 #if !defined(STM32_HSECLK)
 #define STM32_HSECLK                8000000U
 #endif

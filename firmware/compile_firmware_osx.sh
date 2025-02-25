@@ -47,7 +47,7 @@ if [ $BUILD_FLASHER -eq 1 ]; then
     mkdir -p $BUILDDIR/.dep
     mkdir -p $BUILDDIR/lst
     mkdir -p $BUILDDIR/obj
-    if ! make -j8 BOARDDEF=$1 SUBBOARDDEF=$2; then
+    if ! make -j BOARDDEF=$1 SUBBOARDDEF=$2; then
         exit 1
     fi
     cp $BUILDDIR/$FLASHER_PROJECT.* flasher_build/
@@ -61,7 +61,7 @@ if [ $BUILD_MOUNTER -eq 1 ]; then
     mkdir -p $BUILDDIR/.dep
     mkdir -p $BUILDDIR/lst
     mkdir -p $BUILDDIR/obj
-    if ! make -j8 BOARDDEF=$1 SUBBOARDDEF=$2; then
+    if ! make -j BOARDDEF=$1 SUBBOARDDEF=$2; then
         exit 1
     fi
     cp $BUILDDIR/$MOUNTER_PROJECT.* mounter_build/
@@ -74,7 +74,7 @@ if [ $BUILD_NORMAL -eq 1 ]; then
     mkdir -p $BUILDDIR/.dep
     mkdir -p $BUILDDIR/lst
     mkdir -p $BUILDDIR/obj
-    if ! make -j8 BOARDDEF=$1 SUBBOARDDEF=$2; then
+    if ! make -j BOARDDEF=$1 SUBBOARDDEF=$2; then
         exit 1
     fi
     cp $BUILDDIR/$NAME.* build
@@ -86,7 +86,7 @@ if [ $BUILD_SPILINK -eq 1 ]; then
     mkdir -p $BUILDDIR/.dep
     mkdir -p $BUILDDIR/lst
     mkdir -p $BUILDDIR/obj
-    if ! make -j8 BOARDDEF=$1 SUBBOARDDEF=$2 FWOPTIONDEF=FW_SPILINK; then
+    if ! make -j BOARDDEF=$1 SUBBOARDDEF=$2 FWOPTIONDEF=FW_SPILINK; then
         exit 1
     fi
     cp $BUILDDIR/"$NAME"_spilink.* build
@@ -98,7 +98,7 @@ if [ $BUILD_USBAUDIO -eq 1 ]; then
     mkdir -p $BUILDDIR/.dep
     mkdir -p $BUILDDIR/lst
     mkdir -p $BUILDDIR/obj
-    if ! make -j8 BOARDDEF=$1  SUBBOARDDEF=$2 FWOPTIONDEF=FW_USBAUDIO; then
+    if ! make -j BOARDDEF=$1  SUBBOARDDEF=$2 FWOPTIONDEF=FW_USBAUDIO; then
         exit 1
     fi
     cp $BUILDDIR/"$NAME"_usbaudio.* build
@@ -110,7 +110,7 @@ if [ $BUILD_I2SCODEC -eq 1 ]; then
     mkdir -p $BUILDDIR/.dep
     mkdir -p $BUILDDIR/lst
     mkdir -p $BUILDDIR/obj
-    if ! make -j8 BOARDDEF=$1  SUBBOARDDEF=$2 FWOPTIONDEF=FW_I2SCODEC; then
+    if ! make -j BOARDDEF=$1  SUBBOARDDEF=$2 FWOPTIONDEF=FW_I2SCODEC; then
         exit 1
     fi
     cp $BUILDDIR/"$NAME"_i2scodec.* build

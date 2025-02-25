@@ -34,7 +34,12 @@ uint32_t CalcCRC32(uint8_t *buffer, uint32_t size) {
   uint32_t i, j;
   uint32_t ui32x;
 
+#if BOARD_KSOLOTI_CORE_H743
+  RCC->AHB4ENR |= RCC_AHB4ENR_CRCEN;
+#else
   RCC->AHB1ENR |= RCC_AHB1ENR_CRCEN;
+#endif
+
   CRC->CR = 1;
   asm("NOP");
   asm("NOP");

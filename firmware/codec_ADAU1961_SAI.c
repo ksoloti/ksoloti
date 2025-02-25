@@ -26,8 +26,14 @@
 #include "hal.h"
 
 #include "codec.h"
-#include "stm32f4xx.h"
-#include "stm32f4xx_hal_i2c.h"
+
+#if BOARD_KSOLOTI_CORE_H743
+    // TODOH7
+#else
+    #include "stm32f4xx.h"
+    #include "stm32f4xx_hal_i2c.h"
+#endif
+
 #include "axoloti_board.h"
 #include "sysmon.h"
 #ifdef FW_SPILINK

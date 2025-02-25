@@ -20,10 +20,18 @@
 
 #define hal_lld_get_counter_value port_rt_get_counter_value
 
-#define RTT2US(ticks) ((ticks) / (STM32_SYSCLK / 1000000UL))
-#define RTT2MS(ticks) ((ticks) / (STM32_SYSCLK / 1000UL))
-#define US2RTT(usec) (((STM32_SYSCLK + 999999UL) / 1000000UL) * (usec))
-#define MS2RTT(msec) (((STM32_SYSCLK + 999UL) / 1000UL) * (msec))
+
+#if BOARD_KSOLOTI_CORE_H743
+  #define RTT2US(ticks) ((ticks) / (480000000 / 1000000UL))
+  #define RTT2MS(ticks) ((ticks) / (480000000 / 1000UL))
+  #define US2RTT(usec) (((480000000 + 999999UL) / 1000000UL) * (usec))
+  #define MS2RTT(msec) (((480000000 + 999UL) / 1000UL) * (msec))
+#else
+  #define RTT2US(ticks) ((ticks) / (STM32_SYSCLK / 1000000UL))
+  #define RTT2MS(ticks) ((ticks) / (STM32_SYSCLK / 1000UL))
+  #define US2RTT(usec) (((STM32_SYSCLK + 999999UL) / 1000000UL) * (usec))
+  #define MS2RTT(msec) (((STM32_SYSCLK + 999UL) / 1000UL) * (msec))
+#endif
 
 
 
@@ -52,6 +60,10 @@
 // V18 here down
 
 #define MS2ST TIME_MS2I
+
+
+
+
 
 // 20.3 notes.
 // 1. external pump - looks like this is not needed nymore as chibios is now not using a thread for this.

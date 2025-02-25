@@ -19,7 +19,7 @@
             "includePath": [
                 "${workspaceFolder}/**"
             ],
-            "defines": ["HAL_USE_USB=1", "THUMB", "FW_USBAUDIO=1", "KSOLOTI_H7=1", "STM32H755xx=1", "KSOLOTI_H7=1"],
+            "defines": ["HAL_USE_USB=1", "THUMB", "FW_USBAUDIO=1", "KSOLOTI_H7=1", "STM32H755xx=1", "BOARD_KSOLOTI_CORE_H743=1", "BOARD_KSOLOTI_CORE=1"],
             "macFrameworkPath": [],
             "cStandard": "c11",
             "cppStandard": "c++11",

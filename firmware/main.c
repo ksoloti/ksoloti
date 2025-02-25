@@ -19,8 +19,12 @@
  
 #include "axoloti_defines.h"
 
-#include "sdram.h"
-#include "stm32f4xx_fmc.h"
+#if BOARD_KSOLOTI_CORE_H743
+    // TODOH7
+#else
+    #include "sdram.h"
+    #include "stm32f4xx_fmc.h"
+#endif
 
 #include "ch.h"
 #include "hal.h"
@@ -50,10 +54,23 @@
 #include "i2scodec.h"
 #endif
 
-#include "sdram.c"
-#include "stm32f4xx_fmc.c"
+
+#if BOARD_KSOLOTI_CORE_H743
+    // TODOH7
+#else
+    #include "sdram.c"
+    #include "stm32f4xx_fmc.c"
+#endif
 
 #include "board.h"
+
+
+#if BOARD_KSOLOTI_CORE_H743
+  // TODOH7 - will be in SAI
+  uint32_t HAL_GetTick(void) {
+    return RTT2MS(DWT->CYCCNT);
+  }
+#endif
 
 /*===========================================================================*/
 /* Initialization and main thread.                                           */
@@ -92,13 +109,17 @@ void StartMounter(void)
 int main(void) {
 
     /* copy vector table to SRAM1! */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wnonnull"
-    memcpy((char *)0x20000000, (const char)0x00000000, 0x200);
-#pragma GCC diagnostic pop
+#if BOARD_KSOLOTI_CORE_H743
+    // TODOH7
+#else        
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wnonnull"
+        memcpy((char *)0x20000000, (const char)0x00000000, 0x200);
+    #pragma GCC diagnostic pop
 
-    /* remap SRAM1 to 0x00000000 */
-    SYSCFG->MEMRMP |= 0x03;
+        /* remap SRAM1 to 0x00000000 */
+        SYSCFG->MEMRMP |= 0x03;
+#endif
 
     #if INBUILT_MOUNTER_FLASHER
     // shall we run the flasher?
@@ -165,15 +186,12 @@ int main(void) {
     midi_init();
     start_dsp_thread();
     ui_init();
+#if BOARD_KSOLOTI_CORE_H743
+    // TODOH7
+#else    
     configSDRAM();
+#endif
     // memTest();
-
-    #define SDRAM_BANK_ADDR     ((uint32_t)0xC0000000)        
-    volatile uint32_t *sdram32 = (uint32_t *)SDRAM_BANK_ADDR;
-
-    volatile uint32_t flength = sdram32[2];
-    volatile uint32_t ccrc = CalcCRC32((uint8_t *)(SDRAM_BANK_ADDR + 0x010), flength);
-    volatile uint32_t fcrc = sdram32[3];
 
     bool_t is_master = palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN);
 
@@ -190,8 +208,11 @@ int main(void) {
         // watchdog_init();
         chThdSleepMilliseconds(1);
     }
-
+#if BOARD_KSOLOTI_CORE_H743
+    // TODOH7
+#else
     MY_USBH_Init();
+#endif
 
     if (!exception_check()) {
         /* Only try mounting SD and booting a patch when no exception is reported */
