@@ -76,13 +76,10 @@ public class QCmdFlashDFU extends QCmdShellTask {
         Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.INFO, "File path: " + System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build" + File.separator + bname);
 
         if (OSDetect.getOS() == OSDetect.OS.WIN) {
-            return HomeDir() + "/platform_win/bin/sh.exe " + HomeDir() + "/platform_win/upload_fw_dfu.sh " + bname;
+            return HomeDir() + "/platform_win/bin/sh.exe " + FirmwareDir() + "/upload_fw_dfu.sh " + bname;
         }
-        else if (OSDetect.getOS() == OSDetect.OS.MAC) {
-            return "/bin/sh "+ HomeDir() + "/platform_osx/upload_fw_dfu.sh " + bname;
-        }
-        else if (OSDetect.getOS() == OSDetect.OS.LINUX) {
-            return "/bin/sh "+ HomeDir() + "/platform_linux/upload_fw_dfu.sh " + bname;
+        else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {
+            return "/bin/sh "+ FirmwareDir() + "/upload_fw_dfu.sh " + bname;
         }
         else {
             Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");

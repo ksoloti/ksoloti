@@ -2,8 +2,8 @@
 #!/bin/bash
 set -e
 
-printf "\nWarning! This script is only for testing upload of Ksoloti Core firmware!\n"
-printf "Do not use this script for Axoloti Core or any SPILink-enabled or otherwise customized firmware.\n"
+printf "\nWarning! This script is only for testing upload of Ksoloti Core normal firmware!\n"
+printf "Do not use this script for Axoloti Core or any otherwise customized firmware mode.\n"
 
 platform='unknown'
 unamestr=`uname`
