@@ -443,7 +443,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jToolbarPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jToolbarPanel.setLayout(new javax.swing.BoxLayout(jToolbarPanel, javax.swing.BoxLayout.LINE_AXIS));
 
-        Dimension btndim = new Dimension(65,30);
+        Dimension btndim = new Dimension(110,30);
         jToggleButtonLive.setText("Live");
         jToggleButtonLive.setMinimumSize(btndim);
         jToggleButtonLive.setMaximumSize(btndim);
