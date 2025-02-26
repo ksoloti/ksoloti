@@ -77,9 +77,9 @@ void wait_sai_dma_tc_flag(void) {
             /* The SAI DMA Transfer Complete flag must be set,
              * which marks the beginning of the next 16*2-sample buffer transfer.
              * I2S complete transfer interrupt needs to occur 10-20 us before SAI interrupt fires.
-             * diff == 12 to 13 us to be on the safe side.
+             * diff == between 12.0 and 13.5 us to be on the safe side.
              */
-            if ((STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM)->stream->CR & STM32_DMA_CR_CT) && diff > 110 && diff < 140) {
+            if ((STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM)->stream->CR & STM32_DMA_CR_CT) && diff > 120 && diff < 135) {
 
                 /* We have a lock! Set PLLI2S and I2S config to correct frequency of 48000 Hz */ 
                 SPI3->I2SCFGR &= ~SPI_I2SCFGR_I2SE;
