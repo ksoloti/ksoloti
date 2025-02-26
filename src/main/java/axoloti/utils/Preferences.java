@@ -69,25 +69,44 @@ import com.formdev.flatlaf.themes.FlatMacLightLaf;
 public class Preferences {
 
     public enum BoardType {
-        KsolotiGeko ("Ksoloti Geko"),
-        Ksoloti ("Ksoloti"),
-        Axoloti ("Axoloti");
+        Ksoloti ("Ksoloti Core"),
+        KsolotiGeko ("Ksoloti Core Geko"),
+        Axoloti ("Axoloti Core");
 
         private final String name;     
         private BoardType(String s) { name = s; }
         public String toString() {return this.name;}
+        
+        static public BoardType fromString(String name) {
+            for (BoardType b : values()) {
+                if (b.name.equals(name)) {
+                    return b;
+                }
+            }
+            return null;
+        }
     }
 
     public enum FirmwareType {
         Normal ("Normal"),
-        USBAudio ("USB Audio"),
         SPILink ("SPI Link"),
+        USBAudio ("USB Audio"),
         i2SCodec ("i2S Codec");
 
         private final String name;     
         private FirmwareType(String s) { name = s; }
         public String toString() {return this.name;}
-}
+
+        static public FirmwareType fromString(String name) {
+            for (FirmwareType f : values()) {
+                if (f.name.equals(name)) {
+                    return f;
+                }
+            }
+            return null;
+        }
+
+    }
 
     public enum SampleRateType {
         Rate48K ("48K"),
@@ -97,6 +116,14 @@ public class Preferences {
         private SampleRateType(String s) { name = s; }
         public String toString() {return this.name;}
 
+        static public SampleRateType fromString(String name) {
+            for (SampleRateType s : values()) {
+                if (s.name.equals(name)) {
+                    return s;
+                }
+            }
+            return null;
+        }
     }
 
     private static final Logger LOGGER = Logger.getLogger(Preferences.class.getName());
@@ -738,10 +765,10 @@ public class Preferences {
         // SetDirty();
     }
 
-    public void setFirmwareMode(BoardType Board, FirmwareType Firmware, SampleRateType SampleRate ){
+    public boolean setFirmwareMode(BoardType Board, FirmwareType Firmware, SampleRateType SampleRate ){
 
         if(this.Board == Board && this.Firmware == Firmware && this.SampleRate == SampleRate) {
-            return;
+            return false;
         }
 
         if(this.Board != Board) {
@@ -768,6 +795,8 @@ public class Preferences {
 
         MainFrame.mainframe.populateMainframeTitle();
         MainFrame.mainframe.populateInfoColumn();
+
+        return true;
     }
 
     public boolean getRestartRequired() {

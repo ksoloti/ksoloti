@@ -25,6 +25,9 @@ import axoloti.utils.AxoGitLibrary;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
 import axoloti.utils.Preferences;
+import axoloti.utils.Preferences.BoardType;
+import axoloti.utils.Preferences.FirmwareType;
+import axoloti.utils.Preferences.SampleRateType;
 import components.ScrollPaneComponent;
 
 import static axoloti.MainFrame.fc;
@@ -55,6 +58,8 @@ import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
+
+import org.eclipse.jgit.util.QuotedString.BourneStyle;
 
 /**
  *
@@ -109,7 +114,8 @@ public class PreferencesFrame extends JFrame {
 
         if (prefs.getMouseDialAngular()) jComboBoxDialMouseBehaviour.setSelectedItem("Angular"); 
 
-        jComboBoxFirmwareMode.setSelectedItem(prefs.getFirmwareMode()); 
+        jComboBoxBoardType.setSelectedItem(prefs.getBoard());
+        jComboBoxFirmwareMode.setSelectedItem(prefs.getFirmware()); 
 
         jComboBoxTheme.setSelectedItem(prefs.getTheme());
 
@@ -149,15 +155,12 @@ public class PreferencesFrame extends JFrame {
 
         prefs.setMouseDoNotRecenterWhenAdjustingControls(jCheckBoxNoMouseReCenter.isSelected());
 
-        if (!jComboBoxFirmwareMode.getSelectedItem().toString().equals(prefs.getFirmwareMode())) {
 
-            prefs.setFirmwareMode(jComboBoxFirmwareMode.getSelectedItem().toString());
-
+        if(prefs.setFirmwareMode(BoardType.fromString(jComboBoxBoardType.getSelectedItem().toString()), FirmwareType.fromString(jComboBoxFirmwareMode.getSelectedItem().toString()), SampleRateType.Rate48K)) {
             /* Flush old .h.gch file (Will be recompiled for new firmware mode the next time a patch goes live) */
             axoloti.Axoloti.deletePrecompiledHeaderFile();
 
             MainFrame.mainframe.updateLinkFirmwareID();
-            
         }
 
         prefs.setUserShortcut(0, jTextFieldUserShortcut1.getText());
@@ -206,8 +209,10 @@ public class PreferencesFrame extends JFrame {
         jLabelCodeFontSize = new JLabel();
         jButtonSave = new JButton();
         jLabelDialMouseBehaviour = new JLabel();
+        jLabelBoardType = new JLabel();
         jLabelFirmwareMode = new JLabel();
         jComboBoxDialMouseBehaviour = new JComboBox<String>();
+        jComboBoxBoardType = new JComboBox<String>();
         jComboBoxFirmwareMode = new JComboBox<String>();
         jLabelFavouritesDir = new JLabel();
         jLabelUserShortcutTitle = new JLabel();
@@ -274,8 +279,11 @@ public class PreferencesFrame extends JFrame {
         jLabelDialMouseBehaviour.setToolTipText("Vertical: Drag up and down to change values.\n" +
                                                 "Angular: Circle the cursor around the control to change its value.");
 
+        jLabelBoardType.setText("Board Type (restart required)");
+        jLabelBoardType.setToolTipText("<html><div width=\"480px\">Several boards are available, each supporting certain firmware features.<p/><p/><b>Ksoloti Core</b>: The default mode. The Patcher will (only!) detect and connect to Ksoloti Core boards.<p/><p/><b>Ksoloti Core Geko</b>: The Patcher will (only!) detect and connect to Ksoloti Core Geko boards.<p/><p/><b>Axoloti Core</b>: \"Legacy mode\". The Patcher will (only!) detect and connect to Axoloti Core boards.<p/><p/><b>After you've changed modes, click \"Update\" in the resulting \"Firmware Mismatch\" popup to update the Core's firmware automatically to the selected mode.</b></div></html>");
+                                        
         jLabelFirmwareMode.setText("Firmware Mode (restart required)");
-        jLabelFirmwareMode.setToolTipText("<html><div width=\"480px\">Several firmware modes are available, each supporting different boards and/or adding certain firmware features.<p/><p/><b>Ksoloti Core</b>: The default mode. The Patcher will (only!) detect and connect to Ksoloti Core boards.<p/><p/><b>Axoloti Core</b>: \"Legacy mode\". The Patcher will (only!) detect and connect to Axoloti Core boards.<p/><p/><b>[BOARD] + SPILink</b>: Activates a link between two Cores which lets them sync up and exchange audio and data channels. Make the necessary hardware connections as described in the SPILink help patch, and flash this firmware mode on both Cores to be synced together. Follow the instructions in the SPILink help patch.<p/><p/><b>[BOARD] + USBAudio</b>: [Currently experimental] Activates USB audio functionality while connected to a host. Stream up to 4 channels of audio from and to your computer (DAW). Follow the instructions in the USBAudio help patch. <b>Note:</b> On Windows, you may have to right-click->\"Uninstall\" the drivers both for \"Ksoloti Core\" and \"Ksoloti Bulk Interface\" in the Device Manager to force a driver update. On Linux, you will have to run 'platform_linux&#47;add_udev_rules.sh' to update the udev rules.<p/><p/><b>[BOARD] + I2SCodec</b>: [Currently experimental] Activates an I2S stream via SPI3 (PA15, PB3, PB4, PD6). Connect a suitable I2S ADC, DAC, or codec to get 2 additional audio inputs, outputs, or both. Follow the instructions in the I2SCodec help patch.<p/><p/><b>After you've changed modes, click \"Update\" in the resulting \"Firmware Mismatch\" popup to update the Core's firmware automatically to the selected mode.</b></div></html>");
+        jLabelFirmwareMode.setToolTipText("<html><div width=\"480px\">Several firmware modes are available, each supporting different boards and/or adding certain firmware features.<p/><p/><b>SPI Link</b>: Activates a link between two Cores which lets them sync up and exchange audio and data channels. Make the necessary hardware connections as described in the SPILink help patch, and flash this firmware mode on both Cores to be synced together. Follow the instructions in the SPILink help patch.<p/><p/><b>USB Audio</b>: [Currently experimental] Activates USB audio functionality while connected to a host. Stream up to 4 channels of audio from and to your computer (DAW). Follow the instructions in the USBAudio help patch. <b>Note:</b> On Windows, you may have to right-click->\"Uninstall\" the drivers both for \"Ksoloti Core\" and \"Ksoloti Bulk Interface\" in the Device Manager to force a driver update. On Linux, you will have to run 'platform_linux&#47;add_udev_rules.sh' to update the udev rules.<p/><p/><b>I2S Codec</b>: [Currently experimental] Activates an I2S stream via SPI3 (PA15, PB3, PB4, PD6). Connect a suitable I2S ADC, DAC, or codec to get 2 additional audio inputs, outputs, or both. Follow the instructions in the I2SCodec help patch.<p/><p/><b>After you've changed modes, click \"Update\" in the resulting \"Firmware Mismatch\" popup to update the Core's firmware automatically to the selected mode.</b></div></html>");
 
         jComboBoxDialMouseBehaviour.setToolTipText(jLabelDialMouseBehaviour.getToolTipText());
         jComboBoxDialMouseBehaviour.setModel(new DefaultComboBoxModel<String>(new String[] { "Vertical", "Angular" }));
@@ -285,20 +293,29 @@ public class PreferencesFrame extends JFrame {
             }
         });
 
-        jComboBoxFirmwareMode.setModel(new DefaultComboBoxModel<String>(new String[] {
-            "Ksoloti Core",
-            "Ksoloti Core + SPILink",
-            "Ksoloti Core + USBAudio",
-            "Ksoloti Core + I2SCodec",
-            "Ksoloti Core Geko",
-            "Ksoloti Core Geko + SPILink",
-            "Ksoloti Core Geko + USBAudio",
-            "Ksoloti Core Geko + I2SCodec",
-            "Axoloti Core",
-            "Axoloti Core + SPILink",
-            "Axoloti Core + USBAudio",
-            "Axoloti Core + I2SCodec"
-        }));
+        // probably a better way to do this but I don't know it!
+        BoardType[] boardTypes = BoardType.values();
+        String[] boardTypeNames = new String[boardTypes.length];
+        for (int i = 0; i < boardTypes.length; i++) {
+            boardTypeNames[i] = boardTypes[i].toString();
+        }
+        jComboBoxBoardType.setModel(new DefaultComboBoxModel<String>(boardTypeNames));
+
+        jComboBoxBoardType.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxBoardTypeActionPerformed(evt);
+            }
+        });
+        jComboBoxBoardType.setToolTipText(jLabelBoardType.getToolTipText());
+        
+        // probably a better way to do this but I don't know it!
+        FirmwareType[] firmwareTypes = FirmwareType.values();
+        String[] firmwareTypeNames = new String[firmwareTypes.length];
+        for (int i = 0; i < firmwareTypes.length; i++) {
+            firmwareTypeNames[i] = firmwareTypes[i].toString();
+        }
+        jComboBoxFirmwareMode.setModel(new DefaultComboBoxModel<String>(firmwareTypeNames));
+
         jComboBoxFirmwareMode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxFirmwareModeActionPerformed(evt);
@@ -598,6 +615,12 @@ public class PreferencesFrame extends JFrame {
                             )
 
                             .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabelBoardType, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(ComponentPlacement.RELATED)
+                                .addComponent(jComboBoxBoardType, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
+                            )
+
+                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelFirmwareMode, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(jComboBoxFirmwareMode, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
@@ -605,6 +628,7 @@ public class PreferencesFrame extends JFrame {
                                 .addComponent(jButtonSave, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
                                 .addGap(15, 15, 15)
                             )
+
                         )
                         .addContainerGap())
 
@@ -752,10 +776,17 @@ public class PreferencesFrame extends JFrame {
                         .addGap(5, 5, 5)
 
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                            .addComponent(jLabelBoardType)
+                            .addComponent(jComboBoxBoardType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        )
+                        .addGap(5, 5, 5)
+
+                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelFirmwareMode)
                             .addComponent(jComboBoxFirmwareMode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButtonSave)
                         )
+
                     )
 
                 )
@@ -773,6 +804,9 @@ public class PreferencesFrame extends JFrame {
     }
 
     private void jComboBoxDialMouseBehaviourActionPerformed(java.awt.event.ActionEvent evt) {
+    }
+
+    private void jComboBoxBoardTypeActionPerformed(java.awt.event.ActionEvent evt) {
     }
 
     private void jComboBoxFirmwareModeActionPerformed(java.awt.event.ActionEvent evt) {
@@ -918,6 +952,7 @@ public class PreferencesFrame extends JFrame {
     private JButton jButtonSave;
     private JCheckBox jCheckBoxNoMouseReCenter;
     private JComboBox<String> jComboBoxDialMouseBehaviour;
+    private JComboBox<String> jComboBoxBoardType;
     private JComboBox<String> jComboBoxFirmwareMode;
     private JCheckBox jControllerEnabled;
     private JCheckBox jBackupPatchesOnSDEnabled;
@@ -929,6 +964,7 @@ public class PreferencesFrame extends JFrame {
     private JComboBox<String> jComboBoxDspSafetyLimit;
     private JLabel jLabelCodeFontSize;
     private JLabel jLabelDialMouseBehaviour;
+    private JLabel jLabelBoardType;
     private JLabel jLabelFirmwareMode;
     private JLabel jLabelFavouritesDir;
     
