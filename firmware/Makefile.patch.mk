@@ -1,6 +1,9 @@
 BOARDDEF =
+SUBBOARDDEF=
 FWOPTIONDEF =
 
+$(info    BOARDDEF is $(BOARDDEF))
+$(info    SUBBOARDDEF is $(SUBBOARDDEF))
 
 # Some new options are important to keep SRAM usage and DSP load low with newer GCC versions.
 # "--param max-completely-peeled-insns=100" makes a big difference to get SRAM down. Newer GCC versions use 200 here, original axoloti (GCC 4.9) used 100.
@@ -10,11 +13,8 @@ CCFLAGS = \
   -Wno-unused-parameter \
   -Wno-return-type \
   -ggdb3 \
-  -mcpu=cortex-m4 \
   -mfloat-abi=hard \
-  -mfpu=fpv4-sp-d16 \
   -mthumb \
-  -mtune=cortex-m4 \
   -mword-relocations \
   -nostartfiles \
   -nostdlib \
@@ -37,14 +37,40 @@ CCFLAGS = \
   -fno-signed-zeros \
   -ffp-contract=off
 
+ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
+  # Ksoloti h747
+  CCFLAGS += -mcpu=cortex-m7 \
+             -mfpu=fpv5-sp-d16 \
+             -mtune=cortex-m7 
+else
+  # Axoloti and Ksoloti f427
+  CCFLAGS += -mcpu=cortex-m4 \
+             -mfpu=fpv4-sp-d16 \
+             -mtune=cortex-m4 
+endif
+
 DEFS = \
-  -D$(BOARDDEF) \
-  -DARM_MATH_CM4 \
+  -D$(BOARDDEF)=1 \
+  -D$(SUBBOARDDEF)=1 \
   -DCORTEX_USE_FPU=TRUE \
   -DTHUMB \
   -DTHUMB_NO_INTERWORKING \
-  -DTHUMB_PRESENT \
-  -D__FPU_PRESENT
+  -DTHUMB_PRESENT 
+
+ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
+  # Ksoloti h747
+  DEFS += -DPATCH_ITCM=1 \
+          -DSTM32H755xx \
+          -DARM_MATH_CM7 \
+          -DCORE_CM7 \
+          -Dbool_t=bool
+else
+  # Axoloti and Ksoloti f427
+  DEFS += -DPATCH_ITCM=1 \
+          -DSTM32H755xx \
+          -DARM_MATH_CM4 \
+          -D__FPU_PRESENT
+endif
 
 ifneq ($(FWOPTIONDEF),)
   DEFS := $(DEFS) -D$(FWOPTIONDEF)
@@ -113,19 +139,43 @@ CHIBIOS  = $(subst $(SPACE),\ ,${axoloti_home}/chibios)
 CMSIS    = $(subst $(SPACE),\ ,${axoloti_home}/CMSIS)
 
 
-# Licensing files.
-include $(CHIBIOS)/os/license/license.mk
-# Startup files.
-include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
-# HAL-OSAL files (optional).
-include $(CHIBIOS)/os/hal/hal.mk
-include $(CHIBIOS)/os/hal/ports/STM32/STM32F4xx/platform.mk
-include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
-# RTOS files (optional).
-include $(CHIBIOS)/os/rt/rt.mk
-include $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC/mk/port.mk
-# FAT stuff
-include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+
+ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
+  # Ksoloti h747
+
+  # Licensing files.
+  include $(CHIBIOS)/os/license/license.mk
+  # Startup files.
+  include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32h7xx.mk
+  # HAL-OSAL files (optional).
+  include $(CHIBIOS)/os/hal/hal.mk
+  include $(CHIBIOS)/os/hal/ports/STM32/STM32H7xx/platform.mk
+  include $(CHIBIOS)/os/hal/boards/ST_NUCLEO144_H743ZI/board.mk
+  include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
+  # RTOS files (optional).
+  include $(CHIBIOS)/os/rt/rt.mk
+  include $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC/mk/port.mk
+  # FAT stuff
+  include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+else
+  # Axoloti and Ksoloti f427
+
+  # Licensing files.
+  include $(CHIBIOS)/os/license/license.mk
+  # Startup files.
+  include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
+  # HAL-OSAL files (optional).
+  include $(CHIBIOS)/os/hal/hal.mk
+  include $(CHIBIOS)/os/hal/ports/STM32/STM32F4xx/platform.mk
+  include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
+  # RTOS files (optional).
+  include $(CHIBIOS)/os/rt/rt.mk
+  include $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC/mk/port.mk
+  # FAT stuff
+  include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+  include $(CHIBIOS)/os/various/shell/shell.mk
+endif
+
 
 INCDIR = $(CMSIS)/Core/Include \
   $(CMSIS)/DSP/Include \
@@ -136,12 +186,19 @@ INCDIR = $(CMSIS)/Core/Include \
   ${FIRMWARE} \
   $(CHIBIOS) \
   $(CHIBIOS)/os/various \
-  ${FIRMWARE}/STM32F4xx_HAL_Driver/Inc \
   ${FIRMWARE}/mutable_instruments \
-  $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC \
-  $(CHIBIOS)/os/common/ports/ARMCMx/devices/STM32F4xx \
-  $(CHIBIOS)/os/ext/CMSIS/include \
-  $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx
+
+ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
+  # Ksoloti h747
+  INCDIR += ${FIRMWARE}/STM32H7xx_HAL_Driver/Inc 
+else
+  # Axoloti and Ksoloti f427
+  INCDIR += ${FIRMWARE}/STM32F4xx_HAL_Driver/Inc \
+            $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC \
+            $(CHIBIOS)/os/common/ports/ARMCMx/devices/STM32F4xx \
+            $(CHIBIOS)/os/ext/CMSIS/include \
+            $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx
+endif
 
 # Paths
 IINCDIR = $(patsubst %,-I%,$(INCDIR) $(DINCDIR) $(UINCDIR) $(CONFDIR) $(ALLINC))
