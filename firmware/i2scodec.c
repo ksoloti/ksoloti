@@ -123,13 +123,6 @@ static void dma_i2s_tx_interrupt(void* dat, uint32_t flags) {
 }
 
 
-static void dma_i2s_rx_interrupt(void* dat, uint32_t flags) {
-    (void) dat;
-    (void) flags;
-    dmaStreamClearInterrupt(i2s_rx_dma);
-}
-
-
 void i2s_peripheral_init(void)  {
 
 #ifdef I2S_DEBUG
@@ -237,16 +230,5 @@ void i2s_init(void) {
     wait_sai_dma_tc_flag();
 }
 
-
-void i2s_dma_stop(void) {
-}
-
-
-void i2s_stop(void) {
-    SPI3->I2SCFGR = 0;
-    I2S3ext->I2SCFGR = 0;
-    SPI3->CR2 = 0;
-    I2S3ext->CR2 = 0;
-}
 
 #endif /* FW_I2SCODEC */
