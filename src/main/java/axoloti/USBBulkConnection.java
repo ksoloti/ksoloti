@@ -246,7 +246,8 @@ public class USBBulkConnection extends Connection {
 
             // if we have a matching useDeviceHandle return that, else if we have a firstDeviceHandle return that
             if(useDeviceHandle != null) {
-                LibUsb.close(firstDeviceHandle);
+                if(firstDeviceHandle != null)
+                    LibUsb.close(firstDeviceHandle);
                 return useDeviceHandle;
             } else if(firstDeviceHandle != null)
             {
