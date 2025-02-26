@@ -71,17 +71,21 @@ SECTIONS
     constructors : ALIGN(4) SUBALIGN(4)
     {
         PROVIDE(__init_array_start = .);
+        PROVIDE(__init_array_base__ = .);
         KEEP(*(SORT(.init_array.*)))
         KEEP(*(.init_array))
         PROVIDE(__init_array_end = .);
+        PROVIDE(__init_array_end__ = .);
     } > FLASH
 
     destructors : ALIGN(4) SUBALIGN(4)
     {
         PROVIDE(__fini_array_start = .);
+        PROVIDE(__fini_array_base__ = .);
         KEEP(*(.fini_array))
         KEEP(*(SORT(.fini_array.*)))
         PROVIDE(__fini_array_end = .);
+        PROVIDE(__fini_array_end__ = .);
     } > FLASH
 
     .text : ALIGN(16) SUBALIGN(16)
@@ -150,6 +154,8 @@ SECTIONS
     {
         . = ALIGN(4);
         PROVIDE(_data = .);
+        __textdata_base__ = LOADADDR(.data);
+        __data_base__ = .;
         _textdata_start = LOADADDR(.data);
         _data_start = .;
         *(.data)
@@ -160,6 +166,7 @@ SECTIONS
         . = ALIGN(4);
         PROVIDE(_edata = .);
         _data_end = .;
+        __data_end__ = .;
     } > RAM AT > FLASH
     .flashend :
     {
@@ -172,12 +179,14 @@ SECTIONS
     {
         . = ALIGN(4);
         PROVIDE(_bss_start = .);
+        __bss_base__ = .;
         *(.bss)
         . = ALIGN(4);
         *(.bss.*)
         . = ALIGN(4);
         *(COMMON)
         . = ALIGN(4);
+        __bss_end__ = .;        
         PROVIDE(_bss_end = .);
     } > RAM
 

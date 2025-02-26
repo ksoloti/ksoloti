@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@
  * @{
  */
 
-#ifndef _STM32_DMA_H_
-#define _STM32_DMA_H_
+#ifndef STM32_DMA_H
+#define STM32_DMA_H
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -51,11 +51,6 @@
 #define STM32_DMA_ISR_MASK          0x0E
 
 /**
- * @brief   From stream number to shift factor in @p ISR and @p IFCR registers.
- */
-#define STM32_DMA_ISR_SHIFT(stream) (((stream) - 1U) * 4U)
-
-/**
  * @brief   Returns the request line associated to the specified stream.
  * @note    In some STM32 manuals the request line is named confusingly
  *          channel.
@@ -65,7 +60,8 @@
  *                      nibble
  * @return              Returns the request associated to the stream.
  */
-#define STM32_DMA_GETCHANNEL(id, c) (((c) >> (((id) % 7U) * 4U)) & 15U)
+#define STM32_DMA_GETCHANNEL(id, c)                                         \
+  (((uint32_t)(c) >> (((uint32_t)(id) % (uint32_t)STM32_DMA1_NUM_CHANNELS) * 4U)) & 15U)
 
 /**
  * @brief   Checks if a DMA priority is within the valid range.
@@ -77,6 +73,27 @@
  */
 #define STM32_DMA_IS_VALID_PRIORITY(prio) (((prio) >= 0U) && ((prio) <= 3U))
 
+#if (STM32_DMA_SUPPORTS_DMAMUX == FALSE) || defined(_DOXYGEN__)
+/**
+ * @brief   Checks if a DMA stream id is within the valid range.
+ *
+ * @param[in] id        DMA stream id
+ * @retval              The check result.
+ * @retval false        invalid DMA channel.
+ * @retval true         correct DMA channel.
+ */
+#define STM32_DMA_IS_VALID_STREAM(id) (((id) >= 0U) &&                      \
+                                       ((id) < STM32_DMA_STREAMS))
+#else /* STM32_DMA_SUPPORTS_DMAMUX == FALSE */
+#if STM32_DMA2_NUM_CHANNELS > 0
+#define STM32_DMA_IS_VALID_STREAM(id) (((id) >= 0U) &&                      \
+                                       ((id) <= (STM32_DMA_STREAMS + 2)))
+#else
+#define STM32_DMA_IS_VALID_STREAM(id) (((id) >= 0U) &&                      \
+                                       ((id) <= (STM32_DMA_STREAMS + 1)))
+#endif
+#endif /* STM32_DMA_SUPPORTS_DMAMUX == FALSE */
+
 /**
  * @brief   Returns an unique numeric identifier for a DMA stream.
  *
@@ -84,7 +101,8 @@
  * @param[in] stream    the stream number
  * @return              An unique numeric stream identifier.
  */
-#define STM32_DMA_STREAM_ID(dma, stream) ((((dma) - 1U) * 7U) + ((stream) - 1U))
+#define STM32_DMA_STREAM_ID(dma, stream)                                    \
+  ((((dma) - 1) * STM32_DMA1_NUM_CHANNELS) + ((stream) - 1))
 
 /**
  * @brief   Returns a DMA stream identifier mask.
@@ -109,6 +127,19 @@
  */
 #define STM32_DMA_IS_VALID_ID(id, mask) (((1U << (id)) & (mask)))
 
+#if (STM32_DMA_SUPPORTS_DMAMUX == TRUE) || defined(_DOXYGEN__)
+/**
+ * @name    Special stream identifiers
+ * @{
+ */
+#define STM32_DMA_STREAM_ID_ANY         STM32_DMA_STREAMS
+#define STM32_DMA_STREAM_ID_ANY_DMA1    (STM32_DMA_STREAM_ID_ANY + 1)
+#if STM32_DMA2_NUM_CHANNELS > 0
+#define STM32_DMA_STREAM_ID_ANY_DMA2    (STM32_DMA_STREAM_ID_ANY_DMA1 + 1)
+#endif
+/** @} */
+#endif
+
 /**
  * @name    DMA streams identifiers
  * @{
@@ -122,26 +153,61 @@
  */
 #define STM32_DMA_STREAM(id)        (&_stm32_dma_streams[id])
 
+#if STM32_DMA1_NUM_CHANNELS > 0
 #define STM32_DMA1_STREAM1          STM32_DMA_STREAM(0)
+#endif
+#if STM32_DMA1_NUM_CHANNELS > 1
 #define STM32_DMA1_STREAM2          STM32_DMA_STREAM(1)
+#endif
+#if STM32_DMA1_NUM_CHANNELS > 2
 #define STM32_DMA1_STREAM3          STM32_DMA_STREAM(2)
+#endif
+#if STM32_DMA1_NUM_CHANNELS > 3
 #define STM32_DMA1_STREAM4          STM32_DMA_STREAM(3)
+#endif
+#if STM32_DMA1_NUM_CHANNELS > 4
 #define STM32_DMA1_STREAM5          STM32_DMA_STREAM(4)
+#endif
+#if STM32_DMA1_NUM_CHANNELS > 5
 #define STM32_DMA1_STREAM6          STM32_DMA_STREAM(5)
+#endif
+#if STM32_DMA1_NUM_CHANNELS > 6
 #define STM32_DMA1_STREAM7          STM32_DMA_STREAM(6)
-#define STM32_DMA2_STREAM1          STM32_DMA_STREAM(7)
-#define STM32_DMA2_STREAM2          STM32_DMA_STREAM(8)
-#define STM32_DMA2_STREAM3          STM32_DMA_STREAM(9)
-#define STM32_DMA2_STREAM4          STM32_DMA_STREAM(10)
-#define STM32_DMA2_STREAM5          STM32_DMA_STREAM(11)
-#define STM32_DMA2_STREAM6          STM32_DMA_STREAM(12)
-#define STM32_DMA2_STREAM7          STM32_DMA_STREAM(13)
+#endif
+#if STM32_DMA1_NUM_CHANNELS > 7
+#define STM32_DMA1_STREAM8          STM32_DMA_STREAM(7)
+#endif
+#if STM32_DMA2_NUM_CHANNELS > 0
+#define STM32_DMA2_STREAM1          STM32_DMA_STREAM(STM32_DMA1_NUM_CHANNELS + 0)
+#endif
+#if STM32_DMA2_NUM_CHANNELS > 1
+#define STM32_DMA2_STREAM2          STM32_DMA_STREAM(STM32_DMA1_NUM_CHANNELS + 1)
+#endif
+#if STM32_DMA2_NUM_CHANNELS > 2
+#define STM32_DMA2_STREAM3          STM32_DMA_STREAM(STM32_DMA1_NUM_CHANNELS + 2)
+#endif
+#if STM32_DMA2_NUM_CHANNELS > 3
+#define STM32_DMA2_STREAM4          STM32_DMA_STREAM(STM32_DMA1_NUM_CHANNELS + 3)
+#endif
+#if STM32_DMA2_NUM_CHANNELS > 4
+#define STM32_DMA2_STREAM5          STM32_DMA_STREAM(STM32_DMA1_NUM_CHANNELS + 4)
+#endif
+#if STM32_DMA2_NUM_CHANNELS > 5
+#define STM32_DMA2_STREAM6          STM32_DMA_STREAM(STM32_DMA1_NUM_CHANNELS + 5)
+#endif
+#if STM32_DMA2_NUM_CHANNELS > 6
+#define STM32_DMA2_STREAM7          STM32_DMA_STREAM(STM32_DMA1_NUM_CHANNELS + 6)
+#endif
+#if STM32_DMA2_NUM_CHANNELS > 7
+#define STM32_DMA2_STREAM8          STM32_DMA_STREAM(STM32_DMA1_NUM_CHANNELS + 7)
+#endif
 /** @} */
 
 /**
  * @name    CR register constants common to all DMA types
  * @{
  */
+#define STM32_DMA_CCR_RESET_VALUE   0x00000000U
 #define STM32_DMA_CR_EN             DMA_CCR_EN
 #define STM32_DMA_CR_TEIE           DMA_CCR_TEIE
 #define STM32_DMA_CR_HTIE           DMA_CCR_HTIE
@@ -206,8 +272,16 @@
 /* Derived constants and error checks.                                       */
 /*===========================================================================*/
 
+#if !defined(STM32_DMA_SUPPORTS_DMAMUX)
+#error "STM32_DMA_SUPPORTS_DMAMUX not defined in registry"
+#endif
+
 #if !defined(STM32_DMA_SUPPORTS_CSELR)
 #error "STM32_DMA_SUPPORTS_CSELR not defined in registry"
+#endif
+
+#if STM32_DMA_SUPPORTS_DMAMUX && STM32_DMA_SUPPORTS_CSELR
+#error "STM32_DMA_SUPPORTS_DMAMUX and STM32_DMA_SUPPORTS_CSELR both TRUE"
 #endif
 
 #if !defined(STM32_DMA1_NUM_CHANNELS)
@@ -218,27 +292,24 @@
 #error "STM32_DMA2_NUM_CHANNELS not defined in registry"
 #endif
 
+#if (STM32_DMA1_NUM_CHANNELS < 0) || (STM32_DMA1_NUM_CHANNELS > 8)
+#error "unsupported channels configuration"
+#endif
+
+#if (STM32_DMA2_NUM_CHANNELS < 0) || (STM32_DMA2_NUM_CHANNELS > 8)
+#error "unsupported channels configuration"
+#endif
+
+#if (STM32_DMA_SUPPORTS_DMAMUX == TRUE) || defined(__DOXYGEN__)
+#include "stm32_dmamux.h"
+#endif
+
 /*===========================================================================*/
 /* Driver data structures and types.                                         */
 /*===========================================================================*/
 
 /**
- * @brief   STM32 DMA stream descriptor structure.
- */
-typedef struct {
-  DMA_TypeDef           *dma ;          /**< @brief Associated DMA.         */
-  DMA_Channel_TypeDef   *channel;       /**< @brief Associated DMA channel. */
-  uint32_t              cmask;          /**< @brief Mask of streams sharing
-                                             the same ISR.                  */
-  volatile uint32_t     *cselr;         /**< @brief Associated CSELR reg.   */
-  uint8_t               shift;          /**< @brief Bit offset in ISR, IFCR
-                                             and CSELR registers.           */
-  uint8_t               selfindex;      /**< @brief Index to self in array. */
-  uint8_t               vector;         /**< @brief Associated IRQ vector.  */
-} stm32_dma_stream_t;
-
-/**
- * @brief   STM32 DMA ISR function type.
+ * @brief   Type of a DMA callback.
  *
  * @param[in] p         parameter for the registered function
  * @param[in] flags     pre-shifted content of the ISR register, the bits
@@ -247,12 +318,25 @@ typedef struct {
 typedef void (*stm32_dmaisr_t)(void *p, uint32_t flags);
 
 /**
- * @brief   DMA ISR redirector type.
+ * @brief   STM32 DMA stream descriptor structure.
  */
 typedef struct {
-  stm32_dmaisr_t        dma_func;       /**< @brief DMA callback function.  */
-  void                  *dma_param;     /**< @brief DMA callback parameter. */
-} dma_isr_redir_t;
+  DMA_TypeDef           *dma;           /**< @brief Associated DMA.         */
+  DMA_Channel_TypeDef   *channel;       /**< @brief Associated DMA channel. */
+  uint32_t              cmask;          /**< @brief Mask of streams sharing
+                                             the same ISR.                  */
+#if (STM32_DMA_SUPPORTS_CSELR == TRUE) || defined(__DOXYGEN__)
+  volatile uint32_t     *cselr;         /**< @brief Associated CSELR reg.   */
+#elif STM32_DMA_SUPPORTS_DMAMUX == TRUE
+  DMAMUX_Channel_TypeDef *mux;          /**< @brief Associated DMA mux.     */
+#else
+  uint8_t               dummy;          /**< @brief Filler.                 */
+#endif
+  uint8_t               shift;          /**< @brief Bit offset in ISR, IFCR
+                                             and CSELR registers.           */
+  uint8_t               selfindex;      /**< @brief Index to self in array. */
+  uint8_t               vector;         /**< @brief Associated IRQ vector.  */
+} stm32_dma_stream_t;
 
 /*===========================================================================*/
 /* Driver macros.                                                            */
@@ -265,7 +349,7 @@ typedef struct {
 /**
  * @brief   Associates a peripheral data register to a DMA stream.
  * @note    This function can be invoked in both ISR or thread context.
- * @pre     The stream must have been allocated using @p dmaStreamAllocate().
+ * @pre     The stream must have been allocated using @p dmaStreamAlloc().
  * @post    After use the stream can be released using @p dmaStreamRelease().
  *
  * @param[in] dmastp    pointer to a stm32_dma_stream_t structure
@@ -274,13 +358,13 @@ typedef struct {
  * @special
  */
 #define dmaStreamSetPeripheral(dmastp, addr) {                              \
-  (dmastp)->channel->CPAR  = (uint32_t)(addr);                              \
+  (dmastp)->channel->CPAR = (uint32_t)(addr);                               \
 }
 
 /**
  * @brief   Associates a memory destination to a DMA stream.
  * @note    This function can be invoked in both ISR or thread context.
- * @pre     The stream must have been allocated using @p dmaStreamAllocate().
+ * @pre     The stream must have been allocated using @p dmaStreamAlloc().
  * @post    After use the stream can be released using @p dmaStreamRelease().
  *
  * @param[in] dmastp    pointer to a stm32_dma_stream_t structure
@@ -289,13 +373,13 @@ typedef struct {
  * @special
  */
 #define dmaStreamSetMemory0(dmastp, addr) {                                 \
-  (dmastp)->channel->CMAR  = (uint32_t)(addr);                              \
+  (dmastp)->channel->CMAR = (uint32_t)(addr);                               \
 }
 
 /**
  * @brief   Sets the number of transfers to be performed.
  * @note    This function can be invoked in both ISR or thread context.
- * @pre     The stream must have been allocated using @p dmaStreamAllocate().
+ * @pre     The stream must have been allocated using @p dmaStreamAlloc().
  * @post    After use the stream can be released using @p dmaStreamRelease().
  *
  * @param[in] dmastp    pointer to a stm32_dma_stream_t structure
@@ -304,13 +388,13 @@ typedef struct {
  * @special
  */
 #define dmaStreamSetTransactionSize(dmastp, size) {                         \
-  (dmastp)->channel->CNDTR  = (uint32_t)(size);                             \
+  (dmastp)->channel->CNDTR = (uint32_t)(size);                              \
 }
 
 /**
  * @brief   Returns the number of transfers to be performed.
  * @note    This function can be invoked in both ISR or thread context.
- * @pre     The stream must have been allocated using @p dmaStreamAllocate().
+ * @pre     The stream must have been allocated using @p dmaStreamAlloc().
  * @post    After use the stream can be released using @p dmaStreamRelease().
  *
  * @param[in] dmastp    pointer to a stm32_dma_stream_t structure
@@ -323,7 +407,7 @@ typedef struct {
 /**
  * @brief   Programs the stream mode settings.
  * @note    This function can be invoked in both ISR or thread context.
- * @pre     The stream must have been allocated using @p dmaStreamAllocate().
+ * @pre     The stream must have been allocated using @p dmaStreamAlloc().
  * @post    After use the stream can be released using @p dmaStreamRelease().
  *
  * @param[in] dmastp    pointer to a stm32_dma_stream_t structure
@@ -348,7 +432,7 @@ typedef struct {
 /**
  * @brief   DMA stream enable.
  * @note    This function can be invoked in both ISR or thread context.
- * @pre     The stream must have been allocated using @p dmaStreamAllocate().
+ * @pre     The stream must have been allocated using @p dmaStreamAlloc().
  * @post    After use the stream can be released using @p dmaStreamRelease().
  *
  * @param[in] dmastp    pointer to a stm32_dma_stream_t structure
@@ -366,7 +450,7 @@ typedef struct {
  * @note    This function can be invoked in both ISR or thread context.
  * @note    Interrupts enabling flags are set to zero after this call, see
  *          bug 3607518.
- * @pre     The stream must have been allocated using @p dmaStreamAllocate().
+ * @pre     The stream must have been allocated using @p dmaStreamAlloc().
  * @post    After use the stream can be released using @p dmaStreamRelease().
  *
  * @param[in] dmastp    pointer to a stm32_dma_stream_t structure
@@ -382,7 +466,7 @@ typedef struct {
 /**
  * @brief   DMA stream interrupt sources clear.
  * @note    This function can be invoked in both ISR or thread context.
- * @pre     The stream must have been allocated using @p dmaStreamAllocate().
+ * @pre     The stream must have been allocated using @p dmaStreamAlloc().
  * @post    After use the stream can be released using @p dmaStreamRelease().
  *
  * @param[in] dmastp    pointer to a stm32_dma_stream_t structure
@@ -397,7 +481,7 @@ typedef struct {
  * @brief   Starts a memory to memory operation using the specified stream.
  * @note    The default transfer data mode is "byte to byte" but it can be
  *          changed by specifying extra options in the @p mode parameter.
- * @pre     The stream must have been allocated using @p dmaStreamAllocate().
+ * @pre     The stream must have been allocated using @p dmaStreamAlloc().
  * @post    After use the stream can be released using @p dmaStreamRelease().
  *
  * @param[in] dmastp    pointer to a stm32_dma_stream_t structure
@@ -423,7 +507,7 @@ typedef struct {
 
 /**
  * @brief   Polled wait for DMA transfer end.
- * @pre     The stream must have been allocated using @p dmaStreamAllocate().
+ * @pre     The stream must have been allocated using @p dmaStreamAlloc().
  * @post    After use the stream can be released using @p dmaStreamRelease().
  *
  * @param[in] dmastp    pointer to a stm32_dma_stream_t structure
@@ -433,24 +517,6 @@ typedef struct {
     ;                                                                       \
   dmaStreamDisable(dmastp);                                                 \
 }
-
-/**
- * @brief   Serves a DMA IRQ.
- *
- * @param[in] dmastp    pointer to a stm32_dma_stream_t structure
- */
-#define dmaServeInterrupt(dmastp) {                                         \
-  uint32_t flags;                                                           \
-  uint32_t idx = (dmastp)->selfindex;                                       \
-                                                                            \
-  flags = ((dmastp)->dma->ISR >> (dmastp)->shift) & STM32_DMA_ISR_MASK;     \
-  if (flags & (dmastp)->channel->CCR) {                                     \
-    (dmastp)->dma->IFCR = flags << (dmastp)->shift;                         \
-    if (_stm32_dma_isr_redir[idx].dma_func) {                               \
-      _stm32_dma_isr_redir[idx].dma_func(_stm32_dma_isr_redir[idx].dma_param, flags); \
-    }                                                                       \
-  }                                                                         \
-}
 /** @} */
 
 /*===========================================================================*/
@@ -459,22 +525,30 @@ typedef struct {
 
 #if !defined(__DOXYGEN__)
 extern const stm32_dma_stream_t _stm32_dma_streams[STM32_DMA_STREAMS];
-extern dma_isr_redir_t _stm32_dma_isr_redir[STM32_DMA_STREAMS];
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
   void dmaInit(void);
-  bool dmaStreamAllocate(const stm32_dma_stream_t *dmastp,
-                         uint32_t priority,
-                         stm32_dmaisr_t func,
-                         void *param);
-  void dmaStreamRelease(const stm32_dma_stream_t *dmastp);
+  const stm32_dma_stream_t *dmaStreamAllocI(uint32_t id,
+                                            uint32_t priority,
+                                            stm32_dmaisr_t func,
+                                            void *param);
+  const stm32_dma_stream_t *dmaStreamAlloc(uint32_t id,
+                                           uint32_t priority,
+                                           stm32_dmaisr_t func,
+                                           void *param);
+  void dmaStreamFreeI(const stm32_dma_stream_t *dmastp);
+  void dmaStreamFree(const stm32_dma_stream_t *dmastp);
+  void dmaServeInterrupt(const stm32_dma_stream_t *dmastp);
+#if STM32_DMA_SUPPORTS_DMAMUX == TRUE
+  void dmaSetRequestSource(const stm32_dma_stream_t *dmastp, uint32_t per);
+#endif
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _STM32_DMA_H_ */
+#endif /* STM32_DMA_H */
 
 /** @} */

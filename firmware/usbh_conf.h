@@ -43,7 +43,9 @@
 #include <string.h>
 
 #include "ch.h"
-#include "chprintf.h"
+#include "hal_usb.h"
+
+//#include "chprintf.h"
 #include "migration_v16.h"
 #include "mcuconf.h"
 
@@ -110,13 +112,14 @@ extern void fakefree(void * p);
 
 // osThreadId
 #define osMessageQDef(name, queue_sz, type) \
-  static type buf[queue_sz]; \
-  INPUTQUEUE_DECL(name, &buf, sizeof(buf), NULL, NULL)
-#define osMessageCreate(queue_def, thread_id)  &queue_def
+  static int buf[queue_sz]; \
+  MAILBOX_DECL(name, &buf, queue_sz)
+#define osMessageCreate(queue_def, thread_id)  thread_id /*&queue_def*/
 #define osMessageQ(x) x
 #define osWaitForever TIME_INFINITE
 #define osEventMessage 1
-typedef uint8_t osEvent;
+typedef int osEvent;
+
 
 //#define DEBUG_ON_GPIO
 

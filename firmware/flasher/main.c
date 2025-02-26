@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
-
+ 
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
@@ -93,6 +93,9 @@ void DisplayAbortErr(int err)
 
 int main(void)
 {
+    // small sleep required before watchdog_feed() & halInit();
+    chThdSleepMilliseconds(100);
+
     watchdog_feed();
     halInit();
 

@@ -46,5 +46,7 @@
 
 // V18 here down
 
-// #define MS2ST TIME_MS2I
+#define MS2ST TIME_MS2I
 
+// 20.3 notes.
+// 1. external pump - looks like this is not needed nymore as chibios is now not using a thread for this.

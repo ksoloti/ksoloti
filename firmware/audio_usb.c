@@ -7,7 +7,7 @@
 #include "hal.h"
 #include "audio_usb.h"
 #include "audio_usb_dbg.h"
-#include "usb_lld.h"
+#include "hal_usb_lld.h"
 #include "chevents.h"
 #include "chdebug.h"
 #include "usbcfg.h"

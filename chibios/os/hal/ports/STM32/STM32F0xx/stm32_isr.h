@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -16,18 +16,32 @@
 
 /**
  * @file    STM32F0xx/stm32_isr.h
- * @brief   ISR remapper driver header.
+ * @brief   STM32F0xx ISR handler header.
  *
  * @addtogroup STM32F0xx_ISR
  * @{
  */
 
-#ifndef _STM32_ISR_H_
-#define _STM32_ISR_H_
+#ifndef STM32_ISR_H
+#define STM32_ISR_H
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
 /*===========================================================================*/
+
+/**
+ * @name    ISRs suppressed in standard drivers
+ * @{
+ */
+#define STM32_USART1_SUPPRESS_ISR
+#define STM32_USART2_SUPPRESS_ISR
+#define STM32_USART3_SUPPRESS_ISR
+#define STM32_UART4_SUPPRESS_ISR
+#define STM32_UART5_SUPPRESS_ISR
+#define STM32_USART6_SUPPRESS_ISR
+#define STM32_UART7_SUPPRESS_ISR
+#define STM32_UART8_SUPPRESS_ISR
+/** @} */
 
 /**
  * @name    ISR names and numbers remapping
@@ -97,9 +111,114 @@
 /* Driver pre-compile time settings.                                         */
 /*===========================================================================*/
 
+/**
+ * @name    Configuration options
+ * @{
+ */
+/**
+ * @brief   EXTI0..1 interrupt priority level setting.
+ */
+#if !defined(STM32_IRQ_EXTI0_1_PRIORITY) || defined(__DOXYGEN__)
+#define STM32_IRQ_EXTI0_1_PRIORITY          3
+#endif
+
+/**
+ * @brief   EXTI2..3 interrupt priority level setting.
+ */
+#if !defined(STM32_IRQ_EXTI2_3_PRIORITY) || defined(__DOXYGEN__)
+#define STM32_IRQ_EXTI2_3_PRIORITY          3
+#endif
+
+/**
+ * @brief   EXTI4..15 interrupt priority level setting.
+ */
+#if !defined(STM32_IRQ_EXTI4_15_PRIORITY) || defined(__DOXYGEN__)
+#define STM32_IRQ_EXTI4_15_PRIORITY         3
+#endif
+
+/**
+ * @brief   EXTI16 interrupt priority level setting.
+ */
+#if !defined(STM32_IRQ_EXTI16_PRIORITY) || defined(__DOXYGEN__)
+#define STM32_IRQ_EXTI16_PRIORITY           3
+#endif
+
+/**
+ * @brief   EXTI17,19,20 interrupt priority level setting.
+ */
+#if !defined(STM32_IRQ_EXTI17_20_PRIORITY) || defined(__DOXYGEN__)
+#define STM32_IRQ_EXTI17_20_PRIORITY        3
+#endif
+
+/**
+ * @brief   EXTI21,22 interrupt priority level setting.
+ */
+#if !defined(STM32_IRQ_EXTI21_22_PRIORITY) || defined(__DOXYGEN__)
+#define STM32_IRQ_EXTI21_22_PRIORITY        3
+#endif
+
+/**
+ * @brief   USART1 interrupt priority level setting.
+ */
+#if !defined(STM32_IRQ_USART1_PRIORITY) || defined(__DOXYGEN__)
+#define STM32_IRQ_USART1_PRIORITY           3
+#endif
+
+/**
+ * @brief   USART2 interrupt priority level setting.
+ */
+#if !defined(STM32_IRQ_USART2_PRIORITY) || defined(__DOXYGEN__)
+#define STM32_IRQ_USART2_PRIORITY           3
+#endif
+
+/**
+ * @brief   USART3..8 interrupt priority level setting.
+ */
+#if !defined(STM32_IRQ_USART3_8_PRIORITY) || defined(__DOXYGEN__)
+#define STM32_IRQ_USART3_8_PRIORITY         3
+#endif
+/** @} */
+
 /*===========================================================================*/
 /* Derived constants and error checks.                                       */
 /*===========================================================================*/
+
+/* IRQ priority checks.*/
+#if !OSAL_IRQ_IS_VALID_PRIORITY(STM32_IRQ_EXTI0_1_PRIORITY)
+#error "Invalid IRQ priority assigned to STM32_IRQ_EXTI0_1_PRIORITY"
+#endif
+
+#if !OSAL_IRQ_IS_VALID_PRIORITY(STM32_IRQ_EXTI2_3_PRIORITY)
+#error "Invalid IRQ priority assigned to STM32_IRQ_EXTI2_3_PRIORITY"
+#endif
+
+#if !OSAL_IRQ_IS_VALID_PRIORITY(STM32_IRQ_EXTI4_15_PRIORITY)
+#error "Invalid IRQ priority assigned to STM32_IRQ_EXTI4_15_PRIORITY"
+#endif
+
+#if !OSAL_IRQ_IS_VALID_PRIORITY(STM32_IRQ_EXTI16_PRIORITY)
+#error "Invalid IRQ priority assigned to STM32_IRQ_EXTI16_PRIORITY"
+#endif
+
+#if !OSAL_IRQ_IS_VALID_PRIORITY(STM32_IRQ_EXTI17_20_PRIORITY)
+#error "Invalid IRQ priority assigned to STM32_IRQ_EXTI17_20_PRIORITY"
+#endif
+
+#if !OSAL_IRQ_IS_VALID_PRIORITY(STM32_IRQ_EXTI21_22_PRIORITY)
+#error "Invalid IRQ priority assigned to STM32_IRQ_EXTI21_22_PRIORITY"
+#endif
+
+#if !OSAL_IRQ_IS_VALID_PRIORITY(STM32_IRQ_USART1_PRIORITY)
+#error "Invalid IRQ priority assigned to STM32_IRQ_USART1_PRIORITY"
+#endif
+
+#if !OSAL_IRQ_IS_VALID_PRIORITY(STM32_IRQ_USART2_PRIORITY)
+#error "Invalid IRQ priority assigned to STM32_IRQ_USART2_PRIORITY"
+#endif
+
+#if !OSAL_IRQ_IS_VALID_PRIORITY(STM32_IRQ_USART3_8_PRIORITY)
+#error "Invalid IRQ priority assigned to STM32_IRQ_USART3_8_PRIORITY"
+#endif
 
 /*===========================================================================*/
 /* Driver data structures and types.                                         */
@@ -113,6 +232,15 @@
 /* External declarations.                                                    */
 /*===========================================================================*/
 
-#endif /* _STM32_ISR_H_ */
+#ifdef __cplusplus
+extern "C" {
+#endif
+  void irqInit(void);
+  void irqDeinit(void);
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* STM32_ISR_H */
 
 /** @} */

@@ -31,8 +31,8 @@
 
 #define _USB_H_
 #include "ch.h"
-#define HAL_USE_PAL 1
-#include "pal.h"
+// #define HAL_USE_PAL 1
+// #include "pal.h"
 
 
 
@@ -133,7 +133,7 @@ USBH_StatusTypeDef  USBH_Init(USBH_HandleTypeDef *phost, void (*pUsrFunc)(USBH_H
   osThreadDef(USBH_Thread, (void*) USBH_Process_OS, USBH_PROCESS_PRIO, 0, 8 * configMINIMAL_STACK_SIZE);
 #endif  
   phost->thread = osThreadCreate (osThread(USBH_Thread), phost);
-#endif  
+ #endif  
   
   /* Initialize low level driver */
   USBH_LL_Init(phost);

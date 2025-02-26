@@ -14,7 +14,7 @@ ifeq ($(USE_OPT),)
     -Wno-return-type \
     -Wno-unused-function \
     -Wno-unused-parameter \
-    -O2 \
+    -Og \
     -falign-functions=16 \
     -fno-math-errno \
     -fomit-frame-pointer \
@@ -100,41 +100,33 @@ BUILDDIR = mounter_build/$(PROJECT)
 CHIBIOS = ${axoloti_release}/chibios
 
 include board.mk
-# include $(CHIBIOS)/os/hal/platforms/STM32F4xx/platform.mk
-# include $(CHIBIOS)/os/hal/hal.mk
-# include $(CHIBIOS)/os/ports/GCC/ARMCMx/STM32F4xx/port.mk
-# include $(CHIBIOS)/os/kernel/kernel.mk
 
+# Licensing files.
+include $(CHIBIOS)/os/license/license.mk
 # Startup files.
-include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
+include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
 # HAL-OSAL files (optional).
 include $(CHIBIOS)/os/hal/hal.mk
 include $(CHIBIOS)/os/hal/ports/STM32/STM32F4xx/platform.mk
-include $(CHIBIOS)/os/hal/osal/rt/osal.mk
+include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
 # RTOS files (optional).
 include $(CHIBIOS)/os/rt/rt.mk
-include $(CHIBIOS)/os/rt/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
+include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # FAT stuff
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+# include $(CHIBIOS)/os/various/shell/shell.mk
 	
 # Define linker script file here
 LDSCRIPT= STM32F427xG_mounter.ld
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
-CSRC = $(STARTUPSRC) \
-      $(PORTSRC) \
-      $(KERNSRC) \
-      $(HALSRC) \
-      $(PLATFORMSRC) \
-      $(BOARDSRC) \
-      $(CHIBIOS)/os/various/shell.c \
-      $(CHIBIOS)/os/various/memstreams.c \
-      $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
+CSRC = $(ALLCSRC) \
       ../axoloti_board.c \
       ../watchdog.c \
       mass_storage/usb_msd.c \
-      main.c  
+      main.c \
+      board.c
 
        
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
@@ -162,33 +154,28 @@ TCSRC =
 TCPPSRC =
 
 # List ASM source files here
-ASMSRC = $(STARTUPASM) \
-        $(PORTASM)
+ASMSRC = $(ALLASMSRC)
 
-INCDIR = ../ \
-		 $(PORTINC) $(KERNINC) $(TESTINC) \
-         $(HALINC) $(PLATFORMINC) $(BOARDINC) \
-         $(FATFSINC) \
-         $(CHIBIOS)/os/various \
-		 ./mass_storage
-
+# List ASM with preprocessor source files here.
+ASMXSRC = $(ALLXASMSRC)
 
 INCDIR = ../ \
   $(CMSIS)/Core/Include \
   $(CMSIS)/DSP/Include \
-        $(PORTINC) $(KERNINC) $(TESTINC) \
-        $(HALINC) $(PLATFORMINC) $(BOARDINC) \
+  $(PORTINC) $(KERNINC) $(TESTINC) \
+  $(HALINC) $(PLATFORMINC) $(BOARDINC) \
   $(FATFSINC) \
-        $(OSALINC) \
+  $(OSALINC) \
   $(CHIBIOS) \
-        $(CHIBIOS)/os/various \
+  $(CHIBIOS)/os/various \
   $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC \
-        $(CHIBIOS)/os/common/ports/ARMCMx/devices/STM32F4xx \
-        $(CHIBIOS)/os/ext/CMSIS/include \
-        $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx \
-        $(CHIBIOS)/os/hal/lib/streams \
+  $(CHIBIOS)/os/common/ports/ARMCMx/devices/STM32F4xx \
+  $(CHIBIOS)/os/ext/CMSIS/include \
+  $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx \
+  $(CHIBIOS)/os/hal/lib/streams \
+  $(CONFDIR) $(ALLINC) \
   ./mass_storage
-
+  
 #
 # Project, sources and paths
 ##############################################################################
@@ -279,6 +266,9 @@ VPATH = .
 # End of user defines
 ##############################################################################
 
-RULESPATH = $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC
-include $(RULESPATH)/rules.mk
+# Set DEPDIR to location for dependencies inside build folder
+DEPDIR := $(BUILDDIR)/.dep
 
+RULESPATH = $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk
+include $(RULESPATH)/arm-none-eabi.mk
+include $(RULESPATH)/rules.mk

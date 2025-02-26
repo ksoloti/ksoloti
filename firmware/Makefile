@@ -4,6 +4,7 @@
 #
 BOARDDEF=
 FWOPTIONDEF=
+USE_VERBOSE_COMPILE=no
 
 # Compiler options here.
 
@@ -152,17 +153,20 @@ MUTABLE_INSTRUMENTS = ${FIRMWARE}/mutable_instruments
 
 include board.mk
 
+# Licensing files.
+include $(CHIBIOS)/os/license/license.mk
 # Startup files.
-include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
+include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
 # HAL-OSAL files (optional).
 include $(CHIBIOS)/os/hal/hal.mk
 include $(CHIBIOS)/os/hal/ports/STM32/STM32F4xx/platform.mk
-include $(CHIBIOS)/os/hal/osal/rt/osal.mk
+include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
 # RTOS files (optional).
 include $(CHIBIOS)/os/rt/rt.mk
-include $(CHIBIOS)/os/rt/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
+include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # FAT stuff
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+include $(CHIBIOS)/os/various/shell/shell.mk
 
 # get the same binary as openOCD flashes from elf
 override BIN = $(CP) -O binary --gap-fill 0xff
@@ -178,14 +182,7 @@ LDSCRIPT = STM32F427xG_axoloti.ld
 endif
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
-CSRC = $(STARTUPSRC) \
-  $(PORTSRC) \
-  $(KERNSRC) \
-  $(HALSRC) \
-  $(PLATFORMSRC) \
-  $(BOARDSRC) \
-  $(FATFSSRC) \
-  $(OSALSRC) \
+CSRC = $(ALLCSRC) \
   $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
   $(CHIBIOS)/os/various/memstreams.c \
   ${FIRMWARE}/codec.c \
@@ -203,7 +200,9 @@ CSRC = $(STARTUPSRC) \
   ${FIRMWARE}/main.c \
   ${FIRMWARE}/patch.c \
   ${FIRMWARE}/flash.c \
+  ${FIRMWARE}/board.c \
   ${CMSIS}/DSP/Source/TransformFunctions/arm_bitreversal.c \
+  ${CMSIS}/DSP/Source/TransformFunctions/arm_bitreversal2.c \
   ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_f32.c \
   ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_q15.c \
   ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_q31.c \
@@ -360,6 +359,7 @@ endif
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
 CPPSRC = \
+  $(ALLCPPSRC) \
   ${MUTABLE_INSTRUMENTS}/stmlib/dsp/units.cpp \
   ${MUTABLE_INSTRUMENTS}/stmlib/dsp/atan.cpp \
   ${MUTABLE_INSTRUMENTS}/stmlib/utils/random.cpp \
@@ -394,10 +394,10 @@ TCSRC =
 TCPPSRC =
 
 # List ASM source files here
-ASMSRC = \
-  $(STARTUPASM) \
-  $(PORTASM) \
-  ${CMSIS}/DSP/Source/TransformFunctions/arm_bitreversal2.s
+ASMSRC = $(ALLASMSRC)
+
+# List ASM with preprocessor source files here.
+ASMXSRC = $(ALLXASMSRC)
 
 INCDIR = \
   ${CMSIS}/Core/Include \
@@ -406,6 +406,7 @@ INCDIR = \
   $(PORTINC) $(KERNINC) $(TESTINC) \
   $(HALINC) $(PLATFORMINC) $(BOARDINC) \
   $(FATFSINC) \
+  $(SHELLINC) \
   $(OSALINC) \
   $(CHIBIOS)/os/various \
   ${FIRMWARE}/STM32_USB_Host_Library/Core/Inc \
@@ -417,6 +418,7 @@ INCDIR = \
   ${MUTABLE_INSTRUMENTS}/rings \
   ${MUTABLE_INSTRUMENTS}/elements \
   ${MUTABLE_INSTRUMENTS}/stmlib \
+  $(CONFDIR) $(ALLINC) \
 	$(CHIBIOS)/os/hal/lib/streams
 
 #
@@ -504,7 +506,6 @@ UDEFS = \
   -DTHUMB \
   -DTHUMB_NO_INTERWORKING \
   -DTHUMB_PRESENT \
-  -D__FPU_PRESENT
 
 # Define ASM defines here
 UADEFS =
@@ -522,9 +523,11 @@ ULIBS = -lm
 # End of user defines
 ##############################################################################
 
-# RULESPATH = $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC
-# include $(RULESPATH)/rules.mk
+# Set DEPDIR to location for dependencies inside build folder
+DEPDIR := $(BUILDDIR)/.dep
 
-include ./rules.mk
+RULESPATH = $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk
+include $(RULESPATH)/arm-none-eabi.mk
+include $(RULESPATH)/rules.mk
 
 

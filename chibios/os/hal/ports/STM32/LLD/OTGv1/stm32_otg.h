@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@
  * @{
  */
 
-#ifndef _STM32_OTG_H_
-#define _STM32_OTG_H_
+#ifndef STM32_OTG_H
+#define STM32_OTG_H
 
 /**
  * @brief   OTG_FS FIFO memory size in words.
@@ -897,15 +897,20 @@ typedef struct {
 #define PCGCCTL_STPPCLK         (1U<<0)     /**< Stop PCLK.                 */
 /** @} */
 
+#if defined(STM32H7XX) || defined(__DOXYGEN__)
 /**
  * @brief   OTG_FS registers block memory address.
  */
-#define OTG_FS_ADDR                 0x50000000
+#define OTG_FS_ADDR                 0x40080000
 
 /**
  * @brief   OTG_HS registers block memory address.
  */
 #define OTG_HS_ADDR                 0x40040000
+#else
+#define OTG_FS_ADDR                 0x50000000
+#define OTG_HS_ADDR                 0x40040000
+#endif
 
 /**
  * @brief   Accesses to the OTG_FS registers block.
@@ -917,6 +922,6 @@ typedef struct {
  */
 #define OTG_HS                      ((stm32_otg_t *)OTG_HS_ADDR)
 
-#endif /* _STM32_OTG_H_ */
+#endif /* STM32_OTG_H */
 
 /** @} */

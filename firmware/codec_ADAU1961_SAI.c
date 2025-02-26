@@ -634,21 +634,23 @@ void codec_ADAU1961_SAI_init(uint16_t samplerate, bool_t isMaster) {
         | STM32_DMA_CR_TEIE | STM32_DMA_CR_TCIE | STM32_DMA_CR_DBM /* double buffer mode */
         | STM32_DMA_CR_PSIZE_WORD | STM32_DMA_CR_MSIZE_WORD;
 
-    bool_t b;
-
 #ifdef FW_SPILINK
     if  (isMaster) {
-        b = dmaStreamAllocate(sai_a_dma, STM32_SAI_A_IRQ_PRIORITY,
-                              (stm32_dmaisr_t)dma_sai_a_interrupt_spilink_master, (void *)0);
+        sai_a_dma = dmaStreamAlloc( STM32_SAI_A_DMA_STREAM,
+                                    STM32_SAI_A_IRQ_PRIORITY,
+                                    (stm32_dmaisr_t)dma_sai_a_interrupt_spilink_master,
+                                    (void *)0);
     }
     else {
-        b = dmaStreamAllocate(sai_a_dma, STM32_SAI_A_IRQ_PRIORITY,
-                              (stm32_dmaisr_t)dma_sai_a_interrupt_spilink_slave, (void *)0);
+        sai_a_dma = dmaStreamAlloc(STM32_SAI_A_DMA_STREAM,
+                                    STM32_SAI_A_IRQ_PRIORITY,
+                                    (stm32_dmaisr_t)dma_sai_a_interrupt_spilink_slave,
+                                    (void *)0);
+
     }
 
 #else
-    b = dmaStreamAllocate(sai_a_dma, STM32_SAI_A_IRQ_PRIORITY, (stm32_dmaisr_t)dma_sai_a_interrupt, (void *)0);
-
+    sai_a_dma = dmaStreamAlloc(STM32_SAI_A_DMA_STREAM, STM32_SAI_A_IRQ_PRIORITY, (stm32_dmaisr_t)dma_sai_a_interrupt, (void *)0);
 #endif
 
     dmaStreamSetPeripheral(sai_a_dma, &(sai_a->DR));
@@ -657,10 +659,10 @@ void codec_ADAU1961_SAI_init(uint16_t samplerate, bool_t isMaster) {
     dmaStreamSetTransactionSize(sai_a_dma, 32);
     dmaStreamSetMode(sai_a_dma, sai_a_dma_mode | STM32_DMA_CR_MINC);
 
+    sai_b_dma = dmaStreamAlloc(STM32_SAI_B_DMA_STREAM, STM32_SAI_B_IRQ_PRIORITY, (stm32_dmaisr_t)0, (void *)0);
 
-    b |= dmaStreamAllocate(sai_b_dma, STM32_SAI_B_IRQ_PRIORITY, (stm32_dmaisr_t)0, (void *)0);
 
-    if (b) {
+    if (!sai_a_dma || !sai_b_dma) {
         setErrorFlag(ERROR_CODEC_I2C);
         while (1);
     }

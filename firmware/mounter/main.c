@@ -225,6 +225,9 @@ static const USBMassStorageConfig msdConfig = {
 int main(void) {
     /* system & hardware initialization */
 
+    // small sleep required before halInit();        
+    chThdSleepMilliseconds(100);
+
     halInit();
 
     /* float usb inputs, hope the host notices detach... */
@@ -237,6 +240,11 @@ int main(void) {
     palClearPad(LED1_PORT, LED1_PIN);
     palClearPad(LED2_PORT, LED2_PIN);
 
+#if (CH_DBG_SYSTEM_STATE_CHECK == TRUE)
+    // avoid trapping into _dbg_check_enable
+    ch.dbg.isr_cnt = 0;
+    ch.dbg.lock_cnt = 0;
+#endif    
     chSysInit();
 
     palSetPadMode(GPIOA, 11, PAL_MODE_ALTERNATE(10));
