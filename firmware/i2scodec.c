@@ -81,13 +81,17 @@ void wait_sai_dma_tc_flag(void) {
              */
             if ((STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM)->stream->CR & STM32_DMA_CR_CT) && diff > 120 && diff < 135) {
 
-                /* We have a lock! Set PLLI2S and I2S config to correct frequency of 48000 Hz */ 
+                /* We have a lock! Correct frequency to 48000 Hz */ 
+
+                /* Disable I2S */
                 SPI3->I2SCFGR &= ~SPI_I2SCFGR_I2SE;
                 I2S3ext->I2SCFGR &= ~SPI_I2SCFGR_I2SE;
 
+                /* Set PLLI2S and I2S config to correct frequency */
                 RCC->PLLI2SCFGR = STM32_PLLI2SR | STM32_PLLI2SN;
                 SPI3->I2SPR = 0x000C | SPI_I2SPR_ODD;
 
+                /* Re-enable I2S*/
                 SPI3->I2SCFGR |= SPI_I2SCFGR_I2SE;
                 I2S3ext->I2SCFGR |= SPI_I2SCFGR_I2SE;
                 break;
