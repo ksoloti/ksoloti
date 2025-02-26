@@ -72,14 +72,14 @@ void wait_sai_dma_tc_flag(void) {
     while (1) {
 
             /* Compare timestamps and wait until the two interrupts trigger at the correct timing. */
-            volatile int32_t diff = (codec_interrupt_timestamp*10 - i2s_tc_interrupt_timestamp*10) / (STM32_SYSCLK / 1000000UL); /* Time in tenths of us (RTT2US) */
+            volatile int32_t diff = ((codec_interrupt_timestamp - i2s_tc_interrupt_timestamp) * 1000) / (STM32_SYSCLK / 1000000UL); /* Time in ns */
 
             /* The SAI DMA Transfer Complete flag must be set,
              * which marks the beginning of the next 16*2-sample buffer transfer.
              * I2S complete transfer interrupt needs to occur 10-20 us before SAI interrupt fires.
              * diff == between 12.0 and 13.5 us to be on the safe side.
              */
-            if ((STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM)->stream->CR & STM32_DMA_CR_CT) && diff > 120 && diff < 135) {
+            if ((STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM)->stream->CR & STM32_DMA_CR_CT) && diff > 12000 && diff < 13500) {
 
                 /* We have a lock! Correct frequency to 48000 Hz */ 
 
