@@ -161,8 +161,12 @@ void stm32_gpio_init(void)
 #elif defined(STM32F2XX) || defined(STM32F4XX) || defined(STM32F7XX)
   RCC->AHB1ENR   |= AHB1_EN_MASK;
   RCC->AHB1LPENR |= AHB1_LPEN_MASK;
+#elif defined(STM32H7XX)
+  rccResetAHB4(STM32_GPIO_EN_MASK);
+  rccEnableAHB4(STM32_GPIO_EN_MASK, true);
 #endif
 
+#
   /*
    * Initial GPIO setup.
    */

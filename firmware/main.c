@@ -150,6 +150,8 @@ int main(void) {
 
 #if BOARD_KSOLOTI_CORE_H743
     // TODOH7
+    sdcard_init();
+    sysmon_init();
 #else    
     sdcard_init();
     sysmon_init();
