@@ -196,8 +196,8 @@ void i2s_dma_init(void) {
         STM32_DMA_CR_MINC |
         STM32_DMA_CR_MSIZE_WORD |
         STM32_DMA_CR_PSIZE_HWORD |
-        STM32_DMA_CR_TEIE |
-        STM32_DMA_CR_TCIE;
+        STM32_DMA_CR_TEIE;
+        //STM32_DMA_CR_TCIE;
 
     b |= dmaStreamAllocate(i2s_rx_dma, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t) 0, (void*) 0);
 
