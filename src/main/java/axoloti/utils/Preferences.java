@@ -18,9 +18,11 @@
  */
 package axoloti.utils;
 
+import axoloti.Axoloti;
 import axoloti.MainFrame;
 import axoloti.USBBulkConnection;
 import axoloti.Version;
+import axoloti.utils.Preferences.BoardType;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -66,6 +68,37 @@ import com.formdev.flatlaf.themes.FlatMacLightLaf;
 @Root
 public class Preferences {
 
+    public enum BoardType {
+        KsolotiGeko ("Ksoloti Geko"),
+        Ksoloti ("Ksoloti"),
+        Axoloti ("Axoloti");
+
+        private final String name;     
+        private BoardType(String s) { name = s; }
+        public String toString() {return this.name;}
+    }
+
+    public enum FirmwareType {
+        Normal ("Normal"),
+        USBAudio ("USB Audio"),
+        SPILink ("SPI Link"),
+        i2SCodec ("i2S Codec");
+
+        private final String name;     
+        private FirmwareType(String s) { name = s; }
+        public String toString() {return this.name;}
+}
+
+    public enum SampleRateType {
+        Rate48K ("48K"),
+        Rate96K ("96K");
+
+        private final String name;     
+        private SampleRateType(String s) { name = s; }
+        public String toString() {return this.name;}
+
+    }
+
     private static final Logger LOGGER = Logger.getLogger(Preferences.class.getName());
 
     @Attribute(required = false)
@@ -88,6 +121,12 @@ public class Preferences {
     Boolean MouseDialAngular;
     @Element(required = false)
     String FirmwareMode;
+    @Element(required = false)
+    BoardType Board;
+    @Element(required = false)
+    FirmwareType Firmware;
+    @Element(required = false)
+    SampleRateType SampleRate;
     @Element(required = false)
     Boolean MouseDoNotRecenterWhenAdjustingControls;
     @Element(required = false)
@@ -208,6 +247,15 @@ public class Preferences {
         }
         if (FirmwareMode == null) {
             FirmwareMode = "Ksoloti Core";
+        }
+        if (Board == null) {
+            Board = BoardType.Ksoloti;
+        }
+        if (Firmware == null) {
+            Firmware = FirmwareType.Normal;
+        }
+        if (SampleRate == null) {
+            SampleRate = SampleRateType.Rate48K;
         }
         for (int i=0; i<4; i++) {
             if (UserShortcuts[i] == null) {
@@ -532,6 +580,112 @@ public class Preferences {
         return FirmwareMode;
     }
 
+    public BoardType getBoard() {
+        return Board;
+    }
+
+    public boolean isKsolotiDerivative() {
+        return (Board == BoardType.Ksoloti) || (Board == BoardType.KsolotiGeko);
+    }
+
+    public boolean isAxolotiDerivative() {
+        return (Board == BoardType.Axoloti);
+    }
+
+    public FirmwareType getFirmware() {
+        return Firmware;
+    }
+
+    public SampleRateType getSampleRate() {
+        return SampleRate;
+    }
+
+    public String getFlasherBinFilename() { // TODOH7 will need removing
+        String name = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build" + File.separator;
+        switch(Board)
+        {
+            case BoardType.Ksoloti:
+            case BoardType.KsolotiGeko:
+                name += "ksoloti_flasher.bin";
+                break;
+
+            case BoardType.Axoloti:
+                name += "axoloti_flasher.bin";
+                break;
+
+        }
+        return name;
+    }
+
+    public String getMounterBinFilename() { // TODOH7 will need removing
+        String name = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "mounter" + File.separator + "mounter_build" + File.separator;
+        switch(Board)
+        {
+            case BoardType.Ksoloti:
+            case BoardType.KsolotiGeko:
+                name += "ksoloti_mounter.bin";
+                break;
+
+            case BoardType.Axoloti:
+                name += "axoloti_mounter.bin";
+                break;
+
+        }
+        return name;
+    }
+
+    public String getFirmwareBinFilename(boolean bFullPath) {
+        String name;
+        if(bFullPath) 
+            name = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build" + File.separator;
+        else
+            name = "";
+
+        switch(Board)
+        {
+            case BoardType.Ksoloti:     name += "ksoloti"; break;
+            case BoardType.KsolotiGeko: name += "ksoloti_h743"; break;
+            case BoardType.Axoloti:     name += "axoloti"; break;
+        } 
+
+        switch(Firmware)
+        {
+            case Normal:   break;
+            case SPILink:  name += "_spilink"; break;
+            case USBAudio: name += "_usbaudio"; break;
+            case i2SCodec: name += "_i2scodec"; break;
+        }
+
+        name += ".bin";
+
+        return name;
+    }
+
+    // default gets full path
+    public String getFirmwareBinFilename() {
+        return getFirmwareBinFilename(true);
+    }
+        
+    public String getCompilerOptions() {
+        String defines = "";
+        switch(Board)
+        {
+            case BoardType.Ksoloti:     defines += "BOARD_KSOLOTI_CORE BOARD_KSOLOTI_CORE_F427 "; break;
+            case BoardType.KsolotiGeko: defines += "BOARD_KSOLOTI_CORE BOARD_KSOLOTI_CORE_H743 "; break;
+            case BoardType.Axoloti:     defines += "BOARD_AXOLOTI_CORE BOARD_AXOLOTI_CORE "; break;
+        } 
+
+        switch(Firmware)
+        {
+            case Normal:   break;
+            case SPILink:  defines += " FW_SPILINK"; break;
+            case USBAudio: defines += " FW_USBAUDIO"; break;
+            case i2SCodec: defines += " FW_I2SCODEC"; break;
+        }
+
+        return defines;
+    }
+
     public String getUserShortcut(int index) {
         if (index < 0 || index > 3) {
             /* Only four user shortcuts so far */
@@ -582,6 +736,38 @@ public class Preferences {
 
         MainFrame.mainframe.populateInfoColumn();
         // SetDirty();
+    }
+
+    public void setFirmwareMode(BoardType Board, FirmwareType Firmware, SampleRateType SampleRate ){
+
+        if(this.Board == Board && this.Firmware == Firmware && this.SampleRate == SampleRate) {
+            return;
+        }
+
+        if(this.Board != Board) {
+            this.Board = Board;
+            restartRequired = true;
+            MainFrame.mainframe.refreshAppIcon();
+        }
+
+        this.Firmware = Firmware;
+        this.SampleRate = SampleRate;
+
+        if (restartRequired) {
+            if (USBBulkConnection.GetConnection().isConnected()) {
+                USBBulkConnection.GetConnection().disconnect();
+            }
+            MainFrame.mainframe.ShowDisconnect();
+        }
+        else {
+            /* If connected, offer automatic firmware update */
+            if (USBBulkConnection.GetConnection().isConnected()) {
+                MainFrame.mainframe.interactiveFirmwareUpdate();
+            }
+        }
+
+        MainFrame.mainframe.populateMainframeTitle();
+        MainFrame.mainframe.populateInfoColumn();
     }
 
     public boolean getRestartRequired() {

@@ -34,6 +34,7 @@ import axoloti.utils.Constants;
 import axoloti.utils.FirmwareID;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
+import axoloti.utils.Preferences.FirmwareType;
 import components.ScrollPaneComponent;
 
 import java.awt.Color;
@@ -393,20 +394,23 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         );
                     }
 
-                    if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+                    if (prefs.getBoard() == Preferences.BoardType.Axoloti) {
                         LOGGER.log(Level.WARNING, ">>> Axoloti Legacy Mode <<<\n");
                     }
 
-                    if (prefs.getFirmwareMode().contains("SPILink")) {
-                        LOGGER.log(Level.WARNING, ">>> SPILink-enabled firmware <<<\nPins PB3, PB4, PD5, PD6 are occupied by SPILink communication in this firmware mode!\n");
-                    }
-
-                    if (prefs.getFirmwareMode().contains("USBAudio")) {
-                        LOGGER.log(Level.WARNING, ">>> USBAudio-enabled firmware <<<\n");
-                    }
-
-                    if (prefs.getFirmwareMode().contains("I2SCodec")) {
-                        LOGGER.log(Level.WARNING, ">>> I2SCodec-enabled firmware <<<\nPins PA15, PB3, PB4, PD6 are occupied by I2S communication in this firmware mode!\n");
+                    switch (prefs.getFirmware())
+                    {
+                        case Preferences.FirmwareType.SPILink :
+                            LOGGER.log(Level.WARNING, ">>> SPILink-enabled firmware <<<\nPins PB3, PB4, PD5, PD6 are occupied by SPILink communication in this firmware mode!\n");
+                            break;
+                        case USBAudio:
+                            LOGGER.log(Level.WARNING, ">>> USBAudio-enabled firmware <<<\n");
+                            break;
+                        case i2SCodec:
+                            LOGGER.log(Level.WARNING, ">>> I2SCodec-enabled firmware <<<\nPins PA15, PB3, PB4, PD6 are occupied by I2S communication in this firmware mode!\n");
+                            break;
+                        default:
+                            break;
                     }
 
                     updateLinkFirmwareID();
@@ -581,12 +585,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         String tstring = "";
         String tsuffix = "";
 
-        if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-            tstring = "Axoloti";
-        }
-        else {
-            tstring = "Ksoloti";
-        }
+        tstring = prefs.getBoard().toString();
 
         if (Axoloti.isDeveloper()) {
             tsuffix += "Developer";
@@ -599,33 +598,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             tsuffix += "Expert Mode";
         }
 
-        if (prefs.getFirmwareMode().contains("SPILink")) {
-            if (tsuffix.length() > 0) {
-                tsuffix += ", ";
-            }
-            tsuffix += "SPILink";
-        }
-
-        if (prefs.getFirmwareMode().contains("USBAudio")) {
-            if (tsuffix.length() > 0) {
-                tsuffix += ", ";
-            }
-            tsuffix += "USBAudio";
-        }
-
-        if (prefs.getFirmwareMode().contains("I2SCodec")) {
-            if (tsuffix.length() > 0) {
-                tsuffix += ", ";
-            }
-            tsuffix += "I2SCodec";
-        }
+        tsuffix += (tsuffix.length()> 0) ? "," : "" + prefs.getFirmware().toString();
 
         if (tsuffix.length() > 0) {
             tstring += " (" + tsuffix + ")";
         }
         
         MainFrame.this.setTitle(tstring);
-
     }
 
 
@@ -1265,27 +1244,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
 
     private void jMenuItemFlashUserActionPerformed(java.awt.event.ActionEvent evt) {
-        String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
-        String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
-        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-            fname += File.separator + "ksoloti_flasher.bin";
-            pname += File.separator + "ksoloti";
-        }
-        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-            fname += File.separator + "axoloti_flasher.bin";
-            pname += File.separator + "axoloti";
-        }
-        if (prefs.getFirmwareMode().contains("SPILink")) {
-            pname += "_spilink";
-        }
-        if (prefs.getFirmwareMode().contains("USBAudio")) {
-            pname += "_usbaudio";
-        }
-        if (prefs.getFirmwareMode().contains("I2SCodec")) {
-            pname += "_i2scodec";
-        }
-        pname += ".bin";
-        flashUsingSDRam(fname, pname);
+        String flasherBinName = prefs.getFlasherBinFilename();
+        String firmwareBinName = prefs.getFirmwareBinFilename();
+        flashUsingSDRam(flasherBinName, firmwareBinName); // TODOH7 will remove flasherbin
     }
 
 
@@ -1300,28 +1261,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
 
     private void jMenuItemFlashDefaultActionPerformed(java.awt.event.ActionEvent evt) {
-
-        String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
-        String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
-        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-            fname += File.separator + "ksoloti_flasher.bin";
-            pname += File.separator + "ksoloti";
-        }
-        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-            fname += File.separator + "axoloti_flasher.bin";
-            pname += File.separator + "axoloti";
-        }
-        if (prefs.getFirmwareMode().contains("SPILink")) {
-            pname += "_spilink";
-        }
-        if (prefs.getFirmwareMode().contains("USBAudio")) {
-            pname += "_usbaudio";
-        }
-        if (prefs.getFirmwareMode().contains("I2SCodec")) {
-            pname += "_i2scodec";
-        }
-        pname += ".bin";
-        flashUsingSDRam(fname, pname);
+        String flasherBinName = prefs.getFlasherBinFilename();
+        String firmwareBinName = prefs.getFirmwareBinFilename();
+        flashUsingSDRam(flasherBinName, firmwareBinName); // TODOH7 will remove flasherbin
     }
 
 
@@ -1332,13 +1274,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.AppendToQueue(new QCmdDisconnect());
         }
         else {
-            String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "mounter" + File.separator + "mounter_build";
-            if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-                fname += File.separator + "ksoloti_mounter.bin";
-            }
-            else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                fname += File.separator + "axoloti_mounter.bin";
-            }
+            String fname = prefs.getMounterBinFilename(); // TODOH7 will be removed
             File f = new File(fname);
             if (f.canRead()) {
                 qcmdprocessor.AppendToQueue(new QCmdStop());
@@ -1648,27 +1584,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 options[1]);
 
         if (s == 0) {
-            String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
-            String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
-            if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-                fname += File.separator + "ksoloti_flasher.bin";
-                pname += File.separator + "ksoloti";
-            }
-            else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                fname += File.separator + "axoloti_flasher.bin";
-                pname += File.separator + "axoloti";
-            }
-            if (prefs.getFirmwareMode().contains("SPILink")) {
-                pname += "_spilink";
-            }
-            if (prefs.getFirmwareMode().contains("USBAudio")) {
-                pname += "_usbaudio";
-            }
-            if (prefs.getFirmwareMode().contains("I2SCodec")) {
-                pname += "_i2scodec";
-            }
-            pname += ".bin";
-            flashUsingSDRam(fname, pname);
+            String flasherBinName = prefs.getFlasherBinFilename();
+            String firmwareBinName = prefs.getFirmwareBinFilename();
+            flashUsingSDRam(flasherBinName, firmwareBinName); // TODOH7 will remove flasherbin
         }
     }
 
@@ -1698,7 +1616,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         jPanelInfoColumn.add(jLabelSDCardPresent);
 
-        if (prefs.getFirmwareMode().contains("USBAudio")) {
+        if(prefs.getFirmware() == FirmwareType.USBAudio) {
             jPanelInfoColumn.add(jLabelFlags);
         }
 

@@ -113,10 +113,10 @@ public class Constants {
     }
 
     public static void createAppIcon() {
-        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+        if (prefs.isKsolotiDerivative()) {
             APP_ICON = new ImageIcon(Constants.class.getResource("/resources/ksoloti_icon.png"));
         }
-        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+        else if (prefs.isAxolotiDerivative()) {
             APP_ICON = new ImageIcon(Constants.class.getResource("/resources/axoloti_icon.png"));
         }
     }

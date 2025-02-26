@@ -112,12 +112,12 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
                 if (r >= 0) {
                     String devName = (String) model.getValueAt(r, 1);
-
-                    if (!USBBulkConnection.GetConnection().isConnected() && prefs.getFirmwareMode().contains("Ksoloti Core") && (devName.equals(sKsolotiCore) || devName.equals(sKsolotiCoreUsbAudio))) {
+                    
+                    if (!USBBulkConnection.GetConnection().isConnected() && prefs.isKsolotiDerivative() && (devName.equals(sKsolotiCore) || devName.equals(sKsolotiCoreUsbAudio))) {
                         jButtonOK.setEnabled(true);
                         cpuid = (String) model.getValueAt(r, 3);
                     }
-                    else if (!USBBulkConnection.GetConnection().isConnected() && prefs.getFirmwareMode().contains("Axoloti Core") && (devName.equals(sAxolotiCore) || devName.equals(sAxolotiCoreUsbAudio))) {
+                    else if (!USBBulkConnection.GetConnection().isConnected() && prefs.isAxolotiDerivative() && (devName.equals(sAxolotiCore) || devName.equals(sAxolotiCoreUsbAudio))) {
                         jButtonOK.setEnabled(true);
                         cpuid = (String) model.getValueAt(r, 3);
                     }
@@ -243,7 +243,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             }
                         }
                     }
-                    else if (prefs.getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && ((descriptor.idProduct() == PID_KSOLOTI) || (descriptor.idProduct() == PID_KSOLOTI_USBAUDIO))) {
+                    else if (prefs.isKsolotiDerivative() && descriptor.idVendor() == VID_AXOLOTI && ((descriptor.idProduct() == PID_KSOLOTI) || (descriptor.idProduct() == PID_KSOLOTI_USBAUDIO))) {
 
                         String sName;
 
@@ -268,10 +268,10 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             LibUsb.close(handle);
                         }
                     }
-                    else if (prefs.getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD) {
+                    else if (prefs.isKsolotiDerivative() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD) {
                         model.addRow(new String[]{"",sKsolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
                     }
-                    else if (prefs.getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && ((descriptor.idProduct() == PID_AXOLOTI) || (descriptor.idProduct() == PID_AXOLOTI_USBAUDIO))) {
+                    else if (prefs.isAxolotiDerivative() && descriptor.idVendor() == VID_AXOLOTI && ((descriptor.idProduct() == PID_AXOLOTI) || (descriptor.idProduct() == PID_AXOLOTI_USBAUDIO))) {
 
                         String sName;
 
@@ -298,7 +298,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             LibUsb.close(handle);
                         }
                     }
-                    else if (prefs.getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI_SDCARD) {
+                    else if (prefs.isAxolotiDerivative() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI_SDCARD) {
                         model.addRow(new String[]{"",sAxolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
                     }
                 }

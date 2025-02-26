@@ -29,6 +29,9 @@ import static axoloti.dialogs.USBPortSelectionDlg.ErrorString;
 import axoloti.displays.DisplayInstance;
 import axoloti.parameters.ParameterInstance;
 import axoloti.targetprofile.ksoloti_core;
+import axoloti.utils.Preferences.BoardType;
+import axoloti.utils.Preferences.FirmwareType;
+
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -184,6 +187,9 @@ public class USBBulkConnection extends Connection {
 
         try {
             /* Iterate over all devices and scan for the right one */
+            DeviceHandle firstDeviceHandle = null;
+            DeviceHandle useDeviceHandle = null;
+
             for (Device d : list) {
                 DeviceDescriptor descriptor = new DeviceDescriptor();
 
@@ -192,54 +198,21 @@ public class USBBulkConnection extends Connection {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
 
-                if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+                BoardType board = prefs.getBoard();
+                FirmwareType firmware = prefs.getFirmware();
 
-                    if (descriptor.idVendor() == bulkVID && ((descriptor.idProduct() == bulkPIDKsoloti) || (descriptor.idProduct() == bulkPIDKsolotiUsbAudio))) {
+                if(descriptor.idVendor() == bulkVID) {
+                    boolean foundKsoloti         = (descriptor.idProduct() == bulkPIDKsoloti);
+                    boolean foundKsolotiUsbAudio = (descriptor.idProduct() == bulkPIDKsolotiUsbAudio);
+                    boolean foundAxoloti         = (descriptor.idProduct() == bulkPIDAxoloti);
+                    boolean foundAxolotiUsbAudio = (descriptor.idProduct() == bulkPIDAxolotiUsbAudio);
+                    
+                    boolean matchKsoloti = (board == BoardType.Ksoloti) || (board == BoardType.KsolotiGeko) && (foundKsoloti || foundKsolotiUsbAudio);
+                    boolean matchAxoloti = (board == BoardType.Axoloti) && (foundAxoloti || foundAxolotiUsbAudio);
 
-                        if (descriptor.idProduct() == bulkPIDKsolotiUsbAudio) {
-                            useBulkInterfaceNumber = 4;
-                            LOGGER.log(Level.INFO, "Ksoloti Core USB Audio found.");
-                        }
-                        else {
-                            useBulkInterfaceNumber = 2;
-                            LOGGER.log(Level.INFO, "Ksoloti Core found.");
-                        }
-
-                        DeviceHandle h = new DeviceHandle();
-
-                        result = LibUsb.open(d, h);
-                        if (result < 0) {
-                            LOGGER.log(Level.INFO, ErrorString(result));
-                        }
-                        else {
-                            String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
-
-                            if (cpuid != null) {
-
-                                if (serial.equals(cpuid)) {
-                                    return h;
-                                }
-                            }
-                            else {
-                                return h;
-                            }
-
-                            LibUsb.close(h);
-                        }
-                    }
-                }
-                else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-
-                    if (descriptor.idVendor() == bulkVID && ((descriptor.idProduct() == bulkPIDAxoloti) || (descriptor.idProduct() == bulkPIDAxolotiUsbAudio))) {
-
-                        if (descriptor.idProduct() == bulkPIDAxolotiUsbAudio) {
-                            useBulkInterfaceNumber = 4;
-                            LOGGER.log(Level.INFO, "Axoloti Core USB Audio found.");
-                        }
-                        else {
-                            useBulkInterfaceNumber = 2;
-                            LOGGER.log(Level.INFO, "Axoloti Core found.");
-                        }
+                    if (matchKsoloti || matchAxoloti) {
+                        LOGGER.log(Level.INFO, board.toString() + " " + firmware.toString() + " found.");
+                        useBulkInterfaceNumber = (foundKsoloti || foundAxoloti) ? 2 : 4;
 
                         DeviceHandle h = new DeviceHandle();
 
@@ -252,61 +225,32 @@ public class USBBulkConnection extends Connection {
 
                             if (cpuid != null) {
                                 if (serial.equals(cpuid)) {
-                                    return h;
+                                    useDeviceHandle = h;
+                                    break;
                                 }
                             }
                             else {
-                                return h;
+                                useDeviceHandle = h;
+                                break;
                             }
 
-                            LibUsb.close(h);
+                            if(firstDeviceHandle == null)
+                                firstDeviceHandle = h;
+                            
+                            if(h != firstDeviceHandle)
+                                LibUsb.close(h);
                         }
                     }
                 }
             }
 
-            /* Or else pick the first one */
-            for (Device d : list) {
-
-                DeviceDescriptor descriptor = new DeviceDescriptor();
-
-                result = LibUsb.getDeviceDescriptor(d, descriptor);
-                if (result != LibUsb.SUCCESS) {
-                    throw new LibUsbException("Unable to read device descriptor", result);
-                }
-
-                if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-
-                    if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDKsoloti) {
-
-                        LOGGER.log(Level.INFO, "Ksoloti Core found.");
-                        DeviceHandle h = new DeviceHandle();
-
-                        result = LibUsb.open(d, h);
-                        if (result < 0) {
-                            LOGGER.log(Level.INFO, ErrorString(result));
-                        }
-                        else {
-                            return h;
-                        }
-                    }
-                }
-                else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-
-                    if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDAxoloti) {
-
-                        LOGGER.log(Level.INFO, "Axoloti Core found.");
-                        DeviceHandle h = new DeviceHandle();
-
-                        result = LibUsb.open(d, h);
-                        if (result < 0) {
-                            LOGGER.log(Level.INFO, ErrorString(result));
-                        }
-                        else {
-                            return h;
-                        }
-                    }
-                }
+            // if we have a matching useDeviceHandle return that, else if we have a firstDeviceHandle return that
+            if(useDeviceHandle != null) {
+                LibUsb.close(firstDeviceHandle);
+                return useDeviceHandle;
+            } else if(firstDeviceHandle != null)
+            {
+                return firstDeviceHandle;
             }
         }
         finally {
@@ -406,29 +350,33 @@ public class USBBulkConnection extends Connection {
             }
             qcmdp.WaitQueueFinished();
 
-            QCmdMemRead1Word q1 = new QCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
-            qcmdp.AppendToQueue(q1);
-            targetProfile.setCPUIDCode(q1.getResult());
-
+            // TODOH7 
+            boolean signaturevalid = true;
             QCmdMemRead q;
 
-            q = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
-            qcmdp.AppendToQueue(q);
-            targetProfile.setCPUSerial(q.getResult());
+            // QCmdMemRead1Word q1 = new QCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
+            // qcmdp.AppendToQueue(q1);
+            // targetProfile.setCPUIDCode(q1.getResult());
 
-            q = new QCmdMemRead(targetProfile.getOTPAddr(), 32);
-            qcmdp.AppendToQueue(q);
-            // ByteBuffer otpInfo = q.getResult();
+            // QCmdMemRead q;
 
-            q = new QCmdMemRead(targetProfile.getOTPAddr() + 32, 256);
-            qcmdp.AppendToQueue(q);
+            // q = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
+            // qcmdp.AppendToQueue(q);
+            // targetProfile.setCPUSerial(q.getResult());
 
-            ByteBuffer signature = q.getResult();
+            // q = new QCmdMemRead(targetProfile.getOTPAddr(), 32);
+            // qcmdp.AppendToQueue(q);
+            // // ByteBuffer otpInfo = q.getResult();
 
-            boolean signaturevalid = false;
-            if (signature == null) {
-                LOGGER.log(Level.INFO, "Cannot obtain signature, upgrade firmware?");
-            }
+            // q = new QCmdMemRead(targetProfile.getOTPAddr() + 32, 256);
+            // qcmdp.AppendToQueue(q);
+
+            // ByteBuffer signature = q.getResult();
+
+            // boolean signaturevalid = false;
+            // if (signature == null) {
+            //     LOGGER.log(Level.INFO, "Cannot obtain signature, upgrade firmware?");
+            // }
 
             boolean signing = false;
 

@@ -65,30 +65,14 @@ public class QCmdCompilePatch extends QCmdShellTask {
     
     @Override
     String GetExec() {
-            String boarddef = "";
-            String fwoptiondef = "";
-            if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-                boarddef = "BOARD_KSOLOTI_CORE";
-            }
-            else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                boarddef = "BOARD_AXOLOTI_CORE";
-            }
-            if (prefs.getFirmwareMode().contains("SPILink")) {
-                fwoptiondef += " FW_SPILINK";
-            }
-            if (prefs.getFirmwareMode().contains("USBAudio")) {
-                fwoptiondef += " FW_USBAUDIO";
-            }
-            if (prefs.getFirmwareMode().contains("I2SCodec")) {
-                fwoptiondef += " FW_I2SCODEC";
-            }
-
+            String compilerOptions = prefs.getCompilerOptions();
+            
             if (OSDetect.getOS() == OSDetect.OS.WIN) {
-                return RuntimeDir() + "/platform_win/bin/sh.exe " + FirmwareDir() + "/compile_patch_win.sh " + boarddef + fwoptiondef;
+                return RuntimeDir() + "/platform_win/bin/sh.exe " + FirmwareDir() + "/compile_patch_win.sh " + compilerOptions;
             } else if (OSDetect.getOS() == OSDetect.OS.MAC) {
-                return "/bin/sh " + FirmwareDir() + "/compile_patch_osx.sh " + boarddef + fwoptiondef;
+                return "/bin/sh " + FirmwareDir() + "/compile_patch_osx.sh " + compilerOptions;
             } else if (OSDetect.getOS() == OSDetect.OS.LINUX) {
-                return "/bin/sh " + FirmwareDir() + "/compile_patch_linux.sh " + boarddef + fwoptiondef;
+                return "/bin/sh " + FirmwareDir() + "/compile_patch_linux.sh " + compilerOptions;
             } else {
                 Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");
                 return null;

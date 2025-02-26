@@ -42,10 +42,10 @@ public class ksoloti_core {
     cputype_e cputype;
 
     public ByteBuffer CreateOTPInfo() {
-        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+        if (prefs.isKsolotiDerivative()) {
             return CreateOTPInfo(1, 1, 0, 32); /* 32MB SDRAM */
         }
-        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+        else if (prefs.isAxolotiDerivative()) {
             return CreateOTPInfo(1, 1, 0, 8); /* 8MB SDRAM */
         }
         return null;
@@ -61,10 +61,10 @@ public class ksoloti_core {
             ByteBuffer bb = ByteBuffer.allocate(32);
 
             String header = "";
-            if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+            if (prefs.isKsolotiDerivative()) {
                 header = "Ksoloti Core";
             }
-            else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+            else if (prefs.isAxolotiDerivative()) {
                 header = "Axoloti Core";
             }
 
@@ -95,10 +95,10 @@ public class ksoloti_core {
     }
 
     public int getSDRAMSize() {
-        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+        if (prefs.isKsolotiDerivative()) {
             return  32 * 1024 * 1024;  /* 32MB */
         }
-        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+        else if (prefs.isAxolotiDerivative()) {
             return  8 * 1024 * 1024;  /* 8MB */
         }
         return -1;

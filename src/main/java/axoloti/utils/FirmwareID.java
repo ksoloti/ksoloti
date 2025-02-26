@@ -39,24 +39,8 @@ public class FirmwareID {
 
     static public String getFirmwareID() {
         try {
-            String boarddef = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
+            String boarddef = prefs.getFirmwareBinFilename();
 
-            if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-                boarddef += File.separator + "ksoloti";
-            }
-            else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-                boarddef += File.separator + "axoloti";
-            }
-            if (prefs.getFirmwareMode().contains("SPILink")) {
-                boarddef += "_spilink";
-            }
-            if (prefs.getFirmwareMode().contains("USBAudio")) {
-                boarddef += "_usbaudio";
-            }
-            if (prefs.getFirmwareMode().contains("I2SCodec")) {
-                boarddef += "_i2scodec";
-            }
-            boarddef += ".bin";
             File f = new File(boarddef);
 
             if (f == null || !f.canRead()) {
