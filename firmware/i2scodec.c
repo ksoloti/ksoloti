@@ -53,7 +53,6 @@
 #define I2S3_SDOUT_PORT    GPIOD
 #define I2S3_SDOUT_PIN     6
 
-extern void i2s_computebufI(int32_t* i2s_inp, int32_t* i2s_outp);
 
 const stm32_dma_stream_t* i2s_tx_dma;
 const stm32_dma_stream_t* i2s_rx_dma;
@@ -110,10 +109,8 @@ static void dma_i2s_tx_interrupt(void* dat, uint32_t flags) {
 #ifdef I2S_DEBUG
         palSetPad(GPIOA, 1);
 #endif
-        i2s_computebufI(i2s_rbuf2, i2s_buf);
     }
     else {
-        i2s_computebufI(i2s_rbuf, i2s_buf2);
     }
     dmaStreamClearInterrupt(i2s_tx_dma);
 #ifdef I2S_DEBUG
@@ -121,11 +118,13 @@ static void dma_i2s_tx_interrupt(void* dat, uint32_t flags) {
 #endif
 }
 
+
 static void dma_i2s_rx_interrupt(void* dat, uint32_t flags) {
     (void) dat;
     (void) flags;
     dmaStreamClearInterrupt(i2s_rx_dma);
 }
+
 
 void i2s_peripheral_init(void)  {
 

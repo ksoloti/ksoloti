@@ -86,6 +86,14 @@ static uint8_t i2ctxbuf[8];
 
 uint32_t codec_interrupt_timestamp;
 
+#ifdef FW_I2SCODEC
+extern void i2s_computebufI(int32_t* i2s_inp, int32_t* i2s_outp);
+
+extern int32_t i2s_buf[DOUBLE_BUFSIZE];
+extern int32_t i2s_buf2[DOUBLE_BUFSIZE];
+extern int32_t i2s_rbuf[DOUBLE_BUFSIZE];
+extern int32_t i2s_rbuf2[DOUBLE_BUFSIZE];
+#endif
 
 #ifdef FW_SPILINK
 /* approx 1Hz drift... */
@@ -345,9 +353,15 @@ static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
 #ifdef I2S_DEBUG
         palSetPad(GPIOA, 0);
 #endif
+#ifdef FW_I2SCODEC
+        i2s_computebufI(i2s_rbuf2, i2s_buf);
+#endif
         computebufI(rbuf2, buf);
     }
     else {
+#ifdef FW_I2SCODEC
+        i2s_computebufI(i2s_rbuf, i2s_buf2);
+#endif
         computebufI(rbuf, buf2);
     }
     dmaStreamClearInterrupt(sai_a_dma);
