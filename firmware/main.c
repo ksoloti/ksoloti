@@ -148,8 +148,12 @@ int main(void) {
     pThreadSpilink = 0;
 #endif
 
+#if BOARD_KSOLOTI_CORE_H743
+    // TODOH7
+#else    
     sdcard_init();
     sysmon_init();
+#endif
 
 
 #if ENABLE_SERIAL_DEBUG
@@ -212,7 +216,6 @@ int main(void) {
     // TODOH7
 #else
     MY_USBH_Init();
-#endif
 
     if (!exception_check()) {
         /* Only try mounting SD and booting a patch when no exception is reported */
@@ -234,6 +237,7 @@ int main(void) {
             }
         }
     }
+#endif
 
     //TestMemset();
 

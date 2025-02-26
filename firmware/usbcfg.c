@@ -519,10 +519,14 @@ static const USBDescriptor *get_descriptor(USBDriver *usbp,
     return &vcom_configuration_descriptor;
   case USB_DESCRIPTOR_STRING:
     if (dindex == 3) {
+#if BOARD_KSOLOTI_CORE_H743
+      // TODOH7 crashing here?
+#else      
       inttohex(*((uint32_t*)0x1FFF7A10),&descriptor_serial_string[2]);
       inttohex(*((uint32_t*)0x1FFF7A14),&descriptor_serial_string[2+16]);
       inttohex(*((uint32_t*)0x1FFF7A18),&descriptor_serial_string[2+32]);
       return &descriptor_serial;
+#endif
     }
     if (dindex < 9)
       return &vcom_strings[dindex];

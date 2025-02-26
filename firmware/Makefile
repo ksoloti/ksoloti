@@ -137,7 +137,7 @@ ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
   ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_F427)
     PROJECT = ksoloti
   else ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
-    PROJECT = ksoloti_743
+    PROJECT = ksoloti_h743
   endif
 else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
   PROJECT = axoloti
@@ -170,10 +170,11 @@ CMSIS               = ${HOME}/CMSIS
 MUTABLE_INSTRUMENTS = ${FIRMWARE}/mutable_instruments
 
 
-include board.mk
 
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # Ksoloti h747
+
+  include board_h7.mk
 
   # Licensing files.
   include $(CHIBIOS)/os/license/license.mk
@@ -192,6 +193,8 @@ ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   include $(CHIBIOS)/os/various/shell/shell.mk
 else
   # Axoloti and Ksoloti f427
+
+  include board.mk
 
   # Licensing files.
   include $(CHIBIOS)/os/license/license.mk
