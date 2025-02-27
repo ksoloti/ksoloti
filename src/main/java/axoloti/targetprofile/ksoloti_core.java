@@ -26,6 +26,9 @@ import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import axoloti.utils.Preferences.BoardType;
+import axoloti.utils.Preferences.MemoryLayoutType;
+
 /**
  *
  * @author Johannes Taelman
@@ -86,8 +89,17 @@ public class ksoloti_core {
     }
 
     public int getPatchAddr() {
-        // SRAM1 - must match with patch.ld
-        return 0x20011000;
+        int addr = 0x20011000; // Default axoloti ksoloti address
+        
+        if(prefs.getBoard() == BoardType.KsolotiGeko) {
+            if(prefs.getMemoryLayout() == MemoryLayoutType.Code64Data64) {
+                addr = 0x00000000;
+            } else {
+                addr = 0x24040000;
+            }
+        } 
+        
+        return addr;
     }
 
     public int getSDRAMAddr() {

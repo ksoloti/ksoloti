@@ -126,6 +126,25 @@ public class Preferences {
         }
     }
 
+    public enum MemoryLayoutType {
+        Code64Data64 ("64 KB Code and 64 KB Data"),
+        Code256Data64 ("256 KB Code and 64 KB Data."),
+        Code256Shared ("256 KB shared Code and Data.");
+
+        private final String name;     
+        private MemoryLayoutType(String s) { name = s; }
+        public String toString() {return this.name;}
+
+        static public MemoryLayoutType fromString(String name) {
+            for (MemoryLayoutType s : values()) {
+                if (s.name.equals(name)) {
+                    return s;
+                }
+            }
+            return null;
+        }
+    }
+
     private static final Logger LOGGER = Logger.getLogger(Preferences.class.getName());
 
     @Attribute(required = false)
@@ -154,6 +173,8 @@ public class Preferences {
     FirmwareType Firmware;
     @Element(required = false)
     SampleRateType SampleRate;
+    @Element(required = false)
+    MemoryLayoutType MemoryLayout;
     @Element(required = false)
     Boolean MouseDoNotRecenterWhenAdjustingControls;
     @Element(required = false)
@@ -283,6 +304,9 @@ public class Preferences {
         }
         if (SampleRate == null) {
             SampleRate = SampleRateType.Rate48K;
+        }
+        if (MemoryLayout == null) {
+            MemoryLayout = MemoryLayoutType.Code64Data64;
         }
         for (int i=0; i<4; i++) {
             if (UserShortcuts[i] == null) {
@@ -627,6 +651,10 @@ public class Preferences {
         return SampleRate;
     }
 
+    public MemoryLayoutType getMemoryLayout() {
+        return MemoryLayout;
+    }
+
     public String getFlasherBinFilename() { // TODOH7 will need removing
         String name = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build" + File.separator;
         switch(Board)
@@ -693,24 +721,44 @@ public class Preferences {
         return getFirmwareBinFilename(true);
     }
         
-    public String getCompilerOptions() {
-        String defines = "";
+    public String getPatchCompilerOptions() {
+        String options = "";
         switch(Board)
         {
-            case BoardType.Ksoloti:     defines += "BOARD_KSOLOTI_CORE BOARD_KSOLOTI_CORE_F427 "; break;
-            case BoardType.KsolotiGeko: defines += "BOARD_KSOLOTI_CORE BOARD_KSOLOTI_CORE_H743 "; break;
-            case BoardType.Axoloti:     defines += "BOARD_AXOLOTI_CORE BOARD_AXOLOTI_CORE "; break;
+            case BoardType.Ksoloti:     options += "BOARD_KSOLOTI_CORE BOARD_KSOLOTI_CORE_F427 "; break;
+            case BoardType.KsolotiGeko: options += "BOARD_KSOLOTI_CORE BOARD_KSOLOTI_CORE_H743 "; break;
+            case BoardType.Axoloti:     options += "BOARD_AXOLOTI_CORE BOARD_AXOLOTI_CORE "; break;
         } 
 
         switch(Firmware)
         {
             case Normal:   break;
-            case SPILink:  defines += " FW_SPILINK"; break;
-            case USBAudio: defines += " FW_USBAUDIO"; break;
-            case i2SCodec: defines += " FW_I2SCODEC"; break;
+            case SPILink:  options += " FW_SPILINK"; break;
+            case USBAudio: options += " FW_USBAUDIO"; break;
+            case i2SCodec: options += " FW_I2SCODEC"; break;
         }
 
-        return defines;
+        if(isAxolotiDerivative()) {
+            options += " ramlink_axoloti.ld";
+        } else if(getBoard() == BoardType.Ksoloti) {
+            options += " ramlink_ksoloti.ld";
+        } else if(getBoard() == BoardType.KsolotiGeko) {
+            switch(MemoryLayout) {
+                case Code256Data64:
+                    options += " ramlink_ksoloti_h743_sram_dtcm.ld";
+                    break;
+                case Code256Shared:
+                    options += " ramlink_ksoloti_h743_sram_sram.ld";
+                    break;
+                case Code64Data64:
+                    options += " ramlink_ksoloti_h743_itcm_dtcm.ld";
+                    break;
+                default:
+                    break;
+                
+            }
+        }
+        return options;
     }
 
     public String getUserShortcut(int index) {
@@ -765,9 +813,9 @@ public class Preferences {
         // SetDirty();
     }
 
-    public boolean setFirmwareMode(BoardType Board, FirmwareType Firmware, SampleRateType SampleRate ){
+    public boolean setFirmwareMode(BoardType Board, FirmwareType Firmware, SampleRateType SampleRate, MemoryLayoutType MemoryLayout ){
 
-        if(this.Board == Board && this.Firmware == Firmware && this.SampleRate == SampleRate) {
+        if(this.Board == Board && this.Firmware == Firmware && this.SampleRate == SampleRate && this.MemoryLayout == MemoryLayout) {
             return false;
         }
 
@@ -779,6 +827,7 @@ public class Preferences {
 
         this.Firmware = Firmware;
         this.SampleRate = SampleRate;
+        this.MemoryLayout = MemoryLayout;
 
         if (restartRequired) {
             if (USBBulkConnection.GetConnection().isConnected()) {
