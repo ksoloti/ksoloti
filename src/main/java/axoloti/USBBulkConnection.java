@@ -529,17 +529,15 @@ public class USBBulkConnection extends Connection {
                 case -6:  errstr = "Device busy"; break;
                 case -7:  errstr = "Operation timed out"; break;
                 case -8:  errstr = "Overflow"; break;
-                case -9:  {
-                    errstr = "Pipe error";
-                    MainFrame.mainframe.ShowDisconnect();
-                    break;
-                }
+                case -9:  errstr = "Pipe error"; break;
                 case -10: errstr = "System call interrupted"; break;
                 case -11: errstr = "Insufficient memory"; break;
                 case -12: errstr = "Operation not supported or unimplemented"; break;
                 default:  errstr = Integer.toString(result); break;
             }
             LOGGER.log(Level.SEVERE, "USB connection failed: " + errstr);
+            Panic();
+            MainFrame.mainframe.ShowDisconnect();
         }
     }
 
