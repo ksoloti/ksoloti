@@ -6,36 +6,36 @@ FWOPTIONDEF =
 # "--param max-completely-peeled-insns=100" makes a big difference to get SRAM down. Newer GCC versions use 200 here, original axoloti (GCC 4.9) used 100.
 # Added a few flags that speed up floating-point calculation at the expense of precision. Graciously shared by https://github.com/malyzajko/daisy/blob/master/doc/documentation.md#running-generated-code
 CCFLAGS = \
+  --param max-completely-peeled-insns=100 \
+  -O3 \
   -Wno-implicit-fallthrough \
-  -Wno-unused-parameter \
   -Wno-return-type \
+  -Wno-unused-parameter \
+  -fcode-hoisting \
+  -fdata-sections \
+  -ffast-math \
+  -ffp-contract=off \
+  -ffunction-sections \
+  -fno-common \
+  -fno-math-errno \
+  -fno-reorder-blocks \
+  -fno-rtti \
+  -fno-signed-zeros \
+  -fno-threadsafe-statics \
+  -fno-unsafe-math-optimizations \
+  -fno-use-cxa-atexit \
+  -fpermissive \
   -ggdb3 \
   -mcpu=cortex-m4 \
   -mfloat-abi=hard \
   -mfpu=fpv4-sp-d16 \
+  -mno-thumb-interwork \
   -mthumb \
   -mtune=cortex-m4 \
   -mword-relocations \
   -nostartfiles \
   -nostdlib \
-  -std=c++11 \
-  -O3 \
-  --param max-completely-peeled-insns=100 \
-  -fcode-hoisting \
-  -fno-threadsafe-statics \
-  -ffunction-sections \
-  -fdata-sections \
-  -fno-common \
-  -fno-math-errno \
-  -fno-reorder-blocks \
-  -fno-rtti \
-  -mno-thumb-interwork \
-  -fno-use-cxa-atexit \
-  -fpermissive \
-  -ffast-math \
-  -fno-unsafe-math-optimizations \
-  -fno-signed-zeros \
-  -ffp-contract=off
+  -std=c++11
 
 DEFS = \
   -D$(BOARDDEF) \

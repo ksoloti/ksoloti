@@ -9,13 +9,11 @@ FWOPTIONDEF=
 
 
 # O3 would turn on the six additional flags below:
+# These six flags, used alone or in combination, may break the firmware!
 
-# These three flags DO NOT work:
 #-funswitch-loops
 #-finline-functions
 #-fipa-cp-clone
-
-# These three flags work but make little/no difference:
 #-fpredictive-commoning
 #-fgcse-after-reload
 #-ftree-vectorize
