@@ -76,10 +76,13 @@ void wait_sai_dma_tc_flag(void) {
 
             /* The SAI DMA Transfer Complete flag must be set,
              * which marks the beginning of the next 16*2-sample buffer transfer.
-             * I2S complete transfer interrupt needs to occur 10-20 us before SAI interrupt fires.
-             * diff == between 12.0 and 13.5 us to be on the safe side.
+             * I2S "complete transfer" needs to occur before SAI interrupt fires.
+             * since I2S double buffers are being filled in an inverted fashion to the SAI buffers
+             * (meaning I2S "buf2" and "rbuf" are being transmitted while SAI "buf" and "rbuf2" are being transmitted)
+             * setting it to "transfer complete" around half a k-cycle (=166.7 us) before SAI TC interrupt will give us
+             * plenty of tolerance.
              */
-            if ((STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM)->stream->CR & STM32_DMA_CR_CT) && diff > 12000 && diff < 13500) {
+            if ((STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM)->stream->CR & STM32_DMA_CR_CT) && diff > 165000 && diff < 168000) {
 
                 /* We have a lock! Correct frequency to 48000 Hz */ 
 
