@@ -1,9 +1,9 @@
 BOARDDEF =
 SUBBOARDDEF=
 FWOPTIONDEF =
+LINKERFILE =
 
-$(info    BOARDDEF is $(BOARDDEF))
-$(info    SUBBOARDDEF is $(SUBBOARDDEF))
+$(info Compiling for $(SUBBOARDDEF) using linker file $(LINKERFILE))
 
 # Some new options are important to keep SRAM usage and DSP load low with newer GCC versions.
 # "--param max-completely-peeled-insns=100" makes a big difference to get SRAM down. Newer GCC versions use 200 here, original axoloti (GCC 4.9) used 100.
@@ -35,7 +35,8 @@ CCFLAGS = \
   -ffast-math \
   -fno-unsafe-math-optimizations \
   -fno-signed-zeros \
-  -ffp-contract=off
+  -ffp-contract=off \
+  -Wa,-adhlns="$@.lst"
 
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # Ksoloti h747
@@ -76,15 +77,41 @@ ifneq ($(FWOPTIONDEF),)
   DEFS := $(DEFS) -D$(FWOPTIONDEF)
 endif
 
-
 ELFNAME=
-ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
-  RAMLINKOPT = -Tramlink_ksoloti.ld
+
+ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_F427)
   ELFNAME = ksoloti
-else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
-  RAMLINKOPT = -Tramlink_axoloti.ld
+  DEFS += -DPATCHMAINLOC=0x20011000 \
+          -DPATCHFLASHLOC=0x080E0000 \
+          -DPATCHFLASHSIZE=0xB000
+else ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
+  ELFNAME = ksoloti_h743
+  DEFS += -DPATCHFLASHLOC=0x08100000
+  ifeq ($(LINKERFILE),ramlink_ksoloti_h743_itcm_dtcm.ld)
+    DEFS += -DPATCHMAINLOC=0x00000000 \
+            -DPATCHFLASHSIZE=65536 \
+            -DPATCHFLASHSLOTS=8
+  else ifeq ($(LINKERFILE),ramlink_ksoloti_h743_sram_dtcm.ld)
+    DEFS += -DPATCHMAINLOC=0x24040000 \
+            -DPATCHFLASHSIZE=262144 \
+            -DPATCHFLASHSLOTS=4
+  else ifeq ($(LINKERFILE),ramlink_ksoloti_h743_itcm_dtcm.ld)
+    DEFS += -DPATCHMAINLOC=0x24040000 \
+            -DPATCHFLASHSIZE=262144 \
+            -DPATCHFLASHSLOTS=4
+  endif
+else ifeq ($(SUBBOARDDEF),BOARD_AXOLOTI_CORE)
   ELFNAME = axoloti
+  DEFS += -DPATCHMAINLOC=0x20011000 \
+          -DPATCHFLASHLOC 0x080E0000 \
+          -DPATCHFLASHSIZE 0xB000
 endif
+
+RAMLINKOPT = -T$(LINKERFILE)
+
+$(info DEFS =  $(DEFS))
+$(info CCFLAGS =  $(CCFLAGS))
+
 
 ifeq ($(FWOPTIONDEF),FW_SPILINK)
   ELFNAME := $(ELFNAME)_spilink

@@ -39,7 +39,7 @@
 
 // struct KeyValuePair KvpsHead;
 // struct KeyValuePair *KvpsDisplay;
-struct KeyValuePair *ObjectKvpRoot;
+struct KeyValuePair *ObjectKvpRoot; // TODOH7 we really need to sort this crap out!
 #define MAXOBJECTS 256
 struct KeyValuePair *ObjectKvps[MAXOBJECTS] __attribute__ ((section (".sram2")));;
 // #define MAXTMPMENUITEMS 15
@@ -189,6 +189,9 @@ static WORKING_AREA(waThreadUI, 1172);
 
 
 void ui_init(void) {
+    KeyValuePair_s *p = chCoreAlloc(sizeof(KeyValuePair_s) * 6);
+    ObjectKvpRoot = &p[0];
+
     chThdCreateStatic(waThreadUI, sizeof(waThreadUI), UI_USB_PRIO, (void*) ThreadUI, NULL);
 }
 
@@ -198,9 +201,12 @@ void KVP_ClearObjects(void) {
 }
 
 void KVP_RegisterObject(KeyValuePair_s *kvp) {
-    ObjectKvps[ObjectKvpRoot->apvp.length] = kvp;
-    // kvp->parent = ObjectKvpRoot;
-    ObjectKvpRoot->apvp.length++;
+    if(ObjectKvpRoot->apvp.length < (MAXOBJECTS) )
+    {
+        ObjectKvps[ObjectKvpRoot->apvp.length] = kvp;
+        // kvp->parent = ObjectKvpRoot;
+        ObjectKvpRoot->apvp.length++;
+    }
 }
 
 // #define LCD_COL_INDENT 5

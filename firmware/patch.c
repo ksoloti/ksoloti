@@ -278,15 +278,25 @@ static int StartPatch1(void) {
     /* Reinit pin configuration for ADC */
     adc_configpads();
 
+#if BOARD_KSOLOTI_CORE_H743
+    SCB_CleanInvalidateDCache();
+    SCB_InvalidateICache();
+#else
     uint32_t* ccm; /* Clear CCMRAM area declared in ramlink_*.ld */
     for (ccm = (uint32_t*) 0x10000000; ccm < (uint32_t*) 0x1000C800; ccm++) {
         *ccm = 0;
     }
+#endif
 
+    // volatile bool bPause = true;
+    // while(bPause)
+    //     ;
     patchMeta.fptr_dsp_process = 0;
     nThreadsBeforePatch = GetNumberOfThreads();
     patchMeta.fptr_patch_init = (fptr_patch_init_t)(PATCHMAINLOC + 1);
-    (patchMeta.fptr_patch_init)(GetFirmwareID());
+    int nFirmwareId = GetFirmwareID();
+
+    (patchMeta.fptr_patch_init)(nFirmwareId);
 
     if (patchMeta.fptr_dsp_process == 0) {
         report_patchLoadFail((const char*) &loadFName[0]);

@@ -103,26 +103,32 @@ void StopPatch(void);
 
 void start_dsp_thread(void);
 
-#if BOARD_KSOLOTI_CORE_H743
-  #define PATCHFLASHLOC 0x08100000
-  #if PATCH_ITCM
-    #define PATCHMAINLOC 0x00000000
-    #define PATCHFLASHSIZE (64 * 1024)
-    #define PATCHFLASHSLOTS 8
-  #else
-    // need to look at this, 128 or 256
-    #define PATCHMAINLOC 0x24040000
-    #define PATCHFLASHSIZE (256 * 1024)
-    #define PATCHFLASHSLOTS 4
-  #endif
-#else
-  #define PATCHMAINLOC 0x20011000
+// need to do this at runtime, how?
+// 1. Put this data at start of bin
+// 2. Load it from flash somehow.
+// 3. Who knows?
 
-  // patch is located in sector 11
-  #define PATCHFLASHLOC 0x080E0000
-  #define PATCHFLASHSIZE 0xB000
-#endif
- 
+#if !defined(PATCHFLASHLOC)
+  #if BOARD_KSOLOTI_CORE_H743
+    #define PATCHFLASHLOC 0x08100000
+    #if PATCH_ITCM
+      #define PATCHMAINLOC 0x00000000
+      #define PATCHFLASHSIZE (64 * 1024)
+      #define PATCHFLASHSLOTS 8
+    #else
+      // need to look at this, 128 or 256
+      #define PATCHMAINLOC 0x24040000
+      #define PATCHFLASHSIZE (256 * 1024)
+      #define PATCHFLASHSLOTS 4
+    #endif
+  #else
+    #define PATCHMAINLOC 0x20011000
+
+    // patch is located in sector 11
+    #define PATCHFLASHLOC 0x080E0000
+    #define PATCHFLASHSIZE 0xB000
+  #endif
+#endif 
 
 void StartLoadPatchTread(void);
 void LoadPatch(const char* name);

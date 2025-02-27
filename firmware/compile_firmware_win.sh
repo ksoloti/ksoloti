@@ -21,7 +21,7 @@ else
 fi
 
 cd "${axoloti_firmware}"
-make BOARDDEF=$1 -f Makefile.patch.mk clean
+make BOARDDEF=$1 SUBBOARDDEF=$2 -f Makefile.patch.mk clean
 
 if [[ $1 = "BOARD_KSOLOTI_CORE" ]]; then
   NAME=ksoloti
