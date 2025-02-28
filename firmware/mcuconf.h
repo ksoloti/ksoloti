@@ -151,8 +151,13 @@
  * Reading STM32 Reference Manual is required.
  */
 
-#define STM32_MCO1SEL                       STM32_MCO1SEL_HSI_CK
-#define STM32_MCO1PRE_VALUE                 4
+// #define STM32_MCO1SEL                       STM32_MCO1SEL_HSI_CK
+// #define STM32_MCO1PRE_VALUE                 4
+
+#define STM32_MCO1SEL                       STM32_MCO1SEL_HSE_CK
+#define STM32_MCO1PRE_VALUE                 1
+//#define STM32_MCO1PRE                       STM32_MCO1PRE_DIV1
+
 #define STM32_MCO2SEL                       STM32_MCO2SEL_SYS_CK
 #define STM32_MCO2PRE_VALUE                 4
 #define STM32_TIMPRE_ENABLE                 TRUE

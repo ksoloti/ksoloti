@@ -210,7 +210,10 @@ static void ADAU_I2C_Init(void) {
 #if BOARD_KSOLOTI_CORE_H743
     if(HAL_I2C_GetState(&ADAU1961_i2c_handle) == HAL_I2C_STATE_RESET) 
     {
-        ADAU1961_i2c_handle.Init.Timing = 0x703074FF;
+        // Ksoloti, probably 400000 closk
+        // ADAU1961_i2c_handle.Init.Timing = 0x703074FF;
+        // akso, probably 100000 clock 
+        ADAU1961_i2c_handle.Init.Timing = 0x307075B1;
         ADAU1961_i2c_handle.Init.OwnAddress1 = 0x33;
         ADAU1961_i2c_handle.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
 
@@ -219,6 +222,7 @@ static void ADAU_I2C_Init(void) {
         /* SCL: PB10, SDA: PB11 */
         palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
         palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
+        rccEnableI2C2(FALSE);
 
         HAL_I2C_Init(&ADAU1961_i2c_handle);
     }
@@ -397,7 +401,9 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     */
 
 #ifdef FW_SPILINK
-    ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC, 0x0E); /* Disable core, PLL as clksrc, 1024*FS */
+   ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC, 0x0E); /* Disable core, PLL as clksrc, 1024*FS */
+#else
+   ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC, 0x08); /* Disable core, PLL as clksrc, 256*FS */
 #endif
 
     /* Confirm samplerate (redundant) */
