@@ -65,12 +65,12 @@
 #include "board.h"
 
 
-#if BOARD_KSOLOTI_CORE_H743
-  // TODOH7 - will be in SAI
-  uint32_t HAL_GetTick(void) {
-    return RTT2MS(DWT->CYCCNT);
-  }
-#endif
+// #if BOARD_KSOLOTI_CORE_H743
+//   // TODOH7 - will be in SAI
+//   uint32_t HAL_GetTick(void) {
+//     return RTT2MS(DWT->CYCCNT);
+//   }
+// #endif
 
 /*===========================================================================*/
 /* Initialization and main thread.                                           */

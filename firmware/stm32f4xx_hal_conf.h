@@ -37,6 +37,8 @@
   ******************************************************************************
   */
 
+// #warning "HALINCLUDE stm32f4xx_hal_conf.h"
+
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32F4xx_HAL_CONF_H
 #define __STM32F4xx_HAL_CONF_H

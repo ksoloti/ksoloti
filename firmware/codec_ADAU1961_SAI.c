@@ -28,7 +28,9 @@
 #include "codec.h"
 
 #if BOARD_KSOLOTI_CORE_H743
-    // TODOH7
+    #include "stm32h7xx.h"
+    #include "stm32h7xx_hal_dma.h"
+    #include "stm32h7xx_hal_i2c.h"
 #else
     #include "stm32f4xx.h"
     #include "stm32f4xx_hal_i2c.h"
@@ -205,30 +207,47 @@ void lock_SAI_to_SPI_FS(void) {
 
 
 static void ADAU_I2C_Init(void) {
+#if BOARD_KSOLOTI_CORE_H743
+    if(HAL_I2C_GetState(&ADAU1961_i2c_handle) == HAL_I2C_STATE_RESET) 
+    {
+        ADAU1961_i2c_handle.Init.Timing = 0x703074FF;
+        ADAU1961_i2c_handle.Init.OwnAddress1 = 0x33;
+        ADAU1961_i2c_handle.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+
+        ADAU1961_i2c_handle.Instance = I2C2;
+        
+        /* SCL: PB10, SDA: PB11 */
+        palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
+        palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
+
+        HAL_I2C_Init(&ADAU1961_i2c_handle);
+    }
+#else    
     if(HAL_I2C_GetState(&ADAU1961_i2c_handle) == HAL_I2C_STATE_RESET) {
         /* DISCOVERY_I2Cx peripheral configuration */
         ADAU1961_i2c_handle.Init.ClockSpeed = 400000;
         ADAU1961_i2c_handle.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
         ADAU1961_i2c_handle.Init.OwnAddress1 = 0x33;
         ADAU1961_i2c_handle.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-#if defined(BOARD_KSOLOTI_CORE)
+    #if defined(BOARD_KSOLOTI_CORE)
         ADAU1961_i2c_handle.Instance = I2C2;
         /* SCL: PB10, SDA: PB11 */
         palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
         palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
         rccEnableI2C2(FALSE);
-#elif defined(BOARD_AXOLOTI_CORE)
+    #elif defined(BOARD_AXOLOTI_CORE)
         ADAU1961_i2c_handle.Instance = I2C3;
         /* SCL: PH7, SDA: PH8 */
         palSetPadMode(GPIOH, 7, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
         palSetPadMode(GPIOH, 8, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
         rccEnableI2C3(FALSE);
-#elif defined(BOARD_STM32F4_DISCOVERY)
-//TODO
-#endif
+    #elif defined(BOARD_STM32F4_DISCOVERY)
+    //TODO
+    #endif
 
         HAL_I2C_Init(&ADAU1961_i2c_handle);
     }
+    #endif // BOARD_KSOLOTI_CORE_H743
 }
 
 

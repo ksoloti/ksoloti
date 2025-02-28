@@ -1,0 +1,92 @@
+Comparisons
+
+hal_conf
+
+#define HAL_USE_PAL                 TRUE
+#define HAL_USE_ADC                 TRUE
+#define HAL_USE_I2C                 TRUE
+#define HAL_USE_PWM                 TRUE
+#define HAL_USE_SDC                 TRUE
+#define HAL_USE_SERIAL              TRUE
+#define SERIAL_USB_BUFFERS_SIZE     512
+#define HAL_USE_SPI                 TRUE
+#define HAL_USE_USB                 TRUE
+#define ADC_USE_WAIT                TRUE
+#define ADC_USE_MUTUAL_EXCLUSION    TRUE
+#define CAN_USE_SLEEP_MODE          TRUE
+#define I2C_USE_MUTUAL_EXCLUSION    TRUE
+#define MAC_USE_EVENTS              TRUE
+#define MMC_NICE_WAITING            TRUE
+#define MMC_POLLING_INTERVAL        10
+#define MMC_POLLING_DELAY           10
+#define MMC_USE_SPI_POLLING         TRUE
+#define SDC_INIT_RETRY              100
+#define SDC_NICE_WAITING            TRUE
+#define SERIAL_DEFAULT_BITRATE      38400
+#define SERIAL_BUFFERS_SIZE         32
+#define SPI_USE_WAIT                TRUE
+#define SPI_USE_MUTUAL_EXCLUSION    TRUE
+
+
+stm32f4xx_hal_conf
+
+#define HAL_MODULE_ENABLED
+#define HAL_RCC_MODULE_ENABLED
+#define HAL_GPIO_MODULE_ENABLED
+#define HAL_CORTEX_MODULE_ENABLED
+#define HAL_HCD_MODULE_ENABLED
+#define HAL_I2C_MODULE_ENABLED
+
+
+#define HSE_VALUE    ((uint32_t)8000000) /*!< Value of the External oscillator in Hz */
+#define HSE_STARTUP_TIMEOUT    ((uint32_t)5000)   /*!< Time out for HSE start up, in ms */
+#define HSI_VALUE    ((uint32_t)16000000) /*!< Value of the Internal oscillator in Hz*/
+#define LSI_VALUE  ((uint32_t)40000)
+#define LSE_VALUE  ((uint32_t)32768)    /*!< Value of the External Low Speed oscillator in Hz */
+#define EXTERNAL_CLOCK_VALUE    ((uint32_t)12288000) /*!< Value of the Internal oscillator in Hz*/
+
+#define  VDD_VALUE                    ((uint32_t)3300) /*!< Value of VDD in mv */
+#define  TICK_INT_PRIORITY            ((uint32_t)0x0F) /*!< tick interrupt priority */
+#define  USE_RTOS                     0
+#define  PREFETCH_ENABLE              1
+#define  INSTRUCTION_CACHE_ENABLE     1
+#define  DATA_CACHE_ENABLE            1
+
+#define SystemCoreClock 168000000
+
+
+stm32h7xx_hal_conf
+
+#define HAL_RCC_MODULE_ENABLED 
+#define HAL_FLASH_MODULE_ENABLED 
+#define HAL_DMA_MODULE_ENABLED
+
+#define HSE_VALUE    ((uint32_t)8000000) /*!< Value of the External oscillator in Hz */
+#define HSE_STARTUP_TIMEOUT    ((uint32_t)100)   /*!< Time out for HSE start up, in ms */
+#define CSI_VALUE    ((uint32_t)4000000) /*!< Value of the Internal oscillator in Hz*/
+#define HSI_VALUE    ((uint32_t)64000000) /*!< Value of the Internal oscillator in Hz*/
+#define LSE_VALUE    ((uint32_t)32768) /*!< Value of the External oscillator in Hz*/
+#define LSE_STARTUP_TIMEOUT    ((uint32_t)5000)   /*!< Time out for LSE start up, in ms */
+#define LSI_VALUE  ((uint32_t)32000)      /*!< LSI Typical Value in Hz*/
+#define EXTERNAL_CLOCK_VALUE    12288000U /*!< Value of the External clock in Hz*/
+
+#define  VDD_VALUE                    3300UL /*!< Value of VDD in mv */
+#define  TICK_INT_PRIORITY            ((uint32_t)0x0F) /*!< tick interrupt priority */
+#define  USE_RTOS                     0
+
+#define ETH_TX_DESC_CNT         4  /* number of Ethernet Tx DMA descriptors */
+#define ETH_RX_DESC_CNT         4  /* number of Ethernet Rx DMA descriptors */
+
+#define ETH_MAC_ADDR0    ((uint8_t)0x02)
+#define ETH_MAC_ADDR1    ((uint8_t)0x00)
+#define ETH_MAC_ADDR2    ((uint8_t)0x00)
+#define ETH_MAC_ADDR3    ((uint8_t)0x00)
+#define ETH_MAC_ADDR4    ((uint8_t)0x00)
+#define ETH_MAC_ADDR5    ((uint8_t)0x00)
+
+#define USE_SPI_CRC                   1U
+
+
+
+
+

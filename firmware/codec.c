@@ -42,11 +42,7 @@ int32_t i2s_rbuf2[DOUBLE_BUFSIZE] __attribute__ ((section (".sram2")));
 #endif
 
 void codec_init(bool_t isMaster) {
-#if BOARD_KSOLOTI_CORE_H743
-    // TODOH7
-#else
     codec_ADAU1961_SAI_init(SAMPLERATE, isMaster);
-#endif
 }
 
 
@@ -67,8 +63,4 @@ void codec_clearbuffer(void) {
 
 }
 
-#if BOARD_KSOLOTI_CORE_H743
-    // TODOH7
-#else
-    #include "codec_ADAU1961_SAI.c"
-#endif
+#include "codec_ADAU1961_SAI.c"

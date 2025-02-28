@@ -321,7 +321,9 @@ CSRC = $(ALLCSRC) \
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # Ksoloti h747
   CSRC += ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash.c \
-          ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash_ex.c 
+          ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash_ex.c \
+          ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c.c \
+          ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c \
 
   # TODO H7 
           # ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_core.c \
