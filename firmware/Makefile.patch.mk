@@ -59,16 +59,16 @@ DEFS = \
   -DTHUMB_PRESENT 
 
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
-  # Ksoloti h747
+  # Ksoloti h743
   DEFS += -DPATCH_ITCM=1 \
-          -DSTM32H755xx \
+          -DSTM32H743xx \
           -DARM_MATH_CM7 \
           -DCORE_CM7 \
           -Dbool_t=bool
 else
   # Axoloti and Ksoloti f427
   DEFS += -DPATCH_ITCM=1 \
-          -DSTM32H755xx \
+          -DSTM32F427xx \
           -DARM_MATH_CM4 \
           -D__FPU_PRESENT
 endif
