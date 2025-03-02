@@ -375,7 +375,7 @@ static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
 
     if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
 
-#if defined(I2S_DEBUG) || DEBUG_SAI
+#if defined(I2S_DEBUG)
         palSetPad(GPIOA, 0);
 #endif
         computebufI(rbuf2, buf);
@@ -384,7 +384,7 @@ static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
         computebufI(rbuf, buf2);
     }
     dmaStreamClearInterrupt(sai_a_dma);
-#if defined(I2S_DEBUG) || DEBUG_SAI
+#if defined(I2S_DEBUG)
     palClearPad(GPIOA, 0);
 #endif
 }
