@@ -34,10 +34,6 @@
 #endif
 #include "audio_usb.h"
 
-#ifdef FW_I2SCODEC
-#include "i2scodec.h"
-#endif
-
 #if FW_USBAUDIO     
 extern void aduDataExchange (int32_t *in, int32_t *out);
 #endif

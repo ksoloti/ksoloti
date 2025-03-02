@@ -18,9 +18,6 @@
  */
 
 #include "axoloti_defines.h"
-#ifdef FW_I2SCODEC
-#include "i2scodec.h"
-#endif
 #include "codec_ADAU1961.h"
 #include "ch.h"
 #include "hal.h"

@@ -46,10 +46,6 @@
 #include "spilink.h"
 #endif
 
-#ifdef FW_I2SCODEC
-#include "i2scodec.h"
-#endif
-
 #include "sdram.c"
 #include "stm32f4xx_fmc.c"
 
