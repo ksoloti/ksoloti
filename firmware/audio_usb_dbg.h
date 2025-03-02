@@ -9,7 +9,7 @@ typedef struct _DBGLOG
   uint16_t  uSize;
 } DBGLOG;
 
-DBGLOG aduTransferLog[ADU_TRANSFER_LOG_SIZE] __attribute__ ((section (".sram3")));
+DBGLOG aduTransferLog[ADU_TRANSFER_LOG_SIZE] DEBUG_DATA_SECTION;
 uint16_t aduLogCount = 0;
 
 void aduAddTransferLog(BLType type, uint16_t uSize)
@@ -66,7 +66,7 @@ typedef struct _OverrunDebug
 //  uint16_t txCurrentRingBufferSize;
 } __attribute__((packed)) OverrunDebug;
 
-OverrunDebug overrunDebug[ADU_OVERRUN_LOG_SIZE]   __attribute__ ((section (".sram3")));
+OverrunDebug overrunDebug[ADU_OVERRUN_LOG_SIZE] DEBUG_DATA_SECTION;
 uint16_t uLogIndex = 0;
 
 void AddOverunLog(LogType type)

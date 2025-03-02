@@ -55,9 +55,8 @@
 
 
 
-
-static int16_t aduTxRingBuffer[TX_RING_BUFFER_FULL_SIZE] __attribute__ ((section (".sram2")));
-static int16_t aduRxRingBuffer[TX_RING_BUFFER_FULL_SIZE] __attribute__ ((section (".sram2")));
+static int16_t aduTxRingBuffer[TX_RING_BUFFER_FULL_SIZE] USB_AUDIO_DATA_SECTION;
+static int16_t aduRxRingBuffer[TX_RING_BUFFER_FULL_SIZE] USB_AUDIO_DATA_SECTION;
 extern AudioUSBDriver ADU1;
 #define N_SAMPLE_RATES  1
 const uint32_t aduSampleRates[] = {48000};

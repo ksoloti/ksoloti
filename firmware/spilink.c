@@ -31,8 +31,8 @@
 bool_t spilink_toggle;
 Thread *pThreadSpilink = 0;
 
-spilink_data_t spilink_tx[2] __attribute__ ((section (".sram2")));
-spilink_data_t spilink_rx[2] __attribute__ ((section (".sram2")));
+spilink_data_t spilink_tx[2] SPILINK_DMA_SECTION;
+spilink_data_t spilink_rx[2] SPILINK_DMA_SECTION;
 
 spilink_channels_t *spilink_rx_samples;
 spilink_channels_t *spilink_tx_samples;
@@ -79,7 +79,7 @@ static const SPIDBConfig spidbcfg_slave = {
     sizeof(spilink_data_t) / 2
 };
 
-static WORKING_AREA(waThreadSpilink, 256); // __attribute__ ((section (".sram2")));
+static WORKING_AREA(waThreadSpilink, 256); // SPILINK_DMA_SECTION?;
 
 
 static msg_t ThreadSpilinkSlave(void *arg)

@@ -41,7 +41,7 @@
 // struct KeyValuePair *KvpsDisplay;
 struct KeyValuePair *ObjectKvpRoot; // TODOH7 we really need to sort this crap out!
 #define MAXOBJECTS 256
-struct KeyValuePair *ObjectKvps[MAXOBJECTS] __attribute__ ((section (".sram2")));;
+struct KeyValuePair *ObjectKvps[MAXOBJECTS] KVP_DATA_SECTION;
 // #define MAXTMPMENUITEMS 15
 // KeyValuePair_s TmpMenuKvps[MAXTMPMENUITEMS];
 // KeyValuePair_s ADCkvps[3];

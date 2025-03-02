@@ -47,7 +47,6 @@
  extern "C" {
 #endif
 
-#define STM32F427xx
 #include <stdint.h>
 //#include <stm32f4xx.h>
 //#define __STM32F4xx_H

@@ -32,6 +32,6 @@ void cmd_tree(BaseSequentialStream *chp, int argc, char *argv[]);
 //extern FATFS SDC_FS;
 extern bool_t fs_ready;
 
-extern uint32_t fbuff[256];
+extern uint32_t fbuff[512];
 
 #endif

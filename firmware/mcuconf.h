@@ -43,6 +43,21 @@
 #define STM32H7xx_MCUCONF
 #define STM32H743_MCUCONF
 
+// USB_AUDIO_DATA_SECTION - need to find best location, is DMA used?
+// LCD_DATA_SECTION - is this used
+// KVP_DATA_SECTION - KVP need sorting out properly
+// FF_DATA_SECTION - Akso must have this here for a reason, check.
+
+#define DEBUG_DATA_SECTION      __attribute__ ((section (".ram4"))) __attribute__ ((aligned (32)))
+#define CODEC_DMA_SECTION       __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)))
+#define USB_AUDIO_DATA_SECTION  __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)))
+#define ADC_DATA_SECTION        __attribute__ ((section (".ram4"))) __attribute__ ((aligned (32)))
+#define LCD_DATA_SECTION        __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)))
+#define KVP_DATA_SECTION        __attribute__ ((section (".ram4"))) __attribute__ ((aligned (32)))
+#define FF_DATA_SECTION         __attribute__ ((section (".ram4"))) __attribute__ ((aligned (32)))
+#define SPILINK_DMA_SECTION     __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)))
+
+
 /*
  * HAL driver system settings.
  */
@@ -500,6 +515,15 @@
 #define STM32F437_MCUCONF
 #define STM32F439_MCUCONF
 
+
+#define DEBUG_DATA_SECTION      __attribute__ ((section (".sram3")))
+#define CODEC_DMA_SECTION       __attribute__ ((section (".sram2")))
+#define USB_AUDIO_DATA_SECTION  __attribute__ ((section (".sram2")))
+#define ADC_DATA_SECTION        __attribute__ ((section (".sram2")))
+#define LCD_DATA_SECTION        __attribute__ ((section (".sram2")))
+#define KVP_DATA_SECTION        __attribute__ ((section (".sram2")))
+#define FF_DATA_SECTION         __attribute__ ((section (".sram2")))
+#define SPILINK_DATA_SECTION    __attribute__ ((section (".sram2")))
 
 /*
  * HAL driver system settings.

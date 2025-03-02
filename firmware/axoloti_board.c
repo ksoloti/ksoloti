@@ -45,7 +45,7 @@ uint8_t adc3_ch = 8; /* We start with the conversion of channel 8 (voltage super
     /*
     * ADC samples buffer. Increased size to hold data of 5V supervisor and PF6..9 inputs.
     */
-   unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS] __attribute__ ((section (".sram2")));
+   unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS] ADC_DATA_SECTION;
 
 
 #else // BOARD_KSOLOTI_CORE_H743
@@ -187,7 +187,7 @@ uint8_t adc3_ch = 8; /* We start with the conversion of channel 8 (voltage super
     /*
     * ADC samples buffer. Increased size to hold data of 5V supervisor and PF6..9 inputs.
     */
-    unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS] __attribute__ ((section (".sram2")));
+    unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS] ADC_DATA_SECTION;
 
     /*
     * ADC conversion group.

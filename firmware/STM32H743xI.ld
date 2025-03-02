@@ -24,6 +24,7 @@
  * DTCM-RAM     - Main Stack, Process Stack.
  * ITCM-RAM     - None.
  * BCKP SRAM    - None.
+   AXI (dual channel?) ram has better throughput than AHB ram (single channel?)
  */
 MEMORY
 {

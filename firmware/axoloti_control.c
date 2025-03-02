@@ -25,8 +25,8 @@
 
 #define _BV(bit) (1 << (bit))
 
-uint8_t lcd_buffer[(AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) * AXOLOTI_CONTROL_LCDROWS] __attribute__ ((section (".sram2")));
-uint8_t led_buffer[AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH] __attribute__ ((section (".sram2")));
+uint8_t lcd_buffer[(AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH) * AXOLOTI_CONTROL_LCDROWS] LCD_DATA_SECTION;
+uint8_t led_buffer[AXOLOTI_CONTROL_LCDHEADER + AXOLOTI_CONTROL_LCDWIDTH] LCD_DATA_SECTION;
 
 
 void LCD_updateBoundingBox(int x, int y, int x2, int y2) {

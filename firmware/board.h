@@ -43,11 +43,6 @@
  */
 #define STM32_VDD                   300U
 
-/*
- * MCU type as defined in the ST header.
- */
-#define STM32F427xx // TODO is this needed??
-#define STM32F427_437xx
 
 /*
  * IO pins assignments.

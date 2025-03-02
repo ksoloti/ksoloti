@@ -31,10 +31,14 @@
 /*===========================================================================*/
 
 /* FS object.*/
-FATFS SDC_FS;
+FATFS SDC_FS FF_DATA_SECTION;
 
 /* FS mounted and ready.*/
-bool_t fs_ready = FALSE;
+bool_t fs_ready  FF_DATA_SECTION = FALSE;
+
+/* Generic large buffer.*/
+uint32_t fbuff[512] FF_DATA_SECTION;
+
 
 /*===========================================================================*/
 /* Card insertion monitor.                                                   */
@@ -188,9 +192,6 @@ void sdcard_attemptMountIfUnmounted() {
 void sdcard_unmount(void){
   RemoveHandler(0);
 }
-
-/* Generic large buffer.*/
-uint32_t fbuff[256] __attribute__ ((section (".sram2")));
 
 int sdcard_loadPatch1(char *fname) {
   FIL FileObject;
