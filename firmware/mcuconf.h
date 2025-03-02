@@ -41,13 +41,13 @@
 #if BOARD_KSOLOTI_CORE_H743
 
 #define STM32H7xx_MCUCONF
-#define STM32H742_MCUCONF
+// #define STM32H742_MCUCONF
 #define STM32H743_MCUCONF
 #define STM32H753_MCUCONF
-#define STM32H745_MCUCONF
-#define STM32H755_MCUCONF
-#define STM32H747_MCUCONF
-#define STM32H757_MCUCONF
+// #define STM32H745_MCUCONF
+// #define STM32H755_MCUCONF
+// #define STM32H747_MCUCONF
+// #define STM32H757_MCUCONF
 
 /*
  * HAL driver system settings.
@@ -63,9 +63,15 @@
 /*
  * Memory attributes settings.
  */
+
 #define STM32_NOCACHE_MPU_REGION            MPU_REGION_6
-#define STM32_NOCACHE_SRAM1_SRAM2           FALSE
-#define STM32_NOCACHE_SRAM3                 TRUE
+#define STM32_NOCACHE_RBAR                  0x30040000U
+#define STM32_NOCACHE_ENABLE                TRUE
+#define STM32_NOCACHE_RASR                  MPU_RASR_SIZE_32K
+
+// #define STM32_NOCACHE_MPU_REGION            MPU_REGION_6
+// #define STM32_NOCACHE_SRAM1_SRAM2           FALSE
+// #define STM32_NOCACHE_SRAM3                 TRUE
 
 /*
  * PWR system settings.
@@ -73,10 +79,16 @@
  * very critical.
  * Register constants are taken from the ST header.
  */
+// #define STM32_VOS                           STM32_VOS_SCALE1
+// #define STM32_PWR_CR1                       (PWR_CR1_SVOS_1 | PWR_CR1_SVOS_0)
+// #define STM32_PWR_CR2                       (PWR_CR2_BREN)
+// #define STM32_PWR_CR3                       (PWR_CR3_SMPSEN | PWR_CR3_USB33DEN)
+// #define STM32_PWR_CPUCR                     0
+
 #define STM32_VOS                           STM32_VOS_SCALE1
 #define STM32_PWR_CR1                       (PWR_CR1_SVOS_1 | PWR_CR1_SVOS_0)
 #define STM32_PWR_CR2                       (PWR_CR2_BREN)
-#define STM32_PWR_CR3                       (PWR_CR3_SMPSEN | PWR_CR3_USB33DEN)
+#define STM32_PWR_CR3                       (PWR_CR3_LDOEN | PWR_CR3_USB33DEN)
 #define STM32_PWR_CPUCR                     0
 
 /*
