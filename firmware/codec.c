@@ -29,19 +29,36 @@
 #endif
 #include "codec_ADAU1961.h"
 
-int32_t buf[DOUBLE_BUFSIZE]   __attribute__ ((section (".sram2")));
-int32_t buf2[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
-int32_t rbuf[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
-int32_t rbuf2[DOUBLE_BUFSIZE] __attribute__ ((section (".sram2")));
+#if BOARD_KSOLOTI_CORE_H743
+    int32_t buf[DOUBLE_BUFSIZE]   __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)));
+    int32_t buf2[DOUBLE_BUFSIZE]  __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)));
+    int32_t rbuf[DOUBLE_BUFSIZE]  __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)));
+    int32_t rbuf2[DOUBLE_BUFSIZE] __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)));
 
-#ifdef FW_I2SCODEC
-int32_t i2s_buf[DOUBLE_BUFSIZE]   __attribute__ ((section (".sram2")));
-int32_t i2s_buf2[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
-int32_t i2s_rbuf[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
-int32_t i2s_rbuf2[DOUBLE_BUFSIZE] __attribute__ ((section (".sram2")));
+    #ifdef FW_I2SCODEC
+        int32_t i2s_buf[DOUBLE_BUFSIZE]   __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)));
+        int32_t i2s_buf2[DOUBLE_BUFSIZE]  __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)));
+        int32_t i2s_rbuf[DOUBLE_BUFSIZE]  __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)));
+        int32_t i2s_rbuf2[DOUBLE_BUFSIZE] __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)));
+    #endif
+#else
+    int32_t buf[DOUBLE_BUFSIZE]   __attribute__ ((section (".sram2")));
+    int32_t buf2[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
+    int32_t rbuf[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
+    int32_t rbuf2[DOUBLE_BUFSIZE] __attribute__ ((section (".sram2")));
+
+
+    #ifdef FW_I2SCODEC
+        int32_t i2s_buf[DOUBLE_BUFSIZE]   __attribute__ ((section (".sram2")));
+        int32_t i2s_buf2[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
+        int32_t i2s_rbuf[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
+        int32_t i2s_rbuf2[DOUBLE_BUFSIZE] __attribute__ ((section (".sram2")));
+    #endif
 #endif
 
 void codec_init(bool_t isMaster) {
+    // volatile extern uint32_t __ram3_clear__;
+    // volatile uint32_t u = __ram3_clear__;
     codec_ADAU1961_SAI_init(SAMPLERATE, isMaster);
 }
 

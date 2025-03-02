@@ -28,6 +28,7 @@ extern uint32_t codec_interrupt_timestamp;
 #define ADAU1961_REG_R0_CLKC       0x4000
 #define ADAU1961_REG_R1_PLLC       0x4002
 #define ADAU1961_REG_R2_DMICJ      0x4008
+#define ADAU1961_REG_R3_RES        0x4009
 #define ADAU1961_REG_R4_RMIXL0     0x400A
 #define ADAU1961_REG_R5_RMIXL1     0x400B
 #define ADAU1961_REG_R6_RMIXR0     0x400C

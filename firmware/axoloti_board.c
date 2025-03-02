@@ -29,7 +29,13 @@ uint8_t adc3_ch = 8; /* We start with the conversion of channel 8 (voltage super
 
 #if BOARD_KSOLOTI_CORE_H743
     // TODOH7
-    void axoloti_board_init(void) {};
+    void axoloti_board_init(void) 
+    {
+        RCC->AHB1ENR |= RCC_AHB1ENR_DMA2EN;
+        RCC->AHB1RSTR |= RCC_AHB1RSTR_DMA2RST;
+        RCC->AHB1RSTR &= ~RCC_AHB1RSTR_DMA2RST;
+    };
+    
     void adc3_init(void) {};
     void adc_init(void) {};
     void adc_configpads(void) {};

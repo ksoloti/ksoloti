@@ -444,8 +444,7 @@ void bduDataReceived(USBDriver *usbp, usbep_t ep) {
   USBOutEndpointState *pEpState = usbp->epc[ep]->out_state;
   volatile uint32_t uReceivedCount = pEpState->rxcnt;
 
-  chSysLockFromIsr()
-  ;
+  chSysLockFromIsr();
 
   chnAddFlagsI(bdup, CHN_INPUT_AVAILABLE);
 
@@ -471,8 +470,8 @@ void bduDataReceived(USBDriver *usbp, usbep_t ep) {
   if(uQueueRemainingSize!=0)
     bduInitiateReceiveI(bdup, uQueueRemainingSize);
 
-  chSysUnlockFromIsr()
-  ;
+  chSysUnlockFromIsr();
+  
 
 }
 

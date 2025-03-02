@@ -43,6 +43,7 @@
 #include "spilink_lld.h"
 #endif
 
+#define DEBUG_SAI 1
 
 #define ADAU1961_I2C_ADDR 0x70 /* (0x38<<1) */
 #define TIMEOUT 1000000
@@ -93,7 +94,6 @@ static uint8_t i2crxbuf[8];
 static uint8_t i2ctxbuf[8];
 
 uint32_t codec_interrupt_timestamp;
-
 
 #ifdef FW_SPILINK
 /* approx 1Hz drift... */
@@ -208,6 +208,12 @@ void lock_SAI_to_SPI_FS(void) {
 
 static void ADAU_I2C_Init(void) {
 #if BOARD_KSOLOTI_CORE_H743
+
+#if DEBUG_SAI
+    palSetPadMode(GPIOA, 0, PAL_MODE_OUTPUT_PUSHPULL);
+    palSetPadMode(GPIOA, 1, PAL_MODE_OUTPUT_PUSHPULL);
+#endif
+
     if(HAL_I2C_GetState(&ADAU1961_i2c_handle) == HAL_I2C_STATE_RESET) 
     {
         // Ksoloti, probably 400000 closk
@@ -216,9 +222,7 @@ static void ADAU_I2C_Init(void) {
         ADAU1961_i2c_handle.Init.Timing = 0x307075B1;
         ADAU1961_i2c_handle.Init.OwnAddress1 = 0x33;
         ADAU1961_i2c_handle.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-
         ADAU1961_i2c_handle.Instance = I2C2;
-        
         /* SCL: PB10, SDA: PB11 */
         palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
         palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
@@ -371,7 +375,7 @@ static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
 
     if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
 
-#ifdef I2S_DEBUG
+#if defined(I2S_DEBUG) || DEBUG_SAI
         palSetPad(GPIOA, 0);
 #endif
         computebufI(rbuf2, buf);
@@ -380,7 +384,7 @@ static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
         computebufI(rbuf, buf2);
     }
     dmaStreamClearInterrupt(sai_a_dma);
-#ifdef I2S_DEBUG
+#if defined(I2S_DEBUG) || DEBUG_SAI
     palClearPad(GPIOA, 0);
 #endif
 }
@@ -710,6 +714,10 @@ void codec_ADAU1961_SAI_init(uint16_t samplerate, bool_t isMaster) {
 
     sai_b_dma = dmaStreamAlloc(STM32_SAI_B_DMA_STREAM, STM32_SAI_B_IRQ_PRIORITY, (stm32_dmaisr_t)0, (void *)0);
 
+#if BOARD_KSOLOTI_CORE_H743
+    dmaSetRequestSource(sai_a_dma, STM32_DMAMUX1_SAI1_A);
+    dmaSetRequestSource(sai_b_dma, STM32_DMAMUX1_SAI1_B);
+#endif
 
     if (!sai_a_dma || !sai_b_dma) {
         setErrorFlag(ERROR_CODEC_I2C);
@@ -755,7 +763,6 @@ void codec_ADAU1961_SAI_init(uint16_t samplerate, bool_t isMaster) {
 #else
     dmaStreamEnable(sai_b_dma);
     dmaStreamEnable(sai_a_dma);
-
     SAI1_Block_A->CR1 |= SAI_xCR1_SAIEN;
     SAI1_Block_B->CR1 |= SAI_xCR1_SAIEN;
 

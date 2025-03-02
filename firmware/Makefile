@@ -8,6 +8,8 @@ FWOPTIONDEF=
 USE_VERBOSE_COMPILE=no
 INBUILT_MOUNTER_FLASHER=yes
 
+$(info Compiling for $(SUBBOARDDEF))
+
 # Compiler options here.
 
 
@@ -219,13 +221,16 @@ override HEX = $(CP) -O ihex --gap-fill 0xff
 
 
 # Define linker script file here
-ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
+ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_F427)
 LDSCRIPT = STM32F427xG_ksoloti.ld
-else ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE_H7)
+else ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
 LDSCRIPT= STM32H743xi.ld
-else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
+else ifeq ($(SUBBOARDDEF),BOARD_AXOLOTI_CORE)
 LDSCRIPT = STM32F427xG_axoloti.ld
 endif
+
+$(info Linking with $(LDSCRIPT))
+
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
 CSRC = $(ALLCSRC) \
