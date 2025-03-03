@@ -3,7 +3,9 @@ SUBBOARDDEF=
 FWOPTIONDEF =
 LINKERFILE =
 
-$(info Patcher Compiling for $(SUBBOARDDEF) using linker file $(LINKERFILE))
+$(info SUBBOARDDEF = $(SUBBOARDDEF))
+$(info FWOPTIONDEF = $(FWOPTIONDEF))
+$(info LINKERFILE  = $(LINKERFILE))
 
 # Some new options are important to keep SRAM usage and DSP load low with newer GCC versions.
 # "--param max-completely-peeled-insns=100" makes a big difference to get SRAM down. Newer GCC versions use 200 here, original axoloti (GCC 4.9) used 100.
