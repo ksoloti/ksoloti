@@ -598,7 +598,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             tsuffix += "Expert Mode";
         }
 
-        tsuffix += (tsuffix.length()> 0) ? "," : "" + prefs.getFirmware().toString();
+        String firmwareString = prefs.getFirmware().toString();
+        tsuffix += ((tsuffix.length()> 0) ? ", " : "") + firmwareString;
 
         if (tsuffix.length() > 0) {
             tstring += " (" + tsuffix + ")";

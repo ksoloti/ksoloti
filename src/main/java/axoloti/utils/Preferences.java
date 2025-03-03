@@ -730,14 +730,6 @@ public class Preferences {
             case BoardType.Axoloti:     options += "BOARD_AXOLOTI_CORE BOARD_AXOLOTI_CORE "; break;
         } 
 
-        switch(Firmware)
-        {
-            case Normal:   break;
-            case SPILink:  options += " FW_SPILINK"; break;
-            case USBAudio: options += " FW_USBAUDIO"; break;
-            case i2SCodec: options += " FW_I2SCODEC"; break;
-        }
-
         if(isAxolotiDerivative()) {
             options += " ramlink_axoloti.ld";
         } else if(getBoard() == BoardType.Ksoloti) {
@@ -758,6 +750,15 @@ public class Preferences {
                 
             }
         }
+
+        switch(Firmware)
+        {
+            case Normal:   break;
+            case SPILink:  options += " FW_SPILINK"; break;
+            case USBAudio: options += " FW_USBAUDIO"; break;
+            case i2SCodec: options += " FW_I2SCODEC"; break;
+        }
+
         return options;
     }
 
