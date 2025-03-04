@@ -48,6 +48,7 @@
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32429I_DISCO_SDRAM_H
+
 #define __STM32429I_DISCO_SDRAM_H
 
 
@@ -57,8 +58,11 @@ extern "C" {
 
 
   /* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx.h"
-
+#if BOARD_KSOLOTI_CORE_H743
+  #include "stm32h7xx.h"
+#else
+  #include "stm32f4xx.h"
+#endif
   /**
    * @brief  FMC SDRAM Bank address
    */

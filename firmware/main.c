@@ -21,6 +21,8 @@
 
 #if BOARD_KSOLOTI_CORE_H743
     // TODOH7
+    #include "sdram.h"
+    #include "stm32h7xx_ll_fmc.h"
 #else
     #include "sdram.h"
     #include "stm32f4xx_fmc.h"
@@ -194,6 +196,7 @@ int main(void) {
     ui_init();
 #if BOARD_KSOLOTI_CORE_H743
     // TODOH7
+    configSDRAM();
 #else    
     configSDRAM();
 #endif

@@ -88,7 +88,8 @@
         "halconf.h": "c",
         "stm32h7xx_hal_conf.h": "c",
         "stm32h7xx.h": "c",
-        "sysmon.h": "c"
+        "sysmon.h": "c",
+        "stm32h7xx_ll_fmc.h": "c"
     },
     "C_Cpp.default.compilerPath": "/Applications/ARM/bin/arm-none-eabi-gcc",
     "C_Cpp.default.cppStandard": "c++11",
