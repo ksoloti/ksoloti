@@ -88,7 +88,7 @@
                 ((uint32_t)MPU_Init->Enable                  << MPU_RASR_ENABLE_Pos);
   }
 
-  static FMC_SDRAM_TypeDef *pSdramInstance = (FMC_SDRAM_TypeDef *)RCC_AHB3ENR_FMCEN;
+  static FMC_SDRAM_TypeDef *pSdramInstance = (FMC_SDRAM_TypeDef *)FMC_SDRAM_DEVICE;
 
   void SDRAM_Init(void) 
   {
