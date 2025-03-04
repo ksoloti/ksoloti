@@ -116,19 +116,19 @@ void wait_SPI_fsync(edge_t edge) {
 
         volatile int i,j;
 
-        j = 1000000; /* wait till NSS is low (or already is) */
+        j = 1000000; /* wait till NSS goes low (or already is) */
         while(--j) {
             if (edge ^ !palReadPad(SPILINK_FSYNC_PORT, SPILINK_FSYNC_PIN))
                 break;
         }
 
-        i = 1000000; /* wait till NSS is high */
+        i = 1000000; /* wait till NSS goes high */
         while(--i) {
             if (edge ^ palReadPad(SPILINK_FSYNC_PORT, SPILINK_FSYNC_PIN))
                 break;
         }
 
-        j = 1000000; /* wait till NSS is low again */
+        j = 1000000; /* wait till NSS goes low again */
         while(--j) {
             if (edge ^ !palReadPad(SPILINK_FSYNC_PORT, SPILINK_FSYNC_PIN))
                 break;
@@ -348,6 +348,7 @@ static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
     if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
 
 #ifdef I2S_DEBUG
+        palSetPadMode(GPIOA, 0, PAL_MODE_OUTPUT_PUSHPULL);
         palSetPad(GPIOA, 0);
 #endif
 #ifdef FW_I2SCODEC

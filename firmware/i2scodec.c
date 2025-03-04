@@ -114,6 +114,7 @@ static void dma_i2s_tx_interrupt(void* dat, uint32_t flags) {
     if ((i2s_tx_dma)->stream->CR & STM32_DMA_CR_CT) {
         i2s_tc_interrupt_timestamp = hal_lld_get_counter_value();
 #ifdef I2S_DEBUG
+        palSetPadMode(GPIOA, 1, PAL_MODE_OUTPUT_PUSHPULL);
         palSetPad(GPIOA, 1);
 #endif
     }
@@ -127,11 +128,6 @@ static void dma_i2s_tx_interrupt(void* dat, uint32_t flags) {
 
 
 void i2s_peripheral_init(void)  {
-
-#ifdef I2S_DEBUG
-    palSetPadMode(GPIOA, 0, PAL_MODE_OUTPUT_PUSHPULL);
-    palSetPadMode(GPIOA, 1, PAL_MODE_OUTPUT_PUSHPULL);
-#endif
 
     /* release I2S3 */
     palSetPadMode(I2S3_WS_PORT, I2S3_WS_PIN, PAL_MODE_INPUT);
