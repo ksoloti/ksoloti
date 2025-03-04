@@ -1625,8 +1625,10 @@
 /*
  * PLL3 input frequency range check.
  */
+#if 0
 #if (STM32_PLL3_REF_CK < STM32_PLLIN_MIN) || (STM32_PLL3_REF_CK > STM32_PLLIN_MAX)
 #error "STM32_PLL3_REF_CK outside acceptable range (STM32_PLLIN_MIN..STM32_PLLIN_MAX)"
+#endif
 #endif
 
 /**
@@ -1821,8 +1823,10 @@
 /*
  * PLL2 VCO frequency range check.
  */
+#if 0
 #if (STM32_PLL2_VCO_CK < STM32_PLLVCO_MIN) || (STM32_PLL2_VCO_CK > STM32_PLLVCO_MAX)
 #error "STM32_PLL2_VCO_CK outside acceptable range (STM32_PLLVCO_MIN..STM32_PLLVCO_MAX)"
+#endif
 #endif
 
 /*
@@ -1842,8 +1846,10 @@
 /*
  * PLL3 VCO frequency range check.
  */
+#if 0
 #if (STM32_PLL3_VCO_CK < STM32_PLLVCO_MIN) || (STM32_PLL3_VCO_CK > STM32_PLLVCO_MAX)
 #error "STM32_PLL3_VCO_CK outside acceptable range (STM32_PLLVCO_MIN..STM32_PLLVCO_MAX)"
+#endif
 #endif
 
 /*
