@@ -185,7 +185,6 @@ ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # HAL-OSAL files (optional).
   include $(CHIBIOS)/os/hal/hal.mk
   include $(CHIBIOS)/os/hal/ports/STM32/STM32H7xx/platform.mk
-  include $(CHIBIOS)/os/hal/boards/ST_NUCLEO144_H743ZI/board.mk
   include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
   # RTOS files (optional).
   include $(CHIBIOS)/os/rt/rt.mk
@@ -330,7 +329,8 @@ ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
           ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c.c \
           ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c \
           ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_fmc.c \
-          ${FIRMWARE}/sdram.c
+          ${FIRMWARE}/sdram.c \
+          ${FIRMWARE}/board.c \
 
   # TODO H7 
           # ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_core.c \

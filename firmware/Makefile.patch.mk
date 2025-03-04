@@ -179,7 +179,6 @@ ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # HAL-OSAL files (optional).
   include $(CHIBIOS)/os/hal/hal.mk
   include $(CHIBIOS)/os/hal/ports/STM32/STM32H7xx/platform.mk
-  include $(CHIBIOS)/os/hal/boards/ST_NUCLEO144_H743ZI/board.mk
   include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
   # RTOS files (optional).
   include $(CHIBIOS)/os/rt/rt.mk
