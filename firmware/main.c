@@ -200,7 +200,7 @@ int main(void) {
 #else    
     configSDRAM();
 #endif
-    // memTest();
+    memTest();
 
     bool_t is_master = palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN);
 

@@ -50,6 +50,7 @@
 
 #if BOARD_KSOLOTI_CORE_H743
   #include "stm32h7xx_ll_fmc.h"
+  #include "stm32h7xx_hal_cortex.h"
 #else
   #include "stm32f4xx_fmc.h"
 #endif
@@ -66,11 +67,48 @@
  * @retval None
  */
 #if BOARD_KSOLOTI_CORE_H743
+  void HAL_MPU_ConfigRegion(const MPU_Region_InitTypeDef *MPU_Init)
+  {
+    /* Set the Region number */
+    MPU->RNR = MPU_Init->Number;
+
+    /* Disable the Region */
+    CLEAR_BIT(MPU->RASR, MPU_RASR_ENABLE_Msk);
+
+    /* Apply configuration */
+    MPU->RBAR = MPU_Init->BaseAddress;
+    MPU->RASR = ((uint32_t)MPU_Init->DisableExec             << MPU_RASR_XN_Pos)   |
+                ((uint32_t)MPU_Init->AccessPermission        << MPU_RASR_AP_Pos)   |
+                ((uint32_t)MPU_Init->TypeExtField            << MPU_RASR_TEX_Pos)  |
+                ((uint32_t)MPU_Init->IsShareable             << MPU_RASR_S_Pos)    |
+                ((uint32_t)MPU_Init->IsCacheable             << MPU_RASR_C_Pos)    |
+                ((uint32_t)MPU_Init->IsBufferable            << MPU_RASR_B_Pos)    |
+                ((uint32_t)MPU_Init->SubRegionDisable        << MPU_RASR_SRD_Pos)  |
+                ((uint32_t)MPU_Init->Size                    << MPU_RASR_SIZE_Pos) |
+                ((uint32_t)MPU_Init->Enable                  << MPU_RASR_ENABLE_Pos);
+  }
 
   static FMC_SDRAM_TypeDef *pSdramInstance = (FMC_SDRAM_TypeDef *)RCC_AHB3ENR_FMCEN;
 
   void SDRAM_Init(void) 
   {
+    MPU_Region_InitTypeDef MPU_InitStruct;
+
+    /* Configure the MPU attributes as WB for SDRAM */
+    MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+    MPU_InitStruct.BaseAddress = SDRAM_BANK_ADDR;
+    MPU_InitStruct.Size = MPU_REGION_SIZE_32MB;
+    MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+    MPU_InitStruct.IsBufferable = MPU_ACCESS_BUFFERABLE;
+    MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
+    MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+    MPU_InitStruct.Number = MPU_REGION_NUMBER1;
+    MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
+    MPU_InitStruct.SubRegionDisable = 0x00;
+    MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+  
+    HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
     FMC_SDRAM_InitTypeDef FMC_SDRAMInitStructure;
     FMC_SDRAM_TimingTypeDef FMC_SDRAMTimingInitStructure;
 
@@ -114,8 +152,10 @@
     FMC_SDRAMInitStructure.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_1;
 
     /* FMC SDRAM bank initialization */
-    FMC_SDRAM_Init(pSdramInstance, &FMC_SDRAMInitStructure);
-    FMC_SDRAM_Timing_Init(pSdramInstance, &FMC_SDRAMTimingInitStructure, FMC_SDRAM_BANK1);
+    volatile HAL_StatusTypeDef res;
+    
+    res = FMC_SDRAM_Init(pSdramInstance, &FMC_SDRAMInitStructure);
+    res = FMC_SDRAM_Timing_Init(pSdramInstance, &FMC_SDRAMTimingInitStructure, FMC_SDRAM_BANK1);
 
     /* FMC SDRAM device initialization sequence */
     SDRAM_InitSequence();
@@ -129,6 +169,7 @@
   void SDRAM_InitSequence(void) {
     FMC_SDRAM_CommandTypeDef FMC_SDRAMCommandStructure;
     uint32_t tmpr = 0;
+    volatile HAL_StatusTypeDef res;
 
     /* Step 3 --------------------------------------------------------------------*/
     /* Configure a clock configuration enable command */
@@ -137,7 +178,7 @@
     FMC_SDRAMCommandStructure.AutoRefreshNumber = 1;
     FMC_SDRAMCommandStructure.ModeRegisterDefinition = 0;
     /* Send the command */
-    FMC_SDRAM_SendCommand(pSdramInstance, &FMC_SDRAMCommandStructure, 0xffff);
+    res = FMC_SDRAM_SendCommand(pSdramInstance, &FMC_SDRAMCommandStructure, 0xffff);
 
     osalSysPolledDelayX(OSAL_US2RTC(STM32_HCLK, 1000));
 
@@ -155,7 +196,7 @@
     FMC_SDRAMCommandStructure.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
     FMC_SDRAMCommandStructure.AutoRefreshNumber = 1;
     FMC_SDRAMCommandStructure.ModeRegisterDefinition = 0;
-    FMC_SDRAM_SendCommand(pSdramInstance, &FMC_SDRAMCommandStructure, 0xffff);
+    res = FMC_SDRAM_SendCommand(pSdramInstance, &FMC_SDRAMCommandStructure, 0xffff);
 
     /* Step 6 --------------------------------------------------------------------*/
     /* Configure a Auto-Refresh command */
@@ -164,7 +205,7 @@
     FMC_SDRAMCommandStructure.AutoRefreshNumber = 4;
     FMC_SDRAMCommandStructure.ModeRegisterDefinition = 0;
     /* Send the  first command */
-    FMC_SDRAM_SendCommand(pSdramInstance, &FMC_SDRAMCommandStructure, 0xffff);
+    res = FMC_SDRAM_SendCommand(pSdramInstance, &FMC_SDRAMCommandStructure, 0xffff);
 
     /* Step 7 --------------------------------------------------------------------*/
     /* Program the external memory mode register */
@@ -180,7 +221,7 @@
     FMC_SDRAMCommandStructure.AutoRefreshNumber = 1;
     FMC_SDRAMCommandStructure.ModeRegisterDefinition = tmpr;
     /* Send the command */
-    FMC_SDRAM_SendCommand(pSdramInstance, &FMC_SDRAMCommandStructure, 0xffff);
+    res = FMC_SDRAM_SendCommand(pSdramInstance, &FMC_SDRAMCommandStructure, 0xffff);
 
     /* Step 8 --------------------------------------------------------------------*/
 
@@ -188,9 +229,9 @@
     /* (7.81 us x Freq) - 20 */
     /* Set the device refresh counter */
 
-    FMC_SDRAM_ProgramRefreshRate(pSdramInstance, 603 << 1); // from Akso, original 683, stm code has 603!!
+    res = FMC_SDRAM_ProgramRefreshRate(pSdramInstance, 603 << 1); // from Akso, original 683, stm code has 603!!
 
-    FMC_SDRAM_WriteProtection_Disable(pSdramInstance, FMC_SDRAM_BANK1);
+    res = FMC_SDRAM_WriteProtection_Disable(pSdramInstance, FMC_SDRAM_BANK1);
   }
 
 
