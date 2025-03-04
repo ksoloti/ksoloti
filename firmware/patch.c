@@ -319,6 +319,7 @@ static int StartPatch1(void) {
     while (1) {
 
 #ifdef DEBUG_PATCH_INT_ON_GPIO
+        palSetPadMode(GPIOA, 2, PAL_MODE_OUTPUT_PUSHPULL);
         palSetPad(GPIOA, 2);
 #endif
 
