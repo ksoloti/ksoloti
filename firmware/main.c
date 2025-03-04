@@ -78,8 +78,26 @@
 /* Initialization and main thread.                                           */
 /*===========================================================================*/
 
+OSAL_IRQ_HANDLER(VectorE4) 
+{
+    OSAL_IRQ_PROLOGUE();
+    asm("BKPT 255");
+    OSAL_IRQ_EPILOGUE();
+}
 
+OSAL_IRQ_HANDLER(VectorE8) 
+{
+    OSAL_IRQ_PROLOGUE();
+    asm("BKPT 255");
+    OSAL_IRQ_EPILOGUE();
+}
 
+OSAL_IRQ_HANDLER(VectorD0) 
+{
+    OSAL_IRQ_PROLOGUE();
+    asm("BKPT 255");
+    OSAL_IRQ_EPILOGUE();
+}
 
 extern void MY_USBH_Init(void);
 #ifdef FW_I2SCODEC
@@ -135,6 +153,7 @@ int main(void) {
 
     halInit();
     chSysInit();
+
 
 #if INBUILT_MOUNTER_FLASHER
     // shall we run the mounter?
@@ -194,13 +213,34 @@ int main(void) {
     midi_init();
     start_dsp_thread();
     ui_init();
+
+    palClearPad(LED1_PORT, LED1_PIN);
+    palSetPad(LED2_PORT, LED2_PIN);
+
 #if BOARD_KSOLOTI_CORE_H743
     // TODOH7
     configSDRAM();
 #else    
     configSDRAM();
 #endif
-    memTest();
+
+    // just test read;
+    // while(1)
+    // {
+        volatile uint32_t *p = (uint32_t *)0xc0000000;
+        volatile uint32_t total=0;
+        for(int i=0; i < 128; i++)
+            total+= p[i];
+
+    // }
+
+    // memTest();
+
+    palSetPad(LED1_PORT, LED1_PIN);
+    palClearPad(LED2_PORT, LED2_PIN);
+
+    palSetPad(LED1_PORT, LED1_PIN);
+    palClearPad(LED2_PORT, LED2_PIN);
 
     bool_t is_master = palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN);
 

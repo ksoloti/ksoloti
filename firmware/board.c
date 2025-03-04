@@ -215,6 +215,25 @@ void __early_init(void)
     stm32_gpio_init();
     exception_check_DFU();
     stm32_clock_init();
+
+#if TEST_RISE_FALL
+    palSetPadMode(GPIOC, 3, PAL_MODE_OUTPUT_PUSHPULL | PAL_STM32_OSPEED_HIGHEST);
+    palSetPadMode(GPIOC, 2, PAL_MODE_OUTPUT_PUSHPULL | PAL_STM32_OSPEED_HIGHEST);
+    while(1)
+    {
+      pal_lld_writepad(GPIOC, 2, 1);
+      pal_lld_writepad(GPIOC, 3, 1);
+
+      for(int i=0; i < 100; i++)
+        asm volatile ("nop");
+
+      pal_lld_writepad(GPIOC, 2, 0);
+      pal_lld_writepad(GPIOC, 3, 0);
+
+      for(int i=0; i < 100; i++)
+        asm volatile ("nop");
+    }
+#endif
 }
 
 void __late_init(void)
