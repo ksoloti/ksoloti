@@ -416,72 +416,72 @@ public class USBBulkConnection extends Connection {
             qcmdp.AppendToQueue(q);
             targetProfile.setCPUSerial(q.getResult());
 
-            q = new QCmdMemRead(targetProfile.getOTPAddr(), 32);
-            qcmdp.AppendToQueue(q);
+            // q = new QCmdMemRead(targetProfile.getOTPAddr(), 32);
+            // qcmdp.AppendToQueue(q);
             // ByteBuffer otpInfo = q.getResult();
 
-            q = new QCmdMemRead(targetProfile.getOTPAddr() + 32, 256);
-            qcmdp.AppendToQueue(q);
+            // q = new QCmdMemRead(targetProfile.getOTPAddr() + 32, 256);
+            // qcmdp.AppendToQueue(q);
 
-            ByteBuffer signature = q.getResult();
+            // ByteBuffer signature = q.getResult();
 
-            boolean signaturevalid = false;
-            if (signature == null) {
-                LOGGER.log(Level.INFO, "Cannot obtain signature, upgrade firmware?");
-            }
+            // boolean signaturevalid = false;
+            // if (signature == null) {
+            //     LOGGER.log(Level.INFO, "Cannot obtain signature, upgrade firmware?");
+            // }
 
-            boolean signing = false;
+            // boolean signing = false;
 
-            if (signing && !signaturevalid) {
+            // if (signing && !signaturevalid) {
 
-                qcmdp.WaitQueueFinished();
-                ByteBuffer writeotpinfo = targetProfile.CreateOTPInfo();
-                byte[] sign = HWSignature.Sign(targetProfile.getCPUSerial(), writeotpinfo);
-                qcmdp.AppendToQueue(new QCmdWriteMem(targetProfile.getBKPSRAMAddr(), bb2ba(writeotpinfo)));
-                qcmdp.AppendToQueue(new QCmdWriteMem(targetProfile.getBKPSRAMAddr() + 32, sign));
+            //     qcmdp.WaitQueueFinished();
+            //     ByteBuffer writeotpinfo = targetProfile.CreateOTPInfo();
+            //     byte[] sign = HWSignature.Sign(targetProfile.getCPUSerial(), writeotpinfo);
+            //     qcmdp.AppendToQueue(new QCmdWriteMem(targetProfile.getBKPSRAMAddr(), bb2ba(writeotpinfo)));
+            //     qcmdp.AppendToQueue(new QCmdWriteMem(targetProfile.getBKPSRAMAddr() + 32, sign));
 
-                CRC32 zcrc = new CRC32();
-                writeotpinfo.rewind();
-                zcrc.update(bb2ba(writeotpinfo));
-                zcrc.update(sign);
-                int zcrcv = (int) zcrc.getValue();
-                System.out.println(String.format("Key crc: %08X", zcrcv));
+            //     CRC32 zcrc = new CRC32();
+            //     writeotpinfo.rewind();
+            //     zcrc.update(bb2ba(writeotpinfo));
+            //     zcrc.update(sign);
+            //     int zcrcv = (int) zcrc.getValue();
+            //     System.out.println(String.format("Key crc: %08X", zcrcv));
 
-                byte crc[] = new byte[4];
-                crc[0] = (byte) (zcrcv & 0xFF);
-                crc[1] = (byte) ((zcrcv >> 8) & 0xFF);
-                crc[2] = (byte) ((zcrcv >> 16) & 0xFF);
-                crc[3] = (byte) ((zcrcv >> 24) & 0xFF);
-                qcmdp.AppendToQueue(new QCmdWriteMem(targetProfile.getBKPSRAMAddr() + 32 + 256, crc));
+            //     byte crc[] = new byte[4];
+            //     crc[0] = (byte) (zcrcv & 0xFF);
+            //     crc[1] = (byte) ((zcrcv >> 8) & 0xFF);
+            //     crc[2] = (byte) ((zcrcv >> 16) & 0xFF);
+            //     crc[3] = (byte) ((zcrcv >> 24) & 0xFF);
+            //     qcmdp.AppendToQueue(new QCmdWriteMem(targetProfile.getBKPSRAMAddr() + 32 + 256, crc));
 
-                /* Validate from bkpsram */
-                qcmdp.WaitQueueFinished();
-                q = new QCmdMemRead(targetProfile.getBKPSRAMAddr(), 32);
-                qcmdp.AppendToQueue(q);
-                ByteBuffer otpInfo2 = q.getResult();
+            //     /* Validate from bkpsram */
+            //     qcmdp.WaitQueueFinished();
+            //     q = new QCmdMemRead(targetProfile.getBKPSRAMAddr(), 32);
+            //     qcmdp.AppendToQueue(q);
+            //     ByteBuffer otpInfo2 = q.getResult();
 
-                q = new QCmdMemRead(targetProfile.getBKPSRAMAddr() + 32, 256);
-                qcmdp.AppendToQueue(q);
-                ByteBuffer signature2 = q.getResult();
+            //     q = new QCmdMemRead(targetProfile.getBKPSRAMAddr() + 32, 256);
+            //     qcmdp.AppendToQueue(q);
+            //     ByteBuffer signature2 = q.getResult();
 
-                boolean signaturevalid2 = HWSignature.Verify(targetProfile.getCPUSerial(), otpInfo2, bb2ba(signature2));
-                if (signaturevalid2) {
-                    System.out.println("BPKSRAM signature valid");
-                }
-                else {
-                    System.out.println("BPKSRAM signature invalid");
-                    return false;
-                }
+            //     boolean signaturevalid2 = HWSignature.Verify(targetProfile.getCPUSerial(), otpInfo2, bb2ba(signature2));
+            //     if (signaturevalid2) {
+            //         System.out.println("BPKSRAM signature valid");
+            //     }
+            //     else {
+            //         System.out.println("BPKSRAM signature invalid");
+            //         return false;
+            //     }
 
-                System.out.println("<otpinfo>");
-                HWSignature.printByteArray(bb2ba(otpInfo2));
-                System.out.println("</otpinfo>");
+            //     System.out.println("<otpinfo>");
+            //     HWSignature.printByteArray(bb2ba(otpInfo2));
+            //     System.out.println("</otpinfo>");
 
-                System.out.println("<signature>");
-                HWSignature.printByteArray(sign);
-                System.out.println("</signature>");
+            //     System.out.println("<signature>");
+            //     HWSignature.printByteArray(sign);
+            //     System.out.println("</signature>");
 
-            }
+            // }
 
             ShowConnect();
 
