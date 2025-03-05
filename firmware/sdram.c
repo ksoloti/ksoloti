@@ -180,7 +180,6 @@
     /* Send the command */
     res = FMC_SDRAM_SendCommand(pSdramInstance, &FMC_SDRAMCommandStructure, 0xffff);
 
-    osalSysPolledDelayX(OSAL_US2RTC(STM32_HCLK, 1000));
 
     //In the ST example, this is 100ms, but the 429 RM says 100us is typical, and
     //the ISSI datasheet confirms this. 1ms seems plenty, and is much shorter than
@@ -188,7 +187,8 @@
     //mode
     /* Step 4 --------------------------------------------------------------------*/
     /* Insert 1 ms delay */
-    chThdSleepMilliseconds(1);
+    //chThdSleepMilliseconds(1);
+    osalSysPolledDelayX(OSAL_US2RTC(STM32_HCLK, 100));
 
     /* Step 5 --------------------------------------------------------------------*/
     /* Configure a PALL (precharge all) command */
@@ -220,7 +220,7 @@
     FMC_SDRAMCommandStructure.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
     FMC_SDRAMCommandStructure.AutoRefreshNumber = 1;
     FMC_SDRAMCommandStructure.ModeRegisterDefinition = tmpr;
-    /* Send the command */
+    /* Send the second command */
     res = FMC_SDRAM_SendCommand(pSdramInstance, &FMC_SDRAMCommandStructure, 0xffff);
 
     /* Step 8 --------------------------------------------------------------------*/
@@ -229,7 +229,7 @@
     /* (7.81 us x Freq) - 20 */
     /* Set the device refresh counter */
 
-    res = FMC_SDRAM_ProgramRefreshRate(pSdramInstance, 603 << 1); // from Akso, original 683, stm code has 603!!
+    res = FMC_SDRAM_ProgramRefreshRate(pSdramInstance, 683); // original 683, stm code has 603!!
 
     res = FMC_SDRAM_WriteProtection_Disable(pSdramInstance, FMC_SDRAM_BANK1);
   }
@@ -256,6 +256,10 @@
     for (; uwBufferSize != 0; uwBufferSize--) 
     {
       /* Transfer data to the memory */
+      *(uint32_t *)(SDRAM_BANK_ADDR + write_pointer) = *pBuffer++;
+      *(uint32_t *)(SDRAM_BANK_ADDR + write_pointer) = *pBuffer++;
+      *(uint32_t *)(SDRAM_BANK_ADDR + write_pointer) = *pBuffer++;
+      *(uint32_t *)(SDRAM_BANK_ADDR + write_pointer) = *pBuffer++;
       *(uint32_t *)(SDRAM_BANK_ADDR + write_pointer) = *pBuffer++;
 
       /* Increment the address*/

@@ -78,26 +78,6 @@
 /* Initialization and main thread.                                           */
 /*===========================================================================*/
 
-OSAL_IRQ_HANDLER(VectorE4) 
-{
-    OSAL_IRQ_PROLOGUE();
-    asm("BKPT 255");
-    OSAL_IRQ_EPILOGUE();
-}
-
-OSAL_IRQ_HANDLER(VectorE8) 
-{
-    OSAL_IRQ_PROLOGUE();
-    asm("BKPT 255");
-    OSAL_IRQ_EPILOGUE();
-}
-
-OSAL_IRQ_HANDLER(VectorD0) 
-{
-    OSAL_IRQ_PROLOGUE();
-    asm("BKPT 255");
-    OSAL_IRQ_EPILOGUE();
-}
 
 extern void MY_USBH_Init(void);
 #ifdef FW_I2SCODEC
@@ -224,10 +204,17 @@ int main(void) {
     configSDRAM();
 #endif
 
+    uint32_t buffer[32];
+
+    SDRAM_WriteBuffer(buffer, 0, 32);
+
+
     // just test read;
     // while(1)
     // {
         volatile uint32_t *p = (uint32_t *)0xc0000000;
+        *p=0xffffffff;
+
         volatile uint32_t total=0;
         for(int i=0; i < 128; i++)
             total+= p[i];
