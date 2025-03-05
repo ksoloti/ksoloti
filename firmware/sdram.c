@@ -229,7 +229,7 @@
     /* (7.81 us x Freq) - 20 */
     /* Set the device refresh counter */
 
-    res = FMC_SDRAM_ProgramRefreshRate(pSdramInstance, 683); // original 683, stm code has 603!!
+    res = FMC_SDRAM_ProgramRefreshRate(pSdramInstance, 603); // original 683, stm code has 603!!
 
     res = FMC_SDRAM_WriteProtection_Disable(pSdramInstance, FMC_SDRAM_BANK1);
   }
