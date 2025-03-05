@@ -681,17 +681,15 @@ public class USBBulkConnection extends Connection {
     @Override
     public boolean WaitSync(int msec) {
         synchronized (sync) {
-            for (int i=0; i<3; ++i) {
                 if (sync.Acked) {
                     return sync.Acked;
                 }
                 try {
-                    sync.wait(msec/3);
+                    sync.wait(msec);
                 }
                 catch (InterruptedException ex) {
                     // LOGGER.log(Level.SEVERE, "Sync wait interrupted");
                 }
-            }
             return sync.Acked;
         }
     }
