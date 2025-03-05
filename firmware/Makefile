@@ -30,7 +30,7 @@ ifeq ($(USE_OPT),)
   USE_OPT = \
     --specs=nano.specs \
     --specs=nosys.specs \
-    -Og \
+    -O2 \
     -Wno-implicit-fallthrough \
     -Wno-return-type \
     -Wno-unused-function \

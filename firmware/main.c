@@ -197,18 +197,10 @@ int main(void) {
     palClearPad(LED1_PORT, LED1_PIN);
     palSetPad(LED2_PORT, LED2_PIN);
 
-#if BOARD_KSOLOTI_CORE_H743
-    // TODOH7
     configSDRAM();
-#else    
-    configSDRAM();
-#endif
 
-    uint32_t buffer[32];
 
-    SDRAM_WriteBuffer(buffer, 0, 32);
-
-    // memtest();
+    // memTest();
     
     palSetPad(LED1_PORT, LED1_PIN);
     palClearPad(LED2_PORT, LED2_PIN);
