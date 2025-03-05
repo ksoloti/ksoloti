@@ -385,11 +385,9 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
     * 5. Assert the core clock enable bit after the PLL lock is acquired.
     */
 
-#ifdef FW_SPILINK
     ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC, 0x0E); /* Disable core, PLL as clksrc, 1024*FS */
-#else
-    ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC, 0x08); /* Disable core, PLL as clksrc, 256*FS */
-#endif
+
+    chThdSleepMilliseconds(1);
 
     /* Confirm samplerate (redundant) */
     if (samplerate != 48000) {
@@ -452,13 +450,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
         while (1);
     }
 
-#ifdef FW_SPILINK
     ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC,     0x0F); /* Enable core, PLL as clksrc, 1024*FS */
-
-#else
-    ADAU1961_WriteRegister(ADAU1961_REG_R0_CLKC,     0x09); /* PLL as clksrc */
-
-#endif
 
     chThdSleepMilliseconds(1);
 
