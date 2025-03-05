@@ -208,21 +208,8 @@ int main(void) {
 
     SDRAM_WriteBuffer(buffer, 0, 32);
 
-
-    // just test read;
-    // while(1)
-    // {
-        volatile uint32_t *p = (uint32_t *)0xc0000000;
-        *p=0xffffffff;
-
-        volatile uint32_t total=0;
-        for(int i=0; i < 128; i++)
-            total+= p[i];
-
-    // }
-
-    // memTest();
-
+    // memtest();
+    
     palSetPad(LED1_PORT, LED1_PIN);
     palClearPad(LED2_PORT, LED2_PIN);
 

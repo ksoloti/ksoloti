@@ -257,10 +257,6 @@
     {
       /* Transfer data to the memory */
       *(uint32_t *)(SDRAM_BANK_ADDR + write_pointer) = *pBuffer++;
-      *(uint32_t *)(SDRAM_BANK_ADDR + write_pointer) = *pBuffer++;
-      *(uint32_t *)(SDRAM_BANK_ADDR + write_pointer) = *pBuffer++;
-      *(uint32_t *)(SDRAM_BANK_ADDR + write_pointer) = *pBuffer++;
-      *(uint32_t *)(SDRAM_BANK_ADDR + write_pointer) = *pBuffer++;
 
       /* Increment the address*/
       write_pointer += 4;
