@@ -108,17 +108,20 @@ void StartMounter(void)
 
 int main(void) {
 
-    /* copy vector table to SRAM1! */
 #if BOARD_KSOLOTI_CORE_H743
-    // TODOH7
+    // TODOH7 - More investication needed
+    // Akso doesn't do this and I am not sure of the performance benefits
+    // on the H7, the ITCM fast code memory at the moment by default
+    // is all being used by the patcher.
 #else        
+    /* copy vector table to SRAM1! */
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wnonnull"
         memcpy((char *)0x20000000, (const char)0x00000000, 0x200);
     #pragma GCC diagnostic pop
 
-        /* remap SRAM1 to 0x00000000 */
-        SYSCFG->MEMRMP |= 0x03;
+    /* remap SRAM1 to 0x00000000 */
+    SYSCFG->MEMRMP |= 0x03;
 #endif
 
     #if INBUILT_MOUNTER_FLASHER
@@ -149,15 +152,19 @@ int main(void) {
     pThreadSpilink = 0;
 #endif
 
-#if BOARD_KSOLOTI_CORE_H743
-    // TODOH7
-    sdcard_init();
-    sysmon_init();
-#else    
-    sdcard_init();
-    sysmon_init();
-#endif
+    // Use the MPU ro turn cache off for the memory
+    // we use to store the sdcard io buffers in.
+    volatile extern uint32_t *__ram0nc_base__;
+    mpuConfigureRegion(MPU_REGION_7,
+        &__ram0nc_base__,
+        MPU_RASR_ATTR_AP_RW_RW |
+        MPU_RASR_ATTR_SHARED_DEVICE |
+        MPU_RASR_ATTR_NON_CACHEABLE |
+        MPU_RASR_SIZE_8K |
+        MPU_RASR_ENABLE);
 
+    sdcard_init();
+    sysmon_init();
 
 #if ENABLE_SERIAL_DEBUG
     /* SD2 for serial debug output */

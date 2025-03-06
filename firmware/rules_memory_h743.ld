@@ -17,6 +17,9 @@
 __ram0_base__           = ORIGIN(ram0);
 __ram0_size__           = LENGTH(ram0);
 __ram0_end__            = __ram0_base__ + __ram0_size__;
+__ram0nc_base__         = ORIGIN(ram0nc);
+__ram0nc_size__         = LENGTH(ram0nc);
+__ram0nc_end__          = __ram0nc_base__ + __ram0nc_size__;
 __ram1_base__           = ORIGIN(ram1);
 __ram1_size__           = LENGTH(ram1);
 __ram1_end__            = __ram1_base__ + __ram1_size__;
@@ -87,6 +90,28 @@ SECTIONS
         . = ALIGN(4);
         __ram0_free__ = .;
     } > ram0
+
+    .ram0nc_init : ALIGN(4)
+    {
+        __ram0nc_init_text__ = LOADADDR(.ram0nc_init);
+        __ram0nc_init__ = .;
+        KEEP(*(.ram0nc_init))
+        KEEP(*(.ram0nc_init.*))
+        . = ALIGN(4);
+    } > ram0nc AT > RAM_INIT_FLASH_LMA
+
+    .ram0nc (NOLOAD) : ALIGN(4)
+    {
+        __ram0nc_clear__ = .;
+        *(.ram0nc_clear)
+        *(.ram0nc_clear.*)
+        . = ALIGN(4);
+        __ram0nc_noinit__ = .;
+        *(.ram0nc)
+        *(.ram0nc.*)
+        . = ALIGN(4);
+        __ram0nc_free__ = .;
+    } > ram0nc
 
     .ram1_init : ALIGN(4)
     {

@@ -64,15 +64,18 @@ static const SDCConfig sdc_default_cfg = {
   SDC_MODE_4BIT
 };
 
+// __nocache_rules in linker file are not working and even if they did we want
+// these buffers in AXI ram and aligned 32
 #if STM32_SDC_USE_SDMMC1 || defined(__DOXYGEN__)
-static uint8_t __nocache_sd1_buf[MMCSD_BLOCK_SIZE];
-static uint32_t __nocache_sd1_wbuf[1];
+static uint8_t sd1_buf[MMCSD_BLOCK_SIZE] __attribute__ ((section (".ram0nc"))) __attribute__ ((aligned (32)));
+static uint32_t sd1_wbuf[1] __attribute__ ((section (".ram0nc"))) __attribute__ ((aligned (32)));
 #endif
 
 #if STM32_SDC_USE_SDMMC2 || defined(__DOXYGEN__)
-static uint8_t __nocache_sd2_buf[MMCSD_BLOCK_SIZE];
-static uint32_t __nocache_sd2_wbuf[1];
+static uint8_t sd2_buf[MMCSD_BLOCK_SIZE] __attribute__ ((section (".ram0nc"))) __attribute__ ((aligned (32)));
+static uint32_t sd2_wbuf[1] __attribute__ ((section (".ram0nc"))) __attribute__ ((aligned (32)));
 #endif
+
 
 /*===========================================================================*/
 /* Driver local functions.                                                   */
@@ -327,8 +330,8 @@ void sdc_lld_init(void) {
   SDCD1.thread  = NULL;
   SDCD1.sdmmc   = SDMMC1;
   SDCD1.clkfreq = STM32_SDMMC1CLK;
-  SDCD1.buf     = __nocache_sd1_buf;
-  SDCD1.resp    = __nocache_sd1_wbuf;
+  SDCD1.buf     = sd1_buf;
+  SDCD1.resp    = sd1_wbuf;
 #endif
 
 #if STM32_SDC_USE_SDMMC2
@@ -336,8 +339,8 @@ void sdc_lld_init(void) {
   SDCD2.thread  = NULL;
   SDCD2.sdmmc   = SDMMC2;
   SDCD2.clkfreq = STM32_SDMMC2CLK;
-  SDCD2.buf     = __nocache_sd2_buf;
-  SDCD2.resp    = __nocache_sd2_wbuf;
+  SDCD2.buf     = sd2_buf;
+  SDCD2.resp    = sd2_wbuf;
 #endif
 }
 

@@ -46,7 +46,6 @@
 // USB_AUDIO_DATA_SECTION - need to find best location, is DMA used?
 // LCD_DATA_SECTION - is this used
 // KVP_DATA_SECTION - KVP need sorting out properly
-// FF_DATA_SECTION - Akso must have this here for a reason, check.
 // FAST_DATA_SECTION - not really needed as .bss is already in ram5
 
 #define DEBUG_DATA_SECTION      __attribute__ ((section (".ram4"))) __attribute__ ((aligned (32)))
@@ -55,9 +54,9 @@
 #define ADC_DATA_SECTION        __attribute__ ((section (".ram4"))) __attribute__ ((aligned (32)))
 #define LCD_DATA_SECTION        __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)))
 #define KVP_DATA_SECTION        __attribute__ ((section (".ram4"))) __attribute__ ((aligned (32)))
-#define FF_DATA_SECTION         __attribute__ ((section (".ram4"))) __attribute__ ((aligned (32)))
 #define SPILINK_DMA_SECTION     __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)))
 #define FAST_DATA_SECTION       __attribute__ ((section (".ram5"))) __attribute__ ((aligned (32)))
+#define SDCARD_DATA_SECTION     __attribute__ ((section (".ram0nc"))) __attribute__ ((aligned (32)))
 
 /*
  * HAL driver system settings.
@@ -518,9 +517,10 @@
 #define ADC_DATA_SECTION        __attribute__ ((section (".sram2")))
 #define LCD_DATA_SECTION        __attribute__ ((section (".sram2")))
 #define KVP_DATA_SECTION        __attribute__ ((section (".sram2")))
-#define FF_DATA_SECTION         __attribute__ ((section (".sram2")))
 #define SPILINK_DATA_SECTION    __attribute__ ((section (".sram2")))
 #define FAST_DATA_SECTION       __attribute__ ((section (".ccmramend")));
+#define SDCARD_DATA_SECTION     __attribute__ ((section (".bss")));
+
 /*
  * HAL driver system settings.
  */

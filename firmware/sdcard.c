@@ -31,13 +31,13 @@
 /*===========================================================================*/
 
 /* FS object.*/
-FATFS SDC_FS FF_DATA_SECTION;
+FATFS SDC_FS;
 
 /* FS mounted and ready.*/
-bool_t fs_ready  FF_DATA_SECTION = FALSE;
+bool_t fs_ready  SDCARD_DATA_SECTION = FALSE;
 
 /* Generic large buffer.*/
-uint32_t fbuff[512] FF_DATA_SECTION;
+uint32_t fbuff[512] SDCARD_DATA_SECTION;
 
 
 /*===========================================================================*/
