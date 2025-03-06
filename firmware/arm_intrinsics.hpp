@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef ARM_INTRINSICS_H_
 #define ARM_INTRINSICS_H_
 
