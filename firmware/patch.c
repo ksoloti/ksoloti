@@ -110,31 +110,31 @@ void SetPatchSafety(uint16_t uUIMidiCost, uint8_t uDspLimit200)
 
 static void SetPatchStatus(patchStatus_t status)
 {
-    if(patchStatus != status)
-    {
-        if(status == RUNNING)
-        {
-            // DSP priority
-            chThdSetPriority(PATCH_DSP_PRIO);
-#if USE_EXTERNAL_USB_FIFO_PUMP
-            // Switch to external fifo pump
-            usb_lld_use_external_pump(true);
-#endif
-        }
-        else
-        {
-            // Normal priority
-            chThdSetPriority(PATCH_NORMAL_PRIO);
+//     if(patchStatus != status)
+//     {
+//         if(status == RUNNING)
+//         {
+//             // DSP priority
+//             chThdSetPriority(PATCH_DSP_PRIO);
+// #if USE_EXTERNAL_USB_FIFO_PUMP
+//             // Switch to external fifo pump
+//             usb_lld_use_external_pump(true);
+// #endif
+//         }
+//         else
+//         {
+//             // Normal priority
+//             chThdSetPriority(PATCH_NORMAL_PRIO);
 
-#if USE_EXTERNAL_USB_FIFO_PUMP
-            if(patchStatus == RUNNING)
-            {
-                // switch to fifo pump thread.
-                usb_lld_use_external_pump(false);
-            }
-#endif
-        }
-    }
+// #if USE_EXTERNAL_USB_FIFO_PUMP
+//             if(patchStatus == RUNNING)
+//             {
+//                 // switch to fifo pump thread.
+//                 usb_lld_use_external_pump(false);
+//             }
+// #endif
+//         }
+//     }
     patchStatus = status;    
 }
 

@@ -127,7 +127,7 @@ static const stm32_otg_params_t hsparams = {
 };
 #endif
 
-static bool use_external_pump = false;
+static bool use_external_pump = true;
 
 /*===========================================================================*/
 /* Driver local functions.                                                   */
