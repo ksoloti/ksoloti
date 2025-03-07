@@ -454,10 +454,20 @@ void StartMounter(void)
         va_start(ap, format);
         chvprintf((BaseSequentialStream *)&SD2, format, ap);
         va_end(ap);
+    }
+    void LogUartMessageEol(const char* format, ...)
+    {
+        va_list ap;
+        va_start(ap, format);
+        chvprintf((BaseSequentialStream *)&SD2, format, ap);
+        va_end(ap);
         chprintf((BaseSequentialStream *)&SD2, "\n");
     }
 #else
     void LogUartMessage(const char* format, ...)
+    {
+    }
+    void LogUartMessageEol(const char* format, ...)
     {
     }
 #endif
