@@ -474,6 +474,7 @@ USBH_StatusTypeDef USBH_Process(USBH_HandleTypeDef *phost)
 {
   __IO USBH_StatusTypeDef status = USBH_FAIL;
   uint8_t idx = 0U;
+  uint8_t intf = 0U;
 
   /* check for Host pending port disconnect event */
   if (phost->device.is_disconnected == 1U)
@@ -670,19 +671,41 @@ USBH_StatusTypeDef USBH_Process(USBH_HandleTypeDef *phost)
       else
       {
         phost->pActiveClass = NULL;
+        bool bFound = false;
+        USBH_StatusTypeDef initStatus = USBH_NOT_SUPPORTED;
 
         for (idx = 0U; idx < USBH_MAX_NUM_SUPPORTED_CLASS; idx++)
         {
-          if (phost->pClass[idx]->ClassCode == phost->device.CfgDesc.Itf_Desc[0].bInterfaceClass)
+          for (intf = 0; intf < phost->device.CfgDesc.bNumInterfaces && !bFound; intf ++) 
           {
-            phost->pActiveClass = phost->pClass[idx];
-            break;
+            if (phost->pClass[idx]->ClassCode == phost->device.CfgDesc.Itf_Desc[intf].bInterfaceClass)
+            {
+              phost->pActiveClass = phost->pClass[idx];
+              initStatus = phost->pActiveClass->Init(phost);
+              if (initStatus == USBH_OK) 
+              {
+                  bFound = true;
+              } else if (initStatus == USBH_NOT_SUPPORTED) 
+              {
+                  // its not supported by this class, try others
+                  phost->pActiveClass = NULL;
+              }
+              else 
+              {
+                  // failed to start
+                  bFound = true;
+              }
+              break;
+            }
           }
+          
+          if(phost->pActiveClass != NULL) 
+            break;
         }
 
         if (phost->pActiveClass != NULL)
         {
-          if (phost->pActiveClass->Init(phost) == USBH_OK)
+          if (initStatus == USBH_OK) 
           {
             phost->gState = HOST_CLASS_REQUEST;
             USBH_UsrLog("%s class started.", phost->pActiveClass->Name);
@@ -693,7 +716,7 @@ USBH_StatusTypeDef USBH_Process(USBH_HandleTypeDef *phost)
           else
           {
             phost->gState = HOST_ABORT_STATE;
-            USBH_UsrLog("Device not supporting %s class.", phost->pActiveClass->Name);
+            USBH_UsrLog("%s class failed to init\n", phost->pActiveClass->Name);
           }
         }
         else
@@ -854,8 +877,8 @@ static USBH_StatusTypeDef USBH_HandleEnum(USBH_HandleTypeDef *phost)
       ReqStatus = USBH_Get_DevDesc(phost, USB_DEVICE_DESC_SIZE);
       if (ReqStatus == USBH_OK)
       {
-        USBH_UsrLog("PID: %xh", phost->device.DevDesc.idProduct);
         USBH_UsrLog("VID: %xh", phost->device.DevDesc.idVendor);
+        USBH_UsrLog("PID: %xh", phost->device.DevDesc.idProduct);
 
         phost->EnumState = ENUM_SET_ADDR;
       }

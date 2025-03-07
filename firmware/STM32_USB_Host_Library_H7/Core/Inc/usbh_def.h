@@ -127,6 +127,7 @@ extern "C" {
 
 /* Table 9-4. Standard Request Codes  */
 /* bRequest , Value */
+#ifndef USB_REQ_GET_STATUS
 #define  USB_REQ_GET_STATUS                                0x00U
 #define  USB_REQ_CLEAR_FEATURE                             0x01U
 #define  USB_REQ_SET_FEATURE                               0x03U
@@ -138,6 +139,7 @@ extern "C" {
 #define  USB_REQ_GET_INTERFACE                             0x0AU
 #define  USB_REQ_SET_INTERFACE                             0x0BU
 #define  USB_REQ_SYNCH_FRAME                               0x0CU
+#endif
 
 /* Table 9-5. Descriptor Types of USB Specifications */
 #define  USB_DESC_TYPE_DEVICE                              0x01U
