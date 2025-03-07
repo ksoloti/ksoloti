@@ -86,7 +86,7 @@ LDFLAGS = \
   -mtune=cortex-m4 \
   -nostartfiles
 
-DMPFLAGS = \
+ODFLAGS = \
   --demangle \
   --disassemble \
   --source-comment \
@@ -97,7 +97,7 @@ CC   = $(TRGT)gcc
 CPP  = $(TRGT)g++
 LD   = $(TRGT)gcc
 CP   = $(TRGT)objcopy
-DMP  = $(TRGT)objdump
+OD   = $(TRGT)objdump
 SIZ  = $(TRGT)size
 
 axoloti_libraries ?= ..
@@ -164,7 +164,7 @@ ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
 	@$(CP) -O binary ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin
 
 #	@echo Creating LST file for debugging
-#	@$(DMP) $(DMPFLAGS) "${BUILDDIR}/xpatch.elf" > "${BUILDDIR}/xpatch.lst"
+#	@$(OD) $(ODFLAGS) "${BUILDDIR}/xpatch.elf" > "${BUILDDIR}/xpatch.lst"
 
 clean:
 	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.lst ${BUILDDIR}/xpatch.h.gch
