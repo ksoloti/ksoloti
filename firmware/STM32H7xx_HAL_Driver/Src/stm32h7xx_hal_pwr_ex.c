@@ -308,6 +308,10 @@
   *         PWR_SMPS_2V5_SUPPLIES_EXT_AND_LDO, PWR_SMPS_1V8_SUPPLIES_EXT and
   *         PWR_SMPS_2V5_SUPPLIES_EXT are used only for lines that supports SMPS
   *         regulator.
+  * @note   This API is deprecated and is kept only for backward compatibility's sake.
+  *         The power supply configuration is handled as part of the system initialization
+  *         process during startup.
+  *         For more details, please refer to the power control chapter in the reference manual
   * @retval HAL status.
   */
 HAL_StatusTypeDef HAL_PWREx_ConfigSupply (uint32_t SupplySource)
