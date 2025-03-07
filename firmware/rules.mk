@@ -64,7 +64,7 @@ endif
 OUTFILES := $(BUILDDIR)/$(PROJECT).elf \
             $(BUILDDIR)/$(PROJECT).hex \
             $(BUILDDIR)/$(PROJECT).bin \
-            $(BUILDDIR)/$(PROJECT).dmp \
+            $(BUILDDIR)/$(PROJECT).dmp
             # $(BUILDDIR)/$(PROJECT).list
 
 ifdef SREC
