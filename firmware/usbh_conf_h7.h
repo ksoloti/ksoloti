@@ -138,10 +138,10 @@ extern void fakefree(void * p);
 #if (USBH_DEBUG_LEVEL > 0)
   #if ENABLE_SERIAL_DEBUG
     extern void LogUartMessage(const char* format, ...);
-    #define  USBH_UsrLog(...)   LogUartMessage(__VA_ARGS__);
+    #define  USBH_UsrLog(...)   LogUartMessage(__VA_ARGS__)
   #else
     extern void LogTextMessage(const char* format, ...);
-    #define  USBH_UsrLog(...)   LogTextMessage(__VA_ARGS__);
+    #define  USBH_UsrLog(...)   LogTextMessage(__VA_ARGS__)
   #endif
 #else
 #define USBH_UsrLog(...)
@@ -150,9 +150,9 @@ extern void fakefree(void * p);
 
 #if (USBH_DEBUG_LEVEL > 1)
   #if ENABLE_SERIAL_DEBUG
-    #define  USBH_ErrLog(...)   LogUartMessage(__VA_ARGS__);
+    #define  USBH_ErrLog(...)   LogUartMessage(__VA_ARGS__)
   #else
-    #define  USBH_ErrLog(...)   LogTextMessage(__VA_ARGS__);
+    #define  USBH_ErrLog(...)   LogTextMessage(__VA_ARGS__)
   #endif
 #else
 #define USBH_ErrLog(...)
@@ -161,9 +161,9 @@ extern void fakefree(void * p);
 
 #if (USBH_DEBUG_LEVEL > 2)
   #if ENABLE_SERIAL_DEBUG
-    #define  USBH_DbgLog(...)   LogUartMessage(__VA_ARGS__);
+    #define  USBH_DbgLog(...)   LogUartMessage(__VA_ARGS__)
   #else
-    #define  USBH_DbgLog(...)   LogTextMessage(__VA_ARGS__);
+    #define  USBH_DbgLog(...)   LogTextMessage(__VA_ARGS__)
   #endif
 #else
 #define USBH_DbgLog(...)

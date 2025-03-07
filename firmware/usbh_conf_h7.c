@@ -628,9 +628,20 @@ void MY_USBH_Init(void) {
 
   /* Add Supported Class */
   /* highest priority first */
-  USBH_RegisterClass(&hUSBHost, USBH_VENDOR_CLASS);
-  USBH_RegisterClass(&hUSBHost, USBH_MIDI_CLASS);
-  USBH_RegisterClass(&hUSBHost, USBH_HID_CLASS);
+  if(USBH_OK != USBH_RegisterClass(&hUSBHost, USBH_VENDOR_CLASS))
+    USBH_DbgLog("Failed to register USBH_VENDOR_CLASS");
+  else
+    USBH_DbgLog("Registered USBH_VENDOR_CLASS");
+
+  if(USBH_OK != USBH_RegisterClass(&hUSBHost, USBH_MIDI_CLASS))
+    USBH_DbgLog("Failed to register USBH_MIDI_CLASS");
+  else
+    USBH_DbgLog("Registered USBH_MIDI_CLASS");
+
+  if(USBH_OK != USBH_RegisterClass(&hUSBHost, USBH_HID_CLASS))
+    USBH_DbgLog("Failed to register USBH_HID_CLASS");
+  else
+    USBH_DbgLog("Registered USBH_HID_CLASS");
 
   /* Start Host Process */
   USBH_Start(&hUSBHost);

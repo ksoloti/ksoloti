@@ -406,15 +406,12 @@ uint8_t USBH_FindInterfaceIndex(USBH_HandleTypeDef *phost, uint8_t interface_num
   */
 USBH_StatusTypeDef USBH_Start(USBH_HandleTypeDef *phost)
 {
-  USBH_DbgLog("USBH_Start() begin\n");
-
   /* Start the low level driver  */
   (void)USBH_LL_Start(phost);
 
   /* Activate VBUS on the port */
   (void)USBH_LL_DriverVBUS(phost, TRUE);
 
-  USBH_DbgLog("USBH_Start() end\n");
   return USBH_OK;
 }
 
