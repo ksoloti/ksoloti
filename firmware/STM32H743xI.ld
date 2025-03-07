@@ -26,6 +26,7 @@
  * BCKP SRAM    - None.
    AXI (dual channel?) ram has better throughput than AHB ram (single channel?)
  */
+
 MEMORY
 {
     flash0 (rx) : org = 0x08000000, len = 2M        /* Flash bank1+bank2 */

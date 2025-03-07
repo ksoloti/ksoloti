@@ -26,7 +26,11 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx_hal.h"
+#if BOARD_KSOLOTI_CORE_H743
+  #include "stm32h7xx_hal.h"
+#else
+  #include "stm32f4xx_hal.h"
+#endif
 #include "usbh_core.h"
 
 HCD_HandleTypeDef hHCD;
@@ -36,7 +40,12 @@ HCD_HandleTypeDef hHCD;
 #define HOST_POWERSW_VBUS                  GPIO_PIN_7
 
 /* JT */
-#include "core_cm4.h"
+#if BOARD_KSOLOTI_CORE_H743 
+  #include "core_cm7.h"
+#else
+  #include "core_cm4.h"
+#endif
+
 #include "usbh_hid.h"
 #include "usbh_hid_parser.h"
 #include "usbh_midi_core.h"
@@ -89,7 +98,11 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef *hHCD) {
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
+#if BOARD_KSOLOTI_CORE_H743    
+    GPIO_InitStruct.Alternate = GPIO_AF10_OTG1_FS;
+#else
+  GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
+#endif
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     /* This for ID line debug */ /* Ksoloti Core: deactivated since PA10 is used for Switch 1 */
@@ -120,17 +133,26 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef *hHCD) {
     /* Configure USB FS GPIOs */
     //__GPIOA_CLK_ENABLE();
     //HOST_POWERSW_CLK_ENABLE();
+#if BOARD_KSOLOTI_CORE_H743
+  RCC->AHB1RSTR |= RCC_AHB1RSTR_USB2OTGHSRST;
+  chThdSleepMilliseconds(1);
+  RCC->AHB1RSTR &= ~RCC_AHB1RSTR_USB2OTGHSRST;
+#else    
     RCC->AHB1RSTR |= RCC_AHB1RSTR_OTGHRST;
     chThdSleepMilliseconds(1);
     RCC->AHB1RSTR &= ~RCC_AHB1RSTR_OTGHRST;
-
+#endif
     /* Configure DM DP Pins */
     GPIO_InitStruct.Pin = GPIO_PIN_14 | GPIO_PIN_15;
 
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Alternate = GPIO_AF12_OTG_HS_FS;
+#if BOARD_KSOLOTI_CORE_H743    
+    GPIO_InitStruct.Alternate = GPIO_AF12_OTG1_FS;
+#else
+  GPIO_InitStruct.Alternate = GPIO_AF12_OTG_HS_FS;
+#endif
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     /* This for ID line debug */ /* Ksoloti Core: deactivated since PB12 is used as GPIO */
@@ -230,8 +252,13 @@ void HAL_HCD_HC_NotifyURBChange_Callback(HCD_HandleTypeDef *hHCD, uint8_t chnum,
 USBH_StatusTypeDef USBH_LL_Init(USBH_HandleTypeDef *phost) {
   /* Change Systick prioity */
   //HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+#if BOARD_KSOLOTI_CORE_H743
+  // RCC->AHB1ENR |= RCC_AHB1ENR_USB1OTGHSEN;
+  // RCC->AHB1LPENR |= RCC_AHB1LPENR_USB1OTGHSLPEN;
+#else
   RCC->AHB1ENR |= RCC_AHB1ENR_OTGHSEN;
   RCC->AHB1LPENR |= RCC_AHB1LPENR_OTGHSLPEN;
+#endif
 
   /*Set LL Driver parameters */
   hHCD.Instance = USB_OTG_HS;
@@ -242,13 +269,19 @@ USBH_StatusTypeDef USBH_LL_Init(USBH_HandleTypeDef *phost) {
   hHCD.Init.Sof_enable = 0;
   hHCD.Init.speed = HCD_SPEED_FULL;
   hHCD.Init.vbus_sensing_enable = 0;
+#if BOARD_KSOLOTI_CORE_H743
+  hHCD.Init.lpm_enable = 0;
+#endif
   /* Link The driver to the stack */
   hHCD.pData = phost;
   phost->pData = &hHCD;
   /*Initialize LL Driver */
   HAL_HCD_Init(&hHCD);
 
-//  USB_OTG_HS->GUSBCFG |= USB_OTG_GUSBCFG_FHMOD;
+#if BOARD_KSOLOTI_CORE_H743
+  USB_OTG_HS->GUSBCFG |= USB_OTG_GUSBCFG_FHMOD;
+#endif
+
   USBH_LL_SetTimer(phost, HAL_HCD_GetCurrentFrame(&hHCD));
 
   return USBH_OK;
@@ -454,6 +487,10 @@ uint8_t USBH_LL_GetToggle(USBH_HandleTypeDef *phost, uint8_t pipe) {
  * @retval None
  */
 void USBH_Delay(uint32_t Delay) {
+  // uint32_t uTotalTicks = MS2RTT(Delay); 
+  // uint32_t uStartTick = DWT->CYCCNT; 
+  // while (DWT->CYCCNT - uStartTick < uTotalTicks) 
+  //     ; 
   HAL_Delay(Delay);
   __NOP();
 }
@@ -635,3 +672,5 @@ CH_IRQ_HANDLER(Vector16C) {
   while (1) {
   }
 }
+
+

@@ -329,22 +329,23 @@ ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
           ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c.c \
           ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c \
           ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_fmc.c \
+          ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_usb.c \
+          ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_hcd.c \
+          ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c \
+          ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c \
           ${FIRMWARE}/sdram.c \
           ${FIRMWARE}/board.c \
-
-  # TODO H7 
-          # ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_core.c \
-          # ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c \
-          # ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c \
-          # ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_pipes.c \
-          # ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c \
-          # ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c \
-          # ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c \
-          # ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c \
-          # ${FIRMWARE}/usbh_midi_core.c \
-          # ${FIRMWARE}/usbh_vendor.c \
-          # ${FIRMWARE}/usbh_conf.c 
-
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Core/Src/usbh_core.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Core/Src/usbh_ctlreq.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Core/Src/usbh_ioreq.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Core/Src/usbh_pipes.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/HID/Src/usbh_hid.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/HID/Src/usbh_hid_keybd.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/HID/Src/usbh_hid_mouse.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/HID/Src/usbh_hid_parser.c \
+          ${FIRMWARE}/usbh_midi_core.c \
+          ${FIRMWARE}/usbh_vendor.c \
+          ${FIRMWARE}/usbh_conf_h7.c 
 else
   # Axoloti and Ksoloti f427
   CSRC += ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c \
@@ -363,7 +364,7 @@ else
           ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c \
           ${FIRMWARE}/usbh_midi_core.c \
           ${FIRMWARE}/usbh_vendor.c \
-          ${FIRMWARE}/usbh_conf.c 
+          ${FIRMWARE}/usbh_conf_f4.c 
 endif
 
 
@@ -495,8 +496,6 @@ INCDIR = \
   $(SHELLINC) \
   $(OSALINC) \
   $(CHIBIOS)/os/various \
-  ${FIRMWARE}/STM32_USB_Host_Library/Core/Inc \
-  ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Inc \
   ${MUTABLE_INSTRUMENTS} \
   ${MUTABLE_INSTRUMENTS}/warps \
   ${MUTABLE_INSTRUMENTS}/braids \
@@ -508,10 +507,14 @@ INCDIR = \
 
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # Ksoloti h747
-  INCDIR += ${FIRMWARE}/STM32H7xx_HAL_Driver/Inc 
+  INCDIR += ${FIRMWARE}/STM32H7xx_HAL_Driver/Inc \
+            ${FIRMWARE}/STM32_USB_Host_Library_H7/Core/Inc \
+            ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/HID/Inc 
 else
   # Axoloti and Ksoloti f427
-  INCDIR += ${FIRMWARE}/STM32F4xx_HAL_Driver/Inc 
+  INCDIR += ${FIRMWARE}/STM32F4xx_HAL_Driver/Inc \
+            ${FIRMWARE}/STM32_USB_Host_Library/Core/Inc \
+            ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Inc 
 endif
 #
 # Project, sources and paths
@@ -599,7 +602,8 @@ UDEFS = \
   -DTHUMB \
   -DTHUMB_NO_INTERWORKING \
   -DTHUMB_PRESENT \
-
+  -DENABLE_SERIAL_DEBUG \
+  
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # Ksoloti h743
   UDEFS += -DPATCH_ITCM=1 \
