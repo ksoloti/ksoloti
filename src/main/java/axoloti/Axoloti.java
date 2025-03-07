@@ -47,6 +47,7 @@ public class Axoloti {
     public final static String HOME_DIR       = "axoloti_home";
     public final static String LIBRARIES_DIR  = "axoloti_libraries";
     public final static String FIRMWARE_DIR   = "axoloti_firmware";
+    public final static String PLATFORM_DIR   = "axoloti_platform";
     
     /**
      * @param args the command line arguments
@@ -204,9 +205,7 @@ public class Axoloti {
     // }
 
     private static void initProperties() throws URISyntaxException, IOException {
-        String curDir = System.getProperty("user.dir");
         File jarFile = new File(Axoloti.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        String jarDir = jarFile.getParentFile().getCanonicalPath();
         String defaultHome = ".";
         String defaultLibraries = "defaultLibraries";
 
@@ -264,14 +263,32 @@ public class Axoloti {
             System.err.println("Firmware directory is invalid");
         }
 
-        String fwdir = System.getProperty(FIRMWARE_DIR);
+        if (os != null) {
+            switch (os) {
+                case WIN:
+                    BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_win");
+                    break;
+                case MAC:
+                    BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_osx");
+                    break;
+                case LINUX:
+                    BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_linux");
+                    break;
+                default:
+                break;
+            }
+        }
+        if (!TestDir(PLATFORM_DIR)) {
+            System.err.println("platform_* directory is invalid");
+        }
 
         System.out.println("Directories:\n"
-                + "Current = " + curDir + "\n"
-                + "Jar = " + jarDir + "\n"
+                + "Current = " + System.getProperty("user.dir") + "\n"
+                + "Jar = " + jarFile.getParentFile().getCanonicalPath() + "\n"
                 + "Home = " + System.getProperty(HOME_DIR) + "\n"
-                + "Firmware = " + fwdir + "\n"
-                + "Libraries = " + System.getProperty(LIBRARIES_DIR)
+                + "Firmware = " + System.getProperty(FIRMWARE_DIR) + "\n"
+                + "Libraries = " + System.getProperty(LIBRARIES_DIR) + "\n"
+                + "Platform = " + System.getProperty(PLATFORM_DIR) + "\n"
         );
     }
 

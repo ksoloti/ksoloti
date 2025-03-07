@@ -55,7 +55,7 @@ public class QCmdFlashDFU extends QCmdShellTask {
     
     
     @Override
-    String GetExec() {
+    String[] GetExec() {
         String bname = "";
         if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
             bname = "ksoloti";
@@ -76,10 +76,12 @@ public class QCmdFlashDFU extends QCmdShellTask {
         Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.INFO, "File path: " + System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build" + File.separator + bname);
 
         if (OSDetect.getOS() == OSDetect.OS.WIN) {
-            return HomeDir() + "/platform_win/bin/sh.exe " + FirmwareDir() + "/upload_fw_dfu.sh " + bname;
+            String str = PlatformDir() + "\\bin\\sh.exe " + FirmwareDir() + "\\upload_fw_dfu.sh " + bname;
+            return str.split("\\s+");
         }
         else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {
-            return "/bin/sh "+ FirmwareDir() + "/upload_fw_dfu.sh " + bname;
+            String str = "/bin/sh "+ FirmwareDir() + "/upload_fw_dfu.sh " + bname;
+            return str.split("\\s+");
         }
         else {
             Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");

@@ -40,7 +40,7 @@ public abstract class QCmdShellTask implements QCmd {
 
     private static final Logger LOGGER = Logger.getLogger(QCmdShellTask.class.getName());
 
-    abstract String GetExec();
+    abstract String[] GetExec();
     boolean success;
 
     class StreamHandlerThread implements Runnable {
@@ -107,6 +107,10 @@ public abstract class QCmdShellTask implements QCmd {
         return str;
     }
     
+    public String PlatformDir() {
+        String str = System.getProperty(axoloti.Axoloti.PLATFORM_DIR);
+        return str;
+    }
     
     public String[] GetEnv() {
         ArrayList<String> list = new ArrayList<String>();
@@ -117,6 +121,7 @@ public abstract class QCmdShellTask implements QCmd {
         list.add((axoloti.Axoloti.HOME_DIR + "=" + HomeDir()));
         list.add((axoloti.Axoloti.LIBRARIES_DIR + "=" + LibrariesDir()));
         list.add((axoloti.Axoloti.FIRMWARE_DIR + "=" + FirmwareDir()));
+        list.add((axoloti.Axoloti.PLATFORM_DIR + "=" + PlatformDir()));
 
         String vars[] = new String[list.size()];
         list.toArray(vars);
@@ -128,10 +133,9 @@ public abstract class QCmdShellTask implements QCmd {
     }
 
     public QCmd Do(QCmdProcessor shellProcessor) {
-        Runtime runtime = Runtime.getRuntime();
         try {
             Process p1;
-            p1 = runtime.exec(GetExec(), GetEnv(), GetWorkingDir());
+            p1 = Runtime.getRuntime().exec(GetExec(), GetEnv(), GetWorkingDir());
 
             Thread thd_out = new Thread(new StreamHandlerThread(shellProcessor, p1.getInputStream()));
             thd_out.start();
