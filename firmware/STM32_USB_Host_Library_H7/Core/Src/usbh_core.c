@@ -19,7 +19,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_core.h"
-
+#include "UsbLog.h"
 
 /** @addtogroup USBH_LIB
   * @{
@@ -475,6 +475,8 @@ USBH_StatusTypeDef USBH_Process(USBH_HandleTypeDef *phost)
   __IO USBH_StatusTypeDef status = USBH_FAIL;
   uint8_t idx = 0U;
   uint8_t intf = 0U;
+
+  AddUsbLog(ltState, phost->gState);
 
   /* check for Host pending port disconnect event */
   if (phost->device.is_disconnected == 1U)
@@ -1305,6 +1307,7 @@ static void USBH_Process_OS(void const *argument)
   for (;;)
   {
     event = osMessageGet(((USBH_HandleTypeDef *)argument)->os_event, osWaitForever);
+    AddUsbLog(ltGet, event);
     // if (event.status == osEventMessage)
     {
       USBH_Process((USBH_HandleTypeDef *)argument);

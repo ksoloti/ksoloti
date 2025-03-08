@@ -25,9 +25,29 @@
 
 #include "midi.h"
 
+#include "UsbLog.h"
+
 #define HOST_POWERSW_CLK_ENABLE()          __GPIOC_CLK_ENABLE()
 #define HOST_POWERSW_PORT                  GPIOD
 #define HOST_POWERSW_VBUS                  GPIO_PIN_7
+
+#if USE_USB_LOG
+void osMessagePut(osMessageQId queue_id, uint32_t info, uint32_t millisec)
+{
+  AddUsbLog(ltPut, 1<<info);
+  if(port_is_isr_context()) 
+    chEvtSignalI (queue_id, 1<<info);
+  else                      
+    chEvtSignal (queue_id, 1<<info);    
+}
+
+void osMessagePutI(osMessageQId queue_id, uint32_t info, uint32_t millisec)
+{
+  AddUsbLog(ltPut, 1<<info);
+  chEvtSignal (queue_id,1<<info);
+}
+#endif
+
 
 
 void MIDI_CB(uint8_t a,uint8_t b,uint8_t c,uint8_t d){

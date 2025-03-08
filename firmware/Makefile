@@ -322,6 +322,7 @@ CSRC = $(ALLCSRC) \
   ${FIRMWARE}/axoloti_memory.c \
   ${FIRMWARE}/exceptions.c \
   ${FIRMWARE}/debug.c \
+  ${FIRMWARE}/UsbLog.c \
 
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # Ksoloti h747

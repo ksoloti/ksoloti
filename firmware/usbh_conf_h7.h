@@ -100,9 +100,10 @@
 #define osThreadTerminate(x) x
 
 #define osMessageQId Thread *
+
+#if !USE_USB_LOG
 #define osMessagePutI(q,val,time) chEvtSignalI (q,1<<val);
-//#define osMessagePut(q,val,time) chEvtSignal (q,1<<val);
-//#define osMessagePut(q,val,time) (port_is_isr_context() ? chEvtSignalI (q,1<<val) : chEvtSignal (q,1<<val))
+
 #define osMessagePut(q,val,time)    \
 ({                                  \
   if(port_is_isr_context())         \
@@ -110,6 +111,7 @@
   else                              \
     chEvtSignal (q,1<<val);         \
 })
+#endif
 
 #define osMessageGet(q,to) chEvtWaitOneTimeout(0xFF, MS2ST(to))
 #define osMessageQDef(name, queue_sz, type) \

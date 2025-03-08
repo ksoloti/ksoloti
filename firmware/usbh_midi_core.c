@@ -448,7 +448,21 @@ USBH_StatusTypeDef USBH_MIDI_ProcessInput(USBH_HandleTypeDef *phost) {
     switch (MIDI_Handle->state_in) {
         case MIDI_INIT:
             MIDI_Handle->state_in = MIDI_GET_DATA;
+
+            // The way this all works is a bit heath robinson
+            // The USBH state engine is running of off events
+            // it has no understanding of what these events actually are
+            // and it looks like a real hack job!
+            // This code only works because there are events queued that 
+            // call this twice to luckily change the state machine from MIDI_INIT
+            // to MIDI_GET_DATA. 
+            // The timing of the events on the H7 with the newest HAL Host lib
+            // is different and we only get here once, so the initial bulk request is never done
+            // and nothing then works!
+            // So for the H7 drop through to the next state immediately in order to kick everything off
+#if !BOARD_KSOLOTI_CORE_H743
             break;
+#endif
 
         case MIDI_GET_DATA:
             if (URB_state_in == USBH_URB_STALL) {
