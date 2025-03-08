@@ -34,15 +34,13 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-#include "usbh_midi_core.h"
-
-
-
 #define _USB_H_
-#include "ch.h"
 #include "hal.h"
+#include "ch.h"
 #include "axoloti_board.h"
 #include "exceptions.h"
+
+#include "usbh_midi_core.h"
 
 USB_Setup_TypeDef MIDI_Setup;
 

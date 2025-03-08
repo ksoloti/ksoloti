@@ -1300,12 +1300,12 @@ void USBH_OS_PutMessage(USBH_HandleTypeDef *phost, USBH_OSEventTypeDef message, 
 #if (osCMSIS < 0x20000U)
 static void USBH_Process_OS(void const *argument)
 {
-  osEvent event;
+  __attribute__((unused)) osEvent event;
 
   for (;;)
   {
     event = osMessageGet(((USBH_HandleTypeDef *)argument)->os_event, osWaitForever);
-    // TODOH7 if (event.status == osEventMessage)
+    // if (event.status == osEventMessage)
     {
       USBH_Process((USBH_HandleTypeDef *)argument);
     }

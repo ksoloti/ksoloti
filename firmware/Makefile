@@ -320,7 +320,8 @@ CSRC = $(ALLCSRC) \
   ${FIRMWARE}/watchdog.c \
   ${FIRMWARE}/sysmon.c \
   ${FIRMWARE}/axoloti_memory.c \
-  ${FIRMWARE}/exceptions.c 
+  ${FIRMWARE}/exceptions.c \
+  ${FIRMWARE}/debug.c \
 
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # Ksoloti h747
@@ -603,6 +604,7 @@ UDEFS = \
   -DTHUMB_NO_INTERWORKING \
   -DTHUMB_PRESENT \
   -DENABLE_SERIAL_DEBUG \
+  -DENABLE_EXCPT_DUMP
   
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # Ksoloti h743
@@ -612,8 +614,7 @@ ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
            -DCORE_CM7 
 else
   # Axoloti and Ksoloti f427
-  UDEFS += -DPATCH_ITCM=1 \
-           -DSTM32F427xx \
+  UDEFS += -DSTM32F427xx \
            -DARM_MATH_CM4
 endif
 

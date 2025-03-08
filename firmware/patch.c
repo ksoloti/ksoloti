@@ -427,7 +427,13 @@ static int StartPatch1(void) {
             }
             else if (loadPatchIndex == START_FLASH) {
                 /* Patch in flash sector 11 */
+                #if PATCH_ITCM
+                    #pragma GCC diagnostic ignored "-Wnonnull"
+                #endif                 
                 memcpy((uint8_t*) PATCHMAINLOC, (uint8_t*) PATCHFLASHLOC, PATCHFLASHSIZE);
+                #if PATCH_ITCM
+                    #pragma GCC diagnostic pop
+                #endif                 
                 if ((*(uint32_t*) PATCHMAINLOC != 0xFFFFFFFF) && (*(uint32_t*) PATCHMAINLOC != 0)) {
                     StartPatch1();
                 }

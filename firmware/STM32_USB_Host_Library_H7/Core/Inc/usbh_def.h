@@ -162,6 +162,7 @@ extern "C" {
 
 /* Descriptor Type and Descriptor Index  */
 /* Use the following values when calling the function USBH_GetDescriptor  */
+#ifndef USB_DESC_DEVICE
 #define  USB_DESC_DEVICE                    ((USB_DESC_TYPE_DEVICE << 8) & 0xFF00U)
 #define  USB_DESC_CONFIGURATION             ((USB_DESC_TYPE_CONFIGURATION << 8) & 0xFF00U)
 #define  USB_DESC_STRING                    ((USB_DESC_TYPE_STRING << 8) & 0xFF00U)
@@ -172,6 +173,7 @@ extern "C" {
 #define  USB_DESC_INTERFACE_POWER           ((USB_DESC_TYPE_INTERFACE_POWER << 8) & 0xFF00U)
 #define  USB_DESC_HID_REPORT                ((USB_DESC_TYPE_HID_REPORT << 8) & 0xFF00U)
 #define  USB_DESC_HID                       ((USB_DESC_TYPE_HID << 8) & 0xFF00U)
+#endif
 
 
 #define  USB_EP_TYPE_CTRL                                  0x00U

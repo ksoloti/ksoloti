@@ -59,6 +59,8 @@
 #include "hal.h"
 #include "axoloti_board.h"
 #include "sysmon.h"
+#include "debug.h"
+
 /**
  * @brief  Configures the FMC and GPIOs to interface with the SDRAM memory.
  *         This function must be called before any read/write operation
@@ -88,6 +90,8 @@
   //               ((uint32_t)MPU_Init->Size                    << MPU_RASR_SIZE_Pos) |
   //               ((uint32_t)MPU_Init->Enable                  << MPU_RASR_ENABLE_Pos);
   // }
+
+  extern void HAL_Delay(uint32_t Delay);
 
   static FMC_SDRAM_TypeDef *pSdramInstance = (FMC_SDRAM_TypeDef *)FMC_SDRAM_DEVICE;
 
@@ -137,10 +141,8 @@
     FMC_SDRAMInitStructure.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_1;
 
     /* FMC SDRAM bank initialization */
-    volatile HAL_StatusTypeDef res;
-    
-    res = FMC_SDRAM_Init(pSdramInstance, &FMC_SDRAMInitStructure);
-    res = FMC_SDRAM_Timing_Init(pSdramInstance, &FMC_SDRAMTimingInitStructure, FMC_SDRAM_BANK1);
+    FMC_SDRAM_Init(pSdramInstance, &FMC_SDRAMInitStructure);
+    FMC_SDRAM_Timing_Init(pSdramInstance, &FMC_SDRAMTimingInitStructure, FMC_SDRAM_BANK1);
 
     __FMC_ENABLE();
 
@@ -546,6 +548,8 @@ void memTest(void)
     }
     uint32_t uEnd = DWT->CYCCNT;
     uMs = RTT2MS(uEnd-uStart); 
+
+    LogUartMessage("MemTest linear write with linear congruential = %ums\n", uMs);
   }
 
   // scattered byte write at linear congruential generator addresses
@@ -578,6 +582,7 @@ void memTest(void)
     }
     uint32_t uEnd = DWT->CYCCNT;
     uMs = RTT2MS(uEnd-uStart); 
+    LogUartMessage("scattered byte write at linear congruential  = %ums\n", uMs);
   }
   palClearPad(LED2_PORT,LED2_PIN);
   palSetPad(LED1_PORT,LED1_PIN);

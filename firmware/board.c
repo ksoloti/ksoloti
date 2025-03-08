@@ -31,6 +31,10 @@
 #define AHB1_EN_MASK    STM32_GPIO_EN_MASK
 #define AHB1_LPEN_MASK  AHB1_EN_MASK
 
+// GPIO J and K not used
+#undef STM32_HAS_GPIOJ
+#undef STM32_HAS_GPIOK
+
 /**
  * @brief   GPIO port setup info.
  */
