@@ -82,22 +82,46 @@ extern void i2s_init(void);
 #define INBUILT_FLASHER_TEST 1
 #define MOUNTER_MAGIC 0x2a4d4f554e544552 /* *MOUNTER */
 #define FLASHER_MAGIC 0x2a464c4153484552 /* *FLASHER */
+
 volatile uint64_t g_startup_flags __attribute__ ((section (".noinit")));
+
 extern int mounter(void);
 extern void flasher(void);
 
+void SetStartupFlags(uint64_t uValue)
+{
+    g_startup_flags = uValue;
+#if BOARD_KSOLOTI_CORE_H743
+    SCB_CleanInvalidateDCache();
+#endif
+    NVIC_SystemReset();
+}
+
+void ResetStartupFlags(void)
+{
+    g_startup_flags = 0;
+#if BOARD_KSOLOTI_CORE_H743
+    SCB_CleanInvalidateDCache();
+#endif
+        
+}
+
+uint64_t GetStartupFlags(void)
+{
+    return g_startup_flags;
+}
+
 void StartFlasher(void)
 {
-    g_startup_flags = FLASHER_MAGIC;
-    NVIC_SystemReset();
+    SetStartupFlags(FLASHER_MAGIC);
 }
 
 void StartMounter(void)
 {
-    g_startup_flags = MOUNTER_MAGIC;
-    NVIC_SystemReset();
+    SetStartupFlags(MOUNTER_MAGIC);
 }
 #endif
+
 
 int main(void) {
 
@@ -120,26 +144,15 @@ int main(void) {
     #if INBUILT_MOUNTER_FLASHER
     // shall we run the flasher?
     // the flasher needs to run from ram and does not use chibios
-    if(g_startup_flags == FLASHER_MAGIC)
+    if(GetStartupFlags() == FLASHER_MAGIC)
     {
-        g_startup_flags=0;
+        ResetStartupFlags();
         flasher();
     }
 #endif
 
     halInit();
     chSysInit();
-
-
-#if INBUILT_MOUNTER_FLASHER
-    // shall we run the mounter?
-    // the mounter uses the chibios we have here running from flash
-    if(g_startup_flags == MOUNTER_MAGIC)
-    {
-        g_startup_flags=0;
-        mounter();
-    }
-#endif
 
 #ifdef FW_SPILINK
     pThreadSpilink = 0;
@@ -155,6 +168,16 @@ int main(void) {
         MPU_RASR_ATTR_NON_CACHEABLE |
         MPU_RASR_SIZE_8K |
         MPU_RASR_ENABLE);
+
+#if INBUILT_MOUNTER_FLASHER 
+    // shall we run the mounter?
+    // the mounter uses the chibios we have here running from flash
+    if(GetStartupFlags() == MOUNTER_MAGIC)
+    {
+        ResetStartupFlags();
+        mounter();
+    }
+#endif
 
     sdcard_init();
     sysmon_init();
