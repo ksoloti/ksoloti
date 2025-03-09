@@ -20,7 +20,6 @@
 #include "axoloti_defines.h"
 
 #if BOARD_KSOLOTI_CORE_H743
-    // TODOH7
     #include "sdram.h"
     #include "stm32h7xx_ll_fmc.h"
 #else
@@ -60,7 +59,7 @@
 #endif
 
 #if BOARD_KSOLOTI_CORE_H743
-    // TODOH7
+    // done in the makefile like it should be!
 #else
     #include "sdram.c"
     #include "stm32f4xx_fmc.c"
@@ -68,13 +67,6 @@
 
 #include "board.h"
 
-
-// #if BOARD_KSOLOTI_CORE_H743
-//   // TODOH7 - will be in SAI
-//   uint32_t HAL_GetTick(void) {
-//     return RTT2MS(DWT->CYCCNT);
-//   }
-// #endif
 
 /*===========================================================================*/
 /* Initialization and main thread.                                           */
@@ -234,12 +226,9 @@ int main(void) {
         // watchdog_init();
         chThdSleepMilliseconds(1);
     }
-#if BOARD_KSOLOTI_CORE_H743
-    // TODOH7
+
     MY_USBH_Init();
-#else
-    MY_USBH_Init();
-#endif
+
     if (!exception_check()) {
         /* Only try mounting SD and booting a patch when no exception is reported */
 
