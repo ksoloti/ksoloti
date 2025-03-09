@@ -21,6 +21,7 @@
 #include "usbh_hid.h"
 #include "usbh_hid_parser.h"
 #include "usbh_midi_core.h"
+#include "usbh_audio.h"
 #include "ch.h"
 
 #include "midi.h"
@@ -653,6 +654,11 @@ void MY_USBH_Init(void) {
   else
     USBH_DbgLog("Registered USBH_VENDOR_CLASS");
 
+  // if(USBH_OK != USBH_RegisterClass(&hUSBHost, USBH_AUDIO_CLASS))
+  //   USBH_DbgLog("Failed to register USBH_AUDIO_CLASS");
+  // else
+  //   USBH_DbgLog("Registered USBH_AUDIO_CLASS");
+
   if(USBH_OK != USBH_RegisterClass(&hUSBHost, USBH_MIDI_CLASS))
     USBH_DbgLog("Failed to register USBH_MIDI_CLASS");
   else
@@ -662,6 +668,7 @@ void MY_USBH_Init(void) {
     USBH_DbgLog("Failed to register USBH_HID_CLASS");
   else
     USBH_DbgLog("Registered USBH_HID_CLASS");
+
 
   /* Start Host Process */
   USBH_Start(&hUSBHost);

@@ -70,7 +70,7 @@
 #define USBH_MAX_NUM_INTERFACES               6
 #define USBH_MAX_NUM_CONFIGURATION            1
 #define USBH_KEEP_CFG_DESCRIPTOR              1
-#define USBH_MAX_NUM_SUPPORTED_CLASS          3
+#define USBH_MAX_NUM_SUPPORTED_CLASS          4
 #define USBH_MAX_SIZE_CONFIGURATION           0x200
 #define USBH_MAX_DATA_BUFFER                  0x200
 #define USBH_DEBUG_LEVEL                      3
@@ -124,6 +124,8 @@
 #define osMessageDelete(x) x
 #define osMessageWaiting(x) 0
 typedef int osEvent;
+
+#define osDelay(x) HAL_Delay(x)
 
 
 // Memory management macros 

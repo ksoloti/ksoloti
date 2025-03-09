@@ -121,7 +121,6 @@ extern void fakefree(void * p);
 #define osEventMessage 1
 typedef int osEvent;
 
-
 //#define DEBUG_ON_GPIO
 
  /* DEBUG macros */

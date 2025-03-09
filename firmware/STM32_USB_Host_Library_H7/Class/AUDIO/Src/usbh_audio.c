@@ -196,7 +196,8 @@ static USBH_StatusTypeDef USBH_AUDIO_InterfaceInit(USBH_HandleTypeDef *phost)
   uint16_t ep_size_out = 0U;
   uint16_t ep_size_in = 0U;
 
-  interface = USBH_FindInterface(phost, AC_CLASS, USB_SUBCLASS_AUDIOCONTROL, 0x00U);
+  interface = USBH_FindInterface(phost, AC_CLASS, USB_SUBCLASS_AUDIOCONTROL, 0x20U);
+  // TODOH7 (why 0?) interface = USBH_FindInterface(phost, AC_CLASS, USB_SUBCLASS_AUDIOCONTROL, 0x00U);
 
   if (interface == 0xFFU) /* Not Valid Interface */
   {
