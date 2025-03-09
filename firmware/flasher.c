@@ -23,7 +23,7 @@
 #include "exceptions.h"
 
 
-void  __attribute__ ((section (".ram3text"))) KsolotiSleepMilliseconds(uint32_t uMiliseconds)
+void  __attribute__ ((section (".ramtext"))) KsolotiSleepMilliseconds(uint32_t uMiliseconds)
 { 
     uint32_t uTotalTicks = MS2RTT(uMiliseconds); 
     uint32_t uStartTick = DWT->CYCCNT; 
@@ -75,7 +75,7 @@ void dbgPrintHexDigit(uint8_t b)
     
     #define FLASH_BASE_ADDR 0x08000000
 
-    void __attribute__ ((section (".ram3text"))) FlashSystemReset(void)
+    void __attribute__ ((section (".ramtext"))) FlashSystemReset(void)
     {
     __DSB();                                                          /* Ensure all outstanding memory accesses included
                                                                         buffered write are completed before reset */
@@ -91,7 +91,7 @@ void dbgPrintHexDigit(uint8_t b)
     }
 
 
-    void __attribute__ ((section (".ram3text"))) DisplayAbortErr(int err)
+    void __attribute__ ((section (".ramtext"))) DisplayAbortErr(int err)
     {
         DBGPRINTCHAR('0' + err);
 
@@ -110,7 +110,7 @@ void dbgPrintHexDigit(uint8_t b)
         FlashSystemReset();
     }
 
-    static uint32_t  __attribute__ ((section (".ram3text"))) revbit(uint32_t data) 
+    static uint32_t  __attribute__ ((section (".ramtext"))) revbit(uint32_t data) 
     {
         uint32_t result;
         __ASM
@@ -118,7 +118,7 @@ void dbgPrintHexDigit(uint8_t b)
         return result;
     }
     
-    uint32_t  __attribute__ ((section (".ram3text"))) FlashCalcCRC32(uint8_t *buffer, uint32_t size) 
+    uint32_t  __attribute__ ((section (".ramtext"))) FlashCalcCRC32(uint8_t *buffer, uint32_t size) 
     {
         uint32_t i, j;
         uint32_t ui32x;
@@ -157,7 +157,7 @@ void dbgPrintHexDigit(uint8_t b)
         return ui32x; //now the output is compatible with windows/winzip/winrar
     }
     
-    static int __attribute__ ((section (".ram3text"))) FlashWaitForLastOperation(void) 
+    static int __attribute__ ((section (".ramtext"))) FlashWaitForLastOperation(void) 
     {
         while (FLASH->SR & FLASH_SR_BSY) {
             WWDG->CR = WWDG_CR_T;
@@ -165,7 +165,7 @@ void dbgPrintHexDigit(uint8_t b)
         return FLASH->SR;
     }
 
-    static void  __attribute__ ((section (".ram3text"))) FlashEraseSector(int sector) 
+    static void  __attribute__ ((section (".ramtext"))) FlashEraseSector(int sector) 
     {
         // assume VDD>2.7V
         FLASH->CR &= ~FLASH_CR_PSIZE;
@@ -180,7 +180,7 @@ void dbgPrintHexDigit(uint8_t b)
         FlashWaitForLastOperation();
     }
 
-    int  __attribute__ ((section (".ram3text"))) FlashProgramWord(uint32_t Address, uint32_t Data) 
+    int  __attribute__ ((section (".ramtext"))) FlashProgramWord(uint32_t Address, uint32_t Data) 
     {
         int status;
 
@@ -203,7 +203,7 @@ void dbgPrintHexDigit(uint8_t b)
         return status;
     }
 
-    static void  __attribute__ ((section (".ram3text"))) FlashRamFunction(void)
+    static void  __attribute__ ((section (".ramtext"))) FlashRamFunction(void)
     {
         halInit();
 
@@ -351,10 +351,10 @@ void dbgPrintHexDigit(uint8_t b)
         FlashSystemReset();
     }
 
-    extern void *_sram3_text;
-    extern void *_sram3_start;
-    extern void *_sram3_text_start;
-    extern void *_sram3_text_end;
+    extern void *_ram_text;
+    extern void *_ram_start;
+    extern void *_ram_text_start;
+    extern void *_ram_text_end;
 
     void flasher(void)
     {
@@ -362,9 +362,9 @@ void dbgPrintHexDigit(uint8_t b)
     configSDRAM();
 
     // copy code to ram
-    volatile uint32_t *pSrc = (uint32_t *)&_sram3_start;
-    volatile uint32_t *pDst = (uint32_t *)&_sram3_text_start;
-    volatile uint32_t *pEnd = (uint32_t *)&_sram3_text_end;
+    volatile uint32_t *pSrc = (uint32_t *)&_ram_start;
+    volatile uint32_t *pDst = (uint32_t *)&_ram_text_start;
+    volatile uint32_t *pEnd = (uint32_t *)&_ram_text_end;
     
     while(pDst < pEnd)
     {
