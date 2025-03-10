@@ -61,7 +61,7 @@ public class QCmdCompileFirmware extends QCmdShellTask {
         }
 
         if (OSDetect.getOS() == OSDetect.OS.WIN) {
-            String str = PlatformDir() + "\\bin\\sh.exe " + FirmwareDir() +"\\compile_firmware.sh " + boarddef;
+            String str = FirmwareDir() + "\\compile_firmware_win.bat " + boarddef;
             return str.split("\\s+");
         }
         else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {

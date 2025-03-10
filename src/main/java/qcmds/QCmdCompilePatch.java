@@ -84,7 +84,7 @@ public class QCmdCompilePatch extends QCmdShellTask {
             }
 
             if (OSDetect.getOS() == OSDetect.OS.WIN) {
-                String str = PlatformDir() + "\\bin\\sh.exe " + FirmwareDir() + "\\compile_patch.sh " + boarddef + fwoptiondef;
+                String str = FirmwareDir() + "\\compile_patch_win.bat " + boarddef + fwoptiondef;
                 return str.split("\\s+");
             } else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {
                 String str = "/bin/sh " + FirmwareDir() + "/compile_patch.sh " + boarddef + fwoptiondef;

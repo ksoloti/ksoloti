@@ -100,10 +100,6 @@ CP   = $(TRGT)objcopy
 OD   = $(TRGT)objdump
 SIZ  = $(TRGT)size
 
-axoloti_libraries ?= ..
-axoloti_firmware  ?= ../firmware
-axoloti_home      ?= ..
-
 EMPTY := 
 SPACE := $(EMPTY) $(EMPTY)
 
