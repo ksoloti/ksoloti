@@ -73,7 +73,7 @@ public class VUComponentHorizontal extends ADispComponent {
         // peak
         if (valuesq > peakaccumvalue) {
             peakaccumvalue = valuesq;
-            peakHoldTimer = 30;
+            peakHoldTimer = 40;
         }
         else if (peakHoldTimer > 0){
             peakHoldTimer--; 
