@@ -272,21 +272,21 @@ endif
 
 %.dmp: %.elf
 ifeq ($(USE_VERBOSE_COMPILE),yes)
-	$(OD) $(ODFLAGS) $< > $@
-	$(SZ) $<
+	$(OD) $(ODFLAGS) "$<" > "$@"
+	$(SZ) "$<"
 else
 	@echo Creating $@
-	@$(OD) $(ODFLAGS) $< > $@
+	@$(OD) $(ODFLAGS) "$<" > "$@"
 	@echo
-	@$(SZ) $<
+	@$(SZ) "$<"
 endif
 
 %.list: %.elf
 ifeq ($(USE_VERBOSE_COMPILE),yes)
-	$(OD) $(ODFLAGS) $< > $@
+	$(OD) $(ODFLAGS) "$<" > "$@"
 else
 	@echo Creating $@
-	@$(OD) $(ODFLAGS) -S $< > $@
+	@$(OD) $(ODFLAGS) -S "$<" > "$@"
 	@echo
 	@echo Done
 endif
