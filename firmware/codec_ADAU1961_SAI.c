@@ -351,20 +351,25 @@ static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
         palSetPadMode(GPIOA, 0, PAL_MODE_OUTPUT_PUSHPULL);
         palSetPad(GPIOA, 0);
 #endif
-#ifdef FW_I2SCODEC
-        /* Transfer I2S buffers in an inverted fashion to SAI buffers (i2s_rbuf VS SAI rbuf2, ...)*/
-        i2s_computebufI(i2s_rbuf, i2s_buf2);
-#endif
+
         computebufI(rbuf2, buf);
-    }
-    else {
+
 #ifdef FW_I2SCODEC
-        /* Transfer I2S buffers in an inverted fashion to SAI buffers (i2s_rbuf2 VS SAI rbuf, ...)*/
         i2s_computebufI(i2s_rbuf2, i2s_buf);
 #endif
-        computebufI(rbuf, buf2);
+
     }
+    else {
+        computebufI(rbuf, buf2);
+
+#ifdef FW_I2SCODEC
+        i2s_computebufI(i2s_rbuf, i2s_buf2);
+#endif
+
+    }
+
     dmaStreamClearInterrupt(sai_a_dma);
+
 #ifdef I2S_DEBUG
     palClearPad(GPIOA, 0);
 #endif

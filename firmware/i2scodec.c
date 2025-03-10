@@ -39,9 +39,6 @@
 #define STM32_SPI_I2S3_DMA_PRIORITY         1
 #define STM32_SPI_I2S3_IRQ_PRIORITY         3
 
-/* Required by wait_sai_dma_tc_flag(): access to SAI DMA's transfer complete flag */
-#define STM32_SAI_A_DMA_STREAM              STM32_DMA_STREAM_ID(2, 1)
-
 #define I2S3_WS_PORT       GPIOA
 #define I2S3_WS_PIN        15
 #define I2S3_BCLK_PORT     GPIOB
@@ -58,52 +55,11 @@ const stm32_dma_stream_t* i2s_tx_dma;
 const stm32_dma_stream_t* i2s_rx_dma;
 
 uint32_t i2s_tc_interrupt_timestamp;
-extern uint32_t codec_interrupt_timestamp;
 
 extern int32_t i2s_buf[DOUBLE_BUFSIZE];
 extern int32_t i2s_buf2[DOUBLE_BUFSIZE];
 extern int32_t i2s_rbuf[DOUBLE_BUFSIZE];
 extern int32_t i2s_rbuf2[DOUBLE_BUFSIZE];
-
-
-void wait_sai_dma_tc_flag(void) {
-
-
-    while (1) {
-
-            /* Compare timestamps and wait until the two interrupts trigger at the correct timing. */
-            volatile int32_t diff = ((codec_interrupt_timestamp - i2s_tc_interrupt_timestamp) * 1000) / (STM32_SYSCLK / 1000000UL); /* Time in ns */
-
-            /* The SAI DMA Transfer Complete flag must be set,
-             * which marks the beginning of the next 16*2-sample buffer transfer.
-             * I2S "complete transfer" needs to occur before SAI interrupt fires.
-             * since I2S double buffers are being filled in an inverted fashion to the SAI buffers
-             * (meaning I2S "buf2" and "rbuf" are being transmitted while SAI "buf" and "rbuf2" are being transmitted)
-             * setting it to "transfer complete" around half a k-cycle (=166.7 us) before SAI TC interrupt will give us
-             * plenty of tolerance.
-             */
-            if ((STM32_DMA_STREAM(STM32_SAI_A_DMA_STREAM)->stream->CR & STM32_DMA_CR_CT) && diff > 165000 && diff < 168000) {
-
-                /* We have a lock! Correct frequency to 48000 Hz */ 
-
-                /* Disable I2S */
-                SPI3->I2SCFGR &= ~SPI_I2SCFGR_I2SE;
-                I2S3ext->I2SCFGR &= ~SPI_I2SCFGR_I2SE;
-
-                /* Set PLLI2S and I2S config to correct frequency */
-                RCC->PLLI2SCFGR = STM32_PLLI2SR | STM32_PLLI2SN;
-                SPI3->I2SPR = 0x000C | SPI_I2SPR_ODD;
-
-                /* Re-enable I2S*/
-                SPI3->I2SCFGR |= SPI_I2SCFGR_I2SE;
-                I2S3ext->I2SCFGR |= SPI_I2SCFGR_I2SE;
-                break;
-            }
-        else {
-            chThdSleepMicroseconds(1);
-        }
-    }
-}
 
 
 static void dma_i2s_tx_interrupt(void* dat, uint32_t flags) {
@@ -113,42 +69,45 @@ static void dma_i2s_tx_interrupt(void* dat, uint32_t flags) {
 
     if ((i2s_tx_dma)->stream->CR & STM32_DMA_CR_CT) {
         i2s_tc_interrupt_timestamp = hal_lld_get_counter_value();
+
 #ifdef I2S_DEBUG
         palSetPadMode(GPIOA, 1, PAL_MODE_OUTPUT_PUSHPULL);
         palSetPad(GPIOA, 1);
 #endif
+
     }
     else {
+        /* No action */
     }
     dmaStreamClearInterrupt(i2s_tx_dma);
+
 #ifdef I2S_DEBUG
     palClearPad(GPIOA, 1);
 #endif
+
 }
 
 
 void i2s_peripheral_init(void)  {
 
-    /* release I2S3 */
+    /* Release I2S3 */
     palSetPadMode(I2S3_WS_PORT, I2S3_WS_PIN, PAL_MODE_INPUT);
     palSetPadMode(I2S3_BCLK_PORT, I2S3_BCLK_PIN, PAL_MODE_INPUT);
     //palSetPadMode(I2S3_MCLK_PORT, I2S3_MCLK_PIN, PAL_MODE_INPUT);
     palSetPadMode(I2S3_SDIN_PORT, I2S3_SDIN_PIN, PAL_MODE_INPUT);
     palSetPadMode(I2S3_SDOUT_PORT, I2S3_SDOUT_PIN, PAL_MODE_INPUT);
 
+    /* Enable SPI3 clock */
     rccEnableSPI3(false);
-    /* configure I2S peripheral */
-    //RCC->PLLI2SCFGR = STM32_PLLI2SR | ((STM32_PLLI2SN_VALUE-1)<<6); /* Set PLLI2S slower so that I2S drifts, and I2S and SAI interrupts can cross */
-    //SPI3->I2SPR = 0x000C | SPI_I2SPR_ODD;
 
-    /* Set I2S sample rate at 47991.07031 Hz (RM0090) ... Let me explain. This is the closest to our target of 48000 Hz without actually being 48000 Hz. This will make I2S rate slowly drift towards SAI and allow us to catch a moment when I2S and SAI interrupts are at the right timing in respect to each other. */
-    RCC->PLLI2SCFGR = (3<<28) | (259<<6);
-    SPI3->I2SPR = 0x0003 | SPI_I2SPR_ODD | SPI_I2SPR_MCKOE;
+    /* Configure I2S peripheral */
+    /* I2S3: slave transmit, Philips standard, 32-bit data length (32-bit channel length is set implicitly by data length) */
+    SPI3->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_DATLEN_1;
 
-    SPI3->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_1 | SPI_I2SCFGR_DATLEN_1; /* I2S master transmit, Philips standard, 32-bit data length, 32-bit channel length */
-    I2S3ext->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_0 | SPI_I2SCFGR_DATLEN_1; /* I2S slave receive, Philips standard, 32-bit data length, 32-bit channel length */
+    /* I2S3ext: slave receive, Philips standard, 32-bit data length (32-bit channel length is set implicitly by data length) */
+    I2S3ext->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_0 | SPI_I2SCFGR_DATLEN_1;
 
-    /* reassign I2S3 */
+    /* Reassign I2S3 */
     palSetPadMode(I2S3_WS_PORT, I2S3_WS_PIN, PAL_MODE_ALTERNATE(6));
     palSetPadMode(I2S3_BCLK_PORT, I2S3_BCLK_PIN, PAL_MODE_ALTERNATE(6));
     // palSetPadMode(I2S3_MCLK_PORT, I2S3_MCLK_PIN, PAL_MODE_ALTERNATE(6));
@@ -171,10 +130,10 @@ void i2s_dma_init(void) {
         STM32_DMA_CR_MINC |
         STM32_DMA_CR_MSIZE_WORD |
         STM32_DMA_CR_PSIZE_HWORD |
-        STM32_DMA_CR_TEIE |
-        STM32_DMA_CR_TCIE;
+        STM32_DMA_CR_TEIE;
+        //STM32_DMA_CR_TCIE;
 
-    bool_t b = dmaStreamAllocate(i2s_tx_dma, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t) dma_i2s_tx_interrupt, (void*) 0);
+    bool_t b = dmaStreamAllocate(i2s_tx_dma, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t) 0, (void*) 0);
 
     dmaStreamSetPeripheral(i2s_tx_dma, &(SPI3->DR));
     dmaStreamSetMemory0(i2s_tx_dma, i2s_buf);
@@ -217,16 +176,17 @@ void i2s_init(void) {
 
     i2s_dma_init();
 
-    /* Sync I2S DMA pointer to SAI... */
+    /* Enable DMA streams */
     dmaStreamClearInterrupt(i2s_tx_dma);
     dmaStreamEnable(i2s_tx_dma);
     dmaStreamClearInterrupt(i2s_rx_dma);
     dmaStreamEnable(i2s_rx_dma);
+
+    /* Enable DMA, I2S */
     SPI3->CR2 = SPI_CR2_TXDMAEN;
     I2S3ext->CR2 = SPI_CR2_RXDMAEN;
     SPI3->I2SCFGR |= SPI_I2SCFGR_I2SE;
     I2S3ext->I2SCFGR |= SPI_I2SCFGR_I2SE;
-    wait_sai_dma_tc_flag();
 }
 
 
