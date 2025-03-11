@@ -66,7 +66,7 @@
 #endif
 
 #include "board.h"
-
+#include "ksoloti_boot_options.h"
 
 /*===========================================================================*/
 /* Initialization and main thread.                                           */
@@ -78,50 +78,14 @@ extern void MY_USBH_Init(void);
 extern void i2s_init(void);
 #endif
 
-#if INBUILT_MOUNTER_FLASHER
-#define INBUILT_FLASHER_TEST 1
-#define MOUNTER_MAGIC 0x2a4d4f554e544552 /* *MOUNTER */
-#define FLASHER_MAGIC 0x2a464c4153484552 /* *FLASHER */
-
-volatile uint64_t g_startup_flags __attribute__ ((section (".noinit")));
-
-extern int mounter(void);
-extern void flasher(void);
-
-void SetStartupFlags(uint64_t uValue)
+// YODOH7 maybe think of keepinf only the ram functions for both this and the slash stuff?
+void KsolotiSleepMilliseconds(uint32_t uMiliseconds)
 {
-    g_startup_flags = uValue;
-#if BOARD_KSOLOTI_CORE_H743
-    SCB_CleanInvalidateDCache();
-#endif
-    NVIC_SystemReset();
+  uint32_t uTotalTicks = MS2RTT(uMiliseconds);
+  uint32_t uStartTick = DWT->CYCCNT;
+  while (DWT->CYCCNT - uStartTick < uTotalTicks)
+    ;
 }
-
-void ResetStartupFlags(void)
-{
-    g_startup_flags = 0;
-#if BOARD_KSOLOTI_CORE_H743
-    SCB_CleanInvalidateDCache();
-#endif
-        
-}
-
-uint64_t GetStartupFlags(void)
-{
-    return g_startup_flags;
-}
-
-void StartFlasher(void)
-{
-    SetStartupFlags(FLASHER_MAGIC);
-}
-
-void StartMounter(void)
-{
-    SetStartupFlags(MOUNTER_MAGIC);
-}
-#endif
-
 
 int main(void) {
 
@@ -141,16 +105,10 @@ int main(void) {
     SYSCFG->MEMRMP |= 0x03;
 #endif
 
-    #if INBUILT_MOUNTER_FLASHER
-    // shall we run the flasher?
-    // the flasher needs to run from ram and does not use chibios
-    if(GetStartupFlags() == FLASHER_MAGIC)
-    {
-        ResetStartupFlags();
-        flasher();
-    }
-#endif
+    // Check to see if we need to start the flasher.
+    CheckForFlasherBoot();
 
+    // Initialise HAL and Chibios
     halInit();
     chSysInit();
 
@@ -158,7 +116,8 @@ int main(void) {
     pThreadSpilink = 0;
 #endif
 
-    // Use the MPU ro turn cache off for the memory
+#if BOARD_KSOLOTI_CORE_H743
+    // Use the MPU to turn cache off for the memory
     // we use to store the sdcard io buffers in.
     extern uint32_t *__ram0nc_base__;
     mpuConfigureRegion(MPU_REGION_7,
@@ -168,20 +127,18 @@ int main(void) {
         MPU_RASR_ATTR_NON_CACHEABLE |
         MPU_RASR_SIZE_8K |
         MPU_RASR_ENABLE);
-
-#if INBUILT_MOUNTER_FLASHER 
-    // shall we run the mounter?
-    // the mounter uses the chibios we have here running from flash
-    if(GetStartupFlags() == MOUNTER_MAGIC)
-    {
-        ResetStartupFlags();
-        mounter();
-    }
 #endif
 
+    // Check to see if we need to start the Mounter.
+    CheckForMounterBoot();
+
+    // Start the SDCard driver
     sdcard_init();
+
+    // Start the system monitor
     sysmon_init();
 
+    // If we have serial debug turned on, init the GPIO pins and start the driver
 #if ENABLE_SERIAL_DEBUG
     /* SD2 for serial debug output */
     palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7) | PAL_MODE_INPUT); /* RX */
@@ -196,6 +153,7 @@ int main(void) {
 
 #endif
 
+    
     exception_init();
 
     InitPatch0();

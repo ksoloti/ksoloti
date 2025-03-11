@@ -91,7 +91,10 @@
         "sysmon.h": "c",
         "stm32h7xx_ll_fmc.h": "c",
         "core_cm4.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "ksoloti_boot_options.h": "c",
+        "stm32f4xx_hal_i2c.h": "c",
+        "stm32f4xx.h": "c"
     },
     "C_Cpp.default.compilerPath": "/Applications/ARM/bin/arm-none-eabi-gcc",
     "C_Cpp.default.cppStandard": "c++11",

@@ -113,6 +113,16 @@ SECTIONS
         __ram0nc_free__ = .;
     } > ram0nc
 
+    .fram_text :
+    {
+        . = ALIGN(4);
+        PROVIDE(_fram_text = .);
+        _fram_text_start_flash = LOADADDR(.fram_text);
+        _fram_text_start = .;
+        KEEP(*(.framtext*))
+        _fram_text_end = .;
+    } > ram0nc AT > TEXT_FLASH
+  
     .ram1_init : ALIGN(4)
     {
         __ram1_init_text__ = LOADADDR(.ram1_init);

@@ -57,7 +57,7 @@
 #define SPILINK_DMA_SECTION     __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)))
 #define FAST_DATA_SECTION       __attribute__ ((section (".ram5"))) __attribute__ ((aligned (32)))
 #define SDCARD_DATA_SECTION     __attribute__ ((section (".ram0nc"))) __attribute__ ((aligned (32)))
-
+#define FRAMTEXT_CODE_SECTION   __attribute__ ((section (".framtext"))) 
 /*
  * HAL driver system settings.
  */
@@ -518,9 +518,9 @@
 #define LCD_DATA_SECTION        __attribute__ ((section (".sram2")))
 #define KVP_DATA_SECTION        __attribute__ ((section (".sram2")))
 #define SPILINK_DATA_SECTION    __attribute__ ((section (".sram2")))
-#define FAST_DATA_SECTION       __attribute__ ((section (".ccmramend")));
-#define SDCARD_DATA_SECTION     __attribute__ ((section (".bss")));
-
+#define FAST_DATA_SECTION       __attribute__ ((section (".ccmramend")))
+#define SDCARD_DATA_SECTION     __attribute__ ((section (".sram3")))
+#define FRAMTEXT_CODE_SECTION   __attribute__ ((section (".framtext"))) 
 /*
  * HAL driver system settings.
  */

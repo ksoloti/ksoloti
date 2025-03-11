@@ -35,7 +35,7 @@ void LogUartMessageEol(const char *format, ...)
 
 // Exception code from https://forum.chibios.org/memberlist.php?mode=viewprofile&u=783 at https://forum.chibios.org/viewtopic.php?t=3819#p28370
 
-#if defined(ENABLE_EXCPT_DUMP)
+#if ENABLE_EXCPT_DUMP
 
 /**
  * Executes the BKPT instruction that causes the debugger to stop.
@@ -63,13 +63,20 @@ typedef enum
 
 char exceptionstr[50];
 
-void sendchar(char c)
-{
-
-  while (!(USART2->ISR & USART_ISR_TXE_TXFNF))
-    ;
-  USART2->TDR = (c);
-}
+#if BOARD_KSOLOTI_CORE_H743
+  void sendchar(char c)
+  {
+    while (!(USART2->ISR & USART_ISR_TXE_TXFNF))
+      ;
+    USART2->TDR = (c);
+  }
+#else
+  void sendchar(char c)
+  {
+      while (!(USART2->SR & USART_SR_TXE));
+        USART2->DR = ( c );
+  }
+#endif
 
 void exception_dump(char *s)
 {

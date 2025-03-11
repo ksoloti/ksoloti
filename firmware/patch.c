@@ -33,6 +33,7 @@
 #include "spilink.h"
 #endif
 #include "audio_usb.h"
+#include "debug.h"
 
 #ifdef FW_I2SCODEC
 #include "i2scodec.h"
@@ -426,14 +427,15 @@ static int StartPatch1(void) {
                 if (!res) StartPatch1();
             }
             else if (loadPatchIndex == START_FLASH) {
-                /* Patch in flash sector 11 */
+                /* Patch in flash sector 11 on F4 sector 8 on H7*/
                 #if PATCH_ITCM
                     #pragma GCC diagnostic ignored "-Wnonnull"
                 #endif                 
                 memcpy((uint8_t*) PATCHMAINLOC, (uint8_t*) PATCHFLASHLOC, PATCHFLASHSIZE);
                 #if PATCH_ITCM
                     #pragma GCC diagnostic pop
-                #endif                 
+                #endif      
+                volatile uint32_t uVal = *(uint32_t*) PATCHMAINLOC;           
                 if ((*(uint32_t*) PATCHMAINLOC != 0xFFFFFFFF) && (*(uint32_t*) PATCHMAINLOC != 0)) {
                     StartPatch1();
                 }

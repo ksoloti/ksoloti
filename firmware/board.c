@@ -214,12 +214,41 @@ void stm32_gpio_init(void)
  * @details This initialization must be performed just after stack setup
  *          and before any other initialization.
  */
+
+#define EARLY_FRAM_COPY 1
+
+#if EARLY_FRAM_COPY
+extern void *_fram_text;
+extern void *_fram_text_start_flash;
+extern void *_fram_text_start;
+extern void *_fram_text_end;
+#endif
+
 void __early_init(void)
 {
     stm32_gpio_init();
     exception_check_DFU();
     stm32_clock_init();
 
+#if EARLY_FRAM_COPY
+    // copy any ram code from flash to ram
+    volatile uint32_t *pSrc = (uint32_t *)&_fram_text_start_flash;
+    volatile uint32_t *pDst = (uint32_t *)&_fram_text_start;
+    volatile uint32_t *pEnd = (uint32_t *)&_fram_text_end;
+
+    while (pDst < pEnd)
+    {
+      *pDst = *pSrc;
+      pDst++;
+      pSrc++;
+    }
+
+#if BOARD_KSOLOTI_CORE_H743
+    SCB_CleanInvalidateDCache();
+    SCB_InvalidateICache();
+#endif
+#endif
+  
 #if TEST_RISE_FALL
     palSetPadMode(GPIOC, 3, PAL_MODE_OUTPUT_PUSHPULL | PAL_STM32_OSPEED_HIGHEST);
     palSetPadMode(GPIOC, 2, PAL_MODE_OUTPUT_PUSHPULL | PAL_STM32_OSPEED_HIGHEST);

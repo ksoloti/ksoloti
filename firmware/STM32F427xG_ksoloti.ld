@@ -169,14 +169,14 @@ SECTIONS
         __data_end__ = .;
     } > RAM AT > FLASH
 
-    .ram_text :
+    .fram_text :
     {
         . = ALIGN(4);
-        PROVIDE(_ram_text = .);
-        _ram_start = LOADADDR(.ram_text);
-        _ram_text_start = .;
-        *(.ramtext)
-        _ram_text_end = .;
+        PROVIDE(_fram_text = .);
+        _fram_text_start_flash = LOADADDR(.fram_text);
+        _fram_text_start = .;
+        *(.framtext)
+        _fram_text_end = .;
     } > SRAM3 AT > FLASH
 
     .flashend :

@@ -30,7 +30,7 @@ ifeq ($(USE_OPT),)
   USE_OPT = \
     --specs=nano.specs \
     --specs=nosys.specs \
-    -Og \
+    -O2 \
     -Wno-implicit-fallthrough \
     -Wno-return-type \
     -Wno-unused-function \
@@ -49,7 +49,8 @@ ifeq ($(USE_OPT),)
     -mfloat-abi=hard \
     -mno-thumb-interwork \
     -mthumb \
-    -mword-relocations
+    -mword-relocations \
+    -fno-delete-null-pointer-checks
 endif
 
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
@@ -57,11 +58,15 @@ ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   USE_OPT +=  -mcpu=cortex-m7 \
               -mfpu=fpv5-sp-d16 \
               -mtune=cortex-m7 
+  MCU  = cortex-m7
 else
   # Axoloti and Ksoloti f427
   USE_OPT +=  -mcpu=cortex-m4 \
               -mfpu=fpv4-sp-d16 \
               -mtune=cortex-m4 
+
+  MCU  = cortex-m4
+
 endif
 
 ifneq ($(FWOPTIONDEF),)
@@ -323,6 +328,7 @@ CSRC = $(ALLCSRC) \
   ${FIRMWARE}/exceptions.c \
   ${FIRMWARE}/debug.c \
   ${FIRMWARE}/UsbLog.c \
+  ${FIRMWARE}/ksoloti_boot_options.c   
 
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # Ksoloti h747
@@ -513,7 +519,7 @@ ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   INCDIR += ${FIRMWARE}/STM32H7xx_HAL_Driver/Inc \
             ${FIRMWARE}/STM32_USB_Host_Library_H7/Core/Inc \
             ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/HID/Inc \
-            ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/AUDIO/Inc \
+            ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/AUDIO/Inc 
 else
   # Axoloti and Ksoloti f427
   INCDIR += ${FIRMWARE}/STM32F4xx_HAL_Driver/Inc \
@@ -528,7 +534,6 @@ endif
 # Compiler settings
 #
 
-MCU  = cortex-m4
 
 TRGT = arm-none-eabi-
 CC   = $(TRGT)gcc 

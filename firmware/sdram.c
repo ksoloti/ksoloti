@@ -61,6 +61,8 @@
 #include "sysmon.h"
 #include "debug.h"
 
+extern void KsolotiSleepMilliseconds(uint32_t uMiliseconds);
+
 /**
  * @brief  Configures the FMC and GPIOs to interface with the SDRAM memory.
  *         This function must be called before any read/write operation
@@ -175,8 +177,8 @@
   
     /* Step 2: Insert 100 us minimum delay */
     /* Inserted delay is equal to 1 ms due to systick time base unit (ms) */
-    HAL_Delay(1);
-  
+    KsolotiSleepMilliseconds(1);
+
     /* Step 3: Configure a PALL (precharge all) command */
     Command->CommandMode = FMC_SDRAM_CMD_PALL;
     Command->CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
