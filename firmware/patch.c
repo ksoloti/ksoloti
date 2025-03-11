@@ -435,7 +435,6 @@ static int StartPatch1(void) {
                 #if PATCH_ITCM
                     #pragma GCC diagnostic pop
                 #endif      
-                volatile uint32_t uVal = *(uint32_t*) PATCHMAINLOC;           
                 if ((*(uint32_t*) PATCHMAINLOC != 0xFFFFFFFF) && (*(uint32_t*) PATCHMAINLOC != 0)) {
                     StartPatch1();
                 }

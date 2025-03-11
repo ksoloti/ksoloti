@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include "ch.h"
 #include "hal.h"
+#include "flash.h"
+#include "sdram.h"
 
 #if INBUILT_MOUNTER_FLASHER
     #define MOUNTER_MAGIC 0x2a4d4f554e544552 /* *MOUNTER */
@@ -64,7 +66,15 @@
         if(GetStartupFlags() == FLASHER_MAGIC)
         {
             ResetStartupFlags();
-            flasher();
+ 
+            // enable SDRAM
+            configSDRAM();
+
+            // Init hal
+            halInit();
+
+            // now execute from ram
+            FlashFirmware();
         }
     }
 #else

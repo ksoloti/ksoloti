@@ -21,166 +21,120 @@
 #include "watchdog.h"
 #include "flash.h"
 #include "patch.h"
+#include "sdram.h"
+
+
+static uint32_t FRAMTEXT_CODE_SECTION revbit(uint32_t data)
+{
+  uint32_t result;
+  __ASM
+  volatile("rbit %0, %1" : "=r"(result) : "r"(data));
+  return result;
+}
+
+uint32_t FRAMTEXT_CODE_SECTION FlashCalcCRC32(uint8_t *buffer, uint32_t size)
+{
+  uint32_t i, j;
+  uint32_t ui32x;
 
 #if BOARD_KSOLOTI_CORE_H743
-#include "stm32h7xx_hal.h"
-#include "patch.h"
+  RCC->AHB4ENR |= RCC_AHB4ENR_CRCEN;
+#else
+  RCC->AHB1ENR |= RCC_AHB1ENR_CRCEN;
+#endif
 
-// 8 patches can be store in flashbank 2
+  CRC->CR = 1;
+  asm("NOP");
+  asm("NOP");
+  asm("NOP");
+  // delay for hardware ready
 
-#define FLASH_KEY1 0x45670123U
-#define FLASH_KEY2 0xCDEF89ABU
+  i = size >> 2;
 
-#define FLASH_GET_FLAG_BANK1(__FLAG__) (READ_BIT(FLASH->SR1, (__FLAG__)) == (__FLAG__))
-#define FLASH_GET_FLAG_BANK2(__FLAG__) (READ_BIT(FLASH->SR2, ((__FLAG__) & 0x7FFFFFFFU)) == (((__FLAG__) & 0x7FFFFFFFU)))
+  while (i--)
+  {
+    ui32x = *((uint32_t *)buffer);
+    buffer += 4;
+    ui32x = revbit(ui32x); // reverse the bit order of input data
+    CRC->DR = ui32x;
+    if ((i && 0xFFF) == 0)
+      watchdog_feed();
+  }
+  ui32x = CRC->DR;
 
-#define FLASH_CLEAR_FLAG_BANK1(__FLAG__) WRITE_REG(FLASH->CCR1, (__FLAG__))
-#define FLASH_CLEAR_FLAG_BANK2(__FLAG__) WRITE_REG(FLASH->CCR2, ((__FLAG__) & 0x7FFFFFFFU))
+  ui32x = revbit(ui32x); // reverse the bit order of output data
+  i = size & 3;
+  while (i--)
+  {
+    ui32x ^= (uint32_t)*buffer++;
 
-void FRAMTEXT_CODE_SECTION FlashLock(FlashBank bank)
-{
-  if (bank == fbFirmware)
-    SET_BIT(FLASH->CR1, FLASH_CR_LOCK);
-  else
-    SET_BIT(FLASH->CR2, FLASH_CR_LOCK);
-
-  SCB_DisableICache();
+    for (j = 0; j < 8; j++)
+      if (ui32x & 1)
+        ui32x = (ui32x >> 1) ^ 0xEDB88320;
+      else
+        ui32x >>= 1;
+  }
+  ui32x ^= 0xffffffff; // xor with 0xffffffff
+  return ui32x;        // now the output is compatible with windows/winzip/winrar
 }
 
-void FRAMTEXT_CODE_SECTION FlashUnlock(FlashBank bank)
+void FRAMTEXT_CODE_SECTION KsolotiSleepMilliseconds(uint32_t uMiliseconds)
 {
-  if (bank == fbFirmware)
-  {
-    WRITE_REG(FLASH->KEYR1, FLASH_KEY1);
-    WRITE_REG(FLASH->KEYR1, FLASH_KEY2);
-  }
-  else
-  {
-    WRITE_REG(FLASH->KEYR2, FLASH_KEY1);
-    WRITE_REG(FLASH->KEYR2, FLASH_KEY2);
-  }
-
-  SCB_EnableICache();
+  uint32_t uTotalTicks = MS2RTT(uMiliseconds);
+  uint32_t uStartTick = DWT->CYCCNT;
+  while (DWT->CYCCNT - uStartTick < uTotalTicks)
+    ;
 }
 
-int FRAMTEXT_CODE_SECTION FlashWaitForLastOperation(FlashBank bank)
+
+void FRAMTEXT_CODE_SECTION FlashSystemReset(void)
 {
-  if (bank == fbFirmware)
+  __DSB(); /* Ensure all outstanding memory accesses included
+             buffered write are completed before reset */
+  SCB->AIRCR = (uint32_t)((0x5FAUL << SCB_AIRCR_VECTKEY_Pos) |
+                          (SCB->AIRCR & SCB_AIRCR_PRIGROUP_Msk) |
+                          SCB_AIRCR_SYSRESETREQ_Msk); /* Keep priority group unchanged */
+  __DSB();                                            /* Ensure completion of memory access */
+
+  for (;;) /* wait until reset */
   {
-    while (FLASH_GET_FLAG_BANK1(FLASH_FLAG_QW_BANK1))
-      ;
-
-    if (FLASH_GET_FLAG_BANK1(FLASH_FLAG_EOP_BANK1))
-    {
-      /* Clear FLASH End of Operation pending bit */
-      __HAL_FLASH_CLEAR_FLAG_BANK1(FLASH_FLAG_EOP_BANK1);
-    }
-
-    return !(FLASH->SR1);
-  }
-  else
-  {
-    while (FLASH_GET_FLAG_BANK2(FLASH_FLAG_QW_BANK2))
-      ;
-
-    if (FLASH_GET_FLAG_BANK2(FLASH_FLAG_EOP_BANK2))
-    {
-      /* Clear FLASH End of Operation pending bit */
-      __HAL_FLASH_CLEAR_FLAG_BANK2(FLASH_FLAG_EOP_BANK2);
-    }
-
-    return !(FLASH->SR1);
+    __NOP();
   }
 }
 
-void FRAMTEXT_CODE_SECTION FlashEraseSector(FlashBank bank, uint32_t uSector)
+bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress, uint32_t uBytes)
 {
-  FlashWaitForLastOperation(bank);
+  /* Set up LEDs */
+  palSetPadMode(LED1_PORT, LED1_PIN, PAL_MODE_OUTPUT_PUSHPULL);
+  palSetPad(LED1_PORT, LED1_PIN);
+  palSetPadMode(LED2_PORT, LED2_PIN, PAL_MODE_OUTPUT_PUSHPULL);
 
-  if (bank == fbFirmware)
-  {
-    FLASH->CR1 &= ~(FLASH_CR_PSIZE | FLASH_CR_SNB);
-    FLASH->CR1 |= (FLASH_CR_SER | FLASH_VOLTAGE_RANGE_3 | (uSector << FLASH_CR_SNB_Pos) | FLASH_CR_START);
-  }
-  else
-  {
-    FLASH->CR2 &= ~(FLASH_CR_PSIZE | FLASH_CR_SNB);
-    FLASH->CR2 |= (FLASH_CR_SER | FLASH_VOLTAGE_RANGE_3 | (uSector << FLASH_CR_SNB_Pos) | FLASH_CR_START);
-  }
-}
-
-bool FRAMTEXT_CODE_SECTION FlashErasePatch(uint8_t uPatch)
-{
-  bool bResult = false;
-
-  if (uPatch < PATCHFLASHSLOTS)
-  {
-    FlashUnlock(fbPatch);
-
-    uint32_t uFlashBlockSize = (128 * 1024);
-    uint32_t uSectors = PATCHFLASHSIZE < uFlashBlockSize ? 1 : uFlashBlockSize / PATCHFLASHSIZE;
-
-    for (uint32_t i = 0; i < uSectors; i++)
-      FlashEraseSector(fbPatch, uPatch + i);
-
-    FlashLock(fbPatch);
-
-    bResult = true;
-  }
-
-  return bResult;
-}
-
-bool FRAMTEXT_CODE_SECTION FlashProgramBlock(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress)
-{
-  __IO uint32_t *pDest = (__IO uint32_t *)uFlashAddress;
-  __IO uint32_t *pSrc = (__IO uint32_t *)uDataAddress;
-
-  uint8_t row_index = FLASH_NB_32BITWORD_IN_FLASHWORD;
-
-  if (bank == fbFirmware)
-    SET_BIT(FLASH->CR1, FLASH_CR_PG);
-  else
-    SET_BIT(FLASH->CR2, FLASH_CR_PG);
-
-  __ISB();
-  __DSB();
-
-  do
-  {
-    *pDest = *pSrc;
-    pDest++;
-    pSrc++;
-    row_index--;
-  } while (row_index != 0U);
-
-  __ISB();
-  __DSB();
-
-  bool bResult = FlashWaitForLastOperation(bank);
-
-  if (bank == fbFirmware)
-    CLEAR_BIT(FLASH->CR1, FLASH_CR_PG);
-  else
-    CLEAR_BIT(FLASH->CR2, FLASH_CR_PG);
-
-  return bResult;
-}
-
-bool FRAMTEXT_CODE_SECTION FlashProgramBlocks(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress, uint32_t uBlocks)
-{
   FlashUnlock(bank);
 
   bool bResult = true;
 
   uint32_t uFlashLoc = uFlashAddress;
   uint32_t uSourceLoc = uDataAddress;
+  uint32_t uWords = uBytes / 4;
+  uint32_t uBlockWordSize = FlashGetBlockWordsize();
+  uint32_t uBlocks = uWords / uBlockWordSize;
+  if(uWords % uBlockWordSize)
+    uBlocks++;
+  
+  int32_t nLedWordCount = 1024*16;
 
   for (uint32_t uBlock = 0; bResult && (uBlock < uBlocks); uBlock++)
   {
     bResult = FlashProgramBlock(fbPatch, uFlashLoc, uSourceLoc);
-    uFlashLoc += 32;
-    uSourceLoc += 32;
+    uFlashLoc += uBlockWordSize;
+    uSourceLoc += uBlockWordSize;
+    nLedWordCount -= uBlockWordSize;
+
+    if( nLedWordCount < 0)
+    {
+      nLedWordCount = 1024*16;
+      palTogglePad(LED2_PORT, LED2_PIN);
+    }
   }
 
   if (bResult)
@@ -192,8 +146,6 @@ bool FRAMTEXT_CODE_SECTION FlashProgramBlocks(FlashBank bank, uint32_t uFlashAdd
     uint32_t *pFlash = (uint32_t *)uFlashLoc;
     uint32_t *pSource = (uint32_t *)uSourceLoc;
 
-    uint32_t uWords = uBlocks * 8;
-
     for (uint32_t i = 0; bResult && (i < uWords); i++)
     {
       bResult = *pFlash == *pSource;
@@ -204,160 +156,474 @@ bool FRAMTEXT_CODE_SECTION FlashProgramBlocks(FlashBank bank, uint32_t uFlashAdd
 
   FlashLock(bank);
 
-  return bResult;
-}
-
-bool FlashPatch(uint8_t uPatch)
-{
-  bool bResult = false;
-
-  if (uPatch < PATCHFLASHSLOTS)
-  {
-    if (FlashErasePatch(uPatch))
-    {
-      uint32_t uFlashNeeded = (128 * 1024) / PATCHFLASHSLOTS;
-      uint32_t uFlashLoc = PATCHFLASHLOC + (uPatch * uFlashNeeded);
-      uint32_t uSourceLoc = PATCHMAINLOC;
-
-      uint32_t uBlocks = uFlashNeeded / 32;
-
-      bResult = FlashProgramBlocks(fbPatch, uFlashLoc, uSourceLoc, uBlocks);
-    }
-  }
-
-  return bResult;
-}
-#else  // BOARD_KSOLOTI_CORE_H743
-int FRAMTEXT_CODE_SECTION FlashWaitForLastOperation(__attribute__ ((unused)) FlashBank bank)
-{
-  while (FLASH->SR & FLASH_SR_BSY)
-  {
-    WWDG->CR = WWDG_CR_T;
-  }
-  return FLASH->SR;
-}
-
-void FRAMTEXT_CODE_SECTION FlashLock(__attribute__ ((unused)) FlashBank bank)
-{
-  SET_BIT(FLASH->CR, FLASH_CR_LOCK);
-}
-
-void FRAMTEXT_CODE_SECTION FlashUnlock(__attribute__ ((unused)) FlashBank bank)
-{
-  /* Unlock sequence as per reference manual*/
-  FLASH->KEYR = 0x45670123;
-  FLASH->KEYR = 0xCDEF89AB;
-}
-
-void FRAMTEXT_CODE_SECTION FlashEraseSector(FlashBank bank, uint32_t uSector)
-{
-  /* interrupts would cause flash execution, stall */
-  /* and cause watchdog trigger */
-  chSysLock();
-
-  // assume VDD>2.7V
-  FLASH->CR &= ~FLASH_CR_PSIZE;
-  FLASH->CR |= FLASH_CR_PSIZE_1;
-  FLASH->CR &= ~FLASH_CR_SNB;
-  FLASH->CR |= FLASH_CR_SER | (uSector << 3);
-  FLASH->CR |= FLASH_CR_STRT;
-  FlashWaitForLastOperation(bank);
-
-  FLASH->CR &= (~FLASH_CR_SER);
-  FLASH->CR &= ~FLASH_CR_SER;
-  FlashWaitForLastOperation(bank);
-
-  chSysUnlock();
-}
-
-bool FRAMTEXT_CODE_SECTION FlashProgramBlock(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress)
-{
-  FlashWaitForLastOperation(bank);
-
-  /* if the previous operation is completed, proceed to program the new data */
-  FLASH->CR &= ~FLASH_CR_PSIZE;
-  FLASH->CR |= FLASH_CR_PSIZE_1;
-  FLASH->CR |= FLASH_CR_PG;
-
-  __IO uint32_t *pDest = (__IO uint32_t *)uFlashAddress;
-  __IO uint32_t *pSrc = (__IO uint32_t *)uDataAddress;
-
-  *pDest = *pSrc;
-
-  /* Wait for last operation to be completed */
-  bool bResult = FlashWaitForLastOperation(bank);
-
-  /* if the program operation is completed, disable the PG Bit */
-  FLASH->CR &= (~FLASH_CR_PG);
-
-  watchdog_feed();
-
-  /* Return the Program Status */
-  return bResult;
-}
-
-bool FRAMTEXT_CODE_SECTION FlashProgramBlocks(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress, uint32_t uBlocks)
-{
-  FlashUnlock(bank);
-
-  bool bResult = true;
-
-  uint32_t uFlashLoc = uFlashAddress;
-  uint32_t uSourceLoc = uDataAddress;
-
-  for (uint32_t uBlock = 0; bResult && (uBlock < uBlocks); uBlock++)
-  {
-    bResult = FlashProgramBlock(fbPatch, uFlashLoc, uSourceLoc);
-    uFlashLoc += 1;
-    uSourceLoc += 1;
-  }
-
-  if (bResult)
-  {
-    // Validate flash
-    uint32_t uFlashLoc = uFlashAddress;
-    uint32_t uSourceLoc = uDataAddress;
-
-    uint32_t *pFlash = (uint32_t *)uFlashLoc;
-    uint32_t *pSource = (uint32_t *)uSourceLoc;
-
-    uint32_t uWords = uBlocks * 8;
-
-    for (uint32_t i = 0; bResult && (i < uWords); i++)
-    {
-      bResult = *pFlash == *pSource;
-      pFlash++;
-      pSource++;
-    }
-  }
-
-  FlashLock(bank);
+  palWritePad(LED1_PORT, LED1_PIN, 1);
+  palWritePad(LED2_PORT, LED2_PIN, 1);
 
   return bResult;
 }
 
-bool FRAMTEXT_CODE_SECTION FlashErasePatch(__attribute__ ((unused)) uint8_t uPatch)
+void __attribute__((section(".framtext"))) DisplayAbortErr(int err)
 {
-  FlashUnlock(fbPatch);
-  FlashEraseSector(fbPatch, 11);
-  FlashLock(fbPatch);
-  return true;
-}
+  /* blink red slowly, green off */
+  palWritePad(LED1_PORT, LED1_PIN, 0);
 
-bool FlashPatch(uint8_t uPatch)
-{
-  bool bResult = false;
-
-  if (FlashErasePatch(uPatch))
+  int i = 10;
+  while (i--)
   {
-    uint32_t uFlashLoc = PATCHFLASHLOC;
-    uint32_t uSourceLoc = PATCHMAINLOC;
-
-    uint32_t uBlocks = PATCHFLASHSIZE / 4;
-
-    bResult = FlashProgramBlocks(fbPatch, uFlashLoc, uSourceLoc, uBlocks);
+    palWritePad(LED2_PORT, LED2_PIN, 1);
+    KsolotiSleepMilliseconds(1000);
+    palWritePad(LED2_PORT, LED2_PIN, 0);
+    KsolotiSleepMilliseconds(1000);
   }
 
-  return bResult;
+  FlashSystemReset();
 }
-#endif // BOARD_KSOLOTI_CORE_H743
+
+void FRAMTEXT_CODE_SECTION FlashFirmware(void)
+{
+  halInit();
+
+  /* Float USB inputs, hope the host notices detach... */
+  palSetPadMode(GPIOA, 11, PAL_MODE_INPUT);
+  palSetPadMode(GPIOA, 12, PAL_MODE_INPUT);
+
+  /* Set up LEDs */
+  palSetPadMode(LED1_PORT, LED1_PIN, PAL_MODE_OUTPUT_PUSHPULL);
+  palSetPad(LED1_PORT, LED1_PIN);
+  palSetPadMode(LED2_PORT, LED2_PIN, PAL_MODE_OUTPUT_PUSHPULL);
+
+
+  uint32_t *sdram32 = (uint32_t *)SDRAM_BANK_ADDR;
+  uint8_t *sdram8 = (uint8_t *)SDRAM_BANK_ADDR;
+
+  if ((sdram8[0] != 'f') || (sdram8[1] != 'l') || (sdram8[2] != 'a') || (sdram8[3] != 's') || (sdram8[4] != 'c') || (sdram8[5] != 'o') || (sdram8[6] != 'p') || (sdram8[7] != 'y'))
+  {
+    DisplayAbortErr(1);
+  }
+
+  uint32_t flength = sdram32[2];
+  uint32_t fcrc = sdram32[3];
+
+  if (flength > 1 * 1024 * 1024)
+  {
+    DisplayAbortErr(2);
+  }
+
+  uint32_t ccrc = FlashCalcCRC32((uint8_t *)(SDRAM_BANK_ADDR + 0x010), flength);
+
+  if (ccrc != fcrc)
+  {
+    DisplayAbortErr(3);
+  }
+
+  /* Unlock sequence */
+  FlashUnlock(fbFirmware);
+
+  // Erase flash
+#if BOARD_KSOLOTU_CORE_H743
+  uint32_t uFlashSectors = 8;
+#else
+  uint32_t uFlashSectors = 10;
+#endif 
+
+
+  uint32_t uSector;
+  for (uSector = 0; uSector < uFlashSectors; uSector++)
+    FlashEraseSector(fbFirmware, uSector);
+
+  uint32_t uDest = FLASH_BASE_ADDR;
+  uint32_t uSrc  = SDRAM_BANK_ADDR + 0x010;
+
+  FlashProgram(fbFirmware, uDest, uSrc, flength);
+
+
+  // int destptr = FLASH_BASE_ADDR;                            /* flash base adress */
+  // uint32_t *srcptr = (uint32_t *)(SDRAM_BANK_ADDR + 0x010); /* sdram base adress + header offset */
+
+
+  // bool ledOn = false;
+  // uint32_t i;
+  // for (i = 0; i < (flength + 3) / 4; i++)
+  // {
+  //   uint32_t d = *srcptr;
+
+  //   FlashProgramWord(destptr, d);
+
+  //   if ((i & 0xFFF) == 0)
+  //   {
+  //     ledOn = !ledOn;
+  //     palWritePad(LED2_PORT, LED2_PIN, ledOn);
+  //   }
+
+  //   destptr += 4;
+  //   srcptr++;
+  // }
+
+  palWritePad(LED1_PORT, LED1_PIN, 1);
+  palWritePad(LED2_PORT, LED2_PIN, 1);
+
+
+  ccrc = FlashCalcCRC32((uint8_t *)(FLASH_BASE_ADDR), flength);
+
+  if (ccrc != fcrc)
+  {
+    DisplayAbortErr(5);
+  }
+
+  FlashLock(fbFirmware);
+
+  KsolotiSleepMilliseconds(1000);
+
+  FlashSystemReset();
+}
+
+// #if BOARD_KSOLOTI_CORE_H743
+// #include "stm32h7xx_hal.h"
+// #include "patch.h"
+
+// // 8 patches can be store in flashbank 2
+
+// #define FLASH_KEY1 0x45670123U
+// #define FLASH_KEY2 0xCDEF89ABU
+
+// #define FLASH_GET_FLAG_BANK1(__FLAG__) (READ_BIT(FLASH->SR1, (__FLAG__)) == (__FLAG__))
+// #define FLASH_GET_FLAG_BANK2(__FLAG__) (READ_BIT(FLASH->SR2, ((__FLAG__) & 0x7FFFFFFFU)) == (((__FLAG__) & 0x7FFFFFFFU)))
+
+// #define FLASH_CLEAR_FLAG_BANK1(__FLAG__) WRITE_REG(FLASH->CCR1, (__FLAG__))
+// #define FLASH_CLEAR_FLAG_BANK2(__FLAG__) WRITE_REG(FLASH->CCR2, ((__FLAG__) & 0x7FFFFFFFU))
+
+// void FRAMTEXT_CODE_SECTION FlashLock(FlashBank bank)
+// {
+//   if (bank == fbFirmware)
+//     SET_BIT(FLASH->CR1, FLASH_CR_LOCK);
+//   else
+//     SET_BIT(FLASH->CR2, FLASH_CR_LOCK);
+
+//   SCB_DisableICache();
+// }
+
+// void FRAMTEXT_CODE_SECTION FlashUnlock(FlashBank bank)
+// {
+//   if (bank == fbFirmware)
+//   {
+//     WRITE_REG(FLASH->KEYR1, FLASH_KEY1);
+//     WRITE_REG(FLASH->KEYR1, FLASH_KEY2);
+//   }
+//   else
+//   {
+//     WRITE_REG(FLASH->KEYR2, FLASH_KEY1);
+//     WRITE_REG(FLASH->KEYR2, FLASH_KEY2);
+//   }
+
+//   SCB_EnableICache();
+// }
+
+// int FRAMTEXT_CODE_SECTION FlashWaitForLastOperation(FlashBank bank)
+// {
+//   if (bank == fbFirmware)
+//   {
+//     while (FLASH_GET_FLAG_BANK1(FLASH_FLAG_QW_BANK1))
+//       ;
+
+//     if (FLASH_GET_FLAG_BANK1(FLASH_FLAG_EOP_BANK1))
+//     {
+//       /* Clear FLASH End of Operation pending bit */
+//       __HAL_FLASH_CLEAR_FLAG_BANK1(FLASH_FLAG_EOP_BANK1);
+//     }
+
+//     return !(FLASH->SR1);
+//   }
+//   else
+//   {
+//     while (FLASH_GET_FLAG_BANK2(FLASH_FLAG_QW_BANK2))
+//       ;
+
+//     if (FLASH_GET_FLAG_BANK2(FLASH_FLAG_EOP_BANK2))
+//     {
+//       /* Clear FLASH End of Operation pending bit */
+//       __HAL_FLASH_CLEAR_FLAG_BANK2(FLASH_FLAG_EOP_BANK2);
+//     }
+
+//     return !(FLASH->SR1);
+//   }
+// }
+
+// void FRAMTEXT_CODE_SECTION FlashEraseSector(FlashBank bank, uint32_t uSector)
+// {
+//   FlashWaitForLastOperation(bank);
+
+//   if (bank == fbFirmware)
+//   {
+//     FLASH->CR1 &= ~(FLASH_CR_PSIZE | FLASH_CR_SNB);
+//     FLASH->CR1 |= (FLASH_CR_SER | FLASH_VOLTAGE_RANGE_3 | (uSector << FLASH_CR_SNB_Pos) | FLASH_CR_START);
+//   }
+//   else
+//   {
+//     FLASH->CR2 &= ~(FLASH_CR_PSIZE | FLASH_CR_SNB);
+//     FLASH->CR2 |= (FLASH_CR_SER | FLASH_VOLTAGE_RANGE_3 | (uSector << FLASH_CR_SNB_Pos) | FLASH_CR_START);
+//   }
+// }
+
+// bool FRAMTEXT_CODE_SECTION FlashErasePatch(uint8_t uPatch)
+// {
+//   bool bResult = false;
+
+//   if (uPatch < PATCHFLASHSLOTS)
+//   {
+//     FlashUnlock(fbPatch);
+
+//     uint32_t uFlashBlockSize = (128 * 1024);
+//     uint32_t uSectors = PATCHFLASHSIZE < uFlashBlockSize ? 1 : uFlashBlockSize / PATCHFLASHSIZE;
+
+//     for (uint32_t i = 0; i < uSectors; i++)
+//       FlashEraseSector(fbPatch, uPatch + i);
+
+//     FlashLock(fbPatch);
+
+//     bResult = true;
+//   }
+
+//   return bResult;
+// }
+
+// bool FRAMTEXT_CODE_SECTION FlashProgramBlock(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress)
+// {
+//   __IO uint32_t *pDest = (__IO uint32_t *)uFlashAddress;
+//   __IO uint32_t *pSrc = (__IO uint32_t *)uDataAddress;
+
+//   uint8_t row_index = FLASH_NB_32BITWORD_IN_FLASHWORD;
+
+//   if (bank == fbFirmware)
+//     SET_BIT(FLASH->CR1, FLASH_CR_PG);
+//   else
+//     SET_BIT(FLASH->CR2, FLASH_CR_PG);
+
+//   __ISB();
+//   __DSB();
+
+//   do
+//   {
+//     *pDest = *pSrc;
+//     pDest++;
+//     pSrc++;
+//     row_index--;
+//   } while (row_index != 0U);
+
+//   __ISB();
+//   __DSB();
+
+//   bool bResult = FlashWaitForLastOperation(bank);
+
+//   if (bank == fbFirmware)
+//     CLEAR_BIT(FLASH->CR1, FLASH_CR_PG);
+//   else
+//     CLEAR_BIT(FLASH->CR2, FLASH_CR_PG);
+
+//   return bResult;
+// }
+
+// bool FRAMTEXT_CODE_SECTION FlashProgramBlocks(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress, uint32_t uBlocks)
+// {
+//   FlashUnlock(bank);
+
+//   bool bResult = true;
+
+//   uint32_t uFlashLoc = uFlashAddress;
+//   uint32_t uSourceLoc = uDataAddress;
+
+//   for (uint32_t uBlock = 0; bResult && (uBlock < uBlocks); uBlock++)
+//   {
+//     bResult = FlashProgramBlock(fbPatch, uFlashLoc, uSourceLoc);
+//     uFlashLoc += 32;
+//     uSourceLoc += 32;
+//   }
+
+//   if (bResult)
+//   {
+//     // Validate flash
+//     uint32_t uFlashLoc = uFlashAddress;
+//     uint32_t uSourceLoc = uDataAddress;
+
+//     uint32_t *pFlash = (uint32_t *)uFlashLoc;
+//     uint32_t *pSource = (uint32_t *)uSourceLoc;
+
+//     uint32_t uWords = uBlocks * 8;
+
+//     for (uint32_t i = 0; bResult && (i < uWords); i++)
+//     {
+//       bResult = *pFlash == *pSource;
+//       pFlash++;
+//       pSource++;
+//     }
+//   }
+
+//   FlashLock(bank);
+
+//   return bResult;
+// }
+
+// uint32_t FRAMTEXT_CODE_SECTION FlashGetBlockWordsize(void)
+// {
+//   return 32;
+// }
+
+// bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress, uint32_t uByteLenght)
+// {
+
+// }
+
+
+// bool FlashPatch(uint8_t uPatch)
+// {
+//   bool bResult = false;
+
+//   if (uPatch < PATCHFLASHSLOTS)
+//   {
+//     if (FlashErasePatch(uPatch))
+//     {
+//       uint32_t uFlashNeeded = (128 * 1024) / PATCHFLASHSLOTS;
+//       uint32_t uFlashLoc = PATCHFLASHLOC + (uPatch * uFlashNeeded);
+//       uint32_t uSourceLoc = PATCHMAINLOC;
+
+//       uint32_t uBlocks = uFlashNeeded / 32;
+
+//       bResult = FlashProgramBlocks(fbPatch, uFlashLoc, uSourceLoc, uBlocks);
+//     }
+//   }
+
+//   return bResult;
+// }
+// #else  // BOARD_KSOLOTI_CORE_H743
+// int FRAMTEXT_CODE_SECTION FlashWaitForLastOperation(__attribute__ ((unused)) FlashBank bank)
+// {
+//   while (FLASH->SR & FLASH_SR_BSY)
+//   {
+//     WWDG->CR = WWDG_CR_T;
+//   }
+//   return FLASH->SR;
+// }
+
+// void FRAMTEXT_CODE_SECTION FlashLock(__attribute__ ((unused)) FlashBank bank)
+// {
+//   SET_BIT(FLASH->CR, FLASH_CR_LOCK);
+// }
+
+// void FRAMTEXT_CODE_SECTION FlashUnlock(__attribute__ ((unused)) FlashBank bank)
+// {
+//   /* Unlock sequence as per reference manual*/
+//   FLASH->KEYR = 0x45670123;
+//   FLASH->KEYR = 0xCDEF89AB;
+// }
+
+// void FRAMTEXT_CODE_SECTION FlashEraseSector(FlashBank bank, uint32_t uSector)
+// {
+//   /* interrupts would cause flash execution, stall */
+//   /* and cause watchdog trigger */
+//   chSysLock();
+
+//   // assume VDD>2.7V
+//   FLASH->CR &= ~FLASH_CR_PSIZE;
+//   FLASH->CR |= FLASH_CR_PSIZE_1;
+//   FLASH->CR &= ~FLASH_CR_SNB;
+//   FLASH->CR |= FLASH_CR_SER | (uSector << 3);
+//   FLASH->CR |= FLASH_CR_STRT;
+//   FlashWaitForLastOperation(bank);
+
+//   FLASH->CR &= (~FLASH_CR_SER);
+//   FLASH->CR &= ~FLASH_CR_SER;
+//   FlashWaitForLastOperation(bank);
+
+//   chSysUnlock();
+// }
+
+// bool FRAMTEXT_CODE_SECTION FlashProgramBlock(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress)
+// {
+//   FlashWaitForLastOperation(bank);
+
+//   /* if the previous operation is completed, proceed to program the new data */
+//   FLASH->CR &= ~FLASH_CR_PSIZE;
+//   FLASH->CR |= FLASH_CR_PSIZE_1;
+//   FLASH->CR |= FLASH_CR_PG;
+
+//   __IO uint32_t *pDest = (__IO uint32_t *)uFlashAddress;
+//   __IO uint32_t *pSrc = (__IO uint32_t *)uDataAddress;
+
+//   *pDest = *pSrc;
+
+//   /* Wait for last operation to be completed */
+//   bool bResult = FlashWaitForLastOperation(bank);
+
+//   /* if the program operation is completed, disable the PG Bit */
+//   FLASH->CR &= (~FLASH_CR_PG);
+
+//   watchdog_feed();
+
+//   /* Return the Program Status */
+//   return bResult;
+// }
+
+// bool FRAMTEXT_CODE_SECTION FlashProgramBlocks(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress, uint32_t uBlocks)
+// {
+//   FlashUnlock(bank);
+
+//   bool bResult = true;
+
+//   uint32_t uFlashLoc = uFlashAddress;
+//   uint32_t uSourceLoc = uDataAddress;
+
+//   for (uint32_t uBlock = 0; bResult && (uBlock < uBlocks); uBlock++)
+//   {
+//     bResult = FlashProgramBlock(fbPatch, uFlashLoc, uSourceLoc);
+//     uFlashLoc += 1;
+//     uSourceLoc += 1;
+//   }
+
+//   if (bResult)
+//   {
+//     // Validate flash
+//     uint32_t uFlashLoc = uFlashAddress;
+//     uint32_t uSourceLoc = uDataAddress;
+
+//     uint32_t *pFlash = (uint32_t *)uFlashLoc;
+//     uint32_t *pSource = (uint32_t *)uSourceLoc;
+
+//     uint32_t uWords = uBlocks * 8;
+
+//     for (uint32_t i = 0; bResult && (i < uWords); i++)
+//     {
+//       bResult = *pFlash == *pSource;
+//       pFlash++;
+//       pSource++;
+//     }
+//   }
+
+//   FlashLock(bank);
+
+//   return bResult;
+// }
+
+// bool FRAMTEXT_CODE_SECTION FlashErasePatch(__attribute__ ((unused)) uint8_t uPatch)
+// {
+//   FlashUnlock(fbPatch);
+//   FlashEraseSector(fbPatch, 11);
+//   FlashLock(fbPatch);
+//   return true;
+// }
+
+// bool FlashPatch(uint8_t uPatch)
+// {
+//   bool bResult = false;
+
+//   if (FlashErasePatch(uPatch))
+//   {
+//     uint32_t uFlashLoc = PATCHFLASHLOC;
+//     uint32_t uSourceLoc = PATCHMAINLOC;
+
+//     uint32_t uBlocks = PATCHFLASHSIZE / 4;
+
+//     bResult = FlashProgramBlocks(fbPatch, uFlashLoc, uSourceLoc, uBlocks);
+//   }
+
+//   return bResult;
+// }
+// #endif // BOARD_KSOLOTI_CORE_H743

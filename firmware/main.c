@@ -78,15 +78,6 @@ extern void MY_USBH_Init(void);
 extern void i2s_init(void);
 #endif
 
-// YODOH7 maybe think of keepinf only the ram functions for both this and the slash stuff?
-void KsolotiSleepMilliseconds(uint32_t uMiliseconds)
-{
-  uint32_t uTotalTicks = MS2RTT(uMiliseconds);
-  uint32_t uStartTick = DWT->CYCCNT;
-  while (DWT->CYCCNT - uStartTick < uTotalTicks)
-    ;
-}
-
 int main(void) {
 
 #if BOARD_KSOLOTI_CORE_H743

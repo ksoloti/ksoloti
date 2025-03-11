@@ -354,7 +354,8 @@ ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
           ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/AUDIO/Src/usbh_audio.c \
           ${FIRMWARE}/usbh_midi_core.c \
           ${FIRMWARE}/usbh_vendor.c \
-          ${FIRMWARE}/usbh_conf_h7.c 
+          ${FIRMWARE}/usbh_conf_h7.c \
+          ${FIRMWARE}/flash_h7_functions.c 
 else
   # Axoloti and Ksoloti f427
   CSRC += ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c \
@@ -373,14 +374,14 @@ else
           ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c \
           ${FIRMWARE}/usbh_midi_core.c \
           ${FIRMWARE}/usbh_vendor.c \
-          ${FIRMWARE}/usbh_conf_f4.c 
+          ${FIRMWARE}/usbh_conf_f4.c \
+          ${FIRMWARE}/flash_f4_functions.c 
 endif
 
 
 ifeq ($(INBUILT_MOUNTER_FLASHER),yes)  
   CSRC += ${FIRMWARE}/mounter.c \
-          ${FIRMWARE}/mass_storage/usb_msd.c \
-          ${FIRMWARE}/flasher.c 
+          ${FIRMWARE}/mass_storage/usb_msd.c 
   USE_OPT += -DINBUILT_MOUNTER_FLASHER=1
 endif
 
