@@ -4,7 +4,7 @@ set axoloti_firmware=%~sdp0\
 set axoloti_home=%axoloti_firmware%..\
 set axoloti_platform=%axoloti_home%\platform_win
 
-set PATH=%axoloti_platform%\\bin
+set PATH=%axoloti_platform%\\bin;%PATH%
 
 set argCount = 0
 for %%x in (%*) do if not "%%~x" == "" set /a argCount += 1
