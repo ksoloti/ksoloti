@@ -149,7 +149,6 @@ int main(void) {
 
             if (fs_ready) {
                 LoadPatchStartSD();
-                chThdSleepMilliseconds(100);
             }
 
             /* If no patch booting or running yet try loading from flash */
