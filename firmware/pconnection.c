@@ -486,42 +486,7 @@ static void CloseFile(void) {
 
 
 static void CopyPatchToFlash(void) {
-#if BOARD_KSOLOTI_CORE_H743
     FlashPatch(0);
-#else    
-    flash_unlock();
-    flash_Erase_sector(11);
-
-    int src_addr = PATCHMAINLOC;
-    int flash_addr = PATCHFLASHLOC;
-
-    int c;
-    for (c = 0; c < PATCHFLASHSIZE;) {
-        flash_ProgramWord(flash_addr, *(int32_t *)src_addr);
-        src_addr += 4;
-        flash_addr += 4;
-        c += 4;
-    }
-
-    /* Verify */
-    src_addr = PATCHMAINLOC;
-    flash_addr = PATCHFLASHLOC;
-
-    int err = 0;
-    for (c = 0; c < PATCHFLASHSIZE;) {
-        if (*(int32_t *)flash_addr != *(int32_t *)src_addr) {
-            err++;
-        }
-
-        src_addr += 4;
-        flash_addr += 4;
-        c += 4;
-    }
-
-    if (err) {
-        while (1); /* Flash verify failed */
-    }
-#endif
     AckPending = 1;
 }
 

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2013, 2014 Johannes Taelman
- * Edited 2023 - 2024 by Ksoloti
+ * Edited 2023 - 2025 by Ksoloti
  *
  * This file is part of Axoloti.
  *
@@ -17,14 +17,31 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __FLASH_H
-#define __FLASH_H
+#pragma once
 
-int flash_Erase_sector(int sector);
-int flash_ProgramWord(uint32_t Address, uint32_t Data);
-void flash_unlock(void);
-bool FlashPatch(uint8_t uPatch);
+#include <stdint.h>
+#include "mcuconf.h"
+
+typedef enum _FlashBank
+{
+  fbFirmware,
+  fbPatch
+} FlashBank;
 
 #define FLASH_BASE_ADDR 0x08000000
 
-#endif
+extern void     FRAMTEXT_CODE_SECTION FlashLock(FlashBank bank);
+extern void     FRAMTEXT_CODE_SECTION FlashUnlock(FlashBank bank);
+extern int      FRAMTEXT_CODE_SECTION FlashWaitForLastOperation(FlashBank bank); 
+extern void     FRAMTEXT_CODE_SECTION FlashEraseSector(FlashBank bank, uint32_t uSector); 
+extern bool     FRAMTEXT_CODE_SECTION FlashErasePatch(uint8_t uPatch);
+extern bool     FRAMTEXT_CODE_SECTION FlashProgramBlock(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress);
+extern bool     FRAMTEXT_CODE_SECTION FlashProgramBlocks(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress, uint32_t uBlocks);
+extern uint32_t FRAMTEXT_CODE_SECTION FlashGetBlockWordsize(void);
+
+extern bool FlashPatch(uint8_t uPatch);
+
+
+
+
+

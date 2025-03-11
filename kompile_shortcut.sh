@@ -3,8 +3,8 @@ set -e
 
 # supported boards
 BUILD_AXOLOTI=0
-BUILD_KSOLOTI_F427=0
-BUILD_KSOLOTI_H743=1
+BUILD_KSOLOTI_F427=1
+BUILD_KSOLOTI_H743=0
 
 # supported firmware modes
 BUILD_NORMAL=1
