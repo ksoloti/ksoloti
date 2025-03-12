@@ -241,6 +241,7 @@ ifeq ($(USE_VERBOSE_COMPILE),yes)
 	@echo
 	$(LD) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 else
+	@echo
 	@echo Linking $@
 	@$(LD) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 endif
@@ -282,6 +283,7 @@ else
 	@echo
 	@$(SZ) --format=sysv $<
 	@$(SZ) $<
+	@echo
 endif
 
 %.list: %.elf
