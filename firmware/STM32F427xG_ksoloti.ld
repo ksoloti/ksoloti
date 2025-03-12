@@ -161,6 +161,7 @@ SECTIONS
         PROVIDE(_edata = .);
         _data_end = .;
     } > RAM AT > FLASH
+
     .flashend :
     {
         . = ALIGN(4);
