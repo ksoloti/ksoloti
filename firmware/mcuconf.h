@@ -67,7 +67,9 @@
 #define STM32_MCO1PRE                       STM32_MCO1PRE_DIV1
 #define STM32_MCO2SEL                       STM32_MCO2SEL_SYSCLK
 #define STM32_MCO2PRE                       STM32_MCO2PRE_DIV5
-#define STM32_I2SSRC                        STM32_I2SSRC_PLLI2S
+/* I2S clock source not required - set to "dummy" clock in to save power */
+#define STM32_I2SSRC                        STM32_I2SSRC_CKIN
+
 #define STM32_PLLI2SN_VALUE                 384
 #define STM32_PLLI2SR_VALUE                 5
 #define STM32_PVD_ENABLE                    FALSE
