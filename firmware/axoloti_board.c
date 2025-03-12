@@ -165,7 +165,7 @@ void adc_configpads(void) {
 /*
  * ADC samples buffer. Increased size to hold data of 5V supervisor and PF6..9 inputs.
  */
-unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS] __attribute__ ((section (".sram2")));
+uint16_t adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS] __attribute__ ((section (".sram2")));
 
 /*
  * ADC conversion group.
