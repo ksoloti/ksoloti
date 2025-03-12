@@ -102,8 +102,7 @@ int main(void) {
 #endif
 
     InitPConnection();
-
-
+    
     chThdSleepMilliseconds(10);
 
     /* Pull up SPILINK detector (HIGH means MASTER i.e. regular operation) */
@@ -152,7 +151,6 @@ int main(void) {
             }
 
             /* If no patch booting or running yet try loading from flash */
-            // if (patchStatus == STOPPED) {
             if (patchStatus != RUNNING) {
                 LoadPatchStartFlash();
             }
