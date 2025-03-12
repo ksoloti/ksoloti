@@ -84,10 +84,16 @@ void adc_init(void) {
      */
     PWR->CR |= PWR_CR_ADCDC1;
 
+    ADC->CCR |= ADC_CCR_DELAY; // Irrelevant?
+
     adcStart(&ADCD1, NULL);
 
-
+    /* On STM32F42x and STM32F43x devices, VBATE must be disabled when TSVREFE is
+     * set. If both bits are set, only the VBAT conversion is performed.
+     */
+    adcSTM32DisableVBATE();
     adcSTM32EnableTSVREFE();
+
 }
 
 void adc_configpads(void) {
