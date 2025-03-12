@@ -34,6 +34,15 @@ SECTIONS
         etext = .;
     } > SRAM1
     
+    .bss (NOLOAD) : ALIGN(4) SUBALIGN(4)
+    {
+        PROVIDE(_pbss_start = .);        
+        sbss = .;
+        * (.bss);
+        ebss = .;
+        PROVIDE(_pbss_end = .);        
+    } > CCMSRAM
+    
     constructors : ALIGN(4) SUBALIGN(4)
     {
         PROVIDE(__ctor_array_start = .);
@@ -56,29 +65,20 @@ SECTIONS
         * (.rodata.*);
     } > SRAM1
 
-    .data (NOLOAD): ALIGN(4) SUBALIGN(4)
+    .data (NOLOAD) : ALIGN(4) SUBALIGN(4)
     {
         sdata = .;
         * (.data);
         edata = .;
     } > SRAM1
 
-    .bss (NOLOAD): ALIGN(4) SUBALIGN(4)
-    {
-        PROVIDE(_pbss_start = .);        
-        sbss = .;
-        * (.bss);
-        ebss = .;
-        PROVIDE(_pbss_end = .);        
-    } > CCMSRAM
-    
-    .sram2 (NOLOAD): ALIGN(4) SUBALIGN(4) 
+    .sram2 (NOLOAD) : ALIGN(4) SUBALIGN(4) 
     {
         * (.sram2);
         * (.sram2.*);
     } > SRAM2
 
-    .sram3 (NOLOAD): ALIGN(4) SUBALIGN(4) 
+    .sram3 (NOLOAD) : ALIGN(4) SUBALIGN(4) 
     {
         * (.sram3);
         * (.sram3.*);

@@ -34,7 +34,7 @@ SECTIONS
         etext = .;
     } > SRAM1
     
-    .bss (NOLOAD): ALIGN(4) SUBALIGN(4)
+    .bss (NOLOAD) : ALIGN(4) SUBALIGN(4)
     {
         PROVIDE(_pbss_start = .);        
         sbss = .;
@@ -65,20 +65,20 @@ SECTIONS
         * (.rodata.*);
     } > SRAM1
 
-    .data (NOLOAD): ALIGN(4) SUBALIGN(4)
+    .data (NOLOAD) : ALIGN(4) SUBALIGN(4)
     {
         sdata = .;
         * (.data);
         edata = .;
     } > SRAM1
 
-    .sram2 (NOLOAD): ALIGN(4) SUBALIGN(4) 
+    .sram2 (NOLOAD) : ALIGN(4) SUBALIGN(4) 
     {
         * (.sram2);
         * (.sram2.*);
     } > SRAM2
 
-    .sram3 (NOLOAD): ALIGN(4) SUBALIGN(4) 
+    .sram3 (NOLOAD) : ALIGN(4) SUBALIGN(4) 
     {
         * (.sram3);
         * (.sram3.*);
