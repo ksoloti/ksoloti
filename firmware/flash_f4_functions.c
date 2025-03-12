@@ -86,47 +86,6 @@ bool FRAMTEXT_CODE_SECTION FlashProgramBlock(FlashBank bank, uint32_t uFlashAddr
   return bResult;
 }
 
-// bool FRAMTEXT_CODE_SECTION FlashProgramBlocks(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress, uint32_t uBlocks)
-// {
-//   FlashUnlock(bank);
-
-//   bool bResult = true;
-
-//   uint32_t uFlashLoc = uFlashAddress;
-//   uint32_t uSourceLoc = uDataAddress;
-  
-//   for (uint32_t uBlock = 0; bResult && (uBlock < uBlocks); uBlock++)
-//   {
-//     bResult = FlashProgramBlock(fbPatch, uFlashLoc, uSourceLoc);
-//     uFlashLoc += 1;
-//     uSourceLoc += 1;
-//   }
-
-//   if (bResult)
-//   {
-//     // Validate flash
-//     uint32_t uFlashLoc = uFlashAddress;
-//     uint32_t uSourceLoc = uDataAddress;
-
-//     uint32_t *pFlash = (uint32_t *)uFlashLoc;
-//     uint32_t *pSource = (uint32_t *)uSourceLoc;
-
-//     uint32_t uWords = uBlocks * 8;
-
-//     for (uint32_t i = 0; bResult && (i < uWords); i++)
-//     {
-//       bResult = *pFlash == *pSource;
-//       pFlash++;
-//       pSource++;
-//     }
-//   }
-
-//   FlashLock(bank);
-
-//   return bResult;
-// }
-
-
 bool FRAMTEXT_CODE_SECTION FlashErasePatch(__attribute__ ((unused)) uint8_t uPatch)
 {
   FlashUnlock(fbPatch);
