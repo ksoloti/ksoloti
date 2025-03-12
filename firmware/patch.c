@@ -408,11 +408,7 @@ static int StartPatch1(void) {
             StopPatch1();
             SetPatchStatus(STOPPED);
 
-            if (loadFName[0]) {
-                int res = sdcard_loadPatch1(loadFName);
-                if (!res) StartPatch1();
-            }
-            else if (loadPatchIndex == START_FLASH) {
+            if (loadPatchIndex == START_FLASH) {
                 /* Patch in flash sector 11 */
                 memcpy((uint8_t*) PATCHMAINLOC, (uint8_t*) PATCHFLASHLOC, PATCHFLASHSIZE);
                 if ((*(uint32_t*) PATCHMAINLOC != 0xFFFFFFFF) && (*(uint32_t*) PATCHMAINLOC != 0)) {
@@ -421,6 +417,10 @@ static int StartPatch1(void) {
             }
             else if (loadPatchIndex == START_SD) {
                 strcpy(&loadFName[0], "/start.bin");
+                int res = sdcard_loadPatch1(loadFName);
+                if (!res) StartPatch1();
+            }
+            else if (loadFName[0]) {
                 int res = sdcard_loadPatch1(loadFName);
                 if (!res) StartPatch1();
             }
