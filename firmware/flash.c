@@ -23,6 +23,9 @@
 #include "patch.h"
 #include "sdram.h"
 
+#define GREEN_LED(x)   palWritePad(LED1_PORT, LED1_PIN, x);
+#define RED_LED(x)     palWritePad(LED2_PORT, LED2_PIN, x);
+#define RED_LED_TOGGLE palTogglePad(LED2_PORT, LED2_PIN);
 
 static uint32_t FRAMTEXT_CODE_SECTION revbit(uint32_t data)
 {
@@ -56,9 +59,7 @@ uint32_t FRAMTEXT_CODE_SECTION FlashCalcCRC32(uint8_t *buffer, uint32_t size)
     ui32x = *((uint32_t *)buffer);
     buffer += 4;
     ui32x = revbit(ui32x); // reverse the bit order of input data
-    CRC->DR = ui32x;
-    if ((i && 0xFFF) == 0)
-      watchdog_feed();
+    CRC->DR = ui32x;  
   }
   ui32x = CRC->DR;
 
@@ -105,9 +106,7 @@ void FRAMTEXT_CODE_SECTION FlashSystemReset(void)
 bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress, uint32_t uBytes)
 {
   /* Set up LEDs */
-  palSetPadMode(LED1_PORT, LED1_PIN, PAL_MODE_OUTPUT_PUSHPULL);
-  palSetPad(LED1_PORT, LED1_PIN);
-  palSetPadMode(LED2_PORT, LED2_PIN, PAL_MODE_OUTPUT_PUSHPULL);
+  RED_LED(1);
 
   FlashUnlock(bank);
 
@@ -115,10 +114,9 @@ bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, 
 
   uint32_t uFlashLoc = uFlashAddress;
   uint32_t uSourceLoc = uDataAddress;
-  uint32_t uWords = uBytes / 4;
-  uint32_t uBlockWordSize = FlashGetBlockWordsize();
-  uint32_t uBlocks = uWords / uBlockWordSize;
-  if(uWords % uBlockWordSize)
+  uint32_t uBlockByteSize = FlashGetBlockBytesize();
+  uint32_t uBlocks = uBytes / uBlockByteSize;
+  if(uBytes % uBlockByteSize)
     uBlocks++;
   
   int32_t nLedWordCount = 1024*16;
@@ -126,14 +124,14 @@ bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, 
   for (uint32_t uBlock = 0; bResult && (uBlock < uBlocks); uBlock++)
   {
     bResult = FlashProgramBlock(fbPatch, uFlashLoc, uSourceLoc);
-    uFlashLoc += uBlockWordSize;
-    uSourceLoc += uBlockWordSize;
-    nLedWordCount -= uBlockWordSize;
+    uFlashLoc += uBlockByteSize;
+    uSourceLoc += uBlockByteSize;
+    nLedWordCount -= uBlockByteSize;
 
     if( nLedWordCount < 0)
     {
       nLedWordCount = 1024*16;
-      palTogglePad(LED2_PORT, LED2_PIN);
+      RED_LED_TOGGLE;
     }
   }
 
@@ -146,9 +144,15 @@ bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, 
     uint32_t *pFlash = (uint32_t *)uFlashLoc;
     uint32_t *pSource = (uint32_t *)uSourceLoc;
 
+    uint32_t uWords = (uBlocks * uBlockByteSize) / 4;
+
     for (uint32_t i = 0; bResult && (i < uWords); i++)
     {
       bResult = *pFlash == *pSource;
+      if(!bResult)
+      {
+        volatile uint32_t u = 0;
+      }
       pFlash++;
       pSource++;
     }
@@ -156,8 +160,7 @@ bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, 
 
   FlashLock(bank);
 
-  palWritePad(LED1_PORT, LED1_PIN, 1);
-  palWritePad(LED2_PORT, LED2_PIN, 1);
+  RED_LED(0);
 
   return bResult;
 }
@@ -167,13 +170,11 @@ void __attribute__((section(".framtext"))) DisplayAbortErr(int err)
   /* blink red slowly, green off */
   palWritePad(LED1_PORT, LED1_PIN, 0);
 
-  int i = 10;
+  int i = 20;
   while (i--)
   {
+    RED_LED_TOGGLE;
     palWritePad(LED2_PORT, LED2_PIN, 1);
-    KsolotiSleepMilliseconds(1000);
-    palWritePad(LED2_PORT, LED2_PIN, 0);
-    KsolotiSleepMilliseconds(1000);
   }
 
   FlashSystemReset();
@@ -183,14 +184,10 @@ void FRAMTEXT_CODE_SECTION FlashFirmware(void)
 {
   halInit();
 
-  /* Float USB inputs, hope the host notices detach... */
-  palSetPadMode(GPIOA, 11, PAL_MODE_INPUT);
-  palSetPadMode(GPIOA, 12, PAL_MODE_INPUT);
-
-  /* Set up LEDs */
-  palSetPadMode(LED1_PORT, LED1_PIN, PAL_MODE_OUTPUT_PUSHPULL);
-  palSetPad(LED1_PORT, LED1_PIN);
-  palSetPadMode(LED2_PORT, LED2_PIN, PAL_MODE_OUTPUT_PUSHPULL);
+  FLASH->SR = 0xffffffff;
+  
+  // Set LEDs on
+  RED_LED(1);
 
 
   uint32_t *sdram32 = (uint32_t *)SDRAM_BANK_ADDR;
@@ -216,62 +213,53 @@ void FRAMTEXT_CODE_SECTION FlashFirmware(void)
     DisplayAbortErr(3);
   }
 
-  /* Unlock sequence */
-  FlashUnlock(fbFirmware);
-
+  
+ 
   // Erase flash
 #if BOARD_KSOLOTU_CORE_H743
   uint32_t uFlashSectors = 8;
 #else
-  uint32_t uFlashSectors = 10;
+  uint32_t uFlashSectors = 12;
 #endif 
 
 
+  FlashUnlock(fbFirmware);
   uint32_t uSector;
-  for (uSector = 0; uSector < uFlashSectors; uSector++)
-    FlashEraseSector(fbFirmware, uSector);
+  bool bResult = true;
+  for (uSector = 0; bResult && (uSector < uFlashSectors); uSector++)
+  {
+    bResult = FlashEraseSector(fbFirmware, uSector);
+    RED_LED_TOGGLE;
+  }
+  FlashLock(fbFirmware);
+
+  if (!bResult)
+    DisplayAbortErr(4);
 
   uint32_t uDest = FLASH_BASE_ADDR;
   uint32_t uSrc  = SDRAM_BANK_ADDR + 0x010;
 
-  FlashProgram(fbFirmware, uDest, uSrc, flength);
+  if (!bResult)
+    DisplayAbortErr(4);
 
+  bResult = FlashProgram(fbFirmware, uDest, uSrc, flength);
 
-  // int destptr = FLASH_BASE_ADDR;                            /* flash base adress */
-  // uint32_t *srcptr = (uint32_t *)(SDRAM_BANK_ADDR + 0x010); /* sdram base adress + header offset */
+  FlashLock(fbFirmware);
 
+  if (!bResult)
+    DisplayAbortErr(5);
 
-  // bool ledOn = false;
-  // uint32_t i;
-  // for (i = 0; i < (flength + 3) / 4; i++)
-  // {
-  //   uint32_t d = *srcptr;
-
-  //   FlashProgramWord(destptr, d);
-
-  //   if ((i & 0xFFF) == 0)
-  //   {
-  //     ledOn = !ledOn;
-  //     palWritePad(LED2_PORT, LED2_PIN, ledOn);
-  //   }
-
-  //   destptr += 4;
-  //   srcptr++;
-  // }
-
-  palWritePad(LED1_PORT, LED1_PIN, 1);
-  palWritePad(LED2_PORT, LED2_PIN, 1);
+  RED_LED(1);
 
 
   ccrc = FlashCalcCRC32((uint8_t *)(FLASH_BASE_ADDR), flength);
 
   if (ccrc != fcrc)
   {
-    DisplayAbortErr(5);
+    DisplayAbortErr(6);
   }
 
-  FlashLock(fbFirmware);
-
+ 
   KsolotiSleepMilliseconds(1000);
 
   FlashSystemReset();
@@ -462,7 +450,7 @@ void FRAMTEXT_CODE_SECTION FlashFirmware(void)
 //   return bResult;
 // }
 
-// uint32_t FRAMTEXT_CODE_SECTION FlashGetBlockWordsize(void)
+// uint32_t FRAMTEXT_CODE_SECTION FlashGetBlockBytesize(void)
 // {
 //   return 32;
 // }

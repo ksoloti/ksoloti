@@ -427,7 +427,7 @@ static int StartPatch1(void) {
                 if (!res) StartPatch1();
             }
             else if (loadPatchIndex == START_FLASH) {
-                /* Patch in flash sector 11 on F4 sector 8 on H7*/
+                // Patch in flash sector 11 on F4 sector 8 on H7
                 #if PATCH_ITCM
                     #pragma GCC diagnostic ignored "-Wnonnull"
                 #endif                 

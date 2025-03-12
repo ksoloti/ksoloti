@@ -18,18 +18,19 @@
  */
 #include "ch.h"
 #include "hal.h"
-#include "watchdog.h"
 #include "flash.h"
 #include "patch.h"
 
+volatile int SR;
 
-int FRAMTEXT_CODE_SECTION FlashWaitForLastOperation(__attribute__ ((unused)) FlashBank bank)
+bool FRAMTEXT_CODE_SECTION FlashWaitForLastOperation(__attribute__ ((unused)) FlashBank bank)
 {
   while (FLASH->SR & FLASH_SR_BSY)
   {
     WWDG->CR = WWDG_CR_T;
   }
-  return FLASH->SR;
+  SR = FLASH->SR;
+  return !(FLASH->SR);
 }
 
 void FRAMTEXT_CODE_SECTION FlashLock(__attribute__ ((unused)) FlashBank bank)
@@ -44,12 +45,8 @@ void FRAMTEXT_CODE_SECTION FlashUnlock(__attribute__ ((unused)) FlashBank bank)
   FLASH->KEYR = 0xCDEF89AB;
 }
 
-void FRAMTEXT_CODE_SECTION FlashEraseSector(FlashBank bank, uint32_t uSector)
+bool FRAMTEXT_CODE_SECTION FlashEraseSector(FlashBank bank, uint32_t uSector)
 {
-  /* interrupts would cause flash execution, stall */
-  /* and cause watchdog trigger */
-  chSysLock();
-
   // assume VDD>2.7V
   FLASH->CR &= ~FLASH_CR_PSIZE;
   FLASH->CR |= FLASH_CR_PSIZE_1;
@@ -60,9 +57,9 @@ void FRAMTEXT_CODE_SECTION FlashEraseSector(FlashBank bank, uint32_t uSector)
 
   FLASH->CR &= (~FLASH_CR_SER);
   FLASH->CR &= ~FLASH_CR_SER;
-  FlashWaitForLastOperation(bank);
+  bool bResult = FlashWaitForLastOperation(bank);
 
-  chSysUnlock();
+  return bResult;
 }
 
 bool FRAMTEXT_CODE_SECTION FlashProgramBlock(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress)
@@ -84,8 +81,6 @@ bool FRAMTEXT_CODE_SECTION FlashProgramBlock(FlashBank bank, uint32_t uFlashAddr
 
   /* if the program operation is completed, disable the PG Bit */
   FLASH->CR &= (~FLASH_CR_PG);
-
-  watchdog_feed();
 
   /* Return the Program Status */
   return bResult;
@@ -135,9 +130,9 @@ bool FRAMTEXT_CODE_SECTION FlashProgramBlock(FlashBank bank, uint32_t uFlashAddr
 bool FRAMTEXT_CODE_SECTION FlashErasePatch(__attribute__ ((unused)) uint8_t uPatch)
 {
   FlashUnlock(fbPatch);
-  FlashEraseSector(fbPatch, 11);
+  bool bResult = FlashEraseSector(fbPatch, 11);
   FlashLock(fbPatch);
-  return true;
+  return bResult;
 }
 
 bool FlashPatch(uint8_t uPatch)
@@ -155,7 +150,7 @@ bool FlashPatch(uint8_t uPatch)
   return bResult;
 }
 
-uint32_t FRAMTEXT_CODE_SECTION FlashGetBlockWordsize(void)
+uint32_t FRAMTEXT_CODE_SECTION FlashGetBlockBytesize(void)
 {
-  return 1;
+  return 4;
 }

@@ -63,7 +63,7 @@ void FRAMTEXT_CODE_SECTION FlashUnlock(FlashBank bank)
   SCB_EnableICache();
 }
 
-int FRAMTEXT_CODE_SECTION FlashWaitForLastOperation(FlashBank bank)
+bool FRAMTEXT_CODE_SECTION FlashWaitForLastOperation(FlashBank bank)
 {
   if (bank == fbFirmware)
   {
@@ -93,7 +93,7 @@ int FRAMTEXT_CODE_SECTION FlashWaitForLastOperation(FlashBank bank)
   }
 }
 
-void FRAMTEXT_CODE_SECTION FlashEraseSector(FlashBank bank, uint32_t uSector)
+bool FRAMTEXT_CODE_SECTION FlashEraseSector(FlashBank bank, uint32_t uSector)
 {
   FlashWaitForLastOperation(bank);
 
@@ -107,6 +107,10 @@ void FRAMTEXT_CODE_SECTION FlashEraseSector(FlashBank bank, uint32_t uSector)
     FLASH->CR2 &= ~(FLASH_CR_PSIZE | FLASH_CR_SNB);
     FLASH->CR2 |= (FLASH_CR_SER | FLASH_VOLTAGE_RANGE_3 | (uSector << FLASH_CR_SNB_Pos) | FLASH_CR_START);
   }
+
+  bool bResult = FlashWaitForLastOperation(bank);
+
+  return bResult;
 }
 
 bool FRAMTEXT_CODE_SECTION FlashErasePatch(uint8_t uPatch)
@@ -115,17 +119,17 @@ bool FRAMTEXT_CODE_SECTION FlashErasePatch(uint8_t uPatch)
 
   if (uPatch < PATCHFLASHSLOTS)
   {
+    bResult = true;
+
     FlashUnlock(fbPatch);
 
     uint32_t uFlashBlockSize = (128 * 1024);
     uint32_t uSectors = PATCHFLASHSIZE < uFlashBlockSize ? 1 : uFlashBlockSize / PATCHFLASHSIZE;
 
-    for (uint32_t i = 0; i < uSectors; i++)
-      FlashEraseSector(fbPatch, uPatch + i);
+    for (uint32_t i = 0; bResult && (i < uSectors); i++)
+      bResult = FlashEraseSector(fbPatch, uPatch + i);
 
     FlashLock(fbPatch);
-
-    bResult = true;
   }
 
   return bResult;
@@ -207,9 +211,9 @@ bool FRAMTEXT_CODE_SECTION FlashProgramBlock(FlashBank bank, uint32_t uFlashAddr
 //   return bResult;
 // }
 
-uint32_t FRAMTEXT_CODE_SECTION FlashGetBlockWordsize(void)
+uint32_t FRAMTEXT_CODE_SECTION FlashGetBlockBytesize(void)
 {
-  return 32;
+  return 128;
 }
 
 

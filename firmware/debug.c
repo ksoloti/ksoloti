@@ -43,7 +43,7 @@ void LogUartMessageEol(const char *format, ...)
  */
 #define bkpt() __asm volatile("BKPT #0\n")
 
-void NMI_Handler(void)
+void FRAMTEXT_CODE_SECTION NMI_Handler(void)
 {
   // TODO
   while (1)
@@ -64,21 +64,21 @@ typedef enum
 char exceptionstr[50];
 
 #if BOARD_KSOLOTI_CORE_H743
-  void sendchar(char c)
+  void FRAMTEXT_CODE_SECTION sendchar(char c)
   {
     while (!(USART2->ISR & USART_ISR_TXE_TXFNF))
       ;
     USART2->TDR = (c);
   }
 #else
-  void sendchar(char c)
+  void FRAMTEXT_CODE_SECTION sendchar(char c)
   {
       while (!(USART2->SR & USART_SR_TXE));
         USART2->DR = ( c );
   }
 #endif
 
-void exception_dump(char *s)
+void FRAMTEXT_CODE_SECTION exception_dump(char *s)
 {
   do
   {
@@ -86,7 +86,7 @@ void exception_dump(char *s)
   } while (*s++);
 }
 
-void faulttype(FaultType type)
+void FRAMTEXT_CODE_SECTION faulttype(FaultType type)
 {
 
   switch (type)
@@ -117,7 +117,7 @@ void faulttype(FaultType type)
   }
 }
 
-void hex2string(uint32_t hex)
+void FRAMTEXT_CODE_SECTION hex2string(uint32_t hex)
 {
   uint8_t i;
   char ascii = 0x0;
@@ -165,7 +165,7 @@ void hex2string(uint32_t hex)
   }
 }
 
-void HardFault_Handler(void)
+void FRAMTEXT_CODE_SECTION HardFault_Handler(void)
 {
   // Copy to local variables (not pointers) to allow GDB "i loc" to directly show the info
   // Get thread context. Contains main registers including PC and LR
@@ -259,9 +259,9 @@ void HardFault_Handler(void)
   NVIC_SystemReset();
 }
 
-void BusFault_Handler(void) __attribute__((alias("HardFault_Handler")));
+void FRAMTEXT_CODE_SECTION BusFault_Handler(void) __attribute__((alias("HardFault_Handler")));
 
-void UsageFault_Handler(void)
+void FRAMTEXT_CODE_SECTION UsageFault_Handler(void)
 {
   // Copy to local variables (not pointers) to allow GDB "i loc" to directly show the info
   // Get thread context. Contains main registers including PC and LR
@@ -289,7 +289,7 @@ void UsageFault_Handler(void)
   NVIC_SystemReset();
 }
 
-void MemManage_Handler(void)
+void FRAMTEXT_CODE_SECTION MemManage_Handler(void)
 {
   // Copy to local variables (not pointers) to allow GDB "i loc" to directly show the info
   // Get thread context. Contains main registers including PC and LR

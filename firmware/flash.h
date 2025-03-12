@@ -32,13 +32,13 @@ typedef enum _FlashBank
 
 extern void     FRAMTEXT_CODE_SECTION FlashLock(FlashBank bank);
 extern void     FRAMTEXT_CODE_SECTION FlashUnlock(FlashBank bank);
-extern int      FRAMTEXT_CODE_SECTION FlashWaitForLastOperation(FlashBank bank); 
-extern void     FRAMTEXT_CODE_SECTION FlashEraseSector(FlashBank bank, uint32_t uSector); 
+extern bool     FRAMTEXT_CODE_SECTION FlashWaitForLastOperation(FlashBank bank); 
+extern bool     FRAMTEXT_CODE_SECTION FlashEraseSector(FlashBank bank, uint32_t uSector); 
 extern bool     FRAMTEXT_CODE_SECTION FlashErasePatch(uint8_t uPatch);
 extern bool     FRAMTEXT_CODE_SECTION FlashProgramBlock(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress);
 //extern bool     FRAMTEXT_CODE_SECTION FlashProgramBlocks(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress, uint32_t uBlocks);
 extern uint32_t FRAMTEXT_CODE_SECTION FlashCalcCRC32(uint8_t *buffer, uint32_t size);
-extern uint32_t FRAMTEXT_CODE_SECTION FlashGetBlockWordsize(void);
+extern uint32_t FRAMTEXT_CODE_SECTION FlashGetBlockBytesize(void);
 extern void     FRAMTEXT_CODE_SECTION KsolotiSleepMilliseconds(uint32_t uMiliseconds);
 extern void     FRAMTEXT_CODE_SECTION FlashSystemReset(void);
 extern bool     FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress, uint32_t uBytes);
