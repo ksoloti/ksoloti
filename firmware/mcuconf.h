@@ -54,8 +54,8 @@
 #define STM32_CLOCK48_REQUIRED              TRUE
 #define STM32_SW                            STM32_SW_PLL
 #define STM32_PLLSRC                        STM32_PLLSRC_HSE
-#define STM32_PLLM_VALUE                    8
-#define STM32_PLLN_VALUE                    336
+#define STM32_PLLM_VALUE                    4
+#define STM32_PLLN_VALUE                    168
 #define STM32_PLLP_VALUE                    2
 #define STM32_PLLQ_VALUE                    7
 #define STM32_HPRE                          STM32_HPRE_DIV1
@@ -65,12 +65,12 @@
 #define STM32_RTCPRE_VALUE                  8
 #define STM32_MCO1SEL                       STM32_MCO1SEL_HSE
 #define STM32_MCO1PRE                       STM32_MCO1PRE_DIV1
-#define STM32_MCO2SEL                       STM32_MCO2SEL_SYSCLK
-#define STM32_MCO2PRE                       STM32_MCO2PRE_DIV5
+#define STM32_MCO2SEL                       STM32_MCO2SEL_PLLI2S
+#define STM32_MCO2PRE                       STM32_MCO2PRE_DIV4
 /* I2S clock source not required - set to "dummy" clock in to save power */
 #define STM32_I2SSRC                        STM32_I2SSRC_CKIN
 
-#define STM32_PLLI2SN_VALUE                 384
+#define STM32_PLLI2SN_VALUE                 192
 #define STM32_PLLI2SR_VALUE                 5
 #define STM32_PVD_ENABLE                    FALSE
 #define STM32_PLS                           STM32_PLS_LEV0
