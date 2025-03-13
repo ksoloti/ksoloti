@@ -1281,6 +1281,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void jMenuItemEnterDFUActionPerformed(java.awt.event.ActionEvent evt) {
         qcmdprocessor.AppendToQueue(new QCmdBringToDFUMode());
+        qcmdprocessor.AppendToQueue(new QCmdDisconnect());
     }
 
 
