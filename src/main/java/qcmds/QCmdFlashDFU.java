@@ -76,7 +76,7 @@ public class QCmdFlashDFU extends QCmdShellTask {
         Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.INFO, "File path: " + System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build" + File.separator + bname);
 
         if (OSDetect.getOS() == OSDetect.OS.WIN) {
-            String str = PlatformDir() + "\\bin\\sh.exe " + FirmwareDir() + "\\upload_fw_dfu.sh " + bname;
+            String str = FirmwareDir() + "\\upload_fw_dfu_win.bat " + bname;
             return str.split("\\s+");
         }
         else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {
