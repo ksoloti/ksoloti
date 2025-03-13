@@ -100,7 +100,7 @@
     "C_Cpp.default.compilerPath": "/Applications/ARM/bin/arm-none-eabi-gcc",
     "C_Cpp.default.cppStandard": "c++11",
     "C_Cpp.default.cStandard": "c11",
-    "cortex-debug.variableUseNaturalFormat": false,
+    "cortex-debug.variableUseNaturalFormat": true,
     "cortex-debug.stm32cubeprogrammer": "/Volumes/X82/Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.macos64_2.1.201.202404072231/tools/bin/",
     "cortex-debug.stlinkPath": "/Volumes/X82/Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.ide.mcu.externaltools.stlink-gdb-server.macos64_2.1.300.202403291623/tools/bin/ST-LINK_gdbserver",
     "makefile.makefilePath": "firmware/makefile"
