@@ -56,6 +56,7 @@ uint32_t DspTime;
 char loadFName[64] = "";
 loadPatchIndex_t loadPatchIndex = UNINITIALIZED;
 static const char* index_fn = "/index.axb";
+static const char* startbin_fn = "/start.bin";
 
 static int32_t inbuf[32];
 static int32_t* outbuf;
@@ -416,7 +417,7 @@ static int StartPatch1(void) {
                 }
             }
             else if (loadPatchIndex == START_SD) {
-                strcpy(&loadFName[0], "/start.bin");
+                strcpy(&loadFName[0], startbin_fn);
                 int res = sdcard_loadPatch1(loadFName);
                 if (!res) StartPatch1();
             }
@@ -488,7 +489,7 @@ static int StartPatch1(void) {
 
                             if (patchStatus != RUNNING) {
                                 loadPatchIndex = START_SD;
-                                strcpy(&loadFName[0], "/start.bin");
+                                strcpy(&loadFName[0], startbin_fn);
                                 res = sdcard_loadPatch1(loadFName);
                                 if (!res) StartPatch1();
                             }
@@ -507,7 +508,7 @@ static int StartPatch1(void) {
                 if (!bytes_read) {
                     LogTextMessage("Patch load out of range: %d", loadPatchIndex);
                     loadPatchIndex = START_SD;
-                    strcpy(&loadFName[0], "/start.bin");
+                    strcpy(&loadFName[0], startbin_fn);
                     int res = sdcard_loadPatch1(loadFName);
                     if (!res) StartPatch1();
                 }
@@ -624,7 +625,8 @@ void LoadPatch(const char* name) {
 
 
 void LoadPatchStartSD(void) {
-    strcpy(loadFName, "/start.bin");
+    palClearPad(LED1_PORT, LED1_PIN);
+    strcpy(loadFName, startbin_fn);
     loadPatchIndex = START_SD;
     chEvtSignal(pThreadDSP, (eventmask_t)2);
     chThdSleepMilliseconds(50);
