@@ -22,8 +22,13 @@
 #include "axoloti_defines.h"
 
 #if defined(BOARD_KSOLOTI_CORE)
+#if BOARD_KSOLOTI_CORE_H743
+#define ADC_GRP1_NUM_CHANNELS   13
+#define ADC_GRP2_NUM_CHANNELS   6
+#else
 #define ADC_GRP1_NUM_CHANNELS   14
 #define ADC_GRP2_NUM_CHANNELS   5
+#endif
 #else
 #define ADC_GRP1_NUM_CHANNELS   16
 #define ADC_GRP2_NUM_CHANNELS   0
