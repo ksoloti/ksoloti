@@ -361,9 +361,9 @@ public class USBBulkConnection extends Connection {
 
             // QCmdMemRead q;
 
-            // q = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
-            // qcmdp.AppendToQueue(q);
-            // targetProfile.setCPUSerial(q.getResult());
+            q = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
+            qcmdp.AppendToQueue(q);
+            targetProfile.setCPUSerial(q.getResult());
 
             // q = new QCmdMemRead(targetProfile.getOTPAddr(), 32);
             // qcmdp.AppendToQueue(q);

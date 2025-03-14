@@ -125,7 +125,11 @@ public class ksoloti_core {
     }
 
     public int getCPUSerialAddr() {
-        return 0x1FFF7A10;
+        if(prefs.getBoard() == BoardType.KsolotiGeko) {
+            return 0x1FF1E800;
+        } else {
+            return 0x1FFF7A10;
+        }
     }
 
     public int getCPUIDCodeAddr() {

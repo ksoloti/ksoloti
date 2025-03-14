@@ -520,9 +520,10 @@ static const USBDescriptor *get_descriptor(USBDriver *usbp,
   case USB_DESCRIPTOR_STRING:
     if (dindex == 3) {
 #if BOARD_KSOLOTI_CORE_H743
-      inttohex(*((uint32_t*)UID_BASE),&descriptor_serial_string[2]);
-      inttohex(*((uint32_t*)UID_BASE+4),&descriptor_serial_string[2+16]);
-      inttohex(*((uint32_t*)UID_BASE+8),&descriptor_serial_string[2+32]);
+      uint32_t *pUid = (uint32_t *)UID_BASE;
+      inttohex(*pUid++,&descriptor_serial_string[2]);
+      inttohex(*pUid++,&descriptor_serial_string[2+16]);
+      inttohex(*pUid,&descriptor_serial_string[2+32]);
 #else      
       inttohex(*((uint32_t*)0x1FFF7A10),&descriptor_serial_string[2]);
       inttohex(*((uint32_t*)0x1FFF7A14),&descriptor_serial_string[2+16]);
