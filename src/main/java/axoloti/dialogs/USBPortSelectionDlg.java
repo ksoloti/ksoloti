@@ -309,7 +309,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
             for (int r = 0; r < model.getRowCount(); r++) {
                 String id = (String) model.getValueAt(r, 3);
-                if (id.equals(this.defCPUID)) {
+                if (id != null && id.equals(this.defCPUID)) {
                     jTable1.setRowSelectionInterval(r, r);
                 }
             }
