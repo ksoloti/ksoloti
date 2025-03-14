@@ -30,6 +30,7 @@
 #endif /* BOARD_KSOLOTI_CORE */
 
 #define ADC_GRP1_BUF_DEPTH      1
+#define ADC_GRP2_BUF_DEPTH      1
 
 extern unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS];
 

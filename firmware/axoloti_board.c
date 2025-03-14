@@ -26,8 +26,8 @@
 /*
  * ADC samples buffer. Increased size to hold data of 5V supervisor and PF6..9 inputs.
  */
-unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS] CODEC_DMA_SECTION;
-// ARCFATALunsigned short adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS] ADC_DATA_SECTION;
+unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS] ADC_DMA_DATA_SECTION;
+unsigned short adc3_values[ADC_GRP2_NUM_CHANNELS] ADC_DMA_DATA_SECTION;
 
 void adc_configpads(void)
 {
@@ -123,107 +123,168 @@ void axoloti_board_init(void)
 #define ADC_SMPR2_SMP_SENSOR ADC_SMPR2_SMP_AN16
 
 const ADCConversionGroup adcgrpcfg1 =
-    {
-        .circular = false,
-        .num_channels = ADC_GRP1_NUM_CHANNELS,
-        .end_cb = NULL,
-        .error_cb = NULL,
-        .cfgr = 0U,
-        .cfgr2 = 0U,
-        .ccr = 0U,
-        .pcsel = (
-          ADC_SELMASK_IN16 | ADC_SELMASK_IN17 |
-          ADC_SELMASK_IN14 | ADC_SELMASK_IN15 |
-          ADC_SELMASK_IN18 | ADC_SELMASK_IN19 |
-          ADC_SELMASK_IN3 | ADC_SELMASK_IN7 |
-          ADC_SELMASK_IN9 | ADC_SELMASK_IN5 |
-          ADC_SELMASK_IN10 | ADC_SELMASK_IN11 |
-          ADC_SELMASK_IN4),
-        .ltr1 = 0x00000000U,
-        .htr1 = 0x03FFFFFFU,
-        .ltr2 = 0x00000000U,
-        .htr2 = 0x03FFFFFFU,
-        .ltr3 = 0x00000000U,
-        .htr3 = 0x03FFFFFFU,
-        .smpr =
-            {
-                // SMPR1
-                ADC_SMPR1_SMP_AN0(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN1(ADC_SMPR_SMP_384P5) 
-                | ADC_SMPR1_SMP_AN2(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN3(ADC_SMPR_SMP_384P5) 
-                | ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN5(ADC_SMPR_SMP_384P5) 
-                | ADC_SMPR1_SMP_AN6(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN7(ADC_SMPR_SMP_384P5) 
-                | ADC_SMPR1_SMP_AN8(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN8(ADC_SMPR_SMP_384P5),
-                // SMPR2
-                ADC_SMPR2_SMP_AN10(ADC_SMPR_SMP_384P5) | ADC_SMPR2_SMP_AN11(ADC_SMPR_SMP_384P5) 
-                | ADC_SMPR2_SMP_AN12(ADC_SMPR_SMP_384P5) | ADC_SMPR2_SMP_AN13(ADC_SMPR_SMP_384P5) 
-                | ADC_SMPR2_SMP_AN14(ADC_SMPR_SMP_384P5) | ADC_SMPR2_SMP_AN15(ADC_SMPR_SMP_384P5) 
-                | ADC_SMPR2_SMP_SENSOR(ADC_SMPR_SMP_384P5) | ADC_SMPR2_SMP_VREF(ADC_SMPR_SMP_384P5)},
-        .sqr =
-            {
-                // 15, vrefint, 6, 7, 8, 9, 11, 14, 0, 1, 2, 3, 4, 5
-                // SQR1
-                ADC_SQR1_SQ1_N(ADC_CHANNEL_IN15) | ADC_SQR1_SQ2_N(ADC_CHANNEL_VREFINT) 
-                | ADC_SQR1_SQ3_N(ADC_CHANNEL_IN6) | ADC_SQR1_SQ4_N(ADC_CHANNEL_IN7) | ADC_SQR1_NUM_CH(ADC_GRP1_NUM_CHANNELS),
-                // SQR2
-                ADC_SQR2_SQ5_N(ADC_CHANNEL_IN8) | ADC_SQR2_SQ6_N(ADC_CHANNEL_IN9) 
-                | ADC_SQR2_SQ7_N(ADC_CHANNEL_IN11) | ADC_SQR2_SQ8_N(ADC_CHANNEL_IN14) | ADC_SQR2_SQ9_N(ADC_CHANNEL_IN0),
-                // SQR3
-                ADC_SQR3_SQ10_N(ADC_CHANNEL_IN1) | ADC_SQR3_SQ11_N(ADC_CHANNEL_IN2) 
-                | ADC_SQR3_SQ12_N(ADC_CHANNEL_IN3) | ADC_SQR3_SQ13_N(ADC_CHANNEL_IN4) | ADC_SQR3_SQ14_N(ADC_CHANNEL_IN5),
-                // SQR4
-                0U}};
-
-void adc3_init(void)
 {
-  /* initialize ADC3 */
-  rccEnableADC3(FALSE);
+  .circular = false,
+  .num_channels = ADC_GRP1_NUM_CHANNELS,
+  .end_cb = NULL,
+  .error_cb = NULL,
+  .cfgr = 0U,
+  .cfgr2 = 0U,
+  .ccr = 0U,
+  .pcsel =  (  
+              ADC_SELMASK_IN16 | ADC_CHANNEL_VREFINT |
+              ADC_SELMASK_IN14 | ADC_SELMASK_IN15 |
+              ADC_SELMASK_IN18 | ADC_SELMASK_IN19 |
+              ADC_SELMASK_IN3 | ADC_SELMASK_IN7 |
+              ADC_SELMASK_IN9 | ADC_SELMASK_IN5 |
+              ADC_SELMASK_IN10 | ADC_SELMASK_IN11 |
+              ADC_SELMASK_IN4
+            ),
+  .ltr1 = 0x00000000U,
+  .htr1 = 0x03FFFFFFU,
+  .ltr2 = 0x00000000U,
+  .htr2 = 0x03FFFFFFU,
+  .ltr3 = 0x00000000U,
+  .htr3 = 0x03FFFFFFU,
+  .smpr =
+          {
+            // SMPR1
+            ADC_SMPR1_SMP_AN0(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN1(ADC_SMPR_SMP_384P5) 
+            | ADC_SMPR1_SMP_AN2(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN3(ADC_SMPR_SMP_384P5) 
+            | ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN5(ADC_SMPR_SMP_384P5) 
+            | ADC_SMPR1_SMP_AN6(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN7(ADC_SMPR_SMP_384P5) 
+            | ADC_SMPR1_SMP_AN8(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN8(ADC_SMPR_SMP_384P5),
+            // SMPR2
+            ADC_SMPR2_SMP_AN10(ADC_SMPR_SMP_384P5) | ADC_SMPR2_SMP_AN11(ADC_SMPR_SMP_384P5) 
+            | ADC_SMPR2_SMP_AN12(ADC_SMPR_SMP_384P5) | ADC_SMPR2_SMP_AN13(ADC_SMPR_SMP_384P5) 
+            | ADC_SMPR2_SMP_AN14(ADC_SMPR_SMP_384P5) | ADC_SMPR2_SMP_AN15(ADC_SMPR_SMP_384P5) 
+            | ADC_SMPR2_SMP_SENSOR(ADC_SMPR_SMP_384P5) | ADC_SMPR2_SMP_VREF(ADC_SMPR_SMP_384P5)
+          },
+  .sqr =
+          {
+            // 15, vrefint, 6, 7, 8, 9, 11, 14, 0, 1, 2, 3, 4, 5
+            // SQR1
+            ADC_SQR1_SQ1_N(ADC_CHANNEL_IN15) | ADC_SQR1_SQ2_N(ADC_CHANNEL_VREFINT) 
+            | ADC_SQR1_SQ3_N(ADC_CHANNEL_IN6) | ADC_SQR1_SQ4_N(ADC_CHANNEL_IN7) | ADC_SQR1_NUM_CH(ADC_GRP1_NUM_CHANNELS),
+            // SQR2
+            ADC_SQR2_SQ5_N(ADC_CHANNEL_IN8) | ADC_SQR2_SQ6_N(ADC_CHANNEL_IN9) 
+            | ADC_SQR2_SQ7_N(ADC_CHANNEL_IN11) | ADC_SQR2_SQ8_N(ADC_CHANNEL_IN14) | ADC_SQR2_SQ9_N(ADC_CHANNEL_IN0),
+            // SQR3
+            ADC_SQR3_SQ10_N(ADC_CHANNEL_IN1) | ADC_SQR3_SQ11_N(ADC_CHANNEL_IN2) 
+            | ADC_SQR3_SQ12_N(ADC_CHANNEL_IN3) | ADC_SQR3_SQ13_N(ADC_CHANNEL_IN4) | ADC_SQR3_SQ14_N(ADC_CHANNEL_IN5),
+            // SQR4
+            0U
+          }
+};
 
-  ADC3->CR = ADC_CR_ADEN;
 
-  ADC3->SMPR2 = ADC_SMPR2_SMP_AN10(ADC_SMPR_SMP_384P5) | ADC_SMPR2_SMP_AN11(ADC_SMPR_SMP_384P5) 
-  | ADC_SMPR2_SMP_AN12(ADC_SMPR_SMP_810P5) | ADC_SMPR2_SMP_AN13(ADC_SMPR_SMP_810P5) 
-  | ADC_SMPR2_SMP_AN14(ADC_SMPR_SMP_810P5) | ADC_SMPR2_SMP_AN15(ADC_SMPR_SMP_810P5);
+const ADCConversionGroup adcgrpcfg3 =
+{
+  .circular = false,
+  .num_channels = ADC_GRP2_NUM_CHANNELS,
+  .end_cb = NULL,
+  .error_cb = NULL,
+  .cfgr = 0U,
+  .cfgr2 = 0U,
+  .ccr = 0U,
+  .pcsel =  (  
+              ADC_SELMASK_IN4  | ADC_SELMASK_IN5 |
+              ADC_SELMASK_IN6  | ADC_SELMASK_IN7 |
+              ADC_SELMASK_IN8 
+            ),
+  .ltr1 = 0x00000000U,
+  .htr1 = 0x03FFFFFFU,
+  .ltr2 = 0x00000000U,
+  .htr2 = 0x03FFFFFFU,
+  .ltr3 = 0x00000000U,
+  .htr3 = 0x03FFFFFFU,
+  .smpr =
+          {
+            // SMPR1
+              ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN5(ADC_SMPR_SMP_384P5) 
+            | ADC_SMPR1_SMP_AN6(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN7(ADC_SMPR_SMP_384P5) 
+            | ADC_SMPR1_SMP_AN8(ADC_SMPR_SMP_384P5),
+            // SMPR2
+            0U
+          },
+  .sqr =
+          {
+            // 8, 4, 5, 6, 7
+            // SQR1
+            ADC_SQR1_SQ1_N(ADC_CHANNEL_IN8) | ADC_SQR1_SQ2_N(ADC_CHANNEL_IN4) 
+            | ADC_SQR1_SQ3_N(ADC_CHANNEL_IN5) | ADC_SQR1_SQ4_N(ADC_CHANNEL_IN6) | ADC_SQR1_NUM_CH(ADC_GRP2_NUM_CHANNELS),
+            // SQR2
+            ADC_SQR2_SQ5_N(ADC_CHANNEL_IN7),
+            // SQR3
+            0U,
+            // SQR4
+            0U
+          }
+};
 
-  ADC3->SMPR1 = ADC_SMPR1_SMP_AN0(ADC_SMPR_SMP_810P5) | ADC_SMPR1_SMP_AN1(ADC_SMPR_SMP_810P5) 
-  | ADC_SMPR1_SMP_AN2(ADC_SMPR_SMP_810P5) | ADC_SMPR1_SMP_AN3(ADC_SMPR_SMP_810P5) 
-  | ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_810P5) | ADC_SMPR1_SMP_AN5(ADC_SMPR_SMP_810P5) 
-  | ADC_SMPR1_SMP_AN6(ADC_SMPR_SMP_810P5) | ADC_SMPR1_SMP_AN7(ADC_SMPR_SMP_810P5) 
-  | ADC_SMPR1_SMP_AN8(ADC_SMPR_SMP_810P5) | ADC_SMPR1_SMP_AN9(ADC_SMPR_SMP_810P5);
 
-  ADC3->SQR1 = 0;
-  ADC3->SQR2 = 0;
-  ADC3->SQR3 = adc3_ch; /* No DMA available! Incrementing the channel manually. Starting with ADC3_IN_8 (the 5V supervisor). */
-  ADC3->CR |= ADC_CR_ADSTART;
-}
+// void adc3_init(void)
+// {
+//   /* initialize ADC3 */
+//   rccEnableADC3(FALSE);
+
+//   ADC3->CR = ADC_CR_ADEN;
+
+//   ADC3->SMPR2 = ADC_SMPR2_SMP_AN10(ADC_SMPR_SMP_384P5) | ADC_SMPR2_SMP_AN11(ADC_SMPR_SMP_384P5) 
+//   | ADC_SMPR2_SMP_AN12(ADC_SMPR_SMP_810P5) | ADC_SMPR2_SMP_AN13(ADC_SMPR_SMP_810P5) 
+//   | ADC_SMPR2_SMP_AN14(ADC_SMPR_SMP_810P5) | ADC_SMPR2_SMP_AN15(ADC_SMPR_SMP_810P5);
+
+//   ADC3->SMPR1 = ADC_SMPR1_SMP_AN0(ADC_SMPR_SMP_810P5) | ADC_SMPR1_SMP_AN1(ADC_SMPR_SMP_810P5) 
+//   | ADC_SMPR1_SMP_AN2(ADC_SMPR_SMP_810P5) | ADC_SMPR1_SMP_AN3(ADC_SMPR_SMP_810P5) 
+//   | ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_810P5) | ADC_SMPR1_SMP_AN5(ADC_SMPR_SMP_810P5) 
+//   | ADC_SMPR1_SMP_AN6(ADC_SMPR_SMP_810P5) | ADC_SMPR1_SMP_AN7(ADC_SMPR_SMP_810P5) 
+//   | ADC_SMPR1_SMP_AN8(ADC_SMPR_SMP_810P5) | ADC_SMPR1_SMP_AN9(ADC_SMPR_SMP_810P5);
+
+//   ADC3->SQR1 = 0;
+//   ADC3->SQR2 = 0;
+//   ADC3->SQR3 = adc3_ch; /* No DMA available! Incrementing the channel manually. Starting with ADC3_IN_8 (the 5V supervisor). */
+//   ADC3->CR |= ADC_CR_ADSTART;
+// }
 
 void adc_init(void)
 {
   adc_configpads();
 
-  adc3_init();
-
+  
+  adcSTM32EnableVREF(&ADCD3);
+  adcSTM32EnableTS(&ADCD1);
   adcStart(&ADCD1, NULL);
+  adcStart(&ADCD3, NULL);
 
   // TODOH7 ?? adcSTM32EnableTSVREFE();
 }
 
-void adc3_convert(void)
-{
-  /* Retrieve sample from ADC3 (slower than ADC1 and no DMA available, but still adequate) */
-  adcvalues[10 + adc3_ch] = (ADC3->DR); /* Store ADC3 results in adcvalues[14...18] */
+// void adc3_convert(void)
+// {
+//   /* Retrieve sample from ADC3 (slower than ADC1 and no DMA available, but still adequate) */
+//   adcvalues[10 + adc3_ch] = (ADC3->DR); /* Store ADC3 results in adcvalues[14...18] */
 
-  if (++adc3_ch > 8)
-    adc3_ch = 4; /* Increment and wrap ADC3 channel from 4 to 8 */
+//   if (++adc3_ch > 8)
+//     adc3_ch = 4; /* Increment and wrap ADC3 channel from 4 to 8 */
 
-  ADC3->SQR3 = adc3_ch;       /* Set next channel for conversion */
-  ADC3->CR |= ADC_CR_ADSTART; /* Start next conversion */
-}
+//   ADC3->SQR3 = adc3_ch;       /* Set next channel for conversion */
+//   ADC3->CR |= ADC_CR_ADSTART; /* Start next conversion */
+// }
 
 void adc_convert(void)
 {
-  adcStopConversion(&ADCD1); /* restart ADC1 sampling sequence */
-  adc3_convert();
+  // restart ADCD1 and ADCD3
+  adcStopConversion(&ADCD1); 
+  adcStopConversion(&ADCD3); 
   adcStartConversion(&ADCD1, &adcgrpcfg1, adcvalues, ADC_GRP1_BUF_DEPTH);
+  adcStartConversion(&ADCD3, &adcgrpcfg3, adc3_values, ADC_GRP2_BUF_DEPTH);
+  // bit of a bodge at the moment, DMA requires adc3_values to be 32 aligned.
+  // talk to Seb about this
+  adcvalues[14] = adc3_values[0];
+  adcvalues[15] = adc3_values[1];
+  adcvalues[16] = adc3_values[2];
+  adcvalues[17] = adc3_values[3];
+  adcvalues[18] = adc3_values[4];
 }
 
 #else // BOARD_KSOLOTI_CORE_H743
