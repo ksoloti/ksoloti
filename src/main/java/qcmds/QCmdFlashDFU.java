@@ -80,7 +80,7 @@ public class QCmdFlashDFU extends QCmdShellTask {
             return str.split("\\s+");
         }
         else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {
-            String str = "/bin/sh "+ FirmwareDir() + "/upload_fw_dfu.sh " + bname;
+            String str = FirmwareDir() + "/upload_fw_dfu.sh " + bname;
             return str.split("\\s+");
         }
         else {

@@ -65,7 +65,7 @@ public class QCmdCompileFirmware extends QCmdShellTask {
             return str.split("\\s+");
         }
         else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {
-            String str = "/bin/sh " + FirmwareDir() + "/compile_firmware.sh " + boarddef;
+            String str = FirmwareDir() + "/compile_firmware.sh " + boarddef;
             return str.split("\\s+");
         }
         else {

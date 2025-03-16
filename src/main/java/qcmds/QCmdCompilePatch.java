@@ -87,7 +87,7 @@ public class QCmdCompilePatch extends QCmdShellTask {
                 String str = FirmwareDir() + "\\compile_patch_win.bat " + boarddef + fwoptiondef;
                 return str.split("\\s+");
             } else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {
-                String str = "/bin/sh " + FirmwareDir() + "/compile_patch.sh " + boarddef + fwoptiondef;
+                String str = FirmwareDir() + "/compile_patch.sh " + boarddef + fwoptiondef;
                 return str.split("\\s+");
             } else {
                 Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");
