@@ -30,6 +30,11 @@
 #include "exceptions.h"
 #include "ff.h"
 
+#if BOARD_KSOLOTI_CORE_H743
+  #define DAC DAC1
+  #define APB1ENR APB1LENR
+#endif
+
 typedef void (*fptr_patch_init_t) (uint32_t fwID);
 typedef void (*fptr_patch_dispose_t) (void);
 #if FW_USBAUDIO
