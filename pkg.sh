@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e # exit immediately if anything "goes wrong"
 
 START=$(date +%s)

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 unamestr=`uname`
 case "$unamestr" in

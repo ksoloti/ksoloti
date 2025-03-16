@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Downloads and builds all the required dependencies and toolchain executables
 # Items already present are skipped to save your bandwidth.

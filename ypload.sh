@@ -1,5 +1,5 @@
 
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 printf "\nWarning! This script is only for testing upload of Ksoloti Core normal firmware!\n"

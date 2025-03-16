@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # this removes unnecessary code and archives
 # created by running build.sh,
