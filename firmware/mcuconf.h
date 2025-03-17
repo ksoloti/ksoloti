@@ -140,12 +140,23 @@
 #define STM32_PLL3_P_ENABLED                TRUE
 #define STM32_PLL3_Q_ENABLED                TRUE
 #define STM32_PLL3_R_ENABLED                TRUE
-#define STM32_PLL3_DIVM_VALUE               32
-#define STM32_PLL3_DIVN_VALUE               129
+#define STM32_PLL3_DIVM_VALUE               1
+#define STM32_PLL3_DIVN_VALUE               20
 #define STM32_PLL3_FRACN_VALUE              0
 #define STM32_PLL3_DIVP_VALUE               2
 #define STM32_PLL3_DIVQ_VALUE               2
 #define STM32_PLL3_DIVR_VALUE               2
+
+// #define STM32_PLL3_ENABLED                  TRUE
+// #define STM32_PLL3_P_ENABLED                TRUE
+// #define STM32_PLL3_Q_ENABLED                TRUE
+// #define STM32_PLL3_R_ENABLED                TRUE
+// #define STM32_PLL3_DIVM_VALUE               32
+// #define STM32_PLL3_DIVN_VALUE               129
+// #define STM32_PLL3_FRACN_VALUE              0
+// #define STM32_PLL3_DIVP_VALUE               2
+// #define STM32_PLL3_DIVQ_VALUE               2
+// #define STM32_PLL3_DIVR_VALUE               2
 
 /*
  * Core clocks dynamic settings (can be changed at runtime).
@@ -263,8 +274,10 @@
 #define STM32_ADC_ADC3_DMA_PRIORITY         2
 #define STM32_ADC_ADC12_IRQ_PRIORITY        5
 #define STM32_ADC_ADC3_IRQ_PRIORITY         5
-#define STM32_ADC_ADC12_CLOCK_MODE          ADC_CCR_CKMODE_AHB_DIV4
-#define STM32_ADC_ADC3_CLOCK_MODE           ADC_CCR_CKMODE_AHB_DIV4
+#define STM32_ADC_ADC12_CLOCK_MODE          ADC_CCR_CKMODE_ADCCK
+#define STM32_ADC_ADC3_CLOCK_MODE           ADC_CCR_CKMODE_ADCCK
+// #define STM32_ADC_ADC12_CLOCK_MODE          ADC_CCR_CKMODE_AHB_DIV4
+// #define STM32_ADC_ADC3_CLOCK_MODE           ADC_CCR_CKMODE_AHB_DIV4
 
 /*
  * CAN driver system settings.
@@ -354,7 +367,7 @@
 #define STM32_PWM_USE_TIM1                  TRUE
 #define STM32_PWM_USE_TIM2                  TRUE
 #define STM32_PWM_USE_TIM3                  TRUE
-#define STM32_PWM_USE_TIM4                  FALSE
+#define STM32_PWM_USE_TIM4                  TRUE
 #define STM32_PWM_USE_TIM5                  TRUE
 #define STM32_PWM_USE_TIM8                  TRUE
 #define STM32_PWM_TIM1_IRQ_PRIORITY         7

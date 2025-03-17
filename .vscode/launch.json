@@ -86,7 +86,7 @@
             "serverArgs": ["-i 0030001B3532510F31333430", "--frequency 24000"]
         },
         {
-            "name": "Testbed H7 launch",
+            "name": "Gills H7 launch",
             "cwd": "${workspaceRoot}",
             "executable": "./firmware/build/ksoloti_h743.elf",
             "request": "launch",
@@ -101,7 +101,7 @@
             "serverArgs": ["-i 0030001B3532510F31333430", "--frequency 24000"]
         },
         {
-            "name": "Testbed H7 attach",
+            "name": "Gills H7 attach",
             "cwd": "${workspaceRoot}",
             "executable": "./firmware/build/ksoloti_h743.elf",
             "request": "attach",
@@ -115,7 +115,7 @@
             "serverArgs": ["-i 0030001B3532510F31333430", "--frequency 24000"]
         },
         {
-            "name": "Testbed H7 usbaudio launch",
+            "name": "Gills H7 usbaudio launch",
             "cwd": "${workspaceRoot}",
             "executable": "./firmware/build/ksoloti_h743_usbaudio.elf",
             "request": "launch",
@@ -130,7 +130,7 @@
             "serverArgs": ["-i 0030001B3532510F31333430", "--frequency 24000"]
         },
         {
-            "name": "Testbed H7 usbaudio attach",
+            "name": "Gills H7 usbaudio attach",
             "cwd": "${workspaceRoot}",
             "executable": "./firmware/build/ksoloti_h743_usbaudio.elf",
             "request": "attach",

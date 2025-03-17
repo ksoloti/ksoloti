@@ -126,17 +126,29 @@ void errorcb(ADCDriver *adcp, adcerror_t err)
 {
 }
 
+// Currently sticking with adcvalues of 12 bits
+// this can be setup at 16 or 22 bits though when
+// I work out the impact on AXO etc.
+
+#define KSOLOTI_ADC1_SMP_RATE ADC_SMPR_SMP_16P5
+#define KSOLOTI_ADC1_OVERSAMPLE (64-1)
+#define KSOLOTI_ADC1_OVERSAMPLE_SHIFT (6 + 4) /* 22 -> 16 -> 12*/
+
+#define KSOLOTI_ADC3_SMP_RATE ADC_SMPR_SMP_16P5
+#define KSOLOTI_ADC3_OVERSAMPLE (64-1)
+#define KSOLOTI_ADC3_OVERSAMPLE_SHIFT (6 + 4)
+
 const ADCConversionGroup adcgrpcfg1 =
 {
   .circular = false,
   .num_channels = ADC_GRP1_NUM_CHANNELS,
-  .end_cb = NULL,
-  .error_cb = NULL,
-  .cfgr = ADC_CFGR_RES_12BITS,
-  .cfgr2 = 0U,
+  .end_cb = endcb,
+  .error_cb = errorcb,
+  .cfgr = ADC_CFGR_RES_16BITS,
+  .cfgr2 = ADC_CFGR2_OVSS_N(KSOLOTI_ADC1_OVERSAMPLE_SHIFT) | ADC_CFGR2_OVSR_N(KSOLOTI_ADC1_OVERSAMPLE) | 0x1, 
   .ccr = 0U,
   .pcsel =  (  
-              ADC_SELMASK_IN16 | ADC_CHANNEL_IN17 |
+              ADC_SELMASK_IN16 | ADC_SELMASK_IN17 |
               ADC_SELMASK_IN14 | ADC_SELMASK_IN15 |
               ADC_SELMASK_IN18 | ADC_SELMASK_IN19 |
               ADC_SELMASK_IN3 | ADC_SELMASK_IN7 |
@@ -153,16 +165,16 @@ const ADCConversionGroup adcgrpcfg1 =
   .smpr =
           {
             // SMPR1
-            ADC_SMPR1_SMP_AN0(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN1(ADC_SMPR_SMP_384P5) 
-            | ADC_SMPR1_SMP_AN2(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN3(ADC_SMPR_SMP_384P5) 
-            | ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN5(ADC_SMPR_SMP_384P5) 
-            | ADC_SMPR1_SMP_AN6(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN7(ADC_SMPR_SMP_384P5) 
-            | ADC_SMPR1_SMP_AN8(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN9(ADC_SMPR_SMP_384P5),
+            ADC_SMPR1_SMP_AN0(KSOLOTI_ADC1_SMP_RATE) | ADC_SMPR1_SMP_AN1(KSOLOTI_ADC1_SMP_RATE) 
+            | ADC_SMPR1_SMP_AN2(KSOLOTI_ADC1_SMP_RATE) | ADC_SMPR1_SMP_AN3(KSOLOTI_ADC1_SMP_RATE) 
+            | ADC_SMPR1_SMP_AN4(KSOLOTI_ADC1_SMP_RATE) | ADC_SMPR1_SMP_AN5(KSOLOTI_ADC1_SMP_RATE) 
+            | ADC_SMPR1_SMP_AN6(KSOLOTI_ADC1_SMP_RATE) | ADC_SMPR1_SMP_AN7(KSOLOTI_ADC1_SMP_RATE) 
+            | ADC_SMPR1_SMP_AN8(KSOLOTI_ADC1_SMP_RATE) | ADC_SMPR1_SMP_AN9(KSOLOTI_ADC1_SMP_RATE),
             // SMPR2
-            ADC_SMPR2_SMP_AN10(ADC_SMPR_SMP_384P5) | ADC_SMPR2_SMP_AN11(ADC_SMPR_SMP_384P5) 
-            | ADC_SMPR2_SMP_AN12(ADC_SMPR_SMP_384P5) | ADC_SMPR2_SMP_AN13(ADC_SMPR_SMP_384P5) 
-            | ADC_SMPR2_SMP_AN14(ADC_SMPR_SMP_384P5) | ADC_SMPR2_SMP_AN15(ADC_SMPR_SMP_384P5) 
-            | ADC_SMPR2_SMP_AN16(ADC_SMPR_SMP_384P5) | ADC_SMPR2_SMP_AN17(ADC_SMPR_SMP_384P5)
+            ADC_SMPR2_SMP_AN10(KSOLOTI_ADC1_SMP_RATE) | ADC_SMPR2_SMP_AN11(KSOLOTI_ADC1_SMP_RATE) 
+            | ADC_SMPR2_SMP_AN12(KSOLOTI_ADC1_SMP_RATE) | ADC_SMPR2_SMP_AN13(KSOLOTI_ADC1_SMP_RATE) 
+            | ADC_SMPR2_SMP_AN14(KSOLOTI_ADC1_SMP_RATE) | ADC_SMPR2_SMP_AN15(KSOLOTI_ADC1_SMP_RATE) 
+            | ADC_SMPR2_SMP_AN16(KSOLOTI_ADC1_SMP_RATE) | ADC_SMPR2_SMP_AN17(KSOLOTI_ADC1_SMP_RATE)
           },
   .sqr =
           {
@@ -189,8 +201,8 @@ const ADCConversionGroup adcgrpcfg3 =
   .num_channels = ADC_GRP2_NUM_CHANNELS,
   .end_cb = NULL,
   .error_cb = NULL,
-  .cfgr = ADC_CFGR_RES_12BITS,
-  .cfgr2 = 0U,
+  .cfgr = ADC_CFGR_RES_16BITS,
+  .cfgr2 = ADC_CFGR2_OVSS_N(KSOLOTI_ADC3_OVERSAMPLE_SHIFT) | ADC_CFGR2_OVSR_N(KSOLOTI_ADC3_OVERSAMPLE) | 0x1, 
   .ccr = 0U,
   .pcsel =  (  
               ADC_SELMASK_IN2 | ADC_SELMASK_IN3 |
@@ -206,11 +218,11 @@ const ADCConversionGroup adcgrpcfg3 =
   .smpr =
           {
             // SMPR1
-              ADC_SMPR1_SMP_AN2(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN3(ADC_SMPR_SMP_384P5) 
-            | ADC_SMPR1_SMP_AN6(ADC_SMPR_SMP_384P5) | ADC_SMPR1_SMP_AN7(ADC_SMPR_SMP_384P5) 
-            | ADC_SMPR1_SMP_AN8(ADC_SMPR_SMP_384P5),
+              ADC_SMPR1_SMP_AN2(KSOLOTI_ADC3_SMP_RATE) | ADC_SMPR1_SMP_AN3(KSOLOTI_ADC3_SMP_RATE) 
+            | ADC_SMPR1_SMP_AN6(KSOLOTI_ADC3_SMP_RATE) | ADC_SMPR1_SMP_AN7(KSOLOTI_ADC3_SMP_RATE) 
+            | ADC_SMPR1_SMP_AN8(KSOLOTI_ADC3_SMP_RATE),
             // SMPR2
-            ADC_SMPR2_SMP_AN19(ADC_SMPR_SMP_384P5),
+            ADC_SMPR2_SMP_AN19(KSOLOTI_ADC3_SMP_RATE),
           },
   .sqr =
           {
@@ -259,6 +271,11 @@ void adc_convert(void)
   {
     adcvalues[13+i] = adc3_values[i];
   }
+
+  //LogTextMessage("F %u = %u", 12, adcvalues[12]);
+
+  // cacheBufferInvalidate(adcvalues, sizeof(adcvalues) / sizeof(adcsample_t));
+
 }
 
 #else // BOARD_KSOLOTI_CORE_H743
