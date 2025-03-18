@@ -161,6 +161,10 @@ int main(void) {
     /* Pull up SPILINK detector (HIGH means MASTER i.e. regular operation) */
     palSetPadMode(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN, PAL_MODE_INPUT_PULLUP);
 
+    // Reset SW2 to input
+    palSetPadMode(SW2_PORT, SW2_PIN, PAL_MODE_INPUT_PULLDOWN);
+
+    
     axoloti_board_init();
     adc_init();
     adc_convert();
@@ -200,6 +204,20 @@ int main(void) {
     }
 
     MY_USBH_Init();
+
+    chThdSleepMilliseconds(10);
+
+    // Reset SW3 to input
+    palSetPadMode(GPIOB, 12, PAL_MODE_INPUT_PULLDOWN);
+
+    volatile uint32_t uSw2 = 0;
+    volatile uint32_t uSw3 = 0;
+    while(1)
+    {
+        palSetPadMode(GPIOB, 12, PAL_MODE_INPUT_PULLDOWN);
+        uSw2 = palReadPad(SW2_PORT, SW2_PIN);
+        uSw3 = palReadPad(GPIOB, 12);
+    }
 
     if (!exception_check()) {
         /* Only try mounting SD and booting a patch when no exception is reported */

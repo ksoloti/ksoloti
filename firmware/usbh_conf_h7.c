@@ -158,9 +158,16 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef* hcdHandle)
     /* Peripheral interrupt init */
     HAL_NVIC_SetPriority(OTG_HS_IRQn, 6, 0);
     HAL_NVIC_EnableIRQ(OTG_HS_IRQn);
-  /* USER CODE BEGIN USB_OTG_HS_MspInit 1 */
 
-  /* USER CODE END USB_OTG_HS_MspInit 1 */
+    GPIO_InitStruct.Pin = GPIO_PIN_10;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_12;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  
   }
 }
 
@@ -278,6 +285,8 @@ USBH_StatusTypeDef USBH_LL_Init(USBH_HandleTypeDef *phost)
   hhcd_USB_OTG_HS.Init.Sof_enable = DISABLE;
   hhcd_USB_OTG_HS.Init.low_power_enable = DISABLE;
   hhcd_USB_OTG_HS.Init.use_external_vbus = DISABLE;
+  // ARCHOSTISSUEHERE hhcd_USB_OTG_HS.Init.battery_charging_enable = ENABLE;
+  
   if (HAL_HCD_Init(&hhcd_USB_OTG_HS) != HAL_OK)
   {
     Error_Handler( );
@@ -646,6 +655,8 @@ void MY_USBH_Init(void) {
 
   /* Init Host Library */
   USBH_Init(&hUSBHost, USBH_UserProcess, 0);
+
+  //return;// ARCFATAL
 
   /* Add Supported Class */
   /* highest priority first */

@@ -26,7 +26,7 @@
 #endif
 /* Includes ------------------------------------------------------------------*/
 
-#define DEBUG_ON_GPIO 1
+#define DEBUG_ON_GPIO 0
 
 #include <stdio.h>
 #include <stdlib.h>
