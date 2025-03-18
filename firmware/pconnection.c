@@ -149,7 +149,7 @@ void TransmitDisplayPckt(void) {
 
 
 void LogTextMessage(const char* format, ...) {
-    if ((usbGetDriverStateI(BDU1.config->usbp) == USB_ACTIVE) && (connected)) {
+    if ((connected) && (usbGetDriverStateI(BDU1.config->usbp) == USB_ACTIVE)) {
         if(chMtxTryLock(&LogMutex) && !port_is_isr_context() )
         {
           MemoryStream ms;

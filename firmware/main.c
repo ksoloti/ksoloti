@@ -102,6 +102,7 @@ int main(void) {
     // Initialise HAL and Chibios
     halInit();
     chSysInit();
+    MY_USBH_Init();
 
 #ifdef FW_SPILINK
     pThreadSpilink = 0;
@@ -203,7 +204,7 @@ int main(void) {
         chThdSleepMilliseconds(1);
     }
 
-    MY_USBH_Init();
+    //MY_USBH_Init();
 
     chThdSleepMilliseconds(10);
 
