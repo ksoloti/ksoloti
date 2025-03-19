@@ -11,11 +11,11 @@ extern I2CDriver I2CD1;
 namespace OLED_I2C
 {
 #if BOARD_KSOLOTI_CORE_H743
-  volatile uint8_t txbuf[132] ADC_DMA_DATA_SECTION1;
-  volatile uint8_t rxbuf[8] ADC_DMA_DATA_SECTION1;
+  uint8_t txbuf[132] ADC_DMA_DATA_SECTION1;
+  uint8_t rxbuf[8] ADC_DMA_DATA_SECTION1;
 #else
-  volatile uint8_t txbuf[132] __attribute__((section(".sram2")));
-  volatile uint8_t rxbuf[8] __attribute__((section(".sram2")));
+  uint8_t txbuf[132] __attribute__((section(".sram2")));
+  uint8_t rxbuf[8] __attribute__((section(".sram2")));
 #endif
 
   void Start(void)
