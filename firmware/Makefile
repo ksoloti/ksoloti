@@ -464,7 +464,8 @@ CPPSRC = \
   ${ELEMENTS_SRC} \
   ${CLOUDS_SRC} \
   ${RINGS_SRC} \
-  ${STREAMS_SRC}
+  ${STREAMS_SRC} \
+  ${FIRMWARE}/oled_i2c.cpp
 
 
 

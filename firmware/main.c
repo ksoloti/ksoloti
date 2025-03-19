@@ -211,15 +211,6 @@ int main(void) {
     // Reset SW3 to input
     palSetPadMode(GPIOB, 12, PAL_MODE_INPUT_PULLDOWN);
 
-    volatile uint32_t uSw2 = 0;
-    volatile uint32_t uSw3 = 0;
-    while(1)
-    {
-        palSetPadMode(GPIOB, 12, PAL_MODE_INPUT_PULLDOWN);
-        uSw2 = palReadPad(SW2_PORT, SW2_PIN);
-        uSw3 = palReadPad(GPIOB, 12);
-    }
-
     if (!exception_check()) {
         /* Only try mounting SD and booting a patch when no exception is reported */
 

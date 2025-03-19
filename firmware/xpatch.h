@@ -22,3 +22,4 @@ extern "C" {
 #include "elements/dsp/part.h"
 #include "elements/dsp/patch.h"
 #include "streams/processor.h"
+#include "oled_i2c.h"
