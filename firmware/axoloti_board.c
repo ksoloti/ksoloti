@@ -127,16 +127,39 @@ void errorcb(ADCDriver *adcp, adcerror_t err)
 }
 
 // Currently sticking with adcvalues of 12 bits
-// this can be setup at 16 or 22 bits though when
-// I work out the impact on AXO etc.
 
-#define KSOLOTI_ADC1_SMP_RATE ADC_SMPR_SMP_16P5
-#define KSOLOTI_ADC1_OVERSAMPLE (64-1)
-#define KSOLOTI_ADC1_OVERSAMPLE_SHIFT (6 + 4) /* 22 -> 16 -> 12*/
+#define ADC_BITS 20
 
-#define KSOLOTI_ADC3_SMP_RATE ADC_SMPR_SMP_16P5
-#define KSOLOTI_ADC3_OVERSAMPLE (64-1)
-#define KSOLOTI_ADC3_OVERSAMPLE_SHIFT (6 + 4)
+#if ADC_BITS == 21
+  // This setup is 21 bits, then 16, then 12
+  #define KSOLOTI_ADC1_SMP_RATE ADC_SMPR_SMP_16P5
+  #define KSOLOTI_ADC1_OVERSAMPLE (32-1)
+  #define KSOLOTI_ADC1_OVERSAMPLE_SHIFT (5 + 4) 
+
+  #define KSOLOTI_ADC3_SMP_RATE ADC_SMPR_SMP_16P5
+  #define KSOLOTI_ADC3_OVERSAMPLE (32-1)
+  #define KSOLOTI_ADC3_OVERSAMPLE_SHIFT (5 + 4)
+#elif ADC_BITS == 20
+  // This setup is 20 bits, then 16, then 12
+  // Seems to be a nice setting for least noise
+  #define KSOLOTI_ADC1_SMP_RATE ADC_SMPR_SMP_64P5
+  #define KSOLOTI_ADC1_OVERSAMPLE (16-1)
+  #define KSOLOTI_ADC1_OVERSAMPLE_SHIFT (4 + 4) 
+
+  #define KSOLOTI_ADC3_SMP_RATE ADC_SMPR_SMP_64P5
+  #define KSOLOTI_ADC3_OVERSAMPLE (16-1)
+  #define KSOLOTI_ADC3_OVERSAMPLE_SHIFT (4 + 4)
+#elif ADC_BITS == 17
+  // This setup is 17 bits, then 16, then 12
+  // Quite noisy
+  #define KSOLOTI_ADC1_SMP_RATE ADC_SMPR_SMP_384P5
+  #define KSOLOTI_ADC1_OVERSAMPLE (2-1)
+  #define KSOLOTI_ADC1_OVERSAMPLE_SHIFT (1 + 4) 
+
+  #define KSOLOTI_ADC3_SMP_RATE ADC_SMPR_SMP_384P5
+  #define KSOLOTI_ADC3_OVERSAMPLE (2-1)
+  #define KSOLOTI_ADC3_OVERSAMPLE_SHIFT (1 + 4)
+#endif
 
 const ADCConversionGroup adcgrpcfg1 =
 {
