@@ -165,7 +165,7 @@ void FRAMTEXT_CODE_SECTION hex2string(uint32_t hex)
   }
 }
 
-void FRAMTEXT_CODE_SECTION HardFault_Handler(void)
+void __attribute__((optimize("-O0"))) FRAMTEXT_CODE_SECTION HardFault_Handler(void)
 {
   // Copy to local variables (not pointers) to allow GDB "i loc" to directly show the info
   // Get thread context. Contains main registers including PC and LR
@@ -261,7 +261,7 @@ void FRAMTEXT_CODE_SECTION HardFault_Handler(void)
 
 void FRAMTEXT_CODE_SECTION BusFault_Handler(void) __attribute__((alias("HardFault_Handler")));
 
-void FRAMTEXT_CODE_SECTION UsageFault_Handler(void)
+void __attribute__((optimize("-O0"))) FRAMTEXT_CODE_SECTION UsageFault_Handler(void)
 {
   // Copy to local variables (not pointers) to allow GDB "i loc" to directly show the info
   // Get thread context. Contains main registers including PC and LR
@@ -289,7 +289,7 @@ void FRAMTEXT_CODE_SECTION UsageFault_Handler(void)
   NVIC_SystemReset();
 }
 
-void FRAMTEXT_CODE_SECTION MemManage_Handler(void)
+void __attribute__((optimize("-O0"))) FRAMTEXT_CODE_SECTION MemManage_Handler(void)
 {
   // Copy to local variables (not pointers) to allow GDB "i loc" to directly show the info
   // Get thread context. Contains main registers including PC and LR
