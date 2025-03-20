@@ -37,8 +37,8 @@ CCFLAGS = \
   -ffast-math \
   -fno-unsafe-math-optimizations \
   -fno-signed-zeros \
-  -ffp-contract=off \
-  -Wa,-adhlns="$@.lst"
+  -ffp-contract=off 
+  #-Wa,-adhlns="$@.lst"
 
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # Ksoloti h747
@@ -235,21 +235,21 @@ LLIBDIR = $(patsubst %,-L%,$(DLIBDIR) $(ULIBDIR))
 all: ${BUILDDIR}/xpatch.bin
 
 ${BUILDDIR}/xpatch.h.gch: ${FIRMWARE}/xpatch.h ${FIRMWARE}/patch.h ${FIRMWARE}/axoloti.h ${FIRMWARE}/parameter_functions.h ${FIRMWARE}/axoloti_math.h ${FIRMWARE}/axoloti_filters.h
-#	@echo Building precompiled header
+	@echo Building precompiled header
 	@$(CPP) $(CCFLAGS) $(DEFS) $(IINCDIR) -Winvalid-pch -MD -MP -c ${FIRMWARE}/xpatch.h -o ${BUILDDIR}/xpatch.h.gch
 
 ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
-#	@echo Removing previous build files
+	@echo Removing previous build files
 	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.list ${BUILDDIR}/xpatch.siz
-#	@echo Compiling patch dependencies
+	@echo Compiling patch dependencies
 	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c ${BUILDDIR}/xpatch.cpp -o ${BUILDDIR}/xpatch.o
-#	@echo Linking patch dependencies
+	@echo Linking patch dependencies
 	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/$(ELFNAME).elf -o ${BUILDDIR}/xpatch.elf
 
-#	@echo Creating binary
+	@echo Creating binary
 	@$(CP) -O binary ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin
 
-#	@echo Creating LST file for debugging
+	@echo Creating LST file for debugging
 #	@$(DMP) $(DMPFLAGS) "${BUILDDIR}/xpatch.elf" > "${BUILDDIR}/xpatch.lst"
 
 clean:
