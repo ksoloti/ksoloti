@@ -361,7 +361,7 @@ void adc_init(void)
 /*
  * ADC samples buffer. Increased size to hold data of 5V supervisor and PF6..9 inputs.
  */
-unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS] ADC_DATA_SECTION;
+unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS] ADC_DMA_DATA_SECTION1;
 
 /*
  * ADC conversion group.
@@ -408,8 +408,8 @@ static const ADCConversionGroup adcgrpcfg1 = {
 
     // SQR3
     ADC_SQR3_SQ1_N(ADC_CHANNEL_IN0) | ADC_SQR3_SQ2_N(ADC_CHANNEL_IN1) | 
-    ADC_SQR3_SQ3_N(ADC_CHANNEL_IN2) | ADC_SQR3_SQ4_N(ADC_CHANNEL_IN3) | A
-    DC_SQR3_SQ5_N(ADC_CHANNEL_IN4) | ADC_SQR3_SQ6_N(ADC_CHANNEL_IN5) /* SQR3: Conversion group sequence 1...6 */
+    ADC_SQR3_SQ3_N(ADC_CHANNEL_IN2) | ADC_SQR3_SQ4_N(ADC_CHANNEL_IN3) | 
+    ADC_SQR3_SQ5_N(ADC_CHANNEL_IN4) | ADC_SQR3_SQ6_N(ADC_CHANNEL_IN5) /* SQR3: Conversion group sequence 1...6 */
 
 #elif defined(BOARD_AXOLOTI_CORE) || defined(BOARD_STM32F4_DISCOVERY)
     // SMPR1

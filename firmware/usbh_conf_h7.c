@@ -27,6 +27,7 @@
 #include "midi.h"
 
 #include "UsbLog.h"
+#include "cache.h"
 
 #define HOST_POWERSW_CLK_ENABLE()          __GPIOC_CLK_ENABLE()
 #define HOST_POWERSW_PORT                  GPIOD
@@ -57,8 +58,10 @@ void MIDI_CB(uint8_t a,uint8_t b,uint8_t c,uint8_t d){
   MidiInMsgHandler(MIDI_DEVICE_USB_HOST, ((a & 0xF0) >> 4)+ 1 ,b,c,d);
 }
 
-HCD_HandleTypeDef hhcd_USB_OTG_HS;
-USBH_HandleTypeDef hUSBHost; /* USB Host handle */
+HCD_HandleTypeDef hhcd_USB_OTG_HS ;
+USBH_HandleTypeDef hUSBHost USB_DMA_DATA_SECTION; /* USB Host handle */
+
+//Srongly ordered section maybe: https://github.com/STMicroelectronics/STM32CubeH7/issues/298
 
 void Error_Handler(void);
 
@@ -236,6 +239,9 @@ void HAL_HCD_Disconnect_Callback(HCD_HandleTypeDef *hhcd)
 void HAL_HCD_HC_NotifyURBChange_Callback(HCD_HandleTypeDef *hhcd, uint8_t chnum, HCD_URBStateTypeDef urb_state)
 {
   /* To be used with OS to sync URB state with the global state machine */
+  // ARCCACHEHERE
+  //SCB_InvalidateDCache();
+
 #if (USBH_USE_OS == 1)
   USBH_LL_NotifyURBChange(hhcd->pData);
 #endif
@@ -280,12 +286,11 @@ USBH_StatusTypeDef USBH_LL_Init(USBH_HandleTypeDef *phost)
   hhcd_USB_OTG_HS.Instance = USB_OTG_HS;
   hhcd_USB_OTG_HS.Init.Host_channels = 16;
   hhcd_USB_OTG_HS.Init.speed = HCD_SPEED_FULL;
-  hhcd_USB_OTG_HS.Init.dma_enable = DISABLE;
+  hhcd_USB_OTG_HS.Init.dma_enable = ENABLE;
   hhcd_USB_OTG_HS.Init.phy_itface = USB_OTG_EMBEDDED_PHY;
   hhcd_USB_OTG_HS.Init.Sof_enable = DISABLE;
   hhcd_USB_OTG_HS.Init.low_power_enable = DISABLE;
   hhcd_USB_OTG_HS.Init.use_external_vbus = DISABLE;
-  // ARCHOSTISSUEHERE hhcd_USB_OTG_HS.Init.battery_charging_enable = ENABLE;
   
   if (HAL_HCD_Init(&hhcd_USB_OTG_HS) != HAL_OK)
   {
@@ -483,6 +488,9 @@ USBH_StatusTypeDef USBH_LL_SubmitURB(USBH_HandleTypeDef *phost, uint8_t pipe, ui
   HAL_StatusTypeDef hal_status = HAL_OK;
   USBH_StatusTypeDef usb_status = USBH_OK;
 
+  // ARCCACHEHERE
+  //cacheBufferInvalidate(pbuff, length);
+
   hal_status = HAL_HCD_HC_SubmitRequest(phost->pData, pipe, direction ,
                                         ep_type, token, pbuff, length,
                                         do_ping);
@@ -656,30 +664,33 @@ void MY_USBH_Init(void) {
   /* Init Host Library */
   USBH_Init(&hUSBHost, USBH_UserProcess, 0);
 
-  //return;// ARCFATAL
-
   /* Add Supported Class */
   /* highest priority first */
-  if(USBH_OK != USBH_RegisterClass(&hUSBHost, USBH_VENDOR_CLASS))
+  if(USBH_OK != USBH_RegisterClass(&hUSBHost, USBH_VENDOR_CLASS)) {
     USBH_DbgLog("Failed to register USBH_VENDOR_CLASS");
-  else
+  }
+  else {
     USBH_DbgLog("Registered USBH_VENDOR_CLASS");
+  }
 
   // if(USBH_OK != USBH_RegisterClass(&hUSBHost, USBH_AUDIO_CLASS))
   //   USBH_DbgLog("Failed to register USBH_AUDIO_CLASS");
   // else
   //   USBH_DbgLog("Registered USBH_AUDIO_CLASS");
 
-  if(USBH_OK != USBH_RegisterClass(&hUSBHost, USBH_MIDI_CLASS))
+  if(USBH_OK != USBH_RegisterClass(&hUSBHost, USBH_MIDI_CLASS)) {
     USBH_DbgLog("Failed to register USBH_MIDI_CLASS");
-  else
+  }
+  else {
     USBH_DbgLog("Registered USBH_MIDI_CLASS");
+  }
 
-  if(USBH_OK != USBH_RegisterClass(&hUSBHost, USBH_HID_CLASS))
+  if(USBH_OK != USBH_RegisterClass(&hUSBHost, USBH_HID_CLASS)) {
     USBH_DbgLog("Failed to register USBH_HID_CLASS");
-  else
+  }
+  else {
     USBH_DbgLog("Registered USBH_HID_CLASS");
-
+  }
 
   /* Start Host Process */
   USBH_Start(&hUSBHost);
@@ -770,7 +781,7 @@ void USBH_HID_EventCallback(USBH_HandleTypeDef *phost) {
 #define PORT_IRQ_HANDLER(id) void id(void)
 #define CH_IRQ_HANDLER(id) PORT_IRQ_HANDLER(id)
 
-char mem[256];
+char mem[256] USB_DMA_DATA_SECTION;
 bool memused=0;
 
 void* fakemalloc(size_t size){

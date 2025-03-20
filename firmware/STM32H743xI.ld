@@ -41,7 +41,7 @@ MEMORY
     ram0nc (wx) : org = 0x2403E000, len = 8k        /* 8kb for sdcard in AXI, MPU used to make noncacheable */
     ram1   (wx) : org = 0x30000000, len = 256k      /* AHB SRAM1+SRAM2 */
     ram2   (wx) : org = 0x30000000, len = 288k      /* AHB SRAM1+SRAM2+SRAM3 */
-    ram3   (wx) : org = 0x30040000, len = 32k       /* AHB SRAM3 */
+    ram3   (wx) : org = 0x30040000, len = 32k       /* AHB SRAM3 DMA NOCACHE REGION*/
     ram4   (wx) : org = 0x38000000, len = 64k       /* AHB SRAM4 */
     ram5   (wx) : org = 0x20000000, len = 64k       /* DTCM-RAM, leave 64k for patcher, was 128k */
     ram6   (wx) : org = 0x00000000, len = 64k       /* ITCM-RAM */
