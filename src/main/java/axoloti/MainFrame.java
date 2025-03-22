@@ -34,7 +34,11 @@ import axoloti.utils.Constants;
 import axoloti.utils.FirmwareID;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
-import axoloti.utils.Preferences.FirmwareType;
+import axoloti.Boards.BoardType;
+import axoloti.Boards.FirmwareType;
+import axoloti.Boards.MemoryLayoutType;
+import axoloti.Boards.SampleRateType;
+
 import components.ScrollPaneComponent;
 
 import java.awt.Color;
@@ -102,6 +106,7 @@ import qcmds.QCmdStop;
 import qcmds.QCmdUploadFWSDRam;
 import qcmds.QCmdUploadPatch;
 
+
 /**
  *
  * @author Johannes Taelman
@@ -114,9 +119,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     static public AxoObjects axoObjects;
     public static MainFrame mainframe;
     public static AxoJFileChooser fc;
-
-    // change this for flasher and mounter built into firmware
-    boolean inbuiltMounterFlasher = true;
 
     boolean even = false;
     String LinkFirmwareID;
@@ -376,8 +378,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             public void run() {
                 try {
 
+                    prefs.getBoards().scanBoards();
+                    prefs.SavePrefs();
+                    
                     populateMainframeTitle();
-
 
                     // instanceSocketHack = new ServerSocket(1);
 
@@ -394,13 +398,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         );
                     }
 
-                    if (prefs.getBoard() == Preferences.BoardType.Axoloti) {
+                    if (prefs.boards.getBoardType() == BoardType.Axoloti) {
                         LOGGER.log(Level.WARNING, ">>> Axoloti Legacy Mode <<<\n");
                     }
 
-                    switch (prefs.getFirmware())
+                    switch (prefs.boards.getFirmware())
                     {
-                        case Preferences.FirmwareType.SPILink :
+                        case FirmwareType.SPILink :
                             LOGGER.log(Level.WARNING, ">>> SPILink-enabled firmware <<<\nPins PB3, PB4, PD5, PD6 are occupied by SPILink communication in this firmware mode!\n");
                             break;
                         case USBAudio:
@@ -585,7 +589,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         String tstring = "";
         String tsuffix = "";
 
-        tstring = prefs.getBoard().toString();
+        tstring = prefs.boards.getBoardType().toString();
 
         if (Axoloti.isDeveloper()) {
             tsuffix += "Developer";
@@ -598,7 +602,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             tsuffix += "Expert Mode";
         }
 
-        String firmwareString = prefs.getFirmware().toString();
+        String firmwareString = prefs.boards.getFirmware().toString();
         tsuffix += ((tsuffix.length()> 0) ? ", " : "") + firmwareString;
 
         if (tsuffix.length() > 0) {
@@ -626,30 +630,21 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
 
-    void flashUsingSDRam(String fname_flasher, String pname) {
+    void flashUsingSDRam(String pname) {
 
         updateLinkFirmwareID();
 
-        File f = new File(fname_flasher);
         File p = new File(pname);
 
-        if (f.canRead()) {
-            if (p.canRead()) {
-                qcmdprocessor.AppendToQueue(new QCmdStop());
-                qcmdprocessor.AppendToQueue(new QCmdUploadFWSDRam(p));
-                if(!inbuiltMounterFlasher) {
-                    qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
-                }
-                qcmdprocessor.AppendToQueue(new QCmdStartFlasher(inbuiltMounterFlasher));
-                qcmdprocessor.AppendToQueue(new QCmdDisconnect());
-                ShowDisconnect();
-            }
-            else {
-                LOGGER.log(Level.SEVERE, "Cannot read firmware, please compile firmware! (File: {0})", pname);
-            }
+        if (p.canRead()) {
+            qcmdprocessor.AppendToQueue(new QCmdStop());
+            qcmdprocessor.AppendToQueue(new QCmdUploadFWSDRam(p));
+            qcmdprocessor.AppendToQueue(new QCmdStartFlasher(true));
+            qcmdprocessor.AppendToQueue(new QCmdDisconnect());
+            ShowDisconnect();
         }
         else {
-            LOGGER.log(Level.SEVERE, "Cannot read flasher, please compile firmware! (File: {0})", fname_flasher);
+            LOGGER.log(Level.SEVERE, "Cannot read firmware, please compile firmware! (File: {0})", pname);
         }
     }
 
@@ -1245,9 +1240,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
 
     private void jMenuItemFlashUserActionPerformed(java.awt.event.ActionEvent evt) {
-        String flasherBinName = prefs.getFlasherBinFilename();
-        String firmwareBinName = prefs.getFirmwareBinFilename();
-        flashUsingSDRam(flasherBinName, firmwareBinName); // TODOH7 will remove flasherbin
+        String firmwareBinName = prefs.boards.getFirmwareBinFilename();
+        flashUsingSDRam(firmwareBinName); 
     }
 
 
@@ -1262,31 +1256,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
 
     private void jMenuItemFlashDefaultActionPerformed(java.awt.event.ActionEvent evt) {
-        String flasherBinName = prefs.getFlasherBinFilename();
-        String firmwareBinName = prefs.getFirmwareBinFilename();
-        flashUsingSDRam(flasherBinName, firmwareBinName); // TODOH7 will remove flasherbin
+        String firmwareBinName = prefs.boards.getFirmwareBinFilename();
+        flashUsingSDRam(firmwareBinName); 
     }
 
 
     private void jMenuItemMountActionPerformed(java.awt.event.ActionEvent evt) {
-        if(inbuiltMounterFlasher) {
-            qcmdprocessor.AppendToQueue(new QCmdStop());
-            qcmdprocessor.AppendToQueue(new QCmdStartMounter(true));
-            qcmdprocessor.AppendToQueue(new QCmdDisconnect());
-        }
-        else {
-            String fname = prefs.getMounterBinFilename(); // TODOH7 will be removed
-            File f = new File(fname);
-            if (f.canRead()) {
-                qcmdprocessor.AppendToQueue(new QCmdStop());
-                qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
-                qcmdprocessor.AppendToQueue(new QCmdStartMounter());
-                qcmdprocessor.AppendToQueue(new QCmdDisconnect());
-                ShowDisconnect();
-            } else {
-                LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first! (file: {0})", fname);
-            }
-        }
+        qcmdprocessor.AppendToQueue(new QCmdStop());
+        qcmdprocessor.AppendToQueue(new QCmdStartMounter(true));
+        qcmdprocessor.AppendToQueue(new QCmdDisconnect());
     }
 
 
@@ -1585,9 +1563,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 options[1]);
 
         if (s == 0) {
-            String flasherBinName = prefs.getFlasherBinFilename();
-            String firmwareBinName = prefs.getFirmwareBinFilename();
-            flashUsingSDRam(flasherBinName, firmwareBinName); // TODOH7 will remove flasherbin
+            String firmwareBinName = prefs.boards.getFirmwareBinFilename();
+            flashUsingSDRam(firmwareBinName);
         }
     }
 
@@ -1617,7 +1594,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         jPanelInfoColumn.add(jLabelSDCardPresent);
 
-        if(prefs.getFirmware() == FirmwareType.USBAudio) {
+        if(prefs.boards.getFirmware() == FirmwareType.USBAudio) {
             jPanelInfoColumn.add(jLabelFlags);
         }
 

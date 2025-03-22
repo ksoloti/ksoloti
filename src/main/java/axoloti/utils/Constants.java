@@ -113,11 +113,14 @@ public class Constants {
     }
 
     public static void createAppIcon() {
-        if (prefs.isKsolotiDerivative()) {
+        if (prefs.boards.isKsolotiDerivative()) {
             APP_ICON = new ImageIcon(Constants.class.getResource("/resources/ksoloti_icon.png"));
         }
-        else if (prefs.isAxolotiDerivative()) {
+        else if (prefs.boards.isAxolotiDerivative()) {
             APP_ICON = new ImageIcon(Constants.class.getResource("/resources/axoloti_icon.png"));
+        }
+        else {
+            APP_ICON = new ImageIcon(Constants.class.getResource("/resources/ksoloti_icon.png"));
         }
     }
 }

@@ -26,8 +26,10 @@ import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import axoloti.utils.Preferences.BoardType;
-import axoloti.utils.Preferences.MemoryLayoutType;
+import axoloti.Boards.BoardType;
+import axoloti.Boards.FirmwareType;
+import axoloti.Boards.MemoryLayoutType;
+import axoloti.Boards.SampleRateType;
 
 /**
  *
@@ -45,10 +47,10 @@ public class ksoloti_core {
     cputype_e cputype;
 
     public ByteBuffer CreateOTPInfo() {
-        if (prefs.isKsolotiDerivative()) {
+        if (prefs.boards.isKsolotiDerivative()) {
             return CreateOTPInfo(1, 1, 0, 32); /* 32MB SDRAM */
         }
-        else if (prefs.isAxolotiDerivative()) {
+        else if (prefs.boards.isAxolotiDerivative()) {
             return CreateOTPInfo(1, 1, 0, 8); /* 8MB SDRAM */
         }
         return null;
@@ -64,10 +66,10 @@ public class ksoloti_core {
             ByteBuffer bb = ByteBuffer.allocate(32);
 
             String header = "";
-            if (prefs.isKsolotiDerivative()) {
+            if (prefs.boards.isKsolotiDerivative()) {
                 header = "Ksoloti Core";
             }
-            else if (prefs.isAxolotiDerivative()) {
+            else if (prefs.boards.isAxolotiDerivative()) {
                 header = "Axoloti Core";
             }
 
@@ -91,8 +93,8 @@ public class ksoloti_core {
     public int getPatchAddr() {
         int addr = 0x20011000; // Default axoloti ksoloti address
         
-        if(prefs.getBoard() == BoardType.KsolotiGeko) {
-            if(prefs.getMemoryLayout() == MemoryLayoutType.Code64Data64) {
+        if(prefs.boards.getBoardType() == BoardType.KsolotiGeko) {
+            if(prefs.boards.getMemoryLayout() == MemoryLayoutType.Code64Data64) {
                 addr = 0x00000000;
             } else {
                 addr = 0x24040000;
@@ -107,10 +109,10 @@ public class ksoloti_core {
     }
 
     public int getSDRAMSize() {
-        if (prefs.isKsolotiDerivative()) {
+        if (prefs.boards.isKsolotiDerivative()) {
             return  32 * 1024 * 1024;  /* 32MB */
         }
-        else if (prefs.isAxolotiDerivative()) {
+        else if (prefs.boards.isAxolotiDerivative()) {
             return  8 * 1024 * 1024;  /* 8MB */
         }
         return -1;
@@ -125,7 +127,7 @@ public class ksoloti_core {
     }
 
     public int getCPUSerialAddr() {
-        if(prefs.getBoard() == BoardType.KsolotiGeko) {
+        if(prefs.boards.getBoardType() == BoardType.KsolotiGeko) {
             return 0x1FF1E800;
         } else {
             return 0x1FFF7A10;

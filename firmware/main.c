@@ -103,8 +103,6 @@ int main(void) {
     halInit();
     chSysInit();
 
-    // Check to see if we need to start the Mounter.
-    CheckForMounterBoot();
 
 #ifdef FW_SPILINK
     pThreadSpilink = 0;
@@ -123,11 +121,14 @@ int main(void) {
         MPU_RASR_ENABLE);
 #endif
 
-    // Start the USB host
-    MY_USBH_Init();
+    // Check to see if we need to start the Mounter.
+    CheckForMounterBoot();
 
     // Start the SDCard driver
     sdcard_init();
+
+    // Start the USB host
+    MY_USBH_Init();
 
     // Start the system monitor
     sysmon_init();

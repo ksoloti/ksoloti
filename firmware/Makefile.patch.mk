@@ -38,6 +38,7 @@ CCFLAGS = \
   -fno-unsafe-math-optimizations \
   -fno-signed-zeros \
   -ffp-contract=off 
+  
   #-Wa,-adhlns="$@.lst"
 
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)

@@ -19,10 +19,15 @@
 package axoloti.utils;
 
 import axoloti.Axoloti;
+import axoloti.Boards;
 import axoloti.MainFrame;
 import axoloti.USBBulkConnection;
 import axoloti.Version;
-import axoloti.utils.Preferences.BoardType;
+import axoloti.Boards.BoardDetail;
+import axoloti.Boards.BoardType;
+import axoloti.Boards.FirmwareType;
+import axoloti.Boards.MemoryLayoutType;
+import axoloti.Boards.SampleRateType;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -68,83 +73,6 @@ import com.formdev.flatlaf.themes.FlatMacLightLaf;
 @Root
 public class Preferences {
 
-    public enum BoardType {
-        Ksoloti ("Ksoloti Core"),
-        KsolotiGeko ("Ksoloti Core Geko"),
-        Axoloti ("Axoloti Core");
-
-        private final String name;     
-        private BoardType(String s) { name = s; }
-        public String toString() {return this.name;}
-        
-        static public BoardType fromString(String name) {
-            for (BoardType b : values()) {
-                if (b.name.equals(name)) {
-                    return b;
-                }
-            }
-            return null;
-        }
-    }
-
-    public enum FirmwareType {
-        Normal ("Normal"),
-        SPILink ("SPI Link"),
-        USBAudio ("USB Audio"),
-        i2SCodec ("i2S Codec");
-
-        private final String name;     
-        private FirmwareType(String s) { name = s; }
-        public String toString() {return this.name;}
-
-        static public FirmwareType fromString(String name) {
-            for (FirmwareType f : values()) {
-                if (f.name.equals(name)) {
-                    return f;
-                }
-            }
-            return null;
-        }
-
-    }
-
-    public enum SampleRateType {
-        Rate48K ("48K"),
-        Rate96K ("96K");
-
-        private final String name;     
-        private SampleRateType(String s) { name = s; }
-        public String toString() {return this.name;}
-
-        static public SampleRateType fromString(String name) {
-            for (SampleRateType s : values()) {
-                if (s.name.equals(name)) {
-                    return s;
-                }
-            }
-            return null;
-        }
-    }
-
-    public enum MemoryLayoutType {
-        Code64Data64 ("64 KB Code and 64 KB Data"),
-        Code256Data64 ("256 KB Code and 64 KB Data."),
-        Code256Shared ("256 KB shared Code and Data.");
-
-        private final String name;     
-        private MemoryLayoutType(String s) { name = s; }
-        public String toString() {return this.name;}
-
-        static public MemoryLayoutType fromString(String name) {
-            for (MemoryLayoutType s : values()) {
-                if (s.name.equals(name)) {
-                    return s;
-                }
-            }
-            return null;
-        }
-    }
-
     private static final Logger LOGGER = Logger.getLogger(Preferences.class.getName());
 
     @Attribute(required = false)
@@ -167,8 +95,6 @@ public class Preferences {
     Boolean MouseDialAngular;
     @Element(required = false)
     String FirmwareMode;
-    @Element(required = false)
-    BoardType Board;
     @Element(required = false)
     FirmwareType Firmware;
     @Element(required = false)
@@ -217,6 +143,9 @@ public class Preferences {
     )
     ArrayList<AxolotiLibrary> libraries;
 
+    @Element(required = false)
+    public Boards boards;
+  
     String[] ObjectPath;
 
     // private boolean isDirty = false;
@@ -296,9 +225,6 @@ public class Preferences {
         if (FirmwareMode == null) {
             FirmwareMode = "Ksoloti Core";
         }
-        if (Board == null) {
-            Board = BoardType.Ksoloti;
-        }
         if (Firmware == null) {
             Firmware = FirmwareType.Normal;
         }
@@ -343,6 +269,9 @@ public class Preferences {
         }
         if(DspSafetyLimit == null) {
             DspSafetyLimit = 3; // Normal setting
+        }
+        if(boards == null) {
+            boards = new Boards();
         }
     }
 
@@ -458,10 +387,10 @@ public class Preferences {
         return DspSafetyLimit;
     }
 
-    public void setDspSafetyLimit(int i) {
-        DspSafetyLimit = i;
-        // SetDirty();
-    }
+    // public void setDspSafetyLimit(int i) {
+    //     DspSafetyLimit = i;
+    //     // SetDirty();
+    // }
 
     public void setCurrentFileDirectory(String CurrentFileDirectory) {
         if (this.CurrentFileDirectory.equals(CurrentFileDirectory)) {
@@ -496,6 +425,10 @@ public class Preferences {
         this.codeSyntaxTheme = codeSyntaxTheme;
         restartRequired = true;
         // SetDirty();
+    }
+
+    public Boards getBoards() {
+        return boards;
     }
 
     public void applyTheme() {
@@ -627,141 +560,6 @@ public class Preferences {
         return MouseDialAngular;
     }
 
-    public String getFirmwareMode() {
-        return FirmwareMode;
-    }
-
-    public BoardType getBoard() {
-        return Board;
-    }
-
-    public boolean isKsolotiDerivative() {
-        return (Board == BoardType.Ksoloti) || (Board == BoardType.KsolotiGeko);
-    }
-
-    public boolean isAxolotiDerivative() {
-        return (Board == BoardType.Axoloti);
-    }
-
-    public FirmwareType getFirmware() {
-        return Firmware;
-    }
-
-    public SampleRateType getSampleRate() {
-        return SampleRate;
-    }
-
-    public MemoryLayoutType getMemoryLayout() {
-        return MemoryLayout;
-    }
-
-    public String getFlasherBinFilename() { // TODOH7 will need removing
-        String name = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build" + File.separator;
-        switch(Board)
-        {
-            case BoardType.Ksoloti:
-            case BoardType.KsolotiGeko:
-                name += "ksoloti_flasher.bin";
-                break;
-
-            case BoardType.Axoloti:
-                name += "axoloti_flasher.bin";
-                break;
-
-        }
-        return name;
-    }
-
-    public String getMounterBinFilename() { // TODOH7 will need removing
-        String name = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "mounter" + File.separator + "mounter_build" + File.separator;
-        switch(Board)
-        {
-            case BoardType.Ksoloti:
-            case BoardType.KsolotiGeko:
-                name += "ksoloti_mounter.bin";
-                break;
-
-            case BoardType.Axoloti:
-                name += "axoloti_mounter.bin";
-                break;
-
-        }
-        return name;
-    }
-
-    public String getFirmwareBinFilename(boolean bFullPath) {
-        String name;
-        if(bFullPath) 
-            name = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build" + File.separator;
-        else
-            name = "";
-
-        switch(Board)
-        {
-            case BoardType.Ksoloti:     name += "ksoloti"; break;
-            case BoardType.KsolotiGeko: name += "ksoloti_h743"; break;
-            case BoardType.Axoloti:     name += "axoloti"; break;
-        } 
-
-        switch(Firmware)
-        {
-            case Normal:   break;
-            case SPILink:  name += "_spilink"; break;
-            case USBAudio: name += "_usbaudio"; break;
-            case i2SCodec: name += "_i2scodec"; break;
-        }
-
-        name += ".bin";
-
-        return name;
-    }
-
-    // default gets full path
-    public String getFirmwareBinFilename() {
-        return getFirmwareBinFilename(true);
-    }
-        
-    public String getPatchCompilerOptions() {
-        String options = "";
-        switch(Board)
-        {
-            case BoardType.Ksoloti:     options += "BOARD_KSOLOTI_CORE BOARD_KSOLOTI_CORE_F427 "; break;
-            case BoardType.KsolotiGeko: options += "BOARD_KSOLOTI_CORE BOARD_KSOLOTI_CORE_H743 "; break;
-            case BoardType.Axoloti:     options += "BOARD_AXOLOTI_CORE BOARD_AXOLOTI_CORE "; break;
-        } 
-
-        if(isAxolotiDerivative()) {
-            options += " ramlink_axoloti.ld";
-        } else if(getBoard() == BoardType.Ksoloti) {
-            options += " ramlink_ksoloti.ld";
-        } else if(getBoard() == BoardType.KsolotiGeko) {
-            switch(MemoryLayout) {
-                case Code256Data64:
-                    options += " ramlink_ksoloti_h743_sram_dtcm.ld";
-                    break;
-                case Code256Shared:
-                    options += " ramlink_ksoloti_h743_sram_sram.ld";
-                    break;
-                case Code64Data64:
-                    options += " ramlink_ksoloti_h743_itcm_dtcm.ld";
-                    break;
-                default:
-                    break;
-                
-            }
-        }
-
-        switch(Firmware)
-        {
-            case Normal:   break;
-            case SPILink:  options += " FW_SPILINK"; break;
-            case USBAudio: options += " FW_USBAUDIO"; break;
-            case i2SCodec: options += " FW_I2SCODEC"; break;
-        }
-
-        return options;
-    }
-
     public String getUserShortcut(int index) {
         if (index < 0 || index > 3) {
             /* Only four user shortcuts so far */
@@ -778,76 +576,77 @@ public class Preferences {
         // SetDirty();
     }
 
-    public void setFirmwareMode(String FirmwareMode) {
+    // public void setFirmwareMode(String FirmwareMode) {
 
-        if (this.FirmwareMode.equals(FirmwareMode)) {
-            return;
-        }
+    //     if (this.FirmwareMode.equals(FirmwareMode)) {
+    //         return;
+    //     }
 
-        if (FirmwareMode.contains("Axoloti") && !this.FirmwareMode.contains("Axoloti") || FirmwareMode.contains("Ksoloti") && !this.FirmwareMode.contains("Ksoloti")) {
-            /* If switching to another board model... */
+    //     if (FirmwareMode.contains("Axoloti") && !this.FirmwareMode.contains("Axoloti") || FirmwareMode.contains("Ksoloti") && !this.FirmwareMode.contains("Ksoloti")) {
+    //         /* If switching to another board model... */
             
-            this.FirmwareMode = FirmwareMode;
-            MainFrame.mainframe.populateMainframeTitle();
-            MainFrame.mainframe.refreshAppIcon();
+    //         this.FirmwareMode = FirmwareMode;
+    //         MainFrame.mainframe.populateMainframeTitle();
+    //         MainFrame.mainframe.refreshAppIcon();
 
-            restartRequired = true;
+    //         restartRequired = true;
             
-            /* Disconnect automatically. User will have to restart the Patcher anyway. */
-            if (USBBulkConnection.GetConnection().isConnected()) {
-                USBBulkConnection.GetConnection().disconnect();
-            }
-            MainFrame.mainframe.ShowDisconnect();
-        }
-        else {
+    //         /* Disconnect automatically. User will have to restart the Patcher anyway. */
+    //         if (USBBulkConnection.GetConnection().isConnected()) {
+    //             USBBulkConnection.GetConnection().disconnect();
+    //         }
+    //         MainFrame.mainframe.ShowDisconnect();
+    //     }
+    //     else {
 
-            this.FirmwareMode = FirmwareMode;
-            MainFrame.mainframe.populateMainframeTitle();
+    //         this.FirmwareMode = FirmwareMode;
+    //         MainFrame.mainframe.populateMainframeTitle();
 
-            /* If connected, offer automatic firmware update */
-            if (USBBulkConnection.GetConnection().isConnected()) {
-                MainFrame.mainframe.interactiveFirmwareUpdate();
-            }
-        }
+    //         /* If connected, offer automatic firmware update */
+    //         if (USBBulkConnection.GetConnection().isConnected()) {
+    //             MainFrame.mainframe.interactiveFirmwareUpdate();
+    //         }
+    //     }
 
-        MainFrame.mainframe.populateInfoColumn();
-        // SetDirty();
-    }
+    //     MainFrame.mainframe.populateInfoColumn();
+    //     // SetDirty();
+    // }
 
-    public boolean setFirmwareMode(BoardType Board, FirmwareType Firmware, SampleRateType SampleRate, MemoryLayoutType MemoryLayout ){
+    // TODOh7
+    // public boolean setFirmwareMode(BoardType Board, FirmwareType Firmware, SampleRateType SampleRate, MemoryLayoutType MemoryLayout ){
 
-        if(this.Board == Board && this.Firmware == Firmware && this.SampleRate == SampleRate && this.MemoryLayout == MemoryLayout) {
-            return false;
-        }
+    //     if(this.Board == Board && this.Firmware == Firmware && this.SampleRate == SampleRate && this.MemoryLayout == MemoryLayout) {
+    //         return false;
+    //     }
 
-        if(this.Board != Board) {
-            this.Board = Board;
-            restartRequired = true;
-            MainFrame.mainframe.refreshAppIcon();
-        }
+    //     if(this.Board != Board) {
+    //         this.Board = Board;
+    //         restartRequired = true;
+    //         MainFrame.mainframe.refreshAppIcon();
+    //     }
 
-        this.Firmware = Firmware;
-        this.SampleRate = SampleRate;
-        this.MemoryLayout = MemoryLayout;
+    //     this.Firmware = Firmware;
+    //     this.SampleRate = SampleRate;
+    //     this.MemoryLayout = MemoryLayout;
 
-        if (restartRequired) {
-            if (USBBulkConnection.GetConnection().isConnected()) {
-                USBBulkConnection.GetConnection().disconnect();
-            }
-            MainFrame.mainframe.ShowDisconnect();
-        }
-        else {
-            /* If connected, offer automatic firmware update */
-            if (USBBulkConnection.GetConnection().isConnected()) {
-                MainFrame.mainframe.interactiveFirmwareUpdate();
-            }
-        }
+    //     if (restartRequired) {
+    //         if (USBBulkConnection.GetConnection().isConnected()) {
+    //             USBBulkConnection.GetConnection().disconnect();
+    //         }
+    //         MainFrame.mainframe.ShowDisconnect();
+    //     }
+    //     else {
+    //         /* If connected, offer automatic firmware update */
+    //         if (USBBulkConnection.GetConnection().isConnected()) {
+    //             MainFrame.mainframe.interactiveFirmwareUpdate();
+    //         }
+    //     }
 
-        MainFrame.mainframe.populateMainframeTitle();
-        MainFrame.mainframe.populateInfoColumn();
+    //     MainFrame.mainframe.populateMainframeTitle();
+    //     MainFrame.mainframe.populateInfoColumn();
 
-        return true;
-    }
+    //     return true;
+    // }
 
     public boolean getRestartRequired() {
         return restartRequired;
@@ -939,15 +738,6 @@ public class Preferences {
             return BoardNames.get(cpu);
         }
         return null;
-    }
-
-    public void setBoardName(String cpuid, String name) {
-        if (name == null) {
-            BoardNames.remove(cpuid);
-        } else {
-            BoardNames.put(cpuid, name);
-        }
-        // SetDirty();
     }
 
     public String getControllerObject() {

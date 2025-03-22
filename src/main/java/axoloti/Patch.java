@@ -48,7 +48,11 @@ import axoloti.outlets.OutletFrac32Buffer;
 import axoloti.outlets.OutletInstance;
 import axoloti.outlets.OutletInt32;
 import axoloti.parameters.ParameterInstance;
-import axoloti.utils.Preferences.FirmwareType;
+import axoloti.Boards.BoardType;
+import axoloti.Boards.FirmwareType;
+import axoloti.Boards.MemoryLayoutType;
+import axoloti.Boards.SampleRateType;
+
 
 import java.awt.Dimension;
 import java.awt.Point;

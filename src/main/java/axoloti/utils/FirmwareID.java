@@ -39,7 +39,7 @@ public class FirmwareID {
 
     static public String getFirmwareID() {
         try {
-            String boarddef = prefs.getFirmwareBinFilename();
+            String boarddef = prefs.boards.getFirmwareBinFilename();
 
             File f = new File(boarddef);
 

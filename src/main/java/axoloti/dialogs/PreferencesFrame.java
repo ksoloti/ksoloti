@@ -25,10 +25,11 @@ import axoloti.utils.AxoGitLibrary;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
 import axoloti.utils.Preferences;
-import axoloti.utils.Preferences.BoardType;
-import axoloti.utils.Preferences.FirmwareType;
-import axoloti.utils.Preferences.MemoryLayoutType;
-import axoloti.utils.Preferences.SampleRateType;
+import axoloti.Boards.BoardType;
+import axoloti.Boards.FirmwareType;
+import axoloti.Boards.MemoryLayoutType;
+import axoloti.Boards.SampleRateType;
+
 import components.ScrollPaneComponent;
 
 import static axoloti.MainFrame.fc;
@@ -115,9 +116,9 @@ public class PreferencesFrame extends JFrame {
 
         if (prefs.getMouseDialAngular()) jComboBoxDialMouseBehaviour.setSelectedItem("Angular"); 
 
-        jComboBoxBoardType.setSelectedItem(prefs.getBoard());
-        jComboBoxFirmwareMode.setSelectedItem(prefs.getFirmware()); 
-        jComboBoxMemoryLayout.setSelectedItem(prefs.getMemoryLayout());
+        jComboBoxBoardType.setSelectedItem(prefs.boards.getBoardType());
+        jComboBoxFirmwareMode.setSelectedItem(prefs.boards.getFirmware()); 
+        jComboBoxMemoryLayout.setSelectedItem(prefs.boards.getMemoryLayout());
         jComboBoxTheme.setSelectedItem(prefs.getTheme());
 
         jComboBoxDspSafetyLimit.setSelectedIndex(prefs.getDspSafetyLimit());
@@ -156,13 +157,13 @@ public class PreferencesFrame extends JFrame {
 
         prefs.setMouseDoNotRecenterWhenAdjustingControls(jCheckBoxNoMouseReCenter.isSelected());
 
+        // TODO H7
+        // if(prefs.setFirmwareMode(BoardType.fromString(jComboBoxBoardType.getSelectedItem().toString()), FirmwareType.fromString(jComboBoxFirmwareMode.getSelectedItem().toString()), SampleRateType.Rate48K, MemoryLayoutType.fromString(jComboBoxMemoryLayout.getSelectedItem().toString()))) {
+        //     /* Flush old .h.gch file (Will be recompiled for new firmware mode the next time a patch goes live) */
+        //     axoloti.Axoloti.deletePrecompiledHeaderFile();
 
-        if(prefs.setFirmwareMode(BoardType.fromString(jComboBoxBoardType.getSelectedItem().toString()), FirmwareType.fromString(jComboBoxFirmwareMode.getSelectedItem().toString()), SampleRateType.Rate48K, MemoryLayoutType.fromString(jComboBoxMemoryLayout.getSelectedItem().toString()))) {
-            /* Flush old .h.gch file (Will be recompiled for new firmware mode the next time a patch goes live) */
-            axoloti.Axoloti.deletePrecompiledHeaderFile();
-
-            MainFrame.mainframe.updateLinkFirmwareID();
-        }
+        //     MainFrame.mainframe.updateLinkFirmwareID();
+        // }
 
         prefs.setUserShortcut(0, jTextFieldUserShortcut1.getText());
         prefs.setUserShortcut(1, jTextFieldUserShortcut2.getText());
@@ -177,8 +178,6 @@ public class PreferencesFrame extends JFrame {
 
         prefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
         prefs.applyTheme();
-        
-        prefs.setDspSafetyLimit(jComboBoxDspSafetyLimit.getSelectedIndex());
     }
 
     final void PopulateLibrary() {
@@ -344,7 +343,7 @@ public class PreferencesFrame extends JFrame {
             }
         });
         jComboBoxMemoryLayout.setToolTipText(jLabelFirmwareMode.getToolTipText());
-        jComboBoxMemoryLayout.setEnabled(prefs.getBoard() == BoardType.KsolotiGeko);
+        jComboBoxMemoryLayout.setEnabled(prefs.boards.getBoardType() == BoardType.KsolotiGeko);
         
 
         jLabelFavouritesDir.setText("Favourites Dir");

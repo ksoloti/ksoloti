@@ -18,6 +18,11 @@
  */
 package axoloti.dialogs;
 
+import axoloti.Boards;
+import axoloti.Boards.BoardDetail;
+import axoloti.Boards.BoardType;
+import axoloti.Boards.FirmwareType;
+import axoloti.Boards.MemoryLayoutType;
 import axoloti.MainFrame;
 import axoloti.USBBulkConnection;
 
@@ -39,11 +44,18 @@ import static axoloti.usb.Usb.VID_STM;
 import axoloti.utils.OSDetect;
 import static axoloti.utils.OSDetect.getOS;
 
+import java.lang.foreign.MemoryLayout;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 
+import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -76,6 +88,31 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     private final String sKsolotiSDCard = "Ksoloti SD Card Reader";
     private final String sKsolotiCoreUsbAudio = "Ksoloti Core USB Audio";
 
+    private final String sKsolotiGekoCore = "Ksoloti Geko Core";
+    private final String sKsolotiGekoSDCard = "Ksoloti Geko SD Card Reader";
+    private final String sKsolotiGekoCoreUsbAudio = "Ksoloti Geko Core USB Audio";
+
+    private String[] dspSafetyNames = new String[]{"Legacy", "Very Safe", "Safe", "Normal", "Risky", "Very Risky"};
+
+    private enum Columns
+    {
+        Name        (0),
+        Device      (1),
+        Port        (2),
+        Serial      (3),
+        Firmware    (4),
+        DSP         (5),
+        Memory      (6);
+
+        private final int value;
+        private Columns(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
     /**
      * Creates new form USBPortSelectionDlg
      *
@@ -89,7 +126,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
         initComponents();
 
-        setSize(560, 200);
+        setSize(920, 200);
         setTitle("Select Device");
         setLocation((int)mainframe.getLocation().getX() + 60, (int)mainframe.getLocation().getY() + 80);
 
@@ -100,6 +137,49 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         Populate();
 
         getRootPane().setDefaultButton(jButtonOK);
+
+        // probably a better way to do this but I don't know it!
+        FirmwareType[] firmwareTypes = FirmwareType.values();
+        String[] firmwareTypeNames = new String[firmwareTypes.length];
+        for (int i = 0; i < firmwareTypes.length; i++) {
+            firmwareTypeNames[i] = firmwareTypes[i].toString();
+        }
+        jComboBoxFirmwareMode.setModel(new DefaultComboBoxModel<String>(firmwareTypeNames));
+
+        jComboBoxFirmwareMode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxFirmwareModeActionPerformed(evt);
+            }
+        });
+        jComboBoxFirmwareMode.setToolTipText("<html><div width=\"480px\">Several firmware modes are available, each supporting different boards and/or adding certain firmware features.<p/><p/><b>SPI Link</b>: Activates a link between two Cores which lets them sync up and exchange audio and data channels. Make the necessary hardware connections as described in the SPILink help patch, and flash this firmware mode on both Cores to be synced together. Follow the instructions in the SPILink help patch.<p/><p/><b>USB Audio</b>: [Currently experimental] Activates USB audio functionality while connected to a host. Stream up to 4 channels of audio from and to your computer (DAW). Follow the instructions in the USBAudio help patch. <b>Note:</b> On Windows, you may have to right-click->\"Uninstall\" the drivers both for \"Ksoloti Core\" and \"Ksoloti Bulk Interface\" in the Device Manager to force a driver update. On Linux, you will have to run 'platform_linux&#47;add_udev_rules.sh' to update the udev rules.<p/><p/><b>I2S Codec</b>: [Currently experimental] Activates an I2S stream via SPI3 (PA15, PB3, PB4, PD6). Connect a suitable I2S ADC, DAC, or codec to get 2 additional audio inputs, outputs, or both. Follow the instructions in the I2SCodec help patch.<p/><p/><b>After you've changed modes, click \"Update\" in the resulting \"Firmware Mismatch\" popup to update the Core's firmware automatically to the selected mode.</b></div></html>");
+
+
+        // probably a better way to do this but I don't know it!
+        MemoryLayoutType[] memorylayoutTypes = MemoryLayoutType.values();
+        String[] memoryLayoutTypeNames = new String[memorylayoutTypes.length];
+        for (int i = 0; i < memorylayoutTypes.length; i++) {
+            memoryLayoutTypeNames[i] = memorylayoutTypes[i].toString();
+        }
+        jComboBoxMemoryLayout.setModel(new DefaultComboBoxModel<String>(memoryLayoutTypeNames));
+
+        jComboBoxMemoryLayout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxMemoryLayoutTypeActionPerformed(evt);
+            }
+        });
+        jComboBoxMemoryLayout.setToolTipText("Choose the memory layout for the Geko (TODO better text needed)");
+        jComboBoxMemoryLayout.setEnabled(prefs.boards.getBoardType() == BoardType.KsolotiGeko);
+
+        jComboBoxDspSafetyLimit.setModel(new DefaultComboBoxModel<String>(dspSafetyNames));
+
+        jComboBoxDspSafetyLimit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxDspSafetyLimitPerformed(evt);
+            }
+        });
+
+        jComboBoxMemoryLayout.setToolTipText("Changes the DSP safety limits.\nThe \'very safe\' and \'safe\' settings ensure a stricter DSP overload threshold and make sure all features in your patches work stable.\nIf you encounter frequent USB disconnects from your computer, try a safer setting.\nThe \'risky\' and \'very risky\' settings set the DSP overload threshold a bit higher,\nallowing you to push your patch load further, but with higher risk of glitches and USB disconnects.\nThe \'Legacy\' setting replicates the original Axoloti Patcher behaviour.");
+
 
         jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -113,11 +193,11 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 if (r >= 0) {
                     String devName = (String) model.getValueAt(r, 1);
                     
-                    if (!USBBulkConnection.GetConnection().isConnected() && prefs.isKsolotiDerivative() && (devName.equals(sKsolotiCore) || devName.equals(sKsolotiCoreUsbAudio))) {
+                    if (!USBBulkConnection.GetConnection().isConnected() && prefs.boards.isKsolotiDerivative() && (devName.equals(sKsolotiCore) || devName.equals(sKsolotiCoreUsbAudio))) {
                         jButtonOK.setEnabled(true);
                         cpuid = (String) model.getValueAt(r, 3);
                     }
-                    else if (!USBBulkConnection.GetConnection().isConnected() && prefs.isAxolotiDerivative() && (devName.equals(sAxolotiCore) || devName.equals(sAxolotiCoreUsbAudio))) {
+                    else if (!USBBulkConnection.GetConnection().isConnected() && prefs.boards.isAxolotiDerivative() && (devName.equals(sAxolotiCore) || devName.equals(sAxolotiCoreUsbAudio))) {
                         jButtonOK.setEnabled(true);
                         cpuid = (String) model.getValueAt(r, 3);
                     }
@@ -131,31 +211,53 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             }
         });
         
+        jTable1.getColumnModel().getColumn(Columns.Firmware.getValue()).setCellEditor(new DefaultCellEditor(jComboBoxFirmwareMode));
+        jTable1.getColumnModel().getColumn(Columns.DSP.getValue()).setCellEditor(new DefaultCellEditor(jComboBoxDspSafetyLimit));
+        jTable1.getColumnModel().getColumn(Columns.Memory.getValue()).setCellEditor(new DefaultCellEditor(jComboBoxMemoryLayout));
+
         jTable1.getModel().addTableModelListener(new TableModelListener() {
 
             @Override
             public void tableChanged(TableModelEvent e) {
                 int row = e.getFirstRow();
                 int column = e.getColumn();
-                if(column!=0) return;
-                
+
                 TableModel model = (TableModel)e.getSource();
-                String name = (String) model.getValueAt(row, column);
-                String cpuid = (String) ((DefaultTableModel) jTable1.getModel()).getValueAt(row, 3);
-                Preferences prefs = MainFrame.prefs;
-                prefs.setBoardName(cpuid,name);
+                String cpuid = (String) model.getValueAt(row, Columns.Serial.getValue());
+
+                if(column == Columns.Name.getValue()) {
+                    String name = (String) model.getValueAt(row, column);
+                    prefs.boards.setBoardName(cpuid, name);
+                } else if(column == Columns.Firmware.getValue()) {
+                    FirmwareType firmwareType = FirmwareType.fromString((String)model.getValueAt(row, column));
+                    prefs.boards.setFirmwareType(cpuid, firmwareType);
+                } else if(column == Columns.DSP.getValue()) {
+                    Integer dspSafety = Arrays.asList(dspSafetyNames).indexOf((String)model.getValueAt(row, column));
+                    prefs.boards.setDspSafetyLimit(cpuid, dspSafety);
+                } else if(column == Columns.Memory.getValue()) {
+                    MemoryLayoutType memoryLayout = MemoryLayoutType.fromString((String)model.getValueAt(row, column));
+                    prefs.boards.setMemoryLayout(cpuid, memoryLayout);
+                } else {
+                    return;
+                }
+
                 prefs.SavePrefs();
             }
         });
 
         if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setPreferredWidth(100);
-            jTable1.getColumnModel().getColumn(1).setPreferredWidth(100);
-            jTable1.getColumnModel().getColumn(2).setPreferredWidth(20);
-            jTable1.getColumnModel().getColumn(3).setPreferredWidth(40);
+            jTable1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            jTable1.getColumnModel().getColumn(Columns.Name.getValue()).setPreferredWidth(150);
+            jTable1.getColumnModel().getColumn(Columns.Device.getValue()).setPreferredWidth(120);
+            jTable1.getColumnModel().getColumn(Columns.Port.getValue()).setPreferredWidth(80);
+            jTable1.getColumnModel().getColumn(Columns.Serial.getValue()).setPreferredWidth(190);
+            jTable1.getColumnModel().getColumn(Columns.Firmware.getValue()).setPreferredWidth(80);
+            jTable1.getColumnModel().getColumn(Columns.DSP.getValue()).setPreferredWidth(80);
+            jTable1.getColumnModel().getColumn(Columns.Memory.getValue()).setPreferredWidth(200);
         }
         
-        
+        jTable1.setSize(900, 200);
+        jTable1.doLayout();
     }
 
     public static String ErrorString(int result) {
@@ -189,136 +291,158 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     final void Populate() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
-        DeviceList list = new DeviceList();
 
-        int result = LibUsb.init(null);
+        
+        prefs.getBoards().scanBoards();
+        Boards boards = prefs.getBoards();
 
-        if (result < 0) {
-            throw new LibUsbException("Unable to initialize LibUsb context", result);
-        }
-
-        result = LibUsb.getDeviceList(null, list);
-
-        if (result < 0) {
-            throw new LibUsbException("Unable to get device list", result);
-        }
-
-        try {
-            /* Iterate over all devices and scan for the right one */
-            for (Device device : list) {
-
-                DeviceDescriptor descriptor = new DeviceDescriptor();
-                
-                result = LibUsb.getDeviceDescriptor(device, descriptor);
-                if (result == LibUsb.SUCCESS) {
-
-                    if (descriptor.idVendor() == VID_STM) {
-
-                        if (descriptor.idProduct() == PID_STM_DFU) {
-
-                            DeviceHandle handle = new DeviceHandle();
-
-                            result = LibUsb.open(device, handle);
-                            if (result < 0) {
-
-                                if (getOS() == OSDetect.OS.WIN) {
-
-                                    if (result == LibUsb.ERROR_NOT_SUPPORTED) {
-                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Inaccessible: wrong driver installed"});
-                                    }
-                                    else if (result == LibUsb.ERROR_ACCESS) {
-                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Inaccessible: busy?"});
-                                    }
-                                    else {
-                                        model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Inaccessible: " + result});
-                                    }
-                                }
-                                else {
-                                    model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Inaccessible: " + result});
-                                }
-                            }
-                            else {
-                                model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Driver OK"});
-                                LibUsb.close(handle);
-                            }
-                        }
-                    }
-                    else if (prefs.isKsolotiDerivative() && descriptor.idVendor() == VID_AXOLOTI && ((descriptor.idProduct() == PID_KSOLOTI) || (descriptor.idProduct() == PID_KSOLOTI_USBAUDIO))) {
-
-                        String sName;
-
-                        if (descriptor.idProduct() == PID_KSOLOTI) {
-                            sName = sKsolotiCore;
-                        }
-                        else {
-                            sName = sKsolotiCoreUsbAudio;
-                        }
-
-                        DeviceHandle handle = new DeviceHandle();
-
-                        result = LibUsb.open(device, handle);
-                        if (result < 0) {
-                            model.addRow(new String[]{"", sName, DeviceToPath(device), ErrorString(result)});
-                        }
-                        else {
-                            String serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
-                            String name = MainFrame.prefs.getBoardName(serial);
-                            if(name==null) name = "";
-                            model.addRow(new String[]{name, sName, DeviceToPath(device), serial});
-                            LibUsb.close(handle);
-                        }
-                    }
-                    else if (prefs.isKsolotiDerivative() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD) {
-                        model.addRow(new String[]{"",sKsolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
-                    }
-                    else if (prefs.isAxolotiDerivative() && descriptor.idVendor() == VID_AXOLOTI && ((descriptor.idProduct() == PID_AXOLOTI) || (descriptor.idProduct() == PID_AXOLOTI_USBAUDIO))) {
-
-                        String sName;
-
-                        if (descriptor.idProduct() == PID_AXOLOTI) {
-                            sName = sAxolotiCore;
-                        }
-                        else {
-                            sName = sAxolotiCoreUsbAudio;
-                        }
-
-                        DeviceHandle handle = new DeviceHandle();
-
-                        result = LibUsb.open(device, handle);
-                        
-                        if (result < 0) {
-                            model.addRow(new String[]{"", sName, DeviceToPath(device), ErrorString(result)});
-
-                        }
-                        else {
-                            String serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
-                            String name = MainFrame.prefs.getBoardName(serial);
-                            if(name==null) name = "";
-                            model.addRow(new String[]{name, sName, DeviceToPath(device), serial});
-                            LibUsb.close(handle);
-                        }
-                    }
-                    else if (prefs.isAxolotiDerivative() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI_SDCARD) {
-                        model.addRow(new String[]{"",sAxolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
-                    }
-                }
-                else {
-                    throw new LibUsbException("Unable to read device descriptor", result);
-                }
+        HashMap<String, BoardDetail> boardDetails = boards.getBoardDetails();
+        
+        int r =0;
+        for(BoardDetail board : boardDetails.values()) {
+            String memoryLayoutString;
+            if(board.memoryLayout != null) {
+                memoryLayoutString = board.memoryLayout.toString();
+            } else {
+                memoryLayoutString = "N/A";
             }
-
-            for (int r = 0; r < model.getRowCount(); r++) {
-                String id = (String) model.getValueAt(r, 3);
-                if (id != null && id.equals(this.defCPUID)) {
-                    jTable1.setRowSelectionInterval(r, r);
-                }
-            }
-        }
-        finally {
-            // Ensure the allocated device list is freed
-            LibUsb.freeDeviceList(list, true);
+            model.addRow(new String[]{board.name, board.boardType.toString(), "TODO", board.serialNumber, board.firmwareType.toString(), dspSafetyNames[board.dspSafetyLimit], memoryLayoutString});
+            if(boards.getSelectedBoardSerialNumber().equals(board.serialNumber))
+                jTable1.setRowSelectionInterval(r,r);
+            r++;
         }
     }
+
+        // DeviceList list = new DeviceList();
+
+        // int result = LibUsb.init(null);
+
+        // if (result < 0) {
+        //     throw new LibUsbException("Unable to initialize LibUsb context", result);
+        // }
+
+        // result = LibUsb.getDeviceList(null, list);
+
+        // if (result < 0) {
+        //     throw new LibUsbException("Unable to get device list", result);
+        // }
+
+        // try {
+        //     /* Iterate over all devices and scan for the right one */
+        //     for (Device device : list) {
+
+        //         DeviceDescriptor descriptor = new DeviceDescriptor();
+                
+        //         result = LibUsb.getDeviceDescriptor(device, descriptor);
+        //         if (result == LibUsb.SUCCESS) {
+
+        //             if (descriptor.idVendor() == VID_STM) {
+
+        //                 if (descriptor.idProduct() == PID_STM_DFU) {
+
+        //                     DeviceHandle handle = new DeviceHandle();
+
+        //                     result = LibUsb.open(device, handle);
+        //                     if (result < 0) {
+
+        //                         if (getOS() == OSDetect.OS.WIN) {
+
+        //                             if (result == LibUsb.ERROR_NOT_SUPPORTED) {
+        //                                 model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Inaccessible: wrong driver installed"});
+        //                             }
+        //                             else if (result == LibUsb.ERROR_ACCESS) {
+        //                                 model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Inaccessible: busy?"});
+        //                             }
+        //                             else {
+        //                                 model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Inaccessible: " + result});
+        //                             }
+        //                         }
+        //                         else {
+        //                             model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Inaccessible: " + result});
+        //                         }
+        //                     }
+        //                     else {
+        //                         model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Driver OK"});
+        //                         LibUsb.close(handle);
+        //                     }
+        //                 }
+        //             }
+        //             else if (prefs.isKsolotiDerivative() && descriptor.idVendor() == VID_AXOLOTI && ((descriptor.idProduct() == PID_KSOLOTI) || (descriptor.idProduct() == PID_KSOLOTI_USBAUDIO))) {
+
+        //                 String sName;
+
+        //                 if (descriptor.idProduct() == PID_KSOLOTI) {
+        //                     sName = sKsolotiCore;
+        //                 }
+        //                 else {
+        //                     sName = sKsolotiCoreUsbAudio;
+        //                 }
+
+        //                 DeviceHandle handle = new DeviceHandle();
+
+        //                 result = LibUsb.open(device, handle);
+        //                 if (result < 0) {
+        //                     model.addRow(new String[]{"", sName, DeviceToPath(device), ErrorString(result)});
+        //                 }
+        //                 else {
+        //                     String serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
+        //                     String name = MainFrame.prefs.getBoardName(serial);
+        //                     if(name==null) name = "";
+        //                     model.addRow(new String[]{name, sName, DeviceToPath(device), serial});
+        //                     LibUsb.close(handle);
+        //                 }
+        //             }
+        //             else if (prefs.isKsolotiDerivative() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD) {
+        //                 model.addRow(new String[]{"",sKsolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
+        //             }
+        //             else if (prefs.isAxolotiDerivative() && descriptor.idVendor() == VID_AXOLOTI && ((descriptor.idProduct() == PID_AXOLOTI) || (descriptor.idProduct() == PID_AXOLOTI_USBAUDIO))) {
+
+        //                 String sName;
+
+        //                 if (descriptor.idProduct() == PID_AXOLOTI) {
+        //                     sName = sAxolotiCore;
+        //                 }
+        //                 else {
+        //                     sName = sAxolotiCoreUsbAudio;
+        //                 }
+
+        //                 DeviceHandle handle = new DeviceHandle();
+
+        //                 result = LibUsb.open(device, handle);
+                        
+        //                 if (result < 0) {
+        //                     model.addRow(new String[]{"", sName, DeviceToPath(device), ErrorString(result)});
+
+        //                 }
+        //                 else {
+        //                     String serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
+        //                     String name = MainFrame.prefs.getBoardName(serial);
+        //                     if(name==null) name = "";
+        //                     model.addRow(new String[]{name, sName, DeviceToPath(device), serial});
+        //                     LibUsb.close(handle);
+        //                 }
+        //             }
+        //             else if (prefs.isAxolotiDerivative() && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI_SDCARD) {
+        //                 model.addRow(new String[]{"",sAxolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
+        //             }
+        //         }
+        //         else {
+        //             throw new LibUsbException("Unable to read device descriptor", result);
+        //         }
+        //     }
+
+        //     for (int r = 0; r < model.getRowCount(); r++) {
+        //         String id = (String) model.getValueAt(r, 3);
+        //         if (id != null && id.equals(this.defCPUID)) {
+        //             jTable1.setRowSelectionInterval(r, r);
+        //         }
+        //     }
+        // }
+        // finally {
+        //     // Ensure the allocated device list is freed
+        //     LibUsb.freeDeviceList(list, true);
+        // }
+//    }
 
     public String getCPUID() {
         return cpuid;
@@ -333,6 +457,10 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         jButtonRefresh = new javax.swing.JButton();
         jScrollPane2 = new ScrollPaneComponent();
         jTable1 = new javax.swing.JTable();
+
+        jComboBoxFirmwareMode = new JComboBox<String>();
+        jComboBoxMemoryLayout = new JComboBox<String>();
+        jComboBoxDspSafetyLimit = new JComboBox<String>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
@@ -366,14 +494,14 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Board Name", "Device", "USB Port", "Board ID"
+                "Board Name", "Device", "USB Port", "Board ID", "Firmware", "DSP Limit", "Memory Layout"
             }
         ) {
             Class<?>[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, false, false
+                true, false, false, false, true, true, true
             };
 
             public Class<?> getColumnClass(int columnIndex) {
@@ -381,7 +509,13 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
+                if(columnIndex == Columns.Memory.value) {
+                    jTable1.getModel().getValueAt(rowIndex, Columns.Device.value);
+                    BoardType boardType = BoardType.fromString((String)jTable1.getModel().getValueAt(rowIndex, Columns.Device.value));
+                    return (boardType == BoardType.KsolotiGeko);
+                } else {
+                    return canEdit [columnIndex];
+                }
             }
         });
         jTable1.getTableHeader().setReorderingAllowed(false);
@@ -463,10 +597,22 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         setVisible(false);        
     }
     
+    private void jComboBoxFirmwareModeActionPerformed(java.awt.event.ActionEvent evt) {
+    }
+
+    private void jComboBoxMemoryLayoutTypeActionPerformed(java.awt.event.ActionEvent evt) {
+    }
+
+    private void jComboBoxDspSafetyLimitPerformed(java.awt.event.ActionEvent evt) {
+    }
+
     
     private javax.swing.JButton jButtonRefresh;
     private javax.swing.JButton jButtonCancel;
     private javax.swing.JButton jButtonOK;
     private ScrollPaneComponent jScrollPane2;
     private javax.swing.JTable jTable1;
+    private JComboBox<String> jComboBoxDspSafetyLimit;
+    private JComboBox<String> jComboBoxMemoryLayout;
+    private JComboBox<String> jComboBoxFirmwareMode;
 }

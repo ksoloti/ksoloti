@@ -384,7 +384,7 @@ static const uint8_t vcom_string3[] = {
 };
 
 static uint8_t descriptor_serial_string[] = {
-  USB_DESC_BYTE(50),                    /* bLength.                         */
+  USB_DESC_BYTE(52),                    /* bLength.                         */
   USB_DESC_BYTE(USB_DESCRIPTOR_STRING), /* bDescriptorType.                 */
   '0', 0, '0', 0, '0', 0, '0', 0,
   '0', 0, '0', 0, '0', 0, '0', 0,
@@ -392,13 +392,20 @@ static uint8_t descriptor_serial_string[] = {
   '0', 0, '0', 0, '0', 0, '0', 0,
   '0', 0, '0', 0, '0', 0, '0', 0,
   '0', 0, '0', 0, '0', 0, '0', 0,
+#if BOARD_KSOLOTI_CORE_H743
+  'G', 0, '0', 0, '0', 0, '0', 0,
+#elif BOARD_KSOLOTI_CORE
+  'K', 0, '0', 0, '0', 0, '0', 0,
+#else
+  'A', 0, '0', 0, '0', 0, '0', 0,
+#endif
   '0', 0, '0', 0, '0', 0, '0', 0,
   '0', 0, '0', 0, '0', 0, '0', 0,
   '0', 0, '0', 0, '0', 0, '0', 0,
   '0', 0, '0', 0, '0', 0, '0', 0,
   '0', 0, '0', 0, '0', 0, '0', 0,
-  '0', 0, '0', 0, '0', 0, '0', 0
 };
+
 
 static const USBDescriptor descriptor_serial = {
    sizeof descriptor_serial_string, descriptor_serial_string,

@@ -29,8 +29,11 @@ import static axoloti.dialogs.USBPortSelectionDlg.ErrorString;
 import axoloti.displays.DisplayInstance;
 import axoloti.parameters.ParameterInstance;
 import axoloti.targetprofile.ksoloti_core;
-import axoloti.utils.Preferences.BoardType;
-import axoloti.utils.Preferences.FirmwareType;
+import axoloti.Boards.BoardType;
+import axoloti.Boards.FirmwareType;
+import axoloti.Boards.MemoryLayoutType;
+import axoloti.Boards.SampleRateType;
+
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
@@ -198,8 +201,8 @@ public class USBBulkConnection extends Connection {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
 
-                BoardType board = prefs.getBoard();
-                FirmwareType firmware = prefs.getFirmware();
+                BoardType board = prefs.boards.getBoardType();
+                FirmwareType firmware = prefs.boards.getFirmware();
 
                 if(descriptor.idVendor() == bulkVID) {
                     boolean foundKsoloti         = (descriptor.idProduct() == bulkPIDKsoloti);
