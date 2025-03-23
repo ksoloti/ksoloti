@@ -100,6 +100,8 @@ import qcmds.QCmdCompilePatch;
 import qcmds.QCmdDisconnect;
 import qcmds.QCmdPing;
 import qcmds.QCmdProcessor;
+import qcmds.QCmdShowConnect;
+import qcmds.QCmdShowDisconnect;
 import qcmds.QCmdStartFlasher;
 import qcmds.QCmdStartMounter;
 import qcmds.QCmdStop;
@@ -979,6 +981,17 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void jMenuItemSelectComActionPerformed(java.awt.event.ActionEvent evt) {
         if(USBBulkConnection.GetConnection().SelectPort()) {
+            populateMainframeTitle();
+            
+            ShowDisconnect();
+            boolean success = USBBulkConnection.GetConnection().connect();
+            if (success) {
+                MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdShowConnect());
+            }
+
+            // // Connect
+            // jToggleButtonConnectActionPerformed(null);
+
             // User has changed, disconnect and connect
             // TODOH7
             // if(jToggleButtonConnect.isSelected()) {

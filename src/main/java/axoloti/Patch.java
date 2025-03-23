@@ -1657,7 +1657,7 @@ public class Patch {
         + I+I + "for(u=0; u < BUFSIZE; u++) {\n"
         + I+I+I + "AudioOutputLeft[u] = 0;\n"
         + I+I+I + "AudioOutputRight[u] = 0;\n";
-        if (prefs.getFirmware() == FirmwareType.USBAudio) {
+        if (prefs.boards.getFirmware() == FirmwareType.USBAudio) {
             c += I+I+I + "UsbOutputLeft[u] = 0;\n"
                + I+I+I + "UsbOutputRight[u] = 0;\n"
                + "#if USB_AUDIO_CHANNELS == 4\n"
@@ -1665,7 +1665,7 @@ public class Patch {
                + I+I+I + "UsbOutput2Right[u] = 0;\n"
                + "#endif\n";
         }
-        if (prefs.getFirmware() == FirmwareType.i2SCodec) {
+        if (prefs.boards.getFirmware() == FirmwareType.i2SCodec) {
             c += I+I+I + "i2sOutputLeft[u] = 0;\n"
                + I+I+I + "i2sOutputRight[u] = 0;\n";
         }
@@ -1695,10 +1695,10 @@ public class Patch {
         c += "};\n\n";
         c += "static rootc root;\n\n";
 
-        if (prefs.getFirmware() == FirmwareType.USBAudio) {
+        if (prefs.boards.getFirmware() == FirmwareType.USBAudio) {
             c += "void PatchProcess(int32_t* inbuf, int32_t* outbuf, int32_t* inbufUsb, int32_t* outbufUsb) {\n";
         }
-        else if (prefs.getFirmware() == FirmwareType.i2SCodec) {
+        else if (prefs.boards.getFirmware() == FirmwareType.i2SCodec) {
             c += "void PatchProcess(int32_t* inbuf, int32_t* outbuf, int32_t* i2s_inbuf, int32_t* i2s_outbuf) {\n";
         }
         else {
@@ -1729,7 +1729,7 @@ public class Patch {
                + I+I + "AudioInputRight[i] = inbuf[(i<<1) + 1] >> 4;\n";
         }
 
-        if (prefs.getFirmware() == FirmwareType.USBAudio) {
+        if (prefs.boards.getFirmware() == FirmwareType.USBAudio) {
             c += "\n";
             c += "#if USB_AUDIO_CHANNELS == 2\n"
             + I+I + "UsbInputLeft[i]  = inbufUsb[i*2]>>4;\n"
@@ -1743,7 +1743,7 @@ public class Patch {
             + I+I + "UsbInput2Right[i] = inbufUsb[i*4+3]>>4;\n"
             + "#endif\n\n";
         }
-        if (prefs.getFirmware() == FirmwareType.i2SCodec) {
+        if (prefs.boards.getFirmware() == FirmwareType.i2SCodec) {
             c += "\n"
                + I+I + "i2sInputLeft[i] = ___ROR(i2s_inbuf[(i<<1)], 16) >> 4;\n"
                + I+I + "i2sInputRight[i] = ___ROR(i2s_inbuf[(i<<1) + 1], 16) >> 4;\n";
@@ -1772,7 +1772,7 @@ public class Patch {
                    + I+I + "outbuf[(i<<1) + 1] = __SSAT(AudioOutputRight[i], 28) << 4;\n";
             }
             
-            if (prefs.getFirmware() == FirmwareType.USBAudio) {
+            if (prefs.boards.getFirmware() == FirmwareType.USBAudio) {
                 c += "\n";
                 c += "#if USB_AUDIO_CHANNELS == 2\n"
                 + I+I + "outbufUsb[i*2]   = __SSAT(UsbOutputLeft[i],28)<<4;\n"
@@ -1786,7 +1786,7 @@ public class Patch {
                 + I+I + "outbufUsb[i*4+3] = __SSAT(UsbOutput2Right[i],28)<<4;\n"
                 + "#endif\n";
             }
-            if (prefs.getFirmware() == FirmwareType.i2SCodec) {
+            if (prefs.boards.getFirmware() == FirmwareType.i2SCodec) {
                 c += "\n"
                    + I+I + "i2s_outbuf[(i<<1)] = ___ROR(__SSAT(i2sOutputLeft[i], 28) << 4, 16);\n"
                    + I+I + "i2s_outbuf[(i<<1) + 1] = ___ROR(__SSAT(i2sOutputRight[i], 28) << 4, 16);\n";
@@ -1811,7 +1811,7 @@ public class Patch {
                    + I+I + "outbuf[(i<<1) + 1] = AudioOutputRight[i];\n";
             }
                 
-            if (prefs.getFirmware() == FirmwareType.USBAudio) {
+            if (prefs.boards.getFirmware() == FirmwareType.USBAudio) {
                 c += "\n";
                 c += "#if USB_AUDIO_CHANNELS == 2\n"
                 + I+I + "outbufUsb[i*2]   = UsbOutputLeft[i];\n"
@@ -1825,7 +1825,7 @@ public class Patch {
                 + I+I + "outbufUsb[i*4+3] = UsbOutput2Right[i];\n"
                 + "#endif\n";
             }
-            if (prefs.getFirmware() == FirmwareType.i2SCodec) {
+            if (prefs.boards.getFirmware() == FirmwareType.i2SCodec) {
                 c += "\n"
                    + I+I + "i2s_outbuf[(i<<1)] = ___ROR(i2sOutputLeft[i], 16);\n"
                    + I+I + "i2s_outbuf[(i<<1) + 1] = ___ROR(i2sOutputRight[i], 16);\n";
@@ -1954,14 +1954,14 @@ public class Patch {
         }
 
         c += "int32buffer AudioInputLeft, AudioInputRight, AudioOutputLeft, AudioOutputRight;\n";
-        if (prefs.getFirmware() == FirmwareType.USBAudio) {
+        if (prefs.boards.getFirmware() == FirmwareType.USBAudio) {
             c += "#if USB_AUDIO_CHANNELS==2\n";
             c += "  int32buffer UsbInputLeft, UsbInputRight, UsbOutputLeft, UsbOutputRight;\n";
             c += "#elif USB_AUDIO_CHANNELS==4\n";
             c += "  int32buffer UsbInputLeft, UsbInputRight, UsbOutputLeft, UsbOutputRight, UsbInput2Left, UsbInput2Right, UsbOutput2Left, UsbOutput2Right;\n";
             c += "#endif\n";
         }
-        if (prefs.getFirmware() == FirmwareType.i2SCodec) {
+        if (prefs.boards.getFirmware() == FirmwareType.i2SCodec) {
             c += "int32buffer i2sInputLeft, i2sInputRight, i2sOutputLeft, i2sOutputRight;\n";
         }
 

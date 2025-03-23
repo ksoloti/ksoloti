@@ -65,7 +65,7 @@ public class QCmdCompilePatch extends QCmdShellTask {
     
     @Override
     String GetExec() {
-            String compilerOptions = prefs.getPatchCompilerOptions();
+            String compilerOptions = prefs.boards.getPatchCompilerOptions();
             
             if (OSDetect.getOS() == OSDetect.OS.WIN) {
                 return RuntimeDir() + "/platform_win/bin/sh.exe " + FirmwareDir() + "/compile_patch_win.sh " + compilerOptions;

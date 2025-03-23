@@ -53,10 +53,10 @@ public class QCmdCompileFirmware extends QCmdShellTask {
     @Override
     String GetExec() {
         String boarddef = "";
-        if (prefs.isKsolotiDerivative()) {
+        if (prefs.boards.isKsolotiDerivative()) {
             boarddef = "BOARD_KSOLOTI_CORE";
         }
-        else if (prefs.isAxolotiDerivative()) {
+        else if (prefs.boards.isAxolotiDerivative()) {
             boarddef = "BOARD_AXOLOTI_CORE";
         }
 

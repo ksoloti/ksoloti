@@ -64,7 +64,7 @@ public class QCmdUploadFWSDRam implements QCmdSerialTask {
         connection.ClearSync();
         try {
             if (f == null) {
-                String buildDir = prefs.getFirmwareBinFilename();
+                String buildDir = prefs.boards.getFirmwareBinFilename();
                 f = new File(buildDir);
             }
 

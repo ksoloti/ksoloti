@@ -56,7 +56,7 @@ public class QCmdFlashDFU extends QCmdShellTask {
     
     @Override
     String GetExec() {
-        String bname = prefs.getFirmwareBinFilename(false);
+        String bname = prefs.boards.getFirmwareBinFilename(false);
         Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.INFO, "File path: " + System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build" + File.separator + bname);
 
         if (OSDetect.getOS() == OSDetect.OS.WIN) {
