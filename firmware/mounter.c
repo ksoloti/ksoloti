@@ -5,6 +5,8 @@
 #include <string.h>
 #include "axoloti_board.h"
 
+extern void inttohex(uint32_t v, unsigned char *p);
+
 /* endpoint index */
 #define USB_MS_DATA_EP 1
 
@@ -127,16 +129,42 @@ static const USBDescriptor productDescriptor = {
 };
 
 /* Serial number descriptor */
-static const uint8_t serialNumberDescriptorData[] = {
-    USB_DESC_BYTE(26),
-    USB_DESC_BYTE(USB_DESCRIPTOR_STRING),
-    '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '1', 0
-};
+// static const uint8_t serialNumberDescriptorData[] = {
+//     USB_DESC_BYTE(26),
+//     USB_DESC_BYTE(USB_DESCRIPTOR_STRING),
+//     '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '1', 0
+// };
+
+static uint8_t serialNumberDescriptorData[] = {
+    USB_DESC_BYTE(52),                    /* bLength.                         */
+    USB_DESC_BYTE(USB_DESCRIPTOR_STRING), /* bDescriptorType.                 */
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+  #if BOARD_KSOLOTI_CORE_H743
+    'G', 0, '0', 0, '0', 0, '0', 0,
+  #elif BOARD_KSOLOTI_CORE
+    'K', 0, '0', 0, '0', 0, '0', 0,
+  #else
+    'A', 0, '0', 0, '0', 0, '0', 0,
+  #endif
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+  };
+  
+  
 
 static const USBDescriptor serialNumberDescriptor = {
     sizeof(serialNumberDescriptorData),
     serialNumberDescriptorData
 };
+
 
 /* Handles GET_DESCRIPTOR requests from the USB host */
 static const USBDescriptor *getDescriptor(USBDriver *usbp, uint8_t type, uint8_t index, uint16_t lang) {
@@ -157,7 +185,19 @@ static const USBDescriptor *getDescriptor(USBDriver *usbp, uint8_t type, uint8_t
                 case 2:
                     return &productDescriptor;
                 case 3:
-                    return &serialNumberDescriptor;
+                {
+                    #if BOARD_KSOLOTI_CORE_H743
+                        uint32_t *pUid = (uint32_t *)UID_BASE;
+                        inttohex(*pUid++,&serialNumberDescriptorData[2]);
+                        inttohex(*pUid++,&serialNumberDescriptorData[2+16]);
+                        inttohex(*pUid,&serialNumberDescriptorData[2+32]);
+                    #else      
+                        inttohex(*((uint32_t*)0x1FFF7A10),&serialNumberDescriptorData[2]);
+                        inttohex(*((uint32_t*)0x1FFF7A14),&serialNumberDescriptorData[2+16]);
+                        inttohex(*((uint32_t*)0x1FFF7A18),&serialNumberDescriptorData[2+32]);
+                    #endif                
+                }
+                return &serialNumberDescriptor;
             }
     }
 

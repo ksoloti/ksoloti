@@ -978,7 +978,20 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
 
     private void jMenuItemSelectComActionPerformed(java.awt.event.ActionEvent evt) {
-        USBBulkConnection.GetConnection().SelectPort();
+        if(USBBulkConnection.GetConnection().SelectPort()) {
+            // User has changed, disconnect and connect
+            // TODOH7
+            // if(jToggleButtonConnect.isSelected()) {
+            //     USBBulkConnection.GetConnection().disconnect();
+            // }
+            // qcmdprocessor.Panic();
+            // boolean success = USBBulkConnection.GetConnection().connect();
+            // if (success) {
+            //     jToggleButtonConnect.setSelected(true);
+            // } else {
+            //     ShowDisconnect();
+            // }
+        }
     }
 
 

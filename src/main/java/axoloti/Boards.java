@@ -15,6 +15,7 @@ import org.usb4java.LibUsbException;
 import axoloti.utils.OSDetect;
 import qcmds.QCmdShellTask;
 
+import static axoloti.usb.Usb.DeviceToPath;
 import static axoloti.usb.Usb.PID_AXOLOTI;
 import static axoloti.usb.Usb.PID_AXOLOTI_SDCARD;
 import static axoloti.usb.Usb.PID_AXOLOTI_USBAUDIO;
@@ -38,6 +39,8 @@ public class Boards {
         Ksoloti("Ksoloti Core"),
         KsolotiGeko("Ksoloti Core Geko"),
         Axoloti("Axoloti Core"),
+        DFU("STM DFU Bootloader"),
+        CardReader("Card Reader"),
         Unknown("Unknown");
 
         private final String name;
@@ -190,6 +193,8 @@ public class Boards {
         @Element(required = false)
         public boolean isConnected;
 
+        @Element(required = false)
+        public String path;
 
         BoardDetail() {
         }
@@ -201,6 +206,8 @@ public class Boards {
             dspSafetyLimit = 3;
             name = "";
             needsUpdate = false;
+            path = "";
+            isConnected = false;
 
             if (cpuid.length() == 25) {
                 // Valid serial for 1.1 and later
@@ -239,6 +246,13 @@ public class Boards {
             boardMode = mode;
         }
 
+        public String toString() { 
+            if(name != null) {
+                return name + " (" + boardType.toString() + ", " + firmwareType.toString() + ")"; 
+            } else {
+                return serialNumber + " (" + boardType.toString() + ", " + firmwareType.toString() + ")"; 
+            }
+        }
     }
 
 
@@ -275,6 +289,9 @@ public class Boards {
         return getBoardDetail(selectedBoardSerial);
     }
 
+    public void setSelectedBoard(BoardDetail board) {
+        selectedBoardSerial = board.serialNumber;
+    }
     public boolean addBoardDetail(String cpuid, BoardDetail boardDetail) {
         boolean result = false;
         
@@ -285,10 +302,15 @@ public class Boards {
         return result;
     }
 
-    public boolean addBoardOrUpdateBoardMode(BoardMode mode, String cpuid) {
+    public boolean addBoardOrUpdateBoardMode(BoardMode mode, String cpuid, String path) {
         boolean result = false;
 
         if(cpuid != null) {
+            if(mode == BoardMode.DFU) {
+
+            } else if(mode == BoardMode.SDCard) {
+
+            }
 
             if(BoardDetails.containsKey(cpuid)){
                 // update mode
@@ -296,16 +318,94 @@ public class Boards {
 
                 BoardDetail boardDetail = BoardDetails.get(cpuid);
                 boardDetail.setMode(mode);
+                boardDetail.path = path;
                 boardDetail.isConnected = true;
             } else {
                 // add new
                 BoardDetail boardDetail = new BoardDetail(mode, cpuid);
+                boardDetail.path = path;
                 boardDetail.isConnected = true;
                 result = addBoardDetail(cpuid, boardDetail);
             }
         }
 
         return result;
+    }
+
+
+    BoardMode getBoardModeFromDescriptor(DeviceDescriptor descriptor) {
+        BoardMode mode = BoardMode.Unknown;
+
+        if ((descriptor.idVendor() == VID_STM) && (descriptor.idProduct() == PID_STM_DFU)) {
+            // DFU Mode
+            mode = BoardMode.DFU;
+        } if (descriptor.idVendor() == VID_AXOLOTI) {
+            // Valid Vid
+            if ((descriptor.idProduct() == PID_KSOLOTI) || (descriptor.idProduct() == PID_KSOLOTI_USBAUDIO) || (descriptor.idProduct() == PID_AXOLOTI) || (descriptor.idProduct() == PID_AXOLOTI_USBAUDIO)) {
+                // Ksoloti/Axoloti running firmware
+                mode = BoardMode.Firmware;
+            } else if ((descriptor.idProduct() == PID_AXOLOTI_SDCARD) || (descriptor.idProduct() == PID_KSOLOTI_SDCARD)) {
+                // Axoloti Derivative running mounter
+                mode = BoardMode.SDCard;
+            };
+        }
+
+        return mode;
+    }
+
+    String getUsbSerial(Device device, DeviceDescriptor descriptor) {
+        String serial = null;
+
+        DeviceHandle handle = new DeviceHandle();
+        int result = LibUsb.open(device, handle);
+        if (result < 0) {
+            LOGGER.log(Level.SEVERE, "Failed to open USB device {0} - {1} : {2}\n", new Object[]{descriptor.idVendor(), descriptor.idProduct(), ErrorString(result)});
+        } else {
+            serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
+            LibUsb.close(handle);
+        }
+
+        return serial;
+    }
+
+    public DeviceHandle getDeviceHandleForBoard(BoardDetail boardDetail) {
+        DeviceHandle deviceHandle = null;
+
+        if(boardDetail.isConnected) {
+            // There must be a better way!
+            int result = LibUsb.init(null); // TODOH7 loook at all these inits
+
+            DeviceList list = new DeviceList();
+            LibUsb.getDeviceList(null, list);
+
+            for (Device device : list) {
+                DeviceDescriptor descriptor = new DeviceDescriptor();
+                
+                result = LibUsb.getDeviceDescriptor(device, descriptor);
+                if (result == LibUsb.SUCCESS) {
+    
+                    BoardMode boardMode = getBoardModeFromDescriptor(descriptor);
+    
+                    if(boardMode != BoardMode.Unknown) {
+                        String serial = getUsbSerial(device, descriptor);
+    
+                        if(serial != null) {
+                            if(serial.equals(boardDetail.serialNumber)) {
+                                deviceHandle = new DeviceHandle();
+                                if (LibUsb.open(device, deviceHandle) < 0) {
+                                    LOGGER.log(Level.SEVERE, "Failed to open USB device {0} - {1} : {2}\n", new Object[]{descriptor.idVendor(), descriptor.idProduct(), ErrorString(result)});
+                                    deviceHandle = null;
+                                }
+                            }
+                        }
+                    } 
+                } else {
+                    throw new LibUsbException("Unable to read device descriptor", result);
+                }            
+            }
+        } 
+
+        return deviceHandle;
     }
 
     public void scanBoards() {
@@ -316,7 +416,7 @@ public class Boards {
 
         DeviceList list = new DeviceList();
 
-        int result = LibUsb.init(null);
+        int result = LibUsb.init(null); // TODOH7 loook at all these inits
 
         if (result < 0) {
             throw new LibUsbException("Unable to initialize LibUsb context", result);
@@ -329,37 +429,19 @@ public class Boards {
         }
 
         for (Device device : list) {
-
             DeviceDescriptor descriptor = new DeviceDescriptor();
             
             result = LibUsb.getDeviceDescriptor(device, descriptor);
             if (result == LibUsb.SUCCESS) {
-                BoardMode mode = BoardMode.Unknown;
-                if ((descriptor.idVendor() == VID_STM) && (descriptor.idProduct() == PID_STM_DFU)) {
-                    // DFU Mode
-                    mode = BoardMode.DFU;
-                } if (descriptor.idVendor() == VID_AXOLOTI) {
-                    // Valid Vid
-                    if ((descriptor.idProduct() == PID_KSOLOTI) || (descriptor.idProduct() == PID_KSOLOTI_USBAUDIO) || (descriptor.idProduct() == PID_AXOLOTI) || (descriptor.idProduct() == PID_AXOLOTI_USBAUDIO)) {
-                        // Ksoloti/Axoloti running firmware
-                        mode = BoardMode.Firmware;
-                    } else if ((descriptor.idProduct() == PID_AXOLOTI_SDCARD) || (descriptor.idProduct() == PID_KSOLOTI_SDCARD)) {
-                        // Axoloti Derivative running mounter
-                        mode = BoardMode.SDCard;
-                    };
-                }
 
-                if(mode != BoardMode.Unknown) {
-                    // Lets get the serial number
-                    DeviceHandle handle = new DeviceHandle();
-                    result = LibUsb.open(device, handle);
-                    if (result < 0) {
-                        LOGGER.log(Level.SEVERE, "Failed to open USB device {0} - {1} : {2}\n", new Object[]{descriptor.idVendor(), descriptor.idProduct(), ErrorString(result)});
-                    }
-                    else {
-                        String serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
-                        addBoardOrUpdateBoardMode(mode, serial);
-                        LibUsb.close(handle);
+                BoardMode boardMode = getBoardModeFromDescriptor(descriptor);
+
+                if(boardMode != BoardMode.Unknown) {
+                    String serial = getUsbSerial(device, descriptor);
+
+                    if(serial != null) {
+                        String path = DeviceToPath(device);
+                        addBoardOrUpdateBoardMode(boardMode, serial, path);
                     }
                 }
             } else {
@@ -367,6 +449,8 @@ public class Boards {
             }            
         }
 
+        // If we have never had a selected board then just choose the first one
+        // in a convoluter java way!
         if(selectedBoardSerial == null && BoardDetails.size() > 0) {
             HashMap.Entry<String,BoardDetail> board = BoardDetails.entrySet().iterator().next();
             selectedBoardSerial = board.getKey();

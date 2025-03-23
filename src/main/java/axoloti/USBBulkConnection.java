@@ -29,6 +29,8 @@ import static axoloti.dialogs.USBPortSelectionDlg.ErrorString;
 import axoloti.displays.DisplayInstance;
 import axoloti.parameters.ParameterInstance;
 import axoloti.targetprofile.ksoloti_core;
+import axoloti.Boards.BoardDetail;
+import axoloti.Boards.BoardMode;
 import axoloti.Boards.BoardType;
 import axoloti.Boards.FirmwareType;
 import axoloti.Boards.MemoryLayoutType;
@@ -179,94 +181,113 @@ public class USBBulkConnection extends Connection {
     }
 
     public DeviceHandle OpenDeviceHandle() {
+        DeviceHandle deviceHandle = null;
 
-        /* Read the USB device list */
-        DeviceList list = new DeviceList();
-
-        int result = LibUsb.getDeviceList(context, list);
-        if (result < 0) {
-            throw new LibUsbException("Unable to get device list", result);
-        }
-
-        try {
-            /* Iterate over all devices and scan for the right one */
-            DeviceHandle firstDeviceHandle = null;
-            DeviceHandle useDeviceHandle = null;
-
-            for (Device d : list) {
-                DeviceDescriptor descriptor = new DeviceDescriptor();
-
-                result = LibUsb.getDeviceDescriptor(d, descriptor);
-                if (result != LibUsb.SUCCESS) {
-                    throw new LibUsbException("Unable to read device descriptor", result);
-                }
-
-                BoardType board = prefs.boards.getBoardType();
-                FirmwareType firmware = prefs.boards.getFirmware();
-
-                if(descriptor.idVendor() == bulkVID) {
-                    boolean foundKsoloti         = (descriptor.idProduct() == bulkPIDKsoloti);
-                    boolean foundKsolotiUsbAudio = (descriptor.idProduct() == bulkPIDKsolotiUsbAudio);
-                    boolean foundAxoloti         = (descriptor.idProduct() == bulkPIDAxoloti);
-                    boolean foundAxolotiUsbAudio = (descriptor.idProduct() == bulkPIDAxolotiUsbAudio);
-                    
-                    boolean matchKsoloti = (board == BoardType.Ksoloti) || (board == BoardType.KsolotiGeko) && (foundKsoloti || foundKsolotiUsbAudio);
-                    boolean matchAxoloti = (board == BoardType.Axoloti) && (foundAxoloti || foundAxolotiUsbAudio);
-
-                    if (matchKsoloti || matchAxoloti) {
-                        LOGGER.log(Level.INFO, board.toString() + " " + firmware.toString() + " found.");
-                        useBulkInterfaceNumber = (foundKsoloti || foundAxoloti) ? 2 : 4;
-
-                        DeviceHandle h = new DeviceHandle();
-
-                        result = LibUsb.open(d, h);
-                        if (result < 0) {
-                            LOGGER.log(Level.INFO, ErrorString(result));
-                        }
-                        else {
-                            String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
-
-                            if (cpuid != null) {
-                                if (serial.equals(cpuid)) {
-                                    useDeviceHandle = h;
-                                    break;
-                                }
-                            }
-                            else {
-                                useDeviceHandle = h;
-                                break;
-                            }
-
-                            if(firstDeviceHandle == null)
-                                firstDeviceHandle = h;
-                            
-                            if(h != firstDeviceHandle)
-                                LibUsb.close(h);
-                        }
-                    }
+        BoardDetail boardDetail = prefs.boards.getSelectedBoardDetail();
+        if(boardDetail != null) {
+            if(boardDetail.boardMode == BoardMode.SDCard) {
+                LOGGER.log(Level.WARNING, "{0} is mounted as an SDCard, please eject it in order to connect.", new Object[]{boardDetail.toString()});
+            }
+            else {
+                deviceHandle = prefs.boards.getDeviceHandleForBoard(boardDetail);
+                if(deviceHandle == null) {
+                    LOGGER.log(Level.WARNING, "{0} is not available to connect to, please select another board.", new Object[]{boardDetail.toString()});
                 }
             }
-
-            // if we have a matching useDeviceHandle return that, else if we have a firstDeviceHandle return that
-            if(useDeviceHandle != null) {
-                if(firstDeviceHandle != null)
-                    LibUsb.close(firstDeviceHandle);
-                return useDeviceHandle;
-            } else if(firstDeviceHandle != null)
-            {
-                return firstDeviceHandle;
-            }
-        }
-        finally {
-            /* Ensure the allocated device list is freed */
-            // LibUsb.freeDeviceList(list, true);
+        } else {
+            LOGGER.log(Level.SEVERE, "Default board is not correct in prefs, please report this.");
         }
 
-        LOGGER.log(Level.SEVERE, "No matching USB devices found.");
-
-        /* Device not found */
-        return null;
+        return deviceHandle;
     }
+
+    //     /* Read the USB device list */
+    //     DeviceList list = new DeviceList();
+
+    //     int result = LibUsb.getDeviceList(context, list);
+    //     if (result < 0) {
+    //         throw new LibUsbException("Unable to get device list", result);
+    //     }
+
+    //     try {
+    //         /* Iterate over all devices and scan for the right one */
+    //         DeviceHandle firstDeviceHandle = null;
+    //         DeviceHandle useDeviceHandle = null;
+
+    //         for (Device d : list) {
+    //             DeviceDescriptor descriptor = new DeviceDescriptor();
+
+    //             result = LibUsb.getDeviceDescriptor(d, descriptor);
+    //             if (result != LibUsb.SUCCESS) {
+    //                 throw new LibUsbException("Unable to read device descriptor", result);
+    //             }
+
+    //             BoardType board = prefs.boards.getBoardType();
+    //             FirmwareType firmware = prefs.boards.getFirmware();
+
+    //             if(descriptor.idVendor() == bulkVID) {
+    //                 boolean foundKsoloti         = (descriptor.idProduct() == bulkPIDKsoloti);
+    //                 boolean foundKsolotiUsbAudio = (descriptor.idProduct() == bulkPIDKsolotiUsbAudio);
+    //                 boolean foundAxoloti         = (descriptor.idProduct() == bulkPIDAxoloti);
+    //                 boolean foundAxolotiUsbAudio = (descriptor.idProduct() == bulkPIDAxolotiUsbAudio);
+                    
+    //                 boolean matchKsoloti = (board == BoardType.Ksoloti) || (board == BoardType.KsolotiGeko) && (foundKsoloti || foundKsolotiUsbAudio);
+    //                 boolean matchAxoloti = (board == BoardType.Axoloti) && (foundAxoloti || foundAxolotiUsbAudio);
+
+    //                 if (matchKsoloti || matchAxoloti) {
+    //                     LOGGER.log(Level.INFO, board.toString() + " " + firmware.toString() + " found.");
+    //                     useBulkInterfaceNumber = (foundKsoloti || foundAxoloti) ? 2 : 4;
+
+    //                     DeviceHandle h = new DeviceHandle();
+
+    //                     result = LibUsb.open(d, h);
+    //                     if (result < 0) {
+    //                         LOGGER.log(Level.INFO, ErrorString(result));
+    //                     }
+    //                     else {
+    //                         String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
+
+    //                         if (cpuid != null) {
+    //                             if (serial.equals(cpuid)) {
+    //                                 useDeviceHandle = h;
+    //                                 break;
+    //                             }
+    //                         }
+    //                         else {
+    //                             useDeviceHandle = h;
+    //                             break;
+    //                         }
+
+    //                         if(firstDeviceHandle == null)
+    //                             firstDeviceHandle = h;
+                            
+    //                         if(h != firstDeviceHandle)
+    //                             LibUsb.close(h);
+    //                     }
+    //                 }
+    //             }
+    //         }
+
+    //         // if we have a matching useDeviceHandle return that, else if we have a firstDeviceHandle return that
+    //         if(useDeviceHandle != null) {
+    //             if(firstDeviceHandle != null)
+    //                 LibUsb.close(firstDeviceHandle);
+    //             return useDeviceHandle;
+    //         } else if(firstDeviceHandle != null)
+    //         {
+    //             return firstDeviceHandle;
+    //         }
+    //     }
+    //     finally {
+    //         /* Ensure the allocated device list is freed */
+    //         // LibUsb.freeDeviceList(list, true);
+    //     }
+
+    //     LOGGER.log(Level.SEVERE, "No matching USB devices found.");
+
+    //     /* Device not found */
+    //     return null;
+    // }
 
     private byte[] bb2ba(ByteBuffer bb) {
         bb.rewind();
@@ -568,18 +589,26 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public void SelectPort() {
+    public boolean SelectPort() {
+        boolean reconnect = false;
+
         USBPortSelectionDlg spsDlg = new USBPortSelectionDlg(null, true, cpuid);
         spsDlg.setVisible(true);
         cpuid = spsDlg.getCPUID();
-        String name = prefs.getBoardName(cpuid);
-        if (cpuid == null) return;
-        if (name == null) {
-            LOGGER.log(Level.INFO, "Selecting CPUID: {0} for connection.", cpuid);
+
+        if(cpuid != null) {
+            BoardDetail boardDetail = prefs.boards.getBoardDetail(cpuid);
+            if(boardDetail != null) {
+                prefs.boards.setSelectedBoard(boardDetail);
+                prefs.SavePrefs();
+                LOGGER.log(Level.INFO, "Selecting Board: {0} for connection.", new Object[]{boardDetail.toString()});
+                reconnect = true;
+            } else {
+                LOGGER.log(Level.SEVERE, "Board Id {0} does not exist, please report this.", new Object[]{cpuid});
+            }
         }
-        else {
-            LOGGER.log(Level.INFO, "Selecting \"{0}\" for connection.", new Object[]{name});
-        }
+
+        return reconnect;
     }
 
     static private USBBulkConnection conn = null;
