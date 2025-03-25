@@ -5,11 +5,18 @@
 #include "hal.h"
 
 #if ANALYSE_USB_AUDIO
-#define ANALYSER_CHANNELS 1
+
 typedef enum
 {
-    acUsbAudioError = 0
+    acUsbAudioError = 0,
+    acUsbAudioDataExchange,
+    acUsbAudioInitiateTransmit,
+    acUsbAudioInitiateReceive,
+    acUsbAudioTransmitComplete,
+    acUsbAudioReceiveComplete,
 } AnalyserChannel;
+
+#define ANALYSER_CHANNELS 6
 
 #endif
 
@@ -17,6 +24,7 @@ typedef enum
 
 bool AddAnalyserChannel(AnalyserChannel channel, stm32_gpio_t *port, uint32_t pad);
 void AnalyserSetChannel(AnalyserChannel channel, bool bState);
+void AnalyserTriggerChannel(AnalyserChannel channel);
 void AnalyserSetup(void);
 
 typedef struct 
@@ -29,5 +37,6 @@ typedef struct
 
 #define AddAnalyserChannel(channel, port, pad)
 #define AnalyserSetChannel(channel, bState)
+#define AnalyserTriggerChannel(channel)
 #define AnalyserSetup()
 #endif

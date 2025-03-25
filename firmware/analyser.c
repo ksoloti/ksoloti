@@ -1,10 +1,31 @@
 #include "analyser.h"
 
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
 
 #if ANALYSE_USB_AUDIO
 void AnalyserSetup(void)
 {
-    AddAnalyserChannel(acUsbAudioError, GPIOG, 11);
+    AddAnalyserChannel(acUsbAudioDataExchange,      GPIOB, 9);
+    AddAnalyserChannel(acUsbAudioInitiateTransmit,  GPIOB, 8);
+    AddAnalyserChannel(acUsbAudioInitiateReceive,   GPIOB, 7);
+    AddAnalyserChannel(acUsbAudioTransmitComplete,  GPIOB, 6);
+    AddAnalyserChannel(acUsbAudioReceiveComplete,   GPIOB, 4);
+    AddAnalyserChannel(acUsbAudioError,             GPIOB, 3);
+    
+    AnalyserSetChannel(acUsbAudioError,             false);
+    AnalyserSetChannel(acUsbAudioDataExchange,      false);
+    AnalyserSetChannel(acUsbAudioInitiateTransmit,  false);
+    AnalyserSetChannel(acUsbAudioInitiateReceive,   false);
+    AnalyserSetChannel(acUsbAudioTransmitComplete,  false);
+    AnalyserSetChannel(acUsbAudioReceiveComplete,   false);
+    
+    AnalyserSetChannel(acUsbAudioError,             true);
+    AnalyserSetChannel(acUsbAudioDataExchange,      true);
+    AnalyserSetChannel(acUsbAudioInitiateTransmit,  true);
+    AnalyserSetChannel(acUsbAudioInitiateReceive,   true);
+    AnalyserSetChannel(acUsbAudioTransmitComplete,  true);
+    AnalyserSetChannel(acUsbAudioReceiveComplete,   true);
 }
 #endif
 
@@ -22,7 +43,8 @@ bool AddAnalyserChannel(AnalyserChannel uChannel, stm32_gpio_t *port, uint32_t p
         analyserChannels[uChannel].pad = pad;
 
         palSetPadMode(port, pad, PAL_MODE_OUTPUT_PUSHPULL);
-
+        AnalyserSetChannel(acUsbAudioError, false);
+    
         bResult = true;
     }
     
@@ -34,6 +56,15 @@ void AnalyserSetChannel(AnalyserChannel channel, bool bState)
     uint32_t pad = analyserChannels[channel].pad;
     stm32_gpio_t *port = analyserChannels[channel].port;
 
-    palWritePort(port, (palReadLatch(port) & ~PAL_PORT_BIT(pad)) | (((bState) & 1U) << pad));
+    palWritePad(port, pad, bState);
 }
+
+void AnalyserTriggerChannel(AnalyserChannel channel)
+{
+    AnalyserSetChannel(channel, true);
+    AnalyserSetChannel(channel, false);
+}
+
 #endif
+
+#pragma GCC pop_options

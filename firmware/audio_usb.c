@@ -12,8 +12,10 @@
 #include "chdebug.h"
 #include "usbcfg.h"
 
+#include "analyser.h"
 
 // do not set higher than -O1
+#pragma GCC push_options
 #pragma GCC optimize ("O2")
 #define FORCE_INLINE __attribute__((always_inline)) inline 
 //#define FORCE_INLINE
@@ -93,13 +95,14 @@ void aduReset(void)
   aduState.state = asNeedsReset;
 }
 
-void HandleError(void)
+void  __attribute__((optimize("-O0"))) HandleError(void)
 {
-
+  AnalyserSetChannel(acUsbAudioError, true);
   AddOverunLog(ltErrorBefore____);
 
   // ok we are all out of sync, try to recover
   aduState.state = asNeedsReset;
+  AnalyserSetChannel(acUsbAudioError, false);
 }
 
 // Set the sample rate
@@ -701,6 +704,7 @@ void aduDataExchange (int32_t *in, int32_t *out)
 {
   if(aduIsUsbOutputEnabled())
   {
+    AnalyserSetChannel(acUsbAudioDataExchange, true);
 #if USB_AUDIO_CHANNELS == 2
     uint16_t uBufferSize   = 32;
     uint16_t uBufferAdjust = 2;
@@ -839,6 +843,7 @@ void aduDataExchange (int32_t *in, int32_t *out)
       AddOverunLog(ltCodecCopyEnd___);
     }
   }
+  AnalyserSetChannel(acUsbAudioDataExchange, false);
 }
 
 /**
@@ -994,7 +999,7 @@ FORCE_INLINE void aduCodecFrameStarted(void)
  */
 void aduInitiateTransmitI(USBDriver *usbp)
 {
-  
+  AnalyserSetChannel(acUsbAudioInitiateTransmit, true);
   // tell codec copy that USB frame has ended
   aduCodecFrameEnded();
 
@@ -1083,6 +1088,8 @@ void aduInitiateTransmitI(USBDriver *usbp)
   usbStartTransmitI(usbp, 3, (uint8_t *)pTxLocation, USE_TRANSFER_SIZE_BYTES);
   aduAddTransferLog(blStartTransmit, USE_TRANSFER_SIZE_BYTES);
 
+  AnalyserSetChannel(acUsbAudioInitiateTransmit, false);
+
 }
 
 
@@ -1095,6 +1102,7 @@ void aduInitiateTransmitI(USBDriver *usbp)
  */
 void aduDataTransmitted(USBDriver *usbp, usbep_t ep) 
 {
+  AnalyserSetChannel(acUsbAudioTransmitComplete, true);
 #if ADU_TRANSFER_LOG_SIZE
   USBInEndpointState *pEpState = usbp->epc[ep]->in_state;
   volatile uint32_t uTransmittedCount = pEpState->txcnt;
@@ -1110,6 +1118,9 @@ void aduDataTransmitted(USBDriver *usbp, usbep_t ep)
   }
   else
     aduResetBuffers();
+
+  AnalyserSetChannel(acUsbAudioTransmitComplete, false);
+
 }
 
 
@@ -1122,11 +1133,15 @@ void aduDataTransmitted(USBDriver *usbp, usbep_t ep)
  */
 void aduInitiateReceiveI(USBDriver *usbp)
 {
+  AnalyserSetChannel(acUsbAudioInitiateReceive, true);
+
   AddOverunLog(ltStartReceive___);
   int16_t *pRxLocation = aduRxRingBuffer + aduState.rxRingBufferWriteOffset;
 
   usbStartReceiveI(usbp, 3, (uint8_t *)pRxLocation, USE_TRANSFER_SIZE_BYTES);
   aduAddTransferLog(blStartReceive, USE_TRANSFER_SIZE_BYTES);
+  
+  AnalyserSetChannel(acUsbAudioInitiateReceive, true);
 }
 
 /**
@@ -1139,6 +1154,8 @@ void aduInitiateReceiveI(USBDriver *usbp)
  */
 void aduDataReceived(USBDriver *usbp, usbep_t ep) 
 {
+  AnalyserSetChannel(acUsbAudioReceiveComplete, true);
+
   chSysLockFromIsr();
 #if ADU_TRANSFER_LOG_SIZE
   USBOutEndpointState *pEpState = usbp->epc[ep]->out_state;
@@ -1172,6 +1189,9 @@ void aduDataReceived(USBDriver *usbp, usbep_t ep)
     aduResetBuffers();
 
   chSysUnlockFromIsr();
+
+  AnalyserSetChannel(acUsbAudioReceiveComplete, false);
+
 }
 
 FORCE_INLINE bool aduIsUsbInUse(void)
@@ -1197,3 +1217,4 @@ FORCE_INLINE bool aduIsUsbOutputEnabled(void)
 
 
 
+#pragma GCC pop_options

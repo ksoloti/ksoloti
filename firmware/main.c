@@ -49,6 +49,8 @@
 #include "sdram.c"
 #include "stm32f4xx_fmc.c"
 
+#include "analyser.h"
+
 /*===========================================================================*/
 /* Initialization and main thread.                                           */
 /*===========================================================================*/
@@ -137,6 +139,8 @@ int main(void) {
     }
 
     MY_USBH_Init();
+
+    AnalyserSetup();
 
     if (!exception_check()) {
         /* Only try mounting SD and booting a patch when no exception is reported */
