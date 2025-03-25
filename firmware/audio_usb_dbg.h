@@ -14,8 +14,8 @@ uint16_t aduLogCount = 0;
 
 void aduAddTransferLog(BLType type, uint16_t uSize)
 {
-  if(aduLogCount == 0)
-    memset(aduTransferLog, 0, sizeof(aduTransferLog));
+  //if(aduLogCount == 0)
+  //  memset(aduTransferLog, 0, sizeof(aduTransferLog));
 
   aduTransferLog[aduLogCount].type = type;
   aduTransferLog[aduLogCount].uSize = uSize;

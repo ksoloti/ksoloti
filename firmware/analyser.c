@@ -56,7 +56,7 @@ void AnalyserSetChannel(AnalyserChannel channel, bool bState)
     uint32_t pad = analyserChannels[channel].pad;
     stm32_gpio_t *port = analyserChannels[channel].port;
 
-    palWritePad(port, pad, bState);
+    palWritePad(port, pad, (uint32_t)bState);
 }
 
 void AnalyserTriggerChannel(AnalyserChannel channel)

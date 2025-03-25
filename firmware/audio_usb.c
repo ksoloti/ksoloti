@@ -1212,9 +1212,9 @@ FORCE_INLINE bool aduIsUsbOutputEnabled(void)
 #endif
 }
 
+#pragma GCC pop_options
 
 #endif
 
 
 
-#pragma GCC pop_options
