@@ -548,13 +548,6 @@ public class AxoObject extends AxoObjectAbstract {
                     if (s.startsWith("./")) {
                         String strippedPath = patchFilePath.substring(0, patchFilePath.lastIndexOf(File.separatorChar));
                         File f = new File(strippedPath + "/" + s.substring(2));
-                            String s2 = f.getAbsolutePath();
-                            s2 = s2.replace('\\', '/');
-                            r.add(s2);
-                    }
-                    else if (s.startsWith("../")) {
-                        String strippedPath = patchFilePath.substring(0, patchFilePath.lastIndexOf(File.separatorChar));
-                        File f = new File(strippedPath + "/" + s);
                         if (f.isFile() && f.canRead()) {
                             String s2 = f.getAbsolutePath();
                             s2 = s2.replace('\\', '/');
@@ -567,7 +560,14 @@ public class AxoObject extends AxoObjectAbstract {
                         r.add(s2);
                     }
                     else {
-                        r.add(s);
+                        /* includes "../" and "naked" filenames */
+                        String strippedPath = patchFilePath.substring(0, patchFilePath.lastIndexOf(File.separatorChar));
+                        File f = new File(strippedPath + "/" + s);
+                        if (f.isFile() && f.canRead()) {
+                            String s2 = f.getAbsolutePath();
+                            s2 = s2.replace('\\', '/');
+                            r.add(s2);
+                        }
                     }
                 }
             }
