@@ -558,7 +558,15 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
             } else {
                 // if (Locked) setBorder(borderUnselectedLocked);
                 setBorder(borderUnselected);
-                Titlebar.setBackground(Theme.Object_TitleBar_Background);
+                if (this instanceof AxoObjectInstancePatcher) {
+                    Titlebar.setBackground(Theme.Object_TitleBar_Subpatch_Background);
+                }
+                else if (this instanceof AxoObjectInstancePatcherObject) {
+                    Titlebar.setBackground(Theme.Object_TitleBar_Embedded_Background);
+                }
+                else {
+                    Titlebar.setBackground(Theme.Object_TitleBar_Background);
+                }
             }
             repaint();
         }
