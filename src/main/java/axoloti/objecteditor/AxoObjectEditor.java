@@ -255,8 +255,6 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             }
         });
 
-        jLabelMidiPrototype.setText(AxoObjectInstance.MidiHandlerFunctionHeader);
-
         jTextAreaLocalData.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             void update() {
@@ -609,6 +607,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         jPanelDisposeCode = new javax.swing.JPanel();
         jPanelMidiCode = new javax.swing.JPanel();
         jLabelMidiPrototype = new javax.swing.JLabel();
+        jLabelMidiPrototypeEnd = new javax.swing.JLabel();
         jPanelMidiCode2 = new javax.swing.JPanel();
         jPanelXML = new javax.swing.JPanel();
         jScrollPane6 = new ScrollPaneComponent();
@@ -867,7 +866,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         jPanelMidiCode.setLayout(new BoxLayout(jPanelMidiCode, BoxLayout.Y_AXIS));
 
-        jLabelMidiPrototype.setText("jLabel11");
+        jLabelMidiPrototype.setText(AxoObjectInstance.MidiHandlerFunctionHeader);
         jPanelMidiCode.add(jLabelMidiPrototype);
 
         GroupLayout jPanelMidiCode2Layout = new GroupLayout(jPanelMidiCode2);
@@ -882,6 +881,9 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         );
 
         jPanelMidiCode.add(jPanelMidiCode2);
+
+        jLabelMidiPrototypeEnd.setText("}");
+        jPanelMidiCode.add(jLabelMidiPrototypeEnd);
 
         jTabbedPane1.addTab("MIDI Code", jPanelMidiCode);
 
@@ -1003,6 +1005,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private javax.swing.JLabel jLabelHelp;
     private javax.swing.JLabel jLabelLibrary;
     private javax.swing.JLabel jLabelMidiPrototype;
+    private javax.swing.JLabel jLabelMidiPrototypeEnd;
     private javax.swing.JLabel jLabelName;
     private javax.swing.JList jListDepends;
     private javax.swing.JList jListIncludes;
