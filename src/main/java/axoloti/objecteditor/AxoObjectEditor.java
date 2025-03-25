@@ -866,6 +866,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         jPanelMidiCode.setLayout(new BoxLayout(jPanelMidiCode, BoxLayout.Y_AXIS));
 
+        jLabelMidiPrototype.setFont(Constants.FONT_MONO.deriveFont(11.0f));
         jLabelMidiPrototype.setText(AxoObjectInstance.MidiHandlerFunctionHeader);
         jPanelMidiCode.add(jLabelMidiPrototype);
 
@@ -882,6 +883,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         jPanelMidiCode.add(jPanelMidiCode2);
 
+        jLabelMidiPrototypeEnd.setFont(Constants.FONT_MONO.deriveFont(11.0f));
         jLabelMidiPrototypeEnd.setText("}");
         jPanelMidiCode.add(jLabelMidiPrototypeEnd);
 
