@@ -511,11 +511,11 @@ public class AxoObject extends AxoObjectAbstract {
         }
 
         HashSet<String> r = new HashSet<String>();
-        if (sPath != null) {
-            if (sPath.lastIndexOf(File.separatorChar) >= 0) {
+        if (sObjFilePath != null) {
+            if (sObjFilePath.lastIndexOf(File.separatorChar) >= 0) {
                 for (String s : includes) {
                     if (s.startsWith("./")) {
-                        String strippedPath = sPath.substring(0, sPath.lastIndexOf(File.separatorChar));
+                        String strippedPath = sObjFilePath.substring(0, sObjFilePath.lastIndexOf(File.separatorChar));
                         File f = new File(strippedPath + "/" + s.substring(2));
                         if (f.isFile() && f.canRead()) {
                             String s2 = f.getAbsolutePath();
@@ -524,7 +524,7 @@ public class AxoObject extends AxoObjectAbstract {
                         }
                     }
                     else if (s.startsWith("../")) {
-                        String strippedPath = sPath.substring(0, sPath.lastIndexOf(File.separatorChar));
+                        String strippedPath = sObjFilePath.substring(0, sObjFilePath.lastIndexOf(File.separatorChar));
                         File f = new File(strippedPath + "/" + s);
                             String s2 = f.getAbsolutePath();
                             s2 = s2.replace('\\', '/');
@@ -595,10 +595,10 @@ public class AxoObject extends AxoObjectAbstract {
     }
 
     public File GetHelpPatchFile() {
-        if ((helpPatch == null) || (sPath == null) || sPath.isEmpty()) {
+        if ((helpPatch == null) || (sObjFilePath == null) || sObjFilePath.isEmpty()) {
             return null;
         }
-        File o = new File(sPath);
+        File o = new File(sObjFilePath);
         String p = o.getParent() + File.separator + helpPatch;
         File f = new File(p);
         if (f.isFile() && f.canRead()) {

@@ -303,7 +303,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         // is it from the factory?
         AxolotiLibrary sellib = null;
         for (AxolotiLibrary lib : prefs.getLibraries()) {
-            if (editObj.sPath != null && editObj.sPath.startsWith(lib.getLocalLocation())) {
+            if (editObj.sObjFilePath != null && editObj.sObjFilePath.startsWith(lib.getLocalLocation())) {
                 if (sellib == null || sellib.getLocalLocation().length() < lib.getLocalLocation().length()) {
                     sellib = lib;
                 }
@@ -339,7 +339,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     }
 
     boolean IsEmbeddedObj() {
-        return (editObj.sPath == null || editObj.sPath.length() == 0);
+        return (editObj.sObjFilePath == null || editObj.sObjFilePath.length() == 0);
     }
 
     void SetReadOnly(boolean readonly) {
@@ -520,12 +520,12 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     }
 
     boolean isCompositeObject() {
-        if (editObj.sPath == null) {
+        if (editObj.sObjFilePath == null) {
             return false;
         }
         int count = 0;
         for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-            if (editObj.sPath.equalsIgnoreCase(o.sPath)) {
+            if (editObj.sObjFilePath.equalsIgnoreCase(o.sObjFilePath)) {
                 count++;
             }
         }
@@ -960,11 +960,11 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private void jMenuItemSaveActionPerformed(java.awt.event.ActionEvent evt) {
         editObj.FireObjectModified(this);
         if (!isCompositeObject()) {
-            MainFrame.axoObjects.WriteAxoObject(editObj.sPath, editObj);
+            MainFrame.axoObjects.WriteAxoObject(editObj.sObjFilePath, editObj);
             updateReferenceXML();
             MainFrame.axoObjects.LoadAxoObjects();
         } else {
-            JOptionPane.showMessageDialog(null, "The original object file " + editObj.sPath + " contains multiple objects, the object editor does not support this.\n"
+            JOptionPane.showMessageDialog(null, "The original object file " + editObj.sObjFilePath + " contains multiple objects, the object editor does not support this.\n"
                     + "Your changes are NOT saved!");
         }
     }

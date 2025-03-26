@@ -137,8 +137,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         if ((getType().sAuthor != null) && (!getType().sAuthor.isEmpty())) {
             tooltiptxt += "<p><br/><i>Author: " + getType().sAuthor + "</p>";
         }
-        if ((getType().sPath != null) && (!getType().sPath.isEmpty())) {
-            tooltiptxt += "<p><i>Path: " + getType().sPath + "</p>";
+        if ((getType().sObjFilePath != null) && (!getType().sObjFilePath.isEmpty())) {
+            tooltiptxt += "<p><i>Path: " + getType().sObjFilePath + "</p>";
         }
         if (IndexLabel != null && !IndexLabel.getText().equals("")) {
             tooltiptxt += "<p><i>Execution order: " + (IndexLabel.getText()) + " / " + patch.objectInstances.size() + "</p>";
@@ -1253,7 +1253,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         if (files == null){
             files = new ArrayList<SDFileReference>();
         } else {
-            String p1 = getType().sPath;
+            String p1 = getType().sObjFilePath;
             if (p1==null) {
                 /* embedded object, reference path is of the patch */
                 p1 = getPatch().getFileNamePath();
@@ -1310,7 +1310,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             AxoObject ao = getType();
             oi.ao = new AxoObjectPatcherObject(ao.id, ao.sDescription);
             oi.ao.copy(ao);
-            oi.ao.sPath = "";
+            oi.ao.sObjFilePath = "";
             oi.ao.upgradeSha = null;
             oi.ao.CloseEditor();
             oi.setInstanceName(iname);
