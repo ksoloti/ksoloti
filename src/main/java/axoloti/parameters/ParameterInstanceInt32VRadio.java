@@ -48,10 +48,10 @@ public class ParameterInstanceInt32VRadio extends ParameterInstanceInt32 {
         return s;
     }
 
-    @Override
-    public String GenerateCodeDeclaration(String vprefix) {
-        return "KeyValuePair " + KVPName(vprefix) + ";\n";
-    }
+    // @Override
+    // public String GenerateCodeDeclaration(String vprefix) {
+    //     return "";
+    // }
 
     @Override
     public String GenerateCodeMidiHandler(String vprefix) {

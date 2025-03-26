@@ -131,19 +131,7 @@ public class ParameterInstanceFrac32UMap<T extends ParameterFrac32> extends Para
 
     @Override
     public String GenerateCodeInit(String vprefix, String StructAccces) {
-        String n;
-        if (axoObj.parameterInstances.size() == 1) {
-            n = axoObj.getInstanceName();
-        } else {
-            n = axoObj.getInstanceName() + ":" + name;
-        }
-        String s = PExName(vprefix) + ".pfunction = " + GetPFunction() + ";\n"
-                + I+I+I + "SetKVP_IPVP(&" + StructAccces + KVPName(vprefix) + ", ObjectKvpRoot, \"" + charEscape(n) + "\", "
-                + "&" + PExName(vprefix) + ", "
-                + "0, "
-                + "1<<27);\n"
-                + I+I+I + "KVP_RegisterObject(&" + StructAccces + KVPName(vprefix) + ");\n";
-        return s;
+        return "";
     }
 
     @Override
@@ -154,10 +142,10 @@ public class ParameterInstanceFrac32UMap<T extends ParameterFrac32> extends Para
         }
     }
 
-    @Override
-    public String GenerateCodeDeclaration(String vprefix) {
-        return "KeyValuePair " + KVPName(vprefix) + ";\n";
-    }
+    // @Override
+    // public String GenerateCodeDeclaration(String vprefix) {
+    //     return "";
+    // }
 
     @Override
     public String GenerateCodeMidiHandler(String vprefix) {
