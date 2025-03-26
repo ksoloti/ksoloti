@@ -273,7 +273,9 @@ static int StartPatch1(void) {
     sdcard_attemptMountIfUnmounted();
 
     /* Reinit pin configuration for ADC */
+#if !ANALYSE_USB_AUDIO    
     adc_configpads();
+#endif
 
     uint32_t* ccm; /* Clear CCMRAM area declared in ramlink_*.ld */
     for (ccm = (uint32_t*) 0x10000000; ccm < (uint32_t*) 0x1000C800; ccm++) {

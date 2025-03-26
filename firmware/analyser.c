@@ -8,24 +8,16 @@ void AnalyserSetup(void)
 {
     AddAnalyserChannel(acUsbAudioDataExchange,      GPIOB, 9);
     AddAnalyserChannel(acUsbAudioInitiateTransmit,  GPIOB, 8);
+
     AddAnalyserChannel(acUsbAudioInitiateReceive,   GPIOB, 7);
     AddAnalyserChannel(acUsbAudioTransmitComplete,  GPIOB, 6);
     AddAnalyserChannel(acUsbAudioReceiveComplete,   GPIOB, 4);
     AddAnalyserChannel(acUsbAudioError,             GPIOB, 3);
     
-    AnalyserSetChannel(acUsbAudioError,             false);
-    AnalyserSetChannel(acUsbAudioDataExchange,      false);
-    AnalyserSetChannel(acUsbAudioInitiateTransmit,  false);
-    AnalyserSetChannel(acUsbAudioInitiateReceive,   false);
-    AnalyserSetChannel(acUsbAudioTransmitComplete,  false);
-    AnalyserSetChannel(acUsbAudioReceiveComplete,   false);
-    
-    AnalyserSetChannel(acUsbAudioError,             true);
-    AnalyserSetChannel(acUsbAudioDataExchange,      true);
-    AnalyserSetChannel(acUsbAudioInitiateTransmit,  true);
-    AnalyserSetChannel(acUsbAudioInitiateReceive,   true);
-    AnalyserSetChannel(acUsbAudioTransmitComplete,  true);
-    AnalyserSetChannel(acUsbAudioReceiveComplete,   true);
+    AddAnalyserChannel(acUsbAudioReceiveEmpty,      GPIOC, 5);
+    AddAnalyserChannel(acUsbAudioSof,               GPIOC, 4);
+    // GPIOB, 1
+    // GPIOb, 0
 }
 #endif
 
@@ -65,6 +57,7 @@ void AnalyserTriggerChannel(AnalyserChannel channel)
     AnalyserSetChannel(channel, false);
 }
 
+#pragma GCC pop_options
+
 #endif
 
-#pragma GCC pop_options

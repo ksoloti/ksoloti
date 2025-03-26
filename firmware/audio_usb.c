@@ -485,6 +485,7 @@ bool_t __attribute__((optimize("-O0"))) aduRequestsHook(USBDriver *usbp) {
 
 void __attribute__((optimize("-O0"))) aduSofHookI(AudioUSBDriver *adup)
 {
+  AnalyserTriggerChannel(acUsbAudioSof);
 }
 
 
@@ -531,8 +532,8 @@ void __attribute__((optimize("-O0"))) aduEnableInput(USBDriver *usbp, bool bEnab
   {
     aduState.isInputActive = bEnable;
 
-    if(!aduState.isInputActive)
-      memset(aduTxRingBuffer, 0, sizeof(aduTxRingBuffer));
+    // if(!aduState.isInputActive)
+    //   memset(aduTxRingBuffer, 0, sizeof(aduTxRingBuffer));
 
     chSysLockFromIsr();
     chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_INPUT);
@@ -1141,7 +1142,7 @@ void aduInitiateReceiveI(USBDriver *usbp)
   usbStartReceiveI(usbp, 3, (uint8_t *)pRxLocation, USE_TRANSFER_SIZE_BYTES);
   aduAddTransferLog(blStartReceive, USE_TRANSFER_SIZE_BYTES);
   
-  AnalyserSetChannel(acUsbAudioInitiateReceive, true);
+  AnalyserSetChannel(acUsbAudioInitiateReceive, false);
 }
 
 /**
@@ -1156,39 +1157,47 @@ void aduDataReceived(USBDriver *usbp, usbep_t ep)
 {
   AnalyserSetChannel(acUsbAudioReceiveComplete, true);
 
-  chSysLockFromIsr();
+  //chSysLockFromIsr();
 #if ADU_TRANSFER_LOG_SIZE
   USBOutEndpointState *pEpState = usbp->epc[ep]->out_state;
   volatile uint32_t uReceivedCount = pEpState->rxcnt;
   aduAddTransferLog(blEndReceive, uReceivedCount);
+
+  AnalyserSetChannel(acUsbAudioReceiveEmpty, (uReceivedCount==0));
 #endif
 
-  // increase and wrap write offset
-  aduState.rxRingBufferWriteOffset += USE_TRANSFER_SIZE_SAMPLES;
-  if(aduState.rxRingBufferWriteOffset == TX_RING_BUFFER_FULL_SIZE)
-    aduState.rxRingBufferWriteOffset = 0;
-
-  // increase buffer used size
-  aduState.rxRingBufferUsedSize += USE_TRANSFER_SIZE_SAMPLES;
-
-  if(aduState.rxRingBufferUsedSize > TX_RING_BUFFER_NORMAL_SIZE)
+  if(uReceivedCount!=0)
   {
-    //HandleError();
-    if(aduState.rxRingBufferUsedSize > TX_RING_BUFFER_FULL_SIZE)
-    {
-      // really bad 
-      HandleError();
-    }
-  }
+    // increase and wrap write offset
+    aduState.rxRingBufferWriteOffset += USE_TRANSFER_SIZE_SAMPLES;
+    if(aduState.rxRingBufferWriteOffset == TX_RING_BUFFER_FULL_SIZE)
+      aduState.rxRingBufferWriteOffset = 0;
 
+    // increase buffer used size
+    aduState.rxRingBufferUsedSize += USE_TRANSFER_SIZE_SAMPLES;
+
+    if(aduState.rxRingBufferUsedSize > TX_RING_BUFFER_NORMAL_SIZE)
+    {
+      //HandleError();
+      if(aduState.rxRingBufferUsedSize > TX_RING_BUFFER_FULL_SIZE)
+      {
+        // really bad 
+        HandleError();
+      }
+    }
+  
   AddOverunLog(ltAfterRXAdjust__);
 
   if(aduIsUsbOutputEnabled())
+  {
+    chSysLockFromIsr();
     aduInitiateReceiveI(usbp);
+    chSysUnlockFromIsr();
+  }
   else
     aduResetBuffers();
 
-  chSysUnlockFromIsr();
+}
 
   AnalyserSetChannel(acUsbAudioReceiveComplete, false);
 
