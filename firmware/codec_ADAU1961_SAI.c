@@ -246,7 +246,7 @@ void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue) {
     i2ctxbuf[1] = RegisterAddr;
     i2ctxbuf[2] = RegisterValue;
 
-    chThdSleepMilliseconds(2);
+    chThdSleepMilliseconds(1);
 
     HAL_StatusTypeDef r = HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR, i2ctxbuf, 3, TIMEOUT);
 
@@ -269,7 +269,7 @@ void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
     i2ctxbuf[6] = RegisterValues[4];
     i2ctxbuf[7] = RegisterValues[5];
 
-    chThdSleepMilliseconds(2);
+    chThdSleepMilliseconds(1);
 
     HAL_StatusTypeDef r = HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR, i2ctxbuf, 8, TIMEOUT);
 
@@ -286,7 +286,7 @@ void ADAU1961_ReadRegister6(uint16_t RegisterAddr) {
     i2ctxbuf[0] = RegisterAddr >> 8;
     i2ctxbuf[1] = RegisterAddr;
 
-    chThdSleepMilliseconds(2);
+    chThdSleepMilliseconds(1);
 
     HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR, i2ctxbuf, 2, TIMEOUT);
 
