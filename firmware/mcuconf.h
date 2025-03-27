@@ -287,8 +287,8 @@
  */
 #define STM32_USB_USE_OTG1                  TRUE
 #define STM32_USB_USE_OTG2                  FALSE
-#define STM32_USB_OTG1_IRQ_PRIORITY         14
-#define STM32_USB_OTG2_IRQ_PRIORITY         14
+#define STM32_USB_OTG1_IRQ_PRIORITY         2 /* ARCLOOKAT these two irqs were 14, but we dont want them preempted by the codec interrupt, look at preemption groups. */
+#define STM32_USB_OTG2_IRQ_PRIORITY         2
 #define STM32_USB_OTG1_RX_FIFO_SIZE         512
 #define STM32_USB_OTG2_RX_FIFO_SIZE         1024
 #define STM32_USB_OTG_THREAD_STACK_SIZE     128
@@ -302,9 +302,8 @@
 #define DSP_USB_AUDIO_STREAMING_COST        65
 #define DSP_LIMIT200                        200
 
-#define USE_NONTHREADED_FIFO_PUMP           0
-#define USE_EXTERNAL_USB_FIFO_PUMP          1
-#define USE_BLOCKED_BULK_TX                 1
+#define USE_NONTHREADED_FIFO_PUMP           1 /* Leave at 1, please don't change */
+#define USE_BLOCKED_BULK_TX                 1 /* Leave at 1, please don't change */
 #define USB_USE_WAIT                        USE_BLOCKED_BULK_TX
 #define USE_PATCH_DSPTIME_SMOOTHING_MS      0
 // USB_AUDIO_CHANNELS must be 2 or 4

@@ -42,6 +42,10 @@ extern void aduDataExchange (int32_t *in, int32_t *out);
 #define STACKSPACE_MARGIN 32
 // #define DEBUG_PATCH_INT_ON_GPIO 1
 
+#if USE_NONTHREADED_FIFO_PUMP
+extern volatile uint32_t fifoTicksUsed;
+#endif 
+
 patchMeta_t patchMeta;
 
 volatile patchStatus_t patchStatus;
@@ -309,6 +313,7 @@ static int StartPatch1(void) {
             uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost;
 #endif
             static uint32_t tStart;
+            fifoTicksUsed = 0;
             tStart = hal_lld_get_counter_value();
             watchdog_feed();
 
@@ -342,7 +347,8 @@ static int StartPatch1(void) {
             adc_convert();
 
             DspTime = RTT2US(hal_lld_get_counter_value() - tStart);
-
+            uint32_t FifoTime = RTT2US(fifoTicksUsed);
+            DspTime -= FifoTime;
 #if USE_MOVING_AVERAGE
             ma_add(&ma, DspTime);
 #endif

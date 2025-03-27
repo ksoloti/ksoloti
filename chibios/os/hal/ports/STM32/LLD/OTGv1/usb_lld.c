@@ -128,6 +128,9 @@ static const stm32_otg_params_t hsparams = {
 };
 #endif
 
+#if USE_NONTHREADED_FIFO_PUMP
+  volatile uint32_t fifoTicksUsed=0;
+#endif
 
 /*===========================================================================*/
 /* Driver local functions.                                                   */
@@ -328,7 +331,12 @@ static bool otg_txfifo_handler(USBDriver *usbp, usbep_t ep) {
 
     /* Transaction end condition.*/
     if (usbp->epc[ep]->in_state->txcnt >= usbp->epc[ep]->in_state->txsize)
+    {
+#if USE_NONTHREADED_FIFO_PUMP      
+      usbp->otg->DIEPEMPMSK &= ~DIEPEMPMSK_INEPTXFEM(ep);
+#endif
       return true;
+    }
 
     /* Number of bytes remaining in current transaction.*/
     n = usbp->epc[ep]->in_state->txsize - usbp->epc[ep]->in_state->txcnt;
@@ -394,7 +402,9 @@ static void otg_epin_handler(USBDriver *usbp, usbep_t ep) {
       (otgp->DIEPEMPMSK & DIEPEMPMSK_INEPTXFEM(ep))) {
 
 #if USE_NONTHREADED_FIFO_PUMP
+      uint32_t start = DWT->CYCCNT;
       otg_txfifo_handler(usbp, ep);
+      fifoTicksUsed += DWT->CYCCNT - start;
 #else      
       /* The thread is made ready, it will be scheduled on ISR exit.*/
       osalSysLockFromISR();
@@ -613,7 +623,9 @@ static void usb_lld_serve_interrupt(USBDriver *usbp) {
   /* RX FIFO not empty handling.*/
   if (sts & GINTSTS_RXFLVL) {
 #if USE_NONTHREADED_FIFO_PUMP    
-    otg_rxfifo_handler(usbp);
+  uint32_t start = DWT->CYCCNT;
+  otg_rxfifo_handler(usbp);
+  fifoTicksUsed += DWT->CYCCNT - start;
 #else    
       /* The interrupt is masked while the thread has control or it would
         be triggered again.*/
