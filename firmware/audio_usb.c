@@ -67,7 +67,6 @@ static uint8_t aduControlData[8];
 static uint8_t aduControlChannel;
 
 
-
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
 /*===========================================================================*/
@@ -483,7 +482,7 @@ bool_t __attribute__((optimize("-O0"))) aduRequestsHook(USBDriver *usbp) {
 }
 
 
-void __attribute__((optimize("-O0"))) aduSofHookI(AudioUSBDriver *adup)
+void aduSofHookI(AudioUSBDriver *adup)
 {
   AnalyserTriggerChannel(acUsbAudioSof);
 }
@@ -723,9 +722,11 @@ void aduDataExchange (int32_t *in, int32_t *out)
     {
       // remove uBufferAdjust samples
       uLen -= uBufferAdjust;
+      AnalyserTriggerChannel(acUsbAudioAdjust);
     } 
     else if(aduState.state == asCodecDuplicate)
     {
+      AnalyserTriggerChannel(acUsbAudioAdjust);
       // add uBufferAdjust samples 
 
       #if CHECK_USB_DATA
@@ -775,6 +776,8 @@ void aduDataExchange (int32_t *in, int32_t *out)
     /////////////////////////////////
     if(aduState.state > asFillingUnderflow)
     {
+      AddOverunLog(ltCodecCopyStart_);
+
       // always copy uBufferSize samples
 #if NEW_CODE_RX
       aduMoveDataFromRX(in, uBufferSize);
@@ -883,6 +886,15 @@ FORCE_INLINE void aduCodecFrameEnded(void)
   if(0 == (aduState.currentFrame % CODEC_METICS_MS))
   {
 
+    // if(aduState.codecMetricsSampleOffset  < 0)
+    // {
+    //   AnalyserTriggerChannel(acUsbUnderrun);
+    // }
+    // else if(aduState.codecMetricsSampleOffset  > 0)
+    // {
+    //   AnalyserTriggerChannel(acUsbOverrun);
+    // }
+
     if(aduState.codecMetricsSampleOffset != 0)
     {
       // ok we are out of sync, adjust to sync
@@ -899,6 +911,7 @@ FORCE_INLINE void aduCodecFrameEnded(void)
       // If using 4 channels the total adustment will take half the time, so alter.
       aduState.sampleAdjustEveryFrame *= 2;
 #endif      
+      // aduState.sampleAdjustEveryFrame = 100000; // ARCFATAL, not to do with overrun/overrun adjustment!!!!
       aduState.sampleAdjustFrameCounter = aduState.sampleAdjustEveryFrame;
 
       // reset
@@ -914,11 +927,12 @@ FORCE_INLINE void aduCodecFrameEnded(void)
     aduState.codecMetricsSampleOffset = 0;
   }
 
+  AddOverunLog(ltFrameEndedEnd__);
 
   // we need some checks here for debugging
   if(aduState.state > asFillingUnderflow)
   {
-    uint16_t uTXCalcSize;
+    volatile uint16_t uTXCalcSize;
     if((aduState.txRingBufferWriteOffset < aduState.txRingBufferReadOffset))
       uTXCalcSize = (aduState.txRingBufferWriteOffset + TX_RING_BUFFER_FULL_SIZE) - aduState.txRingBufferReadOffset;
     else
@@ -927,7 +941,7 @@ FORCE_INLINE void aduCodecFrameEnded(void)
     if(uTXCalcSize != aduState.txRingBufferUsedSize)
       HandleError();
 
-    uint16_t uRXCalcSize;
+    volatile uint16_t uRXCalcSize;
     if((aduState.rxRingBufferWriteOffset < aduState.rxRingBufferReadOffset))
     {
       uRXCalcSize = (aduState.rxRingBufferWriteOffset + TX_RING_BUFFER_FULL_SIZE) - aduState.rxRingBufferReadOffset;
@@ -939,7 +953,6 @@ FORCE_INLINE void aduCodecFrameEnded(void)
       HandleError();
   }
 
-  AddOverunLog(ltFrameEndedEnd__);
 }
 
 /**
@@ -1157,16 +1170,20 @@ void aduDataReceived(USBDriver *usbp, usbep_t ep)
 {
   AnalyserSetChannel(acUsbAudioReceiveComplete, true);
 
+  AddOverunLog(ltBeforeRXAdjust_);
+
   //chSysLockFromIsr();
-#if ADU_TRANSFER_LOG_SIZE
   USBOutEndpointState *pEpState = usbp->epc[ep]->out_state;
   volatile uint32_t uReceivedCount = pEpState->rxcnt;
-  aduAddTransferLog(blEndReceive, uReceivedCount);
+  bool bHaveRxData = uReceivedCount!=0;
 
-  AnalyserSetChannel(acUsbAudioReceiveEmpty, (uReceivedCount==0));
+#if ADU_TRANSFER_LOG_SIZE
+  aduAddTransferLog(blEndReceive, uReceivedCount);
 #endif
 
-  if(uReceivedCount!=0)
+
+
+  //if(bHaveRxData)
   {
     // increase and wrap write offset
     aduState.rxRingBufferWriteOffset += USE_TRANSFER_SIZE_SAMPLES;
@@ -1185,7 +1202,8 @@ void aduDataReceived(USBDriver *usbp, usbep_t ep)
         HandleError();
       }
     }
-  
+  }
+
   AddOverunLog(ltAfterRXAdjust__);
 
   if(aduIsUsbOutputEnabled())
@@ -1196,8 +1214,6 @@ void aduDataReceived(USBDriver *usbp, usbep_t ep)
   }
   else
     aduResetBuffers();
-
-}
 
   AnalyserSetChannel(acUsbAudioReceiveComplete, false);
 

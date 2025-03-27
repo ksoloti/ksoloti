@@ -302,6 +302,7 @@
 #define DSP_USB_AUDIO_STREAMING_COST        65
 #define DSP_LIMIT200                        200
 
+#define USE_NONTHREADED_FIFO_PUMP           0
 #define USE_EXTERNAL_USB_FIFO_PUMP          1
 #define USE_BLOCKED_BULK_TX                 1
 #define USB_USE_WAIT                        USE_BLOCKED_BULK_TX
@@ -312,7 +313,7 @@
 /*
  * Thread priority settings. v1.0.12 settings in comments for reference.
  */
-#define STM32_USB_OTG_THREAD_PRIO           HIGHPRIO     /* HIGHPRIO-2 */
+#define STM32_USB_OTG_THREAD_PRIO           HIGHPRIO-1     /* HIGHPRIO-2 */
 #define PATCH_DSP_PRIO                      HIGHPRIO-1   /* HIGHPRIO-1 */
 #define SPILINK_PRIO                        HIGHPRIO-1   /* HIGHPRIO-1 */
 #define UI_USB_PRIO                         HIGHPRIO-2   /* NORMALPRIO */

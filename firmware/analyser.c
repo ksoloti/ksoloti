@@ -14,10 +14,16 @@ void AnalyserSetup(void)
     AddAnalyserChannel(acUsbAudioReceiveComplete,   GPIOB, 4);
     AddAnalyserChannel(acUsbAudioError,             GPIOB, 3);
     
-    AddAnalyserChannel(acUsbAudioReceiveEmpty,      GPIOC, 5);
+    AddAnalyserChannel(acUsbDSP,                    GPIOC, 5);
     AddAnalyserChannel(acUsbAudioSof,               GPIOC, 4);
-    // GPIOB, 1
-    // GPIOb, 0
+    AddAnalyserChannel(acUsbFifo,                   GPIOB, 1);
+    AddAnalyserChannel(acUsbAudioAdjust,            GPIOB, 0);
+
+   // AddAnalyserChannel(acUsbAudioRXInt,             GPIOA, 7);
+   // AddAnalyserChannel(acUsbAudioTXInt,             GPIOA, 6);
+    
+    // GPIOA, 5
+    // GPIOA, 6
 }
 #endif
 
@@ -47,7 +53,6 @@ void AnalyserSetChannel(AnalyserChannel channel, bool bState)
 {
     uint32_t pad = analyserChannels[channel].pad;
     stm32_gpio_t *port = analyserChannels[channel].port;
-
     palWritePad(port, pad, (uint32_t)bState);
 }
 

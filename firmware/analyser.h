@@ -14,11 +14,13 @@ typedef enum
     acUsbAudioInitiateReceive,
     acUsbAudioTransmitComplete,
     acUsbAudioReceiveComplete,
-    acUsbAudioReceiveEmpty,
+    acUsbDSP,
     acUsbAudioSof,
+    acUsbFifo,
+    acUsbAudioAdjust
 } AnalyserChannel;
 
-#define ANALYSER_CHANNELS 8
+#define ANALYSER_CHANNELS 10
 
 #endif
 
