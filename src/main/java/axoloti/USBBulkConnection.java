@@ -537,7 +537,6 @@ public class USBBulkConnection extends Connection {
             }
             LOGGER.log(Level.SEVERE, "USB connection failed: " + errstr);
             Panic();
-            MainFrame.mainframe.ShowDisconnect();
         }
     }
 
