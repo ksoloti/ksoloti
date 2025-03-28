@@ -75,7 +75,8 @@ int main(void) {
 
     halInit();
     chSysInit();
-
+    AnalyserSetup();
+    
 #ifdef FW_SPILINK
     pThreadSpilink = 0;
 #endif

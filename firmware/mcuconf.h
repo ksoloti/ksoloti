@@ -299,13 +299,14 @@
 #define DSP_CODEC_TIMESLICE                 3333
 #define DSP_UI_MIDI_COST                    100
 #define DSP_USB_AUDIO_FIRMWARE_COST         5
-#define DSP_USB_AUDIO_STREAMING_COST        65
+#define DSP_USB_AUDIO_STREAMING_COST        20
 #define DSP_LIMIT200                        200
 
 #define USE_NONTHREADED_FIFO_PUMP           1 /* Leave at 1, please don't change */
 #define USE_BLOCKED_BULK_TX                 1 /* Leave at 1, please don't change */
 #define USB_USE_WAIT                        USE_BLOCKED_BULK_TX
-#define USE_PATCH_DSPTIME_SMOOTHING_MS      0
+#define USE_PATCH_DSPTIME_SMOOTHING_MS      2 /* Leave at 2, please don't change */
+#define USE_FIFO_SPEEDUP                    1 /* Leave at 1, please don't change */
 // USB_AUDIO_CHANNELS must be 2 or 4
 #define USB_AUDIO_CHANNELS                  4
 

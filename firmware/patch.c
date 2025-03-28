@@ -362,6 +362,7 @@ static int StartPatch1(void) {
 
 
             if (dspLoad200 > uPatchUsbLimit200) {
+                AnalyserSetChannel(acDspOverload, true);
                 /* Overload: clear output buffers and give other processes a chance */
                 codec_clearbuffer();
 
@@ -371,6 +372,8 @@ static int StartPatch1(void) {
 #endif
                 // LogTextMessage("DSP overrun");
                 connectionFlags.dspOverload = true;
+
+                AnalyserSetChannel(acDspOverload, false);
 
                 /* DSP overrun penalty, keeping cooperative with lower priority threads */
                 chThdSleepMilliseconds(1);
@@ -506,7 +509,6 @@ static int StartPatch1(void) {
         palClearPad(GPIOA, 2);
 #endif
         AnalyserSetChannel(acUsbDSP, false);
-
     }
     // return (msg_t)0;
 }
