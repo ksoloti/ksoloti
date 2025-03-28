@@ -886,14 +886,14 @@ FORCE_INLINE void aduCodecFrameEnded(void)
   if(0 == (aduState.currentFrame % CODEC_METICS_MS))
   {
 
-    // if(aduState.codecMetricsSampleOffset  < 0)
-    // {
-    //   AnalyserTriggerChannel(acUsbUnderrun);
-    // }
-    // else if(aduState.codecMetricsSampleOffset  > 0)
-    // {
-    //   AnalyserTriggerChannel(acUsbOverrun);
-    // }
+    if(aduState.codecMetricsSampleOffset  < 0)
+    {
+      AnalyserTriggerChannel(acUsbUnderrun);
+    }
+    else if(aduState.codecMetricsSampleOffset  > 0)
+    {
+      AnalyserTriggerChannel(acUsbOverrun);
+    }
 
     if(aduState.codecMetricsSampleOffset != 0)
     {
@@ -1175,32 +1175,26 @@ void aduDataReceived(USBDriver *usbp, usbep_t ep)
   //chSysLockFromIsr();
   USBOutEndpointState *pEpState = usbp->epc[ep]->out_state;
   volatile uint32_t uReceivedCount = pEpState->rxcnt;
-  bool bHaveRxData = uReceivedCount!=0;
 
 #if ADU_TRANSFER_LOG_SIZE
   aduAddTransferLog(blEndReceive, uReceivedCount);
 #endif
 
+  // increase and wrap write offset
+  aduState.rxRingBufferWriteOffset += USE_TRANSFER_SIZE_SAMPLES;
+  if(aduState.rxRingBufferWriteOffset == TX_RING_BUFFER_FULL_SIZE)
+    aduState.rxRingBufferWriteOffset = 0;
 
+  // increase buffer used size
+  aduState.rxRingBufferUsedSize += USE_TRANSFER_SIZE_SAMPLES;
 
-  //if(bHaveRxData)
+  if(aduState.rxRingBufferUsedSize > TX_RING_BUFFER_NORMAL_SIZE)
   {
-    // increase and wrap write offset
-    aduState.rxRingBufferWriteOffset += USE_TRANSFER_SIZE_SAMPLES;
-    if(aduState.rxRingBufferWriteOffset == TX_RING_BUFFER_FULL_SIZE)
-      aduState.rxRingBufferWriteOffset = 0;
-
-    // increase buffer used size
-    aduState.rxRingBufferUsedSize += USE_TRANSFER_SIZE_SAMPLES;
-
-    if(aduState.rxRingBufferUsedSize > TX_RING_BUFFER_NORMAL_SIZE)
+    //HandleError();
+    if(aduState.rxRingBufferUsedSize > TX_RING_BUFFER_FULL_SIZE)
     {
-      //HandleError();
-      if(aduState.rxRingBufferUsedSize > TX_RING_BUFFER_FULL_SIZE)
-      {
-        // really bad 
-        HandleError();
-      }
+      // really bad 
+      HandleError();
     }
   }
 
