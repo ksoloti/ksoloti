@@ -111,15 +111,8 @@ public class Display extends gentools {
         o.helpPatch = "kscope.axh";
         o.sLocalData = "   int32_t data[64];\n"
                 + "   int32_t index;\n"
-                + "   KeyValuePair kvp;\n"
                 + "const char NAME[] = \"attr_name\";\n";
-        o.sInitCode = "  index = 0;\n"
-                + "  kvp.kvptype = KVP_TYPE_CUSTOM;\n"
-                + "  kvp.keyname = %name%NAME;\n"
-                + "  kvp.parent =  ObjectKvpRoot;\n"
-                + "  kvp.custom.displayFunction = &k_scope_DisplayFunction; \n"
-                + "  kvp.custom.userdata = (void *)%name%data;\n"
-                + "  KVP_RegisterObject(&kvp);\n";
+        o.sInitCode = "  index = 0;\n";
         o.sKRateCode = "  {\n"
                 + "    if ( (index)||(!Btn_Nav_CurStates.btn_nav_Enter)) {\n"
                 + "        data[index] = %in%;\n"
@@ -140,17 +133,10 @@ public class Display extends gentools {
                 + "   int32_t vmin;\n"
                 + "   int32_t vmax;\n"
                 + "   int32_t subindex;\n"
-                + "   KeyValuePair kvp;\n"
                 + "const char NAME[] = \"%name%\";\n";
 
         o.sInitCode = "  index = 0;\n"
-                + "  subindex = 0;\n"
-                + "  kvp.kvptype = KVP_TYPE_CUSTOM;\n"
-                + "  kvp.keyname = %name%NAME;\n"
-                + "  kvp.parent =  ObjectKvpRoot;\n"
-                + "  kvp.custom.displayFunction = &k_scope_DisplayFunction2; \n"
-                + "  kvp.custom.userdata = (void *)data;\n"
-                + "  KVP_RegisterObject(&kvp);\n";
+                + "  subindex = 0;\n";
         o.sKRateCode = "  {"
                 + "    if ( (index)||(!Btn_Nav_CurStates.btn_nav_Enter)) {\n"
                 + "        if (subindex >= (%timescale%)>>20) {\n"
@@ -186,15 +172,8 @@ public class Display extends gentools {
        o.helpPatch = "scope.axh";
        o.sLocalData = "   int32_t data[64];\n"
                 + "   int32_t index;\n"
-                + "   KeyValuePair kvp;\n"
                 + "const char NAME[] = \"%name%\";\n";
-        o.sInitCode = "  index = 0;\n"
-                + "  kvp.kvptype = KVP_TYPE_CUSTOM;\n"
-                + "  kvp.keyname = %name%NAME;\n"
-                + "  kvp.parent =  ObjectKvpRoot;\n"
-                + "  kvp.custom.displayFunction = &k_scope_DisplayFunction; \n"
-                + "  kvp.custom.userdata = (void *)data;\n"
-                + "  KVP_RegisterObject(&%name%kvp);\n";
+        o.sInitCode = "  index = 0;\n";
         o.sKRateCode = "  {\n"
                 + "    if ( (index)||(!Btn_Nav_CurStates.btn_nav_Enter)) {\n"
                 + "        for(i=0;i<BUFSIZE;i++){\n"
@@ -209,15 +188,10 @@ public class Display extends gentools {
      static AxoObject CreateIntDisplay() {
      AxoObject o = new AxoObject("displayint", "k-rate display, value as ////broken////");
      o.inlets.add(new InletFrac32("in", "input"));
-     o.sLocalData = "KeyValuePair kvp; \n"
+     o.sLocalData = ""
      + "int32_t value;\n"
      + "const char NAME[] = \"%name%\";\n";
-     o.sInitCode = ""
-     + "  kvp.kvptype = KVP_TYPE_INTDISPLAY;\n"
-     + "  kvp.keyname = NAME;\n"
-     + "  kvp.idv.value = &value; \n"
-     + "  kvp.parent =  ObjectKvpRoot;\n"
-     + "  KVP_RegisterObject(&kvp);\n";
+     o.sInitCode = "";
      o.sKRateCode = "if (!Btn_Nav_CurStates.btn_nav_Enter) value = %in%;";
      return o;
      }*/
@@ -233,15 +207,10 @@ public class Display extends gentools {
      static AxoObject CreateFreqDisplay() {
      AxoObject o = new AxoObject("displayfreq", "displays k-rate signals, value in Hertz");
      o.inlets.add(new InletFrac32("in", "input"));
-     o.sLocalData = "KeyValuePair kvp; \n"
+     o.sLocalData = ""
      + "int32_t value;\n"
      + "const char NAME[] = \"%name%\";\n";
-     o.sInitCode = ""
-     + "  kvp.kvptype = KVP_TYPE_FREQDISPLAY;\n"
-     + "  kvp.keyname = NAME;\n"
-     + "  kvp.idv.value = &value; \n"
-     + "  kvp.parent =  ObjectKvpRoot;\n"
-     + "  KVP_RegisterObject(&kvp);\n";
+     o.sInitCode = "";
      o.sKRateCode = "if (!Btn_Nav_CurStates.btn_nav_Enter) value = %in%;";
      return o;
      }*/
@@ -249,15 +218,10 @@ public class Display extends gentools {
      static AxoObject CreateFractDisplay() {
      AxoObject o = new AxoObject("displayfract", "displays k-rate signals, value as fraction");
      o.inlets.add(new InletFrac32("in", "input"));
-     o.sLocalData = "KeyValuePair kvp; \n"
+     o.sLocalData = ""
      + "int32_t value;\n"
      + "const char NAME[] = \"%name%\";\n";
-     o.sInitCode = ""
-     + "  kvp.kvptype = KVP_TYPE_FRACTDISPLAY;\n"
-     + "  kvp.keyname = NAME;\n"
-     + "  kvp.idv.value = &value; \n"
-     + "  kvp.parent =  ObjectKvpRoot;\n"
-     + "  KVP_RegisterObject(&kvp);\n";
+     o.sInitCode = "";
      o.sKRateCode = "if (!Btn_Nav_CurStates.btn_nav_Enter) value = %in%;";
      return o;
      }

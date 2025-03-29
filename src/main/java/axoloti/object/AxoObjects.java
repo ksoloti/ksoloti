@@ -91,7 +91,7 @@ public class AxoObjects {
                     if (loadOK) {
                         AxoObjectAbstract o = of.objs.get(0);
                         if (o != null) {
-                            o.sPath = fnameA;
+                            o.sObjFilePath = fnameA;
                             // to be completed : loading overloaded objects too
                             o.createdFromRelativePath = true;
                             LOGGER.log(Level.INFO, "Loaded: {0}", fnameA);
@@ -113,7 +113,7 @@ public class AxoObjects {
                     if (n.startsWith("./") || n.startsWith("../")) {
                         o.createdFromRelativePath = true;
                     }
-                    o.sPath = f.getPath();
+                    o.sObjFilePath = f.getPath();
                     LOGGER.log(Level.INFO, "Subpatch loaded: {0}", fnameP);
                     set.add(o);
                     return set;
@@ -136,7 +136,7 @@ public class AxoObjects {
                 if (fs.isFile()) {
                     AxoObjectAbstract o = new AxoObjectFromPatch(fs);
 //                    o.createdFromRelativePath = true;
-                    o.sPath = n + ".axs";
+                    o.sObjFilePath = n + ".axs";
                     LOGGER.log(Level.INFO, "Subpatch loaded: {0}", fsname);
                     set.add(o);
                     return set;
@@ -258,7 +258,7 @@ public class AxoObjects {
                     }
                     if (o!=null) {
                         for (AxoObjectAbstract a : o.objs) {
-                            a.sPath = fileEntry.getAbsolutePath();
+                            a.sObjFilePath = fileEntry.getAbsolutePath();
                             if (!prefix.isEmpty()) {
                                 a.id = prefix.substring(1) + "/" + a.id;
                             }
@@ -278,7 +278,7 @@ public class AxoObjects {
                             ObjectList.add(a);
 
                             if ((a.getUUID() != null) && (ObjectUUIDMap.containsKey(a.getUUID()))) {
-                                LOGGER.log(Level.SEVERE, "Duplicate UUID! {0}\nOriginal name: {1}\nPath: {2}", new Object[]{fileEntry.getAbsolutePath(), ObjectUUIDMap.get(a.getUUID()).id, ObjectUUIDMap.get(a.getUUID()).sPath});
+                                LOGGER.log(Level.SEVERE, "Duplicate UUID! {0}\nOriginal name: {1}\nPath: {2}", new Object[]{fileEntry.getAbsolutePath(), ObjectUUIDMap.get(a.getUUID()).id, ObjectUUIDMap.get(a.getUUID()).sObjFilePath});
                             }
                             ObjectUUIDMap.put(a.getUUID(), a);
                         }
@@ -293,7 +293,7 @@ public class AxoObjects {
                             fullname = prefix.substring(1) + "/" + oname;
                         }
                         AxoObjectUnloaded a = new AxoObjectUnloaded(fullname, fileEntry);
-                        a.sPath = fileEntry.getAbsolutePath();
+                        a.sObjFilePath = fileEntry.getAbsolutePath();
                         t.Objects.add(a);
                         ObjectList.add(a);
                     } catch (Exception ex) {

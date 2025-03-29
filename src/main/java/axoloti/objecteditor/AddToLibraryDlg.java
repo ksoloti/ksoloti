@@ -271,16 +271,16 @@ public class AddToLibraryDlg extends javax.swing.JDialog {
             obj.shortId = objname;
         }
         obj.id = jObjectName.getText();
-        obj.sPath = jFileTxt.getText();
+        obj.sObjFilePath = jFileTxt.getText();
         obj.setUUID(obj.GenerateUUID());
-        File f = new File(obj.sPath);
+        File f = new File(obj.sObjFilePath);
         if (!f.exists()) {
             File dir = f.getParentFile();
             if (!dir.exists()) {
                 dir.mkdirs();
             }
         }
-        MainFrame.axoObjects.WriteAxoObject(obj.sPath, obj);
+        MainFrame.axoObjects.WriteAxoObject(obj.sObjFilePath, obj);
         axoObjects.LoadAxoObjects();
 
         setVisible(false);
@@ -327,7 +327,7 @@ public class AddToLibraryDlg extends javax.swing.JDialog {
             if (!lib.isReadOnly()) {
                 jLibrary.addItem(lib.getId());
             }
-            if (obj.sPath != null && obj.sPath.startsWith(lib.getLocalLocation())) {
+            if (obj.sObjFilePath != null && obj.sObjFilePath.startsWith(lib.getLocalLocation())) {
                if (sellib == null || sellib.getLocalLocation().length() < lib.getLocalLocation().length()) {
                     sellib = lib;
                 }

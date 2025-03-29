@@ -244,7 +244,6 @@ static void StopPatch1(void) {
 
 
 static int StartPatch1(void) {
-    KVP_ClearObjects();
 
     sdcard_attemptMountIfUnmounted();
 
@@ -557,7 +556,7 @@ void start_dsp_thread(void) {
 #endif
 
     if (!pThreadDSP)
-        pThreadDSP = chThdCreateStatic(waThreadDSP, sizeof(waThreadDSP), PATCH_DSP_PRIO, (void*) ThreadDSP, NULL);
+        pThreadDSP = chThdCreateStatic(waThreadDSP, sizeof(waThreadDSP), PATCH_NORMAL_PRIO, (void*) ThreadDSP, NULL);
 }
 
 

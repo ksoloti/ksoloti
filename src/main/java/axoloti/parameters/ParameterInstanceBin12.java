@@ -42,18 +42,13 @@ public class ParameterInstanceBin12 extends ParameterInstanceInt32 {
 
     @Override
     public String GenerateCodeInit(String vprefix, String StructAccces) {
-        String s = I+I+I + "SetKVP_IPVP(&" + StructAccces + KVPName(vprefix) + ", ObjectKvpRoot, \"" + KVPName(vprefix) + "\", "
-                + "&" + PExName(vprefix) + ", "
-                + 0 + ", "
-                + ((1 << 12) - 1) + ");\n"
-                + I+I+I + "KVP_RegisterObject(&" + StructAccces + KVPName(vprefix) + ");\n";
-        return s;
+        return "";
     }
 
-    @Override
-    public String GenerateCodeDeclaration(String vprefix) {
-        return "KeyValuePair " + KVPName(vprefix) + ";\n";
-    }
+    // @Override
+    // public String GenerateCodeDeclaration(String vprefix) {
+    //     return "";
+    // }
 
     @Override
     public String GenerateCodeMidiHandler(String vprefix) {

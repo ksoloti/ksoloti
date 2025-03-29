@@ -255,8 +255,6 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             }
         });
 
-        jLabelMidiPrototype.setText(AxoObjectInstance.MidiHandlerFunctionHeader);
-
         jTextAreaLocalData.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             void update() {
@@ -305,7 +303,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         // is it from the factory?
         AxolotiLibrary sellib = null;
         for (AxolotiLibrary lib : prefs.getLibraries()) {
-            if (editObj.sPath != null && editObj.sPath.startsWith(lib.getLocalLocation())) {
+            if (editObj.sObjFilePath != null && editObj.sObjFilePath.startsWith(lib.getLocalLocation())) {
                 if (sellib == null || sellib.getLocalLocation().length() < lib.getLocalLocation().length()) {
                     sellib = lib;
                 }
@@ -341,7 +339,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     }
 
     boolean IsEmbeddedObj() {
-        return (editObj.sPath == null || editObj.sPath.length() == 0);
+        return (editObj.sObjFilePath == null || editObj.sObjFilePath.length() == 0);
     }
 
     void SetReadOnly(boolean readonly) {
@@ -522,12 +520,12 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     }
 
     boolean isCompositeObject() {
-        if (editObj.sPath == null) {
+        if (editObj.sObjFilePath == null) {
             return false;
         }
         int count = 0;
         for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-            if (editObj.sPath.equalsIgnoreCase(o.sPath)) {
+            if (editObj.sObjFilePath.equalsIgnoreCase(o.sObjFilePath)) {
                 count++;
             }
         }
@@ -572,29 +570,29 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         jInternalFrame1 = new javax.swing.JInternalFrame();
         jLabel4 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
+        jPanelTabs = new javax.swing.JPanel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanelOverview = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        jPanelBasicInfo = new javax.swing.JPanel();
+        jLabelTitleLibrary = new javax.swing.JLabel();
         jLabelLibrary = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
+        jLabelTitleName = new javax.swing.JLabel();
         jLabelName = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
+        jLabeltitleAuthor = new javax.swing.JLabel();
         jTextFieldAuthor = new javax.swing.JTextField();
-        jLabel9 = new javax.swing.JLabel();
+        jLabelTitleLicense = new javax.swing.JLabel();
         jTextFieldLicense = new javax.swing.JTextField();
         jLabelHelp = new javax.swing.JLabel();
         jTextFieldHelp = new javax.swing.JTextField();
-        jPanel3 = new javax.swing.JPanel();
-        jLabel10 = new javax.swing.JLabel();
-        jScrollPane13 = new ScrollPaneComponent();
+        jPanelDetails = new javax.swing.JPanel();
+        jLabelDescription = new javax.swing.JLabel();
+        jScrollPaneDescription = new ScrollPaneComponent();
         jTextDesc = new javax.swing.JTextArea();
-        jLabel5 = new javax.swing.JLabel();
-        jScrollPane4 = new ScrollPaneComponent();
+        jLabelIncludes = new javax.swing.JLabel();
+        jScrollPaneIncludes = new ScrollPaneComponent();
         jListIncludes = new javax.swing.JList<>();
-        jLabel6 = new javax.swing.JLabel();
-        jScrollPane12 = new ScrollPaneComponent();
+        jLabelDepends = new javax.swing.JLabel();
+        jScrollPaneDepends = new ScrollPaneComponent();
         jListDepends = new javax.swing.JList<>();
         inletDefinitionsEditor1 = new axoloti.objecteditor.InletDefinitionsEditorPanel();
         outletDefinitionsEditorPanel1 = new axoloti.objecteditor.OutletDefinitionsEditorPanel();
@@ -609,9 +607,10 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         jPanelDisposeCode = new javax.swing.JPanel();
         jPanelMidiCode = new javax.swing.JPanel();
         jLabelMidiPrototype = new javax.swing.JLabel();
+        jLabelMidiPrototypeEnd = new javax.swing.JLabel();
         jPanelMidiCode2 = new javax.swing.JPanel();
         jPanelXML = new javax.swing.JPanel();
-        jScrollPane6 = new ScrollPaneComponent();
+        jScrollPaneXML = new ScrollPaneComponent();
         rSyntaxTextAreaXML = new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea();
         jLabel2 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -655,8 +654,8 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
         getContentPane().add(jLabel4);
 
-        jPanel1.setPreferredSize(new java.awt.Dimension(640, 100));
-        jPanel1.setLayout(new BoxLayout(jPanel1, BoxLayout.PAGE_AXIS));
+        jPanelTabs.setPreferredSize(new java.awt.Dimension(640, 100));
+        jPanelTabs.setLayout(new BoxLayout(jPanelTabs, BoxLayout.PAGE_AXIS));
 
         jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.LEFT);
         jTabbedPane1.setPreferredSize(new java.awt.Dimension(640, 100));
@@ -664,70 +663,70 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         jPanelOverview.setLayout(new BoxLayout(jPanelOverview, BoxLayout.Y_AXIS));
 
-        jPanel2.setLayout(new java.awt.GridLayout(5, 2));
+        jPanelBasicInfo.setLayout(new java.awt.GridLayout(5, 2));
 
-        jLabel1.setText("Library:");
-        jPanel2.add(jLabel1);
+        jLabelTitleLibrary.setText("Library:");
+        jPanelBasicInfo.add(jLabelTitleLibrary);
 
         jLabelLibrary.setText("library");
-        jPanel2.add(jLabelLibrary);
+        jPanelBasicInfo.add(jLabelLibrary);
 
-        jLabel7.setText("Name:");
-        jPanel2.add(jLabel7);
+        jLabelTitleName.setText("Name:");
+        jPanelBasicInfo.add(jLabelTitleName);
 
         jLabelName.setText("object name");
-        jPanel2.add(jLabelName);
+        jPanelBasicInfo.add(jLabelName);
 
-        jLabel8.setText("Author:");
-        jPanel2.add(jLabel8);
+        jLabeltitleAuthor.setText("Author:");
+        jPanelBasicInfo.add(jLabeltitleAuthor);
 
         jTextFieldAuthor.setText("author");
-        jPanel2.add(jTextFieldAuthor);
+        jPanelBasicInfo.add(jTextFieldAuthor);
 
-        jLabel9.setText("License:");
-        jPanel2.add(jLabel9);
+        jLabelTitleLicense.setText("License:");
+        jPanelBasicInfo.add(jLabelTitleLicense);
 
         jTextFieldLicense.setText("license");
-        jPanel2.add(jTextFieldLicense);
+        jPanelBasicInfo.add(jTextFieldLicense);
 
         jLabelHelp.setText("Help patch");
-        jPanel2.add(jLabelHelp);
+        jPanelBasicInfo.add(jLabelHelp);
 
         jTextFieldHelp.setText("help");
-        jPanel2.add(jTextFieldHelp);
+        jPanelBasicInfo.add(jTextFieldHelp);
 
-        jPanelOverview.add(jPanel2);
+        jPanelOverview.add(jPanelBasicInfo);
 
-        jPanel3.setLayout(new BoxLayout(jPanel3, BoxLayout.Y_AXIS));
+        jPanelDetails.setLayout(new BoxLayout(jPanelDetails, BoxLayout.Y_AXIS));
 
-        jLabel10.setText("Description:");
-        jPanel3.add(jLabel10);
+        jLabelDescription.setText("Description:");
+        jPanelDetails.add(jLabelDescription);
 
         jTextDesc.setColumns(20);
         jTextDesc.setLineWrap(true);
         jTextDesc.setRows(5);
         jTextDesc.setWrapStyleWord(true);
-        jScrollPane13.setViewportView(jTextDesc);
+        jScrollPaneDescription.setViewportView(jTextDesc);
 
-        jPanel3.add(jScrollPane13);
+        jPanelDetails.add(jScrollPaneDescription);
 
-        jLabel5.setText("Includes");
-        jPanel3.add(jLabel5);
+        jLabelIncludes.setText("Includes");
+        jPanelDetails.add(jLabelIncludes);
 
         jListIncludes.setModel(new DefaultListModel());
-        jScrollPane4.setViewportView(jListIncludes);
+        jScrollPaneIncludes.setViewportView(jListIncludes);
 
-        jPanel3.add(jScrollPane4);
+        jPanelDetails.add(jScrollPaneIncludes);
 
-        jLabel6.setText("Dependencies");
-        jPanel3.add(jLabel6);
+        jLabelDepends.setText("Dependencies");
+        jPanelDetails.add(jLabelDepends);
 
         jListDepends.setModel(new DefaultListModel());
-        jScrollPane12.setViewportView(jListDepends);
+        jScrollPaneDepends.setViewportView(jListDepends);
 
-        jPanel3.add(jScrollPane12);
+        jPanelDetails.add(jScrollPaneDepends);
 
-        jPanelOverview.add(jPanel3);
+        jPanelOverview.add(jPanelDetails);
 
         jTabbedPane1.addTab("Overview", jPanelOverview);
 
@@ -867,7 +866,8 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         jPanelMidiCode.setLayout(new BoxLayout(jPanelMidiCode, BoxLayout.Y_AXIS));
 
-        jLabelMidiPrototype.setText("jLabel11");
+        jLabelMidiPrototype.setFont(Constants.FONT_MONO.deriveFont(11.0f));
+        jLabelMidiPrototype.setText(AxoObjectInstance.MidiHandlerFunctionHeader);
         jPanelMidiCode.add(jLabelMidiPrototype);
 
         GroupLayout jPanelMidiCode2Layout = new GroupLayout(jPanelMidiCode2);
@@ -883,31 +883,35 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         jPanelMidiCode.add(jPanelMidiCode2);
 
+        jLabelMidiPrototypeEnd.setFont(Constants.FONT_MONO.deriveFont(11.0f));
+        jLabelMidiPrototypeEnd.setText("}");
+        jPanelMidiCode.add(jLabelMidiPrototypeEnd);
+
         jTabbedPane1.addTab("MIDI Code", jPanelMidiCode);
 
         rSyntaxTextAreaXML.setColumns(20);
         rSyntaxTextAreaXML.setRows(5);
-        jScrollPane6.setViewportView(rSyntaxTextAreaXML);
+        jScrollPaneXML.setViewportView(rSyntaxTextAreaXML);
 
         GroupLayout jPanelXMLLayout = new GroupLayout(jPanelXML);
         jPanelXML.setLayout(jPanelXMLLayout);
         jPanelXMLLayout.setHorizontalGroup(
             jPanelXMLLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane6, GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
+            .addComponent(jScrollPaneXML, GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
         );
         jPanelXMLLayout.setVerticalGroup(
             jPanelXMLLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane6, GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+            .addComponent(jScrollPaneXML, GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("XML", jPanelXML);
+        jTabbedPane1.addTab("XML Preview", jPanelXML);
 
-        jPanel1.add(jTabbedPane1);
+        jPanelTabs.add(jTabbedPane1);
 
         jLabel2.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
-        jPanel1.add(jLabel2);
+        jPanelTabs.add(jLabel2);
 
-        getContentPane().add(jPanel1);
+        getContentPane().add(jPanelTabs);
 
         fileMenu1.setMnemonic('F');
         fileMenu1.setText("File");
@@ -956,11 +960,11 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private void jMenuItemSaveActionPerformed(java.awt.event.ActionEvent evt) {
         editObj.FireObjectModified(this);
         if (!isCompositeObject()) {
-            MainFrame.axoObjects.WriteAxoObject(editObj.sPath, editObj);
+            MainFrame.axoObjects.WriteAxoObject(editObj.sObjFilePath, editObj);
             updateReferenceXML();
             MainFrame.axoObjects.LoadAxoObjects();
         } else {
-            JOptionPane.showMessageDialog(null, "The original object file " + editObj.sPath + " contains multiple objects, the object editor does not support this.\n"
+            JOptionPane.showMessageDialog(null, "The original object file " + editObj.sObjFilePath + " contains multiple objects, the object editor does not support this.\n"
                     + "Your changes are NOT saved!");
         }
     }
@@ -991,18 +995,19 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private axoloti.menus.HelpMenu helpMenu1;
     private axoloti.objecteditor.InletDefinitionsEditorPanel inletDefinitionsEditor1;
     private javax.swing.JInternalFrame jInternalFrame1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabelTitleLibrary;
+    private javax.swing.JLabel jLabelDescription;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabelIncludes;
+    private javax.swing.JLabel jLabelDepends;
+    private javax.swing.JLabel jLabelTitleName;
+    private javax.swing.JLabel jLabeltitleAuthor;
+    private javax.swing.JLabel jLabelTitleLicense;
     private javax.swing.JLabel jLabelHelp;
     private javax.swing.JLabel jLabelLibrary;
     private javax.swing.JLabel jLabelMidiPrototype;
+    private javax.swing.JLabel jLabelMidiPrototypeEnd;
     private javax.swing.JLabel jLabelName;
     private javax.swing.JList jListDepends;
     private javax.swing.JList jListIncludes;
@@ -1010,9 +1015,9 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private javax.swing.JMenuItem jMenuItemCopyToLibrary;
     private javax.swing.JMenuItem jMenuItemRevert;
     private javax.swing.JMenuItem jMenuItemSave;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanelTabs;
+    private javax.swing.JPanel jPanelBasicInfo;
+    private javax.swing.JPanel jPanelDetails;
     private javax.swing.JPanel jPanelDisposeCode;
     private javax.swing.JPanel jPanelInitCode;
     private javax.swing.JPanel jPanelKRateCode;
@@ -1023,10 +1028,10 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private javax.swing.JPanel jPanelOverview;
     private javax.swing.JPanel jPanelSRateCode;
     private javax.swing.JPanel jPanelXML;
-    private ScrollPaneComponent jScrollPane12;
-    private ScrollPaneComponent jScrollPane13;
-    private ScrollPaneComponent jScrollPane4;
-    private ScrollPaneComponent jScrollPane6;
+    private ScrollPaneComponent jScrollPaneDepends;
+    private ScrollPaneComponent jScrollPaneDescription;
+    private ScrollPaneComponent jScrollPaneIncludes;
+    private ScrollPaneComponent jScrollPaneXML;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextArea jTextDesc;
