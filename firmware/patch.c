@@ -537,7 +537,7 @@ void StopPatch(void) {
 
 
 int StartPatch(void) {
-    chEvtSignal(pThreadDSP, (eventmask_t)EVENT_START_PATCH)
+    chEvtSignal(pThreadDSP, (eventmask_t)EVENT_START_PATCH);
 
     while ((patchStatus != RUNNING) && (patchStatus != STARTFAILED)) {
         chThdSleepMilliseconds(1);
