@@ -76,7 +76,7 @@ volatile SAI_Block_TypeDef *sai_a = SAI1_Block_A;
 volatile SAI_Block_TypeDef *sai_b = SAI1_Block_B;
 
 /* use STM32 HAL for I2C */
-static I2C_HandleTypeDef ADAU1961_i2c_handle;
+I2C_HandleTypeDef onboard_i2c_handle;
 
 static uint8_t i2crxbuf[8];
 static uint8_t i2ctxbuf[8];
@@ -204,20 +204,20 @@ void lock_SAI_to_SPI_FS(void) {
 
 
 static void ADAU_I2C_Init(void) {
-    if(HAL_I2C_GetState(&ADAU1961_i2c_handle) == HAL_I2C_STATE_RESET) {
+    if(HAL_I2C_GetState(&onboard_i2c_handle) == HAL_I2C_STATE_RESET) {
         /* DISCOVERY_I2Cx peripheral configuration */
-        ADAU1961_i2c_handle.Init.ClockSpeed = 400000;
-        ADAU1961_i2c_handle.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
-        ADAU1961_i2c_handle.Init.OwnAddress1 = 0x33;
-        ADAU1961_i2c_handle.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+        onboard_i2c_handle.Init.ClockSpeed = 400000;
+        onboard_i2c_handle.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
+        onboard_i2c_handle.Init.OwnAddress1 = 0x33;
+        onboard_i2c_handle.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
 #if defined(BOARD_KSOLOTI_CORE)
-        ADAU1961_i2c_handle.Instance = I2C2;
+        onboard_i2c_handle.Instance = I2C2;
         /* SCL: PB10, SDA: PB11 */
         palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
         palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
         rccEnableI2C2(FALSE);
 #elif defined(BOARD_AXOLOTI_CORE)
-        ADAU1961_i2c_handle.Instance = I2C3;
+        onboard_i2c_handle.Instance = I2C3;
         /* SCL: PH7, SDA: PH8 */
         palSetPadMode(GPIOH, 7, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
         palSetPadMode(GPIOH, 8, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
@@ -226,7 +226,7 @@ static void ADAU_I2C_Init(void) {
 //TODO
 #endif
 
-        HAL_I2C_Init(&ADAU1961_i2c_handle);
+        HAL_I2C_Init(&onboard_i2c_handle);
     }
 }
 
@@ -248,7 +248,7 @@ void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue) {
 
     chThdSleepMilliseconds(1);
 
-    HAL_StatusTypeDef r = HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR, i2ctxbuf, 3, TIMEOUT);
+    HAL_StatusTypeDef r = HAL_I2C_Master_Transmit(&onboard_i2c_handle, ADAU1961_I2C_ADDR, i2ctxbuf, 3, TIMEOUT);
 
     if (r != HAL_OK) {
         while(1);
@@ -271,7 +271,7 @@ void ADAU1961_WriteRegister6(uint16_t RegisterAddr, uint8_t * RegisterValues) {
 
     chThdSleepMilliseconds(1);
 
-    HAL_StatusTypeDef r = HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR, i2ctxbuf, 8, TIMEOUT);
+    HAL_StatusTypeDef r = HAL_I2C_Master_Transmit(&onboard_i2c_handle, ADAU1961_I2C_ADDR, i2ctxbuf, 8, TIMEOUT);
 
     if (r != HAL_OK) {
         setErrorFlag(ERROR_CODEC_I2C);
@@ -288,11 +288,11 @@ void ADAU1961_ReadRegister6(uint16_t RegisterAddr) {
 
     chThdSleepMilliseconds(1);
 
-    HAL_I2C_Master_Transmit(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR, i2ctxbuf, 2, TIMEOUT);
+    HAL_I2C_Master_Transmit(&onboard_i2c_handle, ADAU1961_I2C_ADDR, i2ctxbuf, 2, TIMEOUT);
 
     chThdSleepMilliseconds(2);
 
-    HAL_StatusTypeDef r = HAL_I2C_Master_Receive(&ADAU1961_i2c_handle, ADAU1961_I2C_ADDR+1, i2crxbuf, 6, TIMEOUT);
+    HAL_StatusTypeDef r = HAL_I2C_Master_Receive(&onboard_i2c_handle, ADAU1961_I2C_ADDR+1, i2crxbuf, 6, TIMEOUT);
 
     if (r != HAL_OK) {
         setErrorFlag(ERROR_CODEC_I2C);
