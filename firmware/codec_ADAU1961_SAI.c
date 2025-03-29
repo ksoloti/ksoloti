@@ -78,8 +78,8 @@ volatile SAI_Block_TypeDef *sai_b = SAI1_Block_B;
 /* use STM32 HAL for I2C */
 I2C_HandleTypeDef onboard_i2c_handle;
 
-static uint8_t i2crxbuf[8];
-static uint8_t i2ctxbuf[8];
+uint8_t i2crxbuf[8];
+uint8_t i2ctxbuf[8];
 
 uint32_t codec_interrupt_timestamp;
 
