@@ -33,17 +33,18 @@
 #include "spilink.h"
 #endif
 #include "audio_usb.h"
+#include "analyser.h"
 
 #if FW_USBAUDIO     
 extern void aduDataExchange (int32_t *in, int32_t *out);
 #endif
 
-#if USE_EXTERNAL_USB_FIFO_PUMP
-extern void usb_lld_external_pump(void);
-#endif 
-
 #define STACKSPACE_MARGIN 32
 // #define DEBUG_PATCH_INT_ON_GPIO 1
+
+#if USE_NONTHREADED_FIFO_PUMP
+extern volatile uint32_t fifoTicksUsed;
+#endif 
 
 patchMeta_t patchMeta;
 
@@ -111,31 +112,6 @@ void SetPatchSafety(uint16_t uUIMidiCost, uint8_t uDspLimit200)
 
 static void SetPatchStatus(patchStatus_t status)
 {
-    if(patchStatus != status)
-    {
-        if(status == RUNNING)
-        {
-            // DSP priority
-            chThdSetPriority(PATCH_DSP_PRIO);
-#if USE_EXTERNAL_USB_FIFO_PUMP
-            // Switch to external fifo pump
-            usb_lld_use_external_pump(true);
-#endif
-        }
-        else
-        {
-            // Normal priority
-            chThdSetPriority(PATCH_NORMAL_PRIO);
-
-#if USE_EXTERNAL_USB_FIFO_PUMP
-            if(patchStatus == RUNNING)
-            {
-                // switch to fifo pump thread.
-                usb_lld_use_external_pump(false);
-            }
-#endif
-        }
-    }
     patchStatus = status;    
 }
 
@@ -272,7 +248,9 @@ static int StartPatch1(void) {
     sdcard_attemptMountIfUnmounted();
 
     /* Reinit pin configuration for ADC */
+#if !ANALYSE_USB_AUDIO    
     adc_configpads();
+#endif
 
     uint32_t* ccm; /* Clear CCMRAM area declared in ramlink_*.ld */
     for (ccm = (uint32_t*) 0x10000000; ccm < (uint32_t*) 0x1000C800; ccm++) {
@@ -317,7 +295,6 @@ static int StartPatch1(void) {
 #endif
 
     while (1) {
-
 #ifdef DEBUG_PATCH_INT_ON_GPIO
         palSetPadMode(GPIOA, 2, PAL_MODE_OUTPUT_PUSHPULL);
         palSetPad(GPIOA, 2);
@@ -325,6 +302,7 @@ static int StartPatch1(void) {
 
         /* Codec DSP cycle */
         eventmask_t evt = chEvtWaitOne((eventmask_t)7);
+        AnalyserSetChannel(acUsbDSP, true);
         if (evt == 1) {
 #if FW_USBAUDIO             
             uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost - DSP_USB_AUDIO_FIRMWARE_COST;;
@@ -334,6 +312,7 @@ static int StartPatch1(void) {
             uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost;
 #endif
             static uint32_t tStart;
+            fifoTicksUsed = 0;
             tStart = hal_lld_get_counter_value();
             watchdog_feed();
 
@@ -367,7 +346,8 @@ static int StartPatch1(void) {
             adc_convert();
 
             DspTime = RTT2US(hal_lld_get_counter_value() - tStart);
-
+            uint32_t FifoTime = RTT2US(fifoTicksUsed);
+            DspTime -= FifoTime;
 #if USE_MOVING_AVERAGE
             ma_add(&ma, DspTime);
 #endif
@@ -381,6 +361,7 @@ static int StartPatch1(void) {
 
 
             if (dspLoad200 > uPatchUsbLimit200) {
+                AnalyserSetChannel(acDspOverload, true);
                 /* Overload: clear output buffers and give other processes a chance */
                 codec_clearbuffer();
 
@@ -391,12 +372,11 @@ static int StartPatch1(void) {
                 // LogTextMessage("DSP overrun");
                 connectionFlags.dspOverload = true;
 
+                AnalyserSetChannel(acDspOverload, false);
+
                 /* DSP overrun penalty, keeping cooperative with lower priority threads */
                 chThdSleepMilliseconds(1);
             }
-#if USE_EXTERNAL_USB_FIFO_PUMP            
-            usb_lld_external_pump();
-#endif
         }
         else if (evt == 2) {
             /* load patch event */
@@ -527,7 +507,7 @@ static int StartPatch1(void) {
 #ifdef DEBUG_PATCH_INT_ON_GPIO
         palClearPad(GPIOA, 2);
 #endif
-
+        AnalyserSetChannel(acUsbDSP, false);
     }
     // return (msg_t)0;
 }

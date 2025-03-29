@@ -290,7 +290,8 @@ CSRC = $(STARTUPSRC) \
   ${FIRMWARE}/exceptions.c \
   ${FIRMWARE}/watchdog.c \
   ${FIRMWARE}/sysmon.c \
-  ${FIRMWARE}/axoloti_memory.c
+  ${FIRMWARE}/axoloti_memory.c \
+  ${FIRMWARE}/analyser.c
 
 #optional modules
 ifneq (,$(findstring BRAIDS,$(AXO_OPT_MODULES)))
@@ -507,7 +508,8 @@ UDEFS = \
   -DTHUMB \
   -DTHUMB_NO_INTERWORKING \
   -DTHUMB_PRESENT \
-  -D__FPU_PRESENT
+  -D__FPU_PRESENT \
+  -DANALYSE_USB_AUDIO=0
 
 # Define ASM defines here
 UADEFS =

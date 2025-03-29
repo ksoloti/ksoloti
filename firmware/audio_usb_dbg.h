@@ -14,9 +14,6 @@ uint16_t aduLogCount = 0;
 
 void aduAddTransferLog(BLType type, uint16_t uSize)
 {
-  if(aduLogCount == 0)
-    memset(aduTransferLog, 0, sizeof(aduTransferLog));
-
   aduTransferLog[aduLogCount].type = type;
   aduTransferLog[aduLogCount].uSize = uSize;
   aduLogCount++;
@@ -31,12 +28,14 @@ void aduAddTransferLog(BLType type, uint16_t uSize)
 #if ADU_OVERRUN_LOG_SIZE
 typedef enum _LogType
 {
+  ltCodecCopyStart_,
   ltCodecCopyEnd___,
   ltFrameEndedEnd__,
   ltSampleAdjusted_,
   ltWaitingForSync_,
   ltAfterTXAdjust__,
   ltAfterRXAdjust__,
+  ltBeforeRXAdjust_,
   ltAfterDataRX____,
   ltTxRxSynced_____,
   ltResetForSync___,
@@ -93,9 +92,15 @@ void AddOverunLog(LogType type)
     else
       overrunDebug[uLogIndex].C = aduState.rxRingBufferWriteOffset - aduState.rxRingBufferReadOffset;
 
+    if(overrunDebug[uLogIndex].C != overrunDebug[uLogIndex].rxUsedSize)
+    {
+      volatile bp = 1;
+    };
+
     uLogIndex++;
     if(uLogIndex == ADU_OVERRUN_LOG_SIZE)
       uLogIndex = 0;
+    
   }
 }
 #else
