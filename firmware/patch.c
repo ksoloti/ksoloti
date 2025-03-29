@@ -46,6 +46,12 @@ extern void aduDataExchange (int32_t *in, int32_t *out);
 extern volatile uint32_t fifoTicksUsed;
 #endif 
 
+enum DSPThreadSignal {
+    EVENT_START_DSP_CYCLE = 1,
+    EVENT_LOAD_PATCH  = 2,
+    EVENT_START_PATCH   = 4
+};
+
 patchMeta_t patchMeta;
 
 volatile patchStatus_t patchStatus;
@@ -303,7 +309,7 @@ static int StartPatch1(void) {
         /* Codec DSP cycle */
         eventmask_t evt = chEvtWaitOne((eventmask_t)7);
         AnalyserSetChannel(acUsbDSP, true);
-        if (evt == 1) {
+        if (evt == EVENT_START_DSP_CYCLE) {
 #if FW_USBAUDIO             
             uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost - DSP_USB_AUDIO_FIRMWARE_COST;;
             if(aduIsUsbInUse())
@@ -378,7 +384,7 @@ static int StartPatch1(void) {
                 chThdSleepMilliseconds(1);
             }
         }
-        else if (evt == 2) {
+        else if (evt == EVENT_LOAD_PATCH) {
             /* load patch event */
             codec_clearbuffer();
             #if FW_USBAUDIO
@@ -495,7 +501,7 @@ static int StartPatch1(void) {
                 cont: ;
             }
         }
-        else if (evt == 4) {
+        else if (evt == EVENT_START_PATCH) {
             /* Start patch */
             codec_clearbuffer();
             #if FW_USBAUDIO
@@ -531,7 +537,7 @@ void StopPatch(void) {
 
 
 int StartPatch(void) {
-    chEvtSignal(pThreadDSP, (eventmask_t)4);
+    chEvtSignal(pThreadDSP, (eventmask_t)EVENT_START_PATCH)
 
     while ((patchStatus != RUNNING) && (patchStatus != STARTFAILED)) {
         chThdSleepMilliseconds(1);
@@ -573,7 +579,7 @@ void computebufI(int32_t* inp, int32_t* outp) {
 #endif
 
     chSysLockFromIsr();
-    chEvtSignalI(pThreadDSP, (eventmask_t)1);
+    chEvtSignalI(pThreadDSP, (eventmask_t)EVENT_START_DSP_CYCLE);
     chSysUnlockFromIsr();
 }
 
