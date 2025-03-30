@@ -312,7 +312,9 @@ static int StartPatch1(void) {
             uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost;
 #endif
             static uint32_t tStart;
+#if USE_NONTHREADED_FIFO_PUMP                
             fifoTicksUsed = 0;
+#endif
             tStart = hal_lld_get_counter_value();
             watchdog_feed();
 
@@ -346,8 +348,10 @@ static int StartPatch1(void) {
             adc_convert();
 
             DspTime = RTT2US(hal_lld_get_counter_value() - tStart);
+#if USE_NONTHREADED_FIFO_PUMP                
             uint32_t FifoTime = RTT2US(fifoTicksUsed);
             DspTime -= FifoTime;
+#endif
 #if USE_MOVING_AVERAGE
             ma_add(&ma, DspTime);
 #endif

@@ -885,16 +885,6 @@ FORCE_INLINE void aduCodecFrameEnded(void)
 
   if(0 == (aduState.currentFrame % CODEC_METICS_MS))
   {
-
-    if(aduState.codecMetricsSampleOffset  < 0)
-    {
-      AnalyserTriggerChannel(acUsbUnderrun);
-    }
-    else if(aduState.codecMetricsSampleOffset  > 0)
-    {
-      AnalyserTriggerChannel(acUsbOverrun);
-    }
-
     if(aduState.codecMetricsSampleOffset != 0)
     {
       // ok we are out of sync, adjust to sync
@@ -1173,10 +1163,10 @@ void aduDataReceived(USBDriver *usbp, usbep_t ep)
   AddOverunLog(ltBeforeRXAdjust_);
 
   //chSysLockFromIsr();
-  USBOutEndpointState *pEpState = usbp->epc[ep]->out_state;
-  volatile uint32_t uReceivedCount = pEpState->rxcnt;
 
 #if ADU_TRANSFER_LOG_SIZE
+  USBOutEndpointState *pEpState = usbp->epc[ep]->out_state;
+  volatile uint32_t uReceivedCount = pEpState->rxcnt;
   aduAddTransferLog(blEndReceive, uReceivedCount);
 #endif
 
