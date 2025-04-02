@@ -313,7 +313,7 @@
 /*
  * Thread priority settings. v1.0.12 settings in comments for reference.
  */
-#define STM32_USB_OTG_THREAD_PRIO           HIGHPRIO-1     /* HIGHPRIO-2 */
+#define STM32_USB_OTG_THREAD_PRIO           HIGHPRIO-1   /* HIGHPRIO-2 */
 #define PATCH_DSP_PRIO                      HIGHPRIO-1   /* HIGHPRIO-1 */
 #define SPILINK_PRIO                        HIGHPRIO-1   /* HIGHPRIO-1 */
 #define UI_USB_PRIO                         HIGHPRIO-2   /* NORMALPRIO */
