@@ -115,11 +115,64 @@ typedef enum {
     KVP_TYPE_FNCTN,
 } KVP_type;
 
+typedef struct KeyValuePair {
+    KVP_type kvptype;
+    struct KeyValuePair *parent;
+    const char *keyname;
+    union {
+        iValuePair ivp;
+        fValuePair fvp;
+        sValuePair svp;
+        arrayValuePair avp;
+        intDbgValuePairBar idvp;
+        arrayPtrValuePair apvp;
+        customUIFunctions custom;
+        intDisplayValue idv;
+        pitchDisplayValue pdv;
+        freqDisplayValue freqdv;
+        fractDisplayValue fractdv;
+        ipValuePair ipvp;
+        u7ValuePair u7vp;
+        fnctnValuePair fnctnvp;
+    };
+} KeyValuePair_s;
+
+//typedef struct KeyValuePair KeyValuePair_s;
+
+extern struct KeyValuePair *kvps;
+extern struct KeyValuePair *ObjectKvpRoot;
+
+void KVP_Display(int x, int y, struct KeyValuePair *kvp);
+void KVP_Increment(struct KeyValuePair *kvp);
+void KVP_Decrement(struct KeyValuePair *kvp);
+
+void KVP_SendMetaDataUSB(struct KeyValuePair *kvp);
+void KVP_SendDataUSB(struct KeyValuePair *kvp);
+void KVP_ReceiveDataUSB(char *data);
+
+void KVP_ClearObjects(void);
+void KVP_RegisterObject(struct KeyValuePair *kvp);
+
 void k_scope_DisplayFunction(void * userdata);
 void k_scope_DisplayFunction2(void * userdata);
 void k_scope_DisplayFunction3(void * userdata);
 void k_scope_DisplayFunction4(void * userdata);
 
+void SetKVP_APVP(struct KeyValuePair *kvp, struct KeyValuePair *parent,
+                 const char *keyName, int length, struct KeyValuePair *array);
+void SetKVP_AVP(struct KeyValuePair *kvp, struct KeyValuePair *parent,
+                const char *keyName, int length, struct KeyValuePair *array);
+void SetKVP_IVP(struct KeyValuePair *kvp, struct KeyValuePair *parent,
+                const char *keyName, int *value, int min, int max);
+void SetKVP_IPVP(struct KeyValuePair *kvp, struct KeyValuePair *parent,
+                 const char *keyName, ParameterExchange_t *PEx, int min,
+                 int max);
+void SetKVP_FNCTN(struct KeyValuePair *kvp, struct KeyValuePair *parent,
+                  const char *keyName, VoidFunction fnctn);
+
+// void UIGoSafe(void);
+
+// void AxolotiControlUpdate(void);
 extern void (*pControlUpdate)(void);
 
 #endif

@@ -831,9 +831,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     c += p.GetValueRaw() + ";\n"; 
                 }
             }
-            // else {
-            //     c += I+I + p.GenerateCodeDeclaration(classname);
-            // }
+            else {
+                c += I+I + p.GenerateCodeDeclaration(classname);
+            }
         }
         c += GenerateInstanceDataDeclaration2();
         for (AttributeInstance p : attributeInstances) {

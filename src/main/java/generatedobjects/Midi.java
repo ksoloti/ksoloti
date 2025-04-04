@@ -99,9 +99,16 @@ public class Midi extends gentools {
      o.outlets.add(new OutletFrac32("midiCC", "midi CC 0-127"));
      o.attributes.add(new AxoAttributeInt32("CC", 0, 127, 0));
      o.attributes.add(new AxoAttributeInt32("Value", 0, 127, 0));
-     o.sLocalData = ""
+     o.sLocalData = "KeyValuePair kvp; \n"
      + "const char NAME[] = \"\";\n";
-     o.sInitCode = "controller[%CC%] = %Value%;";
+     o.sInitCode = "controller[%CC%] = %Value%;"
+     + "  kvp.kvptype = KVP_TYPE_IVP;\n"
+     + "  kvp.keyname = NAME;\n"
+     + "  kvp.ivp.value = &controller[%CC%]; \n"
+     + "  kvp.ivp.minvalue = " + 0 + ";\n"
+     + "  kvp.ivp.maxvalue = " + 127 + ";\n"
+     + "  kvp.parent =  ObjectKvpRoot;\n"
+     + "  KVP_RegisterObject(&kvp);\n";
      o.sKRateCode = "%midiCC%= controller[%CC%]<<20;";
      return o;
      }
@@ -111,9 +118,16 @@ public class Midi extends gentools {
      o.outlets.add(new OutletFrac32("midiCC", "midi CC 0-127"));
      o.attributes.add(new AxoAttributeSpinner("CC", 0, 127, 0));
      o.attributes.add(new AxoAttributeSpinner("Value", 0, 127, 0));
-     o.sLocalData = ""
+     o.sLocalData = "KeyValuePair kvp; \n"
      + "const char NAME[] = \"\";\n";
-     o.sInitCode = "controller[%CC%] = %Value%;";
+     o.sInitCode = "controller[%CC%] = %Value%;"
+     + "  kvp.kvptype = KVP_TYPE_IVP;\n"
+     + "  kvp.keyname = NAME;\n"
+     + "  kvp.ivp.value = &controller[%CC%]; \n"
+     + "  kvp.ivp.minvalue = " + 0 + ";\n"
+     + "  kvp.ivp.maxvalue = " + 127 + ";\n"
+     + "  kvp.parent =  ObjectKvpRoot;\n"
+     + "  KVP_RegisterObject(&kvp);\n";
      o.sKRateCode = "%midiCC%= controller[%CC%]<<20;";
      return o;
      }
@@ -124,11 +138,18 @@ public class Midi extends gentools {
      o.outlets.add(new OutletBool32("trig", "trigger output"));
      o.attributes.add(new AxoAttributeSpinner("CC", 0, 127, 0));
      o.attributes.add(new AxoAttributeSpinner("Value", 0, 127, 0));
-     o.sLocalData = ""
+     o.sLocalData = "KeyValuePair kvp;\n"
      + "const char NAME[] = \"\";\n"
      + "int32_t cc;\n"
      + "int32_t ntrig;\n";
-     o.sInitCode = "cc = %Value%;";
+     o.sInitCode = "cc = %Value%;"
+     + "  kvp.kvptype = KVP_TYPE_IVP;\n"
+     + "  kvp.keyname = NAME;\n"
+     + "  kvp.ivp.value = &cc; \n"
+     + "  kvp.ivp.minvalue = " + 0 + ";\n"
+     + "  kvp.ivp.maxvalue = " + 127 + ";\n"
+     + "  kvp.parent =  ObjectKvpRoot;\n"
+     + "  KVP_RegisterObject(&kvp);\n";
      o.sMidiCCCode = "if (cc == %CC%) { cc = val; ntrig = 1;}\n";
      o.sKRateCode = "%midiCC%= cc<<20;\n"
      + "%trig% = ntrig;\n"
