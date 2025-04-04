@@ -24,8 +24,8 @@
 
 MEMORY
 {
-    SRAM (rwx) : ORIGIN = 0x20011000, LENGTH = 0x00009000
     CCMSRAM    : ORIGIN = 0x10000000, LENGTH = 0x0000E000 /* CCM - ccmramend */
+    SRAM (rwx) : ORIGIN = 0x20011000, LENGTH = 0x00009000
 }
 
 __main_stack_size__     = 0x400;
