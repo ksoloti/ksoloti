@@ -77,7 +77,7 @@ SECTIONS
         * (.rodata.*);
     } > SRAM
 
-    startup : ALIGN(16) SUBALIGN(16)
+    .startup : ALIGN(16) SUBALIGN(16)
     {
         KEEP(*(.vectors))
     } > SRAM
