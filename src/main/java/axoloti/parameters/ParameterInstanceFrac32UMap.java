@@ -138,7 +138,7 @@ public class ParameterInstanceFrac32UMap<T extends ParameterFrac32> extends Para
             n = axoObj.getInstanceName() + ":" + name;
         }
         String s = PExName(vprefix) + ".pfunction = " + GetPFunction() + ";\n"
-                + I+I+I + "SetKVP_IPVP(&" + StructAccces + KVPName(vprefix) + ", ObjectKvpRoot, \"" + charEscape(n) + "\", "
+                + I+I+I + "SetKVP_IPVP(&" + StructAccces + KVPName(vprefix) + ", ObjectKvpRoot, "
                 + "&" + PExName(vprefix) + ", "
                 + "0, "
                 + "1<<27);\n"
