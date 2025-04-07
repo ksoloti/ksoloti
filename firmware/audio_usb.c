@@ -838,12 +838,12 @@ void aduDataExchangeResample (int32_t *in, int32_t *out)
     if(aduState.state == asCodecRemove)
     {
       // remove uBufferAdjust samples
-      AnalyserTriggerChannel(acUsbAudioAdjust);
+      //AnalyserTriggerChannel(acUsbAudioAdjust);
       uLen -= uBufferAdjust;
     } 
     else if(aduState.state == asCodecDuplicate)
     {
-      AnalyserTriggerChannel(acUsbAudioAdjust);
+      //AnalyserTriggerChannel(acUsbAudioAdjust);
       // add uBufferAdjust samples 
 
       #if CHECK_USB_DATA
@@ -857,12 +857,12 @@ void aduDataExchangeResample (int32_t *in, int32_t *out)
 
     // copy into resample buffer
     // we need to copy everything
-    AnalyserSetChannel(acUsbAudioAdjust, true);
+    //AnalyserSetChannel(acUsbAudioAdjust, true);
     for(uint16_t u=0; u < uBufferSize; u++)
     {
       txResampleBuffer[uTxResampleBufferPos++] = out[u];
     }
-    AnalyserSetChannel(acUsbAudioAdjust, false);
+    //AnalyserSetChannel(acUsbAudioAdjust, false);
     
     uTxResampleBufferLen += uLen;
 
