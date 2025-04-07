@@ -19,44 +19,8 @@
 #pragma GCC push_options
 #pragma GCC optimize ("O2")
 #define FORCE_INLINE __attribute__((always_inline)) inline 
-//#define FORCE_INLINE
-#define NEW_CODE_TX 1
-#define NEW_CODE_TRY_TX 1
-#define NEW_CODE_RX 1
-#define NEW_CODE_TRY_RX 1
 
-//#define FORCE_INLINE
-
-// O0 codecCopy = 14us,  TX = 42.1us
-// O1 codecCopy = 3.3us, TX = 11.5us
-
-// Simple improvements
-// O0 codecCopy = 11us,  TX = 31.0us
-// O1 codecCopy = 2.9us, TX = 10.1us
-
-// TX direct
-// O0 codecCopy = 11.98us, TX = 2.6us
-// O1 codecCopy = 3.14us,  TX = 2.0us
-
-////////////////////////////////////////////////
-// new timings
-
-// O0 codecCopy = 21.00us, TX = 3.18us, RX = 1.12us
-// O1 codecCopy = 7.14us,  TX = 3.18us, RX = 1.12us
-
-// O0 codecCopy = 21.31us, TX = 3.18us, RX = 1.12us           // Inline calls, why slower?
-// O1 codecCopy = 7.14us,  TX = 3.18us, RX = 1.12us
-
-// O0 codecCopy = 16.90us, TX = 3.18us, RX = 1.12us           // TX changed
-// O1 codecCopy = 5.82us,  TX = 3.18us, RX = 1.12us           // TX changed
-
-// O1 codecCopy = 4.68us,  TX = 3.18us, RX = 1.12us           // TX & RX changed
-// O2 codecCopy = 3.61us,  TX = 1.87us, RX = 0.96us           // TX & RX changed
-// O3 codecCopy = 3.61us,  TX = 1.87us, RX = 0.96us           // TX & RX changed
-
-// So we need to improve that simple codec copy, get rid of %, two tight loops needed.
-
-
+#define RESAMPLE_BUFFER_BLOCKS 3
 
 
 static int16_t aduTxRingBuffer[TX_RING_BUFFER_FULL_SIZE] __attribute__ ((section (".sram2")));
@@ -579,11 +543,8 @@ uint16_t aduAddedRxSamplesStart = 0;
 int16_t  aduAddedRxSampleValue = 0;
 #endif
 
-#if NEW_CODE_TX
 static FORCE_INLINE void aduMoveDataToTX(int32_t *pData, uint_fast16_t uLen)
 {
-#if NEW_CODE_TRY_TX
-
   if(aduState.txRingBufferUsedSize+uLen > TX_RING_BUFFER_NORMAL_SIZE)
   {
     //HandleError();
@@ -620,37 +581,13 @@ static FORCE_INLINE void aduMoveDataToTX(int32_t *pData, uint_fast16_t uLen)
       pSrc+=2;
     }
   }
-
-  // for (u=0; u< uLen; u++)
-  // {
-  //   if(aduTxRingBuffer[aduState.txRingBufferWriteOffset] != pData[u] >> 16)
-  //   {
-  //     // wrong
-  //     HandleError();
-  //   }
-  //   if (++(aduState.txRingBufferWriteOffset) == TX_RING_BUFFER_FULL_SIZE) 
-  //     aduState.txRingBufferWriteOffset= 0;
-  // }
-
+  
   aduState.txRingBufferWriteOffset = (aduState.txRingBufferWriteOffset + uLen) % TX_RING_BUFFER_FULL_SIZE;
   aduState.txRingBufferUsedSize+=uLen;
-#else  
-  uint_fast16_t u; for (u=0; u< uLen; u++)
-  {
-    aduTxRingBuffer[aduState.txRingBufferWriteOffset] = pData[u] >> 16;
-    if (++(aduState.txRingBufferWriteOffset) == TX_RING_BUFFER_FULL_SIZE) 
-      aduState.txRingBufferWriteOffset= 0;
-  }
-  aduState.txRingBufferUsedSize+=uLen;
-#endif
 }
-#endif
 
-#if NEW_CODE_RX
 static FORCE_INLINE void aduMoveDataFromRX(int32_t *pData, uint_fast16_t uLen)
 {
-#if NEW_CODE_TRY_RX
-
   // RX check
   if(aduState.rxRingBufferUsedSize < uLen)
     HandleError();
@@ -681,89 +618,195 @@ static FORCE_INLINE void aduMoveDataFromRX(int32_t *pData, uint_fast16_t uLen)
   }
   aduState.rxRingBufferReadOffset = (aduState.rxRingBufferReadOffset + uLen) % TX_RING_BUFFER_FULL_SIZE;
   aduState.rxRingBufferUsedSize -= uLen;
-#else  
-  uint_fast16_t u; for (u=0; u < uLen; u++)
-  {
-    pData[u] = aduRxRingBuffer[aduState.rxRingBufferReadOffset] << 16;
-    if (++(aduState.rxRingBufferReadOffset) == TX_RING_BUFFER_FULL_SIZE) 
-      aduState.rxRingBufferReadOffset= 0;
-  }
-  aduState.rxRingBufferUsedSize -= uLen;
-#endif
 }
-#endif
 
 
-# define RESAMPLE 1
-#if RESAMPLE
 
-// resamples a buffer
+/**
+ * @brief   Removes a sample for each usb RX channel and resamples 
+ *          48 to 47 samples in usb rx
+ */
 
-void aduInterpolateBuffer(int32_t *buffer, uint16_t uChannels, uint16_t uInSamples, uint16_t uOutSamples)
+void aduRemoveRxSample(void)
 {
-  float fD = uChannels*(1.0f/uOutSamples);
-  uint32_t uD = 65535 * fD;
-  
-  uint32_t uIndex = 0;
+  int16_t *inBuffer   = &aduRxRingBuffer[aduState.rxRingBufferReadOffset];
+  int16_t *endBuffer  = &aduRxRingBuffer[TX_RING_BUFFER_FULL_SIZE];
 
-  int32_t *pSample     = buffer;
-  int32_t *pNextSample = buffer + (uChannels);
-   
-  for(int i = 0; i < uOutSamples/uChannels; i++)
+  float fD = 1.0f/(47-1);
+  uint32_t ufD = 65535 * fD;
+  uint32_t ufIndex = 0;
+
+  int16_t *pSample     = inBuffer;
+  int16_t *pNextSample = inBuffer + USB_AUDIO_CHANNELS;
+
+  int16_t nTemp[4] = {inBuffer[0], inBuffer[1], inBuffer[2], inBuffer[3]};
+  int16_t nTempOld[4];
+  
+  for(uint_fast16_t i = 0; i < 47; i++)
   {
-    for(int j=0; j < uChannels; j++)
+    for(uint_fast16_t j=0; j < USB_AUDIO_CHANNELS; j++)
     {
-      *pSample = ((*pSample >> 16) * (65535 - uIndex)) + ((*pNextSample >> 16) * uIndex);
+      if(pSample == endBuffer)
+        pSample = aduRxRingBuffer;
+      
+      if(pNextSample == endBuffer)
+        pNextSample = aduRxRingBuffer;
+      
+      nTempOld[j] = nTemp[j];
+      nTemp[j] = *pNextSample;
+
+      *pNextSample = (((int32_t)(nTempOld[j]) * (65535 - ufIndex)) + (((int32_t)*pNextSample) * ufIndex)) >> 16;
       pSample++;
       pNextSample++;
     }
 
-    uIndex += uD;
+    ufIndex += ufD;
+  }
+  
+  aduState.rxRingBufferReadOffset = (aduState.rxRingBufferReadOffset+USB_AUDIO_CHANNELS) % TX_RING_BUFFER_FULL_SIZE;
+  aduState.rxRingBufferUsedSize -= USB_AUDIO_CHANNELS;
+}
+
+
+/**
+ * @brief   Adds a sample for each usb RX channel and resamples 
+ *          48 to 49 samples in usb rx
+ */
+
+void aduAddRxSample(void)
+{
+  int16_t *endBuffer  = &aduRxRingBuffer[TX_RING_BUFFER_FULL_SIZE];
+
+  float fD = 1.0f/(49-1);
+  uint32_t ufD = 65535 * fD;
+  uint32_t ufIndex = 0;
+
+  // We are setting samples back in time before adjusting buffer pos
+  int16_t *pSetSample;
+  if(aduState.rxRingBufferReadOffset== 0)
+    pSetSample = &aduRxRingBuffer[TX_RING_BUFFER_FULL_SIZE-USB_AUDIO_CHANNELS];
+  else
+    pSetSample = &aduRxRingBuffer[aduState.rxRingBufferReadOffset-USB_AUDIO_CHANNELS];
+  
+  for(uint_fast16_t i = 0; i < 49; i++)
+  {
+    uint32_t ufUseIndex = ufIndex * (48-1);
+    uint32_t uIndex = USB_AUDIO_CHANNELS * (ufUseIndex >> 16);
+    ufUseIndex = ufUseIndex &0xffff;
+        
+    int16_t uSourceSampleIndex = aduState.rxRingBufferReadOffset+uIndex;
+    if(uSourceSampleIndex >= TX_RING_BUFFER_FULL_SIZE)
+      uSourceSampleIndex -= TX_RING_BUFFER_FULL_SIZE;
+    
+    int16_t *pSample     = &aduRxRingBuffer[uSourceSampleIndex];
+    int16_t *pNextSample = pSample + USB_AUDIO_CHANNELS;
+
+    if(pNextSample == endBuffer)
+      pNextSample = aduRxRingBuffer;
+
+    if(pSetSample == endBuffer)
+      pSetSample = aduRxRingBuffer;
+
+    for(uint_fast16_t j=0; j < USB_AUDIO_CHANNELS; j++)
+    {
+      *pSetSample = (((int32_t)(*pSample) * (65535 - ufUseIndex)) + (((int32_t)*pNextSample) * ufUseIndex)) >> 16;
+      pSample++;
+      pNextSample++;
+      pSetSample++;
+    }
+
+    ufIndex += ufD;
+  }
+
+   if(aduState.rxRingBufferReadOffset == 0)
+     aduState.rxRingBufferReadOffset = TX_RING_BUFFER_FULL_SIZE - USB_AUDIO_CHANNELS;
+   else
+     aduState.rxRingBufferReadOffset -= USB_AUDIO_CHANNELS;
+
+   aduState.rxRingBufferUsedSize += USB_AUDIO_CHANNELS;
+}
+
+
+/**
+ * @brief   Strectch/Resamples int32 samples in place, resulting data is offset by -USB_AUDIO_CHANNELS samples
+ * @details 
+ *
+ * @param[in] inBuffer    pointer to the data
+ */
+
+void aduStretchInt32Buffer(int32_t *inBuffer)
+{
+  float fD = 1.0f/(49-1);
+  uint32_t ufD = 65535 * fD;
+  uint32_t ufIndex = 0;
+
+  int32_t *pSetSample  = inBuffer-USB_AUDIO_CHANNELS; // need space at start
+
+  for(uint_fast16_t i = 0; i < 49; i++)
+  {
+    uint32_t ufUseIndex = ufIndex * (48-1);
+    uint32_t uIndex = USB_AUDIO_CHANNELS * (ufUseIndex >> 16);
+    ufUseIndex = ufUseIndex &0xffff;
+        
+    int32_t *pSample     = &(inBuffer[uIndex]);
+    int32_t *pNextSample = pSample + USB_AUDIO_CHANNELS;
+
+    for(uint_fast16_t j=0; j < USB_AUDIO_CHANNELS; j++)
+    {
+      *pSetSample = ((*pSample >> 16) * (65535 - ufUseIndex)) + ((*pNextSample >> 16) * ufUseIndex);
+      pSample++;
+      pNextSample++;
+      pSetSample++;
+    }
+
+    ufIndex += ufD;
   }
 }
 
-// void aduInterpolateBuffer(int32_t *buffer, uint16_t uChannels, uint16_t uInSamples, uint16_t uOutSamples)
-// {
-//   float fD = uChannels*(1.0f/uOutSamples);
-//   float fIndex = 0.0f;
-//   int32_t *pSample     = buffer;
-//   int32_t *pNextSample = buffer + (uChannels);
-   
-//   for(int i = 0; i < uOutSamples/uChannels; i++)
-//   {
-//     for(int j=0; j < uChannels; j++)
-//     {
-//       *pSample = (*pSample * (1.0f - fIndex)) + (*pNextSample * fIndex);
-//       pSample++;
-//       pNextSample++;
-//     }
-
-//     fIndex += fD;
-//   }
-// }
-
-FORCE_INLINE int32_t aduInterpolate(int32_t *in, uint16_t uBufferSize, int16_t uStride, float fIndex)
-{
-  fIndex *= uBufferSize;
-  uint16_t uIndex = (uint16_t)fIndex;
-  fIndex -= uIndex;
-  uIndex*=uStride;
-
-  int32_t nResult = (in[uIndex] * (1.0f - fIndex)) + (in[uIndex+uStride] * (fIndex));
-
-  return nResult;
-}
 /**
- * @brief   Handles transfer of data between codec and USB
+ * @brief   Shrink/Resamples int32 samples in place
+ * @details 
+ *
+ * @param[in] inBuffer    pointer to the data
+ */
+
+void aduShrinkInt32BufferNormal(int32_t *inBuffer)
+{
+  float fD = 1.0f/(47-1);
+
+  uint32_t ufD = 65535 * fD;
+  uint32_t ufIndex = 0;
+
+  int32_t *pSetSample  = inBuffer;
+  int32_t *pSample     = inBuffer;
+  int32_t *pNextSample = inBuffer + USB_AUDIO_CHANNELS;
+  
+  for(uint_fast16_t i = 0; i < 47; i++)
+  {
+    for(uint_fast16_t j=0; j < USB_AUDIO_CHANNELS; j++)
+    {
+      *pSetSample = ((*pSample >> 16) * (65535 - ufIndex)) + ((*pNextSample >> 16) * ufIndex);
+
+      pSample++;
+      pNextSample++;
+      pSetSample++;
+    }
+
+    ufIndex += ufD;
+  }
+}
+
+
+
+/**
+ * @brief   Handles transfer of data between codec and USB, resampling
  * @details 
  *
  * @param[in] in    pointer to in data  <- Codec
  * @param[in] out   pointer to out data -> USB
  */
 
-#define RESAMPLE_BUFFER_BLOCKS 3
-
-void aduDataExchange (int32_t *in, int32_t *out)
+void aduDataExchangeResample (int32_t *in, int32_t *out)
 {
   if(aduIsUsbOutputEnabled())
   {
@@ -771,11 +814,13 @@ void aduDataExchange (int32_t *in, int32_t *out)
 #if USB_AUDIO_CHANNELS == 2
     uint16_t uBufferSize   = 32;
     uint16_t uBufferAdjust = 2;
-    static int32_t txResampleBuffer[2 + (32 * RESAMPLE_BUFFER_BLOCKS)];
+    static int32_t txResampleBufferData[2 + (32 * RESAMPLE_BUFFER_BLOCKS)];
+    static int32_t *txResampleBuffer = &txResampleBufferData[2];
 #elif  USB_AUDIO_CHANNELS == 4
     uint16_t uBufferSize   = 64;
     uint16_t uBufferAdjust = 4;
-    static int32_t txResampleBuffer[4 + (64 * RESAMPLE_BUFFER_BLOCKS)];
+    static int32_t txResampleBufferData[4 + (64 * RESAMPLE_BUFFER_BLOCKS)];
+    static int32_t *txResampleBuffer = &txResampleBufferData[4];
 #endif  
     static uint16_t uTxBufferBlockCount = 0;
     static uint16_t uTxResampleBufferLen = 0;
@@ -827,11 +872,22 @@ void aduDataExchange (int32_t *in, int32_t *out)
       {
         AnalyserSetChannel(acUsbAudioAdjust, true);
         // we need to resample here
-        aduInterpolateBuffer(txResampleBuffer, uBufferAdjust, uBufferSize*RESAMPLE_BUFFER_BLOCKS, uTxResampleBufferLen);
+        if(uTxResampleBufferLen > (RESAMPLE_BUFFER_BLOCKS * uBufferSize)) 
+        {
+          aduStretchInt32Buffer(txResampleBuffer);
+          aduMoveDataToTX(txResampleBufferData, uTxResampleBufferLen);
+          aduRemoveRxSample();
+        }
+        else
+        {
+          aduShrinkInt32BufferNormal(txResampleBuffer);
+          aduMoveDataToTX(txResampleBuffer, uTxResampleBufferLen);
+          aduAddRxSample();
+        }
         AnalyserSetChannel(acUsbAudioAdjust, false);
       }
-
-      aduMoveDataToTX(txResampleBuffer, uTxResampleBufferLen);
+      else
+        aduMoveDataToTX(txResampleBuffer, uTxResampleBufferLen);
 
       uTxBufferBlockCount = 0;
       uTxResampleBufferLen = 0;
@@ -858,36 +914,6 @@ void aduDataExchange (int32_t *in, int32_t *out)
 
       // always copy uBufferSize samples
       aduMoveDataFromRX(in, uBufferSize);
-
-      // adjustments 
-      if(aduState.state == asCodecDuplicate)
-      {
-        // uBufferAdjust two many in USB buffer
-
-        #if CHECK_USB_DATA
-          aduSkippedRxSamplesStart = aduState.rxRingBufferReadOffset;
-          aduSkippedRxSampleValue = aduRxRingBuffer[aduSkippedRxSamplesStart];
-        #endif // CHECK_USB_DATA
-
-        aduState.rxRingBufferReadOffset = (aduState.rxRingBufferReadOffset+uBufferAdjust) % TX_RING_BUFFER_FULL_SIZE;
-        aduState.rxRingBufferUsedSize -= uBufferAdjust;
-      }
-      else if(aduState.state == asCodecRemove)
-      {
-        // two  little in USB buffer
-        #if CHECK_USB_DATA
-          aduAddedRxSamplesStart = aduState.rxRingBufferReadOffset;
-          aduAddedRxSampleValue = aduRxRingBuffer[aduSkippedRxSamplesStart];
-        #endif // CHECK_USB_DATA
-
-        if(aduState.rxRingBufferReadOffset == 0)
-          aduState.rxRingBufferReadOffset = TX_RING_BUFFER_FULL_SIZE - uBufferAdjust;
-        else
-          aduState.rxRingBufferReadOffset -= uBufferAdjust;
-
-        aduState.rxRingBufferUsedSize += uBufferAdjust;
-      }
-
 
       #if CHECK_USB_DATA
         // DEBUG test USB Data, requires USBOutputTest.axp running on Ksoloiti
@@ -917,8 +943,17 @@ void aduDataExchange (int32_t *in, int32_t *out)
   }
   AnalyserSetChannel(acUsbAudioDataExchange, false);
 }
-#else
-void aduDataExchange (int32_t *in, int32_t *out)
+
+
+/**
+ * @brief   Handles transfer of data between codec and USB, no resampling
+ * @details 
+ *
+ * @param[in] in    pointer to in data  <- Codec
+ * @param[in] out   pointer to out data -> USB
+ */
+
+void aduDataExchangeNoResample (int32_t *in, int32_t *out)
 {
   if(aduIsUsbOutputEnabled())
   {
@@ -952,31 +987,10 @@ void aduDataExchange (int32_t *in, int32_t *out)
         aduAddedTxSampleValue = out[0]>>16;
       #endif // CHECK_USB_DATA
 
-#if NEW_CODE_TX
       aduMoveDataToTX(out, uBufferAdjust);
-#else
-      uint_fast16_t u; 
-	  for (u=0; u< uBufferAdjust; u++)
-      {
-        aduTxRingBuffer[aduState.txRingBufferWriteOffset] = out[u] >> 16;
-        if (++(aduState.txRingBufferWriteOffset) == TX_RING_BUFFER_FULL_SIZE) 
-          aduState.txRingBufferWriteOffset= 0;
-      }
-      aduState.txRingBufferUsedSize+=uBufferAdjust;
-#endif
     }
 
-#if NEW_CODE_TX
     aduMoveDataToTX(out, uLen);
-#else
-    for (u=0; u< uLen; u++)
-    {
-      aduTxRingBuffer[aduState.txRingBufferWriteOffset] = out[u] >> 16;
-      if (++(aduState.txRingBufferWriteOffset) == TX_RING_BUFFER_FULL_SIZE) 
-        aduState.txRingBufferWriteOffset= 0;
-    }
-    aduState.txRingBufferUsedSize+=uLen;
-#endif
 
     aduState.codecFrameSampleCount+=uFeedbackLen;
 
@@ -997,19 +1011,9 @@ void aduDataExchange (int32_t *in, int32_t *out)
       AddOverunLog(ltCodecCopyStart_);
 
       // always copy uBufferSize samples
-#if NEW_CODE_RX
       aduMoveDataFromRX(in, uBufferSize);
-#else
-      for (u=0; u < uBufferSize; u++)
-      {
-        in[u] = aduRxRingBuffer[aduState.rxRingBufferReadOffset] << 16;
-        if (++(aduState.rxRingBufferReadOffset) == TX_RING_BUFFER_FULL_SIZE) 
-          aduState.rxRingBufferReadOffset= 0;
-      }
-      aduState.rxRingBufferUsedSize -= uBufferSize;
-#endif
-      // adjustments 
 
+      // adjustments 
       if(aduState.state == asCodecDuplicate)
       {
         // uBufferAdjust two many in USB buffer
@@ -1067,7 +1071,7 @@ void aduDataExchange (int32_t *in, int32_t *out)
   }
   AnalyserSetChannel(acUsbAudioDataExchange, false);
 }
-#endif
+
 
 /**
  * @brief   End of last USB frame

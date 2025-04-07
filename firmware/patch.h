@@ -120,6 +120,7 @@ void codec_clearbuffer(void);
 
 #if FW_USBAUDIO
 void usb_clearbuffer(void);
+extern bool usbAudioResample;
 #endif
 
 

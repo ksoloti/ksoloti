@@ -36,7 +36,9 @@
 #include "analyser.h"
 
 #if FW_USBAUDIO     
-extern void aduDataExchange (int32_t *in, int32_t *out);
+extern void aduDataExchangeResample (int32_t *in, int32_t *out);
+extern void aduDataExchangeNoResample (int32_t *in, int32_t *out);
+bool usbAudioResample = false;
 #endif
 
 #define STACKSPACE_MARGIN 32
@@ -573,7 +575,10 @@ void computebufI(int32_t* inp, int32_t* outp) {
     outbuf = outp;
 
 #if FW_USBAUDIO     
-    aduDataExchange(inbufUsb, outbufUsb);
+    if(usbAudioResample)
+        aduDataExchangeResample(inbufUsb, outbufUsb);
+    else
+        aduDataExchangeNoResample(inbufUsb, outbufUsb);
 #endif
 
     chSysLockFromIsr();
