@@ -99,6 +99,7 @@ endif
 CHIBIOS = ${axoloti_home}/chibios
 
 include board.mk
+
 # Startup files.
 include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
 # HAL-OSAL files (optional).
@@ -110,7 +111,6 @@ include $(CHIBIOS)/os/rt/rt.mk
 include $(CHIBIOS)/os/rt/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # FAT stuff
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
-	
 	
 # Define linker script file here
 LDSCRIPT= STM32F427xG_flasher.ld
@@ -164,26 +164,18 @@ ASMSRC = $(STARTUPASM) \
         $(PORTASM)
 
 INCDIR = ../ \
-		 $(PORTINC) $(KERNINC) $(TESTINC) \
-         $(HALINC) $(PLATFORMINC) $(BOARDINC) \
-         $(FATFSINC) \
-         $(CHIBIOS)/os/various \
-         ../STM32F4xx_HAL_Driver/Inc 
-INCDIR = ../ \
   $(CMSIS)/Core/Include \
   $(CMSIS)/DSP/Include \
-        $(PORTINC) $(KERNINC) $(TESTINC) \
-        $(HALINC) $(PLATFORMINC) $(BOARDINC) \
-        $(FATFSINC) \
-  $(FATFSINC) \
-        $(OSALINC) \
+  $(PORTINC) $(KERNINC) $(TESTINC) \
+  $(HALINC) $(PLATFORMINC) $(BOARDINC) \
+  $(FATFSINC) $(OSALINC) \
   $(CHIBIOS) \
-        $(CHIBIOS)/os/various \
+  $(CHIBIOS)/os/various \
   $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC \
-        $(CHIBIOS)/os/common/ports/ARMCMx/devices/STM32F4xx \
-        $(CHIBIOS)/os/ext/CMSIS/include \
-        $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx \
-        $(CHIBIOS)/os/hal/lib/streams \
+  $(CHIBIOS)/os/common/ports/ARMCMx/devices/STM32F4xx \
+  $(CHIBIOS)/os/ext/CMSIS/include \
+  $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx \
+  $(CHIBIOS)/os/hal/lib/streams
 
 #
 # Project, sources and paths
@@ -265,6 +257,7 @@ UDEFS = \
     -DARM_MATH_CM4 \
     -D__FPU_PRESENT \
     -DCRT1_AREAS_NUMBER=0 
+
 # Define ASM defines here
 UADEFS =
 

@@ -51,13 +51,18 @@ public class ParameterInstanceFrac32SMapVSlider extends ParameterInstanceFrac32S
 
     @Override
     public String GenerateCodeInit(String vprefix, String StructAccces) {
-        return "";
+        String s = /*I+I+I + "SetKVP_IPVP(&" + StructAccces + KVPName(vprefix) + ", ObjectKvpRoot, "
+                 + "&" + PExName(vprefix) + ", "
+                 + (((ParameterFrac32SMapVSlider) parameter).MinValue.getRaw()) + ", "
+                 + (((ParameterFrac32SMapVSlider) parameter).MaxValue.getRaw()) + ");\n"
+                 + I+I+I + "KVP_RegisterObject(&" + StructAccces + KVPName(vprefix) + ");\n"*/ "";
+        return s;
     }
 
-    // @Override
-    // public String GenerateCodeDeclaration(String vprefix) {
-    //     return "";
-    // }
+    @Override
+    public String GenerateCodeDeclaration(String vprefix) {
+        return "KeyValuePair " + KVPName(vprefix) + ";\n";
+    }
 
     @Override
     public String GenerateCodeMidiHandler(String vprefix) {

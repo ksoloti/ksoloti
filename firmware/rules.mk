@@ -275,13 +275,13 @@ endif
 %.dmp: %.elf
 ifeq ($(USE_VERBOSE_COMPILE),yes)
 	$(OD) $(ODFLAGS) "$<" > "$@"
-	$(SZ) --format=sysv $<
+	$(SZ) -x --format=sysv $<
 	$(SZ) $<
 else
 	@echo Creating $@
 	@$(OD) $(ODFLAGS) "$<" > "$@"
 	@echo
-	@$(SZ) --format=sysv $<
+	@$(SZ) -x --format=sysv $<
 	@$(SZ) $<
 	@echo
 endif

@@ -436,7 +436,7 @@
  *          some test cases into the test suite.
  */
 #if !defined(CH_DBG_THREADS_PROFILING) || defined(__DOXYGEN__)
-#define CH_DBG_THREADS_PROFILING        TRUE
+#define CH_DBG_THREADS_PROFILING        FALSE
 #endif
 
 /** @} */

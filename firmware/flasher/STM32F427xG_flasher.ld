@@ -24,8 +24,8 @@
 
 MEMORY
 {
-    SRAM (rwx) : ORIGIN = 0x00011000, LENGTH = 0x00009000 
-    CCMSRAM (rwx) : ORIGIN = 0x10000000, LENGTH = 0x0000C800 /* CCM - ccmramend */
+    CCMSRAM (rwx) : ORIGIN = 0x10000000, LENGTH = 0x0000E000 /* CCM - ccmramend */
+    SRAM (rwx)    : ORIGIN = 0x00011000, LENGTH = 0x00009000 
 }
 
 __main_stack_size__     = 0x400;
@@ -111,7 +111,7 @@ SECTIONS
     {
         . = ALIGN(4);
         PROVIDE(_data = .);
-	_textdata_start = LOADADDR(.data);
+	    _textdata_start = LOADADDR(.data);
         _data_start = .;
         *(.data)
         . = ALIGN(4);
@@ -120,7 +120,7 @@ SECTIONS
         *(.ramtext)
         . = ALIGN(4);
         PROVIDE(_edata = .);
-	_data_end = .;
+	    _data_end = .;
     } > SRAM
 
     .bss :

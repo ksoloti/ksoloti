@@ -37,13 +37,19 @@ public class ParameterInstanceBin1Momentary extends ParameterInstanceInt32 {
 
     @Override
     public String GenerateCodeInit(String vprefix, String StructAccces) {
-        return "";
+        String s = "    " + signalsName(vprefix) + " = 0;\n"
+                + I+I+I + "SetKVP_IPVP(&" + StructAccces + KVPName(vprefix) + ", ObjectKvpRoot, "
+                + "&" + PExName(vprefix) + ", "
+                + 0 + ", "
+                + ((1 << 16) - 1) + ");\n"
+                + I+I+I + "KVP_RegisterObject(&" + StructAccces + KVPName(vprefix) + ");\n";
+        return s;
     }
 
-    // @Override
-    // public String GenerateCodeDeclaration(String vprefix) {
-    //     return "";
-    // }
+    @Override
+    public String GenerateCodeDeclaration(String vprefix) {
+        return "KeyValuePair " + KVPName(vprefix) + ";\n";
+    }
 
     @Override
     public String GenerateCodeMidiHandler(String vprefix) {

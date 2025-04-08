@@ -66,12 +66,12 @@ remove_temp_files()
 
     rm     ./firmware/build/*.dmp
     rm     ./firmware/build/*.hex
-    # rm     ./firmware/build/*.list
+    rm     ./firmware/build/*.list
     rm     ./firmware/build/*.map
 
     rm     ./firmware/*/*_build/*.dmp
     rm     ./firmware/*/*_build/*.hex
-    # rm     ./firmware/*/*_build/*.list
+    rm     ./firmware/*/*_build/*.list
     rm     ./firmware/*/*_build/*.map
 
 

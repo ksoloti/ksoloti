@@ -24,6 +24,7 @@
 #include "ch.h"
 #include "hal.h"
 #include "ui.h"
+#include "stm32f4xx_hal_i2c.h"
 #include "axoloti_board.h"
 #include "midi.h"
 #include "crc32.h"
@@ -96,6 +97,10 @@ extern uint8_t hid_mouse_y;
 
 extern uint8_t hid_keys[6];
 extern uint8_t hid_key_modifiers;
+
+extern I2C_HandleTypeDef onboard_i2c_handle;
+extern uint8_t i2crxbuf[8];
+extern uint8_t i2ctxbuf[8];
 
 void InitPatch0(void);
 int StartPatch(void);

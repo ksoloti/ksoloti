@@ -393,9 +393,9 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         return "";
     }
 
-    // public String GenerateCodeDeclaration(String vprefix) {
-    //     return "";//("#define " + indexName() + " " + index + "\n");
-    // }
+    public String GenerateCodeDeclaration(String vprefix) {
+        return "";//("#define " + indexName() + " " + index + "\n");
+    }
 
     public abstract String GenerateCodeInit(String vprefix, String StructAccces);
 
