@@ -207,7 +207,7 @@ static void ADAU_I2C_Init(void) {
     if(HAL_I2C_GetState(&onboard_i2c_handle) == HAL_I2C_STATE_RESET) {
         /* DISCOVERY_I2Cx peripheral configuration */
         onboard_i2c_handle.Init.ClockSpeed = 400000;
-        onboard_i2c_handle.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
+        onboard_i2c_handle.Init.DutyCycle = I2C_DUTYCYCLE_2;
         onboard_i2c_handle.Init.OwnAddress1 = 0x33;
         onboard_i2c_handle.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
 #if defined(BOARD_KSOLOTI_CORE)
