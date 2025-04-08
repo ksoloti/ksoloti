@@ -66,9 +66,10 @@ static void  __attribute__((optimize("-O0"))) HandleError(void)
   AddOverunLog(ltErrorBefore____);
 
   // notify
-  chSysLockFromIsr();
-  chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_ERROR);
-  chSysUnlockFromIsr();
+  if(port_is_isr_context()) 
+    chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_ERROR);
+  else
+    chEvtBroadcastFlags(&ADU1.event, AUDIO_EVENT_ERROR);
   
   // ok we are all out of sync, try to recover
   aduState.state = asNeedsReset;
@@ -1192,9 +1193,10 @@ FORCE_INLINE static void aduCodecFrameEnded(void)
       if(!aduClockWarned)
       {
         aduClockWarned = true;
-        chSysLockFromIsr();
-        chEvtBroadcastFlagsI(&ADU1.event, (aduState.codecMetricsSampleOffset > 0) ? AUDIO_EVENT_CLOCK_SLOW : AUDIO_EVENT_CLOCK_FAST);
-        chSysUnlockFromIsr();
+        if(port_is_isr_context()) 
+          chEvtBroadcastFlagsI(&ADU1.event, (aduState.codecMetricsSampleOffset > 0) ? AUDIO_EVENT_CLOCK_SLOW : AUDIO_EVENT_CLOCK_FAST);
+        else
+          chEvtBroadcastFlags(&ADU1.event, (aduState.codecMetricsSampleOffset > 0) ? AUDIO_EVENT_CLOCK_SLOW : AUDIO_EVENT_CLOCK_FAST);
       }
 
       // ok we are out of sync, adjust to sync
@@ -1346,9 +1348,10 @@ static void aduInitiateTransmitI(USBDriver *usbp)
       AddOverunLog(ltTxRxSynced_____);
 
       // notify
-      chSysLockFromIsr();
-      chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_SYNCED);
-      chSysUnlockFromIsr();
+      if(port_is_isr_context()) 
+        chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_SYNCED);
+      else
+        chEvtBroadcastFlags(&ADU1.event, AUDIO_EVENT_SYNCED);      
 
       aduState.state = asNormal;
     }
