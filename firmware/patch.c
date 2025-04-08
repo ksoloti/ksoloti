@@ -36,14 +36,16 @@
 #include "analyser.h"
 
 #if FW_USBAUDIO     
-extern void aduDataExchange (int32_t *in, int32_t *out);
+extern void aduDataExchangeResample (int32_t *in, int32_t *out);
+extern void aduDataExchangeNoResample (int32_t *in, int32_t *out);
+bool usbAudioResample = false;
 #endif
 
 #define STACKSPACE_MARGIN 32
 // #define DEBUG_PATCH_INT_ON_GPIO 1
 
 #if USE_NONTHREADED_FIFO_PUMP
-extern volatile uint32_t fifoTicksUsed;
+extern uint32_t fifoTicksUsed;
 #endif 
 
 enum DSPThreadSignal {
@@ -56,7 +58,7 @@ patchMeta_t patchMeta;
 
 volatile patchStatus_t patchStatus;
 
-uint32_t     dspLoad200; // DSP load: Values 0-200 correspond to 0-100%
+uint32_t dspLoad200; // DSP load: Values 0-200 correspond to 0-100%
 
 uint32_t DspTime;
 
@@ -312,14 +314,18 @@ static int StartPatch1(void) {
         AnalyserSetChannel(acUsbDSP, true);
         if (evt == EVENT_START_DSP_CYCLE) {
 #if FW_USBAUDIO             
-            uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost - DSP_USB_AUDIO_FIRMWARE_COST;;
+            volatile uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost - DSP_USB_AUDIO_FIRMWARE_COST;;
             if(aduIsUsbInUse())
                 uDspTimeslice -= DSP_USB_AUDIO_STREAMING_COST;
+            if(usbAudioResample)
+                uDspTimeslice -= DSP_USB_AUDIO_RESAMPLE_COST;
 #else
             uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost;
 #endif
-            static uint32_t tStart;
+            static volatile uint32_t tStart;
+#if USE_NONTHREADED_FIFO_PUMP                
             fifoTicksUsed = 0;
+#endif
             tStart = hal_lld_get_counter_value();
             watchdog_feed();
 
@@ -351,10 +357,22 @@ static int StartPatch1(void) {
             }
 
             adc_convert();
+            uint32_t tEnd = hal_lld_get_counter_value();
+            uint32_t tTaken;
+            if(tEnd < tStart)
+                tTaken = ((uint32_t)0xFFFFFFFF-tStart) + tEnd;
+            else
+                tTaken = (tEnd - tStart);
 
-            DspTime = RTT2US(hal_lld_get_counter_value() - tStart);
-            uint32_t FifoTime = RTT2US(fifoTicksUsed);
-            DspTime -= FifoTime;
+            DspTime = RTT2US(tTaken);
+
+#if USE_NONTHREADED_FIFO_PUMP                
+            volatile uint32_t FifoTime = RTT2US(fifoTicksUsed);
+            if(FifoTime > DspTime)
+                DspTime = 0;
+            else
+                DspTime -= FifoTime;
+#endif
 #if USE_MOVING_AVERAGE
             ma_add(&ma, DspTime);
 #endif
@@ -576,7 +594,10 @@ void computebufI(int32_t* inp, int32_t* outp) {
     outbuf = outp;
 
 #if FW_USBAUDIO     
-    aduDataExchange(inbufUsb, outbufUsb);
+    if(usbAudioResample)
+        aduDataExchangeResample(inbufUsb, outbufUsb);
+    else
+        aduDataExchangeNoResample(inbufUsb, outbufUsb);
 #endif
 
     chSysLockFromIsr();

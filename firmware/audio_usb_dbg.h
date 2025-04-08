@@ -65,7 +65,7 @@ typedef struct _OverrunDebug
 //  uint16_t txCurrentRingBufferSize;
 } __attribute__((packed)) OverrunDebug;
 
-OverrunDebug overrunDebug[ADU_OVERRUN_LOG_SIZE]   __attribute__ ((section (".sram3")));
+OverrunDebug overrunDebug[ADU_OVERRUN_LOG_SIZE]   __attribute__ ((section (".sdram")));
 uint16_t uLogIndex = 0;
 
 void AddOverunLog(LogType type)
@@ -91,11 +91,6 @@ void AddOverunLog(LogType type)
     }
     else
       overrunDebug[uLogIndex].C = aduState.rxRingBufferWriteOffset - aduState.rxRingBufferReadOffset;
-
-    if(overrunDebug[uLogIndex].C != overrunDebug[uLogIndex].rxUsedSize)
-    {
-      volatile bp = 1;
-    };
 
     uLogIndex++;
     if(uLogIndex == ADU_OVERRUN_LOG_SIZE)

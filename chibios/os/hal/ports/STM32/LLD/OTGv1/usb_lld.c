@@ -311,7 +311,9 @@ static void otg_fifo_read_to_buffer_speedup(volatile uint32_t *fifop,
  * @notapi
  */
 static void otg_rxfifo_handler(USBDriver *usbp) {
+#if USE_NONTHREADED_FIFO_PUMP  
   uint32_t start = DWT->CYCCNT;
+#endif
   AnalyserSetChannel(acUsbFifoRx, true);
 
   uint32_t sts, cnt, ep;
@@ -366,7 +368,9 @@ static void otg_rxfifo_handler(USBDriver *usbp) {
   }
 
   AnalyserSetChannel(acUsbFifoRx, false);
+#if USE_NONTHREADED_FIFO_PUMP  
   fifoTicksUsed += DWT->CYCCNT - start;
+#endif
 }
 
 /**
@@ -378,7 +382,9 @@ static void otg_rxfifo_handler(USBDriver *usbp) {
  * @notapi
  */
 static bool otg_txfifo_handler(USBDriver *usbp, usbep_t ep) {
+#if USE_NONTHREADED_FIFO_PUMP      
   uint32_t start = DWT->CYCCNT;
+#endif
   AnalyserSetChannel(acUsbFifoTx, true);
   /* The TXFIFO is filled until there is space and data to be transmitted.*/
   while (true) {
@@ -389,9 +395,9 @@ static bool otg_txfifo_handler(USBDriver *usbp, usbep_t ep) {
     {
 #if USE_NONTHREADED_FIFO_PUMP      
       usbp->otg->DIEPEMPMSK &= ~DIEPEMPMSK_INEPTXFEM(ep);
+      fifoTicksUsed += DWT->CYCCNT - start;
 #endif
       AnalyserSetChannel(acUsbFifoTx, false);
-      fifoTicksUsed += DWT->CYCCNT - start;
       return true;
     }
 
@@ -404,8 +410,10 @@ static bool otg_txfifo_handler(USBDriver *usbp, usbep_t ep) {
        next packet.*/
     if (((usbp->otg->ie[ep].DTXFSTS & DTXFSTS_INEPTFSAV_MASK) * 4) < n) {
         AnalyserSetChannel(acUsbFifoTx, false);
+#if USE_NONTHREADED_FIFO_PUMP      
         fifoTicksUsed += DWT->CYCCNT - start;
-          return false;
+#endif
+        return false;
     }
 
 #if STM32_USB_OTGFIFO_FILL_BASEPRI
