@@ -8,14 +8,14 @@
 
 
 #if ENABLE_SERIAL_DEBUG
-void LogUartMessage(const char *format, ...)
+void FRAMTEXT_CODE_SECTION LogUartMessage(const char *format, ...)
 {
   va_list ap;
   va_start(ap, format);
   chvprintf((BaseSequentialStream *)&SD2, format, ap);
   va_end(ap);
 }
-void LogUartMessageEol(const char *format, ...)
+void FRAMTEXT_CODE_SECTION LogUartMessageEol(const char *format, ...)
 {
   va_list ap;
   va_start(ap, format);
@@ -24,10 +24,10 @@ void LogUartMessageEol(const char *format, ...)
   chprintf((BaseSequentialStream *)&SD2, "\n");
 }
 #else
-void LogUartMessage(const char *format, ...)
+void FRAMTEXT_CODE_SECTION LogUartMessage(const char *format, ...)
 {
 }
-void LogUartMessageEol(const char *format, ...)
+void FRAMTEXT_CODE_SECTION LogUartMessageEol(const char *format, ...)
 {
 }
 #endif
