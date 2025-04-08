@@ -245,30 +245,45 @@ int main(void) {
         uint32_t  evt = chEvtGetAndClearFlags(&audioEventListener);
 
         if(evt & AUDIO_EVENT_USB_CONFIGURED)
-            LogTextMessage("Audio USB Configured.");
+            LogTextMessage("USB Audio Configured.");
         else if(evt & AUDIO_EVENT_USB_SUSPEND)
-            LogTextMessage("Audio USB Suspend");
+            LogTextMessage("USB Audio Suspend");
         else if(evt & AUDIO_EVENT_USB_WAKEUP)
-            LogTextMessage("Audio USB Wakeup.");
+            LogTextMessage("USB Audio Wakeup.");
         else if(evt & AUDIO_EVENT_USB_STALLED)
-            LogTextMessage("Audio USB Stalled.");
+            LogTextMessage("USB Audio Stalled.");
         else if(evt & AUDIO_EVENT_USB_RESET)
-            LogTextMessage("Audio USB Reset.");
+            LogTextMessage("USB Audio Reset.");
         else if(evt & AUDIO_EVENT_USB_ENABLE)
-            LogTextMessage("Audio USB Enable.");
+            LogTextMessage("USB Audio Enable.");
         else if(evt & AUDIO_EVENT_MUTE)
-            LogTextMessage("Audio mute changed.");
+            LogTextMessage("USB Audio mute changed.");
         else if(evt & AUDIO_EVENT_VOLUME)
-            LogTextMessage("Audio volume changed.");
+            LogTextMessage("USB Audio volume changed.");
         else if(evt & AUDIO_EVENT_INPUT)
-            LogTextMessage("Audio input state changed = %u", aduState.isInputActive);
+            LogTextMessage("USB Audio input %s", (aduState.isInputActive) ? "connected." : "disconnected");
         else if(evt & AUDIO_EVENT_OUTPUT)
-            LogTextMessage("Audio output state changed = %u", aduState.isOutputActive);
+            LogTextMessage("USB Audio output %s", (aduState.isOutputActive) ? "connected." : "disconnected");
         else if(evt & AUDIO_EVENT_FORMAT)
-            LogTextMessage("Audio Format type changed = %u", aduState.currentSampleRate);
+            LogTextMessage("USB Audio Format type changed = %u", aduState.currentSampleRate);
+        else if(evt & AUDIO_EVENT_SYNCING)
+            LogTextMessage("USB Audio Syncing...");
+        else if(evt & AUDIO_EVENT_SYNCED)
+            LogTextMessage("USB Audio Synced.");
+        else if(evt & AUDIO_EVENT_CLOCK_SLOW)
+            LogTextMessage("Host USB clock is slow.");
+        else if(evt & AUDIO_EVENT_CLOCK_FAST)
+            LogTextMessage("Host USB clock is fast.");
 
-        connectionFlags.usbActive = aduIsUsbInUse();
-        LogTextMessage("connectionFlags.usbActive = %u", connectionFlags.usbActive );
+        if(connectionFlags.usbActive != aduIsUsbInUse())
+        {
+            connectionFlags.usbActive = aduIsUsbInUse();   
+            if(aduIsUsbInUse())
+                LogTextMessage("USB Audio is being used."); 
+            else
+                LogTextMessage("USB Audio is not being used."); 
+        }
+
     }
 #else
     while (1) {

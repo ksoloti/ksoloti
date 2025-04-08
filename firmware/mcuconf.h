@@ -48,7 +48,7 @@
 // KVP_DATA_SECTION - KVP need sorting out properly
 // FAST_DATA_SECTION - not really needed as .bss is already in ram5
 
-#define DEBUG_DATA_SECTION      __attribute__ ((section (".ram4"))) __attribute__ ((aligned (32)))
+#define DEBUG_DATA_SECTION      __attribute__ ((section (".ram2"))) __attribute__ ((aligned (32)))
 #define CODEC_DMA_SECTION       __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)))
 #define USB_AUDIO_DATA_SECTION  __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)))
 #define ADC_DMA_DATA_SECTION1   __attribute__ ((section (".ram3"))) __attribute__ ((aligned (32)))
@@ -453,8 +453,8 @@
  */
 #define STM32_USB_USE_OTG1                  TRUE
 #define STM32_USB_USE_OTG2                  FALSE
-#define STM32_USB_OTG1_IRQ_PRIORITY         14
-#define STM32_USB_OTG2_IRQ_PRIORITY         14
+#define STM32_USB_OTG1_IRQ_PRIORITY         3
+#define STM32_USB_OTG2_IRQ_PRIORITY         3
 #define STM32_USB_OTG1_RX_FIFO_SIZE         512
 #define STM32_USB_OTG2_RX_FIFO_SIZE         1024
 #define STM32_USB_OTG_THREAD_STACK_SIZE     128
@@ -467,8 +467,8 @@
  */
 #define STM32_USB_USE_OTG1                  TRUE
 #define STM32_USB_USE_OTG2                  FALSE
-#define STM32_USB_OTG1_IRQ_PRIORITY         14
-#define STM32_USB_OTG2_IRQ_PRIORITY         14
+#define STM32_USB_OTG1_IRQ_PRIORITY         3
+#define STM32_USB_OTG2_IRQ_PRIORITY         3
 #define STM32_USB_OTG1_RX_FIFO_SIZE         512
 #define STM32_USB_OTG2_RX_FIFO_SIZE         1024
 #define STM32_USB_OTG_THREAD_STACK_SIZE     128
@@ -479,7 +479,8 @@
 #define DSP_CODEC_TIMESLICE                 3333
 #define DSP_UI_MIDI_COST                    100
 #define DSP_USB_AUDIO_FIRMWARE_COST         5
-#define DSP_USB_AUDIO_STREAMING_COST        65
+#define DSP_USB_AUDIO_STREAMING_COST        20
+#define DSP_USB_AUDIO_RESAMPLE_COST         50
 #define DSP_LIMIT200                        200
 
 #define USE_EXTERNAL_USB_FIFO_PUMP          0
@@ -814,8 +815,8 @@
  */
 #define STM32_USB_USE_OTG1                  TRUE
 #define STM32_USB_USE_OTG2                  FALSE
-#define STM32_USB_OTG1_IRQ_PRIORITY         14
-#define STM32_USB_OTG2_IRQ_PRIORITY         14
+#define STM32_USB_OTG1_IRQ_PRIORITY         3
+#define STM32_USB_OTG2_IRQ_PRIORITY         3
 #define STM32_USB_OTG1_RX_FIFO_SIZE         512
 #define STM32_USB_OTG2_RX_FIFO_SIZE         1024
 #define STM32_USB_OTG_THREAD_STACK_SIZE     128
@@ -826,7 +827,8 @@
 #define DSP_CODEC_TIMESLICE                 3333
 #define DSP_UI_MIDI_COST                    100
 #define DSP_USB_AUDIO_FIRMWARE_COST         5
-#define DSP_USB_AUDIO_STREAMING_COST        65
+#define DSP_USB_AUDIO_STREAMING_COST        20
+#define DSP_USB_AUDIO_RESAMPLE_COST         50
 #define DSP_LIMIT200                        200
 
 #define USE_EXTERNAL_USB_FIFO_PUMP          0

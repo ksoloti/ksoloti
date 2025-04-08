@@ -33,34 +33,40 @@
 #include "spilink.h"
 #endif
 #include "audio_usb.h"
+#include "analyser.h"
 #include "debug.h"
 
-#ifdef FW_I2SCODEC
-#include "i2scodec.h"
-#endif
-
 #if FW_USBAUDIO     
-extern void aduDataExchange (int32_t *in, int32_t *out);
+extern void aduDataExchangeResample (int32_t *in, int32_t *out);
+extern void aduDataExchangeNoResample (int32_t *in, int32_t *out);
+bool usbAudioResample = false;
 #endif
-
-#if USE_EXTERNAL_USB_FIFO_PUMP
-extern void usb_lld_external_pump(void);
-#endif 
 
 #define STACKSPACE_MARGIN 32
 // #define DEBUG_PATCH_INT_ON_GPIO 1
+
+#if USE_NONTHREADED_FIFO_PUMP
+extern uint32_t fifoTicksUsed;
+#endif 
+
+enum DSPThreadSignal {
+    EVENT_START_DSP_CYCLE = 1,
+    EVENT_LOAD_PATCH  = 2,
+    EVENT_START_PATCH   = 4
+};
 
 patchMeta_t patchMeta;
 
 volatile patchStatus_t patchStatus;
 
-uint32_t     dspLoad200; // DSP load: Values 0-200 correspond to 0-100%
+uint32_t dspLoad200; // DSP load: Values 0-200 correspond to 0-100%
 
 uint32_t DspTime;
 
 char loadFName[64] = "";
 loadPatchIndex_t loadPatchIndex = UNINITIALIZED;
 static const char* index_fn = "/index.axb";
+static const char* startbin_fn = "/start.bin";
 
 static int32_t inbuf[32];
 static int32_t* outbuf;
@@ -115,31 +121,6 @@ void SetPatchSafety(uint16_t uUIMidiCost, uint8_t uDspLimit200)
 
 static void SetPatchStatus(patchStatus_t status)
 {
-    if(patchStatus != status)
-    {
-        if(status == RUNNING)
-        {
-            // DSP priority
-            chThdSetPriority(PATCH_DSP_PRIO);
-#if USE_EXTERNAL_USB_FIFO_PUMP
-            // Switch to external fifo pump
-            usb_lld_use_external_pump(true);
-#endif
-        }
-        else
-        {
-            // Normal priority
-            chThdSetPriority(PATCH_NORMAL_PRIO);
-
-#if USE_EXTERNAL_USB_FIFO_PUMP
-            if(patchStatus == RUNNING)
-            {
-                // switch to fifo pump thread.
-                usb_lld_use_external_pump(false);
-            }
-#endif
-        }
-    }
     patchStatus = status;    
 }
 
@@ -277,7 +258,9 @@ static int StartPatch1(void) {
     sdcard_attemptMountIfUnmounted();
 
     /* Reinit pin configuration for ADC */
+#if !ANALYSE_USB_AUDIO    
     adc_configpads();
+#endif
 
 #if BOARD_KSOLOTI_CORE_H743
     SCB_CleanInvalidateDCache();
@@ -295,9 +278,9 @@ static int StartPatch1(void) {
     patchMeta.fptr_dsp_process = 0;
     nThreadsBeforePatch = GetNumberOfThreads();
     patchMeta.fptr_patch_init = (fptr_patch_init_t)(PATCHMAINLOC + 1);
-    int nFirmwareId = GetFirmwareID();
+    int firmwareId = GetFirmwareID();
 
-    (patchMeta.fptr_patch_init)(nFirmwareId);
+    (patchMeta.fptr_patch_init)(firmwareId);
 
     if (patchMeta.fptr_dsp_process == 0) {
         report_patchLoadFail((const char*) &loadFName[0]);
@@ -332,22 +315,28 @@ static int StartPatch1(void) {
 #endif
 
     while (1) {
-
 #ifdef DEBUG_PATCH_INT_ON_GPIO
+        palSetPadMode(GPIOA, 2, PAL_MODE_OUTPUT_PUSHPULL);
         palSetPad(GPIOA, 2);
 #endif
 
         /* Codec DSP cycle */
         eventmask_t evt = chEvtWaitOne((eventmask_t)7);
-        if (evt == 1) {
+        AnalyserSetChannel(acUsbDSP, true);
+        if (evt == EVENT_START_DSP_CYCLE) {
 #if FW_USBAUDIO             
-            uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost - DSP_USB_AUDIO_FIRMWARE_COST;;
+            volatile uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost - DSP_USB_AUDIO_FIRMWARE_COST;;
             if(aduIsUsbInUse())
                 uDspTimeslice -= DSP_USB_AUDIO_STREAMING_COST;
+            if(usbAudioResample)
+                uDspTimeslice -= DSP_USB_AUDIO_RESAMPLE_COST;
 #else
             uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost;
 #endif
-            static uint32_t tStart;
+            static volatile uint32_t tStart;
+#if USE_NONTHREADED_FIFO_PUMP                
+            fifoTicksUsed = 0;
+#endif
             tStart = hal_lld_get_counter_value();
             watchdog_feed();
 
@@ -379,9 +368,22 @@ static int StartPatch1(void) {
             }
 
             adc_convert();
+            uint32_t tEnd = hal_lld_get_counter_value();
+            uint32_t tTaken;
+            if(tEnd < tStart)
+                tTaken = ((uint32_t)0xFFFFFFFF-tStart) + tEnd;
+            else
+                tTaken = (tEnd - tStart);
 
-            DspTime = RTT2US(hal_lld_get_counter_value() - tStart);
+            DspTime = RTT2US(tTaken);
 
+#if USE_NONTHREADED_FIFO_PUMP                
+            volatile uint32_t FifoTime = RTT2US(fifoTicksUsed);
+            if(FifoTime > DspTime)
+                DspTime = 0;
+            else
+                DspTime -= FifoTime;
+#endif
 #if USE_MOVING_AVERAGE
             ma_add(&ma, DspTime);
 #endif
@@ -395,6 +397,7 @@ static int StartPatch1(void) {
 
 
             if (dspLoad200 > uPatchUsbLimit200) {
+                AnalyserSetChannel(acDspOverload, true);
                 /* Overload: clear output buffers and give other processes a chance */
                 codec_clearbuffer();
 
@@ -405,14 +408,13 @@ static int StartPatch1(void) {
                 // LogTextMessage("DSP overrun");
                 connectionFlags.dspOverload = true;
 
+                AnalyserSetChannel(acDspOverload, false);
+
                 /* DSP overrun penalty, keeping cooperative with lower priority threads */
                 chThdSleepMilliseconds(1);
             }
-#if USE_EXTERNAL_USB_FIFO_PUMP            
-            usb_lld_external_pump();
-#endif
         }
-        else if (evt == 2) {
+        else if (evt == EVENT_LOAD_PATCH) {
             /* load patch event */
             codec_clearbuffer();
             #if FW_USBAUDIO
@@ -422,25 +424,22 @@ static int StartPatch1(void) {
             StopPatch1();
             SetPatchStatus(STOPPED);
 
-            if (loadFName[0]) {
-                int res = sdcard_loadPatch1(loadFName);
-                if (!res) StartPatch1();
-            }
-            else if (loadPatchIndex == START_FLASH) {
-                // Patch in flash sector 11 on F4 sector 8 on H7
-                #if PATCH_ITCM
-                    #pragma GCC diagnostic ignored "-Wnonnull"
-                #endif                 
+            if (loadPatchIndex == START_FLASH) {
+                #pragma GCC diagnostic push
+                #pragma GCC diagnostic ignored "-Wnonnull"                
+                /* Patch in flash sector 11 */
                 memcpy((uint8_t*) PATCHMAINLOC, (uint8_t*) PATCHFLASHLOC, PATCHFLASHSIZE);
-                #if PATCH_ITCM
-                    #pragma GCC diagnostic pop
-                #endif      
+                #pragma GCC diagnostic pop
                 if ((*(uint32_t*) PATCHMAINLOC != 0xFFFFFFFF) && (*(uint32_t*) PATCHMAINLOC != 0)) {
                     StartPatch1();
                 }
             }
             else if (loadPatchIndex == START_SD) {
-                strcpy(&loadFName[0], "/start.bin");
+                strcpy(&loadFName[0], startbin_fn);
+                int res = sdcard_loadPatch1(loadFName);
+                if (!res) StartPatch1();
+            }
+            else if (loadFName[0]) {
                 int res = sdcard_loadPatch1(loadFName);
                 if (!res) StartPatch1();
             }
@@ -508,7 +507,7 @@ static int StartPatch1(void) {
 
                             if (patchStatus != RUNNING) {
                                 loadPatchIndex = START_SD;
-                                strcpy(&loadFName[0], "/start.bin");
+                                strcpy(&loadFName[0], startbin_fn);
                                 res = sdcard_loadPatch1(loadFName);
                                 if (!res) StartPatch1();
                             }
@@ -527,7 +526,7 @@ static int StartPatch1(void) {
                 if (!bytes_read) {
                     LogTextMessage("Patch load out of range: %d", loadPatchIndex);
                     loadPatchIndex = START_SD;
-                    strcpy(&loadFName[0], "/start.bin");
+                    strcpy(&loadFName[0], startbin_fn);
                     int res = sdcard_loadPatch1(loadFName);
                     if (!res) StartPatch1();
                 }
@@ -535,7 +534,7 @@ static int StartPatch1(void) {
                 cont: ;
             }
         }
-        else if (evt == 4) {
+        else if (evt == EVENT_START_PATCH) {
             /* Start patch */
             codec_clearbuffer();
             #if FW_USBAUDIO
@@ -547,7 +546,7 @@ static int StartPatch1(void) {
 #ifdef DEBUG_PATCH_INT_ON_GPIO
         palClearPad(GPIOA, 2);
 #endif
-
+        AnalyserSetChannel(acUsbDSP, false);
     }
     // return (msg_t)0;
 }
@@ -571,7 +570,7 @@ void StopPatch(void) {
 
 
 int StartPatch(void) {
-    chEvtSignal(pThreadDSP, (eventmask_t)4);
+    chEvtSignal(pThreadDSP, (eventmask_t)EVENT_START_PATCH);
 
     while ((patchStatus != RUNNING) && (patchStatus != STARTFAILED)) {
         chThdSleepMilliseconds(1);
@@ -596,7 +595,7 @@ void start_dsp_thread(void) {
 #endif
 
     if (!pThreadDSP)
-        pThreadDSP = chThdCreateStatic(waThreadDSP, sizeof(waThreadDSP), PATCH_DSP_PRIO, (void*) ThreadDSP, NULL);
+        pThreadDSP = chThdCreateStatic(waThreadDSP, sizeof(waThreadDSP), PATCH_NORMAL_PRIO, (void*) ThreadDSP, NULL);
 }
 
 
@@ -609,11 +608,14 @@ void computebufI(int32_t* inp, int32_t* outp) {
     outbuf = outp;
 
 #if FW_USBAUDIO     
-    aduDataExchange(inbufUsb, outbufUsb);
+    if(usbAudioResample)
+        aduDataExchangeResample(inbufUsb, outbufUsb);
+    else
+        aduDataExchangeNoResample(inbufUsb, outbufUsb);
 #endif
 
     chSysLockFromIsr();
-    chEvtSignalI(pThreadDSP, (eventmask_t)1);
+    chEvtSignalI(pThreadDSP, (eventmask_t)EVENT_START_DSP_CYCLE);
     chSysUnlockFromIsr();
 }
 
@@ -644,7 +646,8 @@ void LoadPatch(const char* name) {
 
 
 void LoadPatchStartSD(void) {
-    strcpy(loadFName, "/start.bin");
+    palClearPad(LED1_PORT, LED1_PIN);
+    strcpy(loadFName, startbin_fn);
     loadPatchIndex = START_SD;
     chEvtSignal(pThreadDSP, (eventmask_t)2);
     chThdSleepMilliseconds(50);
