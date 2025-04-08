@@ -45,14 +45,14 @@ bool usbAudioResample = false;
 // #define DEBUG_PATCH_INT_ON_GPIO 1
 
 #if USE_NONTHREADED_FIFO_PUMP
-extern volatile uint32_t fifoTicksUsed;
+extern uint32_t fifoTicksUsed;
 #endif 
 
 patchMeta_t patchMeta;
 
 volatile patchStatus_t patchStatus;
 
-uint32_t     dspLoad200; // DSP load: Values 0-200 correspond to 0-100%
+uint32_t dspLoad200; // DSP load: Values 0-200 correspond to 0-100%
 
 uint32_t DspTime;
 
@@ -307,13 +307,15 @@ static int StartPatch1(void) {
         AnalyserSetChannel(acUsbDSP, true);
         if (evt == 1) {
 #if FW_USBAUDIO             
-            uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost - DSP_USB_AUDIO_FIRMWARE_COST;;
+            volatile uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost - DSP_USB_AUDIO_FIRMWARE_COST;;
             if(aduIsUsbInUse())
                 uDspTimeslice -= DSP_USB_AUDIO_STREAMING_COST;
+            if(usbAudioResample)
+                uDspTimeslice -= DSP_USB_AUDIO_RESAMPLE_COST;
 #else
             uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost;
 #endif
-            static uint32_t tStart;
+            static volatile uint32_t tStart;
 #if USE_NONTHREADED_FIFO_PUMP                
             fifoTicksUsed = 0;
 #endif
@@ -348,11 +350,21 @@ static int StartPatch1(void) {
             }
 
             adc_convert();
+            uint32_t tEnd = hal_lld_get_counter_value();
+            uint32_t tTaken;
+            if(tEnd < tStart)
+                tTaken = ((uint32_t)0xFFFFFFFF-tStart) + tEnd;
+            else
+                tTaken = (tEnd - tStart);
 
-            DspTime = RTT2US(hal_lld_get_counter_value() - tStart);
+            DspTime = RTT2US(tTaken);
+
 #if USE_NONTHREADED_FIFO_PUMP                
-            uint32_t FifoTime = RTT2US(fifoTicksUsed);
-            DspTime -= FifoTime;
+            volatile uint32_t FifoTime = RTT2US(fifoTicksUsed);
+            if(FifoTime > DspTime)
+                DspTime = 0;
+            else
+                DspTime -= FifoTime;
 #endif
 #if USE_MOVING_AVERAGE
             ma_add(&ma, DspTime);
