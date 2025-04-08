@@ -910,6 +910,11 @@ typedef struct __attribute__ ((packed))
 #define AUDIO_EVENT_USB_ENABLE      EVENT_MASK(10)
 #define AUDIO_EVENT_FORMAT          EVENT_MASK(11)
 #define AUDIO_EVENT_UNCONFIGURED    EVENT_MASK(12)
+#define AUDIO_EVENT_SYNCING         EVENT_MASK(13)
+#define AUDIO_EVENT_SYNCED          EVENT_MASK(14)
+#define AUDIO_EVENT_ERROR           EVENT_MASK(15)
+#define AUDIO_EVENT_CLOCK_SLOW      EVENT_MASK(16)
+#define AUDIO_EVENT_CLOCK_FAST      EVENT_MASK(17)
 
 
 
@@ -1100,13 +1105,14 @@ extern AduState aduState;
 
 extern void usb_clearbuffer(void);
 
-void aduEnableInput(USBDriver *usbp, bool bEnable);
-void aduEnableOutput(USBDriver *usbp, bool bEnable);
+static void aduEnableInput(USBDriver *usbp, bool bEnable);
+static void aduEnableOutput(USBDriver *usbp, bool bEnable);
+static void aduInitiateReceiveI(USBDriver *usbp);
+static void aduInitiateTransmitI(USBDriver *usbp);
+static void aduResetBuffers(void);
+
 void aduDataTransmitted(USBDriver *usbp, usbep_t ep); 
 void aduDataReceived(USBDriver *usbp, usbep_t ep);
-void aduInitiateReceiveI(USBDriver *usbp);
-void aduInitiateTransmitI(USBDriver *usbp);
-void aduResetBuffers(void);
 void aduReset(void);
 void aduObjectInit(AudioUSBDriver *adup);
 
@@ -1119,7 +1125,6 @@ extern "C" {
   void   aduStop(AudioUSBDriver *adup);
   void   aduConfigureHookI(AudioUSBDriver *adup);
   bool_t aduRequestsHook(USBDriver *usbp);
-  void   aduDataTransmitted(USBDriver *usbp, usbep_t ep);
   void   aduDataReceived(USBDriver *usbp, usbep_t ep);
   void   aduSofHookI(AudioUSBDriver *adup);
 

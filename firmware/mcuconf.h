@@ -300,6 +300,7 @@
 #define DSP_UI_MIDI_COST                    100
 #define DSP_USB_AUDIO_FIRMWARE_COST         5
 #define DSP_USB_AUDIO_STREAMING_COST        20
+#define DSP_USB_AUDIO_RESAMPLE_COST         50
 #define DSP_LIMIT200                        200
 
 #define USE_NONTHREADED_FIFO_PUMP           1 /* Leave at 1, please don't change */
@@ -313,7 +314,7 @@
 /*
  * Thread priority settings. v1.0.12 settings in comments for reference.
  */
-#define STM32_USB_OTG_THREAD_PRIO           HIGHPRIO-1     /* HIGHPRIO-2 */
+#define STM32_USB_OTG_THREAD_PRIO           HIGHPRIO-1   /* HIGHPRIO-2 */
 #define PATCH_DSP_PRIO                      HIGHPRIO-1   /* HIGHPRIO-1 */
 #define SPILINK_PRIO                        HIGHPRIO-1   /* HIGHPRIO-1 */
 #define UI_USB_PRIO                         HIGHPRIO-2   /* NORMALPRIO */
