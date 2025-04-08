@@ -287,8 +287,8 @@
  */
 #define STM32_USB_USE_OTG1                  TRUE
 #define STM32_USB_USE_OTG2                  FALSE
-#define STM32_USB_OTG1_IRQ_PRIORITY         3 /* these two irqs were 14, but we dont want them preempted by the codec interrupt, so set to same priority */
-#define STM32_USB_OTG2_IRQ_PRIORITY         3
+#define STM32_USB_OTG1_IRQ_PRIORITY         2 /* these two irqs were 14, but we dont want them preempted by the codec interrupt, so set to higher priority than codec */
+#define STM32_USB_OTG2_IRQ_PRIORITY         2
 #define STM32_USB_OTG1_RX_FIFO_SIZE         512
 #define STM32_USB_OTG2_RX_FIFO_SIZE         1024
 #define STM32_USB_OTG_THREAD_STACK_SIZE     128
