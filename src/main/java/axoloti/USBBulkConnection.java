@@ -536,7 +536,6 @@ public class USBBulkConnection extends Connection {
                 default:  errstr = Integer.toString(result); break;
             }
             LOGGER.log(Level.SEVERE, "USB connection failed: " + errstr);
-            Panic();
         }
     }
 
