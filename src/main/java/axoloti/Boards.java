@@ -25,6 +25,7 @@ import static axoloti.usb.Usb.PID_KSOLOTI_USBAUDIO;
 import static axoloti.usb.Usb.PID_STM_DFU;
 import static axoloti.usb.Usb.VID_AXOLOTI;
 import static axoloti.usb.Usb.VID_STM;
+import static axoloti.usb.Usb.isDFUDeviceAvailable;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -90,7 +91,8 @@ public class Boards {
     }
 
     public enum BoardMode {
-        Firmware("Firmware"),
+        NormalFirmware("Normal Firmware"),
+        USBAudioFirmware("USB Audio Firmware"),
         SDCard("SDCard"),
         DFU("DFU"),
         Unknown("Unknown");
@@ -195,6 +197,7 @@ public class Boards {
 
         @Element(required = false)
         public String path;
+
 
         BoardDetail() {
         }
@@ -341,9 +344,12 @@ public class Boards {
             mode = BoardMode.DFU;
         } if (descriptor.idVendor() == VID_AXOLOTI) {
             // Valid Vid
-            if ((descriptor.idProduct() == PID_KSOLOTI) || (descriptor.idProduct() == PID_KSOLOTI_USBAUDIO) || (descriptor.idProduct() == PID_AXOLOTI) || (descriptor.idProduct() == PID_AXOLOTI_USBAUDIO)) {
-                // Ksoloti/Axoloti running firmware
-                mode = BoardMode.Firmware;
+            if ((descriptor.idProduct() == PID_KSOLOTI) || (descriptor.idProduct() == PID_AXOLOTI)) {
+                // Ksoloti/Axoloti running normal firmware
+                mode = BoardMode.NormalFirmware;
+            }else if ((descriptor.idProduct() == PID_KSOLOTI_USBAUDIO) || (descriptor.idProduct() == PID_AXOLOTI_USBAUDIO)) {
+                // Ksoloti/Axoloti running USB Audio firmware
+                mode = BoardMode.USBAudioFirmware;
             } else if ((descriptor.idProduct() == PID_AXOLOTI_SDCARD) || (descriptor.idProduct() == PID_KSOLOTI_SDCARD)) {
                 // Axoloti Derivative running mounter
                 mode = BoardMode.SDCard;
@@ -413,6 +419,9 @@ public class Boards {
         for(BoardDetail board : BoardDetails.values()) {
             board.isConnected = false;
         }
+
+        // Remove any DFU boards
+        BoardDetails.entrySet().removeIf(e -> e.getValue().boardMode == BoardMode.DFU);
 
         DeviceList list = new DeviceList();
 
@@ -629,4 +638,12 @@ public class Boards {
         }
     }
 
+    public int getBulkInterfaceNumber() {
+        BoardDetail boardDetail = getSelectedBoardDetail();
+        if(boardDetail != null) {
+            return (boardDetail.boardMode == BoardMode.NormalFirmware) ? 2 : 4;
+        } else {
+            return 2; // Normal firmware default, should never happen
+        }
+    }
 }

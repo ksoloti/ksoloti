@@ -56,6 +56,7 @@ import components.ScrollPaneComponent;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -192,13 +193,14 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
                 int r = jTable1.getSelectedRow();
 
-                
-                cpuid = (String) model.getValueAt(r, Columns.Serial.value);
-                if(!prefs.boards.getSelectedBoardSerialNumber().equals(cpuid)) {
-                    jButtonOK.setEnabled(true);
-                } else {
-                    jButtonOK.setEnabled(false);
-                    cpuid = null;
+                if (r >= 0) {
+                    cpuid = (String) model.getValueAt(r, Columns.Serial.value);
+                    if(!prefs.boards.getSelectedBoardSerialNumber().equals(cpuid)) {
+                        jButtonOK.setEnabled(true);
+                    } else {
+                        jButtonOK.setEnabled(false);
+                        cpuid = null;
+                    }
                 }
             }
         });
@@ -215,25 +217,28 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 int column = e.getColumn();
 
                 TableModel model = (TableModel)e.getSource();
-                String cpuid = (String) model.getValueAt(row, Columns.Serial.value);
+                if(model.getRowCount() > 0)
+                {
+                    String cpuid = (String) model.getValueAt(row, Columns.Serial.value);
 
-                if(column == Columns.Name.getValue()) {
-                    String name = (String) model.getValueAt(row, column);
-                    prefs.boards.setBoardName(cpuid, name);
-                } else if(column == Columns.Firmware.getValue()) {
-                    FirmwareType firmwareType = FirmwareType.fromString((String)model.getValueAt(row, column));
-                    prefs.boards.setFirmwareType(cpuid, firmwareType);
-                } else if(column == Columns.DSP.getValue()) {
-                    Integer dspSafety = Arrays.asList(dspSafetyNames).indexOf((String)model.getValueAt(row, column));
-                    prefs.boards.setDspSafetyLimit(cpuid, dspSafety);
-                } else if(column == Columns.Memory.getValue()) {
-                    MemoryLayoutType memoryLayout = MemoryLayoutType.fromString((String)model.getValueAt(row, column));
-                    prefs.boards.setMemoryLayout(cpuid, memoryLayout);
-                } else {
-                    return;
+                    if(column == Columns.Name.getValue()) {
+                        String name = (String) model.getValueAt(row, column);
+                        prefs.boards.setBoardName(cpuid, name);
+                    } else if(column == Columns.Firmware.getValue()) {
+                        FirmwareType firmwareType = FirmwareType.fromString((String)model.getValueAt(row, column));
+                        prefs.boards.setFirmwareType(cpuid, firmwareType);
+                    } else if(column == Columns.DSP.getValue()) {
+                        Integer dspSafety = Arrays.asList(dspSafetyNames).indexOf((String)model.getValueAt(row, column));
+                        prefs.boards.setDspSafetyLimit(cpuid, dspSafety);
+                    } else if(column == Columns.Memory.getValue()) {
+                        MemoryLayoutType memoryLayout = MemoryLayoutType.fromString((String)model.getValueAt(row, column));
+                        prefs.boards.setMemoryLayout(cpuid, memoryLayout);
+                    } else {
+                        return;
+                    }
+
+                    prefs.SavePrefs();
                 }
-
-                prefs.SavePrefs();
             }
         });
 
@@ -312,7 +317,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 }
             }
             
-            model.addRow(new String[]{status, board.name, board.boardType.toString(), "TODO", board.serialNumber, board.firmwareType.toString(), dspSafetyNames[board.dspSafetyLimit], memoryLayoutString});
+            model.addRow(new String[]{status, board.name, board.boardType.toString(), board.path, board.serialNumber, board.firmwareType.toString(), dspSafetyNames[board.dspSafetyLimit], memoryLayoutString});
             if(boards.getSelectedBoardSerialNumber().equals(board.serialNumber))
                 jTable1.setRowSelectionInterval(r,r);
             r++;
@@ -602,8 +607,30 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
             BoardDetail boardDetail = prefs.boards.getBoardDetail(cpuid);
 
+           
             if(boardDetail != null) {
+                // Do we know what this board is?
+                if(boardDetail.boardType == BoardType.Unknown) {
+                    //Custom button text
+                    Object[] options = {"Ksoloti Geko", "Ksoloti", "Axoloti" };
+                    int n = JOptionPane.showOptionDialog(this,
+                                                        "What sort of board is this?",
+                                                        "Unknown Board",
+                                                        JOptionPane.YES_NO_CANCEL_OPTION,
+                                                        JOptionPane.QUESTION_MESSAGE,
+                                                        null,
+                                                        options,
+                                                        options[2]);
+                    switch(n)
+                    {
+                        case 0 : boardDetail.boardType = BoardType.Axoloti; break;
+                        case 1 : boardDetail.boardType = BoardType.Ksoloti; break;
+                        case 2 : boardDetail.boardType = BoardType.KsolotiGeko; break;
+                    }
+                }
+                
                 prefs.boards.setSelectedBoard(boardDetail);
+                prefs.SavePrefs();;
 
                 axoloti.Axoloti.deletePrecompiledHeaderFile();
                 MainFrame.mainframe.updateLinkFirmwareID();

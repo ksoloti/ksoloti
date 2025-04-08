@@ -49,6 +49,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
+
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.usb4java.*;
 import qcmds.QCmd;
@@ -322,7 +324,7 @@ public class USBBulkConnection extends Connection {
 
         try {
             // devicePath = Usb.DeviceToPath(device);
-
+            useBulkInterfaceNumber = prefs.boards.getBulkInterfaceNumber();
             int result = LibUsb.claimInterface(handle, useBulkInterfaceNumber);
             if (result != LibUsb.SUCCESS) {
                 throw new LibUsbException("Unable to claim interface", result);
@@ -599,9 +601,7 @@ public class USBBulkConnection extends Connection {
         if(cpuid != null) {
             BoardDetail boardDetail = prefs.boards.getBoardDetail(cpuid);
             if(boardDetail != null) {
-                prefs.boards.setSelectedBoard(boardDetail);
-                prefs.SavePrefs();
-                LOGGER.log(Level.INFO, "Selecting Board: {0} for connection.", new Object[]{boardDetail.toString()});
+                LOGGER.log(Level.INFO, "Selected Board: {0} for connection.", new Object[]{boardDetail.toString()});
                 reconnect = true;
             } else {
                 LOGGER.log(Level.SEVERE, "Board Id {0} does not exist, please report this.", new Object[]{cpuid});
