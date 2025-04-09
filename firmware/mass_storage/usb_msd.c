@@ -90,7 +90,7 @@ PACK_STRUCT_BEGIN typedef struct {
 /**
  * @brief   Read-write buffers (TODO: need a way of specifying the size of this)
  */
-static uint8_t rw_buf[2][512];
+static uint8_t rw_buf[2][512] MSD_DATA_SECTION;
 
 /**
  * @brief Byte-swap a 32 bits unsigned integer
