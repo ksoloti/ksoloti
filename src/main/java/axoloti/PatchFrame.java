@@ -508,7 +508,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         fileMenuP.add(jMenuSaveAs);
 
-        jMenuSaveCopy.setText("Save Copy...");
+        jMenuSaveCopy.setText("Save a Copy...");
         jMenuSaveCopy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuSaveCopyActionPerformed(evt);

@@ -160,7 +160,7 @@ public class FileMenu extends JMenu {
                 jMenuSyncActionPerformed(evt);
             }
         });
-        insert(jMenuSync, pos++);
+        add(jMenuSync);
 
         jMenuReloadObjects.setMnemonic('J');
         jMenuReloadObjects.setText("Reload Objects");
