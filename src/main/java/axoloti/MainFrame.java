@@ -1013,6 +1013,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             USBBulkConnection.GetConnection().disconnect();
         } else {
             qcmdprocessor.Panic();
+            prefs.getBoards().scanBoards();
             boolean success = USBBulkConnection.GetConnection().connect();
             if (!success) {
                 ShowDisconnect();

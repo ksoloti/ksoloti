@@ -169,6 +169,8 @@ public class USBBulkConnection extends Connection {
                 }
             }
             
+            LOGGER.log(Level.INFO, "Disconecting from bulk endpoint {0}", useBulkInterfaceNumber);
+
             int result = LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
             if (result != LibUsb.SUCCESS) {
                 throw new LibUsbException("Unable to release interface", result);
@@ -325,6 +327,7 @@ public class USBBulkConnection extends Connection {
         try {
             // devicePath = Usb.DeviceToPath(device);
             useBulkInterfaceNumber = prefs.boards.getBulkInterfaceNumber();
+            LOGGER.log(Level.INFO, "Connecting to bulk endpoint {0}", useBulkInterfaceNumber);
             int result = LibUsb.claimInterface(handle, useBulkInterfaceNumber);
             if (result != LibUsb.SUCCESS) {
                 throw new LibUsbException("Unable to claim interface", result);

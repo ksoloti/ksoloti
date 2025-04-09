@@ -237,7 +237,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                         return;
                     }
 
-                    prefs.SavePrefs();
+                    jButtonOK.setEnabled(true);
                 }
             }
         });
