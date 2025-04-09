@@ -130,6 +130,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     // AxolotiRemoteControl remote;
     QCmdProcessor qcmdprocessor;
     Thread qcmdprocessorThread;
+    DeviceConnector deviceConnector;
+    Thread deviceConnectorThread;
+    
     static public Cursor transparentCursor;
     private final String[] args;
     JMenu favouriteMenu;
@@ -425,6 +428,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     qcmdprocessorThread = new Thread(qcmdprocessor);
                     qcmdprocessorThread.setName("QCmdProcessor");
                     qcmdprocessorThread.start();
+
+                    deviceConnector = DeviceConnector.getDeviceConnector();
+                    deviceConnectorThread = new Thread(deviceConnector);
+                    deviceConnectorThread.setName("DeviceConnector");
+                    deviceConnectorThread.start();
+
                     USBBulkConnection.GetConnection().addConnectionStatusListener(MainFrame.this);
                     USBBulkConnection.GetConnection().addSDCardMountStatusListener(MainFrame.this);
                     USBBulkConnection.GetConnection().addConnectionFlagsListener(MainFrame.this);
@@ -978,6 +987,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         USBBulkConnection.GetConnection().connect();
     }
 
+    public void doConnect() {
+        populateMainframeTitle();
+            
+        ShowDisconnect();
+        boolean success = USBBulkConnection.GetConnection().connect();
+        if (success) {
+            MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdShowConnect());
+        }
+    }
 
     private void jMenuItemSelectComActionPerformed(java.awt.event.ActionEvent evt) {
         if(USBBulkConnection.GetConnection().SelectPort()) {

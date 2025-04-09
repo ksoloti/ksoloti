@@ -153,6 +153,10 @@ public class USBBulkConnection extends Connection {
 
             LOGGER.log(Level.WARNING, "Disconnected\n");
 
+            if(DeviceConnector.getDeviceConnector().isTryingToReconnect()) {
+                LOGGER.log(Level.WARNING, "Waiting to reconnect...\n");
+            }
+
             synchronized (sync) {
                 sync.Acked = false;
                 sync.notifyAll();

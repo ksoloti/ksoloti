@@ -19,6 +19,7 @@
 package qcmds;
 
 import axoloti.Connection;
+import axoloti.DeviceConnector;
 
 /**
  *
@@ -45,19 +46,20 @@ public class QCmdStartFlasher extends QCmdStart {
 
     @Override
     public String GetDoneMessage() {
-        return "Done sending firmware packets.\n\n>>> FIRMWARE UPDATE IN PROGRESS. DO NOT UNPLUG THE BOARD! <<<\nYou can connect again after the LEDs stop blinking.\n";
+        return "Done sending firmware packets.\n\n>>> FIRMWARE UPDATE IN PROGRESS. DO NOT UNPLUG THE BOARD! <<<\nAutomatically reconnecting when device is available...\n";
     }
 
     @Override
     public String GetTimeOutMessage() {
         /* Should never get here */
-        return "\n>>> FIRMWARE UPDATE IN PROGRESS, DO NOT UNPLUG THE BOARD! <<<\nYou can connect again after the LEDs stop blinking.\n";
+        return "\n>>> FIRMWARE UPDATE IN PROGRESS, DO NOT UNPLUG THE BOARD! <<<\nAutomatically reconnecting when device is available...\n";
     }
 
     public QCmd Do(Connection connection) {
     if(inbuiltMounterFlasher) {
         connection.ClearSync();
         connection.TransmitStartFlasher();
+        DeviceConnector.getDeviceConnector().tryToConnect(15);
     }
     
     return this;
