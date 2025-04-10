@@ -226,9 +226,9 @@ extern void *_fram_text_end;
 
 void __early_init(void)
 {
-    stm32_gpio_init();
-    exception_check_DFU();
-    stm32_clock_init();
+  //stm32_gpio_init();
+  exception_check_DFU();
+//  stm32_clock_init();
 
 #if EARLY_FRAM_COPY
     // copy any ram code from flash to ram

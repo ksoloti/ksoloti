@@ -79,6 +79,8 @@ extern void i2s_init(void);
 #endif
 
 int main(void) {
+    stm32_clock_init();
+    stm32_gpio_init();
 
 #if BOARD_KSOLOTI_CORE_H743
     // TODOH7 - More investication needed

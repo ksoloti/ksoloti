@@ -2050,6 +2050,7 @@
 extern "C" {
 #endif
   void boardInit(void);
+  void stm32_gpio_init(void);
 #ifdef __cplusplus
 }
 #endif
