@@ -1860,14 +1860,16 @@ public class Patch {
            + I + "}\n"
            + "}\n\n";
 
-        c += "void xpatch_init2(uint32_t fwid) {\n"
-           + I + "if (fwid != 0x" + MainFrame.mainframe.LinkFirmwareID + ") {\n"
+        c += "void xpatch_init2(uint32_t fwid) {\n";
+        if(!prefs.getFirmwareWarnDisable()) {
+        c += I + "if (fwid != 0x" + MainFrame.mainframe.LinkFirmwareID + ") {\n"
            + I+I + "// LogTextMessage(\"Patch firmware mismatch\");\n"
            + I+I + "/* Blink red LED a few times. */\n"
            + I+I + "sysmon_blink_pattern(0xA0A0A0A0);\n" /* Magic number (same as BLINK_PATCH_LOAD_FAIL) to ensure backwards compatibility */
            + I+I + "return;\n"
-           + I + "}\n\n"
-           + I + "extern uint32_t _pbss_start;\n"
+           + I + "}\n\n";
+        } 
+        c += I + "extern uint32_t _pbss_start;\n"
            + I + "extern uint32_t _pbss_end;\n"
            + I + "volatile uint32_t* p;\n"
            + I + "for (p = &_pbss_start; p < &_pbss_end; p++) {\n"

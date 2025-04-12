@@ -166,7 +166,7 @@ public class USBBulkConnection extends Connection {
                 receiverThread.interrupt();
 
                 try {
-                    receiverThread.join();
+                    receiverThread.join(10000);
                 }
                 catch (InterruptedException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
@@ -330,6 +330,7 @@ public class USBBulkConnection extends Connection {
 
         try {
             // devicePath = Usb.DeviceToPath(device);
+            prefs.getBoards().scanBoards();
             useBulkInterfaceNumber = prefs.boards.getBulkInterfaceNumber();
             LOGGER.log(Level.INFO, "Connecting to bulk endpoint {0}", useBulkInterfaceNumber);
             int result = LibUsb.claimInterface(handle, useBulkInterfaceNumber);

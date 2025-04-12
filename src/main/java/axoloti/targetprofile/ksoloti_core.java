@@ -203,18 +203,7 @@ public class ksoloti_core {
     }
 
     public void setCPUSerial(ByteBuffer b) {
-        if (b != null) {
-            CPUIDData = b;
-            String s = "";
-            b.rewind();
-            while (b.remaining() > 0) {
-                s = s + String.format("%08X", b.getInt());
-            }
-            mainframe.setCpuID(s);
-        } else {
-            LOGGER.log(Level.SEVERE, "Invalid CPU serial number, invalid protocol?, update firmware",new Object());
-            mainframe.setCpuID("CFCFCFCF");
-        }
+        mainframe.setCpuID();
     }
 
     public ByteBuffer getCPUSerial() {

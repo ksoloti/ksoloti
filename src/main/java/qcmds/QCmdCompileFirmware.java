@@ -41,7 +41,6 @@ public class QCmdCompileFirmware extends QCmdShellTask {
     @Override
     public String GetDoneMessage() {
         MainFrame.mainframe.updateLinkFirmwareID();
-        MainFrame.mainframe.WarnedAboutFWCRCMismatch = false;
         return "Done running compilation script.\n";
     }
     

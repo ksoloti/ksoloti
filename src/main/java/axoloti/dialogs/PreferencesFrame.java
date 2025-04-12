@@ -835,7 +835,7 @@ public class PreferencesFrame extends JFrame {
 
     private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {
         Apply();
-        prefs.SavePrefs();
+        prefs.SavePrefs(true);
         setVisible(false);
     }
 

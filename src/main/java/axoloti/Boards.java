@@ -40,8 +40,6 @@ public class Boards {
         Ksoloti("Ksoloti Core"),
         KsolotiGeko("Ksoloti Core Geko"),
         Axoloti("Axoloti Core"),
-        DFU("STM DFU Bootloader"),
-        CardReader("Card Reader"),
         Unknown("Unknown");
 
         private final String name;
@@ -202,9 +200,9 @@ public class Boards {
         BoardDetail() {
         }
 
-        BoardDetail(BoardMode mode, String cpuid) {
+        BoardDetail(BoardType type, BoardMode mode, String cpuId) {
             boardMode = mode;
-            serialNumber = cpuid;
+            serialNumber = cpuId;
             firmwareType = FirmwareType.Normal;
             dspSafetyLimit = 3;
             name = "";
@@ -212,9 +210,9 @@ public class Boards {
             path = "";
             isConnected = false;
 
-            if (cpuid.length() == 25) {
+            if (cpuId.length() == 25) {
                 // Valid serial for 1.1 and later
-                char designator = cpuid.charAt(24);
+                char designator = cpuId.charAt(24);
                 switch (designator) {
                     case 'A':
                         boardType = BoardType.Axoloti;
@@ -232,12 +230,18 @@ public class Boards {
                 }
             } else {
                 // This does not have a valid serial for 1.1 and later
+                // Gekos will always have 1.1 or later installed.
                 boardType = BoardType.Unknown;
                 needsUpdate = true;
             }
 
             if (BoardIs(BoardType.KsolotiGeko)) {
                 memoryLayout = MemoryLayoutType.Code64Data64;
+            }
+
+            if(boardType == BoardType.Unknown) {
+                // use vid pid
+                boardType = type;
             }
         }
 
@@ -259,7 +263,7 @@ public class Boards {
     }
 
 
-    @ElementMap(required = false, entry = "BoardDetails", key = "cpuid", attribute = true, inline = true)
+    @ElementMap(required = false, entry = "BoardDetails", key = "cpuId", attribute = true, inline = true)
     HashMap<String, BoardDetail> BoardDetails;
 
     @Element(required = false)
@@ -270,11 +274,11 @@ public class Boards {
     }
 
     
-    public BoardDetail getBoardDetail(String cpuid) {
+    public BoardDetail getBoardDetail(String cpuId) {
         BoardDetail boardDetail = null;
 
-        if(cpuid != null){
-            boardDetail = BoardDetails.get(cpuid);
+        if(cpuId != null){
+            boardDetail = BoardDetails.get(cpuId);
         }
 
         return boardDetail;
@@ -295,40 +299,60 @@ public class Boards {
     public void setSelectedBoard(BoardDetail board) {
         selectedBoardSerial = board.serialNumber;
     }
-    public boolean addBoardDetail(String cpuid, BoardDetail boardDetail) {
+
+    public void deleteBoardDetail(String cpuId) {
+        BoardDetails.remove(cpuId);
+    }
+
+    public boolean addBoardDetail(String cpuId, BoardDetail boardDetail) {
         boolean result = false;
         
-        if(cpuid != null && boardDetail!= null && !BoardDetails.containsKey(cpuid)){
-            BoardDetails.put(cpuid, boardDetail);
+        if(cpuId != null && boardDetail!= null && !BoardDetails.containsKey(cpuId)){
+            BoardDetails.put(cpuId, boardDetail);
             result = true;
         }
         return result;
     }
 
-    public boolean addBoardOrUpdateBoardMode(BoardMode mode, String cpuid, String path) {
+    public boolean addBoardOrUpdateBoardMode(BoardType type, BoardMode mode, String cpuId, String path) {
         boolean result = false;
 
-        if(cpuid != null) {
+        if(cpuId != null) {
             if(mode == BoardMode.DFU) {
 
             } else if(mode == BoardMode.SDCard) {
 
             }
 
-            if(BoardDetails.containsKey(cpuid)){
+            if (cpuId.length() == 25) {
+                // This is a new style id, check to see if we need to replace the entry with the old style key
+                // after it has been DFU updated.
+                String oldStyleCpuId = cpuId.substring(0, 24);
+                if(BoardDetails.containsKey(oldStyleCpuId)) {
+                    // Ok lets delete this one
+                    deleteBoardDetail(oldStyleCpuId);
+
+                    // if it was selected choose the new one
+                    if (selectedBoardSerial.equals(oldStyleCpuId)) {
+                        selectedBoardSerial = cpuId;
+                    }
+                }
+            }
+
+            if(BoardDetails.containsKey(cpuId)){
                 // update mode
                 result = true; // Already exists so return true
 
-                BoardDetail boardDetail = BoardDetails.get(cpuid);
+                BoardDetail boardDetail = BoardDetails.get(cpuId);
                 boardDetail.setMode(mode);
                 boardDetail.path = path;
                 boardDetail.isConnected = true;
             } else {
                 // add new
-                BoardDetail boardDetail = new BoardDetail(mode, cpuid);
+                BoardDetail boardDetail = new BoardDetail(type, mode, cpuId);
                 boardDetail.path = path;
                 boardDetail.isConnected = true;
-                result = addBoardDetail(cpuid, boardDetail);
+                result = addBoardDetail(cpuId, boardDetail);
             }
         }
 
@@ -357,6 +381,20 @@ public class Boards {
         }
 
         return mode;
+    }
+
+    BoardType getBoardTypeFromDescriptor(DeviceDescriptor descriptor) {
+        BoardType type = BoardType.Unknown;
+
+        if (descriptor.idVendor() == VID_AXOLOTI) {
+            if ((descriptor.idProduct() == PID_KSOLOTI) || (descriptor.idProduct() == PID_KSOLOTI_USBAUDIO) || (descriptor.idProduct() == PID_KSOLOTI_SDCARD)) {
+                type = BoardType.Ksoloti;
+            } else if ((descriptor.idProduct() == PID_AXOLOTI) || (descriptor.idProduct() == PID_AXOLOTI_USBAUDIO) || (descriptor.idProduct() == PID_AXOLOTI_SDCARD)) {
+                type = BoardType.Axoloti;
+            }
+        }
+
+        return type;
     }
 
     String getUsbSerial(Device device, DeviceDescriptor descriptor) {
@@ -444,13 +482,13 @@ public class Boards {
             if (result == LibUsb.SUCCESS) {
 
                 BoardMode boardMode = getBoardModeFromDescriptor(descriptor);
-
+                BoardType boardType = getBoardTypeFromDescriptor(descriptor);
                 if(boardMode != BoardMode.Unknown) {
                     String serial = getUsbSerial(device, descriptor);
 
                     if(serial != null) {
                         String path = DeviceToPath(device);
-                        addBoardOrUpdateBoardMode(boardMode, serial, path);
+                        addBoardOrUpdateBoardMode(boardType, boardMode, serial, path);
                     }
                 }
             } else {
@@ -459,11 +497,14 @@ public class Boards {
         }
 
         // If we have never had a selected board then just choose the first one
-        // in a convoluter java way!
+        // in a convoluted java way!
         if(selectedBoardSerial == null && BoardDetails.size() > 0) {
             HashMap.Entry<String,BoardDetail> board = BoardDetails.entrySet().iterator().next();
             selectedBoardSerial = board.getKey();
         }
+
+        // Save to disk
+        MainFrame.prefs.SavePrefs(false);
     }
 
     private static String ErrorString(int result) {
@@ -610,29 +651,44 @@ public class Boards {
         return options;
     }
 
-    public void setBoardName(String cpuid, String name) {
-        BoardDetail boardDetail = getBoardDetail(cpuid);
+    public int getDfuCount() {
+        scanBoards();
+
+        int dfuCount = 0;
+
+        for(BoardDetail board : BoardDetails.values()) {
+            if(board.boardMode == BoardMode.DFU) {
+                dfuCount++;
+            }
+            board.isConnected = false;
+        }
+
+        return dfuCount;
+    }
+
+    public void setBoardName(String cpuId, String name) {
+        BoardDetail boardDetail = getBoardDetail(cpuId);
         if(boardDetail != null) {
             boardDetail.name = name;
         }
     }
 
-    public void setFirmwareType(String cpuid, FirmwareType firmwareType) {
-        BoardDetail boardDetail = getBoardDetail(cpuid);
+    public void setFirmwareType(String cpuId, FirmwareType firmwareType) {
+        BoardDetail boardDetail = getBoardDetail(cpuId);
         if(boardDetail != null) {
             boardDetail.firmwareType = firmwareType;
         }
     }
 
-    public void setMemoryLayout(String cpuid, MemoryLayoutType memoryLayout) {
-        BoardDetail boardDetail = getBoardDetail(cpuid);
+    public void setMemoryLayout(String cpuId, MemoryLayoutType memoryLayout) {
+        BoardDetail boardDetail = getBoardDetail(cpuId);
         if(boardDetail != null) {
             boardDetail.memoryLayout = memoryLayout;
         }
     }
 
-    public void setDspSafetyLimit(String cpuid, int dspSafetyLimit) {
-        BoardDetail boardDetail = getBoardDetail(cpuid);
+    public void setDspSafetyLimit(String cpuId, int dspSafetyLimit) {
+        BoardDetail boardDetail = getBoardDetail(cpuId);
         if(boardDetail != null) {
             boardDetail.dspSafetyLimit = dspSafetyLimit;
         }

@@ -630,7 +630,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 }
                 
                 prefs.boards.setSelectedBoard(boardDetail);
-                prefs.SavePrefs();;
+                prefs.SavePrefs(false);
 
                 axoloti.Axoloti.deletePrecompiledHeaderFile();
                 MainFrame.mainframe.updateLinkFirmwareID();

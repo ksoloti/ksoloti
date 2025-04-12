@@ -106,6 +106,8 @@ public class Preferences {
     @Element(required = false)
     Boolean ExpertMode;
     @Element(required = false)
+    Boolean FirmwareWarnDisable;
+    @Element(required = false)
     Integer DspSafetyLimit;
     @ElementList(required = false)
     ArrayList<String> recentFiles = new ArrayList<String>();
@@ -244,6 +246,9 @@ public class Preferences {
         }
         if (ExpertMode == null) {
             ExpertMode = false;
+        }
+        if (FirmwareWarnDisable == null) {
+            FirmwareWarnDisable = false;
         }
         if (FavouriteDir == null) {
             FavouriteDir = "";
@@ -397,7 +402,7 @@ public class Preferences {
             return;
         }
         this.CurrentFileDirectory = CurrentFileDirectory;
-        SavePrefs();
+        SavePrefs(false);
         // SetDirty();
     }
 
@@ -520,9 +525,10 @@ public class Preferences {
         return singleton;
     }
 
-    public void SavePrefs() {
+    public void SavePrefs(boolean logMessages) {
 
-        LOGGER.log(Level.INFO, "Saving preferences...\n");
+        if(logMessages)
+            LOGGER.log(Level.INFO, "Saving preferences...\n");
 
         Serializer serializer = new Persister();
         File f = new File(GetPrefsFileLoc());
@@ -677,6 +683,10 @@ public class Preferences {
 
     public Boolean getExpertMode() {
         return ExpertMode;
+    }
+
+    public Boolean getFirmwareWarnDisable() {
+        return FirmwareWarnDisable;
     }
 
     public ArrayList<String> getRecentFiles() {
@@ -869,6 +879,6 @@ public class Preferences {
     
     public void setThemePath(String themePath) {
         this.themePath = themePath;
-        SavePrefs();
+        SavePrefs(false);
     }
 }

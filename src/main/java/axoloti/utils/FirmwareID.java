@@ -42,6 +42,7 @@ public class FirmwareID {
             String boarddef = prefs.boards.getFirmwareBinFilename();
 
             File f = new File(boarddef);
+            LOGGER.log(Level.WARNING, "Firmware: " + boarddef + ".\n");
 
             if (f == null || !f.canRead()) {
                 LOGGER.log(Level.WARNING, "Could not find " + boarddef + ".\nPlease compile the firmware first.");

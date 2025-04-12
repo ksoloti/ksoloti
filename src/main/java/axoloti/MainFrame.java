@@ -34,6 +34,7 @@ import axoloti.utils.Constants;
 import axoloti.utils.FirmwareID;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
+import axoloti.Boards.BoardDetail;
 import axoloti.Boards.BoardType;
 import axoloti.Boards.FirmwareType;
 import axoloti.Boards.MemoryLayoutType;
@@ -98,6 +99,7 @@ import com.formdev.flatlaf.FlatClientProperties;
 import qcmds.QCmdBringToDFUMode;
 import qcmds.QCmdCompilePatch;
 import qcmds.QCmdDisconnect;
+import qcmds.QCmdFlashDFU;
 import qcmds.QCmdPing;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdShowConnect;
@@ -384,7 +386,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 try {
 
                     prefs.getBoards().scanBoards();
-                    prefs.SavePrefs();
+                    
                     
                     populateMainframeTitle();
 
@@ -611,6 +613,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 tsuffix += ", ";
             }
             tsuffix += "Expert Mode";
+        }
+
+        if (prefs.getFirmwareWarnDisable()) {
+            if (tsuffix.length() > 0) {
+                tsuffix += ", ";
+            }
+            tsuffix += "CRC Disabled";
         }
 
         String firmwareString = prefs.boards.getFirmware().toString();
@@ -1422,7 +1431,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         else {
             jToggleButtonConnect.setText("Connect");
-            setCpuID(null);
+            setCpuID();
             jLabelVoltages.setText(" ");
             v5000c = 0;
             vdd00c = 0;
@@ -1456,29 +1465,26 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 return;
             }
         }
-        prefs.SavePrefs();
+        prefs.SavePrefs(true);
         if (DocumentWindowList.GetList().isEmpty()) {
             System.exit(0);
         }
     }
 
 
-    public void setCpuID(String cpuId) {
-        if (cpuId == null) {
-            jLabelCPUID.setText(" ");
+    public void setCpuID() {
+        BoardDetail boardDetail = MainFrame.prefs.getBoards().getSelectedBoardDetail();
+
+        if(boardDetail.name != null) {
+            jLabelCPUID.setText("Board Name:    " + boardDetail.name);
+            jLabelCPUID.setToolTipText("Showing the name defined in Board > Select Device... > Name.\n" +
+                                    "This setting is saved in the local ksoloti.prefs file.");
         } else {
-            String name = MainFrame.prefs.getBoardName(cpuId);
-            if (name == null) {
-                jLabelCPUID.setText("Board ID:    " + cpuId.substring(0, 8) + " " + cpuId.substring(8, 16) + " " + cpuId.substring(16, 24));
-                jLabelCPUID.setToolTipText("Showing board ID of the currently connected Core.\n" +
-                                           "You can name your Core by disconnecting it from\n" +
-                                           "the Patcher, then going to Board > Select Device... > Name.\n" + 
-                                           "Press Enter in the Name textfield to confirm the entry.");
-            } else {
-                jLabelCPUID.setText("Board Name:    " + name);
-                jLabelCPUID.setToolTipText("Showing the name defined in Board > Select Device... > Name.\n" +
-                                           "This setting is saved in the local ksoloti.prefs file.");
-            }
+            jLabelCPUID.setText("Board ID:    " + boardDetail.serialNumber);
+            jLabelCPUID.setToolTipText("Showing board ID of the currently connected Core.\n" +
+                                        "You can name your Core by disconnecting it from\n" +
+                                        "the Patcher, then going to Board > Select Device... > Name.\n" + 
+                                        "Press Enter in the Name textfield to confirm the entry.");
         }
 
         /* Update listeners */
@@ -1491,11 +1497,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         // TargetFirmwareID = LinkFirmwareID;
         // jLabelFirmwareID.setText("Firmware ID: " + LinkFirmwareID);
         LOGGER.log(Level.INFO, "Patcher linked to firmware {0}", LinkFirmwareID);
-        WarnedAboutFWCRCMismatch = false;
     }
 
 
-    public boolean WarnedAboutFWCRCMismatch = false;
 
     void setFirmwareID(String firmwareId) {
         TargetFirmwareID = firmwareId;
@@ -1513,15 +1517,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 + "- Replace the line <ExpertMode>false</ExpertMode> with <ExpertMode>true</ExpertMode>.\n"
                 + "- Restart the Patcher.\n"
             );
-            WarnedAboutFWCRCMismatch = true;
             qcmdprocessor.AppendToQueue(new QCmdDisconnect());
             ShowDisconnect();
         }
         else if (!firmwareId.equals(this.LinkFirmwareID)) {
-            if (!WarnedAboutFWCRCMismatch) {
+            if (!prefs.getFirmwareWarnDisable()) {
                 LOGGER.log(Level.WARNING, "Firmware version mismatch! Please update the firmware.");
                 LOGGER.log(Level.WARNING, "Core running {0} <-> Patcher linked to {1}", new Object[]{firmwareId, this.LinkFirmwareID});
-                WarnedAboutFWCRCMismatch = true;
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -1592,24 +1594,49 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
 
     public void interactiveFirmwareUpdate() {
+        BoardDetail boardDetail = prefs.boards.getSelectedBoardDetail();
 
-        Object[] options = {"Update", "Cancel"};
-        int s = JOptionPane.showOptionDialog(this,
-                "Firmware mismatch detected!\n"
-                + "Update the firmware now?\n"
-                + "This process will cause a disconnect and the LEDs will blink for a while.\n"
-                + "Do not interrupt until the LEDs stop blinking.\n"
-                + "When only the green LED is steady lit, you can connect again.\n",
-                "Firmware Update",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE,
-                null,
-                options,
-                options[1]);
+        if(boardDetail.needsUpdate) {
+            Object[] options = {"Update", "Cancel"};
+            int s = JOptionPane.showOptionDialog(this,
+                    "Firmware mismatch detected!\n"
+                    + "Update the firmware now?\n"
+                    + "This process will put the board into DFU mode.\n"
+                    + "Do not interrupt until the LEDs stop blinking and the patcher reconnects.\n",
+                    "Firmware Update",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE,
+                    null,
+                    options,
+                    options[1]);
 
-        if (s == 0) {
-            String firmwareBinName = prefs.boards.getFirmwareBinFilename();
-            flashUsingSDRam(firmwareBinName);
+            if (s == 0) {
+                qcmdprocessor.AppendToQueue(new QCmdBringToDFUMode());
+                qcmdprocessor.AppendToQueue(new QCmdFlashDFU());
+            }else {
+                USBBulkConnection.GetConnection().disconnect();
+            }
+        }
+        else {
+            Object[] options = {"Update", "Cancel"};
+            int s = JOptionPane.showOptionDialog(this,
+                    "Firmware mismatch detected!\n"
+                    + "Update the firmware now?\n"
+                    + "This process will cause a disconnect and the LEDs will blink for a while.\n"
+                    + "Do not interrupt until the LEDs stop blinking and the patcher reconnects.\n",
+                    "Firmware Update",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE,
+                    null,
+                    options,
+                    options[1]);
+
+            if (s == 0) {
+                String firmwareBinName = prefs.boards.getFirmwareBinFilename();
+                flashUsingSDRam(firmwareBinName);
+            } else {
+                USBBulkConnection.GetConnection().disconnect();
+            }
         }
     }
 
