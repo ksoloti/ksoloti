@@ -73,9 +73,9 @@ typedef struct {
 } exceptiondump_t;
 
 #if BOARD_KSOLOTI_CORE_H743
-    #define BKPSRAM_BASE D3_BKPSRAM_BASE
-    exceptiondump_t _exceptiondump;
+    exceptiondump_t _exceptiondump __attribute__((section(".noinit")));
     #define exceptiondump ((exceptiondump_t *) &_exceptiondump)
+    #define BKPSRAM_BASE &_exceptiondump
 #else
     #define exceptiondump ((exceptiondump_t *) BKPSRAM_BASE)
 #endif
@@ -85,6 +85,29 @@ typedef struct {
 * @brief   Jumps into the System ROM bootloader
 * @details This will only work before other initializations!
 */
+#if BOARD_KSOLOTI_CORE_H743
+void BootLoaderInit() 
+{
+    void (*SysMemBootJump)(void);
+
+    // /* Re-enable all interrupts */
+    __enable_irq();
+
+    /* Set up the jump to boot loader address + 4 */
+    SysMemBootJump = (void (*)(void)) (*((uint32_t *) ((0x1FF09800 + 4))));
+
+    /* Set the main stack pointer to the boot loader stack */
+    __set_MSP(*(uint32_t *)0x1FF09800);
+
+    // Turn privilaged mode off
+    __ASM volatile ("movs r0,4");
+    __ASM volatile ("msr  CONTROL, r0");
+    __ASM volatile ("isb");
+    
+    /* Call the function to jump to boot loader location */
+    SysMemBootJump();
+}
+#else
 void BootLoaderInit() {
     uint32_t reg, psp;
     reg = 0;
@@ -121,9 +144,15 @@ void BootLoaderInit() {
     asm volatile ("NOP");
     asm volatile ("BX      R0");
 }
+#endif
 
 #if BOARD_KSOLOTI_CORE_H743
-void exception_check_DFU(void) {};
+void exception_check_DFU(void) {
+    if (exception_check() && (exceptiondump->type == goto_DFU)) {
+        exception_clear();
+        BootLoaderInit();
+    }
+}
 #else
 /**
 * @brief   Check exception magic bytes for DFU mode request.
@@ -167,6 +196,7 @@ void exception_init(void) {
     WWDG->SR = 0;
     WWDG->CR = 0x7F;
 #endif
+    SCB_CleanInvalidateDCache();
 }
 #else
 void exception_init(void) {
@@ -214,6 +244,9 @@ int exception_check(void) {
 
 void exception_clear(void) {
     exceptiondump->magicnumber = 0;
+#if BOARD_KSOLOTI_CORE_H743
+    SCB_CleanInvalidateDCache();
+#endif      
 }
 
 /**
@@ -243,6 +276,9 @@ void exception_initiate_dfu(void) {
     exceptiondump->magicnumber = ERROR_MAGIC_NUMBER;
     exceptiondump->type = goto_DFU;
 
+#if BOARD_KSOLOTI_CORE_H743
+    SCB_CleanInvalidateDCache();
+#endif 
     NVIC_SystemReset();
 }
 

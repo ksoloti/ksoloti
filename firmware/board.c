@@ -20,6 +20,7 @@
 #include "hal.h"
 #include "exceptions.h"
 #include "hal_pal_lld.h"
+#include "ksoloti_boot_options.h"
 
 /**
  * @brief   PAL setup.
@@ -226,9 +227,17 @@ extern void *_fram_text_end;
 
 void __early_init(void)
 {
-  //stm32_gpio_init();
   exception_check_DFU();
-//  stm32_clock_init();
+
+#if !BOARD_KSOLOTI_CORE_H743  
+  // Work around for after DFU flashing where the bootloader
+  // screws something up and the firmware won't start correctly
+  // H7 does not need this
+  CheckForReset();
+#endif
+
+  stm32_gpio_init();
+  stm32_clock_init();
 
 #if EARLY_FRAM_COPY
     // copy any ram code from flash to ram

@@ -79,9 +79,7 @@ extern void i2s_init(void);
 #endif
 
 int main(void) {
-    stm32_clock_init();
-    stm32_gpio_init();
-
+    
 #if BOARD_KSOLOTI_CORE_H743
     // TODOH7 - More investication needed
     // Akso doesn't do this and I am not sure of the performance benefits
@@ -205,7 +203,7 @@ int main(void) {
 
     if (!palReadPad(SW2_PORT, SW2_PIN)) {
         /* button S2 not pressed */
-        // watchdog_init();
+        watchdog_init();
         chThdSleepMilliseconds(1);
     }
 

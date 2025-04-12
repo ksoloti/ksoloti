@@ -10,8 +10,10 @@
 #if INBUILT_MOUNTER_FLASHER
   #define MOUNTER_MAGIC 0x2a4d4f554e544552 /* *MOUNTER */
   #define FLASHER_MAGIC 0x2a464c4153484552 /* *FLASHER */
+  #define RESETER_MAGIC 0x524553455445520A /* *RESETER */
 
   volatile uint64_t g_startup_flags __attribute__((section(".noinit")));
+  volatile uint64_t g_reset_flags __attribute__((section(".noinit")));
 
   extern int mounter(void);
   extern void flasher(void);
@@ -46,6 +48,25 @@
   void StartMounter(void)
   {
     SetStartupFlags(MOUNTER_MAGIC);
+  }
+  
+  void CheckForReset(void)
+  {
+    if (g_reset_flags == RESETER_MAGIC)
+    {
+      g_reset_flags = 0;
+#if BOARD_KSOLOTI_CORE_H743
+      SCB_CleanInvalidateDCache();
+#endif      
+    }
+    else
+    {
+      g_reset_flags = RESETER_MAGIC;
+#if BOARD_KSOLOTI_CORE_H743
+      SCB_CleanInvalidateDCache();
+#endif      
+      NVIC_SystemReset();
+    }
   }
 
   void CheckForMounterBoot(void)

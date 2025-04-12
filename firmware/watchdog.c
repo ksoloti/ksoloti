@@ -33,7 +33,8 @@ void watchdog_init(void) {
   WWDG->CFR = WWDG_CFR_W | WWDG_CFR_WDGTB0 | WWDG_CFR_WDGTB1 | WWDG_CFR_EWI;
   WWDG->CR = WWDG_CR_T | WWDG_CR_WDGA;
   WWDG->SR = 0;
-  nvicEnableVector(WWDG_IRQn, CORTEX_PRIORITY_MASK(0));
+  //nvicEnableVector(WWDG_IRQn, CORTEX_PRIORITY_MASK(0));
+  nvicEnableVector(WWDG_IRQn, 0);
 #endif
 }
 
