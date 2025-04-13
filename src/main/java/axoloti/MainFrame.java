@@ -35,6 +35,7 @@ import axoloti.utils.FirmwareID;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import axoloti.Boards.BoardDetail;
+import axoloti.Boards.BoardMode;
 import axoloti.Boards.BoardType;
 import axoloti.Boards.FirmwareType;
 import axoloti.Boards.MemoryLayoutType;
@@ -440,13 +441,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     USBBulkConnection.GetConnection().addSDCardMountStatusListener(MainFrame.this);
                     USBBulkConnection.GetConnection().addConnectionFlagsListener(MainFrame.this);
 
-                    ShowDisconnect();
-                    // if (!Axoloti.isFailSafeMode()) {
-                        boolean success = USBBulkConnection.GetConnection().connect();
-                        if (success) {
-                            ShowConnect();
-                        }
-                    // }
+                    doConnect();
 
                     // Axoloti user library, ask user if they wish to upgrade, or do manual
                     // this allows them the opportunity to manually backup their files!
@@ -993,29 +988,33 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
 
     private void jMenuItemFConnectActionPerformed(java.awt.event.ActionEvent evt) {
-        USBBulkConnection.GetConnection().connect();
+        doConnect();
     }
 
-    public void doConnect() {
+    public boolean doConnect() {
+        boolean result = false;
+
         populateMainframeTitle();
             
         ShowDisconnect();
-        boolean success = USBBulkConnection.GetConnection().connect();
-        if (success) {
-            MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdShowConnect());
+        BoardDetail boardDetail = prefs.boards.getSelectedBoardDetail();
+        if(boardDetail.boardMode == BoardMode.DFU) {
+            userSetsBoardType();
+            qcmdprocessor.AppendToQueue(new qcmds.QCmdFlashDFU());
+        } else
+        {
+            result = USBBulkConnection.GetConnection().connect();
+            if (result) {
+                MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdShowConnect());
+            }
         }
+
+        return result;
     }
 
     private void jMenuItemSelectComActionPerformed(java.awt.event.ActionEvent evt) {
         if(USBBulkConnection.GetConnection().SelectPort()) {
-            populateMainframeTitle();
-            
-            ShowDisconnect();
-            boolean success = USBBulkConnection.GetConnection().connect();
-            if (success) {
-                MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdShowConnect());
-            }
-
+            doConnect();
             // // Connect
             // jToggleButtonConnectActionPerformed(null);
 
@@ -1041,7 +1040,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         } else {
             qcmdprocessor.Panic();
             prefs.getBoards().scanBoards();
-            boolean success = USBBulkConnection.GetConnection().connect();
+            boolean success = doConnect();
             if (!success) {
                 ShowDisconnect();
             }
@@ -1280,15 +1279,58 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         updateLinkFirmwareID();
     }
 
+    public void userSetsBoardType() {
+        BoardDetail boardDetail = prefs.boards.getSelectedBoardDetail();
+
+        if(boardDetail.boardType == BoardType.Unknown) {
+            //Custom button text
+            Object[] options = {"Ksoloti Geko", "Ksoloti", "Axoloti" };
+            int n = JOptionPane.showOptionDialog(this,
+                                                "What sort of board is this?",
+                                                "Rescue Mode Board Found",
+                                                JOptionPane.YES_NO_CANCEL_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE,
+                                                null,
+                                                options,
+                                                options[2]);
+            switch(n)
+            {
+                case 0 : boardDetail.boardType = BoardType.Axoloti; break;
+                case 1 : boardDetail.boardType = BoardType.Ksoloti; break;
+                case 2 : boardDetail.boardType = BoardType.KsolotiGeko; break;
+            }
+
+            prefs.boards.setSelectedBoard(boardDetail);
+            prefs.SavePrefs(false);
+
+            axoloti.Axoloti.deletePrecompiledHeaderFile();
+            MainFrame.mainframe.updateLinkFirmwareID();
+        }
+    }
 
     private void jMenuItemFlashDFUActionPerformed(java.awt.event.ActionEvent evt) {
-        if (Usb.isDFUDeviceAvailable()) {
+
+        Boards boards = MainFrame.prefs.boards;
+        if(boards.getDfuCount() == 0) {
             updateLinkFirmwareID();
-            qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
-            qcmdprocessor.AppendToQueue(new qcmds.QCmdDisconnect());
+            qcmdprocessor.AppendToQueue(new QCmdBringToDFUMode());
+            // qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
+            // qcmdprocessor.AppendToQueue(new qcmds.QCmdDisconnect());
+            qcmdprocessor.AppendToQueue(new qcmds.QCmdFlashDFU());
+        } else if(boards.getDfuCount() == 1) {
+            // ok here we do not know what board we are using as the user
+            // already has a board started as DFU
+            BoardDetail boardDetail = boards.getDfuBoard();
+            prefs.boards.setSelectedBoard(boardDetail);
+            userSetsBoardType();
+
+            axoloti.Axoloti.deletePrecompiledHeaderFile();
+            // qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
+            // qcmdprocessor.AppendToQueue(new qcmds.QCmdDisconnect());
             qcmdprocessor.AppendToQueue(new qcmds.QCmdFlashDFU());
         } else {
-            LOGGER.log(Level.SEVERE, "No devices in Rescue Mode detected. To bring Ksoloti Core into Rescue Mode:\n1. Remove power.\n2. Hold down button S1 then connect the USB prog port to your computer.\nThe LEDs will stay off when in Rescue Mode.");
+            LOGGER.log(Level.SEVERE, "Too many devices in Rescue Mode:\nPlease make sure only one board in rescue mode is connected.");
+            //LOGGER.log(Level.SEVERE, "No devices in Rescue Mode detected. To bring Ksoloti Core into Rescue Mode:\n1. Remove power.\n2. Hold down button S1 then connect the USB prog port to your computer.\nThe LEDs will stay off when in Rescue Mode.");
         }
     }
 
@@ -1420,6 +1462,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     @Override
     public void ShowConnect() {
         ShowConnectDisconnect(true);
+        DeviceConnector.getDeviceConnector().cancel();
     }
 
 

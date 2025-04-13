@@ -13,6 +13,7 @@ public class DeviceConnector implements Runnable {
 
   private static DeviceConnector singleton = null;
   private int connectCount = 0;
+  private boolean activeConnect = false;
   
   public static DeviceConnector getDeviceConnector() {
     if (singleton == null)
@@ -22,11 +23,22 @@ public class DeviceConnector implements Runnable {
 
   public void tryToConnect(int seconds) {
     connectCount = seconds;
+    activeConnect = true;
+  }
+
+  public void backgroundConnect() {
+    connectCount = Integer.MAX_VALUE;
+    activeConnect = false;
   }
 
   public boolean isTryingToReconnect() {
     return connectCount != 0;
   }
+
+  public void cancel(){
+    connectCount = 0;
+    activeConnect = true;
+  }  
 
   @Override
   public void run() {
@@ -43,15 +55,24 @@ public class DeviceConnector implements Runnable {
         BoardDetail boardDetail = boards.getSelectedBoardDetail();
 
         if(boardDetail.isConnected) {
-          LOGGER.log(Level.INFO, "{0} is available, connecting now.", boardDetail.serialNumber);
+          if(activeConnect) {
+            LOGGER.log(Level.INFO, "{0} is available, connecting now.", boardDetail.serialNumber);
+          }
+
           connectCount = 0;
           mainframe.doConnect();
           // todo the work!
         } else {
-          LOGGER.log(Level.INFO, "Looking for {0}", boardDetail.serialNumber);
+          if( activeConnect) {
+            LOGGER.log(Level.INFO, "Looking for {0}", boardDetail.serialNumber);
+          }
           connectCount--;
           if(connectCount == 0) {
-            LOGGER.log(Level.SEVERE, "Timedout looking for {0}", boardDetail.serialNumber);
+            if(activeConnect) {
+              LOGGER.log(Level.SEVERE, "Timedout looking for {0}", boardDetail.serialNumber);
+            } else {
+              connectCount = Integer.MAX_VALUE;
+            }
           }
         }
       }

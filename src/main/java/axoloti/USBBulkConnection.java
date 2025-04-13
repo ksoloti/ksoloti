@@ -26,6 +26,8 @@ import axoloti.dialogs.USBPortSelectionDlg;
 
 import static axoloti.MainFrame.prefs;
 import static axoloti.dialogs.USBPortSelectionDlg.ErrorString;
+import static axoloti.usb.Usb.isDFUDeviceAvailable;
+
 import axoloti.displays.DisplayInstance;
 import axoloti.parameters.ParameterInstance;
 import axoloti.targetprofile.ksoloti_core;
@@ -155,6 +157,8 @@ public class USBBulkConnection extends Connection {
 
             if(DeviceConnector.getDeviceConnector().isTryingToReconnect()) {
                 LOGGER.log(Level.WARNING, "Waiting to reconnect...\n");
+            } else {
+                DeviceConnector.getDeviceConnector().backgroundConnect();
             }
 
             synchronized (sync) {
@@ -195,11 +199,13 @@ public class USBBulkConnection extends Connection {
         if(boardDetail != null) {
             if(boardDetail.boardMode == BoardMode.SDCard) {
                 LOGGER.log(Level.WARNING, "{0} is mounted as an SDCard, please eject it in order to connect.", new Object[]{boardDetail.toString()});
+                DeviceConnector.getDeviceConnector().backgroundConnect();
             }
             else {
                 deviceHandle = prefs.boards.getDeviceHandleForBoard(boardDetail);
                 if(deviceHandle == null) {
-                    LOGGER.log(Level.WARNING, "{0} is not available to connect to, please select another board.", new Object[]{boardDetail.toString()});
+                    LOGGER.log(Level.WARNING, "{0} is not available to connect to, please connect it or select another board.", new Object[]{boardDetail.toString()});
+                    DeviceConnector.getDeviceConnector().backgroundConnect();
                 }
             }
         } else {
@@ -323,14 +329,36 @@ public class USBBulkConnection extends Connection {
 
         targetProfile = new ksoloti_core();
 
+        prefs.getBoards().scanBoards();
+        BoardDetail boardDetail = prefs.boards.getSelectedBoardDetail();
+
         handle = OpenDeviceHandle();
         if (handle == null) {
+            // Board is not available
+            // 1. Check DFU board is available
+            boardDetail = prefs.boards.getDfuBoard();
+            if(boardDetail != null) {
+                prefs.boards.setSelectedBoard(boardDetail);
+                MainFrame.mainframe.userSetsBoardType();
+            } else {
+                return false;
+            }
+        }
+
+
+
+        if(boardDetail.boardMode == BoardMode.DFU) {
+            // ok, selected board is DFU so lets update it
+            QCmdProcessor qcmdprocessor = MainFrame.mainframe.getQcmdprocessor();
+
+            qcmdprocessor.AppendToQueue(new qcmds.QCmdFlashDFU());
+
             return false;
         }
 
         try {
             // devicePath = Usb.DeviceToPath(device);
-            prefs.getBoards().scanBoards();
+
             useBulkInterfaceNumber = prefs.boards.getBulkInterfaceNumber();
             LOGGER.log(Level.INFO, "Connecting to bulk endpoint {0}", useBulkInterfaceNumber);
             int result = LibUsb.claimInterface(handle, useBulkInterfaceNumber);

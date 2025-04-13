@@ -20,11 +20,14 @@ package qcmds;
 
 import axoloti.Axoloti;
 import axoloti.Boards;
+import axoloti.Boards.BoardDetail;
+import axoloti.Boards.BoardMode;
 import axoloti.DeviceConnector;
 import axoloti.MainFrame;
 import axoloti.USBBulkConnection;
 import axoloti.utils.OSDetect;
 
+import static axoloti.MainFrame.mainframe;
 import static axoloti.MainFrame.prefs;
 
 import java.io.File;
@@ -46,6 +49,12 @@ public class QCmdFlashDFU extends QCmdShellTask {
     @Override
     public String GetDoneMessage() {
         if (success) {
+            // Make sure the DFU board is selected
+            prefs.boards.selectBoardAfterDfu();
+            
+            // Update the firmware link
+            mainframe.updateLinkFirmwareID();
+
             // now start reconnect
             DeviceConnector.getDeviceConnector().tryToConnect(15);
 

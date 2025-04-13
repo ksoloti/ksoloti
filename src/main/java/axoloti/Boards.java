@@ -15,6 +15,7 @@ import org.usb4java.LibUsbException;
 import axoloti.utils.OSDetect;
 import qcmds.QCmdShellTask;
 
+import static axoloti.MainFrame.mainframe;
 import static axoloti.usb.Usb.DeviceToPath;
 import static axoloti.usb.Usb.PID_AXOLOTI;
 import static axoloti.usb.Usb.PID_AXOLOTI_SDCARD;
@@ -29,6 +30,8 @@ import static axoloti.usb.Usb.isDFUDeviceAvailable;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JOptionPane;
 
 import static axoloti.utils.OSDetect.getOS;
 
@@ -664,6 +667,38 @@ public class Boards {
         }
 
         return dfuCount;
+    }
+
+    public BoardDetail getDfuBoard() {
+        BoardDetail result = null;
+
+        for(BoardDetail board : BoardDetails.values()) {
+            if(board.boardMode == BoardMode.DFU) {
+                result = board;
+                break;
+            }
+        }
+        
+        return result;
+    }
+
+    public void selectBoardAfterDfu() {
+        BoardDetail boardDetails = getSelectedBoardDetail();
+
+        if(boardDetails.boardMode == BoardMode.DFU) {
+            String path = boardDetails.path;
+
+            scanBoards();
+            selectedBoardSerial = "";
+            for(BoardDetail board : BoardDetails.values()) {
+                if(board.path.equals(path)) {
+                    selectedBoardSerial = board.serialNumber;
+                    break;
+                }
+            }
+
+            mainframe.prefs.SavePrefs(false);
+        }
     }
 
     public void setBoardName(String cpuId, String name) {

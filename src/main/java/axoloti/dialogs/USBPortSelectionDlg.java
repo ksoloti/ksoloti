@@ -611,22 +611,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             if(boardDetail != null) {
                 // Do we know what this board is?
                 if(boardDetail.boardType == BoardType.Unknown) {
-                    //Custom button text
-                    Object[] options = {"Ksoloti Geko", "Ksoloti", "Axoloti" };
-                    int n = JOptionPane.showOptionDialog(this,
-                                                        "What sort of board is this?",
-                                                        "Unknown Board",
-                                                        JOptionPane.YES_NO_CANCEL_OPTION,
-                                                        JOptionPane.QUESTION_MESSAGE,
-                                                        null,
-                                                        options,
-                                                        options[2]);
-                    switch(n)
-                    {
-                        case 0 : boardDetail.boardType = BoardType.Axoloti; break;
-                        case 1 : boardDetail.boardType = BoardType.Ksoloti; break;
-                        case 2 : boardDetail.boardType = BoardType.KsolotiGeko; break;
-                    }
+                    MainFrame.mainframe.userSetsBoardType();
                 }
                 
                 prefs.boards.setSelectedBoard(boardDetail);
