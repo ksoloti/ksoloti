@@ -225,9 +225,15 @@ extern void *_fram_text_start;
 extern void *_fram_text_end;
 #endif
 
+void __dfu_check(void)
+{
+  //BootLoaderInit();
+  exception_check_DFU();
+}
+
 void __early_init(void)
 {
-  exception_check_DFU();
+  //exception_check_DFU();
 
 #if !BOARD_KSOLOTI_CORE_H743  
   // Work around for after DFU flashing where the bootloader

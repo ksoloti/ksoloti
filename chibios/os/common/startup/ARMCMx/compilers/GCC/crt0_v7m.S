@@ -194,6 +194,8 @@
                 .thumb_func
                 .global _crt0_entry
 _crt0_entry:
+                bl __dfu_check
+                
                 /* Interrupts are globally masked initially.*/
                 cpsid   i
 
