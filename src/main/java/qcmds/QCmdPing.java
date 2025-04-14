@@ -49,17 +49,21 @@ public class QCmdPing implements QCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        connection.ClearSync();
-        connection.TransmitPing();
-        if (connection.WaitSync() || (noCauseDisconnect)) {
-            return this;
-        } else {
-            if (connection.isConnected()) {
-                Logger.getLogger(QCmdPing.class.getName()).log(Level.SEVERE, "Ping: Sync timeout, disconnecting now");
-                return new QCmdDisconnect();
+        try {
+            connection.ClearSync();
+            connection.TransmitPing();
+            if (connection.WaitSync() || (noCauseDisconnect)) {
+                return this;
             } else {
-                return null;
+                if (connection.isConnected()) {
+                    Logger.getLogger(QCmdPing.class.getName()).log(Level.SEVERE, "Ping: Sync timeout, disconnecting now");
+                    return new QCmdDisconnect();
+                } else {
+                    return null;
+                }
             }
+        } catch (Exception ex) {
+            return null;
         }
     }
 }

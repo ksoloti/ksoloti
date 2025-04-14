@@ -18,6 +18,7 @@
  */
 package qcmds;
 
+import axoloti.DeviceConnector;
 import axoloti.MainFrame;
 
 /**
@@ -44,5 +45,6 @@ public class QCmdDisconnect implements QCmdGUITask {
         processor.ClearQueue();
         processor.serialconnection.disconnect();
         MainFrame.mainframe.ShowDisconnect();
+        DeviceConnector.getDeviceConnector().backgroundConnect();
     }
 }

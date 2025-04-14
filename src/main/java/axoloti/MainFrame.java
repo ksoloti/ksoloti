@@ -991,6 +991,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         doConnect();
     }
 
+    public void addFlashDfuOrWarn () {
+        if(prefs.boards.getDfuCount() > 1) {
+            LOGGER.log(Level.SEVERE, "Multiple boards in rescue mode are attached, please only have one connected.");
+        } else {
+            qcmdprocessor.AppendToQueue(new qcmds.QCmdFlashDFU());
+        }
+    }
     public boolean doConnect() {
         boolean result = false;
 
@@ -999,8 +1006,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         ShowDisconnect();
         BoardDetail boardDetail = prefs.boards.getSelectedBoardDetail();
         if(boardDetail.boardMode == BoardMode.DFU) {
-            userSetsBoardType();
-            qcmdprocessor.AppendToQueue(new qcmds.QCmdFlashDFU());
+            addFlashDfuOrWarn();
         } else
         {
             result = USBBulkConnection.GetConnection().connect();
@@ -1043,6 +1049,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             boolean success = doConnect();
             if (!success) {
                 ShowDisconnect();
+            } else {
+                ShowConnect();
             }
         }
     }
@@ -1295,9 +1303,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                                                 options[2]);
             switch(n)
             {
-                case 0 : boardDetail.boardType = BoardType.Axoloti; break;
+                case 2 : boardDetail.boardType = BoardType.Axoloti; break;
                 case 1 : boardDetail.boardType = BoardType.Ksoloti; break;
-                case 2 : boardDetail.boardType = BoardType.KsolotiGeko; break;
+                case 0 : boardDetail.boardType = BoardType.KsolotiGeko; break;
             }
 
             prefs.boards.setSelectedBoard(boardDetail);
@@ -1312,17 +1320,21 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         Boards boards = MainFrame.prefs.boards;
         if(boards.getDfuCount() == 0) {
-            updateLinkFirmwareID();
-            qcmdprocessor.AppendToQueue(new QCmdBringToDFUMode());
-            // qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
-            // qcmdprocessor.AppendToQueue(new qcmds.QCmdDisconnect());
-            qcmdprocessor.AppendToQueue(new qcmds.QCmdFlashDFU());
+            if(prefs.boards.getSelectedBoardDetail().isConnected) {
+                updateLinkFirmwareID();
+                qcmdprocessor.AppendToQueue(new QCmdBringToDFUMode());
+                // qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
+                // qcmdprocessor.AppendToQueue(new qcmds.QCmdDisconnect());
+                qcmdprocessor.AppendToQueue(new qcmds.QCmdFlashDFU());
+            } else {
+                LOGGER.log(Level.SEVERE, "There are no devices in Rescue Mode and you are not connected to any devices that can be put into DFU mode.");
+            }
         } else if(boards.getDfuCount() == 1) {
             // ok here we do not know what board we are using as the user
             // already has a board started as DFU
             BoardDetail boardDetail = boards.getDfuBoard();
             prefs.boards.setSelectedBoard(boardDetail);
-            userSetsBoardType();
+            //userSetsBoardType();
 
             axoloti.Axoloti.deletePrecompiledHeaderFile();
             // qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
@@ -1678,6 +1690,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 String firmwareBinName = prefs.boards.getFirmwareBinFilename();
                 flashUsingSDRam(firmwareBinName);
             } else {
+                DeviceConnector.getDeviceConnector().cancel();
                 USBBulkConnection.GetConnection().disconnect();
             }
         }

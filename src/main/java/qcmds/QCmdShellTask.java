@@ -141,21 +141,26 @@ public abstract class QCmdShellTask implements QCmd {
         Runtime runtime = Runtime.getRuntime();
         try {
             Process p1;
-            p1 = runtime.exec(GetExec(), GetEnv(), GetWorkingDir());
+            String execPath = GetExec();
+            if(execPath != null) {
+                p1 = runtime.exec(execPath, GetEnv(), GetWorkingDir());
 
-            Thread thd_out = new Thread(new StreamHandlerThread(shellProcessor, p1.getInputStream()));
-            thd_out.start();
-            Thread thd_err = new Thread(new StreamHandlerThread(shellProcessor, p1.getErrorStream()));
-            thd_err.start();
-            p1.waitFor();
-            thd_out.join();
-            thd_err.join();
-            if (p1.exitValue() == 0) {
-                success = true;
+                Thread thd_out = new Thread(new StreamHandlerThread(shellProcessor, p1.getInputStream()));
+                thd_out.start();
+                Thread thd_err = new Thread(new StreamHandlerThread(shellProcessor, p1.getErrorStream()));
+                thd_err.start();
+                p1.waitFor();
+                thd_out.join();
+                thd_err.join();
+                if (p1.exitValue() == 0) {
+                    success = true;
+                } else {
+                    LOGGER.log(Level.SEVERE, "Shell task failed, exit value: {0}", p1.exitValue());
+                    success = false;
+                    return err();
+                }
             } else {
-                LOGGER.log(Level.SEVERE, "Shell task failed, exit value: {0}", p1.exitValue());
-                success = false;
-                return err();
+                LOGGER.log(Level.SEVERE, "Failed to get exec path");
             }
         } catch (InterruptedException ex) {
             LOGGER.log(Level.SEVERE, null, ex);

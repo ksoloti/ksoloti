@@ -43,25 +43,28 @@ public class QCmdFlashDFU extends QCmdShellTask {
 
     @Override
     public String GetStartMessage() {
+        MainFrame.mainframe.userSetsBoardType();
         return "Flashing firmware with DFU...";
     }
 
     @Override
     public String GetDoneMessage() {
+        // Make sure the DFU board is selected
+        prefs.boards.selectBoardAfterDfu();
+
+        // Update the firmware link
+        mainframe.updateLinkFirmwareID();
+
+        // now start reconnect
+        DeviceConnector.getDeviceConnector().tryToConnect(15);
+        
         if (success) {
-            // Make sure the DFU board is selected
-            prefs.boards.selectBoardAfterDfu();
-            
-            // Update the firmware link
-            mainframe.updateLinkFirmwareID();
-
-            // now start reconnect
-            DeviceConnector.getDeviceConnector().tryToConnect(15);
-
             return "Done flashing firmware with DFU.\n";
         } else {
-            return "Error: Flashing firmware failed.\n";
+            return "Done Flashing firmware with DFU, this may have failed.\n";
         }
+
+
     }
     
     @Override
@@ -76,8 +79,9 @@ public class QCmdFlashDFU extends QCmdShellTask {
         try {
 
             USBBulkConnection.GetConnection().disconnect();
-
             String bname = prefs.boards.getFirmwareBinFilename(false);
+            int dfuSize = prefs.boards.getDfuSize();
+
             Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.INFO, "File path: " + System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build" + File.separator + bname);
 
             Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.INFO, "Waiting for DFU to become available...");
@@ -90,6 +94,9 @@ public class QCmdFlashDFU extends QCmdShellTask {
                 timeout --;
             }
 
+            // try another little sleep
+            Thread.sleep(1000);
+
             if(boardCount > 1) {
                 Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.SEVERE, "More than one board in DFU mode found!");
                 return null; 
@@ -99,13 +106,13 @@ public class QCmdFlashDFU extends QCmdShellTask {
             }
 
             if (OSDetect.getOS() == OSDetect.OS.WIN) {
-                return RuntimeDir() + "/platform_win/bin/sh.exe " + RuntimeDir() + "/platform_win/upload_fw_dfu.sh " + bname;
+                return RuntimeDir() + "/platform_win/bin/sh.exe " + RuntimeDir() + "/platform_win/upload_fw_dfu.sh " + bname + " " + String.valueOf(dfuSize);
             }
             else if (OSDetect.getOS() == OSDetect.OS.MAC) {
-                return "/bin/sh "+ RuntimeDir() + "/platform_osx/upload_fw_dfu.sh " + bname;
+                return "/bin/sh "+ RuntimeDir() + "/platform_osx/upload_fw_dfu.sh " + bname + " " + String.valueOf(dfuSize);
             }
             else if (OSDetect.getOS() == OSDetect.OS.LINUX) {
-                return "/bin/sh "+ RuntimeDir() + "/platform_linux/upload_fw_dfu.sh " + bname;
+                return "/bin/sh "+ RuntimeDir() + "/platform_linux/upload_fw_dfu.sh " + bname + " " + String.valueOf(dfuSize);
             }
             else {
                 Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");

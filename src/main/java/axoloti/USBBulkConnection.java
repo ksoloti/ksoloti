@@ -25,18 +25,12 @@ package axoloti;
 import axoloti.dialogs.USBPortSelectionDlg;
 
 import static axoloti.MainFrame.prefs;
-import static axoloti.dialogs.USBPortSelectionDlg.ErrorString;
-import static axoloti.usb.Usb.isDFUDeviceAvailable;
 
 import axoloti.displays.DisplayInstance;
 import axoloti.parameters.ParameterInstance;
 import axoloti.targetprofile.ksoloti_core;
 import axoloti.Boards.BoardDetail;
 import axoloti.Boards.BoardMode;
-import axoloti.Boards.BoardType;
-import axoloti.Boards.FirmwareType;
-import axoloti.Boards.MemoryLayoutType;
-import axoloti.Boards.SampleRateType;
 
 
 import java.lang.reflect.InvocationTargetException;
@@ -81,14 +75,10 @@ public class USBBulkConnection extends Connection {
     private Thread receiverThread;
     private final BlockingQueue<QCmdSerialTask> queueSerialTask;
     private String cpuid;
+    private String connectedSerialNumber;
     private ksoloti_core targetProfile;
     private final Context context;
     private DeviceHandle handle;
-    private final short bulkVID = (short) 0x16C0;
-    private final short bulkPIDAxoloti = (short) 0x0442;
-    private final short bulkPIDAxolotiUsbAudio = (short) 0x0447;
-    private final short bulkPIDKsoloti = (short) 0x0444;
-    private final short bulkPIDKsolotiUsbAudio = (short) 0x0446;
     private int useBulkInterfaceNumber = 2;
 
 	protected USBBulkConnection() {
@@ -152,13 +142,14 @@ public class USBBulkConnection extends Connection {
             catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
-
+            
+            prefs.boards.setBoardConnectedStatus(connectedSerialNumber, false);
             LOGGER.log(Level.WARNING, "Disconnected\n");
 
             if(DeviceConnector.getDeviceConnector().isTryingToReconnect()) {
                 LOGGER.log(Level.WARNING, "Waiting to reconnect...\n");
             } else {
-                DeviceConnector.getDeviceConnector().backgroundConnect();
+                // ARCTODO DeviceConnector.getDeviceConnector().backgroundConnect();
             }
 
             synchronized (sync) {
@@ -215,93 +206,6 @@ public class USBBulkConnection extends Connection {
         return deviceHandle;
     }
 
-    //     /* Read the USB device list */
-    //     DeviceList list = new DeviceList();
-
-    //     int result = LibUsb.getDeviceList(context, list);
-    //     if (result < 0) {
-    //         throw new LibUsbException("Unable to get device list", result);
-    //     }
-
-    //     try {
-    //         /* Iterate over all devices and scan for the right one */
-    //         DeviceHandle firstDeviceHandle = null;
-    //         DeviceHandle useDeviceHandle = null;
-
-    //         for (Device d : list) {
-    //             DeviceDescriptor descriptor = new DeviceDescriptor();
-
-    //             result = LibUsb.getDeviceDescriptor(d, descriptor);
-    //             if (result != LibUsb.SUCCESS) {
-    //                 throw new LibUsbException("Unable to read device descriptor", result);
-    //             }
-
-    //             BoardType board = prefs.boards.getBoardType();
-    //             FirmwareType firmware = prefs.boards.getFirmware();
-
-    //             if(descriptor.idVendor() == bulkVID) {
-    //                 boolean foundKsoloti         = (descriptor.idProduct() == bulkPIDKsoloti);
-    //                 boolean foundKsolotiUsbAudio = (descriptor.idProduct() == bulkPIDKsolotiUsbAudio);
-    //                 boolean foundAxoloti         = (descriptor.idProduct() == bulkPIDAxoloti);
-    //                 boolean foundAxolotiUsbAudio = (descriptor.idProduct() == bulkPIDAxolotiUsbAudio);
-                    
-    //                 boolean matchKsoloti = (board == BoardType.Ksoloti) || (board == BoardType.KsolotiGeko) && (foundKsoloti || foundKsolotiUsbAudio);
-    //                 boolean matchAxoloti = (board == BoardType.Axoloti) && (foundAxoloti || foundAxolotiUsbAudio);
-
-    //                 if (matchKsoloti || matchAxoloti) {
-    //                     LOGGER.log(Level.INFO, board.toString() + " " + firmware.toString() + " found.");
-    //                     useBulkInterfaceNumber = (foundKsoloti || foundAxoloti) ? 2 : 4;
-
-    //                     DeviceHandle h = new DeviceHandle();
-
-    //                     result = LibUsb.open(d, h);
-    //                     if (result < 0) {
-    //                         LOGGER.log(Level.INFO, ErrorString(result));
-    //                     }
-    //                     else {
-    //                         String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
-
-    //                         if (cpuid != null) {
-    //                             if (serial.equals(cpuid)) {
-    //                                 useDeviceHandle = h;
-    //                                 break;
-    //                             }
-    //                         }
-    //                         else {
-    //                             useDeviceHandle = h;
-    //                             break;
-    //                         }
-
-    //                         if(firstDeviceHandle == null)
-    //                             firstDeviceHandle = h;
-                            
-    //                         if(h != firstDeviceHandle)
-    //                             LibUsb.close(h);
-    //                     }
-    //                 }
-    //             }
-    //         }
-
-    //         // if we have a matching useDeviceHandle return that, else if we have a firstDeviceHandle return that
-    //         if(useDeviceHandle != null) {
-    //             if(firstDeviceHandle != null)
-    //                 LibUsb.close(firstDeviceHandle);
-    //             return useDeviceHandle;
-    //         } else if(firstDeviceHandle != null)
-    //         {
-    //             return firstDeviceHandle;
-    //         }
-    //     }
-    //     finally {
-    //         /* Ensure the allocated device list is freed */
-    //         // LibUsb.freeDeviceList(list, true);
-    //     }
-
-    //     LOGGER.log(Level.SEVERE, "No matching USB devices found.");
-
-    //     /* Device not found */
-    //     return null;
-    // }
 
     private byte[] bb2ba(ByteBuffer bb) {
         bb.rewind();
@@ -323,10 +227,6 @@ public class USBBulkConnection extends Connection {
 
         GoIdleState();
 
-        if (cpuid == null) {
-            cpuid = prefs.getComPortName();
-        }
-
         targetProfile = new ksoloti_core();
 
         prefs.getBoards().scanBoards();
@@ -339,7 +239,6 @@ public class USBBulkConnection extends Connection {
             boardDetail = prefs.boards.getDfuBoard();
             if(boardDetail != null) {
                 prefs.boards.setSelectedBoard(boardDetail);
-                MainFrame.mainframe.userSetsBoardType();
             } else {
                 return false;
             }
@@ -348,17 +247,12 @@ public class USBBulkConnection extends Connection {
 
 
         if(boardDetail.boardMode == BoardMode.DFU) {
-            // ok, selected board is DFU so lets update it
-            QCmdProcessor qcmdprocessor = MainFrame.mainframe.getQcmdprocessor();
-
-            qcmdprocessor.AppendToQueue(new qcmds.QCmdFlashDFU());
-
             return false;
         }
 
         try {
             // devicePath = Usb.DeviceToPath(device);
-
+            connectedSerialNumber = boardDetail.serialNumber;
             useBulkInterfaceNumber = prefs.boards.getBulkInterfaceNumber();
             LOGGER.log(Level.INFO, "Connecting to bulk endpoint {0}", useBulkInterfaceNumber);
             int result = LibUsb.claimInterface(handle, useBulkInterfaceNumber);
@@ -394,6 +288,7 @@ public class USBBulkConnection extends Connection {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
 
+            prefs.boards.setSelectedBoardConnectedStatus(true);
             LOGGER.log(Level.WARNING, "Connected\n");
 
             try {
@@ -417,29 +312,10 @@ public class USBBulkConnection extends Connection {
             boolean signaturevalid = true;
             QCmdMemRead q;
 
-            // QCmdMemRead1Word q1 = new QCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
-            // qcmdp.AppendToQueue(q1);
-            // targetProfile.setCPUIDCode(q1.getResult());
-
-            // QCmdMemRead q;
-
+            // TODO remove this memory read
             q = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
             qcmdp.AppendToQueue(q);
             targetProfile.setCPUSerial(q.getResult());
-
-            // q = new QCmdMemRead(targetProfile.getOTPAddr(), 32);
-            // qcmdp.AppendToQueue(q);
-            // // ByteBuffer otpInfo = q.getResult();
-
-            // q = new QCmdMemRead(targetProfile.getOTPAddr() + 32, 256);
-            // qcmdp.AppendToQueue(q);
-
-            // ByteBuffer signature = q.getResult();
-
-            // boolean signaturevalid = false;
-            // if (signature == null) {
-            //     LOGGER.log(Level.INFO, "Cannot obtain signature, upgrade firmware?");
-            // }
 
             boolean signing = false;
 
@@ -512,45 +388,59 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public void writeBytes(byte[] data) {
-
         ByteBuffer buffer = ByteBuffer.allocateDirect(data.length);
         buffer.put(data);
 
         IntBuffer transfered = IntBuffer.allocate(1);
 
-        int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 1000);
-        if (result != LibUsb.SUCCESS) { /* handle error -99 below */
+        int result = 0;
+        try {
+            result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 1000);
+        } catch(Exception ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+            result = -100;
+        } finally {
+            if (result != LibUsb.SUCCESS) { /* handle error -99 below */
+                // DISCONNECT HERE
 
-            if (result == -99) {
-                /*
-                * Filter out error -99 ... seems to pop up every now and then but does not lead to connection loss  
-                * this "bug" will likely  be resolved after libusb update
-                */
-                // LOGGER.log(Level.INFO, "USB connection not happy: " + result);
-                return;
-            }
-
-            String errstr;
-            switch (result) {
-                case -1:  errstr = "Input/output error"; break;
-                case -2:  errstr = "Invalid parameter"; break;
-                case -3:  errstr = "Access denied (insufficient permissions?)"; break;
-                case -4:  errstr = "Device may have been disconnected"; break;
-                case -5:  errstr = "Device not found"; break;
-                case -6:  errstr = "Device busy"; break;
-                case -7:  errstr = "Operation timed out"; break;
-                case -8:  errstr = "Overflow"; break;
-                case -9:  {
-                    errstr = "Pipe error";
-                    MainFrame.mainframe.ShowDisconnect();
-                    break;
+                if (result == -99) {
+                    /*
+                    * Filter out error -99 ... seems to pop up every now and then but does not lead to connection loss  
+                    * this "bug" will likely  be resolved after libusb update
+                    */
+                    // LOGGER.log(Level.INFO, "USB connection not happy: " + result);
+                    return;
                 }
-                case -10: errstr = "System call interrupted"; break;
-                case -11: errstr = "Insufficient memory"; break;
-                case -12: errstr = "Operation not supported or unimplemented"; break;
-                default:  errstr = Integer.toString(result); break;
+
+                String errstr;
+                switch (result) {
+                    case -1:  errstr = "Input/output error"; break;
+                    case -2:  errstr = "Invalid parameter"; break;
+                    case -3:  errstr = "Access denied (insufficient permissions?)"; break;
+                    case -4:  errstr = "Device may have been disconnected"; break;
+                    case -5:  errstr = "Device not found"; break;
+                    case -6:  errstr = "Device busy"; break;
+                    case -7:  errstr = "Operation timed out"; break;
+                    case -8:  errstr = "Overflow"; break;
+                    case -9:  {
+                        errstr = "Pipe error";
+                        MainFrame.mainframe.ShowDisconnect();
+                        break;
+                    }
+                    case -10: errstr = "System call interrupted"; break;
+                    case -11: errstr = "Insufficient memory"; break;
+                    case -12: errstr = "Operation not supported or unimplemented"; break;
+                    case -100: errstr = "Exception"; break;
+                    default:  errstr = Integer.toString(result); break;
+                }
+                LOGGER.log(Level.SEVERE, "USB connection failed: " + errstr);
+
+                // try disconnect here
+                disconnect();
+        
+                // on error try a background connect
+                DeviceConnector.getDeviceConnector().backgroundConnect();
             }
-            LOGGER.log(Level.SEVERE, "USB connection failed: " + errstr);
         }
     }
 

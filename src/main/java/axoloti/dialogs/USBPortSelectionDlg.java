@@ -310,7 +310,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             } else if(board.boardMode == BoardMode.DFU) {
                 status = "DFU";
             } else {
-                if (board.isConnected) {
+                if (board.isAttached) {
                     status = "Available";
                 } else {
                     status = "Not Available";
@@ -609,11 +609,6 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
            
             if(boardDetail != null) {
-                // Do we know what this board is?
-                if(boardDetail.boardType == BoardType.Unknown) {
-                    MainFrame.mainframe.userSetsBoardType();
-                }
-                
                 prefs.boards.setSelectedBoard(boardDetail);
                 prefs.SavePrefs(false);
 

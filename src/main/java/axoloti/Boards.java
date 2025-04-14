@@ -194,6 +194,9 @@ public class Boards {
         public MemoryLayoutType memoryLayout;
 
         @Element(required = false)
+        public boolean isAttached;
+
+        @Element(required = false)
         public boolean isConnected;
 
         @Element(required = false)
@@ -211,7 +214,7 @@ public class Boards {
             name = "";
             needsUpdate = false;
             path = "";
-            isConnected = false;
+            isAttached = false;
 
             if (cpuId.length() == 25) {
                 // Valid serial for 1.1 and later
@@ -303,6 +306,37 @@ public class Boards {
         selectedBoardSerial = board.serialNumber;
     }
 
+    public void setBoardConnectedStatus(String serialNumber, boolean isConnected) {
+        BoardDetail boardDetail = getBoardDetail(serialNumber);
+
+        if(boardDetail != null) {
+            if(isConnected) {
+                LOGGER.log(Level.WARNING, "Connecting {0}\n", boardDetail.toString());
+                // Disconnect all other boayrds
+                for(BoardDetail board : BoardDetails.values()) {
+                    if(board.isConnected) {
+                        board.isConnected = false;
+                        LOGGER.log(Level.WARNING, "{0} automatically disconnected\n", boardDetail.toString());
+                    }
+                }
+                LOGGER.log(Level.WARNING, "{0} connected\n", boardDetail.toString());
+            } else {
+                LOGGER.log(Level.WARNING, "{0} disconnected\n", boardDetail.toString());
+            }
+
+            boardDetail.isConnected = isConnected;
+        } else {
+            LOGGER.log(Level.SEVERE, "Failed to open set connected status for selected board, not found!\n");
+        }
+
+        mainframe.prefs.SavePrefs(false);
+
+    }
+
+    public void setSelectedBoardConnectedStatus(boolean isConnected) {
+        setBoardConnectedStatus(selectedBoardSerial, isConnected);
+    }
+
     public void deleteBoardDetail(String cpuId) {
         BoardDetails.remove(cpuId);
     }
@@ -349,12 +383,12 @@ public class Boards {
                 BoardDetail boardDetail = BoardDetails.get(cpuId);
                 boardDetail.setMode(mode);
                 boardDetail.path = path;
-                boardDetail.isConnected = true;
+                boardDetail.isAttached = true;
             } else {
                 // add new
                 BoardDetail boardDetail = new BoardDetail(type, mode, cpuId);
                 boardDetail.path = path;
-                boardDetail.isConnected = true;
+                boardDetail.isAttached = true;
                 result = addBoardDetail(cpuId, boardDetail);
             }
         }
@@ -418,7 +452,7 @@ public class Boards {
     public DeviceHandle getDeviceHandleForBoard(BoardDetail boardDetail) {
         DeviceHandle deviceHandle = null;
 
-        if(boardDetail.isConnected) {
+        if(boardDetail.isAttached) {
             // There must be a better way!
             int result = LibUsb.init(null); // TODOH7 loook at all these inits
 
@@ -456,9 +490,9 @@ public class Boards {
     }
 
     public void scanBoards() {
-        // first set all boards to disconnected
+        // first set all boards to unattached
         for(BoardDetail board : BoardDetails.values()) {
-            board.isConnected = false;
+            board.isAttached = false;
         }
 
         // Remove any DFU boards
@@ -506,8 +540,8 @@ public class Boards {
             selectedBoardSerial = board.getKey();
         }
 
-        // Save to disk
-        MainFrame.prefs.SavePrefs(false);
+        // Save to disk??
+        //ARC TODO MainFrame.prefs.SavePrefs(false);
     }
 
     private static String ErrorString(int result) {
@@ -577,6 +611,14 @@ public class Boards {
         } else {
             return MemoryLayoutType.NA;
         }
+    }
+
+    public int getDfuSize() {
+        int dfuSize = 4096;
+        if(getBoardType() == BoardType.KsolotiGeko) {
+            dfuSize = 1024;
+        }
+        return dfuSize;
     }
 
     public String getFirmwareBinFilename(boolean bFullPath) {
@@ -663,7 +705,6 @@ public class Boards {
             if(board.boardMode == BoardMode.DFU) {
                 dfuCount++;
             }
-            board.isConnected = false;
         }
 
         return dfuCount;

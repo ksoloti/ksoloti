@@ -24,6 +24,7 @@ import axoloti.Patch;
 import axoloti.USBBulkConnection;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
@@ -198,10 +199,16 @@ public class QCmdProcessor implements Runnable {
                 if (QCmdSerialTask.class.isInstance(cmd)) {
                     if (serialconnection.isConnected()) {
                         serialconnection.AppendToQueue((QCmdSerialTask) cmd);
-                        QCmd response = queueResponse.take();
-                        publish(response);
-                        if (response instanceof QCmdDisconnect){
-                            queue.clear();
+
+                        QCmd response = queueResponse.poll(1, TimeUnit.SECONDS);
+                        //QCmd response = queueResponse.take();
+                        if(response != null) {
+                            publish(response);
+                            if (response instanceof QCmdDisconnect){
+                                queue.clear();
+                            }
+                        } else {
+                            LOGGER.log(Level.SEVERE, "Timed out waiting for response");
                         }
                     }
                 }

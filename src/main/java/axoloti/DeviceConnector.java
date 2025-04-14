@@ -48,33 +48,39 @@ public class DeviceConnector implements Runnable {
       } catch (InterruptedException ex) {
         LOGGER.log(Level.SEVERE, null, ex);
       }
-      if(connectCount > 0) {
-        MainFrame.prefs.getBoards().scanBoards();
-        Boards boards = MainFrame.prefs.getBoards();
 
-        BoardDetail boardDetail = boards.getSelectedBoardDetail();
+      try {
+        if(connectCount > 0) {
+          activeConnect = true; // ARCFATAL
+          MainFrame.prefs.getBoards().scanBoards();
+          Boards boards = MainFrame.prefs.getBoards();
 
-        if(boardDetail.isConnected) {
-          if(activeConnect) {
-            LOGGER.log(Level.INFO, "{0} is available, connecting now.", boardDetail.serialNumber);
-          }
+          BoardDetail boardDetail = boards.getSelectedBoardDetail();
 
-          connectCount = 0;
-          mainframe.doConnect();
-          // todo the work!
-        } else {
-          if( activeConnect) {
-            LOGGER.log(Level.INFO, "Looking for {0}", boardDetail.serialNumber);
-          }
-          connectCount--;
-          if(connectCount == 0) {
+          if(boardDetail.isAttached) {
             if(activeConnect) {
-              LOGGER.log(Level.SEVERE, "Timedout looking for {0}", boardDetail.serialNumber);
-            } else {
-              connectCount = Integer.MAX_VALUE;
+              LOGGER.log(Level.INFO, "{0} is available, connecting now.", boardDetail.serialNumber);
+            }
+
+            connectCount = 0;
+            mainframe.doConnect();
+            // todo the work!
+          } else {
+            if( activeConnect) {
+              LOGGER.log(Level.INFO, "Looking for {0}", boardDetail.serialNumber);
+            }
+            connectCount--;
+            if(connectCount == 0) {
+              if(activeConnect) {
+                LOGGER.log(Level.SEVERE, "Timeout looking for {0}", boardDetail.serialNumber);
+              } else {
+                connectCount = Integer.MAX_VALUE;
+              }
             }
           }
         }
+      } catch (Exception ex) {
+        LOGGER.log(Level.SEVERE, null, ex);
       }
 
       // if (queue.isEmpty() && serialconnection.isConnected()) {
