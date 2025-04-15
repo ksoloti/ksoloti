@@ -683,6 +683,13 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         return getType().sInitCode.length() != 0;
     }
 
+    public boolean hasGlobal() {
+        if (getType().sGlobalCode == null) {
+            return false;
+        }
+        return getType().sGlobalCode.length() != 0;
+    }
+
     public String GenerateInstanceCodePlusPlus(String classname) {
         String c = "";
         for (ParameterInstance p : parameterInstances) {

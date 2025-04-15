@@ -77,6 +77,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private String origXML;
     private final RSyntaxTextArea jTextAreaLocalData;
     private final RSyntaxTextArea jTextAreaInitCode;
+    private final RSyntaxTextArea jTextAreaGlobalCode;
     private final RSyntaxTextArea jTextAreaKRateCode;
     private final RSyntaxTextArea jTextAreaSRateCode;
     private final RSyntaxTextArea jTextAreaDisposeCode;
@@ -206,6 +207,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         jTextAreaLocalData = initCodeEditor(jPanelLocalData, acProvider);
         jTextAreaInitCode = initCodeEditor(jPanelInitCode, acProvider);
+        jTextAreaGlobalCode = initCodeEditor(jPanelGlobalCode, acProvider);
         jTextAreaKRateCode = initCodeEditor(jPanelKRateCode2, acProvider);
         jTextAreaSRateCode = initCodeEditor(jPanelSRateCode, acProvider);
         jTextAreaDisposeCode = initCodeEditor(jPanelDisposeCode, acProvider);
@@ -275,6 +277,21 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             @Override
             void update() {
                 editObj.sKRateCode = CleanString(jTextAreaKRateCode.getText());
+            }
+        });
+
+        jTextAreaGlobalCode.getDocument().addDocumentListener(new DocumentChangeListener() {
+            @Override
+            void update() {
+                editObj.sGlobalCode = CleanString(jTextAreaGlobalCode.getText());
+            }
+        });
+
+
+        jTextAreaGlobalCode.getDocument().addDocumentListener(new DocumentChangeListener() {
+            @Override
+            void update() {
+                editObj.sGlobalCode = CleanString(jTextAreaGlobalCode.getText());
             }
         });
 
@@ -354,6 +371,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         jTextAreaLocalData.setEditable(!readonly);
         jTextAreaInitCode.setEditable(!readonly);
         jTextAreaKRateCode.setEditable(!readonly);
+        jTextAreaGlobalCode.setEditable(!readonly);
         jTextAreaSRateCode.setEditable(!readonly);
         jTextAreaDisposeCode.setEditable(!readonly);
         jTextAreaMidiCode.setEditable(!readonly);
@@ -419,6 +437,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             jTextAreaLocalData.setText(editObj.sLocalData == null ? "" : editObj.sLocalData);
             jTextAreaInitCode.setText(editObj.sInitCode == null ? "" : editObj.sInitCode);
             jTextAreaKRateCode.setText(editObj.sKRateCode == null ? "" : editObj.sKRateCode);
+            jTextAreaGlobalCode.setText(editObj.sGlobalCode == null ? "" : editObj.sGlobalCode);
             jTextAreaSRateCode.setText(editObj.sSRateCode == null ? "" : editObj.sSRateCode);
             jTextAreaDisposeCode.setText(editObj.sDisposeCode == null ? "" : editObj.sDisposeCode);
             jTextAreaMidiCode.setText(editObj.sMidiCode == null ? "" : editObj.sMidiCode);
@@ -605,6 +624,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         jPanelInitCode = new javax.swing.JPanel();
         jPanelKRateCode = new javax.swing.JPanel();
         jPanelKRateCode2 = new javax.swing.JPanel();
+        jPanelGlobalCode = new javax.swing.JPanel();
         jPanelSRateCode = new javax.swing.JPanel();
         jPanelDisposeCode = new javax.swing.JPanel();
         jPanelMidiCode = new javax.swing.JPanel();
@@ -808,6 +828,19 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         );
 
         jTabbedPane1.addTab("Local Data", jPanelLocalData);
+
+        GroupLayout jPanelGlobalCodeLayout = new GroupLayout(jPanelGlobalCode);
+        jPanelGlobalCode.setLayout(jPanelGlobalCodeLayout);
+        jPanelGlobalCodeLayout.setHorizontalGroup(
+            jPanelGlobalCodeLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGap(0, 466, Short.MAX_VALUE)
+        );
+        jPanelGlobalCodeLayout.setVerticalGroup(
+            jPanelGlobalCodeLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGap(0, 302, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Global Code", jPanelGlobalCode);
 
         GroupLayout jPanelInitCodeLayout = new GroupLayout(jPanelInitCode);
         jPanelInitCode.setLayout(jPanelInitCodeLayout);
@@ -1015,6 +1048,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanelDisposeCode;
     private javax.swing.JPanel jPanelInitCode;
+    private javax.swing.JPanel jPanelGlobalCode;
     private javax.swing.JPanel jPanelKRateCode;
     private javax.swing.JPanel jPanelKRateCode2;
     private javax.swing.JPanel jPanelLocalData;

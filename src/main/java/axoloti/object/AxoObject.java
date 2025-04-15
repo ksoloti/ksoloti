@@ -256,6 +256,8 @@ public class AxoObject extends AxoObjectAbstract {
     public String sLocalData;
     @Element(name = "code.init", required = false, data = true)
     public String sInitCode;
+    @Element(name = "code.global", required = false, data = true)
+    public String sGlobalCode;
     @Element(name = "code.dispose", required = false, data = true)
     public String sDisposeCode;
     @Element(name = "code.krate", required = false, data = true)
@@ -499,6 +501,11 @@ public class AxoObject extends AxoObjectAbstract {
     //     return relative.toString();
     // }
 
+    @Override 
+    public String GetGlobals() {
+        return sGlobalCode;
+    }
+
     @Override
     public HashSet<String> GetIncludes(String patchFilePath) {
         /* Optional String argument makes is possible to
@@ -698,6 +705,7 @@ public class AxoObject extends AxoObjectAbstract {
         }
         sLocalData = o.sLocalData;
         sInitCode = o.sInitCode;
+        sGlobalCode = o.sGlobalCode;
         sDisposeCode = o.sDisposeCode;
         sKRateCode = o.sKRateCode;
         sSRateCode = o.sSRateCode;

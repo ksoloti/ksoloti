@@ -80,6 +80,7 @@ public class AxoObjectFromPatch extends AxoObject {
         sDescription = o.sDescription;
         sDisposeCode = o.sDisposeCode;
         sInitCode = o.sInitCode;
+        sGlobalCode = o.sGlobalCode;
         sKRateCode = o.sKRateCode;
         sLicense = o.sLicense;
         sLocalData = o.sLocalData;

@@ -158,6 +158,10 @@ public abstract class AxoObjectAbstract implements Comparable, Cloneable {
         return null;
     }
 
+    public String GetGlobals() {
+        return null;
+    }
+
     public void SetIncludes(HashSet<String> includes) {
     }
 

@@ -1152,6 +1152,40 @@ public class Patch {
     public void AdjustSize() {
     }
 
+    public String getGlobals() {
+        HashSet<String> idsDone = new HashSet<String>();
+
+        String globals = "// Global code start";
+
+        if (controllerInstance != null) {
+            String id = controllerInstance.getType().id;
+            if(!idsDone.contains(id)) {
+                globals += "\n// " + id;
+                idsDone.add(id);
+                String sg = controllerInstance.getType().GetGlobals();
+                if (sg != null) {
+                    globals += "\n" + sg;
+                }
+            }
+        }
+
+        for (AxoObjectInstanceAbstract o : objectInstances) {
+            String id = o.getType().id;
+            if(!idsDone.contains(id)) {
+                globals += "\n// " + id;
+                idsDone.add(id);
+                String sg = o.getType().GetGlobals();
+                if (sg != null) {
+                    globals += "\n" + sg;
+                }
+            }
+        }
+
+        globals += "\n// Global code end\n";
+
+        return globals;
+    }
+
     public HashSet<String> getIncludes() {
         HashSet<String> includes = new HashSet<String>();
         if (controllerInstance != null) {
@@ -1946,6 +1980,7 @@ public class Patch {
         + "#pragma GCC diagnostic ignored \"-Wunused-variable\"\n"
         + "#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n\n";
 
+        c += getGlobals();
         c += generateIncludes();
 
         if (settings == null) {
