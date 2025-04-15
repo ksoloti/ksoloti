@@ -215,7 +215,8 @@ INCDIR = $(CMSIS)/Core/Include \
   ${FIRMWARE} \
   $(CHIBIOS) \
   $(CHIBIOS)/os/various \
-  ${FIRMWARE}/mutable_instruments \
+  ${FIRMWARE}/mutable_instruments 
+	
 
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # Ksoloti h747
@@ -233,25 +234,43 @@ endif
 IINCDIR = $(patsubst %,-I%,$(INCDIR) $(DINCDIR) $(UINCDIR) $(CONFDIR) $(ALLINC))
 LLIBDIR = $(patsubst %,-L%,$(DLIBDIR) $(ULIBDIR))
 
+
+AXO_CSOURCES=$(shell find ${BUILDDIR}/src -type f -iname '*.c')
+AXO_CPPSOURCES=$(shell find ${BUILDDIR}/src -type f -iname '*.cpp')
+AXO_INCLUDES=$(shell find ${BUILDDIR}/src -type d)
+AXO_OBJECTS=$(foreach x, $(basename $(AXO_CSOURCES)), $(x).o)
+AXO_OBJECTS+=$(foreach x, $(basename $(AXO_CPPSOURCES)), $(x).o)
+
+$(info AXO_CSOURCES = $(AXO_CSOURCES))
+$(info AXO_CPPSOURCES = $(AXO_CPPSOURCES))
+$(info AXO_OBJECTS = $(AXO_OBJECTS))
+$(info AXO_INCLUDES= $(AXO_INCLUDES))
+# $(info INCDIR = $(INCDIR))
+
+INCDIR+=$(AXO_INCLUDES)
+
 all: ${BUILDDIR}/xpatch.bin
+
+.cpp.o:
+	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c $< -o $@
+
+.c.o:
+	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -I ${BUILDDIR}/src/** -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c $< -o $@
 
 ${BUILDDIR}/xpatch.h.gch: ${FIRMWARE}/xpatch.h ${FIRMWARE}/patch.h ${FIRMWARE}/axoloti.h ${FIRMWARE}/parameter_functions.h ${FIRMWARE}/axoloti_math.h ${FIRMWARE}/axoloti_filters.h
 	@echo Building precompiled header
 	@$(CPP) $(CCFLAGS) $(DEFS) $(IINCDIR) -Winvalid-pch -MD -MP -c ${FIRMWARE}/xpatch.h -o ${BUILDDIR}/xpatch.h.gch
 
-${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
+${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch $(AXO_OBJECTS)
 	@echo Removing previous build files
 	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.list ${BUILDDIR}/xpatch.siz
 	@echo Compiling patch dependencies
 	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c ${BUILDDIR}/xpatch.cpp -o ${BUILDDIR}/xpatch.o
 	@echo Linking patch dependencies
-	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/$(ELFNAME).elf -o ${BUILDDIR}/xpatch.elf
+	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o $(AXO_OBJECTS) -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/$(ELFNAME).elf -o ${BUILDDIR}/xpatch.elf
 
 	@echo Creating binary
 	@$(CP) -O binary ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin
-
-	@echo Creating LST file for debugging
-#	@$(DMP) $(DMPFLAGS) "${BUILDDIR}/xpatch.elf" > "${BUILDDIR}/xpatch.lst"
 
 clean:
 	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.lst ${BUILDDIR}/xpatch.h.gch
