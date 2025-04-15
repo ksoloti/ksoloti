@@ -200,8 +200,12 @@ public class QCmdProcessor implements Runnable {
                     if (serialconnection.isConnected()) {
                         serialconnection.AppendToQueue((QCmdSerialTask) cmd);
 
-                        QCmd response = queueResponse.poll(1, TimeUnit.SECONDS);
-                        //QCmd response = queueResponse.take();
+                        // the serial connection can disapear use polling
+                        QCmd response = null;
+                        while ((response == null) && (serialconnection.isConnected())) {
+                            response = queueResponse.poll(1, TimeUnit.SECONDS);
+                        }
+
                         if(response != null) {
                             publish(response);
                             if (response instanceof QCmdDisconnect){
