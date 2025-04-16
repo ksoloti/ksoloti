@@ -23,6 +23,8 @@
 
 void ui_init(void);
 
+#if USE_KVP
+
 typedef struct {
     int *value;
     int minvalue;
@@ -175,4 +177,5 @@ void SetKVP_FNCTN(struct KeyValuePair *kvp, struct KeyValuePair *parent,
 // void AxolotiControlUpdate(void);
 extern void (*pControlUpdate)(void);
 
+#endif
 #endif
