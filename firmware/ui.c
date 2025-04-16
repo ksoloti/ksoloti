@@ -30,6 +30,8 @@
 #include "ff.h"
 #include <string.h>
 
+#if USE_KVP
+
 // Btn_Nav_States_struct Btn_Nav_CurStates;
 // Btn_Nav_States_struct Btn_Nav_PrevStates;
 // Btn_Nav_States_struct Btn_Nav_Or;
@@ -172,6 +174,21 @@ inline void KVP_Decrement(KeyValuePair_s *kvp) {
     }
 }
 
+void KVP_ClearObjects(void) {
+    ObjectKvpRoot->apvp.length = 0;
+    // KvpsDisplay = &KvpsHead;
+}
+
+void KVP_RegisterObject(KeyValuePair_s *kvp) {
+    if(ObjectKvpRoot->apvp.length < (MAXOBJECTS) )
+    {
+        ObjectKvps[ObjectKvpRoot->apvp.length] = kvp;
+        // kvp->parent = ObjectKvpRoot;
+        ObjectKvpRoot->apvp.length++;
+    }
+}
+#endif
+
 
 static WORKING_AREA(waThreadUI, 1172);
     static msg_t ThreadUI(void *arg) {
@@ -189,24 +206,12 @@ static WORKING_AREA(waThreadUI, 1172);
 
 
 void ui_init(void) {
+#if USE_KVP    
     KeyValuePair_s *p = chCoreAlloc(sizeof(KeyValuePair_s) * 6);
     ObjectKvpRoot = &p[0];
+#endif
 
     chThdCreateStatic(waThreadUI, sizeof(waThreadUI), UI_USB_PRIO, (void*) ThreadUI, NULL);
-}
-
-void KVP_ClearObjects(void) {
-    ObjectKvpRoot->apvp.length = 0;
-    // KvpsDisplay = &KvpsHead;
-}
-
-void KVP_RegisterObject(KeyValuePair_s *kvp) {
-    if(ObjectKvpRoot->apvp.length < (MAXOBJECTS) )
-    {
-        ObjectKvps[ObjectKvpRoot->apvp.length] = kvp;
-        // kvp->parent = ObjectKvpRoot;
-        ObjectKvpRoot->apvp.length++;
-    }
 }
 
 // #define LCD_COL_INDENT 5
@@ -214,3 +219,4 @@ void KVP_RegisterObject(KeyValuePair_s *kvp) {
 // #define LCD_COL_VAL 97
 // #define LCD_COL_ENTER 97
 // #define STATUSROW 7
+
