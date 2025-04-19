@@ -73,6 +73,7 @@ import java.net.MalformedURLException;
 // import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Handler;
@@ -111,12 +112,13 @@ import qcmds.QCmdStop;
 import qcmds.QCmdUploadFWSDRam;
 import qcmds.QCmdUploadPatch;
 
+import axoloti.AxolotiLibraryWatcher;
 
 /**
  *
  * @author Johannes Taelman
  */
-public final class MainFrame extends javax.swing.JFrame implements ActionListener, ConnectionStatusListener, SDCardMountStatusListener, ConnectionFlagsListener {
+public final class MainFrame extends javax.swing.JFrame implements ActionListener, ConnectionStatusListener, SDCardMountStatusListener, ConnectionFlagsListener, AxolotiLibraryWatcherListener{
 
     private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
 
@@ -124,6 +126,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     static public AxoObjects axoObjects;
     public static MainFrame mainframe;
     public static AxoJFileChooser fc;
+
+    AxolotiLibraryWatcher axolotiLibraryWatcher;
+    Thread axolotiLibraryWatcherThread;
 
     boolean even = false;
     String LinkFirmwareID;
@@ -385,6 +390,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             @Override
             public void run() {
                 try {
+                    AxolotiLibraryWatcher axolotiLibraryWatcher = new AxolotiLibraryWatcher();
+                    axolotiLibraryWatcher.addListener(mainframe);
 
                     prefs.getBoards().scanBoards();
                     
@@ -522,13 +529,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     LOGGER.log(Level.INFO, "Checking library status...");
                     for (AxolotiLibrary lib : prefs.getLibraries()) {
                         lib.reportStatus();
+                        axolotiLibraryWatcher.AddAxolotiLib(lib);
                     }
                     LOGGER.log(Level.INFO, "Done checking library status.\n");
-
                     axoObjects = new AxoObjects();
                     axoObjects.LoadAxoObjects();
 
-                // }
+                    axolotiLibraryWatcherThread =  new Thread(axolotiLibraryWatcher);
+                    axolotiLibraryWatcherThread.start();
+                    // }
                 // catch (BindException e) {
                     // e.printStackTrace();
                     // System.exit(1);
@@ -536,7 +545,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
+
+           }
         };
 
         EventQueue.invokeLater(initr);
@@ -1477,6 +1487,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         DeviceConnector.getDeviceConnector().cancel();
     }
 
+    public void LibraryEntryChanged(AxolotiLibraryChangeType changeType, Path path) {
+        LOGGER.log(Level.INFO, "Library entry {0} : {1}", new Object[]{changeType, path});
+    }
 
     private void ShowConnectDisconnect(boolean connect) {
 
