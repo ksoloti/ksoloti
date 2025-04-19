@@ -848,7 +848,7 @@
 #define STM32_USB_OTG_THREAD_PRIO           HIGHPRIO     /* HIGHPRIO-2 */
 #define PATCH_DSP_PRIO                      HIGHPRIO-1   /* HIGHPRIO-1 */
 #define SPILINK_PRIO                        HIGHPRIO-1   /* HIGHPRIO-1 */
-#define UI_USB_PRIO                         NORMALPRIO   /* NORMALPRIO */
+#define UI_USB_PRIO                         HIGHPRIO-2   /* NORMALPRIO */
 #define MIDI_USB_PRIO                       HIGHPRIO-2   /* NORMALPRIO*/
 #define USB_HOST_CONF_PRIO                  NORMALPRIO   /* HIGHPRIO-2 */
 #define PATCH_NORMAL_PRIO                   NORMALPRIO   /* N/A */
