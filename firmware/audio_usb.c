@@ -17,7 +17,7 @@
 
 // do not set higher than -O2
 #pragma GCC push_options
-#pragma GCC optimize ("O0")
+#pragma GCC optimize ("O2")
 #define FORCE_INLINE __attribute__((always_inline)) inline 
 
 #define RESAMPLE_BUFFER_BLOCKS 3

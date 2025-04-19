@@ -45,9 +45,7 @@ bool usbAudioResample = false;
 #define STACKSPACE_MARGIN 32
 // #define DEBUG_PATCH_INT_ON_GPIO 1
 
-#if USE_NONTHREADED_FIFO_PUMP
 extern uint32_t fifoTicksUsed;
-#endif 
 
 enum DSPThreadSignal {
     EVENT_START_DSP_CYCLE = 1,
@@ -336,9 +334,8 @@ static int StartPatch1(void) {
             uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost;
 #endif
             static volatile uint32_t tStart;
-#if USE_NONTHREADED_FIFO_PUMP                
             fifoTicksUsed = 0;
-#endif
+
             tStart = hal_lld_get_counter_value();
             watchdog_feed();
 
@@ -379,13 +376,12 @@ static int StartPatch1(void) {
 
             DspTime = RTT2US(tTaken);
 
-#if USE_NONTHREADED_FIFO_PUMP                
             volatile uint32_t FifoTime = RTT2US(fifoTicksUsed);
             if(FifoTime > DspTime)
                 DspTime = 0;
             else
                 DspTime -= FifoTime;
-#endif
+
 #if USE_MOVING_AVERAGE
             ma_add(&ma, DspTime);
 #endif
@@ -603,6 +599,7 @@ void start_dsp_thread(void) {
 
 void computebufI(int32_t* inp, int32_t* outp) {
     uint_fast8_t i;
+    AnalyserSetChannel(acUsbAudioDataExchange, true);
 #pragma GCC unroll 32
     for (i = 0; i < 32; i++) {
         inbuf[i] = inp[i];
@@ -619,6 +616,7 @@ void computebufI(int32_t* inp, int32_t* outp) {
     chSysLockFromIsr();
     chEvtSignalI(pThreadDSP, (eventmask_t)EVENT_START_DSP_CYCLE);
     chSysUnlockFromIsr();
+    AnalyserSetChannel(acUsbAudioDataExchange, false);
 }
 
 #ifdef FW_I2SCODEC

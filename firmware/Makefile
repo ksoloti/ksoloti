@@ -328,7 +328,8 @@ CSRC = $(ALLCSRC) \
   ${FIRMWARE}/exceptions.c \
   ${FIRMWARE}/debug.c \
   ${FIRMWARE}/UsbLog.c \
-  ${FIRMWARE}/ksoloti_boot_options.c   
+  ${FIRMWARE}/ksoloti_boot_options.c \
+  ${FIRMWARE}/analyser.c
 
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # Ksoloti h747
@@ -611,7 +612,8 @@ UDEFS = \
   -DTHUMB \
   -DTHUMB_NO_INTERWORKING \
   -DTHUMB_PRESENT \
-  -DENABLE_EXCPT_DUMP
+  -DENABLE_EXCPT_DUMP \
+  -DANALYSE_USB_AUDIO=1
   
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # Ksoloti h743

@@ -49,6 +49,7 @@
 #include "sysmon.h"
 
 #include "debug.h"
+#include "analyser.h"
 
 #ifdef FW_SPILINK
 #include "spilink.h"
@@ -101,7 +102,7 @@ int main(void) {
     // Initialise HAL and Chibios
     halInit();
     chSysInit();
-
+    AnalyserSetup();
 
 #ifdef FW_SPILINK
     pThreadSpilink = 0;
@@ -129,6 +130,8 @@ int main(void) {
     // Start the USB host
     MY_USBH_Init();
 
+    AnalyserSetup();
+
     // Start the system monitor
     sysmon_init();
 
@@ -147,7 +150,6 @@ int main(void) {
 
 #endif
 
-    
     exception_init();
 
     InitPatch0();
@@ -212,6 +214,8 @@ int main(void) {
 
     // Reset SW3 to input
     palSetPadMode(GPIOB, 12, PAL_MODE_INPUT_PULLDOWN);
+
+    AnalyserSetup();
 
     if (!exception_check()) {
         /* Only try mounting SD and booting a patch when no exception is reported */

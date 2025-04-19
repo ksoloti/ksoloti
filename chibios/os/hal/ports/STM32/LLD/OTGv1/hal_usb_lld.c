@@ -25,6 +25,7 @@
 #include <string.h>
 
 #include "hal.h"
+#include "analyser.h"
 
 #if HAL_USE_USB || defined(__DOXYGEN__)
 
@@ -126,6 +127,8 @@ static const stm32_otg_params_t hsparams = {
   STM32_OTG2_ENDPOINTS
 };
 #endif
+
+volatile uint32_t fifoTicksUsed=0;
 
 /*===========================================================================*/
 /* Driver local functions.                                                   */
@@ -260,6 +263,7 @@ static void otg_fifo_read_to_buffer(volatile uint32_t *fifop,
                                     uint8_t *buf,
                                     size_t n,
                                     size_t max) {
+  AnalyserSetChannel(acUsbFifoRxBuffer, true);   
   uint32_t w = 0;
   size_t i = 0;
 
@@ -273,7 +277,37 @@ static void otg_fifo_read_to_buffer(volatile uint32_t *fifop,
     }
     i++;
   }
+  AnalyserSetChannel(acUsbFifoRxBuffer, false);  
 }
+
+/**
+ * @brief   Reads a packet from the RXFIFO.
+ *
+ * @param[in] fifop     pointer to the FIFO register
+ * @param[out] buf      buffer where to copy the endpoint data
+ * @param[in] n         number of bytes to pull from the FIFO
+ * @param[in] max       number of bytes to copy into the buffer
+ *
+ * @notapi
+ */
+static void otg_fifo_read_to_buffer_speedup(volatile uint32_t *fifop,
+                                            uint8_t *buf,
+                                            size_t n,
+                                            size_t max) {
+  AnalyserSetChannel(acUsbFifoRxBuffer, true);   
+  uint32_t *ibuf = (uint32_t *)buf;
+  while (true) {
+    *ibuf = *fifop;
+    if (n <= 4) {
+      break;
+    }
+    n -= 4;
+    ibuf += 1;
+  }
+
+  AnalyserSetChannel(acUsbFifoRxBuffer, false);                                      
+}
+
 
 /**
  * @brief   Incoming packets handler.
@@ -283,6 +317,9 @@ static void otg_fifo_read_to_buffer(volatile uint32_t *fifop,
  * @notapi
  */
 static void otg_rxfifo_handler(USBDriver *usbp) {
+  uint32_t start = DWT->CYCCNT;
+  AnalyserSetChannel(acUsbFifoRx, true);
+
   uint32_t sts, cnt, ep;
 
   /* Popping the event word out of the RX FIFO.*/
@@ -300,6 +337,22 @@ static void otg_rxfifo_handler(USBDriver *usbp) {
   case GRXSTSP_SETUP_COMP:
     break;
   case GRXSTSP_OUT_DATA:
+  #if USE_FIFO_SPEEDUP
+    // Seems weird but just use our bulk and audio sizes
+    if((cnt == 192) || (cnt == 384) || (cnt == 64)) {
+        otg_fifo_read_to_buffer_speedup(usbp->otg->FIFO[0],
+                                        usbp->epc[ep]->out_state->rxbuf,
+                                        cnt,
+                                        usbp->epc[ep]->out_state->rxsize -
+                                        usbp->epc[ep]->out_state->rxcnt);
+    } else {
+      otg_fifo_read_to_buffer(usbp->otg->FIFO[0],
+        usbp->epc[ep]->out_state->rxbuf,
+        cnt,
+        usbp->epc[ep]->out_state->rxsize -
+        usbp->epc[ep]->out_state->rxcnt);
+    }
+#else
     otg_fifo_read_to_buffer(usbp->otg->FIFO[0],
                             usbp->epc[ep]->out_state->rxbuf,
                             cnt,
@@ -307,6 +360,7 @@ static void otg_rxfifo_handler(USBDriver *usbp) {
                             usbp->epc[ep]->out_state->rxcnt);
     usbp->epc[ep]->out_state->rxbuf += cnt;
     usbp->epc[ep]->out_state->rxcnt += cnt;
+#endif
     break;
   case GRXSTSP_OUT_COMP:
     break;
@@ -315,6 +369,8 @@ static void otg_rxfifo_handler(USBDriver *usbp) {
   default:
     break;
   }
+  AnalyserSetChannel(acUsbFifoRx, false);
+  fifoTicksUsed += DWT->CYCCNT - start;
 }
 
 /**
@@ -326,6 +382,8 @@ static void otg_rxfifo_handler(USBDriver *usbp) {
  * @notapi
  */
 static bool otg_txfifo_handler(USBDriver *usbp, usbep_t ep) {
+  uint32_t start = DWT->CYCCNT;
+  AnalyserSetChannel(acUsbFifoTx, true);
 
   /* The TXFIFO is filled until there is space and data to be transmitted.*/
   while (true) {
@@ -336,6 +394,8 @@ static bool otg_txfifo_handler(USBDriver *usbp, usbep_t ep) {
 #if 1
       usbp->otg->DIEPEMPMSK &= ~DIEPEMPMSK_INEPTXFEM(ep);
 #endif
+      fifoTicksUsed += DWT->CYCCNT - start;
+      AnalyserSetChannel(acUsbFifoTx, false);
       return true;
     }
 
@@ -347,8 +407,11 @@ static bool otg_txfifo_handler(USBDriver *usbp, usbep_t ep) {
     /* Checks if in the TXFIFO there is enough space to accommodate the
        next packet.*/
     if (((usbp->otg->ie[ep].DTXFSTS & DTXFSTS_INEPTFSAV_MASK) * 4) < n)
+    {
+      AnalyserSetChannel(acUsbFifoTx, false);
+      fifoTicksUsed += DWT->CYCCNT - start;
       return false;
-
+    }
 #if STM32_USB_OTGFIFO_FILL_BASEPRI
     __set_BASEPRI(CORTEX_PRIO_MASK(STM32_USB_OTGFIFO_FILL_BASEPRI));
 #endif

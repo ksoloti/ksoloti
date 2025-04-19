@@ -21,7 +21,7 @@ typedef enum
     acUsbAudioAdjust,
     acUsbFifoTx,
     acDspOverload,
-    acUsartTx,
+    acPconnection,
     acUsbFifoRxBuffer
 } AnalyserChannel;
 

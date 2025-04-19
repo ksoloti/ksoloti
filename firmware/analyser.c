@@ -36,16 +36,16 @@ void AnalyserSetup(void)
     AddAnalyserChannel(acUsbAudioAdjust,            GPIOB, 0);
 
     AddAnalyserChannel(acDspOverload,               GPIOC, 1);
-    AddAnalyserChannel(acUsartTx,                   GPIOA, 2);
+    AddAnalyserChannel(acPconnection,               GPIOA, 2);
     AddAnalyserChannel(acUsbFifoTx,                 GPIOA, 1);
     AddAnalyserChannel(acUsbFifoRxBuffer,           GPIOA, 0);
 
     // Setup rx/tx uart
-    palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7) | PAL_MODE_INPUT); /* RX */
-    palSetPadMode(GPIOA, 2, PAL_MODE_OUTPUT_PUSHPULL); /* TX */
-    palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7)); /* TX */
-    static const SerialConfig sd2Cfg = {42000000/16, 0, 0, 0};
-    sdStart(&SD2, &sd2Cfg);
+    // palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7) | PAL_MODE_INPUT); /* RX */
+    // palSetPadMode(GPIOA, 2, PAL_MODE_OUTPUT_PUSHPULL); /* TX */
+    // palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7)); /* TX */
+    // static const SerialConfig sd2Cfg = {42000000/16, 0, 0, 0};
+    // sdStart(&SD2, &sd2Cfg);
 }
 #endif
 

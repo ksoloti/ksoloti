@@ -45,6 +45,7 @@
 #endif
 #include "stdio.h"
 #include "memstreams.h"
+#include "analyser.h"
 
 #if INBUILT_MOUNTER_FLASHER
 extern void StartFlasher(void);
@@ -140,9 +141,9 @@ void TransmitDisplayPckt(void) {
     }
 
     unsigned int length = 12 + (patchMeta.pDisplayVector[2] * 4);
-    if (length > 2048) {
-        return; // FIXME
-    }
+    // if (length > 2048) {
+    //     return; // FIXME
+    // }
 
     chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&patchMeta.pDisplayVector[0], length);
 }
@@ -184,6 +185,7 @@ void PExTransmit(void) {
         BDU1.oqueue.q_notify(&BDU1.oqueue);
     }
     else {
+        AnalyserSetChannel(acUsbAudioSof, true);
         if(chMtxTryLock(&LogMutex))
         {
           if(LogBufferUsed)
@@ -193,6 +195,8 @@ void PExTransmit(void) {
           }
           chMtxUnlock(&LogMutex);
         }
+        AnalyserSetChannel(acUsbAudioSof, false);
+        AnalyserSetChannel(acUsbAudioSof, true);
 
         if (AckPending) {
             uint32_t ack[7];
@@ -226,7 +230,8 @@ void PExTransmit(void) {
             exception_checkandreport();
             AckPending = 0;
         }
-
+        AnalyserSetChannel(acUsbAudioSof, false);
+        AnalyserSetChannel(acUsbAudioSof, true);
         if (!patchStatus) {
             uint16_t i;
             for (i = 0; i < patchMeta.numPEx; i++) {
@@ -242,6 +247,7 @@ void PExTransmit(void) {
                 }
             }
         }
+        AnalyserSetChannel(acUsbAudioSof, false);
     }
 }
 

@@ -6,7 +6,7 @@ LINKERFILE =
 $(info SUBBOARDDEF = $(SUBBOARDDEF))
 $(info FWOPTIONDEF = $(FWOPTIONDEF))
 $(info LINKERFILE  = $(LINKERFILE))
-
+ 
 # Some new options are important to keep SRAM usage and DSP load low with newer GCC versions.
 # "--param max-completely-peeled-insns=100" makes a big difference to get SRAM down. Newer GCC versions use 200 here, original axoloti (GCC 4.9) used 100.
 # Added a few flags that speed up floating-point calculation at the expense of precision. Graciously shared by https://github.com/malyzajko/daisy/blob/master/doc/documentation.md#running-generated-code
@@ -235,11 +235,15 @@ IINCDIR = $(patsubst %,-I%,$(INCDIR) $(DINCDIR) $(UINCDIR) $(CONFDIR) $(ALLINC))
 LLIBDIR = $(patsubst %,-L%,$(DLIBDIR) $(ULIBDIR))
 
 
-AXO_CSOURCES=$(shell find ${BUILDDIR}/src -type f -iname '*.c')
-AXO_CPPSOURCES=$(shell find ${BUILDDIR}/src -type f -iname '*.cpp')
-AXO_INCLUDES=$(shell find ${BUILDDIR}/src -type d)
-AXO_OBJECTS=$(foreach x, $(basename $(AXO_CSOURCES)), $(x).o)
-AXO_OBJECTS+=$(foreach x, $(basename $(AXO_CPPSOURCES)), $(x).o)
+ifneq ($(wildcard ${BUILDDIR}/src/),)
+	AXO_CSOURCES=$(shell find ${BUILDDIR}/src -type f -iname '*.c')
+	AXO_CPPSOURCES=$(shell find ${BUILDDIR}/src -type f -iname '*.cpp')
+	AXO_INCLUDES=$(shell find ${BUILDDIR}/src -type d)
+	AXO_OBJECTS=$(foreach x, $(basename $(AXO_CSOURCES)), $(x).o)
+	AXO_OBJECTS+=$(foreach x, $(basename $(AXO_CPPSOURCES)), $(x).o)
+else
+endif
+
 
 $(info AXO_CSOURCES = $(AXO_CSOURCES))
 $(info AXO_CPPSOURCES = $(AXO_CPPSOURCES))
@@ -263,7 +267,7 @@ ${BUILDDIR}/xpatch.h.gch: ${FIRMWARE}/xpatch.h ${FIRMWARE}/patch.h ${FIRMWARE}/a
 
 ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch $(AXO_OBJECTS)
 	@echo Removing previous build files
-	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.list ${BUILDDIR}/xpatch.siz
+	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.list ${BUILDDIR}/xpatch.siz 
 	@echo Compiling patch dependencies
 	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c ${BUILDDIR}/xpatch.cpp -o ${BUILDDIR}/xpatch.o
 	@echo Linking patch dependencies

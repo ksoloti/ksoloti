@@ -484,10 +484,12 @@
 #define DSP_USB_AUDIO_RESAMPLE_COST         50
 #define DSP_LIMIT200                        200
 
-#define USE_EXTERNAL_USB_FIFO_PUMP          0
-#define USE_BLOCKED_BULK_TX                 1
+#define USE_EXTERNAL_USB_FIFO_PUMP          0 /* Leave at 0, please don't change */
+#define USE_BLOCKED_BULK_TX                 1 /* Leave at 1, please don't change */
 #define USB_USE_WAIT                        USE_BLOCKED_BULK_TX
-#define USE_PATCH_DSPTIME_SMOOTHING_MS      0
+#define USE_PATCH_DSPTIME_SMOOTHING_MS      2 /* Leave at 2, please don't change */
+#define USE_FIFO_SPEEDUP                    1 /* Leave at 1, please don't change */
+
 // USB_AUDIO_CHANNELS must be 2 or 4
 #define USB_AUDIO_CHANNELS                  4
 
@@ -846,7 +848,7 @@
 #define STM32_USB_OTG_THREAD_PRIO           HIGHPRIO     /* HIGHPRIO-2 */
 #define PATCH_DSP_PRIO                      HIGHPRIO-1   /* HIGHPRIO-1 */
 #define SPILINK_PRIO                        HIGHPRIO-1   /* HIGHPRIO-1 */
-#define UI_USB_PRIO                         HIGHPRIO-2   /* NORMALPRIO */
+#define UI_USB_PRIO                         NORMALPRIO   /* NORMALPRIO */
 #define MIDI_USB_PRIO                       HIGHPRIO-2   /* NORMALPRIO*/
 #define USB_HOST_CONF_PRIO                  NORMALPRIO   /* HIGHPRIO-2 */
 #define PATCH_NORMAL_PRIO                   NORMALPRIO   /* N/A */

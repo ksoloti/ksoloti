@@ -29,6 +29,7 @@
 #include "axoloti_board.h"
 #include "ff.h"
 #include <string.h>
+#include "analyser.h"
 
 #if USE_KVP
 
@@ -197,8 +198,12 @@ static WORKING_AREA(waThreadUI, 1172);
     chRegSetThreadName("ui");
 #endif
     while (1) {
+        AnalyserSetChannel(acPconnection, true);
         PExTransmit();
+        AnalyserSetChannel(acPconnection, false);
+        AnalyserSetChannel(acPconnection, true);
         PExReceive();
+        AnalyserSetChannel(acPconnection, false);
         chThdSleepMilliseconds(2);
     }
     return (msg_t)0;
