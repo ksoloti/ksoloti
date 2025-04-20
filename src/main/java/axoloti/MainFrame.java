@@ -534,7 +534,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     LOGGER.log(Level.INFO, "Done checking library status.\n");
                     axoObjects = new AxoObjects();
                     axoObjects.LoadAxoObjects();
-
+                    axolotiLibraryWatcher.addListener(axoObjects);
+                    
                     axolotiLibraryWatcherThread =  new Thread(axolotiLibraryWatcher);
                     axolotiLibraryWatcherThread.start();
                     // }
@@ -1487,7 +1488,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         DeviceConnector.getDeviceConnector().cancel();
     }
 
-    public void LibraryEntryChanged(AxolotiLibraryChangeType changeType, Path path) {
+    public void LibraryEntryChanged(AxolotiLibraryWatcher.AxolotiLibraryChangeType changeType, Path path) {
         LOGGER.log(Level.INFO, "Library entry {0} : {1}", new Object[]{changeType, path});
     }
 

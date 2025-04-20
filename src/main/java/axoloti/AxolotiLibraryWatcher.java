@@ -12,15 +12,16 @@ import java.util.*;
 
 import axoloti.utils.AxolotiLibrary;
 
-enum AxolotiLibraryChangeType {
-  Unknown,
-  Deleted,
-  Created,
-  Modified
-}
 
 public class AxolotiLibraryWatcher implements Runnable {
 
+  public enum AxolotiLibraryChangeType {
+    Unknown,
+    Deleted,
+    Created,
+    Modified
+  }
+  
   private WatchService watcher;
   private Map<WatchKey, Path> keys;
   private boolean recursive;

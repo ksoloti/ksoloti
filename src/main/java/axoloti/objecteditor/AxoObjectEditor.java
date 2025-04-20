@@ -471,6 +471,10 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         initFields();
     }
 
+    public void updateEditFromOrig() {
+        initFields();
+    }
+    
     @Override
     public boolean AskClose() {
         // if it's an embedded object ("patch/object"), assume the parent patch is saving
@@ -991,7 +995,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         if (!isCompositeObject()) {
             MainFrame.axoObjects.WriteAxoObject(editObj.sPath, editObj);
             updateReferenceXML();
-            MainFrame.axoObjects.LoadAxoObjects();
+            //MainFrame.axoObjects.LoadAxoObjects();
         } else {
             JOptionPane.showMessageDialog(null, "The original object file " + editObj.sPath + " contains multiple objects, the object editor does not support this.\n"
                     + "Your changes are NOT saved!");

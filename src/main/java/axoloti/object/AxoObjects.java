@@ -29,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,22 +41,29 @@ import java.util.logging.Logger;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
+import axoloti.AxolotiLibraryWatcher;
+import axoloti.AxolotiLibraryWatcher.AxolotiLibraryChangeType;
+
 /**
  *
  * @author Johannes Taelman
  */
-public class AxoObjects {
+public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
 
     private static final Logger LOGGER = Logger.getLogger(AxoObjects.class.getName());
 
     public AxoObjectTreeNode ObjectTree;
     public ArrayList<AxoObjectAbstract> ObjectList;
     HashMap<String, AxoObjectAbstract> ObjectUUIDMap;
+    HashMap<String, AxoObjectAbstract> ObjectPathMap;
 
     public AxoObjectAbstract GetAxoObjectFromUUID(String n) {
         return ObjectUUIDMap.get(n);
     }
 
+    public AxoObjectAbstract GetAxoObjectFromPath(String path) {
+        return ObjectPathMap.get(path);
+    }
 
     public ArrayList<AxoObjectAbstract> GetAxoObjectFromName(String n, String cwd) {
         String bfname = null;
@@ -153,6 +161,7 @@ public class AxoObjects {
         ObjectTree = new AxoObjectTreeNode("/");
         ObjectList = new ArrayList<AxoObjectAbstract>();
         ObjectUUIDMap = new HashMap<String, AxoObjectAbstract>();
+        ObjectPathMap = new HashMap<String, AxoObjectAbstract>();
     }
 
     public AxoObjectTreeNode LoadAxoObjectsFromFolder(File folder, String prefix) {
@@ -281,6 +290,11 @@ public class AxoObjects {
                                 LOGGER.log(Level.SEVERE, "Duplicate UUID! {0}\nOriginal name: {1}\nPath: {2}", new Object[]{fileEntry.getAbsolutePath(), ObjectUUIDMap.get(a.getUUID()).id, ObjectUUIDMap.get(a.getUUID()).sPath});
                             }
                             ObjectUUIDMap.put(a.getUUID(), a);
+
+                            if ((a.sPath != null) && (ObjectPathMap.containsKey(a.getUUID()))) {
+                                LOGGER.log(Level.SEVERE, "Duplicate Path! {0}\nOriginal name: {1}\nPath: {2}", new Object[]{fileEntry.getAbsolutePath(), ObjectUUIDMap.get(a.getUUID()).id, ObjectUUIDMap.get(a.getUUID()).sPath});
+                            }
+                            ObjectPathMap.put(a.sPath , a);
                         }
                     }
                 } else if (fileEntry.getName().endsWith(".axs")) {
@@ -350,6 +364,7 @@ public class AxoObjects {
                 ObjectTree = new AxoObjectTreeNode("/");
                 ObjectList = new ArrayList<AxoObjectAbstract>();
                 ObjectUUIDMap = new HashMap<String, AxoObjectAbstract>();
+                ObjectPathMap = new HashMap<String, AxoObjectAbstract>();
                 String spath[] = MainFrame.prefs.getObjectSearchPath();
                 if (spath != null) {
                     for (String path : spath) {
@@ -543,6 +558,130 @@ public class AxoObjects {
         }
         o.id = id;
     }
-    
-    
+
+    AxoObjectFile LoadAxoObjectFile(Path path) {
+        AxoObjectFile result = null;
+        File file = path.toFile();
+
+        try {
+            result = serializer.read(AxoObjectFile.class, file);
+        } catch (java.lang.reflect.InvocationTargetException ite) {
+            if(ite.getTargetException() instanceof AxoObjectFile.ObjectVersionException) {
+                AxoObjectFile.ObjectVersionException ove = (AxoObjectFile.ObjectVersionException) ite.getTargetException();
+                LOGGER.log(Level.SEVERE, "Object \"{0}\" was saved with a newer version of Ksoloti: {1}", 
+                new Object[]{file.getAbsoluteFile(), ove.getMessage()});
+            } else {
+                LOGGER.log(Level.SEVERE, file.getAbsolutePath(), ite);
+                try {
+                    LOGGER.log(Level.INFO,"Error reading object, try relaxed mode {0}",file.getAbsolutePath());
+                    result = serializer.read(AxoObjectFile.class, file, false);
+                } catch (Exception ex1) {
+                    LOGGER.log(Level.SEVERE, null, ex1);
+                }
+            }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, file.getAbsolutePath(), ex);
+            try {
+                LOGGER.log(Level.INFO,"Error reading object, try relaxed mode {0}",file.getAbsolutePath());
+                result = serializer.read(AxoObjectFile.class, file, false);
+            } catch (Exception ex1) {
+                LOGGER.log(Level.SEVERE, null, ex1);
+            }
+        }
+
+        return result;
+    }
+
+    AxoObjectAbstract LoadAxoObjectFromFile(Path path) {
+        AxoObjectAbstract result = null;
+
+        AxoObjectFile axoObjectFile = LoadAxoObjectFile(path);
+        if(axoObjectFile != null) {
+            if (axoObjectFile.objs.size() == 1) {
+                result = axoObjectFile.objs.getFirst();
+            } else {
+                LOGGER.log(Level.SEVERE,"Axo file {0} contains more than one object, not supported.", path);
+            }
+        }
+        return result;
+    }
+
+    public boolean UpdateAxoObject(AxoObjectAbstract destAxoObject, AxoObjectAbstract sourceAxoObject) {
+        boolean result = false;
+
+        if((destAxoObject != null) && (sourceAxoObject != null)) {
+            result = destAxoObject.UpdateFrom(sourceAxoObject);
+        }
+
+        return result;
+    }
+
+    public boolean RemoveAxoObject(AxoObjectAbstract axoObject) {
+        boolean result = false;
+
+        return result;
+    }
+
+    public boolean AddAxoObject(AxoObjectAbstract axoObject) {
+        boolean result = false;
+
+        return result;
+    }
+
+    @Override
+    public void LibraryEntryChanged(AxolotiLibraryChangeType type, Path path) {
+        String sPath = path.toString();
+        boolean isAxo =  sPath.toLowerCase().endsWith(".axo");
+
+
+        if(isAxo) {
+            // Get the new version from disk
+            AxoObjectAbstract newObject = LoadAxoObjectFromFile(path);
+
+            // Get the existing object
+            AxoObjectAbstract existingObject = GetAxoObjectFromPath(sPath);
+
+            boolean result = false;
+
+            if(existingObject == null) {
+                if(type == AxolotiLibraryChangeType.Created) {
+                    LOGGER.log(Level.INFO, "AxoObjects: Creating axo {0}", sPath);
+                    result = AddAxoObject(newObject);
+                } else if(type == AxolotiLibraryChangeType.Modified) {
+                    LOGGER.log(Level.INFO, "AxoObjects: Modifying axo {0} which doesn't exist! Will create.", sPath);
+                    result = AddAxoObject(newObject);
+                } else if(type == AxolotiLibraryChangeType.Deleted) {
+                    LOGGER.log(Level.INFO, "AxoObjects: Deleteing axo {0} which doesn't exist!", sPath);
+                    result = RemoveAxoObject(newObject);
+                }
+            } else {
+                if(type == AxolotiLibraryChangeType.Created) {
+                    LOGGER.log(Level.INFO, "AxoObjects: Creating axo {0}, which already exists! Will modify.", sPath);
+                    result = UpdateAxoObject(existingObject, newObject);
+                } else if(type == AxolotiLibraryChangeType.Modified) {
+                    LOGGER.log(Level.INFO, "AxoObjects: Modifying axo {0}", sPath);
+                    result = UpdateAxoObject(existingObject, newObject);
+                } else if(type == AxolotiLibraryChangeType.Deleted) {
+                    LOGGER.log(Level.INFO, "AxoObjects: Deleteing axo {0}", sPath);
+                    result = RemoveAxoObject(newObject);
+                }
+            }
+
+            if(!result) {
+                LOGGER.log(Level.SEVERE, "AxoObjects: axo {0} failed to be updated correctly.", sPath);
+            }
+        } else {
+            File file = path.toFile();
+
+            if((file != null) && (file.isDirectory())) {
+                if(type == AxolotiLibraryChangeType.Created) {
+                    LOGGER.log(Level.INFO, "AxoObjects: Creating folder {0}", sPath);
+                } else if(type == AxolotiLibraryChangeType.Modified) {
+                    LOGGER.log(Level.INFO, "AxoObjects: Modifying folder {0}", sPath);
+                } else if(type == AxolotiLibraryChangeType.Deleted) {
+                    LOGGER.log(Level.INFO, "AxoObjects: Deleteing folder {0}", sPath);
+                }
+            }
+        }
+    }
 }

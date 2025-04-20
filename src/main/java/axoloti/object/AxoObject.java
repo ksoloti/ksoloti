@@ -714,4 +714,21 @@ public class AxoObject extends AxoObjectAbstract {
         sLicense = o.sLicense;
         sDescription = o.sDescription;
     }
+
+    public boolean UpdateFrom(AxoObjectAbstract source) {
+        boolean result = false;
+        try {
+            if(source instanceof AxoObject) {
+                copy((AxoObject)source);
+                result = true;
+                if(editor != null) {
+                    LOGGER.log(Level.INFO, "Object {0} is being edited, need to update editor", this);
+                    editor.updateEditFromOrig();
+                }
+            }
+        } catch (CloneNotSupportedException ex) { 
+        }
+
+        return result;
+    }
 }

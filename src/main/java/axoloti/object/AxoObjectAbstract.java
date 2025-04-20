@@ -199,4 +199,7 @@ public abstract class AxoObjectAbstract implements Comparable, Cloneable {
     public void removeObjectModifiedListener(ObjectModifiedListener oml) {
     }
 
+    public boolean UpdateFrom(AxoObjectAbstract source) {
+        return false;
+    }
 }
