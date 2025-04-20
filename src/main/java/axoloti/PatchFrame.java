@@ -18,6 +18,8 @@
  */
 package axoloti;
 
+import axoloti.object.AxoObject;
+import axoloti.object.AxoObjectFile;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
 import axoloti.utils.Constants;
@@ -26,6 +28,7 @@ import components.PresetPanel;
 import components.ScrollPaneComponent;
 import components.VisibleCablePanel;
 
+import static axoloti.MainFrame.axoObjects;
 import static axoloti.MainFrame.fc;
 import static axoloti.MainFrame.mainframe;
 import static axoloti.MainFrame.prefs;
@@ -52,6 +55,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -379,6 +383,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuSaveAs = new javax.swing.JMenuItem();
         jMenuSaveCopy = new javax.swing.JMenuItem();
         jMenuSaveClip = new javax.swing.JMenuItem();
+        jMenuCreateObject = new javax.swing.JMenuItem();
         jMenuClose = new javax.swing.JMenuItem();
         jMenuEdit = new javax.swing.JMenu();
         undoItem = new javax.swing.JMenuItem();
@@ -524,6 +529,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
         });
         fileMenuP.add(jMenuSaveClip);
+
+        jMenuCreateObject.setText("Create new object");
+        jMenuCreateObject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuCreateObjectActionPerformed(evt);
+            }
+        });
+        fileMenuP.add(jMenuCreateObject);
 
         jMenuClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuClose.setText("Close");
@@ -967,6 +980,93 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
     }
 
+    File FileChooserSaveAxo(String title) {
+
+        fc.resetChoosableFileFilters();
+        fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.restoreCurrentSize();
+        fc.setDialogTitle(title);
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.setAcceptAllFileFilterUsed(false);
+        fc.addChoosableFileFilter(FileUtils.axoFileFilter);
+
+        String fn = patch.getFileNamePath();
+        if (fn == null) {
+            fn = "untitled";
+        }
+        File f = new File(fn);
+        fc.setSelectedFile(f);
+
+        String ext = "";
+        int dot = fn.lastIndexOf('.');
+        if (dot > 0 && fn.length() > dot + 3) {
+            ext = fn.substring(dot);
+        }
+
+        fc.setFileFilter(FileUtils.axoFileFilter);
+
+
+        int returnVal = fc.showSaveDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            String filterext = ".axo";
+
+            File fileToBeSaved = fc.getSelectedFile();
+            ext = "";
+            String fname = fileToBeSaved.getAbsolutePath();
+            dot = fname.lastIndexOf('.');
+            if (dot > 0 && fname.length() > dot + 3) {
+                ext = fname.substring(dot);
+            }
+
+            if (!(ext.equalsIgnoreCase(".axo"))) {
+                fileToBeSaved = new File(fc.getSelectedFile() + filterext);
+            } else if (!ext.equals(filterext)) {
+                Object[] options = {"Change",
+                    "No"};
+                int n = JOptionPane.showOptionDialog(this,
+                        "File extension does not match filter. Change extension to " + filterext + "?",
+                        "File Extension",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[1]);
+                switch (n) {
+                    case JOptionPane.YES_OPTION:
+                        fileToBeSaved = new File(fname.substring(0, fname.length() - 4) + filterext);
+                        break;
+                    case JOptionPane.NO_OPTION:
+                        return null;
+                }
+            }
+
+            if (fileToBeSaved.exists()) {
+                Object[] options = {"Overwrite",
+                    "Cancel"};
+                int n = JOptionPane.showOptionDialog(this,
+                        "File exists! Overwrite?",
+                        "File Exists",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[1]);
+                switch (n) {
+                    case JOptionPane.YES_OPTION:
+                        break;
+                    case JOptionPane.NO_OPTION:
+                        return null;
+                }
+            }
+
+            fc.updateCurrentSize();
+            return fileToBeSaved;
+        } else {
+            fc.updateCurrentSize();
+            return null;
+        }
+    }
+
     private void jMenuSaveAsActionPerformed(java.awt.event.ActionEvent evt) {
         File fileToBeSaved = FileChooserSave("Save As...");
         if (fileToBeSaved != null) {
@@ -1116,6 +1216,42 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         c.setContents(new StringSelection(baos.toString()), null);
     }
 
+    private void jMenuCreateObjectActionPerformed(java.awt.event.ActionEvent evt) {
+        // Save it
+        AxoObject newAxoObject = null;
+        File fileToBeSaved = FileChooserSaveAxo("New Object File...");
+        if (fileToBeSaved != null) {
+            String fnNoExtension = fileToBeSaved.getName().substring(0, fileToBeSaved.getName().lastIndexOf(".axo"));
+            newAxoObject = new AxoObject();
+            newAxoObject.sDescription = fnNoExtension;
+            newAxoObject.id = fnNoExtension;
+            newAxoObject.setUUID(newAxoObject.getUUID());
+
+            AxoObjectFile aof = new AxoObjectFile();
+            aof.objs.add(newAxoObject);
+            Serializer serializer = new Persister();
+    
+            try {
+                serializer.write(aof, fileToBeSaved);
+            }
+            catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+                newAxoObject = null;
+            }
+        }
+
+        if(newAxoObject != null) {
+            // need to check we are a proper object folder.
+
+            // add to AxoObjects
+            axoObjects.AddAxoObject(newAxoObject);
+
+            // add to patcher
+            patch.AddObjectInstance(newAxoObject, new Point(0,0));
+        }
+
+    }
+
     private void jMenuItemUploadInternalFlashActionPerformed(java.awt.event.ActionEvent evt) {
         patch.WriteCode();
         qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
@@ -1242,6 +1378,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JMenuItem jMenuSave;
     private javax.swing.JMenuItem jMenuSaveAs;
     private javax.swing.JMenuItem jMenuSaveClip;
+    private javax.swing.JMenuItem jMenuCreateObject;
     private javax.swing.JMenuItem jMenuSaveCopy;
     private javax.swing.JMenuItem jMenuUploadCode;
     private javax.swing.JMenu jMenuView;

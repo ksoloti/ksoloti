@@ -624,7 +624,12 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
 
     public boolean AddAxoObject(AxoObjectAbstract axoObject) {
         boolean result = false;
-
+        if(axoObject != null) {
+            ObjectList.add(axoObject);
+            ObjectPathMap.put(axoObject.sPath, axoObject);
+            ObjectUUIDMap.put(axoObject.uuid, axoObject);
+            result = true;
+        }
         return result;
     }
 

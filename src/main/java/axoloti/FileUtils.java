@@ -35,6 +35,23 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class FileUtils {
 
+    public final static FileFilter ax0FileFilter = new FileFilter() {
+        @Override
+        public boolean accept(File file) {
+            if (file.getName().endsWith(".axo")) {
+                return true;
+            } else if (file.isDirectory()) {
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Axoloti Object";
+        }
+    };
+
     public final static FileFilter axpFileFilter = new FileFilter() {
         @Override
         public boolean accept(File file) {
