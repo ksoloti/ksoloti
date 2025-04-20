@@ -408,6 +408,17 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         popm_edit.setMnemonic('E');
         popup.add(popm_edit);
 
+
+        JMenuItem popm_external_edit = new JMenuItem("External Editor");
+        popm_external_edit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                OpenExternalEditor();
+            }
+        });
+        popup.add(popm_external_edit);
+
+
         JMenuItem popm_editInstanceName = new JMenuItem("Edit instance name");
         popm_editInstanceName.addActionListener(new ActionListener() {
             @Override
@@ -552,6 +563,20 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     public void OpenEditor() {
         getType().OpenEditor(editorBounds, editorActiveTabIndex);
+    }
+
+    public void OpenExternalEditor() {
+        String sPath = MainFrame.prefs.getExternalEditorPath();
+        if(sPath != null && sPath.length()>0) {
+            try {
+                Runtime run = Runtime.getRuntime();
+                Process proc = run.exec(sPath + " " + getType().sPath);
+            } catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, "Failed to execute external editor : `{0}`.", sPath);
+            }
+        } else {
+            LOGGER.log(Level.SEVERE, "Please set external editor to use in preferences.");
+        }
     }
 
     @Override

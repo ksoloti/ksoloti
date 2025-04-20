@@ -111,6 +111,8 @@ public class Preferences {
     Integer DspSafetyLimit;
     @ElementList(required = false)
     ArrayList<String> recentFiles = new ArrayList<String>();
+    @Element(required = false)
+    String ExternalEditorPath;
 
     @Deprecated
     @Element(required = false)
@@ -314,6 +316,10 @@ public class Preferences {
 
     public String[] getObjectSearchPath() {
         return ObjectPath;
+    }
+
+    public String getExternalEditorPath() {
+        return ExternalEditorPath;
     }
 
     public void updateLibrary(String id, AxolotiLibrary newlib) {
