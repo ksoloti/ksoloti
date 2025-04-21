@@ -24,28 +24,29 @@ then
     mkdir "${PLATFORM_ROOT}/src"
 fi
 
-if [ ! -d "${PLATFORM_ROOT}/../chibios" ]; 
-then
-    cd "${PLATFORM_ROOT}/src"
-    CH_VERSION=2.6.9
-    ARDIR=ChibiOS-ver${CH_VERSION}
-    ARCHIVE=${ARDIR}.zip
-    if [ ! -f ${ARCHIVE} ]; 
-    then
-        printf "\ndownloading ${ARCHIVE}\n"
-		curl -L https://github.com/ChibiOS/ChibiOS/archive/ver${CH_VERSION}.zip > ${ARCHIVE}
-    else
-        printf "\n${ARCHIVE} already downloaded\n"
-    fi
-    unzip -q -o ${ARCHIVE}
-    mv ${ARDIR} chibios
-    cd chibios/ext
-    unzip -q -o ./fatfs-0.*-patched.zip
-    cd ../../
-    mv chibios ../..
-else
-    printf "\nchibios directory already present, skipping...\n"
-fi
+## Obsolete... Chibios is included in the repo now
+# if [ ! -d "${PLATFORM_ROOT}/../chibios" ]; 
+# then
+#     cd "${PLATFORM_ROOT}/src"
+#     CH_VERSION=2.6.9
+#     ARDIR=ChibiOS-ver${CH_VERSION}
+#     ARCHIVE=${ARDIR}.zip
+#     if [ ! -f ${ARCHIVE} ]; 
+#     then
+#         printf "\ndownloading ${ARCHIVE}\n"
+# 		curl -L https://github.com/ChibiOS/ChibiOS/archive/ver${CH_VERSION}.zip > ${ARCHIVE}
+#     else
+#         printf "\n${ARCHIVE} already downloaded\n"
+#     fi
+#     unzip -q -o ${ARCHIVE}
+#     mv ${ARDIR} chibios
+#     cd chibios/ext
+#     unzip -q -o ./fatfs-0.*-patched.zip
+#     cd ../../
+#     mv chibios ../..
+# else
+#     printf "\nchibios directory already present, skipping...\n"
+# fi
 
 if [ ! -f "$PLATFORM_ROOT/bin/arm-none-eabi-gcc" ]; 
 then

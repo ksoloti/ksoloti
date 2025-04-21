@@ -2,27 +2,28 @@
 
 set -e
 
-if [ ! -d "../chibios" ]; 
-then
-    CH_VERSION=2.6.9
-    ARDIR=ChibiOS-ver${CH_VERSION}
-    ARCHIVE=${ARDIR}.zip
-    if [ ! -f ${ARCHIVE} ]; 
-    then
-        printf "\ndownloading ${ARCHIVE}\n"
-		curl -L https://github.com/ChibiOS/ChibiOS/archive/ver${CH_VERSION}.zip > ${ARCHIVE}
-    else
-        printf "\n${ARCHIVE} already downloaded\n"
-    fi
+## Obsolete... Chibios is included in the repo now
+# if [ ! -d "../chibios" ]; 
+# then
+#     CH_VERSION=2.6.9
+#     ARDIR=ChibiOS-ver${CH_VERSION}
+#     ARCHIVE=${ARDIR}.zip
+#     if [ ! -f ${ARCHIVE} ]; 
+#     then
+#         printf "\ndownloading ${ARCHIVE}\n"
+# 		curl -L https://github.com/ChibiOS/ChibiOS/archive/ver${CH_VERSION}.zip > ${ARCHIVE}
+#     else
+#         printf "\n${ARCHIVE} already downloaded\n"
+#     fi
 
-    unzip -q -o ${ARCHIVE}
-    rm ${ARCHIVE}
-    mv ${ARDIR} chibios
-    cd chibios/ext
-    unzip -q -o ./fatfs-0.*-patched.zip
-    cd ../../
-    mv chibios ..
-fi
+#     unzip -q -o ${ARCHIVE}
+#     rm ${ARCHIVE}
+#     mv ${ARDIR} chibios
+#     cd chibios/ext
+#     unzip -q -o ./fatfs-0.*-patched.zip
+#     cd ../../
+#     mv chibios ..
+# fi
 
 if [ ! -f "bin/arm-none-eabi-gcc.exe" ];
 then
