@@ -25,6 +25,8 @@ void ui_init(void);
 
 #if USE_KVP
 
+#if USE_KVP
+
 typedef struct {
     int *value;
     int minvalue;
