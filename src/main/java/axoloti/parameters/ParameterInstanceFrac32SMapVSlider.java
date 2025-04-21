@@ -61,7 +61,7 @@ public class ParameterInstanceFrac32SMapVSlider extends ParameterInstanceFrac32S
 
     @Override
     public String GenerateCodeDeclaration(String vprefix) {
-        return "KeyValuePair " + KVPName(vprefix) + ";\n";
+        return ""; // "KeyValuePair " + KVPName(vprefix) + ";\n";
     }
 
     @Override
