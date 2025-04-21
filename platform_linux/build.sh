@@ -53,6 +53,7 @@ case $OS in
         set +e
         if ! install_lib_bz2; then
             set -e
+            sudo dpkg --add-architecture i386
             sudo apt-get install -y libbz2-1.0:i386 libncurses5:i386
         fi
         ;;
