@@ -176,7 +176,7 @@ void KVP_RegisterObject(KeyValuePair_s *kvp) {
         ObjectKvpRoot->apvp.length++;
     }
 }
-#endif
+#endif /* USE_KVP */
 
 
 static WORKING_AREA(waThreadUI, 1172);
