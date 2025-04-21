@@ -252,7 +252,9 @@ static void StopPatch1(void) {
 
 
 static int StartPatch1(void) {
+#if USE_KVP    
     KVP_ClearObjects();
+#endif
 
     sdcard_attemptMountIfUnmounted();
 
