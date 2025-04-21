@@ -25,8 +25,6 @@ void ui_init(void);
 
 #if USE_KVP
 
-#if USE_KVP
-
 typedef struct {
     int *value;
     int minvalue;
@@ -173,4 +171,4 @@ void SetKVP_FNCTN(struct KeyValuePair *kvp, struct KeyValuePair *parent, VoidFun
 extern void (*pControlUpdate)(void);
 
 #endif /* USE_KVP */
-#endif
+#endif /* __UI_H */
