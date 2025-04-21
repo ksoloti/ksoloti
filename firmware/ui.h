@@ -170,5 +170,5 @@ void SetKVP_FNCTN(struct KeyValuePair *kvp, struct KeyValuePair *parent, VoidFun
 // void AxolotiControlUpdate(void);
 extern void (*pControlUpdate)(void);
 
-#endif
+#endif /* USE_KVP */
 #endif
