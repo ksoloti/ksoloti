@@ -26,8 +26,8 @@ set HOME=.
 
 call build_gui.bat
 
-call compile_firmware.bat BOARD_AXOLOTI_CORE
-call compile_firmware.bat BOARD_KSOLOTI_CORE
+call ..\firmware\compile_firmware_win.bat BOARD_AXOLOTI_CORE
+call ..\firmware\compile_firmware_win.bat BOARD_KSOLOTI_CORE
 
 echo READY
 echo Launch Axoloti by double clicking Axoloti\axoloti.bat

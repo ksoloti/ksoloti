@@ -174,12 +174,11 @@ file "${PLATFORM_ROOT}/bin/dfu-util"
 file "${PLATFORM_ROOT}/bin/libusb-1.0.0.dylib"
 
 printf "\n##### building firmware... #####\n"
-cd "$PLATFORM_ROOT"
-./compile_firmware.sh BOARD_AXOLOTI_CORE
-./compile_firmware.sh BOARD_KSOLOTI_CORE
+cd "${PLATFORM_ROOT}"/..
+./firmware/compile_firmware.sh BOARD_AXOLOTI_CORE
+./firmware/compile_firmware.sh BOARD_KSOLOTI_CORE
 
 printf "\n##### building GUI... #####\n"
-cd "${PLATFORM_ROOT}"/..
 ant
 
 printf "\nDONE!\n"

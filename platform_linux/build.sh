@@ -233,12 +233,11 @@ esac
 
 
 echo "##### compiling firmware... #####"
-cd "${PLATFORM_ROOT}"
-./compile_firmware.sh BOARD_AXOLOTI_CORE
-./compile_firmware.sh BOARD_KSOLOTI_CORE
+cd "${PLATFORM_ROOT}"/..
+./firmware/compile_firmware.sh BOARD_AXOLOTI_CORE
+./firmware/compile_firmware.sh BOARD_KSOLOTI_CORE
 
 echo "##### building Patcher... #####"
-cd "${PLATFORM_ROOT}"/..
 ./byld_java.sh
 
 echo "DONE"
