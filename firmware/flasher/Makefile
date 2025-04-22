@@ -175,7 +175,8 @@ INCDIR = ../ \
   $(CHIBIOS)/os/common/ports/ARMCMx/devices/STM32F4xx \
   $(CHIBIOS)/os/ext/CMSIS/include \
   $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx \
-  $(CHIBIOS)/os/hal/lib/streams
+  $(CHIBIOS)/os/hal/lib/streams \
+  ../STM32F4xx_HAL_Driver/Inc
 
 #
 # Project, sources and paths
