@@ -21,6 +21,9 @@ public class DeviceConnector implements Runnable {
     return singleton;
   }
 
+  private DeviceConnector() {
+  }
+  
   public void tryToConnect(int seconds) {
     connectCount = seconds;
     activeConnect = true;

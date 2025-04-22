@@ -15,7 +15,6 @@ import org.usb4java.LibUsbException;
 import axoloti.utils.OSDetect;
 import qcmds.QCmdShellTask;
 
-import static axoloti.MainFrame.mainframe;
 import static axoloti.usb.Usb.DeviceToPath;
 import static axoloti.usb.Usb.PID_AXOLOTI;
 import static axoloti.usb.Usb.PID_AXOLOTI_SDCARD;
@@ -26,12 +25,9 @@ import static axoloti.usb.Usb.PID_KSOLOTI_USBAUDIO;
 import static axoloti.usb.Usb.PID_STM_DFU;
 import static axoloti.usb.Usb.VID_AXOLOTI;
 import static axoloti.usb.Usb.VID_STM;
-import static axoloti.usb.Usb.isDFUDeviceAvailable;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.JOptionPane;
 
 import static axoloti.utils.OSDetect.getOS;
 
@@ -329,7 +325,7 @@ public class Boards {
             LOGGER.log(Level.SEVERE, "Failed to open set connected status for selected board, not found!\n");
         }
 
-        mainframe.prefs.SavePrefs(false);
+        MainFrame.prefs.SavePrefs(false);
 
     }
 
@@ -738,7 +734,7 @@ public class Boards {
                 }
             }
 
-            mainframe.prefs.SavePrefs(false);
+            MainFrame.prefs.SavePrefs(false);
         }
     }
 

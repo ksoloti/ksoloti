@@ -127,7 +127,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     public static MainFrame mainframe;
     public static AxoJFileChooser fc;
 
-    AxolotiLibraryWatcher axolotiLibraryWatcher;
     Thread axolotiLibraryWatcherThread;
 
     boolean even = false;
@@ -390,7 +389,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             @Override
             public void run() {
                 try {
-                    AxolotiLibraryWatcher axolotiLibraryWatcher = new AxolotiLibraryWatcher();
+                    AxolotiLibraryWatcher axolotiLibraryWatcher = AxolotiLibraryWatcher.getAxolotiLibraryWatcher();
                     axolotiLibraryWatcher.addListener(mainframe);
 
                     prefs.getBoards().scanBoards();
@@ -529,9 +528,23 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     LOGGER.log(Level.INFO, "Checking library status...");
                     for (AxolotiLibrary lib : prefs.getLibraries()) {
                         lib.reportStatus();
-                        axolotiLibraryWatcher.AddAxolotiLib(lib);
                     }
                     LOGGER.log(Level.INFO, "Done checking library status.\n");
+
+
+                    LOGGER.log(Level.INFO, "initialising File Watcher...");
+                    String spath[] = MainFrame.prefs.getObjectSearchPath();
+                    if (spath != null) {
+                        for (String path : spath) {
+                            LOGGER.log(Level.INFO, "Adding {0} to file watcher.", path);
+                            axolotiLibraryWatcher.AddFolder(path);
+                        }
+                    }
+                    else {
+                        LOGGER.log(Level.SEVERE, "Object path empty!\n");
+                    }
+                    LOGGER.log(Level.INFO, "Done initialising File Watcher...");
+
                     axoObjects = new AxoObjects();
                     axoObjects.LoadAxoObjects();
                     axolotiLibraryWatcher.addListener(axoObjects);

@@ -41,10 +41,16 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Rectangle2D;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -53,9 +59,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+
 
 /**
  *
@@ -66,18 +74,40 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     DefaultMutableTreeNode root;
     DefaultTreeModel tm;
     public AxoObjectAbstract type;
-    private final PatchGUI p;
+    private PatchGUI p;
     public AxoObjectInstanceAbstract target_object;
     private AxoObjectTreeNode objectTree;
+    private static final Logger LOGGER = Logger.getLogger(ObjectSearchFrame.class.getName());
+    private HashSet<String> addedPatchFolders = new HashSet<String>();
+    private LocalDateTime lastUpdatedTime;
+    private static ObjectSearchFrame singleton = null;
+    public static ObjectSearchFrame getObjectSearchFrame() {
+        if (singleton == null)
+          singleton = new ObjectSearchFrame();
+        return singleton;
+      }
+    
 
-    Comparator objComp = new Comparator<AxoObjectAbstract>() {
+    Comparator<AxoObjectAbstract> objComp = new Comparator<AxoObjectAbstract>() {
         public int compare(AxoObjectAbstract o1, AxoObjectAbstract o2) {
+            //LOGGER.log(Level.SEVERE, "o1 = {0}, o2 = {1}", new Object[]{o1.id, o2.id});
 
-            String str1Leading = o1.id.substring(0, o1.id.lastIndexOf('/'));
-            String str2Leading = o2.id.substring(0, o2.id.lastIndexOf('/'));
+            int o1LastIndex = o1.id.lastIndexOf('/');
+            int o2LastIndex = o2.id.lastIndexOf('/');
 
-            String str1Ending = o1.id.substring(o1.id.lastIndexOf('/'));
-            String str2Ending = o2.id.substring(o2.id.lastIndexOf('/'));
+            if(o1LastIndex == -1) {
+                return 0;
+            }
+
+            if(o2LastIndex == -1) {
+                return -1;
+            }
+
+            String str1Leading = o1.id.substring(0, o1LastIndex);
+            String str2Leading = o2.id.substring(0, o2LastIndex);
+            
+            String str1Ending = o1.id.substring(o1LastIndex);
+            String str2Ending = o2.id.substring(o2LastIndex);
 
             /* Compare the lengths of two AxoObjectAbstract object id's.
              * If leading path is the same but actual object name
@@ -94,12 +124,17 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         }
     };
 
+    Comparator<AxoObjectAbstract> objAlphaComp = new Comparator<AxoObjectAbstract>() {
+        public int compare(AxoObjectAbstract o1, AxoObjectAbstract o2) {
+            return(o1.id.toLowerCase().compareTo(o2.id.toLowerCase()));
+        }
+    };
+
     /**
      * Creates new form ObjectSearchFrame
      *
-     * @param p parent
      */
-    public ObjectSearchFrame(PatchGUI p) {
+    private ObjectSearchFrame() {
         super();
         initComponents();
 
@@ -132,12 +167,12 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         this.setTitle("    Object Finder");
 
-        this.p = p;
         DefaultMutableTreeNode root1 = new DefaultMutableTreeNode();
         this.objectTree = MainFrame.axoObjects.ObjectTree;
         this.root = PopulateJTree(MainFrame.axoObjects.ObjectTree, root1);
         tm = new DefaultTreeModel(this.root);
         jObjectTree.setModel(tm);
+        lastUpdatedTime = this.objectTree.lastUpdatedTime;
         jObjectTree.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent e) {
@@ -382,13 +417,54 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         return patchLoc;
     }
 
-    void Launch(Point patchLoc, AxoObjectInstanceAbstract o, String searchString, boolean selectSearchString) {
-        if (this.objectTree != MainFrame.axoObjects.ObjectTree) {
+    void Launch(PatchGUI p, Point patchLoc, AxoObjectInstanceAbstract o, String searchString, boolean selectSearchString) {
+        this.p = p;
+
+        if(searchString == null && jTextFieldObjName.getText().length() > 0) {
+            searchString = jTextFieldObjName.getText();
+        }
+
+        if(p.getFileNamePath().length() > 0) {
+            Path path = Paths.get(p.getFileNamePath());
+            Path folder = path.getParent();
+            if(folder != null && !addedPatchFolders.contains(folder.toString())) {
+                addedPatchFolders.add(folder.toString());
+                MainFrame.axoObjects.LoadAxoObjects(folder.toString(), true);
+                AxolotiLibraryWatcher.getAxolotiLibraryWatcher().AddFolder(folder.toString());
+            }
+        }
+
+        // If the objectTree has changed we need to reload the treeview
+        if ((this.objectTree != MainFrame.axoObjects.ObjectTree) || !(this.objectTree.lastUpdatedTime.equals(lastUpdatedTime))) {
+            lastUpdatedTime = this.objectTree.lastUpdatedTime;
+
             DefaultMutableTreeNode root1 = new DefaultMutableTreeNode();
             this.objectTree = MainFrame.axoObjects.ObjectTree;
+
+            // Save tree state
+            ArrayList<TreePath> selectedPaths = new ArrayList<>();
+            for ( int i = 0; i < jObjectTree.getRowCount(); i++ ){
+                if ( jObjectTree.isExpanded(i) ){
+                    TreePath path = jObjectTree.getPathForRow(i);
+                    System.out.println(path);
+                    selectedPaths.add(path);
+                }
+            }
+    
             this.root = PopulateJTree(MainFrame.axoObjects.ObjectTree, root1);
             tm = new DefaultTreeModel(this.root);
             jObjectTree.setModel(tm);
+
+            //restore tree state
+            for(TreePath path : selectedPaths) {
+                if(path.getLastPathComponent() != null) {
+                    String lastPathComponent = path.getLastPathComponent().toString();
+                    if(lastPathComponent.length() > 0) {
+                        TreePath currentPath = jObjectTree.getNextMatch(lastPathComponent,0,Position.Bias.Forward );
+                        jObjectTree.expandPath(currentPath);
+                    }
+                }
+            }
         }
 
         MainFrame.mainframe.SetGrabFocusOnSevereErrors(false);
@@ -409,7 +485,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 ExpandJTreeToEl(oa);
             }
             jTextFieldObjName.setText(o.typeName);
-        } else if (searchString != null) {
+        } else { 
             Search(searchString);
             jTextFieldObjName.setText(searchString);
         }
@@ -523,181 +599,186 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     }
 
     public void Search(String s) {
-        ArrayList<AxoObjectAbstract> listData = new ArrayList<AxoObjectAbstract>();
-        ArrayList<AxoObjectAbstract> tempList = new ArrayList<AxoObjectAbstract>();
+        try {
+            ArrayList<AxoObjectAbstract> listData = new ArrayList<AxoObjectAbstract>();
+            ArrayList<AxoObjectAbstract> tempList = new ArrayList<AxoObjectAbstract>();
 
-        /* --- if search field is empty, show complete list --- */
-        if ((s == null) || s.isEmpty()) {
-            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                /* add complete list */
-                listData.add(o);
-            }
-            jResultList.setListData(listData.toArray());
-        }
-        else {
-
-            /* If any upper case letters are entered, do case-sensitive search */
-            if (containsUpperCase(s)) {
-
-                /* --- exact match of entire string --- */
+            /* --- if search field is empty, show complete list --- */
+            if ((s == null) || s.isEmpty()) {
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.id.equals(s)) {
-                        if (!listData.contains(o)) {
-                            listData.add(o);
-                        }
-                    }
+                    /* add complete list */
+                    listData.add(o);
                 }
-
-                /* --- if starts with --- */
-                tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
-                for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.id.startsWith(s)) {
-                        if (!listData.contains(o)) {
-                            tempList.add(o);
-                        }
-                    }
-                }
-                /* sort matches and add temp to list */
-                Collections.sort(tempList, objComp);
-                listData.addAll(tempList);
-
-                /* --- if contains string (literally, i.e. ignoring wildcards) --- */
-                tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
-                for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.id.contains(s)) {
-                        if (!listData.contains(o)) {
-                            tempList.add(o);
-                        }
-                    }
-                }
-                /* sort matches and add temp to list */
-                Collections.sort(tempList, objComp);
-                listData.addAll(tempList);
-
-                /* --- if object description contains --- */
-                tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
-                for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.sDescription != null && o.sDescription.contains(s)) {
-                        if (!listData.contains(o)) {
-                            tempList.add(o);
-                        }
-                    }
-                }
-                /* sort matches and add temp to list */
-                Collections.sort(tempList, objComp);
-                listData.addAll(tempList);
-
-            }
-            /* Else do case-insensitive search */
-            else {
-                String sl = s.toLowerCase();
-
-                /* --- exact match of entire string, case-insensitive --- */
-                tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
-                for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.id.toLowerCase().equals(sl)) {
-                        if (!listData.contains(o)) {
-                            tempList.add(o);
-                        }
-                    }
-                }
-                /* sort matches and add temp to list */
-                Collections.sort(tempList, objComp);
-                listData.addAll(tempList);
-
-                /* --- if starts with, case-insensitive --- */
-                tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
-                for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.id.toLowerCase().startsWith(sl)) {
-                        if (!listData.contains(o)) {
-                            tempList.add(o);
-                        }
-                    }
-                }
-                /* sort matches and add temp to list */
-                Collections.sort(tempList, objComp);
-                listData.addAll(tempList);
-
-                /* --- if contains string (literally, i.e. ignoring wildcards), case-insensitive --- */
-                tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
-                for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.id.toLowerCase().contains(sl)) {
-                        if (!listData.contains(o)) {
-                            tempList.add(o);
-                        }
-                    }
-                }
-                /* sort matches and add temp to list */
-                Collections.sort(tempList, objComp);
-                listData.addAll(tempList);
-
-                /* --- if object description contains, case-insensitive --- */
-                tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
-                for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.sDescription != null && o.sDescription.toLowerCase().contains(sl)) {
-                        if (!listData.contains(o)) {
-                            tempList.add(o);
-                        }
-                    }
-                }
-                /* sort matches and add temp to list */
-                Collections.sort(tempList, objComp);
-                listData.addAll(tempList);
-            }
-
-            /* Finally, if string contains regex or '*' wildcard,
-             * do regex search.
-             * Case-sensitive except if you add "(?i)" at the beginning.
-             */
-
-            /* Most users will expect "*" to act as wildcard, not as
-             * pure regex. Replace "*" with ".*" to simulate this behaviour
-             */
-            String rgx = s.replace("*", ".*");
-
-            /* Some regex conditioning: match anywhere within the string
-             * unless "at beginning" or "at end" symbols are used
-             */
-            if (!s.startsWith("^")) rgx = ".*" + rgx;
-            if (!s.endsWith("$")) rgx = rgx + ".*";
-
-            /* clear temporary list */
-            tempList = new ArrayList<AxoObjectAbstract>();
-            for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                try {
-                    if (Pattern.matches(rgx, o.id)) {
-                        if (!listData.contains(o)) {
-                            tempList.add(o);
-                        }
-                    }
-                }
-                catch (PatternSyntaxException p) {
-                }
-            }
-            /* sort matches and add temp to list */
-            Collections.sort(tempList, objComp);
-            listData.addAll(tempList);
-
-            jResultList.setListData(listData.toArray());
-
-            if (!listData.isEmpty()) {
-                type = listData.get(0);
-                jResultList.setSelectedIndex(0);
-                jResultList.ensureIndexIsVisible(0);
-                ExpandJTreeToEl(listData.get(0));
-                SetPreview(type);
+                Collections.sort(listData, objAlphaComp);
+                jResultList.setListData(listData.toArray());
             }
             else {
-                ArrayList<AxoObjectAbstract> objs = MainFrame.axoObjects.GetAxoObjectFromName(s, p.GetCurrentWorkingDirectory());
-                if ((objs != null) && (objs.size() > 0)) {
-                    jResultList.setListData(objs.toArray());
-                    SetPreview(objs.get(0));
+
+                /* If any upper case letters are entered, do case-sensitive search */
+                if (containsUpperCase(s)) {
+
+                    /* --- exact match of entire string --- */
+                    for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+                        if (o.id.equals(s)) {
+                            if (!listData.contains(o)) {
+                                listData.add(o);
+                            }
+                        }
+                    }
+
+                    /* --- if starts with --- */
+                    tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
+                    for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+                        if (o.id.startsWith(s)) {
+                            if (!listData.contains(o)) {
+                                tempList.add(o);
+                            }
+                        }
+                    }
+                    /* sort matches and add temp to list */
+                    Collections.sort(tempList, objComp);
+                    listData.addAll(tempList);
+
+                    /* --- if contains string (literally, i.e. ignoring wildcards) --- */
+                    tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
+                    for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+                        if (o.id.contains(s)) {
+                            if (!listData.contains(o)) {
+                                tempList.add(o);
+                            }
+                        }
+                    }
+                    /* sort matches and add temp to list */
+                    Collections.sort(tempList, objComp);
+                    listData.addAll(tempList);
+
+                    /* --- if object description contains --- */
+                    tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
+                    for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+                        if (o.sDescription != null && o.sDescription.contains(s)) {
+                            if (!listData.contains(o)) {
+                                tempList.add(o);
+                            }
+                        }
+                    }
+                    /* sort matches and add temp to list */
+                    Collections.sort(tempList, objComp);
+                    listData.addAll(tempList);
+
+                }
+                /* Else do case-insensitive search */
+                else {
+                    String sl = s.toLowerCase();
+
+                    /* --- exact match of entire string, case-insensitive --- */
+                    tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
+                    for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+                        if (o.id.toLowerCase().equals(sl)) {
+                            if (!listData.contains(o)) {
+                                tempList.add(o);
+                            }
+                        }
+                    }
+                    /* sort matches and add temp to list */
+                    Collections.sort(tempList, objComp);
+                    listData.addAll(tempList);
+
+                    /* --- if starts with, case-insensitive --- */
+                    tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
+                    for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+                        if (o.id.toLowerCase().startsWith(sl)) {
+                            if (!listData.contains(o)) {
+                                tempList.add(o);
+                            }
+                        }
+                    }
+                    /* sort matches and add temp to list */
+                    Collections.sort(tempList, objComp);
+                    listData.addAll(tempList);
+
+                    /* --- if contains string (literally, i.e. ignoring wildcards), case-insensitive --- */
+                    tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
+                    for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+                        if (o.id.toLowerCase().contains(sl)) {
+                            if (!listData.contains(o)) {
+                                tempList.add(o);
+                            }
+                        }
+                    }
+                    /* sort matches and add temp to list */
+                    Collections.sort(tempList, objComp);
+                    listData.addAll(tempList);
+
+                    /* --- if object description contains, case-insensitive --- */
+                    tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
+                    for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+                        if (o.sDescription != null && o.sDescription.toLowerCase().contains(sl)) {
+                            if (!listData.contains(o)) {
+                                tempList.add(o);
+                            }
+                        }
+                    }
+                    /* sort matches and add temp to list */
+                    Collections.sort(tempList, objComp);
+                    listData.addAll(tempList);
+                }
+
+                /* Finally, if string contains regex or '*' wildcard,
+                * do regex search.
+                * Case-sensitive except if you add "(?i)" at the beginning.
+                */
+
+                /* Most users will expect "*" to act as wildcard, not as
+                * pure regex. Replace "*" with ".*" to simulate this behaviour
+                */
+                String rgx = s.replace("*", ".*");
+
+                /* Some regex conditioning: match anywhere within the string
+                * unless "at beginning" or "at end" symbols are used
+                */
+                if (!s.startsWith("^")) rgx = ".*" + rgx;
+                if (!s.endsWith("$")) rgx = rgx + ".*";
+
+                /* clear temporary list */
+                tempList = new ArrayList<AxoObjectAbstract>();
+                for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
+                    try {
+                        if (Pattern.matches(rgx, o.id)) {
+                            if (!listData.contains(o)) {
+                                tempList.add(o);
+                            }
+                        }
+                    }
+                    catch (PatternSyntaxException p) {
+                    }
+                }
+                /* sort matches and add temp to list */
+                Collections.sort(tempList, objComp);
+                listData.addAll(tempList);
+
+                jResultList.setListData(listData.toArray());
+                if (!listData.isEmpty()) {
+                    type = listData.get(0);
+                    jResultList.setSelectedIndex(0);
+                    jResultList.ensureIndexIsVisible(0);
+                    ExpandJTreeToEl(listData.get(0));
+                    SetPreview(type);
+                }
+                else {
+                    ArrayList<AxoObjectAbstract> objs = MainFrame.axoObjects.GetAxoObjectFromName(s, p.GetCurrentWorkingDirectory());
+                    if ((objs != null) && (objs.size() > 0)) {
+                        jResultList.setListData(objs.toArray());
+                        SetPreview(objs.get(0));
+                    }
                 }
             }
-        }
 
-        /* show number of results */
-        this.setTitle(String.format("    %d found", listData.size()));
+            /* show number of results */
+            this.setTitle(String.format("    %d found", listData.size()));
+        } catch (Exception ex) {
+            this.setTitle(String.format("Error!!!"));
+            LOGGER.log(Level.SEVERE, "{0}", ex.toString());
+        }
     }
 
     boolean accepted = false;

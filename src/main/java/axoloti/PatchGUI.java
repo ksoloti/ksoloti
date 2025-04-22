@@ -766,16 +766,13 @@ public class PatchGUI extends Patch {
         }
         return null;
     }
-    public ObjectSearchFrame osf;
+    ObjectSearchFrame osf;
 
     public void ShowClassSelector(Point p, AxoObjectInstanceAbstract o, String searchString, boolean selectText) {
         if (IsLocked()) {
             return;
         }
-        if (osf == null) {
-            osf = new ObjectSearchFrame(this);
-        }
-        osf.Launch(p, o, searchString, selectText);
+        ObjectSearchFrame.getObjectSearchFrame().Launch(this, p, o, searchString, selectText);
     }
 
     void SelectAll() {

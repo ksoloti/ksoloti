@@ -18,6 +18,7 @@
  */
 package axoloti.object;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.TreeMap;
 import org.simpleframework.xml.Attribute;
@@ -36,6 +37,7 @@ public class AxoObjectTreeNode implements Comparable {
     public ArrayList<AxoObjectAbstract> Objects = new ArrayList<AxoObjectAbstract>();
     public AxoObjectAbstract NodeObject;
     public String description;
+    public LocalDateTime lastUpdatedTime = LocalDateTime.now();
 
     public AxoObjectTreeNode(String id) {
         this.id = id;
@@ -56,5 +58,21 @@ public class AxoObjectTreeNode implements Comparable {
             return 1;
         }
         return id.compareTo(tn);
+    }
+
+    public void DebugDump(String keyStr, int level) {
+        String sTabs = "";
+        for(int n = 0; n < level; n++) {
+            sTabs+=" ";
+        } 
+        
+        System.out.printf("%s [%s] '%s'\n", sTabs, keyStr, id);
+        SubNodes.forEach((key, value) -> {
+            value.DebugDump(key, level+1);
+        });
+    }
+
+    public void SetUpdated() {
+        lastUpdatedTime = LocalDateTime.now();
     }
 }

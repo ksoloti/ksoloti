@@ -304,6 +304,18 @@ public class Preferences {
         return libraries;
     }
 
+    public boolean isLibrary(String id) {
+        boolean result = false;
+
+        for (AxolotiLibrary lib : libraries) {
+            if (lib.getId().equals(id)) {
+                result = true;
+                break;
+            }
+        }
+            
+        return result;
+    }
     public AxolotiLibrary getLibrary(String id) {
         if(libraries == null) return null;
         for (AxolotiLibrary lib : libraries) {

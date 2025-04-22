@@ -1225,19 +1225,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             newAxoObject = new AxoObject();
             newAxoObject.sDescription = fnNoExtension;
             newAxoObject.id = fnNoExtension;
+            newAxoObject.shortId = fnNoExtension;
             newAxoObject.setUUID(newAxoObject.getUUID());
+            newAxoObject.sPath = fileToBeSaved.toString();
 
-            AxoObjectFile aof = new AxoObjectFile();
-            aof.objs.add(newAxoObject);
-            Serializer serializer = new Persister();
-    
-            try {
-                serializer.write(aof, fileToBeSaved);
-            }
-            catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-                newAxoObject = null;
-            }
+            axoObjects.WriteAxoObject(fileToBeSaved.toString(), newAxoObject);
         }
 
         if(newAxoObject != null) {

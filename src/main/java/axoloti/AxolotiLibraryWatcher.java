@@ -10,9 +10,6 @@ import java.nio.file.attribute.*;
 import java.io.*;
 import java.util.*;
 
-import axoloti.utils.AxolotiLibrary;
-
-
 public class AxolotiLibraryWatcher implements Runnable {
 
   public enum AxolotiLibraryChangeType {
@@ -22,12 +19,28 @@ public class AxolotiLibraryWatcher implements Runnable {
     Modified
   }
   
+  private static AxolotiLibraryWatcher singleton = null;
+
   private WatchService watcher;
   private Map<WatchKey, Path> keys;
   private boolean recursive;
   private boolean trace;
 
   private ArrayList<AxolotiLibraryWatcherListener> listeners = new ArrayList<AxolotiLibraryWatcherListener>();
+
+  public static AxolotiLibraryWatcher getAxolotiLibraryWatcher() {
+    if (singleton == null)
+      singleton = new AxolotiLibraryWatcher();
+    return singleton;
+  }
+
+  private AxolotiLibraryWatcher() {
+    try {
+      this.watcher = FileSystems.getDefault().newWatchService();
+      this.keys = new HashMap<WatchKey,Path>();
+      this.recursive = true;
+    } catch (Exception ex) {}
+  }
 
   @SuppressWarnings("unchecked")
   static <T> WatchEvent<T> cast(WatchEvent<?> event) {
@@ -82,23 +95,26 @@ public class AxolotiLibraryWatcher implements Runnable {
     });
   }
 
-  AxolotiLibraryWatcher() throws IOException {
-    this.watcher = FileSystems.getDefault().newWatchService();
-    this.keys = new HashMap<WatchKey,Path>();
-    this.recursive = true;
-
-  }
   
-  public void AddAxolotiLib(AxolotiLibrary lib) throws IOException {
-      
-      Path dir = Paths.get(lib.getLocalLocation() + "/objects");
-      System.out.format("Scanning %s ...\n", dir);
-      registerAll(dir);
-      System.out.println("Done.");
-
-      // enable trace after initial registration
-      this.trace = true;
+  public void AddFolder(String folder) {
+    System.out.format("Scanning folder %s ...\n", folder);
+    Path path = Paths.get(folder);
+    try {
+      registerAll(path);
+    } catch (Exception ex) {
+    }
   }
+
+  // public void AddAxolotiLib(AxolotiLibrary lib) throws IOException {
+      
+  //     Path dir = Paths.get(lib.getLocalLocation() + "/objects");
+  //     System.out.format("Scanning %s ...\n", dir);
+  //     registerAll(dir);
+  //     System.out.println("Done.");
+
+  //     // enable trace after initial registration
+  //     this.trace = true;
+  // }
 
   /**
    * Process all events for keys queued to the watcher
