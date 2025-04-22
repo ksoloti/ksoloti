@@ -166,14 +166,14 @@ INCDIR = ../ \
   $(PORTINC) $(KERNINC) $(TESTINC) \
   $(HALINC) $(PLATFORMINC) $(BOARDINC) \
   $(FATFSINC) $(OSALINC) \
+  ./mass_storage \
   $(CHIBIOS) \
   $(CHIBIOS)/os/various \
   $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC \
   $(CHIBIOS)/os/common/ports/ARMCMx/devices/STM32F4xx \
   $(CHIBIOS)/os/ext/CMSIS/include \
   $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx \
-  $(CHIBIOS)/os/hal/lib/streams \
-  ./mass_storage
+  $(CHIBIOS)/os/hal/lib/streams
 
 #
 # Project, sources and paths
