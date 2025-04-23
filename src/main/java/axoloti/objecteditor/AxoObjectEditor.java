@@ -365,9 +365,13 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     void initFields() {
         jLabelName.setText(editObj.getCName());
         jTextFieldLicense.setText(editObj.sLicense);
+        jTextFieldLicense.setCaretPosition(0);
         jTextDesc.setText(editObj.sDescription);
+        jTextDesc.setCaretPosition(0);
         jTextFieldAuthor.setText(editObj.sAuthor);
+        jTextFieldAuthor.setCaretPosition(0);
         jTextFieldHelp.setText(editObj.helpPatch);
+        jTextFieldHelp.setCaretPosition(0);
 
         ((DefaultListModel) jListIncludes.getModel()).removeAllElements();
         if (editObj.includes != null) {
@@ -415,11 +419,17 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     public void ObjectModified(Object source) {
         if (source != this) {
             jTextAreaLocalData.setText(editObj.sLocalData == null ? "" : editObj.sLocalData);
+            jTextAreaLocalData.setCaretPosition(0);
             jTextAreaInitCode.setText(editObj.sInitCode == null ? "" : editObj.sInitCode);
+            jTextAreaInitCode.setCaretPosition(0);
             jTextAreaKRateCode.setText(editObj.sKRateCode == null ? "" : editObj.sKRateCode);
+            jTextAreaKRateCode.setCaretPosition(0);
             jTextAreaSRateCode.setText(editObj.sSRateCode == null ? "" : editObj.sSRateCode);
+            jTextAreaSRateCode.setCaretPosition(0);
             jTextAreaDisposeCode.setText(editObj.sDisposeCode == null ? "" : editObj.sDisposeCode);
+            jTextAreaDisposeCode.setCaretPosition(0);
             jTextAreaMidiCode.setText(editObj.sMidiCode == null ? "" : editObj.sMidiCode);
+            jTextAreaMidiCode.setCaretPosition(0);
         }
 
         Serializer serializer = new Persister();
@@ -437,6 +447,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         rSyntaxTextAreaXML.setFont(Constants.FONT_MONO);
         rSyntaxTextAreaXML.setText(os.toString());
+        rSyntaxTextAreaXML.setCaretPosition(0);
         rSyntaxTextAreaXML.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
         rSyntaxTextAreaXML.setCodeFoldingEnabled(true);
         updateAcProvider(editObj);
