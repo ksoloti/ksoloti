@@ -54,8 +54,8 @@ import java.awt.event.KeyEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -980,6 +980,29 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
     }
 
+    String GetFileNameExtension(File file) {
+        String ext = "";
+        String fname = file.getName();
+        int dot = fname.lastIndexOf('.');
+        if (dot > 0 && fname.length() > dot + 3) {
+            ext = fname.substring(dot);
+        }
+        return ext;
+    }
+
+    File FileWithNewExtension(File file, String extension) {
+        String existingExt = GetFileNameExtension(file);
+        String filename;
+        if(existingExt.length()>0) {
+            filename = file.getAbsolutePath();
+            filename = filename.substring(0, filename.length()-existingExt.length());
+            filename += extension;
+        } else {
+            filename = file.getAbsolutePath() + extension;
+        }
+        return new File(filename);
+    }
+
     File FileChooserSaveAxo(String title) {
 
         fc.resetChoosableFileFilters();
@@ -990,19 +1013,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         fc.setAcceptAllFileFilterUsed(false);
         fc.addChoosableFileFilter(FileUtils.axoFileFilter);
 
-        String fn = patch.getFileNamePath();
-        if (fn == null) {
-            fn = "untitled";
-        }
-        File f = new File(fn);
-        fc.setSelectedFile(f);
-
-        String ext = "";
-        int dot = fn.lastIndexOf('.');
-        if (dot > 0 && fn.length() > dot + 3) {
-            ext = fn.substring(dot);
-        }
-
         fc.setFileFilter(FileUtils.axoFileFilter);
 
 
@@ -1011,16 +1021,15 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             String filterext = ".axo";
 
             File fileToBeSaved = fc.getSelectedFile();
-            ext = "";
-            String fname = fileToBeSaved.getAbsolutePath();
-            dot = fname.lastIndexOf('.');
-            if (dot > 0 && fname.length() > dot + 3) {
-                ext = fname.substring(dot);
-            }
+            
+            // check extension
+            String ext = GetFileNameExtension(fileToBeSaved);
 
-            if (!(ext.equalsIgnoreCase(".axo"))) {
-                fileToBeSaved = new File(fc.getSelectedFile() + filterext);
-            } else if (!ext.equals(filterext)) {
+            if(ext.equals("")) {
+                fileToBeSaved = new File(fc.getSelectedFile().toString()+filterext);
+            } else if(ext.equalsIgnoreCase(filterext)) {
+                fileToBeSaved = new File(fc.getSelectedFile().toString());
+            } else if (!ext.equalsIgnoreCase("")) {
                 Object[] options = {"Change",
                     "No"};
                 int n = JOptionPane.showOptionDialog(this,
@@ -1033,7 +1042,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                         options[1]);
                 switch (n) {
                     case JOptionPane.YES_OPTION:
-                        fileToBeSaved = new File(fname.substring(0, fname.length() - 4) + filterext);
+                        fileToBeSaved = FileWithNewExtension(fileToBeSaved, filterext);
                         break;
                     case JOptionPane.NO_OPTION:
                         return null;
@@ -1221,6 +1230,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         AxoObject newAxoObject = null;
         File fileToBeSaved = FileChooserSaveAxo("New Object File...");
         if (fileToBeSaved != null) {
+            AxolotiLibraryWatcher.getAxolotiLibraryWatcher().AddPatchFolder(Paths.get(fileToBeSaved.getAbsolutePath()).getParent().toAbsolutePath().toString());
+
             String fnNoExtension = fileToBeSaved.getName().substring(0, fileToBeSaved.getName().lastIndexOf(".axo"));
             newAxoObject = new AxoObject();
             newAxoObject.sDescription = fnNoExtension;
@@ -1233,10 +1244,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
 
         if(newAxoObject != null) {
-            // need to check we are a proper object folder.
-
             // add to AxoObjects
-            axoObjects.AddAxoObject(newAxoObject);
+            axoObjects.AddAxoObject(Paths.get(fileToBeSaved.toURI()), newAxoObject);
 
             // add to patcher
             patch.AddObjectInstance(newAxoObject, new Point(0,0));

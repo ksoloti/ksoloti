@@ -424,15 +424,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             searchString = jTextFieldObjName.getText();
         }
 
-        if(p.getFileNamePath().length() > 0) {
-            Path path = Paths.get(p.getFileNamePath());
-            Path folder = path.getParent();
-            if(folder != null && !addedPatchFolders.contains(folder.toString())) {
-                addedPatchFolders.add(folder.toString());
-                MainFrame.axoObjects.LoadAxoObjects(folder.toString(), true);
-                AxolotiLibraryWatcher.getAxolotiLibraryWatcher().AddFolder(folder.toString());
-            }
-        }
 
         // If the objectTree has changed we need to reload the treeview
         if ((this.objectTree != MainFrame.axoObjects.ObjectTree) || !(this.objectTree.lastUpdatedTime.equals(lastUpdatedTime))) {
@@ -556,15 +547,25 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     }
 
     static DefaultMutableTreeNode PopulateJTree(AxoObjectTreeNode anode, DefaultMutableTreeNode root) {
-        for (String n : anode.SubNodes.keySet()) {
-            DefaultMutableTreeNode node = new DefaultMutableTreeNode(anode.SubNodes.get(n));
-            root.add(PopulateJTree(anode.SubNodes.get(n), node));
+        if((anode.getNodeCount() > 0 || anode.getObjectCount() > 0)) {
+            for (String n : anode.SubNodes.keySet()) {
+                DefaultMutableTreeNode node = new DefaultMutableTreeNode(anode.SubNodes.get(n));
+                DefaultMutableTreeNode newNode = PopulateJTree(anode.SubNodes.get(n), node);
+                if(newNode != null) {
+                    root.add(newNode);
+                }
+            }
+            for (AxoObjectAbstract n : anode.Objects) {
+                DefaultMutableTreeNode node = new DefaultMutableTreeNode(n);
+                if(node != null) {
+                    root.add(node);
+                }
+            }
+
+            return root;
+        } else {
+            return null;
         }
-        for (AxoObjectAbstract n : anode.Objects) {
-            DefaultMutableTreeNode node = new DefaultMutableTreeNode(n);
-            root.add(node);
-        }
-        return root;
     }
 
     void ExpandJTreeToEl(AxoObjectAbstract aoa) {

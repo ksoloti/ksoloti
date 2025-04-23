@@ -1170,6 +1170,7 @@ public class PatchGUI extends Patch {
     }
 
     public static PatchFrame OpenPatch(File f) {
+        prefs.setCurrentFileDirectory(f.getAbsolutePath());
         PatchFrame pf = OpenPatchInvisible(f);
         pf.setVisible(true);
         pf.setState(java.awt.Frame.NORMAL);

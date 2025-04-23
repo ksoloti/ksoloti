@@ -39,6 +39,14 @@ public class AxoObjectTreeNode implements Comparable {
     public String description;
     public LocalDateTime lastUpdatedTime = LocalDateTime.now();
 
+    public int getNodeCount() {
+        return SubNodes.size();
+    }
+
+    public int getObjectCount() {
+        return Objects.size();
+    }
+    
     public AxoObjectTreeNode(String id) {
         this.id = id;
     }

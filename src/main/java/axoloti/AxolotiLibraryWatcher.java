@@ -9,6 +9,8 @@ import static java.nio.file.LinkOption.*;
 import java.nio.file.attribute.*;
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AxolotiLibraryWatcher implements Runnable {
 
@@ -19,6 +21,8 @@ public class AxolotiLibraryWatcher implements Runnable {
     Modified
   }
   
+  private static final Logger LOGGER = Logger.getLogger(Axoloti.class.getName());
+
   private static AxolotiLibraryWatcher singleton = null;
 
   private WatchService watcher;
@@ -27,6 +31,8 @@ public class AxolotiLibraryWatcher implements Runnable {
   private boolean trace;
 
   private ArrayList<AxolotiLibraryWatcherListener> listeners = new ArrayList<AxolotiLibraryWatcherListener>();
+
+  private HashSet<String> watchingFolders = new HashSet<String>();
 
   public static AxolotiLibraryWatcher getAxolotiLibraryWatcher() {
     if (singleton == null)
@@ -95,26 +101,31 @@ public class AxolotiLibraryWatcher implements Runnable {
     });
   }
 
-  
+
+  public void AddPatchFolder(String folder) {
+    if(folder != null && !watchingFolders.contains(folder.toString())) {
+      LOGGER.log(Level.INFO,"Adding patch folder {0}", folder);
+      MainFrame.axoObjects.LoadAxoObjects(folder.toString(), true);
+      AddFolder(folder);
+    }
+  }
+ 
   public void AddFolder(String folder) {
-    System.out.format("Scanning folder %s ...\n", folder);
-    Path path = Paths.get(folder);
-    try {
-      registerAll(path);
-    } catch (Exception ex) {
+    // only add once!
+    if(folder != null && !watchingFolders.contains(folder.toString())) {
+      LOGGER.log(Level.INFO,"Adding folder {0}", folder);
+
+      watchingFolders.add(folder.toString());
+
+      System.out.format("Scanning folder %s ...\n", folder);
+      Path path = Paths.get(folder);
+      try {
+        registerAll(path);
+      } catch (Exception ex) {
+      }
     }
   }
 
-  // public void AddAxolotiLib(AxolotiLibrary lib) throws IOException {
-      
-  //     Path dir = Paths.get(lib.getLocalLocation() + "/objects");
-  //     System.out.format("Scanning %s ...\n", dir);
-  //     registerAll(dir);
-  //     System.out.println("Done.");
-
-  //     // enable trace after initial registration
-  //     this.trace = true;
-  // }
 
   /**
    * Process all events for keys queued to the watcher

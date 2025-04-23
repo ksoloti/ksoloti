@@ -325,34 +325,32 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
         File folder = new File(path);
         if (folder.isDirectory()) {
             AxoObjectTreeNode t = LoadAxoObjectsFromFolder(folder, "");
-            if (t.Objects.size() > 0 || t.SubNodes.size() > 0) {
-                String dirname = folder.getName();
-                // it should be noted, here , we never see this name...
-                // it just needs to be unique, so not to overwirte the map
-                // but just in case it becomes relevant in the future
-                String pname = dirname;
-                try {
-                    if(isPatchFolder) {
-                        pname = folder.getCanonicalFile().toString();
-                    } else {
-                        pname = folder.getCanonicalFile().getParent();
-                    }
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
-                }
-
-                if (!ObjectTree.SubNodes.containsKey(pname)) {
-                    ObjectTree.SubNodes.put(pname, t);
+            String dirname = folder.getName();
+            // it should be noted, here , we never see this name...
+            // it just needs to be unique, so not to overwirte the map
+            // but just in case it becomes relevant in the future
+            String pname = dirname;
+            try {
+                if(isPatchFolder) {
+                    pname = folder.getCanonicalFile().toString();
                 } else {
-                    // hmm, lets use the orig name with number
-                    int i = 1;
-                    dirname = folder.getName() + "#" + i;
-                    while (ObjectTree.SubNodes.containsKey(dirname)) {
-                        i++;
-                        dirname = folder.getName() + "#" + i;
-                    }
-                    ObjectTree.SubNodes.put(dirname, t);
+                    pname = folder.getCanonicalFile().getParent();
                 }
+            } catch (IOException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+
+            if (!ObjectTree.SubNodes.containsKey(pname)) {
+                ObjectTree.SubNodes.put(pname, t);
+            } else {
+                // hmm, lets use the orig name with number
+                int i = 1;
+                dirname = folder.getName() + "#" + i;
+                while (ObjectTree.SubNodes.containsKey(dirname)) {
+                    i++;
+                    dirname = folder.getName() + "#" + i;
+                }
+                ObjectTree.SubNodes.put(dirname, t);
             }
         }
         ObjectTree.SetUpdated();
@@ -382,7 +380,6 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
                 LOGGER.log(Level.INFO, "Done loading objects.\n");
 
                 ObjectTree.SetUpdated();
-                ObjectTree.DebugDump("", 0);
             }
         };
         LoaderThread = new Thread(objloader);
@@ -689,7 +686,7 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
 
                 ObjectTree.SetUpdated();
             } else {
-                LOGGER.log(Level.SEVERE, "Deleting AXO object {0} to non existing node failed.");
+                LOGGER.log(Level.SEVERE, "Deleting AXO object {0} to non existing node failed.", axoObject);
             }
             result = true;
         }
@@ -704,6 +701,7 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
             // need to add to object tree
             // This object could be in the axoloti factory, the additional preference folders or any edited patch folder.
             AxoObjectTreeNode foundNode = GetNodeForPath(path);
+
             if(foundNode != null) {
                 axoObject.sPath = path.toString();
                 foundNode.Objects.add(axoObject);
@@ -714,7 +712,7 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
                 ObjectTree.SetUpdated();
                 result = true;
             } else {
-                LOGGER.log(Level.SEVERE, "Adding AXO object {0} to non existing node failed.");
+                LOGGER.log(Level.SEVERE, "Adding AXO object {0} to non existing node failed.", axoObject);
             }
 
 

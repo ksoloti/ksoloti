@@ -18,18 +18,15 @@
  */
 package axoloti.utils;
 
-import axoloti.Axoloti;
+import axoloti.AxolotiLibraryWatcher;
 import axoloti.Boards;
-import axoloti.MainFrame;
-import axoloti.USBBulkConnection;
 import axoloti.Version;
-import axoloti.Boards.BoardDetail;
-import axoloti.Boards.BoardType;
 import axoloti.Boards.FirmwareType;
 import axoloti.Boards.MemoryLayoutType;
 import axoloti.Boards.SampleRateType;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -377,6 +374,16 @@ public class Preferences {
         return CurrentFileDirectory;
     }
 
+    public String getCurrentDirectory() {
+        File file = new File(CurrentFileDirectory);
+        if(file.isDirectory()) {
+            return CurrentFileDirectory;
+        } else {
+            java.nio.file.Path path = Paths.get(CurrentFileDirectory);
+            return path.getParent().toAbsolutePath().toString();
+        }
+    }
+
     public int getPollInterval() {
         if (PollInterval > minimumPollInterval) {
             return PollInterval;
@@ -421,7 +428,8 @@ public class Preferences {
         }
         this.CurrentFileDirectory = CurrentFileDirectory;
         SavePrefs(false);
-        // SetDirty();
+
+        AxolotiLibraryWatcher.getAxolotiLibraryWatcher().AddPatchFolder(getCurrentDirectory());
     }
 
     public String getTheme() {

@@ -551,10 +551,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     
                     axolotiLibraryWatcherThread =  new Thread(axolotiLibraryWatcher);
                     axolotiLibraryWatcherThread.start();
-                    // }
-                // catch (BindException e) {
-                    // e.printStackTrace();
-                    // System.exit(1);
+
+                    // Add current file directory to filewater
+                    AxolotiLibraryWatcher.getAxolotiLibraryWatcher().AddPatchFolder(prefs.getCurrentDirectory());
+
                 }
                 catch (Exception e) {
                     e.printStackTrace();
@@ -1612,6 +1612,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         interactiveFirmwareUpdate();
                     }
                 });
+            } else {
+                LOGGER.log(Level.SEVERE, "Firmware mismatch ignored due to preferences");
             }
         }
     }
