@@ -18,11 +18,16 @@
  */
 package axoloti;
 
+import axoloti.inlets.InletFrac32Bipolar;
+import axoloti.inlets.InletFrac32BufferBipolar;
 import axoloti.object.AxoObject;
-import axoloti.object.AxoObjectFile;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
-import axoloti.utils.Constants;
+import axoloti.outlets.OutletFrac32Bipolar;
+import axoloti.outlets.OutletFrac32BufferBipolar;
+import axoloti.parameters.Parameter;
+import axoloti.parameters.ParameterFrac32UMapGain;
+import axoloti.parameters.ParameterFrac32UMapGainSquare;
 import axoloti.utils.KeyUtils;
 import components.PresetPanel;
 import components.ScrollPaneComponent;
@@ -1239,6 +1244,17 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             newAxoObject.shortId = fnNoExtension;
             newAxoObject.setUUID(newAxoObject.getUUID());
             newAxoObject.sPath = fileToBeSaved.toString();
+
+            newAxoObject.inlets.add(new InletFrac32BufferBipolar("left", "Left Input"));
+            newAxoObject.inlets.add(new InletFrac32BufferBipolar("right", "Right Input"));
+            
+            newAxoObject.outlets.add(new OutletFrac32BufferBipolar("left", "Left Output"));
+            newAxoObject.outlets.add(new OutletFrac32BufferBipolar("right", "Right Output"));
+
+            newAxoObject.params.add(new ParameterFrac32UMapGainSquare("volume"));
+
+            newAxoObject.sSRateCode = "outlet_left  = __SSAT( ___SMMUL( param_volume, inlet_left)  ,28 );\noutlet_right = __SSAT( ___SMMUL( param_volume, inlet_right) ,28 );\n";
+                                
 
             axoObjects.WriteAxoObject(fileToBeSaved.toString(), newAxoObject);
         }
