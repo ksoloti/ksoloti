@@ -472,7 +472,9 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     }
 
     public void updateEditFromOrig() {
+        // TODO this propely!!
         initFields();
+        updateReferenceXML();
     }
     
     @Override
