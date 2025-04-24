@@ -105,4 +105,33 @@ then
 	rm ${ARCHIVE}
 fi
 
+cd "../jdks"
+
+JDK_ARCHIVE_LINUX="zulu21.42.19-ca-jdk21.0.7-linux_x64.zip"
+if [ ! -f "${JDK_ARCHIVE_LINUX}" ];
+then
+    echo "##### downloading ${JDK_ARCHIVE_LINUX} #####"
+    curl -L https://cdn.azul.com/zulu/bin/$JDK_ARCHIVE_LINUX > $JDK_ARCHIVE_LINUX
+else
+    echo "##### ${JDK_ARCHIVE_LINUX} already downloaded #####"
+fi
+
+JDK_ARCHIVE_MAC="zulu21.42.19-ca-jdk21.0.7-macosx_x64.zip"
+if [ ! -f "${JDK_ARCHIVE_MAC}" ];
+then
+    echo "##### downloading ${JDK_ARCHIVE_MAC} #####"
+    curl -L https://cdn.azul.com/zulu/bin/$JDK_ARCHIVE_MAC > $JDK_ARCHIVE_MAC
+else
+    echo "##### ${JDK_ARCHIVE_MAC} already downloaded #####"
+fi
+
+JDK_ARCHIVE_WINDOWS="zulu21.42.19-ca-jdk21.0.7-win_x64.zip"
+if [ ! -f "${JDK_ARCHIVE_WINDOWS}" ];
+then
+    echo "##### downloading ${JDK_ARCHIVE_WINDOWS} #####"
+    curl -L https://cdn.azul.com/zulu/bin/$JDK_ARCHIVE_WINDOWS > $JDK_ARCHIVE_WINDOWS
+else
+    echo "##### ${JDK_ARCHIVE_WINDOWS} already downloaded #####"
+fi
+
 printf "\nDONE!\n"
