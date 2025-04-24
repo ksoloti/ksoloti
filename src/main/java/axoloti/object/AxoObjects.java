@@ -817,8 +817,8 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
             // find the objects to update (in newobjects and in existingobjects)
             for (Map.Entry<String, AxoObjectAbstract> entry : newObjects.entrySet()) {
                 if(existingObjects.containsKey(entry.getKey())) {
-                    AxoObjectAbstract existingObject = entry.getValue();
-                    AxoObjectAbstract newObject = newObjects.get(entry.getKey());
+                    AxoObjectAbstract newObject = entry.getValue();
+                    AxoObjectAbstract existingObject = existingObjects.get(entry.getKey());
                     LOGGER.log(Level.WARNING, "updating {0}", existingObject.getUUID());
                     if(! UpdateAxoObject(existingObject, newObject)) {
                         LOGGER.log(Level.SEVERE, "failed to update {0}", existingObject.getUUID());
