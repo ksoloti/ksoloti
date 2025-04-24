@@ -729,7 +729,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         else {
                             mappedVal = -((psat * psat) >> 31);
                         }
-                        c += (int) mappedVal + " /* pfun_signed_clamp_squarelaw */;\n";
+                        c += (int) mappedVal + "; /* pfun_signed_clamp_squarelaw */;\n";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_squarelaw")) {
