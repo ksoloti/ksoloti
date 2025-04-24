@@ -2981,6 +2981,7 @@ public class Patch {
             }
         }
         qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadFile(getBinFile(), sdfilename, cal));
+        qcmdprocessor.WaitQueueFinished();
         
         String dir;
         int i = sdfilename.lastIndexOf("/");
@@ -2992,6 +2993,7 @@ public class Patch {
         }
 
         UploadDependentFiles(dir);
+        qcmdprocessor.WaitQueueFinished();
 
         if (prefs.isBackupPatchesOnSDEnabled() && getBinFile().exists() && FileNamePath != null && !FileNamePath.isEmpty()) {
             if (f.exists()) {
@@ -3003,6 +3005,7 @@ public class Patch {
                     cal));
             }
         }
+        qcmdprocessor.WaitQueueFinished();
 
     }
 

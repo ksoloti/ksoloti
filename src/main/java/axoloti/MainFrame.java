@@ -1151,7 +1151,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             patch1.GetQCmdProcessor().AppendToQueue(cp);
             qcmdprocessor.WaitQueueFinished();
             pf.Close();
-            Thread.sleep(1500);
+            Thread.sleep(2000);
             status = cp.success();
             if (status == false) {
                 LOGGER.log(Level.SEVERE, "COMPILATION FAILED: {0}\n", f.getPath());

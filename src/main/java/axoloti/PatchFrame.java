@@ -996,7 +996,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         patch.GetQCmdProcessor().SetPatch(null);
         patch.GetQCmdProcessor().AppendToQueue(new QCmdStop());
         patch.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch());
+        qcmdprocessor.WaitQueueFinished();
         patch.GetQCmdProcessor().AppendToQueue(new QCmdStart(patch));
+        qcmdprocessor.WaitQueueFinished();
         patch.GetQCmdProcessor().AppendToQueue(new QCmdLock(patch));
     }
 
@@ -1121,6 +1123,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         qcmdprocessor.AppendToQueue(new qcmds.QCmdCompilePatch(patch));
         qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadPatch());
         qcmdprocessor.AppendToQueue(new qcmds.QCmdCopyPatchToFlash());
+        qcmdprocessor.WaitQueueFinished();
     }
 
     private void jMenuItemAddObjActionPerformed(java.awt.event.ActionEvent evt) {
