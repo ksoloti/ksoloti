@@ -1186,7 +1186,7 @@ public class Patch {
                 inc += "#include \"" + s + "\"\n";
             }
         }
-        return inc + "\n";
+        return inc.replace('\\', '/') + "\n";
     }
 
     /* the c++ code generator */
