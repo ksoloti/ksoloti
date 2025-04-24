@@ -312,7 +312,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         if (IsEmbeddedObj()) {
             jMenuItemSave.setEnabled(false);
-            jLabelLibrary.setText("embedded");
+            jLabelLibrary.setText("Embedded");
             setTitle(origObj.id);
 
             /* Embedded objects have no use for help patches */
