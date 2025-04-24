@@ -995,7 +995,6 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         if (!isCompositeObject()) {
             MainFrame.axoObjects.WriteAxoObject(editObj.sPath, editObj);
             updateReferenceXML();
-            //MainFrame.axoObjects.LoadAxoObjects();
         } else {
             JOptionPane.showMessageDialog(null, "The original object file " + editObj.sPath + " contains multiple objects, the object editor does not support this.\n"
                     + "Your changes are NOT saved!");
