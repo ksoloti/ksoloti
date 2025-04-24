@@ -77,7 +77,6 @@ public class FileMenu extends JMenu {
         jMenuOpenURL = new JMenuItem();
         jMenuQuit = new JMenuItem();
         jMenuRegenerateObjects = new JMenuItem();
-        jMenuReloadObjects = new JMenuItem();
         jMenuSync = new JMenuItem();
         jSeparator1 = new JPopupMenu.Separator();
         jSeparator2 = new JPopupMenu.Separator();
@@ -161,16 +160,6 @@ public class FileMenu extends JMenu {
             }
         });
         insert(jMenuSync, pos++);
-
-        jMenuReloadObjects.setMnemonic('J');
-        jMenuReloadObjects.setText("Reload Objects");
-        jMenuReloadObjects.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuReloadObjectsActionPerformed(evt);
-            }
-        });
-        add(jMenuReloadObjects);
 
         jMenuRegenerateObjects.setText("Regenerate Objects");
         jMenuRegenerateObjects.addActionListener(new java.awt.event.ActionListener() {
@@ -259,7 +248,6 @@ public class FileMenu extends JMenu {
     private javax.swing.JMenuItem jMenuQuit;
     @Deprecated
     private javax.swing.JMenuItem jMenuRegenerateObjects;
-    private javax.swing.JMenuItem jMenuReloadObjects;
     private javax.swing.JMenuItem jMenuSync;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
@@ -345,12 +333,8 @@ public class FileMenu extends JMenu {
 
     private void jMenuRegenerateObjectsActionPerformed(java.awt.event.ActionEvent evt) {
         GeneratedObjects.WriteAxoObjects();
-        jMenuReloadObjectsActionPerformed(evt);
     }
 
-    private void jMenuReloadObjectsActionPerformed(java.awt.event.ActionEvent evt) {
-        axoObjects.LoadAxoObjects();
-    }
 
     private void jMenuOpenURLActionPerformed(java.awt.event.ActionEvent evt) {
         OpenURL();
