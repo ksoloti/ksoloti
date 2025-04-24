@@ -689,7 +689,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             if (p.isFrozen()) {
                 
                 c += I+I + "// Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + "_" + p.getLegalName() + "\n";
-                c += I+I + "static const int32_t " + p.GetCName() + " = ";
+                c += I+I + "const int32_t " + p.GetCName() + " = ";
                 /* Do parameter value mapping in Java so save MCU memory.
                  * These are the same functions like in firmware/parameter_functions.h.
                  */
