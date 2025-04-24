@@ -281,7 +281,7 @@ public class AddToLibraryDlg extends javax.swing.JDialog {
             }
         }
         MainFrame.axoObjects.WriteAxoObject(obj.sPath, obj);
-        axoObjects.LoadAxoObjects();
+        //axoObjects.LoadAxoObjects();
 
         setVisible(false);
         dispose();
