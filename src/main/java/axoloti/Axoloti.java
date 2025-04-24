@@ -73,7 +73,7 @@ public class Axoloti {
 
             /* Set tooltip delay and duration */
             javax.swing.ToolTipManager.sharedInstance().setDismissDelay(600000);
-            javax.swing.ToolTipManager.sharedInstance().setInitialDelay(900);
+            javax.swing.ToolTipManager.sharedInstance().setInitialDelay(1500);
             javax.swing.ToolTipManager.sharedInstance().setReshowDelay(10);
 
             JFrame.setDefaultLookAndFeelDecorated(true);
