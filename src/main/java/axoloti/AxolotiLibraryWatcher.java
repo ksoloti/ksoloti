@@ -27,7 +27,6 @@ public class AxolotiLibraryWatcher implements Runnable {
 
   private WatchService watcher;
   private Map<WatchKey, Path> keys;
-  private boolean recursive;
   private boolean trace;
 
   private ArrayList<AxolotiLibraryWatcherListener> listeners = new ArrayList<AxolotiLibraryWatcherListener>();
@@ -44,7 +43,6 @@ public class AxolotiLibraryWatcher implements Runnable {
     try {
       this.watcher = FileSystems.getDefault().newWatchService();
       this.keys = new HashMap<WatchKey,Path>();
-      this.recursive = true;
     } catch (Exception ex) {}
   }
 
@@ -106,11 +104,11 @@ public class AxolotiLibraryWatcher implements Runnable {
     if(folder != null && !watchingFolders.contains(folder.toString())) {
       LOGGER.log(Level.INFO,"Adding patch folder {0}", folder);
       MainFrame.axoObjects.LoadAxoObjects(folder.toString(), true);
-      AddFolder(folder);
+      AddFolder(folder, false);
     }
   }
  
-  public void AddFolder(String folder) {
+  public void AddFolder(String folder, boolean recursive) {
     // only add once!
     if(folder != null && !watchingFolders.contains(folder.toString())) {
       LOGGER.log(Level.INFO,"Adding folder {0}", folder);
@@ -120,7 +118,11 @@ public class AxolotiLibraryWatcher implements Runnable {
       System.out.format("Scanning folder %s ...\n", folder);
       Path path = Paths.get(folder);
       try {
-        registerAll(path);
+        if(recursive) {
+          registerAll(path);
+        } else {
+          register(path);
+        }
       } catch (Exception ex) {
       }
     }
@@ -182,9 +184,7 @@ public class AxolotiLibraryWatcher implements Runnable {
                   }
               });
 
-              // if directory is created, and watching recursively, then
-              // register it and its sub-directories
-              if (recursive && (kind == ENTRY_CREATE)) {
+              if (kind == ENTRY_CREATE) {
                   try {
                       if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
                           registerAll(child);

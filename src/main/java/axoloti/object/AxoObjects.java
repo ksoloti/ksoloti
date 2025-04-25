@@ -165,7 +165,7 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
         ObjectPathMap = new HashMap<String, HashMap<String, AxoObjectAbstract>>();
     }
 
-    public AxoObjectTreeNode LoadAxoObjectsFromFolder(File folder, String prefix) {
+    public AxoObjectTreeNode LoadAxoObjectsFromFolder(File folder, String prefix, boolean recursive) {
 
         String id = folder.getName();
         // is this objects in a library, if so use the library name
@@ -224,9 +224,9 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
             }
         });
         for (final File fileEntry : fileList) {
-            if (fileEntry.isDirectory()) {
+            if (fileEntry.isDirectory() && recursive) {
                 String dirname = fileEntry.getName();
-                AxoObjectTreeNode s = LoadAxoObjectsFromFolder(fileEntry, prefix + "/" + dirname);
+                AxoObjectTreeNode s = LoadAxoObjectsFromFolder(fileEntry, prefix + "/" + dirname, true);
                 if (s.Objects.size() > 0 || s.SubNodes.size() > 0) {
                     t.SubNodes.put(dirname, s);
                     for (AxoObjectAbstract o : t.Objects) {
@@ -329,7 +329,7 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
     public void LoadAxoObjects(String path, boolean isPatchFolder) {
         File folder = new File(path);
         if (folder.isDirectory()) {
-            AxoObjectTreeNode t = LoadAxoObjectsFromFolder(folder, "");
+            AxoObjectTreeNode t = LoadAxoObjectsFromFolder(folder, "", !isPatchFolder);
             String dirname = folder.getName();
             // it should be noted, here , we never see this name...
             // it just needs to be unique, so not to overwirte the map

@@ -537,7 +537,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (spath != null) {
                         for (String path : spath) {
                             LOGGER.log(Level.INFO, "Adding {0} to file watcher.", path);
-                            axolotiLibraryWatcher.AddFolder(path);
+                            axolotiLibraryWatcher.AddFolder(path, true);
                         }
                     }
                     else {
