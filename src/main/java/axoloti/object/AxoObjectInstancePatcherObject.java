@@ -131,8 +131,6 @@ public class AxoObjectInstancePatcherObject extends AxoObjectInstance {
         Titlebar.setBackground(Theme.Object_TitleBar_Embedded_Background);
         //updateObj();
         BtnEdit = new ButtonComponent("Edit");
-        BtnEdit.setForeground(Theme.Component_Foreground);
-        BtnEdit.setBackground(Theme.Component_Background);
         BtnEdit.setAlignmentX(LEFT_ALIGNMENT);
         BtnEdit.setAlignmentY(TOP_ALIGNMENT);
         BtnEdit.addActListener(new ActListener() {
@@ -142,6 +140,7 @@ public class AxoObjectInstancePatcherObject extends AxoObjectInstance {
             }
         });
         add(BtnEdit);
+
         resizeToGrid();
     }
 
