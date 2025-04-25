@@ -315,6 +315,7 @@ public class Patch {
                         }
                     }
                     GetQCmdProcessor().AppendToQueue(new QCmdUploadFile(f, targetfn));
+                    GetQCmdProcessor().WaitQueueFinished();
                 }
                 else {
                     LOGGER.log(Level.INFO, "File {0} matches timestamp and size, skipping upload.", f.getName());
@@ -357,7 +358,9 @@ public class Patch {
         GetQCmdProcessor().SetPatch(null);
         GetQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
         GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch());
+        GetQCmdProcessor().WaitQueueFinished();
         GetQCmdProcessor().AppendToQueue(new QCmdStart(this));
+        GetQCmdProcessor().WaitQueueFinished();
         GetQCmdProcessor().AppendToQueue(new QCmdLock(this));
     }
 
