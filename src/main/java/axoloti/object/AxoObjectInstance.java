@@ -141,7 +141,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             tooltiptxt += "<p><i>Path: " + getType().sObjFilePath + "</p>";
         }
         if (IndexLabel != null && !IndexLabel.getText().equals("")) {
-            tooltiptxt += "<p><i>Execution order: " + (IndexLabel.getText()) + " / " + patch.objectInstances.size() + "</p>";
+            tooltiptxt += "<p><i>Execution order: " + (IndexLabel.getText()) + " / " + patch.GetObjectInstancesWithoutComments().size() + "</p>";
         }
         tooltiptxt += "</div>";
         Titlebar.setToolTipText(tooltiptxt);
@@ -150,7 +150,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     @Override
     public void refreshIndex() {
         if (patch != null && IndexLabel != null) {
-            IndexLabel.setText("" + (patch.objectInstances.indexOf(this) + 1)); /* Add 1, so Index 0 means 1st object */
+            IndexLabel.setText("" + (patch.GetObjectInstancesWithoutComments().indexOf(this) + 1)); /* Add 1, so Index 0 means 1st object */
             refreshTooltip();
         }
     }

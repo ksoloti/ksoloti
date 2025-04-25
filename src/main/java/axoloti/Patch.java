@@ -327,6 +327,16 @@ public class Patch {
         }
     }
 
+    public ArrayList<AxoObjectInstanceAbstract> GetObjectInstancesWithoutComments() {
+        ArrayList<AxoObjectInstanceAbstract> objectInstancesWithoutComments = new ArrayList<AxoObjectInstanceAbstract>();
+        for (AxoObjectInstanceAbstract oa : objectInstances) {
+            if (!(oa instanceof AxoObjectInstanceComment || oa instanceof AxoObjectInstanceHyperlink)) {
+                objectInstancesWithoutComments.add(oa);
+            }
+        }
+        return objectInstancesWithoutComments;
+    }
+
     void GoLive() {
         GetQCmdProcessor().AppendToQueue(new QCmdStop());
         if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
