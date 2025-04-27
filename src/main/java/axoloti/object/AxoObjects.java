@@ -716,7 +716,7 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
                 if(hm == null) {
                     hm = new HashMap<String, AxoObjectAbstract>();
                 }
-                hm.put(axoObject.id, axoObject);
+                hm.put(axoObject.getUUID(), axoObject);
                 ObjectPathMap.put(axoObject.sPath, hm);
 
                 ObjectTree.SetUpdated();
