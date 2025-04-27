@@ -358,9 +358,10 @@ static void otg_rxfifo_handler(USBDriver *usbp) {
                             cnt,
                             usbp->epc[ep]->out_state->rxsize -
                             usbp->epc[ep]->out_state->rxcnt);
+#endif
     usbp->epc[ep]->out_state->rxbuf += cnt;
     usbp->epc[ep]->out_state->rxcnt += cnt;
-#endif
+
     break;
   case GRXSTSP_OUT_COMP:
     break;
