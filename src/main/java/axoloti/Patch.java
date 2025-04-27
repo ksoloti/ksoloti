@@ -48,10 +48,7 @@ import axoloti.outlets.OutletFrac32Buffer;
 import axoloti.outlets.OutletInstance;
 import axoloti.outlets.OutletInt32;
 import axoloti.parameters.ParameterInstance;
-import axoloti.Boards.BoardType;
 import axoloti.Boards.FirmwareType;
-import axoloti.Boards.MemoryLayoutType;
-import axoloti.Boards.SampleRateType;
 
 
 import java.awt.Dimension;
@@ -63,6 +60,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -1971,6 +1975,49 @@ public class Patch {
 
         CreateIID();
         SortByPosition();
+
+        // copy any source
+        HashSet<String> copiedSources = new HashSet<>();
+        for(AxoObjectInstanceAbstract instance : objectInstances) {
+            AxoObjectAbstract object = instance.getType();
+            String sPath = object.sPath;
+            if(sPath != null && sPath.toLowerCase().endsWith(".axo")) {
+                sPath = sPath.substring(0, sPath.length()-4);
+                sPath+=".src";
+
+                String buildDir = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build";
+
+                if(!copiedSources.contains(sPath)) {
+                    File file = new File(sPath);
+                    if(file.exists() && file.isDirectory()) {
+                        System.out.println("Copying source from" + sPath);
+                        copiedSources.add(sPath);
+                        Path sourceDir = Paths.get(file.getAbsolutePath().toString());
+                        Path targetDir = Paths.get(buildDir).resolve("src").resolve(object.id);
+                        try {
+                            Files.walkFileTree(sourceDir, new SimpleFileVisitor<Path>() {
+                                @Override
+                                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                                    Path targetFile = targetDir.resolve(sourceDir.relativize(file));
+                                    Files.copy(file, targetFile, StandardCopyOption.REPLACE_EXISTING);
+                                    return FileVisitResult.CONTINUE;
+                                }
+
+                                @Override
+                                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                                    Path targetDirPath = targetDir.resolve(sourceDir.relativize(dir));
+                                    Files.createDirectories(targetDirPath);
+                                    return FileVisitResult.CONTINUE;
+                                }
+                            });
+                        } catch(Exception ex) {
+                            LOGGER.log(Level.SEVERE, "Failed to copy source {0}", ex.toString());
+                        }
+                        
+                    }
+                }
+            }
+        }
 
         String c = "/*\n"
         + " * Generated using Ksoloti Patcher v" + Version.AXOLOTI_VERSION + " on " + System.getProperty("os.name") + "\n"
