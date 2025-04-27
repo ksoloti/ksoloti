@@ -569,7 +569,20 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         String sPath = MainFrame.prefs.getExternalEditorPath();
         if(sPath != null && sPath.length()>0) {
             try {
-                ProcessBuilder pb = new ProcessBuilder(sPath, getType().sPath);
+                // if we have source for the object also open that
+                String sObjectPath = getType().sPath;
+                if(sObjectPath.toLowerCase().endsWith(".axo")) {
+                    sObjectPath = sObjectPath.substring(0, sObjectPath.length()-4);
+                    sObjectPath+=".src";
+                    File objectFile = new File(sObjectPath);
+                    if(!(objectFile.exists() && objectFile.isDirectory())) {
+                        sObjectPath = "";
+                    }
+                } else {
+                    sObjectPath = "";
+                }
+
+                ProcessBuilder pb = new ProcessBuilder(sPath, getType().sPath, sObjectPath);
                 Process p = pb.start();
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, "Failed to execute external editor : `{0}`.", sPath);
