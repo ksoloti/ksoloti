@@ -37,6 +37,7 @@ import static axoloti.MainFrame.prefs;
 
 import components.ScrollPaneComponent;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.ByteArrayOutputStream;
@@ -717,14 +718,18 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         jTextDesc.setLineWrap(true);
         jTextDesc.setRows(5);
         jTextDesc.setWrapStyleWord(true);
+        jScrollPaneDescription.setPreferredSize(new Dimension(jScrollPaneDescription.getPreferredSize().width, 240));
         jScrollPaneDescription.setViewportView(jTextDesc);
 
         jPanelDetails.add(jScrollPaneDescription);
+
+        Dimension jtb = new Dimension(jListIncludes.getPreferredSize().width, 120);
 
         jLabelIncludes.setText("Includes");
         jPanelDetails.add(jLabelIncludes);
 
         jListIncludes.setModel(new DefaultListModel<>());
+        jScrollPaneIncludes.setPreferredSize(jtb);
         jScrollPaneIncludes.setViewportView(jListIncludes);
 
         jPanelDetails.add(jScrollPaneIncludes);
@@ -733,6 +738,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         jPanelDetails.add(jLabelDepends);
 
         jListDepends.setModel(new DefaultListModel<>());
+        jScrollPaneDepends.setPreferredSize(jtb);
         jScrollPaneDepends.setViewportView(jListDepends);
 
         jPanelDetails.add(jScrollPaneDepends);
