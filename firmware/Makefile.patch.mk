@@ -256,10 +256,10 @@ INCDIR+=$(AXO_INCLUDES)
 all: ${BUILDDIR}/xpatch.bin
 
 .cpp.o:
-	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c $< -o $@
+	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include ${FIRMWARE}/xpatch.h -c $< -o $@
 
 .c.o:
-	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -I ${BUILDDIR}/src/** -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c $< -o $@
+	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -I ${BUILDDIR}/src/** -Winvalid-pch -MD -MP --include ${FIRMWARE}/xpatch.h -c $< -o $@
 
 ${BUILDDIR}/xpatch.h.gch: ${FIRMWARE}/xpatch.h ${FIRMWARE}/patch.h ${FIRMWARE}/axoloti.h ${FIRMWARE}/parameter_functions.h ${FIRMWARE}/axoloti_math.h ${FIRMWARE}/axoloti_filters.h
 	@echo Building precompiled header
