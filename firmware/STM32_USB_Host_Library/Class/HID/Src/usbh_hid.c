@@ -144,7 +144,9 @@ static USBH_StatusTypeDef USBH_HID_InterfaceInit (USBH_HandleTypeDef *phost)
   USBH_StatusTypeDef status = USBH_FAIL ;
   HID_HandleTypeDef *HID_Handle;
   
-  interface = USBH_FindInterface(phost, phost->pActiveClass->ClassCode, HID_BOOT_CODE, 0xFF);
+  // interface = USBH_FindInterface(phost, phost->pActiveClass->ClassCode, HID_BOOT_CODE, 0xFF);
+  interface = USBH_FindInterface(phost, phost->pActiveClass->ClassCode, 0, 0); // TODO: necessary?
+  // interface = USBH_FindInterface(phost, phost->pActiveClass->ClassCode, 0xFF, 0xFF); // TODO: or better?
   
   if(interface == 0xFF) /* No Valid Interface */
   {
@@ -161,13 +163,18 @@ static USBH_StatusTypeDef USBH_HID_InterfaceInit (USBH_HandleTypeDef *phost)
     /*Decode Bootclass Protocol: Mouse or Keyboard*/
     if(phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].bInterfaceProtocol == HID_KEYBRD_BOOT_CODE)
     {
-      USBH_UsrLog ("KeyBoard device found!"); 
+      USBH_UsrLog ("Keyboard device found!"); 
       HID_Handle->Init =  USBH_HID_KeybdInit;     
     }
     else if(phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].bInterfaceProtocol  == HID_MOUSE_BOOT_CODE)		  
     {
       USBH_UsrLog ("Mouse device found!");         
       HID_Handle->Init =  USBH_HID_MouseInit;     
+    }
+    else if(phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].bInterfaceProtocol  == HID_JOYSTICK_BOOT_CODE)		  
+    {
+      USBH_UsrLog ("Joystick device found!");         
+      HID_Handle->Init =  USBH_HID_JoystickInit;     
     }
     else
     {

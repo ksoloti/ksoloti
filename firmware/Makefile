@@ -269,6 +269,7 @@ CSRC = $(STARTUPSRC) \
   ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c \
   ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_pipes.c \
   ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c \
+  ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_joystick.c \
   ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c \
   ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c \
   ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c \

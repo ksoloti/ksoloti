@@ -583,6 +583,21 @@ void USBH_HID_EventCallback(USBH_HandleTypeDef *phost) {
     //   hid_key_ralt,
     //   hid_key_rgui);
   }
+  else if (USBH_HID_GetDeviceType(&hUSBHost) == HID_JOYSTICK) {
+
+    HID_JOYSTICK_Info_TypeDef *m_pinfo_joystick;
+    m_pinfo_joystick = USBH_HID_GetJoystickInfo(phost);
+
+    if (m_pinfo_joystick) {
+      // TODO: add stuff from 
+    }
+    else {
+
+    }
+
+    // USBH_DbgLog(......
+
+  }
 }
 
 
