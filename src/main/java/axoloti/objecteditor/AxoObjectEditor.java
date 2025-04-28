@@ -724,7 +724,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         jLabelIncludes.setText("Includes");
         jPanelDetails.add(jLabelIncludes);
 
-        jListIncludes.setModel(new DefaultListModel());
+        jListIncludes.setModel(new DefaultListModel<>());
         jScrollPaneIncludes.setViewportView(jListIncludes);
 
         jPanelDetails.add(jScrollPaneIncludes);
@@ -732,7 +732,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         jLabelDepends.setText("Dependencies");
         jPanelDetails.add(jLabelDepends);
 
-        jListDepends.setModel(new DefaultListModel());
+        jListDepends.setModel(new DefaultListModel<>());
         jScrollPaneDepends.setViewportView(jListDepends);
 
         jPanelDetails.add(jScrollPaneDepends);
