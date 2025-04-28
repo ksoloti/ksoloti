@@ -829,7 +829,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         if (USBBulkConnection.GetConnection().isConnected()) {
             processor.AppendToQueue(new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb"));
         }
-        LOGGER.log(Level.INFO, "Done uploading index.");
+        // LOGGER.log(Level.INFO, "Done uploading index.");
         refresh();
     }
 

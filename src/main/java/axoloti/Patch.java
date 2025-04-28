@@ -2703,7 +2703,7 @@ public class Patch {
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, ex.toString());
         }
-        LOGGER.log(Level.INFO, "Done generating code.\n");
+        // LOGGER.log(Level.INFO, "Done generating code.\n");
     }
 
     public void Compile() {

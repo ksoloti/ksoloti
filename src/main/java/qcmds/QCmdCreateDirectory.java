@@ -50,7 +50,8 @@ public class QCmdCreateDirectory implements QCmdSerialTask {
 
     @Override
     public String GetDoneMessage() {
-        return "Done creating directory.\n";
+        // return "Done creating directory.\n";
+        return null;
     }
 
     @Override

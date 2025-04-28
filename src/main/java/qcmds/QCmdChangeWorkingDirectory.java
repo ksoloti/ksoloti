@@ -41,7 +41,8 @@ public class QCmdChangeWorkingDirectory implements QCmdSerialTask {
 
     @Override
     public String GetDoneMessage() {
-        return "Done changing working directory.\n";
+        // return "Done changing working directory.\n";
+        return null;
     }
 
     @Override

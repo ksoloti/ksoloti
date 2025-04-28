@@ -869,7 +869,7 @@ public class PreferencesFrame extends JFrame {
         for (AxolotiLibrary lib : prefs.getLibraries()) {
             lib.reportStatus();
         }
-        LOGGER.log(Level.INFO, "Done checking library status.\n");
+        // LOGGER.log(Level.INFO, "Done checking library status.\n");
     }
 
     private void jComboBoxThemeActionPerformed(java.awt.event.ActionEvent evt) {

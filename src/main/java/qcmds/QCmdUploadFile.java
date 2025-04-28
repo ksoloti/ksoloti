@@ -139,7 +139,7 @@ public class QCmdUploadFile implements QCmdSerialTask {
             connection.TransmitCloseFile();
 
             SDCardInfo.getInstance().AddFile(filename, (int) size, ts);
-            LOGGER.log(Level.INFO, "Done uploading file.\n");
+            // LOGGER.log(Level.INFO, "Done uploading file.\n");
             success = true;
             return this;
         } catch (IOException ex) {
