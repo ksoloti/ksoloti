@@ -42,7 +42,8 @@ public class QCmdGetFileInfo implements QCmdSerialTask {
 
     @Override
     public String GetDoneMessage() {
-        return "Done getting file info.\n";
+        // return "Done getting file info.\n";
+        return null;
     }
 
     @Override
