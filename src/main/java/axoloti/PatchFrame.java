@@ -88,6 +88,12 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     public PatchFrame(final PatchGUI patch, QCmdProcessor qcmdprocessor) {
 
+        try {
+            MainFrame.axoObjects.LoaderThread.join(); /* Make sure all object libraries are loaded before creating/opening a patch */
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+
         setMinimumSize(new Dimension(200,120));
         setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axp.png")).getImage());
         this.qcmdprocessor = qcmdprocessor;
