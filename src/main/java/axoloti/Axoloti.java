@@ -29,6 +29,9 @@ import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -300,6 +303,43 @@ public class Axoloti {
                     if (f.getName().equals("xpatch.h.gch")) f.delete();
                 }
             }
+        }
+
+        File srcddir = new File(System.getProperty(LIBRARIES_DIR) + File.separator + "build" + File.separator + "src");
+        File trashdir = new File(System.getProperty(LIBRARIES_DIR) + File.separator + "build" + File.separator + "trash");
+
+        boolean foldersOk = true;
+        try {
+            if(!srcddir.exists()) {
+                Files.createDirectory(srcddir.toPath());
+            }
+
+            if(!trashdir.exists()) {
+                Files.createDirectory(trashdir.toPath());
+            }
+        } catch(Exception ex) {
+            foldersOk = false;
+        }
+
+        if(foldersOk) {
+            foldersOk = srcddir.isDirectory() && srcddir.exists() && trashdir.isDirectory() && trashdir.exists();
+        }
+
+        if(foldersOk) {
+            File[] sfiles = srcddir.listFiles();
+            if (sfiles != null) {
+                for (File f : sfiles) {
+                    if(f.isDirectory()) {
+                        System.out.printf("Moving source folder %s to trash\n", f.getAbsolutePath());
+                        try {
+                            Path folder = f.toPath().getFileName();
+                            Files.move(f.toPath(), trashdir.toPath().resolve(folder), StandardCopyOption.REPLACE_EXISTING);
+                        } catch (Exception ex) {};
+                    }
+                }
+            }
+        } else {
+            LOGGER.log(Level.SEVERE, "Cannot create valid src structure in build folder.");
         }
     }
 
