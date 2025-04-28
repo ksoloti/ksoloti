@@ -44,6 +44,7 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import axoloti.AxolotiLibraryWatcher.AxolotiLibraryChangeType;
+import axoloti.AxolotiLibraryWatcher.AxolotiLibraryEntryType;
 
 /**
  *
@@ -316,7 +317,16 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
                         a.sPath = fileEntry.getAbsolutePath();
                         t.Objects.add(a);
                         ObjectList.add(a);
-                    } catch (Exception ex) {
+                        if ((a.sPath != null) && (ObjectPathMap.containsKey(a.sPath))) {
+                            HashMap<String, AxoObjectAbstract> hm = ObjectPathMap.get(a.sPath);
+                            hm.put("axs", a);
+                            ObjectPathMap.put(a.sPath, hm);
+                        } else {
+                            HashMap<String, AxoObjectAbstract> hm = new HashMap<String, AxoObjectAbstract>();
+                            hm.put("axs", a);
+                            ObjectPathMap.put(a.sPath, hm);
+                        }
+                } catch (Exception ex) {
                         LOGGER.log(Level.SEVERE, fileEntry.getAbsolutePath(), ex);
                     }
                 }
@@ -601,16 +611,57 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
         return result;
     }
 
-    HashMap<String, AxoObjectAbstract> LoadAxoObjectsFromFile(Path path) {
+    HashMap<String, AxoObjectAbstract> LoadAxoObjectsFromFile(Path path, AxolotiLibraryEntryType type) {
         HashMap<String, AxoObjectAbstract> results = new HashMap<String, AxoObjectAbstract>();
 
-        AxoObjectFile axoObjectFile = LoadAxoObjectFile(path);
-        if(axoObjectFile != null ) {
-            for(AxoObjectAbstract obj : axoObjectFile.objs) {
-                results.put(obj.getUUID(), obj);
+        if(type == AxolotiLibraryEntryType.Axo) {
+            AxoObjectFile axoObjectFile = LoadAxoObjectFile(path);
+            if(axoObjectFile != null ) {
+                for(AxoObjectAbstract obj : axoObjectFile.objs) {
+                    results.put(obj.getUUID(), obj);
+                }
             }
-        }
+        } else if(type == AxolotiLibraryEntryType.Axs) {
+            File fileEntry = new File(path.toAbsolutePath().toString());
 
+            String oname = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
+
+            String prefix;
+            int parts = path.getNameCount();
+            if(parts > 1)
+                prefix = path.getName(parts-2).toString();
+            else
+                prefix = "";
+
+            //String folder = fileEntry.getAbsolutePath();
+
+            String fullname;
+            if (prefix.isEmpty()) {
+                fullname = oname;
+            } else {
+                fullname = prefix.substring(1) + "/" + oname;
+            }
+
+            AxoObjectUnloaded obj = new AxoObjectUnloaded(fullname, fileEntry);
+            results.put("axs", obj);
+
+            // try {
+            //     String oname = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
+            //     String fullname;
+            //     if (prefix.isEmpty()) {
+            //         fullname = oname;
+            //     } else {
+            //         fullname = prefix.substring(1) + "/" + oname;
+            //     }
+            //     AxoObjectUnloaded a = new AxoObjectUnloaded(fullname, fileEntry);
+            //     a.sPath = fileEntry.getAbsolutePath();
+            //     t.Objects.add(a);
+            //     ObjectList.add(a);
+            // } catch (Exception ex) {
+            //     LOGGER.log(Level.SEVERE, fileEntry.getAbsolutePath(), ex);
+            // }
+
+        }
         return results;
     }
 
@@ -779,18 +830,28 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
         return result;
     }
 
+
     @Override
     public void LibraryEntryChanged(AxolotiLibraryChangeType type, Path path) {
         String sPath = path.toString();
-        boolean isAxo =  sPath.toLowerCase().endsWith(".axo");
+        AxolotiLibraryEntryType entryType = AxolotiLibraryEntryType.Other;
 
+        if(sPath.toLowerCase().endsWith(".axo")) {
+            entryType = AxolotiLibraryEntryType.Axo;
+        } else if(sPath.toLowerCase().endsWith(".axs")) {
+            entryType = AxolotiLibraryEntryType.Axs;
+        }
 
-        if(isAxo) {
+        if(entryType != AxolotiLibraryEntryType.Other) {
             // Get the new version from disk, will be empty if deleting
-            HashMap<String, AxoObjectAbstract> newObjects = LoadAxoObjectsFromFile(path);
+            HashMap<String, AxoObjectAbstract> newObjects = LoadAxoObjectsFromFile(path, entryType);
 
             // Get the existing objects
             HashMap<String, AxoObjectAbstract> existingObjects = GetAxoObjectsFromPath(sPath);
+
+            if(existingObjects == null) {
+                existingObjects = new HashMap<>();
+            }
 
             // find the objects to delete (in existingObjects and not in newObjects)
             for (Map.Entry<String, AxoObjectAbstract> entry : existingObjects.entrySet()) {
@@ -825,6 +886,23 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
                     }
                 }
             }
-        }
+        } 
+        // else if (isAxs) {
+            // try {
+            //     String oname = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
+            //     String fullname;
+            //     if (prefix.isEmpty()) {
+            //         fullname = oname;
+            //     } else {
+            //         fullname = prefix.substring(1) + "/" + oname;
+            //     }
+            //     AxoObjectUnloaded a = new AxoObjectUnloaded(fullname, fileEntry);
+            //     a.sPath = fileEntry.getAbsolutePath();
+            //     t.Objects.add(a);
+            //     ObjectList.add(a);
+            // } catch (Exception ex) {
+            //     LOGGER.log(Level.SEVERE, fileEntry.getAbsolutePath(), ex);
+            // }
+        // }
     }
 }

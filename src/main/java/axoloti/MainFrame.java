@@ -1022,9 +1022,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.AppendToQueue(new qcmds.QCmdFlashDFU());
         }
     }
-    public boolean doConnect() {
-        boolean result = false;
 
+    public void doConnect() {
         populateMainframeTitle();
             
         ShowDisconnect();
@@ -1033,33 +1032,20 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             addFlashDfuOrWarn();
         } else
         {
-            result = USBBulkConnection.GetConnection().connect();
-            if (result) {
-                MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdShowConnect());
-            }
+            new Thread() {
+                public void run() {
+                    boolean result = USBBulkConnection.GetConnection().connect();
+                    if (result) {
+                        MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdShowConnect());
+                    }
+                }
+            }.start();
         }
-
-        return result;
     }
 
     private void jMenuItemSelectComActionPerformed(java.awt.event.ActionEvent evt) {
         if(USBBulkConnection.GetConnection().SelectPort()) {
             doConnect();
-            // // Connect
-            // jToggleButtonConnectActionPerformed(null);
-
-            // User has changed, disconnect and connect
-            // TODOH7
-            // if(jToggleButtonConnect.isSelected()) {
-            //     USBBulkConnection.GetConnection().disconnect();
-            // }
-            // qcmdprocessor.Panic();
-            // boolean success = USBBulkConnection.GetConnection().connect();
-            // if (success) {
-            //     jToggleButtonConnect.setSelected(true);
-            // } else {
-            //     ShowDisconnect();
-            // }
         }
     }
 
@@ -1070,12 +1056,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         } else {
             qcmdprocessor.Panic();
             prefs.getBoards().scanBoards();
-            boolean success = doConnect();
-            if (!success) {
-                ShowDisconnect();
-            } else {
-                ShowConnect();
-            }
+            doConnect();
         }
     }
 

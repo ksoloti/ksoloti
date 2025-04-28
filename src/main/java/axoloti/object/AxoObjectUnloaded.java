@@ -67,4 +67,8 @@ public class AxoObjectUnloaded extends AxoObjectAbstract {
         return "unloaded";
     }
 
+    @Override
+    public boolean UpdateFrom(AxoObjectAbstract source) {
+        return true;
+    }
 }

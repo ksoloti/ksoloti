@@ -21,6 +21,13 @@ public class AxolotiLibraryWatcher implements Runnable {
     Modified
   }
   
+  public enum AxolotiLibraryEntryType
+  {
+      Axo,
+      Axs,
+      Other
+  } ;
+
   private static final Logger LOGGER = Logger.getLogger(Axoloti.class.getName());
 
   private static AxolotiLibraryWatcher singleton = null;
