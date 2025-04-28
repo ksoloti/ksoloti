@@ -20,8 +20,6 @@ package axoloti.parameters;
 
 import org.simpleframework.xml.Attribute;
 
-import static axoloti.utils.CharEscape.charEscape;
-
 /**
  *
  * @author Johannes Taelman

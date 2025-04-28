@@ -40,7 +40,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.CRC32;
 import javax.swing.SwingUtilities;
 import org.usb4java.*;
 import qcmds.QCmd;
@@ -50,9 +49,7 @@ import qcmds.QCmdProcessor;
 import qcmds.QCmdSerialTask;
 import qcmds.QCmdSerialTaskNull;
 import qcmds.QCmdShowDisconnect;
-// import qcmds.QCmdStop;
 import qcmds.QCmdTransmitGetFWVersion;
-import qcmds.QCmdWriteMem;
 
 /**
  *
