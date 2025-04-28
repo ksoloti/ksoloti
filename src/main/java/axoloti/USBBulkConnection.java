@@ -317,12 +317,12 @@ public class USBBulkConnection extends Connection {
         return null;
     }
 
-    private byte[] bb2ba(ByteBuffer bb) {
-        bb.rewind();
-        byte[] r = new byte[bb.remaining()];
-        bb.get(r, 0, r.length);
-        return r;
-    }
+    // private byte[] bb2ba(ByteBuffer bb) {
+    //     bb.rewind();
+    //     byte[] r = new byte[bb.remaining()];
+    //     bb.get(r, 0, r.length);
+    //     return r;
+    // }
 
     @Override
     public boolean connect() {
