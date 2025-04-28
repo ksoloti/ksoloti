@@ -463,20 +463,6 @@
 #define USE_INT_EP_MIDI                     0
 #define USE_INT_EP_BULK                     0
 
-/*
- * USB driver system settings.
- */
-#define STM32_USB_USE_OTG1                  TRUE
-#define STM32_USB_USE_OTG2                  FALSE
-#define STM32_USB_OTG1_IRQ_PRIORITY         3
-#define STM32_USB_OTG2_IRQ_PRIORITY         3
-#define STM32_USB_OTG1_RX_FIFO_SIZE         512
-#define STM32_USB_OTG2_RX_FIFO_SIZE         1024
-#define STM32_USB_OTG_THREAD_STACK_SIZE     128
-#define STM32_USB_OTGFIFO_FILL_BASEPRI      0
-#define USE_INT_EP_MIDI                     0
-#define USE_INT_EP_BULK                     0
-
 #define DSP_CODEC_TIMESLICE                 3333
 #define DSP_UI_MIDI_COST                    100
 #define DSP_USB_AUDIO_FIRMWARE_COST         5
