@@ -19,7 +19,7 @@ public abstract class Connection {
     abstract public void TransmitStart();
     abstract public void TransmitPing();
     abstract public void TransmitRecallPreset(int presetNo);
-    abstract public void UploadFragment(byte[] buffer, int offset);
+    abstract public int UploadFragment(byte[] buffer, int offset);
     abstract public void TransmitGetFileList();
     abstract public void TransmitVirtualButton(int b_or, int b_and, int enc1, int enc2, int enc3, int enc4);
     abstract public void TransmitCreateFile(String filename, int size);
@@ -124,6 +124,6 @@ public abstract class Connection {
     }
 
     @Deprecated
-    abstract public void writeBytes(byte[] data);
+    abstract public int writeBytes(byte[] data);
 
 }

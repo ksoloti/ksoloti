@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.usb4java.LibUsb;
+
 /**
  *
  * @author Johannes Taelman
@@ -82,7 +84,10 @@ public class QCmdUploadPatch implements QCmdSerialTask {
                 if (nRead != l) {
                     LOGGER.log(Level.SEVERE, "File size wrong? {0}", nRead);
                 }
-                connection.UploadFragment(buffer, connection.getTargetProfile().getPatchAddr() + offset);
+                int result = connection.UploadFragment(buffer, connection.getTargetProfile().getPatchAddr() + offset);
+                if (result != LibUsb.SUCCESS) {
+                    break;
+                }
                 offset += nRead;
             } while (tlength > 0);
             inputStream.close();

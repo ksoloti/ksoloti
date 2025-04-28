@@ -1002,9 +1002,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         patch.GetQCmdProcessor().SetPatch(null);
         patch.GetQCmdProcessor().AppendToQueue(new QCmdStop());
         patch.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch());
-        qcmdprocessor.WaitQueueFinished();
         patch.GetQCmdProcessor().AppendToQueue(new QCmdStart(patch));
-        qcmdprocessor.WaitQueueFinished();
         patch.GetQCmdProcessor().AppendToQueue(new QCmdLock(patch));
     }
 

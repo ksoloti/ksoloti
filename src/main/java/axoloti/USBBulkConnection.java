@@ -497,14 +497,14 @@ public class USBBulkConnection extends Connection {
     static final int TIMEOUT = 1000;
 
     @Override
-    public void writeBytes(byte[] data) {
+    public int writeBytes(byte[] data) {
 
         ByteBuffer buffer = ByteBuffer.allocateDirect(data.length);
         buffer.put(data);
 
         IntBuffer transfered = IntBuffer.allocate(1);
 
-        int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 1000);
+        int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, TIMEOUT);
         if (result != LibUsb.SUCCESS) { /* handle error -99 below */
 
             if (result == -99) {
@@ -513,7 +513,7 @@ public class USBBulkConnection extends Connection {
                 * this "bug" will likely  be resolved after libusb update
                 */
                 // LOGGER.log(Level.INFO, "USB connection not happy: " + result);
-                return;
+                return result;
             }
 
             String errstr;
@@ -533,7 +533,9 @@ public class USBBulkConnection extends Connection {
                 default:  errstr = Integer.toString(result); break;
             }
             LOGGER.log(Level.SEVERE, "USB connection failed: " + errstr);
+            QCmdProcessor.getQCmdProcessor().Abort();
         }
+        return result;
     }
 
     @Override
@@ -749,7 +751,7 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public void UploadFragment(byte[] buffer, int offset) {
+    public int UploadFragment(byte[] buffer, int offset) {
         byte[] data = new byte[12];
         data[0] = 'A';
         data[1] = 'x';
@@ -766,12 +768,15 @@ public class USBBulkConnection extends Connection {
         data[10] = (byte) (nRead >> 16);
         data[11] = (byte) (nRead >> 24);
         ClearSync();
-        writeBytes(data);
-        writeBytes(buffer);
-        WaitSync();
+        int result = writeBytes(data);
+        result |= writeBytes(buffer);
+        if (!WaitSync()) {
+            result |= 1;
+        };
         LOGGER.log(Level.INFO, "Block uploaded @ 0x{0} length {1}",
                    new Object[]{Integer.toHexString(offset).toUpperCase(),
                    Integer.toString(buffer.length)});
+        return result;
     }
 
     @Override
@@ -1029,7 +1034,7 @@ public class USBBulkConnection extends Connection {
             IntBuffer transfered = IntBuffer.allocate(1);
 
             while (!disconnectRequested) {
-                int result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 1000);
+                int result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, TIMEOUT);
 
                 if (result != LibUsb.SUCCESS) {
                     // LOGGER.log(Level.INFO, "Receive: " + result);
