@@ -18,19 +18,25 @@ if %argCount% leq 2 (
 	set BUILD_MOUNTER=1
 	set BUILD_I2SCODEC=1
 ) else (
-	set BUILD_NORMAL=%2
-	set BUILD_USBAUDIO=%3 
-	set BUILD_SPILINK=%4 
-	set BUILD_FLASHER=%5 
-	set BUILD_MOUNTER=%6
-	set BUILD_I2SCODEC=%7
+	set BUILD_NORMAL=%3
+	set BUILD_USBAUDIO=%4 
+	set BUILD_SPILINK=%5 
+	set BUILD_FLASHER=%6 
+	set BUILD_MOUNTER=%7
+	set BUILD_I2SCODEC=%8
 )
 
 cd %axoloti_firmware%
-make BOARDDEF=%1 -f Makefile.patch.mk clean
+make BOARDDEF=%1 SUBBOARDDEF=$2 -f Makefile.patch.mk clean
 
 if %1==BOARD_KSOLOTI_CORE (
-  set NAME=ksoloti
+    if %2==BOARD_KSOLOTI_CORE_F427 (
+        set NAME=ksoloti
+    ) else if %2==BOARD_KSOLOTI_CORE_H743 (
+        set NAME=ksoloti_h743
+    ) else (
+        set NAME=UNKNOWN
+    )  
 ) else if %1==BOARD_AXOLOTI_CORE (
   set NAME=axoloti
 )
@@ -45,7 +51,7 @@ if %BUILD_FLASHER%==1 (
     if not exist flasher_build\%FLASHER_PROJECT%\.dep mkdir flasher_build\%FLASHER_PROJECT%\.dep
     if not exist flasher_build\%FLASHER_PROJECT%\lst  mkdir flasher_build\%FLASHER_PROJECT%\lst
     if not exist flasher_build\%FLASHER_PROJECT%\obj  mkdir flasher_build\%FLASHER_PROJECT%\obj
-	make -j8 BOARDDEF=%1
+	make -j8 BOARDDEF=%1 SUBBOARDDEF=%2
 	if %ERRORLEVEL% neq 0 (
 		exit /b 1
 	)
@@ -60,7 +66,7 @@ if %BUILD_MOUNTER%==1 (
     if not exist mounter_build\%MOUNTER_PROJECT%\.dep mkdir mounter_build\%MOUNTER_PROJECT%\.dep
     if not exist mounter_build\%MOUNTER_PROJECT%\lst  mkdir mounter_build\%MOUNTER_PROJECT%\lst
     if not exist mounter_build\%MOUNTER_PROJECT%\obj  mkdir mounter_build\%MOUNTER_PROJECT%\obj
-	make -j8 BOARDDEF=%1
+	make -j8 BOARDDEF=%1 SUBBOARDDEF=%2
 	if %ERRORLEVEL% neq 0 (
 		exit /b 1
 	)
@@ -69,12 +75,12 @@ if %BUILD_MOUNTER%==1 (
 )
 
 if %BUILD_NORMAL%==1 (
-    echo. & echo Compiling %1
+    echo. & echo Compiling %2
     set BUILDDIR=build\%NAME%\normal
     if not exist build\%NAME%\normal\.dep mkdir build\%NAME%\normal\.dep
     if not exist build\%NAME%\normal\lst  mkdir build\%NAME%\normal\lst
     if not exist build\%NAME%\normal\obj  mkdir build\%NAME%\normal\obj
-	make -j8 BOARDDEF=%1
+	make -j8 BOARDDEF=%1 SUBBOARDDEF=%2
 	if %ERRORLEVEL% neq 0 (
 		exit /b 1
 	)
@@ -82,12 +88,12 @@ if %BUILD_NORMAL%==1 (
 )
 
 if %BUILD_SPILINK%==1 (
-    echo. & echo Compiling %1 FW_SPILINK
+    echo. & echo Compiling %2 FW_SPILINK
     set BUILDDIR=build\%NAME%\spilink
     if not exist build\%NAME%\spilink\.dep mkdir build\%NAME%\spilink\.dep
     if not exist build\%NAME%\spilink\lst  mkdir build\%NAME%\spilink\lst
     if not exist build\%NAME%\spilink\obj  mkdir build\%NAME%\spilink\obj
-	make -j8 BOARDDEF=%1 FWOPTIONDEF=FW_SPILINK
+	make -j8 BOARDDEF=%1 SUBBOARDDEF=%2 FWOPTIONDEF=FW_SPILINK
 	if %ERRORLEVEL% neq 0 (
 		exit /b 1
 	)
@@ -95,12 +101,12 @@ if %BUILD_SPILINK%==1 (
 )
 
 if %BUILD_USBAUDIO%==1 (
-    echo. & echo Compiling %1 FW_USBAUDIO
+    echo. & echo Compiling %2 FW_USBAUDIO
     set BUILDDIR=build\%NAME%\usbaudio
     if not exist build\%NAME%\usbaudio\.dep mkdir build\%NAME%\usbaudio\.dep
     if not exist build\%NAME%\usbaudio\lst  mkdir build\%NAME%\usbaudio\lst
     if not exist build\%NAME%\usbaudio\obj  mkdir build\%NAME%\usbaudio\obj
-	make -j8 BOARDDEF=%1 FWOPTIONDEF=FW_USBAUDIO
+	make -j8 BOARDDEF=%1 SUBBOARDDEF=%2 FWOPTIONDEF=FW_USBAUDIO
 	if %ERRORLEVEL% neq 0 (
 		exit /b 1
 	)
@@ -108,12 +114,12 @@ if %BUILD_USBAUDIO%==1 (
 )
 
 if %BUILD_I2SCODEC%==1 (
-    echo. & echo Compiling %1 FW_I2SCODEC
+    echo. & echo Compiling %2 FW_I2SCODEC
     set BUILDDIR=build\%NAME%\i2scodec
     if not exist build\%NAME%\i2scodec\.dep mkdir build\%NAME%\i2scodec\.dep
     if not exist build\%NAME%\i2scodec\lst  mkdir build\%NAME%\i2scodec\lst
     if not exist build\%NAME%\i2scodec\obj  mkdir build\%NAME%\i2scodec\obj
-	make -j8 BOARDDEF=%1 FWOPTIONDEF=FW_I2SCODEC
+	make -j8 BOARDDEF=%1 SUBBOARDDEF=%2 FWOPTIONDEF=FW_I2SCODEC
 	if %ERRORLEVEL% neq 0 (
 		exit /b 1
 	)

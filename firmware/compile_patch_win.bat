@@ -7,7 +7,7 @@ set axoloti_platform=%axoloti_home%\platform_win
 set PATH=%axoloti_platform%\\bin;%PATH%
 
 cd %axoloti_firmware%
-make -j8 BOARDDEF=%1 FWOPTIONDEF=%2 -f Makefile.patch.mk
+make -j BOARDDEF=%1 SUBBOARDDEF=%2 LINKERFILE=%3 FWOPTIONDEF=%4 -f Makefile.patch.mk
 IF %ERRORLEVEL% NEQ 0 (
 	exit /b 1
 )
