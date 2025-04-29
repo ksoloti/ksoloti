@@ -41,14 +41,6 @@ fi
 cd "${axoloti_firmware}"
 make BOARDDEF=$1 SUBBOARDDEF=$2 -f Makefile.patch.mk clean
 
-echo 1= $1
-echo 2= $2
-echo 3= $3
-echo 4= $4
-echo 5= $5
-echo 6= $6
-echo 7= $7
-
 if [ $1 = "BOARD_KSOLOTI_CORE" ]; then
     if [ $2 = "BOARD_KSOLOTI_CORE_F427" ]; then
         NAME=ksoloti
