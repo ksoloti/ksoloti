@@ -327,6 +327,16 @@ public class Preferences {
         return ObjectPath;
     }
 
+    public boolean isInObjectSearchPath(String sPath) {
+        boolean result = false;
+        for(String s : ObjectPath) {
+            if(sPath.startsWith(s)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
     public String getExternalEditorPath() {
         return ExternalEditorPath;
     }

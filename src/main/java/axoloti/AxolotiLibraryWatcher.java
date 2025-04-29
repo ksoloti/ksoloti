@@ -108,7 +108,7 @@ public class AxolotiLibraryWatcher implements Runnable {
 
 
   public void AddPatchFolder(String folder) {
-    if(folder != null && !watchingFolders.contains(folder.toString())) {
+    if(folder != null && !MainFrame.prefs.isInObjectSearchPath(folder) && !watchingFolders.contains(folder.toString())) {
       LOGGER.log(Level.INFO,"Adding patch folder {0}", folder);
       MainFrame.axoObjects.LoadAxoObjects(folder.toString(), true);
       AddFolder(folder, false);
