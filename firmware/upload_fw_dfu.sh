@@ -19,4 +19,4 @@ case "$unamestr" in
         exit
     ;;
 esac
-${platformdir}/bin/dfu-util --transfer-size 4096 --device 0483:df11 --intf 0 --alt 0 --download "${firmwaredir}/build/$1" --dfuse-address=0x08000000:leave
+${platformdir}/bin/dfu-util --transfer-size $2 --device 0483:df11 --intf 0 --alt 0 --download "${firmwaredir}/build/$1" --dfuse-address=0x08000000:leave
