@@ -11,25 +11,9 @@ $(info LINKERFILE  = $(LINKERFILE))
 # "--param max-completely-peeled-insns=100" makes a big difference to get SRAM down. Newer GCC versions use 200 here, original axoloti (GCC 4.9) used 100.
 # Added a few flags that speed up floating-point calculation at the expense of precision. Graciously shared by https://github.com/malyzajko/daisy/blob/master/doc/documentation.md#running-generated-code
 CCFLAGS = \
-  --param max-completely-peeled-insns=100 \
-  -O3 \
   -Wno-implicit-fallthrough \
-  -Wno-return-type \
   -Wno-unused-parameter \
-  -fcode-hoisting \
-  -fdata-sections \
-  -ffast-math \
-  -ffp-contract=off \
-  -ffunction-sections \
-  -fno-common \
-  -fno-math-errno \
-  -fno-reorder-blocks \
-  -fno-rtti \
-  -fno-signed-zeros \
-  -fno-threadsafe-statics \
-  -fno-unsafe-math-optimizations \
-  -fno-use-cxa-atexit \
-  -fpermissive \
+  -Wno-return-type \
   -ggdb3 \
   -mfloat-abi=hard \
   -mthumb \
@@ -158,7 +142,7 @@ LDFLAGS = \
   -mtune=cortex-m4 \
   -nostartfiles
 
-ODFLAGS = \
+DMPFLAGS = \
   --demangle \
   --disassemble \
   --source-comment \
@@ -169,8 +153,12 @@ CC   = $(TRGT)gcc
 CPP  = $(TRGT)g++
 LD   = $(TRGT)gcc
 CP   = $(TRGT)objcopy
-OD   = $(TRGT)objdump
+DMP  = $(TRGT)objdump
 SIZ  = $(TRGT)size
+
+axoloti_libraries ?= ..
+axoloti_firmware  ?= ../firmware
+axoloti_home      ?= ..
 
 EMPTY := 
 SPACE := $(EMPTY) $(EMPTY)
