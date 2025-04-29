@@ -1,6 +1,6 @@
 {
     "platform": "linux64",
-    "jdk": "jdks/zulu21.30.15-ca-jdk21.0.1-linux_x64.tar.gz",
+    "jdk": "jdks/zulu21.42.19-ca-jdk21.0.7-linux_x64.zip",
     "executable": "Ksoloti",
     "classpath": [
         "dist/Ksoloti.jar"
@@ -13,7 +13,7 @@
         "Xms256m",
         "Xmx2g",
         "Xdock:name=Ksoloti",
-        "Xbootclasspath/a:lib/marlin-0.9.4.8-Unsafe-OpenJDK11.jar",
+        "Xbootclasspath/a:lib/marlin-0.9.4.8-Unsafe-OpenJDK17.jar",
         "Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine",
         "Dsun.java2d.d3d=false"
     ],

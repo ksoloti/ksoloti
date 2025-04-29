@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e # exit immediately if anything "goes wrong"
 
 START=$(date +%s)
@@ -8,17 +8,14 @@ unamestr=`uname`
 case "$unamestr" in
 	Linux)
 		platform='linux'
-		rootdir="$(dirname $(readlink -f $0))"
 	;;
 
 	Darwin)
 		platform='mac'
-		rootdir="$(cd $(dirname $0); pwd -P)"
 	;;
 
 	MINGW*)
 		platform='windows'
-		rootdir="$(cd $(dirname $0); pwd -P)"
 	;;
 
     *)
@@ -32,7 +29,7 @@ VERSION="$(git describe --tags | grep -Po '\d*\.\d*\.\d*' 2>&1)"
 VERSION_LONG="$(git describe --long --always --tags 2>&1)"
 CUSTOMLABEL=
 
-if [[ $# -eq 1 ]]; then
+if [ $# -eq 1 ]; then
     VERSION=$1
     DASH="-"
     CUSTOMLABEL=$1${DASH}
@@ -69,12 +66,12 @@ remove_temp_files()
 
     rm     ./firmware/build/*.dmp
     rm     ./firmware/build/*.hex
-    # rm     ./firmware/build/*.list
+    rm     ./firmware/build/*.list
     rm     ./firmware/build/*.map
 
     rm     ./firmware/*/*_build/*.dmp
     rm     ./firmware/*/*_build/*.hex
-    # rm     ./firmware/*/*_build/*.list
+    rm     ./firmware/*/*_build/*.list
     rm     ./firmware/*/*_build/*.map
 
 

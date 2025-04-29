@@ -539,8 +539,8 @@
 #define STM32_CLOCK48_REQUIRED              TRUE
 #define STM32_SW                            STM32_SW_PLL
 #define STM32_PLLSRC                        STM32_PLLSRC_HSE
-#define STM32_PLLM_VALUE                    8
-#define STM32_PLLN_VALUE                    336
+#define STM32_PLLM_VALUE                    4
+#define STM32_PLLN_VALUE                    168
 #define STM32_PLLP_VALUE                    2
 #define STM32_PLLQ_VALUE                    7
 #define STM32_HPRE                          STM32_HPRE_DIV1
@@ -550,10 +550,12 @@
 #define STM32_RTCPRE_VALUE                  8
 #define STM32_MCO1SEL                       STM32_MCO1SEL_HSE
 #define STM32_MCO1PRE                       STM32_MCO1PRE_DIV1
-#define STM32_MCO2SEL                       STM32_MCO2SEL_SYSCLK
-#define STM32_MCO2PRE                       STM32_MCO2PRE_DIV5
-#define STM32_I2SSRC                        STM32_I2SSRC_PLLI2S
-#define STM32_PLLI2SN_VALUE                 384
+#define STM32_MCO2SEL                       STM32_MCO2SEL_PLLI2S
+#define STM32_MCO2PRE                       STM32_MCO2PRE_DIV4
+/* I2S clock source not required - set to "dummy" clock in to save power */
+#define STM32_I2SSRC                        STM32_I2SSRC_CKIN
+
+#define STM32_PLLI2SN_VALUE                 192
 #define STM32_PLLI2SR_VALUE                 5
 #define STM32_PVD_ENABLE                    FALSE
 #define STM32_PLS                           STM32_PLS_LEV0
@@ -685,9 +687,9 @@
 #define STM32_I2C_I2C1_IRQ_PRIORITY         5
 #define STM32_I2C_I2C2_IRQ_PRIORITY         5
 #define STM32_I2C_I2C3_IRQ_PRIORITY         5
-#define STM32_I2C_I2C1_DMA_PRIORITY         3
-#define STM32_I2C_I2C2_DMA_PRIORITY         3
-#define STM32_I2C_I2C3_DMA_PRIORITY         3
+#define STM32_I2C_I2C1_DMA_PRIORITY         2
+#define STM32_I2C_I2C2_DMA_PRIORITY         2
+#define STM32_I2C_I2C3_DMA_PRIORITY         2
 #define STM32_I2C_I2C1_DMA_ERROR_HOOK()     chSysHalt("I2C_I2C1_DMA_ERROR")
 #define STM32_I2C_I2C2_DMA_ERROR_HOOK()     chSysHalt("I2C_I2C2_DMA_ERROR")
 #define STM32_I2C_I2C3_DMA_ERROR_HOOK()     chSysHalt("I2C_I2C3_DMA_ERROR")
@@ -765,8 +767,15 @@
 
 #define STM32_SPI_SPI3_RX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 0)
 #define STM32_SPI_SPI3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 7)
+#ifdef FW_SPILINK
 #define STM32_SPI_SPI3_DMA_PRIORITY         3
 #define STM32_SPI_SPI3_IRQ_PRIORITY         3
+#else
+#define STM32_SPI_SPI3_DMA_PRIORITY         1
+#define STM32_SPI_SPI3_IRQ_PRIORITY         10
+/* Note: FW_I2SCODEC uses own priority settings set in i2scodec.c */
+#endif
+
 
 #define STM32_SPI_DMA_ERROR_HOOK(spip)      chSysHalt("SPI_DMA_ERROR")
 
@@ -805,7 +814,7 @@
  */
 #define STM32_USB_USE_OTG1                  TRUE
 #define STM32_USB_USE_OTG2                  FALSE
-#define STM32_USB_OTG1_IRQ_PRIORITY         3
+#define STM32_USB_OTG1_IRQ_PRIORITY         3 /* these two irqs were 14, but we dont want them preempted by the codec interrupt, so set to same priority */
 #define STM32_USB_OTG2_IRQ_PRIORITY         3
 #define STM32_USB_OTG1_RX_FIFO_SIZE         512
 #define STM32_USB_OTG2_RX_FIFO_SIZE         1024
@@ -824,14 +833,15 @@
 #define USE_EXTERNAL_USB_FIFO_PUMP          0
 #define USE_BLOCKED_BULK_TX                 1
 #define USB_USE_WAIT                        USE_BLOCKED_BULK_TX
-#define USE_PATCH_DSPTIME_SMOOTHING_MS      0
+#define USE_PATCH_DSPTIME_SMOOTHING_MS      2 /* Leave at 2, please don't change */
+#define USE_FIFO_SPEEDUP                    1 /* Leave at 1, please don't change */
 // USB_AUDIO_CHANNELS must be 2 or 4
 #define USB_AUDIO_CHANNELS                  4
 
 /*
  * Thread priority settings. v1.0.12 settings in comments for reference.
  */
-#define STM32_USB_OTG_THREAD_PRIO           HIGHPRIO     /* HIGHPRIO-2 */
+#define STM32_USB_OTG_THREAD_PRIO           HIGHPRIO-1   /* HIGHPRIO-2 */
 #define PATCH_DSP_PRIO                      HIGHPRIO-1   /* HIGHPRIO-1 */
 #define SPILINK_PRIO                        HIGHPRIO-1   /* HIGHPRIO-1 */
 #define UI_USB_PRIO                         HIGHPRIO-2   /* NORMALPRIO */

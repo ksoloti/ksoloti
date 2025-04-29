@@ -67,7 +67,7 @@ public abstract class AxoObjectAbstract implements Comparable, Cloneable {
     public String sAuthor;
     @Element(name = "license", required = false)
     public String sLicense;
-    public String sPath;
+    public String sObjFilePath;
 
     @Commit
     public void Commit() {

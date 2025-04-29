@@ -382,6 +382,13 @@ static int StartPatch1(void) {
             else
                 DspTime -= FifoTime;
 
+#if USE_NONTHREADED_FIFO_PUMP                
+            volatile uint32_t FifoTime = RTT2US(fifoTicksUsed);
+            if(FifoTime > DspTime)
+                DspTime = 0;
+            else
+                DspTime -= FifoTime;
+#endif
 #if USE_MOVING_AVERAGE
             ma_add(&ma, DspTime);
 #endif

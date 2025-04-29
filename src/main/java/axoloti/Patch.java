@@ -325,6 +325,7 @@ public class Patch {
                         }
                     }
                     GetQCmdProcessor().AppendToQueue(new QCmdUploadFile(f, targetfn));
+                    GetQCmdProcessor().WaitQueueFinished();
                 }
                 else {
                     LOGGER.log(Level.INFO, "File {0} matches timestamp and size, skipping upload.", f.getName());
@@ -334,6 +335,16 @@ public class Patch {
                 LOGGER.log(Level.INFO, "File {0} matches timestamp and size, skipping upload.", f.getName());
             }
         }
+    }
+
+    public ArrayList<AxoObjectInstanceAbstract> GetObjectInstancesWithoutComments() {
+        ArrayList<AxoObjectInstanceAbstract> objectInstancesWithoutComments = new ArrayList<AxoObjectInstanceAbstract>();
+        for (AxoObjectInstanceAbstract oa : objectInstances) {
+            if (!(oa instanceof AxoObjectInstanceComment || oa instanceof AxoObjectInstanceHyperlink)) {
+                objectInstancesWithoutComments.add(oa);
+            }
+        }
+        return objectInstancesWithoutComments;
     }
 
     void GoLive() {
@@ -367,7 +378,9 @@ public class Patch {
         GetQCmdProcessor().SetPatch(null);
         GetQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
         GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch());
+        GetQCmdProcessor().WaitQueueFinished();
         GetQCmdProcessor().AppendToQueue(new QCmdStart(this));
+        GetQCmdProcessor().WaitQueueFinished();
         GetQCmdProcessor().AppendToQueue(new QCmdLock(this));
     }
 
@@ -1230,7 +1243,7 @@ public class Patch {
                 inc += "#include \"" + s + "\"\n";
             }
         }
-        return inc + "\n";
+        return inc.replace('\\', '/') + "\n";
     }
 
     /* the c++ code generator */
@@ -1902,8 +1915,6 @@ public class Patch {
         if(!prefs.getFirmwareWarnDisable()) {
         c += I + "if (fwid != 0x" + MainFrame.mainframe.LinkFirmwareID + ") {\n"
            + I+I + "// LogTextMessage(\"Patch firmware mismatch\");\n"
-           + I+I + "/* Blink red LED a few times. */\n"
-           + I+I + "sysmon_blink_pattern(0xA0A0A0A0);\n" /* Magic number (same as BLINK_PATCH_LOAD_FAIL) to ensure backwards compatibility */
            + I+I + "return;\n"
            + I + "}\n\n";
         } 
@@ -1980,7 +1991,7 @@ public class Patch {
         HashSet<String> copiedSources = new HashSet<>();
         for(AxoObjectInstanceAbstract instance : objectInstances) {
             AxoObjectAbstract object = instance.getType();
-            String sPath = object.sPath;
+            String sPath = object.sObjFilePath;
             if(sPath != null && sPath.toLowerCase().endsWith(".axo")) {
                 sPath = sPath.substring(0, sPath.length()-4);
                 sPath+=".src";
@@ -3073,6 +3084,7 @@ public class Patch {
             }
         }
         qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadFile(getBinFile(), sdfilename, cal));
+        qcmdprocessor.WaitQueueFinished();
         
         String dir;
         int i = sdfilename.lastIndexOf("/");
@@ -3084,6 +3096,7 @@ public class Patch {
         }
 
         UploadDependentFiles(dir);
+        qcmdprocessor.WaitQueueFinished();
 
         if (prefs.isBackupPatchesOnSDEnabled() && getBinFile().exists() && FileNamePath != null && !FileNamePath.isEmpty()) {
             if (f.exists()) {
@@ -3095,6 +3108,7 @@ public class Patch {
                     cal));
             }
         }
+        qcmdprocessor.WaitQueueFinished();
 
     }
 

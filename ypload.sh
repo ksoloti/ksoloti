@@ -1,24 +1,21 @@
 
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
-printf "\nWarning! This script is only for testing upload of Ksoloti Core firmware!\n"
-printf "Do not use this script for Axoloti Core or any SPILink-enabled or otherwise customized firmware.\n"
+printf "\nWarning! This script is only for testing upload of Ksoloti Core normal firmware!\n"
+printf "Do not use this script for Axoloti Core or any otherwise customized firmware mode.\n"
 
 platform='unknown'
 unamestr=`uname`
 case "$unamestr" in
     Linux)
         platform='linux'
-        rootdir="$(dirname $(readlink -f $0))"
     ;;
     Darwin)
         platform='mac'
-        rootdir="$(cd $(dirname $0); pwd -P)"
     ;;
     MINGW*)
         platform='windows'
-        rootdir="$(cd $(dirname $0); pwd -P)"
     ;;
     *)
         printf "\nUnknown OS: $unamestr - aborting...\n"

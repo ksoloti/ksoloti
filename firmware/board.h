@@ -287,7 +287,7 @@
                                      PIN_PUPDR_FLOATING(GPIOA_PIN7) |        \
                                      PIN_PUPDR_FLOATING(GPIOA_PIN8) |         \
                                      PIN_PUPDR_FLOATING(GPIOA_PIN9) |    \
-                                     PIN_PUPDR_FLOATING(GPIOA_PIN10) |  \
+                                     PIN_PUPDR_PULLDOWN(GPIOA_PIN10) |  \
                                      PIN_PUPDR_FLOATING(GPIOA_PIN11) |  \
                                      PIN_PUPDR_FLOATING(GPIOA_PIN12) |  \
                                      PIN_PUPDR_FLOATING(GPIOA_PIN13) |      \
@@ -1172,7 +1172,7 @@
                                      PIN_MODE_ALTERNATE(GPIOA_PIN7) |        \
                                      PIN_MODE_INPUT(GPIOA_PIN8) |           \
                                      PIN_MODE_INPUT(GPIOA_PIN9) |        \
-                                     PIN_MODE_ALTERNATE(GPIOA_PIN10) |  \
+                                     PIN_MODE_INPUT(GPIOA_PIN10) |  \
                                      PIN_MODE_ALTERNATE(GPIOA_PIN11) |  \
                                      PIN_MODE_ALTERNATE(GPIOA_PIN12) |  \
                                      PIN_MODE_ALTERNATE(GPIOA_PIN13) |      \
@@ -1220,7 +1220,7 @@
                                      PIN_PUPDR_FLOATING(GPIOA_PIN7) |        \
                                      PIN_PUPDR_PULLUP(GPIOA_PIN8) |         \
                                      PIN_PUPDR_FLOATING(GPIOA_PIN9) |    \
-                                     PIN_PUPDR_FLOATING(GPIOA_PIN10) |  \
+                                     PIN_PUPDR_PULLDOWN(GPIOA_PIN10) |  \
                                      PIN_PUPDR_FLOATING(GPIOA_PIN11) |  \
                                      PIN_PUPDR_FLOATING(GPIOA_PIN12) |  \
                                      PIN_PUPDR_FLOATING(GPIOA_PIN13) |      \
@@ -1252,7 +1252,7 @@
                                      PIN_AFIO_AF(GPIOA_PIN7, 5))
 #define VAL_GPIOA_AFRH              (PIN_AFIO_AF(GPIOA_PIN8, 0) |           \
                                      PIN_AFIO_AF(GPIOA_PIN9, 0) |        \
-                                     PIN_AFIO_AF(GPIOA_PIN10, 10) |     \
+                                     PIN_AFIO_AF(GPIOA_PIN10, 0) |     \
                                      PIN_AFIO_AF(GPIOA_PIN11, 10) |     \
                                      PIN_AFIO_AF(GPIOA_PIN12, 10) |     \
                                      PIN_AFIO_AF(GPIOA_PIN13, 0) |          \

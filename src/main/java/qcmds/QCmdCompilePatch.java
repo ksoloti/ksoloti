@@ -64,15 +64,15 @@ public class QCmdCompilePatch extends QCmdShellTask {
     }
     
     @Override
-    String GetExec() {
+    String[] GetExec() {
             String compilerOptions = prefs.boards.getPatchCompilerOptions();
-            
+
             if (OSDetect.getOS() == OSDetect.OS.WIN) {
-                return RuntimeDir() + "/platform_win/bin/sh.exe " + FirmwareDir() + "/compile_patch_win.sh " + compilerOptions;
-            } else if (OSDetect.getOS() == OSDetect.OS.MAC) {
-                return "/bin/sh " + FirmwareDir() + "/compile_patch_osx.sh " + compilerOptions;
-            } else if (OSDetect.getOS() == OSDetect.OS.LINUX) {
-                return "/bin/sh " + FirmwareDir() + "/compile_patch_linux.sh " + compilerOptions;
+                String str = FirmwareDir() + "\\compile_patch_win.bat " + compilerOptions;
+                return str.split("\\s+");
+            } else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {
+                String str = FirmwareDir() + "/compile_patch.sh " + compilerOptions;
+                return str.split("\\s+");
             } else {
                 Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");
                 return null;

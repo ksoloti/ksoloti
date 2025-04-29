@@ -523,7 +523,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             AxoObjectAbstract t = inst.getType();
             if (t != null) {
                 String description = t.sDescription == null || t.sDescription.isEmpty() ? o.sDescription : t.sDescription;
-                String path = t.sPath == null ? o.sPath : t.sPath;
+                String path = t.sObjFilePath == null ? o.sObjFilePath : t.sObjFilePath;
                 String author = t.sAuthor == null ? o.sAuthor : t.sAuthor;
                 String license = t.sLicense == null ? o.sLicense : t.sLicense;
 

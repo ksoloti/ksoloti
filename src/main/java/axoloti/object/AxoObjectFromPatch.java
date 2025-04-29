@@ -55,7 +55,7 @@ public class AxoObjectFromPatch extends AxoObject {
             LOGGER.log(Level.SEVERE, null, ex);
         }
         shortId = f.getName().substring(0, f.getName().lastIndexOf("."));
-        sPath = f.getAbsolutePath();
+        sObjFilePath = f.getAbsolutePath();
         UpdateObject();
         MainFrame.axoObjects.ObjectList.add(this);
         // strip file extension

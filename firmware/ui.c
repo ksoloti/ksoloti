@@ -31,6 +31,7 @@
 #include <string.h>
 #include "analyser.h"
 
+
 #if USE_KVP
 
 // Btn_Nav_States_struct Btn_Nav_CurStates;
@@ -51,53 +52,42 @@ struct KeyValuePair *ObjectKvps[MAXOBJECTS] KVP_DATA_SECTION;
 
 //const char stat = 2;
 
-void SetKVP_APVP(KeyValuePair_s *kvp, KeyValuePair_s *parent,
-                 const char *keyName, int length, KeyValuePair_s *array) {
+void SetKVP_APVP(KeyValuePair_s *kvp, KeyValuePair_s *parent, int length, KeyValuePair_s *array) {
     kvp->kvptype = KVP_TYPE_APVP;
     kvp->parent = (void *)parent;
-    kvp->keyname = keyName;
     kvp->apvp.length = length;
     kvp->apvp.current = 0;
     kvp->apvp.array = (void *)array;
 }
 
-void SetKVP_AVP(KeyValuePair_s *kvp, KeyValuePair_s *parent,
-                const char *keyName, int length, KeyValuePair_s *array) {
+void SetKVP_AVP(KeyValuePair_s *kvp, KeyValuePair_s *parent, int length, KeyValuePair_s *array) {
     kvp->kvptype = KVP_TYPE_AVP;
     kvp->parent = (void *)parent;
-    kvp->keyname = keyName;
     kvp->avp.length = length;
     kvp->avp.current = 0;
     kvp->avp.array = array;
 }
 
-void SetKVP_IVP(KeyValuePair_s *kvp, KeyValuePair_s *parent,
-                const char *keyName, int *value, int min, int max) {
+void SetKVP_IVP(KeyValuePair_s *kvp, KeyValuePair_s *parent, int *value, int min, int max) {
     kvp->kvptype = KVP_TYPE_IVP;
     kvp->parent = (void *)parent;
-    kvp->keyname = keyName;
     kvp->ivp.value = value;
     kvp->ivp.minvalue = min;
     kvp->ivp.maxvalue = max;
 }
 
-void SetKVP_IPVP(KeyValuePair_s *kvp, KeyValuePair_s *parent,
-                 const char *keyName, ParameterExchange_t *PEx, int min,
-                 int max) {
+void SetKVP_IPVP(KeyValuePair_s *kvp, KeyValuePair_s *parent, ParameterExchange_t *PEx, int min, int max) {
     PEx->signals = 0x0F;
     kvp->kvptype = KVP_TYPE_IPVP;
     kvp->parent = (void *)parent;
-    kvp->keyname = keyName;
     kvp->ipvp.PEx = PEx;
     kvp->ipvp.minvalue = min;
     kvp->ipvp.maxvalue = max;
 }
 
-void SetKVP_FNCTN(KeyValuePair_s *kvp, KeyValuePair_s *parent,
-                  const char *keyName, VoidFunction fnctn) {
+void SetKVP_FNCTN(KeyValuePair_s *kvp, KeyValuePair_s *parent, VoidFunction fnctn) {
     kvp->kvptype = KVP_TYPE_FNCTN;
     kvp->parent = (void *)parent;
-    kvp->keyname = keyName;
     kvp->fnctnvp.fnctn = fnctn;
 }
 

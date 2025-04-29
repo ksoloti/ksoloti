@@ -120,7 +120,6 @@ typedef enum {
 typedef struct KeyValuePair {
     KVP_type kvptype;
     struct KeyValuePair *parent;
-    const char *keyname;
     union {
         iValuePair ivp;
         fValuePair fvp;
@@ -160,22 +159,16 @@ void k_scope_DisplayFunction2(void * userdata);
 void k_scope_DisplayFunction3(void * userdata);
 void k_scope_DisplayFunction4(void * userdata);
 
-void SetKVP_APVP(struct KeyValuePair *kvp, struct KeyValuePair *parent,
-                 const char *keyName, int length, struct KeyValuePair *array);
-void SetKVP_AVP(struct KeyValuePair *kvp, struct KeyValuePair *parent,
-                const char *keyName, int length, struct KeyValuePair *array);
-void SetKVP_IVP(struct KeyValuePair *kvp, struct KeyValuePair *parent,
-                const char *keyName, int *value, int min, int max);
-void SetKVP_IPVP(struct KeyValuePair *kvp, struct KeyValuePair *parent,
-                 const char *keyName, ParameterExchange_t *PEx, int min,
-                 int max);
-void SetKVP_FNCTN(struct KeyValuePair *kvp, struct KeyValuePair *parent,
-                  const char *keyName, VoidFunction fnctn);
+void SetKVP_APVP(struct KeyValuePair *kvp, struct KeyValuePair *parent, int length, struct KeyValuePair *array);
+void SetKVP_AVP(struct KeyValuePair *kvp, struct KeyValuePair *parent, int length, struct KeyValuePair *array);
+void SetKVP_IVP(struct KeyValuePair *kvp, struct KeyValuePair *parent, int *value, int min, int max);
+void SetKVP_IPVP(struct KeyValuePair *kvp, struct KeyValuePair *parent, ParameterExchange_t *PEx, int min, int max);
+void SetKVP_FNCTN(struct KeyValuePair *kvp, struct KeyValuePair *parent, VoidFunction fnctn);
 
 // void UIGoSafe(void);
 
 // void AxolotiControlUpdate(void);
 extern void (*pControlUpdate)(void);
 
-#endif
-#endif
+#endif /* USE_KVP */
+#endif /* __UI_H */

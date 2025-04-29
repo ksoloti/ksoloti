@@ -120,8 +120,6 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
 
         //updateObj();
         ButtonComponent BtnEdit = new ButtonComponent("Open");
-        BtnEdit.setForeground(Theme.Component_Foreground);
-        BtnEdit.setBackground(Theme.Component_Background);
         BtnEdit.setAlignmentX(LEFT_ALIGNMENT);
         BtnEdit.setAlignmentY(TOP_ALIGNMENT);
         BtnEdit.addActListener(new ActListener() {
@@ -133,8 +131,6 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
         add(BtnEdit);
 
         BtnUpdate = new ButtonComponent("Update");
-        BtnUpdate.setForeground(Theme.Component_Foreground);
-        BtnUpdate.setBackground(Theme.Component_Background);
         BtnUpdate.setAlignmentX(LEFT_ALIGNMENT);
         BtnUpdate.setAlignmentY(TOP_ALIGNMENT);
         BtnUpdate.addActListener(new ActListener() {

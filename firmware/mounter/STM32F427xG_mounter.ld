@@ -24,8 +24,8 @@
 
 MEMORY
 {
+    CCMSRAM    : ORIGIN = 0x10000000, LENGTH = 0x0000E000 /* CCM - ccmramend */
     SRAM (rwx) : ORIGIN = 0x20011000, LENGTH = 0x00009000
-    CCMSRAM    : ORIGIN = 0x10000000, LENGTH = 0x0000C800 /* CCM - ccmramend */
 }
 
 __main_stack_size__     = 0x400;
@@ -81,7 +81,7 @@ SECTIONS
         * (.rodata.*);
     } > SRAM
 
-    startup : ALIGN(16) SUBALIGN(16)
+    .startup : ALIGN(16) SUBALIGN(16)
     {
         KEEP(*(.vectors))
     } > SRAM

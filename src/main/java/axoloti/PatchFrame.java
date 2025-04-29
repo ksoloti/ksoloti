@@ -454,7 +454,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jToolbarPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jToolbarPanel.setLayout(new javax.swing.BoxLayout(jToolbarPanel, javax.swing.BoxLayout.LINE_AXIS));
 
-        Dimension btndim = new Dimension(65,30);
+        Dimension btndim = new Dimension(110,30);
         jToggleButtonLive.setText("Live");
         jToggleButtonLive.setMinimumSize(btndim);
         jToggleButtonLive.setMaximumSize(btndim);
@@ -476,9 +476,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jProgressBarDSPLoad.setToolTipText("CPU load of currently running patch");
         jProgressBarDSPLoad.setAlignmentX(LEFT_ALIGNMENT);
-        jProgressBarDSPLoad.setMaximumSize(new java.awt.Dimension(200, 20));
-        jProgressBarDSPLoad.setMinimumSize(new java.awt.Dimension(60, 20));
-        jProgressBarDSPLoad.setPreferredSize(new java.awt.Dimension(200, 20));
+        jProgressBarDSPLoad.setMaximumSize(new java.awt.Dimension(200, 18));
+        jProgressBarDSPLoad.setMinimumSize(new java.awt.Dimension(60, 18));
+        jProgressBarDSPLoad.setPreferredSize(new java.awt.Dimension(200, 18));
         jProgressBarDSPLoad.setName(""); // NOI18N
         jProgressBarDSPLoad.setMaximum(200);
         jProgressBarDSPLoad.setStringPainted(true);
@@ -519,7 +519,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         fileMenuP.add(jMenuSaveAs);
 
-        jMenuSaveCopy.setText("Save Copy...");
+        jMenuSaveCopy.setText("Save a Copy...");
         jMenuSaveCopy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuSaveCopyActionPerformed(evt);
@@ -1111,7 +1111,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         patch.GetQCmdProcessor().SetPatch(null);
         patch.GetQCmdProcessor().AppendToQueue(new QCmdStop());
         patch.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch());
+        qcmdprocessor.WaitQueueFinished();
         patch.GetQCmdProcessor().AppendToQueue(new QCmdStart(patch));
+        qcmdprocessor.WaitQueueFinished();
         patch.GetQCmdProcessor().AppendToQueue(new QCmdLock(patch));
     }
 
@@ -1243,7 +1245,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             newAxoObject.id = fnNoExtension;
             newAxoObject.shortId = fnNoExtension;
             newAxoObject.setUUID(newAxoObject.getUUID());
-            newAxoObject.sPath = fileToBeSaved.toString();
+            newAxoObject.sObjFilePath = fileToBeSaved.toString();
 
             newAxoObject.inlets.add(new InletFrac32BufferBipolar("left", "Left Input"));
             newAxoObject.inlets.add(new InletFrac32BufferBipolar("right", "Right Input"));
@@ -1275,6 +1277,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         qcmdprocessor.AppendToQueue(new qcmds.QCmdCompilePatch(patch));
         qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadPatch());
         qcmdprocessor.AppendToQueue(new qcmds.QCmdCopyPatchToFlash());
+        qcmdprocessor.WaitQueueFinished();
     }
 
     private void jMenuItemAddObjActionPerformed(java.awt.event.ActionEvent evt) {

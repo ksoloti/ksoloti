@@ -20,8 +20,6 @@ package axoloti;
 
 import static axoloti.Axoloti.FIRMWARE_DIR;
 import static axoloti.Axoloti.HOME_DIR;
-import static axoloti.Axoloti.RELEASE_DIR;
-import static axoloti.Axoloti.RUNTIME_DIR;
 import axoloti.dialogs.AxoJFileChooser;
 import axoloti.dialogs.FileManagerFrame;
 import axoloti.dialogs.KeyboardFrame;
@@ -368,14 +366,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (!TestDir(HOME_DIR, true)) {
             LOGGER.log(Level.SEVERE, "Invalid home directory: {0} - Does it exist? Can it be written to?", System.getProperty(Axoloti.HOME_DIR));
         }
-
-        if (!TestDir(RELEASE_DIR, false)) {
-            LOGGER.log(Level.SEVERE, "Invalid release directory: {0} - Does it exist?", System.getProperty(Axoloti.RELEASE_DIR));
-        }
-        if (!TestDir(RUNTIME_DIR, false)) {
-            LOGGER.log(Level.SEVERE, "Invalid runtime directory: {0} - Is the runtime installed correctly?", System.getProperty(Axoloti.RUNTIME_DIR));
-        }
-
         if (!TestDir(FIRMWARE_DIR, false)) {
             LOGGER.log(Level.SEVERE, "Invalid firmware directory: {0} - Does it exist?", System.getProperty(Axoloti.FIRMWARE_DIR));
         }
@@ -1207,7 +1197,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             patch1.GetQCmdProcessor().AppendToQueue(cp);
             qcmdprocessor.WaitQueueFinished();
             pf.Close();
-            Thread.sleep(1500);
+            Thread.sleep(1000);
             status = cp.success();
             if (status == false) {
                 LOGGER.log(Level.SEVERE, "COMPILATION FAILED: {0}\n", f.getPath());
@@ -1365,6 +1355,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void jMenuItemEnterDFUActionPerformed(java.awt.event.ActionEvent evt) {
         qcmdprocessor.AppendToQueue(new QCmdBringToDFUMode());
+        qcmdprocessor.AppendToQueue(new QCmdDisconnect());
     }
 
 

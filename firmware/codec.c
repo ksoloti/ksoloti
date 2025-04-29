@@ -24,9 +24,6 @@
 #include "ch.h"
 #include "spilink.h"
 #endif
-#ifdef FW_I2SCODEC
-#include "i2scodec.h"
-#endif
 #include "codec_ADAU1961.h"
 
 int32_t buf[DOUBLE_BUFSIZE]   CODEC_DMA_SECTION;

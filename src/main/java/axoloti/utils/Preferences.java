@@ -218,7 +218,7 @@ public class Preferences {
         ObjectSearchPath = null;
 
         if (PollInterval == null) {
-            PollInterval = 50;
+            PollInterval = 30;
         }
         if (MouseDialAngular == null) {
             MouseDialAngular = false;

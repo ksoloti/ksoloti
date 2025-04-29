@@ -137,11 +137,11 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         if ((getType().sAuthor != null) && (!getType().sAuthor.isEmpty())) {
             tooltiptxt += "<p><br/><i>Author: " + getType().sAuthor + "</p>";
         }
-        if ((getType().sPath != null) && (!getType().sPath.isEmpty())) {
-            tooltiptxt += "<p><i>Path: " + getType().sPath + "</p>";
+        if ((getType().sObjFilePath != null) && (!getType().sObjFilePath.isEmpty())) {
+            tooltiptxt += "<p><i>Path: " + getType().sObjFilePath + "</p>";
         }
         if (IndexLabel != null && !IndexLabel.getText().equals("")) {
-            tooltiptxt += "<p><i>Execution order: " + (IndexLabel.getText()) + " / " + patch.objectInstances.size() + "</p>";
+            tooltiptxt += "<p><i>Execution order: " + (IndexLabel.getText()) + " / " + patch.GetObjectInstancesWithoutComments().size() + "</p>";
         }
         tooltiptxt += "</div>";
         Titlebar.setToolTipText(tooltiptxt);
@@ -150,7 +150,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     @Override
     public void refreshIndex() {
         if (patch != null && IndexLabel != null) {
-            IndexLabel.setText("" + (patch.objectInstances.indexOf(this) + 1)); /* Add 1, so Index 0 means 1st object */
+            IndexLabel.setText("" + (patch.GetObjectInstancesWithoutComments().indexOf(this) + 1)); /* Add 1, so Index 0 means 1st object */
             refreshTooltip();
         }
     }
@@ -570,7 +570,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         if(sPath != null && sPath.length()>0) {
             try {
                 // if we have source for the object also open that
-                String sObjectPath = getType().sPath;
+                String sObjectPath = getType().sObjFilePath;
                 if(sObjectPath.toLowerCase().endsWith(".axo")) {
                     sObjectPath = sObjectPath.substring(0, sObjectPath.length()-4);
                     sObjectPath+=".src";
@@ -582,7 +582,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     sObjectPath = "";
                 }
 
-                ProcessBuilder pb = new ProcessBuilder(sPath, getType().sPath, sObjectPath);
+                ProcessBuilder pb = new ProcessBuilder(sPath, getType().sObjFilePath, sObjectPath);
                 Process p = pb.start();
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, "Failed to execute external editor : `{0}`.", sPath);
@@ -733,9 +733,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         for (ParameterInstance p : parameterInstances) {
             if (p.isFrozen()) {
                 
-                // c += I+I + "// Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + "_" + p.GetCName() + "\n";
-                c += I+I + "// Frozen parameter: " + p.GenerateCodeDeclaration(classname);
-                c += I+I + "static const int32_t " + p.GetCName() + " = ";
+                c += I+I + "// Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + "_" + p.getLegalName() + "\n";
+                c += I+I + "const int32_t " + p.GetCName() + " = ";
                 /* Do parameter value mapping in Java so save MCU memory.
                  * These are the same functions like in firmware/parameter_functions.h.
                  */
@@ -775,7 +774,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         else {
                             mappedVal = -((psat * psat) >> 31);
                         }
-                        c += (int) mappedVal + " /* pfun_signed_clamp_squarelaw */;\n";
+                        c += (int) mappedVal + "; /* pfun_signed_clamp_squarelaw */;\n";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_squarelaw")) {
@@ -907,8 +906,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
             else {
                 if (p.parameter.PropagateToChild != null) {
-                    c += I+I+I + "// on Parent: propagate " + p.getName() + " " + getLegalName() + "" + p.parameter.PropagateToChild + "\n";
-                    c += I+I+I + p.PExName("parent->") + ".pfunction = PropagateToSub;\n";
+                    c += I+I+I + p.PExName("parent->") + ".pfunction = PropagateToSub; // on Parent: " + p.GetObjectInstance().getLegalName() + ":" + p.getLegalName() + " (" + p.parameter.PropagateToChild + ")\n";
                     c += I+I+I + p.PExName("parent->") + ".finalvalue = (int32_t)(&(parent->objectinstance_"
                                + getLegalName() + "_i.PExch[objectinstance_" + getLegalName() + "::PARAM_INDEX_"
                                + p.parameter.PropagateToChild + "]));\n";
@@ -1298,7 +1296,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         if (files == null){
             files = new ArrayList<SDFileReference>();
         } else {
-            String p1 = getType().sPath;
+            String p1 = getType().sObjFilePath;
             if (p1==null) {
                 /* embedded object, reference path is of the patch */
                 p1 = getPatch().getFileNamePath();
@@ -1355,7 +1353,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             AxoObject ao = getType();
             oi.ao = new AxoObjectPatcherObject(ao.id, ao.sDescription);
             oi.ao.copy(ao);
-            oi.ao.sPath = "";
+            oi.ao.sObjFilePath = "";
             oi.ao.upgradeSha = null;
             oi.ao.CloseEditor();
             oi.setInstanceName(iname);

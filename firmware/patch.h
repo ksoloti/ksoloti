@@ -24,6 +24,13 @@
 #include "ch.h"
 #include "hal.h"
 #include "ui.h"
+#if BOARD_KSOLOTI_CORE_H743
+  #include "stm32h7xx.h"
+  #include "stm32h7xx_hal_dma.h"
+  #include "stm32h7xx_hal_i2c.h"
+#else
+  #include "stm32f4xx_hal_i2c.h"
+#endif
 #include "axoloti_board.h"
 #include "midi.h"
 #include "crc32.h"
@@ -103,6 +110,10 @@ extern uint8_t hid_mouse_y;
 extern uint8_t hid_keys[6];
 extern uint8_t hid_key_modifiers;
 
+extern I2C_HandleTypeDef onboard_i2c_handle;
+extern uint8_t i2crxbuf[8];
+extern uint8_t i2ctxbuf[8];
+
 void InitPatch0(void);
 int StartPatch(void);
 void StopPatch(void);
@@ -147,11 +158,9 @@ void codec_clearbuffer(void);
 
 #if FW_USBAUDIO
 void usb_clearbuffer(void);
+extern bool usbAudioResample;
 #endif
 
-#if USE_EXTERNAL_USB_FIFO_PUMP
-extern void usb_lld_use_external_pump(bool use);
-#endif
 
 void SetPatchSafety(uint16_t uUIMidiCost, uint8_t uDspLimit200);
 

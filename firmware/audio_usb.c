@@ -1214,6 +1214,7 @@ FORCE_INLINE static void aduCodecFrameEnded(void)
       // If using 4 channels the total adustment will take half the time, so alter.
       aduState.sampleAdjustEveryFrame *= 2;
 #endif      
+      // aduState.sampleAdjustEveryFrame = 100000; // ARCFATAL, not to do with overrun/overrun adjustment!!!!
       aduState.sampleAdjustFrameCounter = aduState.sampleAdjustEveryFrame;
 
       // reset

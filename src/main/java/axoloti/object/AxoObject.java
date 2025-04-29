@@ -518,11 +518,11 @@ public class AxoObject extends AxoObjectAbstract {
         }
 
         HashSet<String> r = new HashSet<String>();
-        if (sPath != null) {
-            if (sPath.lastIndexOf(File.separatorChar) >= 0) {
+        if (sObjFilePath != null) {
+            if (sObjFilePath.lastIndexOf(File.separatorChar) >= 0) {
                 for (String s : includes) {
                     if (s.startsWith("./")) {
-                        String strippedPath = sPath.substring(0, sPath.lastIndexOf(File.separatorChar));
+                        String strippedPath = sObjFilePath.substring(0, sObjFilePath.lastIndexOf(File.separatorChar));
                         File f = new File(strippedPath + "/" + s.substring(2));
                         if (f.isFile() && f.canRead()) {
                             String s2 = f.getAbsolutePath();
@@ -531,7 +531,7 @@ public class AxoObject extends AxoObjectAbstract {
                         }
                     }
                     else if (s.startsWith("../")) {
-                        String strippedPath = sPath.substring(0, sPath.lastIndexOf(File.separatorChar));
+                        String strippedPath = sObjFilePath.substring(0, sObjFilePath.lastIndexOf(File.separatorChar));
                         File f = new File(strippedPath + "/" + s);
                             String s2 = f.getAbsolutePath();
                             s2 = s2.replace('\\', '/');
@@ -547,33 +547,33 @@ public class AxoObject extends AxoObjectAbstract {
                     }
                 }
             }
-            else if (patchFilePath != null) {
-                /* try to resolve via patch directory */
-                if (patchFilePath.lastIndexOf(File.separatorChar) >= 0) {
-                    for (String s : includes) {
-                        if (s.startsWith("./")) {
-                            String strippedPath = patchFilePath.substring(0, patchFilePath.lastIndexOf(File.separatorChar));
-                            File f = new File(strippedPath + "/" + s.substring(2));
-                                String s2 = f.getAbsolutePath();
-                                s2 = s2.replace('\\', '/');
-                                r.add(s2);
-                        }
-                        else if (s.startsWith("../")) {
-                            String strippedPath = patchFilePath.substring(0, patchFilePath.lastIndexOf(File.separatorChar));
-                            File f = new File(strippedPath + "/" + s);
-                            if (f.isFile() && f.canRead()) {
-                                String s2 = f.getAbsolutePath();
-                                s2 = s2.replace('\\', '/');
-                                r.add(s2);
-                            }
-                        }
-                        else if (s.startsWith("chibios/")) {
-                            String s2 = (new File(System.getProperty(FIRMWARE_DIR))).getAbsolutePath() + "/../chibios" + s.substring(7);
+        }
+        else if (patchFilePath != null) {
+            /* try to resolve via patch directory */
+            if (patchFilePath.lastIndexOf(File.separatorChar) >= 0) {
+                for (String s : includes) {
+                    if (s.startsWith("./")) {
+                        String strippedPath = patchFilePath.substring(0, patchFilePath.lastIndexOf(File.separatorChar));
+                        File f = new File(strippedPath + "/" + s.substring(2));
+                        if (f.isFile() && f.canRead()) {
+                            String s2 = f.getAbsolutePath();
                             s2 = s2.replace('\\', '/');
                             r.add(s2);
                         }
-                        else {
-                            r.add(s);
+                    }
+                    else if (s.startsWith("chibios/")) {
+                        String s2 = (new File(System.getProperty(FIRMWARE_DIR))).getAbsolutePath() + "/../chibios" + s.substring(7);
+                        s2 = s2.replace('\\', '/');
+                        r.add(s2);
+                    }
+                    else {
+                        /* includes "../" and "naked" filenames */
+                        String strippedPath = patchFilePath.substring(0, patchFilePath.lastIndexOf(File.separatorChar));
+                        File f = new File(strippedPath + "/" + s);
+                        if (f.isFile() && f.canRead()) {
+                            String s2 = f.getAbsolutePath();
+                            s2 = s2.replace('\\', '/');
+                            r.add(s2);
                         }
                     }
                 }
@@ -602,10 +602,10 @@ public class AxoObject extends AxoObjectAbstract {
     }
 
     public File GetHelpPatchFile() {
-        if ((helpPatch == null) || (sPath == null) || sPath.isEmpty()) {
+        if ((helpPatch == null) || (sObjFilePath == null) || sObjFilePath.isEmpty()) {
             return null;
         }
-        File o = new File(sPath);
+        File o = new File(sObjFilePath);
         String p = o.getParent() + File.separator + helpPatch;
         File f = new File(p);
         if (f.isFile() && f.canRead()) {

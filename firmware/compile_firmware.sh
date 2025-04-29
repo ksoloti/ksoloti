@@ -1,10 +1,28 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -e
 
-export PATH=${axoloti_runtime}/platform_osx/bin:$PATH
+unamestr=`uname`
+case "$unamestr" in
+    Linux)
+        currentdir="$(dirname $(readlink -f $0))"
+        export axoloti_home=${axoloti_home:="$currentdir/.."}
+        export axoloti_firmware=${axoloti_firmware:="$currentdir"}
+        export PATH="${axoloti_home}/platform_linux/bin:$PATH"
+    ;;
+    Darwin)
+        currentdir="$(cd $(dirname $0); pwd -P)"
+        export axoloti_home=${axoloti_home:="$currentdir/.."}
+        export axoloti_firmware=${axoloti_firmware:="$currentdir"}
+        export PATH="${axoloti_home}/platform_osx/bin:$PATH"
+    ;;
+    *)
+        printf "\nUnknown OS: $unamestr - aborting...\n"
+        exit
+    ;;
+esac
 
 if [ "$#" -eq 2 ]; then
-  printf "Building all firmware modes and helpers for the current board.\n"
+  printf "Building all firmware modes for the current board.\n"
   BUILD_NORMAL=1
   BUILD_USBAUDIO=1 
   BUILD_SPILINK=1 
@@ -14,7 +32,7 @@ if [ "$#" -eq 2 ]; then
 else
   BUILD_NORMAL=$3
   BUILD_USBAUDIO=$4 
-  BUILD_SPILINK=$5
+  BUILD_SPILINK=$5 
   BUILD_FLASHER=$6 
   BUILD_MOUNTER=$7
   BUILD_I2SCODEC=$8
@@ -22,6 +40,14 @@ fi
 
 cd "${axoloti_firmware}"
 make BOARDDEF=$1 SUBBOARDDEF=$2 -f Makefile.patch.mk clean
+
+echo 1= $1
+echo 2= $2
+echo 3= $3
+echo 4= $4
+echo 5= $5
+echo 6= $6
+echo 7= $7
 
 if [ $1 = "BOARD_KSOLOTI_CORE" ]; then
     if [ $2 = "BOARD_KSOLOTI_CORE_F427" ]; then

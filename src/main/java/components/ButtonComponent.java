@@ -91,7 +91,7 @@ public class ButtonComponent extends JComponent implements MouseInputListener, K
         if (width < 20) {
             width = 20;
         }
-        Dimension d = new Dimension(width + 10, 18);
+        Dimension d = new Dimension(width + 12, 18);
         setSize(d);
         setPreferredSize(d);
         setMinimumSize(d);
@@ -144,7 +144,7 @@ public class ButtonComponent extends JComponent implements MouseInputListener, K
             g2.fillRoundRect(2, 2, getWidth() - 4, getHeight() - 4, radius, radius);
             g2.setPaint(Theme.Component_Background);
             g2.setFont(Constants.FONT);
-            g2.drawString(label, 8, getHeight() - 5);
+            g2.drawString(label, 6, getHeight() - 5);
         } else {
             if (isEnabled()) {
                 g2.setPaint(Theme.Component_Background);
@@ -159,7 +159,7 @@ public class ButtonComponent extends JComponent implements MouseInputListener, K
             }
             g2.drawRoundRect(2, 2, getWidth() - 4, getHeight() - 4, radius, radius);
             g2.setFont(Constants.FONT);
-            g2.drawString(label, 8, getHeight() - 5);
+            g2.drawString(label, 6, getHeight() - 5);
         }
     }
 

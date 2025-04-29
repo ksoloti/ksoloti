@@ -219,7 +219,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             Repository repository;
             if (usingSubmodule()) {
                 // special case, in developer mode, we have the repos as sub modules, these need to be accessed via the parent repo
-                String relDir = System.getProperty(Axoloti.RELEASE_DIR);
+                String relDir = System.getProperty(Axoloti.HOME_DIR);
                 Git parent = Git.open(new File(relDir));
                 File ldir = new File(getLocalLocation());
                 String ldirstr = ldir.getName();

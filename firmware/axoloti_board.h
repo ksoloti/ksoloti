@@ -37,7 +37,7 @@
 #define ADC_GRP1_BUF_DEPTH      1
 #define ADC_GRP2_BUF_DEPTH      1
 
-extern unsigned short adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS];
+extern uint16_t adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS];
 
 void axoloti_board_init(void);
 void adc_init(void);

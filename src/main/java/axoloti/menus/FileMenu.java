@@ -159,7 +159,7 @@ public class FileMenu extends JMenu {
                 jMenuSyncActionPerformed(evt);
             }
         });
-        insert(jMenuSync, pos++);
+        add(jMenuSync);
 
         jMenuRegenerateObjects.setText("Regenerate Objects");
         jMenuRegenerateObjects.addActionListener(new java.awt.event.ActionListener() {

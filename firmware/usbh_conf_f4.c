@@ -105,7 +105,7 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef *hHCD) {
 #endif
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /* This for ID line debug */ /* Ksoloti Core: deactivated since PA10 is used for Switch 1 */
+    /* This for ID line debug */ /* Ksoloti Core: deactivated since PA10 is used for Switch 2 */
     // GPIO_InitStruct.Pin = GPIO_PIN_10;
     // GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
     // GPIO_InitStruct.Pull = GPIO_PULLUP;

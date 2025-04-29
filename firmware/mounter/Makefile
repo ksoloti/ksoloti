@@ -40,7 +40,6 @@ ifeq ($(USE_CPPOPT),)
     -fno-threadsafe-statics
 endif
 
-
 # Enable this if you want the linker to remove unused code and data
 ifeq ($(USE_LINK_GC),)
   USE_LINK_GC = yes
@@ -97,12 +96,9 @@ endif
 # BUILDDIR = mounter_build/$(PROJECT)
 
 # Imported source files and paths
-CHIBIOS = ${axoloti_release}/chibios
+CHIBIOS = ${axoloti_home}/chibios
 
 include board.mk
-	
-# Licensing files.
-include $(CHIBIOS)/os/license/license.mk
 # Startup files.
 include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
 # HAL-OSAL files (optional).
@@ -153,28 +149,24 @@ TCSRC =
 TCPPSRC =
 
 # List ASM source files here
-ASMSRC = $(ALLASMSRC)
-
-# List ASM with preprocessor source files here.
-ASMXSRC = $(ALLXASMSRC)
+ASMSRC = $(STARTUPASM) \
+        $(PORTASM)
 
 INCDIR = ../ \
   $(CMSIS)/Core/Include \
   $(CMSIS)/DSP/Include \
   $(PORTINC) $(KERNINC) $(TESTINC) \
   $(HALINC) $(PLATFORMINC) $(BOARDINC) \
-  $(FATFSINC) \
-  $(OSALINC) \
+  $(FATFSINC) $(OSALINC) \
+  ./mass_storage \
   $(CHIBIOS) \
   $(CHIBIOS)/os/various \
   $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC \
   $(CHIBIOS)/os/common/ports/ARMCMx/devices/STM32F4xx \
   $(CHIBIOS)/os/ext/CMSIS/include \
   $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx \
-  $(CHIBIOS)/os/hal/lib/streams \
-  $(CONFDIR) $(ALLINC) \
-  ./mass_storage
-  
+  $(CHIBIOS)/os/hal/lib/streams
+
 #
 # Project, sources and paths
 ##############################################################################
@@ -204,13 +196,20 @@ BIN  = $(CP) -O binary
 AOPT =
 
 # THUMB-specific options here
-TOPT = -mthumb -DTHUMB
+TOPT = \
+  -mthumb \
+  -DTHUMB
 
 # Define C warning options here
-CWARN = -Wall -Wextra -Wstrict-prototypes
+CWARN = \
+  -Wall \
+  -Wextra \
+  -Wstrict-prototypes
 
 # Define C++ warning options here
-CPPWARN = -Wall -Wextra
+CPPWARN = \
+  -Wall \
+  -Wextra
 
 #
 # Compiler settings
@@ -244,8 +243,10 @@ DLIBS =
 #
 
 # List all user C define here, like -D_DEBUG=1
-UDEFS = -DCRT1_AREAS_NUMBER=0 -DCRT0_AREAS_NUMBER=0
-
+UDEFS = \
+    -DARM_MATH_CM4 \
+    -D__FPU_PRESENT \
+    -DCRT1_AREAS_NUMBER=0 
 
 # Define ASM defines here
 UADEFS =

@@ -96,12 +96,9 @@ endif
 # BUILDDIR = flasher_build/$(PROJECT)
 
 # Imported source files and paths
-CHIBIOS = ${axoloti_release}/chibios
+CHIBIOS = ${axoloti_home}/chibios
 
 include board.mk
-	
-# Licensing files.
-include $(CHIBIOS)/os/license/license.mk
 # Startup files.
 include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
 # HAL-OSAL files (optional).
@@ -113,7 +110,6 @@ include $(CHIBIOS)/os/rt/rt.mk
 include $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC/mk/port.mk
 	
 
-	
 	
 # Define linker script file here
 LDSCRIPT= STM32F427xG_flasher.ld
@@ -166,8 +162,7 @@ INCDIR = ../ \
   $(CMSIS)/DSP/Include \
   $(PORTINC) $(KERNINC) $(TESTINC) \
   $(HALINC) $(PLATFORMINC) $(BOARDINC) \
-  $(FATFSINC) \
-  $(OSALINC) \
+  $(FATFSINC) $(OSALINC) \
   $(CHIBIOS) \
   $(CHIBIOS)/os/various \
   $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC \
@@ -175,7 +170,8 @@ INCDIR = ../ \
   $(CHIBIOS)/os/ext/CMSIS/include \
   $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx \
   $(CHIBIOS)/os/hal/lib/streams \
-  $(CONFDIR) $(ALLINC) \
+  ../STM32F4xx_HAL_Driver/Inc
+
 #
 # Project, sources and paths
 ##############################################################################
@@ -245,8 +241,10 @@ DLIBS =
 #
 
 # List all user C define here, like -D_DEBUG=1
-UDEFS = -DCRT1_AREAS_NUMBER=0 -DCRT0_AREAS_NUMBER=0
-
+UDEFS = \
+    -DARM_MATH_CM4 \
+    -D__FPU_PRESENT \
+    -DCRT1_AREAS_NUMBER=0 
 
 # Define ASM defines here
 UADEFS =

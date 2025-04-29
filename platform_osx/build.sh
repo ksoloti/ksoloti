@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Downloads and builds all the required dependencies and toolchain executables
 # Items already present are skipped to save your bandwidth.
@@ -24,28 +24,29 @@ then
     mkdir "${PLATFORM_ROOT}/src"
 fi
 
-if [ ! -d "${PLATFORM_ROOT}/../chibios" ]; 
-then
-    cd "${PLATFORM_ROOT}/src"
-    CH_VERSION=2.6.9
-    ARDIR=ChibiOS-ver${CH_VERSION}
-    ARCHIVE=${ARDIR}.zip
-    if [ ! -f ${ARCHIVE} ]; 
-    then
-        printf "\ndownloading ${ARCHIVE}\n"
-		curl -L https://github.com/ChibiOS/ChibiOS/archive/ver${CH_VERSION}.zip > ${ARCHIVE}
-    else
-        printf "\n${ARCHIVE} already downloaded\n"
-    fi
-    unzip -q -o ${ARCHIVE}
-    mv ${ARDIR} chibios
-    cd chibios/ext
-    unzip -q -o ./fatfs-0.*-patched.zip
-    cd ../../
-    mv chibios ../..
-else
-    printf "\nchibios directory already present, skipping...\n"
-fi
+## Obsolete... Chibios is included in the repo now
+# if [ ! -d "${PLATFORM_ROOT}/../chibios" ]; 
+# then
+#     cd "${PLATFORM_ROOT}/src"
+#     CH_VERSION=2.6.9
+#     ARDIR=ChibiOS-ver${CH_VERSION}
+#     ARCHIVE=${ARDIR}.zip
+#     if [ ! -f ${ARCHIVE} ]; 
+#     then
+#         printf "\ndownloading ${ARCHIVE}\n"
+# 		curl -L https://github.com/ChibiOS/ChibiOS/archive/ver${CH_VERSION}.zip > ${ARCHIVE}
+#     else
+#         printf "\n${ARCHIVE} already downloaded\n"
+#     fi
+#     unzip -q -o ${ARCHIVE}
+#     mv ${ARDIR} chibios
+#     cd chibios/ext
+#     unzip -q -o ./fatfs-0.*-patched.zip
+#     cd ../../
+#     mv chibios ../..
+# else
+#     printf "\nchibios directory already present, skipping...\n"
+# fi
 
 if [ ! -f "$PLATFORM_ROOT/bin/arm-none-eabi-gcc" ]; 
 then
@@ -167,6 +168,35 @@ then
     lipo -create x86_64/bin/make i386/bin/make -output bin/make
 fi
 
+cd "${PLATFORM_ROOT}/../jdks"
+
+JDK_ARCHIVE_LINUX="zulu21.42.19-ca-jdk21.0.7-linux_x64.zip"
+if [ ! -f "${JDK_ARCHIVE_LINUX}" ];
+then
+    echo "##### downloading ${JDK_ARCHIVE_LINUX} #####"
+    curl -L https://cdn.azul.com/zulu/bin/$JDK_ARCHIVE_LINUX > $JDK_ARCHIVE_LINUX
+else
+    echo "##### ${JDK_ARCHIVE_LINUX} already downloaded #####"
+fi
+
+JDK_ARCHIVE_MAC="zulu21.42.19-ca-jdk21.0.7-macosx_x64.zip"
+if [ ! -f "${JDK_ARCHIVE_MAC}" ];
+then
+    echo "##### downloading ${JDK_ARCHIVE_MAC} #####"
+    curl -L https://cdn.azul.com/zulu/bin/$JDK_ARCHIVE_MAC > $JDK_ARCHIVE_MAC
+else
+    echo "##### ${JDK_ARCHIVE_MAC} already downloaded #####"
+fi
+
+JDK_ARCHIVE_WINDOWS="zulu21.42.19-ca-jdk21.0.7-win_x64.zip"
+if [ ! -f "${JDK_ARCHIVE_WINDOWS}" ];
+then
+    echo "##### downloading ${JDK_ARCHIVE_WINDOWS} #####"
+    curl -L https://cdn.azul.com/zulu/bin/$JDK_ARCHIVE_WINDOWS > $JDK_ARCHIVE_WINDOWS
+else
+    echo "##### ${JDK_ARCHIVE_WINDOWS} already downloaded #####"
+fi
+
 #cp -v "${PLATFORM_ROOT}/lib/"*.dylib "${PLATFORM_ROOT}/bin/"
 
 file "${PLATFORM_ROOT}/bin/make"
@@ -174,12 +204,11 @@ file "${PLATFORM_ROOT}/bin/dfu-util"
 file "${PLATFORM_ROOT}/bin/libusb-1.0.0.dylib"
 
 printf "\n##### building firmware... #####\n"
-cd "$PLATFORM_ROOT"
-./compile_firmware.sh BOARD_AXOLOTI_CORE
-./compile_firmware.sh BOARD_KSOLOTI_CORE
+cd "${PLATFORM_ROOT}"/..
+./firmware/compile_firmware.sh BOARD_AXOLOTI_CORE
+./firmware/compile_firmware.sh BOARD_KSOLOTI_CORE
 
 printf "\n##### building GUI... #####\n"
-cd "${PLATFORM_ROOT}"/..
 ant
 
 printf "\nDONE!\n"

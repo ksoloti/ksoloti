@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # creates a binary distribution 
 # (run after build.sh and ant)

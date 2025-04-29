@@ -95,6 +95,7 @@ void AddOverunLog(LogType type)
     uLogIndex++;
     if(uLogIndex == ADU_OVERRUN_LOG_SIZE)
       uLogIndex = 0;
+    
   }
 }
 #else

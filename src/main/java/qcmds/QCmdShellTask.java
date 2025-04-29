@@ -40,7 +40,7 @@ public abstract class QCmdShellTask implements QCmd {
 
     private static final Logger LOGGER = Logger.getLogger(QCmdShellTask.class.getName());
 
-    abstract String GetExec();
+    abstract String[] GetExec();
     boolean success;
 
     class StreamHandlerThread implements Runnable {
@@ -67,7 +67,7 @@ public abstract class QCmdShellTask implements QCmd {
                         LOGGER.log(Level.SEVERE, "{0}\n>>> A required reference text field in the patch has been left empty. (table, delay read/write, filename, ...) <<<", line);
                     }
                     else if (line.contains("one or more PCH files were found, but they were invalid")) {
-                        LOGGER.log(Level.SEVERE, "{0}\n>>> Go to " + Axoloti.LIBRARIES_DIR + File.separator + "build and manually delete all files inside it. <<<", line);
+                        LOGGER.log(Level.SEVERE, "{0}\n>>> Go to " + LibrariesDir() + File.separator + "build and manually delete all files inside it. <<<", line);
                     }
                     else if (line.contains("error:") || line.contains("#error")) {
                         LOGGER.log(Level.SEVERE, "{0}", line);
@@ -94,10 +94,6 @@ public abstract class QCmdShellTask implements QCmd {
         return success;
     }
     
-    public String RuntimeDir() {
-        return System.getProperty(axoloti.Axoloti.RUNTIME_DIR);
-    }
-
     public String HomeDir() {
         return System.getProperty(axoloti.Axoloti.HOME_DIR);
     }
@@ -106,15 +102,15 @@ public abstract class QCmdShellTask implements QCmd {
         return System.getProperty(axoloti.Axoloti.LIBRARIES_DIR);
     }
             
-    public String ReleaseDir() {
-        return System.getProperty(axoloti.Axoloti.RELEASE_DIR);
-    }
-
     public String FirmwareDir() {
         String str = System.getProperty(axoloti.Axoloti.FIRMWARE_DIR);
         return str;
     }
     
+    public String PlatformDir() {
+        String str = System.getProperty(axoloti.Axoloti.PLATFORM_DIR);
+        return str;
+    }
     
     public String[] GetEnv() {
         ArrayList<String> list = new ArrayList<String>();
@@ -122,11 +118,10 @@ public abstract class QCmdShellTask implements QCmd {
         for (String v : env.keySet()) {
             list.add((v + "=" + env.get(v)));
         }
-        list.add((axoloti.Axoloti.RUNTIME_DIR + "=" + RuntimeDir()));
         list.add((axoloti.Axoloti.HOME_DIR + "=" + HomeDir()));
         list.add((axoloti.Axoloti.LIBRARIES_DIR + "=" + LibrariesDir()));
-        list.add((axoloti.Axoloti.RELEASE_DIR + "=" + ReleaseDir()));
         list.add((axoloti.Axoloti.FIRMWARE_DIR + "=" + FirmwareDir()));
+        list.add((axoloti.Axoloti.PLATFORM_DIR + "=" + PlatformDir()));
 
         String vars[] = new String[list.size()];
         list.toArray(vars);
@@ -138,29 +133,23 @@ public abstract class QCmdShellTask implements QCmd {
     }
 
     public QCmd Do(QCmdProcessor shellProcessor) {
-        Runtime runtime = Runtime.getRuntime();
         try {
             Process p1;
-            String execPath = GetExec();
-            if(execPath != null) {
-                p1 = runtime.exec(execPath, GetEnv(), GetWorkingDir());
+            p1 = Runtime.getRuntime().exec(GetExec(), GetEnv(), GetWorkingDir());
 
-                Thread thd_out = new Thread(new StreamHandlerThread(shellProcessor, p1.getInputStream()));
-                thd_out.start();
-                Thread thd_err = new Thread(new StreamHandlerThread(shellProcessor, p1.getErrorStream()));
-                thd_err.start();
-                p1.waitFor();
-                thd_out.join();
-                thd_err.join();
-                if (p1.exitValue() == 0) {
-                    success = true;
-                } else {
-                    LOGGER.log(Level.SEVERE, "Shell task failed, exit value: {0}", p1.exitValue());
-                    success = false;
-                    return err();
-                }
+            Thread thd_out = new Thread(new StreamHandlerThread(shellProcessor, p1.getInputStream()));
+            thd_out.start();
+            Thread thd_err = new Thread(new StreamHandlerThread(shellProcessor, p1.getErrorStream()));
+            thd_err.start();
+            p1.waitFor();
+            thd_out.join();
+            thd_err.join();
+            if (p1.exitValue() == 0) {
+                success = true;
             } else {
-                LOGGER.log(Level.SEVERE, "Failed to get exec path");
+                LOGGER.log(Level.SEVERE, "Shell task failed, exit value: {0}", p1.exitValue());
+                success = false;
+                return err();
             }
         } catch (InterruptedException ex) {
             LOGGER.log(Level.SEVERE, null, ex);

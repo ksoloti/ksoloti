@@ -310,6 +310,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                         try {
                             T j = (T) value.getClass().newInstance();
                             j.setName(GetAtomDefinition(rowIndex).getName());
+                            j.setDescription(GetAtomDefinition(rowIndex).getDescription());
                             GetAtomDefinitions().set(rowIndex, j);
                             AtomDefinitionsEditor.this.obj.FireObjectModified(this);
                             UpdateTable2();

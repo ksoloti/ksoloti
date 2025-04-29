@@ -19,7 +19,6 @@
 package axoloti.dialogs;
 
 import axoloti.MainFrame;
-import axoloti.USBBulkConnection;
 import axoloti.utils.AxoFileLibrary;
 import axoloti.utils.AxoGitLibrary;
 import axoloti.utils.AxolotiLibrary;

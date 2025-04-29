@@ -101,7 +101,7 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
                     if (loadOK) {
                         AxoObjectAbstract o = of.objs.get(0);
                         if (o != null) {
-                            o.sPath = fnameA;
+                            o.sObjFilePath = fnameA;
                             // to be completed : loading overloaded objects too
                             o.createdFromRelativePath = true;
                             LOGGER.log(Level.INFO, "Loaded: {0}", fnameA);
@@ -123,7 +123,7 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
                     if (n.startsWith("./") || n.startsWith("../")) {
                         o.createdFromRelativePath = true;
                     }
-                    o.sPath = f.getPath();
+                    o.sObjFilePath = f.getPath();
                     LOGGER.log(Level.INFO, "Subpatch loaded: {0}", fnameP);
                     set.add(o);
                     return set;
@@ -146,7 +146,7 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
                 if (fs.isFile()) {
                     AxoObjectAbstract o = new AxoObjectFromPatch(fs);
 //                    o.createdFromRelativePath = true;
-                    o.sPath = n + ".axs";
+                    o.sObjFilePath = n + ".axs";
                     LOGGER.log(Level.INFO, "Subpatch loaded: {0}", fsname);
                     set.add(o);
                     return set;
@@ -269,7 +269,7 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
                     }
                     if (o!=null) {
                         for (AxoObjectAbstract a : o.objs) {
-                            a.sPath = fileEntry.getAbsolutePath();
+                            a.sObjFilePath = fileEntry.getAbsolutePath();
                             if (!prefix.isEmpty()) {
                                 a.id = prefix.substring(1) + "/" + a.id;
                             }
@@ -289,18 +289,18 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
                             ObjectList.add(a);
 
                             if ((a.getUUID() != null) && (ObjectUUIDMap.containsKey(a.getUUID()))) {
-                                LOGGER.log(Level.SEVERE, "Duplicate UUID! {0}\nOriginal name: {1}\nPath: {2}", new Object[]{fileEntry.getAbsolutePath(), ObjectUUIDMap.get(a.getUUID()).id, ObjectUUIDMap.get(a.getUUID()).sPath});
+                                LOGGER.log(Level.SEVERE, "Duplicate UUID! {0}\nOriginal name: {1}\nPath: {2}", new Object[]{fileEntry.getAbsolutePath(), ObjectUUIDMap.get(a.getUUID()).id, ObjectUUIDMap.get(a.getUUID()).sObjFilePath});
                             }
                             ObjectUUIDMap.put(a.getUUID(), a);
 
-                            if ((a.sPath != null) && (ObjectPathMap.containsKey(a.sPath))) {
-                                HashMap<String, AxoObjectAbstract> hm = ObjectPathMap.get(a.sPath);
+                            if ((a.sObjFilePath != null) && (ObjectPathMap.containsKey(a.sObjFilePath))) {
+                                HashMap<String, AxoObjectAbstract> hm = ObjectPathMap.get(a.sObjFilePath);
                                 hm.put(a.getUUID(), a);
-                                ObjectPathMap.put(a.sPath, hm);
+                                ObjectPathMap.put(a.sObjFilePath, hm);
                             } else {
                                 HashMap<String, AxoObjectAbstract> hm = new HashMap<String, AxoObjectAbstract>();
                                 hm.put(a.getUUID(), a);
-                                ObjectPathMap.put(a.sPath, hm);
+                                ObjectPathMap.put(a.sObjFilePath, hm);
                             }
                         }
                     }
@@ -314,17 +314,17 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
                             fullname = prefix.substring(1) + "/" + oname;
                         }
                         AxoObjectUnloaded a = new AxoObjectUnloaded(fullname, fileEntry);
-                        a.sPath = fileEntry.getAbsolutePath();
+                        a.sObjFilePath = fileEntry.getAbsolutePath();
                         t.Objects.add(a);
                         ObjectList.add(a);
-                        if ((a.sPath != null) && (ObjectPathMap.containsKey(a.sPath))) {
-                            HashMap<String, AxoObjectAbstract> hm = ObjectPathMap.get(a.sPath);
+                        if ((a.sObjFilePath != null) && (ObjectPathMap.containsKey(a.sObjFilePath))) {
+                            HashMap<String, AxoObjectAbstract> hm = ObjectPathMap.get(a.sObjFilePath);
                             hm.put("axs", a);
-                            ObjectPathMap.put(a.sPath, hm);
+                            ObjectPathMap.put(a.sObjFilePath, hm);
                         } else {
                             HashMap<String, AxoObjectAbstract> hm = new HashMap<String, AxoObjectAbstract>();
                             hm.put("axs", a);
-                            ObjectPathMap.put(a.sPath, hm);
+                            ObjectPathMap.put(a.sObjFilePath, hm);
                         }
                 } catch (Exception ex) {
                         LOGGER.log(Level.SEVERE, fileEntry.getAbsolutePath(), ex);
@@ -736,7 +736,7 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
                     }
                 }
                 ObjectList.remove(axoObject);
-                ObjectPathMap.remove(axoObject.sPath);
+                ObjectPathMap.remove(axoObject.sObjFilePath);
                 ObjectUUIDMap.remove(axoObject.uuid);
 
                 ObjectTree.SetUpdated();
@@ -758,7 +758,7 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
             AxoObjectTreeNode foundNode = GetNodeForPath(path);
 
             if(foundNode != null) {
-                axoObject.sPath = path.toAbsolutePath().toString();
+                axoObject.sObjFilePath = path.toAbsolutePath().toString();
                 foundNode.Objects.add(axoObject);
                 ObjectList.add(axoObject);
                 ObjectUUIDMap.put(axoObject.uuid, axoObject);
@@ -768,7 +768,7 @@ public class AxoObjects implements axoloti.AxolotiLibraryWatcherListener{
                     hm = new HashMap<String, AxoObjectAbstract>();
                 }
                 hm.put(axoObject.getUUID(), axoObject);
-                ObjectPathMap.put(axoObject.sPath, hm);
+                ObjectPathMap.put(axoObject.sObjFilePath, hm);
 
                 ObjectTree.SetUpdated();
                 result = true;

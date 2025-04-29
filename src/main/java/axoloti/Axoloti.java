@@ -47,11 +47,10 @@ import javax.swing.UIManager;
 public class Axoloti {
     private static final Logger LOGGER = Logger.getLogger(Axoloti.class.getName());
 
-    public final static String RUNTIME_DIR    = "axoloti_runtime";
     public final static String HOME_DIR       = "axoloti_home";
     public final static String LIBRARIES_DIR  = "axoloti_libraries";
-    public final static String RELEASE_DIR    = "axoloti_release";
     public final static String FIRMWARE_DIR   = "axoloti_firmware";
+    public final static String PLATFORM_DIR   = "axoloti_platform";
     
     /**
      * @param args the command line arguments
@@ -77,7 +76,7 @@ public class Axoloti {
 
             /* Set tooltip delay and duration */
             javax.swing.ToolTipManager.sharedInstance().setDismissDelay(600000);
-            javax.swing.ToolTipManager.sharedInstance().setInitialDelay(900);
+            javax.swing.ToolTipManager.sharedInstance().setInitialDelay(1250);
             javax.swing.ToolTipManager.sharedInstance().setReshowDelay(10);
 
             JFrame.setDefaultLookAndFeelDecorated(true);
@@ -154,7 +153,7 @@ public class Axoloti {
         cacheFWDir = fwEnv;
         cacheDeveloper = false;
 
-        String dirRelease = System.getProperty(RELEASE_DIR);
+        String dirRelease = System.getProperty(HOME_DIR);
 
         String fwRelease = dirRelease + File.separator + "firmware";
 
@@ -209,13 +208,9 @@ public class Axoloti {
     // }
 
     private static void initProperties() throws URISyntaxException, IOException {
-        String curDir = System.getProperty("user.dir");
         File jarFile = new File(Axoloti.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        String jarDir = jarFile.getParentFile().getCanonicalPath();
         String defaultHome = ".";
         String defaultLibraries = "defaultLibraries";
-        String defaultRuntime = ".";
-        String defaultRelease = ".";
 
         BuildEnv(HOME_DIR, defaultHome);
         File homedir = new File(System.getProperty(HOME_DIR));
@@ -266,29 +261,37 @@ public class Axoloti {
         deletePrecompiledHeaderFile();
         // checkFailSafeModeActive(); // do this as as possible after home dir setup
 
-        BuildEnv(RELEASE_DIR, defaultRelease);
-        if (!TestDir(RELEASE_DIR)) {
-            System.err.println("Release directory is invalid");
-        }
-
-        BuildEnv(RUNTIME_DIR, defaultRuntime);
-        if (!TestDir(RUNTIME_DIR)) {
-            System.err.println("Runtime directory is invalid");
-        }
-
-        BuildEnv(FIRMWARE_DIR, System.getProperty(RELEASE_DIR) + File.separator + "firmware");
+        BuildEnv(FIRMWARE_DIR, System.getProperty(HOME_DIR) + File.separator + "firmware");
         if (!TestDir(FIRMWARE_DIR)) {
             System.err.println("Firmware directory is invalid");
         }
 
-        String fwdir = System.getProperty(FIRMWARE_DIR);
+        if (os != null) {
+            switch (os) {
+                case WIN:
+                    BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_win");
+                    break;
+                case MAC:
+                    BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_osx");
+                    break;
+                case LINUX:
+                    BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_linux");
+                    break;
+                default:
+                break;
+            }
+        }
+        if (!TestDir(PLATFORM_DIR)) {
+            System.err.println("platform_* directory is invalid");
+        }
 
         System.out.println("Directories:\n"
-                + "Current = " + curDir + "\n"
-                + "Jar = " + jarDir + "\n"
-                + "PatcherHome = " + System.getProperty(HOME_DIR) + "\n"
-                + "Firmware = " + fwdir + "\n"
-                + "Libraries = " + System.getProperty(LIBRARIES_DIR)
+                + "Current = " + System.getProperty("user.dir") + "\n"
+                + "Jar = " + jarFile.getParentFile().getCanonicalPath() + "\n"
+                + "Home = " + System.getProperty(HOME_DIR) + "\n"
+                + "Firmware = " + System.getProperty(FIRMWARE_DIR) + "\n"
+                + "Libraries = " + System.getProperty(LIBRARIES_DIR) + "\n"
+                + "Platform = " + System.getProperty(PLATFORM_DIR) + "\n"
         );
     }
 

@@ -75,7 +75,7 @@ public class QCmdFlashDFU extends QCmdShellTask {
     
     
     @Override
-    String GetExec() {
+    String[] GetExec() {
         try {
 
             USBBulkConnection.GetConnection().disconnect();
@@ -106,13 +106,12 @@ public class QCmdFlashDFU extends QCmdShellTask {
             }
 
             if (OSDetect.getOS() == OSDetect.OS.WIN) {
-                return RuntimeDir() + "/platform_win/bin/sh.exe " + RuntimeDir() + "/platform_win/upload_fw_dfu.sh " + bname + " " + String.valueOf(dfuSize);
+                String str = FirmwareDir() + "\\upload_fw_dfu_win.bat " + bname + " " + String.valueOf(dfuSize);;
+                return str.split("\\s+");
             }
-            else if (OSDetect.getOS() == OSDetect.OS.MAC) {
-                return "/bin/sh "+ RuntimeDir() + "/platform_osx/upload_fw_dfu.sh " + bname + " " + String.valueOf(dfuSize);
-            }
-            else if (OSDetect.getOS() == OSDetect.OS.LINUX) {
-                return "/bin/sh "+ RuntimeDir() + "/platform_linux/upload_fw_dfu.sh " + bname + " " + String.valueOf(dfuSize);
+            else if ((OSDetect.getOS() == OSDetect.OS.MAC)  || (OSDetect.getOS() == OSDetect.OS.LINUX)) {
+                String str = FirmwareDir() + "/upload_fw_dfu.sh " + bname + " " + String.valueOf(dfuSize);
+                return str.split("\\s+");
             }
             else {
                 Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");

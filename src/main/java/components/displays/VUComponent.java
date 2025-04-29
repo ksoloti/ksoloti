@@ -47,6 +47,7 @@ public class VUComponent extends ADispComponent {
     }
 
     double decay = 0.5;
+    int peakHoldTimer = 0;
 
     @Override
     public void setValue(double value) {
@@ -55,10 +56,16 @@ public class VUComponent extends ADispComponent {
         accumvalue = (accumvalue * decay) + (valuesq * (1.0 - decay));
 
         double peakdecay = 0.75;
-        peakaccumvalue = (peakaccumvalue * peakdecay) + (valuesq * (1.0 - peakdecay));
+        if (peakHoldTimer == 0) {
+            peakaccumvalue = (peakaccumvalue * peakdecay) + (valuesq * (1.0 - peakdecay));
+        }
         // peak
         if (valuesq > peakaccumvalue) {
             peakaccumvalue = valuesq;
+            peakHoldTimer = 40;
+        }
+        else if (peakHoldTimer > 0){
+            peakHoldTimer--; 
         }
         repaint();
     }

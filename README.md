@@ -23,13 +23,14 @@ Ksoloti Core boards and related kits are available at:
 [Thonk (UK)](https://www.thonk.co.uk/brand/ksoloti)
 
 
-[Alt Circuits (US)](https://altcircuits.myshopify.com/)
+[Alt Circuits (US)](https://altcircuits.com/)
 
 
 More info:
 
 
 [Ksoloti resources, schematics, build guides](https://ksoloti.github.io)
+
 
 [Ksoloti Forum](https://ksoloti.discourse.group)
 

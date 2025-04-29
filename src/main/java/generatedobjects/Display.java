@@ -115,7 +115,6 @@ public class Display extends gentools {
                 + "const char NAME[] = \"attr_name\";\n";
         o.sInitCode = "  index = 0;\n"
                 + "  kvp.kvptype = KVP_TYPE_CUSTOM;\n"
-                + "  kvp.keyname = %name%NAME;\n"
                 + "  kvp.parent =  ObjectKvpRoot;\n"
                 + "  kvp.custom.displayFunction = &k_scope_DisplayFunction; \n"
                 + "  kvp.custom.userdata = (void *)%name%data;\n"
@@ -146,7 +145,6 @@ public class Display extends gentools {
         o.sInitCode = "  index = 0;\n"
                 + "  subindex = 0;\n"
                 + "  kvp.kvptype = KVP_TYPE_CUSTOM;\n"
-                + "  kvp.keyname = %name%NAME;\n"
                 + "  kvp.parent =  ObjectKvpRoot;\n"
                 + "  kvp.custom.displayFunction = &k_scope_DisplayFunction2; \n"
                 + "  kvp.custom.userdata = (void *)data;\n"
@@ -190,7 +188,6 @@ public class Display extends gentools {
                 + "const char NAME[] = \"%name%\";\n";
         o.sInitCode = "  index = 0;\n"
                 + "  kvp.kvptype = KVP_TYPE_CUSTOM;\n"
-                + "  kvp.keyname = %name%NAME;\n"
                 + "  kvp.parent =  ObjectKvpRoot;\n"
                 + "  kvp.custom.displayFunction = &k_scope_DisplayFunction; \n"
                 + "  kvp.custom.userdata = (void *)data;\n"
@@ -214,7 +211,6 @@ public class Display extends gentools {
      + "const char NAME[] = \"%name%\";\n";
      o.sInitCode = ""
      + "  kvp.kvptype = KVP_TYPE_INTDISPLAY;\n"
-     + "  kvp.keyname = NAME;\n"
      + "  kvp.idv.value = &value; \n"
      + "  kvp.parent =  ObjectKvpRoot;\n"
      + "  KVP_RegisterObject(&kvp);\n";
@@ -238,7 +234,6 @@ public class Display extends gentools {
      + "const char NAME[] = \"%name%\";\n";
      o.sInitCode = ""
      + "  kvp.kvptype = KVP_TYPE_FREQDISPLAY;\n"
-     + "  kvp.keyname = NAME;\n"
      + "  kvp.idv.value = &value; \n"
      + "  kvp.parent =  ObjectKvpRoot;\n"
      + "  KVP_RegisterObject(&kvp);\n";
@@ -254,7 +249,6 @@ public class Display extends gentools {
      + "const char NAME[] = \"%name%\";\n";
      o.sInitCode = ""
      + "  kvp.kvptype = KVP_TYPE_FRACTDISPLAY;\n"
-     + "  kvp.keyname = NAME;\n"
      + "  kvp.idv.value = &value; \n"
      + "  kvp.parent =  ObjectKvpRoot;\n"
      + "  KVP_RegisterObject(&kvp);\n";

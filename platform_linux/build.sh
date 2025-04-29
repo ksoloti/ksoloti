@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -53,6 +53,7 @@ case $OS in
         set +e
         if ! install_lib_bz2; then
             set -e
+            sudo dpkg --add-architecture i386
             sudo apt-get install -y libbz2-1.0:i386 libncurses5:i386
         fi
         ;;
@@ -89,28 +90,29 @@ mkdir -p "${PLATFORM_ROOT}/lib"
 mkdir -p "${PLATFORM_ROOT}/src"
 
 
-if [ ! -d "${PLATFORM_ROOT}/../chibios" ];
-then
-    cd "${PLATFORM_ROOT}/src"
-    CH_VERSION=2.6.9
-    ARDIR=ChibiOS-ver${CH_VERSION}
-    ARCHIVE=${ARDIR}.zip
-    if [ ! -f ${ARCHIVE} ];
-    then
-        echo "##### downloading ${ARCHIVE} #####"
-		curl -L https://github.com/ChibiOS/ChibiOS/archive/ver${CH_VERSION}.zip > ${ARCHIVE}
-    else
-        echo "##### ${ARCHIVE} already downloaded #####"
-    fi
-    unzip -q -o ${ARCHIVE}
-    mv ${ARDIR} chibios
-    cd chibios/ext
-    unzip -q -o ./fatfs-0.*-patched.zip
-    cd ../../
-    mv chibios ../..
-else
-    echo "##### chibios directory already present, skipping... #####"
-fi
+## Obsolete... Chibios is included in the repo now
+# if [ ! -d "${PLATFORM_ROOT}/../chibios" ];
+# then
+#     cd "${PLATFORM_ROOT}/src"
+#     CH_VERSION=2.6.9
+#     ARDIR=ChibiOS-ver${CH_VERSION}
+#     ARCHIVE=${ARDIR}.zip
+#     if [ ! -f ${ARCHIVE} ];
+#     then
+#         echo "##### downloading ${ARCHIVE} #####"
+# 		curl -L https://github.com/ChibiOS/ChibiOS/archive/ver${CH_VERSION}.zip > ${ARCHIVE}
+#     else
+#         echo "##### ${ARCHIVE} already downloaded #####"
+#     fi
+#     unzip -q -o ${ARCHIVE}
+#     mv ${ARDIR} chibios
+#     cd chibios/ext
+#     unzip -q -o ./fatfs-0.*-patched.zip
+#     cd ../../
+#     mv chibios ../..
+# else
+#     echo "##### chibios directory already present, skipping... #####"
+# fi
 
 
 if [ ! -f "$PLATFORM_ROOT/bin/arm-none-eabi-gcc" ];
@@ -183,7 +185,7 @@ fi
 
 cd "${PLATFORM_ROOT}/../jdks"
 
-JDK_ARCHIVE_LINUX="zulu21.30.15-ca-jdk21.0.1-linux_x64.tar.gz"
+JDK_ARCHIVE_LINUX="zulu21.42.19-ca-jdk21.0.7-linux_x64.zip"
 if [ ! -f "${JDK_ARCHIVE_LINUX}" ];
 then
     echo "##### downloading ${JDK_ARCHIVE_LINUX} #####"
@@ -192,7 +194,7 @@ else
     echo "##### ${JDK_ARCHIVE_LINUX} already downloaded #####"
 fi
 
-JDK_ARCHIVE_MAC="zulu21.30.15-ca-jdk21.0.1-macosx_x64.tar.gz"
+JDK_ARCHIVE_MAC="zulu21.42.19-ca-jdk21.0.7-macosx_x64.zip"
 if [ ! -f "${JDK_ARCHIVE_MAC}" ];
 then
     echo "##### downloading ${JDK_ARCHIVE_MAC} #####"
@@ -201,7 +203,7 @@ else
     echo "##### ${JDK_ARCHIVE_MAC} already downloaded #####"
 fi
 
-JDK_ARCHIVE_WINDOWS="zulu21.30.15-ca-jdk21.0.1-win_x64.zip"
+JDK_ARCHIVE_WINDOWS="zulu21.42.19-ca-jdk21.0.7-win_x64.zip"
 if [ ! -f "${JDK_ARCHIVE_WINDOWS}" ];
 then
     echo "##### downloading ${JDK_ARCHIVE_WINDOWS} #####"
@@ -233,12 +235,11 @@ esac
 
 
 echo "##### compiling firmware... #####"
-cd "${PLATFORM_ROOT}"
-./compile_firmware.sh BOARD_AXOLOTI_CORE
-./compile_firmware.sh BOARD_KSOLOTI_CORE
+cd "${PLATFORM_ROOT}"/..
+./firmware/compile_firmware.sh BOARD_AXOLOTI_CORE
+./firmware/compile_firmware.sh BOARD_KSOLOTI_CORE
 
 echo "##### building Patcher... #####"
-cd "${PLATFORM_ROOT}"/..
 ./byld_java.sh
 
 echo "DONE"

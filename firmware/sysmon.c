@@ -107,6 +107,7 @@ static msg_t ThreadSysmon(void *arg) {
 //      LogTextMessage("SD card ejected");
       StopPatch();
       sdcard_unmount();
+      LoadPatchStartFlash(); /* Attempt to load flash startup patch */
     }
     else if (!sdcsw && sdcsw_prev) {
 //      LogTextMessage("SD card inserted");
@@ -115,7 +116,7 @@ static msg_t ThreadSysmon(void *arg) {
         pattern_index = 0;
         pattern = BLINK_OVERLOAD;
       }
-      LoadPatchStartSD();
+      LoadPatchStartSD(); /* Attempt to load SD startup patch */
     }
     sdcsw_prev = sdcsw;
 #endif

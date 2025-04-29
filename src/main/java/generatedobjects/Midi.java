@@ -103,7 +103,6 @@ public class Midi extends gentools {
      + "const char NAME[] = \"\";\n";
      o.sInitCode = "controller[%CC%] = %Value%;"
      + "  kvp.kvptype = KVP_TYPE_IVP;\n"
-     + "  kvp.keyname = NAME;\n"
      + "  kvp.ivp.value = &controller[%CC%]; \n"
      + "  kvp.ivp.minvalue = " + 0 + ";\n"
      + "  kvp.ivp.maxvalue = " + 127 + ";\n"
@@ -122,7 +121,6 @@ public class Midi extends gentools {
      + "const char NAME[] = \"\";\n";
      o.sInitCode = "controller[%CC%] = %Value%;"
      + "  kvp.kvptype = KVP_TYPE_IVP;\n"
-     + "  kvp.keyname = NAME;\n"
      + "  kvp.ivp.value = &controller[%CC%]; \n"
      + "  kvp.ivp.minvalue = " + 0 + ";\n"
      + "  kvp.ivp.maxvalue = " + 127 + ";\n"
@@ -144,7 +142,6 @@ public class Midi extends gentools {
      + "int32_t ntrig;\n";
      o.sInitCode = "cc = %Value%;"
      + "  kvp.kvptype = KVP_TYPE_IVP;\n"
-     + "  kvp.keyname = NAME;\n"
      + "  kvp.ivp.value = &cc; \n"
      + "  kvp.ivp.minvalue = " + 0 + ";\n"
      + "  kvp.ivp.maxvalue = " + 127 + ";\n"

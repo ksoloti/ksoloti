@@ -55,9 +55,6 @@
 #include "spilink.h"
 #endif
 
-#ifdef FW_I2SCODEC
-#include "i2scodec.h"
-#endif
 
 #if BOARD_KSOLOTI_CORE_H743
     // done in the makefile like it should be!
@@ -68,6 +65,8 @@
 
 #include "board.h"
 #include "ksoloti_boot_options.h"
+
+#include "analyser.h"
 
 /*===========================================================================*/
 /* Initialization and main thread.                                           */
@@ -103,7 +102,7 @@ int main(void) {
     halInit();
     chSysInit();
     AnalyserSetup();
-
+    
 #ifdef FW_SPILINK
     pThreadSpilink = 0;
 #endif
@@ -159,8 +158,7 @@ int main(void) {
 #endif
 
     InitPConnection();
-
-
+    
     chThdSleepMilliseconds(10);
 
     /* Pull up SPILINK detector (HIGH means MASTER i.e. regular operation) */
@@ -194,12 +192,14 @@ int main(void) {
 
     bool_t is_master = palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN);
 
-    codec_init(is_master);
-#ifdef FW_SPILINK
-    spilink_init(is_master);
-#endif
 #ifdef FW_I2SCODEC
     i2s_init();
+#endif
+
+    codec_init(is_master);
+
+#ifdef FW_SPILINK
+    spilink_init(is_master);
 #endif
 
     if (!palReadPad(SW2_PORT, SW2_PIN)) {
@@ -217,6 +217,8 @@ int main(void) {
 
     AnalyserSetup();
 
+    AnalyserSetup();
+
     if (!exception_check()) {
         /* Only try mounting SD and booting a patch when no exception is reported */
 
@@ -227,11 +229,9 @@ int main(void) {
 
             if (fs_ready) {
                 LoadPatchStartSD();
-                chThdSleepMilliseconds(100);
             }
 
             /* If no patch booting or running yet try loading from flash */
-            // if (patchStatus == STOPPED) {
             if (patchStatus != RUNNING) {
                 LoadPatchStartFlash();
             }

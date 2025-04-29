@@ -470,6 +470,7 @@ static void otg_epin_handler(USBDriver *usbp, usbep_t ep) {
   }
 }
 
+
 /**
  * @brief   Generic endpoint OUT handler.
  *
