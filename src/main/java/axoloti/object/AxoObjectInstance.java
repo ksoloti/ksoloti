@@ -895,33 +895,33 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             if (s.contains("AudioInputMode = A_STEREO;")) {
                 patch.setAudioInputMode(0);
                 s = s.replace("AudioInputMode = A_STEREO;", opt);
-                LOGGER.log(Level.INFO, "Audio input mode set: STEREO");
+                LOGGER.log(Level.INFO, "audio/inconfig: input mode set to STEREO");
             }
             if (s.contains("AudioInputMode = A_MONO;")) {
                 patch.setAudioInputMode(1);
                 s = s.replace("AudioInputMode = A_MONO;", opt);
-                LOGGER.log(Level.INFO, "Audio input mode set: MONO");
+                LOGGER.log(Level.INFO, "audio/inconfig: input mode set to MONO");
             }
             if (s.contains("AudioInputMode = A_BALANCED;")) {
                 patch.setAudioInputMode(2);
                 s = s.replace("AudioInputMode = A_BALANCED;", opt);
-                LOGGER.log(Level.INFO, "Audio input mode set: BALANCED");
+                LOGGER.log(Level.INFO, "audio/inconfig: input mode set to BALANCED");
             }
 
             if (s.contains("AudioOutputMode = A_MONO;")) {
                 patch.setAudioOutputMode(1);
                 s = s.replace("AudioOutputMode = A_MONO;", opt);
-                LOGGER.log(Level.INFO, "Audio output mode set: MONO");
+                LOGGER.log(Level.INFO, "audio/outconfig: output mode set to MONO");
             }
             if (s.contains("AudioOutputMode = A_BALANCED;")) {
                 patch.setAudioOutputMode(2);
                 s = s.replace("AudioOutputMode = A_BALANCED;", opt);
-                LOGGER.log(Level.INFO, "Audio output mode set: BALANCED");
+                LOGGER.log(Level.INFO, "audio/outconfig: output mode set to BALANCED");
             }
             if (s.contains("AudioOutputMode = A_STEREO;")) {
                 patch.setAudioOutputMode(0);
                 s = s.replace("AudioOutputMode = A_STEREO;", opt);
-                LOGGER.log(Level.INFO, "Audio output mode set: STEREO");
+                LOGGER.log(Level.INFO, "audio/outconfig: output mode set to STEREO");
             }
 
             c += s;
