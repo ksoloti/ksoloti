@@ -145,8 +145,7 @@ static USBH_StatusTypeDef USBH_HID_InterfaceInit (USBH_HandleTypeDef *phost)
   HID_HandleTypeDef *HID_Handle;
   
   // interface = USBH_FindInterface(phost, phost->pActiveClass->ClassCode, HID_BOOT_CODE, 0xFF);
-  interface = USBH_FindInterface(phost, phost->pActiveClass->ClassCode, 0, 0); // TODO: necessary?
-  // interface = USBH_FindInterface(phost, phost->pActiveClass->ClassCode, 0xFF, 0xFF); // TODO: or better?
+  interface = USBH_FindInterface(phost, phost->pActiveClass->ClassCode, 0xFF, 0xFF); // TODO: or 0, 0); ?
   
   if(interface == 0xFF) /* No Valid Interface */
   {
