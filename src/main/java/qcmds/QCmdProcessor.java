@@ -160,7 +160,7 @@ public class QCmdProcessor implements Runnable {
             //     break;
             // }
             try {
-                Thread.sleep(100);
+                Thread.sleep(10);
             } catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
