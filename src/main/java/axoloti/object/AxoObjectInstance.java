@@ -351,14 +351,14 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         p_iolets.add(p_outlets);
         add(p_iolets);
 
-        for (AxoAttribute p : getType().attributes) {
+        for (AxoAttribute a : getType().attributes) {
             AttributeInstance attrp1 = null;
             for (AttributeInstance attrp : pAttributeInstances) {
-                if (attrp.getName().equals(p.getName())) {
+                if (attrp.getName().equals(a.getName())) {
                     attrp1 = attrp;
                 }
             }
-            AttributeInstance attri = p.CreateInstance(this, attrp1);
+            AttributeInstance attri = a.CreateInstance(this, attrp1);
             attri.setAlignmentX(LEFT_ALIGNMENT);
             add(attri);
             attributeInstances.add(attri);
@@ -836,9 +836,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
         }
         c += GenerateInstanceDataDeclaration2();
-        for (AttributeInstance p : attributeInstances) {
-            if (p.CValue() != null) {
-                c = c.replaceAll(p.GetCName(), p.CValue());
+        for (AttributeInstance a : attributeInstances) {
+            if (a.CValue() != null) {
+                c = c.replaceAll(a.GetCName(), a.CValue());
             }
         }
         return c + "\n";
@@ -883,8 +883,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         c += "\n" + I+I+I + "/* Object Init Code Tab */\n";
         if (getType().sInitCode != null) {
             String s = getType().sInitCode;
-            for (AttributeInstance p : attributeInstances) {
-                s = s.replace(p.GetCName(), p.CValue());
+            for (AttributeInstance a : attributeInstances) {
+                s = s.replace(a.GetCName(), a.CValue());
             }
             s = I+I+I + s.replace("\n", "\n\t\t\t");
             
@@ -953,8 +953,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             c += I+I+I + "/* Object Dispose Code Tab */\n";
             String s = getType().sDisposeCode;
             s = I+I+I + s.replace("\n", "\n\t\t\t");
-            for (AttributeInstance p : attributeInstances) {
-                s = I+I + s.replaceAll(p.GetCName(), p.CValue());
+            for (AttributeInstance a : attributeInstances) {
+                s = I+I + s.replaceAll(a.GetCName(), a.CValue());
             }
             c += s + "\n";
         }
@@ -968,8 +968,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             String s = getType().sKRateCode;
             s = I+I+I + s.replace("\n", "\n\t\t\t");
 
-            for (AttributeInstance p : attributeInstances) {
-                s = s.replaceAll(p.GetCName(), p.CValue());
+            for (AttributeInstance a : attributeInstances) {
+                s = s.replaceAll(a.GetCName(), a.CValue());
             }
             s = s.replace("attr_name", getCInstanceName());
             s = s.replace("attr_legal_name", getLegalName());
@@ -987,8 +987,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                             + I+I+I+I + getType().sSRateCode.replace("\n", "\n\t\t\t\t")
                      + "\n" + I+I+I + "}\n";
 
-            for (AttributeInstance p : attributeInstances) {
-                s = s.replaceAll(p.GetCName(), p.CValue());
+            for (AttributeInstance a : attributeInstances) {
+                s = s.replaceAll(a.GetCName(), a.CValue());
             }
             for (InletInstance i : inletInstances) {
                 if (i.GetDataType() instanceof Frac32buffer) {
@@ -1092,8 +1092,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 s += i.GenerateCodeMidiHandler("");
             }
         }
-        for (AttributeInstance p : attributeInstances) {
-            s = s.replaceAll(p.GetCName(), p.CValue());
+        for (AttributeInstance a : attributeInstances) {
+            s = s.replaceAll(a.GetCName(), a.CValue());
         }
         s = s.replace("attr_name", getCInstanceName());
         s = s.replace("attr_legal_name", getLegalName());
