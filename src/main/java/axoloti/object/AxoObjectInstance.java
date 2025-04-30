@@ -971,8 +971,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             for (AttributeInstance a : attributeInstances) {
                 s = s.replaceAll(a.GetCName(), a.CValue());
             }
-            s = s.replace("attr_name", getCInstanceName());
-            s = s.replace("attr_legal_name", getLegalName());
+
+            s = s.replace("CGENATTR_instancename", getCInstanceName());
+            s = s.replace("CGENATTR_legalname", getLegalName());
 
             return h + s + "\n";
         }
@@ -1001,8 +1002,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 }
             }
 
-            s = s.replace("attr_name", getCInstanceName());
-            s = s.replace("attr_legal_name", getLegalName());
+            s = s.replace("CGENATTR_instancename", getCInstanceName());
+            s = s.replace("CGENATTR_legalname", getLegalName());
 
             return s;
         }
@@ -1095,8 +1096,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         for (AttributeInstance a : attributeInstances) {
             s = s.replaceAll(a.GetCName(), a.CValue());
         }
-        s = s.replace("attr_name", getCInstanceName());
-        s = s.replace("attr_legal_name", getLegalName());
+
+        s = s.replace("CGENATTR_instancename", getCInstanceName());
+        s = s.replace("CGENATTR_legalname", getLegalName());
 
         if (s.length() > 0) {
             return "\n" + s + "\n";

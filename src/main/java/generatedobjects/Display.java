@@ -112,7 +112,7 @@ public class Display extends gentools {
         o.sLocalData = "   int32_t data[64];\n"
                 + "   int32_t index;\n"
                 + "   KeyValuePair kvp;\n"
-                + "const char NAME[] = \"attr_name\";\n";
+                + "const char NAME[] = \"CGENATTR_instancename\";\n";
         o.sInitCode = "  index = 0;\n"
                 + "  kvp.kvptype = KVP_TYPE_CUSTOM;\n"
                 + "  kvp.parent =  ObjectKvpRoot;\n"

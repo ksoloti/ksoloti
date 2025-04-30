@@ -140,7 +140,7 @@ public class Control extends gentools {
                 + "	if (param_cache != param_value) \n"
                 + "		nhooked = 4;\n"
                 + "	else\n"
-                + "		PExParameterChange(&parent->PExch[PARAM_INDEX_attr_legal_name_value],inlet_in,0xFFFD);\n"
+                + "		PExParameterChange(&parent->PExch[PARAM_INDEX_CGENATTR_legalname_value],inlet_in,0xFFFD);\n"
                 + "		param_cache = inlet_in;\n"
                 + "}\n"
                 + "outlet_hooked = !nhooked;\n";

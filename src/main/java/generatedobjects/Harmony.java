@@ -98,7 +98,7 @@ public class Harmony extends gentools {
                 + "  int16_t note = data1 % 12;\n"
                 + "  int16_t mask = 1 << note;\n"
                 + "  int16_t nval = _scaleVal ^ mask;\n"
-                + "  PExParameterChange(&parent->PExch[PARAM_INDEX_attr_legal_name_b12],nval,0xFFFD);\n"
+                + "  PExParameterChange(&parent->PExch[PARAM_INDEX_CGENATTR_legalname_b12],nval,0xFFFD);\n"
                 + "}\n";
         return o;
     }
