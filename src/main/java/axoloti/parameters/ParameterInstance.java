@@ -83,6 +83,9 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     @Attribute(required = false)
     private Boolean frozen;
 
+    @Attribute(required = false)
+    private int frozenVal = 0;
+
     public final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
 
     public ParameterInstance() {
@@ -483,6 +486,14 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
             frozen = null;
         }
         setCtrlToolTip();
+    }
+
+    public void setFrozenVal(int val) {
+        frozenVal = val;
+    }
+
+    public int getFrozenVal() {
+        return frozenVal;
     }
 
     public abstract ACtrlComponent CreateControl();

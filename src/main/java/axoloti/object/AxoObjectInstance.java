@@ -50,6 +50,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Box;
@@ -111,6 +112,33 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     boolean deferredObjTypeUpdate = false;
 
+    Comparator<AttributeInstance> attrComp = new Comparator<AttributeInstance>() {
+        public int compare(AttributeInstance a1, AttributeInstance a2) {
+
+            /* Compare the lengths of two AttributeInstance's C names (attr_xxxx).
+             * If a1 is longer than a2, sort it first.
+             */
+            if (a1.GetCName().length() > a2.GetCName().length()) {
+                return -1;
+            }
+            /* Else don't change the order */
+            return 0;
+        }
+    };
+
+    Comparator<ParameterInstance> paramComp = new Comparator<ParameterInstance>() {
+        public int compare(ParameterInstance p1, ParameterInstance p2) {
+
+            /* Compare the lengths of two ParameterInstance's C names (param_xxxx).
+             * If p1 is longer than p2, sort it first.
+             */
+            if (p1.GetCName().length() > p2.GetCName().length()) {
+                return -1;
+            }
+            /* Else don't change the order */
+            return 0;
+        }
+    };
 
     private void refreshTooltip() {
         String tooltiptxt = "<html>";
@@ -363,6 +391,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             add(attri);
             attributeInstances.add(attri);
         }
+        attributeInstances.sort(attrComp); /* Sort attributes by name length, longest first. Ensures proper replacement */
 
         for (Parameter p : getType().params) {
             ParameterInstance pin = p.CreateInstance(this);
@@ -657,7 +686,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         if (getType().sLocalData != null) {
             c += I+I + "/* Object Local Code Tab */\n";
             String s = getType().sLocalData;
-            s = I+I + s.replace("\n", "\n\t\t");
+            s = I+I + s.replaceAll("\n", "\n\t\t");
             s = s.replaceAll("attr_parent", getCInstanceName());
             c += s + "\n";
         }
@@ -688,8 +717,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         for (ParameterInstance p : parameterInstances) {
             if (p.isFrozen()) {
                 
-                c += I+I + "// Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + "_" + p.getLegalName() + "\n";
-                c += I+I + "const int32_t " + p.GetCName() + " = ";
+                c += I+I + "// Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + ":" + p.getLegalName() + " = ";
                 /* Do parameter value mapping in Java so save MCU memory.
                  * These are the same functions like in firmware/parameter_functions.h.
                  */
@@ -705,19 +733,22 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     unsignedClampedVal = unsignedClampedVal < S28_MIN ? S28_MIN : unsignedClampedVal > S28_MAX ? S28_MAX : unsignedClampedVal;
 
                     if (pfun.equals("pfun_signed_clamp")) {
-                        c += signedClampedVal + "; /* pfun_signed_clamp */\n";
+                        c += signedClampedVal + " /* pfun_signed_clamp */\n";
+                        p.setFrozenVal(signedClampedVal);
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp")) {
-                        c += unsignedClampedVal + "; /* pfun_unsigned_clamp */\n";
+                        c += unsignedClampedVal + " /* pfun_unsigned_clamp */\n";
+                        p.setFrozenVal(unsignedClampedVal);
                     }
 
                     else if (pfun.equals("pfun_signed_clamp_fullrange")) {
-                        c += (signedClampedVal << 4) + "; /* pfun_signed_clamp_fullrange */\n";
+                        c += (signedClampedVal << 4) + " /* pfun_signed_clamp_fullrange */\n";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_fullrange")) {
-                        c += (unsignedClampedVal << 4) + "; /* pfun_unsigned_clamp_fullrange */\n";
+                        c += (unsignedClampedVal << 4) + " /* pfun_unsigned_clamp_fullrange */\n";
+                        p.setFrozenVal(unsignedClampedVal);
                     }
 
                     else if (pfun.equals("pfun_signed_clamp_squarelaw")) {
@@ -729,13 +760,15 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         else {
                             mappedVal = -((psat * psat) >> 31);
                         }
-                        c += (int) mappedVal + "; /* pfun_signed_clamp_squarelaw */;\n";
+                        c += (int) mappedVal + " /* pfun_signed_clamp_squarelaw */\n";
+                        p.setFrozenVal((int) mappedVal);
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_squarelaw")) {
                         long psat = unsignedClampedVal;
                         long mappedVal = ((psat * psat) >> 31);
-                        c += (int) mappedVal + "; /* pfun_unsigned_clamp_squarelaw */\n";
+                        c += (int) mappedVal + " /* pfun_unsigned_clamp_squarelaw */\n";
+                        p.setFrozenVal((int) mappedVal);
                     }
 
                     else if (pfun.equals("pfun_signed_clamp_fullrange_squarelaw")) {
@@ -747,13 +780,15 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         else {
                             mappedVal = -((psat * psat) >> 23);
                         }
-                        c += (int) mappedVal + "; /* pfun_signed_clamp_fullrange_squarelaw */\n";
+                        c += (int) mappedVal + " /* pfun_signed_clamp_fullrange_squarelaw */\n";
+                        p.setFrozenVal((int) mappedVal);
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_fullrange_squarelaw")) {
                         long psat = (long) unsignedClampedVal;
                         long mappedVal = ((psat * psat) >> 23);
-                        c += (int) mappedVal + "; /* pfun_unsigned_clamp_fullrange_squarelaw */\n";
+                        c += (int) mappedVal + " /* pfun_unsigned_clamp_fullrange_squarelaw */\n";
+                        p.setFrozenVal((int) mappedVal);
                     }
 
                     else if (pfun.equals("pfun_kexpltime") || pfun.equals("pfun_kexpdtime")) {
@@ -820,15 +855,18 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         int final_val = final_bd.intValue();
 
                         if (pfun.equals("pfun_kexpltime")) {
-                            c += final_val + "; /* pfun_kexpltime */\n";
+                            c += final_val + " /* pfun_kexpltime */\n";
+                            p.setFrozenVal(final_val);
                         }
                         else if (pfun.equals("pfun_kexpdtime")) {
-                            c += (0x7FFFFFFF - final_val) + "; /* pfun_kexpdtime */\n";
+                            c += (0x7FFFFFFF - final_val) + " /* pfun_kexpdtime */\n";
+                            p.setFrozenVal(final_val);
                         }
                     }
                 }
                 else {
-                    c += p.GetValueRaw() + ";\n"; 
+                    c += p.GetValueRaw() + "\n"; 
+                    p.setFrozenVal(p.GetValueRaw());
                 }
             }
             else {
@@ -877,16 +915,18 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         for (DisplayInstance p : displayInstances) {
             String s = "";
             s += p.GenerateCodeInit("");
-            c += s.replace("\n", "\n\t\t\t");
+            c += s.replaceAll("\n", "\n\t\t\t");
         }
 
         c += "\n" + I+I+I + "/* Object Init Code Tab */\n";
         if (getType().sInitCode != null) {
             String s = getType().sInitCode;
             for (AttributeInstance a : attributeInstances) {
-                s = s.replace(a.GetCName(), a.CValue());
+                if (a.CValue() != null) {
+                    s = s.replaceAll(a.GetCName(), a.CValue());
+                }
             }
-            s = I+I+I + s.replace("\n", "\n\t\t\t");
+            s = I+I+I + s.replaceAll("\n", "\n\t\t\t");
             
             /* Reverse-analyze if generated init code contains code which changes
              * the audio input or output config. This is a workaround to ensure
@@ -894,33 +934,33 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             String opt = "/* Code was optimized out during code generation */";
             if (s.contains("AudioInputMode = A_STEREO;")) {
                 patch.setAudioInputMode(0);
-                s = s.replace("AudioInputMode = A_STEREO;", opt);
+                s = s.replaceAll("AudioInputMode = A_STEREO;", opt);
                 LOGGER.log(Level.INFO, "audio/inconfig: input mode set to STEREO");
             }
             if (s.contains("AudioInputMode = A_MONO;")) {
                 patch.setAudioInputMode(1);
-                s = s.replace("AudioInputMode = A_MONO;", opt);
+                s = s.replaceAll("AudioInputMode = A_MONO;", opt);
                 LOGGER.log(Level.INFO, "audio/inconfig: input mode set to MONO");
             }
             if (s.contains("AudioInputMode = A_BALANCED;")) {
                 patch.setAudioInputMode(2);
-                s = s.replace("AudioInputMode = A_BALANCED;", opt);
+                s = s.replaceAll("AudioInputMode = A_BALANCED;", opt);
                 LOGGER.log(Level.INFO, "audio/inconfig: input mode set to BALANCED");
             }
 
             if (s.contains("AudioOutputMode = A_MONO;")) {
                 patch.setAudioOutputMode(1);
-                s = s.replace("AudioOutputMode = A_MONO;", opt);
+                s = s.replaceAll("AudioOutputMode = A_MONO;", opt);
                 LOGGER.log(Level.INFO, "audio/outconfig: output mode set to MONO");
             }
             if (s.contains("AudioOutputMode = A_BALANCED;")) {
                 patch.setAudioOutputMode(2);
-                s = s.replace("AudioOutputMode = A_BALANCED;", opt);
+                s = s.replaceAll("AudioOutputMode = A_BALANCED;", opt);
                 LOGGER.log(Level.INFO, "audio/outconfig: output mode set to BALANCED");
             }
             if (s.contains("AudioOutputMode = A_STEREO;")) {
                 patch.setAudioOutputMode(0);
-                s = s.replace("AudioOutputMode = A_STEREO;", opt);
+                s = s.replaceAll("AudioOutputMode = A_STEREO;", opt);
                 LOGGER.log(Level.INFO, "audio/outconfig: output mode set to STEREO");
             }
 
@@ -952,9 +992,11 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         if (getType().sDisposeCode != null) {
             c += I+I+I + "/* Object Dispose Code Tab */\n";
             String s = getType().sDisposeCode;
-            s = I+I+I + s.replace("\n", "\n\t\t\t");
+            s = I+I+I + s.replaceAll("\n", "\n\t\t\t");
             for (AttributeInstance a : attributeInstances) {
-                s = I+I + s.replaceAll(a.GetCName(), a.CValue());
+                if (a.CValue() != null) {
+                    s = I+I + s.replaceAll(a.GetCName(), a.CValue());
+                }
             }
             c += s + "\n";
         }
@@ -966,14 +1008,24 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         String h = "\n" + I+I+I + "/* Object K-Rate Code Tab */\n";
         if (getType().sKRateCode != null) {
             String s = getType().sKRateCode;
-            s = I+I+I + s.replace("\n", "\n\t\t\t");
+            s = I+I+I + s.replaceAll("\n", "\n\t\t\t");
 
             for (AttributeInstance a : attributeInstances) {
-                s = s.replaceAll(a.GetCName(), a.CValue());
+                if (a.CValue() != null) {
+                    s = s.replaceAll(a.GetCName(), a.CValue());
+                }
             }
 
-            s = s.replace("CGENATTR_instancename", getCInstanceName());
-            s = s.replace("CGENATTR_legalname", getLegalName());
+            ArrayList<ParameterInstance> paramInstSorted = (ArrayList<ParameterInstance>) parameterInstances.clone();
+            paramInstSorted.sort(paramComp);
+            for (ParameterInstance p : paramInstSorted) {
+                if (p.isFrozen()) {
+                    s = s.replaceAll("param_" + p.getLegalName(), String.format("(%d) /*frozen parameter " + p.getLegalName() + "*/", p.getFrozenVal()));
+                }
+            }
+
+            s = s.replaceAll("CGENATTR_instancename", getCInstanceName());
+            s = s.replaceAll("CGENATTR_legalname", getLegalName());
 
             return h + s + "\n";
         }
@@ -985,25 +1037,37 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             String s = "\n" + I+I+I + "uint8_t buffer_index;\n"
                             + I+I+I + "for (buffer_index = 0; buffer_index < BUFSIZE; buffer_index++) {\n"
                      + "\n" + I+I+I+I + "/* Object S-Rate Code Tab */\n"
-                            + I+I+I+I + getType().sSRateCode.replace("\n", "\n\t\t\t\t")
+                            + I+I+I+I + getType().sSRateCode.replaceAll("\n", "\n\t\t\t\t")
                      + "\n" + I+I+I + "}\n";
 
             for (AttributeInstance a : attributeInstances) {
-                s = s.replaceAll(a.GetCName(), a.CValue());
+                if (a.CValue() != null) {
+                    s = s.replaceAll(a.GetCName(), a.CValue());
+                }
             }
+
+            ArrayList<ParameterInstance> paramInstSorted = (ArrayList<ParameterInstance>) parameterInstances.clone();
+            paramInstSorted.sort(paramComp);
+            for (ParameterInstance p : paramInstSorted) {
+                if (p.isFrozen()) {
+                    s = s.replaceAll("param_" + p.getLegalName(), String.format("(%d) /*frozen parameter " + p.getLegalName() + "*/", p.getFrozenVal()));
+                }
+            }
+
             for (InletInstance i : inletInstances) {
                 if (i.GetDataType() instanceof Frac32buffer) {
                     s = s.replaceAll(i.GetCName(), i.GetCName() + "[buffer_index]");
                 }
             }
+
             for (OutletInstance i : outletInstances) {
                 if (i.GetDataType() instanceof Frac32buffer) {
                     s = s.replaceAll(i.GetCName(), i.GetCName() + "[buffer_index]");
                 }
             }
 
-            s = s.replace("CGENATTR_instancename", getCInstanceName());
-            s = s.replace("CGENATTR_legalname", getLegalName());
+            s = s.replaceAll("CGENATTR_instancename", getCInstanceName());
+            s = s.replaceAll("CGENATTR_legalname", getLegalName());
 
             return s;
         }
@@ -1086,7 +1150,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         String s = "";
         if (getType().sMidiCode != null) {
             s += "\n" + I+I+I + "/* Object Midi Handler */\n";
-            s += I+I+I + getType().sMidiCode.replace("\n", "\n\t\t\t");
+            s += I+I+I + getType().sMidiCode.replaceAll("\n", "\n\t\t\t");
         }
         for (ParameterInstance i : parameterInstances) {
             if (!i.isFrozen()) {
@@ -1094,11 +1158,13 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
         }
         for (AttributeInstance a : attributeInstances) {
-            s = s.replaceAll(a.GetCName(), a.CValue());
+            if (a.CValue() != null) {
+                s = s.replaceAll(a.GetCName(), a.CValue());
+            }
         }
 
-        s = s.replace("CGENATTR_instancename", getCInstanceName());
-        s = s.replace("CGENATTR_legalname", getLegalName());
+        s = s.replaceAll("CGENATTR_instancename", getCInstanceName());
+        s = s.replaceAll("CGENATTR_legalname", getLegalName());
 
         if (s.length() > 0) {
             return "\n" + s + "\n";
