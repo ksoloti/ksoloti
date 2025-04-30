@@ -1133,7 +1133,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private boolean runTestCompile(File f) {
         SetGrabFocusOnSevereErrors(false);
-        LOGGER.log(Level.INFO, "----- Testing {0} -----", f.getPath());
+        LOGGER.log(Level.INFO, "\n----- Testing {0} -----", f.getPath());
 
         Strategy strategy = new AnnotationStrategy();
         Serializer serializer = new Persister(strategy);
@@ -1146,12 +1146,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             patch1.PostContructor();
             patch1.WriteCode();
             qcmdprocessor.WaitQueueFinished();
-            Thread.sleep(500);
+            Thread.sleep(1000);
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1);
             patch1.GetQCmdProcessor().AppendToQueue(cp);
             qcmdprocessor.WaitQueueFinished();
             pf.Close();
-            Thread.sleep(1000);
+            Thread.sleep(3000);
             status = cp.success();
             if (status == false) {
                 LOGGER.log(Level.SEVERE, "COMPILATION FAILED: {0}\n", f.getPath());
