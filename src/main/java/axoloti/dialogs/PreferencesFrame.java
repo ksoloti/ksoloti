@@ -24,10 +24,6 @@ import axoloti.utils.AxoGitLibrary;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
 import axoloti.utils.Preferences;
-import axoloti.Boards.BoardType;
-import axoloti.Boards.FirmwareType;
-import axoloti.Boards.MemoryLayoutType;
-import axoloti.Boards.SampleRateType;
 
 import components.ScrollPaneComponent;
 
@@ -60,7 +56,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
-import org.eclipse.jgit.util.QuotedString.BourneStyle;
 
 /**
  *
@@ -115,12 +110,8 @@ public class PreferencesFrame extends JFrame {
 
         if (prefs.getMouseDialAngular()) jComboBoxDialMouseBehaviour.setSelectedItem("Angular"); 
 
-        jComboBoxBoardType.setSelectedItem(prefs.boards.getBoardType());
-        jComboBoxFirmwareMode.setSelectedItem(prefs.boards.getFirmware()); 
-        jComboBoxMemoryLayout.setSelectedItem(prefs.boards.getMemoryLayout());
         jComboBoxTheme.setSelectedItem(prefs.getTheme());
 
-        jComboBoxDspSafetyLimit.setSelectedIndex(prefs.getDspSafetyLimit());
 
         PopulateLibrary();
 
@@ -208,13 +199,7 @@ public class PreferencesFrame extends JFrame {
         jLabelCodeFontSize = new JLabel();
         jButtonSave = new JButton();
         jLabelDialMouseBehaviour = new JLabel();
-        jLabelBoardType = new JLabel();
-        jLabelFirmwareMode = new JLabel();
-        jLabelMemoryLayout = new JLabel();
         jComboBoxDialMouseBehaviour = new JComboBox<String>();
-        jComboBoxBoardType = new JComboBox<String>();
-        jComboBoxFirmwareMode = new JComboBox<String>();
-        jComboBoxMemoryLayout = new JComboBox<String>();
         jLabelFavouritesDir = new JLabel();
         jLabelUserShortcutTitle = new JLabel();
         jLabelUserShortcut1 = new JLabel();
@@ -243,9 +228,6 @@ public class PreferencesFrame extends JFrame {
         jLibStatus = new JButton();
         jLabelTheme = new JLabel();
         jComboBoxTheme = new JComboBox<String>();
-
-        jLabelDspSafetyLimit = new JLabel();
-        jComboBoxDspSafetyLimit = new JComboBox<String>();
 
         jCheckBoxNoMouseReCenter = new JCheckBox();
 
@@ -280,14 +262,6 @@ public class PreferencesFrame extends JFrame {
         jLabelDialMouseBehaviour.setToolTipText("Vertical: Drag up and down to change values.\n" +
                                                 "Angular: Circle the cursor around the control to change its value.");
 
-        jLabelBoardType.setText("Board Type (restart required)");
-        jLabelBoardType.setToolTipText("<html><div width=\"480px\">Several boards are available, each supporting certain firmware features.<p/><p/><b>Ksoloti Core</b>: The default mode. The Patcher will (only!) detect and connect to Ksoloti Core boards.<p/><p/><b>Ksoloti Core Geko</b>: The Patcher will (only!) detect and connect to Ksoloti Core Geko boards.<p/><p/><b>Axoloti Core</b>: \"Legacy mode\". The Patcher will (only!) detect and connect to Axoloti Core boards.<p/><p/><b>After you've changed modes, click \"Update\" in the resulting \"Firmware Mismatch\" popup to update the Core's firmware automatically to the selected mode.</b></div></html>");
-                                        
-        jLabelFirmwareMode.setText("Firmware Mode (restart required)");
-        jLabelFirmwareMode.setToolTipText("<html><div width=\"480px\">Several firmware modes are available, each supporting different boards and/or adding certain firmware features.<p/><p/><b>SPI Link</b>: Activates a link between two Cores which lets them sync up and exchange audio and data channels. Make the necessary hardware connections as described in the SPILink help patch, and flash this firmware mode on both Cores to be synced together. Follow the instructions in the SPILink help patch.<p/><p/><b>USB Audio</b>: [Currently experimental] Activates USB audio functionality while connected to a host. Stream up to 4 channels of audio from and to your computer (DAW). Follow the instructions in the USBAudio help patch. <b>Note:</b> On Windows, you may have to right-click->\"Uninstall\" the drivers both for \"Ksoloti Core\" and \"Ksoloti Bulk Interface\" in the Device Manager to force a driver update. On Linux, you will have to run 'platform_linux&#47;add_udev_rules.sh' to update the udev rules.<p/><p/><b>I2S Codec</b>: [Currently experimental] Activates an I2S stream via SPI3 (PA15, PB3, PB4, PD6). Connect a suitable I2S ADC, DAC, or codec to get 2 additional audio inputs, outputs, or both. Follow the instructions in the I2SCodec help patch.<p/><p/><b>After you've changed modes, click \"Update\" in the resulting \"Firmware Mismatch\" popup to update the Core's firmware automatically to the selected mode.</b></div></html>");
-
-        jLabelMemoryLayout.setText("Geko memory layout (restart required)");
-        jLabelMemoryLayout.setToolTipText("<html><div width=\"480px\"> blah blah stuff .</b></div></html>");
 
         
         jComboBoxDialMouseBehaviour.setToolTipText(jLabelDialMouseBehaviour.getToolTipText());
@@ -298,51 +272,6 @@ public class PreferencesFrame extends JFrame {
             }
         });
 
-        // probably a better way to do this but I don't know it!
-        BoardType[] boardTypes = BoardType.values();
-        String[] boardTypeNames = new String[boardTypes.length];
-        for (int i = 0; i < boardTypes.length; i++) {
-            boardTypeNames[i] = boardTypes[i].toString();
-        }
-        jComboBoxBoardType.setModel(new DefaultComboBoxModel<String>(boardTypeNames));
-
-        jComboBoxBoardType.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxBoardTypeActionPerformed(evt);
-            }
-        });
-        jComboBoxBoardType.setToolTipText(jLabelBoardType.getToolTipText());
-        
-        // probably a better way to do this but I don't know it!
-        FirmwareType[] firmwareTypes = FirmwareType.values();
-        String[] firmwareTypeNames = new String[firmwareTypes.length];
-        for (int i = 0; i < firmwareTypes.length; i++) {
-            firmwareTypeNames[i] = firmwareTypes[i].toString();
-        }
-        jComboBoxFirmwareMode.setModel(new DefaultComboBoxModel<String>(firmwareTypeNames));
-
-        jComboBoxFirmwareMode.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxFirmwareModeActionPerformed(evt);
-            }
-        });
-        jComboBoxFirmwareMode.setToolTipText(jLabelFirmwareMode.getToolTipText());
-
-        // probably a better way to do this but I don't know it!
-        MemoryLayoutType[] memorylayoutTypes = MemoryLayoutType.values();
-        String[] memoryLayoutTypeNames = new String[memorylayoutTypes.length];
-        for (int i = 0; i < memorylayoutTypes.length; i++) {
-            memoryLayoutTypeNames[i] = memorylayoutTypes[i].toString();
-        }
-        jComboBoxMemoryLayout.setModel(new DefaultComboBoxModel<String>(memoryLayoutTypeNames));
-
-        jComboBoxMemoryLayout.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxMemoryLayoutTypeActionPerformed(evt);
-            }
-        });
-        jComboBoxMemoryLayout.setToolTipText(jLabelFirmwareMode.getToolTipText());
-        jComboBoxMemoryLayout.setEnabled(prefs.boards.getBoardType() == BoardType.KsolotiGeko);
         
 
         jLabelFavouritesDir.setText("Favourites Dir");
@@ -503,25 +432,6 @@ public class PreferencesFrame extends JFrame {
             }
         });
 
-        jComboBoxDspSafetyLimit.setModel(new DefaultComboBoxModel<String>(new String[] {
-            "Legacy",
-            "Very Safe",
-            "Safe",
-            "Normal",
-            "Risky",
-            "Very Risky"
-        }));
-        jLabelDspSafetyLimit.setText("DSP Safety Limit");
-        jLabelDspSafetyLimit.setToolTipText("Changes the DSP safety limits.\nThe \'very safe\' and \'safe\' settings ensure a stricter DSP overload threshold and make sure all features in your patches work stable.\nIf you encounter frequent USB disconnects from your computer, try a safer setting.\nThe \'risky\' and \'very risky\' settings set the DSP overload threshold a bit higher,\nallowing you to push your patch load further, but with higher risk of glitches and USB disconnects.\nThe \'Legacy\' setting replicates the original Axoloti Patcher behaviour.");
-        jLabelDspSafetyLimit.setEnabled(true);
-
-
-        jComboBoxDspSafetyLimit.setToolTipText(jLabelDspSafetyLimit.getToolTipText());
-        jComboBoxDspSafetyLimit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxDspSafetyLimitPerformed(evt);
-            }
-        });
 
 
         jCheckBoxNoMouseReCenter.setText("Touchscreen Mode");
@@ -624,11 +534,6 @@ public class PreferencesFrame extends JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE)
                             )
 
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelDspSafetyLimit, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(jComboBoxDspSafetyLimit, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
-                            )
 
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelTheme, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
@@ -636,27 +541,6 @@ public class PreferencesFrame extends JFrame {
                                 .addComponent(jComboBoxTheme, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
                             )
 
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelBoardType, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(jComboBoxBoardType, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
-                            )
-
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelMemoryLayout, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(jComboBoxMemoryLayout, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
-                            )
-
-
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelFirmwareMode, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(jComboBoxFirmwareMode, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButtonSave, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
-                                .addGap(15, 15, 15)
-                            )
 
                         )
                         .addContainerGap())
@@ -791,36 +675,12 @@ public class PreferencesFrame extends JFrame {
                             .addComponent(jBackupPatchesOnSDEnabled, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
 
-                        .addGap(15, 15, 15)
-                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                            .addComponent(jLabelDspSafetyLimit)
-                            .addComponent(jComboBoxDspSafetyLimit, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        )
-                        .addGap(5, 5, 5)
 
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelTheme)
                             .addComponent(jComboBoxTheme, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
                         .addGap(5, 5, 5)
-
-                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                            .addComponent(jLabelBoardType)
-                            .addComponent(jComboBoxBoardType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        )
-                        .addGap(5, 5, 5)
-
-                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                            .addComponent(jLabelMemoryLayout)
-                            .addComponent(jComboBoxMemoryLayout, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        )
-                        .addGap(5, 5, 5)
-
-                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                            .addComponent(jLabelFirmwareMode)
-                            .addComponent(jComboBoxFirmwareMode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonSave)
-                        )
 
                     )
 
@@ -841,17 +701,6 @@ public class PreferencesFrame extends JFrame {
     private void jComboBoxDialMouseBehaviourActionPerformed(java.awt.event.ActionEvent evt) {
     }
 
-    private void jComboBoxBoardTypeActionPerformed(java.awt.event.ActionEvent evt) {
-        BoardType board = BoardType.fromString(jComboBoxBoardType.getSelectedItem().toString());
-
-        jComboBoxMemoryLayout.setEnabled(board == BoardType.KsolotiGeko);
-    }
-
-    private void jComboBoxFirmwareModeActionPerformed(java.awt.event.ActionEvent evt) {
-    }
-
-    private void jComboBoxMemoryLayoutTypeActionPerformed(java.awt.event.ActionEvent evt) {
-    }
     
     private void btnFavDirActionPerformed(java.awt.event.ActionEvent evt) {
         fc.resetChoosableFileFilters();
@@ -958,8 +807,6 @@ public class PreferencesFrame extends JFrame {
         SwingUtilities.updateComponentTreeUI(this); /* Preview theme via preferences window */
     }
 
-    private void jComboBoxDspSafetyLimitPerformed(java.awt.event.ActionEvent evt) {
-    }
 
     private void jCheckBoxNoMouseReCenterActionPerformed(java.awt.event.ActionEvent evt) {
     }
@@ -993,22 +840,14 @@ public class PreferencesFrame extends JFrame {
     private JButton jButtonSave;
     private JCheckBox jCheckBoxNoMouseReCenter;
     private JComboBox<String> jComboBoxDialMouseBehaviour;
-    private JComboBox<String> jComboBoxBoardType;
-    private JComboBox<String> jComboBoxMemoryLayout;
-    private JComboBox<String> jComboBoxFirmwareMode;
     private JCheckBox jControllerEnabled;
     private JCheckBox jBackupPatchesOnSDEnabled;
     private JButton jDelLibBtn;
     private JButton jEditLib;
     private JLabel jLabelLibraries;
     private JLabel jLabelPollInterval;
-    private JLabel jLabelDspSafetyLimit;
-    private JComboBox<String> jComboBoxDspSafetyLimit;
     private JLabel jLabelCodeFontSize;
     private JLabel jLabelDialMouseBehaviour;
-    private JLabel jLabelBoardType;
-    private JLabel jLabelMemoryLayout;
-    private JLabel jLabelFirmwareMode;
     private JLabel jLabelFavouritesDir;
     
     private JLabel jLabelUserShortcutTitle;
