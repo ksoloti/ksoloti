@@ -844,7 +844,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuBoard.setText("Board");
 
         jMenuItemSelectCom.setMnemonic('S');
-        jMenuItemSelectCom.setText("Select Device...");
+        jMenuItemSelectCom.setText("Select/Configure Device...");
         jMenuItemSelectCom.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemSelectComActionPerformed(evt);
