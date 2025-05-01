@@ -50,6 +50,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Box;
@@ -363,6 +364,22 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             add(attri);
             attributeInstances.add(attri);
         }
+
+        /* Sort attributes by name length, longest first. Ensures proper replacement */
+        Comparator<AttributeInstance> attrComp = new Comparator<AttributeInstance>() {
+            public int compare(AttributeInstance a1, AttributeInstance a2) {
+
+                /* Compare the lengths of two AttributeInstance's C names (attr_xxxx).
+                 * If a1 is longer than a2, sort it first.
+                 */
+                if (a1.GetCName().length() > a2.GetCName().length()) {
+                    return -1;
+                }
+                /* Else don't change the order */
+                return 0;
+            }
+        };
+        attributeInstances.sort(attrComp); 
 
         for (Parameter p : getType().params) {
             ParameterInstance pin = p.CreateInstance(this);
