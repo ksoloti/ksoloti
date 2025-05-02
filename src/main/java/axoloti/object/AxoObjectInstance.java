@@ -476,10 +476,6 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
             if (isAllFrozen) {
                 popm_freezeAllParameters.setText("Unfreeze all parameters");
-                popm_freezeAllParameters.setMnemonic('U');
-            }
-            else {
-                popm_freezeAllParameters.setMnemonic('F');
             }
             
             final boolean f = isAllFrozen; /* "variable defined in an enclosing scope must be final" workaround */
@@ -493,6 +489,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     getPatch().SetDirty();
                 }
             });
+            popm_freezeAllParameters.setMnemonic('F');
             popup.add(popm_freezeAllParameters);
         }
 
