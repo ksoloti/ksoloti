@@ -116,7 +116,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     private void refreshTooltip() {
         String tooltiptxt = "<html>";
         tooltiptxt += "<b>" + typeName + "</b>";
-        if ((getType().sDescription != null) && (!getType().sDescription.isEmpty())) {
+        if (getType().sDescription != null && !getType().sDescription.isEmpty()) {
             /* Chop up string and put it back together with line breaks */
             /* TODO: turn this into a callable routine */
             String[] splitStrings = getType().sDescription.split(" ");
@@ -135,10 +135,10 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
             tooltiptxt += "<p><br/>" + putBackTogetherString.replaceAll("\n", "<br/>") + "<br/>";
         }
-        if ((getType().sAuthor != null) && (!getType().sAuthor.isEmpty())) {
+        if (getType().sAuthor != null && !getType().sAuthor.isEmpty()) {
             tooltiptxt += "<p><br/><i>Author: " + getType().sAuthor + "</p>";
         }
-        if ((getType().sObjFilePath != null) && (!getType().sObjFilePath.isEmpty())) {
+        if (getType().sObjFilePath != null && !getType().sObjFilePath.isEmpty()) {
             tooltiptxt += "<p><i>Path: " + getType().sObjFilePath + "</p>";
         }
         if (IndexLabel != null && !IndexLabel.getText().equals("")) {
@@ -671,7 +671,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     @Override
     public String GenerateInstanceDataDeclaration2() {
         String c = "\n";
-        if (getType().sLocalData != null) {
+        if (getType().sLocalData != null && !getType().sLocalData.isEmpty()) {
             c += I+I + "/* Object Local Code Tab */\n";
             String s = getType().sLocalData;
             s = I+I + s.replace("\n", "\n\t\t");
@@ -897,7 +897,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             c += s.replace("\n", "\n\t\t\t");
         }
 
-        if (getType().sInitCode != null) {
+        if (getType().sInitCode != null && !getType().sInitCode.isEmpty()) {
             c += "\n" + I+I+I + "/* Object Init Code Tab */\n";
             String s = getType().sInitCode;
             for (AttributeInstance a : attributeInstances) {
@@ -966,7 +966,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public String GenerateDisposeCodePlusPlus(String classname) {
         String h = I+I + "public: void Dispose() {\n";
         String c = "";
-        if (getType().sDisposeCode != null) {
+        if (getType().sDisposeCode != null && !getType().sDisposeCode.isEmpty()) {
             c += "\n" + I+I+I + "/* Object Dispose Code Tab */\n";
             String s = getType().sDisposeCode;
             s = I+I+I + s.replace("\n", "\n\t\t\t");
@@ -981,7 +981,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     public String GenerateKRateCodePlusPlus(String vprefix) {
         String h = "\n" + I+I+I + "/* Object K-Rate Code Tab */\n";
-        if (getType().sKRateCode != null) {
+        if (getType().sKRateCode != null && !getType().sKRateCode.isEmpty()) {
             String s = getType().sKRateCode;
             s = I+I+I + s.replace("\n", "\n\t\t\t");
 
@@ -998,7 +998,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     }
 
     public String GenerateSRateCodePlusPlus(String vprefix) {
-        if (getType().sSRateCode != null) {
+        if (getType().sSRateCode != null && !getType().sSRateCode.isEmpty()) {
             String s = "\n" + I+I+I + "uint8_t buffer_index;\n"
                             + I+I+I + "for (buffer_index = 0; buffer_index < BUFSIZE; buffer_index++) {\n"
                      + "\n" + I+I+I+I + "/* Object S-Rate Code Tab */\n"
@@ -1101,7 +1101,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     @Override
     public String GenerateCodeMidiHandler(String vprefix) {
         String s = "";
-        if (getType().sMidiCode != null) {
+        if (getType().sMidiCode != null && !getType().sMidiCode.isEmpty()) {
             s += "\n" + I+I+I + "/* Object Midi Handler */\n";
             s += I+I+I + getType().sMidiCode.replace("\n", "\n\t\t\t");
         }
@@ -1127,7 +1127,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     @Override
     public String GenerateCallMidiHandler() {
-        if ((getType().sMidiCode != null) && (!getType().sMidiCode.isEmpty())) {
+        if (getType().sMidiCode != null && !getType().sMidiCode.isEmpty()) {
             return I+I + getCInstanceName() + "_i.MidiInHandler(dev, port, status, data1, data2);\n";
         }
         for (ParameterInstance pi : getParameterInstances()) {
