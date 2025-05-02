@@ -897,8 +897,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             c += s.replace("\n", "\n\t\t\t");
         }
 
-        c += "\n" + I+I+I + "/* Object Init Code Tab */\n";
         if (getType().sInitCode != null) {
+            c += "\n" + I+I+I + "/* Object Init Code Tab */\n";
             String s = getType().sInitCode;
             for (AttributeInstance a : attributeInstances) {
                 s = s.replace(a.GetCName(), a.CValue());
@@ -967,7 +967,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         String h = I+I + "public: void Dispose() {\n";
         String c = "";
         if (getType().sDisposeCode != null) {
-            c += I+I+I + "/* Object Dispose Code Tab */\n";
+            c += "\n" + I+I+I + "/* Object Dispose Code Tab */\n";
             String s = getType().sDisposeCode;
             s = I+I+I + s.replace("\n", "\n\t\t\t");
             for (AttributeInstance a : attributeInstances) {

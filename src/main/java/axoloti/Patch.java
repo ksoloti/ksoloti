@@ -1489,13 +1489,13 @@ public class Patch {
             AxoObjectInstanceAbstract o = objectInstances.get(i);
             String s = o.getCInstanceName();
             if (!s.isEmpty()) {
-                c += I+I + o.getCInstanceName() + "_i.Dispose();\n";
+                c += o.getCInstanceName() + "_i.Dispose();\n";
             }
         }
         if (controllerInstance != null) {
             String s = controllerInstance.getCInstanceName();
             if (!s.isEmpty()) {
-                c += I+I + controllerInstance.getCInstanceName() + "_i.Dispose();\n";
+                c += controllerInstance.getCInstanceName() + "_i.Dispose();\n";
             }
         }
 
