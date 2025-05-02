@@ -477,6 +477,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     for (ParameterInstance pi : parameterInstances) {
                         pi.setFrozen(!f);
                     }
+                    getPatch().SetDirty();
                 }
             });
             popup.add(popm_freezeAllParameters);
