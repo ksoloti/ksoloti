@@ -705,8 +705,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         for (ParameterInstance p : parameterInstances) {
             if (p.isFrozen()) {
                 
-                c += I+I + "// Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + "_" + p.getLegalName() + "\n";
-                c += I+I + "const int32_t " + p.GetCName() + " = ";
+                c += I+I + "static constexpr int32_t " + p.GetCName() + " = ";
                 /* Do parameter value mapping in Java so save MCU memory.
                  * These are the same functions like in firmware/parameter_functions.h.
                  */
@@ -722,19 +721,19 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     unsignedClampedVal = unsignedClampedVal < S28_MIN ? S28_MIN : unsignedClampedVal > S28_MAX ? S28_MAX : unsignedClampedVal;
 
                     if (pfun.equals("pfun_signed_clamp")) {
-                        c += signedClampedVal + "; /* pfun_signed_clamp */\n";
+                        c += signedClampedVal + "; /* (pfun_signed_clamp)";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp")) {
-                        c += unsignedClampedVal + "; /* pfun_unsigned_clamp */\n";
+                        c += unsignedClampedVal + "; /* (pfun_unsigned_clamp)";
                     }
 
                     else if (pfun.equals("pfun_signed_clamp_fullrange")) {
-                        c += (signedClampedVal << 4) + "; /* pfun_signed_clamp_fullrange */\n";
+                        c += (signedClampedVal << 4) + "; /* (pfun_signed_clamp_fullrange)";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_fullrange")) {
-                        c += (unsignedClampedVal << 4) + "; /* pfun_unsigned_clamp_fullrange */\n";
+                        c += (unsignedClampedVal << 4) + "; /* (pfun_unsigned_clamp_fullrange)";
                     }
 
                     else if (pfun.equals("pfun_signed_clamp_squarelaw")) {
@@ -746,13 +745,13 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         else {
                             mappedVal = -((psat * psat) >> 31);
                         }
-                        c += (int) mappedVal + "; /* pfun_signed_clamp_squarelaw */;\n";
+                        c += (int) mappedVal + "; /* (pfun_signed_clamp_squarelaw);";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_squarelaw")) {
                         long psat = unsignedClampedVal;
                         long mappedVal = ((psat * psat) >> 31);
-                        c += (int) mappedVal + "; /* pfun_unsigned_clamp_squarelaw */\n";
+                        c += (int) mappedVal + "; /* (pfun_unsigned_clamp_squarelaw)";
                     }
 
                     else if (pfun.equals("pfun_signed_clamp_fullrange_squarelaw")) {
@@ -764,13 +763,13 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         else {
                             mappedVal = -((psat * psat) >> 23);
                         }
-                        c += (int) mappedVal + "; /* pfun_signed_clamp_fullrange_squarelaw */\n";
+                        c += (int) mappedVal + "; /* (pfun_signed_clamp_fullrange_squarelaw)";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_fullrange_squarelaw")) {
                         long psat = (long) unsignedClampedVal;
                         long mappedVal = ((psat * psat) >> 23);
-                        c += (int) mappedVal + "; /* pfun_unsigned_clamp_fullrange_squarelaw */\n";
+                        c += (int) mappedVal + "; /* (pfun_unsigned_clamp_fullrange_squarelaw)";
                     }
 
                     else if (pfun.equals("pfun_kexpltime") || pfun.equals("pfun_kexpdtime")) {
@@ -837,16 +836,17 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         int final_val = final_bd.intValue();
 
                         if (pfun.equals("pfun_kexpltime")) {
-                            c += final_val + "; /* pfun_kexpltime */\n";
+                            c += final_val + "; /* (pfun_kexpltime)";
                         }
                         else if (pfun.equals("pfun_kexpdtime")) {
-                            c += (0x7FFFFFFF - final_val) + "; /* pfun_kexpdtime */\n";
+                            c += (0x7FFFFFFF - final_val) + "; /* (pfun_kexpdtime)";
                         }
                     }
                 }
                 else {
-                    c += p.GetValueRaw() + ";\n"; 
+                    c += p.GetValueRaw() + "; /*"; 
                 }
+                c += " Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + ":" + p.getLegalName() + " */\n";
             }
             else {
                 c += I+I + p.GenerateCodeDeclaration(classname);
