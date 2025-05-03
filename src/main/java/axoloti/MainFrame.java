@@ -1152,7 +1152,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1);
             patch1.GetQCmdProcessor().AppendToQueue(cp);
             qcmdprocessor.WaitQueueFinished();
-            Thread.sleep(3000);
+            Thread.sleep(4000);
 
             pf.Close();
             status = cp.success();
