@@ -48,7 +48,8 @@ public class CharEscape {
         s = s.replaceAll("\\,", "_comma_");   /* Mildly tested! might break patch compilation */
         s = s.replaceAll("\\?", "_questn_");  /* Mildly tested! might break patch compilation */
         s = s.replaceAll("\\;", "_semicln_"); /* Mildly tested! might break patch compilation */
-        s = s.replaceAll("\\\"", "_quot_");   /* Mildly tested! might break patch compilation */
+        s = s.replaceAll("\\\'", "_squot_");  /* Mildly tested! might break patch compilation */
+        s = s.replaceAll("\\\"", "_dquot_");  /* Mildly tested! might break patch compilation */
         return s;
     }
 }
