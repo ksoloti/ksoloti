@@ -1137,32 +1137,35 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         Strategy strategy = new AnnotationStrategy();
         Serializer serializer = new Persister(strategy);
+
+        boolean status = false;
         try {
-            boolean status;
             PatchGUI patch1 = serializer.read(PatchGUI.class, f);
             PatchFrame pf = new PatchFrame(patch1, qcmdprocessor);
             pf.createBufferStrategy(1);
             patch1.setFileNamePath(f.getPath());
             patch1.PostContructor();
+
             patch1.WriteCode();
-            qcmdprocessor.WaitQueueFinished();
             Thread.sleep(1000);
+
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1);
             patch1.GetQCmdProcessor().AppendToQueue(cp);
             qcmdprocessor.WaitQueueFinished();
-            pf.Close();
             Thread.sleep(3000);
+
+            pf.Close();
             status = cp.success();
             if (status == false) {
                 LOGGER.log(Level.SEVERE, "COMPILATION FAILED: {0}\n", f.getPath());
             }
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
-            return status;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "COMPILATION FAILED: " + f.getPath() + "\n", ex);
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
-            return false;
         }
+        return status;
     }
 
 
