@@ -112,19 +112,6 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     boolean deferredObjTypeUpdate = false;
 
-    Comparator<ParameterInstance> paramComp = new Comparator<ParameterInstance>() {
-        public int compare(ParameterInstance a1, ParameterInstance a2) {
-
-            /* Compare the lengths of two ParameterInstance's C names (param_xxxx).
-                * If a1 is longer than a2, sort it first.
-                */
-            if (a1.GetCName().length() > a2.GetCName().length()) {
-                return -1;
-            }
-            /* Else don't change the order */
-            return 0;
-        }
-    };
 
     private void refreshTooltip() {
         String tooltiptxt = "<html>";
@@ -716,9 +703,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         for (ParameterInstance p : parameterInstances) {
             if (p.isFrozen()) {
                 
-                c += I+I + "static const volatile int32_t& GET_" + p.GetCName().toUpperCase() + "() __attribute__((noinline)) {\n";
-                c += I+I+I + "/* Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + ":" + p.getLegalName() + " */\n";
-                c += I+I+I + "static const volatile int32_t val = ";
+                c += I+I + "static constexpr int32_t " + p.GetCName() + " = ";
                 /* Do parameter value mapping in Java so save MCU memory.
                  * These are the same functions like in firmware/parameter_functions.h.
                  */
@@ -734,19 +719,19 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     unsignedClampedVal = unsignedClampedVal < S28_MIN ? S28_MIN : unsignedClampedVal > S28_MAX ? S28_MAX : unsignedClampedVal;
 
                     if (pfun.equals("pfun_signed_clamp")) {
-                        c += signedClampedVal + "; /* pfun_signed_clamp */";
+                        c += signedClampedVal + "; /* (pfun_signed_clamp)";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp")) {
-                        c += unsignedClampedVal + "; /* pfun_unsigned_clamp */";
+                        c += unsignedClampedVal + "; /* (pfun_unsigned_clamp)";
                     }
 
                     else if (pfun.equals("pfun_signed_clamp_fullrange")) {
-                        c += (signedClampedVal << 4) + "; /* pfun_signed_clamp_fullrange */";
+                        c += (signedClampedVal << 4) + "; /* (pfun_signed_clamp_fullrange)";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_fullrange")) {
-                        c += (unsignedClampedVal << 4) + "; /* pfun_unsigned_clamp_fullrange */";
+                        c += (unsignedClampedVal << 4) + "; /* (pfun_unsigned_clamp_fullrange)";
                     }
 
                     else if (pfun.equals("pfun_signed_clamp_squarelaw")) {
@@ -758,13 +743,13 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         else {
                             mappedVal = -((psat * psat) >> 31);
                         }
-                        c += (int) mappedVal + "; /* pfun_signed_clamp_squarelaw */";
+                        c += (int) mappedVal + "; /* (pfun_signed_clamp_squarelaw);";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_squarelaw")) {
                         long psat = unsignedClampedVal;
                         long mappedVal = ((psat * psat) >> 31);
-                        c += (int) mappedVal + "; /* pfun_unsigned_clamp_squarelaw */";
+                        c += (int) mappedVal + "; /* (pfun_unsigned_clamp_squarelaw)";
                     }
 
                     else if (pfun.equals("pfun_signed_clamp_fullrange_squarelaw")) {
@@ -776,13 +761,13 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         else {
                             mappedVal = -((psat * psat) >> 23);
                         }
-                        c += (int) mappedVal + "; /* pfun_signed_clamp_fullrange_squarelaw */";
+                        c += (int) mappedVal + "; /* (pfun_signed_clamp_fullrange_squarelaw)";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_fullrange_squarelaw")) {
                         long psat = (long) unsignedClampedVal;
                         long mappedVal = ((psat * psat) >> 23);
-                        c += (int) mappedVal + "; /* pfun_unsigned_clamp_fullrange_squarelaw */";
+                        c += (int) mappedVal + "; /* (pfun_unsigned_clamp_fullrange_squarelaw)";
                     }
 
                     else if (pfun.equals("pfun_kexpltime") || pfun.equals("pfun_kexpdtime")) {
@@ -849,18 +834,17 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         int final_val = final_bd.intValue();
 
                         if (pfun.equals("pfun_kexpltime")) {
-                            c += final_val + "; /* pfun_kexpltime */";
+                            c += final_val + "; /* (pfun_kexpltime)";
                         }
                         else if (pfun.equals("pfun_kexpdtime")) {
-                            c += (0x7FFFFFFF - final_val) + "; /* pfun_kexpdtime */";
+                            c += (0x7FFFFFFF - final_val) + "; /* (pfun_kexpdtime)";
                         }
                     }
                 }
                 else {
-                    c += p.GetValueRaw() + ";"; 
+                    c += p.GetValueRaw() + "; /*"; 
                 }
-                c += "\n" + I+I+I + "return val;\n"
-                          + I+I + "}\n";
+                c += " Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + ":" + p.getLegalName() + " */\n";
             }
             else {
                 c += I+I + p.GenerateCodeDeclaration(classname);
@@ -870,14 +854,6 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         for (AttributeInstance a : attributeInstances) {
             if (a.CValue() != null) {
                 c = c.replaceAll(a.GetCName(), a.CValue());
-            }
-        }
-
-        ArrayList<ParameterInstance> paramInstSorted = (ArrayList<ParameterInstance>) parameterInstances.clone();
-        paramInstSorted.sort(paramComp);
-        for (ParameterInstance p : paramInstSorted) {
-            if (p.isFrozen()) {
-                c = c.replaceAll(p.GetCName(), "GET_" + p.GetCName().toUpperCase() + "()");
             }
         }
         return c + "\n";
@@ -1011,14 +987,6 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 s = s.replaceAll(a.GetCName(), a.CValue());
             }
 
-            ArrayList<ParameterInstance> paramInstSorted = (ArrayList<ParameterInstance>) parameterInstances.clone();
-            paramInstSorted.sort(paramComp);
-            for (ParameterInstance p : paramInstSorted) {
-                if (p.isFrozen()) {
-                    s = s.replaceAll(p.GetCName(), "GET_" + p.GetCName().toUpperCase() + "()");
-                }
-            }
-
             s = s.replace("CGENATTR_instancename", getCInstanceName());
             s = s.replace("CGENATTR_legalname", getLegalName());
 
@@ -1038,19 +1006,11 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             for (AttributeInstance a : attributeInstances) {
                 s = s.replaceAll(a.GetCName(), a.CValue());
             }
-
-            for (ParameterInstance p : parameterInstances) {
-                if (p.isFrozen()) {
-                    s = s.replaceAll(p.GetCName(), "GET_" + p.GetCName().toUpperCase() + "()");
-                }
-            }
-
             for (InletInstance i : inletInstances) {
                 if (i.GetDataType() instanceof Frac32buffer) {
                     s = s.replaceAll(i.GetCName(), i.GetCName() + "[buffer_index]");
                 }
             }
-
             for (OutletInstance i : outletInstances) {
                 if (i.GetDataType() instanceof Frac32buffer) {
                     s = s.replaceAll(i.GetCName(), i.GetCName() + "[buffer_index]");
