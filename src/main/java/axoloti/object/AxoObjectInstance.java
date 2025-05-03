@@ -870,10 +870,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     c += p.GetValueRaw() + ";"; 
                 }
                 c += "\n";
-            }
-        }
-        for (ParameterInstance p : parameterInstances) {
-            if (p.isFrozen()) {
+
                 if (p.parameter.PropagateToChild != null) {
                     // TODO: This is probably where forwarding the frozen value to the child parameter should happen?
                 }
@@ -947,13 +944,15 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         }
 
         String d = I+I + "public: void Init(" + classname + " *_parent";
+
         if (!displayInstances.isEmpty()) {
             for (DisplayInstance p : displayInstances) {
                 if (p.display.getLength() > 0) {
                     d += ", ";
                     if (p.display.getDatatype().isPointer()) {
                         d += p.display.getDatatype().CType() + " " + p.GetCName();
-                    } else {
+                    }
+                    else {
                         d += p.display.getDatatype().CType() + " &" + p.GetCName();
                     }
                 }
@@ -1086,7 +1085,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     @Override
     public String GenerateClass(String ClassName) {
         String s  = I + "class " + getCInstanceName() + " {\n\n"
-                  + I+I + "public: // v1\n\n"
+                  + I+I + "public: // v1\n"
                   + I+I + ClassName + " *parent;\n";
 
         s += GenerateInstanceCodePlusPlus(ClassName);
