@@ -997,7 +997,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     public String GenerateSRateCodePlusPlus(String vprefix) {
         if (getType().sSRateCode != null && !getType().sSRateCode.isEmpty()) {
-            String s = "\n" + I+I+I + "uint8_t buffer_index;\n"
+            String s = "\n" + I+I+I + "uint32_t buffer_index;\n"
                             + I+I+I + "for (buffer_index = 0; buffer_index < BUFSIZE; buffer_index++) {\n"
                      + "\n" + I+I+I+I + "/* Object S-Rate Code Tab */\n"
                             + I+I+I+I + getType().sSRateCode.replace("\n", "\n\t\t\t\t")
