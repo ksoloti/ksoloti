@@ -26,30 +26,29 @@ public class CharEscape {
 
     static public String charEscape(String s) {
         s = s.replaceAll("_", "__");
-        s = s.replaceAll(" ", "_SPACE_");
-        s = s.replaceAll("\\*", "_STAR_");
-        s = s.replaceAll("/", "_SLASH_");
-        s = s.replaceAll("-", "_DASH_");
-        s = s.replaceAll("\\+", "_PLUS_");
-        s = s.replaceAll("\\~", "_TILDE_");
-        s = s.replaceAll("%", "_PCT_");
-        s = s.replaceAll("@", "_AT_");
-        s = s.replaceAll("!", "_EXCL_");
-        s = s.replaceAll("#", "_HASH_");
-        s = s.replaceAll("\\$", "_DOLLAR_");
-        s = s.replaceAll("&", "_AMP_");
-        s = s.replaceAll("\\(", "_BO_");
-        s = s.replaceAll("\\)", "_BC_");
-        s = s.replaceAll("\\>", "_GT_");
-        s = s.replaceAll("\\<", "_LT_");
-        s = s.replaceAll("=", "_EQ_");
-        s = s.replaceAll(":", "_COLON_");
-        s = s.replaceAll("\\.", "_DOT_");
-        s = s.replaceAll("\\,", "_COMMA_");    /* Mildly tested! might break patch compilation */
-        s = s.replaceAll("\\?", "_QUESTN_");   /* Mildly tested! might break patch compilation */
-        s = s.replaceAll("\\;", "_SEMICLN_");  /* Mildly tested! might break patch compilation */
-        s = s.replaceAll("\\\'", "_SQUOT_");   /* Mildly tested! might break patch compilation */
-        s = s.replaceAll("\\\"", "_DQUOT_");   /* Mildly tested! might break patch compilation */
+        s = s.replaceAll(" ", "_space_");
+        s = s.replaceAll("\\*", "_star_");
+        s = s.replaceAll("/", "_slash_");
+        s = s.replaceAll("-", "_dash_");
+        s = s.replaceAll("\\+", "_plus_");
+        s = s.replaceAll("\\~", "_tilde_");
+        s = s.replaceAll("%", "_pct_");
+        s = s.replaceAll("@", "_at_");
+        s = s.replaceAll("!", "_excl_");
+        s = s.replaceAll("#", "_hash_");
+        s = s.replaceAll("\\$", "_dollar_");
+        s = s.replaceAll("&", "_amp_");
+        s = s.replaceAll("\\(", "_bo_");
+        s = s.replaceAll("\\)", "_bc_");
+        s = s.replaceAll("\\>", "_gt_");
+        s = s.replaceAll("\\<", "_lt_");
+        s = s.replaceAll("=", "_eq_");
+        s = s.replaceAll(":", "_colon_");
+        s = s.replaceAll("\\.", "_dot_");
+        s = s.replaceAll("\\,", "_comma_");   /* Mildly tested! might break patch compilation */
+        s = s.replaceAll("\\?", "_questn_");  /* Mildly tested! might break patch compilation */
+        s = s.replaceAll("\\;", "_semicln_"); /* Mildly tested! might break patch compilation */
+        s = s.replaceAll("\\\"", "_quot_");   /* Mildly tested! might break patch compilation */
         return s;
     }
 }
