@@ -1109,7 +1109,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public String GenerateCodeMidiHandler(String vprefix) {
         String s = "";
         if (getType().sMidiCode != null && !getType().sMidiCode.isEmpty()) {
-            s += "\n" + I+I+I + "/* Object Midi Handler */\n";
+            s += I+I+I + "/* Object Midi Handler */\n";
             s += I+I+I + getType().sMidiCode.replace("\n", "\n\t\t\t");
         }
         for (ParameterInstance i : parameterInstances) {
