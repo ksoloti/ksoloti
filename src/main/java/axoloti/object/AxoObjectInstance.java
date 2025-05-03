@@ -715,37 +715,13 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         String c = "";
         for (ParameterInstance p : parameterInstances) {
             if (p.isFrozen()) {
-                c += I+I + "int32_t *" + p.GetCName().toUpperCase() + ";\n";
-            }
-            else {
-                c += I+I + p.GenerateCodeDeclaration(classname);
-            }
-        }
-        c += GenerateInstanceDataDeclaration2();
-        for (AttributeInstance a : attributeInstances) {
-            if (a.CValue() != null) {
-                c = c.replaceAll(a.GetCName(), a.CValue());
-            }
-        }
-
-        return c + "\n";
-    }
-
-    @Override
-    public String GenerateInitCodePlusPlus(String classname) {
-        String c = "";
-//        if (hasStruct())
-//            c = "  void " + GenerateInitFunctionName() + "(" + GenerateStructName() + " * x ) {\n";
-//        else
-//        if (!classname.equals("one"))
-        c += I+I+I + "parent = _parent;\n";
-
-        for (ParameterInstance p : parameterInstances) {
-            if (p.isFrozen()) {
+                
+                c += I+I + "static const volatile int32_t& GET_" + p.GetCName().toUpperCase() + "() __attribute__((noinline)) {\n";
+                c += I+I+I + "/* Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + ":" + p.getLegalName() + " */\n";
+                c += I+I+I + "static const volatile int32_t val = ";
                 /* Do parameter value mapping in Java so save MCU memory.
                  * These are the same functions like in firmware/parameter_functions.h.
                  */
-                c += I+I+I + "static int32_t _" + p.GetCName().toUpperCase() + " __attribute__((section(\".sram3\"))) = ";
                 String pfun = p.GetPFunction();
                 if (pfun != null && !pfun.equals("")) {
                     int S28_MAX = (1<<27)-1;
@@ -883,7 +859,44 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 else {
                     c += p.GetValueRaw() + ";"; 
                 }
-                c += "\n" + I+I+I + p.GetCName().toUpperCase() + " = &_" + p.GetCName().toUpperCase() + ";\n";
+                c += "\n" + I+I+I + "return val;\n"
+                          + I+I + "}\n";
+            }
+            else {
+                c += I+I + p.GenerateCodeDeclaration(classname);
+            }
+        }
+        c += GenerateInstanceDataDeclaration2();
+        for (AttributeInstance a : attributeInstances) {
+            if (a.CValue() != null) {
+                c = c.replaceAll(a.GetCName(), a.CValue());
+            }
+        }
+
+        ArrayList<ParameterInstance> paramInstSorted = (ArrayList<ParameterInstance>) parameterInstances.clone();
+        paramInstSorted.sort(paramComp);
+        for (ParameterInstance p : paramInstSorted) {
+            if (p.isFrozen()) {
+                c = c.replaceAll(p.GetCName(), "GET_" + p.GetCName().toUpperCase() + "()");
+            }
+        }
+        return c + "\n";
+    }
+
+    @Override
+    public String GenerateInitCodePlusPlus(String classname) {
+        String c = "";
+//        if (hasStruct())
+//            c = "  void " + GenerateInitFunctionName() + "(" + GenerateStructName() + " * x ) {\n";
+//        else
+//        if (!classname.equals("one"))
+        c += I+I+I + "parent = _parent;\n";
+
+        for (ParameterInstance p : parameterInstances) {
+            if (p.isFrozen()) {
+                if (p.parameter.PropagateToChild != null) {
+                    // TODO: This is probably where forwarding the frozen value to the child parameter should happen?
+                }
             }
             else {
                 if (p.parameter.PropagateToChild != null) {
@@ -1002,7 +1015,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             paramInstSorted.sort(paramComp);
             for (ParameterInstance p : paramInstSorted) {
                 if (p.isFrozen()) {
-                    s = s.replaceAll(p.GetCName(), "*" + p.GetCName().toUpperCase());
+                    s = s.replaceAll(p.GetCName(), "GET_" + p.GetCName().toUpperCase() + "()");
                 }
             }
 
@@ -1026,11 +1039,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 s = s.replaceAll(a.GetCName(), a.CValue());
             }
 
-            ArrayList<ParameterInstance> paramInstSorted = (ArrayList<ParameterInstance>) parameterInstances.clone();
-            paramInstSorted.sort(paramComp);
-            for (ParameterInstance p : paramInstSorted) {
+            for (ParameterInstance p : parameterInstances) {
                 if (p.isFrozen()) {
-                    s = s.replaceAll(p.GetCName(), "*" + p.GetCName().toUpperCase());
+                    s = s.replaceAll(p.GetCName(), "GET_" + p.GetCName().toUpperCase() + "()");
                 }
             }
 
