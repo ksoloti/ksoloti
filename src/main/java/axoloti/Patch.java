@@ -1208,7 +1208,7 @@ public class Patch {
     }
 
     String GeneratePexchAndDisplayCodeV() {
-        String c = "\n";
+        String c = "";
         c += I + "static const uint16_t NPEXCH = " + ParameterInstances.size() + ";\n";
         c += I + "ParameterExchange_t PExch[NPEXCH];\n";
         c += I + "int32_t displayVector[" + (displayDataLength + 3) + "];\n";
@@ -1223,9 +1223,9 @@ public class Patch {
 
     String GenerateObjectCode(String classname) {
         String c = "";
-        int k = 0;
-
+        
         if (Modulators.size() > 0) {
+            int k = 0;
             c += "\n" + I + "/* Modsource defines */\n";
             for (Modulator m : Modulators) {
                 c += I + "static const int32_t " + m.getCName() + " = " + k + ";\n";
@@ -1233,12 +1233,14 @@ public class Patch {
             }
         }
 
-        c += "\n" + I + "/* Parameter instance indices */\n";
-        k = 0;
-        for (ParameterInstance p : ParameterInstances) {
-            if (!p.isFrozen()) {
-                c += I + "static const uint16_t PARAM_INDEX_" + p.GetObjectInstance().getLegalName() + "_" + p.getLegalName() + " = " + k + ";\n";
-                k++;
+        if (ParameterInstances.size() > 0) {
+            int k = 0;
+            c += "\n" + I + "/* Parameter instance indices */\n";
+            for (ParameterInstance p : ParameterInstances) {
+                if (!p.isFrozen()) {
+                    c += I + "static const uint16_t PARAM_INDEX_" + p.GetObjectInstance().getLegalName() + "_" + p.getLegalName() + " = " + k + ";\n";
+                    k++;
+                }
             }
         }
 
@@ -1246,10 +1248,13 @@ public class Patch {
             c += "\n" + I + "/* Controller class */\n";
             c += controllerInstance.GenerateClass(classname);
         }
+
         c += "\n" + I + "/* Object classes */\n";
+
         for (AxoObjectInstanceAbstract o : objectInstances) {
             c += o.GenerateClass(classname);
         }
+
         if (controllerInstance != null) {
             c += "\n" + I + "/* Controller instance */\n";
             String s = controllerInstance.getCInstanceName();
@@ -1273,6 +1278,7 @@ public class Patch {
                 c += I + n.CType() + " " + n.CName() + "Latch" + ";\n";
             }
         }
+
         return c + "\n";
     }
 
@@ -1285,7 +1291,7 @@ public class Patch {
 
     String GenerateStructCodePlusPlus(String classname, String parentclassname) {
         String c = "";
-        c += "class " + classname + " {\n";
+        c += "class " + classname + " {\n\n";
         c += I + "public:\n";
         c += GenerateStructCodePlusPlusSub(parentclassname);
         return c;
@@ -1300,7 +1306,7 @@ public class Patch {
             int[] dp = DistillPreset(i + 1);
             c += I+I+I + "{\n";
             for (int j = 0; j < settings.GetNPresetEntries(); j++) {
-                c += I+I+I + "{" + dp[j * 2] + ", " + dp[j * 2 + 1] + "}";
+                c += I+I+I+I + "{" + dp[j * 2] + ", " + dp[j * 2 + 1] + "}";
                 if (j != settings.GetNPresetEntries() - 1) {
                     c += ",\n";
                 }
@@ -1489,13 +1495,13 @@ public class Patch {
             AxoObjectInstanceAbstract o = objectInstances.get(i);
             String s = o.getCInstanceName();
             if (!s.isEmpty()) {
-                c += o.getCInstanceName() + "_i.Dispose();\n";
+                c += I+I + o.getCInstanceName() + "_i.Dispose();\n";
             }
         }
         if (controllerInstance != null) {
             String s = controllerInstance.getCInstanceName();
             if (!s.isEmpty()) {
-                c += controllerInstance.getCInstanceName() + "_i.Dispose();\n";
+                c += I+I + controllerInstance.getCInstanceName() + "_i.Dispose();\n";
             }
         }
 
@@ -1969,7 +1975,7 @@ public class Patch {
         }
 
         c += "\nvoid xpatch_init2(uint32_t fwid);\n\n"
-                + "extern \"C\" __attribute__ ((section(\".boot\"))) void xpatch_init(uint32_t fwid) {\n"
+                + "extern \"C\" __attribute__((section(\".boot\"))) void xpatch_init(uint32_t fwid) {\n"
            + I + "xpatch_init2(fwid);\n"
                 + "}\n\n";
 

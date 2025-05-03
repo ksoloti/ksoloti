@@ -702,8 +702,33 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         String c = "";
         for (ParameterInstance p : parameterInstances) {
             if (p.isFrozen()) {
+                c += I+I + "int32_t " + p.GetCName() + "; /* Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + ":" + p.getLegalName() + " */\n";
+            }
+            else {
+                c += I+I + p.GenerateCodeDeclaration(classname);
+            }
+        }
+        c += GenerateInstanceDataDeclaration2();
+        for (AttributeInstance a : attributeInstances) {
+            if (a.CValue() != null) {
+                c = c.replaceAll(a.GetCName(), a.CValue());
+            }
+        }
+        return c + "\n";
+    }
+
+    @Override
+    public String GenerateInitCodePlusPlus(String classname) {
+        String c = "";
+//        if (hasStruct())
+//            c = "  void " + GenerateInitFunctionName() + "(" + GenerateStructName() + " * x ) {\n";
+//        else
+//        if (!classname.equals("one"))
+        c += I+I+I + "parent = _parent;\n";
+        for (ParameterInstance p : parameterInstances) {
+            if (p.isFrozen()) {
                 
-                c += I+I + "static constexpr int32_t " + p.GetCName() + " = ";
+                c += I+I+I + p.GetCName() + " = ";
                 /* Do parameter value mapping in Java so save MCU memory.
                  * These are the same functions like in firmware/parameter_functions.h.
                  */
@@ -719,19 +744,19 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                     unsignedClampedVal = unsignedClampedVal < S28_MIN ? S28_MIN : unsignedClampedVal > S28_MAX ? S28_MAX : unsignedClampedVal;
 
                     if (pfun.equals("pfun_signed_clamp")) {
-                        c += signedClampedVal + "; /* (pfun_signed_clamp)";
+                        c += signedClampedVal + "; /* pfun_signed_clamp */";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp")) {
-                        c += unsignedClampedVal + "; /* (pfun_unsigned_clamp)";
+                        c += unsignedClampedVal + "; /* pfun_unsigned_clamp */";
                     }
 
                     else if (pfun.equals("pfun_signed_clamp_fullrange")) {
-                        c += (signedClampedVal << 4) + "; /* (pfun_signed_clamp_fullrange)";
+                        c += (signedClampedVal << 4) + "; /* pfun_signed_clamp_fullrange */";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_fullrange")) {
-                        c += (unsignedClampedVal << 4) + "; /* (pfun_unsigned_clamp_fullrange)";
+                        c += (unsignedClampedVal << 4) + "; /* pfun_unsigned_clamp_fullrange */";
                     }
 
                     else if (pfun.equals("pfun_signed_clamp_squarelaw")) {
@@ -743,13 +768,13 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         else {
                             mappedVal = -((psat * psat) >> 31);
                         }
-                        c += (int) mappedVal + "; /* (pfun_signed_clamp_squarelaw);";
+                        c += (int) mappedVal + "; /* pfun_signed_clamp_squarelaw */";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_squarelaw")) {
                         long psat = unsignedClampedVal;
                         long mappedVal = ((psat * psat) >> 31);
-                        c += (int) mappedVal + "; /* (pfun_unsigned_clamp_squarelaw)";
+                        c += (int) mappedVal + "; /* pfun_unsigned_clamp_squarelaw */";
                     }
 
                     else if (pfun.equals("pfun_signed_clamp_fullrange_squarelaw")) {
@@ -761,13 +786,13 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         else {
                             mappedVal = -((psat * psat) >> 23);
                         }
-                        c += (int) mappedVal + "; /* (pfun_signed_clamp_fullrange_squarelaw)";
+                        c += (int) mappedVal + "; /* pfun_signed_clamp_fullrange_squarelaw */";
                     }
 
                     else if (pfun.equals("pfun_unsigned_clamp_fullrange_squarelaw")) {
                         long psat = (long) unsignedClampedVal;
                         long mappedVal = ((psat * psat) >> 23);
-                        c += (int) mappedVal + "; /* (pfun_unsigned_clamp_fullrange_squarelaw)";
+                        c += (int) mappedVal + "; /* pfun_unsigned_clamp_fullrange_squarelaw */";
                     }
 
                     else if (pfun.equals("pfun_kexpltime") || pfun.equals("pfun_kexpdtime")) {
@@ -834,40 +859,19 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         int final_val = final_bd.intValue();
 
                         if (pfun.equals("pfun_kexpltime")) {
-                            c += final_val + "; /* (pfun_kexpltime)";
+                            c += final_val + "; /* pfun_kexpltime) */";
                         }
                         else if (pfun.equals("pfun_kexpdtime")) {
-                            c += (0x7FFFFFFF - final_val) + "; /* (pfun_kexpdtime)";
+                            c += (0x7FFFFFFF - final_val) + "; /* pfun_kexpdtime) */";
                         }
                     }
                 }
                 else {
-                    c += p.GetValueRaw() + "; /*"; 
+                    c += p.GetValueRaw() + ";"; 
                 }
-                c += " Frozen parameter: " + p.GetObjectInstance().getCInstanceName() + ":" + p.getLegalName() + " */\n";
-            }
-            else {
-                c += I+I + p.GenerateCodeDeclaration(classname);
+                c += "\n";
             }
         }
-        c += GenerateInstanceDataDeclaration2();
-        for (AttributeInstance a : attributeInstances) {
-            if (a.CValue() != null) {
-                c = c.replaceAll(a.GetCName(), a.CValue());
-            }
-        }
-        return c + "\n";
-    }
-
-    @Override
-    public String GenerateInitCodePlusPlus(String classname) {
-        String c = "";
-//        if (hasStruct())
-//            c = "  void " + GenerateInitFunctionName() + "(" + GenerateStructName() + " * x ) {\n";
-//        else
-//        if (!classname.equals("one"))
-        c += I+I+I + "parent = _parent;\n";
-
         for (ParameterInstance p : parameterInstances) {
             if (p.isFrozen()) {
                 if (p.parameter.PropagateToChild != null) {
@@ -962,8 +966,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     @Override
     public String GenerateDisposeCodePlusPlus(String classname) {
-        String h = I+I + "public: void Dispose() {\n";
-        String c = "";
+        String c = I+I + "public: void Dispose() {\n";
         if (getType().sDisposeCode != null && !getType().sDisposeCode.isEmpty()) {
             c += "\n" + I+I+I + "/* Object Dispose Code Tab */\n";
             String s = getType().sDisposeCode;
@@ -971,25 +974,25 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             for (AttributeInstance a : attributeInstances) {
                 s = I+I + s.replaceAll(a.GetCName(), a.CValue());
             }
-            c += s + "\n";
+            c += s + "\n\n";
         }
-        c = h + c + "\n" + I+I + "}\n\n";
+        c += I+I + "}\n\n";
         return c;
     }
 
     public String GenerateKRateCodePlusPlus(String vprefix) {
-        String h = "\n" + I+I+I + "/* Object K-Rate Code Tab */\n";
         if (getType().sKRateCode != null && !getType().sKRateCode.isEmpty()) {
             String s = getType().sKRateCode;
             s = I+I+I + s.replace("\n", "\n\t\t\t");
-
+            
             for (AttributeInstance a : attributeInstances) {
                 s = s.replaceAll(a.GetCName(), a.CValue());
             }
-
+            
             s = s.replace("CGENATTR_instancename", getCInstanceName());
             s = s.replace("CGENATTR_legalname", getLegalName());
-
+            
+            String h = "\n" + I+I+I + "/* Object K-Rate Code Tab */\n";
             return h + s + "\n";
         }
         return "";
@@ -1029,6 +1032,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         String s = "";
         boolean comma = false;
         s += I+I + "public: void dsp(";
+
         for (InletInstance i : inletInstances) {
             if (comma) {
                 s += ", ";
@@ -1036,6 +1040,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             s += "const " + i.GetDataType().CType() + " " + i.GetCName();
             comma = true;
         }
+
         for (OutletInstance i : outletInstances) {
             if (comma) {
                 s += ", ";
@@ -1043,6 +1048,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             s += i.GetDataType().CType() + " &" + i.GetCName();
             comma = true;
         }
+
         for (ParameterInstance i : parameterInstances) {
             if (!i.isFrozen() && i.parameter.PropagateToChild == null) {
                 if (comma) {
@@ -1052,6 +1058,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 comma = true;
             }
         }
+
         for (DisplayInstance i : displayInstances) {
             if (i.display.getLength() > 0) {
                 if (comma) {
@@ -1065,10 +1072,12 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 comma = true;
             }
         }
+
         s += ") {\n";//\n" + I+I+I + "/* Object DSP Loop */\n";
         s += GenerateKRateCodePlusPlus("");
         s += GenerateSRateCodePlusPlus("");
-        s += "\n" + I+I + "}\n\n";
+        s += I+I + "}\n\n";
+
         return s;
     }
 
@@ -1076,23 +1085,24 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
     @Override
     public String GenerateClass(String ClassName) {
-        String s  = I + "class " + getCInstanceName() + " {\n"
-                  + I+I + "public: // v1\n"
+        String s  = I + "class " + getCInstanceName() + " {\n\n"
+                  + I+I + "public: // v1\n\n"
                   + I+I + ClassName + " *parent;\n";
 
         s += GenerateInstanceCodePlusPlus(ClassName);
         s += GenerateInitCodePlusPlus(ClassName);
         s += GenerateDisposeCodePlusPlus(ClassName);
         s += GenerateDoFunctionPlusPlus(ClassName);
-        {
-            String d3 = GenerateCodeMidiHandler("");
-            if (!d3.isEmpty()) {
-                s += I+I + MidiHandlerFunctionHeader;
-                s += d3;
-                s += I+I + "}\n";
-            }
+
+        String d3 = GenerateCodeMidiHandler("");
+        if (!d3.isEmpty()) {
+            s += I+I + MidiHandlerFunctionHeader;
+            s += d3;
+            s += I+I + "}\n";
         }
+
         s += I + "};\n\n";
+
         return s;
     }
 
