@@ -10,20 +10,21 @@
 /
 /----------------------------------------------------------------------------*/
 #ifndef FFCONF_DEF
-#define FFCONF_DEF 86631	/* Revision ID */
-#define FF_MAX_SS 512
-#define FF_MIN_SS 512
-#define FF_VOLUMES 1
-#define FF_FS_EXFAT 0
-#define FF_FS_RPATH 2
+#define FFCONF_DEF      86631	/* Revision ID */
+#define FF_MAX_SS       512
+#define FF_MIN_SS       512
+#define FF_VOLUMES      1
+#define FF_FS_EXFAT     0
+#define FF_FS_RPATH     2
 #define FF_LFN_BUF		255
 #define FF_SFN_BUF		12
-#define FF_USE_LFN		1
-#define FF_MAX_LFN      255
+//#define FF_USE_LFN		1
+//#define FF_MAX_LFN      255
 #define FF_LFN_UNICODE	0
 #define FF_CODE_PAGE    437
 #define FF_FS_READONLY	0
-#define FF_USE_CHMOD	1
+#define FF_USE_CHMOD	   1
+#define FF_LBA64        0
 
 // 0 = dos, 1 = dos/windows, 2 = linux
 #define FF_STR_VOLUME_ID 0
@@ -32,19 +33,19 @@
 / Functions and Buffer Configurations
 /----------------------------------------------------------------------------*/
 
-#define	_FS_TINY		1	/* 0:Normal or 1:Tiny */
+#define	FF_FS_TINY		1	/* 0:Normal or 1:Tiny */
 /* When _FS_TINY is set to 1, FatFs uses the sector buffer in the file system
 /  object instead of the sector buffer in the individual file object for file
 /  data transfer. This reduces memory consumption 512 bytes each file object. */
 
 
-#define _FS_READONLY	0	/* 0:Read/Write or 1:Read only */
+#define FF_FS_READONLY	0	/* 0:Read/Write or 1:Read only */
 /* Setting _FS_READONLY to 1 defines read only configuration. This removes
 /  writing functions, f_write, f_sync, f_unlink, f_mkdir, f_chmod, f_rename,
 /  f_truncate and useless f_getfree. */
 
 
-#define _FS_MINIMIZE	0	/* 0 to 3 */
+#define FF_FS_MINIMIZE	0	/* 0 to 3 */
 /* The _FS_MINIMIZE option defines minimization level to remove some functions.
 /
 /   0: Full function.
@@ -54,19 +55,19 @@
 /   3: f_lseek is removed in addition to 2. */
 
 
-#define	_USE_STRFUNC	0	/* 0:Disable or 1-2:Enable */
+#define	FF_USE_STRFUNC	0	/* 0:Disable or 1-2:Enable */
 /* To enable string functions, set _USE_STRFUNC to 1 or 2. */
 
 
-#define	_USE_MKFS		1	/* 0:Disable or 1:Enable */
+#define	FF_USE_MKFS		1	/* 0:Disable or 1:Enable */
 /* To enable f_mkfs function, set _USE_MKFS to 1 and set _FS_READONLY to 0 */
 
 
-#define	_USE_FORWARD	0	/* 0:Disable or 1:Enable */
+#define	FF_USE_FORWARD	0	/* 0:Disable or 1:Enable */
 /* To enable f_forward function, set _USE_FORWARD to 1 and set _FS_TINY to 1. */
 
 
-#define	_USE_FASTSEEK	1	/* 0:Disable or 1:Enable */
+#define	FF_USE_FASTSEEK	1	/* 0:Disable or 1:Enable */
 /* To enable fast seek feature, set _USE_FASTSEEK to 1. */
 
 
@@ -108,8 +109,8 @@
 */
 
 
-#define	_USE_LFN	2		/* 0 to 3 */
-#define	_MAX_LFN	255		/* Maximum LFN length to handle (12 to 255) */
+#define	FF_USE_LFN	2		/* 0 to 3 */
+#define	FF_MAX_LFN	255		/* Maximum LFN length to handle (12 to 255) */
 /* The _USE_LFN option switches the LFN support.
 /
 /   0: Disable LFN feature. _MAX_LFN and _LFN_UNICODE have no effect.
@@ -123,12 +124,12 @@
 /  ff_memalloc() and ff_memfree() must be added to the project. */
 
 
-#define	_LFN_UNICODE	0	/* 0:ANSI/OEM or 1:Unicode */
+#define	FF_LFN_UNICODE	0	/* 0:ANSI/OEM or 1:Unicode */
 /* To switch the character code set on FatFs API to Unicode,
 /  enable LFN feature and set _LFN_UNICODE to 1. */
 
 
-#define _FS_RPATH		2	/* 0 to 2 */
+#define FF_FS_RPATH		2	/* 0 to 2 */
 /* The _FS_RPATH option configures relative path feature.
 /
 /   0: Disable relative path feature and remove related functions.
@@ -143,11 +144,11 @@
 / Physical Drive Configurations
 /----------------------------------------------------------------------------*/
 
-#define _VOLUMES	1
+#define FF_VOLUMES	1
 /* Number of volumes (logical drives) to be used. */
 
-#define	_MIN_SS		512
-#define	_MAX_SS		512		/* 512, 1024, 2048 or 4096 */
+#define	FF_MIN_SS		512
+#define	FF_MAX_SS		512		/* 512, 1024, 2048 or 4096 */
 /* Maximum sector size to be handled.
 /  Always set 512 for memory card and hard disk but a larger value may be
 /  required for on-board flash memory, floppy disk and optical disk.
@@ -155,13 +156,13 @@
 /  and GET_SECTOR_SIZE command must be implememted to the disk_ioctl function. */
 
 
-#define	_MULTI_PARTITION	0	/* 0:Single partition, 1/2:Enable multiple partition */
+#define	FF_MULTI_PARTITION	0	/* 0:Single partition, 1/2:Enable multiple partition */
 /* When set to 0, each volume is bound to the same physical drive number and
 / it can mount only first primaly partition. When it is set to 1, each volume
 / is tied to the partitions listed in VolToPart[]. */
 
 
-#define	_USE_ERASE	0	/* 0:Disable or 1:Enable */
+#define	FF_USE_ERASE	0	/* 0:Disable or 1:Enable */
 /* To enable sector erase feature, set _USE_ERASE to 1. CTRL_ERASE_SECTOR command
 /  should be added to the disk_ioctl functio. */
 
@@ -171,7 +172,7 @@
 / System Configurations
 /----------------------------------------------------------------------------*/
 
-#define _WORD_ACCESS	1	/* 0 or 1 */
+#define FF_WORD_ACCESS	1	/* 0 or 1 */
 /* Set 0 first and it is always compatible with all platforms. The _WORD_ACCESS
 /  option defines which access method is used to the word data on the FAT volume.
 /
@@ -188,9 +189,9 @@
 /* A header file that defines sync object types on the O/S, such as
 /  windows.h, ucos_ii.h and semphr.h, must be included prior to ff.h. */
 
-#define _FS_REENTRANT	1		/* 0:Disable or 1:Enable */
-#define _FS_TIMEOUT		MS2ST(1000)	/* Timeout period in unit of time ticks */
-#define	_SYNC_t			semaphore_t*  /* O/S dependent type of sync object. e.g. HANDLE, OS_EVENT*, ID and etc.. */
+#define FF_FS_REENTRANT	1		/* 0:Disable or 1:Enable */
+#define FF_FS_TIMEOUT		MS2ST(1000)	/* Timeout period in unit of time ticks */
+#define FF_SYNC_t			semaphore_t*  /* O/S dependent type of sync object. e.g. HANDLE, OS_EVENT*, ID and etc.. */
 
 /* The _FS_REENTRANT option switches the reentrancy (thread safe) of the FatFs module.
 /
@@ -200,7 +201,7 @@
 /      function must be added to the project. */
 
 
-#define	_FS_SHARE	0	/* 0:Disable or >=1:Enable */
+#define	FF_FS_SHARE	0	/* 0:Disable or >=1:Enable */
 /* To enable file shareing feature, set _FS_SHARE to 1 or greater. The value
    defines how many files can be opened simultaneously. */
 
