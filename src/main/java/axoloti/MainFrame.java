@@ -31,6 +31,7 @@ import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
 import axoloti.utils.FirmwareID;
 import axoloti.utils.KeyUtils;
+import axoloti.utils.OSDetect;
 import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 
@@ -1013,11 +1014,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
 
     public boolean runAllTests() {
-        boolean r1 = runPatchTests();
+        boolean r1 = runObjectTests();
         if (!r1 && stopOnFirstFail) {
             return r1;
         }
-        boolean r2 = runObjectTests();
+        boolean r2 = runPatchTests();
         if (!r2 && stopOnFirstFail) {
             return r2;
         }
@@ -1131,41 +1132,52 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
 
+
     private boolean runTestCompile(File f) {
         SetGrabFocusOnSevereErrors(false);
         LOGGER.log(Level.INFO, "\n----- Testing {0} -----", f.getPath());
-
+        
         Strategy strategy = new AnnotationStrategy();
         Serializer serializer = new Persister(strategy);
 
-        boolean status = false;
+        int compile_sleep = OSDetect.getOS() == OSDetect.OS.WIN ? 5000 : 3000;
+
         try {
+            boolean status;
+
             PatchGUI patch1 = serializer.read(PatchGUI.class, f);
             PatchFrame pf = new PatchFrame(patch1, qcmdprocessor);
             pf.createBufferStrategy(1);
             patch1.setFileNamePath(f.getPath());
             patch1.PostContructor();
-
             patch1.WriteCode();
-            Thread.sleep(1000);
+            qcmdprocessor.WaitQueueFinished();
+            LOGGER.log(Level.INFO, "Done generating code.\n");
+            Thread.sleep(200); 
 
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1);
             patch1.GetQCmdProcessor().AppendToQueue(cp);
             qcmdprocessor.WaitQueueFinished();
-            Thread.sleep(4000);
+            LOGGER.log(Level.INFO, "Done compiling patch.\n");
+            Thread.sleep(compile_sleep);
 
+            LOGGER.log(Level.INFO, "\nClosing patch...");
             pf.Close();
+            LOGGER.log(Level.INFO, "Done closing patch.\n");
+
             status = cp.success();
             if (status == false) {
                 LOGGER.log(Level.SEVERE, "COMPILATION FAILED: {0}\n", f.getPath());
             }
+
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
+            return status;
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "COMPILATION FAILED: " + f.getPath() + "\n", ex);
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
+            return false;
         }
-        return status;
     }
 
 
