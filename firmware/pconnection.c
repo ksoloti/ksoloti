@@ -512,7 +512,7 @@ void ReplyFWVersion(void) {
   reply[9] = (uint8_t)(fwid>>16);
   reply[10] = (uint8_t)(fwid>>8);
   reply[11] = (uint8_t)(fwid);
-  uint32_t uPatchLoc = GetPatchMainLoc();
+  uint32_t uPatchLoc = 0; // not used, need to remove
   reply[12] = (uint8_t)(uPatchLoc>>24);
   reply[13] = (uint8_t)(uPatchLoc>>16);
   reply[14] = (uint8_t)(uPatchLoc>>8);
@@ -950,7 +950,7 @@ void PExReceiveByte(unsigned char c) {
       state = 0;
     }
   }
-  else if (header == 'C') {
+  else if (header == 'C') { // Create and open file on SD card
     switch (state) {
     case 4:
       pFileSize = c;
@@ -987,7 +987,7 @@ void PExReceiveByte(unsigned char c) {
       }
     }
   }
-  else if (header == 'A') {
+  else if (header == 'A') { // append data to sdcard file 
     switch (state) {
     case 4:
       value = c;
@@ -1031,7 +1031,7 @@ void PExReceiveByte(unsigned char c) {
       }
     }
   }
-  else if (header == 'B') {
+  else if (header == 'B') { // Buttons
     switch (state) {
     case 4:
       a = c;
@@ -1086,7 +1086,7 @@ void PExReceiveByte(unsigned char c) {
       break;
     }
   }
-  else if (header == 'R') {
+  else if (header == 'R') { // preset data set
     switch (state) {
     case 4:
       length = c;

@@ -63,7 +63,7 @@ DEFS = \
 
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   # Ksoloti h743
-  DEFS += -DPATCH_ITCM=1 \
+  DEFS += -DPATCH_ITCM=0 \
           -DSTM32H743xx \
           -DARM_MATH_CM7 \
           -DCORE_CM7 \
@@ -84,30 +84,10 @@ ELFNAME=
 
 ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_F427)
   ELFNAME = ksoloti
-  DEFS += -DPATCHMAINLOC=0x20011000 \
-          -DPATCHFLASHLOC=0x080E0000 \
-          -DPATCHFLASHSIZE=0xB000
 else ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
   ELFNAME = ksoloti_h743
-  DEFS += -DPATCHFLASHLOC=0x08100000
-  ifeq ($(LINKERFILE),ramlink_ksoloti_h743_itcm_dtcm.ld)
-    DEFS += -DPATCHMAINLOC=0x00000000 \
-            -DPATCHFLASHSIZE=65536 \
-            -DPATCHFLASHSLOTS=8
-  else ifeq ($(LINKERFILE),ramlink_ksoloti_h743_sram_dtcm.ld)
-    DEFS += -DPATCHMAINLOC=0x24040000 \
-            -DPATCHFLASHSIZE=262144 \
-            -DPATCHFLASHSLOTS=4
-  else ifeq ($(LINKERFILE),ramlink_ksoloti_h743_itcm_dtcm.ld)
-    DEFS += -DPATCHMAINLOC=0x24040000 \
-            -DPATCHFLASHSIZE=262144 \
-            -DPATCHFLASHSLOTS=4
-  endif
 else ifeq ($(SUBBOARDDEF),BOARD_AXOLOTI_CORE)
   ELFNAME = axoloti
-  DEFS += -DPATCHMAINLOC=0x20011000 \
-          -DPATCHFLASHLOC 0x080E0000 \
-          -DPATCHFLASHSIZE 0xB000
 endif
 
 RAMLINKOPT = -T$(LINKERFILE)

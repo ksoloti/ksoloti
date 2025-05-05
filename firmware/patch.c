@@ -76,34 +76,66 @@ static int32_t i2s_inbuf[32];
 static int32_t* i2s_outbuf;
 #endif
 
-static uint32_t gPatchMainLoc    = PATCHMAINLOC;
-static uint32_t gPatchFlashLoc   = PATCHFLASHLOC;
-static uint32_t gPatchFlashSize  = PATCHFLASHSIZE;
-static uint32_t gPatchFlashSlots = PATCHFLASHSLOTS;
 
 uint32_t GetPatchMainLoc(void)
 {
-    return gPatchMainLoc;
+    uint32_t loc = 0;
+
+    if(binHeader.type == btF4) {
+        loc = PATCHMAINLOC_F4;
+    } else if(binHeader.type == btH7_64) {
+        loc = PATCHMAINLOC_H7_64;
+    } else if(binHeader.type == btH7_256) {
+        loc = PATCHMAINLOC_H7_256;
+    }
+
+    return loc;
 }
 
 uint32_t GetPatchFlashLoc(void)
 {
-    return gPatchFlashLoc;
+#if BOARD_KSOLOTI_CORE_H743
+    uint32_t loc = PATCHFLASHLOC_H7;
+#else
+    uint32_t loc = PATCHFLASHLOC_F4;
+#endif
+
+    return loc;
 }
 
 uint32_t GetPatchFlashCodeLoc(void)
 {
-    return gPatchFlashLoc + binHeader.headerSize;
+    return GetPatchFlashLoc() + binHeader.headerSize;
 }
 
 uint32_t GetPatchFlashSize(void)
 {
-    return gPatchFlashSize;
+    uint32_t size = 0;
+
+    if(binHeader.type == btF4) {
+        size = PATCHFLASHSIZE_F4;
+    } else if(binHeader.type == btH7_64) {
+        size = PATCHFLASHSIZE_H7_64;
+    } else if(binHeader.type == btH7_256) {
+        size = PATCHFLASHSIZE_H7_256;
+    }
+
+    return size;
 }
 
 uint32_t GetPatchFlashSlots(void)
 {
-    return gPatchFlashSlots;
+    uint32_t slots = 0;
+
+    if(binHeader.type == btF4) {
+        slots = PATCHFLASHSLOTS_F4;
+    } else if(binHeader.type == btH7_64) {
+        slots = PATCHFLASHSLOTS_H7_64;
+    } else if(binHeader.type == btH7_256) {
+        slots = PATCHFLASHSLOTS_H7_256;
+    }
+
+    return slots;
 }
 
 uint32_t GetPatchHeaderLoc(void)
@@ -114,6 +146,11 @@ uint32_t GetPatchHeaderLoc(void)
 uint32_t GetPatchHeaderByteSize(void)
 {
     return sizeof (binHeader_type);
+}
+
+uint32_t GetPatchBinSize(void)
+{
+    return binHeader.codeSize;
 }
 
 bool CheckPatchBinHeader(void)
@@ -143,22 +180,22 @@ void SetPatchOffset(uint32_t uOffset)
     binHeader.headerSize = 0;
     binHeader.codeSize = 0;
 #if BOARD_KSOLOTI_CORE_H743
-    if(uOffset == PATCHMAINLOC_64) 
+    if(uOffset == PATCHMAINLOC_H7_64) 
     {
         binHeader.type = btH7_64;
-        binHeader.codeSize = PATCHFLASHSIZE_64;
+        binHeader.codeSize = PATCHFLASHSIZE_H7_64;
         binHeader.fwid = GetFirmwareID();
-    } else if(uOffset == PATCHMAINLOC_256) 
+    } else if(uOffset == PATCHMAINLOC_H7_256) 
     {
         binHeader.type = btH7_256;
-        binHeader.codeSize = PATCHFLASHSIZE_256;
+        binHeader.codeSize = PATCHFLASHSIZE_H7_256;
         binHeader.fwid = GetFirmwareID();
     } 
 #else
-    if(uOffset == PATCHMAINLOC) 
+    if(uOffset == PATCHMAINLOC_F4) 
     {
         binHeader.type = btF4;
-        binHeader.codeSize = PATCHFLASHSIZE;
+        binHeader.codeSize = PATCHFLASHSIZE_F4;
         binHeader.fwid = GetFirmwareID();
     }
 #endif   

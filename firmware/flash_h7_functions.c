@@ -124,7 +124,7 @@ bool FRAMTEXT_CODE_SECTION FlashErasePatch(uint8_t uPatch)
     FlashUnlock(fbPatch);
 
     uint32_t uFlashBlockSize = (128 * 1024);
-    uint32_t uSectors = GetPatchFlashSize() < uFlashBlockSize ? 1 : uFlashBlockSize / GetPatchFlashSize();
+    uint32_t uSectors = GetPatchFlashSize() < uFlashBlockSize ? 1 : GetPatchFlashSize() /uFlashBlockSize;
 
     for (uint32_t i = 0; bResult && (i < uSectors); i++)
       bResult = FlashEraseSector(fbPatch, uPatch + i);

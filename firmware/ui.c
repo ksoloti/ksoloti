@@ -43,7 +43,7 @@
 
 // struct KeyValuePair KvpsHead;
 // struct KeyValuePair *KvpsDisplay;
-struct KeyValuePair *ObjectKvpRoot; // TODOH7 we really need to sort this crap out!
+struct KeyValuePair *ObjectKvpRoot; 
 #define MAXOBJECTS 256
 struct KeyValuePair *ObjectKvps[MAXOBJECTS] KVP_DATA_SECTION;
 // #define MAXTMPMENUITEMS 15

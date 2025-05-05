@@ -247,7 +247,7 @@ int sdcard_loadPatch1(char *fname) {
     if(!CheckPatchBinHeader())
       return -1;
   
-    err = f_read(&FileObject, (uint8_t *)GetPatchMainLoc(), 0xE000, (void *)&bytes_read); // TODO H& lucky this works at all!
+    err = f_read(&FileObject, (uint8_t *)GetPatchMainLoc(), GetPatchBinSize(), (void *)&bytes_read); 
   }
 
   if (err != FR_OK) {
