@@ -1140,7 +1140,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         Strategy strategy = new AnnotationStrategy();
         Serializer serializer = new Persister(strategy);
 
-        int compile_sleep = OSDetect.getOS() == OSDetect.OS.WIN ? 5000 : 3000;
+        int compile_sleep = OSDetect.getOS() == OSDetect.OS.WIN ? 4000 : 3000;
 
         try {
             boolean status;
