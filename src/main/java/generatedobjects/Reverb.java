@@ -53,8 +53,8 @@ public class Reverb extends gentools {
                 + "   d[i] = 0;\n"
                 + "dpos = 0;\n";
         o.sKRateCode = "int32_t g2 = %g%<<4;\n"
-                + "int32_t g2c = ((1<<31)-1)-g2;\n";
-//                + "int32_t g2c_inv = ((1<<31)-1)-g2;\n";
+                + "int32_t g2c = (INT32_MAX-g2;\n";
+//                + "int32_t g2c_inv = (INT32_MAX-g2;\n";
         o.sSRateCode = "int32_t dout =  d[dpos]<<16;\n"
                 + "int32_t din = ___SMMLA(g2,dout,%in%>>1);\n"
                 + "d[dpos++]=din>>15;\n"
