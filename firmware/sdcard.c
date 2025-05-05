@@ -239,7 +239,17 @@ int sdcard_loadPatch1(char *fname) {
     return -1;
   }
 
-  err = f_read(&FileObject, (uint8_t *)PATCHMAINLOC, 0xE000, (void *)&bytes_read);
+  // lets read the header
+  err = f_read(&FileObject, (uint8_t *)GetPatchHeaderLoc(), GetPatchHeaderByteSize(), (void *)&bytes_read);
+
+  if (err == FR_OK) {
+    // Now check header
+    if(!CheckPatchBinHeader())
+      return -1;
+  
+    err = f_read(&FileObject, (uint8_t *)GetPatchMainLoc(), 0xE000, (void *)&bytes_read); // TODO H& lucky this works at all!
+  }
+
   if (err != FR_OK) {
     report_fatfs_error(err,fname);
     return -1;

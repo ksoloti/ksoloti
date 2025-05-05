@@ -77,6 +77,19 @@ typedef struct {
   PresetParamChange_t* pPresets; // is a npreset array of npreset_entries of PresetParamChange_t
 } patchMeta_t;
 
+typedef enum {
+  btInvalid,
+  btF4,
+  btH7_64,
+  btH7_256,
+} binType;
+
+typedef struct {
+  binType  type;
+  uint32_t fwid;  
+  uint32_t headerSize;
+  uint32_t codeSize;
+} binHeader_type;
 
 extern patchMeta_t patchMeta;
 
@@ -125,9 +138,20 @@ void start_dsp_thread(void);
 // 2. Load it from flash somehow.
 // 3. Who knows?
 
+// so this needs sorting for firmware, how
+// firmware needs to run in both modes for H7
 #if !defined(PATCHFLASHLOC)
   #if BOARD_KSOLOTI_CORE_H743
-    #define PATCHFLASHLOC 0x08100000
+    #define PATCHFLASHLOC         0x08100000
+
+    #define PATCHMAINLOC_64     0x00000000
+    #define PATCHFLASHSIZE_64   (64 * 1024)
+    #define PATCHFLASHSLOTS_64  8
+
+    #define PATCHMAINLOC_256     0x24040000
+    #define PATCHFLASHSIZE_256   (256 * 1024)
+    #define PATCHFLASHSLOTS_256  4
+
     #if PATCH_ITCM
       #define PATCHMAINLOC 0x00000000
       #define PATCHFLASHSIZE (64 * 1024)
@@ -144,8 +168,22 @@ void start_dsp_thread(void);
     // patch is located in sector 11
     #define PATCHFLASHLOC 0x080E0000
     #define PATCHFLASHSIZE 0xB000
+    #define PATCHFLASHSLOTS 1
   #endif
 #endif 
+
+
+extern uint32_t GetPatchMainLoc(void);
+extern uint32_t GetPatchFlashLoc(void);
+extern uint32_t GetPatchFlashCodeLoc(void);
+extern uint32_t GetPatchFlashSize(void);
+extern uint32_t GetPatchFlashSlots(void);
+extern uint32_t GetPatchHeaderLoc(void);
+extern uint32_t GetPatchHeaderByteSize(void);
+
+extern bool     CheckPatchBinHeader(void);
+extern void     SetPatchOffset(uint32_t uOffset);
+extern void     SetPatchHeaderFlashByteSize(uint32_t uSize);
 
 void StartLoadPatchTread(void);
 void LoadPatch(const char* name);

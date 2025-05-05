@@ -130,7 +130,7 @@ void InitPConnection(void) {
 }
 
 
-int GetFirmwareID(void) {
+uint32_t GetFirmwareID(void) {
     return fwid;
 }
 
@@ -512,10 +512,11 @@ void ReplyFWVersion(void) {
   reply[9] = (uint8_t)(fwid>>16);
   reply[10] = (uint8_t)(fwid>>8);
   reply[11] = (uint8_t)(fwid);
-  reply[12] = (uint8_t)(PATCHMAINLOC>>24);
-  reply[13] = (uint8_t)(PATCHMAINLOC>>16);
-  reply[14] = (uint8_t)(PATCHMAINLOC>>8);
-  reply[15] = (uint8_t)(PATCHMAINLOC);
+  uint32_t uPatchLoc = GetPatchMainLoc();
+  reply[12] = (uint8_t)(uPatchLoc>>24);
+  reply[13] = (uint8_t)(uPatchLoc>>16);
+  reply[14] = (uint8_t)(uPatchLoc>>8);
+  reply[15] = (uint8_t)(uPatchLoc);
   chnWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&reply[0]), 16);
 }
 
@@ -801,6 +802,7 @@ void PExReceiveByte(unsigned char c) {
     case 7:
       offset += c << 24;
       state++;
+      SetPatchOffset(offset);
       break;
     case 8:
       value = c;
@@ -1002,7 +1004,7 @@ void PExReceiveByte(unsigned char c) {
     case 7:
       value += c << 24;
       length = value;
-      position = PATCHMAINLOC;
+      position = GetPatchMainLoc();
       state++;
       break;
     default:
@@ -1015,7 +1017,7 @@ void PExReceiveByte(unsigned char c) {
           header = 0;
           state = 0;
           int bytes_written;
-          err = f_write(&pFile, (char *)PATCHMAINLOC, length,
+          err = f_write(&pFile, (char *)GetPatchMainLoc(), length,
                         (void *)&bytes_written);
           if (err != FR_OK) {
             report_fatfs_error(err,0);

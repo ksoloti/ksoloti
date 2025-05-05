@@ -277,12 +277,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             jCheckBoxMenuItemLive.setSelected(true);
             jCheckBoxMenuItemLive.setEnabled(true);
             presetPanel.ShowLive(true);
+            LOGGER.log(Level.INFO, "PATCH LIVE");
         } else {
             jToggleButtonLive.setSelected(false);
             jToggleButtonLive.setEnabled(true);
             jCheckBoxMenuItemLive.setSelected(false);
             jCheckBoxMenuItemLive.setEnabled(true);
             presetPanel.ShowLive(false);
+            LOGGER.log(Level.INFO, "PATCH NOT LIVE");
         }
     }
 

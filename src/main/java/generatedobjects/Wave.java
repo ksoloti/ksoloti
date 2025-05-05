@@ -56,7 +56,7 @@ public class Wave extends gentools {
         o.inlets.add(new InletBool32Rising("stop", "trigger"));
         o.inlets.add(new InletCharPtr32("filename", "file name"));
         o.outlets.add(new OutletFrac32Buffer("out", "output"));
-        o.includes.add("chibios/ext/fatfs/src/ff.h");
+        o.includes.add("chibios/ext/fatfs/source/ff.h");
         o.includes.add("./streamer.h");
         o.sLocalData = "    WORKING_AREA(waThreadSD, 720);\n"
                 + "   sdReadFilePingpong *stream;\n"
@@ -107,7 +107,7 @@ public class Wave extends gentools {
         o.inlets.add(new InletBool32Rising("stop", "trigger"));
         o.attributes.add(new AxoAttributeSDFile("fn"));
         o.outlets.add(new OutletFrac32Buffer("out", "output"));
-        o.includes.add("chibios/ext/fatfs/src/ff.h");
+        o.includes.add("chibios/ext/fatfs/source/ff.h");
         o.includes.add("./streamer.h");
         o.sLocalData = "    WORKING_AREA(waThreadSD, 720);\n"
                 + "   sdReadFilePingpong *stream;\n"
@@ -161,7 +161,7 @@ public class Wave extends gentools {
         o.inlets.add(new InletCharPtr32("filename", "file name"));
         o.outlets.add(new OutletFrac32Buffer("outl", "output left"));
         o.outlets.add(new OutletFrac32Buffer("outr", "output right"));
-        o.includes.add("chibios/ext/fatfs/src/ff.h");
+        o.includes.add("chibios/ext/fatfs/source/ff.h");
         o.includes.add("./streamer.h");
         o.sLocalData = "    WORKING_AREA(waThreadSD, 720);\n"
                 + "   sdReadFilePingpong *stream;\n"
@@ -219,7 +219,7 @@ public class Wave extends gentools {
         o.attributes.add(new AxoAttributeSDFile("fn"));
         o.outlets.add(new OutletFrac32Buffer("outl", "output left"));
         o.outlets.add(new OutletFrac32Buffer("outr", "output right"));
-        o.includes.add("chibios/ext/fatfs/src/ff.h");
+        o.includes.add("chibios/ext/fatfs/source/ff.h");
         o.includes.add("./streamer.h");
         o.sLocalData = "    WORKING_AREA(waThreadSD, 720);\n"
                 + "   sdReadFilePingpong *stream;\n"
@@ -279,7 +279,7 @@ public class Wave extends gentools {
         o.attributes.add(new AxoAttributeSDFile("fn"));
         o.outlets.add(new OutletFrac32Buffer("outl", "output left"));
         o.outlets.add(new OutletFrac32Buffer("outr", "output right"));
-        o.includes.add("chibios/ext/fatfs/src/ff.h");
+        o.includes.add("chibios/ext/fatfs/source/ff.h");
         o.includes.add("./streamer.h");
         o.sLocalData = "    WORKING_AREA(waThreadSD, 720);\n"
                 + "   sdReadFilePingpong *stream;\n"
@@ -351,7 +351,7 @@ public class Wave extends gentools {
         o.inlets.add(new InletCharPtr32("filename", "file name"));
         o.outlets.add(new OutletFrac32Buffer("outl", "output left"));
         o.outlets.add(new OutletFrac32Buffer("outr", "output right"));
-        o.includes.add("chibios/ext/fatfs/src/ff.h");
+        o.includes.add("chibios/ext/fatfs/source/ff.h");
         o.includes.add("./streamer.h");
         o.sLocalData = "    WORKING_AREA(waThreadSD, 720);\n"
                 + "   sdReadFilePingpong *stream;\n"
@@ -442,7 +442,7 @@ public class Wave extends gentools {
         o.attributes.add(new AxoAttributeSDFile("fn"));
         o.inlets.add(new InletFrac32Buffer("in", "input"));
         o.outlets.add(new OutletInt32Bipolar("state", "recording state"));
-        o.includes.add("chibios/ext/fatfs/src/ff.h");
+        o.includes.add("chibios/ext/fatfs/source/ff.h");
         o.includes.add("./streamer.h");
         o.sLocalData = "    WORKING_AREA(waThreadSD, 1024);\n"
                 + "   sdReadFilePingpong *stream;\n"

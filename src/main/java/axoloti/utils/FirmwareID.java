@@ -38,6 +38,15 @@ public class FirmwareID {
     private static final Logger LOGGER = Logger.getLogger(FirmwareID.class.getName());
 
     static public String getFirmwareID() {
+        int firmwareId = getIntFirmwareID();
+        if(firmwareId == 0) {
+            return "(not found)";
+        } else {
+            return String.format("%08X", firmwareId);
+        }
+    }
+
+    static public int getIntFirmwareID() {
         try {
             String boarddef = prefs.boards.getFirmwareBinFilename();
 
@@ -46,7 +55,7 @@ public class FirmwareID {
 
             if (f == null || !f.canRead()) {
                 LOGGER.log(Level.WARNING, "Could not find " + boarddef + ".\nPlease compile the firmware first.");
-                return "(not found)";
+                return 0;
             }
             int tlength = (int) f.length();
             FileInputStream inputStream = new FileInputStream(f);
@@ -59,10 +68,11 @@ public class FirmwareID {
             CRC32 zcrc = new CRC32();
             zcrc.update(bb);
             int zcrcv = (int) zcrc.getValue();
-            return String.format("%08X", zcrcv);
+            return zcrcv;
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
-        return "";
+        return 0;
     }
+
 }

@@ -100,10 +100,10 @@ bool FlashPatch(uint8_t uPatch)
 
   if (FlashErasePatch(uPatch))
   {
-    uint32_t uFlashLoc = PATCHFLASHLOC;
-    uint32_t uSourceLoc = PATCHMAINLOC;
+    uint32_t uFlashLoc = GetPatchFlashLoc();
+    uint32_t uSourceLoc = GetPatchMainLoc();
 
-    bResult = FlashProgram(fbPatch, uFlashLoc, uSourceLoc, PATCHFLASHSIZE);
+    bResult = FlashProgram(fbPatch, uFlashLoc, uSourceLoc, GetPatchFlashSize());
   }
 
   return bResult;

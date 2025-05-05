@@ -118,27 +118,43 @@ bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, 
   uint32_t uBlocks = uBytes / uBlockByteSize;
   if(uBytes % uBlockByteSize)
     uBlocks++;
-  
-  int32_t nLedWordCount = 1024*16;
 
-  for (uint32_t uBlock = 0; bResult && (uBlock < uBlocks); uBlock++)
+  // first calculate header size
+  uint32_t uHeaderLoc = GetPatchHeaderLoc();
+  uint32_t uHeaderSizeBytes = GetPatchHeaderByteSize();;
+  uint32_t uHeaderBlocks = uHeaderSizeBytes / uBlockByteSize;
+  if(uHeaderSizeBytes % uBlockByteSize)
+    uHeaderBlocks++;
+
+  // leave space for header
+  uint32_t uHeaderFlashByteSize = uHeaderBlocks * uBlockByteSize;
+  SetPatchHeaderFlashByteSize(uHeaderFlashByteSize);
+  uFlashLoc += uHeaderFlashByteSize;
+
+  // Now write patch code
+  if(bResult)
   {
-    bResult = FlashProgramBlock(bank, uFlashLoc, uSourceLoc);
-    uFlashLoc += uBlockByteSize;
-    uSourceLoc += uBlockByteSize;
-    nLedWordCount -= uBlockByteSize;
+    int32_t nLedWordCount = 1024*16;
 
-    if( nLedWordCount < 0)
+    for (uint32_t uBlock = 0; bResult && (uBlock < uBlocks); uBlock++)
     {
-      nLedWordCount = 1024*16;
-      RED_LED_TOGGLE;
+      bResult = FlashProgramBlock(bank, uFlashLoc, uSourceLoc);
+      uFlashLoc += uBlockByteSize;
+      uSourceLoc += uBlockByteSize;
+      nLedWordCount -= uBlockByteSize;
+
+      if( nLedWordCount < 0)
+      {
+        nLedWordCount = 1024*16;
+        RED_LED_TOGGLE;
+      }
     }
   }
 
+  // Validate flash, just the patch code
   if (bResult)
   {
-    // Validate flash
-    uint32_t uFlashLoc = uFlashAddress;
+    uint32_t uFlashLoc = uFlashAddress + uHeaderFlashByteSize;
     uint32_t uSourceLoc = uDataAddress;
 
     uint32_t *pFlash = (uint32_t *)uFlashLoc;
@@ -154,6 +170,19 @@ bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, 
     }
   }
 
+  // now write header if all ok
+  if(bResult)
+  {
+    uFlashLoc = uFlashAddress;
+    for (uint32_t uHeaderBlock = 0; bResult && (uHeaderBlock < uHeaderBlocks); uHeaderBlock++)
+    {
+      bResult = FlashProgramBlock(bank, uFlashLoc, uHeaderLoc);
+      uFlashLoc += uBlockByteSize;
+      uHeaderLoc += uBlockByteSize;
+    }
+  }
+
+  // lock flash
   FlashLock(bank);
 
   RED_LED(0);

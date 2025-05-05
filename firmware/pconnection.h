@@ -39,6 +39,6 @@ void PExReceive(void);
 void InitPConnection(void);
 extern void BootLoaderInit(void);
 void LogTextMessage(const char* format, ...);
-int GetFirmwareID(void);
+uint32_t GetFirmwareID(void);
 
 #endif

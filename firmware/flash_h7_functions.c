@@ -117,14 +117,14 @@ bool FRAMTEXT_CODE_SECTION FlashErasePatch(uint8_t uPatch)
 {
   bool bResult = false;
 
-  if (uPatch < PATCHFLASHSLOTS)
+  if (uPatch < GetPatchFlashSlots())
   {
     bResult = true;
 
     FlashUnlock(fbPatch);
 
     uint32_t uFlashBlockSize = (128 * 1024);
-    uint32_t uSectors = PATCHFLASHSIZE < uFlashBlockSize ? 1 : uFlashBlockSize / PATCHFLASHSIZE;
+    uint32_t uSectors = GetPatchFlashSize() < uFlashBlockSize ? 1 : uFlashBlockSize / GetPatchFlashSize();
 
     for (uint32_t i = 0; bResult && (i < uSectors); i++)
       bResult = FlashEraseSector(fbPatch, uPatch + i);
@@ -180,13 +180,13 @@ bool FlashPatch(uint8_t uPatch)
 {
   bool bResult = false;
 
-  if (uPatch < PATCHFLASHSLOTS)
+  if (uPatch < GetPatchFlashSlots())
   {
     if (FlashErasePatch(uPatch))
     {
-      uint32_t uFlashNeeded = (128 * 1024) / PATCHFLASHSLOTS;
-      uint32_t uFlashLoc = PATCHFLASHLOC + (uPatch * uFlashNeeded);
-      uint32_t uSourceLoc = PATCHMAINLOC;
+      uint32_t uFlashNeeded = (128 * 1024) / GetPatchFlashSlots();
+      uint32_t uFlashLoc = GetPatchFlashLoc() + (uPatch * uFlashNeeded);
+      uint32_t uSourceLoc = GetPatchMainLoc();
 
 
       bResult = FlashProgram(fbPatch, uFlashLoc, uSourceLoc, uFlashNeeded);

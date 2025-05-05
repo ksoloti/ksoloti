@@ -54,6 +54,8 @@ enum DSPThreadSignal {
 };
 
 patchMeta_t patchMeta;
+binHeader_type binHeader = {btInvalid, 0, 0, 0};
+
 
 volatile patchStatus_t patchStatus;
 
@@ -73,6 +75,152 @@ static int32_t* outbuf;
 static int32_t i2s_inbuf[32];
 static int32_t* i2s_outbuf;
 #endif
+
+static uint32_t gPatchMainLoc    = PATCHMAINLOC;
+static uint32_t gPatchFlashLoc   = PATCHFLASHLOC;
+static uint32_t gPatchFlashSize  = PATCHFLASHSIZE;
+static uint32_t gPatchFlashSlots = PATCHFLASHSLOTS;
+
+uint32_t GetPatchMainLoc(void)
+{
+    return gPatchMainLoc;
+}
+
+uint32_t GetPatchFlashLoc(void)
+{
+    return gPatchFlashLoc;
+}
+
+uint32_t GetPatchFlashCodeLoc(void)
+{
+    return gPatchFlashLoc + binHeader.headerSize;
+}
+
+uint32_t GetPatchFlashSize(void)
+{
+    return gPatchFlashSize;
+}
+
+uint32_t GetPatchFlashSlots(void)
+{
+    return gPatchFlashSlots;
+}
+
+uint32_t GetPatchHeaderLoc(void)
+{
+    return (uint32_t)&binHeader;
+}
+
+uint32_t GetPatchHeaderByteSize(void)
+{
+    return sizeof (binHeader_type);
+}
+
+bool CheckPatchBinHeader(void)
+{
+    bool result = (binHeader.fwid == GetFirmwareID());
+    if(result)
+    {
+        #if BOARD_KSOLOTI_CORE_H743
+            result = ((binHeader.type == btH7_64) || (binHeader.type == btH7_256)); 
+        #else
+            result = (binHeader.type == btF4); 
+        #endif      
+
+        if(!result)
+            LogTextMessage("Incorrect binary header found, architecture is incorrect.");
+    }
+    else
+        LogTextMessage("Incorrect binary header found, firmware id is different.");
+
+    return result;
+}
+
+void SetPatchOffset(uint32_t uOffset)
+{
+    binHeader.type = btInvalid;
+    binHeader.fwid = 0;
+    binHeader.headerSize = 0;
+    binHeader.codeSize = 0;
+#if BOARD_KSOLOTI_CORE_H743
+    if(uOffset == PATCHMAINLOC_64) 
+    {
+        binHeader.type = btH7_64;
+        binHeader.codeSize = PATCHFLASHSIZE_64;
+        binHeader.fwid = GetFirmwareID();
+    } else if(uOffset == PATCHMAINLOC_256) 
+    {
+        binHeader.type = btH7_256;
+        binHeader.codeSize = PATCHFLASHSIZE_256;
+        binHeader.fwid = GetFirmwareID();
+    } 
+#else
+    if(uOffset == PATCHMAINLOC) 
+    {
+        binHeader.type = btF4;
+        binHeader.codeSize = PATCHFLASHSIZE;
+        binHeader.fwid = GetFirmwareID();
+    }
+#endif   
+}
+
+void SetPatchHeaderFlashByteSize(uint32_t uSize)
+{
+    binHeader.headerSize = uSize;
+}
+
+uint32_t ValidPatchInFlash(void) {
+    uint32_t codeSize = 0;
+
+    binHeader_type *pHdr = (binHeader_type *)GetPatchFlashLoc();
+
+#if BOARD_KSOLOTI_CORE_H743
+    if(pHdr->type == btH7_64 || (pHdr->type == btH7_256))
+    {
+        // Got correct binary, now check firmware
+        if(pHdr->fwid == GetFirmwareID()) 
+        {
+            // Got correct firmware version
+            codeSize = pHdr->codeSize;
+            LogTextMessage("Valid patch found in flash.");
+        } 
+        else
+            LogTextMessage("Invalid patch found in flash, incorrect firmware version.");
+    } 
+#else
+    if(pHdr->type == btF4) 
+    {
+        // Got correct binary, now check firmware
+        if(pHdr->fwid == GetFirmwareID()) 
+        {
+            // Got correct firmware version
+            codeSize = pHdr->codeSize;
+            LogTextMessage("Valid patch found in flash.");
+        }
+        else
+            LogTextMessage("Invalid patch found in flash, incorrect firmware version.");
+    } 
+#endif
+
+    return codeSize;
+}
+
+bool CopyPatchInFlashToRam(void) {
+    uint32_t codeSize = ValidPatchInFlash();
+
+    if(codeSize) 
+    {
+        LogTextMessage("Loading patch from flash.");
+
+        // copy header
+        memcpy((uint8_t*) GetPatchHeaderLoc(), (uint8_t*) GetPatchFlashLoc(), GetPatchHeaderByteSize());
+
+        // copy code
+        memcpy((uint8_t*) GetPatchMainLoc(), (uint8_t*) GetPatchFlashCodeLoc(), codeSize);
+    }
+
+    return codeSize;
+};
 
 #if FW_USBAUDIO
     #if USB_AUDIO_CHANNELS == 2
@@ -170,6 +318,8 @@ static int16_t GetNumberOfThreads(void) {
 
 
 void CheckStackOverflow(void) {
+// This code is not valid for new chibios. TODO
+#if 0
 #ifdef CH_CFG_USE_REGISTRY
 #ifdef CH_DBG_FILL_THREADS
     Thread* thd = chRegFirstThread();
@@ -219,6 +369,7 @@ void CheckStackOverflow(void) {
             }
         }
     }
+#endif
 #endif
 #endif
 }
@@ -277,8 +428,8 @@ static int StartPatch1(void) {
     //     ;
     patchMeta.fptr_dsp_process = 0;
     nThreadsBeforePatch = GetNumberOfThreads();
-    patchMeta.fptr_patch_init = (fptr_patch_init_t)(PATCHMAINLOC + 1);
-    int firmwareId = GetFirmwareID();
+    patchMeta.fptr_patch_init = (fptr_patch_init_t)(GetPatchMainLoc() + 1);
+    uint32_t firmwareId = GetFirmwareID();
 
     (patchMeta.fptr_patch_init)(firmwareId);
 
@@ -431,22 +582,21 @@ static int StartPatch1(void) {
 
             if (loadPatchIndex == START_FLASH) {
                 #pragma GCC diagnostic push
-                #pragma GCC diagnostic ignored "-Wnonnull"                
-                /* Patch in flash sector 11 */
-                memcpy((uint8_t*) PATCHMAINLOC, (uint8_t*) PATCHFLASHLOC, PATCHFLASHSIZE);
-                #pragma GCC diagnostic pop
-                if ((*(uint32_t*) PATCHMAINLOC != 0xFFFFFFFF) && (*(uint32_t*) PATCHMAINLOC != 0)) {
+                #pragma GCC diagnostic ignored "-Wnonnull"  
+                if(CopyPatchInFlashToRam()) {
                     StartPatch1();
-                }
+                }              
             }
             else if (loadPatchIndex == START_SD) {
                 strcpy(&loadFName[0], startbin_fn);
                 int res = sdcard_loadPatch1(loadFName);
-                if (!res) StartPatch1();
+                if (!res) 
+                    StartPatch1();
             }
             else if (loadFName[0]) {
                 int res = sdcard_loadPatch1(loadFName);
-                if (!res) StartPatch1();
+                if (!res) 
+                    StartPatch1();
             }
             else {
                 FRESULT err;
@@ -458,7 +608,7 @@ static int StartPatch1(void) {
                     report_fatfs_error(err, index_fn);
                 }
 
-                err = f_read(&f, (uint8_t*) PATCHMAINLOC, 0xE000, (void*) &bytes_read);
+                err = f_read(&f, (uint8_t*) GetPatchMainLoc(), 0xE000, (void*) &bytes_read);
                 if (err != FR_OK) {
                     report_fatfs_error(err, index_fn);
                     continue;
@@ -471,7 +621,7 @@ static int StartPatch1(void) {
                 }
 
                 char* t;
-                t = (char*) PATCHMAINLOC;
+                t = (char*) GetPatchMainLoc();
                 int32_t cindex = 0;
 
                 // LogTextMessage("load %d %d %x", index, bytes_read, t);

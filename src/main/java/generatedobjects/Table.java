@@ -526,7 +526,7 @@ public class Table extends gentools {
         o.attributes.add(new AxoAttributeObjRef("table"));
         o.inlets.add(new InletCharPtr32("filename", "file name"));
         o.inlets.add(new InletBool32Rising("trig", "trigger"));
-        o.includes.add("chibios/ext/fatfs/src/ff.h");
+        o.includes.add("chibios/ext/fatfs/source/ff.h");
         o.sLocalData = "  int ntrig;\n";
         o.sInitCode = "  ntrig = 0;\n";
         o.sKRateCode = "  if ((%trig%>0) && !ntrig) {\n"
@@ -563,7 +563,7 @@ public class Table extends gentools {
         o.attributes.add(new AxoAttributeObjRef("table"));
         o.inlets.add(new InletCharPtr32("filename", "file name"));
         o.inlets.add(new InletBool32Rising("trig", "trigger"));
-        o.includes.add("chibios/ext/fatfs/src/ff.h");
+        o.includes.add("chibios/ext/fatfs/source/ff.h");
         o.sLocalData = "  int ntrig;\n";
         o.sInitCode = "  ntrig = 0;\n";
         o.sKRateCode = "  if ((%trig%>0) && !ntrig) {\n"

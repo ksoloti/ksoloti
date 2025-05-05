@@ -48,8 +48,11 @@ import axoloti.outlets.OutletFrac32Buffer;
 import axoloti.outlets.OutletInstance;
 import axoloti.outlets.OutletInt32;
 import axoloti.parameters.ParameterInstance;
+import axoloti.utils.FirmwareID;
+import axoloti.Boards.BoardDetail;
+import axoloti.Boards.BoardType;
 import axoloti.Boards.FirmwareType;
-
+import axoloti.Boards.MemoryLayoutType;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -57,9 +60,11 @@ import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -3043,10 +3048,77 @@ public class Patch {
         return files;
     }
 
+    private byte[] getByteRepresentation(long uint32) {
+        byte[] bytes = new byte[4];
+
+        if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
+            bytes[0] = (byte) ((uint32 & 0x000000FFL));
+            bytes[1] = (byte) ((uint32 & 0x0000FF00L) >> 8);
+            bytes[2] = (byte) ((uint32 & 0x00FF0000L) >> 16);
+            bytes[3] = (byte) ((uint32 & 0xFF000000L) >> 24);
+        } else {
+            bytes[0] = (byte) ((uint32 & 0xFF000000L) >> 24);
+            bytes[1] = (byte) ((uint32 & 0x00FF0000L) >> 16);
+            bytes[2] = (byte) ((uint32 & 0x0000FF00L) >> 8);
+            bytes[3] = (byte) ((uint32 & 0x000000FFL));
+        }
+
+        return bytes;
+    }
     public File getBinFile() {
         String buildDir = System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator + "build";
 
-        return new File(buildDir + File.separator + "xpatch.bin");
+        String fileOutName = buildDir + File.separator + "xpatch_with_hdr.bin";
+
+        try {
+            long codeSize;
+
+            // read the patch bin in ram
+            File binFile = new File(buildDir + File.separator + "xpatch.bin");
+            codeSize = binFile.length();
+            byte[] data = new byte[(int)codeSize];
+            FileInputStream fis = new FileInputStream(binFile);
+            fis.read(data, 0, data.length);
+            fis.close();
+
+            
+            // create new file with header
+            long type = 0;
+            Boards boards = prefs.getBoards();
+            BoardDetail boardDetail = boards.getSelectedBoardDetail();
+
+            if ((boardDetail.boardType == BoardType.Axoloti) || (boardDetail.boardType == BoardType.Ksoloti) ) {
+                type = 1;
+            } else if (boardDetail.boardType == BoardType.KsolotiGeko) {
+                if(boardDetail.memoryLayout == MemoryLayoutType.Code64Data64) {
+                    type = 2;
+                } else if(boardDetail.memoryLayout == (MemoryLayoutType.Code256Data64) || (boardDetail.memoryLayout == MemoryLayoutType.Code256Shared)){
+                    type = 3;
+                }  
+            }
+          
+            long fwid = FirmwareID.getIntFirmwareID();
+            long headerSize = 16;
+
+            FileOutputStream fileWithHeader = new FileOutputStream(fileOutName);
+            fileWithHeader.write(getByteRepresentation(type));
+            fileWithHeader.write(getByteRepresentation(fwid));
+            fileWithHeader.write(getByteRepresentation(headerSize));
+            fileWithHeader.write(getByteRepresentation(codeSize));
+            
+            // write bin data to file
+            fileWithHeader.write(data);
+            fileWithHeader.close();
+
+            return new File(fileOutName);
+
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, "Failed to create bin file with header {0}", ex.toString());
+
+            return null;
+        }
+
+        //return new File(buildDir + File.separator + "xpatch.bin");
 //            LOGGER.log(Level.INFO, "bin path: {0}", f.getAbsolutePath());        
     }
 
