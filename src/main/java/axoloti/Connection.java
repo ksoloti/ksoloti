@@ -18,6 +18,7 @@ public abstract class Connection {
     abstract public void TransmitStop();
     abstract public void TransmitStart();
     abstract public void TransmitPing();
+    abstract public void TransmitBinHeader();
     abstract public void TransmitRecallPreset(int presetNo);
     abstract public void UploadFragment(byte[] buffer, int offset);
     abstract public void TransmitGetFileList();

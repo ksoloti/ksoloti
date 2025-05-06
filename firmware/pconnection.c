@@ -627,6 +627,11 @@ void PExReceiveByte(unsigned char c) {
       else if (c == 'U') { /* Set cpU safety*/
         state = 4;
       }
+      else if (c == 'b') { // bin header
+        offset = GetPatchHeaderLoc();
+        index = 0;
+        state = 4;
+      }
       else if (c == 'S') { /* stop patch */
         state = 0;
         header = 0;
@@ -701,6 +706,17 @@ void PExReceiveByte(unsigned char c) {
       else
         state = 0;
       break;
+    }
+  }
+  else if (header == 'b') { // bin header
+    *((unsigned char *)offset) = c;
+    offset++;
+    index++;
+    if(index == GetPatchHeaderByteSize()) 
+    {
+      header = 0;
+      state = 0;
+      AckPending = 1;  
     }
   }
   else if (header == 'P') { /* param change */

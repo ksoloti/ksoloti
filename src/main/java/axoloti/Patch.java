@@ -3048,66 +3048,33 @@ public class Patch {
         return files;
     }
 
-    private byte[] getByteRepresentation(long uint32) {
-        byte[] bytes = new byte[4];
-
-        if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
-            bytes[0] = (byte) ((uint32 & 0x000000FFL));
-            bytes[1] = (byte) ((uint32 & 0x0000FF00L) >> 8);
-            bytes[2] = (byte) ((uint32 & 0x00FF0000L) >> 16);
-            bytes[3] = (byte) ((uint32 & 0xFF000000L) >> 24);
-        } else {
-            bytes[0] = (byte) ((uint32 & 0xFF000000L) >> 24);
-            bytes[1] = (byte) ((uint32 & 0x00FF0000L) >> 16);
-            bytes[2] = (byte) ((uint32 & 0x0000FF00L) >> 8);
-            bytes[3] = (byte) ((uint32 & 0x000000FFL));
-        }
-
-        return bytes;
-    }
+    
     public File getBinFile() {
         String buildDir = System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator + "build";
 
         String fileOutName = buildDir + File.separator + "xpatch_with_hdr.bin";
 
         try {
-            long codeSize;
+            int codeSize;
 
             // read the patch bin in ram
             File binFile = new File(buildDir + File.separator + "xpatch.bin");
-            codeSize = binFile.length();
-            byte[] data = new byte[(int)codeSize];
+            codeSize = (int)binFile.length();
+            byte[] codeData = new byte[(int)codeSize];
             FileInputStream fis = new FileInputStream(binFile);
-            fis.read(data, 0, data.length);
+            fis.read(codeData, 0, codeData.length);
             fis.close();
 
+            byte[] binHeader = new byte[16];
+
+            prefs.GetBinHeader(binHeader, 0, codeSize);
             
-            // create new file with header
-            long type = 0;
-            Boards boards = prefs.getBoards();
-            BoardDetail boardDetail = boards.getSelectedBoardDetail();
-
-            if ((boardDetail.boardType == BoardType.Axoloti) || (boardDetail.boardType == BoardType.Ksoloti) ) {
-                type = 1;
-            } else if (boardDetail.boardType == BoardType.KsolotiGeko) {
-                if(boardDetail.memoryLayout == MemoryLayoutType.Code64Data64) {
-                    type = 2;
-                } else if(boardDetail.memoryLayout == (MemoryLayoutType.Code256Data64) || (boardDetail.memoryLayout == MemoryLayoutType.Code256Shared)){
-                    type = 3;
-                }  
-            }
-          
-            long fwid = FirmwareID.getIntFirmwareID();
-            long headerSize = 16;
-
             FileOutputStream fileWithHeader = new FileOutputStream(fileOutName);
-            fileWithHeader.write(getByteRepresentation(type));
-            fileWithHeader.write(getByteRepresentation(fwid));
-            fileWithHeader.write(getByteRepresentation(headerSize));
-            fileWithHeader.write(getByteRepresentation(codeSize));
+            fileWithHeader.write(binHeader);
             
-            // write bin data to file
-            fileWithHeader.write(data);
+
+            // write bin code data to file
+            fileWithHeader.write(codeData);
             fileWithHeader.close();
 
             return new File(fileOutName);

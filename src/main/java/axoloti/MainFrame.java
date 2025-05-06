@@ -126,6 +126,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     public static AxoJFileChooser fc;
 
     Thread axolotiLibraryWatcherThread;
+    boolean currentConnectedState = false;
 
     boolean even = false;
     String LinkFirmwareID;
@@ -1017,17 +1018,22 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         populateMainframeTitle();
             
         ShowDisconnect();
+
+        jToggleButtonConnect.setEnabled(false);
+        //jToggleButtonConnect.setText("Connecting");
+
         BoardDetail boardDetail = prefs.boards.getSelectedBoardDetail();
         if(boardDetail.boardMode == BoardMode.DFU) {
             addFlashDfuOrWarn();
         } else
         {
-            new Thread() {
+            new Thread("doConnect") {
                 public void run() {
                     boolean result = USBBulkConnection.GetConnection().connect();
                     if (result) {
                         MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdShowConnect());
                     }
+                    jToggleButtonConnect.setEnabled(true);
                 }
             }.start();
         }
@@ -1478,38 +1484,41 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void ShowConnectDisconnect(boolean connect) {
-
-        if (connect) {
-            jToggleButtonConnect.setText("Connected");
-            ShowConnectionFlags(USBBulkConnection.GetConnection().GetConnectionFlags());
-        }
-        else {
-            jToggleButtonConnect.setText("Connect");
-            setCpuID();
-            jLabelVoltages.setText(" ");
-            v5000c = 0;
-            vdd00c = 0;
-            patchIndex = -4;
-            jLabelSDCardPresent.setText(" ");
-            jLabelFlags.setText(" ");
-            jLabelPatch.setText(" ");
-        }
-
         jToggleButtonConnect.setSelected(connect);
-        jMenuItemFDisconnect.setEnabled(connect);
 
-        jMenuItemFConnect.setEnabled(!connect);
-        // jMenuItemSelectCom.setEnabled(!connect);
+        if(currentConnectedState != connect ) {
+            currentConnectedState = connect;
+            if (connect) {
+                jToggleButtonConnect.setText("Connected");
+                ShowConnectionFlags(USBBulkConnection.GetConnection().GetConnectionFlags());
+            }
+            else {
+                jToggleButtonConnect.setText("Connect");
+                setCpuID();
+                jLabelVoltages.setText(" ");
+                v5000c = 0;
+                vdd00c = 0;
+                patchIndex = -4;
+                jLabelSDCardPresent.setText(" ");
+                jLabelFlags.setText(" ");
+                jLabelPatch.setText(" ");
+            }
 
-        jMenuItemEnterDFU.setEnabled(connect);
-        jMenuItemMount.setEnabled(connect);
-        jMenuItemFlashDefault.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
-        jMenuItemFlashUser.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
+            jToggleButtonConnect.setSelected(connect);
+            jMenuItemFDisconnect.setEnabled(connect);
 
-        if (prefs.getRestartRequired()) {
-            disableConnectUntilRestart();
+            jMenuItemFConnect.setEnabled(!connect);
+            // jMenuItemSelectCom.setEnabled(!connect);
+
+            jMenuItemEnterDFU.setEnabled(connect);
+            jMenuItemMount.setEnabled(connect);
+            jMenuItemFlashDefault.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
+            jMenuItemFlashUser.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
+
+            if (prefs.getRestartRequired()) {
+                disableConnectUntilRestart();
+            }
         }
-
     }
 
 

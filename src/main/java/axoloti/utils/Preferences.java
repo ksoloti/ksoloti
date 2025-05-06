@@ -21,11 +21,15 @@ package axoloti.utils;
 import axoloti.AxolotiLibraryWatcher;
 import axoloti.Boards;
 import axoloti.Version;
+import axoloti.Boards.BoardDetail;
+import axoloti.Boards.BoardType;
 import axoloti.Boards.FirmwareType;
 import axoloti.Boards.MemoryLayoutType;
 import axoloti.Boards.SampleRateType;
 
 import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -470,6 +474,33 @@ public class Preferences {
 
     public Boards getBoards() {
         return boards;
+    }
+
+    // get bin header into byte array at byte offset
+    public void GetBinHeader(byte[] buffer, int offset, int codesize) {
+        
+        int type = 0;
+        Boards boards = getBoards();
+        BoardDetail boardDetail = boards.getSelectedBoardDetail();
+
+        if ((boardDetail.boardType == BoardType.Axoloti) || (boardDetail.boardType == BoardType.Ksoloti) ) {
+            type = 1;
+        } else if (boardDetail.boardType == BoardType.KsolotiGeko) {
+            if(boardDetail.memoryLayout == MemoryLayoutType.Code64Data64) {
+                type = 2;
+            } else if(boardDetail.memoryLayout == (MemoryLayoutType.Code256Data64) || (boardDetail.memoryLayout == MemoryLayoutType.Code256Shared)){
+                type = 3;
+            }  
+        }
+        
+        int fwid = FirmwareID.getIntFirmwareID();
+
+        ByteBuffer bb = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
+        bb.position(offset);
+        bb.putInt(type);
+        bb.putInt(fwid);
+        bb.putInt(16);
+        bb.putInt(codesize);
     }
 
     public void applyTheme() {

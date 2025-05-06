@@ -32,7 +32,6 @@ import axoloti.targetprofile.ksoloti_core;
 import axoloti.Boards.BoardDetail;
 import axoloti.Boards.BoardMode;
 
-
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -162,7 +161,18 @@ public class USBBulkConnection extends Connection {
                     LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
-            
+
+            if (transmitterThread.isAlive()){
+                transmitterThread.interrupt();
+
+                try {
+                    transmitterThread.join(10000);
+                }
+                catch (InterruptedException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                }
+            }
+
             LOGGER.log(Level.INFO, "Disconecting from bulk endpoint {0}", useBulkInterfaceNumber);
 
             int result = LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
@@ -273,7 +283,8 @@ public class USBBulkConnection extends Connection {
 
             connected = true;
             ClearSync();
-            TransmitPing();
+            TransmitBinHeader();
+            //TransmitPing();
             WaitSync();
 
             try {
@@ -282,40 +293,43 @@ public class USBBulkConnection extends Connection {
             catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
+            
+            if(connected) {
+                prefs.boards.setSelectedBoardConnectedStatus(true);
+                LOGGER.log(Level.WARNING, "Connected\n");
 
-            prefs.boards.setSelectedBoardConnectedStatus(true);
-            LOGGER.log(Level.WARNING, "Connected\n");
+                try {
+                    Thread.sleep(100);
+                }
+                catch (InterruptedException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                }
+                QCmdProcessor qcmdp = MainFrame.mainframe.getQcmdprocessor();
+                qcmdp.AppendToQueue(new QCmdTransmitGetFWVersion());
 
-            try {
-                Thread.sleep(100);
+                try {
+                    Thread.sleep(100);
+                }
+                catch (InterruptedException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                }
+                qcmdp.WaitQueueFinished();
+
+                // TODOH7 
+                boolean signaturevalid = true;
+                QCmdMemRead q;
+
+                // TODO remove this memory read
+                q = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
+                qcmdp.AppendToQueue(q);
+                targetProfile.setCPUSerial(q.getResult());
+
+                ShowConnect();
+
+                return true;
+            } else {
+                return false;
             }
-            catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            }
-            QCmdProcessor qcmdp = MainFrame.mainframe.getQcmdprocessor();
-            qcmdp.AppendToQueue(new QCmdTransmitGetFWVersion());
-
-            try {
-                Thread.sleep(100);
-            }
-            catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            }
-            qcmdp.WaitQueueFinished();
-
-            // TODOH7 
-            boolean signaturevalid = true;
-            QCmdMemRead q;
-
-            // TODO remove this memory read
-            q = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
-            qcmdp.AppendToQueue(q);
-            targetProfile.setCPUSerial(q.getResult());
-
-            ShowConnect();
-
-            return true;
-
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, null, ex);
@@ -599,6 +613,61 @@ public class USBBulkConnection extends Connection {
     @Override
     public void TransmitPing() {
         writeBytes(pingPckt);
+    }
+
+    private byte[] getByteRepresentation(long uint32) {
+        byte[] bytes = new byte[4];
+
+        if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
+            bytes[0] = (byte) ((uint32 & 0x000000FFL));
+            bytes[1] = (byte) ((uint32 & 0x0000FF00L) >> 8);
+            bytes[2] = (byte) ((uint32 & 0x00FF0000L) >> 16);
+            bytes[3] = (byte) ((uint32 & 0xFF000000L) >> 24);
+        } else {
+            bytes[0] = (byte) ((uint32 & 0xFF000000L) >> 24);
+            bytes[1] = (byte) ((uint32 & 0x00FF0000L) >> 16);
+            bytes[2] = (byte) ((uint32 & 0x0000FF00L) >> 8);
+            bytes[3] = (byte) ((uint32 & 0x000000FFL));
+        }
+
+        return bytes;
+    }
+
+    @Override
+    public void TransmitBinHeader() {
+        byte[] binHeader = new byte[20];
+        binHeader[0] = 'A';
+        binHeader[1] = 'x';
+        binHeader[2] = 'o';
+        binHeader[3] = 'b';
+        
+        prefs.GetBinHeader(binHeader, 4, 0);
+        writeBytes(binHeader);
+
+        // int type = 0;
+        // Boards boards = prefs.getBoards();
+        // BoardDetail boardDetail = boards.getSelectedBoardDetail();
+
+        // if ((boardDetail.boardType == BoardType.Axoloti) || (boardDetail.boardType == BoardType.Ksoloti) ) {
+        //     type = 1;
+        // } else if (boardDetail.boardType == BoardType.KsolotiGeko) {
+        //     if(boardDetail.memoryLayout == MemoryLayoutType.Code64Data64) {
+        //         type = 2;
+        //     } else if(boardDetail.memoryLayout == (MemoryLayoutType.Code256Data64) || (boardDetail.memoryLayout == MemoryLayoutType.Code256Shared)){
+        //         type = 3;
+        //     }  
+        // }
+        
+        // int fwid = FirmwareID.getIntFirmwareID();
+
+        // ByteBuffer bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
+        // bb.position(4);
+        // bb.putInt(type);
+        // bb.putInt(fwid);
+        // bb.putInt(16);
+        // bb.putInt(0);
+
+        // writeBytes(bytes);
     }
 
     @Override
