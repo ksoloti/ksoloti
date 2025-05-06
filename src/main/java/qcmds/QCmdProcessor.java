@@ -155,10 +155,10 @@ public class QCmdProcessor implements Runnable {
     }
 
     public void WaitQueueFinished() {
-        while (!queue.isEmpty() && !queueResponse.isEmpty()) {
-            // if (queue.isEmpty() && queueResponse.isEmpty()) {
-            //     break;
-            // }
+        while (true) {
+            if (queue.isEmpty() && queueResponse.isEmpty()) {
+                break;
+            }
             try {
                 Thread.sleep(10);
             } catch (InterruptedException ex) {
