@@ -532,6 +532,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 /* add complete list */
                 listData.add(o);
             }
+            /* sort matches and add all to list */
+            Collections.sort(listData, objComp);
             jResultList.setListData(listData.toArray());
         }
         else {
