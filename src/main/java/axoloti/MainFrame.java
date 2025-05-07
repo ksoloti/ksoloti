@@ -1019,13 +1019,23 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
 
     public boolean runAllTests() {
-        boolean r1 = runObjectTests();
-        if (!r1 && stopOnFirstFail) {
-            return r1;
+
+        boolean r1 = false;
+        boolean r2 = false;
+        
+        try {
+            r1 = runObjectTests();
+            if (!r1 && stopOnFirstFail) {
+                return r1;
+            }
+            r2 = runPatchTests();
+            if (!r2 && stopOnFirstFail) {
+                return r2;
+            }
         }
-        boolean r2 = runPatchTests();
-        if (!r2 && stopOnFirstFail) {
-            return r2;
+        catch (Exception e) {
+            e.printStackTrace();
+            return r1 && r2;
         }
         return r1 && r2;
     }
