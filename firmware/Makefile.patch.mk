@@ -46,7 +46,8 @@ DEFS = \
   -DTHUMB_PRESENT \
   -D__FPU_PRESENT
 
-ifneq ($(FWOPTIONDEF),)
+
+ifneq ($(FWOPTIONDEF),FW_NORMAL)
   DEFS := $(DEFS) -D$(FWOPTIONDEF)
 endif
 

@@ -83,6 +83,9 @@ public class QCmdCompilePatch extends QCmdShellTask {
             if (prefs.getFirmwareMode().contains("I2SCodec")) {
                 fwoptiondef += " FW_I2SCODEC";
             }
+            else {
+                fwoptiondef += " FW_NORMAL";
+            }
 
             if (OSDetect.getOS() == OSDetect.OS.WIN) {
                 String str = FirmwareDir() + "\\compile_patch_win.bat " + boarddef + fwoptiondef;
