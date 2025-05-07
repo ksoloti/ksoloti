@@ -1,5 +1,6 @@
 BOARDDEF =
 FWOPTIONDEF =
+BUILDFILENAME =
 
 
 # Some new options are important to keep SRAM usage and DSP load low with newer GCC versions.
@@ -51,6 +52,9 @@ ifneq ($(FWOPTIONDEF),FW_NORMAL)
   DEFS := $(DEFS) -D$(FWOPTIONDEF)
 endif
 
+ifeq ($(BUILDFILENAME),)
+  BUILDFILENAME=xpatch
+endif
 
 ELFNAME=
 ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
@@ -99,7 +103,6 @@ CPP  = $(TRGT)g++
 LD   = $(TRGT)gcc
 CP   = $(TRGT)objcopy
 OD   = $(TRGT)objdump
-SIZ  = $(TRGT)size
 
 EMPTY := 
 SPACE := $(EMPTY) $(EMPTY)
@@ -143,27 +146,37 @@ INCDIR = $(CMSIS)/Core/Include \
 IINCDIR = $(patsubst %,-I%,$(INCDIR) $(DINCDIR) $(UINCDIR))
 LLIBDIR = $(patsubst %,-L%,$(DLIBDIR) $(ULIBDIR))
 
-all: ${BUILDDIR}/xpatch.bin
+all: ${BUILDDIR}/$(BUILDFILENAME).bin
 
 ${BUILDDIR}/xpatch.h.gch: ${FIRMWARE}/xpatch.h ${FIRMWARE}/patch.h ${FIRMWARE}/axoloti.h ${FIRMWARE}/parameter_functions.h ${FIRMWARE}/axoloti_math.h ${FIRMWARE}/axoloti_filters.h
+
 #	@echo Building precompiled header
 	@$(CPP) $(CCFLAGS) $(DEFS) $(IINCDIR) -Winvalid-pch -MD -MP -c ${FIRMWARE}/xpatch.h -o ${BUILDDIR}/xpatch.h.gch
 
-${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch
+${BUILDDIR}/$(BUILDFILENAME).bin: ${BUILDDIR}/$(BUILDFILENAME).cpp ${BUILDDIR}/xpatch.h.gch
+
 #	@echo Removing previous build files
-	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.lst ${BUILDDIR}/xpatch.siz
+	@rm -f ${BUILDDIR}/$(BUILDFILENAME).o ${BUILDDIR}/$(BUILDFILENAME).elf ${BUILDDIR}/$(BUILDFILENAME).bin ${BUILDDIR}/$(BUILDFILENAME).d ${BUILDDIR}/$(BUILDFILENAME).map ${BUILDDIR}/$(BUILDFILENAME).lst
+
 #	@echo Compiling patch dependencies
-	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c ${BUILDDIR}/xpatch.cpp -o ${BUILDDIR}/xpatch.o
+	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c ${BUILDDIR}/$(BUILDFILENAME).cpp -o ${BUILDDIR}/$(BUILDFILENAME).o
+
 #	@echo Linking patch dependencies
-	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/$(ELFNAME).elf -o ${BUILDDIR}/xpatch.elf
+	@$(LD) $(LDFLAGS) ${BUILDDIR}/$(BUILDFILENAME).o -Wl,-Map=${BUILDDIR}/$(BUILDFILENAME).map,--cref,--just-symbols=${FIRMWARE}/build/$(ELFNAME).elf -o ${BUILDDIR}/$(BUILDFILENAME).elf
 
 #	@echo Creating binary
-	@$(CP) -O binary ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin
+	@$(CP) -O binary ${BUILDDIR}/$(BUILDFILENAME).elf ${BUILDDIR}/$(BUILDFILENAME).bin
 
 #	@echo Creating LST file for debugging
-#	@$(OD) $(ODFLAGS) "${BUILDDIR}/xpatch.elf" > "${BUILDDIR}/xpatch.lst" 
+	@$(OD) $(ODFLAGS) "${BUILDDIR}/$(BUILDFILENAME).elf" > "${BUILDDIR}/$(BUILDFILENAME).lst" 
+
+#	@echo Removing intermediate build artifacts
+	@rm -f ${BUILDDIR}/$(BUILDFILENAME).o ${BUILDDIR}/$(BUILDFILENAME).elf ${BUILDDIR}/$(BUILDFILENAME).d
+
+#	@echo test ... currently not required
+#	@cp ${BUILDDIR}/$(BUILDFILENAME).bin ${BUILDDIR}/xpatch.bin
 
 clean:
-	@rm -f ${BUILDDIR}/xpatch.o ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin ${BUILDDIR}/xpatch.d ${BUILDDIR}/xpatch.map ${BUILDDIR}/xpatch.lst ${BUILDDIR}/xpatch.h.gch
+	@rm -f ${BUILDDIR}/$(BUILDFILENAME).o ${BUILDDIR}/$(BUILDFILENAME).elf ${BUILDDIR}/$(BUILDFILENAME).bin ${BUILDDIR}/$(BUILDFILENAME).d ${BUILDDIR}/$(BUILDFILENAME).map ${BUILDDIR}/$(BUILDFILENAME).lst ${BUILDDIR}/xpatch.h.gch
 
 .PHONY: all clean

@@ -298,8 +298,12 @@ public class Axoloti {
         File[] bfiles = builddir.listFiles();
         if (bfiles != null) {
             for (File f : bfiles) {
-                /* Redundant check. Normally there would never be a subdirectory there. */
-                if (!f.isDirectory()) {
+                /* Flush previous temp build files...  */
+                if (f.isDirectory()) {
+                    FileUtils.deleteDirectory(f);
+                }
+                else {
+                    /* ...and flush precompiled header file. */
                     if (f.getName().equals("xpatch.h.gch")) f.delete();
                 }
             }
