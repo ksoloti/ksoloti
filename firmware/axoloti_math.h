@@ -53,6 +53,8 @@ extern uint16_t expt[EXPTSIZE];
 #define LOGTSIZEN 8
 extern uint16_t logt[LOGTSIZE];
 
+static uint32_t randSeed;
+
 typedef union {
     int32_t i;
     float f;
@@ -215,15 +217,14 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t ConvertFloatToFrac(float 
 #define float_to_frac ConvertFloatToFrac
 
 __attribute__((always_inline)) __STATIC_INLINE int32_t rand_s32(void) {
-    // This function differs from the standard C rand()definition, standard C
-    // rand()only returns positive numbers, while rand_s32()returns the full
-    // signed 32 bit range.
-    // The hardware random generator can't provide new data as quick as desireable
-    // but rather than waiting for a new true random number,
-    // we multiply/add the seed with the latest hardware-generated number.
-    uint32_t randSeed = 22222;
-    return ___SMMLA(randSeed, 196314165, RNG->DR);
-    // return randSeed = (randSeed * 196314165) + RNG->DR;
+    /* This function differs from the standard C rand()definition, standard C
+     * rand() only returns positive numbers, while rand_s32() returns the full
+     * signed 32 bit range.
+     * The hardware random generator can't provide new data as quick as desireable
+     * but rather than waiting for a new true random number,
+     * we multiply/add the seed with the latest hardware-generated number.
+     */
+    return randSeed = (randSeed * 196314165) + RNG->DR;
 }
 
 /* If RAND_MAX was perviously defined, satisfy compiler by undefining it */
@@ -232,10 +233,12 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t rand_s32(void) {
 #endif
 #define RAND_MAX INT32_MAX
 
-__attribute__((always_inline)) __STATIC_INLINE int rand_u32(void) {
+__attribute__((always_inline)) __STATIC_INLINE int32_t rand_u32(void) {
     /* like standard C rand() */
     return ((uint32_t) rand_s32()) >> 1;
 }
+
+// #define rand rand_u32 // TODO: effect?
 
 uint32_t FastLog(uint32_t f);
 
