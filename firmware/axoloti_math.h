@@ -53,8 +53,6 @@ extern uint16_t expt[EXPTSIZE];
 #define LOGTSIZEN 8
 extern uint16_t logt[LOGTSIZE];
 
-static uint32_t randSeed;
-
 typedef union {
     int32_t i;
     float f;
@@ -224,7 +222,8 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t rand_s32(void) {
      * but rather than waiting for a new true random number,
      * we multiply/add the seed with the latest hardware-generated number.
      */
-    return randSeed = (randSeed * 196314165) + RNG->DR;
+    static uint32_t randSeed = 22229; /* Static declaration inside function -> will retain its value */
+    return randSeed = (randSeed * 196314163) + RNG->DR;
 }
 
 /* If RAND_MAX was perviously defined, satisfy compiler by undefining it */
