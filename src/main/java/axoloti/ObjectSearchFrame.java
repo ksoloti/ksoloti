@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -70,26 +71,81 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     public AxoObjectInstanceAbstract target_object;
     private AxoObjectTreeNode objectTree;
 
-    Comparator objComp = new Comparator<AxoObjectAbstract>() {
+    Comparator<AxoObjectAbstract> objComp = new Comparator<AxoObjectAbstract>() {
+
+        /* For number comparison logic - we want 1,2,4,8,16,24 - not 1,16,2,24,4,8 etc. */
+        private final Pattern numericNearEndPattern = Pattern.compile("(\\D*)(\\d+)([^\\d]*)$");
+
         public int compare(AxoObjectAbstract o1, AxoObjectAbstract o2) {
 
-            String str1Leading = o1.id.substring(0, o1.id.lastIndexOf('/'));
-            String str2Leading = o2.id.substring(0, o2.id.lastIndexOf('/'));
-
-            String str1Ending = o1.id.substring(o1.id.lastIndexOf('/'));
-            String str2Ending = o2.id.substring(o2.id.lastIndexOf('/'));
-
-            /* Compare the lengths of two AxoObjectAbstract object id's.
-             * If leading path is the same but actual object name
-             * (part after the last '/') is shorter, sort it first.
-             * For example, "filter/lp" should come before "filter/lp m" but also before "filter/allpass".
-             */
+            /* Get leading parts of object paths (libraries, subcategories) */
+            String str1Leading = o1.id.substring(0, o1.id.lastIndexOf('/')+1).toLowerCase();
+            String str2Leading = o2.id.substring(0, o2.id.lastIndexOf('/')+1).toLowerCase();
+            
+            /* Compare only objects within the same smallest subcategory, for example ksoloti/gpio/in/[object] */
             if (str1Leading.equals(str2Leading)) {
-                if (str1Ending.length() < str2Ending.length()) {
-                    return -1;
+
+                String s1 = o1.id.substring(o1.id.lastIndexOf('/')+1).toLowerCase();
+                String s2 = o2.id.substring(o2.id.lastIndexOf('/')+1).toLowerCase();
+
+                /* Regex matchers in case strings contain numerals */
+                Matcher m1 = numericNearEndPattern.matcher(s1);
+                Matcher m2 = numericNearEndPattern.matcher(s2);
+                
+                String prefix1WithoutNumber = s1;
+                String prefix2WithoutNumber = s2;
+                Integer num1 = null;
+                Integer num2 = null;
+                String suffix1 = "";
+                String suffix2 = "";
+        
+                if (m1.find()) {
+                    prefix1WithoutNumber = m1.group(1);
+                    try {
+                        num1 = Integer.parseInt(m1.group(2));
+                    }
+                    catch (NumberFormatException ignored) {
+                        /* Keep num1 as null if parsing fails */
+                    }
+                    suffix1 = m1.group(3);
                 }
+        
+                if (m2.find()) {
+                    prefix2WithoutNumber = m2.group(1);
+                    try {
+                        num2 = Integer.parseInt(m2.group(2));
+                    }
+                    catch (NumberFormatException ignored) {
+                        /* Keep num2 as null if parsing fails */
+                    }
+                    suffix2 = m2.group(3);
+                }
+        
+                // First, compare the part before the number
+                int prefixComparison = prefix1WithoutNumber.compareTo(prefix2WithoutNumber);
+                if (prefixComparison != 0) {
+                    return prefixComparison;
+                }
+        
+                // If the prefixes are the same, handle the numeric part
+                if (num1 != null && num2 != null) {
+                    int numberComparison = num1.compareTo(num2);
+                    if (numberComparison != 0) {
+                        return numberComparison;
+                    }
+                    // If numbers are also the same, compare the suffixes
+                    return suffix1.compareTo(suffix2);
+                }
+                else if (num1 != null) {
+                    return -1; // s1 has a number, s2 doesn't (comes before if prefixes are same)
+                }
+                else if (num2 != null) {
+                    return 1;  // s2 has a number, s1 doesn't (comes after if prefixes are same)
+                }
+        
+                // If neither has a number (or numbers are the same), compare the original strings
+                return s1.compareTo(s2);
             }
-            /* Else consider them equal, i.e. don't change the order */
             return 0;
         }
     };
