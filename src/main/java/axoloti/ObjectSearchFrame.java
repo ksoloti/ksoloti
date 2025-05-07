@@ -592,12 +592,11 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
             /* Else do case-insensitive search */
             else {
-                String sl = s.toLowerCase();
 
                 /* --- exact match of entire string, case-insensitive --- */
                 tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.id.toLowerCase().equals(sl)) {
+                    if (o.id.toLowerCase().equals(s)) {
                         if (!listData.contains(o)) {
                             tempList.add(o);
                         }
@@ -610,7 +609,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 /* --- if starts with, case-insensitive --- */
                 tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.id.toLowerCase().startsWith(sl)) {
+                    if (o.id.toLowerCase().startsWith(s)) {
                         if (!listData.contains(o)) {
                             tempList.add(o);
                         }
@@ -623,7 +622,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 /* --- if contains string (literally, i.e. ignoring wildcards), case-insensitive --- */
                 tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.id.toLowerCase().contains(sl)) {
+                    if (o.id.toLowerCase().contains(s)) {
                         if (!listData.contains(o)) {
                             tempList.add(o);
                         }
@@ -636,7 +635,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 /* --- if object description contains, case-insensitive --- */
                 tempList = new ArrayList<AxoObjectAbstract>(); /* clear temporary list */
                 for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
-                    if (o.sDescription != null && o.sDescription.toLowerCase().contains(sl)) {
+                    if (o.sDescription != null && o.sDescription.toLowerCase().contains(s)) {
                         if (!listData.contains(o)) {
                             tempList.add(o);
                         }
