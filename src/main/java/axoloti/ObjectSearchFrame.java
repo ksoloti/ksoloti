@@ -121,29 +121,29 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                     suffix2 = m2.group(3);
                 }
         
-                // First, compare the part before the number
+                /* First, compare the part before the number */
                 int prefixComparison = prefix1WithoutNumber.compareTo(prefix2WithoutNumber);
                 if (prefixComparison != 0) {
                     return prefixComparison;
                 }
         
-                // If the prefixes are the same, handle the numeric part
+                /* If the prefixes are the same, handle the numeric part */
                 if (num1 != null && num2 != null) {
                     int numberComparison = num1.compareTo(num2);
                     if (numberComparison != 0) {
                         return numberComparison;
                     }
-                    // If numbers are also the same, compare the suffixes
+                    /* If numbers are also the same, compare the suffixes */
                     return suffix1.compareTo(suffix2);
                 }
                 else if (num1 != null) {
-                    return -1; // s1 has a number, s2 doesn't (comes before if prefixes are same)
+                    return -1; /* s1 has a number, s2 doesn't (comes before if prefixes are same) */
                 }
                 else if (num2 != null) {
-                    return 1;  // s2 has a number, s1 doesn't (comes after if prefixes are same)
+                    return 1;  /* s2 has a number, s1 doesn't (comes after if prefixes are same) */
                 }
         
-                // If neither has a number (or numbers are the same), compare the original strings
+                /* If neither has a number (or numbers are the same), compare the original strings */
                 return s1.compareTo(s2);
             }
             return 0;
