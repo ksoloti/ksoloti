@@ -222,7 +222,7 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t rand_s32(void) {
      * but rather than waiting for a new true random number,
      * we multiply/add the seed with the latest hardware-generated number.
      */
-    static uint32_t randSeed = 22229; /* Static declaration inside function -> will retain its value */
+    static uint32_t randSeed = 22229; /* Static declaration inside function -> will retain its last value between calls */
     return randSeed = (randSeed * 196314163) + RNG->DR;
 }
 
