@@ -48,6 +48,9 @@ import axoloti.outlets.OutletFrac32Buffer;
 import axoloti.outlets.OutletInstance;
 import axoloti.outlets.OutletInt32;
 import axoloti.parameters.ParameterInstance;
+import axoloti.utils.OSDetect;
+import axoloti.utils.OSDetect.OS;
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -364,10 +367,10 @@ public class Patch {
                 }
             }
         }
-        WriteCode();
+        WriteCode(true);
         GetQCmdProcessor().SetPatch(null);
         GetQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
-        GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch());
+        GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(getBinFile()));
         GetQCmdProcessor().AppendToQueue(new QCmdStart(this));
         GetQCmdProcessor().AppendToQueue(new QCmdLock(this));
     }
@@ -2690,16 +2693,23 @@ public class Patch {
         return o;
     }
 
-    public void WriteCode() {
+    public void WriteCode(boolean use_buildfilenames) {
         LOGGER.log(Level.INFO, "Generating code...");
 
         String c = GenerateCode3();
 
+        File f = getCppFile();
+        if (!f.getParentFile().exists()) {
+            if (!f.getParentFile().mkdirs()) {
+                LOGGER.log(Level.SEVERE, "Batch test: Failed to create subfolder structure.");
+                return; // Exit if directory creation fails
+            }
+        }
+
         try {
-            String buildDir = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build";
-            FileOutputStream f = new FileOutputStream(buildDir + File.separator + "xpatch.cpp");
-            f.write(c.getBytes());
-            f.close();
+            FileOutputStream fos = new FileOutputStream(f);
+            fos.write(c.getBytes());
+            fos.close();
         }
         catch (FileNotFoundException ex) {
             LOGGER.log(Level.SEVERE, ex.toString());
@@ -2708,6 +2718,10 @@ public class Patch {
             LOGGER.log(Level.SEVERE, ex.toString());
         }
         // LOGGER.log(Level.INFO, "Done generating code.\n");
+    }
+
+    public void WriteCode() {
+        WriteCode(false);
     }
 
     public void Compile() {
@@ -2959,15 +2973,52 @@ public class Patch {
         return files;
     }
 
-    public File getBinFile() {
-        String buildDir = System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator + "build";
+    public String generateBuildFilenameStem(boolean use_buildfilenames) {
+        String build_filename = "";
+        if (use_buildfilenames) {
+            String fnp = getFileNamePath();
+            if (fnp.contains(System.getProperty(Axoloti.LIBRARIES_DIR))) {
+                /* Path to patch is in a stock library */
+                build_filename += fnp.split(Version.AXOLOTI_SHORT_VERSION)[1].replace(' ', '_');
+            }
+            else if (fnp.equals("untitled")) {
+                build_filename += File.separator + "untitled";
+            }
+            else {
+                /* Path to patch is a user location */
+                OS os = OSDetect.getOS();
+                if (os != null) {
+                    switch (os) {
+                        case WIN:
+                            build_filename += fnp.substring(2).replace(' ', '_');
+                            break;
+                        case MAC:
+                        case LINUX:
+                        default:
+                            build_filename += fnp.replace(' ', '_');
+                            break;
+                    }
+                }
+            }
+        }
+        else {
+            build_filename += File.separator + "xpatch";
+        }
+        return build_filename.replace('\\', '/');
+    }
 
-        return new File(buildDir + File.separator + "xpatch.bin");
-//            LOGGER.log(Level.INFO, "bin path: {0}", f.getAbsolutePath());        
+    public File getBinFile() {
+        String bfPath = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + generateBuildFilenameStem(true) + ".bin";
+        return new File(bfPath.replace('\\', '/'));
+    }
+
+    public File getCppFile() {
+        String cfPath = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + generateBuildFilenameStem(true) + ".cpp";
+        return new File(cfPath.replace('\\', '/'));
     }
 
     public void UploadToSDCard(String sdfilename) {
-        WriteCode();
+        WriteCode(true);
         LOGGER.log(Level.INFO, "SD card filename: {0}", sdfilename);
 
         QCmdProcessor qcmdprocessor = QCmdProcessor.getQCmdProcessor();

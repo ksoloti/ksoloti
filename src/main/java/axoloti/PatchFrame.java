@@ -991,7 +991,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuGenerateCodeActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.WriteCode();
+        patch.WriteCode(true);
     }
 
     private void jMenuCompileCodeActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1001,7 +1001,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private void jMenuUploadCodeActionPerformed(java.awt.event.ActionEvent evt) {
         patch.GetQCmdProcessor().SetPatch(null);
         patch.GetQCmdProcessor().AppendToQueue(new QCmdStop());
-        patch.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch());
+        patch.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch.getBinFile()));
         patch.GetQCmdProcessor().AppendToQueue(new QCmdStart(patch));
         patch.GetQCmdProcessor().AppendToQueue(new QCmdLock(patch));
     }
@@ -1122,10 +1122,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuItemUploadInternalFlashActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.WriteCode();
+        patch.WriteCode(true);
         qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
         qcmdprocessor.AppendToQueue(new qcmds.QCmdCompilePatch(patch));
-        qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadPatch());
+        qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadPatch(patch.getBinFile()));
         qcmdprocessor.AppendToQueue(new qcmds.QCmdCopyPatchToFlash());
         qcmdprocessor.WaitQueueFinished();
     }
@@ -1156,7 +1156,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuGenerateAndCompileCodeActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.WriteCode();
+        patch.WriteCode(true);
         patch.Compile();
     }
 

@@ -20,6 +20,7 @@ package qcmds;
 
 import axoloti.Patch;
 import axoloti.utils.OSDetect;
+
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,11 +88,13 @@ public class QCmdCompilePatch extends QCmdShellTask {
                 fwoptiondef += " FW_NORMAL";
             }
 
+            String build_filename_stem = " " + p.generateBuildFilenameStem(true);
+
             if (OSDetect.getOS() == OSDetect.OS.WIN) {
-                String str = FirmwareDir() + "\\compile_patch_win.bat " + boarddef + fwoptiondef;
+                String str = FirmwareDir() + "\\compile_patch_win.bat " + boarddef + fwoptiondef + build_filename_stem;
                 return str.split("\\s+");
             } else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {
-                String str = FirmwareDir() + "/compile_patch.sh " + boarddef + fwoptiondef;
+                String str = FirmwareDir() + "/compile_patch.sh " + boarddef + fwoptiondef + build_filename_stem;
                 return str.split("\\s+");
             } else {
                 Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");

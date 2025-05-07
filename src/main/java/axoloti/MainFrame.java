@@ -31,7 +31,6 @@ import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
 import axoloti.utils.FirmwareID;
 import axoloti.utils.KeyUtils;
-import axoloti.utils.OSDetect;
 import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 
@@ -60,13 +59,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-// import java.net.BindException;
 import java.net.MalformedURLException;
-// import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -1150,40 +1148,45 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private boolean runTestCompile(File f) {
         SetGrabFocusOnSevereErrors(false);
-        LOGGER.log(Level.INFO, "\n----- Testing {0} -----", f.getPath());
         
         Strategy strategy = new AnnotationStrategy();
         Serializer serializer = new Persister(strategy);
-
-        int compile_sleep = OSDetect.getOS() == OSDetect.OS.WIN ? 4000 : 3000;
-
+        
         try {
             boolean status;
+            
+            FileHandler fh = new FileHandler(System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log", true);
+            SimpleFormatter formatter = new SimpleFormatter();
+            fh.setFormatter(formatter);
+            Logger.getLogger("").addHandler(fh);
+
+            LOGGER.log(Level.INFO, "---------- Testing {0} ----------", f.getPath());
 
             PatchGUI patch1 = serializer.read(PatchGUI.class, f);
             PatchFrame pf = new PatchFrame(patch1, qcmdprocessor);
             pf.createBufferStrategy(1);
             patch1.setFileNamePath(f.getPath());
             patch1.PostContructor();
-            patch1.WriteCode();
+            patch1.WriteCode(true); // generate code as own path/filename .cpp
             qcmdprocessor.WaitQueueFinished();
             LOGGER.log(Level.INFO, "Done generating code.\n");
             Thread.sleep(200); 
 
-            QCmdCompilePatch cp = new QCmdCompilePatch(patch1);
+            QCmdCompilePatch cp = new QCmdCompilePatch(patch1); // compile as own path/filename .bin
             patch1.GetQCmdProcessor().AppendToQueue(cp);
             qcmdprocessor.WaitQueueFinished();
-            LOGGER.log(Level.INFO, "Done compiling patch.\n");
-            Thread.sleep(compile_sleep);
+            LOGGER.log(Level.INFO, "Done compiling patch.\n\n");
+            Logger.getLogger("").removeHandler(fh);
+            fh.close();
+            Thread.sleep(200);
 
-            LOGGER.log(Level.INFO, "\nClosing patch...");
             pf.Close();
-            LOGGER.log(Level.INFO, "Done closing patch.\n");
-
             status = cp.success();
-            if (status == false) {
-                LOGGER.log(Level.SEVERE, "COMPILATION FAILED: {0}\n", f.getPath());
-            }
+
+
+            // if (status == false) {
+            //     LOGGER.log(Level.SEVERE, "COMPILATION FAILED: {0}\n", f.getPath());
+            // }
 
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
             return status;
