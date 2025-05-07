@@ -2691,7 +2691,7 @@ public class Patch {
     }
 
     public void WriteCode() {
-        LOGGER.log(Level.INFO, "\nGenerating code...");
+        LOGGER.log(Level.INFO, "Generating code...");
 
         String c = GenerateCode3();
 
