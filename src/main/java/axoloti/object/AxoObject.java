@@ -536,6 +536,7 @@ public class AxoObject extends AxoObjectAbstract {
                         r.add(s2);
                     }
                     else {
+                        s = s.replace('\\', '/');
                         r.add(s);
                     }
                 }
