@@ -222,8 +222,6 @@ static void ADAU_I2C_Init(void) {
         palSetPadMode(GPIOH, 7, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
         palSetPadMode(GPIOH, 8, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
         rccEnableI2C3(FALSE);
-#elif defined(BOARD_STM32F4_DISCOVERY)
-//TODO
 #endif
 
         HAL_I2C_Init(&onboard_i2c_handle);

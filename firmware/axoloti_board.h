@@ -54,16 +54,6 @@ void adc_convert(void);
 #define SDCSW_PORT GPIOD
 #define SDCSW_PIN 13
 
-#elif defined(BOARD_STM32F4_DISCOVERY)
-/* LED1: green */
-#define LED1_PORT GPIOD
-#define LED1_PIN 12
-/* LED2: red */
-#define LED2_PORT GPIOD
-#define LED2_PIN 14
-#define SW2_PORT GPIOA
-#define SW2_PIN 0
-
 #endif /* BOARD_* */
 
 #if defined(BOARD_KSOLOTI_CORE)
@@ -76,8 +66,6 @@ void adc_convert(void);
 
 #if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
 #define SDMIDI SD6
-#elif defined(BOARD_STM32F4_DISCOVERY)
-#define SDMIDI SD1
 #endif /* BOARD_* */
 
 #endif /* __AXOBOARD_H */

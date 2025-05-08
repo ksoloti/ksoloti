@@ -21,7 +21,7 @@ static const uint8_t deviceDescriptorData[] = {
 #if defined(BOARD_KSOLOTI_CORE)
         /* Ksoloti Core */
         0x0445, /* product ID (lab use only!)                      */
-#elif defined(BOARD_AXOLOTI_CORE) || defined(BOARD_STM32F4_DISCOVERY)
+#elif defined(BOARD_AXOLOTI_CORE)
         /* Axoloti Core */
         0x0443, /* product ID (lab use only!)                      */
 #endif
@@ -103,7 +103,7 @@ static const uint8_t vendorDescriptorData[] = {
 
 #if defined(BOARD_KSOLOTI_CORE)
     'K', 0, 's', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0
-#elif defined(BOARD_AXOLOTI_CORE) || defined(BOARD_STM32F4_DISCOVERY)
+#elif defined(BOARD_AXOLOTI_CORE)
     'A', 0, 'x', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0
 #endif
 
@@ -214,7 +214,7 @@ static const USBMassStorageConfig msdConfig = {
 
 #if defined(BOARD_KSOLOTI_CORE)
     "Ksoloti",
-#elif defined(BOARD_AXOLOTI_CORE) || defined(BOARD_STM32F4_DISCOVERY)
+#elif defined(BOARD_AXOLOTI_CORE)
     "Axoloti",
 #endif
 

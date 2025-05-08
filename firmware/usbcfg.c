@@ -354,8 +354,6 @@ static const uint8_t vcom_string1[] = {
   'K', 0, 's', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0
 #elif defined(BOARD_AXOLOTI_CORE)
   'A', 0, 'x', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0
-#elif defined(BOARD_STM32F4_DISCOVERY)
-  'A', 0, 'x', 0, 'o', 0, 'D', 0, 's', 0, 'c', 0, 'v', 0
 #endif
 
 };
@@ -415,8 +413,6 @@ static const uint8_t vcom_string4[] = {
   'K', 0, 's', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0, ' ', 0,
 #elif defined(BOARD_AXOLOTI_CORE)
   'A', 0, 'x', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0, ' ', 0,
-#elif defined(BOARD_STM32F4_DISCOVERY)
-  'A', 0, 'x', 0, 'o', 0, 'D', 0, 's', 0, 'c', 0, 'v', 0, ' ', 0,
 #endif
 
   'B', 0, 'u', 0, 'l', 0, 'k', 0, ' ', 0,
@@ -435,8 +431,6 @@ static const uint8_t vcom_string5[] = {
   'K', 0, 's', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0, ' ', 0,
 #elif defined(BOARD_AXOLOTI_CORE)
   'A', 0, 'x', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0, ' ', 0,
-#elif defined(BOARD_STM32F4_DISCOVERY)
-  'A', 0, 'x', 0, 'o', 0, 'D', 0, 's', 0, 'c', 0, 'v', 0, ' ', 0,
 #endif
 
   'C', 0, 'o', 0, 'r', 0, 'e', 0
@@ -455,8 +449,6 @@ static const uint8_t vcom_string6[] = {
   'K', 0, 's', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0, ' ', 0,
 #elif defined(BOARD_AXOLOTI_CORE)
   'A', 0, 'x', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0, ' ', 0,
-#elif defined(BOARD_STM32F4_DISCOVERY)
-  'A', 0, 'x', 0, 'o', 0, 'D', 0, 's', 0, 'c', 0, 'v', 0, ' ', 0,
 #endif
 
   'M', 0, 'I', 0, 'D', 0, 'I', 0
