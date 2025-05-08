@@ -293,7 +293,7 @@ static int StartPatch1(void) {
 }
 
 
- __attribute__((__noreturn__)) static msg_t ThreadDSP(void* arg) {
+ __attribute__((noreturn)) static msg_t ThreadDSP(void* arg) {
     (void)(arg);
 
 #if CH_CFG_USE_REGISTRY
