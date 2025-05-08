@@ -18,6 +18,7 @@
  */
 package axoloti.menus;
 
+import axoloti.Axoloti;
 import axoloti.FileUtils;
 import static axoloti.MainFrame.axoObjects;
 import static axoloti.MainFrame.mainframe;
@@ -88,7 +89,7 @@ public class FileMenu extends JMenu {
         jMenuItemPreferences = new JMenuItem();
         // jMenuAutoTestObjects = new JMenuItem();
         // jMenuAutoTestPatches = new JMenuItem();
-        jMenuAutoTestAll = new JMenuItem();
+        // jMenuAutoTestAll = new JMenuItem();
         jMenuAutoTestDir = new JMenuItem();
 
         jMenuNewPatch.setMnemonic('N');
@@ -199,16 +200,16 @@ public class FileMenu extends JMenu {
         // });
         // add(jMenuAutoTestPatches);
 
-        jMenuAutoTestAll.setText("Test Compilation: Run All Tests");
-        jMenuAutoTestAll.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuAutoTestAllActionPerformed(evt);
-            }
-        });
-        add(jMenuAutoTestAll);
+        // jMenuAutoTestAll.setText("Test Compilation: Run All Tests");
+        // jMenuAutoTestAll.addActionListener(new java.awt.event.ActionListener() {
+        //     @Override
+        //     public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //         jMenuAutoTestAllActionPerformed(evt);
+        //     }
+        // });
+        // add(jMenuAutoTestAll);
 
-        jMenuAutoTestDir.setText("Test Compilation: Enter Directory");
+        jMenuAutoTestDir.setText("Test Compilation: All / Enter Directory");
         jMenuAutoTestDir.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -247,7 +248,7 @@ public class FileMenu extends JMenu {
         if (!Preferences.LoadPreferences().getExpertMode()) {
             // jMenuAutoTestObjects.setVisible(false);
             // jMenuAutoTestPatches.setVisible(false);
-            jMenuAutoTestAll.setVisible(false);
+            // jMenuAutoTestAll.setVisible(false);
             jMenuAutoTestDir.setVisible(false);
         }
     }
@@ -268,7 +269,7 @@ public class FileMenu extends JMenu {
     private axoloti.menus.RecentFileMenu recentFileMenu1;
     private axoloti.menus.FavouriteMenu favouriteMenu1;
     private javax.swing.JMenuItem jMenuItemPreferences;
-    private javax.swing.JMenuItem jMenuAutoTestAll;
+    // private javax.swing.JMenuItem jMenuAutoTestAll;
     private javax.swing.JMenuItem jMenuAutoTestDir;
     // private javax.swing.JMenuItem jMenuAutoTestObjects;
     // private javax.swing.JMenuItem jMenuAutoTestPatches;
@@ -307,25 +308,25 @@ public class FileMenu extends JMenu {
     // }
 
 
-    private void jMenuAutoTestAllActionPerformed(java.awt.event.ActionEvent evt) {
-        int res = JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and may freeze the UI until complete. Continue?", "Warning", JOptionPane.OK_CANCEL_OPTION);
-        if (res == JOptionPane.OK_OPTION) {
-            class Thd extends Thread {
-                public void run() {
-                    LOGGER.log(Level.WARNING, "Running tests, please wait...");
-                    mainframe.runAllTests();
-                    LOGGER.log(Level.WARNING, "Done running tests.\n");
-                }
-            }
-            Thd thread = new Thd();
-            thread.start();
-        }
-    }
+    // private void jMenuAutoTestAllActionPerformed(java.awt.event.ActionEvent evt) {
+    //     int res = JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and may freeze the UI until complete. Continue?", "Warning", JOptionPane.OK_CANCEL_OPTION);
+    //     if (res == JOptionPane.OK_OPTION) {
+    //         class Thd extends Thread {
+    //             public void run() {
+    //                 LOGGER.log(Level.WARNING, "Running tests, please wait...");
+    //                 mainframe.runAllTests();
+    //                 LOGGER.log(Level.WARNING, "Done running tests.\n");
+    //             }
+    //         }
+    //         Thd thread = new Thd();
+    //         thread.start();
+    //     }
+    // }
 
     private void jMenuAutoTestDirActionPerformed(java.awt.event.ActionEvent evt) {
         int res = JOptionPane.showConfirmDialog(mainframe, "Running these tests may take a long time and/or freeze the UI until complete. Continue?", "Warning", JOptionPane.OK_CANCEL_OPTION);
         if (res == JOptionPane.OK_OPTION) {
-            String path = JOptionPane.showInputDialog(this, "Enter directory to test:");
+            String path = JOptionPane.showInputDialog(this, "Enter directory to test:\n(Default: Test all stock libraries)", System.getProperty(Axoloti.LIBRARIES_DIR));
             if (path != null && !path.isEmpty()) {
                 File f = new File(path);
                 if (f.exists() && f.canRead()) {
