@@ -111,8 +111,6 @@ public class AttributeInstanceSDFile extends AttributeInstanceString<AxoAttribut
             }
         });
         ButtonChooseFile = new ButtonComponent("Select");
-        ButtonChooseFile.setAlignmentX(LEFT_ALIGNMENT);
-        ButtonChooseFile.setAlignmentY(TOP_ALIGNMENT);
         ButtonChooseFile.addActListener(new ButtonComponent.ActListener() {
             @Override
             public void OnPushed() {

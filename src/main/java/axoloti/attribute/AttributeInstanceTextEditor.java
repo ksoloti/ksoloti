@@ -88,8 +88,6 @@ public class AttributeInstanceTextEditor extends AttributeInstanceString<AxoAttr
     public void PostConstructor() {
         super.PostConstructor();
         bEdit = new ButtonComponent("Edit");
-        bEdit.setAlignmentX(LEFT_ALIGNMENT);
-        bEdit.setAlignmentY(TOP_ALIGNMENT);
         bEdit.addActListener(new ButtonComponent.ActListener() {
             @Override
             public void OnPushed() {
