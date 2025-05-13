@@ -2184,6 +2184,7 @@ arm_status arm_rfft_init_q15(
     /*  Initialization of coef modifier depending on the FFT length */
     switch (S->fftLenReal)
     {
+#if KSO_INCLUDE_LARGE_FFT_TABLES
     case 8192U:
         S->twidCoefRModifier = 1U;
         S->pCfft = &arm_cfft_sR_q15_len4096;
@@ -2192,6 +2193,7 @@ arm_status arm_rfft_init_q15(
         S->twidCoefRModifier = 2U;
         S->pCfft = &arm_cfft_sR_q15_len2048;
         break;
+#endif
     case 2048U:
         S->twidCoefRModifier = 4U;
         S->pCfft = &arm_cfft_sR_q15_len1024;

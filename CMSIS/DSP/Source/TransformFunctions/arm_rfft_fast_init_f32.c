@@ -195,6 +195,7 @@ arm_status arm_rfft_1024_fast_init_f32( arm_rfft_fast_instance_f32 * S ) {
   return ARM_MATH_SUCCESS;
 }
 
+#if KSO_INCLUDE_LARGE_FFT_TABLES
 /**
   @brief         Initialization function for the 2048pt floating-point real FFT.
   @param[in,out] S  points to an arm_rfft_fast_instance_f32 structure
@@ -245,6 +246,7 @@ arm_status arm_rfft_4096_fast_init_f32( arm_rfft_fast_instance_f32 * S ) {
 
   return ARM_MATH_SUCCESS;
 }
+#endif //0
 
 /**
   @brief         Initialization function for the floating-point real FFT.
@@ -270,12 +272,14 @@ arm_status arm_rfft_fast_init_f32(
 
   switch (fftLen)
   {
+#if KSO_INCLUDE_LARGE_FFT_TABLES
   case 4096U:
     fptr = arm_rfft_4096_fast_init_f32;
     break;
   case 2048U:
     fptr = arm_rfft_2048_fast_init_f32;
     break;
+#endif
   case 1024U:
     fptr = arm_rfft_1024_fast_init_f32;
     break;

@@ -2270,9 +2270,11 @@ arm_status arm_rfft_512_fast_init_f32 ( arm_rfft_fast_instance_f32 * S );
 
 arm_status arm_rfft_1024_fast_init_f32 ( arm_rfft_fast_instance_f32 * S );
 
+#if KSO_INCLUDE_LARGE_FFT_TABLES
 arm_status arm_rfft_2048_fast_init_f32 ( arm_rfft_fast_instance_f32 * S );
 
 arm_status arm_rfft_4096_fast_init_f32 ( arm_rfft_fast_instance_f32 * S );
+#endif //0
 
 
   void arm_rfft_fast_f32(

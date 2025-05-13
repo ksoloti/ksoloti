@@ -2339,6 +2339,7 @@ const float32_t twiddleCoef_1024[2048] = {
   @par
   Cos and Sin values are in interleaved fashion
 */
+#if KSO_INCLUDE_LARGE_FFT_TABLES
 const float32_t twiddleCoef_2048[4096] = {
     1.000000000f,  0.000000000f,
     0.999995294f,  0.003067957f,
@@ -8502,6 +8503,7 @@ const float32_t twiddleCoef_4096[8192] = {
     0.999995294f, -0.003067957f,
     0.999998823f, -0.001533980f
 };
+#endif //0
 
 /**
   @brief  Q31 Twiddle factors Table
@@ -9696,6 +9698,7 @@ const q31_t twiddleCoef_1024_q31[1536] = {
   Convert Floating point to Q31(Fixed point 1.31):
  	round(twiddleCoefQ31(i) * pow(2, 31))
  */
+#if KSO_INCLUDE_LARGE_FFT_TABLES
 const q31_t twiddleCoef_2048_q31[3072] = {
 	(q31_t)0x7FFFFFFF, (q31_t)0x00000000, (q31_t)0x7FFFD885,
 	(q31_t)0x006487E3, (q31_t)0x7FFF6216, (q31_t)0x00C90F88,
@@ -12791,6 +12794,7 @@ const q31_t twiddleCoef_4096_q31[6144] =
 	(q31_t)0xFF69343E, (q31_t)0x800058D3, (q31_t)0xFF9B781D,
 	(q31_t)0x8000277A, (q31_t)0xFFCDBC0A, (q31_t)0x800009DE
 };
+#endif //0
 
 
 
@@ -13737,6 +13741,7 @@ const q15_t twiddleCoef_1024_q15[1536] = {
   Convert Floating point to q15(Fixed point 1.15):
  	round(twiddleCoefq15(i) * pow(2, 15))
  */
+#if KSO_INCLUDE_LARGE_FFT_TABLES
 const q15_t twiddleCoef_2048_q15[3072] = {
 	(q15_t)0x7FFF, (q15_t)0x0000, (q15_t)0x7FFF, (q15_t)0x0064,
 	(q15_t)0x7FFF, (q15_t)0x00C9, (q15_t)0x7FFE, (q15_t)0x012D,
@@ -16064,6 +16069,7 @@ const q15_t twiddleCoef_4096_q15[6144] =
 	(q15_t)0xFF36, (q15_t)0x8000, (q15_t)0xFF69, (q15_t)0x8000,
 	(q15_t)0xFF9B, (q15_t)0x8000, (q15_t)0xFFCD, (q15_t)0x8000
 };
+#endif //0
 
 
 /**
@@ -16375,6 +16381,7 @@ const uint16_t armBitRevIndexTable1024[ARMBITREVINDEXTABLE_1024_TABLE_LENGTH] =
    8112,8136, 8120,8168, 8136,8160, 8152,8176
 };
 
+#if KSO_INCLUDE_LARGE_FFT_TABLES
 const uint16_t armBitRevIndexTable2048[ARMBITREVINDEXTABLE_2048_TABLE_LENGTH] =
 {
    /* 8x2, size 3808 */
@@ -17087,6 +17094,7 @@ const uint16_t armBitRevIndexTable4096[ARMBITREVINDEXTABLE_4096_TABLE_LENGTH] =
    31096,31544, 31160,32056, 31224,32568, 31672,32120, 31736,32632,
    32248,32696
 };
+#endif //0
 
 
 const uint16_t armBitRevIndexTable_fixed_16[ARMBITREVINDEXTABLE_FIXED_16_TABLE_LENGTH] =
@@ -17248,6 +17256,7 @@ const uint16_t armBitRevIndexTable_fixed_1024[ARMBITREVINDEXTABLE_FIXED_1024_TAB
     7352,7480, 7416,7992, 7544,7864, 7672,8120, 7928,8056
 };
 
+#if KSO_INCLUDE_LARGE_FFT_TABLES
 const uint16_t armBitRevIndexTable_fixed_2048[ARMBITREVINDEXTABLE_FIXED_2048_TABLE_LENGTH] =
 {
     /* 4x2, size 1984 */
@@ -17741,6 +17750,7 @@ const uint16_t armBitRevIndexTable_fixed_4096[ARMBITREVINDEXTABLE_FIXED_4096_TAB
     30456,32184, 30584,31672, 30712,32696, 30968,31864, 31096,31352, 31224,32376,
     31480,32120, 31736,32632, 32248,32504
 };
+#endif //0
 
 /**
   @par
@@ -18776,6 +18786,7 @@ const float32_t twiddleCoef_rfft_1024[1024] = {
     0.006135885f, -0.999981175f
 };
 
+#if KSO_INCLUDE_LARGE_FFT_TABLES
 const float32_t twiddleCoef_rfft_2048[2048] = {
     0.000000000f,  1.000000000f,
     0.003067957f,  0.999995294f,
@@ -21853,6 +21864,7 @@ const float32_t twiddleCoef_rfft_4096[4096] = {
     0.003067957f, -0.999995294f,
     0.001533980f, -0.999998823f
 };
+#endif //0
 
 
 /**

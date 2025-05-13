@@ -58,6 +58,7 @@ const arm_cfft_instance_f32 arm_cfft_sR_f32_len1024 = {
   1024, twiddleCoef_1024, armBitRevIndexTable1024, ARMBITREVINDEXTABLE_1024_TABLE_LENGTH
 };
 
+#if KSO_INCLUDE_LARGE_FFT_TABLES
 const arm_cfft_instance_f32 arm_cfft_sR_f32_len2048 = {
   2048, twiddleCoef_2048, armBitRevIndexTable2048, ARMBITREVINDEXTABLE_2048_TABLE_LENGTH
 };
@@ -65,6 +66,7 @@ const arm_cfft_instance_f32 arm_cfft_sR_f32_len2048 = {
 const arm_cfft_instance_f32 arm_cfft_sR_f32_len4096 = {
   4096, twiddleCoef_4096, armBitRevIndexTable4096, ARMBITREVINDEXTABLE_4096_TABLE_LENGTH
 };
+#endif //0
 
 /* Fixed-point structs */
 const arm_cfft_instance_q31 arm_cfft_sR_q31_len16 = {
@@ -95,6 +97,7 @@ const arm_cfft_instance_q31 arm_cfft_sR_q31_len1024 = {
   1024, twiddleCoef_1024_q31, armBitRevIndexTable_fixed_1024, ARMBITREVINDEXTABLE_FIXED_1024_TABLE_LENGTH
 };
 
+#if KSO_INCLUDE_LARGE_FFT_TABLES
 const arm_cfft_instance_q31 arm_cfft_sR_q31_len2048 = {
   2048, twiddleCoef_2048_q31, armBitRevIndexTable_fixed_2048, ARMBITREVINDEXTABLE_FIXED_2048_TABLE_LENGTH
 };
@@ -102,6 +105,7 @@ const arm_cfft_instance_q31 arm_cfft_sR_q31_len2048 = {
 const arm_cfft_instance_q31 arm_cfft_sR_q31_len4096 = {
   4096, twiddleCoef_4096_q31, armBitRevIndexTable_fixed_4096, ARMBITREVINDEXTABLE_FIXED_4096_TABLE_LENGTH
 };
+#endif //0
 
 const arm_cfft_instance_q15 arm_cfft_sR_q15_len16 = {
   16, twiddleCoef_16_q15, armBitRevIndexTable_fixed_16, ARMBITREVINDEXTABLE_FIXED_16_TABLE_LENGTH
@@ -131,6 +135,7 @@ const arm_cfft_instance_q15 arm_cfft_sR_q15_len1024 = {
   1024, twiddleCoef_1024_q15, armBitRevIndexTable_fixed_1024, ARMBITREVINDEXTABLE_FIXED_1024_TABLE_LENGTH
 };
 
+#if KSO_INCLUDE_LARGE_FFT_TABLES
 const arm_cfft_instance_q15 arm_cfft_sR_q15_len2048 = {
   2048, twiddleCoef_2048_q15, armBitRevIndexTable_fixed_2048, ARMBITREVINDEXTABLE_FIXED_2048_TABLE_LENGTH
 };
@@ -138,6 +143,7 @@ const arm_cfft_instance_q15 arm_cfft_sR_q15_len2048 = {
 const arm_cfft_instance_q15 arm_cfft_sR_q15_len4096 = {
   4096, twiddleCoef_4096_q15, armBitRevIndexTable_fixed_4096, ARMBITREVINDEXTABLE_FIXED_4096_TABLE_LENGTH
 };
+#endif //0
 
 /* Structure for real-value inputs */
 /* Floating-point structs */
@@ -177,6 +183,7 @@ const arm_rfft_fast_instance_f32 arm_rfft_fast_sR_f32_len1024 = {
   (float32_t *)twiddleCoef_rfft_1024
 };
 
+#if KSO_INCLUDE_LARGE_FFT_TABLES
 const arm_rfft_fast_instance_f32 arm_rfft_fast_sR_f32_len2048 = {
   { 1024, twiddleCoef_1024, armBitRevIndexTable1024, ARMBITREVINDEXTABLE_1024_TABLE_LENGTH },
   2048U,
@@ -188,6 +195,7 @@ const arm_rfft_fast_instance_f32 arm_rfft_fast_sR_f32_len4096 = {
   4096U,
   (float32_t *)twiddleCoef_rfft_4096
 };
+#endif //0
 
 /* Fixed-point structs */
 /* q31_t */
@@ -254,6 +262,7 @@ const arm_rfft_instance_q31 arm_rfft_sR_q31_len1024 = {
   &arm_cfft_sR_q31_len512
 };
 
+#if KSO_INCLUDE_LARGE_FFT_TABLES
 const arm_rfft_instance_q31 arm_rfft_sR_q31_len2048 = {
   2048U,
   0,
@@ -283,6 +292,7 @@ const arm_rfft_instance_q31 arm_rfft_sR_q31_len8192 = {
   (q31_t*)realCoefBQ31,
   &arm_cfft_sR_q31_len4096
 };
+#endif //0
 
 /* q15_t */
 extern const q15_t realCoefAQ15[8192];
@@ -348,6 +358,7 @@ const arm_rfft_instance_q15 arm_rfft_sR_q15_len1024 = {
   &arm_cfft_sR_q15_len512
 };
 
+#if KSO_INCLUDE_LARGE_FFT_TABLES
 const arm_rfft_instance_q15 arm_rfft_sR_q15_len2048 = {
   2048U,
   0,
@@ -377,3 +388,4 @@ const arm_rfft_instance_q15 arm_rfft_sR_q15_len8192 = {
   (q15_t*)realCoefBQ15,
   &arm_cfft_sR_q15_len4096
 };
+#endif //0
