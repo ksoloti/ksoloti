@@ -1180,6 +1180,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             fh.close();
             Thread.sleep(200);
 
+            patch1.Close();
             pf.Close();
             status = cp.success();
 
