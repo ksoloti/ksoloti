@@ -17,8 +17,6 @@
 #include "usbh_hid_parser.h"
 #include "usbh_conf.h"
 
-#define DEBUG_JOY_INFO
-#define DEBUG_JOY_RAW_INFO
 
 #define MIN_JOY_SEND_TIME_MS (1000)
 
@@ -345,21 +343,21 @@ HID_JOYSTICK_Info_TypeDef *USBH_HID_GetJoystickInfo(USBH_HandleTypeDef *phost)
     }
 }
 
-#ifdef DEBUG_JOY_INFO
 
+#if USBH_DEBUG_LEVEL > 2
 void print_pushed(uint8_t b)
 {
-	USBH_UsrLog("%c ", b?'O':'X');
+	USBH_DbgLog("%c ", b?'O':'X');
 }
 
 void print_joy_info(HID_JOYSTICK_Info_TypeDef joystick_info)
 {
-    USBH_UsrLog("\n");
-    USBH_UsrLog("%3d ", (char)joystick_info.left_axis_x);
-    USBH_UsrLog("%3d ", (char)joystick_info.left_axis_y);
-    USBH_UsrLog("%3d ", (char)joystick_info.right_axis_x);
-    USBH_UsrLog("%3d ", (char)joystick_info.right_axis_y);
-    USBH_UsrLog("%02X ", joystick_info.pad_arrow);
+    USBH_DbgLog("\n");
+    USBH_DbgLog("%3d ", (char)joystick_info.left_axis_x);
+    USBH_DbgLog("%3d ", (char)joystick_info.left_axis_y);
+    USBH_DbgLog("%3d ", (char)joystick_info.right_axis_x);
+    USBH_DbgLog("%3d ", (char)joystick_info.right_axis_y);
+    USBH_DbgLog("%02X ", joystick_info.pad_arrow);
     print_pushed(joystick_info.left_hat);
     print_pushed(joystick_info.right_hat);
     print_pushed(joystick_info.select);
@@ -373,8 +371,8 @@ void print_joy_info(HID_JOYSTICK_Info_TypeDef joystick_info)
     print_pushed(joystick_info.l2);
     print_pushed(joystick_info.r2);
 }
-
 #endif
+
 
 /**
   * @brief  USBH_HID_JoystickDecode
@@ -399,11 +397,11 @@ static USBH_StatusTypeDef USBH_HID_JoystickDecode(USBH_HandleTypeDef *phost)
   	    uint8_t* p = (uint8_t*)joystick_report_data;
         memcpy(old_report_data, p, HID_Handle->length);
 
-#ifdef DEBUG_JOY_RAW_INFO
-        USBH_UsrLog("\n");
+#if USBH_DEBUG_LEVEL > 2
+        USBH_DbgLog("\n");
         for(int i=0; i<HID_Handle->length; i++)
         {
-    	    USBH_UsrLog("%02X ", HID_Handle->pData[i]);
+    	    USBH_DbgLog("%02X ", HID_Handle->pData[i]);
         }
 #endif
 
@@ -430,7 +428,7 @@ static USBH_StatusTypeDef USBH_HID_JoystickDecode(USBH_HandleTypeDef *phost)
         joystick_info.select       = (uint8_t)HID_ReadItem((HID_Report_ItemTypedef *) &prop_btn_select, 0U) ? 1 : 0;
         joystick_info.start        = (uint8_t)HID_ReadItem((HID_Report_ItemTypedef *) &prop_btn_start, 0U) ? 1 : 0;
 
-#ifdef DEBUG_JOY_INFO
+#if USBH_DEBUG_LEVEL > 2
         print_joy_info(joystick_info);
 #endif
 

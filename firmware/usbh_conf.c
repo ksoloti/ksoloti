@@ -570,18 +570,10 @@ void USBH_HID_EventCallback(USBH_HandleTypeDef *phost) {
       }
     }
 
-    // USBH_DbgLog( "hid_keys:%u%u%u%u%u%u",
-    //   hid_keys[0], hid_keys[1], hid_keys[2], hid_keys[3], hid_keys[4], hid_keys[5]);
+    USBH_DbgLog( "hid_keys: %u %u %u %u %u %u",
+      hid_keys[0], hid_keys[1], hid_keys[2], hid_keys[3], hid_keys[4], hid_keys[5]);
 
-    // USBH_DbgLog( "->mods:%u%u%u%u%u%u%u%u",
-    //   hid_key_lctrl,
-    //   hid_key_lshift,
-    //   hid_key_lalt,
-    //   hid_key_lgui,
-    //   hid_key_rctrl,
-    //   hid_key_rshift,
-    //   hid_key_ralt,
-    //   hid_key_rgui);
+    USBH_DbgLog( "->mods: 0x%2x", hid_key_modifiers);
   }
   else if (USBH_HID_GetDeviceType(&hUSBHost) == HID_JOYSTICK) {
 
