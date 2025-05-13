@@ -40,7 +40,7 @@ public class QCmdUploadPatch implements QCmdSerialTask {
     File f;
 
     public QCmdUploadPatch() {
-        f = null;
+        this.f = null;
     }
 
     public QCmdUploadPatch(File f) {
@@ -61,7 +61,7 @@ public class QCmdUploadPatch implements QCmdSerialTask {
     public QCmd Do(Connection connection) {
         connection.ClearSync();
         try {
-            if (f == null) {
+            if (this.f == null) {
                 String buildDir=System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build";
                 f = new File(buildDir + File.separator + "xpatch.bin");
             }
