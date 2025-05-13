@@ -31,7 +31,7 @@ public class QCmdStart implements QCmdSerialTask {
 
     Patch p;
 
-    static int patch_start_timeout = 10000; //msec
+    static int patch_start_timeout = 15000; //msec
 
     public QCmdStart(Patch p) {
         this.p = p;
