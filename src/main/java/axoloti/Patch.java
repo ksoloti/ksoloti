@@ -370,7 +370,8 @@ public class Patch {
         WriteCode(true);
         GetQCmdProcessor().SetPatch(null);
         GetQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
-        GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(getBinFile()));
+        GetQCmdProcessor().WaitQueueFinished();
+        GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(this.getBinFile()));
         GetQCmdProcessor().AppendToQueue(new QCmdStart(this));
         GetQCmdProcessor().AppendToQueue(new QCmdLock(this));
     }
