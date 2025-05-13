@@ -512,8 +512,8 @@ public class AxoObject extends AxoObjectAbstract {
 
         HashSet<String> r = new HashSet<String>();
         if (sObjFilePath != null) {
-            if (sObjFilePath.lastIndexOf(File.separatorChar) >= 0) {
-                for (String s : includes) {
+            for (String s : includes) {
+                if (sObjFilePath.lastIndexOf(File.separatorChar) >= 0) {
                     if (s.startsWith("./")) {
                         String strippedPath = sObjFilePath.substring(0, sObjFilePath.lastIndexOf(File.separatorChar));
                         File f = new File(strippedPath + "/" + s.substring(2));
@@ -535,17 +535,17 @@ public class AxoObject extends AxoObjectAbstract {
                         s2 = s2.replace('\\', '/');
                         r.add(s2);
                     }
-                    else {
-                        s = s.replace('\\', '/');
-                        r.add(s);
-                    }
+                }
+                else {
+                    s = s.replace('\\', '/');
+                    r.add(s);
                 }
             }
         }
         else if (patchFilePath != null) {
             /* try to resolve via patch directory */
-            if (patchFilePath.lastIndexOf(File.separatorChar) >= 0) {
-                for (String s : includes) {
+            for (String s : includes) {
+                if (patchFilePath.lastIndexOf(File.separatorChar) >= 0) {
                     if (s.startsWith("./")) {
                         String strippedPath = patchFilePath.substring(0, patchFilePath.lastIndexOf(File.separatorChar));
                         File f = new File(strippedPath + "/" + s.substring(2));
@@ -570,6 +570,11 @@ public class AxoObject extends AxoObjectAbstract {
                             r.add(s2);
                         }
                     }
+                }
+                else if (s.startsWith("chibios/")) {
+                    String s2 = (new File(System.getProperty(FIRMWARE_DIR))).getAbsolutePath() + "/../chibios" + s.substring(7);
+                    s2 = s2.replace('\\', '/');
+                    r.add(s2);
                 }
             }
         }
