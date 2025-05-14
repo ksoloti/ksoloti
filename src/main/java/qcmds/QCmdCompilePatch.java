@@ -75,13 +75,14 @@ public class QCmdCompilePatch extends QCmdShellTask {
             else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
                 boarddef = "BOARD_AXOLOTI_CORE";
             }
+
             if (prefs.getFirmwareMode().contains("SPILink")) {
                 fwoptiondef += " FW_SPILINK";
             }
-            if (prefs.getFirmwareMode().contains("USBAudio")) {
+            else if (prefs.getFirmwareMode().contains("USBAudio")) {
                 fwoptiondef += " FW_USBAUDIO";
             }
-            if (prefs.getFirmwareMode().contains("I2SCodec")) {
+            else if (prefs.getFirmwareMode().contains("I2SCodec")) {
                 fwoptiondef += " FW_I2SCODEC";
             }
             else {
