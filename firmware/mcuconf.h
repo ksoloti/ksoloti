@@ -523,7 +523,7 @@
 #define ADC_DMA_DATA_SECTION3   __attribute__ ((section (".sram2")))
 #define LCD_DATA_SECTION        __attribute__ ((section (".sram2")))
 #define KVP_DATA_SECTION        __attribute__ ((section (".sram2")))
-#define SPILINK_DATA_SECTION    __attribute__ ((section (".sram2")))
+#define SPILINK_DMA_SECTION     __attribute__ ((section (".sram2")))
 #define MSD_DATA_SECTION        __attribute__ ((section (".sram2")))
 #define FAST_DATA_SECTION       __attribute__ ((section (".ccmramend")))
 #define SDCARD_DATA_SECTION     __attribute__ ((section (".sram3")))
