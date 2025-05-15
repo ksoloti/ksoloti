@@ -34,7 +34,6 @@
 
 #include "usbh_hid_joystick.h"
 #include "usbh_hid_parser.h"
-#include "usbh_conf.h"
 
 
 #define MIN_JOY_SEND_TIME_MS (1000)
