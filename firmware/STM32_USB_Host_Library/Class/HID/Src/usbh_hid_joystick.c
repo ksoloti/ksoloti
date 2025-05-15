@@ -38,11 +38,8 @@
 
 #define MIN_JOY_SEND_TIME_MS (1000)
 
-HID_JOYSTICK_Info_TypeDef joystick_info;
-
-static uint32_t            old_report_data[USBH_HID_JOYSTICK_PROTOLENGTH] = {0}; // TODO: should these be uint8?
+HID_JOYSTICK_Info_TypeDef  joystick_info;
 uint32_t                   joystick_report_data[USBH_HID_JOYSTICK_PROTOLENGTH];
-uint32_t                   joystick_rx_report_buf[USBH_HID_JOYSTICK_PROTOLENGTH];
 
 static USBH_StatusTypeDef USBH_HID_JoystickDecode(USBH_HandleTypeDef *phost);
 
@@ -51,7 +48,7 @@ static USBH_StatusTypeDef USBH_HID_JoystickDecode(USBH_HandleTypeDef *phost);
 /* Access x coordinate change. */
 static const HID_Report_ItemTypedef prop_x =
 {
-    (uint8_t *)(void *)joystick_report_data + 1, /*data*/
+    (uint8_t *)joystick_report_data + 1, /*data*/
     8,     /*size*/
     0,     /*shift*/
     0,     /*count (only for array items)*/
@@ -66,7 +63,7 @@ static const HID_Report_ItemTypedef prop_x =
 /* Access y coordinate change. */
 static const HID_Report_ItemTypedef prop_y =
 {
-    (uint8_t *)(void *)joystick_report_data + 2, /*data*/
+    (uint8_t *)joystick_report_data + 2, /*data*/
     8,     /*size*/
     0,     /*shift*/
     0,     /*count (only for array items)*/
@@ -82,7 +79,7 @@ static const HID_Report_ItemTypedef prop_y =
 /* Access y coordinate change. */
 static const HID_Report_ItemTypedef prop_z =
 {
-    (uint8_t *)(void *)joystick_report_data + 3, /*data*/
+    (uint8_t *)joystick_report_data + 3, /*data*/
     8,     /*size*/
     0,     /*shift*/
     0,     /*count (only for array items)*/
@@ -98,7 +95,7 @@ static const HID_Report_ItemTypedef prop_z =
 /* Access y coordinate change. */
 static const HID_Report_ItemTypedef prop_rz =
 {
-    (uint8_t *)(void *)joystick_report_data + 4, /*data*/
+    (uint8_t *)joystick_report_data + 4, /*data*/
     8,     /*size*/
     0,     /*shift*/
     0,     /*count (only for array items)*/
@@ -112,7 +109,7 @@ static const HID_Report_ItemTypedef prop_rz =
 
 static const HID_Report_ItemTypedef prop_pad =
 {
-    (uint8_t *)(void *)joystick_report_data + 5, /*data*/
+    (uint8_t *)joystick_report_data + 5, /*data*/
     4,     /*size*/
     0,     /*shift*/
     0,     /*count (only for array items)*/
@@ -127,7 +124,7 @@ static const HID_Report_ItemTypedef prop_pad =
 /* Access button A state. */
 static const HID_Report_ItemTypedef prop_btn_a =
 {
-    (uint8_t *)(void *)joystick_report_data + 6, /*data*/
+    (uint8_t *)joystick_report_data + 6, /*data*/
     1,     /*size*/
     0,     /*shift*/
     0,     /*count (only for array items)*/
@@ -142,7 +139,7 @@ static const HID_Report_ItemTypedef prop_btn_a =
 /* Access button B state. */
 static const HID_Report_ItemTypedef prop_btn_b =
 {
-    (uint8_t *)(void *)joystick_report_data + 6, /*data*/
+    (uint8_t *)joystick_report_data + 6, /*data*/
     1,     /*size*/
     1,     /*shift*/
     0,     /*count (only for array items)*/
@@ -158,7 +155,7 @@ static const HID_Report_ItemTypedef prop_btn_b =
 /* Access button X state. */
 static const HID_Report_ItemTypedef prop_btn_x =
 {
-    (uint8_t *)(void *)joystick_report_data + 6, /*data*/
+    (uint8_t *)joystick_report_data + 6, /*data*/
     1,     /*size*/
     3,     /*shift*/
     0,     /*count (only for array items)*/
@@ -173,7 +170,7 @@ static const HID_Report_ItemTypedef prop_btn_x =
 /* Access button Y state. */
 static const HID_Report_ItemTypedef prop_btn_y =
 {
-    (uint8_t *)(void *)joystick_report_data + 6, /*data*/
+    (uint8_t *)joystick_report_data + 6, /*data*/
     1,     /*size*/
     4,     /*shift*/
     0,     /*count (only for array items)*/
@@ -188,7 +185,7 @@ static const HID_Report_ItemTypedef prop_btn_y =
 /* Access button L1 state. */
 static const HID_Report_ItemTypedef prop_btn_l1 =
 {
-    (uint8_t *)(void *)joystick_report_data + 6, /*data*/
+    (uint8_t *)joystick_report_data + 6, /*data*/
     1,     /*size*/
     6,     /*shift*/
     0,     /*count (only for array items)*/
@@ -203,7 +200,7 @@ static const HID_Report_ItemTypedef prop_btn_l1 =
 /* Access button R1 state. */
 static const HID_Report_ItemTypedef prop_btn_r1 =
 {
-    (uint8_t *)(void *)joystick_report_data + 6, /*data*/
+    (uint8_t *)joystick_report_data + 6, /*data*/
     1,     /*size*/
     7,     /*shift*/
     0,     /*count (only for array items)*/
@@ -218,7 +215,7 @@ static const HID_Report_ItemTypedef prop_btn_r1 =
 /* Access hat switch right state. */
 static const HID_Report_ItemTypedef prop_hat_switch_left =
 {
-    (uint8_t *)(void *)joystick_report_data + 7, /*data*/
+    (uint8_t *)joystick_report_data + 7, /*data*/
     1,     /*size*/
     5,     /*shift*/
     0,     /*count (only for array items)*/
@@ -233,7 +230,7 @@ static const HID_Report_ItemTypedef prop_hat_switch_left =
 /* Access hat switch right state. */
 static const HID_Report_ItemTypedef prop_hat_switch_right =
 {
-    (uint8_t *)(void *)joystick_report_data + 7, /*data*/
+    (uint8_t *)joystick_report_data + 7, /*data*/
     1,     /*size*/
     6,     /*shift*/
     0,     /*count (only for array items)*/
@@ -248,7 +245,7 @@ static const HID_Report_ItemTypedef prop_hat_switch_right =
 /* Access button L2 state. */
 static const HID_Report_ItemTypedef prop_btn_l2 =
 {
-    (uint8_t *)(void *)joystick_report_data + 7, /*data*/
+    (uint8_t *)joystick_report_data + 7, /*data*/
     1,     /*size*/
     0,     /*shift*/
     0,     /*count (only for array items)*/
@@ -263,7 +260,7 @@ static const HID_Report_ItemTypedef prop_btn_l2 =
 /* Access button R2 state. */
 static const HID_Report_ItemTypedef prop_btn_r2 =
 {
-    (uint8_t *)(void *)joystick_report_data + 7, /*data*/
+    (uint8_t *)joystick_report_data + 7, /*data*/
     1,     /*size*/
     1,     /*shift*/
     0,     /*count (only for array items)*/
@@ -278,7 +275,7 @@ static const HID_Report_ItemTypedef prop_btn_r2 =
 /* Access button Select state. */
 static const HID_Report_ItemTypedef prop_btn_select =
 {
-    (uint8_t *)(void *)joystick_report_data + 7, /*data*/
+    (uint8_t *)joystick_report_data + 7, /*data*/
     1,     /*size*/
     2,     /*shift*/
     0,     /*count (only for array items)*/
@@ -293,7 +290,7 @@ static const HID_Report_ItemTypedef prop_btn_select =
 /* Access button Start state. */
 static const HID_Report_ItemTypedef prop_btn_start =
 {
-    (uint8_t *)(void *)joystick_report_data + 7, /*data*/
+    (uint8_t *)joystick_report_data + 7, /*data*/
     1,     /*size*/
     3,     /*shift*/
     0,     /*count (only for array items)*/
@@ -321,23 +318,22 @@ static const HID_Report_ItemTypedef prop_btn_start =
   */
 USBH_StatusTypeDef USBH_HID_JoystickInit(USBH_HandleTypeDef *phost)
 {
-    uint32_t i;
+    uint32_t x;
     HID_HandleTypeDef *HID_Handle = (HID_HandleTypeDef *) phost->pActiveClass->pData;
 
-    USBH_memset(&joystick_info, 0, sizeof(HID_JOYSTICK_Info_TypeDef));
+    // USBH_memset(&joystick_info, 0, sizeof(HID_JOYSTICK_Info_TypeDef));
 
-    for (i = 0U; i < USBH_HID_JOYSTICK_PROTOLENGTH; i++)
+    for (x = 0U; x < (sizeof(joystick_report_data)/sizeof(uint32_t)); x++)
     {
-  	    joystick_report_data[i] = 0U;
-        joystick_rx_report_buf[i] = 0U;
+  	    joystick_report_data[x] = 0U;
     }
 
-    if (HID_Handle->length > sizeof(joystick_report_data))
+    if (HID_Handle->length > (sizeof(joystick_report_data)/sizeof(uint32_t)))
     {
-        HID_Handle->length = sizeof(joystick_report_data);
+        HID_Handle->length = (sizeof(joystick_report_data)/sizeof(uint32_t));
     }
 
-    HID_Handle->pData = (uint8_t *)(void *)joystick_rx_report_buf;
+    HID_Handle->pData = (uint8_t *)joystick_report_data;
     fifo_init(&HID_Handle->fifo, phost->device.Data, HID_QUEUE_SIZE * sizeof(joystick_report_data)); // changed to fifo_init
 
     return USBH_OK;
@@ -411,19 +407,18 @@ static USBH_StatusTypeDef USBH_HID_JoystickDecode(USBH_HandleTypeDef *phost)
     if (fifo_read(&HID_Handle->fifo, &joystick_report_data, HID_Handle->length) ==  HID_Handle->length)
     {
 
-        // SEB: removed is_diff check
-  	    uint8_t* p = (uint8_t*)joystick_report_data;
-        memcpy(old_report_data, p, HID_Handle->length);
+        // SEB: removed is_diff check and old_report_data
 
 #if USBH_DEBUG_LEVEL > 2
         USBH_DbgLog("\n");
-        for(int i=0; i<HID_Handle->length; i++)
+        uint32_t x;
+        for(x = 0; x < HID_Handle->length; x++)
         {
-    	    USBH_DbgLog("%02X ", HID_Handle->pData[i]);
+    	    USBH_DbgLog("%02X ", HID_Handle->pData[x]);
         }
 #endif
 
-        /*Decode report */
+        /*Decode report */ // TOOD: need all the "&" and "x ? y : z" checks?
         joystick_info.pad_arrow    = (uint8_t)HID_ReadItem((HID_Report_ItemTypedef *) &prop_pad, 0U) & 0x0F;
         joystick_info.left_hat     = (uint8_t)HID_ReadItem((HID_Report_ItemTypedef *) &prop_hat_switch_left, 0U) ? 1 : 0;
   	    joystick_info.right_hat    = (uint8_t)HID_ReadItem((HID_Report_ItemTypedef *) &prop_hat_switch_right, 0U) ? 1 : 0;
