@@ -512,6 +512,12 @@ uint8_t hid_mouse_y;
 uint8_t hid_keys[6];
 uint8_t hid_key_modifiers;
 
+uint8_t hid_joy_left_axis_x;
+uint8_t hid_joy_left_axis_y;
+uint8_t hid_joy_right_axis_x;
+uint8_t hid_joy_right_axis_y;
+uint8_t hid_joy_buttons[3];
+
 void USBH_HID_EventCallback(USBH_HandleTypeDef *phost) {
 
   if (USBH_HID_GetDeviceType(&hUSBHost) == HID_MOUSE) {
@@ -581,10 +587,32 @@ void USBH_HID_EventCallback(USBH_HandleTypeDef *phost) {
     m_pinfo_joystick = USBH_HID_GetJoystickInfo(phost);
 
     if (m_pinfo_joystick) {
-      // TODO: add stuff from 
+
+      hid_joy_left_axis_x += m_pinfo_joystick->left_axis_x; // TODO: "+=" or "=" ??
+      hid_joy_left_axis_y += m_pinfo_joystick->left_axis_y;
+      hid_joy_right_axis_x += m_pinfo_joystick->right_axis_x;
+      hid_joy_right_axis_y += m_pinfo_joystick->right_axis_y;
+
+      hid_joy_buttons[0] = m_pinfo_joystick->pad_arrow;
+      hid_joy_buttons[0] += m_pinfo_joystick->left_hat << 4;
+      hid_joy_buttons[0] += m_pinfo_joystick->right_hat << 5;
+      hid_joy_buttons[0] += m_pinfo_joystick->select << 6;
+      hid_joy_buttons[0] += m_pinfo_joystick->start << 7;
+
+      hid_joy_buttons[1] = m_pinfo_joystick->pad_a;
+      hid_joy_buttons[1] += m_pinfo_joystick->pad_b << 1;
+      hid_joy_buttons[1] += m_pinfo_joystick->pad_x << 2;
+      hid_joy_buttons[1] += m_pinfo_joystick->pad_y << 3;
+
+      hid_joy_buttons[2] = m_pinfo_joystick->l1;
+      hid_joy_buttons[2] += m_pinfo_joystick->r1 << 1;
+      hid_joy_buttons[2] += m_pinfo_joystick->l2 << 2;
+      hid_joy_buttons[2] += m_pinfo_joystick->r2 << 3;
     }
     else {
-
+      hid_joy_buttons[0] = 0;
+      hid_joy_buttons[1] = 0;
+      hid_joy_buttons[2] = 0;
     }
 
     // USBH_DbgLog(......

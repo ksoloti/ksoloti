@@ -98,6 +98,12 @@ extern uint8_t hid_mouse_y;
 extern uint8_t hid_keys[6];
 extern uint8_t hid_key_modifiers;
 
+extern uint8_t hid_joy_left_axis_x;
+extern uint8_t hid_joy_left_axis_y;
+extern uint8_t hid_joy_right_axis_x;
+extern uint8_t hid_joy_right_axis_y;
+extern uint8_t hid_joy_buttons[3];
+
 extern I2C_HandleTypeDef onboard_i2c_handle;
 extern uint8_t i2crxbuf[8];
 extern uint8_t i2ctxbuf[8];
