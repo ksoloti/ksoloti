@@ -484,7 +484,7 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
       }
           
     } else {
-      chThdSleepMilliseconds(1);
+      chThdSleepMilliseconds(5);
       USBH_DbgLog ("Enumeration retry.");
       osMessagePut ( phost->os_event, USBH_PORT_EVENT, 0);
     }
