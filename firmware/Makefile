@@ -647,6 +647,6 @@ DEPDIR := $(BUILDDIR)/.dep
 
 RULESPATH = $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk
 include $(RULESPATH)/arm-none-eabi.mk
-include $(RULESPATH)/rules.mk
+include ./rules.mk
 
 
