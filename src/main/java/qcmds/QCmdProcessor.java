@@ -22,6 +22,7 @@ import axoloti.Connection;
 import axoloti.MainFrame;
 import axoloti.Patch;
 import axoloti.USBBulkConnection;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -212,7 +213,8 @@ public class QCmdProcessor implements Runnable {
                                 queue.clear();
                             }
                         } else {
-                            LOGGER.log(Level.SEVERE, "Timed out waiting for response");
+                            if(MainFrame.prefs.boards.getSelectedBoardDetail().isConnected)
+                                LOGGER.log(Level.SEVERE, "Timed out waiting for response");
                         }
                     }
                 }

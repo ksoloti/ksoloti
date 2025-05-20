@@ -169,7 +169,6 @@ public class USBBulkConnection extends Connection {
                     transmitterThread.join(10000);
                 }
                 catch (InterruptedException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
 

@@ -54,7 +54,6 @@ public class DeviceConnector implements Runnable {
 
       try {
         if(connectCount > 0) {
-          activeConnect = true; // ARCFATAL
           MainFrame.prefs.getBoards().scanBoards();
           Boards boards = MainFrame.prefs.getBoards();
 
@@ -67,7 +66,6 @@ public class DeviceConnector implements Runnable {
 
             connectCount = 0;
             mainframe.doConnect();
-            // todo the work!
           } else {
             if( activeConnect) {
               LOGGER.log(Level.INFO, "Looking for {0}", boardDetail.serialNumber);
