@@ -58,6 +58,18 @@ __STATIC_INLINE void spidbMasterExchangeI(SPIDriver *spip, bool_t toggle) {
 
     palClearPad(config->spiconfig.ssport, config->spiconfig.sspad);
 
+#if BOARD_KSOLOTI_CORE_H743
+    dmaStreamSetMemory0(spip->rx.dma, config->rxbuf + offset);
+    dmaStreamSetTransactionSize(spip->rx.dma, config->size);
+    dmaStreamSetMode(spip->rx.dma, spip->rxdmamode);
+
+    dmaStreamSetMemory0(spip->tx.dma, config->txbuf + offset);
+    dmaStreamSetTransactionSize(spip->tx.dma, config->size);
+    dmaStreamSetMode(spip->tx.dma, spip->txdmamode);
+
+    dmaStreamEnable(spip->rx.dma);
+    dmaStreamEnable(spip->tx.dma);
+#else
     dmaStreamSetMemory0(spip->dmarx, config->rxbuf + offset);
     dmaStreamSetTransactionSize(spip->dmarx, config->size);
     dmaStreamSetMode(spip->dmarx, spip->rxdmamode);
@@ -68,6 +80,7 @@ __STATIC_INLINE void spidbMasterExchangeI(SPIDriver *spip, bool_t toggle) {
 
     dmaStreamEnable(spip->dmarx);
     dmaStreamEnable(spip->dmatx);
+#endif
 }
 
 

@@ -78,6 +78,16 @@ static void dma_spidb_slave_interrupt(void* dat, uint32_t flags) {
 
 
 void dmastream_slave_start(SPIDriver *spip) {
+
+#if BOARD_KSOLOTI_CORE_H743
+    dmaStreamSetMemory0(spip->rx.dma, ((SPIDBConfig *) (spip->config))->rxbuf);
+    dmaStreamSetTransactionSize(spip->rx.dma, ((SPIDBConfig *) (spip->config))->size * 2);
+    dmaStreamSetMode(spip->rx.dma, spip->rxdmamode | STM32_DMA_CR_MINC | STM32_DMA_CR_CIRC | STM32_DMA_CR_HTIE);
+
+    dmaStreamSetMemory0(spip->tx.dma, ((SPIDBConfig *) (spip->config))->txbuf);
+    dmaStreamSetTransactionSize(spip->tx.dma, ((SPIDBConfig *) (spip->config))->size * 2);
+    dmaStreamSetMode(spip->tx.dma, spip->txdmamode | STM32_DMA_CR_MINC | STM32_DMA_CR_CIRC);
+#else
     dmaStreamSetMemory0(spip->dmarx, ((SPIDBConfig *) (spip->config))->rxbuf);
     dmaStreamSetTransactionSize(spip->dmarx, ((SPIDBConfig *) (spip->config))->size * 2);
     dmaStreamSetMode(spip->dmarx, spip->rxdmamode | STM32_DMA_CR_MINC | STM32_DMA_CR_CIRC | STM32_DMA_CR_HTIE);
@@ -85,6 +95,7 @@ void dmastream_slave_start(SPIDriver *spip) {
     dmaStreamSetMemory0(spip->dmatx, ((SPIDBConfig *) (spip->config))->txbuf);
     dmaStreamSetTransactionSize(spip->dmatx, ((SPIDBConfig *) (spip->config))->size * 2);
     dmaStreamSetMode(spip->dmatx, spip->txdmamode | STM32_DMA_CR_MINC | STM32_DMA_CR_CIRC);
+#endif
 
     chSysLock();
     /* Wait till not selected */
@@ -92,17 +103,34 @@ void dmastream_slave_start(SPIDriver *spip) {
 
     spip->spi->CR1 |= SPI_CR1_SPE;
 
+#if BOARD_KSOLOTI_CORE_H743
+    // TODO SPILINK_H7
+
+    dmaStreamEnable(spip->rx.dma);
+    dmaStreamEnable(spip->tx.dma);
+#else
+
     /* Wait till not busy */
     while (spip->spi->SR & SPI_SR_BSY);
 
     dmaStreamEnable(spip->dmarx);
     dmaStreamEnable(spip->dmatx);
+#endif
     chSysUnlock();
 }
 
 
 void spidbSlaveResync(SPIDriver *spip) {
     palSetPad(LED2_PORT, LED2_PIN);
+
+#if BOARD_KSOLOTI_CORE_H743
+    dmaStreamDisable(spip->tx.dma);
+
+    // TODO SPILINK_H7
+    spip->spi->CR1 &= ~SPI_CR1_SPE;
+
+    dmaStreamDisable(spip->rx.dma);
+#else
     dmaStreamDisable(spip->dmatx);
 
     /* Wait till buffer is empty */
@@ -114,6 +142,7 @@ void spidbSlaveResync(SPIDriver *spip) {
     spip->spi->CR1 &= ~SPI_CR1_SPE;
 
     dmaStreamDisable(spip->dmarx);
+#endif
     dmastream_slave_start(spip);
     palClearPad(LED2_PORT, LED2_PIN);
 }
@@ -131,6 +160,14 @@ void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, Thread * thread
     spiStart(spip, &config->spiconfig);
 
     spip->sync_transfer = thread;
+
+#if BOARD_KSOLOTI_CORE_H743
+    spip->spi->CR1 &= ~SPI_CR1_SPE;
+    // TODO SPILINK_H7
+
+    dmaStreamFreeI(spip->rx.dma);
+    dmaStreamFreeI(spip->tx.dma);
+#else
     spip->spi->CR1 &= ~SPI_CR1_SPE;
     spip->spi->CR1 &= ~SPI_CR1_MSTR;
     spip->spi->CR1 &= ~SPI_CR1_SSM;
@@ -138,6 +175,7 @@ void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, Thread * thread
 
     dmaStreamFree(spip->dmarx);
     dmaStreamFree(spip->dmatx);
+#endif
 
     int irq_priority = -1;
 
@@ -159,6 +197,17 @@ void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, Thread * thread
     if (irq_priority == -1)
         chSysHalt("spidbSlaveStart wrong irq_priority");
 
+#if BOARD_KSOLOTI_CORE_H743
+    spip->rx.dma = dmaStreamAllocI( STM32_SPI_SPI3_RX_DMA_STREAM,
+                                    irq_priority,
+                                    (stm32_dmaisr_t)dma_spidb_slave_interrupt,
+                                    (void *)spip);
+
+    spip->tx.dma = dmaStreamAllocI( STM32_SPI_SPI3_TX_DMA_STREAM,
+                                    irq_priority,
+                                    (stm32_dmaisr_t)0,
+                                    (void *)spip);
+#else
     spip->dmarx = dmaStreamAlloc( STM32_SPI_SPI3_RX_DMA_STREAM,
                                   irq_priority,
                                   (stm32_dmaisr_t)dma_spidb_slave_interrupt,
@@ -168,6 +217,7 @@ void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, Thread * thread
                                   irq_priority,
                                   (stm32_dmaisr_t)0,
                                   (void *)spip);
+#endif
   
     // bool_t b = dmaStreamAllocate(spip->dmarx, irq_priority, (stm32_dmaisr_t) dma_spidb_slave_interrupt, (void *) spip);
     // chDbgAssert(!b, "spi_lld_start(), #1 stream already allocated");
@@ -192,8 +242,13 @@ static void dma_spidb_master_interrupt(void* dat, uint32_t flags) {
     SPIDriver *spip = dat;
     spidb_interrupt_timestamp = hal_lld_get_counter_value();
 
+#if BOARD_KSOLOTI_CORE_H743
+    dmaStreamDisable(spip->rx.dma);
+    dmaStreamDisable(spip->tx.dma);
+#else
     dmaStreamDisable(spip->dmarx);
     dmaStreamDisable(spip->dmatx);
+#endif
 
     palSetPad(spip->config->ssport, spip->config->sspad);
 
@@ -209,6 +264,13 @@ void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config) {
 
     spiStart(spip, &config->spiconfig);
 
+
+#if BOARD_KSOLOTI_CORE_H743
+    spip->spi->CR1 &= ~SPI_CR1_SPE;
+    // TODO SPILINK_H7
+    dmaStreamFreeI(spip->rx.dma);
+    dmaStreamFreeI(spip->tx.dma);
+#else
     spip->spi->CR1 &= ~SPI_CR1_SPE;
     spip->spi->CR1 &= ~SPI_CR1_SSM;
     spip->spi->CR1 &= ~SPI_CR1_SSI;
@@ -217,6 +279,7 @@ void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config) {
 
     dmaStreamFree(spip->dmarx);
     dmaStreamFree(spip->dmatx);
+#endif
 
     int irq_priority = -1;
 
@@ -241,7 +304,25 @@ void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config) {
     spip->rxdmamode |= STM32_DMA_CR_MINC;
     spip->txdmamode |= STM32_DMA_CR_MINC;
 
+#if BOARD_KSOLOTI_CORE_H743
+    spip->rx.dma = dmaStreamAllocI( STM32_SPI_SPI3_RX_DMA_STREAM,
+                                    irq_priority,
+                                    (stm32_dmaisr_t)dma_spidb_master_interrupt,
+                                    (void *)spip);
 
+    spip->tx.dma = dmaStreamAllocI( STM32_SPI_SPI3_TX_DMA_STREAM,
+                                    irq_priority,
+                                    (stm32_dmaisr_t)0,
+                                    (void *)spip);
+
+    dmaStreamSetMemory0(spip->rx.dma, ((SPIDBConfig *) (spip->config))->rxbuf);
+    dmaStreamSetTransactionSize(spip->rx.dma, ((SPIDBConfig *) (spip->config))->size);
+    dmaStreamSetMode(spip->rx.dma, spip->rxdmamode );
+
+    dmaStreamSetMemory0(spip->tx.dma, ((SPIDBConfig *) (spip->config))->txbuf);
+    dmaStreamSetTransactionSize(spip->tx.dma, ((SPIDBConfig *) (spip->config))->size);
+    dmaStreamSetMode(spip->tx.dma, spip->txdmamode );
+#else
     spip->dmarx = dmaStreamAlloc( STM32_SPI_SPI3_RX_DMA_STREAM,
                                   irq_priority,
                                   (stm32_dmaisr_t)dma_spidb_master_interrupt,
@@ -252,12 +333,6 @@ void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config) {
                                   (stm32_dmaisr_t)0,
                                   (void *)spip);
 
-    // bool_t b = dmaStreamAllocate(spip->dmarx, irq_priority, (stm32_dmaisr_t) dma_spidb_master_interrupt, (void *) spip);
-    // chDbgAssert(!b, "spi_lld_start(), #1 stream already allocated");
-
-    // b = dmaStreamAllocate(spip->dmatx, irq_priority, (stm32_dmaisr_t) 0, (void *) spip);
-    // chDbgAssert(!b, "spi_lld_start(), #2 stream already allocated");
-
     dmaStreamSetMemory0(spip->dmarx, ((SPIDBConfig *) (spip->config))->rxbuf);
     dmaStreamSetTransactionSize(spip->dmarx, ((SPIDBConfig *) (spip->config))->size);
     dmaStreamSetMode(spip->dmarx, spip->rxdmamode );
@@ -265,6 +340,7 @@ void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config) {
     dmaStreamSetMemory0(spip->dmatx, ((SPIDBConfig *) (spip->config))->txbuf);
     dmaStreamSetTransactionSize(spip->dmatx, ((SPIDBConfig *) (spip->config))->size);
     dmaStreamSetMode(spip->dmatx, spip->txdmamode );
+#endif
 }
 
 
@@ -275,6 +351,17 @@ void spidbStop(SPIDriver *spip) {
     /* Only necessary if Core is synced */
     if (!palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN)) {
         chSysLock();
+
+#if BOARD_KSOLOTI_CORE_H743
+        dmaStreamDisable(spip->tx.dma);
+        dmaStreamFreeI(spip->tx.dma);
+        // TODO SPILINK_H7
+
+        spip->spi->CR1 &= ~SPI_CR1_SPE;
+
+        dmaStreamDisable(spip->rx.dma);
+        dmaStreamFreeI(spip->rx.dma);
+#else
         dmaStreamDisable(spip->dmatx);
         dmaStreamFree(spip->dmatx);
 
@@ -288,6 +375,7 @@ void spidbStop(SPIDriver *spip) {
 
         dmaStreamDisable(spip->dmarx);
         dmaStreamFree(spip->dmarx);
+#endif
 
         spiStop(spip);
         chSysUnlock();

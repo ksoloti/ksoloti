@@ -58,11 +58,25 @@ bool_t spilink_master_active = 0;
 /* SPI configuration (10.5 MHz, CPHA=0, CPOL=0, 16 bit). */
 static const SPIDBConfig spidbcfg_master = {
     { 
-        NULL, SPILINK_NSS_PORT, SPILINK_NSS_PIN,
-        SPI_CR1_DFF /* 16-bit frame */
-        | SPI_CR1_BR_0 /* 10.5 MHz */
-        // | SPI_CR1_CPOL /* CPOL=1 */
-        // | SPI_CR1_CPHA /* CPHA=1 */
+        .circular = true,
+        .slave    = false,
+        .data_cb  = NULL,
+        .error_cb = NULL,
+        .ssport   = SPILINK_NSS_PORT,
+        .sspad    = SPILINK_NSS_PIN,
+
+#if BOARD_KSOLOTI_CORE_H743
+        .cfg1      = 0U, // TODO SPILINK_H7
+        .cfg2      = 0U
+#else
+        .cr1      = SPI_CR1_DFF /* 16-bit frame */
+                  | SPI_CR1_BR_0, /* 10.5 MHz */
+                  // | SPI_CR1_CPOL /* CPOL=1 */
+                  // | SPI_CR1_CPHA /* CPHA=1 */
+
+        .cr2      = 0U
+#endif
+
     },
     (void *)&spilink_rx, (void *)&spilink_tx,
     sizeof(spilink_data_t) / 2
@@ -70,10 +84,21 @@ static const SPIDBConfig spidbcfg_master = {
 
 static const SPIDBConfig spidbcfg_slave = {
     {
-        NULL, SPILINK_NSS_PORT, SPILINK_NSS_PIN,
-        SPI_CR1_DFF /* 16-bit frame */
-        // | SPI_CR1_CPOL /* CPOL=1 */
-        // | SPI_CR1_CPHA /* CPHA=1 */
+        .circular  = true,
+        .slave     = true,
+        .data_cb   = NULL,
+        .error_cb  = NULL,
+        .ssport    = SPILINK_NSS_PORT,
+        .sspad     = SPILINK_NSS_PIN,
+
+#if BOARD_KSOLOTI_CORE_H743
+        .cfg1       = 0U, // TODO SPILINK_H7
+        .cfg2       = 0U
+#else
+        .cr1       = SPI_CR1_DFF /* 16-bit frame */,
+        .cr2       = 0U
+#endif
+
     },
     (void *)&spilink_rx, (void *)&spilink_tx,
     sizeof(spilink_data_t) / 2
