@@ -151,13 +151,6 @@ public class ksoloti_core {
         return cputype;
     }
 
-    public boolean hasSDRAM() {
-        if (cputype == cputype_e.STM32F42xxx) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     public void setVoltages(int i) {
         //System.out.println(String.format("v%08X", i));
