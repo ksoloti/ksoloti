@@ -354,10 +354,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             jMenuItemRefreshFWID.setVisible(false);
         }
 
-        // jMenuItemEnterDFU.setVisible(Axoloti.isDeveloper());
-        /* Enter Rescue Mode option always available */
-        jMenuItemEnterDFU.setVisible(true);
-
         /* When in Developer mode, make default Flash option invisible to avoid confusion */
         jMenuItemFlashDefault.setVisible(!(Axoloti.isDeveloper()));
 
@@ -723,7 +719,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         jMenuItemFCompile = new javax.swing.JMenuItem();
-        jMenuItemEnterDFU = new javax.swing.JMenuItem();
         jMenuItemFlashUser = new javax.swing.JMenuItem();
         windowMenu1 = new axoloti.menus.WindowMenu();
         helpMenu1 = new axoloti.menus.HelpMenu();
@@ -957,15 +952,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         });
         jMenuFirmware.add(jMenuItemFCompile);
 
-        jMenuItemEnterDFU.setMnemonic('E');
-        jMenuItemEnterDFU.setText("Enter Rescue Mode");
-        jMenuItemEnterDFU.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemEnterDFUActionPerformed(evt);
-            }
-        });
-        jMenuFirmware.add(jMenuItemEnterDFU);
-
+        
 
         jMenuBoard.add(jMenuFirmware);
 
@@ -1359,10 +1346,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
 
-    private void jMenuItemEnterDFUActionPerformed(java.awt.event.ActionEvent evt) {
-        qcmdprocessor.AppendToQueue(new QCmdBringToDFUMode());
-        qcmdprocessor.AppendToQueue(new QCmdDisconnect());
-    }
 
 
     private void jMenuItemFlashDefaultActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1435,7 +1418,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JMenu jMenuEdit;
     private javax.swing.JMenu jMenuFirmware;
     private javax.swing.JMenuItem jMenuItemCopy;
-    private javax.swing.JMenuItem jMenuItemEnterDFU;
     private javax.swing.JMenuItem jMenuItemFCompile;
     private javax.swing.JMenuItem jMenuItemFConnect;
     private javax.swing.JMenuItem jMenuItemFDisconnect;
@@ -1510,7 +1492,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             jMenuItemFConnect.setEnabled(!connect);
             // jMenuItemSelectCom.setEnabled(!connect);
 
-            jMenuItemEnterDFU.setEnabled(connect);
             jMenuItemMount.setEnabled(connect);
             jMenuItemFlashDefault.setEnabled(connect);
             jMenuItemFlashUser.setEnabled(connect);
