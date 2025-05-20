@@ -25,22 +25,9 @@ import axoloti.Boards.BoardType;
 import axoloti.Boards.FirmwareType;
 import axoloti.Boards.MemoryLayoutType;
 import axoloti.MainFrame;
-import axoloti.USBBulkConnection;
 
 import static axoloti.MainFrame.mainframe;
 import static axoloti.MainFrame.prefs;
-import static axoloti.usb.Usb.DeviceToPath;
-import static axoloti.usb.Usb.PID_AXOLOTI;
-import static axoloti.usb.Usb.PID_AXOLOTI_SDCARD;
-import static axoloti.usb.Usb.PID_AXOLOTI_USBAUDIO;
-import static axoloti.usb.Usb.PID_KSOLOTI;
-import static axoloti.usb.Usb.PID_KSOLOTI_SDCARD;
-import static axoloti.usb.Usb.PID_KSOLOTI_USBAUDIO;
-
-
-import static axoloti.usb.Usb.PID_STM_DFU;
-import static axoloti.usb.Usb.VID_AXOLOTI;
-import static axoloti.usb.Usb.VID_STM;
 
 import axoloti.utils.OSDetect;
 import static axoloti.utils.OSDetect.getOS;
@@ -49,13 +36,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -63,12 +48,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import org.usb4java.Device;
-import org.usb4java.DeviceDescriptor;
-import org.usb4java.DeviceHandle;
-import org.usb4java.DeviceList;
 import org.usb4java.LibUsb;
-import org.usb4java.LibUsbException;
 
 /**
  *

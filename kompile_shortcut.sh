@@ -145,7 +145,7 @@ case "$platform" in
             printf "***********************\n"
 
             # compile board mode and firmware options
-            sh ./firmware/compile_firmware_win.bat BOARD_KSOLOTI_CORE BOARD_KSOLOTI_CORE_H743 $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+            ./firmware/compile_firmware_win.bat BOARD_KSOLOTI_CORE BOARD_KSOLOTI_CORE_H743 $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_MOUNTER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
         fi
 
     ;;

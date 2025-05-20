@@ -390,10 +390,13 @@ public class Preferences {
 
     public String getCurrentDirectory() {
         File file = new File(CurrentFileDirectory);
-        if(file.isDirectory()) {
+        if(file != null && file.isDirectory()) {
             return CurrentFileDirectory;
         } else {
             java.nio.file.Path path = Paths.get(CurrentFileDirectory);
+            if (path == null) {
+                return "";
+            }
             return path.getParent().toAbsolutePath().toString();
         }
     }

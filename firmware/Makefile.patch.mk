@@ -216,9 +216,9 @@ LLIBDIR = $(patsubst %,-L%,$(DLIBDIR) $(ULIBDIR))
 
 
 ifneq ($(wildcard ${BUILDDIR}/src/),)
-	AXO_CSOURCES=$(shell find ${BUILDDIR}/src -type f -iname '*.c')
-	AXO_CPPSOURCES=$(shell find ${BUILDDIR}/src -type f -iname '*.cpp')
-	AXO_INCLUDES=$(shell find ${BUILDDIR}/src -type d)
+	AXO_CSOURCES=$(shell find "${BUILDDIR}/src" -type f -iname '*.c')
+	AXO_CPPSOURCES=$(shell find "${BUILDDIR}/src" -type f -iname '*.cpp')
+	AXO_INCLUDES=$(shell find "${BUILDDIR}/src" -type d)
 	AXO_OBJECTS=$(foreach x, $(basename $(AXO_CSOURCES)), $(x).o)
 	AXO_OBJECTS+=$(foreach x, $(basename $(AXO_CPPSOURCES)), $(x).o)
 else
