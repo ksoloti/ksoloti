@@ -119,17 +119,26 @@ bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, 
   if(uBytes % uBlockByteSize)
     uBlocks++;
 
-  // first calculate header size
-  uint32_t uHeaderLoc = GetPatchHeaderLoc();
-  uint32_t uHeaderSizeBytes = GetPatchHeaderByteSize();;
-  uint32_t uHeaderBlocks = uHeaderSizeBytes / uBlockByteSize;
-  if(uHeaderSizeBytes % uBlockByteSize)
-    uHeaderBlocks++;
+  // first calculate header size for patches, not for firmware
+  uint32_t uHeaderLoc = 0;
+  uint32_t uHeaderSizeBytes = 0;
+  uint32_t uHeaderBlocks = 0;
+  uint32_t uHeaderFlashByteSize =0;
 
-  // leave space for header
-  uint32_t uHeaderFlashByteSize = uHeaderBlocks * uBlockByteSize;
-  SetPatchHeaderFlashByteSize(uHeaderFlashByteSize);
-  uFlashLoc += uHeaderFlashByteSize;
+  if(bank == fbPatch)
+  {
+    uHeaderLoc = GetPatchHeaderLoc();
+    uHeaderSizeBytes = GetPatchHeaderByteSize();;
+    uHeaderBlocks = uHeaderSizeBytes / uBlockByteSize;
+    if(uHeaderSizeBytes % uBlockByteSize)
+      uHeaderBlocks++;
+
+    // leave space for header
+    uHeaderFlashByteSize = uHeaderBlocks * uBlockByteSize;
+    SetPatchHeaderFlashByteSize(uHeaderFlashByteSize);
+    uFlashLoc += uHeaderFlashByteSize;
+  }
+
 
   // Now write patch code
   if(bResult)
@@ -171,7 +180,7 @@ bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, 
   }
 
   // now write header if all ok
-  if(bResult)
+  if(bResult && (bank == fbPatch))
   {
     uFlashLoc = uFlashAddress;
     for (uint32_t uHeaderBlock = 0; bResult && (uHeaderBlock < uHeaderBlocks); uHeaderBlock++)
