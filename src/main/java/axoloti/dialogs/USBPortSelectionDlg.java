@@ -45,7 +45,6 @@ import static axoloti.usb.Usb.VID_STM;
 import axoloti.utils.OSDetect;
 import static axoloti.utils.OSDetect.getOS;
 
-import java.lang.foreign.MemoryLayout;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Logger;
