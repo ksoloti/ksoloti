@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Downloads and builds all the required dependencies and toolchain executables
 # Items already present are skipped to save your bandwidth.
@@ -24,7 +24,6 @@ then
     mkdir "${PLATFORM_ROOT}/src"
 fi
 
-## Obsolete... Chibios is included in the repo now
 # if [ ! -d "${PLATFORM_ROOT}/../chibios" ]; 
 # then
 #     cd "${PLATFORM_ROOT}/src"
@@ -33,19 +32,20 @@ fi
 #     ARCHIVE=${ARDIR}.zip
 #     if [ ! -f ${ARCHIVE} ]; 
 #     then
-#         printf "\ndownloading ${ARCHIVE}\n"
+#         echo "downloading ${ARCHIVE}"
 # 		curl -L https://github.com/ChibiOS/ChibiOS/archive/ver${CH_VERSION}.zip > ${ARCHIVE}
+#         # curl -L https://sourceforge.net/projects/chibios/files/ChibiOS%20GPL3/Version%20${CH_VERSION}/${ARCHIVE} > ${ARCHIVE}
 #     else
-#         printf "\n${ARCHIVE} already downloaded\n"
+#         echo "${ARCHIVE} already downloaded"
 #     fi
 #     unzip -q -o ${ARCHIVE}
 #     mv ${ARDIR} chibios
 #     cd chibios/ext
-#     unzip -q -o ./fatfs-0.*-patched.zip
+#     unzip -q -o ./fatfs-0.9-patched.zip
 #     cd ../../
 #     mv chibios ../..
 # else
-#     printf "\nchibios directory already present, skipping...\n"
+#     echo "chibios directory already present, skipping..."
 # fi
 
 if [ ! -f "$PLATFORM_ROOT/bin/arm-none-eabi-gcc" ]; 
@@ -70,20 +70,20 @@ fi
 if [ ! -f "$PLATFORM_ROOT/bin/libusb-1.0.0.dylib" ]; 
 then
     cd "${PLATFORM_ROOT}/src"
-    ARDIR=libusb-1.0.19
+    ARDIR=libusb-1.0.24
     ARCHIVE=${ARDIR}.tar.bz2
     if [ ! -f ${ARCHIVE} ]; 
     then
-        printf "\ndownloading ${ARCHIVE}\n"
+        echo "downloading ${ARCHIVE}"
         curl -L http://sourceforge.net/projects/libusb/files/libusb-1.0/$ARDIR/$ARCHIVE/download > $ARCHIVE
     else
-        printf "\n${ARCHIVE} already downloaded\n"
+        echo "${ARCHIVE} already downloaded"
     fi
     tar xfj ${ARCHIVE}
     
-    cd "${PLATFORM_ROOT}/src/libusb-1.0.19"
+    cd "${PLATFORM_ROOT}/src/libusb-1.0.24"
 
-    patch -N -p1 < ../libusb.stdfu.patch
+    # patch -N -p1 < ../libusb.stdfu.patch
 
  #   ./configure --prefix="${PLATFORM_ROOT}/i386" CFLAGS="-arch i386 -mmacosx-version-min=10.6" LDFLAGS="-arch i386"
  #   make 
@@ -101,7 +101,7 @@ then
     cd $PLATFORM_ROOT/lib
     install_name_tool -id libusb-1.0.0.dylib libusb-1.0.0.dylib
 else
-    printf "\nlibusb already present, skipping...\n"
+    echo "libusb already present, skipping..."
 fi
 
 if [ ! -f "${PLATFORM_ROOT}/bin/dfu-util" ]; 
@@ -111,13 +111,13 @@ then
     ARCHIVE=${ARDIR}.tar.gz
     if [ ! -f $ARCHIVE ]; 
     then
-        printf "\ndownloading ${ARCHIVE}\n"
+        echo "downloading ${ARCHIVE}"
         curl -L http://dfu-util.sourceforge.net/releases/$ARCHIVE > $ARCHIVE
     else
-        printf "\n$ARCHIVE already downloaded\n"
+        echo "$ARCHIVE already downloaded"
     fi
     tar xfz ${ARCHIVE}
-
+ 
     cd "${PLATFORM_ROOT}/src/${ARDIR}"
 #    ./configure --prefix="${PLATFORM_ROOT}/i386" USB_LIBS="${PLATFORM_ROOT}/lib/libusb-1.0.0.dylib" USB_CFLAGS=-I${PLATFORM_ROOT}/i386/include/libusb-1.0/ CFLAGS="-arch i386 -mmacosx-version-min=10.6" LDFLAGS="-arch i386"
 #    make 
@@ -135,21 +135,21 @@ then
 #    lipo -create x86_64/bin/dfu-util i386/bin/dfu-util -output bin/dfu-util
     cp x86_64/bin/dfu-util bin/dfu-util
 else
-    printf "\ndfu-util already present, skipping...\n"
+    echo "dfu-util already present, skipping..."
 fi
 
 if [ ! -f "$PLATFORM_ROOT/bin/make" ]; 
 then
     cd "${PLATFORM_ROOT}/src"
-    ARDIR=make-4.3
+    ARDIR=make-3.82
     ARCHIVE=${ARDIR}.tar.gz
 
     if [ ! -f ${ARCHIVE} ]; 
     then
-        printf "\ndownloading ${ARCHIVE}\n"
+        echo "downloading ${ARCHIVE}"
         curl -L http://ftp.gnu.org/gnu/make/$ARCHIVE > $ARCHIVE
     else
-        printf "\n${ARCHIVE} already downloaded\n"
+        echo "${ARCHIVE} already downloaded"
     fi
 
     tar xfz $ARCHIVE
@@ -171,47 +171,18 @@ then
     cp x86_64/bin/make  bin/make
 fi
 
-cd "${PLATFORM_ROOT}/../jdks"
-
-JDK_ARCHIVE_LINUX="zulu21.42.19-ca-jdk21.0.7-linux_x64.zip"
-if [ ! -f "${JDK_ARCHIVE_LINUX}" ];
-then
-    echo "##### downloading ${JDK_ARCHIVE_LINUX} #####"
-    curl -L https://cdn.azul.com/zulu/bin/$JDK_ARCHIVE_LINUX > $JDK_ARCHIVE_LINUX
-else
-    echo "##### ${JDK_ARCHIVE_LINUX} already downloaded #####"
-fi
-
-JDK_ARCHIVE_MAC="zulu21.42.19-ca-jdk21.0.7-macosx_x64.zip"
-if [ ! -f "${JDK_ARCHIVE_MAC}" ];
-then
-    echo "##### downloading ${JDK_ARCHIVE_MAC} #####"
-    curl -L https://cdn.azul.com/zulu/bin/$JDK_ARCHIVE_MAC > $JDK_ARCHIVE_MAC
-else
-    echo "##### ${JDK_ARCHIVE_MAC} already downloaded #####"
-fi
-
-JDK_ARCHIVE_WINDOWS="zulu21.42.19-ca-jdk21.0.7-win_x64.zip"
-if [ ! -f "${JDK_ARCHIVE_WINDOWS}" ];
-then
-    echo "##### downloading ${JDK_ARCHIVE_WINDOWS} #####"
-    curl -L https://cdn.azul.com/zulu/bin/$JDK_ARCHIVE_WINDOWS > $JDK_ARCHIVE_WINDOWS
-else
-    echo "##### ${JDK_ARCHIVE_WINDOWS} already downloaded #####"
-fi
-
-#cp -v "${PLATFORM_ROOT}/lib/"*.dylib "${PLATFORM_ROOT}/bin/"
+cp -v "${PLATFORM_ROOT}/lib/"*.dylib "${PLATFORM_ROOT}/bin/"
 
 file "${PLATFORM_ROOT}/bin/make"
 file "${PLATFORM_ROOT}/bin/dfu-util"
 file "${PLATFORM_ROOT}/bin/libusb-1.0.0.dylib"
 
-printf "\n##### building firmware... #####\n"
-cd "${PLATFORM_ROOT}"/..
-./firmware/compile_firmware.sh BOARD_AXOLOTI_CORE
-./firmware/compile_firmware.sh BOARD_KSOLOTI_CORE
+echo "##### building firmware... #####"
+cd "$PLATFORM_ROOT"
+./compile_firmware.sh
 
-printf "\n##### building GUI... #####\n"
+echo "##### building GUI... #####"
+cd "${PLATFORM_ROOT}"/..
 ant
 
-printf "\nDONE!\n"
+echo "DONE!"
