@@ -851,7 +851,7 @@ public class Patch {
     }
 
     void saveState() {
-        SortByPosition();
+        SortByPrefs();
         PreSerialize();
 
         Serializer serializer = new Persister();
@@ -938,7 +938,7 @@ public class Patch {
             }
         }
 
-        SortByPosition();
+        SortByPrefs();
         PreSerialize();
 
         Strategy strategy = new AnnotationStrategy();
@@ -1050,6 +1050,20 @@ public class Patch {
         return new Dimension(mx, my);
     }
 
+    void DebugDump(ArrayList<AxoObjectInstanceAbstract> objects) {
+        for( AxoObjectInstanceAbstract object : objects) {
+            LOGGER.log(Level.INFO, "{0}", object.getInstanceName());
+        }
+    }
+
+    void SortByPrefs() {
+        if(MainFrame.prefs.SortByExecution) {
+            SortByExecution();
+        } else {
+            SortByPosition();
+        }
+    }
+
     void SortByPosition() {
         Collections.sort(this.objectInstances);
         refreshIndexes();
@@ -1076,8 +1090,9 @@ public class Patch {
         Collections.sort(parents);
         /* prepend any we haven't seen before */
         for (AxoObjectInstanceAbstract c: parents) {
-            if (!result.contains(c))
-                result.addFirst(c);
+            if (result.contains(c))
+                result.remove(c);
+            result.addFirst(c);
         }
 
         /* prepend their parents */
@@ -1947,7 +1962,7 @@ public class Patch {
         }
 
         CreateIID();
-        SortByPosition();
+        SortByPrefs();
 
         String c = "/*\n"
         + " * Generated using Ksoloti Patcher v" + Version.AXOLOTI_VERSION + " on " + System.getProperty("os.name") + "\n"
@@ -2019,7 +2034,7 @@ public class Patch {
     }
 
     public AxoObject GenerateAxoObjNormal(AxoObject template) {
-        SortByPosition();
+        SortByPrefs();
         AxoObject ao = template;
         for (AxoObjectInstanceAbstract o : objectInstances) {
             if (o.typeName.equals("patch/inlet f")) {
@@ -2192,7 +2207,7 @@ public class Patch {
 
     /* Poly voices from one (or omni) midi channel */
     AxoObject GenerateAxoObjPoly(AxoObject template) {
-        SortByPosition();
+        SortByPrefs();
         AxoObject ao = template;
         ao.id = "unnamedobject";
         ao.sDescription = FileNamePath;
