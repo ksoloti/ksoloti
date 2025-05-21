@@ -1194,13 +1194,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 float pct = patch1.getDSPLoadPercent();
                 Thread.sleep(1000); 
                 if (pct < 1.0f) {
-                    LOGGER.log(Level.SEVERE, "No DSP load detected");
+                    LOGGER.log(Level.SEVERE, "No DSP load detected\n");
                 }
                 else if (pct > 95.0f) {
-                    LOGGER.log(Level.SEVERE, "High DSP load detected: {0}%", String.format("%.1f", pct));
+                    LOGGER.log(Level.SEVERE, "High DSP load detected: {0}%\n", String.format("%.1f", pct));
                 }
                 else {
-                    LOGGER.log(Level.INFO, "DSP load: {0}%", String.format("%.1f", pct));
+                    LOGGER.log(Level.INFO, "DSP load: {0}%\n", String.format("%.1f", pct));
                 }
                 patch1.GetQCmdProcessor().AppendToQueue(new QCmdGuiShowLog());
                 qcmdprocessor.WaitQueueFinished();
