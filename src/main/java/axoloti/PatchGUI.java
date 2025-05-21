@@ -183,6 +183,7 @@ public class PatchGUI extends Patch {
     private final static int capitalLetterOffset = 26;
 
     private int MousePressedBtn = 0;
+    private float dspLoadPercent = 0.0f;
 
     public JLayeredPane Layers = new JLayeredPane();
 
@@ -1054,7 +1055,12 @@ public class PatchGUI extends Patch {
 
     @Override
     void UpdateDSPLoad(int val200, boolean overload) {
+        dspLoadPercent = val200 / 2.0f;
         patchframe.ShowDSPLoad(val200, overload);
+    }
+
+    float getDSPLoadPercent() {
+        return dspLoadPercent;
     }
 
     Dimension GetInitialSize() {

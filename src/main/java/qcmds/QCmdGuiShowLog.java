@@ -26,12 +26,12 @@ public class QCmdGuiShowLog implements QCmdGUITask {
 
     @Override
     public String GetStartMessage() {
-        return "Reporting compile failure...";
+        return null; // "Reporting compile failure...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Done reporting compile failure.\n";
+        return null; //Done reporting compile failure.\n";
     }
 
     @Override

@@ -92,8 +92,10 @@ import com.formdev.flatlaf.FlatClientProperties;
 import qcmds.QCmdBringToDFUMode;
 import qcmds.QCmdCompilePatch;
 import qcmds.QCmdDisconnect;
+import qcmds.QCmdGuiShowLog;
 import qcmds.QCmdPing;
 import qcmds.QCmdProcessor;
+import qcmds.QCmdStart;
 import qcmds.QCmdStartFlasher;
 import qcmds.QCmdStartMounter;
 import qcmds.QCmdStop;
@@ -1175,7 +1177,36 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1); // compile as own path/filename .bin
             patch1.GetQCmdProcessor().AppendToQueue(cp);
             qcmdprocessor.WaitQueueFinished();
-            LOGGER.log(Level.INFO, "Done compiling patch.\n\n");
+            LOGGER.log(Level.INFO, "Done compiling patch.\n");
+
+            if (USBBulkConnection.GetConnection().isConnected() && patch1.getBinFile() != null) {
+                /* If a Core is connected: stop patch, upload test patch to RAM, start test patch, and report status */
+                patch1.GetQCmdProcessor().AppendToQueue(new QCmdStop());
+                qcmdprocessor.WaitQueueFinished();
+                Thread.sleep(100); 
+                patch1.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch1.getBinFile()));
+                qcmdprocessor.WaitQueueFinished();
+                patch1.GetQCmdProcessor().AppendToQueue(new QCmdStart(patch1));
+                qcmdprocessor.WaitQueueFinished();
+                Thread.sleep(1000); 
+                patch1.GetQCmdProcessor().AppendToQueue(new QCmdPing());
+                qcmdprocessor.WaitQueueFinished();
+                float pct = patch1.getDSPLoadPercent();
+                Thread.sleep(1000); 
+                if (pct < 1.0f) {
+                    LOGGER.log(Level.SEVERE, "No DSP load detected");
+                }
+                else if (pct > 95.0f) {
+                    LOGGER.log(Level.SEVERE, "High DSP load detected: {0}%", String.format("%.1f", pct));
+                }
+                else {
+                    LOGGER.log(Level.INFO, "DSP load: {0}%", String.format("%.1f", pct));
+                }
+                patch1.GetQCmdProcessor().AppendToQueue(new QCmdGuiShowLog());
+                qcmdprocessor.WaitQueueFinished();
+                Thread.sleep(100); 
+            }
+
             Logger.getLogger("").removeHandler(fh);
             fh.close();
             Thread.sleep(200);

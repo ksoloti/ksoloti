@@ -333,6 +333,10 @@ public class FileMenu extends JMenu {
                     class Thd extends Thread {
                         public void run() {
                             LOGGER.log(Level.WARNING, "Running tests, please wait...");
+                            File log = new File(System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log");
+                            if (log.exists()) {
+                                log.delete();
+                            }
                             mainframe.runTestDir(f);
                             LOGGER.log(Level.WARNING, "Done running tests.\n");
                         }
