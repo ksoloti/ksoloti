@@ -1176,8 +1176,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1); // compile as own path/filename .bin
             patch1.GetQCmdProcessor().AppendToQueue(cp);
+            Thread.sleep(2000); 
             qcmdprocessor.WaitQueueFinished();
-            Thread.sleep(600); 
             LOGGER.log(Level.INFO, "Done compiling patch.\n");
 
             if (USBBulkConnection.GetConnection().isConnected() && patch1.getBinFile() != null) {
