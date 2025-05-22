@@ -1177,6 +1177,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1); // compile as own path/filename .bin
             patch1.GetQCmdProcessor().AppendToQueue(cp);
             qcmdprocessor.WaitQueueFinished();
+            Thread.sleep(600); 
             LOGGER.log(Level.INFO, "Done compiling patch.\n");
 
             if (USBBulkConnection.GetConnection().isConnected() && patch1.getBinFile() != null) {
@@ -1209,7 +1210,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
             Logger.getLogger("").removeHandler(fh);
             fh.close();
-            Thread.sleep(200);
+            Thread.sleep(500);
 
             patch1.Close();
             pf.Close();
