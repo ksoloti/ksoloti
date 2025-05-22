@@ -1068,7 +1068,7 @@ public class Patch {
     }
 
     void SortByPrefs() {
-        if(MainFrame.prefs.SortByExecution) {
+        if(MainFrame.prefs.getSortByExecution()) {
             SortByExecution();
         } else {
             SortByPosition();
