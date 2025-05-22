@@ -107,6 +107,8 @@ public class Preferences {
     @Element(required = false)
     Boolean ExpertMode;
     @Element(required = false)
+    Boolean SortByExecution;
+    @Element(required = false)
     Boolean FirmwareWarnDisable;
     @Element(required = false)
     Integer DspSafetyLimit;
@@ -249,6 +251,9 @@ public class Preferences {
         }
         if (ExpertMode == null) {
             ExpertMode = false;
+        }
+        if (SortByExecution == null) {
+            SortByExecution = false;
         }
         if (FirmwareWarnDisable == null) {
             FirmwareWarnDisable = false;
@@ -753,6 +758,10 @@ public class Preferences {
 
     public Boolean getExpertMode() {
         return ExpertMode;
+    }
+
+    public Boolean getSortByExecution() {
+        return SortByExecution;
     }
 
     public Boolean getFirmwareWarnDisable() {
