@@ -83,7 +83,6 @@ LDFLAGS = \
   -Wl,--gc-sections \
   -Wl,--print-memory-usage \
   -fno-common \
-  -lm \
   -mcpu=cortex-m4 \
   -mfloat-abi=hard \
   -mfpu=fpv4-sp-d16 \
@@ -163,7 +162,7 @@ ${BUILDDIR}/$(BUILDFILENAME).bin: ${BUILDDIR}/$(BUILDFILENAME).cpp ${BUILDDIR}/x
 	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c ${BUILDDIR}/$(BUILDFILENAME).cpp -o ${BUILDDIR}/$(BUILDFILENAME).o
 
 #	@echo Linking patch dependencies
-	@$(LD) $(LDFLAGS) ${BUILDDIR}/$(BUILDFILENAME).o -Wl,-Map=${BUILDDIR}/$(BUILDFILENAME).map,--cref,--just-symbols=${FIRMWARE}/build/$(ELFNAME).elf -o ${BUILDDIR}/$(BUILDFILENAME).elf
+	@$(LD) $(LDFLAGS) ${BUILDDIR}/$(BUILDFILENAME).o -lm -Wl,-Map=${BUILDDIR}/$(BUILDFILENAME).map,--cref,--just-symbols=${FIRMWARE}/build/$(ELFNAME).elf -o ${BUILDDIR}/$(BUILDFILENAME).elf
 
 #	@echo Creating binary
 	@$(CP) -O binary ${BUILDDIR}/$(BUILDFILENAME).elf ${BUILDDIR}/$(BUILDFILENAME).bin
