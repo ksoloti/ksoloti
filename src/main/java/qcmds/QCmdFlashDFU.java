@@ -87,7 +87,7 @@ public class QCmdFlashDFU extends QCmdShellTask {
             Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.INFO, "Waiting for DFU to become available...");
 
             Boards boards = MainFrame.prefs.boards;
-            int timeout = 10;
+            int timeout = 20;
             int boardCount = 0;
             while((boardCount = boards.getDfuCount()) == 0 && timeout > 0) {
                 Thread.sleep(1000);
