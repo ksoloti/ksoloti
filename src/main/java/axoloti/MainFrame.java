@@ -1010,19 +1010,21 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         //jToggleButtonConnect.setText("Connecting");
 
         BoardDetail boardDetail = prefs.boards.getSelectedBoardDetail();
-        if(boardDetail.boardMode == BoardMode.DFU) {
-            addFlashDfuOrWarn();
-        } else
-        {
-            new Thread("doConnect") {
-                public void run() {
-                    boolean result = USBBulkConnection.GetConnection().connect();
-                    if (result) {
-                        MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdShowConnect());
+        if (boardDetail != null) {
+            if (boardDetail.boardMode == BoardMode.DFU) {
+                    addFlashDfuOrWarn();
+            }
+            else {
+                    new Thread("doConnect") {
+                        public void run() {
+                            boolean result = USBBulkConnection.GetConnection().connect();
+                        if (result) {
+                            MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdShowConnect());
+                        }
+                        jToggleButtonConnect.setEnabled(true);
                     }
-                    jToggleButtonConnect.setEnabled(true);
-                }
-            }.start();
+                }.start();
+            }
         }
     }
 
