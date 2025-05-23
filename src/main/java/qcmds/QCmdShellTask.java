@@ -56,6 +56,7 @@ public abstract class QCmdShellTask implements QCmd {
         public void run() {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String line;
+            String s = "";
             try {
                 line = br.readLine();
                 while (line != null) {
@@ -76,13 +77,14 @@ public abstract class QCmdShellTask implements QCmd {
                     }
                     else if (line.contains("          0 GB")) {
                         /* little modification for --print-memory-usage format */
-                        LOGGER.log(Level.INFO, "{0}", line.replaceAll("          0 GB", "           0 B"));
+                        s += line.replaceAll("          0 GB", "           0 B") + "\n";
                     }
                     else {
-                        LOGGER.log(Level.INFO, "{0}", line);
+                        s += line + "\n";
                     }
                     line = br.readLine();
                 }
+                LOGGER.log(Level.INFO, "{0}", s);
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
