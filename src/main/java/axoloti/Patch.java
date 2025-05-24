@@ -1303,7 +1303,12 @@ public class Patch {
         for (Net n : nets) {
             /* check if net has multiple sources */
             if ((n.CType() != null) && n.NeedsLatch()) {
-                c += I + n.CType() + " " + n.CName() + "Latch" + ";\n";
+                if(n.CType() == "char*") {
+                    c += I + n.CType() + " " + n.CName() + "Latch" + " = NULL;\n";
+                } else
+                {
+                    c += I + n.CType() + " " + n.CName() + "Latch" + ";\n";
+                }
             }
         }
 
