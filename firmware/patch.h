@@ -30,6 +30,7 @@
 #include "crc32.h"
 #include "exceptions.h"
 #include "ff.h"
+#include "../chibios/os/hal/lib/streams/chprintf.h"
 
 typedef void (*fptr_patch_init_t) (uint32_t fwID);
 typedef void (*fptr_patch_dispose_t) (void);
