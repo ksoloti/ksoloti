@@ -21,6 +21,7 @@ package axoloti;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
 import axoloti.utils.KeyUtils;
+import axoloti.utils.OSDetect.OS;
 import components.PresetPanel;
 import components.ScrollPaneComponent;
 import components.VisibleCablePanel;
@@ -30,6 +31,7 @@ import static axoloti.MainFrame.mainframe;
 import static axoloti.MainFrame.prefs;
 
 import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -207,7 +209,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
 
         if (!prefs.getExpertMode()) {
-            jSeparator3.setVisible(false);
+            jSeparator6.setVisible(false);
             jMenuItemLock.setVisible(false);
             jMenuGenerateAndCompileCode.setVisible(false);
             jMenuGenerateCode.setVisible(false);
@@ -380,6 +382,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenuP = new axoloti.menus.FileMenu();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
+        jSeparator5 = new javax.swing.JPopupMenu.Separator();
+        jSeparator6 = new javax.swing.JPopupMenu.Separator();
         jMenuSave = new javax.swing.JMenuItem();
         jMenuSaveAs = new javax.swing.JMenuItem();
         jMenuSaveCopy = new javax.swing.JMenuItem();
@@ -392,20 +399,17 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuItemDelete = new javax.swing.JMenuItem();
         jMenuItemSelectAll = new javax.swing.JMenuItem();
         jMenuItemAddObj = new javax.swing.JMenuItem();
-        jSeparator4 = new javax.swing.JPopupMenu.Separator();
         jMenuView = new javax.swing.JMenu();
         jMenuItemNotes = new javax.swing.JMenuItem();
         jMenuItemSettings = new javax.swing.JMenuItem();
-        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        jMenuItemOpenFileLocation = new javax.swing.JMenuItem();
         jCheckBoxMenuItemCordsInBackground = new javax.swing.JCheckBoxMenuItem();
         jMenuItemAdjScroll = new javax.swing.JMenuItem();
-        jSeparator5 = new javax.swing.JPopupMenu.Separator();
         jMenuPatch = new javax.swing.JMenu();
         jCheckBoxMenuItemLive = new javax.swing.JCheckBoxMenuItem();
         jMenuItemUploadSD = new javax.swing.JMenuItem();
         jMenuItemUploadSDStart = new javax.swing.JMenuItem();
         jMenuItemUploadInternalFlash = new javax.swing.JMenuItem();
-        jSeparator3 = new javax.swing.JPopupMenu.Separator();
         jMenuGenerateAndCompileCode = new javax.swing.JMenuItem();
         jMenuGenerateCode = new javax.swing.JMenuItem();
         jMenuCompileCode = new javax.swing.JMenuItem();
@@ -648,6 +652,16 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuView.add(jMenuItemSettings);
         jMenuView.add(jSeparator2);
 
+        jMenuItemOpenFileLocation.setMnemonic('F');
+        jMenuItemOpenFileLocation.setText("Open File Location");
+        jMenuItemOpenFileLocation.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemOpenFileLocationActionPerformed(evt);
+            }
+        });
+        jMenuView.add(jMenuItemOpenFileLocation);
+        jMenuView.add(jSeparator3);
+
         jCheckBoxMenuItemCordsInBackground.setMnemonic('B');
         jCheckBoxMenuItemCordsInBackground.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyUtils.CONTROL_OR_CMD_MASK));
         jCheckBoxMenuItemCordsInBackground.setText("Patch Cords in Background");
@@ -713,7 +727,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
         });
         jMenuPatch.add(jMenuItemUploadInternalFlash);
-        jMenuPatch.add(jSeparator3);
+        jMenuPatch.add(jSeparator6);
 
         jMenuGenerateAndCompileCode.setText("Generate & compile code");
         jMenuGenerateAndCompileCode.addActionListener(new java.awt.event.ActionListener() {
@@ -1087,6 +1101,32 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         // }
     }
 
+    private void jMenuItemOpenFileLocationActionPerformed(java.awt.event.ActionEvent evt) {
+        Desktop desktop = Desktop.getDesktop();
+        OS os = axoloti.utils.OSDetect.getOS();
+        try {
+            switch (os) {
+                case WIN:
+                    /* desktop.open(new File(patch.getFileNamePath()).getParentFile()); opens folder but doesn't point to file.
+                     * desktop.browseFileDirectory(new File(patch.getFileNamePath())); not supported on Windows.
+                     * Do explorer.exe workaround instead.
+                     */
+                    String[] str = new String("explorer.exe /select,\"" + patch.getFileNamePath() + "\"").split("\\s+");
+                    Runtime.getRuntime().exec(str);
+                    break;
+                case MAC:
+                case LINUX:
+                default:
+                    // TODO: supported?
+                    desktop.browseFileDirectory(new File(patch.getFileNamePath()));
+                    break;
+            }
+        }
+        catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+
     private void jCheckBoxMenuItemLiveActionPerformed(java.awt.event.ActionEvent evt) {
         if (jCheckBoxMenuItemLive.isSelected()) {
             if (GoLive()) {
@@ -1239,6 +1279,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JMenuItem jMenuItemPresetCurrentToInit;
     private javax.swing.JMenuItem jMenuItemSelectAll;
     private javax.swing.JMenuItem jMenuItemSettings;
+    private javax.swing.JMenuItem jMenuItemOpenFileLocation;
     private javax.swing.JMenuItem jMenuItemUnlock;
     private javax.swing.JMenuItem jMenuItemUploadInternalFlash;
     private javax.swing.JMenuItem jMenuItemUploadSD;
@@ -1259,6 +1300,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
+    private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JPanel jToolbarPanel;
     private javax.swing.JMenuItem redoItem;
     private javax.swing.JMenuItem undoItem;
