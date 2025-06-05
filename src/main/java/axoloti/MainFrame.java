@@ -1157,11 +1157,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         try {
             boolean status;
             
-            FileHandler fh = new FileHandler(System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log", true);
-            SimpleFormatter formatter = new SimpleFormatter();
-            fh.setFormatter(formatter);
-            Logger.getLogger("").addHandler(fh);
-
             LOGGER.log(Level.INFO, "---------- Testing {0} ----------", f.getPath());
 
             PatchGUI patch1 = serializer.read(PatchGUI.class, f);
@@ -1192,8 +1187,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 Thread.sleep(1000); 
                 patch1.GetQCmdProcessor().AppendToQueue(new QCmdPing());
                 qcmdprocessor.WaitQueueFinished();
+                Thread.sleep(100); 
                 float pct = patch1.getDSPLoadPercent();
-                Thread.sleep(1000); 
                 if (pct < 1.0f) {
                     LOGGER.log(Level.SEVERE, "No DSP load detected\n");
                 }
@@ -1208,8 +1203,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 Thread.sleep(100); 
             }
 
-            Logger.getLogger("").removeHandler(fh);
-            fh.close();
             Thread.sleep(500);
 
             patch1.Close();
