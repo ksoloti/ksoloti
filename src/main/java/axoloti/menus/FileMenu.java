@@ -25,6 +25,7 @@ import static axoloti.MainFrame.mainframe;
 
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
+import axoloti.USBBulkConnection;
 import axoloti.dialogs.PatchBank;
 import axoloti.dialogs.PreferencesFrame;
 import axoloti.utils.AxolotiLibrary;
@@ -333,6 +334,10 @@ public class FileMenu extends JMenu {
                     class Thd extends Thread {
                         public void run() {
                             LOGGER.log(Level.WARNING, "Running tests, please wait...");
+                            LOGGER.log(Level.INFO, "Creating log file at " + System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log");
+                            if (USBBulkConnection.GetConnection().isConnected()) {
+                                LOGGER.log(Level.INFO, "Core is connected - Attempting test upload of patches and measuring DSP load.");
+                            }
                             File log = new File(System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log");
                             if (log.exists()) {
                                 log.delete();
