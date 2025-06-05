@@ -1175,19 +1175,23 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.WaitQueueFinished();
             LOGGER.log(Level.INFO, "Done compiling patch.\n");
 
-            if (USBBulkConnection.GetConnection().isConnected() && patch1.getBinFile() != null) {
+            if (USBBulkConnection.GetConnection().isConnected() && patch1.getBinFile().exists()) {
                 /* If a Core is connected: stop patch, upload test patch to RAM, start test patch, and report status */
                 patch1.GetQCmdProcessor().AppendToQueue(new QCmdStop());
                 qcmdprocessor.WaitQueueFinished();
                 Thread.sleep(100); 
+
                 patch1.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch1.getBinFile()));
                 qcmdprocessor.WaitQueueFinished();
+
                 patch1.GetQCmdProcessor().AppendToQueue(new QCmdStart(patch1));
                 qcmdprocessor.WaitQueueFinished();
                 Thread.sleep(1000); 
+
                 patch1.GetQCmdProcessor().AppendToQueue(new QCmdPing());
                 qcmdprocessor.WaitQueueFinished();
                 Thread.sleep(100); 
+
                 float pct = patch1.getDSPLoadPercent();
                 if (pct < 1.0f) {
                     LOGGER.log(Level.SEVERE, "No DSP load detected\n");
@@ -1198,17 +1202,17 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 else {
                     LOGGER.log(Level.INFO, "DSP load: {0}%\n", String.format("%.1f", pct));
                 }
+
                 patch1.GetQCmdProcessor().AppendToQueue(new QCmdGuiShowLog());
                 qcmdprocessor.WaitQueueFinished();
                 Thread.sleep(100); 
             }
 
-            Thread.sleep(500);
-
             patch1.Close();
             pf.Close();
             status = cp.success();
 
+            Thread.sleep(100);
 
             // if (status == false) {
             //     LOGGER.log(Level.SEVERE, "COMPILATION FAILED: {0}\n", f.getPath());
