@@ -343,9 +343,15 @@ public class FileMenu extends JMenu {
                                 LOGGER.log(Level.WARNING, "Running tests, please wait...");
                                 LOGGER.log(Level.INFO, "Creating log file at " + System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log");
 
+                                /* If previous log exists, delete it */
                                 File log = new File(System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log");
                                 if (log.exists()) {
                                     log.delete();
+                                }
+                                /* If previous lock exists, delete it (happens if test was interrupted) */
+                                File lock = new File(System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log.lck");
+                                if (lock.exists()) {
+                                    lock.delete();
                                 }
 
                                 FileHandler fh = new FileHandler(System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log", true);
