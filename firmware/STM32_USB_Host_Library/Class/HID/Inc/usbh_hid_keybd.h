@@ -280,14 +280,16 @@
 typedef struct 
 {
   uint8_t state;
-  uint8_t lctrl;
-  uint8_t lshift;
-  uint8_t lalt;
-  uint8_t lgui;
-  uint8_t rctrl;
-  uint8_t rshift;
-  uint8_t ralt;
-  uint8_t rgui;
+
+  uint8_t lctrl:1;
+  uint8_t lshift:1;
+  uint8_t lalt:1;
+  uint8_t lgui:1;
+  uint8_t rctrl:1;
+  uint8_t rshift:1;
+  uint8_t ralt:1;
+  uint8_t rgui:1;
+
   uint8_t keys[6];
 } 
 HID_KEYBD_Info_TypeDef;
