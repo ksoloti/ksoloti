@@ -563,7 +563,7 @@ void USBH_HID_EventCallback(USBH_HandleTypeDef *phost) {
       hid_key_modifiers  += (m_pinfo_keyb->ralt   << 6);
       hid_key_modifiers  += (m_pinfo_keyb->rgui   << 7);
 
-      uint8_t k; for (k = 0; k < 6; k++) {
+      uint8_t k; for (k = 0; k < sizeof(m_pinfo_keyb->keys); k++) {
         hid_keys[k] = m_pinfo_keyb->keys[k];
       } 
     }
@@ -571,7 +571,7 @@ void USBH_HID_EventCallback(USBH_HandleTypeDef *phost) {
 
       hid_key_modifiers = 0;
 
-      uint8_t k; for (k = 0; k < 6; k++) {
+      uint8_t k; for (k = 0; k < sizeof(m_pinfo_keyb->keys); k++) {
         hid_keys[k] = 0;
       }
     }
