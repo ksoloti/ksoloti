@@ -527,7 +527,7 @@ void USBH_HID_EventCallback(USBH_HandleTypeDef *phost) {
 
     if (m_pinfo_mouse) {
 
-      USBH_DbgLog("btns:%u%u%u", m_pinfo_mouse->buttons[0],m_pinfo_mouse->buttons[1],m_pinfo_mouse->buttons[2]);
+      USBH_DbgLog("btns:%u %u %u", m_pinfo_mouse->buttons[0],m_pinfo_mouse->buttons[1],m_pinfo_mouse->buttons[2]);
 
       hid_buttons[0] = m_pinfo_mouse->buttons[0];
       hid_buttons[1] = m_pinfo_mouse->buttons[1];
@@ -543,7 +543,7 @@ void USBH_HID_EventCallback(USBH_HandleTypeDef *phost) {
       hid_buttons[2] = 0;
     }
 
-    USBH_DbgLog("btns:%u%u%u", hid_buttons[0],hid_buttons[1],hid_buttons[2]);
+    USBH_DbgLog("btns:%u %u %u", hid_buttons[0],hid_buttons[1],hid_buttons[2]);
 
   }
   else if (USBH_HID_GetDeviceType(&hUSBHost) == HID_KEYBOARD) {
