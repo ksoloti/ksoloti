@@ -47,7 +47,7 @@ __attribute__((noreturn))
 static msg_t ThreadSysmon(void *arg) {
   (void)arg;
 
-#if CH_CFG_USE_REGISTRY
+#if CH_CFG_USE_REGISTRY == TRUE
   chRegSetThreadName("sysmon");
 #endif
 

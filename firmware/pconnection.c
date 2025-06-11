@@ -77,7 +77,7 @@ connectionflags_t connectionFlags;
 __attribute__((noreturn)) static msg_t ThreadUSBDMidi(void *arg) {
     (void)arg;
 
-#if CH_CFG_USE_REGISTRY
+#if CH_CFG_USE_REGISTRY == TRUE
     chRegSetThreadName("usbdmidi");
 #endif
 

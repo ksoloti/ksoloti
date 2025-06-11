@@ -182,7 +182,7 @@ void KVP_RegisterObject(KeyValuePair_s *kvp) {
 static WORKING_AREA(waThreadUI, 1172);
     static msg_t ThreadUI(void *arg) {
     (void)(arg);
-#if CH_CFG_USE_REGISTRY
+#if CH_CFG_USE_REGISTRY == TRUE
     chRegSetThreadName("ui");
 #endif
     while (1) {

@@ -86,7 +86,7 @@ static msg_t ThreadSpilinkSlave(void *arg)
 {
     (void) arg;
 
-#if CH_CFG_USE_REGISTRY
+#if CH_CFG_USE_REGISTRY == TRUE
     chRegSetThreadName("spilink");
 #endif
 
