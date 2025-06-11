@@ -825,7 +825,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private void jToggleButtonLiveActionPerformed(java.awt.event.ActionEvent evt) {
         if (jToggleButtonLive.isSelected()) {
             if (GoLive()) {
-                jToggleButtonLive.setEnabled(false);
+                // jToggleButtonLive.setEnabled(false); // SEB not sure what the reason for this is??
             } else {
                 jToggleButtonLive.setSelected(false);
             }
@@ -1136,7 +1136,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private void jCheckBoxMenuItemLiveActionPerformed(java.awt.event.ActionEvent evt) {
         if (jCheckBoxMenuItemLive.isSelected()) {
             if (GoLive()) {
-                jCheckBoxMenuItemLive.setEnabled(false);
+                // jCheckBoxMenuItemLive.setEnabled(false) // SEB not sure what the reason for this is??
             } else {
                 jCheckBoxMenuItemLive.setSelected(false);
 
