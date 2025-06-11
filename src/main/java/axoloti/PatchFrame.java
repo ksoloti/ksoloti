@@ -1015,9 +1015,15 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private void jMenuUploadCodeActionPerformed(java.awt.event.ActionEvent evt) {
         patch.GetQCmdProcessor().SetPatch(null);
         patch.GetQCmdProcessor().AppendToQueue(new QCmdStop());
-        patch.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch.getBinFile()));
-        patch.GetQCmdProcessor().AppendToQueue(new QCmdStart(patch));
-        patch.GetQCmdProcessor().AppendToQueue(new QCmdLock(patch));
+        if (patch.getBinFile().exists()) {
+            patch.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch.getBinFile()));
+            patch.GetQCmdProcessor().AppendToQueue(new QCmdStart(patch));
+            patch.GetQCmdProcessor().AppendToQueue(new QCmdLock(patch));
+        }
+        else {
+            String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
+            LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
+        }
     }
 
     private void jMenuItemLockActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1165,9 +1171,15 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         patch.WriteCode(true);
         qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
         qcmdprocessor.AppendToQueue(new qcmds.QCmdCompilePatch(patch));
-        qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadPatch(patch.getBinFile()));
-        qcmdprocessor.AppendToQueue(new qcmds.QCmdCopyPatchToFlash());
-        qcmdprocessor.WaitQueueFinished();
+        if (patch.getBinFile().exists()) {
+            qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadPatch(patch.getBinFile()));
+            qcmdprocessor.AppendToQueue(new qcmds.QCmdCopyPatchToFlash());
+            qcmdprocessor.WaitQueueFinished();
+        }   
+        else {
+            String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
+            LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
+        }
     }
 
     private void jMenuItemAddObjActionPerformed(java.awt.event.ActionEvent evt) {

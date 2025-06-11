@@ -342,22 +342,6 @@ public class Patch {
 
     void GoLive() {
         GetQCmdProcessor().AppendToQueue(new QCmdStop());
-        if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
-            String f = "/" + getSDCardPath();
-            // System.out.println("pathf" + f);
-            if (SDCardInfo.getInstance().find(f) == null) {
-                GetQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(f));
-            }
-            GetQCmdProcessor().AppendToQueue(new QCmdChangeWorkingDirectory(f));
-            UploadDependentFiles("/" + getSDCardPath());
-        }
-        else {
-            /* issue warning when there are dependent files */
-            ArrayList<SDFileReference> files = GetDependendSDFiles();
-            if (files.size() > 0) {
-                LOGGER.log(Level.SEVERE, "Patch requires file {0} on SD card, but no SD card connected.", files.get(0).targetPath);
-            }
-        }
         ShowPreset(0);
         presetUpdatePending = false;
         for (AxoObjectInstanceAbstract o : objectInstances) {
@@ -371,9 +355,34 @@ public class Patch {
         GetQCmdProcessor().SetPatch(null);
         GetQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
         GetQCmdProcessor().WaitQueueFinished();
-        GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(this.getBinFile()));
-        GetQCmdProcessor().AppendToQueue(new QCmdStart(this));
-        GetQCmdProcessor().AppendToQueue(new QCmdLock(this));
+
+        if (this.getBinFile().exists()) {
+
+            if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
+                String f = "/" + getSDCardPath();
+                // System.out.println("pathf" + f);
+                if (SDCardInfo.getInstance().find(f) == null) {
+                    GetQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(f));
+                }
+                GetQCmdProcessor().AppendToQueue(new QCmdChangeWorkingDirectory(f));
+                UploadDependentFiles("/" + getSDCardPath());
+            }
+            else {
+                /* issue warning when there are dependent files */
+                ArrayList<SDFileReference> files = GetDependendSDFiles();
+                if (files.size() > 0) {
+                    LOGGER.log(Level.SEVERE, "Patch requires file {0} on SD card, but no SD card connected.", files.get(0).targetPath);
+                }
+            }
+
+            GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(this.getBinFile()));
+            GetQCmdProcessor().AppendToQueue(new QCmdStart(this));
+            GetQCmdProcessor().AppendToQueue(new QCmdLock(this));
+        }
+        else {
+            String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + this.generateBuildFilenameStem(true);
+            LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
+        }
     }
 
     public void ShowCompileFail() {
@@ -3064,32 +3073,39 @@ public class Patch {
                 }
             }
         }
-        qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadFile(getBinFile(), sdfilename, cal));
-        qcmdprocessor.WaitQueueFinished();
-        
-        String dir;
-        int i = sdfilename.lastIndexOf("/");
-        if (i > 0) {
-            dir = sdfilename.substring(0, i);
+
+        if (getBinFile().exists()) {
+            qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadFile(getBinFile(), sdfilename, cal));
+            qcmdprocessor.WaitQueueFinished();
+
+            String dir;
+            int i = sdfilename.lastIndexOf("/");
+            if (i > 0) {
+                dir = sdfilename.substring(0, i);
+            }
+            else {
+                dir = "";
+            }
+    
+            UploadDependentFiles(dir);
+            qcmdprocessor.WaitQueueFinished();
+
+            if (prefs.isBackupPatchesOnSDEnabled() && FileNamePath != null && !FileNamePath.isEmpty()) {
+                if (f.exists()) {
+                    qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadFile(f,
+                        dir + "/" +
+                        f.getName() + ".backup" +
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(ZonedDateTime.now()) +
+                        f.getName().substring(f.getName().lastIndexOf(".")),
+                        cal));
+                }
+            }
+            qcmdprocessor.WaitQueueFinished();
         }
         else {
-            dir = "";
+            String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + this.generateBuildFilenameStem(true);
+            LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
         }
-
-        UploadDependentFiles(dir);
-        qcmdprocessor.WaitQueueFinished();
-
-        if (prefs.isBackupPatchesOnSDEnabled() && getBinFile().exists() && FileNamePath != null && !FileNamePath.isEmpty()) {
-            if (f.exists()) {
-                qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadFile(f,
-                    dir + "/" +
-                    f.getName() + ".backup" +
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(ZonedDateTime.now()) +
-                    f.getName().substring(f.getName().lastIndexOf(".")),
-                    cal));
-            }
-        }
-        qcmdprocessor.WaitQueueFinished();
 
     }
 
