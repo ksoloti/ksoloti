@@ -423,7 +423,7 @@
  * @note    The default is @p FALSE.
  */
 #if !defined(CH_DBG_FILL_THREADS) || defined(__DOXYGEN__)
-#define CH_DBG_FILL_THREADS             TRUE
+#define CH_DBG_FILL_THREADS             FALSE
 #endif
 
 /**
@@ -436,7 +436,7 @@
  *          some test cases into the test suite.
  */
 #if !defined(CH_DBG_THREADS_PROFILING) || defined(__DOXYGEN__)
-#define CH_DBG_THREADS_PROFILING        FALSE
+#define CH_DBG_THREADS_PROFILING        TRUE
 #endif
 
 /** @} */
@@ -553,7 +553,7 @@
 /* Other                                                                     */
 /*===========================================================================*/
 
-#define CHPRINTF_USE_FLOAT  FALSE
+#define CHPRINTF_USE_FLOAT  TRUE
 
 #endif  /* _CHCONF_H_ */
 

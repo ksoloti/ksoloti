@@ -291,7 +291,7 @@
  * @note    The default is @p TRUE.
  */
 #if !defined(CH_CFG_USE_MEMCORE) || defined(__DOXYGEN__)
-#define CH_CFG_USE_MEMCORE                  TRUE
+#define CH_CFG_USE_MEMCORE                  FALSE
 #endif
 
 /**
@@ -423,7 +423,7 @@
  * @note    The default is @p FALSE.
  */
 #if !defined(CH_DBG_FILL_THREADS) || defined(__DOXYGEN__)
-#define CH_DBG_FILL_THREADS             TRUE
+#define CH_DBG_FILL_THREADS             FALSE
 #endif
 
 /**
@@ -553,7 +553,7 @@
 /* Other                                                                     */
 /*===========================================================================*/
 
-#define CHPRINTF_USE_FLOAT  FALSE
+#define CHPRINTF_USE_FLOAT  TRUE
 
 #endif  /* _CHCONF_H_ */
 
