@@ -569,6 +569,24 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
 
+    public void consoleRemoveLastLine() {
+        try {
+            String content = jTextPaneLog.getDocument().getText(0, jTextPaneLog.getDocument().getLength());
+            content = content.replaceAll("\r\n", "\n");
+            int lastLineBreak = content.lastIndexOf('\n');
+            if (lastLineBreak >= 1) {
+                int secondLastLineBreak = content.lastIndexOf('\n', lastLineBreak - 1);
+                if (secondLastLineBreak >= 0) {
+                    jTextPaneLog.getDocument().remove(secondLastLineBreak + 1, jTextPaneLog.getDocument().getLength() - (secondLastLineBreak + 1));
+                }
+            }
+        }
+        catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public void populateMainframeTitle() {
 
         String tstring = "";
