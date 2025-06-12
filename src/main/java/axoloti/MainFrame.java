@@ -318,7 +318,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         logHandler.setLevel(Level.INFO);
 
         SimpleFormatter formatter = new SimpleFormatter();
-        System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT.%1$tL]\t%4$s: %5$s%n");
+        System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT.%1$tL] %4$s: %5$s%n");
         logHandler.setFormatter(formatter);
         Logger.getLogger("").addHandler(logHandler);
         Logger.getLogger("").setLevel(Level.INFO);
