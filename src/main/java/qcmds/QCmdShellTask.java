@@ -19,6 +19,7 @@
 package qcmds;
 
 // import static axoloti.MainFrame.prefs;
+// import static axoloti.MainFrame.mainframe;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -78,6 +79,12 @@ public abstract class QCmdShellTask implements QCmd {
                         /* little modification for --print-memory-usage format */
                         LOGGER.log(Level.INFO, "{0}", line.replaceAll("          0 GB", "           0 B"));
                     }
+                    // else if (line.startsWith("Erase   \t[") || line.startsWith("Download\t[")) {
+                    //     /* Avoid printing multple lines of progress bars (dfu-util) */
+                    //     // BUGGY
+                    //     mainframe.consoleRemoveLastLine();
+                    //     LOGGER.log(Level.INFO, "{0}", line);
+                    // }
                     else {
                         LOGGER.log(Level.INFO, "{0}", line);
                     }

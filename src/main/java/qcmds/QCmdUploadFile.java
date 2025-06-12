@@ -20,6 +20,9 @@ package qcmds;
 
 import axoloti.Connection;
 import axoloti.SDCardInfo;
+
+import static axoloti.MainFrame.mainframe;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -107,7 +110,7 @@ public class QCmdUploadFile implements QCmdSerialTask {
                 ts = Calendar.getInstance();
             }
             int tlength = inputStream.available();
-            LOGGER.log(Level.INFO, "Size: " + tlength + " bytes");
+            LOGGER.log(Level.INFO, "Size: " + tlength + " bytes\n");
             int remLength = inputStream.available();
             size = tlength;
             connection.TransmitCreateFile(filename, tlength, ts);
@@ -134,6 +137,8 @@ public class QCmdUploadFile implements QCmdSerialTask {
                     for (int i = 0; i < (int) newpct/4; i++) {
                         progressbar.setCharAt(i, '='); /* fill the progress bar depending on the percentage */
                     }
+                    /* Avoid printing multple lines of progress bars */
+                    mainframe.consoleRemoveLastLine();
                     LOGGER.log(Level.INFO, "Uploading\t[" + progressbar + "] " + String.format("%3d", newpct) + "%");
                 }
                 pct = newpct;
