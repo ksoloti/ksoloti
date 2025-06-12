@@ -42,10 +42,13 @@ import java.text.DateFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
@@ -525,7 +528,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
             fc.setMultiSelectionEnabled(false);
             fc.updateCurrentSize();
-        }
+            RequestRefresh();
+        } 
     }
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {
@@ -541,12 +545,19 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         int rows[] = jFileTable.getSelectedRows();
         Arrays.sort(rows);
 
-        if (rows[0] >= 0) {
+        if (rows.length > 0 && rows[0] >= 0) {
+
+            /* Reverse order (so if deleting a directory, files under it are deleted first */
+            List<Integer> rev = Arrays.stream(rows).boxed().collect(Collectors.toList());
+            Collections.reverse(rev);
+            for (int i = 0; i < rows.length; i++) {
+                rows[i] = rev.get(i);
+            }
 
             String txt;
 
             if (rows.length > 1) {
-                txt = "Delete selected items?";
+                txt = "Delete " + rows.length + " selected items?";
             }
             else {
                 SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rows[0]);
@@ -576,7 +587,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
                             for (SDFileInfo subf : SDCardInfo.getInstance().getFiles()) {
                                 String sf = subf.getFilename();
-                                if (sf.startsWith(ff)) {
+                                if (sf.startsWith(ff) && !sf.equals(ff)) {
                                     if (!subf.isDirectory()) {
                                         /* delete files contained in all subfolders */
                                         processor.AppendToQueue(new QCmdDeleteFile(sf));
@@ -586,7 +597,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                             }
                             for (SDFileInfo subf : SDCardInfo.getInstance().getFiles()) {
                                 String sf = subf.getFilename();
-                                if (sf.startsWith(ff)) {
+                                if (sf.startsWith(ff) && !sf.equals(ff)) {
                                     if (subf.isDirectory()) {
                                         /* then delete (hopefully empty) subfolders */
                                         processor.AppendToQueue(new QCmdDeleteFile(sf));
@@ -595,8 +606,9 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                 processor.WaitQueueFinished();
                             }
                             
-                            /* then delete empty main folder */
+                            /* then delete (hopefully empty) main selection folder */
                             if (ff.endsWith("/")) {
+                                /* remove trailing slash */
                                 ff = ff.substring(0, ff.length() - 1);
                             }
                             processor.AppendToQueue(new QCmdDeleteFile(ff));
@@ -605,6 +617,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                             processor.AppendToQueue(new QCmdDeleteFile(f.getFilename()));
                         }
                     }
+                    processor.WaitQueueFinished();
+                    RequestRefresh();
                 }
                 break;
 
@@ -627,8 +641,10 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         if (fn != null && !fn.isEmpty()) {
             QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
             processor.AppendToQueue(new QCmdCreateDirectory(dir + fn));
+            processor.WaitQueueFinished();
         }
         UpdateButtons();
+        RequestRefresh();
     }
 
     public void refresh() {
