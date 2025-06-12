@@ -66,7 +66,7 @@ public class QCmdUploadFile implements QCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "Uploading file to SD card... " + filename;
+        return null; // "Uploading file to SD card... " + filename;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class QCmdUploadFile implements QCmdSerialTask {
                 }
                 inputStream = new FileInputStream(file);
             }
-            // LOGGER.log(Level.INFO, "Uploading: {0}", filename);
+            LOGGER.log(Level.INFO, "Uploading file to SD card: " + filename);
             Calendar ts;
             if (cal != null) {
                 ts = cal;
@@ -107,6 +107,7 @@ public class QCmdUploadFile implements QCmdSerialTask {
                 ts = Calendar.getInstance();
             }
             int tlength = inputStream.available();
+            LOGGER.log(Level.INFO, "Size: " + tlength + " bytes");
             int remLength = inputStream.available();
             size = tlength;
             connection.TransmitCreateFile(filename, tlength, ts);
@@ -129,7 +130,11 @@ public class QCmdUploadFile implements QCmdSerialTask {
                 connection.TransmitAppendFile(buffer);
                 long newpct = (100 * ((long) tlength - (long) remLength)) / (long) tlength;
                 if (newpct != pct) {
-                    LOGGER.log(Level.INFO, "Uploading: " + newpct + "%");
+                    StringBuilder progressbar = new StringBuilder("                         "); /* 25-chars long progress bar */
+                    for (int i = 0; i < (int) newpct/4; i++) {
+                        progressbar.setCharAt(i, '='); /* fill the progress bar depending on the percentage */
+                    }
+                    LOGGER.log(Level.INFO, "Uploading\t[" + progressbar + "] " + String.format("%3d", newpct) + "%");
                 }
                 pct = newpct;
                 remLength = inputStream.available();
@@ -139,7 +144,7 @@ public class QCmdUploadFile implements QCmdSerialTask {
             connection.TransmitCloseFile();
 
             SDCardInfo.getInstance().AddFile(filename, (int) size, ts);
-            // LOGGER.log(Level.INFO, "Done uploading file.\n");
+            LOGGER.log(Level.INFO, "Done uploading file.\n");
             success = true;
             return this;
         } catch (IOException ex) {
