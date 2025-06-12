@@ -124,8 +124,8 @@ CSRC = $(STARTUPSRC) \
       $(PLATFORMSRC) \
       $(BOARDSRC) \
       $(CHIBIOS)/os/various/shell.c \
-      $(CHIBIOS)/os/various/memstreams.c \
       $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
+      $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
       ../axoloti_board.c \
       ../watchdog.c \
       mass_storage/usb_msd.c \
