@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 // import java.util.logging.Level;
 // import java.util.logging.Logger;
+import java.util.Collections;
+
+import axoloti.utils.AxoSDFileComparator;
 
 /**
  *
@@ -114,6 +117,7 @@ public class SDCardInfo {
         sdf = new SDFileInfo(fname, date, size);
         files.add(sdf);
         // LOGGER.log(Level.SEVERE, "File added " + files.size() + ":" + fname);
+        Collections.sort(files, new AxoSDFileComparator());
         MainFrame.mainframe.filemanager.refresh();
     }
 
@@ -128,6 +132,7 @@ public class SDCardInfo {
         }
         if (f1 != null) {
             files.remove(f1);
+            Collections.sort(files, new AxoSDFileComparator());
             MainFrame.mainframe.filemanager.refresh();
         }
     }

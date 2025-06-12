@@ -77,4 +77,23 @@ public class SDFileInfo {
         }
         return "";
     }
+
+    public String getPureName() {
+        /* Required by AxoSDFileComparator */
+
+        String path = filename;
+        if (path.startsWith("/")) {
+            /* Remove leading slash for name extraction */
+            path = path.substring(1);
+        }
+
+        if (isDirectory() && path.endsWith("/") && path.length() > 0) {
+            /* Remove trailing slash for dir name */
+            path = path.substring(0, path.length() - 1);
+        }
+
+        int lastSlash = path.lastIndexOf('/');
+
+        return (lastSlash == -1) ? path : path.substring(lastSlash + 1);
+    }
 }
