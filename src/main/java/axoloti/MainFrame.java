@@ -1408,7 +1408,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.AppendToQueue(new QCmdDisconnect());
             ShowDisconnect();
         } else {
-            LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first! (file: {0})", fname);
+            LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first!\n(File: {0})", fname);
         }
 
     }
