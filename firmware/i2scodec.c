@@ -100,12 +100,16 @@ void i2s_peripheral_init(void)  {
     /* Enable SPI3 clock */
     rccEnableSPI3(false);
 
+
+#if BOARD_KSOLOTI_CORE_H743
+    SPI3->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_2 | SPI_I2SCFGR_DATLEN_1;
+#else
     /* Configure I2S peripheral */
     /* I2S3: slave transmit, Philips standard, 32-bit data length (32-bit channel length is set implicitly by data length) */
     SPI3->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_DATLEN_1;
-
     /* I2S3ext: slave receive, Philips standard, 32-bit data length (32-bit channel length is set implicitly by data length) */
     I2S3ext->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_0 | SPI_I2SCFGR_DATLEN_1;
+#endif
 
     /* Reassign I2S3 */
     palSetPadMode(I2S3_WS_PORT, I2S3_WS_PIN, PAL_MODE_ALTERNATE(6));
@@ -135,7 +139,11 @@ void i2s_dma_init(void) {
 
     i2s_tx_dma = dmaStreamAlloc( STM32_SPI_I2S3_TX_DMA_STREAM, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t)dma_i2s_tx_interrupt, (void *)0);
 
+#if BOARD_KSOLOTI_CORE_H743
+    dmaStreamSetPeripheral(i2s_tx_dma, &(SPI3->TXDR));
+#else
     dmaStreamSetPeripheral(i2s_tx_dma, &(SPI3->DR));
+#endif
     dmaStreamSetMemory0(i2s_tx_dma, i2s_buf);
     dmaStreamSetMemory1(i2s_tx_dma, i2s_buf2);
     dmaStreamSetTransactionSize(i2s_tx_dma, 64);
@@ -161,7 +169,12 @@ void i2s_dma_init(void) {
         while (1);
     }
 
+#if BOARD_KSOLOTI_CORE_H743
+    dmaStreamSetPeripheral(i2s_rx_dma, &(SPI3->RXDR));
+#else
     dmaStreamSetPeripheral(i2s_rx_dma, &(I2S3ext->DR));
+#endif
+
     dmaStreamSetMemory0(i2s_rx_dma, i2s_rbuf);
     dmaStreamSetMemory1(i2s_rx_dma, i2s_rbuf2);
     dmaStreamSetTransactionSize(i2s_rx_dma, 64);
@@ -183,10 +196,16 @@ void i2s_init(void) {
     dmaStreamEnable(i2s_rx_dma);
 
     /* Enable DMA, I2S */
+#if BOARD_KSOLOTI_CORE_H743
+    SPI3->CFG1 = SPI_CFG1_TXDMAEN | SPI_CFG1_RXDMAEN;
+    // SPI3->I2SCFGR |= SPI_I2SCFGR_I2SE;
+#else
     SPI3->CR2 = SPI_CR2_TXDMAEN;
     I2S3ext->CR2 = SPI_CR2_RXDMAEN;
     SPI3->I2SCFGR |= SPI_I2SCFGR_I2SE;
     I2S3ext->I2SCFGR |= SPI_I2SCFGR_I2SE;
+#endif
+
 }
 
 
