@@ -181,7 +181,7 @@ void KVP_RegisterObject(KeyValuePair_s *kvp) {
 #endif
 
 
-static WORKING_AREA(waThreadUI, 1172);
+static WORKING_AREA(waThreadUI, 1536);
     static msg_t ThreadUI(void *arg) {
     (void)(arg);
 #if CH_CFG_USE_REGISTRY

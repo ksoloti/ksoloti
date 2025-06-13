@@ -222,7 +222,7 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t rand_s32(void) {
     // but rather than waiting for a new true random number,
     // we multiply/add the seed with the latest hardware-generated number.
     uint32_t randSeed = 22222;
-    return ___SMMLA(randSeed, 196314165, RNG->DR);
+    return randSeed = ___SMMLA(randSeed, 196314165, RNG->DR);
     // return randSeed = (randSeed * 196314165) + RNG->DR;
 }
 

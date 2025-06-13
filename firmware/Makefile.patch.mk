@@ -120,8 +120,8 @@ LDFLAGS = \
   -mno-thumb-interwork \
   -mthumb \
   -mtune=cortex-m4 \
-  -nostartfiles
-
+  -nostartfiles 
+  
 DMPFLAGS = \
   --demangle \
   --disassemble \
@@ -195,6 +195,7 @@ INCDIR = $(CMSIS)/Core/Include \
   ${FIRMWARE} \
   $(CHIBIOS) \
   $(CHIBIOS)/os/various \
+  $(CHIBIOS)/os/ \
   ${FIRMWARE}/mutable_instruments 
 	
 
@@ -251,7 +252,7 @@ ${BUILDDIR}/xpatch.bin: ${BUILDDIR}/xpatch.cpp ${BUILDDIR}/xpatch.h.gch $(AXO_OB
 	@echo Compiling patch dependencies
 	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include ${BUILDDIR}/xpatch.h -c ${BUILDDIR}/xpatch.cpp -o ${BUILDDIR}/xpatch.o
 	@echo Linking patch dependencies
-	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o $(AXO_OBJECTS) -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/$(ELFNAME).elf -o ${BUILDDIR}/xpatch.elf
+	@$(LD) $(LDFLAGS) ${BUILDDIR}/xpatch.o $(AXO_OBJECTS) -lm -Wl,-Map=${BUILDDIR}/xpatch.map,--cref,--just-symbols=${FIRMWARE}/build/$(ELFNAME).elf -o ${BUILDDIR}/xpatch.elf
 
 	@echo Creating binary
 	@$(CP) -O binary ${BUILDDIR}/xpatch.elf ${BUILDDIR}/xpatch.bin
