@@ -72,8 +72,7 @@ else
   # Axoloti and Ksoloti f427
   DEFS += -DPATCH_ITCM=1 \
           -DSTM32F427xx \
-          -DARM_MATH_CM4 \
-          -D__FPU_PRESENT
+          -DARM_MATH_CM4
 endif
 
 ifneq ($(FWOPTIONDEF),)
