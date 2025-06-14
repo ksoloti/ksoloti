@@ -691,7 +691,7 @@ bool_t msd_read_command_block(USBMassStorageDriver *msdp) {
 /**
  * @brief Mass storage thread that processes commands
  */
-static WORKING_AREA(mass_storage_thread_wa, 1024);
+static WORKING_AREA(mass_storage_thread_wa, 2048);
 static msg_t mass_storage_thread(void *arg) {
 
     USBMassStorageDriver *msdp = (USBMassStorageDriver *)arg;
