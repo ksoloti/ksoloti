@@ -328,8 +328,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         }
         else {
             jButtonDelete.setEnabled(false);
-            jButtonUpload.setEnabled(false);
-            jButtonCreateDir.setEnabled(false);
+            // jButtonUpload.setEnabled(false);
+            // jButtonCreateDir.setEnabled(false);
             ButtonUploadDefaultName();
         }
     }
