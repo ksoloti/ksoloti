@@ -168,6 +168,8 @@ case "$platform" in
             zip -q -r ../ksoloti_patcher-windows-${CUSTOMLABEL}${VERSION_LONG}.zip *
         ;;
         linux)
+            # apply icon (requires wine!)
+            wine "../../jdks/rcedit-x86.exe" "./ksoloti-${VERSION}/Ksoloti.exe" --set-icon "../../src/main/java/resources/ksoloti_icon.ico" --set-product-version "${VERSION}"
             zip -q -r ../ksoloti_patcher-windows-${CUSTOMLABEL}${VERSION_LONG}.zip *
         ;;
         windows)
