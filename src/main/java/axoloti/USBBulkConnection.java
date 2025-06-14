@@ -172,7 +172,7 @@ public class USBBulkConnection extends Connection {
                 }
             }
 
-            LOGGER.log(Level.INFO, "Disconecting from bulk endpoint {0}", useBulkInterfaceNumber);
+            LOGGER.log(Level.INFO, "Disconnecting from bulk endpoint {0}", useBulkInterfaceNumber);
 
             int result = LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
             if (result != LibUsb.SUCCESS) {
