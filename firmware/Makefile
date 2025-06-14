@@ -237,7 +237,7 @@ $(info Linking with $(LDSCRIPT))
 # setting.
 CSRC = $(ALLCSRC) \
   $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
-  $(CHIBIOS)/os/various/memstreams.c \
+  $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
   ${FIRMWARE}/codec.c \
   ${FIRMWARE}/i2scodec.c \
   ${FIRMWARE}/axoloti.c \
