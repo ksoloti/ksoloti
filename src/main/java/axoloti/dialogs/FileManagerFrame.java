@@ -486,6 +486,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             USBBulkConnection.GetConnection().AppendToQueue(new QCmdStop());
             USBBulkConnection.GetConnection().WaitSync();
             USBBulkConnection.GetConnection().AppendToQueue(new QCmdGetFileList());
+            USBBulkConnection.GetConnection().WaitSync();
         }
     }
 

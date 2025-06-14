@@ -795,7 +795,7 @@ int msdStart(USBMassStorageDriver *msdp, const USBMassStorageConfig *config) {
     while (blkGetDriverState(config->bbdp) != BLK_READY) {
         chThdSleepMilliseconds(50);
         i++;
-        if (i>20) {
+        if (i>100) {
             return -1;
         }
     }

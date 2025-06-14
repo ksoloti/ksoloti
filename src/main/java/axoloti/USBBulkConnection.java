@@ -693,7 +693,7 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public boolean WaitSync() {
-        return WaitSync(3000);
+        return WaitSync(1000);
     }
 
     @Override

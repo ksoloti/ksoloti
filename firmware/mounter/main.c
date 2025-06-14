@@ -248,14 +248,17 @@ int main(void) {
     palSetPadMode(GPIOC, 11, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
     palSetPadMode(GPIOC, 12, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
     palSetPadMode(GPIOD, 2,  PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_HIGHEST);
-    chThdSleepMilliseconds(50);
+    chThdSleepMilliseconds(1);
 
     /* initialize the SD card */
     sdcStart(&SDCD1, NULL);
+    chThdSleepMilliseconds(10);
     sdcConnect(&SDCD1);
+    chThdSleepMilliseconds(50);
 
     /* initialize the USB mass storage driver */
     msdInit(&UMSD1);
+    chThdSleepMilliseconds(10);
 
     /* turn off green LED, turn on red LED */
     palClearPad(LED1_PORT, LED1_PIN);
@@ -263,6 +266,7 @@ int main(void) {
 
     /* start the USB mass storage service */
     int ret = msdStart(&UMSD1, &msdConfig);
+    chThdSleepMilliseconds(50);
     if (ret != 0) {
         /* no media found : bye bye! */
         usbDisconnectBus(&USBD1);
@@ -281,6 +285,7 @@ int main(void) {
     chThdSleepMilliseconds(1000);
     usbStart(&USBD1, &usbConfig);
     usbConnectBus(&USBD1);
+    chThdSleepMilliseconds(10);
 
     while (1) {
         eventmask_t event = chEvtWaitOne(EVENT_MASK(1) | EVENT_MASK(2));
