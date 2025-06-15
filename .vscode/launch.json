@@ -41,6 +41,21 @@
             "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
         },
         {
+            "name": "Gills Mounter launch",
+            "cwd": "${workspaceRoot}",
+            "executable": "./firmware/mounter/mounter_build/ksoloti_mounter.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "stlink",
+            "device": "STM32F429ZG",
+            "interface": "swd",
+            "runToEntryPoint": "main",
+            "preLaunchTask": "Build all",
+            "svdFile": "./debug/STM32F429.svd",
+            "swoConfig": {},
+            "serverArgs": ["-i 56FF6F067878545210450567", "--frequency 24000"]
+        },
+        {
             "name": "Axoloti launch",
             "cwd": "${workspaceRoot}",
             "executable": "./firmware/build/axoloti.elf",
