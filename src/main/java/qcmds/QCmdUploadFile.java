@@ -99,7 +99,6 @@ public class QCmdUploadFile implements QCmdSerialTask {
                 }
                 inputStream = new FileInputStream(file);
             }
-            LOGGER.log(Level.INFO, "Uploading file to SD card: " + filename);
             Calendar ts;
             if (cal != null) {
                 ts = cal;
@@ -110,7 +109,7 @@ public class QCmdUploadFile implements QCmdSerialTask {
                 ts = Calendar.getInstance();
             }
             int tlength = inputStream.available();
-            LOGGER.log(Level.INFO, "Size: " + tlength + " bytes\n");
+            LOGGER.log(Level.INFO, "Uploading file to SD card: " + filename + "\nSize: " + tlength + " bytes\n");
             int remLength = inputStream.available();
             size = tlength;
             connection.TransmitCreateFile(filename, tlength, ts);
