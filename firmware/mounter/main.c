@@ -225,6 +225,8 @@ static const USBMassStorageConfig msdConfig = {
 int main(void) {
     /* system & hardware initialization */
 
+    __disable_irq();
+    chThdSleepMilliseconds(50);
     halInit();
 
     /* float usb inputs, hope the host notices detach... */
