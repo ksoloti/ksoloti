@@ -299,6 +299,7 @@ static FRESULT scan_files(char *path) {
         chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+13);
       }
     }
+    f_closedir(&dir);
   } else {
 	  report_fatfs_error(res,0);
   }
