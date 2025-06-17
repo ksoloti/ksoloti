@@ -341,7 +341,6 @@ public class Patch {
     }
 
     void GoLive() {
-        GetQCmdProcessor().AppendToQueue(new QCmdStop());
         ShowPreset(0);
         presetUpdatePending = false;
         for (AxoObjectInstanceAbstract o : objectInstances) {
@@ -355,7 +354,22 @@ public class Patch {
         GetQCmdProcessor().SetPatch(null);
         GetQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
         GetQCmdProcessor().WaitQueueFinished();
-
+        GetQCmdProcessor().AppendToQueue(new QCmdStop());
+        int i = 100;
+        while (!this.getBinFile().exists()) {
+            try {
+                LOGGER.log(Level.INFO, "Waiting for patch bin to be available...");
+                Thread.sleep(10);
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            i--;
+            if (i == 0) {
+                break;
+            }
+        }
+        
         if (this.getBinFile().exists()) {
 
             if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
@@ -3052,8 +3066,8 @@ public class Patch {
         LOGGER.log(Level.INFO, "SD card filename: {0}", sdfilename);
 
         QCmdProcessor qcmdprocessor = QCmdProcessor.getQCmdProcessor();
-        qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
         qcmdprocessor.AppendToQueue(new qcmds.QCmdCompilePatch(this));
+        qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
         // create subdirs...
 
         for (int i = 1; i < sdfilename.length(); i++) {

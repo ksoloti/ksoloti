@@ -21,6 +21,7 @@ package axoloti;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingWorker;
@@ -39,12 +40,23 @@ public class ShellProcessor extends SwingWorker<Integer, String> {
 
     public ShellProcessor(BlockingQueue<QCmd> queueResponse) {
         super();
-        queueShellTasks = new ArrayBlockingQueue<QCmdShellTask>(10);
+        queueShellTasks = new ArrayBlockingQueue<QCmdShellTask>(20);
     }
 
     public boolean AppendToQueue(QCmdShellTask cmd) {
-//        LOGGER.log(Level.INFO, "ShellProcessor queue: "+ cmd.GetStartMessage());
-        return queueShellTasks.add(cmd);
+        // LOGGER.log(Level.INFO, "ShellProcessor queue: "+ cmd.GetStartMessage());
+        try {
+            boolean added = queueShellTasks.offer(cmd, 100, TimeUnit.MILLISECONDS);
+            if (!added) {
+                LOGGER.log(Level.WARNING, "ShellProcessor queue full, command not appended: " + cmd.getClass().getSimpleName());
+            }
+            return added;
+        }
+        catch (InterruptedException ex) {
+            Thread.currentThread().interrupt(); // Restore interrupt status
+            LOGGER.log(Level.SEVERE, "ShellProcessor AppendToQueue interrupted while offering command: " + cmd.getClass().getSimpleName(), ex);
+            return false; // Command not added due to interruption
+        }
     }
 
     @Override

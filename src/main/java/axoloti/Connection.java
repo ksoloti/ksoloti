@@ -4,6 +4,8 @@ import axoloti.targetprofile.ksoloti_core;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.concurrent.Future;
+
 import qcmds.QCmdSerialTask;
 
 /**

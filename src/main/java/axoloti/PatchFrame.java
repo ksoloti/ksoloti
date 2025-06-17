@@ -1169,8 +1169,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private void jMenuItemUploadInternalFlashActionPerformed(java.awt.event.ActionEvent evt) {
         patch.WriteCode(true);
-        qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
         qcmdprocessor.AppendToQueue(new qcmds.QCmdCompilePatch(patch));
+        qcmdprocessor.WaitQueueFinished();
+        qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
         if (patch.getBinFile().exists()) {
             qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadPatch(patch.getBinFile()));
             qcmdprocessor.AppendToQueue(new qcmds.QCmdCopyPatchToFlash());

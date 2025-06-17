@@ -18,6 +18,7 @@
  */
 package axoloti;
 
+// import axoloti.USBBulkConnection.Transmitter;
 /**
  * Replaces the old packet-over-serial protocol with vendor-specific usb bulk
  * transport
@@ -38,6 +39,9 @@ import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
@@ -76,6 +80,15 @@ public class USBBulkConnection extends Connection {
     private final short bulkPIDKsolotiUsbAudio = (short) 0x0446;
     private int useBulkInterfaceNumber = 2;
 
+    protected final Object fileListSync = new Object();
+    protected volatile boolean fileListDone = false; /* Flag to indicate completion of file list transfer */
+
+    private int currentFileSize;
+    private int currentFileTimestamp;
+
+    private final Object usbInLock = new Object();  // For IN endpoint operations (reading)
+    private final Object usbOutLock = new Object(); // For OUT endpoint operations (writing)
+
 	protected USBBulkConnection() {
         this.sync = new Sync();
         this.readsync = new Sync();
@@ -83,7 +96,7 @@ public class USBBulkConnection extends Connection {
 
         disconnectRequested = false;
         connected = false;
-        queueSerialTask = new ArrayBlockingQueue<QCmdSerialTask>(10);
+        queueSerialTask = new ArrayBlockingQueue<QCmdSerialTask>(20);
         context = new Context();
 
         int result = LibUsb.init(context);
@@ -109,7 +122,19 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public boolean AppendToQueue(QCmdSerialTask cmd) {
-        return queueSerialTask.add(cmd);
+        try {
+            boolean added = queueSerialTask.offer(cmd, 100, TimeUnit.MILLISECONDS); // Example timeout
+            if (!added) {
+                LOGGER.log(Level.WARNING, "USBBulkConnection serial task queue full, command not appended: " + cmd.getClass().getSimpleName());
+            }
+            return added;
+        }
+        catch (InterruptedException ex) {
+            /* Restore the interrupted status, as per best practice */
+            Thread.currentThread().interrupt();
+            LOGGER.log(Level.SEVERE, "USBBulkConnection AppendToQueue interrupted while offering command: " + cmd.getClass().getSimpleName(), ex);
+            return false; // Command was not added due to interruption
+        }
     }
 
     @Override
@@ -494,48 +519,50 @@ public class USBBulkConnection extends Connection {
 
     static final byte OUT_ENDPOINT = 0x02;
     static final byte IN_ENDPOINT = (byte) 0x82;
-    static final int TIMEOUT = 1000;
 
     @Override
-    public int writeBytes(byte[] data) {
+    public int writeBytes(byte[] bytes) {
+        // Acquire the OUT lock for writing
+        synchronized (usbOutLock) {
+            ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length);
+            buffer.put(bytes);
+            buffer.rewind();
 
-        ByteBuffer buffer = ByteBuffer.allocateDirect(data.length);
-        buffer.put(data);
+            IntBuffer transfered = IntBuffer.allocate(1);
+    
+            int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, prefs.getPollInterval() * 30); /*  Timeout is thirty times the poll interval, or ten times the read timeout */
+            if (result != LibUsb.SUCCESS) { /* handle error -99 below */
 
-        IntBuffer transfered = IntBuffer.allocate(1);
+                if (result == -99) {
+                    /*
+                    * Filter out error -99 ... seems to pop up every now and then but does not lead to connection loss  
+                    * this "bug" will likely  be resolved after libusb update
+                    */
+                    // LOGGER.log(Level.INFO, "USB connection not happy: " + result);
+                    return result;
+                }
 
-        int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, TIMEOUT);
-        if (result != LibUsb.SUCCESS) { /* handle error -99 below */
-
-            if (result == -99) {
-                /*
-                * Filter out error -99 ... seems to pop up every now and then but does not lead to connection loss  
-                * this "bug" will likely  be resolved after libusb update
-                */
-                // LOGGER.log(Level.INFO, "USB connection not happy: " + result);
-                return result;
+                String errstr;
+                switch (result) {
+                    case -1:  errstr = "Input/output error"; break;
+                    case -2:  errstr = "Invalid parameter"; break;
+                    case -3:  errstr = "Access denied (insufficient permissions?)"; break;
+                    case -4:  errstr = "Device may have been disconnected"; break;
+                    case -5:  errstr = "Device not found"; break;
+                    case -6:  errstr = "Device busy"; break;
+                    case -7:  errstr = "Operation timed out"; break;
+                    case -8:  errstr = "Overflow"; break;
+                    case -9:  errstr = "Pipe error"; break;
+                    case -10: errstr = "System call interrupted"; break;
+                    case -11: errstr = "Insufficient memory"; break;
+                    case -12: errstr = "Operation not supported or unimplemented"; break;
+                    default:  errstr = Integer.toString(result); break;
+                }
+                LOGGER.log(Level.SEVERE, "USB bulk write failed: " + errstr);
+                // QCmdProcessor.getQCmdProcessor().Abort();
             }
-
-            String errstr;
-            switch (result) {
-                case -1:  errstr = "Input/output error"; break;
-                case -2:  errstr = "Invalid parameter"; break;
-                case -3:  errstr = "Access denied (insufficient permissions?)"; break;
-                case -4:  errstr = "Device may have been disconnected"; break;
-                case -5:  errstr = "Device not found"; break;
-                case -6:  errstr = "Device busy"; break;
-                case -7:  errstr = "Operation timed out"; break;
-                case -8:  errstr = "Overflow"; break;
-                case -9:  errstr = "Pipe error"; break;
-                case -10: errstr = "System call interrupted"; break;
-                case -11: errstr = "Insufficient memory"; break;
-                case -12: errstr = "Operation not supported or unimplemented"; break;
-                default:  errstr = Integer.toString(result); break;
-            }
-            LOGGER.log(Level.SEVERE, "USB connection failed: " + errstr);
-            QCmdProcessor.getQCmdProcessor().Abort();
+            return result;
         }
-        return result;
     }
 
     @Override
@@ -632,6 +659,27 @@ public class USBBulkConnection extends Connection {
             conn = new USBBulkConnection();
         }
         return conn;
+    }
+
+    public void clearFileListSync() {
+        synchronized (fileListSync) {
+            fileListDone = false;
+        }
+    }
+    
+    public boolean waitFileListSync(long timeoutMillis) {
+        synchronized (fileListSync) {
+            if (fileListDone) {
+                return true;
+            }
+            try {
+                fileListSync.wait(timeoutMillis);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return false;
+            }
+            return fileListDone;
+        }
     }
 
     @Override
@@ -1029,31 +1077,37 @@ public class USBBulkConnection extends Connection {
 
         @Override
         public void run() {
-
             ByteBuffer recvbuffer = ByteBuffer.allocateDirect(4096);
             IntBuffer transfered = IntBuffer.allocate(1);
 
             while (!disconnectRequested) {
-                int result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, TIMEOUT);
+                int result = LibUsb.SUCCESS;
+                int sz = 0;
 
-                if (result != LibUsb.SUCCESS) {
-                    // LOGGER.log(Level.INFO, "Receive: " + result);
+                synchronized (usbInLock) {
+                    recvbuffer.clear();
+                    transfered.clear();
+                    result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, prefs.getPollInterval()*3); /* timeout is three times the poll interval */
+                    sz = transfered.get(0);
                 }
-                else {
-                    int sz = transfered.get(0);
-                    if (sz != 0) {
-                        // LOGGER.log(Level.INFO, "Receive sz: " + sz);
-                    }
+
+                if (result == LibUsb.SUCCESS && sz > 0) {
+                    recvbuffer.position(0);
+                    recvbuffer.limit(sz);
                     for (int i = 0; i < sz; i++) {
-                        processByte(recvbuffer.get(i));
+                        byte b = recvbuffer.get(i);
+                        processByte(b);
+                    }
+                }
+                else if (result != LibUsb.SUCCESS || sz == 0) {
+                    try {
+                        Thread.sleep(10); // Sleep briefly if no data or timeout
+                    }
+                    catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                     }
                 }
             }
-
-            // LOGGER.log(Level.INFO, "Receiver: thread stopped");
-
-            MainFrame.mainframe.qcmdprocessor.Abort();
-            MainFrame.mainframe.qcmdprocessor.AppendToQueue(new QCmdShowDisconnect());
         }
     }
 
@@ -1185,17 +1239,20 @@ public class USBBulkConnection extends Connection {
     enum ReceiverState {
 
         header,
-        ackPckt,            /* general acknowledge */
-        paramchangePckt,    /* parameter changed */
-        lcdPckt,            /* lcd screen bitmap readback */
-        displayPcktHdr,     /* object display readbac */
-        displayPckt,        /* object display readback */
-        textPckt,           /* text message to display in log */
-        sdinfo,             /* sdcard info */
-        fileinfo,           /* file listing entry */
-        memread,            /* one-time programmable bytes */
-        memread1word,       /* one-time programmable bytes */
-        fwversion
+        ackPckt,                /* general acknowledge */
+        paramchangePckt,        /* parameter changed */
+        lcdPckt,                /* lcd screen bitmap readback */
+        displayPcktHdr,         /* object display readbac */
+        displayPckt,            /* object display readback */
+        textPckt,               /* text message to display in log */
+        sdinfo,                 /* sdcard info */
+        fileinfo_fixed_fields,  /* file listing entry, size and timestamp (8 bytes of Axof packet) */
+        fileinfo_filename,      /* file listing entry, variable length filename */
+        memread,                /* one-time programmable bytes */
+        memread1word,           /* one-time programmable bytes */
+        fwversion,
+        endfilelist,            /* end of file list (aka End of Operation) */
+        idle
     };
 
     /*
@@ -1381,16 +1438,24 @@ public class USBBulkConnection extends Connection {
                                 dataLength = 128;
                                 break;
                             case 'd':
+                                LOGGER.log(Level.INFO, "processByte: Received Axod (Directory Listing Start)");
                                 state = ReceiverState.sdinfo;
                                 sdinfoRcvBuffer.rewind();
                                 dataIndex = 0;
                                 dataLength = 12;
                                 break;
                             case 'f':
-                                state = ReceiverState.fileinfo;
+                                LOGGER.log(Level.INFO, "processByte: Received Axof (File Info)");
+                                state = ReceiverState.fileinfo_fixed_fields;
                                 fileinfoRcvBuffer.clear();
                                 dataIndex = 0;
-                                dataLength = 8;
+                                // dataLength = 8;
+                                break;
+                            case 'E':
+                                LOGGER.log(Level.INFO, "processByte: Received AxoE (End of Directory Listing)");
+                                state = ReceiverState.endfilelist; // Set the state
+                                dataIndex = 0;
+                                dataLength = 0; /* No data expected for AxoE (or minimal status) */
                                 break;
                             case 'r':
                                 state = ReceiverState.memread;
@@ -1504,38 +1569,84 @@ public class USBBulkConnection extends Connection {
                     GoIdleState();
                 }
                 break;
-            case fileinfo:
-                if ((dataIndex < dataLength) || (c != 0)) {
-                    fileinfoRcvBuffer.put(cc);
-                    // System.out.println("fileinfo \'" + (char) c + "\' = " + c);
-                    dataIndex++;
-                }
-                else {
-                    fileinfoRcvBuffer.put((byte) c);
-                    fileinfoRcvBuffer.order(ByteOrder.LITTLE_ENDIAN);
-                    fileinfoRcvBuffer.limit(fileinfoRcvBuffer.position());
-                    fileinfoRcvBuffer.rewind();
-                    int size = fileinfoRcvBuffer.getInt();
-                    int timestamp = fileinfoRcvBuffer.getInt();
-                    CharBuffer cb = Charset.forName("ISO-8859-1").decode(fileinfoRcvBuffer);
-                    String fname = cb.toString();
-                    // strip trailing null
-                    if (fname.charAt(fname.length() - 1) == (char) 0) {
-                        fname = fname.substring(0, fname.length() - 1);
-                    }
-                    SDCardInfo.getInstance().AddFile(fname, size, timestamp);
-                    // LOGGER.log(Level.INFO, "fileinfo: " + cb.toString());                    
-                    GoIdleState();
-                    if (fname.equals("/")) {
-                        /* end of index */
-                        // System.out.println("sdfilelist done");
-                        synchronized (readsync) {
-                            readsync.Acked = true;
-                            readsync.notifyAll();
-                        }
-                    }
+
+                case fileinfo_fixed_fields: // State to collect the 8-byte size and timestamp
+                fileinfoRcvBuffer.put(cc); // Collect bytes into the buffer
+                dataIndex++; // Increment collected bytes count
+        
+                if (dataIndex == 8) { // We've collected exactly 8 bytes (size + timestamp)
+                    LOGGER.log(Level.INFO, "processByte: Received fixed fields for Axof. Processing them.");
+        
+                    fileinfoRcvBuffer.order(ByteOrder.LITTLE_ENDIAN); // Ensure correct byte order for reading
+                    fileinfoRcvBuffer.limit(fileinfoRcvBuffer.position()); // Set buffer's limit to the 8 bytes just written
+                    fileinfoRcvBuffer.rewind(); // Prepare buffer for reading from the start
+        
+                    // No need to skip magic bytes here, as the buffer *only* contains the payload
+                    // (the magic bytes were consumed in HEADER_WAIT)
+                    // REMOVE THIS LINE: fileinfoRcvBuffer.position(fileinfoRcvBuffer.position() + 4);
+        
+                    // Read the 4-byte size and 4-byte timestamp
+                    currentFileSize = fileinfoRcvBuffer.getInt();
+                    currentFileTimestamp = fileinfoRcvBuffer.getInt();
+        
+                    LOGGER.log(Level.FINE, "processByte: Parsed preliminary size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
+        
+                    // Now, prepare to collect the variable-length filename
+                    fileinfoRcvBuffer.clear(); // Clear the buffer to reuse it for filename bytes
+                    dataIndex = 0; // Reset dataIndex for the new collection phase
+                    state = ReceiverState.fileinfo_filename; // Transition to the next sub-state
                 }
                 break;
+        
+            case fileinfo_filename: // State to collect filename bytes until null terminator
+                if (cc == 0x00) { // Check if the current byte is the null terminator
+                    LOGGER.log(Level.INFO, "processByte: Null terminator found for Axof filename. Processing.");
+        
+                    fileinfoRcvBuffer.limit(fileinfoRcvBuffer.position()); // Set limit to actual filename bytes written (before the null)
+                    fileinfoRcvBuffer.rewind(); // Prepare buffer for reading
+        
+                    // Get the collected filename bytes as an array
+                    byte[] filenameBytes = new byte[fileinfoRcvBuffer.remaining()];
+                    fileinfoRcvBuffer.get(filenameBytes);
+        
+                    // Convert byte array to String using the correct character set (ISO-8859-1 is common for FatFS)
+                    String fname = new String(filenameBytes, Charset.forName("ISO-8859-1"));
+        
+                    // No need to strip trailing null, as we stopped collecting *before* adding it to the buffer
+                    // if (!fname.isEmpty() && fname.charAt(fname.length() - 1) == (char) 0) {
+                    //     fname = fname.substring(0, fname.length() - 1);
+                    // }
+        
+                    // Add the fully parsed file information to your SDCardInfo
+                    SDCardInfo.getInstance().AddFile(fname, currentFileSize, currentFileTimestamp);
+                    LOGGER.log(Level.INFO, "processByte: Parsed file: \"" + fname + "\", size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
+        
+                    GoIdleState(); // Packet complete, return to idle to look for the next header (Axof or AxoE)
+                } else {
+                    // Collect the current byte as part of the filename
+                    fileinfoRcvBuffer.put(cc);
+                    dataIndex++;
+        
+                    // OPTIONAL: Add a safety check for maximum filename length to prevent buffer overflow
+                    // if (dataIndex >= MAX_POSSIBLE_FILENAME_LENGTH_OR_BUFFER_CAPACITY) {
+                    //     LOGGER.log(Level.SEVERE, "processByte: Filename exceeds maximum expected length. Aborting packet.");
+                    //     GoIdleState();
+                    // }
+                }
+                break;
+        
+            case endfilelist: // Existing AxoE handling remains
+                LOGGER.log(Level.INFO, "processByte: Entering endfilelist state, notifying fileListSync.");
+
+                synchronized (fileListSync) {
+                    fileListSync.notifyAll(); // Notify all threads waiting on fileListSync
+                    fileListDone = true;
+                }
+
+                state = ReceiverState.idle; // Move to idle after signalling
+                LOGGER.log(Level.INFO, "processByte: Exited endfilelist state, returned to idle.");
+                break;
+        
             case memread:
                 switch (dataIndex) {
                     // case 0:
@@ -1676,6 +1787,7 @@ public class USBBulkConnection extends Connection {
                 dataIndex++;
                 break;
 
+            case idle:
             default:
                 GoIdleState();
                 break;

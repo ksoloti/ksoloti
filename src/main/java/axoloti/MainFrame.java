@@ -64,7 +64,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.FileHandler;
+// import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -255,54 +255,95 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         Handler logHandler = new Handler() {
             @Override
-            public void publish(LogRecord lr) {
+            public void publish(final LogRecord lr) { // Make lr final for inner class access
+                // This entire block (the "else" part) needs to be executed on the EDT.
+                // If we're not on the EDT, schedule *this entire logic* to run on the EDT.
                 if (!SwingUtilities.isEventDispatchThread()) {
-                    // System.out.println("logging outside GUI thread:"+lr.getMessage());
-                    final LogRecord lrf = lr;
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            publish(lrf);
+                            // Now, call the publish method again. This time, it *will* be on the EDT.
+                            // This is how you correctly re-dispatch a method call to the EDT.
+                            publish(lr); // This call will now enter the 'else' block
                         }
                     });
-                } else {
-                    try {
-                        String txt;
-                        String excTxt = "";
-                        Throwable exc = lr.getThrown();
-                        if (exc != null) {
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            PrintStream ps = new PrintStream(baos);
-                            exc.printStackTrace(ps);
-                            excTxt = exc.toString();
-                            excTxt = excTxt + "\n" + baos.toString("utf-8");
-                        }
-                        if (lr.getMessage() == null) {
-                            txt = excTxt;
-                        } else {
-                            txt = java.text.MessageFormat.format(lr.getMessage(), lr.getParameters());
-                            if (excTxt.length() > 0) {
-                                txt = txt + "," + excTxt;
-                            }
-                        }
-                        if (lr.getLevel() == Level.SEVERE) {
-                            doAutoScroll = true;
-                            jTextPaneLog.getDocument().insertString(jTextPaneLog.getDocument().getLength(),
-                                    txt + "\n", styleSevere);
-                            if (bGrabFocusOnSevereErrors) {
-                                MainFrame.this.toFront();
-                            }
-                        } else if (lr.getLevel() == Level.WARNING) {
-                            jTextPaneLog.getDocument().insertString(jTextPaneLog.getDocument().getLength(),
-                                    txt + "\n", styleWarning);
-                        } else {
-                            jTextPaneLog.getDocument().insertString(jTextPaneLog.getDocument().getLength(),
-                                    txt + "\n", styleInfo);
-                        }
-                    } catch (BadLocationException ex) {
-                        LOGGER.log(Level.SEVERE, null, ex);
-                    } catch (UnsupportedEncodingException ex) {
+                    return; // Important: exit the current call as it's been re-dispatched
+                }
+            
+                // If we reach here, we are guaranteed to be on the Event Dispatch Thread (EDT)
+                try {
+                    String txt;
+                    String excTxt = "";
+                    Throwable exc = lr.getThrown();
+
+                    if (exc != null) {
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        PrintStream ps = new PrintStream(baos);
+                        exc.printStackTrace(ps);
+                        excTxt = exc.toString();
+                        excTxt = excTxt + "\n" + baos.toString("utf-8"); // Ensure encoding for platform safety
                     }
+
+                    if (lr.getMessage() == null) {
+                        txt = excTxt;
+                    }
+                    else {
+                        // Handle MessageFormat carefully, especially if parameters are null
+                        if (lr.getParameters() != null) {
+                            txt = java.text.MessageFormat.format(lr.getMessage(), lr.getParameters());
+                        }
+                        else {
+                            txt = lr.getMessage();
+                        }
+            
+                        if (excTxt.length() > 0) {
+                            txt = txt + "," + excTxt;
+                        }
+                    }
+            
+                    /* Add a timestamp or other formatting if desired
+                     * Simple example: String formattedMessage = new Date() + ": " + txt + "\n"; */
+                    String formattedMessage = txt + "\n"; // Stick to your current formatting
+            
+                    /* Get the document length just before insertion to ensure it's current. */
+                    int currentLength = jTextPaneLog.getDocument().getLength();
+            
+                    if (lr.getLevel() == Level.SEVERE) {
+                        // doAutoScroll = true; // This might be a class field that needs thread-safe access if it's used elsewhere
+                        jTextPaneLog.getDocument().insertString(currentLength, formattedMessage, styleSevere);
+                        if (bGrabFocusOnSevereErrors) {
+                            MainFrame.this.toFront();
+                        }
+                    }
+                    else if (lr.getLevel() == Level.WARNING) {
+                        jTextPaneLog.getDocument().insertString(currentLength, formattedMessage, styleWarning);
+                    }
+                    else { // INFO, CONFIG, FINE, FINER, FINEST
+                        jTextPaneLog.getDocument().insertString(currentLength, formattedMessage, styleInfo);
+                    }
+            
+                    // Always ensure the caret position is updated *after* insertion to scroll
+                    // This is crucial for a console-like behavior.
+                    jTextPaneLog.setCaretPosition(jTextPaneLog.getDocument().getLength());
+            
+                }
+                catch (BadLocationException ex) {
+                    // Log this error to standard error or a non-GUI log file,
+                    // to avoid infinite recursion if logging to GUI fails.
+                    System.err.println("BadLocationException when logging to GUI: " + ex.getMessage());
+                    ex.printStackTrace(System.err);
+                    LOGGER.log(Level.SEVERE, "Failed to insert log message into JTextPane (BadLocation)", ex);
+                }
+                catch (UnsupportedEncodingException ex) {
+                    // This catch is for baos.toString("utf-8")
+                    System.err.println("UnsupportedEncodingException in log handler: " + ex.getMessage());
+                    ex.printStackTrace(System.err);
+                    LOGGER.log(Level.SEVERE, "Encoding error in log handler", ex);
+                }
+                catch (Exception ex) { // Catch any other unexpected exceptions
+                    System.err.println("Unexpected exception in log handler: " + ex.getMessage());
+                    ex.printStackTrace(System.err);
+                    LOGGER.log(Level.SEVERE, "Unexpected error in log handler", ex);
                 }
             }
 

@@ -313,28 +313,29 @@ void ReadDirectoryListing(void) {
 
   err = f_getfree("/", &clusters, &fsp);
   if (err != FR_OK) {
-	report_fatfs_error(err,0);
+    report_fatfs_error(err,0);
+    /* Even on error, we should signal the end of the operation to the host */
+    char end_msg[4] = {'A', 'x', 'o', 'E'};
+    chSequentialStreamWrite((BaseSequentialStream *)&BDU1, (const unsigned char*)end_msg, 4);
     return;
   }
-  /*
-   chprintf(chp,
-   "FS: %lu free clusters, %lu sectors per cluster, %lu bytes free\r\n",
-   clusters, (uint32_t)SDC_FS.csize,
-   clusters * (uint32_t)SDC_FS.csize * (uint32_t)MMCSD_BLOCK_SIZE);
-   */
+
   ((char*)fbuff)[0] = 'A';
   ((char*)fbuff)[1] = 'x';
   ((char*)fbuff)[2] = 'o';
   ((char*)fbuff)[3] = 'd';
-  fbuff[1] = clusters;
-  fbuff[2] = fsp->csize;
-  fbuff[3] = MMCSD_BLOCK_SIZE;
+
+  ((uint32_t*)fbuff)[1] = clusters;
+  ((uint32_t*)fbuff)[2] = fsp->csize;
+  ((uint32_t*)fbuff)[3] = MMCSD_BLOCK_SIZE;
+
   chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&fbuff[0]), 16);
-  chThdSleepMilliseconds(10);
+  chThdSleepMilliseconds(10); /* Give some time for the USB buffer to clear */
   fbuff[0] = '/';
   fbuff[1] = 0;
   scan_files((char *)&fbuff[0]);
 
+  /* Send the final "Axof" for the root directory to indicate parent context */
   char *msg = &((char*)fbuff)[64];
   msg[0] = 'A';
   msg[1] = 'x';
@@ -345,6 +346,10 @@ void ReadDirectoryListing(void) {
   msg[12] = '/';
   msg[13] = 0;
   chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, 14);
+
+  /* Send the "End of Operation" packet */
+  char end_msg[4] = {'A', 'x', 'o', 'E'};
+  chSequentialStreamWrite((BaseSequentialStream *)&BDU1, (const unsigned char*)end_msg, 4);
 }
 
 
@@ -664,9 +669,13 @@ void PExReceiveByte(unsigned char c) {
         CopyPatchToFlash();
       }
       else if (c == 'd') { /* read directory listing */
+        AckPending = 1; /* Immediately acknowledge the command receipt. */
         state = 0;
         header = 0;
-        StopPatch();
+        StopPatch(); /* Stop the patch if it is running. */
+        /* IMPORTANT: Calling  ReadDirectoryListing() *after* AckPending is set and state is reset.
+         * PExTransmit will send the AxoA shortly.
+         * ReadDirectoryListing() will then stream data and send a final AxoE "End of Operation" packet. */
         ReadDirectoryListing();
       }
       else if (c == 's') { /* start patch */

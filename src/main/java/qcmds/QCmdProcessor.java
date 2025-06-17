@@ -22,8 +22,12 @@ import axoloti.Connection;
 import axoloti.MainFrame;
 import axoloti.Patch;
 import axoloti.USBBulkConnection;
+
+import static axoloti.MainFrame.prefs;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
@@ -51,12 +55,18 @@ public class QCmdProcessor implements Runnable {
         public void run() {
             while (true) {
                 try {
-                    Thread.sleep(MainFrame.prefs.getPollInterval());
-                } catch (InterruptedException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
+                    Thread.sleep(prefs.getPollInterval());
+                    if (serialconnection.isConnected()) {
+                        /* Try to add the command, but don't block if the queue is full
+                         * Give it a very short timeout, or no timeout if you simply want to drop it */
+                        boolean added = queue.offer(new QCmdPing(), 10, TimeUnit.MILLISECONDS);
+                        if (!added) {
+                            LOGGER.log(Level.INFO, "QCmd queue full, dropping ping command.");
+                        }
+                    }
                 }
-                if (queue.isEmpty() && serialconnection.isConnected()) {
-                    queue.add(new QCmdPing());
+                catch (InterruptedException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -67,11 +77,14 @@ public class QCmdProcessor implements Runnable {
         @Override
         public void run() {
             while (true) {
-                if (queue.isEmpty() && serialconnection.isConnected()) {
-                    queue.add(new QCmdGuiDialTx());
-                }
                 try {
-                    Thread.sleep(5);
+                    Thread.sleep(prefs.getPollInterval());
+                    if (serialconnection.isConnected()) {
+                        boolean added = queue.offer(new QCmdGuiDialTx(), 10, TimeUnit.MILLISECONDS);
+                        if (!added) {
+                            LOGGER.log(Level.INFO, "QCmd queue full, dropping dial command.");
+                        }
+                    }
                 } catch (InterruptedException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
                 }
@@ -80,8 +93,8 @@ public class QCmdProcessor implements Runnable {
     }
     
     protected QCmdProcessor() {
-        queue = new ArrayBlockingQueue<QCmd>(10);
-        queueResponse = new ArrayBlockingQueue<QCmd>(10);
+        queue = new ArrayBlockingQueue<QCmd>(20);
+        queueResponse = new ArrayBlockingQueue<QCmd>(20);
         serialconnection = USBBulkConnection.GetConnection();
         pinger = new PeriodicPinger();
         pingerThread = new Thread(pinger);
@@ -102,7 +115,22 @@ public class QCmdProcessor implements Runnable {
     }
 
     public boolean AppendToQueue(QCmd cmd) {
-        return queue.add(cmd);
+        try {
+            /* Try to add for up to 100 milliseconds.
+             * Adjust the timeout based on how long you're willing for the UI/caller to wait.
+             * A very short timeout (e.g., 0ms) or no timeout at all (just offer(cmd))
+             * makes it purely non-blocking if the queue is full. */
+            boolean added = queue.offer(cmd, 100, TimeUnit.MILLISECONDS);
+            if (!added) {
+                LOGGER.log(Level.WARNING, "Warning: QCmd queue full, command not appended: " + cmd);
+            }
+            return added;
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore interrupt status
+            LOGGER.log(Level.SEVERE, "Error: AppendToQueue interrupted while offering command: " + cmd);
+            return false;
+        }
     }
 
     public void Abort() {
@@ -197,12 +225,36 @@ public class QCmdProcessor implements Runnable {
                 }
                 if (QCmdSerialTask.class.isInstance(cmd)) {
                     if (serialconnection.isConnected()) {
-                        serialconnection.AppendToQueue((QCmdSerialTask) cmd);
-                        QCmd response = queueResponse.take();
-                        publish(response);
-                        if (response instanceof QCmdDisconnect){
-                            queue.clear();
+                        boolean appended = serialconnection.AppendToQueue((QCmdSerialTask) cmd);
+                        if (appended) {
+                            /* Only proceed to wait for a response if the command was successfully queued */
+                            try {
+                                QCmd response = queueResponse.take(); // This might still block if no response arrives
+                                publish(response);
+                                if (response instanceof QCmdDisconnect){
+                                    queue.clear();
+                                }
+                            }
+                            catch (InterruptedException e) {
+                                // Handle interruption while waiting for response
+                                LOGGER.log(Level.SEVERE, "Interrupted while waiting for response to serial command: " + cmd.getClass().getSimpleName(), e);
+                                Thread.currentThread().interrupt();
+                            }
                         }
+                        else {
+                            // **Critical Error Handling:** The serial command could not be queued.
+                            // This means your device might not receive this command.
+                            LOGGER.log(Level.SEVERE, "Failed to append serial command to USBBulkConnection queue. Command: " + cmd.getClass().getSimpleName());
+                            // Depending on the criticality of 'cmd', you might:
+                            // - Alert the user.
+                            // - Attempt to re-queue (with caution to avoid infinite loops on persistent backlog).
+                            // - Log and continue, accepting the lost command.
+                            // - Potentially trigger a connection reset or disconnect if this indicates a severe communication issue.
+                        }
+                    }
+                    else {
+                        // Handle case where serialconnection is not connected when trying to send a serial command.
+                        LOGGER.log(Level.WARNING, "Attempted to send serial command " + cmd.getClass().getSimpleName() + " but connection is not active.");
                     }
                 }
                 if (QCmdGUITask.class.isInstance(cmd)) {
