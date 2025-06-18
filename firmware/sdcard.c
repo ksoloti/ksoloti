@@ -160,23 +160,23 @@ void sdcard_init(void) {
   sdcStart(&SDCD1, NULL);
   chThdSleepMilliseconds(50);
 
-  InsertHandler(0);
+  // InsertHandler(0);
 
-  FRESULT err;
-  uint32_t clusters;
-  FATFS *fsp;
+  // FRESULT err;
+  // uint32_t clusters;
+  // FATFS *fsp;
 
-  err = f_getfree("/", &clusters, &fsp);
-  int retries = 3;
-  while (err != FR_OK) {
-    InsertHandler(0);
-    chThdSleepMilliseconds(20);
-    err = f_getfree("/", &clusters, &fsp);
-    chThdSleepMilliseconds(50);
-    retries--;
-    if (!retries)
-      break;
-  }
+  // err = f_getfree("/", &clusters, &fsp);
+  // int retries = 3;
+  // while (err != FR_OK) {
+  //   InsertHandler(0);
+  //   chThdSleepMilliseconds(20);
+  //   err = f_getfree("/", &clusters, &fsp);
+  //   chThdSleepMilliseconds(50);
+  //   retries--;
+  //   if (!retries)
+  //     break;
+  // }
 }
 
 void sdcard_attemptMountIfUnmounted() {
