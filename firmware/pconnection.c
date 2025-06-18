@@ -245,14 +245,13 @@ static FRESULT scan_files(char *path) {
   FRESULT res;
   FILINFO fno;
   DIR dir;
-  int i;
+  int current_path_len;
   char *fn;
   char *msg = &((char*)fbuff)[64];
   fno.lfname = &FileName[0];
   fno.lfsize = sizeof(FileName);
   res = f_opendir(&dir, path);
   if (res == FR_OK) {
-    i = strlen(path);
     for (;;) {
       res = f_readdir(&dir, &fno);
       if (res != FR_OK || fno.fname[0] == 0)
@@ -269,8 +268,9 @@ static FRESULT scan_files(char *path) {
       if (fno.fattrib & AM_HID)
         continue;
       if (fno.fattrib & AM_DIR) {
-        path[i] = '/';
-        strcpy(&path[i+1], fn);
+        current_path_len = strlen(path);
+        path[current_path_len] = '/';
+        strcpy(&path[current_path_len+1], fn);
         msg[0] = 'A';
         msg[1] = 'x';
         msg[2] = 'o';
@@ -283,8 +283,8 @@ static FRESULT scan_files(char *path) {
         msg[13+l] = 0;
         chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+14);
         res = scan_files(path);
-        path[i] = 0;
         if (res != FR_OK) break;
+        path[current_path_len] = 0;
       } else {
         msg[0] = 'A';
         msg[1] = 'x';
@@ -293,8 +293,8 @@ static FRESULT scan_files(char *path) {
         *(int32_t *)(&msg[4]) = fno.fsize;
         *(int32_t *)(&msg[8]) = fno.fdate + (fno.ftime<<16);
         strcpy(&msg[12], &path[1]);
-        msg[12+i-1] = '/';
-        strcpy(&msg[12+i], fn);
+        msg[12+current_path_len-1] = '/';
+        strcpy(&msg[12+current_path_len], fn);
         int l = strlen(&msg[12]);
         chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+13);
       }
