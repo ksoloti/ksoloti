@@ -240,6 +240,9 @@ void PExTransmit(void) {
     }
 }
 
+/* Do not warn about 'strcpy' accessing between 1 and 2147483646 bytes at offsets 76 and 1 may overlap up to 2147483571 bytes at offset [2147483646, 76] [-Wrestrict] */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wrestrict"
 
 static FRESULT scan_files(char *path) {
   /* Recursive scan of all items in a directory */
@@ -336,6 +339,8 @@ static FRESULT scan_files(char *path) {
 
   return res;
 }
+
+#pragma GCC diagnostic pop
 
 
 void ReadDirectoryListing(void) {
