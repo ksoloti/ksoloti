@@ -242,35 +242,47 @@ void PExTransmit(void) {
 
 
 static FRESULT scan_files(char *path) {
+  /* Recursive scan of all items in a directory */
+
   FRESULT res;
   FILINFO fno;
   DIR dir;
-  int current_path_len;
-  char *fn;
+
+  uint32_t current_path_len;
+  char *fname;
   char *msg = &((char*)fbuff)[64];
+
   fno.lfname = &FileName[0];
   fno.lfsize = sizeof(FileName);
+
   res = f_opendir(&dir, path);
   if (res == FR_OK) {
+
     for (;;) {
+
       res = f_readdir(&dir, &fno);
       if (res != FR_OK || fno.fname[0] == 0)
         break;
       if (fno.fname[0] == '.')
         continue;
+
 #if _USE_LFN
-      fn = *fno.lfname ? fno.lfname : fno.fname;
+      fname = *fno.lfname ? fno.lfname : fno.fname;
 #else
-      fn = fno.fname;
+      fname = fno.fname;
 #endif
-      if (fn[0] == '.')
+
+      if (fname[0] == '.')
         continue;
       if (fno.fattrib & AM_HID)
         continue;
-      if (fno.fattrib & AM_DIR) {
+
+      if (fno.fattrib & AM_DIR) { /* Is directory */
+
         current_path_len = strlen(path);
         path[current_path_len] = '/';
-        strcpy(&path[current_path_len+1], fn);
+        strcpy(&path[current_path_len+1], fname);
+
         msg[0] = 'A';
         msg[1] = 'x';
         msg[2] = 'o';
@@ -282,27 +294,46 @@ static FRESULT scan_files(char *path) {
         msg[12+l] = '/';
         msg[13+l] = 0;
         chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+14);
+
         res = scan_files(path);
         if (res != FR_OK) break;
+
         path[current_path_len] = 0;
-      } else {
+
+      }
+      else { /* Is file */
         msg[0] = 'A';
         msg[1] = 'x';
         msg[2] = 'o';
         msg[3] = 'f';
         *(int32_t *)(&msg[4]) = fno.fsize;
         *(int32_t *)(&msg[8]) = fno.fdate + (fno.ftime<<16);
+        
+        int current_subdir_path_len = strlen(&path[1]);
+
         strcpy(&msg[12], &path[1]);
-        msg[12+current_path_len-1] = '/';
-        strcpy(&msg[12+current_path_len], fn);
-        int l = strlen(&msg[12]);
-        chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+13);
+
+        int append_offset = 12 + current_subdir_path_len;
+        if (current_subdir_path_len > 0 && msg[append_offset - 1] == '/') {
+          /* Path already ends with a slash, append filename directly */
+          strcpy(&msg[append_offset], fname);
+        }
+        else {
+          msg[append_offset] = '/';
+          strcpy(&msg[append_offset + 1], fname);
+          append_offset++; // Adjust offset for the added slash
+        }
+
+        int l = strlen(&msg[12]); /* Calculate total length of the constructed path (starting from msg[12]) */
+        chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, 12 + l + 1);
       }
     }
     f_closedir(&dir);
-  } else {
-	  report_fatfs_error(res,0);
   }
+  else {
+	  report_fatfs_error(res, path);
+  }
+
   return res;
 }
 
