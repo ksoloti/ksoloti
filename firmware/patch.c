@@ -173,52 +173,34 @@ static int16_t GetNumberOfThreads(void) {
 void CheckStackOverflow(void) {
 #if CH_CFG_USE_REGISTRY == TRUE
 #if CH_DBG_FILL_THREADS == TRUE
-    Thread* thd = chRegFirstThread();
 
-    /* skip 1st thread, main thread */
-    thd = chRegNextThread (thd);
-    int critical = 0;
-    int nfree = 0;
+    Thread* thd = chRegFirstThread(); /* Start with the first thread (often main/idle) */
 
     while(thd) {
         char* stk = (char*) (thd + 1);
-        nfree = 0;
+        int nfree = 0; /* Local to loop
+        int is_overflow = 0; /* Flag for actual overflow
 
+        /* Loop to find the end of the 0x55 fill pattern */
         while (*stk == CH_DBG_STACK_FILL_VALUE) {
             nfree++;
             stk++;
-            if (nfree >= STACKSPACE_MARGIN) {
-                break;
-            }
         }
 
+        /* Check if we hit the limit without seeing an overflow, or if nfree is small */
         if (nfree < STACKSPACE_MARGIN) {
-            critical = 1;
-            break;
+            const char* name = chRegGetThreadName(thd);
+            if (name == 0) name = "??"; /* Handle unnamed threads
+
+            /* If nfree is very small (e.g., < 10) or 0, it's likely an overflow */
+            if (nfree <= 10) { /* Or 0, depends on how you define 'overflow' vs 'critical' */
+                LogTextMessage("CRITICAL: Thread %s: STACK OVERFLOW (nfree=%d)", name, nfree);
+            } else {
+                LogTextMessage("WARNING: Thread %s: stack critical %d", name, nfree);
+            }
         }
 
         thd = chRegNextThread(thd);
-    }
-
-    if (critical) {
-        const char* name = chRegGetThreadName(thd);
-
-        if (name != 0) {
-            if (nfree) {
-                LogTextMessage("Thread %s: stack critical %d", name, nfree);
-            }
-            else {
-                LogTextMessage("Thread %s: stack overflow", name);
-            }
-        }
-        else {
-            if (nfree) {
-                LogTextMessage("Thread ??: stack critical %d", nfree);
-            }
-            else {
-                LogTextMessage("Thread ??: stack overflow");
-            }
-        }
     }
 #endif
 #endif
