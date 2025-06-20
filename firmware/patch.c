@@ -171,39 +171,51 @@ static int16_t GetNumberOfThreads(void) {
 
 
 void CheckStackOverflow(void) {
-#if CH_CFG_USE_REGISTRY == TRUE
-#if CH_DBG_FILL_THREADS == TRUE
+#if CH_CFG_USE_REGISTRY == TRUE && CH_DBG_FILL_THREADS == TRUE && CH_DBG_ENABLE_STACK_CHECK == TRUE
 
-    Thread* thd = chRegFirstThread(); /* Start with the first thread (often main/idle) */
+    Thread* thd = chRegFirstThread(); // Start with the first thread (often main/idle)
 
     while (thd) {
-        char* stk = (char*) (thd + 1);
-        int nfree = 0; /* Local to loop */
-
-        /* Loop to find the end of the 0x55 fill pattern */
-        while (*stk == CH_DBG_STACK_FILL_VALUE) {
-            nfree++;
-            stk++;
+        // Get the name (if available)
+        const char* name = chRegGetThreadNameX(thd);
+        if (name == NULL) {
+            name = "??";
         }
 
-        /* Check if we hit the limit without seeing an overflow, or if nfree is small */
-        if (nfree < STACKSPACE_MARGIN) {
-            const char* name = chRegGetThreadNameX(thd);
-            if (name == 0) name = "??"; /* Handle unnamed threads */
+        // Get the stack limit (lowest address of the stack)
+        char* stack_limit = (char*)thd->p_stklimit;
 
-            /* If nfree is very small (e.g., < 10) or 0, it's likely an overflow */
-            if (nfree <= 10) { /* Or 0, depends on how you define 'overflow' vs 'critical' */
-                LogTextMessage("Thread %s: STACK OVERFLOW (nfree=%d)", name, nfree);
-            }
-            else {
-                LogTextMessage("Thread %s: stack critical %d", name, nfree);
-            }
+        // Using p_ctx.r13 as the current stack pointer.
+        // This is effectively where the stack was when the thread was last suspended.
+        char* current_sp = (char*)thd->p_ctx.r13; // SP!
+
+        // Safety check: Make sure current_sp is within the expected range
+        if (current_sp == NULL || current_sp < stack_limit) {
+            // This thread might not be fully active or p_ctx isn't usable yet
+            thd = chRegNextThread(thd);
+            continue;
+        }
+        
+        uint32_t nfree = 0;
+        char* check_ptr = stack_limit; // Start checking from the absolute bottom
+
+        // Iterate upwards from stack_limit as long as we find the fill value
+        // and haven't reached the current stack pointer.
+        while (check_ptr < current_sp && *check_ptr == CH_DBG_STACK_FILL_VALUE) {
+            nfree++;
+            check_ptr++;
+        }
+
+        if (nfree < 100) {
+            LogTextMessage("Thread %s 0x%lx: stack critical %lu", name, (uint32_t)thd, nfree);
+        } else {
+            LogTextMessage("Thread %s 0x%lx: stack free %lu", name, (uint32_t)thd, nfree);
         }
 
         thd = chRegNextThread(thd);
     }
-#endif
-#endif
+    LogTextMessage("\n");
+#endif // CH_CFG_USE_REGISTRY && CH_DBG_FILL_THREADS && CH_DBG_ENABLE_STACK_CHECK
 }
 
 
