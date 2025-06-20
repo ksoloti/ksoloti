@@ -255,22 +255,21 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         Handler logHandler = new Handler() {
             @Override
-            public void publish(final LogRecord lr) { // Make lr final for inner class access
-                // This entire block (the "else" part) needs to be executed on the EDT.
-                // If we're not on the EDT, schedule *this entire logic* to run on the EDT.
+            public void publish(final LogRecord lr) {
+                /* This entire block (the "else" part) needs to be executed on the EDT.
+                   If we're not on the EDT, schedule *this entire logic* to run on the EDT. */
                 if (!SwingUtilities.isEventDispatchThread()) {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            // Now, call the publish method again. This time, it *will* be on the EDT.
-                            // This is how you correctly re-dispatch a method call to the EDT.
-                            publish(lr); // This call will now enter the 'else' block
+                            /* Now, call the publish method again. This time, it *will* be on the EDT. */
+                            publish(lr);
                         }
                     });
-                    return; // Important: exit the current call as it's been re-dispatched
+                    return; /* Important: exit the current call as it's been re-dispatched. */
                 }
             
-                // If we reach here, we are guaranteed to be on the Event Dispatch Thread (EDT)
+                /* If we reach here, we are guaranteed to be on the Event Dispatch Thread (EDT). */
                 try {
                     String txt;
                     String excTxt = "";
@@ -281,14 +280,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         PrintStream ps = new PrintStream(baos);
                         exc.printStackTrace(ps);
                         excTxt = exc.toString();
-                        excTxt = excTxt + "\n" + baos.toString("utf-8"); // Ensure encoding for platform safety
+                        excTxt = excTxt + "\n" + baos.toString("utf-8"); /* Ensure encoding for platform safety */
                     }
 
                     if (lr.getMessage() == null) {
                         txt = excTxt;
                     }
                     else {
-                        // Handle MessageFormat carefully, especially if parameters are null
+                        /* Handle MessageFormat carefully, especially if parameters are null */
                         if (lr.getParameters() != null) {
                             txt = java.text.MessageFormat.format(lr.getMessage(), lr.getParameters());
                         }
@@ -301,9 +300,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         }
                     }
             
-                    /* Add a timestamp or other formatting if desired
-                     * Simple example: String formattedMessage = new Date() + ": " + txt + "\n"; */
-                    String formattedMessage = txt + "\n"; // Stick to your current formatting
+                    String formattedMessage = txt + "\n";
             
                     /* Get the document length just before insertion to ensure it's current. */
                     int currentLength = jTextPaneLog.getDocument().getLength();
