@@ -175,6 +175,7 @@ void CheckStackOverflow(void) {
 
     Thread* thd = chRegFirstThread(); // Start with the first thread (often main/idle)
 
+    LogTextMessage("Thread stacks:");
     while (thd) {
         // Get the name (if available)
         const char* name = chRegGetThreadNameX(thd);
@@ -207,9 +208,9 @@ void CheckStackOverflow(void) {
         }
 
         if (nfree < 100) {
-            LogTextMessage("Thread %s 0x%lx: stack critical %lu", name, (uint32_t)thd, nfree);
+            LogTextMessage("%s 0x%lx CRITICAL: %lu free", name, (uint32_t)thd, nfree);
         } else {
-            LogTextMessage("Thread %s 0x%lx: stack free %lu", name, (uint32_t)thd, nfree);
+            LogTextMessage("%s 0x%lx: %lu free", name, (uint32_t)thd, nfree);
         }
 
         thd = chRegNextThread(thd);
