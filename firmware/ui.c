@@ -180,17 +180,20 @@ void KVP_RegisterObject(KeyValuePair_s *kvp) {
 
 
 static WORKING_AREA(waThreadUI, 1172);
-    static msg_t ThreadUI(void *arg) {
+
+__attribute__((noreturn)) static msg_t ThreadUI(void *arg) {
     (void)(arg);
+
 #if CH_CFG_USE_REGISTRY == TRUE
     chRegSetThreadName("ui");
 #endif
+
     while (1) {
         PExTransmit();
         PExReceive();
         chThdSleepMilliseconds(2);
     }
-    return (msg_t)0;
+    // return (msg_t)0;
 }
 
 

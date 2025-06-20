@@ -82,7 +82,7 @@ static const SPIDBConfig spidbcfg_slave = {
 static WORKING_AREA(waThreadSpilink, 256); // __attribute__ ((section (".sram2")));
 
 
-static msg_t ThreadSpilinkSlave(void *arg)
+__attribute__((noreturn)) static msg_t ThreadSpilinkSlave(void *arg)
 {
     (void) arg;
 
