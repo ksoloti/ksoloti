@@ -41,7 +41,7 @@ extern void aduDataExchangeNoResample (int32_t *in, int32_t *out);
 bool usbAudioResample = false;
 #endif
 
-#define STACKSPACE_MARGIN 32
+#define STACKSPACE_MARGIN 128 /* More conservative reporting */
 // #define DEBUG_PATCH_INT_ON_GPIO 1
 
 #if USE_NONTHREADED_FIFO_PUMP
@@ -176,10 +176,9 @@ void CheckStackOverflow(void) {
 
     Thread* thd = chRegFirstThread(); /* Start with the first thread (often main/idle) */
 
-    while(thd) {
+    while (thd) {
         char* stk = (char*) (thd + 1);
-        int nfree = 0; /* Local to loop
-        int is_overflow = 0; /* Flag for actual overflow
+        int nfree = 0; /* Local to loop */
 
         /* Loop to find the end of the 0x55 fill pattern */
         while (*stk == CH_DBG_STACK_FILL_VALUE) {
@@ -190,13 +189,14 @@ void CheckStackOverflow(void) {
         /* Check if we hit the limit without seeing an overflow, or if nfree is small */
         if (nfree < STACKSPACE_MARGIN) {
             const char* name = chRegGetThreadName(thd);
-            if (name == 0) name = "??"; /* Handle unnamed threads
+            if (name == 0) name = "??"; /* Handle unnamed threads */
 
             /* If nfree is very small (e.g., < 10) or 0, it's likely an overflow */
             if (nfree <= 10) { /* Or 0, depends on how you define 'overflow' vs 'critical' */
-                LogTextMessage("CRITICAL: Thread %s: STACK OVERFLOW (nfree=%d)", name, nfree);
-            } else {
-                LogTextMessage("WARNING: Thread %s: stack critical %d", name, nfree);
+                LogTextMessage("Thread %s: STACK OVERFLOW (nfree=%d)", name, nfree);
+            }
+            else {
+                LogTextMessage("Thread %s: stack critical %d", name, nfree);
             }
         }
 
