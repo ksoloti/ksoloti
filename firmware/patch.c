@@ -188,7 +188,7 @@ void CheckStackOverflow(void) {
 
         /* Check if we hit the limit without seeing an overflow, or if nfree is small */
         if (nfree < STACKSPACE_MARGIN) {
-            const char* name = chRegGetThreadName(thd);
+            const char* name = chRegGetThreadNameX(thd);
             if (name == 0) name = "??"; /* Handle unnamed threads */
 
             /* If nfree is very small (e.g., < 10) or 0, it's likely an overflow */
