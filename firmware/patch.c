@@ -207,7 +207,7 @@ void CheckStackOverflow(void) {
             check_ptr++;
         }
 
-        if (nfree < 100) {
+        if (nfree < 70) {
             LogTextMessage("%s 0x%lx CRITICAL: %lu free", name, (uint32_t)thd, nfree);
         } else {
             LogTextMessage("%s 0x%lx: %lu free", name, (uint32_t)thd, nfree);
