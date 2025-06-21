@@ -58,6 +58,7 @@
 // #define ENABLE_SERIAL_DEBUG 1
 
 extern void MY_USBH_Init(void);
+// extern void ReportThreadStacks(void);
 #ifdef FW_I2SCODEC
 extern void i2s_init(void);
 #endif
@@ -215,6 +216,15 @@ int main(void) {
     }
 #else
     while (1) {
+
+        /* For ReportThreadStacks() to work, open firmware/chconf.h, set the following defines to TRUE,
+         * and recompile firmware:
+         * CH_CFG_USE_REGISTRY
+         * CH_DBG_FILL_THREADS
+         * CH_DBG_ENABLE_STACK_CHECK
+         */
+        // ReportThreadStacks();
+
         chThdSleepMilliseconds(1000);
     }
 #endif

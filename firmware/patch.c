@@ -170,7 +170,7 @@ static int16_t GetNumberOfThreads(void) {
 }
 
 
-void CheckStackOverflow(void) {
+void ReportThreadStacks(void) {
 #if CH_CFG_USE_REGISTRY == TRUE && CH_DBG_FILL_THREADS == TRUE && CH_DBG_ENABLE_STACK_CHECK == TRUE
 
     Thread* thd = chRegFirstThread(); // Start with the first thread (often main/idle)
@@ -222,7 +222,15 @@ void CheckStackOverflow(void) {
 
 static void StopPatch1(void) {
     if (patchMeta.fptr_patch_dispose != 0) {
-        CheckStackOverflow();
+
+        /* For ReportThreadStacks() to work, open firmware/chconf.h, set the following defines to TRUE,
+         * and recompile firmware:
+         * CH_CFG_USE_REGISTRY
+         * CH_DBG_FILL_THREADS
+         * CH_DBG_ENABLE_STACK_CHECK
+         */
+        ReportThreadStacks();
+
         (patchMeta.fptr_patch_dispose)();
 
         /* Check if the number of threads after patch disposal is the same as before */
