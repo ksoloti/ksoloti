@@ -24,7 +24,7 @@ import axoloti.Connection;
  *
  * @author Johannes Taelman
  */
-public class QCmdRecallPreset implements QCmdSerialTask {
+public class QCmdRecallPreset extends AbstractQCmdSerialTask {
 
     int presetNo;
 

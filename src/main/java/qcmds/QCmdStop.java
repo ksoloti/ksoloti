@@ -24,7 +24,7 @@ import axoloti.Connection;
  *
  * @author Johannes Taelman
  */
-public class QCmdStop implements QCmdSerialTask {
+public class QCmdStop extends AbstractQCmdSerialTask {
 
     public QCmdStop() {
     }

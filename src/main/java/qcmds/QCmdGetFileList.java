@@ -32,7 +32,7 @@ import axoloti.USBBulkConnection;
  *
  * @author Johannes Taelman
  */
-public class QCmdGetFileList implements QCmdSerialTask {
+public class QCmdGetFileList extends AbstractQCmdSerialTask {
 
     private static final Logger LOGGER = Logger.getLogger(QCmdGetFileList.class.getName());
 

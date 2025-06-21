@@ -27,7 +27,7 @@ import axoloti.Connection;
  *
  * @author Johannes Taelman
  */
-public class QCmdGetFileInfo implements QCmdSerialTask {
+public class QCmdGetFileInfo extends AbstractQCmdSerialTask {
 
     final String filename;
 

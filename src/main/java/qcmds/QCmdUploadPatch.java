@@ -33,7 +33,7 @@ import org.usb4java.LibUsb;
  *
  * @author Johannes Taelman
  */
-public class QCmdUploadPatch implements QCmdSerialTask {
+public class QCmdUploadPatch extends AbstractQCmdSerialTask {
 
     private static final Logger LOGGER = Logger.getLogger(QCmdUploadPatch.class.getName());
 

@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
  *
  * @author Johannes Taelman
  */
-public class QCmdMemRead implements QCmdSerialTask {
+public class QCmdMemRead extends AbstractQCmdSerialTask {
 
     final int addr;
     final int length;

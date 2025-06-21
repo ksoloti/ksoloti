@@ -24,7 +24,7 @@ import axoloti.Connection;
  *
  * @author Johannes Taelman
  */
-public class QCmdSerialTaskNull implements QCmdSerialTask {
+public class QCmdSerialTaskNull extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {

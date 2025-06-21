@@ -26,5 +26,9 @@ import axoloti.Connection;
  */
 public interface QCmdSerialTask extends QCmd {
 
+    void setCommandCompleted(boolean success);
+    boolean waitForCompletion(long timeoutMs) throws InterruptedException;
+    public boolean isSuccessful();
+
     public QCmd Do(Connection connection);
 }

@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  *
  * @author Johannes Taelman
  */
-public class QCmdStart implements QCmdSerialTask {
+public class QCmdStart extends AbstractQCmdSerialTask {
 
     Patch p;
 

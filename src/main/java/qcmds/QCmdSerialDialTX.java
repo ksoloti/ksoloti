@@ -24,7 +24,7 @@ import axoloti.Connection;
  *
  * @author Johannes Taelman
  */
-public class QCmdSerialDialTX implements QCmdSerialTask {
+public class QCmdSerialDialTX extends AbstractQCmdSerialTask {
 
     final byte[] b;
 

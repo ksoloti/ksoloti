@@ -28,7 +28,7 @@ import java.util.Calendar;
  *
  * @author Johannes Taelman
  */
-public class QCmdCreateDirectory implements QCmdSerialTask {
+public class QCmdCreateDirectory extends AbstractQCmdSerialTask {
 
     final String filename;
     final Calendar date;

@@ -24,7 +24,7 @@ import axoloti.Connection;
  *
  * @author jtaelman
  */
-public class QCmdCopyPatchToFlash implements QCmdSerialTask {
+public class QCmdCopyPatchToFlash extends AbstractQCmdSerialTask {
 
     public QCmdCopyPatchToFlash() {
     }

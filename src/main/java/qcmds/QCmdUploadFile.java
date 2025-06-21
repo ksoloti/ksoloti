@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  *
  * @author Johannes Taelman
  */
-public class QCmdUploadFile implements QCmdSerialTask {
+public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
     private static final Logger LOGGER = Logger.getLogger(QCmdUploadFile.class.getName());
 

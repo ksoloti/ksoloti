@@ -20,25 +20,40 @@ package qcmds;
 
 import axoloti.Connection;
 
-/**
- *
- * @author Johannes Taelman
- */
-public class QCmdBringToDFUMode extends AbstractQCmdSerialTask {
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
+
+    private final CountDownLatch latch = new CountDownLatch(1);
+    private volatile boolean commandSuccess = false;
 
     @Override
-    public String GetStartMessage() {
-        return "Enabling DFU...";
+    public void setCommandCompleted(boolean success) {
+        this.commandSuccess = success;
+        latch.countDown(); // Signal completion
     }
 
     @Override
-    public String GetDoneMessage() {
-        return "Done enabling DFU. Serial connection will now break, but firmware can be flashed with DFU.\n";
+    public boolean waitForCompletion(long timeoutMs) throws InterruptedException {
+        latch.await(timeoutMs, TimeUnit.MILLISECONDS); // Wait for the signal
+        return commandSuccess; // Return the final status
+    }
+
+    @Override
+    public boolean isSuccessful() {
+        return commandSuccess;
     }
 
     @Override
     public QCmd Do(Connection connection) {
-        connection.BringToDFU();
+        connection.SetCurrentExecutingCommand(this);
         return this;
     }
+
+    @Override
+    public abstract String GetStartMessage();
+    
+    @Override
+    public abstract String GetDoneMessage();
 }

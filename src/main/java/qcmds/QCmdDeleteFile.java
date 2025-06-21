@@ -27,7 +27,8 @@ import java.util.logging.Logger;
  *
  * @author Johannes Taelman
  */
-public class QCmdDeleteFile implements QCmdSerialTask {
+public class QCmdDeleteFile extends AbstractQCmdSerialTask {
+
 
     final String filename;
 
@@ -53,5 +54,4 @@ public class QCmdDeleteFile implements QCmdSerialTask {
         connection.TransmitDeleteFile(filename);
         return this;
     }
-
 }

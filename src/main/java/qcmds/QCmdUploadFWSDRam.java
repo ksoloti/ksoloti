@@ -35,7 +35,7 @@ import java.util.zip.CRC32;
  *
  * @author Johannes Taelman
  */
-public class QCmdUploadFWSDRam implements QCmdSerialTask {
+public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
 
     private static final Logger LOGGER = Logger.getLogger(QCmdUploadFWSDRam.class.getName());
 

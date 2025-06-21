@@ -24,7 +24,7 @@ import axoloti.Connection;
  *
  * @author Johannes Taelman
  */
-public class QCmdWriteMem implements QCmdSerialTask {
+public class QCmdWriteMem extends AbstractQCmdSerialTask {
 
     byte[] buffer;
     int addr;

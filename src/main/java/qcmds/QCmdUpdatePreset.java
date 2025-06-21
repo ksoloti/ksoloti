@@ -24,7 +24,7 @@ import axoloti.Connection;
  *
  * @author jtaelman
  */
-public class QCmdUpdatePreset implements QCmdSerialTask {
+public class QCmdUpdatePreset extends AbstractQCmdSerialTask {
 
     final byte[] b;
 

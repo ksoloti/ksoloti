@@ -24,7 +24,7 @@ import axoloti.Connection;
  *
  * @author Johannes Taelman
  */
-public class QCmdVirtualButton implements QCmdSerialTask {
+public class QCmdVirtualButton extends AbstractQCmdSerialTask {
 
     int b_or;
     int b_and;

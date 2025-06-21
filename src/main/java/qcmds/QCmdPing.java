@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  *
  * @author Johannes Taelman
  */
-public class QCmdPing implements QCmdSerialTask {
+public class QCmdPing extends AbstractQCmdSerialTask {
 
     @Override
     public String GetStartMessage() {

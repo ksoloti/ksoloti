@@ -24,7 +24,7 @@ import axoloti.Connection;
  *
  * @author Johannes Taelman
  */
-public class QCmdMemRead1Word implements QCmdSerialTask {
+public class QCmdMemRead1Word extends AbstractQCmdSerialTask {
 
     final int addr;
     int result = 0;

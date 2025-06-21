@@ -26,7 +26,7 @@ import axoloti.Connection;
  *
  * @author Johannes Taelman
  */
-public class QCmdChangeWorkingDirectory implements QCmdSerialTask {
+public class QCmdChangeWorkingDirectory extends AbstractQCmdSerialTask {
 
     final String filename;
 
