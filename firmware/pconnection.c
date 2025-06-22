@@ -345,49 +345,63 @@ static FRESULT scan_files(char *path) {
 
 
 void ReadDirectoryListing(void) {
+  // LogTextMessage("%lu: Entered RDL", hal_lld_get_counter_value());
   FATFS *fsp;
   uint32_t clusters;
   FRESULT err;
 
   err = f_getfree("/", &clusters, &fsp);
   if (err != FR_OK) {
-    report_fatfs_error(err,0);
+    // LogTextMessage("ERROR: RDL f_getfree, err:%lu", err);
+    report_fatfs_error(err, 0);
     /* Even on error, we should signal the end of the operation to the host */
-    char end_msg[4] = {'A', 'x', 'o', 'E'};
-    chSequentialStreamWrite((BaseSequentialStream *)&BDU1, (const unsigned char*)end_msg, 4);
+    ((char*)fbuff)[0] = 'A';
+    ((char*)fbuff)[1] = 'x';
+    ((char*)fbuff)[2] = 'o';
+    ((char*)fbuff)[3] = 'E';
+    chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&fbuff[0]), 4);
     return;
   }
 
+  // LogTextMessage("%lu: RDL start assembling Axod", hal_lld_get_counter_value());
   ((char*)fbuff)[0] = 'A';
   ((char*)fbuff)[1] = 'x';
   ((char*)fbuff)[2] = 'o';
   ((char*)fbuff)[3] = 'd';
-
-  ((uint32_t*)fbuff)[1] = clusters;
-  ((uint32_t*)fbuff)[2] = fsp->csize;
-  ((uint32_t*)fbuff)[3] = MMCSD_BLOCK_SIZE;
-
+  
+  fbuff[1] = clusters;
+  fbuff[2] = fsp->csize;
+  fbuff[3] = MMCSD_BLOCK_SIZE;
   chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&fbuff[0]), 16);
+  // LogTextMessage("%lu: RDL finished sending Axod", hal_lld_get_counter_value());
   chThdSleepMilliseconds(10); /* Give some time for the USB buffer to clear */
+  // LogTextMessage("%lu: RDL finished sleeping 10ms", hal_lld_get_counter_value());
   fbuff[0] = '/';
   fbuff[1] = 0;
   scan_files((char *)&fbuff[0]);
 
   /* Send the final "Axof" for the root directory to indicate parent context */
-  char *msg = &((char*)fbuff)[64];
-  msg[0] = 'A';
-  msg[1] = 'x';
-  msg[2] = 'o';
-  msg[3] = 'f';
-  *(int32_t *)(&msg[4]) = 0;
-  *(int32_t *)(&msg[8]) = 0;
-  msg[12] = '/';
-  msg[13] = 0;
-  chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, 14);
+  // LogTextMessage("%lu: RDL start assembling Axof", hal_lld_get_counter_value());
+  ((char*)fbuff)[0] = 'A';
+  ((char*)fbuff)[1] = 'x';
+  ((char*)fbuff)[2] = 'o';
+  ((char*)fbuff)[3] = 'f';
+  fbuff[1] = 0;
+  fbuff[2] = 0;
+  ((char*)fbuff)[12] = '/';
+  ((char*)fbuff)[13] = 0;
+  chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&fbuff[0]), 14);
+  // LogTextMessage("%lu: RDL finished sending Axof", hal_lld_get_counter_value());
 
   /* Send the "End of Operation" packet */
-  char end_msg[4] = {'A', 'x', 'o', 'E'};
-  chSequentialStreamWrite((BaseSequentialStream *)&BDU1, (const unsigned char*)end_msg, 4);
+  // LogTextMessage("%lu: RDL start assembling AxoE", hal_lld_get_counter_value());
+  ((char*)fbuff)[0] = 'A';
+  ((char*)fbuff)[1] = 'x';
+  ((char*)fbuff)[2] = 'o';
+  ((char*)fbuff)[3] = 'E';
+  chSequentialStreamWrite((BaseSequentialStream *)&BDU1, (const unsigned char*)(&fbuff[0]), 4);
+  // LogTextMessage("%lu: RDL finished sending AxoE, leaving", hal_lld_get_counter_value());
+  return;
 }
 
 
