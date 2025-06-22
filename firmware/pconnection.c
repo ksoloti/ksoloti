@@ -1114,7 +1114,7 @@ void PExReceiveByte(unsigned char c) {
       }
     }
   }
-  else if (header == 'A') {
+  else if (header == 'a') {
     switch (state) {
     case 4:
       value = c;

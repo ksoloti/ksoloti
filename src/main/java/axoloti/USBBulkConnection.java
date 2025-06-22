@@ -993,7 +993,7 @@ public class USBBulkConnection extends Connection {
         data[0] = 'A';
         data[1] = 'x';
         data[2] = 'o';
-        data[3] = 'A';
+        data[3] = 'a'; /* changed from 'A' to lower-case to avoid confusion with "AxoA" ack message (MCU->Patcher) */
         int size = buffer.length;
         // LOGGER.log(Level.INFO, "Append size: " + buffer.length);
         data[4] = (byte) size;
