@@ -430,76 +430,133 @@ void ReadDirectoryListing(void) {
 
 
 static void ManipulateFile(void) {
+  // LogTextMessage("%lu: Entered MNPFL", hal_lld_get_counter_value());
   sdcard_attemptMountIfUnmounted();
+  FRESULT err = FR_OK; // Initialize err to success (0)
   if (FileName[0]) {
+    // LogTextMessage("Executing backwards compatibility block.");
     /* backwards compatibility */
-    FRESULT err;
-    err = f_open(&pFile, &FileName[0], FA_WRITE | FA_CREATE_ALWAYS);
-    if (err != FR_OK) {
-      report_fatfs_error(err,&FileName[0]);
+    FRESULT op_err; // Temporary variable for each operation's result
+    op_err = f_open(&pFile, &FileName[0], FA_WRITE | FA_CREATE_ALWAYS);
+    if (op_err != FR_OK) {
+      // LogTextMessage("ERROR: MNPFL f_open (backwards), err:%lu, path:%s", op_err, &FileName[0]);
+      report_fatfs_error(op_err, &FileName[0]);
+      err = op_err; // Propagate this error to the main 'err'
     }
-    err = f_lseek(&pFile, pFileSize);
-    if (err != FR_OK) {
-      report_fatfs_error(err,&FileName[0]);
+    if (err == FR_OK) { // Only proceed if no error yet
+        op_err = f_lseek(&pFile, pFileSize);
+        if (op_err != FR_OK) {
+            // LogTextMessage("ERROR: MNPFL f_lseek1 (backwards), err:%lu, path:%s", op_err, &FileName[0]);
+            report_fatfs_error(op_err, &FileName[0]);
+            err = op_err; // Propagate this error
+        }
     }
-    err = f_lseek(&pFile, 0);
-    if (err != FR_OK) {
-      report_fatfs_error(err,&FileName[0]);
+    if (err == FR_OK) { // Only proceed if no error yet
+        op_err = f_lseek(&pFile, 0);
+        if (op_err != FR_OK) {
+            // LogTextMessage("ERROR: MNPFL f_lseek2 (backwards), err:%lu, path:%s", op_err, &FileName[0]);
+            report_fatfs_error(op_err, &FileName[0]);
+            err = op_err; // Propagate this error
+        }
     }
-  } else {
+  }
+  else {
     /* filename[0] == 0 */
     if (FileName[1]=='d') {
+      // LogTextMessage("Executing 'd' (create directory) command.");
       /* create directory */
-      FRESULT err;
-      err = f_mkdir(&FileName[6]);
-      if ((err != FR_OK) && (err != FR_EXIST)) {
-        report_fatfs_error(err,&FileName[6]);
+      FRESULT op_err;
+      op_err = f_mkdir(&FileName[6]);
+      if ((op_err != FR_OK) && (op_err != FR_EXIST)) { // FR_EXIST is not an error for mkdir
+        // LogTextMessage("ERROR: MNPFL f_mkdir, err:%lu, path:%s", op_err, &FileName[6]);
+        report_fatfs_error(op_err, &FileName[6]);
+        err = op_err; // Propagate this error
       }
-      /* and set timestamp */
-      FILINFO fno;
-      fno.fdate = FileName[2] + (FileName[3]<<8);
-      fno.ftime = FileName[4] + (FileName[5]<<8);
-      err = f_utime(&FileName[6],&fno);
-      if (err != FR_OK) {
-        report_fatfs_error(err,&FileName[6]);
+      // If mkdir was FR_OK or FR_EXIST, the overall operation so far is considered successful.
+      // Now, try to set timestamp.
+      if (err == FR_OK || err == FR_EXIST) { // If no previous error OR directory already existed
+          /* and set timestamp */
+          FILINFO fno;
+          fno.fdate = FileName[2] + (FileName[3]<<8);
+          fno.ftime = FileName[4] + (FileName[5]<<8);
+          op_err = f_utime(&FileName[6], &fno);
+          if (op_err != FR_OK) {
+            // LogTextMessage("ERROR: MNPFL f_utime, err:%lu, path:%s", op_err, &FileName[6]);
+            report_fatfs_error(op_err, &FileName[6]);
+            err = op_err; // Propagate this specific utime error as the overall error
+          }
       }
-    } else if (FileName[1]=='f') {
+      // If f_mkdir itself failed with a true error, we don't attempt f_utime,
+      // and 'err' already holds the mkdir error.
+    }
+    else if (FileName[1]=='f') {
+      // LogTextMessage("Executing 'f' (create file) command.");
       /* create file */
-      FRESULT err;
-      err = f_open(&pFile, &FileName[6], FA_WRITE | FA_CREATE_ALWAYS);
-      if (err != FR_OK) {
-        report_fatfs_error(err,&FileName[6]);
+      FRESULT op_err;
+      op_err = f_open(&pFile, &FileName[6], FA_WRITE | FA_CREATE_ALWAYS);
+      if (op_err != FR_OK) {
+        // LogTextMessage("ERROR: MNPFL f_open, err:%lu, path:%s", op_err, &FileName[6]);
+        report_fatfs_error(op_err, &FileName[6]);
+        err = op_err; // Propagate this error
       }
-      err = f_lseek(&pFile, pFileSize);
-      if (err != FR_OK) {
-        report_fatfs_error(err,&FileName[6]);
+      if (err == FR_OK) { // Only proceed if no error yet
+          op_err = f_lseek(&pFile, pFileSize);
+          if (op_err != FR_OK) {
+            // LogTextMessage("ERROR: MNPFL f_lseek3, err:%lu, path:%s", op_err, &FileName[6]);
+            report_fatfs_error(op_err, &FileName[6]);
+            err = op_err; // Propagate this error
+          }
       }
-      err = f_lseek(&pFile, 0);
-      if (err != FR_OK) {
-        report_fatfs_error(err,&FileName[6]);
+      if (err == FR_OK) { // Only proceed if no error yet
+          op_err = f_lseek(&pFile, 0);
+          if (op_err != FR_OK) {
+            // LogTextMessage("ERROR: MNPFL f_lseek4, err:%lu, path:%s", op_err, &FileName[6]);
+            report_fatfs_error(op_err, &FileName[6]);
+            err = op_err; // Propagate this error
+          }
       }
-    } else if (FileName[1]=='D') {
+    }
+    else if (FileName[1]=='D') {
+      // LogTextMessage("Executing 'D' (delete) command.");
       /* delete */
-      FRESULT err;
+
       err = f_unlink(&FileName[6]);
       if (err != FR_OK) {
-        report_fatfs_error(err,&FileName[6]);
+        // LogTextMessage("ERROR: MNPFL f_unlink, err:%lu, path:%s", err, &FileName[6]);
+        report_fatfs_error(err, &FileName[6]);
       }
-    } else if (FileName[1]=='C') {
+      // else {
+      //   LogTextMessage("SUCCESS: MNPFL f_unlink, path:%s", &FileName[6]);
+      // }
+      /* New Response Packet: ['A', 'x', 'o', 'R', command_byte, status_byte] */
+      char resp_msg[6];
+      resp_msg[0] = 'A';
+      resp_msg[1] = 'x';
+      resp_msg[2] = 'o';
+      resp_msg[3] = 'R';        // Header: 'R' for Result (MCU to Java)
+      resp_msg[4] = 'D';        // Command byte: 'D' for the Delete command
+      resp_msg[5] = (char)err;  // Status byte: 0 (FR_OK) for success, or the FRESULT error code
+      chSequentialStreamWrite((BaseSequentialStream *)&BDU1, (const unsigned char*) resp_msg, 6);
+      // LogTextMessage("%lu: Sent AxoR (Delete Result), command='%c', status=%lu", hal_lld_get_counter_value(), resp_msg[4], err);
+    }
+    else if (FileName[1]=='C') {
+      // LogTextMessage("Executing 'C' (change directory) command.");
       /* change working directory */
-      FRESULT err;
+      // Single operation, direct assignment to 'err' is fine
       err = f_chdir(&FileName[6]);
       if (err != FR_OK) {
-        report_fatfs_error(err,&FileName[6]);
+        // LogTextMessage("ERROR: MNPFL f_chdir, err:%lu, path:%s", err, &FileName[6]);
+        report_fatfs_error(err, &FileName[6]);
       }
-    } else if (FileName[1]=='I') {
+    }
+    else if (FileName[1]=='I') {
+      // LogTextMessage("Executing 'I' (get file info) command.");
       /* get file info */
-      FRESULT err;
       FILINFO fno;
       fno.lfname = &((char*)fbuff)[0];
       fno.lfsize = 256;
-      err =  f_stat(&FileName[6],&fno);
-      if (err == FR_OK) {
+      FRESULT stat_err = f_stat(&FileName[6], &fno); // Use a local variable here as it sends its own msg
+      if (stat_err == FR_OK) {
         char *msg = &((char*)fbuff)[0];
         msg[0] = 'A';
         msg[1] = 'x';
@@ -511,8 +568,14 @@ static void ManipulateFile(void) {
         int l = strlen(&msg[12]);
         chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+13);
       }
+      else {
+        // LogTextMessage("ERROR: MNPFL f_stat, err:%lu, path:%s", stat_err, &FileName[6]);
+        report_fatfs_error(stat_err, &FileName[6]); // Report this specific error
+      }
     }
   }
+  AckPending = (err == FR_OK);
+  // LogTextMessage("%lu: Leaving MNPFL, AckPending=%lu", hal_lld_get_counter_value(), AckPending);
 }
 
 
@@ -1047,7 +1110,7 @@ void PExReceiveByte(unsigned char c) {
         ManipulateFile();
         header = 0;
         state = 0;
-        AckPending = 1;
+        /* AckPending set from within ManipulateFile()! */
       }
     }
   }
