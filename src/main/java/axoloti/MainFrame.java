@@ -306,23 +306,22 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     int currentLength = jTextPaneLog.getDocument().getLength();
             
                     if (lr.getLevel() == Level.SEVERE) {
-                        // doAutoScroll = true; // This might be a class field that needs thread-safe access if it's used elsewhere
                         jTextPaneLog.getDocument().insertString(currentLength, formattedMessage, styleSevere);
                         if (bGrabFocusOnSevereErrors) {
+                            doAutoScroll = true;
                             MainFrame.this.toFront();
                         }
                     }
                     else if (lr.getLevel() == Level.WARNING) {
                         jTextPaneLog.getDocument().insertString(currentLength, formattedMessage, styleWarning);
                     }
-                    else { // INFO, CONFIG, FINE, FINER, FINEST
+                    else {
                         jTextPaneLog.getDocument().insertString(currentLength, formattedMessage, styleInfo);
                     }
-            
-                    // Always ensure the caret position is updated *after* insertion to scroll
-                    // This is crucial for a console-like behavior.
-                    jTextPaneLog.setCaretPosition(jTextPaneLog.getDocument().getLength());
-            
+
+                    if (doAutoScroll) {
+                        jTextPaneLog.setCaretPosition(jTextPaneLog.getDocument().getLength());
+                    }
                 }
                 catch (BadLocationException ex) {
                     // Log this error to standard error or a non-GUI log file,
