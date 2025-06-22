@@ -50,10 +50,9 @@
             "device": "STM32F429ZG",
             "interface": "swd",
             "runToEntryPoint": "main",
-            "preLaunchTask": "Build all",
+            "preLaunchTask": "kompile_shortcut",
             "svdFile": "./debug/STM32F429.svd",
             "swoConfig": {},
-            "serverArgs": ["-i 56FF6F067878545210450567", "--frequency 24000"]
         },
         {
             "name": "Axoloti launch",
