@@ -3,7 +3,23 @@
 #include "hal.h"
 #include <stdio.h>
 #include <string.h>
-#include "axoloti_board.h"
+// #include "axoloti_board.h"
+
+#if defined(BOARD_AXOLOTI_CORE) || defined(BOARD_KSOLOTI_CORE)
+#define LED1_PORT GPIOG
+#define LED1_PIN 6
+#define LED2_PORT GPIOC
+#define LED2_PIN 6
+// SW1 is also BOOT0
+#define SW1_PORT GPIOB
+#define SW1_PIN 5
+#define SW2_PORT GPIOA
+#define SW2_PIN 10
+#define OCFLAG_PORT GPIOG
+#define OCFLAG_PIN 13
+#define SDCSW_PORT GPIOD
+#define SDCSW_PIN 13
+#endif
 
 /* endpoint index */
 #define USB_MS_DATA_EP 1
@@ -290,16 +306,17 @@ int main(void) {
     chThdSleepMilliseconds(10);
 
     while (1) {
-        eventmask_t event = chEvtWaitOne(EVENT_MASK(1) | EVENT_MASK(2));
-        if (event == EVENT_MASK(1)) {
-            /* media connected */
-        }
-        else if (event == EVENT_MASK(2)) {
-            /* media ejected : bye bye! */
+        if (chEvtWaitOne(EVENT_MASK(1))) {
+            /* media is now connected */
+
+            /* wait until the media is ejected */
+            chEvtWaitOne(EVENT_MASK(2));
+            /* media is now ejected : bye bye! */
             usbDisconnectBus(&USBD1);
             chThdSleepMilliseconds(1000);
             NVIC_SystemReset();
         }
+        chThdSleepMilliseconds(1000);
     }
 
     return 0;

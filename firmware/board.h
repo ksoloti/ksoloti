@@ -443,10 +443,10 @@
                                      PIN_MODE_INPUT(GPIOC_PIN5) |           \
                                      PIN_MODE_INPUT(GPIOC_PIN6) |           \
                                      PIN_MODE_INPUT(GPIOC_PIN7) |          \
-                                     PIN_MODE_INPUT(GPIOC_PIN8) |           \
-                                     PIN_MODE_INPUT(GPIOC_PIN9) |           \
+                                     PIN_MODE_ALTERNATE(GPIOC_PIN8) |           \
+                                     PIN_MODE_ALTERNATE(GPIOC_PIN9) |           \
                                      PIN_MODE_ALTERNATE(GPIOC_PIN10) |       \
-                                     PIN_MODE_INPUT(GPIOC_PIN11) |          \
+                                     PIN_MODE_ALTERNATE(GPIOC_PIN11) |          \
                                      PIN_MODE_ALTERNATE(GPIOC_PIN12) |       \
                                      PIN_MODE_INPUT(GPIOC_PIN13) |          \
                                      PIN_MODE_INPUT(GPIOC_PIN14) |          \
@@ -496,9 +496,9 @@
                                      PIN_PUPDR_FLOATING(GPIOC_PIN7) |       \
                                      PIN_PUPDR_PULLUP(GPIOC_PIN8) |         \
                                      PIN_PUPDR_PULLUP(GPIOC_PIN9) |         \
-                                     PIN_PUPDR_FLOATING(GPIOC_PIN10) |       \
+                                     PIN_PUPDR_PULLUP(GPIOC_PIN10) |       \
                                      PIN_PUPDR_PULLUP(GPIOC_PIN11) |        \
-                                     PIN_PUPDR_FLOATING(GPIOC_PIN12) |       \
+                                     PIN_PUPDR_PULLUP(GPIOC_PIN12) |       \
                                      PIN_PUPDR_PULLUP(GPIOC_PIN13) |        \
                                      PIN_PUPDR_PULLUP(GPIOC_PIN14) |        \
                                      PIN_PUPDR_PULLUP(GPIOC_PIN15))
@@ -529,11 +529,11 @@
                                      PIN_AFIO_AF(GPIOC_PIN6, 0) |           \
                                      PIN_AFIO_AF(GPIOC_PIN7, 0))
 
-#define VAL_GPIOC_AFRH              (PIN_AFIO_AF(GPIOC_PIN8, 0) |           \
-                                     PIN_AFIO_AF(GPIOC_PIN9, 0) |           \
-                                     PIN_AFIO_AF(GPIOC_PIN10, 6) |           \
-                                     PIN_AFIO_AF(GPIOC_PIN11, 0) |          \
-                                     PIN_AFIO_AF(GPIOC_PIN12, 6) |           \
+#define VAL_GPIOC_AFRH              (PIN_AFIO_AF(GPIOC_PIN8, 12) |           \
+                                     PIN_AFIO_AF(GPIOC_PIN9, 12) |           \
+                                     PIN_AFIO_AF(GPIOC_PIN10, 12) |           \
+                                     PIN_AFIO_AF(GPIOC_PIN11, 12) |          \
+                                     PIN_AFIO_AF(GPIOC_PIN12, 12) |           \
                                      PIN_AFIO_AF(GPIOC_PIN13, 0) |          \
                                      PIN_AFIO_AF(GPIOC_PIN14, 0) |          \
                                      PIN_AFIO_AF(GPIOC_PIN15, 0))
@@ -541,7 +541,7 @@
 
 #define VAL_GPIOD_MODER             (PIN_MODE_ALTERNATE(GPIOD_PIN0) |       \
                                      PIN_MODE_ALTERNATE(GPIOD_PIN1) |       \
-                                     PIN_MODE_INPUT(GPIOD_PIN2) |           \
+                                     PIN_MODE_ALTERNATE(GPIOD_PIN2) |           \
                                      PIN_MODE_INPUT(GPIOD_PIN3) |           \
                                      PIN_MODE_INPUT(GPIOD_PIN4) |         \
                                      PIN_MODE_INPUT(GPIOD_PIN5) |          \
@@ -626,7 +626,7 @@
 
 #define VAL_GPIOD_AFRL              (PIN_AFIO_AF(GPIOD_PIN0, 12) |          \
                                      PIN_AFIO_AF(GPIOD_PIN1, 12) |          \
-                                     PIN_AFIO_AF(GPIOD_PIN2, 0) |           \
+                                     PIN_AFIO_AF(GPIOD_PIN2, 12) |           \
                                      PIN_AFIO_AF(GPIOD_PIN3, 0) |           \
                                      PIN_AFIO_AF(GPIOD_PIN4, 0) |          \
                                      PIN_AFIO_AF(GPIOD_PIN5, 0) |          \
