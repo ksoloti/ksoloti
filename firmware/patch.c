@@ -440,7 +440,7 @@ static int StartPatch1(void) {
                 uint32_t bytes_read;
 
                 err = f_open(&f, index_fn, FA_READ | FA_OPEN_EXISTING);
-                if (err) {
+                if (err != FR_OK) {
                     report_fatfs_error(err, index_fn);
                 }
 
