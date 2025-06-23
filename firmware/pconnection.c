@@ -1121,6 +1121,7 @@ void PExReceiveByte(unsigned char c) {
       }
       else {
         FileName[state - 8] = 0;
+        StopPatch();
         ManipulateFile();
         header = 0;
         state = 0;
