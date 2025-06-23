@@ -753,7 +753,8 @@ void PExReceiveByte(unsigned char c) {
       else if (c == 'C') { /* create sdcard file */
         state = 4;
       }
-      else if (c == 'A') { /* append data to sdcard file */
+      else if (c == 'a') { /* append data to sdcard file */
+        /* Note: changed from 'A' to lower-case to avoid confusion with "AxoA" ack message (MCU->Patcher) */
         state = 4;
       }
       else if (c == 'r') { /* generic read */
