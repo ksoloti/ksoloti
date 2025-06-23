@@ -798,7 +798,7 @@ void PExReceiveByte(unsigned char c) {
         AckPending = 1; /* Immediately acknowledge the command receipt. */
         state = 0;
         header = 0;
-        StopPatch(); /* Stop the patch if it is running. */
+        // StopPatch(); /* not strictly necessary but patch will glitch */
         /* IMPORTANT: Calling  ReadDirectoryListing() *after* AckPending is set and state is reset.
          * PExTransmit will send the AxoA shortly.
          * ReadDirectoryListing() will then stream data and send a final AxoE "End of Operation" packet. */
