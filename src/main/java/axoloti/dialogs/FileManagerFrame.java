@@ -340,8 +340,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     }
 
     void ButtonUploadDefaultName() {
-        jButtonUpload.setText("Upload...");
-        jButtonCreateDir.setText("New Folder...");
+        jButtonUpload.setText("Upload to Root...");
+        jButtonCreateDir.setText("New Folder in Root...");
     }
 
 
@@ -403,7 +403,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
         jLabelSDInfo.setText("jLabelSDInfo");
 
-        jButtonUpload.setText("Upload...");
+        jButtonUpload.setText("Upload to Root...");
         jButtonUpload.setEnabled(false);
         jButtonUpload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -419,7 +419,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
         });
 
-        jButtonCreateDir.setText("New Folder...");
+        jButtonCreateDir.setText("New Folder in Root...");
         jButtonCreateDir.setEnabled(false);
         jButtonCreateDir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
