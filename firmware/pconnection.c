@@ -178,6 +178,7 @@ void PExTransmit(void) {
     if (!chOQIsEmptyI(&BDU1.oqueue)) {
         chThdSleepMilliseconds(1);
         BDU1.oqueue.q_notify(&BDU1.oqueue);
+        // LogTextMessage("%lu: PExTx: leaving !chOQIsEmptyI", hal_lld_get_counter_value());
     }
     else {
         if(chMtxTryLock(&LogMutex))
@@ -191,6 +192,7 @@ void PExTransmit(void) {
         }
 
         if (AckPending) {
+            // LogTextMessage("%lu: Beginning sending AxoA", hal_lld_get_counter_value(), AckPending);
             uint32_t ack[7];
             ack[0] = 0x416F7841; /* "AxoA" */
             ack[1] = connectionFlags.value; // flags for overload, USB audio etc
@@ -207,11 +209,12 @@ void PExTransmit(void) {
             chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&ack[0], 7 * 4);
 
 
+            // LogTextMessage("%lu: Finished sending AxoA", hal_lld_get_counter_value(), AckPending);
             // clear overload flag
             connectionFlags.dspOverload = false;
 
 // #ifdef DEBUG_SERIAL
-//            chprintf((BaseSequentialStream * )&SD2,"ack!\r\n");
+//            chprintf((BaseSequentialStream * )&SD2, "ack!\r\n");
 // #endif
 
             if (!patchStatus) {
@@ -248,6 +251,7 @@ void PExTransmit(void) {
 static FRESULT scan_files(char *path) {
   /* Recursive scan of all items in a directory */
 
+  // LogTextMessage("%lu: Entered scan_files:%s", hal_lld_get_counter_value(), (char *)&fbuff[0]);
   FRESULT res;
   FILINFO fno;
   DIR dir;
@@ -335,9 +339,11 @@ static FRESULT scan_files(char *path) {
     f_closedir(&dir);
   }
   else {
+    // LogTextMessage("ERROR: scan_files f_opendir, err:%lu, path:%s", res, path);
 	  report_fatfs_error(res, path);
   }
 
+  // LogTextMessage("%lu: leaving scan_files:%s", hal_lld_get_counter_value(), (char *)&fbuff[0]);
   return res;
 }
 
@@ -583,16 +589,18 @@ static void CloseFile(void) {
   FRESULT err;
   err = f_close(&pFile);
   if (err != FR_OK) {
-    report_fatfs_error(err,&FileName[0]);
+    // LogTextMessage("ERROR: CloseFile f_close, err:%lu, path:%s", err, &FileName[0]);
+    report_fatfs_error(err, &FileName[0]);
   }
   if (!FileName[0]) {
     /* and set timestamp */
     FILINFO fno;
     fno.fdate = FileName[2] + (FileName[3]<<8);
     fno.ftime = FileName[4] + (FileName[5]<<8);
-    err = f_utime(&FileName[6],&fno);
+    err = f_utime(&FileName[6], &fno);
     if (err != FR_OK) {
-      report_fatfs_error(err,&FileName[6]);
+      // LogTextMessage("ERROR: CloseFile f_utime, err:%lu, path:%s", err, &FileName[6]);
+      report_fatfs_error(err, &FileName[6]);
     }
   }
 }
@@ -741,7 +749,7 @@ void PExReceiveByte(unsigned char c) {
       else if (c == 'w') { /* write file to SD */
         state = 4;
       }
-      else if (c == 'T') { /* change preset */
+      else if (c == 'T') { /* apply preset */
         state = 4;
       }
       else if (c == 'M') { /* midi command */
@@ -751,6 +759,7 @@ void PExReceiveByte(unsigned char c) {
         state = 4;
       }
       else if (c == 'C') { /* create sdcard file */
+        // LogTextMessage("%lu: Complete AxoC received", hal_lld_get_counter_value());
         state = 4;
       }
       else if (c == 'a') { /* append data to sdcard file */
@@ -785,6 +794,7 @@ void PExReceiveByte(unsigned char c) {
         CopyPatchToFlash();
       }
       else if (c == 'd') { /* read directory listing */
+        // LogTextMessage("%lu: Complete Axod received", hal_lld_get_counter_value());
         AckPending = 1; /* Immediately acknowledge the command receipt. */
         state = 0;
         header = 0;
@@ -814,17 +824,20 @@ void PExReceiveByte(unsigned char c) {
         AckPending = 1;
       }
       else if (c == 'p') { /* ping */
+        // LogTextMessage("%lu: Complete Axop (ping) received", hal_lld_get_counter_value());
         state = 0;
         header = 0;
 // #ifdef DEBUG_SERIAL
-//        chprintf((BaseSequentialStream * )&SD2,"ping\r\n");
+//        chprintf((BaseSequentialStream * )&SD2, "ping\r\n");
 // #endif
         AckPending = 1;
       }
       else if (c == 'c') { /* close sdcard file */
+        // LogTextMessage("%lu: Complete Axoc (f_close) received", hal_lld_get_counter_value());
         state = 0;
         header = 0;
         CloseFile();
+        // LogTextMessage("%lu: Axoc CloseFile() completed", hal_lld_get_counter_value());
         AckPending = 1;
       }
       else
@@ -1148,7 +1161,8 @@ void PExReceiveByte(unsigned char c) {
           err = f_write(&pFile, (char *)PATCHMAINLOC, length,
                         (void *)&bytes_written);
           if (err != FR_OK) {
-            report_fatfs_error(err,0);
+            // LogTextMessage("ERROR: 'header == 'a'->case default' f_write, err:%lu, path:%s", err, pFile);
+            report_fatfs_error(err, 0);
           }
           AckPending = 1;
         }
