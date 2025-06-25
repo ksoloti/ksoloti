@@ -23,7 +23,7 @@ import javax.swing.JFileChooser;
 
 /**
  *
- * @author ksoloti
+ * @author Ksoloti
  */
 public class AxoJFileChooser extends JFileChooser {
 
