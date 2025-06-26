@@ -192,7 +192,6 @@ void PExTransmit(void) {
         }
 
         if (AckPending) {
-            // LogTextMessage("%lu: Beginning sending AxoA", hal_lld_get_counter_value(), AckPending);
             uint32_t ack[7];
             ack[0] = 0x416F7841; /* "AxoA" */
             ack[1] = connectionFlags.value; // flags for overload, USB audio etc
@@ -209,7 +208,7 @@ void PExTransmit(void) {
             chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )&ack[0], 7 * 4);
 
 
-            // LogTextMessage("%lu: Finished sending AxoA", hal_lld_get_counter_value(), AckPending);
+            // LogTextMessage("%lu: Finished sending AxoA, AckPending:%lu", hal_lld_get_counter_value(), AckPending);
             // clear overload flag
             connectionFlags.dspOverload = false;
 
@@ -267,10 +266,13 @@ static FRESULT scan_files(char *path) {
   if (res == FR_OK) {
 
     for (;;) {
+      // LogTextMessage("%lu: scan_files: Entered 'for (;;)', path: %s", hal_lld_get_counter_value(), path);
 
       res = f_readdir(&dir, &fno);
-      if (res != FR_OK || fno.fname[0] == 0)
+      if (res != FR_OK || fno.fname[0] == 0) {
+        // LogTextMessage("%lu: scan_files: BREAKING LOOP. res: %lu, fno.fname[0]: %02x, current_dir: %s", hal_lld_get_counter_value(), res, fno.fname[0], path);
         break;
+      }
       if (fno.fname[0] == '.')
         continue;
 
@@ -280,13 +282,14 @@ static FRESULT scan_files(char *path) {
       fname = fno.fname;
 #endif
 
-      if (fname[0] == '.')
+      if (fname[0] == '.') /* ignore hidden items */
         continue;
-      if (fno.fattrib & AM_HID)
+      if (fno.fattrib & AM_HID) /* ignore hidden items */
         continue;
 
       if (fno.fattrib & AM_DIR) { /* Is directory */
 
+        // LogTextMessage("%lu: scan_files: AM_DIR, path: %s, current_path_len:%lu", hal_lld_get_counter_value(), path, current_path_len);
         current_path_len = strlen(path);
         path[current_path_len] = '/';
         strcpy(&path[current_path_len+1], fname);
@@ -301,10 +304,18 @@ static FRESULT scan_files(char *path) {
         int l = strlen(&msg[12]);
         msg[12+l] = '/';
         msg[13+l] = 0;
+        // LogTextMessage("%lu: scan_files: sending Axof msg", hal_lld_get_counter_value());
         chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, l+14);
 
+        // LogTextMessage("%lu: scan_files: entering scan_files recursion", hal_lld_get_counter_value());
         res = scan_files(path);
-        if (res != FR_OK) break;
+        if (res != FR_OK) {
+          // LogTextMessage("%lu: scan_files recursion break, res:%lu", hal_lld_get_counter_value(), res);
+          break;
+        }
+        // else {
+        //   LogTextMessage("%lu: scan_files recursion done, res:%lu", hal_lld_get_counter_value(), res);
+        // }
 
         path[current_path_len] = 0;
 
@@ -318,9 +329,9 @@ static FRESULT scan_files(char *path) {
         *(int32_t *)(&msg[8]) = fno.fdate + (fno.ftime<<16);
         
         int current_subdir_path_len = strlen(&path[1]);
-
+        
         strcpy(&msg[12], &path[1]);
-
+        
         int append_offset = 12 + current_subdir_path_len;
         if (current_subdir_path_len > 0 && msg[append_offset - 1] == '/') {
           /* Path already ends with a slash, append filename directly */
@@ -329,8 +340,9 @@ static FRESULT scan_files(char *path) {
         else {
           msg[append_offset] = '/';
           strcpy(&msg[append_offset + 1], fname);
-          append_offset++; // Adjust offset for the added slash
+          append_offset++; /* Adjust offset for the added slash */
         }
+        // LogTextMessage("%lu: scan_files: !AM_DIR, path: %s, current_subdir_path_len:%lu, append_offset:%lu", hal_lld_get_counter_value(), path, current_subdir_path_len, append_offset);
 
         int l = strlen(&msg[12]); /* Calculate total length of the constructed path (starting from msg[12]) */
         chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )msg, 12 + l + 1);
@@ -343,7 +355,7 @@ static FRESULT scan_files(char *path) {
 	  report_fatfs_error(res, path);
   }
 
-  // LogTextMessage("%lu: leaving scan_files:%s", hal_lld_get_counter_value(), (char *)&fbuff[0]);
+  // LogTextMessage("%lu: scan_files: Exiting path: %s, final res: %lu", hal_lld_get_counter_value(), path, res);
   return res;
 }
 
@@ -358,7 +370,7 @@ void ReadDirectoryListing(void) {
 
   err = f_getfree("/", &clusters, &fsp);
   if (err != FR_OK) {
-    // LogTextMessage("ERROR: RDL f_getfree, err:%lu", err);
+    // LogTextMessage("%lu: ERROR: RDL f_getfree, err:%lu", hal_lld_get_counter_value(), err);
     report_fatfs_error(err, 0);
     /* Even on error, we should signal the end of the operation to the host */
     ((char*)fbuff)[0] = 'A';
@@ -369,7 +381,6 @@ void ReadDirectoryListing(void) {
     return;
   }
 
-  // LogTextMessage("%lu: RDL start assembling Axod", hal_lld_get_counter_value());
   ((char*)fbuff)[0] = 'A';
   ((char*)fbuff)[1] = 'x';
   ((char*)fbuff)[2] = 'o';
@@ -381,13 +392,12 @@ void ReadDirectoryListing(void) {
   chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&fbuff[0]), 16);
   // LogTextMessage("%lu: RDL finished sending Axod", hal_lld_get_counter_value());
   chThdSleepMilliseconds(10); /* Give some time for the USB buffer to clear */
-  // LogTextMessage("%lu: RDL finished sleeping 10ms", hal_lld_get_counter_value());
+
   fbuff[0] = '/';
   fbuff[1] = 0;
   scan_files((char *)&fbuff[0]);
 
   /* Send the final "Axof" for the root directory to indicate parent context */
-  // LogTextMessage("%lu: RDL start assembling Axof", hal_lld_get_counter_value());
   ((char*)fbuff)[0] = 'A';
   ((char*)fbuff)[1] = 'x';
   ((char*)fbuff)[2] = 'o';
@@ -400,7 +410,6 @@ void ReadDirectoryListing(void) {
   // LogTextMessage("%lu: RDL finished sending Axof", hal_lld_get_counter_value());
 
   /* Send the "End of Operation" packet */
-  // LogTextMessage("%lu: RDL start assembling AxoE", hal_lld_get_counter_value());
   ((char*)fbuff)[0] = 'A';
   ((char*)fbuff)[1] = 'x';
   ((char*)fbuff)[2] = 'o';
@@ -759,7 +768,6 @@ void PExReceiveByte(unsigned char c) {
         state = 4;
       }
       else if (c == 'C') { /* create sdcard file */
-        // LogTextMessage("%lu: Complete AxoC received", hal_lld_get_counter_value());
         state = 4;
       }
       else if (c == 'a') { /* append data to sdcard file */
@@ -776,6 +784,7 @@ void PExReceiveByte(unsigned char c) {
         state = 4;
       }
       else if (c == 'S') { /* stop patch */
+        // LogTextMessage("%lu: AxoS received", hal_lld_get_counter_value());
         state = 0;
         header = 0;
         StopPatch();
@@ -794,7 +803,7 @@ void PExReceiveByte(unsigned char c) {
         CopyPatchToFlash();
       }
       else if (c == 'd') { /* read directory listing */
-        // LogTextMessage("%lu: Complete Axod received", hal_lld_get_counter_value());
+        // LogTextMessage("%lu: Axod received", hal_lld_get_counter_value());
         AckPending = 1; /* Immediately acknowledge the command receipt. */
         state = 0;
         header = 0;
@@ -824,7 +833,7 @@ void PExReceiveByte(unsigned char c) {
         AckPending = 1;
       }
       else if (c == 'p') { /* ping */
-        // LogTextMessage("%lu: Complete Axop (ping) received", hal_lld_get_counter_value());
+        // LogTextMessage("%lu: Axop (ping) received", hal_lld_get_counter_value());
         state = 0;
         header = 0;
 // #ifdef DEBUG_SERIAL
@@ -833,11 +842,10 @@ void PExReceiveByte(unsigned char c) {
         AckPending = 1;
       }
       else if (c == 'c') { /* close sdcard file */
-        // LogTextMessage("%lu: Complete Axoc (f_close) received", hal_lld_get_counter_value());
+        // LogTextMessage("%lu: Axoc (f_close) received", hal_lld_get_counter_value());
         state = 0;
         header = 0;
         CloseFile();
-        // LogTextMessage("%lu: Axoc CloseFile() completed", hal_lld_get_counter_value());
         AckPending = 1;
       }
       else
@@ -898,6 +906,7 @@ void PExReceiveByte(unsigned char c) {
     }
   }
   else if (header == 'U') {
+    // LogTextMessage("%lu: AxoU received", hal_lld_get_counter_value());
     static uint16_t uUIMidiCost = 0;
     static uint8_t  uDspLimit200 = 0;
     
@@ -928,6 +937,7 @@ void PExReceiveByte(unsigned char c) {
     }
   }
   else if (header == 'W') {
+    // LogTextMessage("%lu: AxoW received", hal_lld_get_counter_value());
     switch (state) {
     case 4:
       offset = c;
@@ -980,6 +990,7 @@ void PExReceiveByte(unsigned char c) {
     }
   }
   else if (header == 'w') {
+    // LogTextMessage("%lu: Axow received", hal_lld_get_counter_value());
     switch (state) {
     case 4:
       offset = c;
@@ -1092,6 +1103,7 @@ void PExReceiveByte(unsigned char c) {
     }
   }
   else if (header == 'C') {
+    // LogTextMessage("%lu: AxoC received", hal_lld_get_counter_value());
     switch (state) {
     case 4:
       pFileSize = c;
@@ -1130,6 +1142,7 @@ void PExReceiveByte(unsigned char c) {
     }
   }
   else if (header == 'a') {
+    // LogTextMessage("%lu: Axoa received", hal_lld_get_counter_value());
     switch (state) {
     case 4:
       value = c;
@@ -1230,6 +1243,7 @@ void PExReceiveByte(unsigned char c) {
     }
   }
   else if (header == 'R') {
+    // LogTextMessage("%lu: AxoR received", hal_lld_get_counter_value());
     switch (state) {
     case 4:
       length = c;
@@ -1269,6 +1283,7 @@ void PExReceiveByte(unsigned char c) {
     }
   }
   else if (header == 'r') { /* generic read */
+    // LogTextMessage("%lu: Axor received", hal_lld_get_counter_value());
     switch (state) {
     case 4:
       offset = c;
@@ -1318,6 +1333,7 @@ void PExReceiveByte(unsigned char c) {
     }
   }
   else if (header == 'y') { /* generic read, 32bit */
+    // LogTextMessage("%lu: Axoy received", hal_lld_get_counter_value());
     switch (state) {
     case 4:
       offset = c;
