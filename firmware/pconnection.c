@@ -502,6 +502,7 @@ static void ManipulateFile(void) {
       // LogTextMessage("Executing 'd' (create directory) command.");
       /* create directory */
       FRESULT op_err;
+
       op_err = f_mkdir(&FileName[6]);
       if ((op_err != FR_OK) && (op_err != FR_EXIST)) { // FR_EXIST is not an error for mkdir
         // LogTextMessage("ERROR: MNPFL f_mkdir, err:%lu, path:%s", op_err, &FileName[6]);
@@ -529,12 +530,14 @@ static void ManipulateFile(void) {
       // LogTextMessage("Executing 'f' (create file) command.");
       /* create file */
       FRESULT op_err;
+
       op_err = f_open(&pFile, &FileName[6], FA_WRITE | FA_CREATE_ALWAYS);
       if (op_err != FR_OK) {
         // LogTextMessage("ERROR: MNPFL f_open, err:%lu, path:%s", op_err, &FileName[6]);
         report_fatfs_error(op_err, &FileName[6]);
         err = op_err; // Propagate this error
       }
+
       if (err == FR_OK) { // Only proceed if no error yet
           op_err = f_lseek(&pFile, pFileSize);
           if (op_err != FR_OK) {
@@ -543,6 +546,7 @@ static void ManipulateFile(void) {
             err = op_err; // Propagate this error
           }
       }
+
       if (err == FR_OK) { // Only proceed if no error yet
           op_err = f_lseek(&pFile, 0);
           if (op_err != FR_OK) {
@@ -555,6 +559,8 @@ static void ManipulateFile(void) {
     else if (FileName[1]=='D') {
       // LogTextMessage("Executing 'D' (delete) command.");
       /* delete */
+
+      f_chdir("/"); /* Change to root dir (avoids FR_DENIED if item to be deleted is a (currently open) directory)
 
       err = f_unlink(&FileName[6]);
       if (err != FR_OK) {
