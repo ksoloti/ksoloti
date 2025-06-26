@@ -40,8 +40,8 @@ void __early_init(void)
     /* Reset of all peripherals.*/
     rccResetAHB1(~0);
     rccResetAHB2(~0);
-    rccResetAPB1(~0);
-    rccResetAPB2(~0x10000000); // RCC_APB1RSTR_PWRRST
+    rccResetAPB1(~0x10000000); // RCC_APB1RSTR_PWRRST
+    rccResetAPB2(~0);
     OTG_HS->GINTMSK = 0;       // disable OTG_HS interrupts!
     extern uint32_t _vectors[0x200];  // copy vector table. Trick compiler into believing us it is 0x200 ints long.
     memcpy((char *)0x20000000, (const char *)&_vectors, 0x200);
