@@ -560,7 +560,7 @@ static void ManipulateFile(void) {
       // LogTextMessage("Executing 'D' (delete) command.");
       /* delete */
 
-      f_chdir("/"); /* Change to root dir (avoids FR_DENIED if item to be deleted is a (currently open) directory)
+      f_chdir("/"); /* Change to root dir (avoids FR_DENIED if item to be deleted is a (currently open) directory) */
 
       err = f_unlink(&FileName[6]);
       if (err != FR_OK) {
