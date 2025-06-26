@@ -45,6 +45,7 @@ public class AddToLibraryDlg extends javax.swing.JDialog {
     public AddToLibraryDlg(AxoObjectEditor parent, boolean modal, AxoObject obj) {
         super(parent, modal);
         initComponents();
+        setLocationRelativeTo(parent);
         // for later use
         jAxoFile.setVisible(false);
         jAxoFileLabel.setVisible(false);
