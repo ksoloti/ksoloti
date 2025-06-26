@@ -20,6 +20,9 @@ package qcmds;
 
 import axoloti.Connection;
 import axoloti.SDCardInfo;
+import axoloti.USBBulkConnection;
+
+import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,6 +32,9 @@ import java.util.logging.Logger;
  */
 public class QCmdDeleteFile extends AbstractQCmdSerialTask {
 
+    private static final Logger LOGGER = Logger.getLogger(QCmdDeleteFile.class.getName());
+
+    boolean success = true;
 
     final String filename;
 
@@ -43,15 +49,47 @@ public class QCmdDeleteFile extends AbstractQCmdSerialTask {
 
     @Override
     public String GetDoneMessage() {
-        SDCardInfo.getInstance().Delete(filename);
-        return "Done deleting file.\n";
+        if (this.success) {
+            SDCardInfo.getInstance().Delete(filename);
+            return "Done deleting file.\n";
+        }
+        else {
+            return "Failed to delete file (see MCU status in console/logs)\n";
+        }
     }
-
+    
     @Override
     public QCmd Do(Connection connection) {
         connection.ClearSync();
-        Logger.getLogger(QCmdDeleteFile.class.getName()).log(Level.INFO, "Deleting: {0}", filename);
-        connection.TransmitDeleteFile(filename);
+        connection.ClearReadSync();
+
+        USBBulkConnection usbConnection = (USBBulkConnection) connection;
+        usbConnection.TransmitDeleteFile(filename, this);
+
+        try {
+            /* Check if the command finishes (latch counted down) or times out */
+            boolean commandCompleted = this.waitForCompletion(5000);
+
+            if (commandCompleted) {
+                if (isSuccessful()) {
+                    System.out.println(Instant.now() + " DeleteFile operation confirmed successful by MCU.");
+                    this.success = true;
+                }
+                else {
+                    System.out.println(Instant.now() + " DeleteFile operation confirmed failed by MCU.");
+                    this.success = false;
+                }
+            }
+            else {
+                System.out.println(Instant.now() + " DeleteFile operation timed out waiting for MCU response (no AxoR received).");
+                this.success = false;
+            }
+        }
+        catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "DeleteFile Do() interrupted while waiting for completion", ex);
+            Thread.currentThread().interrupt();
+            this.success = false;
+        }
         return this;
     }
 }

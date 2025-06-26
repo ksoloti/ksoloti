@@ -18,6 +18,7 @@
  */
 package qcmds;
 
+import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,7 +37,7 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
 
     private static final Logger LOGGER = Logger.getLogger(QCmdGetFileList.class.getName());
 
-    boolean done = true;
+    boolean success = true;
 
     @Override
     public String GetStartMessage() {
@@ -45,63 +46,47 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
 
     @Override
     public String GetDoneMessage() {
-        if (done) {
+        if (this.success) {
             return "Done receiving SD card file list.\n";
-        } else {
+        }
+        else {
             return "Incomplete SD card file list.\n";
         }
     }
 
     @Override
     public QCmd Do(Connection connection) {
-
-        LOGGER.log(Level.INFO, "QCmdGetFileList.Do(): Starting command execution.");
-
         connection.ClearSync();
         connection.ClearReadSync();
 
         /* Cast to the concrete type to access the specific methods */
-        USBBulkConnection usbBulkConnection = (USBBulkConnection) connection;
+        USBBulkConnection usbConnection = (USBBulkConnection) connection;
+        usbConnection.TransmitGetFileList(this);
 
-        // 1. Reset the synchronization state
-        usbBulkConnection.clearFileListSync(); // Call your existing method
-        LOGGER.log(Level.INFO, "QCmdGetFileList.Do(): fileListSync state cleared (fileListDone reset to false).");
+        try {
+            /* Check if the command finishes (latch counted down) or times out */
+            boolean commandCompleted = this.waitForCompletion(5000);
 
-        // 2. Clear the SDCardInfo list before populating with new data
-        SDCardInfo.getInstance().clear();
-        LOGGER.log(Level.INFO, "QCmdGetFileList.Do(): SDCardInfo cleared.");
-
-        // 3. Send the command to the firmware
-        usbBulkConnection.TransmitGetFileList();
-        LOGGER.log(Level.INFO, "QCmdGetFileList.Do(): TransmitGetFileList command sent (Axod).");
-
-        LOGGER.log(Level.INFO, "QCmdGetFileList.Do(): Waiting for AxoE signal for 10000ms...");
-
-        // 4. Wait for the firmware to finish sending the list
-        boolean success = usbBulkConnection.waitFileListSync(10000);
-        this.done = success; // Update the 'done' flag
-
-        if (success) {
-            LOGGER.log(Level.INFO, "QCmdGetFileList: AxoE signal received. File list transfer complete.");
-        } else {
-            LOGGER.log(Level.WARNING, "QCmdGetFileList: Timeout waiting for AxoE signal or transfer failed.");
-            // Add robust error handling here: maybe retry, show an error message in UI, etc.
-        }
-
-        /* Ensure this call is always scheduled on the Event Dispatch Thread (EDT).
-         * This 'Do()' method runs on a background thread (Transmitter). */
-        SwingUtilities.invokeLater(() -> {
-            /* Check if MainFrame and filemanager are not null before trying to use them */
-            if ((MainFrame.mainframe != null) && (MainFrame.mainframe.getFilemanager() != null)) {
-                MainFrame.mainframe.getFilemanager().refresh();
-                if (done) {
-                    LOGGER.log(Level.INFO, "UI refreshed: File list loaded successfully.");
-                } else {
-                    LOGGER.log(Level.WARNING, "UI refreshed: File list load incomplete (timeout).");
+            if (commandCompleted) {
+                if (isSuccessful()) {
+                    System.out.println(Instant.now() + " TransmitGetFileList.Do() operation confirmed successful by MCU.");
+                    this.success = true;
+                }
+                else {
+                    System.out.println(Instant.now() + " TransmitGetFileList.Do() operation confirmed failed by MCU.");
+                    this.success = false;
                 }
             }
-        });
-
+            else {
+                System.out.println(Instant.now() + " TransmitGetFileList.Do() operation timed out waiting for MCU response (no AxoR received).");
+                this.success = false;
+            }
+        }
+        catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "TransmitGetFileList.Do() interrupted while waiting for completion", ex);
+            Thread.currentThread().interrupt();
+            this.success = false;
+        }
         return this;
     }
 }

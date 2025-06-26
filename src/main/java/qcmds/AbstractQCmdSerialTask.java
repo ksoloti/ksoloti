@@ -28,17 +28,19 @@ public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
     private final CountDownLatch latch = new CountDownLatch(1);
     private volatile boolean commandSuccess = false;
 
-    @Override
+@Override
     public void setCommandCompleted(boolean success) {
         this.commandSuccess = success;
-        latch.countDown(); // Signal completion
+        latch.countDown(); // Signal that the command completed (successfully or not)
     }
 
     @Override
     public boolean waitForCompletion(long timeoutMs) throws InterruptedException {
-        latch.await(timeoutMs, TimeUnit.MILLISECONDS); // Wait for the signal
-        return commandSuccess; // Return the final status
+        // This method returns 'true' if the latch counted down (command finished),
+        // and 'false' if the timeout occurred before the latch counted down.
+        return latch.await(timeoutMs, TimeUnit.MILLISECONDS);
     }
+
 
     @Override
     public boolean isSuccessful() {
