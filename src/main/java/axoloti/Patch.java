@@ -3025,9 +3025,6 @@ public class Patch {
                 /* Path to patch is in a stock library */
                 build_filename += fnp.split(Version.AXOLOTI_SHORT_VERSION)[1].replace(' ', '_');
             }
-            else if (fnp.equals("untitled")) {
-                build_filename += File.separator + "untitled";
-            }
             else {
                 /* Path to patch is a user location */
                 OS os = OSDetect.getOS();
@@ -3048,7 +3045,11 @@ public class Patch {
         else {
             build_filename += File.separator + "xpatch";
         }
-        return build_filename.replace('\\', '/');
+        build_filename = build_filename.replace('\\', '/');
+        if (!build_filename.startsWith("/")) { /* Subpatches and untitled patch */
+            build_filename = "/" + build_filename;
+        }
+        return build_filename;
     }
 
     public File getBinFile() {
