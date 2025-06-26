@@ -376,8 +376,10 @@ void ReadDirectoryListing(void) {
     ((char*)fbuff)[0] = 'A';
     ((char*)fbuff)[1] = 'x';
     ((char*)fbuff)[2] = 'o';
-    ((char*)fbuff)[3] = 'E';
-    chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&fbuff[0]), 4);
+    ((char*)fbuff)[3] = 'R';
+    ((char*)fbuff)[4] = 'd';
+    ((char*)fbuff)[5] = (char)err;
+    chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&fbuff[0]), 6);
     return;
   }
 
@@ -395,7 +397,24 @@ void ReadDirectoryListing(void) {
 
   fbuff[0] = '/';
   fbuff[1] = 0;
-  scan_files((char *)&fbuff[0]);
+  // LogTextMessage("%lu: RDL entering scan_files", hal_lld_get_counter_value());
+  err = scan_files((char *)&fbuff[0]);
+  if (err != FR_OK) {
+    // LogTextMessage("%lu: ERROR: RDL scan_files, err:%lu", hal_lld_get_counter_value(), err);
+    report_fatfs_error(err, 0);
+    /* Even on error, we should signal the end of the operation to the host */
+    ((char*)fbuff)[0] = 'A';
+    ((char*)fbuff)[1] = 'x';
+    ((char*)fbuff)[2] = 'o';
+    ((char*)fbuff)[3] = 'R';
+    ((char*)fbuff)[4] = 'd';
+    ((char*)fbuff)[5] = (char)err;
+    chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&fbuff[0]), 6);
+    return;
+  }
+  // else {
+  //   LogTextMessage("%lu: RDL scan_files done, err:%lu", hal_lld_get_counter_value(), err);
+  // }
 
   /* Send the final "Axof" for the root directory to indicate parent context */
   ((char*)fbuff)[0] = 'A';
@@ -413,8 +432,10 @@ void ReadDirectoryListing(void) {
   ((char*)fbuff)[0] = 'A';
   ((char*)fbuff)[1] = 'x';
   ((char*)fbuff)[2] = 'o';
-  ((char*)fbuff)[3] = 'E';
-  chSequentialStreamWrite((BaseSequentialStream *)&BDU1, (const unsigned char*)(&fbuff[0]), 4);
+  ((char*)fbuff)[3] = 'R';
+  ((char*)fbuff)[4] = 'd';
+  ((char*)fbuff)[5] = (char)err;
+  chSequentialStreamWrite((BaseSequentialStream * )&BDU1, (const unsigned char* )(&fbuff[0]), 6);
   // LogTextMessage("%lu: RDL finished sending AxoE, leaving", hal_lld_get_counter_value());
   return;
 }

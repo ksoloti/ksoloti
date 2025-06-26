@@ -1251,8 +1251,7 @@ public class USBBulkConnection extends Connection {
         memread,                /* one-time programmable bytes */
         memread1word,           /* one-time programmable bytes */
         fwversion,
-        endfilelist,            /* end of file list (aka End of Operation) */
-        idle
+        commandResultPckt       /* New Response Packet: ['A', 'x', 'o', 'R', command_byte, status_byte] */
     };
 
     /*
@@ -1413,6 +1412,14 @@ public class USBBulkConnection extends Connection {
                                 // System.out.println("display packet start");
                                 dataIndex = 0;
                                 dataLength = 8;
+                                // System.out.println(Instant.now() + " Completed headerstate after 'D'");
+                                break;
+                            case 'R': /* New case for 'R' header (AxoR packet from MCU) */
+                                // System.out.println(Instant.now() + " cmdresult packet start");
+                                state = ReceiverState.commandResultPckt;
+                                dataIndex = 0;
+                                dataLength = 2; /* Expecting command_byte (1 byte) + status_byte (1 byte) */
+                                // System.out.println(Instant.now() + " Completed headerstate after 'R'");
                                 break;
                             case 'T':
                                 state = ReceiverState.textPckt;
@@ -1450,12 +1457,6 @@ public class USBBulkConnection extends Connection {
                                 fileinfoRcvBuffer.clear();
                                 dataIndex = 0;
                                 // dataLength = 8;
-                                break;
-                            case 'E':
-                                LOGGER.log(Level.INFO, "processByte: Received AxoE (End of Directory Listing)");
-                                state = ReceiverState.endfilelist; // Set the state
-                                dataIndex = 0;
-                                dataLength = 0; /* No data expected for AxoE (or minimal status) */
                                 break;
                             case 'r':
                                 state = ReceiverState.memread;
@@ -1535,6 +1536,57 @@ public class USBBulkConnection extends Connection {
                     GoIdleState();
                 }
                 break;
+
+            case commandResultPckt: // This state is now reached after receiving an AxoR packet
+                if (dataIndex < dataLength) {
+                    storeDataByte(c); // Store the incoming bytes (command_byte then status_byte)
+                }
+                if (dataIndex == dataLength) { // Once both bytes are received
+                    int commandByte = packetData[0] & 0xFF;
+                    int statusCode = (packetData[0] >> 8) & 0xFF;
+
+                    if (commandByte == 'D') { // Check if this result is for the 'D' (delete) command
+                        if (statusCode == 0) { // FR_OK (typically 0) indicates success
+                            System.out.println(Instant.now() + " Delete command 'D' confirmed successful by MCU.");
+                            if (currentExecutingCommand instanceof QCmdDeleteFile) {
+                                ((QCmdDeleteFile) currentExecutingCommand).setCommandCompleted(true);
+                            }
+                        }
+                        else {
+                            System.out.println(Instant.now() + " Delete command 'D' confirmed failed by MCU with status code: " + statusCode);
+                            // Notify the QCmdDeleteFile instance of the failure using the AbstractQCmdSerialTask's method
+                            if (currentExecutingCommand instanceof QCmdDeleteFile) {
+                                ((QCmdDeleteFile) currentExecutingCommand).setCommandCompleted(false);
+                            }
+                        }
+                        // After setting completion, clear the currentExecutingCommand
+                        currentExecutingCommand = null;
+                    }
+                    else if (commandByte == 'd') { // Check if this result is for the 'd' (get file list) command
+                        if (statusCode == 0) { // FR_OK (typically 0) indicates success
+                            System.out.println(Instant.now() + " Filelist command 'd' confirmed successful by MCU.");
+                            if (currentExecutingCommand instanceof QCmdGetFileList) {
+                                ((QCmdGetFileList) currentExecutingCommand).setCommandCompleted(true);
+                            }
+                            
+                        }
+                        else {
+                            System.out.println(Instant.now() + " Filelist command 'd' confirmed failed by MCU with status code: " + statusCode);
+                            // Notify the QCmdDeleteFile instance of the failure using the AbstractQCmdSerialTask's method
+                            if (currentExecutingCommand instanceof QCmdGetFileList) {
+                                ((QCmdGetFileList) currentExecutingCommand).setCommandCompleted(false);
+                            }
+                        }
+                        // After setting completion, clear the currentExecutingCommand
+                        currentExecutingCommand = null;
+                    }
+
+                    // Add 'else if (commandByte == '...')' blocks here to handle results for other commands...
+
+                    GoIdleState();
+                }
+                break;
+
             case textPckt:
                 if (c != 0) {
                     textRcvBuffer.append((char) cc);
