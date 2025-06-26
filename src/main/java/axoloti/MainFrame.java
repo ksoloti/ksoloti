@@ -418,7 +418,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                             "Expert Mode is enabled in ksoloti.prefs. The following options are now available:\n" + 
                             "- Compile firmware, Refresh firmware ID (Board -> Firmware)\n" + 
                             "- Generate and/or compile patch code, simulate lock/unlock, also while no Core is connected (patch windows -> Patch)\n" + 
-                            "- Remove read-only restrictions: Edit and save to read-only libraries (axoloti-factory, *oloti-community, ksoloti-objects)\n" + 
+                            "- Remove read-only restrictions: Edit and save to read-only libraries (axoloti-factory, *oloti-contrib, ksoloti-objects)\n" + 
                             "- Test-compile all patches in all libraries, or all patches (recursively) in specified folder (File -> Test Compilation)\n"
                         );
                     }
@@ -463,7 +463,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
-                            LOGGER.log(Level.INFO, "Current axoloti-community library does not match specified version: {0} <-> {1}", new Object[]{cb, ulib.getBranch()});
+                            LOGGER.log(Level.INFO, "Current axoloti-contrib library does not match specified version: {0} <-> {1}", new Object[]{cb, ulib.getBranch()});
                             int s = JOptionPane.showConfirmDialog(MainFrame.this,
                                     "Axoloti community library version mismatch detected. Upgrade now?\n"
                                     + "This will stash any local changes and reapply them to the new version.\n"
@@ -482,7 +482,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (kso_ulib != null) {
                         String cb = kso_ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(kso_ulib.getBranch())) {
-                            LOGGER.log(Level.INFO, "Current ksoloti-community library does not match specified version: {0} <-> {1}", new Object[]{cb, kso_ulib.getBranch()});
+                            LOGGER.log(Level.INFO, "Current ksoloti-contrib library does not match specified version: {0} <-> {1}", new Object[]{cb, kso_ulib.getBranch()});
                             int s = JOptionPane.showConfirmDialog(MainFrame.this,
                                     "Ksoloti community library version mismatch detected. Upgrade now?\n"
                                     + "This will stash any local changes and reapply them to the new version.\n"

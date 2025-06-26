@@ -43,9 +43,9 @@ public class AxolotiLibrary {
     private String ContributorPrefix;
 
     public static String FACTORY_ID = "axoloti-factory";
-    public static String USER_LIBRARY_ID = "axoloti-community";
+    public static String USER_LIBRARY_ID = "axoloti-contrib";
     public static String KSOLOTI_LIBRARY_ID = "ksoloti-objects";
-    public static String KSOLOTI_CONTRIB_LIBRARY_ID = "ksoloti-community";
+    public static String KSOLOTI_CONTRIB_LIBRARY_ID = "ksoloti-contrib";
 
     public AxolotiLibrary() {
         Id = "";
