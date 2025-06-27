@@ -36,6 +36,30 @@
   STM32_DMA_GETCHANNEL(STM32_SDC_SDIO_DMA_STREAM,                           \
                        STM32_SDC_SDIO_DMA_CHN)
 
+#ifndef SDC_MAX_SYNC_RETRIES
+#define SDC_MAX_SYNC_RETRIES            1000U
+#endif
+
+#ifndef SDC_SYNC_POLL_INTERVAL_MS
+#define SDC_SYNC_POLL_INTERVAL_MS       1U
+#endif
+
+#ifndef MMCSD_R1_CURRENT_STATE_MASK
+#define MMCSD_R1_CURRENT_STATE_MASK     (0xFUL << 9)
+#endif
+
+#ifndef MMCSD_R1_CURRENT_STATE_PROGRAM
+#define MMCSD_R1_CURRENT_STATE_PROGRAM  (7UL << 9) // State 7 is Programming
+#endif
+
+#ifndef MMCSD_R1_READY_FOR_DATA
+#define MMCSD_R1_READY_FOR_DATA         (1UL << 8)
+#endif
+
+#ifndef SDC_CARD_TIMEOUT
+#define SDC_CARD_TIMEOUT                256U  // Card did not become ready during sync
+#endif
+
 /*===========================================================================*/
 /* Driver exported variables.                                                */
 /*===========================================================================*/
@@ -861,9 +885,40 @@ bool sdc_lld_write(SDCDriver *sdcp, uint32_t startblk,
  * @api
  */
 bool sdc_lld_sync(SDCDriver *sdcp) {
+  palSetPad(LED2_PORT,LED2_PIN);
+  uint32_t resp[1];
+  unsigned int retries = 0;
 
-  /* TODO: Implement.*/
-  (void)sdcp;
+  do {
+    // Send CMD13 (SEND_STATUS) to get the card's current status
+    // Use the stored Relative Card Address (RCA) as the argument.
+    if (sdc_lld_send_cmd_short_crc(sdcp, MMCSD_CMD_SEND_STATUS,
+                                   sdcp->rca, resp) || MMCSD_R1_ERROR(resp[0])) {
+      // If CMD13 itself fails (e.g., CRC error, timeout), then report failure.
+      // Card might be in a very bad state, or the communication line is broken.
+      return HAL_FAILED;
+    }
+
+    // If MMCSD_R1_READY_FOR_DATA bit is set, the card is ready.
+    // OR if the CURRENT_STATE bits indicate it's no longer in PROGRAMMING state.
+    if ((resp[0] & MMCSD_R1_READY_FOR_DATA) ||
+        ((resp[0] & MMCSD_R1_CURRENT_STATE_MASK) != MMCSD_R1_CURRENT_STATE_PROGRAM)) {
+      // The card is no longer busy with internal programming.
+      break;
+    }
+
+    // Delay a short period before polling again to avoid busy-waiting unnecessarily.
+    osalThreadSleep(OSAL_MS2ST(SDC_SYNC_POLL_INTERVAL_MS));
+
+    retries++;
+    if (retries >= SDC_MAX_SYNC_RETRIES) {
+      // Timeout: Card did not become ready within the expected time.
+      sdcp->errors |= SDC_CARD_TIMEOUT;
+      return HAL_FAILED;
+    }
+
+  } while (true);
+
   return HAL_SUCCESS;
 }
 

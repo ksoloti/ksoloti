@@ -192,33 +192,43 @@ DRESULT disk_write (
 
 #if _USE_IOCTL
 DRESULT disk_ioctl (
-    BYTE pdrv,        /* Physical drive nmuber (0..) */
-    BYTE cmd,        /* Control code */
+    BYTE pdrv,        /* Physical drive number (0..) */
+    BYTE cmd,         /* Control code */
     void *buff        /* Buffer to send/receive control data */
 )
 {
+  DRESULT res;
+  
   switch (pdrv) {
-#if HAL_USE_MMC_SPI
-  case MMC:
+    #if HAL_USE_MMC_SPI
+    case MMC:
     switch (cmd) {
-    case CTRL_SYNC:
+      case CTRL_SYNC:
+      // MMC_SPI equivalent sync function should go here if it exists
+      // For now, assuming MMC_SPI needs a separate fix or is not in use
         return RES_OK;
     case GET_SECTOR_SIZE:
-        *((WORD *)buff) = MMCSD_BLOCK_SIZE;
-        return RES_OK;
+    *((WORD *)buff) = MMCSD_BLOCK_SIZE;
+    return RES_OK;
 #if _USE_ERASE
     case CTRL_ERASE_SECTOR:
-        mmcErase(&MMCD1, *((DWORD *)buff), *((DWORD *)buff + 1));
-        return RES_OK;
+    mmcErase(&MMCD1, *((DWORD *)buff), *((DWORD *)buff + 1));
+    return RES_OK;
 #endif
     default:
         return RES_PARERR;
-    }
-#else
-  case SDC:
-    switch (cmd) {
-    case CTRL_SYNC:
-        return RES_OK;
+      }
+#else // HAL_USE_SDC
+      case SDC:
+      switch (cmd) {
+        case CTRL_SYNC:
+        if (sdc_lld_sync(&SDCD1)) {
+            res = RES_OK;
+        }
+        else {
+            res = RES_ERROR;
+        }
+        return res;
     case GET_SECTOR_COUNT:
         *((DWORD *)buff) = mmcsdGetCardCapacity(&SDCD1);
         return RES_OK;
