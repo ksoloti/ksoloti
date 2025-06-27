@@ -407,6 +407,8 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
                 msd_start_receive(msdp, rw_buf[(i + 1) % 2], msdp->block_dev_info.blk_size);
             }
 
+            chThdSleepMicroseconds(5); /* Yields a slight speed increase: typically 210 kB/s VS 175 kb/s */
+
             /* now write the block to the block device */
             if (blkWrite(msdp->config->bbdp, rw_block_address++, rw_buf[i % 2], 1) == CH_FAILED) {
                 /* write failed */
@@ -425,7 +427,8 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
                 msd_wait_for_isr(msdp);
             }
         }
-    } else {
+    }
+    else { // SCSI_CMD_READ_10
         /* process a read command */
 
         i = 0;
