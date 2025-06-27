@@ -885,7 +885,6 @@ bool sdc_lld_write(SDCDriver *sdcp, uint32_t startblk,
  * @api
  */
 bool sdc_lld_sync(SDCDriver *sdcp) {
-  palSetPad(LED2_PORT,LED2_PIN);
   uint32_t resp[1];
   unsigned int retries = 0;
 
