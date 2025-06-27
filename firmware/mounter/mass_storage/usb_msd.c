@@ -35,6 +35,7 @@
 #define SCSI_CMD_READ_10                      0x28
 #define SCSI_CMD_WRITE_10                     0x2A
 #define SCSI_CMD_VERIFY_10                    0x2F
+#define SCSI_CMD_SYNCHRONIZE_CACHE            0x35 
 
 /* SCSI sense keys */
 #define SCSI_SENSE_KEY_GOOD                            0x00
@@ -634,6 +635,19 @@ bool_t msd_read_command_block(USBMassStorageDriver *msdp) {
     case SCSI_CMD_VERIFY_10:
         /* don't handle */
         msdp->result = TRUE;
+        break;
+    case SCSI_CMD_SYNCHRONIZE_CACHE:
+        if (blkSync(msdp->config->bbdp)) {
+            msdp->result = TRUE; /* Indicate success to the host */
+        } else {
+            /* Handle error if blkSync fails */
+            msd_scsi_set_sense(msdp,
+                            SCSI_SENSE_KEY_MEDIUM_ERROR,
+                            SCSI_ASENSE_WRITE_FAULT,
+                            SCSI_ASENSEQ_NO_QUALIFIER);
+            msdp->result = FALSE; /* Indicate failure to the host */
+        }
+        sleep = FALSE; /* blkSync is blocking, no further wait needed here. */
         break;
     default:
         msd_scsi_set_sense(msdp,
