@@ -44,6 +44,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
 import javax.swing.SwingUtilities;
 import org.usb4java.*;
 import qcmds.QCmd;
@@ -1595,7 +1597,8 @@ public class USBBulkConnection extends Connection {
                     // textRcvBuffer.append((char) cc);
                     textRcvBuffer.limit(textRcvBuffer.position());
                     textRcvBuffer.rewind();
-                    if (textRcvBuffer.toString().toLowerCase().contains("file error: fr_no_file, filename:\"/start.bin\"")) {
+                    if (Pattern.compile("File error:.*filename:\"/start.bin\"").matcher(textRcvBuffer.toString()).find()) {
+                    // if (textRcvBuffer.toString().toLowerCase().contains("file error: fr_no_file, filename:\"/start.bin\"")) {
                         /* Filter out error if SD card is connected but no start.bin is found */
                         LOGGER.log(Level.INFO, "SD card connected, no startup patch found.");
                     }
