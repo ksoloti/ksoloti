@@ -14,7 +14,7 @@ ifeq ($(USE_OPT),)
     -Wno-return-type \
     -Wno-unused-function \
     -Wno-unused-parameter \
-    -Og \
+    -O2 \
     -falign-functions=16 \
     -fno-math-errno \
     -fomit-frame-pointer \
@@ -123,6 +123,7 @@ CSRC = $(STARTUPSRC) \
       $(HALSRC) \
       $(PLATFORMSRC) \
       $(BOARDSRC) \
+      $(FATFSSRC) \
       $(CHIBIOS)/os/various/shell.c \
       $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
       $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
