@@ -448,6 +448,8 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
             /* transmit the block */
             msd_start_transmit(msdp, rw_buf[i % 2], msdp->block_dev_info.blk_size);
 
+            chThdSleepMicroseconds(5); /* Required for stability. Possibly waiting for cache/prefetch...*/
+
             if (i < (total - 1)) {
                 /* there is at least one more block to be read from device */
                 /* so read that whilst the USB transfer takes place */
@@ -459,8 +461,8 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
                                        SCSI_ASENSEQ_NO_QUALIFIER);
                     msdp->result = FALSE;
 
-                    /* wait for ISR (the previous transmission is still running) */
-                    return TRUE;
+                    /* DON'T wait for ISR (the previous transmission is still running, but we must return FALSE to prevent the system from getting stuck waiting indefinitely in msd_wait_for_isr) */
+                    return FALSE;
                 }
             }
 
