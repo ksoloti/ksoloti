@@ -451,7 +451,7 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
             /* transmit the block */
             msd_start_transmit(msdp, rw_buf[i % 2], msdp->block_dev_info.blk_size);
 
-            chThdSleepMicroseconds(5); /* Required for stability. Possibly waiting for cache/prefetch...*/
+            chThdSleepMicroseconds(10); /* Required for stability. Possibly waiting for cache/prefetch...*/
 
             if (i < (total - 1)) {
                 /* there is at least one more block to be read from device */
