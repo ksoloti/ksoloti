@@ -150,9 +150,9 @@ void start_dsp_thread(void);
 #define PATCHFLASHSIZE_H7_256   (256 * 1024)
 #define PATCHFLASHSLOTS_H7_256  4
 
-#define PATCHMAINLOC_F4         0x20011000
+#define PATCHMAINLOC_F4         0x2000B000
 #define PATCHFLASHLOC_F4        0x080E0000
-#define PATCHFLASHSIZE_F4       0xB000
+#define PATCHFLASHSIZE_F4       0x00011000
 #define PATCHFLASHSLOTS_F4      1
 
 
