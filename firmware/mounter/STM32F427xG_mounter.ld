@@ -24,12 +24,12 @@
 
 MEMORY
 {
-    CCMSRAM    : ORIGIN = 0x10000000, LENGTH = 0x0000E000 /* CCM - ccmramend */
-    SRAM (rwx) : ORIGIN = 0x20011000, LENGTH = 0x00009000
+    CCMSRAM    : ORIGIN = 0x10000000, LENGTH = 0x0000C800 /* CCM - ccmramend */
+    SRAM (rwx) : ORIGIN = 0x20011000, LENGTH = 0x0000B000
 }
 
-__main_stack_size__     = 0x400;
-__process_stack_size__  = 0x400;
+__main_stack_size__     = 0x800;
+__process_stack_size__  = 0x800;
 
 __ram_start__   = ORIGIN(SRAM);
 __ram_size__    = LENGTH(SRAM);
