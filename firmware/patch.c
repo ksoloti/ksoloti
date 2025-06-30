@@ -175,10 +175,6 @@ bool CheckPatchBinHeader(void)
 
 void SetPatchOffset(uint32_t uOffset)
 {
-    binHeader.type = btInvalid;
-    binHeader.fwid = 0;
-    binHeader.headerSize = 0;
-    binHeader.codeSize = 0;
 #if BOARD_KSOLOTI_CORE_H743
     if(uOffset == PATCHMAINLOC_H7_64) 
     {
