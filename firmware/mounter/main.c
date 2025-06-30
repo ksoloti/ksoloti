@@ -327,7 +327,6 @@ int main(void) {
 
     /* start the USB mass storage service */
     int ret = msdStart(&UMSD1, &msdConfig);
-    chThdSleepMilliseconds(50);
     if (ret != 0) {
         /* no media found : bye bye! */
         usbDisconnectBus(&USBD1);
@@ -346,7 +345,6 @@ int main(void) {
     chThdSleepMilliseconds(1000);
     usbStart(&USBD1, &usbConfig);
     usbConnectBus(&USBD1);
-    chThdSleepMilliseconds(10);
 
     while (1) {
         if (chEvtWaitOne(EVENT_MASK(1))) {
