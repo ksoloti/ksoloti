@@ -541,7 +541,6 @@ static void ManipulateFile(void) {
 
             if (err == FR_OK) { /* Only proceed if no error yet */
                 op_err = f_lseek(&pFile, pFileSize);
-                // LogTextMessage("f_lseeked pFile, pFilesize:%u, flag:%02x, err:%u", pFileSize, &pFile.flag, err);
                 if (op_err != FR_OK) {
                     // LogTextMessage("%u: ERROR: MNPFL f_lseek3, err:%u, path:%s", hal_lld_get_counter_value(), op_err, &FileName[6]);
                     report_fatfs_error(op_err, &FileName[6]);
@@ -551,7 +550,6 @@ static void ManipulateFile(void) {
 
             if (err == FR_OK) { /* Only proceed if no error yet */
                 op_err = f_lseek(&pFile, 0);
-                // LogTextMessage("f_lseeked pFile, pFilesize:%u, flag:%02x, err:%u", pFileSize, &pFile.flag, err);
                 if (op_err != FR_OK) {
                     // LogTextMessage("%u: ERROR: MNPFL f_lseek4, err:%u, path:%s", hal_lld_get_counter_value(), op_err, &FileName[6]);
                     report_fatfs_error(op_err, &FileName[6]);
@@ -628,7 +626,6 @@ static void CloseFile(void) {
     
     FRESULT err;
     err = f_close(&pFile);
-    // LogTextMessage("f_closed pFile, pFilesize:%u, flag:%02x, err:%u", pFileSize, &pFile.flag, err);
     if (err != FR_OK) {
         // LogTextMessage("%u: ERROR: CloseFile f_close, err:%u, path:%s", hal_lld_get_counter_value(), err, &FileName[6]);
         report_fatfs_error(err, &FileName[6]);
@@ -640,7 +637,6 @@ static void CloseFile(void) {
         fno.fdate = FileName[2] + (FileName[3]<<8);
         fno.ftime = FileName[4] + (FileName[5]<<8);
         err = f_utime(&FileName[6], &fno);
-        // LogTextMessage("f_utimed pFile, pFilesize:%u, flag:%02x, err:%u", pFileSize, &pFile.flag, err);
         if (err != FR_OK) {
             // LogTextMessage("%u: ERROR: CloseFile f_utime, Filename2-5:%x %x %x %x, path:%s", hal_lld_get_counter_value(), FileName[2], FileName[3], FileName[4], FileName[5], &FileName[6]);
             report_fatfs_error(err, &FileName[6]);
@@ -1185,7 +1181,6 @@ void PExReceiveByte(unsigned char c) {
                         state = 0;
                         int bytes_written;
                         err = f_write(&pFile, (char*) PATCHMAINLOC, length, (void*) &bytes_written);
-                        // LogTextMessage("f_written pFile, pFilesize:%u, flag:%02x, err:%u", pFileSize, &pFile.flag, err);
                         if (err != FR_OK) {
                             // LogTextMessage("%u: ERROR: 'header == 'a'->case default' f_write, err:%u, path:%s", hal_lld_get_counter_value(), err, FileName[6]); // TODO FileName[6] or?
                             report_fatfs_error(err, 0);
