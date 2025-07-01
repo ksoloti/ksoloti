@@ -208,9 +208,9 @@ void ReportThreadStacks(void) {
         }
 
         if (nfree < 70) {
-            LogTextMessage("%s 0x%lx CRITICAL: %lu free", name, (uint32_t)thd, nfree);
+            LogTextMessage("%s 0x%x CRITICAL: %u free", name, (uint32_t)thd, nfree);
         } else {
-            LogTextMessage("%s 0x%lx: %lu free", name, (uint32_t)thd, nfree);
+            LogTextMessage("%s 0x%x: %u free", name, (uint32_t)thd, nfree);
         }
 
         thd = chRegNextThread(thd);
