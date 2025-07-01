@@ -197,15 +197,14 @@ DRESULT disk_ioctl (
     void *buff        /* Buffer to send/receive control data */
 )
 {
-  DRESULT res;
   
   switch (pdrv) {
-    #if HAL_USE_MMC_SPI
+#if HAL_USE_MMC_SPI
     case MMC:
     switch (cmd) {
       case CTRL_SYNC:
-      // MMC_SPI equivalent sync function should go here if it exists
-      // For now, assuming MMC_SPI needs a separate fix or is not in use
+        // MMC_SPI equivalent sync function should go here if it exists
+        // For now, assuming MMC_SPI needs a separate fix or is not in use
         return RES_OK;
     case GET_SECTOR_SIZE:
     *((WORD *)buff) = MMCSD_BLOCK_SIZE;
@@ -223,12 +222,11 @@ DRESULT disk_ioctl (
       switch (cmd) {
         case CTRL_SYNC:
         if (sdc_lld_sync(&SDCD1)) {
-            res = RES_OK;
+          return RES_ERROR;
         }
         else {
-            res = RES_ERROR;
+          return RES_OK;
         }
-        return res;
     case GET_SECTOR_COUNT:
         *((DWORD *)buff) = mmcsdGetCardCapacity(&SDCD1);
         return RES_OK;
