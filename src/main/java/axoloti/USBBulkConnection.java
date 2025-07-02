@@ -1796,7 +1796,6 @@ public class USBBulkConnection extends Connection {
                 dataIndex++;
                 break;
 
-            case idle:
             default:
                 GoIdleState();
                 System.out.println(Instant.now() + " Unhandled byte c=" + String.format("%02x", c) + "(char=" + (char)c + ") in state=" + state);
