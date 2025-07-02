@@ -29,11 +29,18 @@ public class SDFileInfo {
     String filename;
     Calendar timestamp;
     int size;
+    private boolean isDirectory;
 
-    public SDFileInfo(String filename, Calendar timestamp, int size) {
+    public SDFileInfo(String filename, Calendar timestamp, int size, boolean isDirectory) {
         this.filename = filename;
         this.timestamp = timestamp;
         this.size = size;
+        this.isDirectory = isDirectory;
+    }
+
+    public SDFileInfo(String filename, boolean isDirectory) {
+        /* Dummy constructor for "/" root */
+        this(filename, null, 0, isDirectory);
     }
 
     public String getFilename() {
@@ -49,12 +56,12 @@ public class SDFileInfo {
     }
 
     public boolean isDirectory() {
-        return filename.endsWith("/");
+        return isDirectory;
     }
 
     public String getFilenameNoExtension() {
         int i = filename.lastIndexOf('.');
-        if (i > 0) {
+        if (i > 0 && !isDirectory) {
             return filename.substring(0, i);
         } else {
             return filename;
@@ -63,7 +70,7 @@ public class SDFileInfo {
 
     public String getExtension() {
         int i = filename.lastIndexOf('.');
-        if (i > 0) {
+        if (i > 0 && !isDirectory) {
             return filename.substring(i + 1);
         } else {
             return "";
@@ -71,7 +78,7 @@ public class SDFileInfo {
     }
 
     public String getPatchFileName() {
-        if (!isDirectory()) {
+        if (!isDirectory) {
             int i = filename.lastIndexOf('/');
             return filename.substring(i + 1);
         }
@@ -79,7 +86,6 @@ public class SDFileInfo {
     }
 
     public String getPureName() {
-        /* Required by AxoSDFileComparator */
 
         String path = filename;
         if (path.startsWith("/")) {
@@ -87,7 +93,7 @@ public class SDFileInfo {
             path = path.substring(1);
         }
 
-        if (isDirectory() && path.endsWith("/") && path.length() > 0) {
+        if (isDirectory && path.endsWith("/") && path.length() > 0) {
             /* Remove trailing slash for dir name */
             path = path.substring(0, path.length() - 1);
         }
