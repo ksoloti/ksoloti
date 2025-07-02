@@ -627,28 +627,7 @@ public class USBBulkConnection extends Connection {
         }
         return conn;
     }
-
-    public void clearFileListSync() {
-        synchronized (fileListSync) {
-            fileListDone = false;
-        }
-    }
     
-    public boolean waitFileListSync(long timeoutMillis) {
-        synchronized (fileListSync) {
-            if (fileListDone) {
-                return true;
-            }
-            try {
-                fileListSync.wait(timeoutMillis);
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                return false;
-            }
-            return fileListDone;
-        }
-    }
-
     @Override
     public void TransmitGetFileInfo(String filename) {
         byte[] data = new byte[15 + filename.length()];
