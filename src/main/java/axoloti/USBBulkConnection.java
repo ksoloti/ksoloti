@@ -219,7 +219,6 @@ public class USBBulkConnection extends Connection {
                 }
             }
 
-            LibUsb.close(handle);
             handle = null;
             CpuId0 = 0;
             CpuId1 = 0;
