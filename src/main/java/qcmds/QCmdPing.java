@@ -51,7 +51,7 @@ public class QCmdPing extends AbstractQCmdSerialTask {
     public QCmd Do(Connection connection) {
         connection.ClearSync();
         connection.TransmitPing();
-        if (connection.WaitSync(3000) || (noCauseDisconnect)) {
+        if (connection.WaitSync(5000) || (noCauseDisconnect)) {
             return this;
         } else {
             if (connection.isConnected()) {
