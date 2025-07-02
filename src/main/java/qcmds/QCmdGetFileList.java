@@ -22,10 +22,7 @@ import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.SwingUtilities;
-
 import axoloti.Connection;
-import axoloti.MainFrame;
 import axoloti.SDCardInfo;
 import axoloti.USBBulkConnection;
 
@@ -58,6 +55,7 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
     public QCmd Do(Connection connection) {
         connection.ClearSync();
         connection.ClearReadSync();
+        SDCardInfo.getInstance().setBusy();
 
         /* Cast to the concrete type to access the specific methods */
         USBBulkConnection usbConnection = (USBBulkConnection) connection;
@@ -86,6 +84,9 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
             LOGGER.log(Level.SEVERE, "TransmitGetFileList.Do() interrupted while waiting for completion", ex);
             Thread.currentThread().interrupt();
             this.success = false;
+        }
+        finally {
+            SDCardInfo.getInstance().clearBusy();
         }
         return this;
     }

@@ -16,15 +16,23 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package axoloti;
 
+import static axoloti.MainFrame.mainframe;
+
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
-// import java.util.logging.Level;
-// import java.util.logging.Logger;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import axoloti.utils.AxoSDFileComparator;
+import axoloti.utils.AxoSDFileNode;
+import axoloti.utils.DisplayTreeNode;
 
 /**
  *
@@ -35,12 +43,15 @@ public class SDCardInfo {
     // private static final Logger LOGGER = Logger.getLogger(SDCardInfo.class.getName());
 
     private final ArrayList<SDFileInfo> files = new ArrayList<SDFileInfo>();
-    boolean available = false;
-    int clusters = 0;
-    int clustersize = 0;
-    int sectorsize = 0;
+    private AxoSDFileNode rootNode;
+    private Map<String, AxoSDFileNode> pathToNodeMap;
+    private List<DisplayTreeNode> sortedDisplayNodes;
 
-    boolean busy = false;
+    private int clusters = 0;
+    private int clustersize = 0;
+    private int sectorsize = 0;
+
+    private boolean busy = false;
 
     private static SDCardInfo instance = null;
 
@@ -49,6 +60,14 @@ public class SDCardInfo {
 
     public boolean isBusy() {
         return busy;
+    }
+
+    public void setBusy() {
+        this.busy = true;
+    }
+
+    public void clearBusy() {
+        this.busy = false;
     }
 
     public synchronized static SDCardInfo getInstance() {
@@ -63,11 +82,210 @@ public class SDCardInfo {
         this.clustersize = clustersize;
         this.sectorsize = sectorsize;
         files.clear();
-        busy = true;
+        sortedDisplayNodes = null;
+        System.out.println(Instant.now() + " SDCardInfo.SetInfo(): clusters=" + this.clusters + " clustersize=" + this.clustersize + " sectorsize=" + this.sectorsize);
+    }
+
+    private void buildTreeNodes(List<SDFileInfo> currentLevelFiles, int currentDepth,
+                                List<Boolean> parentIsLastFlags, List<DisplayTreeNode> resultList,
+                                Map<String, List<SDFileInfo>> childrenMap) {
+
+        for (int i = 0; i < currentLevelFiles.size(); i++) {
+            SDFileInfo file = currentLevelFiles.get(i);
+            boolean isLastChild = (i == currentLevelFiles.size() - 1);
+
+            /* Create a new list for the next level's parentIsLastFlags */
+            List<Boolean> nextParentIsLastFlags = new ArrayList<>(parentIsLastFlags);
+            nextParentIsLastFlags.add(isLastChild);
+
+            /* Create the DisplayTreeNode */
+            DisplayTreeNode node = new DisplayTreeNode(file, currentDepth, isLastChild, parentIsLastFlags);
+            resultList.add(node); // Add to the flat list for the table model
+
+            /* If it's a directory, recursively build its children */
+            if (file.isDirectory()) {
+                List<SDFileInfo> children = childrenMap.getOrDefault(file.getFilename(), Collections.emptyList());
+                buildTreeNodes(children, currentDepth + 1, nextParentIsLastFlags, resultList, childrenMap);
+            }
+        }
+    }
+
+    public void buildFileTree() {
+        pathToNodeMap = new HashMap<>();
+        sortedDisplayNodes = new ArrayList<>();
+
+        /* Create a 'dummy' root node for "/" */
+        SDFileInfo rootInfo = new SDFileInfo("/", Calendar.getInstance(), 0, true);
+        rootNode = new AxoSDFileNode(rootInfo);
+        pathToNodeMap.put("/", rootNode);
+
+        Collections.sort(files, Comparator.comparingInt(f -> f.getFilename().length()));
+
+        for (SDFileInfo file : files) {
+            String fullPath = file.getFilename();
+            if (fullPath.equals("/")) { /* Skip if is root */
+                continue;
+            }
+
+            String parentPath = getParentPath(fullPath);
+            AxoSDFileNode parentNode = pathToNodeMap.get(parentPath);
+
+            if (parentNode == null) {
+                System.err.println(Instant.now() + " Warning: Parent node not found for: " + fullPath + " (parent: " + parentPath + ")");
+                continue;
+            }
+
+            AxoSDFileNode currentNode = new AxoSDFileNode(file);
+            parentNode.addChild(currentNode);
+            pathToNodeMap.put(fullPath, currentNode);
+        }
+
+        /* After building the raw tree, sort children within each node */
+        sortTreeChildren(rootNode, new AxoSDFileComparator());
+        traverseTreeForDisplay(rootNode, 0, new ArrayList<>(), sortedDisplayNodes);
+    }
+
+private boolean isLastChildInParentList(AxoSDFileNode childNode, AxoSDFileNode parentNode) {
+    if (parentNode == null || parentNode.getChildren() == null || parentNode.getChildren().isEmpty()) {
+        return true; /* If no children or no parent, it is the 'last' (or the only) */
+    }
+
+    List<AxoSDFileNode> children = parentNode.getChildren();
+    return children.get(children.size() - 1) == childNode;
+}
+
+
+private void traverseTreeForDisplay(AxoSDFileNode node, int currentDepth,
+                                    List<Boolean> parentIsLastChildFlags,
+                                    List<DisplayTreeNode> displayList) {
+
+    if (!node.getFileInfo().getFilename().equals("/") || currentDepth > 0) {
+        DisplayTreeNode displayNode = new DisplayTreeNode(
+            node.getFileInfo(),
+            currentDepth,
+            node.getParent() != null && isLastChildInParentList(node, node.getParent()),
+            new ArrayList<>(parentIsLastChildFlags)
+        );
+        displayList.add(displayNode);
+    }
+
+    if (node.isDirectory() && node.getChildren() != null) {
+        for (int i = 0; i < node.getChildren().size(); i++) {
+            AxoSDFileNode child = node.getChildren().get(i);
+            boolean childIsLast = (i == node.getChildren().size() - 1);
+
+            List<Boolean> childParentFlags = new ArrayList<>(parentIsLastChildFlags);
+            if (!node.getFileInfo().getFilename().equals("/")) {
+                 childParentFlags.add(childIsLast);
+            }
+
+            traverseTreeForDisplay(child, currentDepth + 1, childParentFlags, displayList);
+        }
+    }
+}
+
+    private String getParentPath(String filePath) {
+        if (filePath.equals("/")) {
+            return null; /* Root has no 'parent path' */
+        }
+
+        /* Handle trailing slash for directories */
+        String path = filePath;
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+
+        int lastSlash = path.lastIndexOf('/');
+        if (lastSlash > 0) {
+            return path.substring(0, lastSlash) + "/";
+        }
+        else if (lastSlash == 0) {
+            return "/";
+        }
+
+        return "/"; /* Default to root if no parent found */
+}
+
+    private void sortTreeChildren(AxoSDFileNode node, Comparator<AxoSDFileNode> comparator) {
+        if (node.isDirectory() && node.getChildren() != null) {
+            Collections.sort(node.getChildren(), comparator);
+            for (AxoSDFileNode child : node.getChildren()) {
+                sortTreeChildren(child, comparator);
+            }
+        }
+    }
+
+    public ArrayList<SDFileInfo> getSortedDisplayFiles() {
+        ArrayList<SDFileInfo> displayList = new ArrayList<>();
+        if (rootNode != null) {
+            traverseTreeForDisplay(rootNode, displayList);
+        }
+        if (!displayList.isEmpty() && displayList.get(0).getFilename().equals("/")) {
+            displayList.remove(0);
+        }
+        return displayList;
+    }
+
+    private void traverseTreeForDisplay(AxoSDFileNode node, List<SDFileInfo> displayList) {
+        if (!node.getFileInfo().getFilename().equals("/") || node == rootNode) {
+            // System.out.println(Instant.now() + " SDCardInfo: traverseTreeForDisplay(): added node " + node.getFileInfo().getFilename());
+            displayList.add(node.getFileInfo());
+        }
+
+        if (node.isDirectory() && node.getChildren() != null) {
+            for (AxoSDFileNode child : node.getChildren()) {
+                traverseTreeForDisplay(child, displayList);
+            }
+        }
+    }
+
+    public synchronized List<DisplayTreeNode> getDisplayTreeNodes() {
+        return sortedDisplayNodes;
+    }
+
+    public synchronized List<DisplayTreeNode> getSortedDisplayNodes() {
+        if (sortedDisplayNodes == null) {
+            // System.out.println(Instant.now() + " SDCardInfo: Rebuilding sortedDisplayNodes. Current files size: " + files.size());
+
+            Map<String, SDFileInfo> fileMap = new HashMap<>();
+            for (SDFileInfo file : files) {
+                fileMap.put(file.getFilename(), file);
+            }
+
+            Map<String, List<SDFileInfo>> childrenMap = new HashMap<>();
+            childrenMap.put("/", new ArrayList<>());
+
+            for (SDFileInfo file : files) {
+                String parentPath = getParentPath(file.getFilename());
+                if (parentPath != null) {
+                    childrenMap.computeIfAbsent(parentPath, k -> new ArrayList<>()).add(file);
+                }
+            }
+
+            /* Sort children within each directory */
+            for (List<SDFileInfo> childList : childrenMap.values()) {
+                Collections.sort(childList, (f1, f2) -> {
+                    /* Directories first, then alphabetically */
+                    if (f1.isDirectory() && !f2.isDirectory()) return -1;
+                    if (!f1.isDirectory() && f2.isDirectory()) return 1;
+                    return f1.getFilename().compareToIgnoreCase(f2.getFilename());
+                });
+            }
+
+            List<SDFileInfo> rootLevelSDFileInfos = childrenMap.getOrDefault("/", Collections.emptyList());
+            List<DisplayTreeNode> tempNodes = new ArrayList<>();
+
+            buildTreeNodes(rootLevelSDFileInfos, 0, new ArrayList<Boolean>(), tempNodes, childrenMap);
+
+            sortedDisplayNodes = tempNodes;
+            // System.out.println(Instant.now() + " SDCardInfo: Finished rebuilding sortedDisplayNodes. New list size: " + sortedDisplayNodes.size());
+        }
+        return sortedDisplayNodes;
     }
 
     public synchronized ArrayList<SDFileInfo> getFiles() {
-        return (ArrayList<SDFileInfo>) files.clone();
+        buildFileTree();
+        return getSortedDisplayFiles();
     }
 
     public int getClusters() {
@@ -95,49 +313,65 @@ public class SDCardInfo {
     }
 
     public synchronized void AddFile(String fname, int size, Calendar date) {
-        if (fname.lastIndexOf(0) > 0) {
-            fname = fname.substring(0, fname.lastIndexOf(0));
-        }
+        // if (fname.lastIndexOf(0) > 0) { <--- SEB What's this call doing??
+        //     fname = fname.substring(0, fname.lastIndexOf(0));
+        // }
+
         if (fname.equals("/")) {
-            busy = false;
+            /* Ignore root entry */
             return;
         }
+
         SDFileInfo sdf = null;
         for (SDFileInfo f : files) {
-            if (f.filename.equalsIgnoreCase(fname)) {
+            if (f.getFilename().equalsIgnoreCase(fname)) {
                 // already present
                 sdf = f;
             }
         }
+
         if (sdf != null) {
-            sdf.size = size;
-            sdf.timestamp = date;
+            /* Create a new SDFileInfo object with updated data */
+            SDFileInfo updatedSdf = new SDFileInfo(sdf.getFilename(), date, size, sdf.isDirectory());
+
+            int index = files.indexOf(sdf);
+            if (index != -1) {
+                files.set(index, updatedSdf); /* Replace old with the new object */
+            }
+            sortedDisplayNodes = null; /* Invalidate cache */
+            mainframe.getFilemanager().getAxoSDFileTableModel().setData(sortedDisplayNodes);
             return;
         }
-        sdf = new SDFileInfo(fname, date, size);
+
+        boolean isDirectory = fname.endsWith("/");
+        sdf = new SDFileInfo(fname, date, size, isDirectory);
+        // System.out.println(Instant.now() + " SDCardInfo.AddFile(), fname=" + fname + " size=" + size + " date=" + date.getTime().toString() + " isDirectory=" + isDirectory);
+
         files.add(sdf);
-        // LOGGER.log(Level.SEVERE, "File added " + files.size() + ":" + fname);
-        Collections.sort(files, new AxoSDFileComparator());
+        sortedDisplayNodes = null;
+        mainframe.getFilemanager().getAxoSDFileTableModel().setData(sortedDisplayNodes);
     }
 
     public synchronized void Delete(String fname) {
         SDFileInfo f1 = null;
         for (SDFileInfo f : files) {
-            if (f.filename.equalsIgnoreCase(fname)
-                    || f.filename.equalsIgnoreCase(fname + "/")) {
+            if (f.getFilename().equalsIgnoreCase(fname)
+                    || f.getFilename().equalsIgnoreCase(fname + "/")) {
                 f1 = f;
                 break;
             }
         }
         if (f1 != null) {
+            // System.out.println(Instant.now() + " SDCardInfo.Delete(), fname=" + fname);
             files.remove(f1);
-            Collections.sort(files, new AxoSDFileComparator());
+            sortedDisplayNodes = null;
         }
     }
 
     public synchronized void clear() {
+        // System.out.println(Instant.now() + " SDCardInfo.clear(), cleared file list.");
         files.clear();
-        // LOGGER.log(Level.INFO, "SDCardInfo: Cleared file list.");
+        sortedDisplayNodes = null;
     }
 
     public synchronized SDFileInfo find(String name) {
@@ -145,7 +379,7 @@ public class SDCardInfo {
             name = "/" + name;
         }
         for (SDFileInfo f : files) {
-            if (f.filename.equalsIgnoreCase(name)) {
+            if (f.getFilename().equalsIgnoreCase(name)) {
                 return f;
             }
         }
@@ -153,13 +387,11 @@ public class SDCardInfo {
     }
 
     public synchronized boolean exists(String name, long timestampEpoch, long size) {
-        // LOGGER.log(Level.SEVERE, "Does " + name + " exist?");
         if (!name.startsWith("/")) {
             name = "/" + name;
         }
         for (SDFileInfo f : files) {
-            // LOGGER.log(Level.SEVERE, "File compare " + name + ":" + f.filename);
-            if (f.filename.equalsIgnoreCase(name) && f.size == size && (Math.abs(f.timestamp.getTimeInMillis() - timestampEpoch) < 3000)) {
+            if (f.getFilename().equalsIgnoreCase(name) && f.getSize() == size && (Math.abs(f.getTimestamp().getTimeInMillis() - timestampEpoch) < 3000)) {
                 return true;
             }
         }
