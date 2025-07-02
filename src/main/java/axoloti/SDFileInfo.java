@@ -26,10 +26,10 @@ import java.util.Calendar;
  */
 public class SDFileInfo {
 
-    String filename;
-    Calendar timestamp;
-    int size;
-    private boolean isDirectory;
+    private final String filename;
+    private final Calendar timestamp;
+    private final int size;
+    private final boolean isDirectory;
 
     public SDFileInfo(String filename, Calendar timestamp, int size, boolean isDirectory) {
         this.filename = filename;
@@ -48,7 +48,7 @@ public class SDFileInfo {
     }
 
     public Calendar getTimestamp() {
-        return timestamp;
+        return (timestamp != null) ? (Calendar) timestamp.clone() : null;
     }
 
     public int getSize() {
