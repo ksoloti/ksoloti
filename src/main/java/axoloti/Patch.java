@@ -303,6 +303,7 @@ public class Patch {
                 GetQCmdProcessor().AppendToQueue(new qcmds.QCmdGetFileInfo(targetfn));
                 GetQCmdProcessor().WaitQueueFinished();
                 GetQCmdProcessor().AppendToQueue(new qcmds.QCmdPing());
+                // GetQCmdProcessor().AppendToQueue(new qcmds.QCmdPing(true)); // no-disconnect ping for debug
                 GetQCmdProcessor().WaitQueueFinished();
 
                 if (!SDCardInfo.getInstance().exists(targetfn, f.lastModified(), f.length())) {

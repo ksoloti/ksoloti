@@ -1035,6 +1035,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void jMenuItemPingActionPerformed(java.awt.event.ActionEvent evt) {
         qcmdprocessor.AppendToQueue(new QCmdPing());
+        // qcmdprocessor.AppendToQueue(new QCmdPing(true)); // no-disconnect ping for debug
     }
 
 
@@ -1244,6 +1245,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 Thread.sleep(1000); 
 
                 patch1.GetQCmdProcessor().AppendToQueue(new QCmdPing());
+                // patch1.GetQCmdProcessor().AppendToQueue(new QCmdPing(true)); // no-disconnect ping for debug
                 qcmdprocessor.WaitQueueFinished();
                 Thread.sleep(100); 
 

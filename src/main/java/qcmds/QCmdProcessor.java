@@ -73,6 +73,7 @@ public class QCmdProcessor implements Runnable {
                         if (now - lastSendAttemptTime >= currentSendInterval) {
 
                             boolean added = queue.offer(new QCmdPing(), 10, TimeUnit.MILLISECONDS);
+                            // boolean added = queue.offer(new QCmdPing(true), 10, TimeUnit.MILLISECONDS); // no-disconnect ping for debug
                             if (!added) {
                                 // System.out.println(Instant.now() + " QCmd queue full, dropping ping command. Backing off outbound rate.");
                                 /* If the queue is full (command not added), back off
