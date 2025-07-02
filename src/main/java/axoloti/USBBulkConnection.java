@@ -339,6 +339,7 @@ public class USBBulkConnection extends Connection {
                         result = LibUsb.open(d, h);
                         if (result < 0) {
                             LOGGER.log(Level.INFO, ErrorString(result));
+                            System.err.println(Instant.now() + " LibUsb: Failed to open device handle: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
                         }
                         else {
                             return h;
@@ -365,7 +366,7 @@ public class USBBulkConnection extends Connection {
         }
         finally {
             /* Ensure the allocated device list is freed */
-            // LibUsb.freeDeviceList(list, true);
+            LibUsb.freeDeviceList(list, true);
         }
 
         LOGGER.log(Level.SEVERE, "No matching USB devices found.");
