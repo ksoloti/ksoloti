@@ -525,7 +525,7 @@ public class USBBulkConnection extends Connection {
                     case -12: errstr = "Operation not supported or unimplemented"; break;
                     default:  errstr = Integer.toString(result); break;
                 }
-                LOGGER.log(Level.SEVERE, "USB bulk write failed: " + errstr);
+                LOGGER.log(Level.WARNING, "USB bulk write failed: " + errstr);
                 // QCmdProcessor.getQCmdProcessor().Abort();
             }
             return result;
@@ -1256,7 +1256,7 @@ public class USBBulkConnection extends Connection {
                 packetData[dataIndex >> 2] += (c << 24);
                 break;
         }
-        // System.out.println("s " + dataIndex + "  v=" + Integer.toHexString(packetData[dataIndex>>2]) + " c=");
+        // System.out.println(Instant.now() + " s " + dataIndex + "  v=" + Integer.toHexString(packetData[dataIndex>>2]) + " c=");
         dataIndex++;
 
     }
@@ -1323,56 +1323,68 @@ public class USBBulkConnection extends Connection {
     int LCDPacketRow = 0;
 
     void processByte(byte cc) {
-        // LOGGER.log(Level.SEVERE,"AxoP c="+(char)c+"="+Integer.toHexString(c)+" s="+Integer.toHexString(state));
+
         int c = cc & 0xff;
-        // System.out.println("AxoP c="+(char)c+"="+Integer.toHexString(c));
+        // String charDisplay;
+        // if (c >= 0x20 && c <= 0x7E) {
+        //     charDisplay = "'" + String.valueOf((char) c) + "'";
+        // } else {
+        //     charDisplay = String.format("%02x", c) + "h"; // Show hex for non-printable characters
+        // }
+        // System.out.println(Instant.now() + " processByte c=" + charDisplay + " s=" + state.name());
+
         switch (state) {
+
             case header:
                 switch (headerstate) {
-                    case 0:
+                    case 0: /* This should always be 'A' or command will be ignored */
                         if (c == 'A') {
                             headerstate = 1;
+                            // System.out.println(Instant.now() + " Transitioning to headerstate " + headerstate + " after 'A'");
                         }
                         break;
-                    case 1:
+
+                    case 1: /* This should always be 'x' or command will be ignored */
                         if (c == 'x') {
                             headerstate = 2;
+                            // System.out.println(Instant.now() + " Transitioning to headerstate " + headerstate + " after 'x'");
                         }
                         else {
                             GoIdleState();
                         }
                         break;
-                    case 2:
+
+                    case 2: /* This should always be 'o' or command will be ignored */
                         if (c == 'o') {
                             headerstate = 3;
+                            // System.out.println(Instant.now() + " Transitioning to headerstate " + headerstate + " after 'o'");
                         }
                         else {
                             GoIdleState();
                         }
                         break;
+
                     case 3:
                         switch (c) {
                             case 'Q':
                                 state = ReceiverState.paramchangePckt;
-                                // System.out.println("param packet start");
                                 dataIndex = 0;
                                 dataLength = 12;
+                                // System.out.println(Instant.now() + " Completed headerstate after 'Q'");
                                 break;
                             case 'A':
                                 state = ReceiverState.ackPckt;
-                                // System.out.println("ack packet start");
                                 dataIndex = 0;
                                 dataLength = 24;
+                                // System.out.println(Instant.now() + " Completed headerstate after 'A'");
                                 break;
                             case 'D':
                                 state = ReceiverState.displayPcktHdr;
-                                // System.out.println("display packet start");
                                 dataIndex = 0;
                                 dataLength = 8;
                                 // System.out.println(Instant.now() + " Completed headerstate after 'D'");
                                 break;
                             case 'R': /* New case for 'R' header (AxoR packet from MCU) */
-                                // System.out.println(Instant.now() + " cmdresult packet start");
                                 state = ReceiverState.commandResultPckt;
                                 dataIndex = 0;
                                 dataLength = 2; /* Expecting command_byte (1 byte) + status_byte (1 byte) */
@@ -1380,10 +1392,10 @@ public class USBBulkConnection extends Connection {
                                 break;
                             case 'T':
                                 state = ReceiverState.textPckt;
-                                // System.out.println("text packet start");
                                 textRcvBuffer.clear();
                                 dataIndex = 0;
                                 dataLength = 255;
+                                // System.out.println(Instant.now() + " Completed headerstate after 'T'");
                                 break;
                             case '0':
                             case '1':
@@ -1402,62 +1414,69 @@ public class USBBulkConnection extends Connection {
                                 dataLength = 128;
                                 break;
                             case 'd':
-                                LOGGER.log(Level.INFO, "processByte: Received Axod (Directory Listing Start)");
                                 state = ReceiverState.sdinfo;
                                 sdinfoRcvBuffer.rewind();
                                 dataIndex = 0;
                                 dataLength = 12;
+                                // System.out.println(Instant.now() + " Completed headerstate after 'd'");
                                 break;
                             case 'f':
-                                LOGGER.log(Level.INFO, "processByte: Received Axof (File Info)");
                                 state = ReceiverState.fileinfo_fixed_fields;
                                 fileinfoRcvBuffer.clear();
                                 dataIndex = 0;
                                 // dataLength = 8;
+                                // System.out.println(Instant.now() + " Completed headerstate after 'f'");
                                 break;
                             case 'r':
                                 state = ReceiverState.memread;
                                 memReadBuffer.clear();
                                 dataIndex = 0;
+                                // System.out.println(Instant.now() + " Completed headerstate after 'r'");
                                 break;
                             case 'y':
                                 state = ReceiverState.memread1word;
                                 dataIndex = 0;
+                                // System.out.println(Instant.now() + " Completed headerstate after 'y'");
                                 break;
                             case 'V':
                                 state = ReceiverState.fwversion;
                                 dataIndex = 0;
+                                // System.out.println(Instant.now() + " Completed headerstate after 'V'");
                                 break;
                             default:
                                 GoIdleState();
+                                System.err.println(Instant.now() + " Error trying to complete headerstate after valid 'Axo'");
                                 break;
                         }
                         break;
+
                     default:
-                        LOGGER.log(Level.SEVERE, "Receiver: invalid header");
+                        System.err.println(Instant.now() + " Receiver: invalid header");
                         GoIdleState();
 
                         break;
                 }
                 break;
+
             case paramchangePckt:
                 if (dataIndex < dataLength) {
                     storeDataByte(c);
                 }
-                // System.out.println("pch packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
+                // System.out.println(Instant.now() + " pch packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
                 if (dataIndex == dataLength) {
-                    // System.out.println("param packet complete 0x" + Integer.toHexString(packetData[1]) + "    0x" + Integer.toHexString(packetData[0]));
+                    // System.out.println(Instant.now() + " param packet complete 0x" + Integer.toHexString(packetData[1]) + "    0x" + Integer.toHexString(packetData[0]));
                     RPacketParamChange(packetData[2], packetData[1], packetData[0]);
                     GoIdleState();
                 }
                 break;
+
             case ackPckt:
                 if (dataIndex < dataLength) {
-                    // System.out.println("ack packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
+                    // System.out.println(Instant.now() + " ack packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
                     storeDataByte(c);
                 }
                 if (dataIndex == dataLength) {
-                    // System.out.println("ack packet complete");
+                    // System.out.println(Instant.now() + " ack packet complete");
                     Acknowledge(packetData[0], packetData[1], packetData[2], packetData[3], packetData[4], packetData[5]);
                     GoIdleState();
                 }
@@ -1478,11 +1497,12 @@ public class USBBulkConnection extends Connection {
                 if (dataIndex < dataLength) {
                     storeDataByte(c);
                 }
-                // System.out.println("pch packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
+                // System.out.println(Instant.now() + " pch packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
                 if (dataIndex == dataLength) {
                     DisplayPackHeader(packetData[0], packetData[1]);
                 }
                 break;
+
             case displayPckt:
                 if (dataIndex < dataLength) {
                     dispData.put(cc);
@@ -1502,8 +1522,8 @@ public class USBBulkConnection extends Connection {
                     int commandByte = packetData[0] & 0xFF;
                     int statusCode = (packetData[0] >> 8) & 0xFF;
 
-                    if (commandByte == 'D') { // Check if this result is for the 'D' (delete) command
-                        if (statusCode == 0) { // FR_OK (typically 0) indicates success
+                    if (commandByte == 'D') { /* Check if this result is for the 'D' (delete) command */
+                        if (statusCode == 0) { /* FR_OK (0) indicates success */
                             System.out.println(Instant.now() + " Delete command 'D' confirmed successful by MCU.");
                             if (currentExecutingCommand instanceof QCmdDeleteFile) {
                                 ((QCmdDeleteFile) currentExecutingCommand).setCommandCompleted(true);
@@ -1511,16 +1531,15 @@ public class USBBulkConnection extends Connection {
                         }
                         else {
                             System.out.println(Instant.now() + " Delete command 'D' confirmed failed by MCU with status code: " + statusCode);
-                            // Notify the QCmdDeleteFile instance of the failure using the AbstractQCmdSerialTask's method
                             if (currentExecutingCommand instanceof QCmdDeleteFile) {
                                 ((QCmdDeleteFile) currentExecutingCommand).setCommandCompleted(false);
                             }
                         }
-                        // After setting completion, clear the currentExecutingCommand
+                        /* After setting completion, clear the currentExecutingCommand */
                         currentExecutingCommand = null;
                     }
-                    else if (commandByte == 'd') { // Check if this result is for the 'd' (get file list) command
-                        if (statusCode == 0) { // FR_OK (typically 0) indicates success
+                    else if (commandByte == 'd') {
+                        if (statusCode == 0) {
                             System.out.println(Instant.now() + " Filelist command 'd' confirmed successful by MCU.");
                             if (currentExecutingCommand instanceof QCmdGetFileList) {
                                 ((QCmdGetFileList) currentExecutingCommand).setCommandCompleted(true);
@@ -1529,12 +1548,10 @@ public class USBBulkConnection extends Connection {
                         }
                         else {
                             System.out.println(Instant.now() + " Filelist command 'd' confirmed failed by MCU with status code: " + statusCode);
-                            // Notify the QCmdDeleteFile instance of the failure using the AbstractQCmdSerialTask's method
                             if (currentExecutingCommand instanceof QCmdGetFileList) {
                                 ((QCmdGetFileList) currentExecutingCommand).setCommandCompleted(false);
                             }
                         }
-                        // After setting completion, clear the currentExecutingCommand
                         currentExecutingCommand = null;
                     }
 
@@ -1560,9 +1577,11 @@ public class USBBulkConnection extends Connection {
                     else {
                         LOGGER.log(Level.WARNING, "{0}", textRcvBuffer.toString());
                     }
+                    // System.out.println(Instant.now() + " FINAL MCU Text Message (AxoT): " + textRcvBuffer.toString());
                     GoIdleState();
                 }
                 break;
+
             case sdinfo:
                 if (dataIndex < dataLength) {
                     sdinfoRcvBuffer.put(cc);
@@ -1580,81 +1599,57 @@ public class USBBulkConnection extends Connection {
                 }
                 break;
 
-                case fileinfo_fixed_fields: // State to collect the 8-byte size and timestamp
-                fileinfoRcvBuffer.put(cc); // Collect bytes into the buffer
-                dataIndex++; // Increment collected bytes count
+                case fileinfo_fixed_fields: /* State to collect the 8-byte size and timestamp */
+                fileinfoRcvBuffer.put(cc);
+                dataIndex++;
         
-                if (dataIndex == 8) { // We've collected exactly 8 bytes (size + timestamp)
-                    LOGGER.log(Level.INFO, "processByte: Received fixed fields for Axof. Processing them.");
+                if (dataIndex == 8) { /* exactly 8 bytes (size + timestamp) */ 
+                    // System.out.println(Instant.now() + " processByte: Received fixed fields for Axof. Processing.");
         
-                    fileinfoRcvBuffer.order(ByteOrder.LITTLE_ENDIAN); // Ensure correct byte order for reading
-                    fileinfoRcvBuffer.limit(fileinfoRcvBuffer.position()); // Set buffer's limit to the 8 bytes just written
-                    fileinfoRcvBuffer.rewind(); // Prepare buffer for reading from the start
+                    fileinfoRcvBuffer.order(ByteOrder.LITTLE_ENDIAN);
+                    fileinfoRcvBuffer.limit(fileinfoRcvBuffer.position());
+                    fileinfoRcvBuffer.rewind();
         
-                    // No need to skip magic bytes here, as the buffer *only* contains the payload
-                    // (the magic bytes were consumed in HEADER_WAIT)
-                    // REMOVE THIS LINE: fileinfoRcvBuffer.position(fileinfoRcvBuffer.position() + 4);
-        
-                    // Read the 4-byte size and 4-byte timestamp
+                    /* Read the 4-byte size and 4-byte timestamp */
                     currentFileSize = fileinfoRcvBuffer.getInt();
                     currentFileTimestamp = fileinfoRcvBuffer.getInt();
+                    // System.out.println(Instant.now() + " processByte: Parsed preliminary size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
         
-                    LOGGER.log(Level.FINE, "processByte: Parsed preliminary size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
-        
-                    // Now, prepare to collect the variable-length filename
-                    fileinfoRcvBuffer.clear(); // Clear the buffer to reuse it for filename bytes
-                    dataIndex = 0; // Reset dataIndex for the new collection phase
-                    state = ReceiverState.fileinfo_filename; // Transition to the next sub-state
+                    /* Prepare to collect the variable-length filename */
+                    fileinfoRcvBuffer.clear();
+                    dataIndex = 0;
+                    state = ReceiverState.fileinfo_filename; /* Transition to the next sub-state */
                 }
                 break;
         
-            case fileinfo_filename: // State to collect filename bytes until null terminator
-                if (cc == 0x00) { // Check if the current byte is the null terminator
-                    LOGGER.log(Level.INFO, "processByte: Null terminator found for Axof filename. Processing.");
+            case fileinfo_filename: /* State to collect filename bytes until null terminator */
+                if (cc == 0x00) {
+                    // System.out.println(Instant.now() + " processByte: Null terminator found for Axof filename. Processing.");
         
-                    fileinfoRcvBuffer.limit(fileinfoRcvBuffer.position()); // Set limit to actual filename bytes written (before the null)
-                    fileinfoRcvBuffer.rewind(); // Prepare buffer for reading
+                    fileinfoRcvBuffer.limit(fileinfoRcvBuffer.position());
+                    fileinfoRcvBuffer.rewind();
         
-                    // Get the collected filename bytes as an array
+                    /* Get the collected filename bytes as an array */
                     byte[] filenameBytes = new byte[fileinfoRcvBuffer.remaining()];
                     fileinfoRcvBuffer.get(filenameBytes);
-        
-                    // Convert byte array to String using the correct character set (ISO-8859-1 is common for FatFS)
                     String fname = new String(filenameBytes, Charset.forName("ISO-8859-1"));
-        
-                    // No need to strip trailing null, as we stopped collecting *before* adding it to the buffer
-                    // if (!fname.isEmpty() && fname.charAt(fname.length() - 1) == (char) 0) {
-                    //     fname = fname.substring(0, fname.length() - 1);
-                    // }
-        
-                    // Add the fully parsed file information to your SDCardInfo
+
                     SDCardInfo.getInstance().AddFile(fname, currentFileSize, currentFileTimestamp);
-                    LOGGER.log(Level.INFO, "processByte: Parsed file: \"" + fname + "\", size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
+                    // System.out.println(Instant.now() + " processByte: Parsed file: \"" + fname + "\", size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
         
-                    GoIdleState(); // Packet complete, return to idle to look for the next header (Axof or AxoE)
-                } else {
-                    // Collect the current byte as part of the filename
+                    GoIdleState(); /* Packet complete, return to idle */
+                }
+                else {
+                    /* Collect the current byte as part of the filename */
                     fileinfoRcvBuffer.put(cc);
                     dataIndex++;
         
-                    // OPTIONAL: Add a safety check for maximum filename length to prevent buffer overflow
-                    // if (dataIndex >= MAX_POSSIBLE_FILENAME_LENGTH_OR_BUFFER_CAPACITY) {
-                    //     LOGGER.log(Level.SEVERE, "processByte: Filename exceeds maximum expected length. Aborting packet.");
-                    //     GoIdleState();
-                    // }
+                    /* Protection against malformed Axof */
+                    if (dataIndex >= fileinfoRcvBuffer.capacity()) {
+                        LOGGER.log(Level.SEVERE, "processByte: Filename exceeds maximum expected length. Aborting packet.");
+                        GoIdleState();
+                    }
                 }
-                break;
-        
-            case endfilelist: // Existing AxoE handling remains
-                LOGGER.log(Level.INFO, "processByte: Entering endfilelist state, notifying fileListSync.");
-
-                synchronized (fileListSync) {
-                    fileListSync.notifyAll(); // Notify all threads waiting on fileListSync
-                    fileListDone = true;
-                }
-
-                state = ReceiverState.idle; // Move to idle after signalling
-                LOGGER.log(Level.INFO, "processByte: Exited endfilelist state, returned to idle.");
                 break;
         
             case memread:
@@ -1691,7 +1686,7 @@ public class USBBulkConnection extends Connection {
                         if (dataIndex == memReadLength + 7) {
                             memReadBuffer.rewind();
                             memReadBuffer.order(ByteOrder.LITTLE_ENDIAN);
-                            // System.out.println("memread offset 0x" + Integer.toHexString(memReadAddr));
+                            // System.out.println(Instant.now() + " memread offset 0x" + Integer.toHexString(memReadAddr));
                             // int i = 0;
                             // while (memReadBuffer.hasRemaining()) {
                             //     System.out.print(" " + String.format("%02X", memReadBuffer.get()));
@@ -1739,7 +1734,7 @@ public class USBBulkConnection extends Connection {
                         break;
                     case 7:
                         memReadValue += (cc & 0xFF) << 24;
-                        // System.out.println(String.format("addr %08X value %08X", memReadAddr, memReadValue));
+                        // System.out.println(Instant.now() + " " + String.format("addr %08X value %08X", memReadAddr, memReadValue));
                         synchronized (readsync) {
                             readsync.Acked = true;
                             readsync.notifyAll();
@@ -1787,8 +1782,7 @@ public class USBBulkConnection extends Connection {
                     case 11:
                         patchentrypoint += (cc & 0xFF);
                         String sFwcrc = String.format("%08X", fwcrc);
-
-                        System.out.println(String.format("Firmware version: %d.%d.%d.%d, CRC: 0x%s, entry point: 0x%08X", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc, patchentrypoint));
+                        System.out.println(Instant.now() + " " + String.format("Firmware version: %d.%d.%d.%d, CRC: 0x%s, entry point: 0x%08X", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc, patchentrypoint));
                         LOGGER.log(Level.INFO, String.format("Firmware version %d.%d.%d.%d | CRC %s\n", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
                         MainFrame.mainframe.setFirmwareID(sFwcrc);
                         GoIdleState();
@@ -1800,6 +1794,7 @@ public class USBBulkConnection extends Connection {
             case idle:
             default:
                 GoIdleState();
+                System.out.println(Instant.now() + " Unhandled byte c=" + String.format("%02x", c) + "(char=" + (char)c + ") in state=" + state);
                 break;
         }
     }
