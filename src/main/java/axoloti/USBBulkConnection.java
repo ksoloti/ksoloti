@@ -1198,7 +1198,7 @@ public class USBBulkConnection extends Connection {
         header,
         ackPckt,                /* general acknowledge */
         paramchangePckt,        /* parameter changed */
-        lcdPckt,                /* lcd screen bitmap readback */
+        // lcdPckt,                /* lcd screen bitmap readback */
         displayPcktHdr,         /* object display readbac */
         displayPckt,            /* object display readback */
         textPckt,               /* text message to display in log */
@@ -1221,7 +1221,7 @@ public class USBBulkConnection extends Connection {
     private int dataIndex = 0;  /* in bytes */
     private int dataLength = 0; /* in bytes */
     private CharBuffer textRcvBuffer = CharBuffer.allocate(256);
-    private ByteBuffer lcdRcvBuffer = ByteBuffer.allocate(256);
+    // private ByteBuffer lcdRcvBuffer = ByteBuffer.allocate(256);
     private ByteBuffer sdinfoRcvBuffer = ByteBuffer.allocate(12);
     private ByteBuffer fileinfoRcvBuffer = ByteBuffer.allocate(256);
     private ByteBuffer memReadBuffer = ByteBuffer.allocate(16 * 4);
@@ -1320,7 +1320,7 @@ public class USBBulkConnection extends Connection {
     }
     ByteBuffer dispData;
 
-    int LCDPacketRow = 0;
+    // int LCDPacketRow = 0;
 
     void processByte(byte cc) {
 
@@ -1397,22 +1397,22 @@ public class USBBulkConnection extends Connection {
                                 dataLength = 255;
                                 // System.out.println(Instant.now() + " Completed headerstate after 'T'");
                                 break;
-                            case '0':
-                            case '1':
-                            case '2':
-                            case '3':
-                            case '4':
-                            case '5':
-                            case '6':
-                            case '7':
-                            case '8':
-                                LCDPacketRow = c - '0';
-                                state = ReceiverState.lcdPckt;
-                                // System.out.println("text packet start");
-                                lcdRcvBuffer.rewind();
-                                dataIndex = 0;
-                                dataLength = 128;
-                                break;
+                            // case '0': /* non-existing LCD stuff */
+                            // case '1':
+                            // case '2':
+                            // case '3':
+                            // case '4':
+                            // case '5':
+                            // case '6':
+                            // case '7':
+                            // case '8':
+                            //     LCDPacketRow = c - '0';
+                            //     state = ReceiverState.lcdPckt;
+                            //     lcdRcvBuffer.rewind();
+                            //     dataIndex = 0;
+                            //     dataLength = 128;
+                            //     System.out.println(Instant.now() + " Completed headerstate after digit");
+                            //     break;
                             case 'd':
                                 state = ReceiverState.sdinfo;
                                 sdinfoRcvBuffer.rewind();
@@ -1481,18 +1481,20 @@ public class USBBulkConnection extends Connection {
                     GoIdleState();
                 }
                 break;
-            case lcdPckt:
-                if (dataIndex < dataLength) {
-                    // System.out.println("lcd packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
-                    lcdRcvBuffer.put(cc);
-                    dataIndex++;
-                }
-                if (dataIndex == dataLength) {
-                    lcdRcvBuffer.rewind();
-                    // MainFrame.mainframe.remote.updateRow(LCDPacketRow, lcdRcvBuffer);
-                    GoIdleState();
-                }
-                break;
+
+            // case lcdPckt:
+            //     if (dataIndex < dataLength) {
+            //         // System.out.println(Instant.now() + " lcd packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
+            //         lcdRcvBuffer.put(cc);
+            //         dataIndex++;
+            //     }
+            //     if (dataIndex == dataLength) {
+            //         lcdRcvBuffer.rewind();
+            //         // MainFrame.mainframe.remote.updateRow(LCDPacketRow, lcdRcvBuffer);
+            //         GoIdleState();
+            //     }
+            //     break;
+
             case displayPcktHdr:
                 if (dataIndex < dataLength) {
                     storeDataByte(c);
