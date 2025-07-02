@@ -652,13 +652,13 @@ public class USBBulkConnection extends Connection {
         data[i] = 0;
         ClearSync();
         writeBytes(data);
-        WaitSync();
+        /* No WaitSync() call necessary - will wait for AxoRd response */
     }
 
     class Sync {
-
         boolean Acked = false;
     }
+
     final Sync sync;
     final Sync readsync;
 
@@ -730,7 +730,9 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public void TransmitGetFileList() {
+    public void TransmitGetFileList(QCmdSerialTask senderCommand) {
+        this.currentExecutingCommand = senderCommand; // Storing the command object
+        ClearSync();
         writeBytes(getFileListPckt);
     }
 
@@ -852,7 +854,8 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public void TransmitDeleteFile(String filename) {
+    public void TransmitDeleteFile(String filename, QCmdSerialTask senderCommand) {
+        this.currentExecutingCommand = senderCommand; // Storing the command object
         byte[] data = new byte[15 + filename.length()];
         data[0] = 'A';
         data[1] = 'x';
@@ -861,7 +864,7 @@ public class USBBulkConnection extends Connection {
         data[4] = 0;
         data[5] = 0;
         data[6] = 0;
-        data[7] = 0;
+        data[7] = 0; // These might be used for cmd ID later
         data[8] = 0;
         data[9] = 'D';
         data[10] = 0;
@@ -875,7 +878,7 @@ public class USBBulkConnection extends Connection {
         data[i] = 0;
         ClearSync();
         writeBytes(data);
-        WaitSync();
+        /* No WaitSync() call necessary - will wait for AxoRD response */
     }
 
     @Override
