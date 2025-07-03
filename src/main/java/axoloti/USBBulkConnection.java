@@ -798,7 +798,7 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public void TransmitCreateFile(String filename, int size) {
+    public int TransmitCreateFile(String filename, int size) {
         byte[] data = new byte[9 + filename.length()];
         data[0] = 'A';
         data[1] = 'x';
@@ -814,12 +814,16 @@ public class USBBulkConnection extends Connection {
         }
         data[i] = 0;
         ClearSync();
-        writeBytes(data);
-        WaitSync();
+        int writeResult = writeBytes(data);
+        if (writeResult != LibUsb.SUCCESS) {
+            return writeResult;
+        }
+        boolean syncSuccess = WaitSync(10000);
+        return syncSuccess ? LibUsb.SUCCESS : LibUsb.ERROR_TIMEOUT;
     }
 
     @Override
-    public void TransmitCreateFile(String filename, int size, Calendar date) {
+    public int TransmitCreateFile(String filename, int size, Calendar date) {
         byte[] data = new byte[15 + filename.length()];
         data[0] = 'A';
         data[1] = 'x';
@@ -849,12 +853,16 @@ public class USBBulkConnection extends Connection {
         }
         data[i] = 0;
         ClearSync();
-        writeBytes(data);
-        WaitSync();
+        int writeResult = writeBytes(data);
+        if (writeResult != LibUsb.SUCCESS) {
+            return writeResult;
+        }
+        boolean syncSuccess = WaitSync(10000);
+        return syncSuccess ? LibUsb.SUCCESS : LibUsb.ERROR_TIMEOUT;
     }
 
     @Override
-    public void TransmitDeleteFile(String filename, QCmdSerialTask senderCommand) {
+    public int TransmitDeleteFile(String filename, QCmdSerialTask senderCommand) { // CHANGED RETURN TYPE TO int
         this.currentExecutingCommand = senderCommand; // Storing the command object
         byte[] data = new byte[15 + filename.length()];
         data[0] = 'A';
@@ -877,12 +885,12 @@ public class USBBulkConnection extends Connection {
         }
         data[i] = 0;
         ClearSync();
-        writeBytes(data);
-        /* No WaitSync() call necessary - will wait for AxoRD response */
+        int writeResult = writeBytes(data);
+        return writeResult;
     }
 
     @Override
-    public void TransmitChangeWorkingDirectory(String path) {
+    public int TransmitChangeWorkingDirectory(String path) {
         byte[] data = new byte[15 + path.length()];
         data[0] = 'A';
         data[1] = 'x';
@@ -904,12 +912,16 @@ public class USBBulkConnection extends Connection {
         }
         data[i] = 0;
         ClearSync();
-        writeBytes(data);
-        WaitSync();
+        int writeResult = writeBytes(data);
+        if (writeResult != LibUsb.SUCCESS) {
+            return writeResult;
+        }
+        boolean syncSuccess = WaitSync(10000);
+        return syncSuccess ? LibUsb.SUCCESS : LibUsb.ERROR_TIMEOUT;
     }
 
     @Override
-    public void TransmitCreateDirectory(String filename, Calendar date) {
+    public int TransmitCreateDirectory(String filename, Calendar date) {
         byte[] data = new byte[15 + filename.length()];
         data[0] = 'A';
         data[1] = 'x';
@@ -932,12 +944,16 @@ public class USBBulkConnection extends Connection {
         }
         data[i] = 0;
         ClearSync();
-        writeBytes(data);
-        WaitSync();
+        int writeResult = writeBytes(data);
+        if (writeResult != LibUsb.SUCCESS) {
+            return writeResult;
+        }
+        boolean syncSuccess = WaitSync(10000);
+        return syncSuccess ? LibUsb.SUCCESS : LibUsb.ERROR_TIMEOUT;
     }
 
     @Override
-    public void TransmitAppendFile(byte[] buffer) {
+    public int TransmitAppendFile(byte[] buffer) {
         byte[] data = new byte[8];
         data[0] = 'A';
         data[1] = 'x';
@@ -950,21 +966,32 @@ public class USBBulkConnection extends Connection {
         data[6] = (byte) (size >> 16);
         data[7] = (byte) (size >> 24);
         ClearSync();
-        writeBytes(data);
-        writeBytes(buffer);
-        WaitSync();
+        int result1 = writeBytes(data);
+        if (result1 != LibUsb.SUCCESS) {
+            return result1;
+        }
+        int result2 = writeBytes(buffer);
+        if (result2 != LibUsb.SUCCESS) {
+            return result2;
+        }
+        boolean syncSuccess = WaitSync(10000);
+        return syncSuccess ? LibUsb.SUCCESS : LibUsb.ERROR_TIMEOUT;
     }
 
     @Override
-    public void TransmitCloseFile() {
+    public int TransmitCloseFile() {
         byte[] data = new byte[4];
         data[0] = 'A';
         data[1] = 'x';
         data[2] = 'o';
         data[3] = 'c';
         ClearSync();
-        writeBytes(data);
-        WaitSync();
+        int writeResult = writeBytes(data);
+        if (writeResult != LibUsb.SUCCESS) {
+            return writeResult;
+        }
+        boolean syncSuccess = WaitSync(10000);
+        return syncSuccess ? LibUsb.SUCCESS : LibUsb.ERROR_TIMEOUT;
     }
 
     @Override
