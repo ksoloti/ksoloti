@@ -954,28 +954,26 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public int TransmitAppendFile(byte[] buffer) {
+        int size = buffer.length;
         byte[] data = new byte[8];
         data[0] = 'A';
         data[1] = 'x';
         data[2] = 'o';
         data[3] = 'a'; /* changed from 'A' to lower-case to avoid confusion with "AxoA" ack message (MCU->Patcher) */
-        int size = buffer.length;
-        // LOGGER.log(Level.INFO, "Append size: " + buffer.length);
         data[4] = (byte) size;
         data[5] = (byte) (size >> 8);
         data[6] = (byte) (size >> 16);
         data[7] = (byte) (size >> 24);
         ClearSync();
-        int result1 = writeBytes(data);
-        if (result1 != LibUsb.SUCCESS) {
-            return result1;
+        int writeResult = writeBytes(data);
+        if (writeResult != LibUsb.SUCCESS) {
+            return writeResult;
         }
-        int result2 = writeBytes(buffer);
-        if (result2 != LibUsb.SUCCESS) {
-            return result2;
+        writeResult = writeBytes(buffer);
+        if (writeResult != LibUsb.SUCCESS) {
+            return writeResult;
         }
-        boolean syncSuccess = WaitSync(10000);
-        return syncSuccess ? LibUsb.SUCCESS : LibUsb.ERROR_TIMEOUT;
+        return LibUsb.SUCCESS;
     }
 
     @Override
