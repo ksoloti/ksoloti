@@ -64,6 +64,14 @@ static char FileName[256];
 static FIL pFile;
 static int pFileSize;
 
+/* now static global */
+static uint32_t preset_index;
+static int32_t value;
+static int32_t position;
+static int32_t offset;
+static uint32_t length;
+static uint32_t patchid;
+
 MUTEX_DECL(LogMutex);
 char    LogBuffer[LOG_BUFFER_SIZE];
 uint8_t LogBufferUsed = 0;
@@ -436,7 +444,7 @@ void ReadDirectoryListing(void) {
 
 /* input data decoder state machine
  *
- * "AxoP" (int value, int16 index) -> parameter set
+ * "AxoP" (int value, int16 preset_index) -> parameter set
  * "AxoR" (uint length, data) -> preset data set
  * "AxoW" (uint length, int addr, char[length] data) -> generic memory write
  * "Axow" (uint length, int offset, char[12] filename, char[length] data) -> data write to SD card
@@ -730,14 +738,9 @@ void AddPCDebug(uint8_t c, int state) {
 void PExReceiveByte(unsigned char c) {
     static char header = 0;
     static int32_t state = 0;
-    static uint32_t index;
-    static int32_t value;
-    static int32_t position;
-    static int32_t offset;
-    static uint32_t length;
-    // static int32_t a;
-    // static int32_t b;
-    static uint32_t patchid;
+
+    static uint32_t current_filename_idx; /* For parsing filename characters into FileName[6]+ */
+    static uint32_t current_param_byte_idx; /* For parsing multi-byte parameters like pFileSize */
 
     AddPCDebug(c, state);
 
@@ -746,9 +749,9 @@ void PExReceiveByte(unsigned char c) {
 
             /* Confirm "Axo" sequence is correct first */
             case 0:
-                if (c == 'A') state++;
+                if (c == 'A') state++; 
                 break;
-            case 1:
+            case 1: 
                 if (c == 'x') state++;
                 else state = 0;
                 break;
@@ -761,256 +764,149 @@ void PExReceiveByte(unsigned char c) {
                 header = c;
                 switch (c) {
 
+                    /* --- Commands that keep AckPending = 1; (AxoA-based or dual-ack) --- */
                     case 'P': /* param change */
                     case 'R': /* preset change */
                     case 'W': /* generic write */
-                    case 'w': /* write file to SD */
+                    case 'w': /* write file to SD (old protocol) */
                     case 'T': /* apply preset */
                     case 'M': /* midi command */
-                    // case 'B': /* virtual Axoloti Control buttons DEPRECATED */
-                    case 'C': /* create/edit/close/delete file, create/change directory on SD */
-                    case 'a': /* append data to opened sdcard file
-                                 Note: changed from 'A' to lower-case
-                                 to avoid confusion with "AxoA" ack message (MCU->Patcher) */
+                    case 'U': /* Set cpU safety */
                     case 'r': /* generic read */
                     case 'y': /* generic read, 32 bit */
-                    case 'U': /* Set cpU safety*/
                         state = 4; /* All the above pass on directly to state 4. */
                         break;
                     case 'S': /* stop patch */
-                        // LogTextMessage("%u: AxoS received, c=%x", hal_lld_get_counter_value(), c);
-                        state = 0; header = 0;
+                        state = 0; header = 0; AckPending = 1;
                         StopPatch();
-                        AckPending = 1;
                         break;
                     case 'D': /* go to DFU mode */
-                        state = 0; header = 0;
+                        state = 0; header = 0; AckPending = 1;
                         StopPatch();
                         exception_initiate_dfu();
                         break;
                     case 'F': /* copy to flash */
-                        state = 0; header = 0;
+                        state = 0; header = 0; AckPending = 1;
                         StopPatch();
                         CopyPatchToFlash();
                         break;
                     case 'l': /* read directory listing */
-                        // LogTextMessage("%u: Axol received, c=%x", hal_lld_get_counter_value(), c);
-                        state = 0; header = 0;
-                        AckPending = 1; /* Immediately acknowledge the command receipt. */
-                        // StopPatch(); /* not strictly necessary but patch will glitch */
-                        ReadDirectoryListing();
+                        state = 0; header = 0; AckPending = 1; /* Immediate AxoA for receipt */
+                        ReadDirectoryListing(); /* Will send AxoRl when done */
                         break;
                     case 's': /* start patch */
-                        state = 0; header = 0;
+                        state = 0; header = 0; AckPending = 1;
                         loadPatchIndex = LIVE;
                         StartPatch();
-                        AckPending = 1;
                         break;
                     case 'V': /* FW version number */
-                        state = 0; header = 0;
+                        state = 0; header = 0; AckPending = 1;
                         ReplyFWVersion();
-                        AckPending = 1;
                         break;
                     case 'Y': /* is this Core SPILINK synced */
-                        state = 0; header = 0;
+                        state = 0; header = 0; AckPending = 1;
                         ReplySpilinkSynced();
-                        AckPending = 1;
                         break;
                     case 'p': /* ping */
-                        // LogTextMessage("%u: Axop (ping) received", hal_lld_get_counter_value());
-                        state = 0; header = 0;
-// #ifdef DEBUG_SERIAL
-//                         chprintf((BaseSequentialStream*) &SD2, "ping\r\n");
-// #endif
-                        AckPending = 1;
+                        state = 0; header = 0; AckPending = 1;
+                        break;
+                    
+                    /* --- Commands that DO NOT set AckPending (AxoR**-based) --- */
+                    case 'C': /* Unified File System Command (create, delete, mkdir, getinfo, close) */
+                        current_param_byte_idx = 0; /* Reset for pFileSize parsing */
+                        current_filename_idx = 0; /* Reset for filename parsing */
+                        state = 4; /* Next state will receive the 4-byte pFileSize/placeholder */
+                        break;
+                    case 'a': /* append data to opened sdcard file (top-level Axoa) */
+                        value = 0; /* Reset value for length parsing */
+                        current_param_byte_idx = 0; /* Reset for length parsing */
+                        state = 4; /* Start parsing length for append. */
                         break;
                     default:
-                        state = 0;
-                        break;
+                        state = 0; break; /* Unknown Axo* header */
                 }
         }
     }
     else if (header == 'P') { /* param change */
         switch (state) {
-            case 4:
-                patchid = c;
-                state++;
-                break;
-            case 5:
-                patchid += c << 8;
-                state++;
-                break;
-            case 6:
-                patchid += c << 16;
-                state++;
-                break;
-            case 7:
-                patchid += c << 24;
-                state++;
-                break;
-            case 8:
-                value = c;
-                state++;
-                break;
-            case 9:
-                value += c << 8;
-                state++;
-                break;
-            case 10:
-                value += c << 16;
-                state++;
-                break;
-            case 11:
-                value += c << 24;
-                state++;
-                break;
-            case 12:
-                index = c;
-                state++;
-                break;
-            case 13:
-                index += c << 8;
-                state = 0; header = 0;
-                if ((patchid == patchMeta.patchID) && (index < patchMeta.numPEx)) {
-                    PExParameterChange(&(patchMeta.pPExch)[index], value, 0xFFFFFFEE);
+            case 4: patchid  = c; state++; break;
+            case 5: patchid += (uint32_t)c <<  8; state++; break;
+            case 6: patchid += (uint32_t)c << 16; state++; break;
+            case 7: patchid += (uint32_t)c << 24; state++; break;
+            case 8:   value  = c; state++; break;
+            case 9:   value += (int32_t)c <<  8; state++; break;
+            case 10:  value += (int32_t)c << 16; state++; break;
+            case 11:  value += (int32_t)c << 24; state++; break;
+            case 12:  preset_index  = c; state++; break;
+            case 13:  preset_index += (uint32_t)c << 8;
+                if ((patchid == patchMeta.patchID) && (preset_index < patchMeta.numPEx)) {
+                    PExParameterChange(&(patchMeta.pPExch)[preset_index], value, 0xFFFFFFEE);
                 }
+                state = 0; header = 0; AckPending = 1;
                 break;
             default:
-                state = 0; header = 0;
+                state = 0; header = 0; AckPending = 1;
         }
     }
-    else if (header == 'U') { /* set CPU safety */
-        // LogTextMessage("%u: AxoU received, c=%x", hal_lld_get_counter_value(), c);
-        static uint16_t uUIMidiCost = 0;
-        static uint8_t  uDspLimit200 = 0;
+    else if (header == 'U') { /* set cpU satefy */
+        static uint16_t uUIMidiCost = 0; /* Local static */
+        static uint8_t  uDspLimit200 = 0; /* Local static */
 
         switch (state) {
-            case 4:
-                uUIMidiCost = c;
-                state++;
-                break;
-            case 5:
-                uUIMidiCost += c << 8;
-                state++;
-                break;
-            case 6:
-                uDspLimit200 = c;
+            case 4:  uUIMidiCost  = c; state++; break;
+            case 5:  uUIMidiCost += (uint16_t)c << 8; state++; break;
+            case 6: uDspLimit200  = c;
                 SetPatchSafety(uUIMidiCost, uDspLimit200);
-                state = 0; header = 0;
-                AckPending = 1;
+                state = 0; header = 0; AckPending = 1;
                 break;
             default:
-                state = 0; header = 0;
-                AckPending = 1;
-                break;
+                state = 0; header = 0; AckPending = 1;
         }
     }
     else if (header == 'W') { /* generic write */
-        // LogTextMessage("%u: AxoW received, c=%x", hal_lld_get_counter_value(), c);
         switch (state) {
-            case 4:
-                offset = c;
-                state++;
-                break;
-            case 5:
-                offset += c << 8;
-                state++;
-                break;
-            case 6:
-                offset += c << 16;
-                state++;
-                break;
-            case 7:
-                offset += c << 24;
-                state++;
-                break;
-            case 8:
-                value = c;
-                state++;
-                break;
-            case 9:
-                value += c << 8;
-                state++;
-                break;
-            case 10:
-                value += c << 16;
-                state++;
-                break;
-            case 11:
-                value += c << 24;
-                state++;
-                break;
-            default:
+            case 4: offset  = c; state++; break;
+            case 5: offset += (int32_t)c <<  8; state++; break;
+            case 6: offset += (int32_t)c << 16; state++; break;
+            case 7: offset += (int32_t)c << 24; state++; break;
+            case 8:  value  = c; state++; break;
+            case 9:  value += (int32_t)c <<  8; state++; break;
+            case 10: value += (int32_t)c << 16; state++; break;
+            case 11: value += (int32_t)c << 24; state++; break; /* value is now length */
+            default: /* Data streaming state */
                 if (value > 0) {
                     value--;
                     *((unsigned char*) offset) = c;
                     offset++;
                     if (value == 0) {
-                        state = 0; header = 0;
-                        AckPending = 1;
+                        state = 0; header = 0; AckPending = 1;
                     }
                 }
-                else {
-                    state = 0; header = 0;
-                    AckPending = 1;
+                else { /* Should not happen, or error */
+                    state = 0; header = 0; AckPending = 1;
                 }
         }
     }
-    else if (header == 'w') { /* write file to SD */
-        /* This seems to be a "backwards compatibility" type command - current Patcher is not using it" */
-        // LogTextMessage("%u: Axow received, c=%x", hal_lld_get_counter_value(), c);
+    else if (header == 'w') { /* write file to SD (old protocol)*/
         switch (state) {
-            case 4:
-                offset = c;
+            case 4: offset  = c; state++; break;
+            case 5: offset += (int32_t)c <<  8; state++; break;
+            case 6: offset += (int32_t)c << 16; state++; break;
+            case 7: offset += (int32_t)c << 24; state++; break;
+            case 8:  value  = c; state++; break;
+            case 9:  value += (int32_t)c <<  8; state++; break;
+            case 10: value += (int32_t)c << 16; state++; break;
+            case 11: value += (int32_t)c << 24; /* value is now length */
+                length = (uint32_t)value; /* Initial length for the file */
+                position = offset; /* Start address for data in RAM */
                 state++;
                 break;
-            case 5:
-                offset += c << 8;
+            case 12: case 13: case 14: case 15: case 16: case 17: case 18: case 19: case 20: case 21: case 22: case 23:
+                FileName[state - 12] = c; /* Filename parsing */
                 state++;
                 break;
-            case 6:
-                offset += c << 16;
-                state++;
-                break;
-            case 7:
-                offset += c << 24;
-                state++;
-                break;
-            case 8:
-                value = c;
-                state++;
-                break;
-            case 9:
-                value += c << 8;
-                state++;
-                break;
-            case 10:
-                value += c << 16;
-                state++;
-                break;
-            case 11:
-                value += c << 24;
-                length = value;
-                position = offset;
-                state++;
-                break;
-            case 12:
-            case 13:
-            case 14:
-            case 15:
-            case 16:
-            case 17:
-            case 18:
-            case 19:
-            case 20:
-            case 21:
-            case 22:
-            case 23:
-                FileName[state - 12] = c;
-                state++;
-                break;
-            default:
-                if (value > 0) {
+            default: /* Data streaming state */
+                if (value > 0) { /* 'value' tracks remaining bytes to write */
                     value--;
                     *((unsigned char*) position) = c;
                     position++;
@@ -1038,292 +934,211 @@ void PExReceiveByte(unsigned char c) {
                         if (op_result != FR_OK) {
                             LogTextMessage("File close failed");
                         }
+                        state = 0; header = 0; AckPending = 1;
+                    }
+                }
+                else { /* Should not happen, or error */
+                    state = 0; header = 0; AckPending = 1;
+                }
+        }
+    }
+    else if (header == 'T') { /* apply preset */
+        ApplyPreset(c); /* 'c' is the preset index */
+        state = 0; header = 0; AckPending = 1;
+    }
+    else if (header == 'M') { /* midi message */
+        static uint8_t midi_r[3]; /* Local static */
+        switch (state) {
+            case 4: midi_r[0] = c; state++; break;
+            case 5: midi_r[1] = c; state++; break;
+            case 6: midi_r[2] = c;
+                MidiInMsgHandler(MIDI_DEVICE_INTERNAL, 1, midi_r[0], midi_r[1], midi_r[2]);
+                state = 0; header = 0; AckPending = 1;
+                break;
+            default:
+                state = 0; header = 0; AckPending = 1;
+        }
+    }
+    else if (header == 'C') { /* create/edit/close/delete file, create/change directory on SD */ 
+        // LogTextMessage("%u: AxoC received, c=%x, state=%u", hal_lld_get_counter_value(), c, state);
+        switch (state) {
+            case 4: /* Expecting pFileSize (byte 0) for 'f', or placeholder for others */
+                pFileSize = c; /* Store first byte of pFileSize/placeholder */
+                current_param_byte_idx = 1; /* Track bytes received for pFileSize */
+                state++;
+                break;
+            case 5: /* pFileSize (byte 1) */
+                pFileSize |= (int32_t)c << 8;
+                current_param_byte_idx++;
+                state++;
+                break;
+            case 6: /* pFileSize (byte 2) */
+                pFileSize |= (int32_t)c << 16;
+                current_param_byte_idx++;
+                state++;
+                break;
+            case 7: /* pFileSize (byte 3) */
+                pFileSize |= (int32_t)c << 24;
+                current_param_byte_idx++;
+                /* Now pFileSize is fully parsed */
+                state++;
+                break;
+            case 8: /* Expecting FileName[0] */
+                FileName[0] = c; /* Should always be 0 */
+                state++;
+                break;
+            case 9: /* Expecting FileName[1] (sub-command: 'f', 'k', 'c', 'D', 'C', 'I') */
+                FileName[1] = c; /* Store the sub-command */
 
-                        state = 0; header = 0;
-                        AckPending = 1;
+                if (FileName[1] == 'f' || FileName[1] == 'k' || FileName[1] == 'c') {
+                    /* These expect fdate/ftime next (FileName[2]...[5]) */
+                    state = 10; /* Go to state to receive FileName[2] (fdate byte 0) */
+                } else if (FileName[1] == 'D' || FileName[1] == 'C' || FileName[1] == 'I') {
+                    /* These skip fdate/ftime and go straight to filename (FileName[6]+) */
+                    current_filename_idx = 6; /* Start filename parsing from FileName[6] */
+                    state = 14; /* Go to state to receive FileName[6] (filename byte 0) */
+                } else {
+                    /* Unknown sub-command for AxoC */
+                    header = 0; state = 0; /* Reset state machine, no AckPending */
+                }
+                break;
+            /* --- States for parsing fdate/ftime (2 bytes each) into FileName[2] to FileName[5] --- */
+            /* Used by 'f', 'k', 'c' */
+            case 10: /* Expecting FileName[2] (fdate byte 0) */
+                FileName[2] = c; state++; break;
+            case 11: /* Expecting FileName[3] (fdate byte 1) */
+                FileName[3] = c; state++; break;
+            case 12: /* Expecting FileName[4] (ftime byte 0) */
+                FileName[4] = c; state++; break;
+            case 13: /* Expecting FileName[5] (ftime byte 1) */
+                FileName[5] = c;
+                current_filename_idx = 6; /* Next byte is FileName[6] (start of filename) */
+                state++; /* Move on to filename parsing state (case 14) */
+                break;
+            
+            /* --- States for parsing filename (variable length, null-terminated) into FileName[6] onwards --- */
+            /* Used by 'f', 'k', 'c', 'D', 'C', 'I' */
+            case 14: /* Start/continue filename parsing (into FileName[6]+) */
+                if (current_filename_idx < sizeof(FileName)) {
+                    FileName[current_filename_idx++] = c;
+                    if (c == 0) { // Null terminator received
+                        /* Filename complete, dispatch command */
+                        StopPatch();
+                        ManipulateFile(); /* ManipulateFile will now use FileName and pFileSize */
+                        header = 0; state = 0; /* Reset state machine, no AckPending */
                     }
                 }
                 else {
-                    state = 0; header = 0;
+                    header = 0; state = 0; /* Error: filename too long */
                 }
+                break;
+            
+            default: /* Unknown state: reset state machine */
+                header = 0; state = 0;
+                break;
         }
     }
-    else if (header == 'T') { /* Apply Preset */
-        ApplyPreset(c);
-        state = 0; header = 0;
-        AckPending = 1;
-    }
-    else if (header == 'M') { /* Midi message */
-        static uint8_t midi_r[3];
+    else if (header == 'a') { /* append data to open file on SD */
         switch (state) {
-            case 4:
-                midi_r[0] = c;
-                state++;
+            case 4: value  = c; current_param_byte_idx = 1; state++; break;
+            case 5: value |= (int32_t)c <<  8; current_param_byte_idx++; state++; break;
+            case 6: value |= (int32_t)c << 16; current_param_byte_idx++; state++; break;
+            case 7: value |= (int32_t)c << 24; /* Total length */
+                length = (uint32_t)value; /* Store the length to be received */
+                position = PATCHMAINLOC; /* Set base address for data buffer */
+                state = 8; /* Move on to data streaming state */
                 break;
-            case 5:
-                midi_r[1] = c;
-                state++;
-                break;
-            case 6:
-                midi_r[2] = c;
-                MidiInMsgHandler(MIDI_DEVICE_INTERNAL, 1, midi_r[0], midi_r[1],
-                midi_r[2]);
-                state = 0; header = 0;
-                break;
-            default:
-                state = 0; header = 0;
-        }
-    }
-    else if (header == 'C') { /* create/edit/close/delete file, create/change directory on SD */
-        // LogTextMessage("%u: AxoC received, c=%x", hal_lld_get_counter_value(), c);
-        switch (state) {
-            case 4:
-                pFileSize = c;
-                state++;
-                break;
-            case 5:
-                pFileSize += c << 8;
-                state++;
-                break;
-            case 6:
-                pFileSize += c << 16;
-                state++;
-                break;
-            case 7:
-                pFileSize += c << 24;
-                state++;
-                break;
-            case 8:
-                FileName[state - 8] = c;
-                /* Filename starting with null means there are attributes present */
-                state++;
-                break;
-            default:
-                if (c || ((!FileName[0])&&(state<14))) {
-                    FileName[state - 8] = c;
-                    state++;
-                }
-                else {
-                    FileName[state - 8] = 0;
-                    StopPatch();
-                    ManipulateFile();
-                    state = 0; header = 0;
-                }
-        }
-    }
-    else if (header == 'a') { /* append data to opened file on SD */
-        // LogTextMessage("%u: Axoa received, c=%x", hal_lld_get_counter_value(), c);
-        switch (state) {
-            case 4:
-                value = c;
-                state++;
-                break;
-            case 5:
-                value += c << 8;
-                state++;
-                break;
-            case 6:
-                value += c << 16;
-                state++;
-                break;
-            case 7:
-                value += c << 24;
-                length = value;
-                position = PATCHMAINLOC;
-                state++;
-                break;
-            default:
-                if (value > 0) {
-                    value--;
+            case 8: /* Data streaming state */
+                if (length > 0) { /* 'length' now tracks remaining bytes to receive */
                     *((unsigned char*) position) = c;
                     position++;
-                    if (value == 0) {
-                        AppendFile(length);
-                        state = 0; header = 0;
-                        AckPending = 1;
+                    length--;
+                    if (length == 0) {
+                        AppendFile((uint32_t)value); /* Call AppendFile with the total length ('value') */
+                        state = 0; header = 0; /* Reset state machine, no AckPending */
                     }
                 }
-                else {
-                    state = 0; header = 0;
+                else { /* Should not happen, or error */
+                    state = 0; header = 0; /* Reset state machine, no AckPending */
                 }
+                break;
+            default: /* Error or unexpected state */
+                state = 0; header = 0; /* Reset state machine, no AckPending */
+                break;
         }
     }
-    // else if (header == 'B') { /* virtual Axoloti Control buttons DEPRECATED */
-    //     switch (state) {
-    //         case 4:
-    //             a = c;
-    //             state++;
-    //             break;
-    //         case 5:
-    //             a += c << 8;
-    //             state++;
-    //             break;
-    //         case 6:
-    //             a += c << 16;
-    //             state++;
-    //             break;
-    //         case 7:
-    //             a += c << 24;
-    //             state++;
-    //             break;
-    //         case 8:
-    //             b = c;
-    //             state++;
-    //             break;
-    //         case 9:
-    //             b += c << 8;
-    //             state++;
-    //             break;
-    //         case 10:
-    //             b += c << 16;
-    //             state++;
-    //             break;
-    //         case 11:
-    //             b += c << 24;
-    //             state++;
-    //             break;
-    //         case 12:
-    //             // EncBuffer[0] += c;
-    //             state++;
-    //             break;
-    //         case 13:
-    //             // EncBuffer[1] += c;
-    //             state++;
-    //             break;
-    //         case 14:
-    //             // EncBuffer[2] += c;
-    //             state++;
-    //             break;
-    //         case 15:
-    //             // EncBuffer[3] += c;
-    //             state = 0; header = 0;
-    //             // Btn_Nav_Or.word = Btn_Nav_Or.word | a;
-    //             // Btn_Nav_And.word = Btn_Nav_And.word & b;
-    //             break;
-    //     }
-    // }
     else if (header == 'R') { /* preset change */
-        // LogTextMessage("%u: AxoR received, c=%x", hal_lld_get_counter_value(), c);
         switch (state) {
-            case 4:
-                length = c;
-                state++;
+            case 4: length  = c; state++; break;
+            case 5: length += (uint32_t)c <<  8; state++; break;
+            case 6: length += (uint32_t)c << 16; state++; break;
+            case 7: length += (uint32_t)c << 24; state++;
+                offset = (int32_t)patchMeta.pPresets;
                 break;
-            case 5:
-                length += c << 8;
-                state++;
-                break;
-            case 6:
-                length += c << 16;
-                state++;
-                break;
-            case 7:
-                length += c << 24;
-                state++;
-                offset = (int)patchMeta.pPresets;
-                break;
-            default:
+            default: /* Data streaming state */
                 if (length > 0) {
                     length--;
-                    if (offset) {
+                    if (offset) { /* Check if offset is valid */
                         *((unsigned char*) offset) = c;
                         offset++;
                     }
                     if (length == 0) {
-                        state = 0; header = 0;
-                        AckPending = 1;
+                        state = 0; header = 0; AckPending = 1;
                     }
                 }
                 else {
-                    state = 0; header = 0;
-                    AckPending = 1;
+                    state = 0; header = 0; AckPending = 1;
                 }
         }
     }
     else if (header == 'r') { /* generic read */
-        // LogTextMessage("%u: Axor received, c=%x", hal_lld_get_counter_value(), c);
         switch (state) {
-            case 4:
-                offset = c;
-                state++;
+            case 4: offset  = c; state++; break;
+            case 5: offset += (int32_t)c <<  8; state++; break;
+            case 6: offset += (int32_t)c << 16; state++; break;
+            case 7: offset += (int32_t)c << 24; state++; break;
+            case 8:  value  = c; state++; break;
+            case 9:  value += (int32_t)c <<  8; state++; break;
+            case 10: value += (int32_t)c << 16; state++; break;
+            case 11: value += (int32_t)c << 24;
+                uint32_t read_reply_header[3];
+                ((char*) read_reply_header)[0] = 'A';
+                ((char*) read_reply_header)[1] = 'x';
+                ((char*) read_reply_header)[2] = 'o';
+                ((char*) read_reply_header)[3] = 'r';
+                read_reply_header[1] = (uint32_t)offset;
+                read_reply_header[2] = (uint32_t)value;
+                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12); /* 3*4 bytes */
+                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (offset), (uint32_t)value);
+                state = 0; header = 0; AckPending = 1;
                 break;
-            case 5:
-                offset += c << 8;
-                state++;
-                break;
-            case 6:
-                offset += c << 16;
-                state++;
-                break;
-            case 7:
-                offset += c << 24;
-                state++;
-                break;
-            case 8:
-                value = c;
-                state++;
-                break;
-            case 9:
-                value += c << 8;
-                state++;
-                break;
-            case 10:
-                value += c << 16;
-                state++;
-                break;
-            case 11:
-                value += c << 24;
-
-                uint32_t read_repy_header[3];
-                ((char*) read_repy_header)[0] = 'A';
-                ((char*) read_repy_header)[1] = 'x';
-                ((char*) read_repy_header)[2] = 'o';
-                ((char*) read_repy_header)[3] = 'r';
-                read_repy_header[1] = offset;
-                read_repy_header[2] = value;
-                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_repy_header[0]), 3 * 4);
-                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (offset), value);
-
-                state = 0; header = 0;
-                AckPending = 1;
-                break;
+            default:
+                state = 0; header = 0; AckPending = 1;
         }
     }
-    else if (header == 'y') { /* generic read, 32bit */
-        // LogTextMessage("%u: Axoy received, c=%x", hal_lld_get_counter_value(), c);
+    else if (header == 'y') { /* generic read, 32-bit */
         switch (state) {
-            case 4:
-                offset = c;
-                state++;
+            case 4: offset  = c; state++; break;
+            case 5: offset += (int32_t)c <<  8; state++; break;
+            case 6: offset += (int32_t)c << 16; state++; break;
+            case 7: offset += (int32_t)c << 24;
+                uint32_t read_reply_header[3];
+                ((char*) read_reply_header)[0] = 'A';
+                ((char*) read_reply_header)[1] = 'x';
+                ((char*) read_reply_header)[2] = 'o';
+                ((char*) read_reply_header)[3] = 'y';
+                read_reply_header[1] = (uint32_t)offset;
+                read_reply_header[2] = *((uint32_t*) offset);
+                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12); /* 3*4 bytes */
+                state = 0; header = 0; AckPending = 1;
                 break;
-            case 5:
-                offset += c << 8;
-                state++;
-                break;
-            case 6:
-                offset += c << 16;
-                state++;
-                break;
-            case 7:
-                offset += c << 24;
-
-                uint32_t read_repy_header[3];
-                ((char*) read_repy_header)[0] = 'A';
-                ((char*) read_repy_header)[1] = 'x';
-                ((char*) read_repy_header)[2] = 'o';
-                ((char*) read_repy_header)[3] = 'y';
-                read_repy_header[1] = offset;
-                read_repy_header[2] = *((uint32_t*) offset);
-                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_repy_header[0]), 3 * 4);
-
-                state = 0; header = 0;
-                AckPending = 1;
-                break;
+            default:
+                state = 0; header = 0; AckPending = 1;
         }
     }
     else { /* unknown command */
         // LogTextMessage("%u: Unknown cmd received: Axo%c, c=%x", hal_lld_get_counter_value(), header, c);
-        state = 0; header = 0;
+        state = 0; header = 0; AckPending = 1;
     }
 }
 
