@@ -355,6 +355,25 @@ static FRESULT scan_files(char *path) {
 #pragma GCC diagnostic pop /* diagnostic ignored "-Wrestrict" */
 
 
+static void send_AxoResponse(char cmd_byte, FRESULT status) {
+    /* Send command response: AxoR<command_byte><status_byte> 
+       Required by Patcher to mark operations as completed and see if they were successful.
+       Currently the following commands require an AxoR<c><s> response:
+       - create directory
+       - change directory
+       - create file
+       - append to file
+       - close file
+       - delete file */
+    char res_msg[6];
+    res_msg[0] = 'A'; res_msg[1] = 'x'; res_msg[2] = 'o'; res_msg[3] = 'R';
+    res_msg[4] = cmd_byte;
+    res_msg[5] = (char)status;
+    chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) res_msg, 6);
+    // LogTextMessage("%u: Sent AxoR, command='%c', status=%u", hal_lld_get_counter_value(), res_msg[4], res_msg[5]);
+}
+
+
 void ReadDirectoryListing(void) {
     // LogTextMessage("%u: Entered RDL", hal_lld_get_counter_value());
     FATFS *fsp;
