@@ -355,7 +355,7 @@ static FRESULT scan_files(char *path) {
 #pragma GCC diagnostic pop /* diagnostic ignored "-Wrestrict" */
 
 
-static void send_AxoResponse(char cmd_byte, FRESULT status) {
+static void send_AxoResult(char cmd_byte, FRESULT status) {
     /* Send command response: AxoR<command_byte><status_byte> 
        Required by Patcher to mark operations as completed and see if they were successful.
        Currently the following commands require an AxoR<c><s> response:
