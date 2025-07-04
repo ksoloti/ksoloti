@@ -981,6 +981,7 @@ void PExReceiveByte(unsigned char c) {
         }
     }
     else if (header == 'w') { /* write file to SD */
+        /* This seems to be a "backwards compatibility" type command - current Patcher is not using it" */
         // LogTextMessage("%u: Axow received, c=%x", hal_lld_get_counter_value(), c);
         switch (state) {
             case 4:
@@ -1040,17 +1041,21 @@ void PExReceiveByte(unsigned char c) {
                     if (value == 0) {
 
                         FRESULT err;
+                        UINT bytes_written;
 
                         sdcard_attemptMountIfUnmounted();
-                        err = f_open(&pFile, &FileName[0], FA_WRITE | FA_CREATE_ALWAYS); // TODO are we sure this should be FileName[0] and not [6]?
+                        
+                        err = f_open(&pFile, &FileName[0], FA_WRITE | FA_CREATE_ALWAYS);
                         if (err != FR_OK) {
                             LogTextMessage("File open failed");
                         }
-                        int bytes_written;
                         err = f_write(&pFile, (char*) offset, length, (void*) &bytes_written);
                         if (err != FR_OK) {
                             LogTextMessage("File write failed");
                         }
+                        // if (bytes_written != length) {
+                        //     LogTextMessage("%u: ERROR: Axow f_write, err:%u, requested:%d, written:%u, path:%s", hal_lld_get_counter_value(), err, length, bytes_written, FileName[6]);
+                        // }
                         err = f_close(&pFile);
                         if (err != FR_OK) {
                             LogTextMessage("File close failed");
