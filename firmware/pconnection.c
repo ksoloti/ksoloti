@@ -484,156 +484,133 @@ static void ManipulateFile(void) {
     }
     else { /* filename[0] == 0 */
 
-        FRESULT err = FR_OK;
-        char command_byte_to_ack = 0;
+        /* At the time ManipulateFile() is called,
+         * the sub-command is now in FileName[1]
+         * fdate is FileName[2] + (FileName[3]<<8)
+         * ftime is FileName[4] + (FileName[5]<<8)
+         * filename path starts at FileName[6]
+         * pFileSize is used for file size in 'f' command
+         */
 
-        if (FileName[1] == 'I') { /* get file info (sends no AxoR) */
+        if (FileName[1] == 'k') { /* create directory (AxoCk) */
+            // LogTextMessage("%u: Executing 'k' (kreate direktory) command.", hal_lld_get_counter_value());
+            
+            FRESULT op_result = f_mkdir(&FileName[6]); /* Path from FileName[6]+ */
+            if ((op_result != FR_OK) && (op_result != FR_EXIST)) {
+                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
+                // LogTextMessage("%u: ERROR: MNPFL f_mkdir, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                return;
+            }
+            
+            FILINFO fno;
+            fno.fdate = FileName[2] + (FileName[3]<<8); /* Date from FileName[2/3] */
+            fno.ftime = FileName[4] + (FileName[5]<<8); /* Time from FileName[4/5] */
+
+            op_result = f_utime(&FileName[6], &fno); /* Path from FileName[6]+ */
+            if (op_result != FR_OK) {
+                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
+                // LogTextMessage("%u: ERROR: MNPFL f_utime, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                return;
+            }
+            send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
+            return;
+        }
+        else if (FileName[1] == 'f') { /* create file (AxoCf) */
+            // LogTextMessage("%u: Executing 'f' (create file) command.", hal_lld_get_counter_value());
+            
+            FRESULT op_result = f_open(&pFile, &FileName[6], FA_WRITE | FA_CREATE_ALWAYS); /* Path from FileName[6]+ */
+            if (op_result != FR_OK) {
+                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
+                // LogTextMessage("%u: ERROR: MNPFL f_open, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                return;
+            }
+
+            op_result = f_lseek(&pFile, pFileSize); /* pFileSize holds the size from received AxoCf command */
+            if (op_result != FR_OK) {
+                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
+                // LogTextMessage("%u: ERROR: MNPFL f_lseek1, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                return;
+            }
+
+            op_result = f_lseek(&pFile, 0);
+            if (op_result != FR_OK) {
+                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
+                // LogTextMessage("%u: ERROR: MNPFL f_lseek2, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                return;
+            }
+            send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
+            return;
+        }
+        else if (FileName[1] == 'c') { /* close currently open file (AxoCc) */
+            // LogTextMessage("%u: Executing 'c' (close file) command.", hal_lld_get_counter_value());
+            
+            FRESULT op_result = f_close(&pFile);
+            if (op_result != FR_OK) {
+                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
+                // LogTextMessage("%u: ERROR: CloseFile f_close, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                return;
+            }
+
+            FILINFO fno;
+            fno.fdate = FileName[2] + (FileName[3]<<8); /* Date from FileName[2/3] */
+            fno.ftime = FileName[4] + (FileName[5]<<8); /* Time from FileName[4/5] */
+            op_result = f_utime(&FileName[6], &fno); /* Path from FileName[6]+ */
+            if (op_result != FR_OK) {
+                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
+                // LogTextMessage("%u: ERROR: CloseFile f_utime, Date/Time:%x %x, path:%s", hal_lld_get_counter_value(), fno.fdate, fno.ftime, &FileName[6]);
+                return;
+            }
+            send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
+            return;
+        }
+        else if (FileName[1] == 'D') { /* delete file (AxoCD) */
+            // LogTextMessage("%u: Executing 'D' (delete) command.", hal_lld_get_counter_value());
+
+            FRESULT op_result = f_unlink(&FileName[6]); /* Path from FileName[6]+ */
+            if (op_result != FR_OK) {
+                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
+                // LogTextMessage("%u: ERROR: MNPFL f_unlink, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                return;
+            }
+            send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
+            return;
+        }
+        else if (FileName[1] == 'C') { /* change working directory (AxoCC) */
+            // LogTextMessage("%u: Executing 'C' (change directory) command.", hal_lld_get_counter_value());
+
+            FRESULT op_result = f_chdir(&FileName[6]); /* Path from FileName[6]+ */
+            if (op_result != FR_OK) {
+                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
+                // LogTextMessage("%u: ERROR: MNPFL f_chdir, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                return;
+            }
+            send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
+            return;
+        }
+        else if (FileName[1] == 'I') { /* get file info (AxoCI) */
             // LogTextMessage("%u: Executing 'I' (get file info) command.", hal_lld_get_counter_value());
 
             FILINFO fno;
-            fno.lfname = &((char*) fbuff)[0];
-            fno.lfsize = 256;
+            fno.lfname = &((char*) fbuff)[0]; // fbuff is a global buffer
+            fno.lfsize = 256; // Max size for long file name
             
-            err = f_stat(&FileName[6], &fno);
-            if (err == FR_OK) {
+            FRESULT op_result = f_stat(&FileName[6], &fno); /* Path from FileName[6]+ */
+            if (op_result == FR_OK) {
                 char *msg = &((char*) fbuff)[0];
-                msg[0] = 'A';
-                msg[1] = 'x';
-                msg[2] = 'o';
-                msg[3] = 'f';
+                msg[0] = 'A'; msg[1] = 'x'; msg[2] = 'o'; msg[3] = 'f';
                 *(int32_t*) (&msg[4]) = fno.fsize;
                 *(int32_t*) (&msg[8]) = fno.fdate + (fno.ftime<<16);
-                strcpy(&msg[12], &FileName[6]);
+                strcpy(&msg[12], &FileName[6]); // Copy from FileName[6]
                 int l = strlen(&msg[12]);
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) msg, l+13);
             }
-            else {
-                // LogTextMessage("%u: ERROR: MNPFL f_stat, err:%u, path:%s", hal_lld_get_counter_value(), err, &FileName[6]);
-                report_fatfs_error(err, &FileName[6]);
-            }
-            AckPending = (err == FR_OK); /* AckPending = 1 if no error - only for AxoCI */ // TODO: should probably introduce AxoRI result here instead.
+            // else {
+            //     LogTextMessage("%u: ERROR: MNPFL f_stat, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+            // }
+            send_AxoResult(FileName[1], op_result); /* Explicit AxoR for success or failure */
             return;
         }
-        else if (FileName[1] == 'k') { /* create directory */
-            // LogTextMessage("%u: Executing 'k' (kreate direktory) command.", hal_lld_get_counter_value());
-            
-            command_byte_to_ack = 'k';
-            
-            err = f_mkdir(&FileName[6]);
-            if ((err != FR_OK) && (err != FR_EXIST)) { // FR_EXIST is not an error for mkdir
-                send_AxoResult(command_byte_to_ack, err);
-                // LogTextMessage("%u: ERROR: MNPFL f_mkdir, err:%u, path:%s", hal_lld_get_counter_value(), err, &FileName[6]);
-                report_fatfs_error(err, &FileName[6]);
-                return;
-            }
-            
-            /* Try to set timestamp */
-            FILINFO fno;
-            fno.fdate = FileName[2] + (FileName[3]<<8);
-            fno.ftime = FileName[4] + (FileName[5]<<8);
-
-            err = f_utime(&FileName[6], &fno);
-            if (err != FR_OK) {
-                send_AxoResult(command_byte_to_ack, err);
-                // LogTextMessage("%u: ERROR: MNPFL f_utime, err:%u, path:%s", hal_lld_get_counter_value(), err, &FileName[6]);
-                report_fatfs_error(err, &FileName[6]);
-                return;
-            }
-        }
-        else if (FileName[1] == 'f') { /* create file */
-            // LogTextMessage("%u: Executing 'f' (create file) command.", hal_lld_get_counter_value());
-            
-            command_byte_to_ack = 'f';
-            
-            err = f_open(&pFile, &FileName[6], FA_WRITE | FA_CREATE_ALWAYS);
-            if (err != FR_OK) {
-                send_AxoResult(command_byte_to_ack, err);
-                // LogTextMessage("%u: ERROR: MNPFL f_open, err:%u, path:%s", hal_lld_get_counter_value(), err, &FileName[6]);
-                report_fatfs_error(err, &FileName[6]);
-                return;
-            }
-
-            err = f_lseek(&pFile, pFileSize);
-            if (err != FR_OK) {
-                send_AxoResult(command_byte_to_ack, err);
-                // LogTextMessage("%u: ERROR: MNPFL f_lseek1, err:%u, path:%s", hal_lld_get_counter_value(), err, &FileName[6]);
-                report_fatfs_error(err, &FileName[6]);
-                return;
-            }
-
-            err = f_lseek(&pFile, 0);
-            if (err != FR_OK) {
-                send_AxoResult(command_byte_to_ack, err);
-                // LogTextMessage("%u: ERROR: MNPFL f_lseek2, err:%u, path:%s", hal_lld_get_counter_value(), err, &FileName[6]);
-                report_fatfs_error(err, &FileName[6]);
-                return;
-            }
-        }
-        else if (FileName[1] == 'c') { /* close currently open file*/
-            // LogTextMessage("%u: Executing 'c' (close file) command.", hal_lld_get_counter_value());
-            
-            command_byte_to_ack = 'c';
-            
-            err = f_close(&pFile);
-            if (err != FR_OK) {
-                send_AxoResult(command_byte_to_ack, err);
-                // LogTextMessage("%u: ERROR: CloseFile f_close, err:%u, path:%s", hal_lld_get_counter_value(), err, &FileName[6]);
-                report_fatfs_error(err, &FileName[6]);
-                return;
-            }
-
-            FILINFO fno;
-            /* Try to set timestamp */
-            fno.fdate = FileName[2] + (FileName[3]<<8);
-            fno.ftime = FileName[4] + (FileName[5]<<8);
-            err = f_utime(&FileName[6], &fno);
-            if (err != FR_OK) {
-                send_AxoResult(command_byte_to_ack, err);
-                // LogTextMessage("%u: ERROR: CloseFile f_utime, Filename2-5:%x %x %x %x, path:%s", hal_lld_get_counter_value(), FileName[2], FileName[3], FileName[4], FileName[5], &FileName[6]);
-                report_fatfs_error(err, &FileName[6]);
-                return;
-            }
-        }
-        else if (FileName[1] == 'D') { /* delete file */
-            // LogTextMessage("%u: Executing 'D' (delete) command.", hal_lld_get_counter_value());
-
-            command_byte_to_ack = 'D';
-
-            /* EDIT: f_chdir might not be necessary anymore - observing */
-            // err = f_chdir("/"); /* Change to root dir (avoid FR_DENIED if item to be deleted is a (currently open) directory) */
-            // if (err != FR_OK) {
-            //     send_AxoResult(command_byte_to_ack, err);
-            //     // LogTextMessage("%u: ERROR: MNPFL f_chdir, err:%u, path:%s", hal_lld_get_counter_value(), err, &FileName[6]);
-            //     report_fatfs_error(err, &FileName[6]);
-            //     return;
-            // }
-            
-            err = f_unlink(&FileName[6]);
-            if (err != FR_OK) {
-                send_AxoResult(command_byte_to_ack, err);
-                // LogTextMessage("%u: ERROR: MNPFL f_unlink, err:%u, path:%s", hal_lld_get_counter_value(), err, &FileName[6]);
-                report_fatfs_error(err, &FileName[6]);
-                return;
-            }
-        }
-        else if (FileName[1] == 'C') { /* change working directory */
-            // LogTextMessage("%u: Executing 'C' (change directory) command.", hal_lld_get_counter_value());
-
-            command_byte_to_ack = 'C';
-
-            err = f_chdir(&FileName[6]);
-            if (err != FR_OK) {
-                send_AxoResult(command_byte_to_ack, err);
-                // LogTextMessage("%u: ERROR: MNPFL f_chdir, err:%u, path:%s", hal_lld_get_counter_value(), err, &FileName[6]);
-                report_fatfs_error(err, &FileName[6]);
-                return;
-            }
-        }
-        /* If we get here, it means all requested operations were successful and err is FR_OK. */
-        send_AxoResult(command_byte_to_ack, err);
-
-    }  /* filename[0] == 0 */
-    // LogTextMessage("%u: Leaving MNPFL, AckPending=%u", hal_lld_get_counter_value(), AckPending);
+    }
 }
 
 
