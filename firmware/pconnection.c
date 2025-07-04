@@ -408,9 +408,6 @@ void ReadDirectoryListing(void) {
         chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&fbuff[0]), 6);
         return;
     }
-    // else {
-    //     LogTextMessage("%u: RDL scan_files done, err:%u", hal_lld_get_counter_value(), err);
-    // }
 
     /* Send the final "Axof" for the root directory to indicate parent context */
     ((char*) fbuff)[0] = 'A';
@@ -441,10 +438,10 @@ void ReadDirectoryListing(void) {
 /* input data decoder state machine
  *
  * "AxoP" (int value, int16 index) -> parameter set
- * "AxoR" (int length, data) -> preset data set
- * "AxoW" (int length, int addr, char[length] data) -> generic memory write
- * "Axow" (int length, int offset, char[12] filename, char[length] data) -> data write to SD card
- * "Axor" (int offset, int length) -> generic memory read
+ * "AxoR" (uint length, data) -> preset data set
+ * "AxoW" (uint length, int addr, char[length] data) -> generic memory write
+ * "Axow" (uint length, int offset, char[12] filename, char[length] data) -> data write to SD card
+ * "Axor" (int offset, uint length) -> generic memory read
  * "Axoy" (int offset) -> generic memory read, single 32bit aligned
  * "AxoY" returns true if Core SPILink jumper is set, i.e. Core is set up to be synced
  * "AxoS" -> start patch
@@ -592,8 +589,8 @@ static void ManipulateFile(void) {
             }
         }
         else if (FileName[1] == 'I') { /* get file info */
-
             // LogTextMessage("%u: Executing 'I' (get file info) command.", hal_lld_get_counter_value());
+
             FILINFO fno;
             fno.lfname = &((char*) fbuff)[0];
             fno.lfsize = 256;
@@ -759,7 +756,7 @@ void PExReceiveByte(unsigned char c) {
     if (!header) {
         switch (state) {
 
-            /* Confirm "Axo" sequence first */
+            /* Confirm "Axo" sequence is correct first */
             case 0:
                 if (c == 'A') state++;
                 break;
@@ -783,7 +780,7 @@ void PExReceiveByte(unsigned char c) {
                     case 'T': /* apply preset */
                     case 'M': /* midi command */
                     // case 'B': /* virtual Axoloti Control buttons DEPRECATED */
-                    case 'C': /* create sdcard file */
+                    case 'C': /* create/edit/close/delete file, create/change directory on SD */
                     case 'a': /* append data to opened sdcard file
                                  Note: changed from 'A' to lower-case
                                  to avoid confusion with "AxoA" ack message (MCU->Patcher) */
@@ -794,56 +791,46 @@ void PExReceiveByte(unsigned char c) {
                         break;
                     case 'S': /* stop patch */
                         // LogTextMessage("%u: AxoS received, c=%x", hal_lld_get_counter_value(), c);
-                        state = 0;
-                        header = 0;
+                        state = 0; header = 0;
                         StopPatch();
                         AckPending = 1;
                         break;
                     case 'D': /* go to DFU mode */
-                        state = 0;
-                        header = 0;
+                        state = 0; header = 0;
                         StopPatch();
                         exception_initiate_dfu();
                         break;
                     case 'F': /* copy to flash */
-                        state = 0;
-                        header = 0;
+                        state = 0; header = 0;
                         StopPatch();
                         CopyPatchToFlash();
                         break;
                     case 'd': /* read directory listing */
                         // LogTextMessage("%u: Axod received, c=%x", hal_lld_get_counter_value(), c);
-                        state = 0;
-                        header = 0;
+                        state = 0; header = 0;
                         AckPending = 1; /* Immediately acknowledge the command receipt. */
                         // StopPatch(); /* not strictly necessary but patch will glitch */
-                        /* IMPORTANT: Calling  ReadDirectoryListing() *after* AckPending is set and state is reset.
-                           ReadDirectoryListing() will then stream data and send a final AxoRd* "Result" packet. */
                         ReadDirectoryListing();
                         break;
                     case 's': /* start patch */
-                        state = 0;
-                        header = 0;
+                        state = 0; header = 0;
                         loadPatchIndex = LIVE;
                         StartPatch();
                         AckPending = 1;
                         break;
                     case 'V': /* FW version number */
-                        state = 0;
-                        header = 0;
+                        state = 0; header = 0;
                         ReplyFWVersion();
                         AckPending = 1;
                         break;
                     case 'Y': /* is this Core SPILINK synced */
-                        state = 0;
-                        header = 0;
+                        state = 0; header = 0;
                         ReplySpilinkSynced();
                         AckPending = 1;
                         break;
                     case 'p': /* ping */
                         // LogTextMessage("%u: Axop (ping) received", hal_lld_get_counter_value());
-                        state = 0;
-                        header = 0;
+                        state = 0; header = 0;
 // #ifdef DEBUG_SERIAL
 //                         chprintf((BaseSequentialStream*) &SD2, "ping\r\n");
 // #endif
@@ -902,15 +889,13 @@ void PExReceiveByte(unsigned char c) {
                 break;
             case 13:
                 index += c << 8;
-                state = 0;
-                header = 0;
+                state = 0; header = 0;
                 if ((patchid == patchMeta.patchID) && (index < patchMeta.numPEx)) {
                     PExParameterChange(&(patchMeta.pPExch)[index], value, 0xFFFFFFEE);
                 }
                 break;
             default:
-                state = 0;
-                header = 0;
+                state = 0; header = 0;
         }
     }
     else if (header == 'U') { /* set CPU safety */
@@ -929,17 +914,12 @@ void PExReceiveByte(unsigned char c) {
                 break;
             case 6:
                 uDspLimit200 = c;
-
                 SetPatchSafety(uUIMidiCost, uDspLimit200);
-
-                // we have our values now so ack
-                header = 0;
-                state = 0;
+                state = 0; header = 0;
                 AckPending = 1;
                 break;
             default:
-                header = 0;
-                state = 0;
+                state = 0; header = 0;
                 AckPending = 1;
                 break;
         }
@@ -985,14 +965,12 @@ void PExReceiveByte(unsigned char c) {
                     *((unsigned char*) offset) = c;
                     offset++;
                     if (value == 0) {
-                        header = 0;
-                        state = 0;
+                        state = 0; header = 0;
                         AckPending = 1;
                     }
                 }
                 else {
-                    header = 0;
-                    state = 0;
+                    state = 0; header = 0;
                     AckPending = 1;
                 }
         }
@@ -1055,9 +1033,9 @@ void PExReceiveByte(unsigned char c) {
                     *((unsigned char*) position) = c;
                     position++;
                     if (value == 0) {
+
                         FRESULT err;
-                        header = 0;
-                        state = 0;
+
                         sdcard_attemptMountIfUnmounted();
                         err = f_open(&pFile, &FileName[0], FA_WRITE | FA_CREATE_ALWAYS); // TODO are we sure this should be FileName[0] and not [6]?
                         if (err != FR_OK) {
@@ -1072,20 +1050,20 @@ void PExReceiveByte(unsigned char c) {
                         if (err != FR_OK) {
                             LogTextMessage("File close failed");
                         }
+
+                        state = 0; header = 0;
                         AckPending = 1;
                     }
                 }
                 else {
-                    header = 0;
-                    state = 0;
+                    state = 0; header = 0;
                 }
         }
     }
     else if (header == 'T') { /* Apply Preset */
         ApplyPreset(c);
+        state = 0; header = 0;
         AckPending = 1;
-        header = 0;
-        state = 0;
     }
     else if (header == 'M') { /* Midi message */
         static uint8_t midi_r[3];
@@ -1102,15 +1080,13 @@ void PExReceiveByte(unsigned char c) {
                 midi_r[2] = c;
                 MidiInMsgHandler(MIDI_DEVICE_INTERNAL, 1, midi_r[0], midi_r[1],
                 midi_r[2]);
-                header = 0;
-                state = 0;
+                state = 0; header = 0;
                 break;
             default:
-                header = 0;
-                state = 0;
+                state = 0; header = 0;
         }
     }
-    else if (header == 'C') { /* create file on SD */
+    else if (header == 'C') { /* create/edit/close/delete file, create/change directory on SD */
         // LogTextMessage("%u: AxoC received, c=%x", hal_lld_get_counter_value(), c);
         switch (state) {
             case 4:
@@ -1143,13 +1119,11 @@ void PExReceiveByte(unsigned char c) {
                     FileName[state - 8] = 0;
                     StopPatch();
                     ManipulateFile();
-                    header = 0;
-                    state = 0;
-                    /* AckPending set from within ManipulateFile()! */
+                    state = 0; header = 0;
                 }
         }
     }
-    else if (header == 'a') {/* append data to opened file on SD */
+    else if (header == 'a') { /* append data to opened file on SD */
         // LogTextMessage("%u: Axoa received, c=%x", hal_lld_get_counter_value(), c);
         switch (state) {
             case 4:
@@ -1177,20 +1151,18 @@ void PExReceiveByte(unsigned char c) {
                     position++;
                     if (value == 0) {
                         FRESULT err;
-                        header = 0;
-                        state = 0;
                         int bytes_written;
                         err = f_write(&pFile, (char*) PATCHMAINLOC, length, (void*) &bytes_written);
                         if (err != FR_OK) {
                             // LogTextMessage("%u: ERROR: 'header == 'a'->case default' f_write, err:%u, path:%s", hal_lld_get_counter_value(), err, FileName[6]); // TODO FileName[6] or?
                             report_fatfs_error(err, 0);
                         }
+                        state = 0; header = 0;
                         AckPending = 1;
                     }
                 }
                 else {
-                    header = 0;
-                    state = 0;
+                    state = 0; header = 0;
                 }
         }
     }
@@ -1242,8 +1214,7 @@ void PExReceiveByte(unsigned char c) {
     //             break;
     //         case 15:
     //             // EncBuffer[3] += c;
-    //             header = 0;
-    //             state = 0;
+    //             state = 0; header = 0;
     //             // Btn_Nav_Or.word = Btn_Nav_Or.word | a;
     //             // Btn_Nav_And.word = Btn_Nav_And.word & b;
     //             break;
@@ -1277,14 +1248,12 @@ void PExReceiveByte(unsigned char c) {
                         offset++;
                     }
                     if (length == 0) {
-                        header = 0;
-                        state = 0;
+                        state = 0; header = 0;
                         AckPending = 1;
                     }
                 }
                 else {
-                    header = 0;
-                    state = 0;
+                    state = 0; header = 0;
                     AckPending = 1;
                 }
         }
@@ -1333,9 +1302,8 @@ void PExReceiveByte(unsigned char c) {
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_repy_header[0]), 3 * 4);
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (offset), value);
 
+                state = 0; header = 0;
                 AckPending = 1;
-                header = 0;
-                state = 0;
                 break;
         }
     }
@@ -1366,16 +1334,14 @@ void PExReceiveByte(unsigned char c) {
                 read_repy_header[2] = *((uint32_t*) offset);
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_repy_header[0]), 3 * 4);
 
+                state = 0; header = 0;
                 AckPending = 1;
-                header = 0;
-                state = 0;
                 break;
         }
     }
     else { /* unknown command */
         // LogTextMessage("%u: Unknown cmd received: Axo%c, c=%x", hal_lld_get_counter_value(), header, c);
-        header = 0;
-        state = 0;
+        state = 0; header = 0;
     }
 }
 
