@@ -716,7 +716,7 @@ public class USBBulkConnection extends Connection {
     private final byte[] startPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('s')};
     private final byte[] stopPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('S')};
     private final byte[] pingPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('p')};
-    private final byte[] getFileListPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('d')};
+    private final byte[] getFileListPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('l')};
     private final byte[] copyToFlashPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('F')};
 
     @Override
@@ -1441,12 +1441,12 @@ public class USBBulkConnection extends Connection {
                             //     dataLength = 128;
                             //     System.out.println(Instant.now() + " Completed headerstate after digit");
                             //     break;
-                            case 'd':
+                            case 'l':
                                 state = ReceiverState.sdinfo;
                                 sdinfoRcvBuffer.rewind();
                                 dataIndex = 0;
                                 dataLength = 12;
-                                // System.out.println(Instant.now() + " Completed headerstate after 'd'");
+                                // System.out.println(Instant.now() + " Completed headerstate after 'l'");
                                 break;
                             case 'f':
                                 state = ReceiverState.fileinfo_fixed_fields;

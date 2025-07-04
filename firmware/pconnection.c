@@ -390,7 +390,7 @@ void ReadDirectoryListing(void) {
         ((char*) fbuff)[1] = 'x';
         ((char*) fbuff)[2] = 'o';
         ((char*) fbuff)[3] = 'R';
-        ((char*) fbuff)[4] = 'd';
+        ((char*) fbuff)[4] = 'l';
         ((char*) fbuff)[5] = (char)err;
         chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&fbuff[0]), 6);
         return;
@@ -399,12 +399,12 @@ void ReadDirectoryListing(void) {
     ((char*) fbuff)[0] = 'A';
     ((char*) fbuff)[1] = 'x';
     ((char*) fbuff)[2] = 'o';
-    ((char*) fbuff)[3] = 'd';
+    ((char*) fbuff)[3] = 'l';
     fbuff[1] = clusters;
     fbuff[2] = fsp->csize;
     fbuff[3] = MMCSD_BLOCK_SIZE;
     chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&fbuff[0]), 16);
-    // LogTextMessage("%u: RDL finished sending Axod", hal_lld_get_counter_value());
+    // LogTextMessage("%u: RDL finished sending Axol", hal_lld_get_counter_value());
     chThdSleepMilliseconds(10); /* Give some time for the USB buffer to clear */
 
 
@@ -422,7 +422,7 @@ void ReadDirectoryListing(void) {
         ((char*) fbuff)[1] = 'x';
         ((char*) fbuff)[2] = 'o';
         ((char*) fbuff)[3] = 'R';
-        ((char*) fbuff)[4] = 'd';
+        ((char*) fbuff)[4] = 'l';
         ((char*) fbuff)[5] = (char)err;
         chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&fbuff[0]), 6);
         return;
@@ -446,7 +446,7 @@ void ReadDirectoryListing(void) {
     ((char*) fbuff)[1] = 'x';
     ((char*) fbuff)[2] = 'o';
     ((char*) fbuff)[3] = 'R';
-    ((char*) fbuff)[4] = 'd';
+    ((char*) fbuff)[4] = 'l';
     ((char*) fbuff)[5] = (char)err;
     chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&fbuff[0]), 6);
     // LogTextMessage("%u: RDL finished sending AxoE, leaving", hal_lld_get_counter_value());
@@ -470,11 +470,7 @@ void ReadDirectoryListing(void) {
  * "AxoD" -> go to DFU mode
  * "AxoV" -> reply FW version number (4 bytes)
  * "AxoF" -> copy patch code to flash (assumes patch is stopped)
- * "Axod" -> read directory listing
- * "AxoC" (int length) (char[] filename)" -> create and open file on SD card
- * "Axoc" -> close file on SD card
- * "AxoA" (int length) (byte[] data)" -> append data on open file on SD card
- * "AxoB" (int or) (int and)" -> buttons for virtual Axoloti Control -> DEPRECATED
+ * "Axol" -> read directory listing
  */
 
 static void ManipulateFile(void) {
@@ -824,8 +820,8 @@ void PExReceiveByte(unsigned char c) {
                         StopPatch();
                         CopyPatchToFlash();
                         break;
-                    case 'd': /* read directory listing */
-                        // LogTextMessage("%u: Axod received, c=%x", hal_lld_get_counter_value(), c);
+                    case 'l': /* read directory listing */
+                        // LogTextMessage("%u: Axol received, c=%x", hal_lld_get_counter_value(), c);
                         state = 0; header = 0;
                         AckPending = 1; /* Immediately acknowledge the command receipt. */
                         // StopPatch(); /* not strictly necessary but patch will glitch */
