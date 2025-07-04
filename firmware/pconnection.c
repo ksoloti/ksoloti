@@ -379,20 +379,14 @@ void ReadDirectoryListing(void) {
     FATFS *fsp;
     uint32_t clusters;
     FRESULT err;
+    uint8_t command_byte_to_ack = 'l';
 
     err = f_getfree("/", &clusters, &fsp);
     if (err != FR_OK) {
+        /* Even on error, we should signal the result to the host */
+        send_AxoResult(command_byte_to_ack, err);
         // LogTextMessage("%u: ERROR: RDL f_getfree, err:%u", hal_lld_get_counter_value(), err);
         report_fatfs_error(err, 0);
-
-        /* Even on error, we should signal the result to the host */
-        ((char*) fbuff)[0] = 'A';
-        ((char*) fbuff)[1] = 'x';
-        ((char*) fbuff)[2] = 'o';
-        ((char*) fbuff)[3] = 'R';
-        ((char*) fbuff)[4] = 'l';
-        ((char*) fbuff)[5] = (char)err;
-        chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&fbuff[0]), 6);
         return;
     }
 
@@ -414,17 +408,10 @@ void ReadDirectoryListing(void) {
     // LogTextMessage("%u: RDL entering scan_files", hal_lld_get_counter_value());
     err = scan_files((char*) &fbuff[0]);
     if (err != FR_OK) {
+        /* Even on error, we should signal the result to the host */
+        send_AxoResult(command_byte_to_ack, err);
         // LogTextMessage("%u: ERROR: RDL scan_files, err:%u", hal_lld_get_counter_value(), err);
         report_fatfs_error(err, 0);
-
-        /* Even on error, we should signal the result to the host */
-        ((char*) fbuff)[0] = 'A';
-        ((char*) fbuff)[1] = 'x';
-        ((char*) fbuff)[2] = 'o';
-        ((char*) fbuff)[3] = 'R';
-        ((char*) fbuff)[4] = 'l';
-        ((char*) fbuff)[5] = (char)err;
-        chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&fbuff[0]), 6);
         return;
     }
 
@@ -441,15 +428,8 @@ void ReadDirectoryListing(void) {
     // LogTextMessage("%u: RDL finished sending Axof", hal_lld_get_counter_value());
     chThdSleepMilliseconds(10); /* Give some time for the USB buffer to clear */
 
-    /* Send the "Result" packet */
-    ((char*) fbuff)[0] = 'A';
-    ((char*) fbuff)[1] = 'x';
-    ((char*) fbuff)[2] = 'o';
-    ((char*) fbuff)[3] = 'R';
-    ((char*) fbuff)[4] = 'l';
-    ((char*) fbuff)[5] = (char)err;
-    chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&fbuff[0]), 6);
-    // LogTextMessage("%u: RDL finished sending AxoE, leaving", hal_lld_get_counter_value());
+    /* Send the Result packet */
+    send_AxoResult(command_byte_to_ack, err);
     return;
 }
 
@@ -471,6 +451,7 @@ void ReadDirectoryListing(void) {
  * "AxoV" -> reply FW version number (4 bytes)
  * "AxoF" -> copy patch code to flash (assumes patch is stopped)
  * "Axol" -> read directory listing
+ * "AxoC" (uint length) (char[] filename)" -> create, append to, close, delete file (directory) on SD card
  */
 
 static void ManipulateFile(void) {
