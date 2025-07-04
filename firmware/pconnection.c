@@ -245,7 +245,7 @@ static FRESULT scan_files(char *path) {
     /* Recursive scan of all items in a directory */
 
     // LogTextMessage("%u: Entered scan_files:%s", hal_lld_get_counter_value(), (char*) &fbuff[0]);
-    FRESULT res;
+    FRESULT op_result;
     FILINFO fno;
     DIR dir;
 
@@ -256,15 +256,15 @@ static FRESULT scan_files(char *path) {
     fno.lfname = &FileName[0];
     fno.lfsize = sizeof(FileName);
 
-    res = f_opendir(&dir, path);
-    if (res == FR_OK) {
+    op_result = f_opendir(&dir, path);
+    if (op_result == FR_OK) {
 
         for (;;) {
             // LogTextMessage("%u: scan_files: Entered 'for (;;)', path:%s", hal_lld_get_counter_value(), path);
 
-            res = f_readdir(&dir, &fno);
-            if (res != FR_OK || fno.fname[0] == 0) {
-                // LogTextMessage("%u: scan_files BREAKING LOOP. res:%u, fno.fname[0]:%02x, current_dir:%s", hal_lld_get_counter_value(), res, fno.fname[0], path);
+            op_result = f_readdir(&dir, &fno);
+            if (op_result != FR_OK || fno.fname[0] == 0) {
+                // LogTextMessage("%u: scan_files BREAKING LOOP. op_result:%u, fno.fname[0]:%02x, current_dir:%s", hal_lld_get_counter_value(), op_result, fno.fname[0], path);
                 break;
             }
             if (fno.fname[0] == '.')
@@ -303,13 +303,13 @@ static FRESULT scan_files(char *path) {
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) msg, l+14);
 
                 // LogTextMessage("%u: scan_files: entering scan_files recursion", hal_lld_get_counter_value());
-                res = scan_files(path);
-                if (res != FR_OK) {
-                    // LogTextMessage("%u: scan_files recursion break, res:%u", hal_lld_get_counter_value(), res);
+                op_result = scan_files(path);
+                if (op_result != FR_OK) {
+                    // LogTextMessage("%u: scan_files recursion break, op_result:%u", hal_lld_get_counter_value(), op_result);
                     break;
                 }
                 // else {
-                //     LogTextMessage("%u: scan_files recursion done, res:%u", hal_lld_get_counter_value(), res);
+                //     LogTextMessage("%u: scan_files recursion done, op_result:%u", hal_lld_get_counter_value(), op_result);
                 // }
                 path[current_path_len] = 0;
             }
@@ -344,12 +344,12 @@ static FRESULT scan_files(char *path) {
         f_closedir(&dir);
     }
     else {
-        // LogTextMessage("%u: ERROR: scan_files f_opendir, err:%u, path:%s", hal_lld_get_counter_value(), res, path);
-        report_fatfs_error(res, path);
+        // LogTextMessage("%u: ERROR: scan_files f_opendir, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, path);
+        report_fatfs_error(op_result, path);
     }
 
-    // LogTextMessage("%u: scan_files: Exiting path: %s, final res:%u", hal_lld_get_counter_value(), path, res);
-    return res;
+    // LogTextMessage("%u: scan_files: Exiting path: %s, final op_result:%u", hal_lld_get_counter_value(), path, op_result);
+    return op_result;
 }
 
 #pragma GCC diagnostic pop /* diagnostic ignored "-Wrestrict" */
@@ -378,15 +378,15 @@ void ReadDirectoryListing(void) {
     // LogTextMessage("%u: Entered RDL", hal_lld_get_counter_value());
     FATFS *fsp;
     uint32_t clusters;
-    FRESULT err;
+    FRESULT op_result;
     uint8_t command_byte_to_ack = 'l';
 
-    err = f_getfree("/", &clusters, &fsp);
-    if (err != FR_OK) {
+    op_result = f_getfree("/", &clusters, &fsp);
+    if (op_result != FR_OK) {
         /* Even on error, we should signal the result to the host */
-        send_AxoResult(command_byte_to_ack, err);
-        // LogTextMessage("%u: ERROR: RDL f_getfree, err:%u", hal_lld_get_counter_value(), err);
-        report_fatfs_error(err, 0);
+        send_AxoResult(command_byte_to_ack, op_result);
+        // LogTextMessage("%u: ERROR: RDL f_getfree, op_result:%u", hal_lld_get_counter_value(), op_result);
+        report_fatfs_error(op_result, 0);
         return;
     }
 
@@ -406,12 +406,12 @@ void ReadDirectoryListing(void) {
     ((char*) fbuff)[1] = 0;
 
     // LogTextMessage("%u: RDL entering scan_files", hal_lld_get_counter_value());
-    err = scan_files((char*) &fbuff[0]);
-    if (err != FR_OK) {
+    op_result = scan_files((char*) &fbuff[0]);
+    if (op_result != FR_OK) {
         /* Even on error, we should signal the result to the host */
-        send_AxoResult(command_byte_to_ack, err);
-        // LogTextMessage("%u: ERROR: RDL scan_files, err:%u", hal_lld_get_counter_value(), err);
-        report_fatfs_error(err, 0);
+        send_AxoResult(command_byte_to_ack, op_result);
+        // LogTextMessage("%u: ERROR: RDL scan_files, op_result:%u", hal_lld_get_counter_value(), op_result);
+        report_fatfs_error(op_result, 0);
         return;
     }
 
@@ -429,7 +429,7 @@ void ReadDirectoryListing(void) {
     chThdSleepMilliseconds(10); /* Give some time for the USB buffer to clear */
 
     /* Send the Result packet */
-    send_AxoResult(command_byte_to_ack, err);
+    send_AxoResult(command_byte_to_ack, op_result);
     return;
 }
 
@@ -461,24 +461,24 @@ static void ManipulateFile(void) {
     if (FileName[0] != 0) { /* backwards compatibility, don't change! */
         // LogTextMessage("%u: Executing backwards compatibility block.", hal_lld_get_counter_value());
         
-        FRESULT err = f_open(&pFile, &FileName[0], FA_WRITE | FA_CREATE_ALWAYS);
-        if (err != FR_OK) {
-            // LogTextMessage("%u: ERROR: MNPFL f_open (backwards), err:%u, path:%s", hal_lld_get_counter_value(), err, &FileName[0]);
-            report_fatfs_error(err, &FileName[0]);
+        FRESULT op_result = f_open(&pFile, &FileName[0], FA_WRITE | FA_CREATE_ALWAYS);
+        if (op_result != FR_OK) {
+            // LogTextMessage("%u: ERROR: MNPFL f_open (backwards), op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[0]);
+            report_fatfs_error(op_result, &FileName[0]);
             return;
         }
 
-        err = f_lseek(&pFile, pFileSize);
-        if (err != FR_OK) {
-            // LogTextMessage("%u: ERROR: MNPFL f_lseek1 (backwards), err:%u, path:%s", hal_lld_get_counter_value(), err, &FileName[0]);
-            report_fatfs_error(err, &FileName[0]);
+        op_result = f_lseek(&pFile, pFileSize);
+        if (op_result != FR_OK) {
+            // LogTextMessage("%u: ERROR: MNPFL f_lseek1 (backwards), op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[0]);
+            report_fatfs_error(op_result, &FileName[0]);
             return;
         }
 
-        err = f_lseek(&pFile, 0);
-        if (err != FR_OK) {
-            // LogTextMessage("%u: ERROR: MNPFL f_lseek2 (backwards), err:%u, path:%s", hal_lld_get_counter_value(), err, &FileName[0]);
-            report_fatfs_error(err, &FileName[0]);
+        op_result = f_lseek(&pFile, 0);
+        if (op_result != FR_OK) {
+            // LogTextMessage("%u: ERROR: MNPFL f_lseek2 (backwards), op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[0]);
+            report_fatfs_error(op_result, &FileName[0]);
             return;
         }
     }
@@ -640,20 +640,19 @@ static void ManipulateFile(void) {
 static void AppendFile(uint32_t length) {
     UINT bytes_written;
 
-    uint8_t command_byte_to_ack = 'a';
-
-    err = f_write(&pFile, (char*) PATCHMAINLOC, length, (void*) &bytes_written);
-    if (err != FR_OK) {
-        send_AxoResult(command_byte_to_ack, err);
-        // LogTextMessage("%u: ERROR: AppendFile f_write, err:%u, path:%s", hal_lld_get_counter_value(), err, &FileName[6]);
-        report_fatfs_error(err, &FileName[6]);
+    FRESULT op_result = f_write(&pFile, (char*) PATCHMAINLOC, length, (void*) &bytes_written);
+    if (op_result != FR_OK) {
+        send_AxoResult('a', op_result);
+        // LogTextMessage("%u: ERROR: AppendFile f_write, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+        report_fatfs_error(op_result, &FileName[6]);
     }
+
     // if (bytes_written != length) {
-    //     send_AxoResult(command_byte_to_ack, err);
-    //     LogTextMessage("%u: ERROR: AppendFile f_write, err:%u, requested:%d, written:%u, path:%s", hal_lld_get_counter_value(), err, length, bytes_written, FileName[6]);
+    //     send_AxoResult('a', op_result);
+    //     LogTextMessage("%u: ERROR: AppendFile f_write, op_result:%u, requested:%d, written:%u, path:%s", hal_lld_get_counter_value(), op_result, length, bytes_written, FileName[6]);
     // }
 
-    send_AxoResult(command_byte_to_ack, err);
+    send_AxoResult('a', op_result);
 }
 
 
@@ -1040,24 +1039,26 @@ void PExReceiveByte(unsigned char c) {
                     position++;
                     if (value == 0) {
 
-                        FRESULT err;
+                        FRESULT op_result;
                         UINT bytes_written;
 
                         sdcard_attemptMountIfUnmounted();
                         
-                        err = f_open(&pFile, &FileName[0], FA_WRITE | FA_CREATE_ALWAYS);
-                        if (err != FR_OK) {
+                        /* NOTE: This uses FileName[0] for path, which is inconsistent with FileName[6] in ManipulateFile.
+                           Probably some backwards compatibility thing. Leaving as is. */
+                        op_result = f_open(&pFile, &FileName[0], FA_WRITE | FA_CREATE_ALWAYS);
+                        if (op_result != FR_OK) {
                             LogTextMessage("File open failed");
                         }
-                        err = f_write(&pFile, (char*) offset, length, (void*) &bytes_written);
-                        if (err != FR_OK) {
+                        op_result = f_write(&pFile, (char*) offset, length, &bytes_written); /* 'length' is initial total length */
+                        if (op_result != FR_OK) {
                             LogTextMessage("File write failed");
                         }
                         // if (bytes_written != length) {
-                        //     LogTextMessage("%u: ERROR: Axow f_write, err:%u, requested:%d, written:%u, path:%s", hal_lld_get_counter_value(), err, length, bytes_written, FileName[6]);
+                        //     LogTextMessage("%u: ERROR: Axow f_write, op_result:%u, requested:%u, written:%u, path:%s", hal_lld_get_counter_value(), op_result, length, bytes_written, FileName[6]);
                         // }
-                        err = f_close(&pFile);
-                        if (err != FR_OK) {
+                        op_result = f_close(&pFile);
+                        if (op_result != FR_OK) {
                             LogTextMessage("File close failed");
                         }
 
