@@ -630,14 +630,17 @@ static void AppendFile(uint32_t length) {
         send_AxoResult('a', op_result);
         // LogTextMessage("%u: ERROR: AppendFile f_write, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
         report_fatfs_error(op_result, &FileName[6]);
+        return;
     }
 
-    // if (bytes_written != length) {
-    //     send_AxoResult('a', op_result);
-    //     LogTextMessage("%u: ERROR: AppendFile f_write, op_result:%u, requested:%d, written:%u, path:%s", hal_lld_get_counter_value(), op_result, length, bytes_written, FileName[6]);
-    // }
+    if (bytes_written != length) {
+        send_AxoResult('a', FR_DISK_ERR);
+        // LogTextMessage("%u: ERROR: AppendFile f_write, op_result:%u, requested:%d, written:%u, path:%s", hal_lld_get_counter_value(), op_result, length, bytes_written, FileName[6]);
+        return;
+    }
 
-    send_AxoResult('a', op_result);
+    send_AxoResult('a', op_result); /* Completed successfully */
+    return;
 }
 
 
