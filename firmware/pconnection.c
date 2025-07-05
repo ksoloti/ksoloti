@@ -272,7 +272,7 @@ static FRESULT scan_files(char *path) {
 
             op_result = f_readdir(&dir, &fno);
             if (op_result != FR_OK || fno.fname[0] == 0) {
-                // LogTextMessage("%u: scan_files BREAKING LOOP. op_result:%u, fno.fname[0]:%02x, current_dir:%s", hal_lld_get_counter_value(), op_result, fno.fname[0], path);
+                // LogTextMessage("%u: scan_files BREAKING LOOP. op_result:%u fno.fname[0]:%02x current_dir:%s", hal_lld_get_counter_value(), op_result, fno.fname[0], path);
                 break;
             }
             if (fno.fname[0] == '.')
@@ -292,7 +292,7 @@ static FRESULT scan_files(char *path) {
             if (fno.fattrib & AM_DIR) { /* Is directory */
 
                 current_path_len = strlen(path);
-                // LogTextMessage("%u: scan_files: AM_DIR, path:%s, current_path_len:%u", hal_lld_get_counter_value(), path, current_path_len);
+                // LogTextMessage("%u: scan_files: AM_DIR, path:%s current_path_len:%u", hal_lld_get_counter_value(), path, current_path_len);
                 path[current_path_len] = '/';
                 strcpy(&path[current_path_len+1], fname);
 
@@ -343,7 +343,7 @@ static FRESULT scan_files(char *path) {
                     strcpy(&msg[append_offset + 1], fname);
                     append_offset++; /* Adjust offset for the added slash */
                 }
-                // LogTextMessage("%u: scan_files: !AM_DIR, path:%s, current_subdir_path_len:%u, append_offset:%u", hal_lld_get_counter_value(), path, current_subdir_path_len, append_offset);
+                // LogTextMessage("%u: scan_files: !AM_DIR, path:%s current_subdir_path_len:%u append_offset:%u", hal_lld_get_counter_value(), path, current_subdir_path_len, append_offset);
 
                 int l = strlen(&msg[12]); /* Calculate total length of the constructed path (starting from msg[12]) */
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) msg, 12 + l + 1);
@@ -352,11 +352,11 @@ static FRESULT scan_files(char *path) {
         f_closedir(&dir);
     }
     else {
-        // LogTextMessage("%u: ERROR: scan_files f_opendir, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, path);
+        // LogTextMessage("%u: ERROR: scan_files f_opendir, op_result:%u path:%s", hal_lld_get_counter_value(), op_result, path);
         report_fatfs_error(op_result, path);
     }
 
-    // LogTextMessage("%u: scan_files: Exiting path: %s, final op_result:%u", hal_lld_get_counter_value(), path, op_result);
+    // LogTextMessage("%u: scan_files: Exiting path:%s final op_result:%u", hal_lld_get_counter_value(), path, op_result);
     return op_result;
 }
 
@@ -471,21 +471,21 @@ static void ManipulateFile(void) {
         
         FRESULT op_result = f_open(&pFile, &FileName[0], FA_WRITE | FA_CREATE_ALWAYS);
         if (op_result != FR_OK) {
-            // LogTextMessage("%u: ERROR: MNPFL f_open (backwards), op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[0]);
+            // LogTextMessage("%u: ERROR: MNPFL f_open (backwards) op_result:%u path:%s", hal_lld_get_counter_value(), op_result, &FileName[0]);
             report_fatfs_error(op_result, &FileName[0]);
             return;
         }
 
         op_result = f_lseek(&pFile, pFileSize);
         if (op_result != FR_OK) {
-            // LogTextMessage("%u: ERROR: MNPFL f_lseek1 (backwards), op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[0]);
+            // LogTextMessage("%u: ERROR: MNPFL f_lseek1 (backwards) op_result:%u path:%s", hal_lld_get_counter_value(), op_result, &FileName[0]);
             report_fatfs_error(op_result, &FileName[0]);
             return;
         }
 
         op_result = f_lseek(&pFile, 0);
         if (op_result != FR_OK) {
-            // LogTextMessage("%u: ERROR: MNPFL f_lseek2 (backwards), op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[0]);
+            // LogTextMessage("%u: ERROR: MNPFL f_lseek2 (backwards) op_result:%u path:%s", hal_lld_get_counter_value(), op_result, &FileName[0]);
             report_fatfs_error(op_result, &FileName[0]);
             return;
         }
@@ -506,7 +506,7 @@ static void ManipulateFile(void) {
             FRESULT op_result = f_mkdir(&FileName[6]); /* Path from FileName[6]+ */
             if ((op_result != FR_OK) && (op_result != FR_EXIST)) {
                 send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
-                // LogTextMessage("%u: ERROR: MNPFL f_mkdir, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                // LogTextMessage("%u: ERROR: MNPFL f_mkdir op_result:%u path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
                 return;
             }
             
@@ -517,45 +517,44 @@ static void ManipulateFile(void) {
             op_result = f_utime(&FileName[6], &fno); /* Path from FileName[6]+ */
             if (op_result != FR_OK) {
                 send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
-                // LogTextMessage("%u: ERROR: MNPFL f_utime, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                // LogTextMessage("%u: ERROR: MNPFL f_utime op_result:%u path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
                 return;
             }
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
         else if (FileName[1] == 'f') { /* create file (AxoCf) */
-            // LogTextMessage("%u: Executing 'f' (create file) command.", hal_lld_get_counter_value());
+            // LogTextMessage("%u: Executing 'f' (create file) command", hal_lld_get_counter_value());
             
             FRESULT op_result = f_open(&pFile, &FileName[6], FA_WRITE | FA_CREATE_ALWAYS); /* Path from FileName[6]+ */
             if (op_result != FR_OK) {
                 send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
-                // LogTextMessage("%u: ERROR: MNPFL f_open, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                // LogTextMessage("%u: ERROR: MNPFL f_open op_result:%u path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
                 return;
             }
 
             op_result = f_lseek(&pFile, pFileSize); /* pFileSize holds the size from received AxoCf command */
             if (op_result != FR_OK) {
                 send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
-                // LogTextMessage("%u: ERROR: MNPFL f_lseek1, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                // LogTextMessage("%u: ERROR: MNPFL f_lseek1 op_result:%u path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
                 return;
             }
 
             op_result = f_lseek(&pFile, 0);
             if (op_result != FR_OK) {
                 send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
-                // LogTextMessage("%u: ERROR: MNPFL f_lseek2, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                // LogTextMessage("%u: ERROR: MNPFL f_lseek2 op_result:%u path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
                 return;
             }
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
         else if (FileName[1] == 'c') { /* close currently open file (AxoCc) */
-            // LogTextMessage("%u: Executing 'c' (close file) command.", hal_lld_get_counter_value());
-            
+            // LogTextMessage("%u: Executing 'c' (close file) command", hal_lld_get_counter_value());
             FRESULT op_result = f_close(&pFile);
             if (op_result != FR_OK) {
                 send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
-                // LogTextMessage("%u: ERROR: CloseFile f_close, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                // LogTextMessage("%u: ERROR: CloseFile f_close op_result:%u path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
                 return;
             }
 
@@ -565,7 +564,7 @@ static void ManipulateFile(void) {
             op_result = f_utime(&FileName[6], &fno); /* Path from FileName[6]+ */
             if (op_result != FR_OK) {
                 send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
-                // LogTextMessage("%u: ERROR: CloseFile f_utime, Date/Time:%x %x, path:%s", hal_lld_get_counter_value(), fno.fdate, fno.ftime, &FileName[6]);
+                // LogTextMessage("%u: ERROR: CloseFile f_utime Date/Time:%x %x path:%s", hal_lld_get_counter_value(), fno.fdate, fno.ftime, &FileName[6]);
                 return;
             }
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
@@ -577,7 +576,7 @@ static void ManipulateFile(void) {
             FRESULT op_result = f_unlink(&FileName[6]); /* Path from FileName[6]+ */
             if (op_result != FR_OK) {
                 send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
-                // LogTextMessage("%u: ERROR: MNPFL f_unlink, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                // LogTextMessage("%u: ERROR: MNPFL f_unlink op_result:%u path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
                 return;
             }
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
@@ -589,7 +588,7 @@ static void ManipulateFile(void) {
             FRESULT op_result = f_chdir(&FileName[6]); /* Path from FileName[6]+ */
             if (op_result != FR_OK) {
                 send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
-                // LogTextMessage("%u: ERROR: MNPFL f_chdir, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+                // LogTextMessage("%u: ERROR: MNPFL f_chdir op_result:%u path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
                 return;
             }
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
@@ -613,7 +612,7 @@ static void ManipulateFile(void) {
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) msg, l+13);
             }
             // else {
-            //     LogTextMessage("%u: ERROR: MNPFL f_stat, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+            //     LogTextMessage("%u: ERROR: MNPFL f_stat op_result:%u path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
             // }
             send_AxoResult(FileName[1], op_result); /* Explicit AxoR for success or failure */
             return;
@@ -626,16 +625,17 @@ static void AppendFile(uint32_t length) {
     UINT bytes_written;
 
     FRESULT op_result = f_write(&pFile, (char*) PATCHMAINLOC, length, (void*) &bytes_written);
+    // LogTextMessage("%u: AppendFile f_write op_result:%u path:%s length:%u bytes_written:%u", hal_lld_get_counter_value(), op_result, &FileName[6], length, bytes_written);
     if (op_result != FR_OK) {
         send_AxoResult('a', op_result);
-        // LogTextMessage("%u: ERROR: AppendFile f_write, op_result:%u, path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
+        // LogTextMessage("%u: ERROR: AppendFile f_write op_result:%u path:%s", hal_lld_get_counter_value(), op_result, &FileName[6]);
         report_fatfs_error(op_result, &FileName[6]);
         return;
     }
 
     if (bytes_written != length) {
         send_AxoResult('a', FR_DISK_ERR);
-        // LogTextMessage("%u: ERROR: AppendFile f_write, op_result:%u, requested:%d, written:%u, path:%s", hal_lld_get_counter_value(), op_result, length, bytes_written, FileName[6]);
+        // LogTextMessage("%u: ERROR: AppendFile f_write op_result:%u requested:%u written:%u path:%s", hal_lld_get_counter_value(), op_result, length, bytes_written, FileName[6]);
         return;
     }
 
@@ -931,7 +931,7 @@ void PExReceiveByte(unsigned char c) {
                             LogTextMessage("File write failed");
                         }
                         // if (bytes_written != length) {
-                        //     LogTextMessage("%u: ERROR: Axow f_write, op_result:%u, requested:%u, written:%u, path:%s", hal_lld_get_counter_value(), op_result, length, bytes_written, FileName[6]);
+                        //     LogTextMessage("%u: ERROR: Axow f_write op_result:%u requested:%u written:%u path:%s", hal_lld_get_counter_value(), op_result, length, bytes_written, FileName[6]);
                         // }
                         op_result = f_close(&pFile);
                         if (op_result != FR_OK) {
@@ -963,7 +963,7 @@ void PExReceiveByte(unsigned char c) {
         }
     }
     else if (header == 'C') { /* create/edit/close/delete file, create/change directory on SD */ 
-        // LogTextMessage("%u: AxoC received, c=%x, state=%u", hal_lld_get_counter_value(), c, state);
+        // LogTextMessage("%u: AxoC received c=%x state=%u", hal_lld_get_counter_value(), c, state);
         switch (state) {
             case 4: /* Expecting pFileSize (byte 0) for 'f', or placeholder for others */
                 pFileSize = c; /* Store first byte of pFileSize/placeholder */
@@ -993,10 +993,10 @@ void PExReceiveByte(unsigned char c) {
             case 9: /* Expecting FileName[1] (sub-command: 'f', 'k', 'c', 'D', 'C', 'I') */
                 FileName[1] = c; /* Store the sub-command */
 
-                if (FileName[1] == 'f' || FileName[1] == 'k' || FileName[1] == 'c') {
+                if (FileName[1] == 'c' || FileName[1] == 'f' || FileName[1] == 'k') {
                     /* These expect fdate/ftime next (FileName[2]...[5]) */
                     state = 10; /* Go to state to receive FileName[2] (fdate byte 0) */
-                } else if (FileName[1] == 'D' || FileName[1] == 'C' || FileName[1] == 'I') {
+                } else if (FileName[1] == 'C' || FileName[1] == 'D' || FileName[1] == 'I') {
                     /* These skip fdate/ftime and go straight to filename (FileName[6]+) */
                     current_filename_idx = 6; /* Start filename parsing from FileName[6] */
                     state = 14; /* Go to state to receive FileName[6] (filename byte 0) */
@@ -1042,6 +1042,7 @@ void PExReceiveByte(unsigned char c) {
         }
     }
     else if (header == 'a') { /* append data to open file on SD */
+        // LogTextMessage("%u: Axoa received c=%x state=%u", hal_lld_get_counter_value(), c, state); // Keep this for general debug
         switch (state) {
             case 4: value  = c; current_param_byte_idx = 1; state++; break;
             case 5: value |= (int32_t)c <<  8; current_param_byte_idx++; state++; break;
@@ -1050,6 +1051,7 @@ void PExReceiveByte(unsigned char c) {
                 length = (uint32_t)value; /* Store the length to be received */
                 position = PATCHMAINLOC; /* Set base address for data buffer */
                 state = 8; /* Move on to data streaming state */
+                // LogTextMessage("%u: Axoa receipt done c=%x length=%u position=%x state=%u", hal_lld_get_counter_value(), c, length, position, state);
                 break;
             case 8: /* Data streaming state */
                 if (length > 0) { /* 'length' now tracks remaining bytes to receive */
@@ -1057,6 +1059,7 @@ void PExReceiveByte(unsigned char c) {
                     position++;
                     length--;
                     if (length == 0) {
+                        // LogTextMessage("%u: Axoa length=0, calling AppendFile value=%u", hal_lld_get_counter_value(), value);
                         AppendFile((uint32_t)value); /* Call AppendFile with the total length ('value') */
                         state = 0; header = 0; /* Reset state machine, no AckPending */
                     }
@@ -1140,7 +1143,7 @@ void PExReceiveByte(unsigned char c) {
         }
     }
     else { /* unknown command */
-        // LogTextMessage("%u: Unknown cmd received: Axo%c, c=%x", hal_lld_get_counter_value(), header, c);
+        // LogTextMessage("%u: Unknown cmd received Axo%c c=%x", hal_lld_get_counter_value(), header, c);
         state = 0; header = 0; AckPending = 1;
     }
 }
