@@ -149,18 +149,17 @@ void TransmitDisplayPckt(void) {
 
 void LogTextMessage(const char* format, ...) {
     if ((usbGetDriverStateI(BDU1.config->usbp) == USB_ACTIVE) && (connected)) {
-        MemoryStream ms;
-        uint8_t      tmp[256-5]; // nead AXOT and null
-
-        msObjectInit(&ms, (uint8_t*) tmp, 256-5, 0); 
-
-        va_list ap;
-        va_start(ap, format);
-        chvprintf((BaseSequentialStream*) &ms, format, ap);
-        va_end(ap);
-        chSequentialStreamPut(&ms, 0);
-
         if(chMtxTryLock(&LogMutex)) {
+            MemoryStream ms;
+            uint8_t      tmp[256-5]; // nead AXOT and null
+
+            msObjectInit(&ms, (uint8_t*) tmp, 256-5, 0); 
+
+            va_list ap;
+            va_start(ap, format);
+            chvprintf((BaseSequentialStream*) &ms, format, ap);
+            va_end(ap);
+            chSequentialStreamPut(&ms, 0);
 
             size_t length = strlen((char*) tmp);
             if((length) && (LogBufferUsed + 4 + length + 1) < LOG_BUFFER_SIZE) {
