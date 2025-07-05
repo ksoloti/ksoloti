@@ -66,9 +66,9 @@ static int pFileSize;
 
 /* now static global */
 static uint32_t preset_index;
-static int32_t value;
-static int32_t position;
-static int32_t offset;
+static uint32_t value;
+static unsigned char* position;
+static uint32_t offset;
 static uint32_t length;
 static uint32_t patchid;
 
@@ -443,12 +443,12 @@ void ReadDirectoryListing(void) {
 
 /* input data decoder state machine
  *
- * "AxoP" (int value, int16 preset_index) -> parameter set
+ * "AxoP" (uint value, int16 preset_index) -> parameter set
  * "AxoR" (uint length, data) -> preset data set
- * "AxoW" (uint length, int addr, char[length] data) -> generic memory write
- * "Axow" (uint length, int offset, char[12] filename, char[length] data) -> data write to SD card
- * "Axor" (int offset, uint length) -> generic memory read
- * "Axoy" (int offset) -> generic memory read, single 32bit aligned
+ * "AxoW" (uint length, addr, char[length] data) -> generic memory write
+ * "Axow" (uint length, offset, char[12] filename, char[length] data) -> data write to SD card
+ * "Axor" (uint offset, length) -> generic memory read
+ * "Axoy" (uint offset) -> generic memory read, single 32bit aligned
  * "AxoY" returns true if Core SPILink jumper is set, i.e. Core is set up to be synced
  * "AxoS" -> start patch
  * "Axos" -> stop patch
@@ -900,7 +900,7 @@ void PExReceiveByte(unsigned char c) {
             case 10: value += (int32_t)c << 16; state++; break;
             case 11: value += (int32_t)c << 24; /* value is now length */
                 length = (uint32_t)value; /* Initial length for the file */
-                position = offset; /* Start address for data in RAM */
+                position = (unsigned char*)offset; /* Start address for data in RAM */
                 state++;
                 break;
             case 12: case 13: case 14: case 15: case 16: case 17: case 18: case 19: case 20: case 21: case 22: case 23:
@@ -1049,8 +1049,8 @@ void PExReceiveByte(unsigned char c) {
             case 5: value |= (int32_t)c <<  8; current_param_byte_idx++; state++; break;
             case 6: value |= (int32_t)c << 16; current_param_byte_idx++; state++; break;
             case 7: value |= (int32_t)c << 24; /* Total length */
-                length = (uint32_t)value; /* Store the length to be received */
-                position = PATCHMAINLOC; /* Set base address for data buffer */
+                length = value; /* Store the length to be received */
+                position = (unsigned char*) PATCHMAINLOC; /* Set base address for data buffer */
                 state = 8; /* Move on to data streaming state */
                 // LogTextMessage("Axoa done c=%x lgth=%u pos=%x state=%u", c, length, position, state);
                 break;
