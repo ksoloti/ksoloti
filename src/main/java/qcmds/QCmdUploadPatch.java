@@ -84,7 +84,7 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
                 if (nRead != l) {
                     LOGGER.log(Level.SEVERE, "File size wrong? {0}", nRead);
                 }
-                int result = connection.UploadFragment(buffer, connection.getTargetProfile().getPatchAddr() + offset);
+                int result = connection.TransmitUploadFragment(buffer, connection.getTargetProfile().getPatchAddr() + offset);
                 if (result != LibUsb.SUCCESS) {
                     break;
                 }

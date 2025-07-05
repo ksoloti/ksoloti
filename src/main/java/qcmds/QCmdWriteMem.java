@@ -64,7 +64,7 @@ public class QCmdWriteMem extends AbstractQCmdSerialTask {
             for (int i = 0; i < l; i++) {
                 part[i] = buffer[offset + i];
             }
-            connection.UploadFragment(part, addr + offset);
+            connection.TransmitUploadFragment(part, addr + offset);
             offset += l;
             remaining -= l;
         } while (remaining > 0);

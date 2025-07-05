@@ -49,7 +49,7 @@ public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        connection.SetCurrentExecutingCommand(this);
+        connection.setCurrentExecutingCommand(this);
         return this;
     }
 

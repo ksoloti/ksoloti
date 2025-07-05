@@ -61,13 +61,13 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
             @Override
             public void KeyDown(int key) {
                 piano.setSelection(key);
-                USBBulkConnection.GetConnection().SendMidi(0x90 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, key & 0x7F, (int)velodial.getValue());
+                USBBulkConnection.GetConnection().TransmitMidi(0x90 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, key & 0x7F, (int)velodial.getValue());
             }
 
             @Override
             public void KeyUp(int key) {
                 piano.clearSelection(key);
-                USBBulkConnection.GetConnection().SendMidi(0x80 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, key & 0x7F, 80);
+                USBBulkConnection.GetConnection().TransmitMidi(0x80 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, key & 0x7F, 80);
             }
 
         };
@@ -496,7 +496,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         pbenddial.addACtrlListener(new ACtrlListener() {
             @Override
             public void ACtrlAdjusted(ACtrlEvent e) {
-                USBBulkConnection.GetConnection().SendMidi(0xE0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, 0, 0x07F & (int) (pbenddial.getValue() - 64.0));
+                USBBulkConnection.GetConnection().TransmitMidi(0xE0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, 0, 0x07F & (int) (pbenddial.getValue() - 64.0));
             }
 
             @Override
@@ -517,7 +517,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         moddial.addACtrlListener(new ACtrlListener() {
             @Override
             public void ACtrlAdjusted(ACtrlEvent e) {
-                USBBulkConnection.GetConnection().SendMidi(0xB0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, 1, 0x07F & (int) (moddial.getValue()));
+                USBBulkConnection.GetConnection().TransmitMidi(0xB0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, 1, 0x07F & (int) (moddial.getValue()));
             }
 
             @Override
@@ -549,7 +549,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         ccdial.addACtrlListener(new ACtrlListener() {
             @Override
             public void ACtrlAdjusted(ACtrlEvent e) {
-                USBBulkConnection.GetConnection().SendMidi(0xB0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, ((SpinnerNumberModel) jSpinnerControlChange.getModel()).getNumber().intValue(), 0x07F & (int) (ccdial.getValue()));
+                USBBulkConnection.GetConnection().TransmitMidi(0xB0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, ((SpinnerNumberModel) jSpinnerControlChange.getModel()).getNumber().intValue(), 0x07F & (int) (ccdial.getValue()));
             }
 
             @Override
@@ -624,7 +624,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
     }
 
     private void jButtonAllNotesOffActionPerformed(java.awt.event.ActionEvent evt) {
-        USBBulkConnection.GetConnection().SendMidi(0xB0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, 0x7B, 80);
+        USBBulkConnection.GetConnection().TransmitMidi(0xB0 + ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).getNumber().intValue() - 1, 0x7B, 80);
         piano.clear();
     }
 

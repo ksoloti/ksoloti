@@ -64,7 +64,7 @@ public class QCmdVirtualButton extends AbstractQCmdSerialTask {
     @Override
     public QCmd Do(Connection connection) {
         connection.ClearSync();
-        connection.TransmitVirtualButton(b_or, b_and, enc1, enc2, enc3, enc4);
+        // connection.TransmitVirtualButton(b_or, b_and, enc1, enc2, enc3, enc4); // DEPRECATED
         return this;
     }
 }

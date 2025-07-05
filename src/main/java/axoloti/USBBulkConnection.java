@@ -105,12 +105,12 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public void SetCurrentExecutingCommand(qcmds.QCmdSerialTask command) {
+    public void setCurrentExecutingCommand(QCmdSerialTask command) {
         this.currentExecutingCommand = command;
     }
 
     @Override
-    public QCmdSerialTask GetCurrentExecutingCommand() {
+    public QCmdSerialTask getCurrentExecutingCommand() {
         return currentExecutingCommand;
     }
 
@@ -533,78 +533,6 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public void TransmitRecallPreset(int presetNo) {
-        byte[] data = new byte[5];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'T';
-        data[4] = (byte) presetNo;
-        writeBytes(data);
-    }
-
-    @Override
-    public void BringToDFU() {
-        byte[] data = new byte[4];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'D';
-        writeBytes(data);
-    }
-
-    @Override
-    public void TransmitGetFWVersion() {
-        byte[] data = new byte[4];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'V';
-        writeBytes(data);
-    }
-
-    @Override
-    public void TransmitGetSpilinkSynced() {
-        byte[] data = new byte[4];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'Y';
-        writeBytes(data);
-    }
-
-    @Override
-    public void SendMidi(int m0, int m1, int m2) {
-        if (isConnected()) {
-            byte[] data = new byte[7];
-            data[0] = 'A';
-            data[1] = 'x';
-            data[2] = 'o';
-            data[3] = 'M';
-            data[4] = (byte) m0;
-            data[5] = (byte) m1;
-            data[6] = (byte) m2;
-            writeBytes(data);
-        }
-    }
-
-    @Override
-    public void SendUpdatedPreset(byte[] b) {
-        byte[] data = new byte[8];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'R';
-        int len = b.length;
-        data[4] = (byte) len;
-        data[5] = (byte) (len >> 8);
-        data[6] = (byte) (len >> 16);
-        data[7] = (byte) (len >> 24);
-        writeBytes(data);
-        writeBytes(b);
-    }
-
-    @Override
     public void SelectPort() {
         USBPortSelectionDlg spsDlg = new USBPortSelectionDlg(null, true, cpuid);
         spsDlg.setVisible(true);
@@ -628,33 +556,6 @@ public class USBBulkConnection extends Connection {
         return conn;
     }
     
-    @Override
-    public void TransmitGetFileInfo(String filename) {
-        byte[] data = new byte[15 + filename.length()];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'C';
-        data[4] = 0;
-        data[5] = 0;
-        data[6] = 0;
-        data[7] = 0;
-        data[8] = 0;
-        data[9] = 'I';
-        data[10] = 0;
-        data[11] = 0;
-        data[12] = 0;
-        data[13] = 0;
-        int i = 14;
-        for (int j = 0; j < filename.length(); j++) {
-            data[i++] = (byte) filename.charAt(j);
-        }
-        data[i] = 0;
-        ClearSync();
-        writeBytes(data);
-        /* No WaitSync() call necessary - will wait for AxoRd response */
-    }
-
     class Sync {
         boolean Acked = false;
     }
@@ -730,10 +631,112 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public void TransmitGetFileList(QCmdSerialTask senderCommand) {
-        this.currentExecutingCommand = senderCommand; // Storing the command object
+    public void TransmitRecallPreset(int presetNo) {
+        byte[] data = new byte[5];
+        data[0] = 'A';
+        data[1] = 'x';
+        data[2] = 'o';
+        data[3] = 'T';
+        data[4] = (byte) presetNo;
+        writeBytes(data);
+    }
+
+    @Override
+    public void TransmitBringToDFU() {
+        byte[] data = new byte[4];
+        data[0] = 'A';
+        data[1] = 'x';
+        data[2] = 'o';
+        data[3] = 'D';
+        writeBytes(data);
+    }
+
+    @Override
+    public void TransmitGetFWVersion() {
+        byte[] data = new byte[4];
+        data[0] = 'A';
+        data[1] = 'x';
+        data[2] = 'o';
+        data[3] = 'V';
+        writeBytes(data);
+    }
+
+    @Override
+    public void TransmitGetSpilinkSynced() {
+        byte[] data = new byte[4];
+        data[0] = 'A';
+        data[1] = 'x';
+        data[2] = 'o';
+        data[3] = 'Y';
+        writeBytes(data);
+    }
+
+    @Override
+    public void TransmitMidi(int m0, int m1, int m2) {
+        if (isConnected()) {
+            byte[] data = new byte[7];
+            data[0] = 'A';
+            data[1] = 'x';
+            data[2] = 'o';
+            data[3] = 'M';
+            data[4] = (byte) m0;
+            data[5] = (byte) m1;
+            data[6] = (byte) m2;
+            writeBytes(data);
+        }
+    }
+
+    @Override
+    public void TransmitUpdatedPreset(byte[] b) {
+        byte[] data = new byte[8];
+        data[0] = 'A';
+        data[1] = 'x';
+        data[2] = 'o';
+        data[3] = 'R';
+        int len = b.length;
+        data[4] = (byte) len;
+        data[5] = (byte) (len >> 8);
+        data[6] = (byte) (len >> 16);
+        data[7] = (byte) (len >> 24);
+        writeBytes(data);
+        writeBytes(b);
+    }
+
+    @Override
+    public int TransmitGetFileList() {
         ClearSync();
-        writeBytes(getFileListPckt);
+        int writeResult = writeBytes(getFileListPckt);
+        return writeResult;
+    }
+
+    @Override
+    public int TransmitGetFileInfo(String filename) {
+
+        /* Total size:
+           "AxoC"           (4) +
+           pFileSize        (4) +
+           FileName[0]      (1) +
+           FileName[1]      (1) +
+           (skip fdate)
+           (skip ftime)
+           filename bytes   (variable length) +
+           null terminator  (1)
+        */
+        byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
+        ByteBuffer buffer = ByteBuffer.allocate(10 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+
+        buffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'C'); // "AxoC" header
+        buffer.putInt(0);           // pFileSize placeholder (4 bytes)
+        buffer.put((byte)0x00);     // FileName[0] (always 0 for new protocol)
+        buffer.put((byte)'I');      // FileName[1] (sub-command 'I')
+        // buffer.putShort((short)0);  // fdate placeholder (2 bytes)
+        // buffer.putShort((short)0);  // ftime placeholder (2 bytes)
+        buffer.put(filenameBytes);  // FileName[6]+ (variable length)
+        buffer.put((byte)0x00);     // Null terminator
+
+        ClearSync();
+        int writeResult = writeBytes(buffer.array());
+        return writeResult;
     }
 
     @Override
@@ -747,7 +750,7 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public int UploadFragment(byte[] buffer, int offset) {
+    public int TransmitUploadFragment(byte[] buffer, int offset) {
         byte[] data = new byte[12];
         data[0] = 'A';
         data[1] = 'x';
@@ -776,220 +779,208 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public void TransmitVirtualButton(int b_or, int b_and, int enc1, int enc2, int enc3, int enc4) {
-        byte[] data = new byte[16];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'B';
-        data[4] = (byte) b_or;
-        data[5] = (byte) (b_or >> 8);
-        data[6] = (byte) (b_or >> 16);
-        data[7] = (byte) (b_or >> 24);
-        data[8] = (byte) b_and;
-        data[9] = (byte) (b_and >> 8);
-        data[10] = (byte) (b_and >> 16);
-        data[11] = (byte) (b_and >> 24);
-        data[12] = (byte) (enc1);
-        data[13] = (byte) (enc2);
-        data[14] = (byte) (enc3);
-        data[15] = (byte) (enc4);
-        writeBytes(data);
-    }
-
-    @Override
-    public int TransmitCreateFile(String filename, int size) {
-        byte[] data = new byte[9 + filename.length()];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'C';
-        data[4] = (byte) size;
-        data[5] = (byte) (size >> 8);
-        data[6] = (byte) (size >> 16);
-        data[7] = (byte) (size >> 24);
-        int i = 8;
-        for (int j = 0; j < filename.length(); j++) {
-            data[i++] = (byte) filename.charAt(j);
-        }
-        data[i] = 0;
-        ClearSync();
-        int writeResult = writeBytes(data);
-        if (writeResult != LibUsb.SUCCESS) {
-            return writeResult;
-        }
-        boolean syncSuccess = WaitSync(10000);
-        return syncSuccess ? LibUsb.SUCCESS : LibUsb.ERROR_TIMEOUT;
-    }
-
-    @Override
     public int TransmitCreateFile(String filename, int size, Calendar date) {
-        byte[] data = new byte[15 + filename.length()];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'C';
-        data[4] = (byte) size;
-        data[5] = (byte) (size >> 8);
-        data[6] = (byte) (size >> 16);
-        data[7] = (byte) (size >> 24);
-        data[8] = 0;
-        data[9] = 'f';
+
+        /* Total size:
+           "AxoC"           (4) +
+           pFileSize        (4) +
+           FileName[0]      (1) +
+           FileName[1]      (1) +
+           fdate            (2) +
+           ftime            (2) +
+           filename bytes   (variable length) +
+           null terminator  (1)
+         */
+        byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
+        ByteBuffer buffer = ByteBuffer.allocate(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+
+        buffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'C'); // "AxoC" header
+        buffer.putInt(size);                // pFileSize (4 bytes)
+        buffer.put((byte)0x00);             // FileName[0] (always 0 for new protocol)
+        buffer.put((byte)'f');              // FileName[1] (sub-command 'f')
+
+        /* Calculate FatFs date/time */
         int dy = date.get(Calendar.YEAR);
         int dm = date.get(Calendar.MONTH) + 1;
         int dd = date.get(Calendar.DAY_OF_MONTH);
         int th = date.get(Calendar.HOUR_OF_DAY);
         int tm = date.get(Calendar.MINUTE);
         int ts = date.get(Calendar.SECOND);
-        int t = ((dy - 1980) * 512) | (dm * 32) | dd;
-        int d = (th * 2048) | (tm * 32) | (ts / 2);
-        data[10] = (byte) (t & 0xff);
-        data[11] = (byte) (t >> 8);
-        data[12] = (byte) (d & 0xff);
-        data[13] = (byte) (d >> 8);
-        int i = 14;
-        for (int j = 0; j < filename.length(); j++) {
-            data[i++] = (byte) filename.charAt(j);
-        }
-        data[i] = 0;
+        short fatFsDate = (short)(((dy - 1980) << 9) | (dm << 5) | dd);
+        short fatFsTime = (short)((th << 11) | (tm << 5) | (ts / 2));
+
+        buffer.putShort(fatFsDate);  // FileName[2/3]
+        buffer.putShort(fatFsTime);  // FileName[4/5]
+        buffer.put(filenameBytes);   // FileName[6]+ (variable length)
+        buffer.put((byte)0x00);      // Null terminator
+
         ClearSync();
-        int writeResult = writeBytes(data);
-        if (writeResult != LibUsb.SUCCESS) {
-            return writeResult;
-        }
-        boolean syncSuccess = WaitSync(10000);
-        return syncSuccess ? LibUsb.SUCCESS : LibUsb.ERROR_TIMEOUT;
+        int writeResult = writeBytes(buffer.array());
+        return writeResult;
     }
 
     @Override
-    public int TransmitDeleteFile(String filename, QCmdSerialTask senderCommand) { // CHANGED RETURN TYPE TO int
-        this.currentExecutingCommand = senderCommand; // Storing the command object
-        byte[] data = new byte[15 + filename.length()];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'C';
-        data[4] = 0;
-        data[5] = 0;
-        data[6] = 0;
-        data[7] = 0; // These might be used for cmd ID later
-        data[8] = 0;
-        data[9] = 'D';
-        data[10] = 0;
-        data[11] = 0;
-        data[12] = 0;
-        data[13] = 0;
-        int i = 14;
-        for (int j = 0; j < filename.length(); j++) {
-            data[i++] = (byte) filename.charAt(j);
-        }
-        data[i] = 0;
-        ClearSync();
-        int writeResult = writeBytes(data);
+    public int TransmitDeleteFile(String filename) {
+
+        /* Total size:
+           "AxoC"           (4) +
+           pFileSize        (4) +
+           FileName[0]      (1) +
+           FileName[1]      (1) +
+           (skip fdate)
+           (skip ftime)
+           filename bytes   (variable length) +
+           null terminator  (1)
+         */
+        byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
+        ByteBuffer buffer = ByteBuffer.allocate(10 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+
+        buffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'C'); // "AxoC" header
+        buffer.putInt(0);           // pFileSize placeholder (4 bytes)
+        buffer.put((byte)0x00);     // FileName[0] (always 0)
+        buffer.put((byte)'D');      // FileName[1] (sub-command 'D')
+        // buffer.putShort((short)0);  // fdate placeholder (2 bytes)
+        // buffer.putShort((short)0);  // ftime placeholder (2 bytes)
+        buffer.put(filenameBytes);  // FileName[6]+ (variable length)
+        buffer.put((byte)0x00);     // Null terminator
+
+        int writeResult = writeBytes(buffer.array());
         return writeResult;
     }
 
     @Override
     public int TransmitChangeWorkingDirectory(String path) {
-        byte[] data = new byte[15 + path.length()];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'C';
-        data[4] = 0;
-        data[5] = 0;
-        data[6] = 0;
-        data[7] = 0;
-        data[8] = 0;
-        data[9] = 'C';
-        data[10] = 0;
-        data[11] = 0;
-        data[12] = 0;
-        data[13] = 0;
-        int i = 14;
-        for (int j = 0; j < path.length(); j++) {
-            data[i++] = (byte) path.charAt(j);
-        }
-        data[i] = 0;
+
+        /* Total size:
+           "AxoC"           (4) +
+           pFileSize        (4) +
+           FileName[0]      (1) +
+           FileName[1]      (1) +
+           (skip fdate)
+           (skip ftime)
+           filename bytes   (variable length) +
+           null terminator  (1)
+         */
+        byte[] pathBytes = path.getBytes(StandardCharsets.US_ASCII);
+        ByteBuffer buffer = ByteBuffer.allocate(10 + pathBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+
+        buffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'C'); // "AxoC" header
+        buffer.putInt(0);           // pFileSize placeholder (4 bytes)
+        buffer.put((byte)0x00);     // FileName[0] (always 0)
+        buffer.put((byte)'C');      // FileName[1] (sub-command 'C')
+        // buffer.putShort((short)0);  // fdate placeholder (2 bytes)
+        // buffer.putShort((short)0);  // ftime placeholder (2 bytes)
+        buffer.put(pathBytes);      // FileName[6]+ (variable length)
+        buffer.put((byte)0x00);     // Null terminator
+
         ClearSync();
-        int writeResult = writeBytes(data);
-        if (writeResult != LibUsb.SUCCESS) {
-            return writeResult;
-        }
-        boolean syncSuccess = WaitSync(10000);
-        return syncSuccess ? LibUsb.SUCCESS : LibUsb.ERROR_TIMEOUT;
+        int writeResult = writeBytes(buffer.array());
+        return writeResult;
     }
 
     @Override
     public int TransmitCreateDirectory(String filename, Calendar date) {
-        byte[] data = new byte[15 + filename.length()];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'C';
-        data[4] = 0;
-        data[5] = 0;
-        data[6] = 0;
-        data[7] = 0;
-        data[8] = 0;
-        data[9] = 'd';
-        data[10] = 0;
-        data[11] = 0;
-        data[12] = 0;
-        data[13] = 0;
 
-        int i = 14;
-        for (int j = 0; j < filename.length(); j++) {
-            data[i++] = (byte) filename.charAt(j);
-        }
-        data[i] = 0;
+        /* Total size:
+           "AxoC"           (4) +
+           pFileSize        (4) +
+           FileName[0]      (1) +
+           FileName[1]      (1) +
+           fdate            (2) +
+           ftime            (2) +
+           filename bytes   (variable length) +
+           null terminator  (1)
+         */
+        byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
+        ByteBuffer buffer = ByteBuffer.allocate(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+
+        buffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'C'); // "AxoC" header
+        buffer.putInt(0);            // pFileSize placeholder (4 bytes)
+        buffer.put((byte)0x00);      // FileName[0] (always 0)
+        buffer.put((byte)'k');       // FileName[1] (sub-command 'k')
+
+        /* Calculate FatFs date/time */
+        int dy = date.get(Calendar.YEAR);
+        int dm = date.get(Calendar.MONTH) + 1;
+        int dd = date.get(Calendar.DAY_OF_MONTH);
+        int th = date.get(Calendar.HOUR_OF_DAY);
+        int tm = date.get(Calendar.MINUTE);
+        int ts = date.get(Calendar.SECOND);
+        short fatFsDate = (short)(((dy - 1980) << 9) | (dm << 5) | dd);
+        short fatFsTime = (short)((th << 11) | (tm << 5) | (ts / 2));
+
+        buffer.putShort(fatFsDate);  // FileName[2/3]
+        buffer.putShort(fatFsTime);  // FileName[4/5]
+        buffer.put(filenameBytes);   // FileName[6]+ (variable length)
+        buffer.put((byte)0x00);      // Null terminator
+
         ClearSync();
-        int writeResult = writeBytes(data);
-        if (writeResult != LibUsb.SUCCESS) {
-            return writeResult;
-        }
-        boolean syncSuccess = WaitSync(10000);
-        return syncSuccess ? LibUsb.SUCCESS : LibUsb.ERROR_TIMEOUT;
+        int writeResult = writeBytes(buffer.array());
+        return writeResult;
     }
 
     @Override
     public int TransmitAppendFile(byte[] buffer) {
+
+        /* Total size:
+           "Axoa"           (4) +
+           Length           (4)
+           (data is streamed in successive writeByte)
+         */
         int size = buffer.length;
-        byte[] data = new byte[8];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'a'; /* changed from 'A' to lower-case to avoid confusion with "AxoA" ack message (MCU->Patcher) */
-        data[4] = (byte) size;
-        data[5] = (byte) (size >> 8);
-        data[6] = (byte) (size >> 16);
-        data[7] = (byte) (size >> 24);
+        ByteBuffer headerBuffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN); // "Axoa" + length
+
+        headerBuffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'a');
+        headerBuffer.putInt(size);  // Length of the data chunk
+
         ClearSync();
-        int writeResult = writeBytes(data);
+        int writeResult = writeBytes(headerBuffer.array());
         if (writeResult != LibUsb.SUCCESS) {
             return writeResult;
         }
-        writeResult = writeBytes(buffer);
-        if (writeResult != LibUsb.SUCCESS) {
-            return writeResult;
-        }
-        return LibUsb.SUCCESS;
+        writeResult = writeBytes(buffer); /* Send the actual data payload */
+        return writeResult;
     }
 
     @Override
-    public int TransmitCloseFile() {
-        byte[] data = new byte[4];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'c';
+    public int TransmitCloseFile(String filename, Calendar date) {
+
+        /* Total size:
+           "AxoC"           (4) +
+           pFileSize        (4) +
+           FileName[0]      (1) +
+           FileName[1]      (1) +
+           fdate            (2) +
+           ftime            (2)
+           filename bytes   (variable length) +
+           null terminator  (1)
+         */
+        byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
+        ByteBuffer buffer = ByteBuffer.allocate(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+
+        buffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'C'); // "AxoC" header
+        buffer.putInt(0);                   // pFileSize placeholder (4 bytes)
+        buffer.put((byte)0x00);             // FileName[0] (always 0)
+        buffer.put((byte)'c');              // FileName[1] (sub-command 'c')
+
+        /* Calculate FatFs date/time */
+        int dy = date.get(Calendar.YEAR);
+        int dm = date.get(Calendar.MONTH) + 1;
+        int dd = date.get(Calendar.DAY_OF_MONTH);
+        int th = date.get(Calendar.HOUR_OF_DAY);
+        int tm = date.get(Calendar.MINUTE);
+        int ts = date.get(Calendar.SECOND);
+        short fatFsDate = (short)(((dy - 1980) << 9) | (dm << 5) | dd);
+        short fatFsTime = (short)((th << 11) | (tm << 5) | (ts / 2));
+
+        buffer.putShort(fatFsDate);  // FileName[2/3]
+        buffer.putShort(fatFsTime);  // FileName[4/5]
+        buffer.put(filenameBytes);   // FileName[6]+ (variable length)
+        buffer.put((byte)0x00);      // Null terminator
+
         ClearSync();
-        int writeResult = writeBytes(data);
-        if (writeResult != LibUsb.SUCCESS) {
-            return writeResult;
-        }
-        boolean syncSuccess = WaitSync(10000);
-        return syncSuccess ? LibUsb.SUCCESS : LibUsb.ERROR_TIMEOUT;
+        int writeResult = writeBytes(buffer.array());
+        return writeResult;
     }
 
     @Override
@@ -1346,6 +1337,7 @@ public class USBBulkConnection extends Connection {
         headerstate = 0;
         state = ReceiverState.header;
     }
+
     ByteBuffer dispData;
 
     // int LCDPacketRow = 0;
@@ -1620,11 +1612,16 @@ public class USBBulkConnection extends Connection {
                 if (dataIndex == dataLength) {
                     sdinfoRcvBuffer.rewind();
                     sdinfoRcvBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
+                    int clusters = sdinfoRcvBuffer.getInt();
+                    int clustersize = sdinfoRcvBuffer.getInt();
+                    int blocksize = sdinfoRcvBuffer.getInt();
                     // LOGGER.log(Level.INFO, "sdinfo: "
                     // + sdinfoRcvBuffer.asIntBuffer().get(0) + " "
                     // + sdinfoRcvBuffer.asIntBuffer().get(1) + " "
                     // + sdinfoRcvBuffer.asIntBuffer().get(2));
-                    SDCardInfo.getInstance().SetInfo(sdinfoRcvBuffer.asIntBuffer().get(0), sdinfoRcvBuffer.asIntBuffer().get(1), sdinfoRcvBuffer.asIntBuffer().get(2));
+
+                    SDCardInfo.getInstance().SetInfo(clusters, clustersize, blocksize);
                     GoIdleState();
                 }
                 break;

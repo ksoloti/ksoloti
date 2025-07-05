@@ -119,7 +119,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
             header[13] = (byte) (zcrcv >> 8);
             header[14] = (byte) (zcrcv >> 16);
             header[15] = (byte) (zcrcv >> 24);
-            connection.UploadFragment(header, connection.getTargetProfile().getSDRAMAddr() + offset);
+            connection.TransmitUploadFragment(header, connection.getTargetProfile().getSDRAMAddr() + offset);
             offset += header.length;
             int MaxBlockSize = 32768;
             do {
@@ -136,7 +136,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
                 if (nRead != l) {
                     LOGGER.log(Level.SEVERE, "File size wrong? {0}", nRead);
                 }
-                connection.UploadFragment(buffer, connection.getTargetProfile().getSDRAMAddr() + offset);
+                connection.TransmitUploadFragment(buffer, connection.getTargetProfile().getSDRAMAddr() + offset);
                 offset += nRead;
             } while (tlength > 0);
             inputStream.close();

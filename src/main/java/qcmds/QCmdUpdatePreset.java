@@ -35,7 +35,7 @@ public class QCmdUpdatePreset extends AbstractQCmdSerialTask {
     @Override
     public QCmd Do(Connection connection) {
         connection.ClearSync();
-        connection.SendUpdatedPreset(b);
+        connection.TransmitUpdatedPreset(b);
         return this;
     }
 

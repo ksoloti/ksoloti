@@ -16,31 +16,31 @@ public abstract class Connection {
     abstract public void disconnect();
     abstract public boolean connect();
     abstract public void SelectPort();
+    
     abstract public void TransmitStop();
     abstract public void TransmitStart();
     abstract public void TransmitPing();
     abstract public void TransmitRecallPreset(int presetNo);
-    abstract public int  UploadFragment(byte[] buffer, int offset);
-    abstract public void TransmitGetFileList(QCmdSerialTask senderCommand);
-    abstract public void TransmitVirtualButton(int b_or, int b_and, int enc1, int enc2, int enc3, int enc4);
-    abstract public void TransmitGetFileInfo(String filename);
-    abstract public int  TransmitCreateFile(String filename, int size);
+    abstract public int  TransmitUploadFragment(byte[] buffer, int offset);
+    abstract public int  TransmitGetFileList();
+    abstract public int  TransmitGetFileInfo(String filename);
     abstract public int  TransmitCreateFile(String filename, int size, Calendar date);
     abstract public int  TransmitCreateDirectory(String filename, Calendar date);
-    abstract public int  TransmitDeleteFile(String filename, QCmdSerialTask senderCommand);
+    abstract public int  TransmitDeleteFile(String filename);
     abstract public int  TransmitChangeWorkingDirectory(String path);
     abstract public int  TransmitAppendFile(byte[] buffer);
-    abstract public int  TransmitCloseFile();
+    abstract public int  TransmitCloseFile(String filename, Calendar date);
     abstract public void TransmitMemoryRead(int addr, int length);
     abstract public void TransmitMemoryRead1Word(int addr);    
     abstract public void TransmitCosts();
-    abstract public void SendUpdatedPreset(byte[] b);
-    abstract public void SendMidi(int m0, int m1, int m2);
-    abstract public boolean AppendToQueue(QCmdSerialTask cmd);
+    abstract public void TransmitUpdatedPreset(byte[] b);
+    abstract public void TransmitMidi(int m0, int m1, int m2);
     abstract public void TransmitGetFWVersion();
     abstract public void TransmitGetSpilinkSynced();
     abstract public void TransmitCopyToFlash();
-    abstract public void BringToDFU();
+    abstract public void TransmitBringToDFU();
+    
+    abstract public boolean AppendToQueue(QCmdSerialTask cmd);
     abstract public void ClearSync();
     abstract public boolean WaitSync(int msec);
     abstract public boolean WaitSync();
@@ -52,6 +52,8 @@ public abstract class Connection {
     abstract public int getMemRead1Word();
     abstract public boolean GetSDCardPresent();
     abstract public int GetConnectionFlags();
+    abstract public void setCurrentExecutingCommand(qcmds.QCmdSerialTask command);
+    abstract public QCmdSerialTask getCurrentExecutingCommand();
     
     private ArrayList<ConnectionStatusListener> csls = new ArrayList<ConnectionStatusListener>();
 
