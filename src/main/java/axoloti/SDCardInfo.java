@@ -398,4 +398,29 @@ private void traverseTreeForDisplay(AxoSDFileNode node, int currentDepth,
         return false;
     }
 
+    public static String getFatFsErrorString(int error_code) {
+        switch (error_code) {
+            case 0:  return "FR_OK";                   /* (0) Succeeded */
+            case 1:  return "FR_DISK_ERR";             /* (1) A hard error occurred in the low level disk I/O layer */
+            case 2:  return "FR_INT_ERR";              /* (2) Assertion failed */
+            case 3:  return "FR_NOT_READY";            /* (3) The physical drive cannot work */
+            case 4:  return "FR_NO_FILE";              /* (4) Could not find the file */
+            case 5:  return "FR_NO_PATH";              /* (5) Could not find the path */
+            case 6:  return "FR_INVALID_NAME";         /* (6) The path name format is invalid */
+            case 7:  return "FR_DENIED";               /* (7) Access denied due to prohibited access or directory full */
+            case 8:  return "FR_EXIST";                /* (8) Access denied due to prohibited access */
+            case 9:  return "FR_INVALID_OBJECT";       /* (9) The file/directory object is invalid */
+            case 10: return "FR_WRITE_PROTECTED";     /* (10) The physical drive is write protected */
+            case 11: return "FR_INVALID_DRIVE";       /* (11) The logical drive number is invalid */
+            case 12: return "FR_NOT_ENABLED";         /* (12) The volume has no work area */
+            case 13: return "FR_NO_FILESYSTEM";       /* (13) There is no valid FAT volume */
+            case 14: return "FR_MKFS_ABORTED";        /* (14) The f_mkfs() aborted due to any parameter error */
+            case 15: return "FR_TIMEOUT";             /* (15) Could not get a grant to access the volume within defined period */
+            case 16: return "FR_LOCKED";              /* (16) The operation is rejected according to the file sharing policy */
+            case 17: return "FR_NOT_ENOUGH_CORE";     /* (17) LFN working buffer could not be allocated */
+            case 18: return "FR_TOO_MANY_OPEN_FILES"; /* (18) Number of open files > _FS_SHARE */
+            case 19: return "FR_INVALID_PARAMETER";   /* (19) Given parameter is invalid */
+            default: return "FR_???";
+        }
+    }
 }
