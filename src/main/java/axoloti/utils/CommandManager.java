@@ -19,7 +19,9 @@
 
 package axoloti.utils;
 
-import java.time.Instant;
+// import java.time.Instant;
+
+import qcmds.QCmdGetFileList;
 import qcmds.QCmdPing;
 import qcmds.QCmdSerialTask;
 
@@ -32,6 +34,7 @@ public class CommandManager {
     // private static final Logger LOGGER = Logger.getLogger(CommandManager.class.getName());
 
     private volatile boolean longOperationInProgress = false;
+    private volatile boolean suppressPeriodicPings = false;
     private volatile long lastLongOperationEndTime = 0;
 
     private static final long COOLDOWN_MILLIS = 2000;
@@ -51,30 +54,59 @@ public class CommandManager {
 
     public void startLongOperation() {
         longOperationInProgress = true;
-        // System.out.println(Instant.now() + " CommandManager: Long operation started.");
+        suppressPeriodicPings = true;
+        // System.out.println(Instant.now() + " [DEBUG] CommandManager: Long operation started. Suppressing pings.");
     }
 
     public void endLongOperation() {
         longOperationInProgress = false;
+        suppressPeriodicPings = false;
         lastLongOperationEndTime = System.currentTimeMillis();
-        // System.out.println(Instant.now() + " CommandManager: Long operation ended. Cooldown started.");
+        // System.out.println(Instant.now() + " [DEBUG] CommandManager: Long operation ended. Cooldown started. Resuming pings.");
     }
 
     /* Checks if the system is currently busy with a long operation or in cooldown. */
-    public boolean isBusy() {
-        return longOperationInProgress || (System.currentTimeMillis() - lastLongOperationEndTime < COOLDOWN_MILLIS);
+    public boolean isLongOperationActive() {
+        return longOperationInProgress;
+    }
+
+    public boolean isSuppressPeriodicPings() {
+        return suppressPeriodicPings;
     }
 
     /* Determines if a given QCmdSerialTask should be offered to the USB queue
        based on the current busy state and cooldown period. */
     public boolean shouldOfferCommand(QCmdSerialTask command) {
-        if (isBusy()) {
-            if (command instanceof QCmdPing || command.getClass().getSimpleName().equals("QCmdGuiDialTx")) {
-                System.out.println(Instant.now() + " CommandManager: Suppressing " + command.getClass().getSimpleName() + " due to busy state.");
-                return false;
+
+        /* --- STEP 1: Always allow pings and dials to be offered to the queue --- */
+        if (command instanceof QCmdPing || command.getClass().getSimpleName().equals("QCmdGuiDialTx")) {
+            // System.out.println(Instant.now() + " [DEBUG] CommandManager: Allowing ping/dial command to be offered.");
+            return true;
+        }
+
+        /* --- STEP 2: Suppress ALL other commands if a long operation is currently active --- */
+        if (isLongOperationActive()) {
+            // System.out.println(Instant.now() + " [DEBUG] CommandManager: Suppressing command " + command.getClass().getSimpleName() + " because long operation is in progress.");
+            return false;
+        }
+
+        /* --- STEP 3: Handle cooldown for commands AFTER a long operation has just ended --- */
+        /* Allow QCmdGetFileList immediately after a long operation (override cooldown for it) */
+        if (command instanceof QCmdGetFileList) {
+            /* If we are within the cooldown period, but it's a file list request, allow it. */
+            if (System.currentTimeMillis() - lastLongOperationEndTime < COOLDOWN_MILLIS) {
+                // System.out.println(Instant.now() + " [DEBUG] CommandManager: Allowing QCmdGetFileList during cooldown.");
+                return true;
             }
         }
+
+        /* For all other commands, apply the general cooldown */
+        if (System.currentTimeMillis() - lastLongOperationEndTime < COOLDOWN_MILLIS) {
+            // System.out.println(Instant.now() + " [DEBUG] CommandManager: Suppressing command " + command.getClass().getSimpleName() + " due to cooldown.");
+            return false;
+        }
+
+        /* If none of the above conditions apply, the command is allowed */
         return true;
     }
 }
-

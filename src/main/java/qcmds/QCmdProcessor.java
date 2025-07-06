@@ -22,6 +22,7 @@ import axoloti.Connection;
 import axoloti.MainFrame;
 import axoloti.Patch;
 import axoloti.USBBulkConnection;
+import axoloti.utils.CommandManager;
 
 import static axoloti.MainFrame.prefs;
 
@@ -41,6 +42,7 @@ public class QCmdProcessor implements Runnable {
 
     private static final Logger LOGGER = Logger.getLogger(QCmdProcessor.class.getName());
 
+    private static QCmdProcessor singleton = null;
     private final BlockingQueue<QCmd> queue;
     private final BlockingQueue<QCmd> queueResponse;
     protected Connection serialconnection;
@@ -49,6 +51,7 @@ public class QCmdProcessor implements Runnable {
     private final Thread pingerThread;
     private final PeriodicDialTransmitter dialTransmitter;
     private final Thread dialTransmitterThread;
+    private int progressValue = 0;
 
     class PeriodicPinger implements Runnable {
 
@@ -66,16 +69,22 @@ public class QCmdProcessor implements Runnable {
                     Thread.sleep(prefs.getPollInterval());
     
                     if (queue.isEmpty() && serialconnection.isConnected()) {
+                        if (CommandManager.getInstance().isSuppressPeriodicPings()) {
+                            /* If suppressed, reset interval and continue to next loop iteration */
+                            currentSendInterval = prefs.getPollInterval();
+                            lastSendAttemptTime = System.currentTimeMillis();
+                            // System.out.println(Instant.now() + " [DEBUG] PeriodicPinger: Suppressing ping as long operation is in progress.");
+                            continue; /* Skip offering a ping this cycle */
+                        }
 
                         long now = System.currentTimeMillis();
-    
                         /* Check if enough time has passed since the last attempt to send a command */
                         if (now - lastSendAttemptTime >= currentSendInterval) {
 
                             boolean added = queue.offer(new QCmdPing(), 10, TimeUnit.MILLISECONDS);
                             // boolean added = queue.offer(new QCmdPing(true), 10, TimeUnit.MILLISECONDS); // no-disconnect ping for debug
                             if (!added) {
-                                // System.out.println(Instant.now() + " QCmd queue full, dropping ping command. Backing off outbound rate.");
+                                // System.out.println(Instant.now() + " [DEBUG] QCmd queue full, dropping ping command. Backing off outbound rate.");
                                 /* If the queue is full (command not added), back off
                                    and increase and cap the currentSendInterval */
                                 currentSendInterval = Math.min(currentSendInterval * 2, 500); /* Cap at 500ms */
@@ -102,7 +111,12 @@ public class QCmdProcessor implements Runnable {
                 catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "Error in PeriodicPinger thread.", ex);
                     /* On a general error, add a small sleep to prevent tight looping */
-                    try { Thread.sleep(prefs.getPollInterval() * 5); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                    try {
+                        Thread.sleep(prefs.getPollInterval() * 5);
+                    }
+                    catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                    }
                 }
             }
         }
@@ -121,15 +135,22 @@ public class QCmdProcessor implements Runnable {
         public void run() {
             while (true) {
                 try {
+                    Thread.sleep(5);
+
                     if (queue.isEmpty() && serialconnection.isConnected()) {
+                        if (CommandManager.getInstance().isSuppressPeriodicPings()) {
+                            currentSendInterval = prefs.getPollInterval(); // Reset interval
+                            lastSendAttemptTime = System.currentTimeMillis(); // Reset timer
+                            // System.out.println(Instant.now() + " [DEBUG] PeriodicDialTransmitter: Suppressing dial command as long operation is in progress.");
+                            continue; /* Skip offering a dial command this cycle */
+                        }
 
                         long now = System.currentTimeMillis();
-
                         if (now - lastSendAttemptTime >= currentSendInterval) {
     
                             boolean added = queue.offer(new QCmdGuiDialTx(), 10, TimeUnit.MILLISECONDS);
                             if (!added) {
-                                // System.out.println(Instant.now() + " QCmd queue full, dropping dial command. Backing off outbound rate.");
+                                // System.out.println(Instant.now() + " [DEBUG] QCmd queue full, dropping dial command. Backing off outbound rate.");
                                 currentSendInterval = Math.min(currentSendInterval * 2, 500);
                             }
                             else {
@@ -142,7 +163,6 @@ public class QCmdProcessor implements Runnable {
                         currentSendInterval = prefs.getPollInterval();
                         lastSendAttemptTime = 0;
                     }
-                    Thread.sleep(5);
                 }
                 catch (InterruptedException ex) {
                     LOGGER.log(Level.SEVERE, "PeriodicDialTransmitter interrupted.", ex);
@@ -151,12 +171,17 @@ public class QCmdProcessor implements Runnable {
                 }
                 catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "Error in PeriodicDialTransmitter thread.", ex);
-                    try { Thread.sleep(prefs.getPollInterval() * 5); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                    try {
+                        Thread.sleep(prefs.getPollInterval() * 5);
+                    }
+                    catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                    }
                 }
             }
         }
     }
-    
+
     protected QCmdProcessor() {
         queue = new ArrayBlockingQueue<QCmd>(20);
         queueResponse = new ArrayBlockingQueue<QCmd>(20);
@@ -167,8 +192,6 @@ public class QCmdProcessor implements Runnable {
         dialTransmitterThread = new Thread(dialTransmitter);
     }
 
-    private static QCmdProcessor singleton = null;
-    
     public static QCmdProcessor getQCmdProcessor() {
         if (singleton == null)
             singleton = new QCmdProcessor();
@@ -180,20 +203,18 @@ public class QCmdProcessor implements Runnable {
     }
 
     public boolean AppendToQueue(QCmd cmd) {
-        try {
-            /* Try to add for up to 100 milliseconds.
-             * Adjust the timeout based on how long you're willing for the UI/caller to wait.
-             * A very short timeout (e.g., 0ms) or no timeout at all (just offer(cmd))
-             * makes it purely non-blocking if the queue is full. */
-            boolean added = queue.offer(cmd, 100, TimeUnit.MILLISECONDS);
-            if (!added) {
-                LOGGER.log(Level.WARNING, "Warning: QCmd queue full, command not appended: " + cmd);
+        /* check if it is a serial task that goes to the USBBulkConnection */
+        if (cmd instanceof QCmdSerialTask) {
+            QCmdSerialTask serialCmd = (QCmdSerialTask) cmd;
+
+            if (!CommandManager.getInstance().shouldOfferCommand(serialCmd)) {
+                // System.out.println(Instant.now() + " [DEBUG] QCmdProcessor: Command " + serialCmd.getClass().getSimpleName() + " suppressed.");
+                return false;
             }
-            return added;
+            return USBBulkConnection.GetConnection().AppendToQueue(serialCmd);
         }
-        catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Restore interrupt status
-            LOGGER.log(Level.SEVERE, "Error: AppendToQueue interrupted while offering command: " + cmd);
+        else {
+            // System.err.println(Instant.now() + " [DEBUG] QCmdProcessor: Non-serial QCmd appended: " + cmd.getClass().getSimpleName());
             return false;
         }
     }
@@ -205,8 +226,8 @@ public class QCmdProcessor implements Runnable {
 
     public void Panic() {
         queue.clear();
-//        shellprocessor.Panic();
-//        serialconnection.Panic();
+        // shellprocessor.Panic();
+        // serialconnection.Panic();
     }
 
     private void publish(final QCmd cmd) {
@@ -223,7 +244,6 @@ public class QCmdProcessor implements Runnable {
             }
         });
     }
-    private int progressValue = 0;
 
     private void setProgress(final int i) {
         if (i != progressValue) {
@@ -238,7 +258,6 @@ public class QCmdProcessor implements Runnable {
     }
 
     private void publish(final String m) {
-//        println(m);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -254,7 +273,8 @@ public class QCmdProcessor implements Runnable {
             }
             try {
                 Thread.sleep(10);
-            } catch (InterruptedException ex) {
+            }
+            catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
         }
@@ -323,7 +343,8 @@ public class QCmdProcessor implements Runnable {
                     println(m);
                     publish(m);
                 }
-            } catch (InterruptedException ex) {
+            }
+            catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
             setProgress(0);
@@ -355,7 +376,7 @@ public class QCmdProcessor implements Runnable {
 
     public void ClearQueue() {
         queue.clear();
-    }    
+    }
 
     public boolean isQueueEmpty() {
         return queue.isEmpty();
