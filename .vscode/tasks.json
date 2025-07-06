@@ -2,6 +2,13 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "ant_clean_ant",
+            "group": "build",
+            "type": "shell",
+            "command": "ant -q clean && ant -q",
+            "args": []
+        },
+        {
             "label": "kompile_shortcut",
             "group": "build",
             "type": "shell",

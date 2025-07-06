@@ -10,6 +10,7 @@
             "name": "Debug Patcher!",
             "request": "launch",
             "mainClass": "axoloti.Axoloti",
+            "preLaunchTask": "ant_clean_ant",
         },
         {
             "name": "Ksoloti launch",
