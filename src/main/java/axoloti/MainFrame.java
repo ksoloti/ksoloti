@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package axoloti;
 
 import static axoloti.Axoloti.FIRMWARE_DIR;
@@ -62,6 +63,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 // import java.util.logging.FileHandler;
@@ -120,6 +122,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     String TargetFirmwareID;
     KeyboardFrame keyboard;
     FileManagerFrame filemanager;
+    PreferencesFrame pp;
     // AxolotiRemoteControl remote;
     QCmdProcessor qcmdprocessor;
     Thread qcmdprocessorThread;
@@ -127,10 +130,69 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private final String[] args;
     JMenu favouriteMenu;
     boolean bGrabFocusOnSevereErrors = true;
+    public boolean WarnedAboutFWCRCMismatch = false;
+    private int patchIndex = -3;
+    private int v5000c = 0;
+    private int vdd00c = 0;
+
+    public static Style styleSevere;
+    public static Style styleWarning;
+    public static Style styleInfo;
+
+    private axoloti.menus.FileMenu fileMenu;
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.Box.Filler filler3;
+    private axoloti.menus.HelpMenu helpMenu1;
+    private javax.swing.JButton jButtonClear;
+    private javax.swing.JToggleButton jToggleButtonConnect;
+    private javax.swing.JPopupMenu.Separator jDevSeparator;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
+    // private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabelCPUID;
+    private javax.swing.JLabel jLabelFlags;
+    // private javax.swing.JLabel jLabelFirmwareID;
+    private javax.swing.JLabel jLabelIcon;
+    private javax.swing.JLabel jLabelPatch;
+    private javax.swing.JLabel jLabelProgress;
+    private javax.swing.JLabel jLabelSDCardPresent;
+    private javax.swing.JLabel jLabelVoltages;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenu jMenuBoard;
+    private javax.swing.JMenu jMenuEdit;
+    private javax.swing.JMenu jMenuFirmware;
+    private javax.swing.JMenuItem jMenuItemCopy;
+    private javax.swing.JMenuItem jMenuItemEnterDFU;
+    private javax.swing.JMenuItem jMenuItemFCompile;
+    private javax.swing.JMenuItem jMenuItemFConnect;
+    private javax.swing.JMenuItem jMenuItemFDisconnect;
+    private javax.swing.JMenuItem jMenuItemFlashDFU;
+    private javax.swing.JMenuItem jMenuItemFlashDefault;
+    private javax.swing.JMenuItem jMenuItemFlashUser;
+    private javax.swing.JMenuItem jMenuItemMount;
+    private javax.swing.JMenuItem jMenuItemPanic;
+    private javax.swing.JMenuItem jMenuItemPing;
+    private javax.swing.JMenuItem jMenuItemRefreshFWID;
+    private javax.swing.JMenuItem jMenuItemSelectCom;
+    private javax.swing.JPanel jPanelHeader;
+    private javax.swing.JPanel jPanelIconColumn;
+    private javax.swing.JPanel jPanelButtonsColumn;
+    private javax.swing.JPanel jPanelInfoColumn;
+    private javax.swing.JPanel jPanelProgress;
+    private javax.swing.JProgressBar jProgressBar1;
+    private ScrollPaneComponent jScrollPaneLog;
+    public static javax.swing.JTextPane jTextPaneLog;
+    private axoloti.menus.WindowMenu windowMenu1;
 
     private boolean doAutoScroll = true;
 
-    // ServerSocket instanceSocketHack;
+    private ArrayList<UnitNameListener> uncmls = new ArrayList<UnitNameListener>();
+
+    /* Usually we run all tests, as many may fail for same reason and you want
+       a list of all affected files, but if you want to stop on first failure,
+       flip this flag */
+    public static boolean stopOnFirstFail = false;
 
     /**
      * Creates new form MainFrame
@@ -154,9 +216,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         final Style styleParent = jTextPaneLog.addStyle(null, null);
         jTextPaneLog.setFont(Constants.FONT_MONO);
 
-        final Style styleSevere = jTextPaneLog.addStyle("severe", styleParent);
-        final Style styleWarning = jTextPaneLog.addStyle("warning", styleParent);
-        final Style styleInfo = jTextPaneLog.addStyle("info", styleParent);
+        styleSevere = jTextPaneLog.addStyle("severe", styleParent);
+        styleWarning = jTextPaneLog.addStyle("warning", styleParent);
+        styleInfo = jTextPaneLog.addStyle("info", styleParent);
+
         jTextPaneLog.setBackground(Theme.Console_Background);
         StyleConstants.setForeground(styleSevere, Theme.Error_Text);
         StyleConstants.setForeground(styleWarning, Theme.Console_Warning_Text);
@@ -170,12 +233,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             public synchronized void drop(DropTargetDropEvent evt) {
                 try {
                     evt.acceptDrop(DnDConstants.ACTION_COPY);
-                    System.out.println("drag & drop:");
+                    System.out.println(Instant.now() + " drag & drop:");
                     @SuppressWarnings("unchecked")
                     List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
 
-                    /* Cap max opened files to 64 */
-                    int openedCount = 0, maxCount = 64;
+                    /* Cap max opened files to 32 */
+                    int openedCount = 0, maxCount = 32;
                     if (droppedFiles.size() > maxCount) {
                         /* Display "whoa" message first */
                         LOGGER.log(Level.WARNING, "Whoa, slow down. Only the first " + maxCount + " files were opened.");
@@ -200,7 +263,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                                     openedCount++;
                                 }
                                 else if (fn.endsWith(".axo")) {
-                                    System.out.println("opening .axo files not implemented yet");
+                                    System.out.println(Instant.now() + " Opening .axo files not implemented yet");
                                     // TODO
                                 }
                             }
@@ -324,22 +387,16 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
                 }
                 catch (BadLocationException ex) {
-                    // Log this error to standard error or a non-GUI log file,
-                    // to avoid infinite recursion if logging to GUI fails.
-                    System.err.println("BadLocationException when logging to GUI: " + ex.getMessage());
+                    System.err.println(Instant.now() + " BadLocationException when logging to GUI: " + ex.getMessage());
                     ex.printStackTrace(System.err);
-                    LOGGER.log(Level.SEVERE, "Failed to insert log message into JTextPane (BadLocation)", ex);
                 }
                 catch (UnsupportedEncodingException ex) {
-                    // This catch is for baos.toString("utf-8")
-                    System.err.println("UnsupportedEncodingException in log handler: " + ex.getMessage());
+                    System.err.println(Instant.now() + " UnsupportedEncodingException in log handler: " + ex.getMessage());
                     ex.printStackTrace(System.err);
-                    LOGGER.log(Level.SEVERE, "Encoding error in log handler", ex);
                 }
-                catch (Exception ex) { // Catch any other unexpected exceptions
-                    System.err.println("Unexpected exception in log handler: " + ex.getMessage());
+                catch (Exception ex) {
+                    System.err.println(Instant.now() + " Unexpected exception in log handler: " + ex.getMessage());
                     ex.printStackTrace(System.err);
-                    LOGGER.log(Level.SEVERE, "Unexpected error in log handler", ex);
                 }
             }
 
@@ -406,11 +463,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 try {
 
                     populateMainframeTitle();
-
-
-                    // instanceSocketHack = new ServerSocket(1);
-
-
                     LOGGER.log(Level.WARNING, "Patcher version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
 
                     if (prefs.getExpertMode()) {
@@ -587,7 +639,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         EventQueue.invokeLater(r);
                     }
                 } else if (arg.endsWith(".axo")) {
-                    System.out.println("opening .axo files not implemented yet");
+                    System.out.println(Instant.now() + " Opening .axo files not implemented yet");
                     // NOP for AXO at the moment - new patch and paste object as embedded inside?
                     // NewPatchWithObjectEmbedded---or something();
                 }
@@ -600,29 +652,44 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     }
 
+    public void abortAllOperations(String reason) {
+        SwingUtilities.invokeLater(() -> {
+            LOGGER.log(Level.SEVERE, "Operation aborted: " + reason);
+
+            try {
+                jTextPaneLog.getDocument().insertString(
+                    jTextPaneLog.getDocument().getLength(),
+                    Instant.now() + " ERROR: " + reason + "\n",
+                    styleSevere
+                );
+                jTextPaneLog.setCaretPosition(jTextPaneLog.getDocument().getLength());
+            }
+            catch (Exception e) {
+                System.err.println(Instant.now() + " Failed to log abort to JTextPane: " + e.getMessage());
+            }
+        });
+    }
 
     public void updateConsoleFont() {
         jTextPaneLog.setFont(Constants.FONT_MONO);
     }
 
-
-    public void consoleRemoveLastLine() {
-        try {
-            String content = jTextPaneLog.getDocument().getText(0, jTextPaneLog.getDocument().getLength());
-            content = content.replaceAll("\r\n", "\n");
-            int lastLineBreak = content.lastIndexOf('\n');
-            if (lastLineBreak >= 1) {
-                int secondLastLineBreak = content.lastIndexOf('\n', lastLineBreak - 1);
-                if (secondLastLineBreak >= 0) {
-                    jTextPaneLog.getDocument().remove(secondLastLineBreak + 1, jTextPaneLog.getDocument().getLength() - (secondLastLineBreak + 1));
-                }
-            }
-        }
-        catch (BadLocationException e) {
-            e.printStackTrace();
-        }
-    }
-
+    // public void consoleRemoveLastLine() {
+    //     try {
+    //         String content = jTextPaneLog.getDocument().getText(0, jTextPaneLog.getDocument().getLength());
+    //         content = content.replaceAll("\r\n", "\n");
+    //         int lastLineBreak = content.lastIndexOf('\n');
+    //         if (lastLineBreak >= 1) {
+    //             int secondLastLineBreak = content.lastIndexOf('\n', lastLineBreak - 1);
+    //             if (secondLastLineBreak >= 0) {
+    //                 jTextPaneLog.getDocument().remove(secondLastLineBreak + 1, jTextPaneLog.getDocument().getLength() - (secondLastLineBreak + 1));
+    //             }
+    //         }
+    //     }
+    //     catch (BadLocationException e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 
     public void populateMainframeTitle() {
 
@@ -676,7 +743,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     }
 
-
     static boolean TestDir(String var, boolean write) {
         String ev = System.getProperty(var);
         File f = new File(ev);
@@ -692,7 +758,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         return true;
     }
-
 
     void flashUsingSDRam(String fname_flasher, String pname) {
 
@@ -718,8 +783,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             LOGGER.log(Level.SEVERE, "Cannot read flasher, please compile firmware! (File: {0})", fname_flasher);
         }
     }
-
-
 
     private void initComponents() {
 
@@ -1022,37 +1085,30 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         pack();
     }
 
-
     private void jButtonClearActionPerformed(java.awt.event.ActionEvent evt) {
         jTextPaneLog.setText("");
     }
 
-
     private void jMenuItemPanicActionPerformed(java.awt.event.ActionEvent evt) {
         qcmdprocessor.Panic();
     }
-
 
     private void jMenuItemPingActionPerformed(java.awt.event.ActionEvent evt) {
         qcmdprocessor.AppendToQueue(new QCmdPing());
         // qcmdprocessor.AppendToQueue(new QCmdPing(true)); // no-disconnect ping for debug
     }
 
-
     private void jMenuItemFDisconnectActionPerformed(java.awt.event.ActionEvent evt) {
         USBBulkConnection.GetConnection().disconnect();
     }
-
 
     private void jMenuItemFConnectActionPerformed(java.awt.event.ActionEvent evt) {
         USBBulkConnection.GetConnection().connect();
     }
 
-
     private void jMenuItemSelectComActionPerformed(java.awt.event.ActionEvent evt) {
         USBBulkConnection.GetConnection().SelectPort();
     }
-
 
     private void jToggleButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {
         if (!jToggleButtonConnect.isSelected()) {
@@ -1065,14 +1121,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             }
         }
     }
-
-
-    PreferencesFrame pp;
-    /* usually we run all tests, as many may fail for same reason and you want
-       a list of all affected files, but if you want to stop on first failure,
-       flip this flag */
-    public static boolean stopOnFirstFail = false;
-
 
     public boolean runAllTests() {
 
@@ -1095,7 +1143,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         return r1 && r2;
     }
-
 
     public boolean runPatchTests() {
         SetGrabFocusOnSevereErrors(false);
@@ -1133,7 +1180,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         return result;
     }
 
-
     public boolean runObjectTests() {
         boolean result;
 
@@ -1164,11 +1210,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         return result;
     }
 
-
     public boolean runFileTest(String patchName) {
         return runTestDir(new File(patchName));
     }
-
 
     public boolean runTestDir(File f) {
         if (!f.exists()) {
@@ -1201,8 +1245,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         return runTestCompile(f);
     }
-
-
 
     private boolean runTestCompile(File f) {
         SetGrabFocusOnSevereErrors(false);
@@ -1285,11 +1327,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
-
     public boolean runFileUpgrade(String patchName) {
         return runUpgradeDir(new File(patchName));
     }
-
 
     private boolean runUpgradeDir(File f) {
         if (!f.exists()) {
@@ -1323,7 +1363,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         return runUpgradeFile(f);
     }
 
-
     private boolean runUpgradeFile(File f) {
         LOGGER.log(Level.INFO, "Upgrading {0}", f.getPath());
 
@@ -1346,16 +1385,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
-
     private void formWindowClosing(java.awt.event.WindowEvent evt) {
         Quit();
     }
 
-
     private void jMenuItemRefreshFWIDActionPerformed(java.awt.event.ActionEvent evt) {
         updateLinkFirmwareID();
+        setFirmwareID(LinkFirmwareID);
     }
-
 
     private void jMenuItemFlashDFUActionPerformed(java.awt.event.ActionEvent evt) {
         if (Usb.isDFUDeviceAvailable()) {
@@ -1367,7 +1404,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             LOGGER.log(Level.SEVERE, "No devices in Rescue Mode detected. To bring Ksoloti Core into Rescue Mode:\n1. Remove power.\n2. Hold down button S1 then connect the USB prog port to your computer.\nThe LEDs will stay off when in Rescue Mode.");
         }
     }
-
 
     private void jMenuItemFlashUserActionPerformed(java.awt.event.ActionEvent evt) {
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
@@ -1393,17 +1429,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         flashUsingSDRam(fname, pname);
     }
 
-
     private void jMenuItemFCompileActionPerformed(java.awt.event.ActionEvent evt) {
         qcmdprocessor.AppendToQueue(new qcmds.QCmdCompileFirmware());
     }
-
 
     private void jMenuItemEnterDFUActionPerformed(java.awt.event.ActionEvent evt) {
         qcmdprocessor.AppendToQueue(new QCmdBringToDFUMode());
         qcmdprocessor.AppendToQueue(new QCmdDisconnect());
     }
-
 
     private void jMenuItemFlashDefaultActionPerformed(java.awt.event.ActionEvent evt) {
 
@@ -1430,7 +1463,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         flashUsingSDRam(fname, pname);
     }
 
-
     private void jMenuItemMountActionPerformed(java.awt.event.ActionEvent evt) {
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "mounter" + File.separator + "mounter_build";
         if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
@@ -1452,7 +1484,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     }
 
-
     public void OpenURL() {
         String uri = JOptionPane.showInputDialog(this, "Enter URL:");
         if (uri == null) {
@@ -1471,7 +1502,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
-
     public void NewPatch() {
         PatchGUI patch1 = new PatchGUI();
         PatchFrame pf = new PatchFrame(patch1, qcmdprocessor);
@@ -1485,74 +1515,23 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         b.setVisible(true);
     }
 
-
-    private axoloti.menus.FileMenu fileMenu;
-    private javax.swing.Box.Filler filler1;
-    private javax.swing.Box.Filler filler3;
-    private axoloti.menus.HelpMenu helpMenu1;
-    private javax.swing.JButton jButtonClear;
-    private javax.swing.JToggleButton jToggleButtonConnect;
-    private javax.swing.JPopupMenu.Separator jDevSeparator;
-    private javax.swing.JPopupMenu.Separator jSeparator1;
-    private javax.swing.JPopupMenu.Separator jSeparator2;
-    private javax.swing.JPopupMenu.Separator jSeparator3;
-    // private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabelCPUID;
-    private javax.swing.JLabel jLabelFlags;
-    // private javax.swing.JLabel jLabelFirmwareID;
-    private javax.swing.JLabel jLabelIcon;
-    private javax.swing.JLabel jLabelPatch;
-    private javax.swing.JLabel jLabelProgress;
-    private javax.swing.JLabel jLabelSDCardPresent;
-    private javax.swing.JLabel jLabelVoltages;
-    private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenu jMenuBoard;
-    private javax.swing.JMenu jMenuEdit;
-    private javax.swing.JMenu jMenuFirmware;
-    private javax.swing.JMenuItem jMenuItemCopy;
-    private javax.swing.JMenuItem jMenuItemEnterDFU;
-    private javax.swing.JMenuItem jMenuItemFCompile;
-    private javax.swing.JMenuItem jMenuItemFConnect;
-    private javax.swing.JMenuItem jMenuItemFDisconnect;
-    private javax.swing.JMenuItem jMenuItemFlashDFU;
-    private javax.swing.JMenuItem jMenuItemFlashDefault;
-    private javax.swing.JMenuItem jMenuItemFlashUser;
-    private javax.swing.JMenuItem jMenuItemMount;
-    private javax.swing.JMenuItem jMenuItemPanic;
-    private javax.swing.JMenuItem jMenuItemPing;
-    private javax.swing.JMenuItem jMenuItemRefreshFWID;
-    private javax.swing.JMenuItem jMenuItemSelectCom;
-    private javax.swing.JPanel jPanelHeader;
-    private javax.swing.JPanel jPanelIconColumn;
-    private javax.swing.JPanel jPanelButtonsColumn;
-    private javax.swing.JPanel jPanelInfoColumn;
-    private javax.swing.JPanel jPanelProgress;
-    private javax.swing.JProgressBar jProgressBar1;
-    private ScrollPaneComponent jScrollPaneLog;
-    private javax.swing.JTextPane jTextPaneLog;
-    private axoloti.menus.WindowMenu windowMenu1;
-
     public void SetProgressValue(int i) {
         jProgressBar1.setValue(i);
     }
 
-
     public void SetProgressMessage(String s) {
         jLabelProgress.setText(s);
     }
-
 
     @Override
     public void ShowDisconnect() {
         ShowConnectDisconnect(false);
     }
 
-
     @Override
     public void ShowConnect() {
         ShowConnectDisconnect(true);
     }
-
 
     private void ShowConnectDisconnect(boolean connect) {
 
@@ -1589,7 +1568,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     }
 
-
     public void Quit() {
         while (!DocumentWindowList.GetList().isEmpty()) {
             if (DocumentWindowList.GetList().get(0).AskClose()) {
@@ -1601,7 +1579,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             System.exit(0);
         }
     }
-
 
     public void setCpuID(String cpuId) {
         if (cpuId == null) {
@@ -1625,7 +1602,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         ShowUnitName(jLabelCPUID.getText());
     }
 
-
     public void updateLinkFirmwareID() {
         LinkFirmwareID = FirmwareID.getFirmwareID();
         // TargetFirmwareID = LinkFirmwareID;
@@ -1633,9 +1609,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         LOGGER.log(Level.INFO, "Patcher linked to firmware {0}", LinkFirmwareID);
         WarnedAboutFWCRCMismatch = false;
     }
-
-
-    public boolean WarnedAboutFWCRCMismatch = false;
 
     void setFirmwareID(String firmwareId) {
         TargetFirmwareID = firmwareId;
@@ -1672,9 +1645,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
-
-    private int patchIndex = -3;
-
     public void showPatchIndex(int index) {
         if (patchIndex != index) {
             patchIndex = index;
@@ -1702,10 +1672,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
-
-    private int v5000c = 0;
-    private int vdd00c = 0;
-
     public void setVoltages(float v50, float vdd, boolean warning) {
         int v5000 = (int) (v50 * 100.0f);
         int vdd00 = (int) (vdd * 100.0f);
@@ -1729,7 +1695,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             jLabelVoltages.setEnabled(true);
         }
     }
-
 
     public void interactiveFirmwareUpdate() {
 
@@ -1772,7 +1737,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
-
     public void disableConnectUntilRestart() {
         jToggleButtonConnect.setText("RESTART");
         jToggleButtonConnect.setSelected(false);
@@ -1781,13 +1745,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemFDisconnect.setEnabled(false);
     }
     
-    
     public void refreshAppIcon() {
         Constants.createAppIcon();
         setIconImage(Constants.APP_ICON.getImage());
         jLabelIcon.setIcon(Constants.APP_ICON);
     }
-
 
     public void populateInfoColumn() {
 
@@ -1805,11 +1767,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelInfoColumn.add(jLabelPatch);
     }
 
-
     public QCmdProcessor getQcmdprocessor() {
         return qcmdprocessor;
     }
-
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1825,7 +1785,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     PatchBank.OpenBank(f);
                 }
                 else if (fn.endsWith(".axo")) {
-                    System.out.println("opening .axo files not implemented yet");
+                    System.out.println(Instant.now() + " Opening .axo files not implemented yet");
                     // TODO
                 }
             }
@@ -1835,26 +1795,21 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
-
     public FileManagerFrame getFilemanager() {
         return filemanager;
     }
-
 
     // public AxolotiRemoteControl getRemote() {
     //     return remote;
     // }
 
-
     public KeyboardFrame getKeyboard() {
         return keyboard;
     }
 
-
     public void SetGrabFocusOnSevereErrors(boolean b) {
         bGrabFocusOnSevereErrors = b;
     }
-
 
     @Override
     public void ShowSDCardMounted() {
@@ -1862,13 +1817,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemMount.setEnabled(true);
     }
 
-
     @Override
     public void ShowSDCardUnmounted() {
         jLabelSDCardPresent.setText("No SD Card");
         jMenuItemMount.setEnabled(false);
     }
-
 
     @Override
     public void ShowConnectionFlags(int connectionFlags) {
@@ -1905,19 +1858,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jLabelFlags.setText(flags.toString());
     }
 
-
-    private ArrayList<UnitNameListener> uncmls = new ArrayList<UnitNameListener>();
-
     public void addUnitNameListener(UnitNameListener uncml) {
         uncmls.add(uncml);
         uncml.ShowUnitName(jLabelCPUID.getText());
     }
 
-
     public void removeUnitNameListener(UnitNameListener uncml) {
         uncmls.remove(uncml);
     }
-
 
     public void ShowUnitName(String unitName) {
         for (UnitNameListener uncml : uncmls) {
