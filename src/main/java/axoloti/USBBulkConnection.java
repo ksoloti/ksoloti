@@ -1616,10 +1616,7 @@ public class USBBulkConnection extends Connection {
                     int clusters = sdinfoRcvBuffer.getInt();
                     int clustersize = sdinfoRcvBuffer.getInt();
                     int blocksize = sdinfoRcvBuffer.getInt();
-                    // LOGGER.log(Level.INFO, "sdinfo: "
-                    // + sdinfoRcvBuffer.asIntBuffer().get(0) + " "
-                    // + sdinfoRcvBuffer.asIntBuffer().get(1) + " "
-                    // + sdinfoRcvBuffer.asIntBuffer().get(2));
+                    // System.out.println(Instant.now() +  " [DEBUG] processByte sdinfo: clusters:" + clusters + " clsize:" + clustersize + " blsize:" + blocksize);
 
                     SDCardInfo.getInstance().SetInfo(clusters, clustersize, blocksize);
                     GoIdleState();
