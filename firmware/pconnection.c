@@ -183,6 +183,13 @@ void PExTransmit(void) {
         // LogTextMessage("PExTx: leaving !chOQIsEmptyI");
     }
     else {
+        if(chMtxTryLock(&LogMutex)) {
+            if(LogBufferUsed) {
+                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) LogBuffer, LogBufferUsed);
+                LogBufferUsed = 0;
+            }
+            chMtxUnlock(&LogMutex);
+        }
 
         if (AckPending) {
             uint32_t ack[7];
@@ -233,15 +240,6 @@ void PExTransmit(void) {
                     chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) &msg, sizeof(msg));
                 }
             }
-        }
-
-        /* Push LogTextMessages last to prioritize control messages and reduce ack latency */
-        if(chMtxTryLock(&LogMutex)) {
-            if(LogBufferUsed) {
-                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) LogBuffer, LogBufferUsed);
-                LogBufferUsed = 0;
-            }
-            chMtxUnlock(&LogMutex);
         }
     }
 }
