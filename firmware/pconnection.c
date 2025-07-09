@@ -378,7 +378,7 @@ static void send_AxoResult(char cmd_byte, FRESULT status) {
     res_msg[0] = 'A'; res_msg[1] = 'x'; res_msg[2] = 'o'; res_msg[3] = 'R';
     res_msg[4] = cmd_byte;
     res_msg[5] = (char)status;
-    // LogTextMessage("send_AxoResult,cmd=%c sta=%u", res_msg[4], res_msg[5]);
+    // LogTextMessage("send_AxoResult called,cmd=%c (0x%02x) sta=%u", res_msg[4], res_msg[4], res_msg[5]);
     chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) res_msg, 6);
 }
 
@@ -395,7 +395,7 @@ void ReadDirectoryListing(void) {
         /* Even on error, we should signal the result to the host */
         send_AxoResult(command_byte_to_ack, op_result);
         // LogTextMessage("ERROR:RDL f_getfree,op_result:%u", op_result);
-        // report_fatfs_error(op_result, 0);
+        report_fatfs_error(op_result, 0);
         return;
     }
 
@@ -420,7 +420,7 @@ void ReadDirectoryListing(void) {
         /* Even on error, we should signal the result to the host */
         send_AxoResult(command_byte_to_ack, op_result);
         // LogTextMessage("ERROR:RDL scan_files,op_result:%u", op_result);
-        // report_fatfs_error(op_result, 0);
+        report_fatfs_error(op_result, 0);
         return;
     }
 
@@ -491,8 +491,7 @@ static void ManipulateFile(void) {
             return;
         }
     }
-    }
-    else { /* filename[0] == 0, the normal format since v1.0+ */
+    else { /* filename[0] == 0 */
 
         /* At the time ManipulateFile() is called,
          * the sub-command is now in FileName[1]
@@ -745,6 +744,7 @@ void PExReceiveByte(unsigned char c) {
     static int32_t state = 0;
 
     static uint32_t current_filename_idx; /* For parsing filename characters into FileName[6]+ */
+    static uint32_t current_param_byte_idx; /* For parsing multi-byte parameters like pFileSize */
 
     AddPCDebug(c, state);
 
@@ -817,11 +817,13 @@ void PExReceiveByte(unsigned char c) {
                     
                     /* --- Commands that DO NOT set AckPending (AxoR**-based) --- */
                     case 'C': /* Unified File System Command (create, delete, mkdir, getinfo, close) */
+                        current_param_byte_idx = 0; /* Reset for pFileSize parsing */
                         current_filename_idx = 0; /* Reset for filename parsing */
                         state = 4; /* Next state will receive the 4-byte pFileSize/placeholder */
                         break;
                     case 'a': /* append data to opened sdcard file (top-level Axoa) */
                         value = 0; /* Reset value for length parsing */
+                        current_param_byte_idx = 0; /* Reset for length parsing */
                         state = 4; /* Start parsing length for append. */
                         break;
                     default:
@@ -836,9 +838,9 @@ void PExReceiveByte(unsigned char c) {
             case 6: patchid += (uint32_t)c << 16; state++; break;
             case 7: patchid += (uint32_t)c << 24; state++; break;
             case 8:   value  = c; state++; break;
-            case 9:   value += (uint32_t)c <<  8; state++; break;
-            case 10:  value += (uint32_t)c << 16; state++; break;
-            case 11:  value += (uint32_t)c << 24; state++; break;
+            case 9:   value += (int32_t)c <<  8; state++; break;
+            case 10:  value += (int32_t)c << 16; state++; break;
+            case 11:  value += (int32_t)c << 24; state++; break;
             case 12:  preset_index  = c; state++; break;
             case 13:  preset_index += (uint32_t)c << 8;
                 if ((patchid == patchMeta.patchID) && (preset_index < patchMeta.numPEx)) {
@@ -868,13 +870,13 @@ void PExReceiveByte(unsigned char c) {
     else if (header == 'W') { /* generic write */
         switch (state) {
             case 4: offset  = c; state++; break;
-            case 5: offset += (uint32_t)c <<  8; state++; break;
-            case 6: offset += (uint32_t)c << 16; state++; break;
-            case 7: offset += (uint32_t)c << 24; state++; break;
+            case 5: offset += (int32_t)c <<  8; state++; break;
+            case 6: offset += (int32_t)c << 16; state++; break;
+            case 7: offset += (int32_t)c << 24; state++; break;
             case 8:  value  = c; state++; break;
-            case 9:  value += (uint32_t)c <<  8; state++; break;
-            case 10: value += (uint32_t)c << 16; state++; break;
-            case 11: value += (uint32_t)c << 24; state++; break; /* value is now length */
+            case 9:  value += (int32_t)c <<  8; state++; break;
+            case 10: value += (int32_t)c << 16; state++; break;
+            case 11: value += (int32_t)c << 24; state++; break; /* value is now length */
             default: /* Data streaming state */
                 if (value > 0) {
                     value--;
@@ -892,14 +894,14 @@ void PExReceiveByte(unsigned char c) {
     else if (header == 'w') { /* write file to SD (old protocol)*/
         switch (state) {
             case 4: offset  = c; state++; break;
-            case 5: offset += (uint32_t)c <<  8; state++; break;
-            case 6: offset += (uint32_t)c << 16; state++; break;
-            case 7: offset += (uint32_t)c << 24; state++; break;
+            case 5: offset += (int32_t)c <<  8; state++; break;
+            case 6: offset += (int32_t)c << 16; state++; break;
+            case 7: offset += (int32_t)c << 24; state++; break;
             case 8:  value  = c; state++; break;
-            case 9:  value += (uint32_t)c <<  8; state++; break;
-            case 10: value += (uint32_t)c << 16; state++; break;
-            case 11: value += (uint32_t)c << 24; /* value is now length */
-                length = value; /* Initial length for the file */
+            case 9:  value += (int32_t)c <<  8; state++; break;
+            case 10: value += (int32_t)c << 16; state++; break;
+            case 11: value += (int32_t)c << 24; /* value is now length */
+                length = (uint32_t)value; /* Initial length for the file */
                 position = (unsigned char*)offset; /* Start address for data in RAM */
                 state++;
                 break;
@@ -913,10 +915,11 @@ void PExReceiveByte(unsigned char c) {
                     *((unsigned char*) position) = c;
                     position++;
                     if (value == 0) {
-                        sdcard_attemptMountIfUnmounted();
 
                         FRESULT op_result;
                         UINT bytes_written;
+
+                        sdcard_attemptMountIfUnmounted();
                         
                         /* NOTE: This uses FileName[0] for path, which is inconsistent with FileName[6] in ManipulateFile.
                            Probably some backwards compatibility thing. Leaving as is. */
@@ -924,12 +927,13 @@ void PExReceiveByte(unsigned char c) {
                         if (op_result != FR_OK) {
                             LogTextMessage("File open failed");
                         }
-
                         op_result = f_write(&pFile, (char*) offset, length, &bytes_written); /* 'length' is initial total length */
                         if (op_result != FR_OK) {
                             LogTextMessage("File write failed");
                         }
-
+                        // if (bytes_written != length) {
+                        //     LogTextMessage("ERROR:Axow f_write,op_result:%u requested:%u written:%u path:%s", op_result, length, bytes_written, FileName[6]);
+                        // }
                         op_result = f_close(&pFile);
                         if (op_result != FR_OK) {
                             LogTextMessage("File close failed");
@@ -947,7 +951,7 @@ void PExReceiveByte(unsigned char c) {
         state = 0; header = 0; AckPending = 1;
     }
     else if (header == 'M') { /* midi message */
-        static uint8_t midi_r[3];
+        static uint8_t midi_r[3]; /* Local static */
         switch (state) {
             case 4: midi_r[0] = c; state++; break;
             case 5: midi_r[1] = c; state++; break;
@@ -959,13 +963,30 @@ void PExReceiveByte(unsigned char c) {
                 state = 0; header = 0; AckPending = 1;
         }
     }
-    else if (header == 'C') { /* create/append to/close/delete file, create/change directory on SD */ 
+    else if (header == 'C') { /* create/edit/close/delete file, create/change directory on SD */ 
         // LogTextMessage("AxoC received,c=%x s=%u", c, state);
         switch (state) {
-            case 4: pFileSize  = c; state++; break;
-            case 5: pFileSize |= (uint32_t)c << 8; state++; break;
-            case 6: pFileSize |= (uint32_t)c << 16; state++; break;
-            case 7: pFileSize |= (uint32_t)c << 24; state++; break;
+            case 4: /* Expecting pFileSize (byte 0) for 'f', or placeholder for others */
+                pFileSize = c; /* Store first byte of pFileSize/placeholder */
+                current_param_byte_idx = 1; /* Track bytes received for pFileSize */
+                state++;
+                break;
+            case 5: /* pFileSize (byte 1) */
+                pFileSize |= (int32_t)c << 8;
+                current_param_byte_idx++;
+                state++;
+                break;
+            case 6: /* pFileSize (byte 2) */
+                pFileSize |= (int32_t)c << 16;
+                current_param_byte_idx++;
+                state++;
+                break;
+            case 7: /* pFileSize (byte 3) */
+                pFileSize |= (int32_t)c << 24;
+                current_param_byte_idx++;
+                /* Now pFileSize is fully parsed */
+                state++;
+                break;
             case 8: /* Expecting FileName[0] */
                 FileName[0] = c; /* Should always be 0 */
                 state++;
@@ -981,28 +1002,31 @@ void PExReceiveByte(unsigned char c) {
                     /* These skip fdate/ftime and go straight to filename (FileName[6]+) */
                     current_filename_idx = 6; /* Start filename parsing from FileName[6] */
                     state = 14; /* Go to state to receive FileName[6] (filename byte 0) */
-                }
-                else {
+                } else {
                     /* Unknown sub-command for AxoC */
                     header = 0; state = 0; /* Reset state machine, no AckPending */
                 }
                 break;
-            /* States for parsing fdate/ftime (2 bytes each) into FileName[2] to FileName[5] */
-            /* Used by 'AxoCf', 'AxoCk', 'AxoCc' */
-            case 10: FileName[2] = c; state++; break;
-            case 11: FileName[3] = c; state++; break;
-            case 12: FileName[4] = c; state++; break;
-            case 13: FileName[5] = c;
+            /* --- States for parsing fdate/ftime (2 bytes each) into FileName[2] to FileName[5] --- */
+            /* Used by 'f', 'k', 'c' */
+            case 10: /* Expecting FileName[2] (fdate byte 0) */
+                FileName[2] = c; state++; break;
+            case 11: /* Expecting FileName[3] (fdate byte 1) */
+                FileName[3] = c; state++; break;
+            case 12: /* Expecting FileName[4] (ftime byte 0) */
+                FileName[4] = c; state++; break;
+            case 13: /* Expecting FileName[5] (ftime byte 1) */
+                FileName[5] = c;
                 current_filename_idx = 6; /* Next byte is FileName[6] (start of filename) */
                 state++; /* Move on to filename parsing state (case 14) */
                 break;
             
-            /* States for parsing filename (variable length, null-terminated) into FileName[6] onwards */
-            /* Used by 'AxoCf', 'AxoCk', 'AxoCc', 'AxoCD', 'AxoCC', 'AxoCI' */
+            /* --- States for parsing filename (variable length, null-terminated) into FileName[6] onwards --- */
+            /* Used by 'f', 'k', 'c', 'D', 'C', 'I' */
             case 14: /* Start/continue filename parsing (into FileName[6]+) */
                 if (current_filename_idx < sizeof(FileName)) {
                     FileName[current_filename_idx++] = c;
-                    if (c == 0) { /* Null terminator received */
+                    if (c == 0) { // Null terminator received
                         /* Filename complete, dispatch command */
                         StopPatch();
                         ManipulateFile(); /* ManipulateFile will now use FileName and pFileSize */
@@ -1023,11 +1047,11 @@ void PExReceiveByte(unsigned char c) {
     else if (header == 'a') { /* append data to open file on SD */
         // LogTextMessage("Axoa received c=%x state=%u", c, state); // Keep this for general debug
         switch (state) {
-            case 4: value  = c; state++; break;
-            case 5: value |= (uint32_t)c <<  8; state++; break;
-            case 6: value |= (uint32_t)c << 16; state++; break;
-            case 7: value |= (uint32_t)c << 24; /* Total length */
-                length = value; /* Initial length for the chunk */
+            case 4: value  = c; current_param_byte_idx = 1; state++; break;
+            case 5: value |= (int32_t)c <<  8; current_param_byte_idx++; state++; break;
+            case 6: value |= (int32_t)c << 16; current_param_byte_idx++; state++; break;
+            case 7: value |= (int32_t)c << 24; /* Total length */
+                length = value; /* Store the length to be received */
                 position = (unsigned char*) PATCHMAINLOC; /* Set base address for data buffer */
                 state = 8; /* Move on to data streaming state */
                 // LogTextMessage("Axoa done c=%x lgth=%u pos=%x state=%u", c, length, position, state);
@@ -1079,20 +1103,20 @@ void PExReceiveByte(unsigned char c) {
     else if (header == 'r') { /* generic read */
         switch (state) {
             case 4: offset  = c; state++; break;
-            case 5: offset += (uint32_t)c <<  8; state++; break;
-            case 6: offset += (uint32_t)c << 16; state++; break;
-            case 7: offset += (uint32_t)c << 24; state++; break;
+            case 5: offset += (int32_t)c <<  8; state++; break;
+            case 6: offset += (int32_t)c << 16; state++; break;
+            case 7: offset += (int32_t)c << 24; state++; break;
             case 8:  value  = c; state++; break;
-            case 9:  value += (uint32_t)c <<  8; state++; break;
-            case 10: value += (uint32_t)c << 16; state++; break;
-            case 11: value += (uint32_t)c << 24;
+            case 9:  value += (int32_t)c <<  8; state++; break;
+            case 10: value += (int32_t)c << 16; state++; break;
+            case 11: value += (int32_t)c << 24;
                 uint32_t read_reply_header[3];
                 ((char*) read_reply_header)[0] = 'A';
                 ((char*) read_reply_header)[1] = 'x';
                 ((char*) read_reply_header)[2] = 'o';
                 ((char*) read_reply_header)[3] = 'r';
-                read_reply_header[1] = offset;
-                read_reply_header[2] = value;
+                read_reply_header[1] = (uint32_t)offset;
+                read_reply_header[2] = (uint32_t)value;
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12); /* 3*4 bytes */
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (offset), (uint32_t)value);
                 state = 0; header = 0; AckPending = 1;
@@ -1104,9 +1128,9 @@ void PExReceiveByte(unsigned char c) {
     else if (header == 'y') { /* generic read, 32-bit */
         switch (state) {
             case 4: offset  = c; state++; break;
-            case 5: offset += (uint32_t)c <<  8; state++; break;
-            case 6: offset += (uint32_t)c << 16; state++; break;
-            case 7: offset += (uint32_t)c << 24;
+            case 5: offset += (int32_t)c <<  8; state++; break;
+            case 6: offset += (int32_t)c << 16; state++; break;
+            case 7: offset += (int32_t)c << 24;
                 uint32_t read_reply_header[3];
                 ((char*) read_reply_header)[0] = 'A';
                 ((char*) read_reply_header)[1] = 'x';
