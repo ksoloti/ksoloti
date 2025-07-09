@@ -607,7 +607,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         EventQueue.invokeLater(initr);
 
-
         String argMessage = "";
         for (String arg : this.args) { //TODO check why always opening new instance
 
@@ -652,44 +651,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     }
 
-    public void abortAllOperations(String reason) {
-        SwingUtilities.invokeLater(() -> {
-            LOGGER.log(Level.SEVERE, "Operation aborted: " + reason);
-
-            try {
-                jTextPaneLog.getDocument().insertString(
-                    jTextPaneLog.getDocument().getLength(),
-                    Instant.now() + " ERROR: " + reason + "\n",
-                    styleSevere
-                );
-                jTextPaneLog.setCaretPosition(jTextPaneLog.getDocument().getLength());
-            }
-            catch (Exception e) {
-                System.err.println(Instant.now() + " Failed to log abort to JTextPane: " + e.getMessage());
-            }
-        });
-    }
-
     public void updateConsoleFont() {
         jTextPaneLog.setFont(Constants.FONT_MONO);
     }
-
-    // public void consoleRemoveLastLine() {
-    //     try {
-    //         String content = jTextPaneLog.getDocument().getText(0, jTextPaneLog.getDocument().getLength());
-    //         content = content.replaceAll("\r\n", "\n");
-    //         int lastLineBreak = content.lastIndexOf('\n');
-    //         if (lastLineBreak >= 1) {
-    //             int secondLastLineBreak = content.lastIndexOf('\n', lastLineBreak - 1);
-    //             if (secondLastLineBreak >= 0) {
-    //                 jTextPaneLog.getDocument().remove(secondLastLineBreak + 1, jTextPaneLog.getDocument().getLength() - (secondLastLineBreak + 1));
-    //             }
-    //         }
-    //     }
-    //     catch (BadLocationException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
 
     public void populateMainframeTitle() {
 
