@@ -69,6 +69,27 @@ public class USBBulkConnection extends Connection {
     private ksoloti_core targetProfile;
     private final Context context;
     private DeviceHandle handle;
+    static private USBBulkConnection conn = null;
+
+    ByteBuffer dispData;
+
+    final Sync sync;
+    final Sync readsync;
+
+    private Boolean isSDCardPresent = null;
+    private int connectionFlags = 0;
+
+    int CpuId0 = 0;
+    int CpuId1 = 0;
+    int CpuId2 = 0;
+    int fwcrc = -1;
+
+    private final byte[] startPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('s')};
+    private final byte[] stopPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('S')};
+    private final byte[] pingPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('p')};
+    private final byte[] getFileListPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('l')};
+    private final byte[] copyToFlashPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('F')};
+    private final byte[] axoFileOpPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('C')};
 
     private final short bulkVID = (short) 0x16C0;
     private final short bulkPIDAxoloti = (short) 0x0442;
@@ -87,6 +108,96 @@ public class USBBulkConnection extends Connection {
     private final Object usbOutLock = new Object(); /* For OUT endpoint operations (writing) */
 
     protected volatile QCmdSerialTask currentExecutingCommand = null;
+
+    class Sync {
+        boolean Acked = false;
+    }
+
+    class Receiver implements Runnable {
+        @Override
+        public void run() {
+            ByteBuffer recvbuffer = ByteBuffer.allocateDirect(4096);
+            IntBuffer transfered = IntBuffer.allocate(1);
+
+            while (!disconnectRequested) {
+                int result = LibUsb.SUCCESS;
+                int sz = 0;
+
+                try {
+                    synchronized (usbInLock) {
+                        recvbuffer.clear();
+                        transfered.clear();
+                        result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, prefs.getPollInterval()*3);
+                        sz = transfered.get(0);
+
+                        if (result != LibUsb.SUCCESS) {
+                            // System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsb.bulkTransfer returned error: " + result + " (" + LibUsb.strError(result) + ")");
+                        }
+                    }
+
+                    if (result == LibUsb.SUCCESS && sz > 0) {
+                        recvbuffer.position(0);
+                        recvbuffer.limit(sz);
+                        for (int i = 0; i < sz; i++) {
+                            byte b = recvbuffer.get(i);
+                            processByte(b);
+                        }
+                    }
+                }
+                catch (LibUsbException e) {
+                    System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsbException: " + e.getMessage());
+                    e.printStackTrace(System.err);
+                    // SwingUtilities.invokeLater(() -> {
+                    //     if (MainFrame.mainframe != null) {
+                    //         MainFrame.mainframe.abortAllOperations("USB connection lost unexpectedly. Please check device and reconnect.");
+                    //     }
+                    // });
+                    disconnectRequested = true;
+                }
+                catch (Exception e) {
+                    System.err.println(Instant.now() + " [DEBUG] Receiver: Unexpected exception: " + e.getMessage());
+                    e.printStackTrace(System.err);
+                    // SwingUtilities.invokeLater(() -> {
+                    //     if (MainFrame.mainframe != null) {
+                    //         MainFrame.mainframe.abortAllOperations("USB connection lost unexpectedly. Please check device and reconnect.");
+                    //     }
+                    // });
+                    disconnectRequested = true;
+                }
+            }
+            // System.out.println(Instant.now() + " [DEBUG] Receiver thread exiting.");
+        }
+    }
+
+    class Transmitter implements Runnable {
+        @Override
+        public void run() {
+            while (!disconnectRequested) {
+                try {
+                    QCmdSerialTask cmd = queueSerialTask.take();
+
+                    if (disconnectRequested) {
+                        System.out.println(Instant.now() + " [DEBUG] Transmitter: Disconnect requested while waiting for task.");
+                        break;
+                    }
+
+                    QCmd response = cmd.Do(USBBulkConnection.this);
+                    if (response != null) {
+                        QCmdProcessor.getQCmdProcessor().getQueueResponse().add(response);
+                    }
+                }
+                catch (InterruptedException ex) {
+                    // System.out.println(Instant.now() + " [DEBUG] Transmitter: thread interrupted. Exiting loop.");
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+                catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Transmitter: Unexpected exception during command execution: " + e.getMessage(), e);
+                }
+            }
+            // System.out.println(Instant.now() + " [DEBUG] Transmitter thread exiting.");
+        }
+    }
 
 	protected USBBulkConnection() {
         this.sync = new Sync();
@@ -548,21 +659,12 @@ public class USBBulkConnection extends Connection {
         }
     }
 
-    static private USBBulkConnection conn = null;
-
     public static Connection GetConnection() {
         if (conn == null) {
             conn = new USBBulkConnection();
         }
         return conn;
     }
-    
-    class Sync {
-        boolean Acked = false;
-    }
-
-    final Sync sync;
-    final Sync readsync;
 
     @Override
     public void ClearSync() {
@@ -614,12 +716,6 @@ public class USBBulkConnection extends Connection {
             return readsync.Acked;
         }
     }
-
-    private final byte[] startPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('s')};
-    private final byte[] stopPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('S')};
-    private final byte[] pingPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('p')};
-    private final byte[] getFileListPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('l')};
-    private final byte[] copyToFlashPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('F')};
 
     @Override
     public void TransmitStart() {
@@ -1037,78 +1133,6 @@ public class USBBulkConnection extends Connection {
         writeBytes(data);
         WaitSync();
     }
-
-
-    class Receiver implements Runnable {
-        @Override
-        public void run() {
-            ByteBuffer recvbuffer = ByteBuffer.allocateDirect(4096);
-            IntBuffer transfered = IntBuffer.allocate(1);
-
-            while (!disconnectRequested) {
-                int result = LibUsb.SUCCESS;
-                int sz = 0;
-
-                try {
-                    synchronized (usbInLock) {
-                        recvbuffer.clear();
-                        transfered.clear();
-                        result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, prefs.getPollInterval()*3);
-                        sz = transfered.get(0);
-                    }
-
-                    if (result == LibUsb.SUCCESS && sz > 0) {
-                        recvbuffer.position(0);
-                        recvbuffer.limit(sz);
-                        for (int i = 0; i < sz; i++) {
-                            byte b = recvbuffer.get(i);
-                            processByte(b);
-                        }
-                    }
-                } catch (LibUsbException e) {
-                    LOGGER.log(Level.SEVERE, "Application Error: An unexpected issue occurred in USB Receiver. Connection Lost.");
-                    // System.err.println(Instant.now() + " Receiver: Unexpected exception: " + e.getMessage());
-                    // e.printStackTrace(System.err);
-                    disconnectRequested = true;
-                } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Receiver: Unexpected exception: " + e.getMessage(), e);
-                    disconnectRequested = true;
-                }
-            }
-            // System.out.println(Instant.now() + " Receiver thread exiting.");
-        }
-    }
-
-    class Transmitter implements Runnable {
-        @Override
-        public void run() {
-            while (!disconnectRequested) {
-                try {
-                    QCmdSerialTask cmd = queueSerialTask.take();
-
-                    if (disconnectRequested) {
-                        // System.out.println(Instant.now() + " Transmitter: Disconnect requested while waiting for task.");
-                        break;
-                    }
-
-                    QCmd response = cmd.Do(USBBulkConnection.this);
-                    if (response != null) {
-                        QCmdProcessor.getQCmdProcessor().getQueueResponse().add(response);
-                    }
-                }
-                catch (InterruptedException ex) {
-                    // System.out.println(Instant.now() + " Transmitter: thread interrupted. Exiting loop.");
-                    Thread.currentThread().interrupt();
-                    break;
-                } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Transmitter: Unexpected exception during command execution: " + e.getMessage(), e);
-                }
-            }
-            // System.out.println(Instant.now() + " Transmitter thread exiting.");
-        }
-    }
-
-    private Boolean isSDCardPresent = null;
     
     public void SetSDCardPresent(boolean i) {
         if ((isSDCardPresent != null) && (i == isSDCardPresent)) return;
@@ -1127,8 +1151,6 @@ public class USBBulkConnection extends Connection {
         return isSDCardPresent;
     }
 
-    private int connectionFlags = 0;
-
     public void SetConnectionFlags(int newConnectionFlags) {
         if(newConnectionFlags != connectionFlags) {
             connectionFlags = newConnectionFlags;
@@ -1140,11 +1162,6 @@ public class USBBulkConnection extends Connection {
     public int GetConnectionFlags() {
         return connectionFlags;
     }
-
-    int CpuId0 = 0;
-    int CpuId1 = 0;
-    int CpuId2 = 0;
-    int fwcrc = -1;
 
     void Acknowledge(final int ConnectionFlags, final int DSPLoad, final int PatchID, final int Voltages, final int patchIndex, final int sdcardPresent) {
 
@@ -1338,10 +1355,6 @@ public class USBBulkConnection extends Connection {
         headerstate = 0;
         state = ReceiverState.header;
     }
-
-    ByteBuffer dispData;
-
-    // int LCDPacketRow = 0;
 
     void processByte(byte cc) {
 
