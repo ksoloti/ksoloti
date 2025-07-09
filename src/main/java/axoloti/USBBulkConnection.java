@@ -1546,37 +1546,47 @@ public class USBBulkConnection extends Connection {
                     int commandByte = packetData[0] & 0xFF;
                     int statusCode = (packetData[0] >> 8) & 0xFF;
 
-                    if (commandByte == 'D') { /* Check if this result is for the 'D' (delete) command */
-                        if (statusCode == 0) { /* FR_OK (0) indicates success */
-                            System.out.println(Instant.now() + " Delete command 'D' confirmed successful by MCU.");
-                            if (currentExecutingCommand instanceof QCmdDeleteFile) {
-                                ((QCmdDeleteFile) currentExecutingCommand).setCommandCompleted(true);
+                    System.out.println(Instant.now() + " [DEBUG] AxoR received for '" + (char)commandByte + "': Status = " + SDCardInfo.getFatFsErrorString(statusCode));
+
+                    if (currentExecutingCommand != null) {
+                        // Special handling for QCmdUploadFile's sub-commands
+                        if (currentExecutingCommand instanceof QCmdUploadFile) {
+                            QCmdUploadFile uploadCmd = (QCmdUploadFile) currentExecutingCommand;
+                            if (commandByte == 'f') {
+                                uploadCmd.setCreateFileCompleted((byte)statusCode);
                             }
+                            else if (commandByte == 'a') {
+                                uploadCmd.setAppendFileCompleted((byte)statusCode);
+                            }
+                            else if (commandByte == 'c') {
+                                uploadCmd.setCloseFileCompleted((byte)statusCode);
                         }
                         else {
-                            System.out.println(Instant.now() + " Delete command 'D' confirmed failed by MCU with status code: " + statusCode);
-                            if (currentExecutingCommand instanceof QCmdDeleteFile) {
-                                ((QCmdDeleteFile) currentExecutingCommand).setCommandCompleted(false);
+                                System.err.println(Instant.now() + " [DEBUG] Warning: QCmdUploadFile received unexpected AxoR for command: " + (char)commandByte);
                             }
                         }
-                        /* After setting completion, clear the currentExecutingCommand */
-                        currentExecutingCommand = null;
-                    }
-                    else if (commandByte == 'd') {
-                        if (statusCode == 0) {
-                            System.out.println(Instant.now() + " Filelist command 'd' confirmed successful by MCU.");
-                            if (currentExecutingCommand instanceof QCmdGetFileList) {
-                                ((QCmdGetFileList) currentExecutingCommand).setCommandCompleted(true);
+                        // Handling for other commands that expect an AxoR for their completion
+                        else if (currentExecutingCommand instanceof QCmdGetFileList ||
+                                 currentExecutingCommand instanceof QCmdCreateDirectory ||
+                                 currentExecutingCommand instanceof QCmdChangeWorkingDirectory ||
+                                 currentExecutingCommand instanceof QCmdDeleteFile ||
+                                 currentExecutingCommand instanceof QCmdGetFileInfo) {
+
+                            if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) { // for example, ('l' == 'l') -> TRUE
+                                currentExecutingCommand.setMcuStatusCode((byte)statusCode);
+                                currentExecutingCommand.setCommandCompleted(statusCode == 0x00);
                             }
-                            
+                            else {
+                                System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received unexpected AxoR for command: " + (char)commandByte + ". Expected: " + currentExecutingCommand.getExpectedAckCommandByte() + ". Ignoring.");
+                            }
                         }
+                        // Generic handling for all other single-step QCmdSerialTasks
                         else {
-                            System.out.println(Instant.now() + " Filelist command 'd' confirmed failed by MCU with status code: " + statusCode);
-                            if (currentExecutingCommand instanceof QCmdGetFileList) {
-                                ((QCmdGetFileList) currentExecutingCommand).setCommandCompleted(false);
+                            System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received an AxoR for command: " + (char)commandByte + ", but this command does not expect an AxoR for completion. Ignoring.");
                             }
                         }
-                        currentExecutingCommand = null;
+                    else {
+                        System.err.println(Instant.now() + " [DEBUG] Warning: AxoR received but no currentExecutingCommand is set.");
                     }
                     GoIdleState();
                 }
