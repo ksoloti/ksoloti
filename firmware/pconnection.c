@@ -623,29 +623,6 @@ static void ManipulateFile(void) {
 }
 
 
-static void AppendFile(uint32_t length) {
-    UINT bytes_written;
-
-    FRESULT op_result = f_write(&pFile, (char*) PATCHMAINLOC, length, (void*) &bytes_written);
-    // LogTextMessage("APPNDF:f_write,op_result:%u path:%s length:%u b_written:%u", op_result, &FileName[6], length, bytes_written);
-    if (op_result != FR_OK) {
-        send_AxoResult('a', op_result);
-        // LogTextMessage("ERROR:APPNDF f_write,op_result:%u path:%s", op_result, &FileName[6]);
-        report_fatfs_error(op_result, &FileName[6]);
-        return;
-    }
-
-    if (bytes_written != length) {
-        send_AxoResult('a', FR_DISK_ERR);
-        // LogTextMessage("ERROR:APPNDF f_write,op_result:%u requested:%u written:%u path:%s", op_result, length, bytes_written, FileName[6]);
-        return;
-    }
-
-    send_AxoResult('a', op_result); /* Completed successfully */
-    return;
-}
-
-
 static void CopyPatchToFlash(void) {
     flash_unlock();
     flash_Erase_sector(11);
@@ -1013,7 +990,7 @@ void PExReceiveByte(unsigned char c) {
                     header = 0; state = 0; /* Error: filename too long */
                 }
                 break;
-            
+
             default: /* Unknown state: reset state machine */
                 // LogTextMessage("PEXRB:Unknown state %u", state);
                 header = 0; state = 0;
@@ -1033,22 +1010,59 @@ void PExReceiveByte(unsigned char c) {
                 // LogTextMessage("Axoa done c=%x lgth=%u pos=%x state=%u", c, length, position, state);
                 break;
             case 8: /* Data streaming state */
-                if (length > 0) { /* 'length' now tracks remaining bytes to receive */
+                if (value > 0) { /* 'length' now tracks remaining bytes to receive */
+                    value--;
                     *((unsigned char*) position) = c;
                     position++;
-                    length--;
-                    if (length == 0) {
-                        // LogTextMessage("Axoa lgth=0, calling APPNDF value=%u", value);
-                        AppendFile((uint32_t)value); /* Call AppendFile with the total length ('value') */
-                        state = 0; header = 0; /* Reset state machine, no AckPending */
+
+                    /* Here's a fun loop... A week of debugging failed to shed any light on the reason
+                    why after several appends (<10), the Core would fail to send an AxoR<a><0> response
+                    even though the f_write following below was successful...
+                    The upload progress timed out from the Patcher side
+                    but the Core didn't crash, it stayed responsive otherwise.
+                    By adding a blocking dummy loop like this file uploads succeed...
+                    I am done here and will just leave this dummy in here.
+                    Calling chThdSleep* did not work here - same hang up. Possibly because sleep will allow
+                    the CPU to go away and handle other things, including the current variables we are
+                    dealing with here.
+                    This fine dummy loop was now tested with batches of dozens of files,
+                    including file sizes in the hundreds of MB ¯\_(ツ)_/¯ */
+                    for (volatile int i = 0; i < 1000; i++);
+
+                    if (value == 0) { /* This block runs ONLY when the LAST byte of the chunk has just been received. */
+                        // LogTextMessage("DBG:Axoa value=0, calling APPNDF length=%u", length);
+
+                        UINT bytes_written; 
+                        FRESULT op_result = f_write(&pFile, (char*) PATCHMAINLOC, length, &bytes_written);
+                        if (op_result != FR_OK) {
+                            goto cleanup_and_exit;
+                        }
+                        else if (bytes_written != length) {
+                            op_result = FR_DISK_ERR;
+                            goto cleanup_and_exit;
+                        }
+
+                        // op_result = f_sync(&pFile);
+                        // if (op_result != FR_OK) {
+                        //     LogTextMessage("ERROR: MNPFL f_sync (backw),op_result:%u path:%s", op_result, &FileName[0]);
+                        // }
+
+                        cleanup_and_exit:  /* always c&e, no matter the resut */
+                        send_AxoResult('a', op_result); /* Send only one result */
+                        state = 0; header = 0;
+                        break;
                     }
+                    break;
                 }
-                else { /* Should not happen, or error */
-                    state = 0; header = 0; /* Reset state machine, no AckPending */
+                else { /* Should not happen, or error: length was already 0 or negative */
+                    send_AxoResult('a', FR_INT_ERR);
+                    state = 0; header = 0;
+                    break;
                 }
-                break;
-            default: /* Error or unexpected state */
-                state = 0; header = 0; /* Reset state machine, no AckPending */
+            default: /* Unexpected state */
+                /* This block should NOT be hit during normal byte streaming in case 8. */
+                send_AxoResult('a', FR_INT_ERR);
+                state = 0; header = 0;
                 break;
         }
     }
