@@ -98,7 +98,8 @@ static const SerialConfig default_config =
  * @param[in] sdp       pointer to a @p SerialDriver object
  * @param[in] config    the architecture-dependent serial driver configuration
  */
-static void usart_init(SerialDriver *sdp, const SerialConfig *config) {  USART_TypeDef *u = sdp->usart;
+static void usart_init(SerialDriver *sdp, const SerialConfig *config) {
+  USART_TypeDef *u = sdp->usart;
 
   /* Baud rate setting.*/
 #if STM32_HAS_USART6
