@@ -68,7 +68,7 @@ int main(void) {
     /* copy vector table to SRAM1! */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnonnull"
-    memcpy((char *)0x20000000, (const char)0x00000000, 0x200);
+    memcpy((char *)0x20000000, (const char*)0x00000000, 0x200);
 #pragma GCC diagnostic pop
 
     /* remap SRAM1 to 0x00000000 */
