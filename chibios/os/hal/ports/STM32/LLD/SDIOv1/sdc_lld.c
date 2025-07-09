@@ -36,13 +36,9 @@
   STM32_DMA_GETCHANNEL(STM32_SDC_SDIO_DMA_STREAM,                           \
                        STM32_SDC_SDIO_DMA_CHN)
 
-#ifndef SDC_MAX_SYNC_RETRIES
 #define SDC_MAX_SYNC_RETRIES            1000U
-#endif
-
-#ifndef SDC_SYNC_POLL_INTERVAL_MS
-#define SDC_SYNC_POLL_INTERVAL_MS       1U
-#endif
+#define SDC_SYNC_POLL_INTERVAL_US       1000U
+#define SDC_SYNC_POLL_CYCLES            ((STM32_SYSCLK / 1000000U) * SDC_SYNC_POLL_INTERVAL_US)
 
 #ifndef MMCSD_R1_CURRENT_STATE_MASK
 #define MMCSD_R1_CURRENT_STATE_MASK     (0xFUL << 9)
@@ -907,7 +903,7 @@ bool sdc_lld_sync(SDCDriver *sdcp) {
     }
 
     // Delay a short period before polling again to avoid busy-waiting unnecessarily.
-    osalThreadSleep(OSAL_MS2ST(SDC_SYNC_POLL_INTERVAL_MS));
+    chSysPolledDelayX(SDC_SYNC_POLL_CYCLES);
 
     retries++;
     if (retries >= SDC_MAX_SYNC_RETRIES) {
