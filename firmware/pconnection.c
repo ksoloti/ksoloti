@@ -66,10 +66,10 @@ static int pFileSize;
 
 /* now static global */
 static uint32_t preset_index;
-static volatile uint32_t value;
-static volatile unsigned char* position;
+static uint32_t value;
+static unsigned char* position;
 static uint32_t offset;
-static volatile uint32_t length;
+static uint32_t length;
 static uint32_t patchid;
 
 MUTEX_DECL(LogMutex);
