@@ -808,7 +808,7 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public int TransmitGetFileList() {
-        ClearSync();
+        // ClearSync();
         int writeResult = writeBytes(getFileListPckt);
         return writeResult;
     }
@@ -829,7 +829,7 @@ public class USBBulkConnection extends Connection {
         byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
         ByteBuffer buffer = ByteBuffer.allocate(10 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'C'); // "AxoC" header
+        buffer.put(axoFileOpPckt);  // "AxoC" header
         buffer.putInt(0);           // pFileSize placeholder (4 bytes)
         buffer.put((byte)0x00);     // FileName[0] (always 0 for new protocol)
         buffer.put((byte)'I');      // FileName[1] (sub-command 'I')
@@ -838,7 +838,7 @@ public class USBBulkConnection extends Connection {
         buffer.put(filenameBytes);  // FileName[6]+ (variable length)
         buffer.put((byte)0x00);     // Null terminator
 
-        ClearSync();
+        // ClearSync();
         int writeResult = writeBytes(buffer.array());
         return writeResult;
     }
@@ -898,10 +898,10 @@ public class USBBulkConnection extends Connection {
         byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
         ByteBuffer buffer = ByteBuffer.allocate(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'C'); // "AxoC" header
-        buffer.putInt(size);                // pFileSize (4 bytes)
-        buffer.put((byte)0x00);             // FileName[0] (always 0 for new protocol)
-        buffer.put((byte)'f');              // FileName[1] (sub-command 'f')
+        buffer.put(axoFileOpPckt);  // "AxoC" header
+        buffer.putInt(size);        // pFileSize (4 bytes)
+        buffer.put((byte)0x00);     // FileName[0] (always 0 for new protocol)
+        buffer.put((byte)'f');      // FileName[1] (sub-command 'f')
 
         /* Calculate FatFs date/time */
         int dy = date.get(Calendar.YEAR);
@@ -913,12 +913,12 @@ public class USBBulkConnection extends Connection {
         short fatFsDate = (short)(((dy - 1980) << 9) | (dm << 5) | dd);
         short fatFsTime = (short)((th << 11) | (tm << 5) | (ts / 2));
 
-        buffer.putShort(fatFsDate);  // FileName[2/3]
-        buffer.putShort(fatFsTime);  // FileName[4/5]
-        buffer.put(filenameBytes);   // FileName[6]+ (variable length)
-        buffer.put((byte)0x00);      // Null terminator
+        buffer.putShort(fatFsDate); // FileName[2/3]
+        buffer.putShort(fatFsTime); // FileName[4/5]
+        buffer.put(filenameBytes);  // FileName[6]+ (variable length)
+        buffer.put((byte)0x00);     // Null terminator
 
-        ClearSync();
+        // ClearSync();
         int writeResult = writeBytes(buffer.array());
         return writeResult;
     }
@@ -939,7 +939,7 @@ public class USBBulkConnection extends Connection {
         byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
         ByteBuffer buffer = ByteBuffer.allocate(10 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'C'); // "AxoC" header
+        buffer.put(axoFileOpPckt);  // "AxoC" header
         buffer.putInt(0);           // pFileSize placeholder (4 bytes)
         buffer.put((byte)0x00);     // FileName[0] (always 0)
         buffer.put((byte)'D');      // FileName[1] (sub-command 'D')
@@ -968,7 +968,7 @@ public class USBBulkConnection extends Connection {
         byte[] pathBytes = path.getBytes(StandardCharsets.US_ASCII);
         ByteBuffer buffer = ByteBuffer.allocate(10 + pathBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'C'); // "AxoC" header
+        buffer.put(axoFileOpPckt);  // "AxoC" header
         buffer.putInt(0);           // pFileSize placeholder (4 bytes)
         buffer.put((byte)0x00);     // FileName[0] (always 0)
         buffer.put((byte)'C');      // FileName[1] (sub-command 'C')
@@ -977,7 +977,7 @@ public class USBBulkConnection extends Connection {
         buffer.put(pathBytes);      // FileName[6]+ (variable length)
         buffer.put((byte)0x00);     // Null terminator
 
-        ClearSync();
+        // ClearSync();
         int writeResult = writeBytes(buffer.array());
         return writeResult;
     }
@@ -998,10 +998,10 @@ public class USBBulkConnection extends Connection {
         byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
         ByteBuffer buffer = ByteBuffer.allocate(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'C'); // "AxoC" header
-        buffer.putInt(0);            // pFileSize placeholder (4 bytes)
-        buffer.put((byte)0x00);      // FileName[0] (always 0)
-        buffer.put((byte)'k');       // FileName[1] (sub-command 'k')
+        buffer.put(axoFileOpPckt);  // "AxoC" header
+        buffer.putInt(0);           // pFileSize placeholder (4 bytes)
+        buffer.put((byte)0x00);     // FileName[0] (always 0)
+        buffer.put((byte)'k');      // FileName[1] (sub-command 'k')
 
         /* Calculate FatFs date/time */
         int dy = date.get(Calendar.YEAR);
@@ -1018,7 +1018,7 @@ public class USBBulkConnection extends Connection {
         buffer.put(filenameBytes);   // FileName[6]+ (variable length)
         buffer.put((byte)0x00);      // Null terminator
 
-        ClearSync();
+        // ClearSync();
         int writeResult = writeBytes(buffer.array());
         return writeResult;
     }
@@ -1037,7 +1037,7 @@ public class USBBulkConnection extends Connection {
         headerBuffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'a');
         headerBuffer.putInt(size);  // Length of the data chunk
 
-        ClearSync();
+        // ClearSync();
         int writeResult = writeBytes(headerBuffer.array());
         if (writeResult != LibUsb.SUCCESS) {
             return writeResult;
@@ -1062,10 +1062,10 @@ public class USBBulkConnection extends Connection {
         byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
         ByteBuffer buffer = ByteBuffer.allocate(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'C'); // "AxoC" header
-        buffer.putInt(0);                   // pFileSize placeholder (4 bytes)
-        buffer.put((byte)0x00);             // FileName[0] (always 0)
-        buffer.put((byte)'c');              // FileName[1] (sub-command 'c')
+        buffer.put(axoFileOpPckt);  // "AxoC" header
+        buffer.putInt(0);           // pFileSize placeholder (4 bytes)
+        buffer.put((byte)0x00);     // FileName[0] (always 0)
+        buffer.put((byte)'c');      // FileName[1] (sub-command 'c')
 
         /* Calculate FatFs date/time */
         int dy = date.get(Calendar.YEAR);
