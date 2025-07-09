@@ -132,18 +132,20 @@ public class USBBulkConnection extends Connection {
     @Override
     public boolean AppendToQueue(QCmdSerialTask cmd) {
         try {
-            // System.out.println(Instant.now() + " AppendToQueue: attempting to append " + cmd.getClass().getSimpleName());
-            boolean added = queueSerialTask.offer(cmd, 100, TimeUnit.MILLISECONDS); // Example timeout
+            if (!(cmd instanceof QCmdPing)) {
+                System.out.println(Instant.now() + " [DEBUG] AppendToQueue: attempting to append " + cmd.getClass().getSimpleName());
+            }
+            boolean added = queueSerialTask.offer(cmd, 100, TimeUnit.MILLISECONDS);
             if (!added) {
-                System.out.println(Instant.now() + " AppendToQueue: USBBulkConnection serial task queue full, command not appended: " + cmd.getClass().getSimpleName());
+                LOGGER.log(Level.WARNING, "USB command queue full. Command not sent: " + cmd.getClass().getSimpleName());
             }
             return added;
         }
         catch (InterruptedException ex) {
             /* Restore the interrupted status, as per best practice */
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "USBBulkConnection AppendToQueue interrupted while offering command: " + cmd.getClass().getSimpleName(), ex);
-            return false; // Command was not added due to interruption
+            System.err.println(Instant.now() + " [DEBUG] USBBulkConnection AppendToQueue interrupted while offering command: " + cmd.getClass().getSimpleName() + " - " + ex.getMessage());
+            return false; /* Command was not added due to interruption */
         }
     }
 
@@ -173,7 +175,7 @@ public class USBBulkConnection extends Connection {
                     receiverThread.join(3000);
                 }
                 catch (InterruptedException ex) {
-                    // System.err.println(Instant.now() + " Receiver join interrupted: " + ex.getMessage());
+                    System.err.println(Instant.now() + " [DEBUG] Receiver join interrupted: " + ex.getMessage());
                     Thread.currentThread().interrupt();
                 }
             }
@@ -183,39 +185,36 @@ public class USBBulkConnection extends Connection {
                     transmitterThread.join(3000);
                 }
                 catch (InterruptedException ex) {
-                    // System.err.println(Instant.now() + " Transmitter join interrupted: " + ex.getMessage());
+                    System.err.println(Instant.now() + " [DEBUG] Transmitter join interrupted: " + ex.getMessage());
                     Thread.currentThread().interrupt();
                 }
             }
 
-            if (receiverThread != null && receiverThread.isAlive()) {
-                System.err.println(Instant.now() + " Receiver thread did not terminate gracefully after timeout.");
-            }
-            if (transmitterThread != null && transmitterThread.isAlive()) {
-                System.err.println(Instant.now() + " Transmitter thread did not terminate gracefully after timeout.");
-            }
+            // if (receiverThread != null && receiverThread.isAlive()) {
+            //     System.err.println(Instant.now() + " [DEBUG] Receiver thread did not terminate gracefully after timeout.");
+            // }
+            // if (transmitterThread != null && transmitterThread.isAlive()) {
+            //     System.err.println(Instant.now() + " [DEBUG] Transmitter thread did not terminate gracefully after timeout.");
+            // }
             
             if (handle != null) {
                 try {
                     int result = LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
                     if (result != LibUsb.SUCCESS) {
-                        LOGGER.log(Level.WARNING, "Connection Warning: Device may have been forcefully disconnected.");
-                        // System.err.println(Instant.now() + " LibUsb: Unable to release interface: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
+                        System.err.println(Instant.now() + " [DEBUG] LibUsb: Unable to release interface: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
                     }
                 }
                 catch (LibUsbException ex) {
-                    LOGGER.log(Level.WARNING, "Connection Warning: USB interface release failed unexpectedly.");
-                    // System.err.println(Instant.now() + " LibUsb: Exception during interface release: " + ex.getMessage());
-                    // ex.printStackTrace(System.err);
+                    System.err.println(Instant.now() + " [DEBUG] LibUsb: Exception during interface release: " + ex.getMessage());
+                    ex.printStackTrace(System.err);
                 }
 
                 try {
                     LibUsb.close(handle);
                 }
                 catch (LibUsbException ex) {
-                    LOGGER.log(Level.WARNING, "Connection Warning: USB device close failed unexpectedly.");
-                    // System.err.println(Instant.now() + " LibUsb: Exception during device close: " + ex.getMessage());
-                    // ex.printStackTrace(System.err);
+                    System.err.println(Instant.now() + " [DEBUG] LibUsb: Exception during device close: " + ex.getMessage());
+                    ex.printStackTrace(System.err);
                 }
             }
 
@@ -338,8 +337,7 @@ public class USBBulkConnection extends Connection {
 
                         result = LibUsb.open(d, h);
                         if (result < 0) {
-                            LOGGER.log(Level.INFO, ErrorString(result));
-                            System.err.println(Instant.now() + " LibUsb: Failed to open device handle: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
+                            System.err.println(Instant.now() + " [DEBUG] LibUsb: Failed to open device handle: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
                         }
                         else {
                             return h;
@@ -391,20 +389,20 @@ public class USBBulkConnection extends Connection {
 
         handle = OpenDeviceHandle();
         if (handle == null) {
-            System.err.println(Instant.now() + " USB device not found or inaccessible.");
+            // System.err.println(Instant.now() + " [DEBUG] USB device not found or inaccessible.");
             return false;
         }
 
         try {
             int result = LibUsb.claimInterface(handle, useBulkInterfaceNumber);
             if (result != LibUsb.SUCCESS) {
-                LOGGER.log(Level.SEVERE, "USB interface already in use or inaccessible.");
-                // System.err.println(Instant.now() + " LibUsb: Unable to claim USB interface: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
+                LOGGER.log(Level.WARNING, "USB interface already in use or inaccessible.");
+                // System.err.println(Instant.now() + " [DEBUG] LibUsb: Unable to claim USB interface: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
                 try {
                     LibUsb.close(handle);
                 }
                 catch (LibUsbException closeEx) {
-                    System.err.println(Instant.now() + " Error closing handle after failed claim: " + closeEx.getMessage());
+                    // System.err.println(Instant.now() + " [DEBUG] Error closing handle after failed claim: " + closeEx.getMessage());
                 }
                 handle = null;
                 return false;
@@ -425,13 +423,13 @@ public class USBBulkConnection extends Connection {
             TransmitPing();
 
             if (!WaitSync()) {
-                // System.err.println(Instant.now() + " Initial ping timeout. Connection failed.");
+                // System.err.println(Instant.now() + " [DEBUG] Initial ping timeout. Connection failed.");
                 ShowDisconnect();
                 try {
                     disconnect();
                 }
                 catch (Exception e) {
-                    System.err.println(Instant.now() + " Error during cleanup after failed ping response: " + e.getMessage());
+                    // System.err.println(Instant.now() + " [DEBUG] Error during cleanup after failed ping response: " + e.getMessage());
                 }
                 return false;
             }
@@ -456,30 +454,26 @@ public class USBBulkConnection extends Connection {
             return true;
         }
         catch (LibUsbException e) {
-            LOGGER.log(Level.SEVERE, "Connection Error: A USB communication problem occurred: " + e.getMessage());
-            e.printStackTrace(System.err); // Print stack trace to CLI
             ShowDisconnect();
             if (handle != null) {
                 try {
                     LibUsb.close(handle);
                 }
                 catch (LibUsbException ce) {
-                    System.err.println(Instant.now() + " Error closing handle after connection exception: " + ce.getMessage());
+                    System.err.println(Instant.now() + " [DEBUG] Error closing handle after connection exception: " + ce.getMessage());
                 }
                 handle = null;
             }
             return false;
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Connection Error: An unexpected issue prevented connection: " + ex.getMessage());
-            ex.printStackTrace(System.err); // Print stack trace to CLI
             ShowDisconnect();
             if (handle != null) {
                 try {
                     LibUsb.close(handle);
                 }
                 catch (LibUsbException ce) {
-                    System.err.println(Instant.now() + " Error closing handle after connection exception: " + ce.getMessage());
+                    System.err.println(Instant.now() + " [DEBUG] Error closing handle after connection exception: " + ce.getMessage());
                 }
                 handle = null;
             }
@@ -491,14 +485,21 @@ public class USBBulkConnection extends Connection {
     public int writeBytes(byte[] bytes) {
         /* Acquire the OUT lock for writing */
         synchronized (usbOutLock) {
+
+            if (handle == null) {
+                LOGGER.log(Level.SEVERE, "USB bulk write failed: Connection is not active.");
+                // System.err.println(Instant.now() + " [DEBUG] USB bulk write failed: handle is null. Disconnected?");
+                return LibUsb.ERROR_NO_DEVICE;
+            }
+
             ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length);
             buffer.put(bytes);
             buffer.rewind();
 
             IntBuffer transfered = IntBuffer.allocate(1);
     
-            int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, prefs.getPollInterval() * 30); /*  Timeout is thirty times the poll interval, or ten times the read timeout */
-            if (result != LibUsb.SUCCESS) { /* handle error -99 below */
+            int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 999999000); /* 1s timeout */
+            if (result != LibUsb.SUCCESS) {
 
                 if (result == -99) {
                     /*
@@ -525,8 +526,8 @@ public class USBBulkConnection extends Connection {
                     case -12: errstr = "Operation not supported or unimplemented"; break;
                     default:  errstr = Integer.toString(result); break;
                 }
-                LOGGER.log(Level.WARNING, "USB bulk write failed: " + errstr);
-                // QCmdProcessor.getQCmdProcessor().Abort();
+                LOGGER.log(Level.SEVERE, "USB bulk write failed: " + errstr);
+                QCmdProcessor.getQCmdProcessor().Abort();
             }
             return result;
         }
@@ -1206,7 +1207,7 @@ public class USBBulkConnection extends Connection {
                 if (!pi.GetNeedsTransmit()) {
                     pi.SetValueRaw(value);
                 }
-                // System.out.println(Instant.now() + " rcv ppc objname:" + pi.axoObj.getInstanceName() + " pname:"+ pi.name);
+                // System.out.println(Instant.now() + " [DEBUG] rcv ppc objname:" + pi.axoObj.getInstanceName() + " pname:"+ pi.name);
             }
         });
 
@@ -1275,7 +1276,7 @@ public class USBBulkConnection extends Connection {
                 packetData[dataIndex >> 2] += (c << 24);
                 break;
         }
-        // System.out.println(Instant.now() + " s " + dataIndex + "  v=" + Integer.toHexString(packetData[dataIndex>>2]) + " c=");
+        // System.out.println(Instant.now() + " [DEBUG] s " + dataIndex + "  v=" + Integer.toHexString(packetData[dataIndex>>2]) + " c=" + Integer.toHexString(c));
         dataIndex++;
 
     }
@@ -1345,13 +1346,15 @@ public class USBBulkConnection extends Connection {
     void processByte(byte cc) {
 
         int c = cc & 0xff;
+
         // String charDisplay;
         // if (c >= 0x20 && c <= 0x7E) {
         //     charDisplay = "'" + String.valueOf((char) c) + "'";
-        // } else {
+        // }
+        // else {
         //     charDisplay = String.format("%02x", c) + "h"; // Show hex for non-printable characters
         // }
-        // System.out.println(Instant.now() + " processByte c=" + charDisplay + " s=" + state.name());
+        // System.out.println(Instant.now() + " [DEBUG] processByte c=" + charDisplay + " s=" + state.name());
 
         switch (state) {
 
@@ -1360,14 +1363,14 @@ public class USBBulkConnection extends Connection {
                     case 0: /* This should always be 'A' or command will be ignored */
                         if (c == 'A') {
                             headerstate = 1;
-                            // System.out.println(Instant.now() + " Transitioning to headerstate " + headerstate + " after 'A'");
+                            // System.out.println(Instant.now() + " [DEBUG] Transitioning to headerstate " + headerstate + " after 'A'");
                         }
                         break;
 
                     case 1: /* This should always be 'x' or command will be ignored */
                         if (c == 'x') {
                             headerstate = 2;
-                            // System.out.println(Instant.now() + " Transitioning to headerstate " + headerstate + " after 'x'");
+                            // System.out.println(Instant.now() + " [DEBUG] Transitioning to headerstate " + headerstate + " after 'x'");
                         }
                         else {
                             GoIdleState();
@@ -1377,7 +1380,7 @@ public class USBBulkConnection extends Connection {
                     case 2: /* This should always be 'o' or command will be ignored */
                         if (c == 'o') {
                             headerstate = 3;
-                            // System.out.println(Instant.now() + " Transitioning to headerstate " + headerstate + " after 'o'");
+                            // System.out.println(Instant.now() + " [DEBUG] Transitioning to headerstate " + headerstate + " after 'o'");
                         }
                         else {
                             GoIdleState();
@@ -1390,32 +1393,32 @@ public class USBBulkConnection extends Connection {
                                 state = ReceiverState.paramchangePckt;
                                 dataIndex = 0;
                                 dataLength = 12;
-                                // System.out.println(Instant.now() + " Completed headerstate after 'Q'");
+                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'Q'");
                                 break;
                             case 'A':
                                 state = ReceiverState.ackPckt;
                                 dataIndex = 0;
                                 dataLength = 24;
-                                // System.out.println(Instant.now() + " Completed headerstate after 'A'");
+                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'A'");
                                 break;
                             case 'D':
                                 state = ReceiverState.displayPcktHdr;
                                 dataIndex = 0;
                                 dataLength = 8;
-                                // System.out.println(Instant.now() + " Completed headerstate after 'D'");
+                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'D'");
                                 break;
                             case 'R': /* New case for 'R' header (AxoR packet from MCU) */
                                 state = ReceiverState.commandResultPckt;
                                 dataIndex = 0;
                                 dataLength = 2; /* Expecting command_byte (1 byte) + status_byte (1 byte) */
-                                // System.out.println(Instant.now() + " Completed headerstate after 'R'");
+                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'R'");
                                 break;
                             case 'T':
                                 state = ReceiverState.textPckt;
                                 textRcvBuffer.clear();
                                 dataIndex = 0;
                                 dataLength = 255;
-                                // System.out.println(Instant.now() + " Completed headerstate after 'T'");
+                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'T'");
                                 break;
                             // case '0': /* non-existing LCD stuff */
                             // case '1':
@@ -1438,42 +1441,41 @@ public class USBBulkConnection extends Connection {
                                 sdinfoRcvBuffer.rewind();
                                 dataIndex = 0;
                                 dataLength = 12;
-                                // System.out.println(Instant.now() + " Completed headerstate after 'l'");
+                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'l'");
                                 break;
                             case 'f':
                                 state = ReceiverState.fileinfo_fixed_fields;
                                 fileinfoRcvBuffer.clear();
                                 dataIndex = 0;
-                                // dataLength = 8;
-                                // System.out.println(Instant.now() + " Completed headerstate after 'f'");
+                                dataLength = 8;
+                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'f'");
                                 break;
                             case 'r':
                                 state = ReceiverState.memread;
                                 memReadBuffer.clear();
                                 dataIndex = 0;
-                                // System.out.println(Instant.now() + " Completed headerstate after 'r'");
+                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'r'");
                                 break;
                             case 'y':
                                 state = ReceiverState.memread1word;
                                 dataIndex = 0;
-                                // System.out.println(Instant.now() + " Completed headerstate after 'y'");
+                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'y'");
                                 break;
                             case 'V':
                                 state = ReceiverState.fwversion;
                                 dataIndex = 0;
-                                // System.out.println(Instant.now() + " Completed headerstate after 'V'");
+                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'V'");
                                 break;
                             default:
                                 GoIdleState();
-                                System.err.println(Instant.now() + " Error trying to complete headerstate after valid 'Axo'");
+                                // System.err.println(Instant.now() + " [DEBUG] Error trying to complete headerstate after valid 'Axo'");
                                 break;
                         }
                         break;
 
                     default:
-                        System.err.println(Instant.now() + " Receiver: invalid header");
+                        System.err.println(Instant.now() + " [DEBUG] processByte: invalid header");
                         GoIdleState();
-
                         break;
                 }
                 break;
@@ -1482,9 +1484,9 @@ public class USBBulkConnection extends Connection {
                 if (dataIndex < dataLength) {
                     storeDataByte(c);
                 }
-                // System.out.println(Instant.now() + " pch packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
+                // System.out.println(Instant.now() + " [DEBUG] pch packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
                 if (dataIndex == dataLength) {
-                    // System.out.println(Instant.now() + " param packet complete 0x" + Integer.toHexString(packetData[1]) + "    0x" + Integer.toHexString(packetData[0]));
+                    // System.out.println(Instant.now() + " [DEBUG] param packet complete 0x" + Integer.toHexString(packetData[1]) + "    0x" + Integer.toHexString(packetData[0]));
                     RPacketParamChange(packetData[2], packetData[1], packetData[0]);
                     GoIdleState();
                 }
@@ -1492,11 +1494,11 @@ public class USBBulkConnection extends Connection {
 
             case ackPckt:
                 if (dataIndex < dataLength) {
-                    // System.out.println(Instant.now() + " ack packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
+                    // System.out.println(Instant.now() + " [DEBUG] ack packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
                     storeDataByte(c);
                 }
                 if (dataIndex == dataLength) {
-                    // System.out.println(Instant.now() + " ack packet complete");
+                    // System.out.println(Instant.now() + " [DEBUG] ack packet complete");
                     Acknowledge(packetData[0], packetData[1], packetData[2], packetData[3], packetData[4], packetData[5]);
                     GoIdleState();
                 }
@@ -1519,7 +1521,7 @@ public class USBBulkConnection extends Connection {
                 if (dataIndex < dataLength) {
                     storeDataByte(c);
                 }
-                // System.out.println(Instant.now() + " pch packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
+                // System.out.println(Instant.now() + " [DEBUG] pch packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
                 if (dataIndex == dataLength) {
                     DisplayPackHeader(packetData[0], packetData[1]);
                 }
@@ -1536,9 +1538,9 @@ public class USBBulkConnection extends Connection {
                 }
                 break;
 
-            case commandResultPckt: // This state is now reached after receiving an AxoR packet
+            case commandResultPckt:
                 if (dataIndex < dataLength) {
-                    storeDataByte(c); // Store the incoming bytes (command_byte then status_byte)
+                    storeDataByte(c);
                 }
                 if (dataIndex == dataLength) { // Once both bytes are received
                     int commandByte = packetData[0] & 0xFF;
@@ -1576,9 +1578,6 @@ public class USBBulkConnection extends Connection {
                         }
                         currentExecutingCommand = null;
                     }
-
-                    // Add 'else if (commandByte == '...')' blocks here to handle results for other commands...
-
                     GoIdleState();
                 }
                 break;
@@ -1592,14 +1591,13 @@ public class USBBulkConnection extends Connection {
                     textRcvBuffer.limit(textRcvBuffer.position());
                     textRcvBuffer.rewind();
                     if (Pattern.compile("File error:.*filename:\"/start.bin\"").matcher(textRcvBuffer.toString()).find()) {
-                    // if (textRcvBuffer.toString().toLowerCase().contains("file error: fr_no_file, filename:\"/start.bin\"")) {
                         /* Filter out error if SD card is connected but no start.bin is found */
                         LOGGER.log(Level.INFO, "SD card connected, no startup patch found.");
                     }
                     else {
                         LOGGER.log(Level.WARNING, "{0}", textRcvBuffer.toString());
                     }
-                    // System.out.println(Instant.now() + " FINAL MCU Text Message (AxoT): " + textRcvBuffer.toString());
+                    // System.out.println(Instant.now() + " [DEBUG] FINAL MCU Text Message (AxoT): " + textRcvBuffer.toString());
                     GoIdleState();
                 }
                 break;
@@ -1616,7 +1614,7 @@ public class USBBulkConnection extends Connection {
                     int clusters = sdinfoRcvBuffer.getInt();
                     int clustersize = sdinfoRcvBuffer.getInt();
                     int blocksize = sdinfoRcvBuffer.getInt();
-                    // System.out.println(Instant.now() +  " [DEBUG] processByte sdinfo: clusters:" + clusters + " clsize:" + clustersize + " blsize:" + blocksize);
+                    System.out.println(Instant.now() +  " [DEBUG] processByte sdinfo: clusters:" + clusters + " clsize:" + clustersize + " blsize:" + blocksize);
 
                     SDCardInfo.getInstance().SetInfo(clusters, clustersize, blocksize);
                     GoIdleState();
@@ -1627,8 +1625,8 @@ public class USBBulkConnection extends Connection {
                 fileinfoRcvBuffer.put(cc);
                 dataIndex++;
         
-                if (dataIndex == 8) { /* exactly 8 bytes (size + timestamp) */ 
-                    // System.out.println(Instant.now() + " processByte: Received fixed fields for Axof. Processing.");
+                if (dataIndex == dataLength) { /* exactly 8 bytes (size + timestamp) */ 
+                    System.out.println(Instant.now() + " [DEBUG] processByte: Received fixed fields for Axof. Processing.");
         
                     fileinfoRcvBuffer.order(ByteOrder.LITTLE_ENDIAN);
                     fileinfoRcvBuffer.limit(fileinfoRcvBuffer.position());
@@ -1637,7 +1635,7 @@ public class USBBulkConnection extends Connection {
                     /* Read the 4-byte size and 4-byte timestamp */
                     currentFileSize = fileinfoRcvBuffer.getInt();
                     currentFileTimestamp = fileinfoRcvBuffer.getInt();
-                    // System.out.println(Instant.now() + " processByte: Parsed preliminary size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
+                    System.out.println(Instant.now() + " [DEBUG] processByte: Parsed preliminary size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
         
                     /* Prepare to collect the variable-length filename */
                     fileinfoRcvBuffer.clear();
@@ -1648,7 +1646,7 @@ public class USBBulkConnection extends Connection {
         
             case fileinfo_filename: /* State to collect filename bytes until null terminator */
                 if (cc == 0x00) {
-                    // System.out.println(Instant.now() + " processByte: Null terminator found for Axof filename. Processing.");
+                    System.out.println(Instant.now() + " [DEBUG] processByte: Null terminator found for Axof filename. Processing.");
         
                     fileinfoRcvBuffer.limit(fileinfoRcvBuffer.position());
                     fileinfoRcvBuffer.rewind();
@@ -1659,7 +1657,7 @@ public class USBBulkConnection extends Connection {
                     String fname = new String(filenameBytes, Charset.forName("ISO-8859-1"));
 
                     SDCardInfo.getInstance().AddFile(fname, currentFileSize, currentFileTimestamp);
-                    // System.out.println(Instant.now() + " processByte: Parsed file: \"" + fname + "\", size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
+                    System.out.println(Instant.now() + " [DEBUG] processByte: Parsed file: \'" + fname + "\', size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
         
                     GoIdleState(); /* Packet complete, return to idle */
                 }
@@ -1710,7 +1708,7 @@ public class USBBulkConnection extends Connection {
                         if (dataIndex == memReadLength + 7) {
                             memReadBuffer.rewind();
                             memReadBuffer.order(ByteOrder.LITTLE_ENDIAN);
-                            // System.out.println(Instant.now() + " memread offset 0x" + Integer.toHexString(memReadAddr));
+                            // System.out.println(Instant.now() + " [DEBUG] memread offset 0x" + Integer.toHexString(memReadAddr));
                             // int i = 0;
                             // while (memReadBuffer.hasRemaining()) {
                             //     System.out.print(" " + String.format("%02X", memReadBuffer.get()));
@@ -1758,7 +1756,7 @@ public class USBBulkConnection extends Connection {
                         break;
                     case 7:
                         memReadValue += (cc & 0xFF) << 24;
-                        // System.out.println(Instant.now() + " " + String.format("addr %08X value %08X", memReadAddr, memReadValue));
+                        // System.out.println(Instant.now() + " [DEBUG] " + String.format("addr %08X value %08X", memReadAddr, memReadValue));
                         synchronized (readsync) {
                             readsync.Acked = true;
                             readsync.notifyAll();
@@ -1806,7 +1804,7 @@ public class USBBulkConnection extends Connection {
                     case 11:
                         patchentrypoint += (cc & 0xFF);
                         String sFwcrc = String.format("%08X", fwcrc);
-                        System.out.println(Instant.now() + " " + String.format("Firmware version: %d.%d.%d.%d, CRC: 0x%s, entry point: 0x%08X", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc, patchentrypoint));
+                        System.out.println(Instant.now() + String.format(" Firmware version: %d.%d.%d.%d, CRC: 0x%s, entry point: 0x%08X", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc, patchentrypoint));
                         LOGGER.log(Level.INFO, String.format("Firmware version %d.%d.%d.%d | CRC %s\n", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
                         MainFrame.mainframe.setFirmwareID(sFwcrc);
                         GoIdleState();
@@ -1817,7 +1815,7 @@ public class USBBulkConnection extends Connection {
 
             default:
                 GoIdleState();
-                System.out.println(Instant.now() + " Unhandled byte c=" + String.format("%02x", c) + "(char=" + (char)c + ") in state=" + state);
+                System.out.println(Instant.now() + " [DEBUG] Unhandled byte c=" + String.format("%02x", c) + "(char=" + (char)c + ") in state=" + state);
                 break;
         }
     }
