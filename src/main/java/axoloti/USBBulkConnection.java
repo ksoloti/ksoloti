@@ -1140,7 +1140,7 @@ public class USBBulkConnection extends Connection {
         writeBytes(data);
         WaitSync();
     }
-    
+
     public void SetSDCardPresent(boolean i) {
         if ((isSDCardPresent != null) && (i == isSDCardPresent)) return;
         isSDCardPresent = i;
@@ -1242,7 +1242,6 @@ public class USBBulkConnection extends Connection {
         header,
         ackPckt,                /* general acknowledge */
         paramchangePckt,        /* parameter changed */
-        // lcdPckt,                /* lcd screen bitmap readback */
         displayPcktHdr,         /* object display readbac */
         displayPckt,            /* object display readback */
         textPckt,               /* text message to display in log */
@@ -1265,7 +1264,6 @@ public class USBBulkConnection extends Connection {
     private int dataIndex = 0;  /* in bytes */
     private int dataLength = 0; /* in bytes */
     private CharBuffer textRcvBuffer = CharBuffer.allocate(256);
-    // private ByteBuffer lcdRcvBuffer = ByteBuffer.allocate(256);
     private ByteBuffer sdinfoRcvBuffer = ByteBuffer.allocate(12);
     private ByteBuffer fileinfoRcvBuffer = ByteBuffer.allocate(256);
     private ByteBuffer memReadBuffer = ByteBuffer.allocate(16 * 4);
@@ -1440,22 +1438,6 @@ public class USBBulkConnection extends Connection {
                                 dataLength = 255;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'T'");
                                 break;
-                            // case '0': /* non-existing LCD stuff */
-                            // case '1':
-                            // case '2':
-                            // case '3':
-                            // case '4':
-                            // case '5':
-                            // case '6':
-                            // case '7':
-                            // case '8':
-                            //     LCDPacketRow = c - '0';
-                            //     state = ReceiverState.lcdPckt;
-                            //     lcdRcvBuffer.rewind();
-                            //     dataIndex = 0;
-                            //     dataLength = 128;
-                            //     System.out.println(Instant.now() + " Completed headerstate after digit");
-                            //     break;
                             case 'l':
                                 state = ReceiverState.sdinfo;
                                 sdinfoRcvBuffer.rewind();
@@ -1524,19 +1506,6 @@ public class USBBulkConnection extends Connection {
                 }
                 break;
 
-            // case lcdPckt:
-            //     if (dataIndex < dataLength) {
-            //         // System.out.println(Instant.now() + " lcd packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
-            //         lcdRcvBuffer.put(cc);
-            //         dataIndex++;
-            //     }
-            //     if (dataIndex == dataLength) {
-            //         lcdRcvBuffer.rewind();
-            //         // MainFrame.mainframe.remote.updateRow(LCDPacketRow, lcdRcvBuffer);
-            //         GoIdleState();
-            //     }
-            //     break;
-
             case displayPcktHdr:
                 if (dataIndex < dataLength) {
                     storeDataByte(c);
@@ -1580,8 +1549,8 @@ public class USBBulkConnection extends Connection {
                             }
                             else if (commandByte == 'c') {
                                 uploadCmd.setCloseFileCompleted((byte)statusCode);
-                        }
-                        else {
+                            }
+                            else {
                                 System.err.println(Instant.now() + " [DEBUG] Warning: QCmdUploadFile received unexpected AxoR for command: " + (char)commandByte);
                             }
                         }
@@ -1603,8 +1572,8 @@ public class USBBulkConnection extends Connection {
                         // Generic handling for all other single-step QCmdSerialTasks
                         else {
                             System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received an AxoR for command: " + (char)commandByte + ", but this command does not expect an AxoR for completion. Ignoring.");
-                            }
                         }
+                    }
                     else {
                         System.err.println(Instant.now() + " [DEBUG] Warning: AxoR received but no currentExecutingCommand is set.");
                     }
