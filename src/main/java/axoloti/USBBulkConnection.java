@@ -21,6 +21,7 @@ package axoloti;
 
 import static axoloti.MainFrame.prefs;
 import static axoloti.dialogs.USBPortSelectionDlg.ErrorString;
+
 import axoloti.dialogs.USBPortSelectionDlg;
 import axoloti.displays.DisplayInstance;
 import axoloti.parameters.ParameterInstance;
@@ -31,6 +32,7 @@ import java.nio.ByteOrder;
 import java.nio.CharBuffer;
 import java.nio.IntBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -43,13 +45,18 @@ import java.util.regex.Pattern;
 import javax.swing.SwingUtilities;
 import org.usb4java.*;
 import qcmds.QCmd;
+import qcmds.QCmdChangeWorkingDirectory;
+import qcmds.QCmdCreateDirectory;
 import qcmds.QCmdDeleteFile;
+import qcmds.QCmdGetFileInfo;
 import qcmds.QCmdGetFileList;
 import qcmds.QCmdMemRead;
 import qcmds.QCmdMemRead1Word;
+import qcmds.QCmdPing;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdSerialTask;
 import qcmds.QCmdTransmitGetFWVersion;
+import qcmds.QCmdUploadFile;
 
 /**
  *
