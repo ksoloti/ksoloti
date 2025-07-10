@@ -28,7 +28,10 @@ public interface QCmdSerialTask extends QCmd {
 
     void setCommandCompleted(boolean success);
     boolean waitForCompletion(long timeoutMs) throws InterruptedException;
-    public boolean isSuccessful();
+    boolean waitForCompletion() throws InterruptedException;
+    boolean isSuccessful();
+    void setMcuStatusCode(byte statusCode);
+    char getExpectedAckCommandByte();
 
-    public QCmd Do(Connection connection);
+    QCmd Do(Connection connection);
 }
