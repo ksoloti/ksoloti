@@ -297,11 +297,9 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         jButtonCreateDir.setText("New Folder in Root...");
     }
 
-
     private void initComponents() {
 
         jScrollPane1 = new ScrollPaneComponent();
-        jFileTable = new javax.swing.JTable();
         jButtonSDRefresh = new javax.swing.JButton();
         jLabelSDInfo = new javax.swing.JLabel();
         jButtonUpload = new javax.swing.JButton();
@@ -311,7 +309,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         fileMenu1 = new axoloti.menus.FileMenu();
         jMenu2 = new javax.swing.JMenu();
         windowMenu1 = new axoloti.menus.WindowMenu();
-
+        
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowActivated(java.awt.event.WindowEvent evt) {
                 formWindowActivated(evt);
@@ -320,30 +318,43 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 formWindowClosing(evt);
             }
         });
+        
+        jFileTable = new javax.swing.JTable() {
 
-        // jFileTable.setModel(new javax.swing.table.DefaultTableModel(
-        //     new Object [][] {
+            /* Override getToolTipText to provide cell-specific tooltips */
+            @Override
+            public String getToolTipText(MouseEvent e) {
+                Point p = e.getPoint();
+                int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
 
-        //     },
-        //     new String [] {
-        //         "Name", "Extension", "Size", "Modified"
-        //     }
-        // ) {
-        //     Class[] types = new Class [] {
-        //         java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
-        //     };
-        //     boolean[] canEdit = new boolean [] {
-        //         false, false, false, false
-        //     };
+                /* Ensure the mouse is over a valid cell */
+                if (rowIndex != -1 && colIndex != -1) {
 
-        //     public Class getColumnClass(int columnIndex) {
-        //         return types [columnIndex];
-        //     }
+                    Object cellValue = getModel().getValueAt(rowIndex, colIndex);
+                    String columnName = getModel().getColumnName(colIndex);
+                    SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
 
-        //     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        //         return canEdit [columnIndex];
-        //     }
-        // });
+                    /* Customize tooltip based on column/row/value */
+                    if (columnName.equals("Name")) {
+                        return f.getFilename();
+                    }
+                    else if (columnName.equals("Type")) {
+                        return "File size: " + cellValue + " KB";
+                    }
+                    else if (columnName.equals("Size")) {
+                        return "File size: " + cellValue + " KB";
+                    }
+                    else if (columnName.equals("Modified")) {
+                        return "Modified on: " + cellValue;
+                    }
+                    /* Default tooltip if no specific handling */
+                    return columnName + ": " + cellValue;
+                }
+                /* If not over a cell, return null */
+                return null;
+            }
+        };
 
         jButtonSDRefresh.setText("Refresh");
         jButtonSDRefresh.setEnabled(false);
@@ -519,104 +530,108 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                          .orElse(null);
     }
 
-    // --- Helper Method: Recursive Deletion Logic (Embedded) ---
-    private boolean deleteSdCardEntryRecursiveInternal(String sdCardPath) {
-        // sdCardPath here is the path exactly as it comes from SDCardInfo.getFiles()
-        // This means it might have a trailing slash for directories.
-
-        if (sdCardPath == null || sdCardPath.isEmpty()) {
-            LOGGER.log(Level.WARNING, "Attempted to delete an empty or null path.");
-            return false;
-        }
-
-        LOGGER.log(Level.INFO, "Attempting to delete entry (as per SDCardInfo): ''{0}''", sdCardPath);
-
+    private boolean deleteSdCardEntryRecursive(String sdCardPath) {
+        
         SDFileInfo fileInfo = getFileInfoByPath(sdCardPath);
         if (fileInfo == null) {
-            LOGGER.log(Level.INFO, "Entry ''{0}'' does not exist in local SD card model. Nothing to delete.", sdCardPath);
+            System.out.println(Instant.now() + " Entry '" + sdCardPath + "' does not exist in local SD card model. Nothing to delete.");
             return true; // Already "deleted"
         }
 
-        boolean isDir = fileInfo.isDirectory();
+        if (fileInfo.isDirectory()) {
+            System.out.println(Instant.now() + " Identified as directory. Listing contents for recursive deletion: '" + sdCardPath + "'");
 
-        if (isDir) {
-            LOGGER.log(Level.INFO, "  Identified as directory. Listing contents for recursive deletion: ''{0}''", sdCardPath);
-
-            // --- CRITICAL CHANGE HERE: Loop until no more children are found ---
-            // This ensures we are always working with the freshest view of the SDCardInfo model.
+            // Loop for ensuring the directory is empty on the client model side
             while (true) {
-                // Get the *current* list of children for this directory
                 List<SDFileInfo> children = SDCardInfo.getInstance().getFiles().stream()
                     .filter(f -> f.getFilename().startsWith(sdCardPath) && !f.getFilename().equals(sdCardPath))
-                    // OPTIONAL ADVANCED FILTER: Ensure it's a direct child (prevents going too deep if names overlap)
-                    // This checks that the path has exactly one more '/' than the parent, after the parent's path.
-                    // For example, for /asd/, it ensures /asd/file.txt or /asd/folder/ but not /asd/folder/subfile.txt
-                    // .filter(f -> {
-                    //     String relativePath = f.getFilename().substring(sdCardPath.length());
-                    //     return !relativePath.contains("/"); // Ensure no further slashes for direct children
-                    // })
                     .collect(Collectors.toList());
 
                 if (children.isEmpty()) {
-                    LOGGER.log(Level.INFO, "  Directory ''{0}'' is now empty (or no known children).", sdCardPath);
-                    break; // No more children, can proceed to delete the directory itself
+                    // Directory is truly empty in the *current* model.
+                    break;
                 }
 
-                // Sort children for reliable deletion order (files before folders, deeper paths first)
-                // This is crucial for rmdir operations on the device.
                 children.sort(Comparator
-                    .comparing((SDFileInfo f) -> f.isDirectory() ? 1 : 0) // Files (0) before Dirs (1)
-                    .thenComparing(SDFileInfo::getFilename).reversed()   // Longer paths (deeper) first
+                    .comparing((SDFileInfo f) -> f.isDirectory() ? 1 : 0)
+                    .thenComparing(SDFileInfo::getFilename).reversed()
                 );
 
-                // Process the *first* child in the sorted list (which will be the deepest file or directory)
                 SDFileInfo childToProcess = children.get(0);
                 String childPath = childToProcess.getFilename();
 
-                LOGGER.log(Level.INFO, "  Processing child: ''{0}''", childPath);
-                if (!deleteSdCardEntryRecursiveInternal(childPath)) {
-                    LOGGER.log(Level.WARNING, "Failed to recursively delete child: ''{0}''. Aborting directory deletion for: ''{1}''",
-                            new Object[]{childPath, sdCardPath});
-                    return false; // If a child fails, the whole operation fails
+                System.out.println(Instant.now() + " Processing child: '" + childPath + "'");
+                // RECURSIVE CALL: This will eventually hit the file deletion block below.
+                // The key is that this recursive call *itself* must correctly wait for its command.
+                if (!deleteSdCardEntryRecursive(childPath)) {
+                    System.out.println(Instant.now() + " Failed to recursively delete child: '" + childPath + "'. Aborting directory deletion for: '" + sdCardPath + "'");
+                    return false;
                 }
-                // Loop will continue to get the *new* list of children after one is deleted
+                else {
+                    SDCardInfo.getInstance().Delete(childPath);
+                }
             }
 
             // --- Delete the now-empty directory itself ---
             String pathForFatFsDelete = normalizePathForDeletion(sdCardPath);
-            LOGGER.log(Level.INFO, "  Attempting to delete empty directory: ''{0}'' (normalized for FatFs: ''{1}'')",
-                    new Object[]{sdCardPath, pathForFatFsDelete});
-
+            System.out.println(Instant.now() + " Attempting to delete empty directory: '" + sdCardPath + "' (normalized for FatFs: '" + pathForFatFsDelete + "')");
             QCmdDeleteFile deleteDirCmd = new QCmdDeleteFile(pathForFatFsDelete);
             QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
             processor.AppendToQueue(deleteDirCmd);
-            processor.WaitQueueFinished();
 
-            // IMPORTANT: Get actual success/failure from QCmdProcessor/QCmd
-            boolean success = true; // Placeholder: Replace with actual result from your QCmd implementation
+            boolean success = false;
+            try {
+                if (deleteDirCmd.waitForCompletion()) { // Wait up to 3 seconds for ACK
+                    success = deleteDirCmd.isSuccessful(); // Now, check its success flag
+                }
+                else {
+                    System.out.println(Instant.now() + " QCmdDeleteFile timeout waiting for directory deletion ACK: '" + sdCardPath + "'");
+                    success = false; // Timeout is a failure
+                }
+            }
+            catch (InterruptedException ex) {
+                System.out.println(Instant.now() + " Directory deletion interrupted for: '" + sdCardPath + "'");
+                Thread.currentThread().interrupt();
+                success = false;
+            }
             if (success) {
-                LOGGER.log(Level.INFO, "Successfully deleted directory: ''{0}''", sdCardPath);
-            } else {
-                LOGGER.log(Level.WARNING, "Failed to delete empty directory: ''{0}''. Check device status/logs.", sdCardPath);
+                SDCardInfo.getInstance().Delete(sdCardPath);
+                System.out.println(Instant.now() + " Successfully deleted directory: '" + sdCardPath + "'");
+            }
+            else {
+                System.out.println(Instant.now() + " Failed to delete empty directory: '" + sdCardPath + "'. Check device status/logs.");
             }
             return success;
-
-        } else {
-            // It's a file
+        }
+        else { // It's a file
             String pathForFatFsDelete = normalizePathForDeletion(sdCardPath);
-            LOGGER.log(Level.INFO, "  Identified as file. Attempting to delete file: ''{0}'' (normalized for FatFs: ''{1}'')",
-                    new Object[]{sdCardPath, pathForFatFsDelete});
-
+            System.out.println(Instant.now() + " Identified as file. Attempting to delete file: '" + sdCardPath + "' (normalized for FatFs: '" + pathForFatFsDelete + "')");
             QCmdDeleteFile deleteFileCmd = new QCmdDeleteFile(pathForFatFsDelete);
             QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
             processor.AppendToQueue(deleteFileCmd);
-            processor.WaitQueueFinished();
 
-            boolean success = true; // Placeholder
+            boolean success = false;
+            try {
+                if (deleteFileCmd.waitForCompletion()) { // Wait up to 3 seconds for ACK
+                    success = deleteFileCmd.isSuccessful(); // Now, check its success flag
+                }
+                else {
+                    System.out.println(Instant.now() + " QCmdDeleteFile timeout waiting for file deletion ACK: '" + sdCardPath + "'");
+                    success = false; // Timeout is a failure
+                }
+            }
+            catch (InterruptedException ex) {
+                LOGGER.log(Level.SEVERE, "File deletion interrupted for: ''{0}''", sdCardPath);
+                Thread.currentThread().interrupt();
+                success = false;
+            }
+
             if (success) {
-                LOGGER.log(Level.INFO, "Successfully deleted file: ''{0}''", sdCardPath);
-            } else {
-                LOGGER.log(Level.WARNING, "Failed to delete file: ''{0}''. Check device status/logs.", sdCardPath);
+                SDCardInfo.getInstance().Delete(sdCardPath);
+                System.out.println(Instant.now() + " Successfully deleted file: '" + sdCardPath + "'");
+            }
+            else {
+                System.out.println(Instant.now() + " Failed to delete file: '" + sdCardPath + "'. Check device status/logs.");
             }
             return success;
         }
@@ -760,7 +775,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         int[] selectedRows = jFileTable.getSelectedRows();
 
         if (selectedRows.length == 0) {
-            JOptionPane.showMessageDialog(this, "No items selected for deletion.", "No Selection", JOptionPane.INFORMATION_MESSAGE);
+            System.out.println(Instant.now() + " [DEBUG] No items selected for deletion.");
             return;
         }
 
