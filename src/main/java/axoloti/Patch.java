@@ -1090,7 +1090,8 @@ public class Patch {
     void SortByPrefs() {
         if(MainFrame.prefs.getSortByExecution()) {
             SortByExecution();
-        } else {
+        }
+        else {
             SortByPosition();
         }
     }
@@ -1327,8 +1328,8 @@ public class Patch {
             if ((n.CType() != null) && n.NeedsLatch()) {
                 if(n.CType() == "char*") {
                     c += I + n.CType() + " " + n.CName() + "Latch" + " = NULL;\n";
-                } else
-                {
+                }
+                else {
                     c += I + n.CType() + " " + n.CName() + "Latch" + ";\n";
                 }
             }
@@ -3125,8 +3126,7 @@ public class Patch {
                         dir + "/" +
                         f.getName() + ".backup" +
                         DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(ZonedDateTime.now()) +
-                        f.getName().substring(f.getName().lastIndexOf(".")),
-                        cal));
+                        f.getName().substring(f.getName().lastIndexOf(".")), cal));
                 }
             }
             qcmdprocessor.WaitQueueFinished();
