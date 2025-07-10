@@ -23,70 +23,27 @@ import java.util.Comparator;
 import axoloti.SDFileInfo;
 
 /**
- * A Comparator for SDFileInfo objects that sorts them in a hierarchical,
- * explorer-like manner.
- * 
- * 1. Folders are sorted (case-insensitive) by their paths.
- *    (e.g., "/data/", "/media/", "/MyFolder")
- * 2. Within the same folder:
- *    Files are sorted alphabetically (case-insensitive) by their pure name (last component).
- * 3. Each subfolder is shown as an own entry after its parent folder.
- *    In other words, the "indent" is only to show files inside a folder.
- *    (e.g., "/data/logs/" will come as an own entry after "/data/" (i.e. not shown "inside" /data/).
- *     Files inside /data/ are listed under /data/,
- *     files inside /data/logs/ are listed under /data/logs/, etc.)
- * 4. Files in the root directory come last, without indent, but with leading slash
- *    (e.g., "/myPatchData", "/start.bin", /untitled.txt")
- */
-
-/**
  *
  * @author Ksoloti
  */
-public class AxoSDFileComparator implements Comparator<SDFileInfo> {
+public class AxoSDFileComparator implements Comparator<AxoSDFileNode> { // Or Comparator<SDFileInfo> if preferred for internal node sorting
 
     @Override
-    public int compare(SDFileInfo o1, SDFileInfo o2) {
-        /* Get the paths for comparison, removing the initial leading slash.
-           This simplifies extraction of parent paths and pure names for non-root items. */
-        String path1 = o1.getFilename().substring(1); // e.g., "data/logs/" or "README.md"
-        String path2 = o2.getFilename().substring(1);
+    public int compare(AxoSDFileNode node1, AxoSDFileNode node2) {
+        SDFileInfo o1 = node1.getFileInfo(); // Get the actual SDFileInfo
+        SDFileInfo o2 = node2.getFileInfo();
 
-        /* 1. Determine if items share a common parent directory.
-              Extract the parent path (e.g., "data/logs" for "data/logs/file.txt") */
-        int lastSlash1 = path1.lastIndexOf('/');
-        int lastSlash2 = path2.lastIndexOf('/');
+        boolean isDir1 = o1.isDirectory();
+        boolean isDir2 = o2.isDirectory();
 
-        if (lastSlash1 != -1 && lastSlash2 == -1) {
-            return -1; /* o1 is a directory, o2 is a file in root folder => o1 comes first */
+        // 1. Directories always come before files at the same level
+        if (isDir1 && !isDir2) {
+            return -1; // Directory before file
         }
-        if (lastSlash1 == -1 && lastSlash2 != -1) {
-            return 1; /* o1 is a file in root folder, o2 is a directory => o2 comes first */
+        if (!isDir1 && isDir2) {
+            return 1; // File after directory
         }
 
-        String parentPath1 = (lastSlash1 == -1) ? "" : path1.substring(0, lastSlash1);
-        String parentPath2 = (lastSlash2 == -1) ? "" : path2.substring(0, lastSlash2);
-
-        /* Compare parent paths first (case-insensitive and alphabetically) */
-        int parentCmp = parentPath1.toLowerCase().compareTo(parentPath2.toLowerCase());
-        if (parentCmp != 0) {
-            return parentCmp; /* If parents are different, sort by parent path */
-        }
-
-        /* At this point, o1 and o2 are in the same parent directory (or both are in the root).
-           Now apply the rules for items within the same directory: */
-
-        /* 2. Directories before Files. */
-        if (o1.isDirectory() && !o2.isDirectory()) {
-            return -1; /* o1 is a directory, o2 is a file => o1 comes first */
-        }
-        if (!o1.isDirectory() && o2.isDirectory()) {
-            return 1;  /* o1 is a file, o2 is a directory => o2 comes first */
-        }
-
-        /* 3. If both are directories OR both are files (and in the same parent),
-              sort alphabetically by their pure name (the last component).
-              The SDFileInfo.getPureName() method is crucial here. */
-        return o1.getPureName().toLowerCase().compareTo(o2.getPureName().toLowerCase());
+        return o1.getFilename().compareToIgnoreCase(o2.getFilename());
     }
 }
