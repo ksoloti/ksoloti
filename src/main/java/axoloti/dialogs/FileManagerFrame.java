@@ -256,7 +256,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                             switch (n) {
                                 case JOptionPane.YES_OPTION: {
                                     for (File f : droppedFiles) {
-                                        System.out.println(f.getName());
+                                        System.out.println(Instant.now() + " " + f.getName());
                                         if (!f.canRead()) {
                                             LOGGER.log(Level.SEVERE, "Cannot read file: " + f.getName());
                                         }
@@ -273,7 +273,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         }
                         else if (droppedFiles.size() == 1) {
                             File f = droppedFiles.get(0);
-                            System.out.println(f.getName());
+                            System.out.println(Instant.now() + " " + f.getName());
                             if (!f.canRead()) {
                                 LOGGER.log(Level.SEVERE, "Cannot read file: " + f.getName());
                             }
@@ -281,11 +281,13 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                 processor.AppendToQueue(new QCmdUploadFile(f, f.getName()));
                             }
                         }
-                        RequestRefreshAsync();
+                        triggerRefresh();
                     }
-                } catch (UnsupportedFlavorException ex) {
+                }
+                catch (UnsupportedFlavorException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
-                } catch (IOException ex) {
+                }
+                catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
@@ -933,7 +935,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             processor.WaitQueueFinished();
         }
         UpdateButtons();
-        RequestRefreshAsync();
+        triggerRefresh();
     }
 
     public void refresh() {
