@@ -22,7 +22,6 @@ import axoloti.Connection;
 import axoloti.MainFrame;
 import axoloti.Patch;
 import axoloti.USBBulkConnection;
-import axoloti.utils.CommandManager;
 
 import static axoloti.MainFrame.prefs;
 

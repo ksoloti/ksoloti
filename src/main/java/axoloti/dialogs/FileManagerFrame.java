@@ -58,6 +58,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import qcmds.CommandManager;
 import qcmds.QCmdCreateDirectory;
 import qcmds.QCmdDeleteFile;
 import qcmds.QCmdGetFileList;

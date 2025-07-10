@@ -17,13 +17,7 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package axoloti.utils;
-
-// import java.time.Instant;
-
-import qcmds.QCmdGetFileList;
-import qcmds.QCmdPing;
-import qcmds.QCmdSerialTask;
+package qcmds;
 
 /**
  *
