@@ -616,7 +616,7 @@ public class USBBulkConnection extends Connection {
 
             IntBuffer transfered = IntBuffer.allocate(1);
     
-            int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 999999000); /* 1s timeout */
+            int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 1000); /* 1s timeout */
             if (result != LibUsb.SUCCESS) {
 
                 if (result == -99) {
