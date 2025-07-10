@@ -77,9 +77,9 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
     private static final Logger LOGGER = Logger.getLogger(FileManagerFrame.class.getName());
 
-    private static char decimalSeparator = new DecimalFormatSymbols(Locale.getDefault(Locale.Category.FORMAT)).getDecimalSeparator();
-    
-    private volatile boolean refreshInProgress = false;
+    private Timer refreshTimer;
+    private volatile boolean fileListRefreshInProgress = false;
+
 
     public FileManagerFrame() {
         setPreferredSize(new Dimension(640,400));
@@ -318,6 +318,16 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             jFileTable.getColumnModel().getColumn(3).setPreferredWidth(200);
             jFileTable.getColumnModel().getColumn(3).setMaxWidth(200);
         }
+
+        refreshTimer = new Timer(500, e -> {
+            if (!fileListRefreshInProgress) { /* Only proceed if no refresh is already active */
+                performActualRefreshAsync();
+            }
+            else {
+                System.out.println(Instant.now() + " Timer fired, but refresh already in progress. Skipping.");
+            }
+        });
+        refreshTimer.setRepeats(false); /* Ensure it's a single-shot timer */
     }
     
     void UpdateButtons() {
@@ -634,70 +644,91 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         }
     }
 
-    private void RequestRefreshAsync() {
-        // Check if a refresh is already in progress. If so, just return.
-        if (refreshInProgress) {
-            LOGGER.log(Level.INFO, "Refresh already in progress. Skipping new refresh request.");
-            return;
-        }
-    
+    private void refreshTableData() {
+        fileTableModel.setData(SDCardInfo.getInstance().getSortedDisplayNodes());
+    }
+
+    public AxoSDFileTableModel getAxoSDFileTableModel() {
+        return fileTableModel;
+    }
+
+    public void triggerRefresh() {
+        jButtonSDRefresh.setEnabled(false);
+        jButtonUpload.setEnabled(false);
+        jButtonCreateDir.setEnabled(false);
+        jButtonDelete.setEnabled(false);
+        
+        /* Stop any pending timer. If called multiple times quickly, it just resets the timer. */
+        refreshTimer.stop();
+        /* Start the timer. The actual refresh will happen after the delay. */
+        refreshTimer.start();
+        System.out.println(Instant.now() + " Refresh triggered. Timer started/reset.");
+    }
+
+    private void performActualRefreshAsync() {
         if (!USBBulkConnection.GetConnection().isConnected() || !USBBulkConnection.GetConnection().GetSDCardPresent()) {
-            LOGGER.log(Level.INFO, "Skipping refresh: Not connected or SD card not present.");
+            System.out.println(Instant.now() + " Skipping file list refresh request. Not connected or SD card not present.");
+            fileListRefreshInProgress = false;
             return;
         }
-    
-        LOGGER.log(Level.INFO, "Starting asynchronous UI refresh...");
-        refreshInProgress = true; // Set the flag immediately when starting a new refresh
-    
+
+        if (CommandManager.getInstance().isLongOperationActive()) {
+            System.out.println(Instant.now() + " [DEBUG] FileManagerFrame: Skipping file list refresh request. Long operation in progress.");
+            fileListRefreshInProgress = false; // Ensure flag is reset if it was set by a previous, now-skipped attempt
+            return; // Do not proceed with refresh
+        }
+
+        if (fileListRefreshInProgress) {
+            System.out.println(Instant.now() + " File list refresh already in progress. Skipping.");
+            return;
+        }
+
+        System.out.println(Instant.now() + " Starting asynchronous UI refresh (via timer)...");
+        fileListRefreshInProgress = true; // Set the flag immediately when starting a new refresh
+
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
                 try {
-                    /* This code runs in a background thread */
-
-                    // Optional: Remove QCmdStop and its WaitSync if not strictly needed
-                    // LOGGER.log(Level.INFO, "Sending QCmdStop()...");
-                    // USBBulkConnection.GetConnection().AppendToQueue(new QCmdStop());
-                    // USBBulkConnection.GetConnection().WaitSync(); // This waits on 'sync'
-
-                    LOGGER.log(Level.INFO, "Sending QCmdGetFileList()...");
-                    USBBulkConnection.GetConnection().AppendToQueue(new QCmdGetFileList());
-
-                    // After removing the above, your doInBackground will look cleaner, ending something like this:
-                    LOGGER.log(Level.INFO, "File list refresh command appended to queue. SwingWorker's background task finishing.");
-
+                    System.out.println(Instant.now() + " Sending QCmdGetFileList()...");
+                    QCmdGetFileList getFileListCommand = new QCmdGetFileList();
+                    /* This call blocks until AxoRd or timeout */
+                    getFileListCommand.Do(USBBulkConnection.GetConnection());
+                    System.out.println(Instant.now() + " File list refresh command completed. SwingWorker's background task finishing.");
                 }
                 catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Error during background refresh command execution:", e);
-                    throw e;
+                    throw e; /* Re-throw to be caught by done() */
                 }
                 return null;
             }
-    
+
             @Override
             protected void done() {
-                // This code runs back on the Event Dispatch Thread (UI thread)
                 try {
-                    get(); // This re-throws any exceptions from doInBackground
-                    LOGGER.log(Level.INFO, "Asynchronous UI refresh complete. Updating JTable...");
-                    // Your JTable model update logic goes here:
-                    ((AbstractTableModel) jFileTable.getModel()).fireTableDataChanged();
-                    // You might also want to re-select the previously selected rows if possible
-                } catch (Exception e) {
+                    get(); /* Re-throws exceptions from doInBackground */
+                    System.out.println(Instant.now() + " Asynchronous UI refresh complete. Updating JTable...");
+                    refreshTableData();
+                    refresh();
+                }
+                catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Error during UI refresh processing:", e);
-                    // Optionally, show a message to the user:
-                    // JOptionPane.showMessageDialog(FileManagerFrame.this, "Failed to refresh file list: " + e.getMessage(), "Refresh Error", JOptionPane.ERROR_MESSAGE);
-                } finally {
-                    // Reset the flag ONLY after the SwingWorker has truly finished its lifecycle
-                    // and any UI updates are attempted.
-                    refreshInProgress = false;
+                }
+                finally {
+                    jButtonSDRefresh.setEnabled(true);
+                    jButtonUpload.setEnabled(true);
+                    jButtonCreateDir.setEnabled(true);
+                    jButtonDelete.setEnabled(true);
+
+                    fileListRefreshInProgress = false;
+                    System.out.println(Instant.now() + " JTable updated.");
                 }
             }
-        }.execute(); // Start the worker
+        }.execute();
     }
 
     private void jButtonSDRefreshActionPerformed(java.awt.event.ActionEvent evt) {
-        RequestRefreshAsync();
+        triggerRefresh();
     }
 
     private void jButtonUploadActionPerformed(java.awt.event.ActionEvent evt) {
@@ -735,12 +766,11 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
             fc.setMultiSelectionEnabled(false);
             fc.updateCurrentSize();
-            RequestRefreshAsync();
-        } 
+        }
     }
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {
-        RequestRefreshAsync();
+        triggerRefresh();
     }
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {
