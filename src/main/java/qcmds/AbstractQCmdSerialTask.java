@@ -27,11 +27,18 @@ public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
 
     private final CountDownLatch latch = new CountDownLatch(1);
     private volatile boolean commandSuccess = false;
+    protected volatile byte mcuStatusCode = (byte) 0xFF; /* Stores the FatFs status code received from MCU */
+    protected char expectedAckCommandByte = 0; /* Default value, only used by - and will be set by - subclasses that use AxoR<expectedAckCommandByte><statusbyte> */
 
-@Override
+    @Override
     public void setCommandCompleted(boolean success) {
         this.commandSuccess = success;
         latch.countDown(); // Signal that the command completed (successfully or not)
+    }
+
+    @Override
+    public void setMcuStatusCode(byte statusCode) {
+        this.mcuStatusCode = statusCode;
     }
 
     @Override
@@ -41,10 +48,27 @@ public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
         return latch.await(timeoutMs, TimeUnit.MILLISECONDS);
     }
 
+    @Override
+    public boolean waitForCompletion() throws InterruptedException {
+        /* standard 3-second timeout */
+        return latch.await(3000, TimeUnit.MILLISECONDS);
+    }
 
     @Override
     public boolean isSuccessful() {
-        return commandSuccess;
+        // For AxoR-based commands, success means both commandSuccess (no Java-side comms error)
+        // AND mcuStatusCode is FR_OK (0x00).
+        return commandSuccess && mcuStatusCode == 0x00;
+    }
+
+    // New: Get the raw MCU status code
+    public byte getMcuStatusCode() {
+        return mcuStatusCode;
+    }
+
+    @Override
+    public char getExpectedAckCommandByte() {
+        return expectedAckCommandByte;
     }
 
     @Override
