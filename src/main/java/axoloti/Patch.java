@@ -314,7 +314,8 @@ public class Patch {
 
                     for (int i = 1; i < targetfn.length(); i++) {
                         if (targetfn.charAt(i) == '/') {
-                            GetQCmdProcessor().AppendToQueue(new qcmds.QCmdCreateDirectory(targetfn.substring(0, i)));
+                            Calendar cal = Calendar.getInstance();
+                            GetQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(targetfn.substring(0, i), cal));
                             GetQCmdProcessor().WaitQueueFinished();
                         }
                     }
@@ -373,14 +374,8 @@ public class Patch {
         
         if (this.getBinFile().exists()) {
 
-            if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
-                String f = "/" + getSDCardPath();
-                // System.out.println("pathf" + f);
-                if (SDCardInfo.getInstance().find(f) == null) {
-                    GetQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(f));
-                }
-                GetQCmdProcessor().AppendToQueue(new QCmdChangeWorkingDirectory(f));
-                UploadDependentFiles("/" + getSDCardPath());
+                        Calendar cal = Calendar.getInstance();
+                        GetQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(f, cal));
             }
             else {
                 /* issue warning when there are dependent files */
@@ -3074,7 +3069,8 @@ public class Patch {
 
         for (int i = 1; i < sdfilename.length(); i++) {
             if (sdfilename.charAt(i) == '/') {
-                qcmdprocessor.AppendToQueue(new qcmds.QCmdCreateDirectory(sdfilename.substring(0, i)));
+                Calendar cal = Calendar.getInstance();
+                qcmdprocessor.AppendToQueue(new QCmdCreateDirectory(sdfilename.substring(0, i), cal));
                 qcmdprocessor.WaitQueueFinished();
             }
         }

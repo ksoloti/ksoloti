@@ -815,10 +815,12 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 dir = f.getFilename();
             }
         }
+        
         String fn = JOptionPane.showInputDialog(this, "Enter folder name:");
         if (fn != null && !fn.isEmpty()) {
+            Calendar cal = Calendar.getInstance();
             QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
-            processor.AppendToQueue(new QCmdCreateDirectory(dir + fn));
+            processor.AppendToQueue(new QCmdCreateDirectory(dir + fn, cal));
             processor.WaitQueueFinished();
         }
         UpdateButtons();
