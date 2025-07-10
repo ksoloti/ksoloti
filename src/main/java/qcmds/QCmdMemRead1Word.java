@@ -58,7 +58,7 @@ public class QCmdMemRead1Word extends AbstractQCmdSerialTask {
                 return result;
             }
             try {
-                sync.wait(10000);
+                sync.wait(3000);
                 return result;
             } catch (InterruptedException ex) {
             }

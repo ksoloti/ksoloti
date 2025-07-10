@@ -64,5 +64,4 @@ public class QCmdCreateDirectory extends AbstractQCmdSerialTask {
         SDCardInfo.getInstance().AddFile(fn, 0, date);
         return this;
     }
-
 }

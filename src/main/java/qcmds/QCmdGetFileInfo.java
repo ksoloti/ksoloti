@@ -52,5 +52,4 @@ public class QCmdGetFileInfo extends AbstractQCmdSerialTask {
         connection.TransmitGetFileInfo(filename);
         return this;
     }
-
 }
