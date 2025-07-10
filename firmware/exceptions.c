@@ -463,6 +463,7 @@ void HardFaultVector(void) __attribute__((alias("report_exception")));
 void MemManageVector(void) __attribute__((alias("report_exception")));
 void BusFaultVector(void) __attribute__((alias("report_exception")));
 void UsageFaultVector(void) __attribute__((alias("report_exception")));
+void SVCall_Handler(void) __attribute__((alias("report_exception")));
 
 __attribute__ ((naked))
 CH_IRQ_HANDLER(WWDG_IRQHandler){
