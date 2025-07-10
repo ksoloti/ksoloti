@@ -45,6 +45,7 @@ import axoloti.displays.DisplayFrac4UByteVBar;
 import axoloti.displays.DisplayFrac4UByteVBarDB;
 import axoloti.displays.DisplayFrac8S128VBar;
 import axoloti.displays.DisplayFrac8U128VBar;
+import axoloti.displays.DisplayInt8HexLabel;
 import axoloti.displays.DisplayInt32Bar16;
 import axoloti.displays.DisplayInt32Bar32;
 import axoloti.displays.DisplayInt32HexLabel;
@@ -185,6 +186,7 @@ public class AxoObject extends AxoObjectAbstract {
         @ElementList(entry = DisplayFrac32VUHorizontal.TypeName, type = DisplayFrac32VUHorizontal.class, inline = true, required = false),
         @ElementList(entry = DisplayFrac32VBar.TypeName, type = DisplayFrac32VBar.class, inline = true, required = false),
         @ElementList(entry = DisplayFrac32VBarDB.TypeName, type = DisplayFrac32VBarDB.class, inline = true, required = false),
+        @ElementList(entry = DisplayInt8HexLabel.TypeName, type = DisplayInt8HexLabel.class, inline = true, required = false),
         @ElementList(entry = DisplayFrac4ByteVBar.TypeName, type = DisplayFrac4ByteVBar.class, inline = true, required = false),
         @ElementList(entry = DisplayFrac4UByteVBar.TypeName, type = DisplayFrac4UByteVBar.class, inline = true, required = false),
         @ElementList(entry = DisplayFrac4UByteVBarDB.TypeName, type = DisplayFrac4UByteVBarDB.class, inline = true, required = false),

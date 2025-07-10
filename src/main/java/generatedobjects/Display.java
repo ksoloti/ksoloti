@@ -30,6 +30,7 @@ import axoloti.displays.DisplayFrac8S128VBar;
 import axoloti.displays.DisplayFrac8U128VBar;
 import axoloti.displays.DisplayInt32Bar16;
 import axoloti.displays.DisplayInt32Bar32;
+import axoloti.displays.DisplayInt8HexLabel;
 import axoloti.displays.DisplayInt32HexLabel;
 import axoloti.displays.DisplayInt32Label;
 import axoloti.displays.DisplayNoteLabel;
@@ -678,6 +679,14 @@ public class Display extends gentools {
         AxoObject o = new AxoObject("hex", "hexadecimal display (for developers)");
         o.inlets.add(new InletInt32("in", "input"));
         o.displays.add(new DisplayInt32HexLabel("v"));
+        o.sKRateCode = "%v%=%in%;\n";
+        return o;
+    }
+
+    static AxoObject CreateHexDisplayInt8() {
+        AxoObject o = new AxoObject("hex", "hexadecimal display (for developers): int8");
+        o.inlets.add(new InletInt32("in", "input"));
+        o.displays.add(new DisplayInt8HexLabel("v"));
         o.sKRateCode = "%v%=%in%;\n";
         return o;
     }

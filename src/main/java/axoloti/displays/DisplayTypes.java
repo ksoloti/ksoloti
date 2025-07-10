@@ -38,6 +38,7 @@ public class DisplayTypes {
         new DisplayFrac4UByteVBar(),
         new DisplayFrac8S128VBar(),
         new DisplayFrac8U128VBar(),
+        new DisplayInt8HexLabel(),
         new DisplayInt32Bar16(),
         new DisplayInt32Bar32(),
         new DisplayInt32HexLabel(),
