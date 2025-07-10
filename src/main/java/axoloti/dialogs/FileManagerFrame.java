@@ -89,27 +89,29 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         setIconImage(Constants.APP_ICON.getImage());
         jLabelSDInfo.setText("");
 
-        jFileTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
-        /* Center Type, Size, Modified columns, TODO: add some tooltips? */
         jFileTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+
+            private static final EmptyBorder paddingBorder = new EmptyBorder(0, 10, 0, 10); /* 10px padding, left and right */
+
             @Override
             public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
-                final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                // SDFileInfo f = SDCardInfo.getInstance().getFiles().get(row);
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-                /* Align names left, all other columns center */
+                /* Align names left, type center, size and date right. */
                 if (column == 0) {
                     setHorizontalAlignment(SwingConstants.LEFT);
-                    // setToolTipText(f.getFilename());
+                }
+                else if (column == 1) {
+                    setHorizontalAlignment(SwingConstants.CENTER);
                 }
                 else {
-                    setHorizontalAlignment(SwingConstants.CENTER);
-                    // setToolTipText("");
-                }
+                    setHorizontalAlignment(SwingConstants.RIGHT);
+                } 
 
-                return c;
+                setBorder(paddingBorder);
+
+                return this;
             }
         });
 
