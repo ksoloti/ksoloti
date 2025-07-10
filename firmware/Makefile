@@ -180,7 +180,8 @@ LDSCRIPT = STM32F427xG_axoloti.ld
 endif
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
-CSRC = $(STARTUPSRC) \
+CSRC = ${FIRMWARE}/exceptions.c \
+  $(STARTUPSRC) \
   $(PORTSRC) \
   $(KERNSRC) \
   $(HALSRC) \
@@ -278,7 +279,6 @@ CSRC = $(STARTUPSRC) \
   ${FIRMWARE}/spilink.c \
   ${FIRMWARE}/spidb.c \
   ${FIRMWARE}/crc32.c \
-  ${FIRMWARE}/exceptions.c \
   ${FIRMWARE}/watchdog.c \
   ${FIRMWARE}/sysmon.c \
   ${FIRMWARE}/axoloti_memory.c \
