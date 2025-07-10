@@ -31,7 +31,6 @@ import axoloti.USBBulkConnection;
  * @author Johannes Taelman
  */
 public class QCmdGetFileList extends AbstractQCmdSerialTask {
-
     private static final Logger LOGGER = Logger.getLogger(QCmdGetFileList.class.getName());
 
     public QCmdGetFileList() {
@@ -45,50 +44,42 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
 
     @Override
     public String GetDoneMessage() {
-        if (this.success) {
-            return "Done receiving SD card file list.\n";
-        }
-        else {
-            return "Incomplete SD card file list.\n";
-        }
+        return "Receiving SD card file list " + (isSuccessful() ? "successful" : "failed");
     }
 
     @Override
     public QCmd Do(Connection connection) {
-        connection.ClearSync();
-        connection.ClearReadSync();
-        SDCardInfo.getInstance().setBusy();
+        super.Do(connection);
 
-        /* Cast to the concrete type to access the specific methods */
-        USBBulkConnection usbConnection = (USBBulkConnection) connection;
-        usbConnection.TransmitGetFileList(this);
+        setMcuStatusCode((byte)0xFF);
+
+        /* This method sends the Axol packet to the MCU. */
+        int writeResult = USBBulkConnection.GetConnection().TransmitGetFileList();
+        if (writeResult != org.usb4java.LibUsb.SUCCESS) {
+            LOGGER.log(Level.SEVERE, "Get file list failed: USB write error.");
+            setMcuStatusCode((byte)0x01); // FR_DISK_ERR
+            setCommandCompleted(false);
+            return this;
+        }
 
         try {
-            /* Check if the command finishes (latch counted down) or times out */
-            boolean commandCompleted = this.waitForCompletion(5000);
-
-            if (commandCompleted) {
-                if (isSuccessful()) {
-                    System.out.println(Instant.now() + " TransmitGetFileList.Do() operation confirmed successful by MCU.");
-                    this.success = true;
-                }
-                else {
-                    System.out.println(Instant.now() + " TransmitGetFileList.Do() operation confirmed failed by MCU.");
-                    this.success = false;
-                }
+            /* Wait for the final AxoRl response from the MCU */
+            if (!waitForCompletion()) { // 3-second timeout
+                LOGGER.log(Level.SEVERE, "Get file list failed: Core did not acknowledge full listing within timeout (AxoRl).");
+                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
+                setCommandCompleted(false);
+            } else {
+                System.out.println(Instant.now() + "Get file list completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
             }
-            else {
-                System.out.println(Instant.now() + " TransmitGetFileList.Do() operation timed out waiting for MCU response (no AxoR received).");
-                this.success = false;
-            }
-        }
-        catch (InterruptedException ex) {
-            LOGGER.log(Level.SEVERE, "TransmitGetFileList.Do() interrupted while waiting for completion", ex);
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            this.success = false;
-        }
-        finally {
-            SDCardInfo.getInstance().clearBusy();
+            LOGGER.log(Level.SEVERE, "Get file list interrupted: {0}", e.getMessage());
+            setMcuStatusCode((byte)0x02); // FR_INT_ERR
+            setCommandCompleted(false);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An unexpected error occurred during file list retrieval: {0}", e.getMessage());
+            setMcuStatusCode((byte)0xFF); // Generic error
+            setCommandCompleted(false);
         }
         return this;
     }

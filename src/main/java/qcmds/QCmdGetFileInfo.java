@@ -19,17 +19,21 @@
 package qcmds;
 
 import axoloti.Connection;
-// import axoloti.SDCardInfo;
-// import java.util.logging.Level;
-// import java.util.logging.Logger;
+import axoloti.SDCardInfo;
+import axoloti.USBBulkConnection;
+
+import java.time.Instant;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Johannes Taelman
  */
 public class QCmdGetFileInfo extends AbstractQCmdSerialTask {
+    private static final Logger LOGGER = Logger.getLogger(QCmdGetFileInfo.class.getName());
 
-    final String filename;
+    private String filename;
 
     public QCmdGetFileInfo(String filename) {
         this.filename = filename;
@@ -38,19 +42,48 @@ public class QCmdGetFileInfo extends AbstractQCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "Getting file info... " + filename;
+        return "Getting file info for: " + filename;
     }
 
     @Override
     public String GetDoneMessage() {
-        // return "Done getting file info.\n";
         return null;
+        // return "Get file info " + (isSuccessful() ? "successful" : "failed") + " for " + filename;
     }
 
     @Override
     public QCmd Do(Connection connection) {
-        connection.ClearSync();
-        connection.TransmitGetFileInfo(filename);
+        super.Do(connection); // Sets 'this' as currentExecutingCommand
+
+        setMcuStatusCode((byte)0xFF);
+
+        int writeResult = USBBulkConnection.GetConnection().TransmitGetFileInfo(filename);
+        if (writeResult != org.usb4java.LibUsb.SUCCESS) {
+            LOGGER.log(Level.SEVERE, "Get file info failed for " + filename + ": USB write error.");
+            setMcuStatusCode((byte)0x01); // FR_DISK_ERR
+            setCommandCompleted(false);
+            return this;
+        }
+
+        try {
+            // Wait for the AxoR response (after the Axof data has been sent)
+            if (!waitForCompletion()) { // 3-second timeout
+                LOGGER.log(Level.SEVERE, "Get file info failed for " + filename + ": Core did not acknowledge within timeout.");
+                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
+                setCommandCompleted(false);
+            } else {
+                System.out.println(Instant.now() + "Get file info for " + filename + " completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.log(Level.SEVERE, "Get file info for " + filename + " interrupted: {0}", e.getMessage());
+            setMcuStatusCode((byte)0x02); // FR_INT_ERR
+            setCommandCompleted(false);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An unexpected error occurred during get file info for " + filename + ": {0}", e.getMessage());
+            setMcuStatusCode((byte)0xFF); // Generic error
+            setCommandCompleted(false);
+        }
         return this;
     }
 }

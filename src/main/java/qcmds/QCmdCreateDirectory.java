@@ -20,9 +20,12 @@ package qcmds;
 
 import axoloti.Connection;
 import axoloti.SDCardInfo;
+import axoloti.USBBulkConnection;
+
+import java.time.Instant;
 import java.util.Calendar;
-// import java.util.logging.Level;
-// import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -30,39 +33,64 @@ import java.util.Calendar;
  */
 public class QCmdCreateDirectory extends AbstractQCmdSerialTask {
 
-    final String filename;
-    final Calendar date;
+    private static final Logger LOGGER = Logger.getLogger(QCmdCreateDirectory.class.getName());
 
-    public QCmdCreateDirectory(String filename) {
-        this.filename = filename;
-        date = Calendar.getInstance();
-    }
+    private String dirname;
+    private Calendar date;
 
-    public QCmdCreateDirectory(String filename, Calendar date) {
-        this.filename = filename;
+    public QCmdCreateDirectory(String dirname, Calendar date) {
+        this.dirname = dirname;
         this.date = date;
         this.expectedAckCommandByte = 'k'; // Expecting AxoRk
     }
 
     @Override
     public String GetStartMessage() {
-        return "Creating directory on SD card... " + filename;
+        return "Creating directory on SD card... " + dirname;
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Done creating directory.\n";
+        return "Create directory " + (isSuccessful() ? "successful" : "failed") + " for " + dirname;
     }
 
     @Override
     public QCmd Do(Connection connection) {
-        connection.ClearSync();
-        connection.TransmitCreateDirectory(filename, date);
-        String fn = filename;
-        if (!fn.endsWith("/")) {
-            fn = fn + "/";
+        super.Do(connection); // Sets 'this' as currentExecutingCommand
+
+        // Reset MCU status for this execution
+        setMcuStatusCode((byte)0xFF);
+
+        int writeResult = USBBulkConnection.GetConnection().TransmitCreateDirectory(dirname, date);
+        if (writeResult != org.usb4java.LibUsb.SUCCESS) {
+            LOGGER.log(Level.SEVERE, "Create directory failed for " + dirname + ": USB write error.");
+            setMcuStatusCode((byte)0x01); // FR_DISK_ERR or custom error for USB comms
+            setCommandCompleted(false);
+            return this;
         }
-        SDCardInfo.getInstance().AddFile(fn, 0, date);
+
+        try {
+            if (!waitForCompletion()) { // 3-second timeout for MCU ACK
+                LOGGER.log(Level.SEVERE, "Create directory failed for " + dirname + ": Core did not acknowledge within timeout.");
+                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
+                setCommandCompleted(false);
+            }
+            else {
+                // Status code and completion flag are already set by processByte()
+                System.out.println(Instant.now() + "Create directory " + dirname + " completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
+            }
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.log(Level.SEVERE, "Create directory for " + dirname + " interrupted: {0}", e.getMessage());
+            setMcuStatusCode((byte)0x02); // FR_INT_ERR
+            setCommandCompleted(false);
+        }
+        catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An unexpected error occurred during directory creation for " + dirname + ": {0}", e.getMessage());
+            setMcuStatusCode((byte)0xFF); // Generic error
+            setCommandCompleted(false);
+        }
         return this;
     }
 }

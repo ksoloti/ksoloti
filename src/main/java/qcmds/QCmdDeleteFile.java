@@ -22,21 +22,19 @@ import axoloti.Connection;
 import axoloti.SDCardInfo;
 import axoloti.USBBulkConnection;
 
-import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.usb4java.LibUsb;
 
 /**
  *
  * @author Johannes Taelman
  */
 public class QCmdDeleteFile extends AbstractQCmdSerialTask {
-
     private static final Logger LOGGER = Logger.getLogger(QCmdDeleteFile.class.getName());
 
-    boolean success = true;
-
-    final String filename;
+    private String filename;
 
     public QCmdDeleteFile(String filename) {
         this.filename = filename;
@@ -50,46 +48,40 @@ public class QCmdDeleteFile extends AbstractQCmdSerialTask {
 
     @Override
     public String GetDoneMessage() {
-        if (this.success) {
-            SDCardInfo.getInstance().Delete(filename);
-            return "Done deleting file.\n";
-        }
-        else {
-            return "Failed to delete file (see MCU status in console/logs)\n";
-        }
+        return "Delete file " + (isSuccessful() ? "successful" : "failed") + " for " + filename;
     }
-    
+
     @Override
     public QCmd Do(Connection connection) {
-        connection.ClearSync();
-        connection.ClearReadSync();
+        super.Do(connection); // Sets 'this' as currentExecutingCommand
 
-        USBBulkConnection usbConnection = (USBBulkConnection) connection;
-        usbConnection.TransmitDeleteFile(filename, this);
+        setMcuStatusCode((byte)0xFF);
+
+        int writeResult = USBBulkConnection.GetConnection().TransmitDeleteFile(filename); // Pass 'this' as senderCommand
+        if (writeResult != LibUsb.SUCCESS) {
+            LOGGER.log(Level.SEVERE, "Delete file failed for " + filename + ": USB write error.");
+            setMcuStatusCode((byte)0x01); // FR_DISK_ERR
+            setCommandCompleted(false);
+            return this;
+        }
 
         try {
-            /* Check if the command finishes (latch counted down) or times out */
-            boolean commandCompleted = this.waitForCompletion(5000);
-
-            if (commandCompleted) {
-                if (isSuccessful()) {
-                    System.out.println(Instant.now() + " DeleteFile operation confirmed successful by MCU.");
-                    this.success = true;
-                }
-                else {
-                    System.out.println(Instant.now() + " DeleteFile operation confirmed failed by MCU.");
-                    this.success = false;
-                }
+            if (!waitForCompletion()) { // 3-second timeout
+                LOGGER.log(Level.SEVERE, "Delete file failed for " + filename + ": Core did not acknowledge within timeout.");
+                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
+                setCommandCompleted(false);
+            } else {
+                LOGGER.log(Level.INFO, "Delete file " + filename + " completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
             }
-            else {
-                System.out.println(Instant.now() + " DeleteFile operation timed out waiting for MCU response (no AxoR received).");
-                this.success = false;
-            }
-        }
-        catch (InterruptedException ex) {
-            LOGGER.log(Level.SEVERE, "DeleteFile Do() interrupted while waiting for completion", ex);
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            this.success = false;
+            LOGGER.log(Level.SEVERE, "Delete file for " + filename + " interrupted: {0}", e.getMessage());
+            setMcuStatusCode((byte)0x02); // FR_INT_ERR
+            setCommandCompleted(false);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An unexpected error occurred during file deletion for " + filename + ": {0}", e.getMessage());
+            setMcuStatusCode((byte)0xFF); // Generic error
+            setCommandCompleted(false);
         }
         return this;
     }

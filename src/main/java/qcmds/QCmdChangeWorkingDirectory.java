@@ -18,37 +18,69 @@
  */
 package qcmds;
 
+import axoloti.SDCardInfo;
 import axoloti.Connection;
-// import java.util.logging.Level;
-// import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import axoloti.USBBulkConnection;
 
 /**
  *
  * @author Johannes Taelman
  */
 public class QCmdChangeWorkingDirectory extends AbstractQCmdSerialTask {
+    private static final Logger LOGGER = Logger.getLogger(QCmdChangeWorkingDirectory.class.getName());
 
-    final String filename;
+    private String path;
 
+    public QCmdChangeWorkingDirectory(String path) {
+        this.path = path;
         this.expectedAckCommandByte = 'C'; // Expecting AxoRC
     }
 
     @Override
     public String GetStartMessage() {
-        return "Changing working directory on SD card... " + filename;
+        return "Changing working directory to: " + path;
     }
 
     @Override
     public String GetDoneMessage() {
-        // return "Done changing working directory.\n";
         return null;
+        // return "Change directory " + (isSuccessful() ? "successful" : "failed") + " for " + path;
     }
 
     @Override
     public QCmd Do(Connection connection) {
-        connection.ClearSync();
-        connection.TransmitChangeWorkingDirectory(filename);
+        super.Do(connection); // Sets 'this' as currentExecutingCommand
+
+        setMcuStatusCode((byte)0xFF);
+
+        int writeResult = USBBulkConnection.GetConnection().TransmitChangeWorkingDirectory(path);
+        if (writeResult != org.usb4java.LibUsb.SUCCESS) {
+            LOGGER.log(Level.SEVERE, "Change directory failed for " + path + ": USB write error.");
+            setMcuStatusCode((byte)0x01); // FR_DISK_ERR
+            setCommandCompleted(false);
+            return this;
+        }
+
+        try {
+            if (!waitForCompletion()) { // 3-second timeout
+                LOGGER.log(Level.SEVERE, "Change directory failed for " + path + ": Core did not acknowledge within timeout.");
+                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
+                setCommandCompleted(false);
+            } else {
+                LOGGER.log(Level.INFO, "Change directory " + path + " completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.log(Level.SEVERE, "Change directory for " + path + " interrupted: {0}", e.getMessage());
+            setMcuStatusCode((byte)0x02); // FR_INT_ERR
+            setCommandCompleted(false);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An unexpected error occurred during change directory for " + path + ": {0}", e.getMessage());
+            setMcuStatusCode((byte)0xFF); // Generic error
+            setCommandCompleted(false);
+        }
         return this;
     }
-
 }
