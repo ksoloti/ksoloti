@@ -858,12 +858,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
     public void refresh() {
         if (!SwingUtilities.isEventDispatchThread()) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    refresh();
-                }
-            });
+            SwingUtilities.invokeLater(this::refresh);
         }
         else {
             if (jFileTable != null) {
