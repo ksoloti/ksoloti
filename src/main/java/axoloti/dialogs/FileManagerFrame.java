@@ -287,6 +287,19 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         });
 
         jScrollPane1.setViewportView(jFileTable);
+        jScrollPane1.addMouseListener(new MouseAdapter() {
+
+            /* Clear table selection if clicking outside the cell area */
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                /* Check if the click was NOT on the JTable itself */
+                if (!SwingUtilities.isDescendingFrom(e.getComponent(), jFileTable)) {
+                    jFileTable.clearSelection();
+                    jScrollPane1.requestFocusInWindow();
+                }
+            }
+        });
+
         if (jFileTable.getColumnModel().getColumnCount() > 0) {
             jFileTable.getColumnModel().getColumn(0).setPreferredWidth(320);
 
