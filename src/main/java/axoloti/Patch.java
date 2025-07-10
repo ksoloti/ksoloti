@@ -356,32 +356,44 @@ public class Patch {
         GetQCmdProcessor().SetPatch(null);
         GetQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
         GetQCmdProcessor().WaitQueueFinished();
-        GetQCmdProcessor().AppendToQueue(new QCmdStop());
-        int i = 100;
-        while (!this.getBinFile().exists()) {
+
+
+        boolean fileFound = false;
+        for (int i = 0; i < 200; i++) {
+            if (this.getBinFile().exists()) {
+                fileFound = true;
+                break;
+            }
             try {
-                LOGGER.log(Level.INFO, "Waiting for patch bin to be available...");
-                Thread.sleep(10);
+                Thread.sleep(50);
             }
             catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            i--;
-            if (i == 0) {
+                Thread.currentThread().interrupt();
+                LOGGER.log(Level.WARNING, "Waiting for bin file interrupted.", e);
                 break;
             }
         }
-        
-        if (this.getBinFile().exists()) {
 
+        if (fileFound) {
+            GetQCmdProcessor().AppendToQueue(new QCmdStop());
+
+            ArrayList<SDFileReference> files = GetDependendSDFiles();
+            if (USBBulkConnection.GetConnection().GetSDCardPresent()) { 
+                if (files.size() > 0) {
+                    /* If there are dependent files, create patch folder and upload files */
+                    String f = "/" + getSDCardPath();
+                    if (SDCardInfo.getInstance().find(f) == null) {
                         Calendar cal = Calendar.getInstance();
                         GetQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(f, cal));
+                    }
+                    GetQCmdProcessor().AppendToQueue(new QCmdChangeWorkingDirectory(f));
+                    UploadDependentFiles("/" + getSDCardPath());
+                }
             }
             else {
-                /* issue warning when there are dependent files */
-                ArrayList<SDFileReference> files = GetDependendSDFiles();
+                /* Issue warning when no SD card but there are dependent files */
                 if (files.size() > 0) {
-                    LOGGER.log(Level.SEVERE, "Patch requires file {0} on SD card, but no SD card connected.", files.get(0).targetPath);
+                    LOGGER.log(Level.WARNING, "Patch requires file {0} on SD card, but no SD card connected.", files.get(0).targetPath);
                 }
             }
 
@@ -391,7 +403,7 @@ public class Patch {
         }
         else {
             String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + this.generateBuildFilenameStem(true);
-            LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
+            LOGGER.log(Level.INFO, "Timeout:" + path.replace('\\', '/') + ".bin could not be created.");
         }
     }
 
