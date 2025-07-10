@@ -92,6 +92,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     private Timer refreshTimer;
     private volatile boolean fileListRefreshInProgress = false;
 
+    private static AxoSDFileTableModel fileTableModel;
 
     public FileManagerFrame() {
         setPreferredSize(new Dimension(640,400));
@@ -129,108 +130,13 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         });
 
         jFileTable.setRowHeight(24);
-        jFileTable.setModel(new AbstractTableModel() {
-            private final String[] columnNames = {"Name", "Type", "Size", "Modified"};
 
-            @Override
-            public int getColumnCount() {
-                return columnNames.length;
-            }
+        List<DisplayTreeNode> fileTreeData = SDCardInfo.getInstance().getSortedDisplayNodes();
+        fileTableModel = new AxoSDFileTableModel(fileTreeData);
+        jFileTable.setModel(fileTableModel);
 
-            @Override
-            public String getColumnName(int column) {
-                return columnNames[column];
-            }
-
-            @Override
-            public Class<?> getColumnClass(int column) {
-                return String.class;
-            }
-
-            @Override
-            public int getRowCount() {
-                return SDCardInfo.getInstance().getFiles().size();
-            }
-
-            @Override
-            public void setValueAt(Object value, int rowIndex, int columnIndex) {
-            }
-
-            @Override
-            public Object getValueAt(int rowIndex, int columnIndex) {
-                Object returnValue = null;
-
-                switch (columnIndex) {
-                    case 0: {
-                        SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
-                        if (f != null) {
-                            if (f.isDirectory()) {
-                                /* is directory: print full path */
-                                returnValue = f.getFilename();
-                            }
-                            else if (f.getFilename().lastIndexOf("/") > 0) {
-                                /* is file in sub directory: print file name with indent */
-                                returnValue = "    " + f.getPatchFileName();
-                            }
-                            else {
-                                /* is file in root directory: print file name with slash and without indent */
-                                returnValue = "/" + f.getPatchFileName();
-                            }
-                        }
-                    }
-                    break;
-                    case 1: {
-                        SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
-                        if (f.isDirectory()) {
-                            returnValue = "[ D ]";
-                        } else {
-                            returnValue = f.getExtension();
-                        }
-                    }
-                    break;
-                    case 2: {
-                        SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
-                        if (f.isDirectory()) {
-                            returnValue = "";
-                        } else {
-                            long size = f.getSize();
-                            if (size < 1024) {
-                                returnValue = "" + size + " B";
-                            }
-                            else if (size < 1024 * 1024 / 10) {
-                                returnValue = "" + (size / 1024) + decimalSeparator + (size % 1024) / 103 + " kB";
-                            }
-                            else if (size < 1024 * 1024) {
-                                returnValue = "" + (size / 1024) + " kB";
-                            }
-                            else if (size < 10240 * 1024 * 10) {
-                                returnValue = "" + (size / (1024 * 1024)) + decimalSeparator + (size % (1024 * 1024)) / (1024 * 1024 / 10) + " MB";
-                            }
-                            else {
-                                returnValue = "" + (size / (1024 * 1024)) + " MB";
-                            }
-                        }
-                    }
-                    break;
-                    case 3: {
-                        Calendar c = SDCardInfo.getInstance().getFiles().get(rowIndex).getTimestamp();
-                        if (c.get(Calendar.YEAR) > 1980) {
-                            returnValue = DateFormat.getDateTimeInstance().format(c.getTime());
-                        } else {
-                            returnValue = "";
-                        }
-                    }
-                    break;
-                }
-
-                return returnValue;
-            }
-
-            @Override
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return false;
-            }
-        });
+        TableColumn nameColumn = jFileTable.getColumnModel().getColumn(0);
+        nameColumn.setCellRenderer(new AxoSDFileTreeCellRenderer());
 
         jFileTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -967,11 +873,13 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
         }
 
-        int clusters = SDCardInfo.getInstance().getClusters();
-        int clustersize = SDCardInfo.getInstance().getClustersize();
-        int sectorsize = SDCardInfo.getInstance().getSectorsize();
-        jLabelSDInfo.setText("Free: " + ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)) + " MB");
-        // System.out.println(String.format("SD free: %d MB, Cluster size: %d", ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)), (clustersize * sectorsize)));
+        if (SDCardInfo.getInstance() != null && jLabelSDInfo != null) {
+            int clusters = SDCardInfo.getInstance().getClusters();
+            int clustersize = SDCardInfo.getInstance().getClustersize();
+            int sectorsize = SDCardInfo.getInstance().getSectorsize();
+            jLabelSDInfo.setText("Free: " + ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)) + " MB");
+            System.out.println(Instant.now() + " " + String.format("SD free: %d MB, Cluster size: %d", ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)), (clustersize * sectorsize)));
+        }
     }
 
     private axoloti.menus.FileMenu fileMenu1;
