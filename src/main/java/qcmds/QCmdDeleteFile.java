@@ -40,6 +40,7 @@ public class QCmdDeleteFile extends AbstractQCmdSerialTask {
 
     public QCmdDeleteFile(String filename) {
         this.filename = filename;
+        this.expectedAckCommandByte = 'D'; // Expecting AxoRD
     }
 
     @Override

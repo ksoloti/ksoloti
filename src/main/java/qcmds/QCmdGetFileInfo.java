@@ -33,6 +33,7 @@ public class QCmdGetFileInfo extends AbstractQCmdSerialTask {
 
     public QCmdGetFileInfo(String filename) {
         this.filename = filename;
+        this.expectedAckCommandByte = 'I';
     }
 
     @Override

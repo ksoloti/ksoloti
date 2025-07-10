@@ -34,7 +34,9 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
 
     private static final Logger LOGGER = Logger.getLogger(QCmdGetFileList.class.getName());
 
-    boolean success = true;
+    public QCmdGetFileList() {
+        this.expectedAckCommandByte = 'l'; // Expecting AxoRl
+    }
 
     @Override
     public String GetStartMessage() {

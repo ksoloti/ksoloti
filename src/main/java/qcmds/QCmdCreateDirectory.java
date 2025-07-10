@@ -41,6 +41,7 @@ public class QCmdCreateDirectory extends AbstractQCmdSerialTask {
     public QCmdCreateDirectory(String filename, Calendar date) {
         this.filename = filename;
         this.date = date;
+        this.expectedAckCommandByte = 'k'; // Expecting AxoRk
     }
 
     @Override

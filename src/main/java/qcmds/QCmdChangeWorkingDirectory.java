@@ -30,8 +30,7 @@ public class QCmdChangeWorkingDirectory extends AbstractQCmdSerialTask {
 
     final String filename;
 
-    public QCmdChangeWorkingDirectory(String filename) {
-        this.filename = filename;
+        this.expectedAckCommandByte = 'C'; // Expecting AxoRC
     }
 
     @Override
