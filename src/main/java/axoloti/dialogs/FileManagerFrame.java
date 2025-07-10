@@ -948,9 +948,11 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             });
         }
         else {
-            jFileTable.clearSelection();
-            jFileTable.revalidate();
-            jFileTable.repaint();
+            if (jFileTable != null) {
+                jFileTable.clearSelection();
+                jFileTable.revalidate();
+                jFileTable.repaint();
+            }
         }
 
         int clusters = SDCardInfo.getInstance().getClusters();
