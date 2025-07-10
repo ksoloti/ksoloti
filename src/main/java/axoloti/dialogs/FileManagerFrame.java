@@ -229,6 +229,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
         jFileTable.getTableHeader().setReorderingAllowed(false);
 
+        addCopyRightClick(jFileTable);
+
         jScrollPane1.setDropTarget(new DropTarget() {
             @Override
             public synchronized void drop(DropTargetDropEvent evt) {
@@ -533,7 +535,63 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         return path; // No change for files or already normalized directory paths.
     }
 
-    // --- Helper Method: getFileInfoByPath (local to this class) ---
+    private void addCopyRightClick(JTable table) {
+        table.addMouseListener(new MouseAdapter() {
+            private JPopupMenu popupMenu;
+            private JMenuItem copyItem;
+            private int clickedRow = -1;
+            private int clickedColumn = -1;
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    showPopupMenu(e);
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    showPopupMenu(e);
+                }
+            }
+
+            private void showPopupMenu(MouseEvent e) {
+                /* Determine the cell that was right-clicked */
+                Point p = e.getPoint();
+                clickedRow = table.rowAtPoint(p);
+                clickedColumn = table.columnAtPoint(p);
+                
+                /* Only offer to copy from the "Name" column (column index 0) */
+                if (clickedRow != -1 && clickedColumn == 0) {
+                    table.clearSelection();
+                    table.requestFocusInWindow();
+                    table.setRowSelectionInterval(clickedRow, clickedRow);
+                    if (popupMenu == null) {
+                        popupMenu = new JPopupMenu();
+                        copyItem = new JMenuItem("Copy Path to Clipboard");
+                        copyItem.addActionListener(event -> {
+                            if (clickedRow != -1 && clickedColumn == 0) {
+                                SDFileInfo f = SDCardInfo.getInstance().getFiles().get(clickedRow);
+                                String textToCopy = f.getFilename();
+                                copyToClipboard(textToCopy);
+                            }
+                        });
+                        popupMenu.add(copyItem);
+                    }
+                    popupMenu.show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+
+            private void copyToClipboard(String text) {
+                StringSelection stringSelection = new StringSelection(text);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(stringSelection, null);
+                LOGGER.log(Level.INFO, "Copied to clipboard: " + text);
+            }
+        });
+    }
+
     private SDFileInfo getFileInfoByPath(String path) {
         return SDCardInfo.getInstance().getFiles().stream()
                          .filter(f -> f.getFilename().equals(path))
