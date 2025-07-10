@@ -83,7 +83,7 @@ public class SDCardInfo {
         this.sectorsize = sectorsize;
         files.clear();
         sortedDisplayNodes = null;
-        System.out.println(Instant.now() + " SDCardInfo.SetInfo(): clusters=" + this.clusters + " clustersize=" + this.clustersize + " sectorsize=" + this.sectorsize);
+        // System.out.println(Instant.now() + " [DEBUG] SDCardInfo.SetInfo(): clusters=" + this.clusters + " clustersize=" + this.clustersize + " sectorsize=" + this.sectorsize);
     }
 
     private void buildTreeNodes(List<SDFileInfo> currentLevelFiles, int currentDepth,
