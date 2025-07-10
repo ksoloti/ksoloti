@@ -318,22 +318,24 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         int rows[] = jFileTable.getSelectedRows();
 
         if (rows.length > 1) {
-            jButtonDelete.setEnabled(true);
-            jButtonUpload.setEnabled(false);
-            jButtonCreateDir.setEnabled(false);
+            // jButtonUpload.setEnabled(false);
+            // jButtonCreateDir.setEnabled(false);
+            // jButtonDelete.setEnabled(true);
             ButtonUploadDefaultName();
         }
         else if (rows.length == 1) {
-            jButtonUpload.setEnabled(true);
-            jButtonCreateDir.setEnabled(true);
+            // jButtonUpload.setEnabled(true);
+            // jButtonCreateDir.setEnabled(true);
 
             if (rows[0] < 0) {
-                jButtonDelete.setEnabled(false);
+                // jButtonDelete.setEnabled(false);
                 ButtonUploadDefaultName();
             }
             else {
-                jButtonDelete.setEnabled(true);
-                SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rows[0]);
+                // jButtonDelete.setEnabled(true);
+                AxoSDFileTableModel model = (AxoSDFileTableModel) jFileTable.getModel();
+                DisplayTreeNode displayNode = model.getDisplayTreeNode(rows[0]);
+                SDFileInfo f = displayNode.fileInfo;
 
                 if (f != null && f.isDirectory()) {
                     jButtonUpload.setText("Upload to Selected...");
@@ -345,9 +347,9 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }        
         }
         else {
-            jButtonDelete.setEnabled(false);
             // jButtonUpload.setEnabled(false);
             // jButtonCreateDir.setEnabled(false);
+            // jButtonDelete.setEnabled(false);
             ButtonUploadDefaultName();
         }
     }
