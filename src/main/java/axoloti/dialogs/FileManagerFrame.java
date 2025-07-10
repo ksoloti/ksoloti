@@ -665,7 +665,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         }
 
         if (CommandManager.getInstance().isLongOperationActive()) {
-            System.out.println(Instant.now() + " [DEBUG] FileManagerFrame: Skipping file list refresh request. Long operation in progress.");
+            // System.out.println(Instant.now() + " [DEBUG] FileManagerFrame: Skipping file list refresh request. Long operation in progress.");
             fileListRefreshInProgress = false; // Ensure flag is reset if it was set by a previous, now-skipped attempt
             return; // Do not proceed with refresh
         }
@@ -764,60 +764,60 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
                     @Override
                     protected Void doInBackground() throws Exception {
-                        System.out.println(Instant.now() + " [DEBUG] SwingWorker: Starting batch upload in background (FULL TEST with detailed logs)...");
-                        System.out.println(Instant.now() + " [DEBUG] SwingWorker: Array length of selectedFiles: " + selectedFiles.length);
+                        // System.out.println(Instant.now() + " [DEBUG] SwingWorker: Starting batch upload in background (FULL TEST with detailed logs)...");
+                        // System.out.println(Instant.now() + " [DEBUG] SwingWorker: Array length of selectedFiles: " + selectedFiles.length);
 
-                        int fileCount = 0;
+                        // int fileCount = 0;
                         for (File file : selectedFiles) {
-                            fileCount++;
-                            System.out.println(Instant.now() + " [DEBUG] SwingWorker: --- Starting iteration " + fileCount + " for file: " + (file != null ? file.getName() : "null") + " ---");
+                            // fileCount++;
+                            // System.out.println(Instant.now() + " [DEBUG] SwingWorker: --- Starting iteration " + fileCount + " for file: " + (file != null ? file.getName() : "null") + " ---");
 
                             if (!USBBulkConnection.GetConnection().isConnected()) {
                                 LOGGER.log(Level.SEVERE, "Batch upload aborted: USB connection lost.");
-                                System.err.println(Instant.now() + " [DEBUG] SwingWorker: Connection lost. Breaking loop for remaining files.");
+                                // System.err.println(Instant.now() + " [DEBUG] SwingWorker: Connection lost. Breaking loop for remaining files.");
                                 break; // Exit the loop for remaining files
                             }
 
                             if (file != null) {
                                 if (!file.canRead()) {
                                     LOGGER.log(Level.SEVERE, "Cannot read file: " + file.getName());
-                                    System.err.println(Instant.now() + " [DEBUG] SwingWorker: Cannot read file: " + file.getName() + ". Skipping.");
+                                    // System.err.println(Instant.now() + " [DEBUG] SwingWorker: Cannot read file: " + file.getName() + ". Skipping.");
                                     continue; // Skip to next file if cannot read
                                 }
                                 try {
-                                    System.out.println(Instant.now() + " [DEBUG] SwingWorker: About to call uploadCommand.Do() for: " + file.getName());
+                                    // System.out.println(Instant.now() + " [DEBUG] SwingWorker: About to call uploadCommand.Do() for: " + file.getName());
                                     QCmdUploadFile uploadCommand = new QCmdUploadFile(file, targetDirectory + file.getName());
                                     uploadCommand.Do(USBBulkConnection.GetConnection());
-                                    System.out.println(Instant.now() + " [DEBUG] SwingWorker: uploadCommand.Do() returned for: " + file.getName());
+                                    // System.out.println(Instant.now() + " [DEBUG] SwingWorker: uploadCommand.Do() returned for: " + file.getName());
 
                                     if (!uploadCommand.isSuccessful()) {
                                         LOGGER.log(Level.WARNING, "Upload failed for file: " + file.getName() + ". Aborting remaining batch.");
-                                        System.err.println(Instant.now() + " [DEBUG] SwingWorker: uploadCommand.isSuccessful() is FALSE for " + file.getName() + ". Breaking loop.");
+                                        // System.err.println(Instant.now() + " [DEBUG] SwingWorker: uploadCommand.isSuccessful() is FALSE for " + file.getName() + ". Breaking loop.");
                                         break;
                                     }
                                     publish("Uploaded " + file.getName());
-                                    System.out.println(Instant.now() + " [DEBUG] SwingWorker: Successfully processed and published for: " + file.getName());
+                                    // System.out.println(Instant.now() + " [DEBUG] SwingWorker: Successfully processed and published for: " + file.getName());
                                 }
                                 catch (Exception e) {
                                     LOGGER.log(Level.SEVERE, "Error uploading file: " + file.getName(), e);
-                                    System.err.println(Instant.now() + " [DEBUG] SwingWorker: Caught Exception for " + file.getName() + ": " + e.getMessage());
+                                    // System.err.println(Instant.now() + " [DEBUG] SwingWorker: Caught Exception for " + file.getName() + ": " + e.getMessage());
                                     e.printStackTrace(System.err);
                                     break; // Abort batch on any exception
                                 }
                             }
-                            System.out.println(Instant.now() + " [DEBUG] SwingWorker: --- Finished iteration " + fileCount + " for file: " + (file != null ? file.getName() : "null") + " ---");
+                            // System.out.println(Instant.now() + " [DEBUG] SwingWorker: --- Finished iteration " + fileCount + " for file: " + (file != null ? file.getName() : "null") + " ---");
                             
                             try {
                                 Thread.sleep(100); // Wait for 100 milliseconds
-                                System.out.println(Instant.now() + " [DEBUG] SwingWorker: Paused for 100ms before next file.");
+                                // System.out.println(Instant.now() + " [DEBUG] SwingWorker: Paused for 100ms before next file.");
                             }
                             catch (InterruptedException ie) {
                                 Thread.currentThread().interrupt(); // Restore interrupt status
-                                System.err.println(Instant.now() + " [DEBUG] SwingWorker: Delay interrupted.");
+                                // System.err.println(Instant.now() + " [DEBUG] SwingWorker: Delay interrupted.");
                                 break; // Abort if interrupted
                             }
                         }
-                        System.out.println(Instant.now() + " [DEBUG] SwingWorker: Loop finished. Processed " + fileCount + " files.");
+                        // System.out.println(Instant.now() + " [DEBUG] SwingWorker: Loop finished. Processed " + fileCount + " files.");
                         return null;
                     }
 
@@ -864,7 +864,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         int[] selectedRows = jFileTable.getSelectedRows();
 
         if (selectedRows.length == 0) {
-            System.out.println(Instant.now() + " [DEBUG] No items selected for deletion.");
+            // System.out.println(Instant.now() + " [DEBUG] No items selected for deletion.");
             return;
         }
 
@@ -908,7 +908,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                                     .collect(Collectors.toList());
 
             if (filesToDeletePaths.isEmpty()) {
-                System.out.println(Instant.now() + " [DEBUG] No valid file paths collected for deletion.");
+                // System.out.println(Instant.now() + " [DEBUG] No valid file paths collected for deletion.");
                 return;
             }
 
@@ -916,12 +916,12 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
                 @Override
                 protected Boolean doInBackground() throws Exception {
-                    System.out.println(Instant.now() + " [DEBUG] Starting batch deletion in background...");
+                    // System.out.println(Instant.now() + " [DEBUG] Starting batch deletion in background...");
                     boolean overallSuccess = true;
 
                     for (String fullPath : filesToDeletePaths) {
                         try {
-                            System.out.println(Instant.now() + " [DEBUG] Initiating deletion for selected item: " + fullPath + "");
+                            // System.out.println(Instant.now() + " [DEBUG] Initiating deletion for selected item: " + fullPath + "");
                             // Call the internal recursive deletion helper
                             boolean deleteSuccess = deleteSdCardEntryRecursive(fullPath);
                             if (!deleteSuccess) {
@@ -956,15 +956,15 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     try {
                         batchOverallSuccess = get();
                         if (batchOverallSuccess) {
-                            System.out.println(Instant.now() + " [DEBUG] Batch deletion SwingWorker completed successfully.");
+                            // System.out.println(Instant.now() + " [DEBUG] Batch deletion SwingWorker completed successfully.");
                         }
                         else {
-                            System.out.println(Instant.now() + " [DEBUG] Batch deletion SwingWorker completed with some failures.");
+                            // System.out.println(Instant.now() + " [DEBUG] Batch deletion SwingWorker completed with some failures.");
                         }
                     }
                     catch (InterruptedException | ExecutionException e) {
                         LOGGER.log(Level.SEVERE, "Batch deletion SwingWorker failed unexpectedly:", e);
-                        System.err.println(Instant.now() + " [DEBUG] Batch deletion SwingWorker crashed.");
+                        // System.err.println(Instant.now() + " [DEBUG] Batch deletion SwingWorker crashed.");
                     }
                     finally {
                         triggerRefresh();

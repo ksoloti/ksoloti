@@ -152,7 +152,7 @@ public class USBBulkConnection extends Connection {
                     }
                 }
                 catch (LibUsbException e) {
-                    System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsbException: " + e.getMessage());
+                    // System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsbException: " + e.getMessage());
                     e.printStackTrace(System.err);
                     // SwingUtilities.invokeLater(() -> {
                     //     if (MainFrame.mainframe != null) {
@@ -162,7 +162,7 @@ public class USBBulkConnection extends Connection {
                     disconnectRequested = true;
                 }
                 catch (Exception e) {
-                    System.err.println(Instant.now() + " [DEBUG] Receiver: Unexpected exception: " + e.getMessage());
+                    // System.err.println(Instant.now() + " [DEBUG] Receiver: Unexpected exception: " + e.getMessage());
                     e.printStackTrace(System.err);
                     // SwingUtilities.invokeLater(() -> {
                     //     if (MainFrame.mainframe != null) {
@@ -184,7 +184,7 @@ public class USBBulkConnection extends Connection {
                     QCmdSerialTask cmd = queueSerialTask.take();
 
                     if (disconnectRequested) {
-                        System.out.println(Instant.now() + " [DEBUG] Transmitter: Disconnect requested while waiting for task.");
+                        // System.out.println(Instant.now() + " [DEBUG] Transmitter: Disconnect requested while waiting for task.");
                         break;
                     }
 
@@ -251,7 +251,7 @@ public class USBBulkConnection extends Connection {
     public boolean AppendToQueue(QCmdSerialTask cmd) {
         try {
             if (!(cmd instanceof QCmdPing)) {
-                System.out.println(Instant.now() + " [DEBUG] AppendToQueue: attempting to append " + cmd.getClass().getSimpleName());
+                // System.out.println(Instant.now() + " [DEBUG] AppendToQueue: attempting to append " + cmd.getClass().getSimpleName());
             }
             boolean added = queueSerialTask.offer(cmd, 100, TimeUnit.MILLISECONDS);
             if (!added) {
@@ -262,7 +262,7 @@ public class USBBulkConnection extends Connection {
         catch (InterruptedException ex) {
             /* Restore the interrupted status, as per best practice */
             Thread.currentThread().interrupt();
-            System.err.println(Instant.now() + " [DEBUG] USBBulkConnection AppendToQueue interrupted while offering command: " + cmd.getClass().getSimpleName() + " - " + ex.getMessage());
+            // System.err.println(Instant.now() + " [DEBUG] USBBulkConnection AppendToQueue interrupted while offering command: " + cmd.getClass().getSimpleName() + " - " + ex.getMessage());
             return false; /* Command was not added due to interruption */
         }
     }
@@ -293,7 +293,7 @@ public class USBBulkConnection extends Connection {
                     receiverThread.join(3000);
                 }
                 catch (InterruptedException ex) {
-                    System.err.println(Instant.now() + " [DEBUG] Receiver join interrupted: " + ex.getMessage());
+                    // System.err.println(Instant.now() + " [DEBUG] Receiver join interrupted: " + ex.getMessage());
                     Thread.currentThread().interrupt();
                 }
             }
@@ -303,7 +303,7 @@ public class USBBulkConnection extends Connection {
                     transmitterThread.join(3000);
                 }
                 catch (InterruptedException ex) {
-                    System.err.println(Instant.now() + " [DEBUG] Transmitter join interrupted: " + ex.getMessage());
+                    // System.err.println(Instant.now() + " [DEBUG] Transmitter join interrupted: " + ex.getMessage());
                     Thread.currentThread().interrupt();
                 }
             }
@@ -319,11 +319,11 @@ public class USBBulkConnection extends Connection {
                 try {
                     int result = LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
                     if (result != LibUsb.SUCCESS) {
-                        System.err.println(Instant.now() + " [DEBUG] LibUsb: Unable to release interface: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
+                        // System.err.println(Instant.now() + " [DEBUG] LibUsb: Unable to release interface: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
                     }
                 }
                 catch (LibUsbException ex) {
-                    System.err.println(Instant.now() + " [DEBUG] LibUsb: Exception during interface release: " + ex.getMessage());
+                    // System.err.println(Instant.now() + " [DEBUG] LibUsb: Exception during interface release: " + ex.getMessage());
                     ex.printStackTrace(System.err);
                 }
 
@@ -331,7 +331,7 @@ public class USBBulkConnection extends Connection {
                     LibUsb.close(handle);
                 }
                 catch (LibUsbException ex) {
-                    System.err.println(Instant.now() + " [DEBUG] LibUsb: Exception during device close: " + ex.getMessage());
+                    // System.err.println(Instant.now() + " [DEBUG] LibUsb: Exception during device close: " + ex.getMessage());
                     ex.printStackTrace(System.err);
                 }
             }
@@ -455,7 +455,7 @@ public class USBBulkConnection extends Connection {
 
                         result = LibUsb.open(d, h);
                         if (result < 0) {
-                            System.err.println(Instant.now() + " [DEBUG] LibUsb: Failed to open device handle: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
+                            // System.err.println(Instant.now() + " [DEBUG] LibUsb: Failed to open device handle: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
                         }
                         else {
                             return h;
@@ -578,7 +578,7 @@ public class USBBulkConnection extends Connection {
                     LibUsb.close(handle);
                 }
                 catch (LibUsbException ce) {
-                    System.err.println(Instant.now() + " [DEBUG] Error closing handle after connection exception: " + ce.getMessage());
+                    // System.err.println(Instant.now() + " [DEBUG] Error closing handle after connection exception: " + ce.getMessage());
                 }
                 handle = null;
             }
@@ -591,7 +591,7 @@ public class USBBulkConnection extends Connection {
                     LibUsb.close(handle);
                 }
                 catch (LibUsbException ce) {
-                    System.err.println(Instant.now() + " [DEBUG] Error closing handle after connection exception: " + ce.getMessage());
+                    // System.err.println(Instant.now() + " [DEBUG] Error closing handle after connection exception: " + ce.getMessage());
                 }
                 handle = null;
             }
@@ -1476,7 +1476,7 @@ public class USBBulkConnection extends Connection {
                         break;
 
                     default:
-                        System.err.println(Instant.now() + " [DEBUG] processByte: invalid header");
+                        // System.err.println(Instant.now() + " [DEBUG] processByte: invalid header");
                         GoIdleState();
                         break;
                 }
@@ -1535,7 +1535,7 @@ public class USBBulkConnection extends Connection {
                     int commandByte = packetData[0] & 0xFF;
                     int statusCode = (packetData[0] >> 8) & 0xFF;
 
-                    System.out.println(Instant.now() + " [DEBUG] AxoR received for '" + (char)commandByte + "': Status = " + SDCardInfo.getFatFsErrorString(statusCode));
+                    // System.out.println(Instant.now() + " [DEBUG] AxoR received for '" + (char)commandByte + "': Status = " + SDCardInfo.getFatFsErrorString(statusCode));
 
                     if (currentExecutingCommand != null) {
                         // Special handling for QCmdUploadFile's sub-commands
@@ -1551,7 +1551,7 @@ public class USBBulkConnection extends Connection {
                                 uploadCmd.setCloseFileCompleted((byte)statusCode);
                             }
                             else {
-                                System.err.println(Instant.now() + " [DEBUG] Warning: QCmdUploadFile received unexpected AxoR for command: " + (char)commandByte);
+                                // System.err.println(Instant.now() + " [DEBUG] Warning: QCmdUploadFile received unexpected AxoR for command: " + (char)commandByte);
                             }
                         }
                         // Handling for other commands that expect an AxoR for their completion
@@ -1566,16 +1566,16 @@ public class USBBulkConnection extends Connection {
                                 currentExecutingCommand.setCommandCompleted(statusCode == 0x00);
                             }
                             else {
-                                System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received unexpected AxoR for command: " + (char)commandByte + ". Expected: " + currentExecutingCommand.getExpectedAckCommandByte() + ". Ignoring.");
+                                // System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received unexpected AxoR for command: " + (char)commandByte + ". Expected: " + currentExecutingCommand.getExpectedAckCommandByte() + ". Ignoring.");
                             }
                         }
                         // Generic handling for all other single-step QCmdSerialTasks
                         else {
-                            System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received an AxoR for command: " + (char)commandByte + ", but this command does not expect an AxoR for completion. Ignoring.");
+                            // System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received an AxoR for command: " + (char)commandByte + ", but this command does not expect an AxoR for completion. Ignoring.");
                         }
                     }
                     else {
-                        System.err.println(Instant.now() + " [DEBUG] Warning: AxoR received but no currentExecutingCommand is set.");
+                        // System.err.println(Instant.now() + " [DEBUG] Warning: AxoR received but no currentExecutingCommand is set.");
                     }
                     GoIdleState();
                 }
@@ -1613,7 +1613,7 @@ public class USBBulkConnection extends Connection {
                     int clusters = sdinfoRcvBuffer.getInt();
                     int clustersize = sdinfoRcvBuffer.getInt();
                     int blocksize = sdinfoRcvBuffer.getInt();
-                    System.out.println(Instant.now() +  " [DEBUG] processByte sdinfo: clusters:" + clusters + " clsize:" + clustersize + " blsize:" + blocksize);
+                    // System.out.println(Instant.now() +  " [DEBUG] processByte sdinfo: clusters:" + clusters + " clsize:" + clustersize + " blsize:" + blocksize);
 
                     SDCardInfo.getInstance().SetInfo(clusters, clustersize, blocksize);
                     GoIdleState();
@@ -1625,7 +1625,7 @@ public class USBBulkConnection extends Connection {
                 dataIndex++;
         
                 if (dataIndex == dataLength) { /* exactly 8 bytes (size + timestamp) */ 
-                    System.out.println(Instant.now() + " [DEBUG] processByte: Received fixed fields for Axof. Processing.");
+                    // System.out.println(Instant.now() + " [DEBUG] processByte: Received fixed fields for Axof. Processing.");
         
                     fileinfoRcvBuffer.order(ByteOrder.LITTLE_ENDIAN);
                     fileinfoRcvBuffer.limit(fileinfoRcvBuffer.position());
@@ -1634,7 +1634,7 @@ public class USBBulkConnection extends Connection {
                     /* Read the 4-byte size and 4-byte timestamp */
                     currentFileSize = fileinfoRcvBuffer.getInt();
                     currentFileTimestamp = fileinfoRcvBuffer.getInt();
-                    System.out.println(Instant.now() + " [DEBUG] processByte: Parsed preliminary size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
+                    // System.out.println(Instant.now() + " [DEBUG] processByte: Parsed preliminary size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
         
                     /* Prepare to collect the variable-length filename */
                     fileinfoRcvBuffer.clear();
@@ -1645,7 +1645,7 @@ public class USBBulkConnection extends Connection {
         
             case fileinfo_filename: /* State to collect filename bytes until null terminator */
                 if (cc == 0x00) {
-                    System.out.println(Instant.now() + " [DEBUG] processByte: Null terminator found for Axof filename. Processing.");
+                    // System.out.println(Instant.now() + " [DEBUG] processByte: Null terminator found for Axof filename. Processing.");
         
                     fileinfoRcvBuffer.limit(fileinfoRcvBuffer.position());
                     fileinfoRcvBuffer.rewind();
@@ -1656,7 +1656,7 @@ public class USBBulkConnection extends Connection {
                     String fname = new String(filenameBytes, Charset.forName("ISO-8859-1"));
 
                     SDCardInfo.getInstance().AddFile(fname, currentFileSize, currentFileTimestamp);
-                    System.out.println(Instant.now() + " [DEBUG] processByte: Parsed file: \'" + fname + "\', size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
+                    // System.out.println(Instant.now() + " [DEBUG] processByte: Parsed file: \'" + fname + "\', size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
         
                     GoIdleState(); /* Packet complete, return to idle */
                 }
@@ -1814,7 +1814,7 @@ public class USBBulkConnection extends Connection {
 
             default:
                 GoIdleState();
-                System.out.println(Instant.now() + " [DEBUG] Unhandled byte c=" + String.format("%02x", c) + "(char=" + (char)c + ") in state=" + state);
+                // System.out.println(Instant.now() + " [DEBUG] Unhandled byte c=" + String.format("%02x", c) + "(char=" + (char)c + ") in state=" + state);
                 break;
         }
     }
