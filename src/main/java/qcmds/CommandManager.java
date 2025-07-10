@@ -28,7 +28,6 @@ public class CommandManager {
     // private static final Logger LOGGER = Logger.getLogger(CommandManager.class.getName());
 
     private volatile boolean longOperationInProgress = false;
-    private volatile boolean suppressPeriodicPings = false;
     private volatile long lastLongOperationEndTime = 0;
 
     private static final long COOLDOWN_MILLIS = 2000;
@@ -48,13 +47,11 @@ public class CommandManager {
 
     public void startLongOperation() {
         longOperationInProgress = true;
-        suppressPeriodicPings = true;
         // System.out.println(Instant.now() + " [DEBUG] CommandManager: Long operation started. Suppressing pings.");
     }
 
     public void endLongOperation() {
         longOperationInProgress = false;
-        suppressPeriodicPings = false;
         lastLongOperationEndTime = System.currentTimeMillis();
         // System.out.println(Instant.now() + " [DEBUG] CommandManager: Long operation ended. Cooldown started. Resuming pings.");
     }
@@ -62,10 +59,6 @@ public class CommandManager {
     /* Checks if the system is currently busy with a long operation or in cooldown. */
     public boolean isLongOperationActive() {
         return longOperationInProgress;
-    }
-
-    public boolean isSuppressPeriodicPings() {
-        return suppressPeriodicPings;
     }
 
     /* Determines if a given QCmdSerialTask should be offered to the USB queue

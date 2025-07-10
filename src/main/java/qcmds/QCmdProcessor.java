@@ -68,8 +68,8 @@ public class QCmdProcessor implements Runnable {
                     Thread.sleep(prefs.getPollInterval());
     
                     if (queue.isEmpty() && serialconnection.isConnected()) {
-                        if (CommandManager.getInstance().isSuppressPeriodicPings()) {
-                            /* If suppressed, reset interval and continue to next loop iteration */
+                        if (CommandManager.getInstance().isLongOperationActive()) {
+                            /* If long operation, reset interval and continue to next loop iteration */
                             currentSendInterval = prefs.getPollInterval();
                             lastSendAttemptTime = System.currentTimeMillis();
                             // System.out.println(Instant.now() + " [DEBUG] PeriodicPinger: Suppressing ping as long operation is in progress.");
@@ -137,7 +137,7 @@ public class QCmdProcessor implements Runnable {
                     Thread.sleep(5);
 
                     if (queue.isEmpty() && serialconnection.isConnected()) {
-                        if (CommandManager.getInstance().isSuppressPeriodicPings()) {
+                        if (CommandManager.getInstance().isLongOperationActive()) {
                             currentSendInterval = prefs.getPollInterval(); // Reset interval
                             lastSendAttemptTime = System.currentTimeMillis(); // Reset timer
                             // System.out.println(Instant.now() + " [DEBUG] PeriodicDialTransmitter: Suppressing dial command as long operation is in progress.");
@@ -208,12 +208,24 @@ public class QCmdProcessor implements Runnable {
 
             if (!CommandManager.getInstance().shouldOfferCommand(serialCmd)) {
                 // System.out.println(Instant.now() + " [DEBUG] QCmdProcessor: Command " + serialCmd.getClass().getSimpleName() + " suppressed.");
-                return false;
+                return false; // Command was suppressed, so don't add to queue
             }
-            return USBBulkConnection.GetConnection().AppendToQueue(serialCmd);
+            // If not in a long operation, fall through to add to queue below
         }
-        else {
-            // System.err.println(Instant.now() + " [DEBUG] QCmdProcessor: Non-serial QCmd appended: " + cmd.getClass().getSimpleName());
+
+        try {
+            boolean added = queue.offer(cmd, 100, TimeUnit.MILLISECONDS);
+            if (!added) {
+                // System.err.println(Instant.now() + " [DEBUG] QCmdProcessor: Queue full, failed to append command: " + cmd.getClass().getSimpleName());
+            }
+            else {
+                // System.out.println(Instant.now() + " [DEBUG] QCmdProcessor: Appended command: " + cmd.getClass().getSimpleName());
+            }
+            return added;
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.log(Level.SEVERE, "QCmdProcessor.AppendToQueue interrupted.", e);
             return false;
         }
     }
