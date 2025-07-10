@@ -358,7 +358,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
         jButtonSDRefresh.setText("Refresh");
         jButtonSDRefresh.setEnabled(false);
-        jButtonSDRefresh.setVisible(false);
         jButtonSDRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSDRefreshActionPerformed(evt);
@@ -375,19 +374,19 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
         });
 
-        jButtonDelete.setText("Delete");
-        jButtonDelete.setEnabled(false);
-        jButtonDelete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonDeleteActionPerformed(evt);
-            }
-        });
-
         jButtonCreateDir.setText("New Folder in Root...");
         jButtonCreateDir.setEnabled(false);
         jButtonCreateDir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonCreateDirActionPerformed(evt);
+            }
+        });
+
+        jButtonDelete.setText("Delete");
+        jButtonDelete.setEnabled(false);
+        jButtonDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDeleteActionPerformed(evt);
             }
         });
 
@@ -419,11 +418,11 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButtonDelete)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonUpload)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(20, 20, 20)
                 .addComponent(jButtonCreateDir)
+                .addGap(20, 20, 20)
+                .addComponent(jButtonDelete)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             )
         );
@@ -441,9 +440,9 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonDelete)
-                    .addComponent(jButtonUpload)
-                    .addComponent(jButtonCreateDir)
+                .addComponent(jButtonUpload)
+                .addComponent(jButtonCreateDir)
+                .addComponent(jButtonDelete)
                 )
                 .addGap(5, 5, 5))
         );
