@@ -23,51 +23,63 @@ import axoloti.MainFrame;
 
 import static axoloti.MainFrame.fc;
 import static axoloti.MainFrame.prefs;
+
 import axoloti.SDCardInfo;
+import axoloti.SDCardMountStatusListener;
 import axoloti.SDFileInfo;
 import axoloti.USBBulkConnection;
+import axoloti.utils.AxoSDFileTableModel;
+import axoloti.utils.AxoSDFileTreeCellRenderer;
 import axoloti.utils.Constants;
+import axoloti.utils.DisplayTreeNode;
 import components.ScrollPaneComponent;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.DecimalFormatSymbols;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.ListSelectionModel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import qcmds.CommandManager;
 import qcmds.QCmdCreateDirectory;
 import qcmds.QCmdDeleteFile;
 import qcmds.QCmdGetFileList;
 import qcmds.QCmdProcessor;
-// import qcmds.QCmdStop;
 import qcmds.QCmdUploadFile;
-import axoloti.SDCardMountStatusListener;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 
 /**
  *
