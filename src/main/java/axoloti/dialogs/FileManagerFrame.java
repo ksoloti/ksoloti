@@ -822,13 +822,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     }
 
                     @Override
-                    protected void process(List<String> chunks) {
-                        for (String message : chunks) {
-                            System.out.println(Instant.now() + " Batch Upload Progress: " + message);
-                        }
-                    }
-
-                    @Override
                     protected void done() {
                         try {
                             get();
@@ -941,13 +934,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         }
                     }
                     return overallSuccess;
-                }
-
-                @Override
-                protected void process(List<String> chunks) {
-                    for (String message : chunks) {
-                        System.out.println(Instant.now() + " [DEBUG] Batch Delete Progress: " + message);
-                    }
                 }
 
                 @Override
