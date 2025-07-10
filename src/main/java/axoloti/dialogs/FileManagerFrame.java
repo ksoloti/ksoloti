@@ -303,14 +303,17 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         if (jFileTable.getColumnModel().getColumnCount() > 0) {
             jFileTable.getColumnModel().getColumn(0).setPreferredWidth(320);
 
-            jFileTable.getColumnModel().getColumn(1).setPreferredWidth(120);
-            jFileTable.getColumnModel().getColumn(1).setMaxWidth(120);
+            jFileTable.getColumnModel().getColumn(1).setMinWidth(80);
+            jFileTable.getColumnModel().getColumn(1).setPreferredWidth(80);
+            jFileTable.getColumnModel().getColumn(1).setMaxWidth(80);
 
-            jFileTable.getColumnModel().getColumn(2).setPreferredWidth(120);
-            jFileTable.getColumnModel().getColumn(2).setMaxWidth(120);
+            jFileTable.getColumnModel().getColumn(2).setMinWidth(80);
+            jFileTable.getColumnModel().getColumn(2).setPreferredWidth(80);
+            jFileTable.getColumnModel().getColumn(2).setMaxWidth(80);
 
-            jFileTable.getColumnModel().getColumn(3).setPreferredWidth(240);
-            jFileTable.getColumnModel().getColumn(3).setMaxWidth(240);
+            jFileTable.getColumnModel().getColumn(3).setMinWidth(200);
+            jFileTable.getColumnModel().getColumn(3).setPreferredWidth(200);
+            jFileTable.getColumnModel().getColumn(3).setMaxWidth(200);
         }
     }
     
