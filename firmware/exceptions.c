@@ -458,6 +458,7 @@ codec_clearbuffer();
 terminator();
 }
 
+void NMI_Handler(void) __attribute__((alias("report_exception")));
 void HardFaultVector(void) __attribute__((alias("report_exception")));
 void MemManageVector(void) __attribute__((alias("report_exception")));
 void BusFaultVector(void) __attribute__((alias("report_exception")));
