@@ -62,7 +62,7 @@ static uint8_t connected = 0;
 static char FileName[256];
 
 static FIL pFile;
-static int pFileSize;
+static int32_t pFileSize;
 
 /* now static global */
 static uint32_t preset_index;
@@ -621,25 +621,16 @@ static void ManipulateFile(void) {
 
 
 static void AppendFile(uint32_t length) {
+
     UINT bytes_written;
-
-    FRESULT op_result = f_write(&pFile, (char*) PATCHMAINLOC, length, (void*) &bytes_written);
+    FRESULT op_result = f_write(&pFile, (char*) PATCHMAINLOC, length, &bytes_written);
     // LogTextMessage("APPNDF:f_write,op_result:%u path:%s length:%u b_written:%u", op_result, &FileName[6], length, bytes_written);
-    if (op_result != FR_OK) {
-        send_AxoResult('a', op_result);
-        // LogTextMessage("ERROR:APPNDF f_write,op_result:%u path:%s", op_result, &FileName[6]);
-        report_fatfs_error(op_result, &FileName[6]);
-        return;
-    }
 
-    if (bytes_written != length) {
-        send_AxoResult('a', FR_DISK_ERR);
+    if (op_result == FR_OK && bytes_written != length) {
         // LogTextMessage("ERROR:APPNDF f_write,op_result:%u requested:%u written:%u path:%s", op_result, length, bytes_written, FileName[6]);
-        return;
+        op_result = FR_DISK_ERR;
     }
-
     send_AxoResult('a', op_result); /* Completed successfully */
-    return;
 }
 
 
@@ -738,11 +729,10 @@ void AddPCDebug(uint8_t c, int state) {
 
 
 void PExReceiveByte(unsigned char c) {
-    static char header = 0;
-    static int32_t state = 0;
+    static volatile char header = 0;
+    static volatile int32_t state = 0;
 
-    static uint32_t current_filename_idx; /* For parsing filename characters into FileName[6]+ */
-    static uint32_t current_param_byte_idx; /* For parsing multi-byte parameters like pFileSize */
+    static volatile uint32_t current_filename_idx; /* For parsing filename characters into FileName[6]+ */
 
     AddPCDebug(c, state);
 
@@ -815,13 +805,10 @@ void PExReceiveByte(unsigned char c) {
                     
                     /* --- Commands that DO NOT set AckPending (AxoR**-based) --- */
                     case 'C': /* Unified File System Command (create, delete, mkdir, getinfo, close) */
-                        current_param_byte_idx = 0; /* Reset for pFileSize parsing */
                         current_filename_idx = 0; /* Reset for filename parsing */
                         state = 4; /* Next state will receive the 4-byte pFileSize/placeholder */
                         break;
                     case 'a': /* append data to opened sdcard file (top-level Axoa) */
-                        value = 0; /* Reset value for length parsing */
-                        current_param_byte_idx = 0; /* Reset for length parsing */
                         state = 4; /* Start parsing length for append. */
                         break;
                     default:
@@ -832,15 +819,15 @@ void PExReceiveByte(unsigned char c) {
     else if (header == 'P') { /* param change */
         switch (state) {
             case 4: patchid  = c; state++; break;
-            case 5: patchid += (uint32_t)c <<  8; state++; break;
-            case 6: patchid += (uint32_t)c << 16; state++; break;
-            case 7: patchid += (uint32_t)c << 24; state++; break;
+            case 5: patchid |= (uint32_t)c <<  8; state++; break;
+            case 6: patchid |= (uint32_t)c << 16; state++; break;
+            case 7: patchid |= (uint32_t)c << 24; state++; break;
             case 8:   value  = c; state++; break;
-            case 9:   value += (int32_t)c <<  8; state++; break;
-            case 10:  value += (int32_t)c << 16; state++; break;
-            case 11:  value += (int32_t)c << 24; state++; break;
+            case 9:   value |= (int32_t)c <<  8; state++; break;
+            case 10:  value |= (int32_t)c << 16; state++; break;
+            case 11:  value |= (int32_t)c << 24; state++; break;
             case 12:  preset_index  = c; state++; break;
-            case 13:  preset_index += (uint32_t)c << 8;
+            case 13:  preset_index |= (uint32_t)c << 8;
                 if ((patchid == patchMeta.patchID) && (preset_index < patchMeta.numPEx)) {
                     PExParameterChange(&(patchMeta.pPExch)[preset_index], value, 0xFFFFFFEE);
                 }
@@ -856,7 +843,7 @@ void PExReceiveByte(unsigned char c) {
 
         switch (state) {
             case 4:  uUIMidiCost  = c; state++; break;
-            case 5:  uUIMidiCost += (uint16_t)c << 8; state++; break;
+            case 5:  uUIMidiCost |= (uint16_t)c << 8; state++; break;
             case 6: uDspLimit200  = c;
                 SetPatchSafety(uUIMidiCost, uDspLimit200);
                 state = 0; header = 0; AckPending = 1;
@@ -868,13 +855,13 @@ void PExReceiveByte(unsigned char c) {
     else if (header == 'W') { /* generic write */
         switch (state) {
             case 4: offset  = c; state++; break;
-            case 5: offset += (int32_t)c <<  8; state++; break;
-            case 6: offset += (int32_t)c << 16; state++; break;
-            case 7: offset += (int32_t)c << 24; state++; break;
+            case 5: offset |= (int32_t)c <<  8; state++; break;
+            case 6: offset |= (int32_t)c << 16; state++; break;
+            case 7: offset |= (int32_t)c << 24; state++; break;
             case 8:  value  = c; state++; break;
-            case 9:  value += (int32_t)c <<  8; state++; break;
-            case 10: value += (int32_t)c << 16; state++; break;
-            case 11: value += (int32_t)c << 24; state++; break; /* value is now length */
+            case 9:  value |= (int32_t)c <<  8; state++; break;
+            case 10: value |= (int32_t)c << 16; state++; break;
+            case 11: value |= (int32_t)c << 24; state++; break; /* value is now length */
             default: /* Data streaming state */
                 if (value > 0) {
                     value--;
@@ -892,13 +879,13 @@ void PExReceiveByte(unsigned char c) {
     else if (header == 'w') { /* write file to SD (old protocol)*/
         switch (state) {
             case 4: offset  = c; state++; break;
-            case 5: offset += (int32_t)c <<  8; state++; break;
-            case 6: offset += (int32_t)c << 16; state++; break;
-            case 7: offset += (int32_t)c << 24; state++; break;
+            case 5: offset |= (int32_t)c <<  8; state++; break;
+            case 6: offset |= (int32_t)c << 16; state++; break;
+            case 7: offset |= (int32_t)c << 24; state++; break;
             case 8:  value  = c; state++; break;
-            case 9:  value += (int32_t)c <<  8; state++; break;
-            case 10: value += (int32_t)c << 16; state++; break;
-            case 11: value += (int32_t)c << 24; /* value is now length */
+            case 9:  value |= (int32_t)c <<  8; state++; break;
+            case 10: value |= (int32_t)c << 16; state++; break;
+            case 11: value |= (int32_t)c << 24; /* value is now length */
                 length = (uint32_t)value; /* Initial length for the file */
                 position = offset; /* Start address for data in RAM */
                 state++;
@@ -966,22 +953,18 @@ void PExReceiveByte(unsigned char c) {
         switch (state) {
             case 4: /* Expecting pFileSize (byte 0) for 'f', or placeholder for others */
                 pFileSize = c; /* Store first byte of pFileSize/placeholder */
-                current_param_byte_idx = 1; /* Track bytes received for pFileSize */
                 state++;
                 break;
             case 5: /* pFileSize (byte 1) */
                 pFileSize |= (int32_t)c << 8;
-                current_param_byte_idx++;
                 state++;
                 break;
             case 6: /* pFileSize (byte 2) */
                 pFileSize |= (int32_t)c << 16;
-                current_param_byte_idx++;
                 state++;
                 break;
             case 7: /* pFileSize (byte 3) */
                 pFileSize |= (int32_t)c << 24;
-                current_param_byte_idx++;
                 /* Now pFileSize is fully parsed */
                 state++;
                 break;
@@ -1045,9 +1028,9 @@ void PExReceiveByte(unsigned char c) {
     else if (header == 'a') { /* append data to open file on SD */
         // LogTextMessage("Axoa received c=%x state=%u", c, state); // Keep this for general debug
         switch (state) {
-            case 4: value  = c; current_param_byte_idx = 1; state++; break;
-            case 5: value |= (int32_t)c <<  8; current_param_byte_idx++; state++; break;
-            case 6: value |= (int32_t)c << 16; current_param_byte_idx++; state++; break;
+            case 4: value  = c; state++; break;
+            case 5: value |= (int32_t)c <<  8; state++; break;
+            case 6: value |= (int32_t)c << 16; state++; break;
             case 7: value |= (int32_t)c << 24; /* Total length */
                 length = (uint32_t)value; /* Store the length to be received */
                 position = PATCHMAINLOC; /* Set base address for data buffer */
@@ -1055,13 +1038,29 @@ void PExReceiveByte(unsigned char c) {
                 // LogTextMessage("Axoa done c=%x lgth=%u pos=%x state=%u", c, length, position, state);
                 break;
             case 8: /* Data streaming state */
-                if (length > 0) { /* 'length' now tracks remaining bytes to receive */
+                if (value > 0) { /* 'value' now tracks remaining bytes to receive */
+                    value--;
                     *((unsigned char*) position) = c;
                     position++;
-                    length--;
-                    if (length == 0) {
-                        // LogTextMessage("Axoa lgth=0, calling APPNDF value=%u", value);
-                        AppendFile((uint32_t)value); /* Call AppendFile with the total length ('value') */
+
+                    /* A week of debugging failed to shed any light on the reason
+                       why after several appends (<10), the Core would fail to send an AxoR<a><0> response
+                       even though the f_write following below was successful...
+                       USB FIFO overloaded? Or AxoRa is sent but Java would not receive it?
+                       The upload progress would then time out from the Patcher side
+                       but the Core didn't crash, it just got locked in some waiting loop.
+                       By adding a blocking dummy loop like this file uploads succeed...
+                       I am done here and will just leave this dummy in.
+                       Calling chThdSleep* did not work here - same hang up. Possibly because sleep will allow
+                       the CPU to go away and process other things, including changing the current
+                       values of the variables we are using here.
+                       This fine dummy loop was now tested with batches of dozens of files,
+                       including file sizes in the hundreds of MB ¯\_(ツ)_/¯ */
+                    for (volatile uint32_t dummy = 0; dummy < 200; dummy++);
+
+                    if (value == 0) {
+                        // LogTextMessage("Axoa value=0, calling APPNDF length=%u", length);
+                        AppendFile(length); /* Call AppendFile with the total length */
                         state = 0; header = 0; /* Reset state machine, no AckPending */
                     }
                 }
@@ -1077,9 +1076,9 @@ void PExReceiveByte(unsigned char c) {
     else if (header == 'R') { /* preset change */
         switch (state) {
             case 4: length  = c; state++; break;
-            case 5: length += (uint32_t)c <<  8; state++; break;
-            case 6: length += (uint32_t)c << 16; state++; break;
-            case 7: length += (uint32_t)c << 24; state++;
+            case 5: length |= (uint32_t)c <<  8; state++; break;
+            case 6: length |= (uint32_t)c << 16; state++; break;
+            case 7: length |= (uint32_t)c << 24; state++;
                 offset = (int32_t)patchMeta.pPresets;
                 break;
             default: /* Data streaming state */
@@ -1101,13 +1100,13 @@ void PExReceiveByte(unsigned char c) {
     else if (header == 'r') { /* generic read */
         switch (state) {
             case 4: offset  = c; state++; break;
-            case 5: offset += (int32_t)c <<  8; state++; break;
-            case 6: offset += (int32_t)c << 16; state++; break;
-            case 7: offset += (int32_t)c << 24; state++; break;
+            case 5: offset |= (int32_t)c <<  8; state++; break;
+            case 6: offset |= (int32_t)c << 16; state++; break;
+            case 7: offset |= (int32_t)c << 24; state++; break;
             case 8:  value  = c; state++; break;
-            case 9:  value += (int32_t)c <<  8; state++; break;
-            case 10: value += (int32_t)c << 16; state++; break;
-            case 11: value += (int32_t)c << 24;
+            case 9:  value |= (int32_t)c <<  8; state++; break;
+            case 10: value |= (int32_t)c << 16; state++; break;
+            case 11: value |= (int32_t)c << 24;
                 uint32_t read_reply_header[3];
                 ((char*) read_reply_header)[0] = 'A';
                 ((char*) read_reply_header)[1] = 'x';
@@ -1126,9 +1125,9 @@ void PExReceiveByte(unsigned char c) {
     else if (header == 'y') { /* generic read, 32-bit */
         switch (state) {
             case 4: offset  = c; state++; break;
-            case 5: offset += (int32_t)c <<  8; state++; break;
-            case 6: offset += (int32_t)c << 16; state++; break;
-            case 7: offset += (int32_t)c << 24;
+            case 5: offset |= (int32_t)c <<  8; state++; break;
+            case 6: offset |= (int32_t)c << 16; state++; break;
+            case 7: offset |= (int32_t)c << 24;
                 uint32_t read_reply_header[3];
                 ((char*) read_reply_header)[0] = 'A';
                 ((char*) read_reply_header)[1] = 'x';
