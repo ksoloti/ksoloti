@@ -725,11 +725,14 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     }
 
     private void jButtonUploadActionPerformed(java.awt.event.ActionEvent evt) {
-        QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
+
         String dir = "/";
         int rowIndex = jFileTable.getSelectedRow();
         if (rowIndex >= 0) {
-            SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
+
+            AxoSDFileTableModel model = (AxoSDFileTableModel) jFileTable.getModel();
+            DisplayTreeNode displayNode = model.getDisplayTreeNode(rowIndex);
+            SDFileInfo f = displayNode.fileInfo;
             if (f != null && f.isDirectory()) {
                 dir = f.getFilename();
             }
@@ -741,22 +744,109 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fc.setMultiSelectionEnabled(true);
             fc.setDialogTitle("Select File...");
+
             int returnVal = fc.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File[] fs = fc.getSelectedFiles();
-                if (fs[0] != null) {
-                    prefs.setCurrentFileDirectory(fs[0].getParentFile().toString());
+                File[] selectedFiles = fc.getSelectedFiles();
+
+                System.out.println(Instant.now() + " FileManagerFrame: Number of files returned by JFileChooser: " + selectedFiles.length);
+                for (int i = 0; i < selectedFiles.length; i++) {
+                    System.out.println(Instant.now() + " FileManagerFrame: Selected file [" + i + "]: " + selectedFiles[i].getAbsolutePath());
                 }
-                for (File f : fs) {
-                    if (f != null) {
-                        if (!f.canRead()) {
-                            LOGGER.log(Level.SEVERE, "Cannot read file");
-                            return;
+
+                if (selectedFiles[0] != null) {
+                    prefs.setCurrentFileDirectory(selectedFiles[0].getParentFile().toString());
+                }
+
+                final String targetDirectory = dir;
+                
+                CommandManager.getInstance().startLongOperation();
+                new SwingWorker<Void, String>() {
+
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        System.out.println(Instant.now() + " [DEBUG] SwingWorker: Starting batch upload in background (FULL TEST with detailed logs)...");
+                        System.out.println(Instant.now() + " [DEBUG] SwingWorker: Array length of selectedFiles: " + selectedFiles.length);
+
+                        int fileCount = 0;
+                        for (File file : selectedFiles) {
+                            fileCount++;
+                            System.out.println(Instant.now() + " [DEBUG] SwingWorker: --- Starting iteration " + fileCount + " for file: " + (file != null ? file.getName() : "null") + " ---");
+
+                            if (!USBBulkConnection.GetConnection().isConnected()) {
+                                LOGGER.log(Level.SEVERE, "Batch upload aborted: USB connection lost.");
+                                System.err.println(Instant.now() + " [DEBUG] SwingWorker: Connection lost. Breaking loop for remaining files.");
+                                break; // Exit the loop for remaining files
+                            }
+
+                            if (file != null) {
+                                if (!file.canRead()) {
+                                    LOGGER.log(Level.SEVERE, "Cannot read file: " + file.getName());
+                                    System.err.println(Instant.now() + " [DEBUG] SwingWorker: Cannot read file: " + file.getName() + ". Skipping.");
+                                    continue; // Skip to next file if cannot read
+                                }
+                                try {
+                                    System.out.println(Instant.now() + " [DEBUG] SwingWorker: About to call uploadCommand.Do() for: " + file.getName());
+                                    QCmdUploadFile uploadCommand = new QCmdUploadFile(file, targetDirectory + file.getName());
+                                    uploadCommand.Do(USBBulkConnection.GetConnection());
+                                    System.out.println(Instant.now() + " [DEBUG] SwingWorker: uploadCommand.Do() returned for: " + file.getName());
+
+                                    if (!uploadCommand.isSuccessful()) {
+                                        LOGGER.log(Level.WARNING, "Upload failed for file: " + file.getName() + ". Aborting remaining batch.");
+                                        System.err.println(Instant.now() + " [DEBUG] SwingWorker: uploadCommand.isSuccessful() is FALSE for " + file.getName() + ". Breaking loop.");
+                                        break;
+                                    }
+                                    publish("Uploaded " + file.getName());
+                                    System.out.println(Instant.now() + " [DEBUG] SwingWorker: Successfully processed and published for: " + file.getName());
+                                }
+                                catch (Exception e) {
+                                    LOGGER.log(Level.SEVERE, "Error uploading file: " + file.getName(), e);
+                                    System.err.println(Instant.now() + " [DEBUG] SwingWorker: Caught Exception for " + file.getName() + ": " + e.getMessage());
+                                    e.printStackTrace(System.err);
+                                    break; // Abort batch on any exception
+                                }
+                            }
+                            System.out.println(Instant.now() + " [DEBUG] SwingWorker: --- Finished iteration " + fileCount + " for file: " + (file != null ? file.getName() : "null") + " ---");
+                            
+                            try {
+                                Thread.sleep(100); // Wait for 100 milliseconds
+                                System.out.println(Instant.now() + " [DEBUG] SwingWorker: Paused for 100ms before next file.");
+                            }
+                            catch (InterruptedException ie) {
+                                Thread.currentThread().interrupt(); // Restore interrupt status
+                                System.err.println(Instant.now() + " [DEBUG] SwingWorker: Delay interrupted.");
+                                break; // Abort if interrupted
+                            }
                         }
-                        processor.AppendToQueue(new QCmdUploadFile(f, dir + f.getName()));
+                        System.out.println(Instant.now() + " [DEBUG] SwingWorker: Loop finished. Processed " + fileCount + " files.");
+                        return null;
                     }
-                }
+
+                    @Override
+                    protected void process(List<String> chunks) {
+                        for (String message : chunks) {
+                            System.out.println(Instant.now() + " Batch Upload Progress: " + message);
+                        }
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            get();
+                            System.out.println(Instant.now() + " Batch upload SwingWorker completed successfully.");
+                        }
+                        catch (InterruptedException | ExecutionException e) {
+                            LOGGER.log(Level.SEVERE, "Batch upload SwingWorker failed:", e);
+                        }
+                        finally {
+                            CommandManager.getInstance().endLongOperation();
+                            triggerRefresh();
+                        }
+                    }
+                }.execute();
+
             }
+
             fc.setMultiSelectionEnabled(false);
             fc.updateCurrentSize();
         }
@@ -782,8 +872,12 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         String confirmationText;
         if (selectedRows.length > 1) {
             confirmationText = "Delete " + selectedRows.length + " items?";
-        } else {
-            SDFileInfo selectedFile = SDCardInfo.getInstance().getFiles().get(selectedRows[0]);
+        }
+        else {
+
+            AxoSDFileTableModel model = (AxoSDFileTableModel) jFileTable.getModel();
+            DisplayTreeNode displayNode = model.getDisplayTreeNode(selectedRows[0]);
+            SDFileInfo selectedFile = displayNode.fileInfo;
             if (selectedFile.isDirectory()) {
                 confirmationText = "Delete \"" + selectedFile.getFilename() + "\" and all its contents?";
             }
@@ -805,48 +899,79 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         );
 
         if (confirmResult == JOptionPane.YES_OPTION) {
-            /* Sort selected rows in reverse order to ensure parent directories appear later
-             * in the loop if both parent and child are selected. This helps a bit,
-             * but the recursive logic ultimately determines the deletion order. */
-            List<Integer> sortedRows = Arrays.stream(selectedRows)
-                                             .boxed()
-                                             .sorted(Comparator.reverseOrder())
-                                             .collect(Collectors.toList());
 
-            boolean overallSuccess = true;
-            for (int row : sortedRows) {
-                SDFileInfo fileToDelete = SDCardInfo.getInstance().getFiles().get(row);
-                String fullPath = fileToDelete.getFilename(); /* Get the full absolute path */
+            AxoSDFileTableModel model = (AxoSDFileTableModel) jFileTable.getModel();
 
-                try {
-                    LOGGER.log(Level.INFO, "\n--- Initiating deletion for selected item: {0} ---", fullPath);
-                    /* Call the internal recursive deletion helper */
-                    boolean deleteSuccess = deleteSdCardEntryRecursiveInternal(fullPath);
-                    if (!deleteSuccess) {
-                        overallSuccess = false;
-                        JOptionPane.showMessageDialog(this,
-                            "Failed to delete: " + fullPath + "\n(See console/logs for details.)",
-                            "Deletion Error",
-                            JOptionPane.ERROR_MESSAGE);
+            List<String> filesToDeletePaths = Arrays.stream(selectedRows)
+                                                    .boxed()
+                                                    .sorted(Comparator.reverseOrder())
+                                                    .map(rowIndex -> model.getDisplayTreeNode(rowIndex).fileInfo.getFilename())
+                                                    .collect(Collectors.toList());
+
+            if (filesToDeletePaths.isEmpty()) {
+                System.out.println(Instant.now() + " [DEBUG] No valid file paths collected for deletion.");
+                return;
+            }
+
+            new SwingWorker<Boolean, String>() {
+
+                @Override
+                protected Boolean doInBackground() throws Exception {
+                    System.out.println(Instant.now() + " [DEBUG] Starting batch deletion in background...");
+                    boolean overallSuccess = true;
+
+                    for (String fullPath : filesToDeletePaths) {
+                        try {
+                            System.out.println(Instant.now() + " [DEBUG] Initiating deletion for selected item: " + fullPath + "");
+                            // Call the internal recursive deletion helper
+                            boolean deleteSuccess = deleteSdCardEntryRecursive(fullPath);
+                            if (!deleteSuccess) {
+                                overallSuccess = false;
+                                String msg = "Failed to delete: " + fullPath + " (See console/logs for details.)";
+                                System.out.println(Instant.now() + " " + msg);
+                                publish(msg); // Publish failure message
+                            } else {
+                                publish("Deleted " + fullPath); // Publish success message
+                            }
+                        }
+                        catch (Exception e) {
+                            overallSuccess = false;
+                            String errMsg = "An unexpected error occurred during deletion of " + fullPath + ": " + e.getMessage();
+                            LOGGER.log(Level.SEVERE, errMsg, e);
+                            publish(errMsg);
+                        }
                     }
-                } catch (Exception e) {
-                    overallSuccess = false;
-                    LOGGER.log(Level.SEVERE, "An unexpected error occurred during deletion of {0}: {1}", new Object[]{fullPath, e.getMessage()});
-                    JOptionPane.showMessageDialog(this,
-                        "An unexpected error occurred during deletion of " + fullPath + ":\n" + e.getMessage() + "\nStopping deletion.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                    break;
+                    return overallSuccess;
                 }
-            }
 
-            RequestRefreshAsync(); /* Always refresh after attempting deletions */
+                @Override
+                protected void process(List<String> chunks) {
+                    for (String message : chunks) {
+                        System.out.println(Instant.now() + " [DEBUG] Batch Delete Progress: " + message);
+                    }
+                }
 
-            if (overallSuccess) {
-                JOptionPane.showMessageDialog(this, "Selected items deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "Some items could not be deleted. Check logs for details.", "Partial Success/Failure", JOptionPane.WARNING_MESSAGE);
-            }
+                @Override
+                protected void done() {
+                    boolean batchOverallSuccess = false;
+                    try {
+                        batchOverallSuccess = get();
+                        if (batchOverallSuccess) {
+                            System.out.println(Instant.now() + " [DEBUG] Batch deletion SwingWorker completed successfully.");
+                        }
+                        else {
+                            System.out.println(Instant.now() + " [DEBUG] Batch deletion SwingWorker completed with some failures.");
+                        }
+                    }
+                    catch (InterruptedException | ExecutionException e) {
+                        LOGGER.log(Level.SEVERE, "Batch deletion SwingWorker failed unexpectedly:", e);
+                        System.err.println(Instant.now() + " [DEBUG] Batch deletion SwingWorker crashed.");
+                    }
+                    finally {
+                        triggerRefresh();
+                    }
+                }
+            }.execute();
         }
     }
 
@@ -854,7 +979,9 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         String dir = "/";
         int rowIndex = jFileTable.getSelectedRow();
         if (rowIndex >= 0) {
-            SDFileInfo f = SDCardInfo.getInstance().getFiles().get(rowIndex);
+            AxoSDFileTableModel model = (AxoSDFileTableModel) jFileTable.getModel();
+            DisplayTreeNode displayNode = model.getDisplayTreeNode(rowIndex);
+            SDFileInfo f = displayNode.fileInfo;
             if (f != null && f.isDirectory()) {
                 dir = f.getFilename();
             }
