@@ -70,6 +70,8 @@
 #define SCSI_ASENSEQ_INITIALIZING_COMMAND_REQUIRED     0x02
 #define SCSI_ASENSEQ_OPERATION_IN_PROGRESS             0x07
 
+#define N_BLOCKS_PER_WRITE 1 /* Currently only 1 works ¯\_(ツ)_/¯ */
+
 /**
  * @brief Response to a READ_CAPACITY_10 SCSI command
  */
@@ -91,7 +93,7 @@ PACK_STRUCT_BEGIN typedef struct {
 /**
  * @brief   Read-write buffers (TODO: need a way of specifying the size of this)
  */
-static uint8_t rw_buf[2][512];
+static uint8_t rw_buf[2][N_BLOCKS_PER_WRITE * MMCSD_BLOCK_SIZE];
 
 /**
  * @brief Byte-swap a 32 bits unsigned integer
@@ -377,6 +379,7 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
 
     uint32_t rw_block_address = swap_uint32(*(uint32_t *)&cbw->scsi_cmd_data[2]);
     uint16_t total = swap_uint16(*(uint16_t *)&cbw->scsi_cmd_data[7]);
+    uint16_t current_buf_idx = 0;
     uint16_t i = 0;
 
     if (rw_block_address >= msdp->block_dev_info.blk_num) {
@@ -395,22 +398,27 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
         /* process a write command */
 
         /* get the first packet */
-        msd_start_receive(msdp, rw_buf[i % 2], msdp->block_dev_info.blk_size);
+        msd_start_receive(msdp, rw_buf[current_buf_idx], N_BLOCKS_PER_WRITE * MMCSD_BLOCK_SIZE);
         msd_wait_for_isr(msdp);
 
-        /* loop over each block */
-        for (i = 0; i < total; i++) {
+        /* loop over all blocks, processing them in chunks of N_BLOCKS_PER_WRITE (currently only 1 works) */
+        for (i = 0; i < total;) {
+            /* How many blocks to write in this iteration (could be less than N_BLOCKS_PER_WRITE for the last chunk) */
+            uint16_t blocks_to_write = (total - i > N_BLOCKS_PER_WRITE) ? N_BLOCKS_PER_WRITE : (total - i);
 
-            if (i < (total - 1)) {
-                /* there is at least one block of data left to be read over USB */
-                /* queue this read before issuing the blocking write */
-                msd_start_receive(msdp, rw_buf[(i + 1) % 2], msdp->block_dev_info.blk_size);
+            uint8_t *buffer_to_process = rw_buf[current_buf_idx];
+
+            if (i + blocks_to_write < total) {
+                /* Switch to the other buffer */
+                current_buf_idx = (current_buf_idx == 0) ? 1 : 0;
+                /* Start receiving the next chunk into the other buffer */
+                msd_start_receive(msdp, rw_buf[current_buf_idx], N_BLOCKS_PER_WRITE * MMCSD_BLOCK_SIZE);
             }
 
             chThdSleepMicroseconds(5); /* Yields a slight speed increase: typically 210 kB/s VS 175 kb/s */
 
             /* now write the block to the block device */
-            if (blkWrite(msdp->config->bbdp, rw_block_address++, rw_buf[i % 2], 1) == CH_FAILED) {
+            if (blkWrite(msdp->config->bbdp, rw_block_address, buffer_to_process, blocks_to_write) == CH_FAILED) {
                 /* write failed */
                 msd_scsi_set_sense(msdp,
                                    SCSI_SENSE_KEY_MEDIUM_ERROR,
@@ -422,8 +430,21 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
                 return FALSE;
             }
 
-            if (i < (total - 1)) {
-                /* now wait for the USB event to complete */
+            if (sdcSync(&SDCD1) == HAL_FAILED) {
+                msd_scsi_set_sense(msdp,
+                                   SCSI_SENSE_KEY_MEDIUM_ERROR,
+                                   SCSI_ASENSE_WRITE_FAULT,
+                                   SCSI_ASENSEQ_NO_QUALIFIER);
+                msdp->result = FALSE;
+                return FALSE;
+            }
+
+            /* Increment block address and 'i' by the number of blocks just written */
+            rw_block_address += blocks_to_write;
+            i += blocks_to_write;
+
+            if (i < total) {
+                /* If there is a pending USB receive for the next chunk, wait for it to complete */
                 msd_wait_for_isr(msdp);
             }
         }
@@ -465,6 +486,15 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
                     msdp->result = FALSE;
 
                     /* DON'T wait for ISR (the previous transmission is still running, but we must return FALSE to prevent the system from getting stuck waiting indefinitely in msd_wait_for_isr) */
+                    return FALSE;
+                }
+
+                if (sdcSync(&SDCD1) == HAL_FAILED) {
+                    msd_scsi_set_sense(msdp,
+                                       SCSI_SENSE_KEY_MEDIUM_ERROR,
+                                       SCSI_ASENSE_READ_ERROR,
+                                       SCSI_ASENSEQ_NO_QUALIFIER);
+                    msdp->result = FALSE;
                     return FALSE;
                 }
             }
