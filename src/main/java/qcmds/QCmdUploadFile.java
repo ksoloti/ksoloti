@@ -157,10 +157,6 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
                 ts = Calendar.getInstance();
             }
 
-            // Note: inputStream.available() can be inaccurate for large files,
-            // but for typical embedded use cases, it might be sufficient initially.
-            // For robust large file handling, you'd calculate size from file.length()
-            // if 'file' is available, or stream until EOF.
             int tlength = inputStream.available(); 
             LOGGER.log(Level.INFO, "Uploading file to SD card: " + filename + ", Size: " + tlength + " bytes");
             size = tlength; // Store total size for SDCardInfo.AddFile and accurate progress
