@@ -724,27 +724,31 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     void flashUsingSDRam(String fname_flasher, String pname) {
+        try {
+            updateLinkFirmwareID();
 
-        updateLinkFirmwareID();
+            File f = new File(fname_flasher);
+            File p = new File(pname);
 
-        File f = new File(fname_flasher);
-        File p = new File(pname);
-
-        if (f.canRead()) {
-            if (p.canRead()) {
-                qcmdprocessor.AppendToQueue(new QCmdStop());
-                qcmdprocessor.AppendToQueue(new QCmdUploadFWSDRam(p));
-                qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
-                qcmdprocessor.AppendToQueue(new QCmdStartFlasher());
-                qcmdprocessor.AppendToQueue(new QCmdDisconnect());
-                ShowDisconnect();
+            if (f.canRead()) {
+                if (p.canRead()) {
+                    qcmdprocessor.AppendToQueue(new QCmdStop());
+                    qcmdprocessor.AppendToQueue(new QCmdUploadFWSDRam(p));
+                    qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
+                    qcmdprocessor.AppendToQueue(new QCmdStartFlasher());
+                    qcmdprocessor.AppendToQueue(new QCmdDisconnect());
+                    ShowDisconnect();
+                }
+                else {
+                    LOGGER.log(Level.SEVERE, "Cannot read firmware, please compile firmware! (File: {0})", pname);
+                }
             }
             else {
-                LOGGER.log(Level.SEVERE, "Cannot read firmware, please compile firmware! (File: {0})", pname);
+                LOGGER.log(Level.SEVERE, "Cannot read flasher, please compile firmware! (File: {0})", fname_flasher);
             }
         }
-        else {
-            LOGGER.log(Level.SEVERE, "Cannot read flasher, please compile firmware! (File: {0})", fname_flasher);
+        catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An error occurred during firmware flashing sequence.", e);
         }
     }
 
