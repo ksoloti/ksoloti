@@ -1557,6 +1557,16 @@ public class USBBulkConnection extends Connection {
                             if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) { // for example, ('l' == 'l') -> TRUE
                                 currentExecutingCommand.setMcuStatusCode((byte)statusCode);
                                 currentExecutingCommand.setCommandCompleted(statusCode == 0x00);
+
+                                try {
+                                    /* Put the command that just completed into the QCmdProcessor's response queue.
+                                       This should unblock QCmdProcessor.run()'s queueResponse.take() */
+                                    QCmdProcessor.getQCmdProcessor().getQueueResponse().offer(currentExecutingCommand, 10, TimeUnit.MILLISECONDS);
+                                }
+                                catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                    LOGGER.log(Level.SEVERE, "Interrupted while offering response to QCmdProcessor queue.", e);
+                                }
                             }
                             else {
                                 // System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received unexpected AxoR for command: " + (char)commandByte + ". Expected: " + currentExecutingCommand.getExpectedAckCommandByte() + ". Ignoring.");
