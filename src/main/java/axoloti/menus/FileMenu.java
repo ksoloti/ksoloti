@@ -330,7 +330,7 @@ public class FileMenu extends JMenu {
         int res = JOptionPane.showConfirmDialog(mainframe, "Running these tests may take a long time and/or freeze the UI until complete. Continue?", "Warning", JOptionPane.OK_CANCEL_OPTION);
         if (res == JOptionPane.OK_OPTION) {
 
-            String path = JOptionPane.showInputDialog(this, "Enter directory to test:\n(Default: Test all stock libraries)", System.getProperty(Axoloti.LIBRARIES_DIR));
+            String path = JOptionPane.showInputDialog(mainframe, "Enter directory to test:\n(Default: Test all stock libraries)", System.getProperty(Axoloti.LIBRARIES_DIR));
 
             if (path != null && !path.isEmpty()) {
 
