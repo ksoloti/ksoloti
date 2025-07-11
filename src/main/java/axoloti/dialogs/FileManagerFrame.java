@@ -648,7 +648,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         }
     }
 
-    private void refreshTableData() {
+    private void setTableData() {
         fileTableModel.setData(SDCardInfo.getInstance().getSortedDisplayNodes());
     }
 
@@ -666,7 +666,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         refreshTimer.stop();
         /* Start the timer. The actual refresh will happen after the delay. */
         refreshTimer.start();
-        System.out.println(Instant.now() + " Refresh triggered. Timer started/reset.");
+        // System.out.println(Instant.now() + " [DEBUG] GetFileList triggered. Timer started/reset.");
     }
 
     private void performActualRefreshAsync() {
@@ -712,8 +712,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 try {
                     get(); /* Re-throws exceptions from doInBackground */
                     System.out.println(Instant.now() + " Asynchronous UI refresh complete. Updating JTable...");
-                    refreshTableData();
-                    refresh();
+                    setTableData();
+                    refreshUI();
                 }
                 catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Error during UI refresh processing:", e);
@@ -995,9 +995,9 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         triggerRefresh();
     }
 
-    public void refresh() {
+    public void refreshUI() {
         if (!SwingUtilities.isEventDispatchThread()) {
-            SwingUtilities.invokeLater(this::refresh);
+            SwingUtilities.invokeLater(this::refreshUI);
         }
         else {
             if (jFileTable != null) {
