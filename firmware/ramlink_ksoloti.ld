@@ -33,7 +33,7 @@ SECTIONS
         * (.text);
         etext = .;
     } > SRAM1
-    
+
     .bss (NOLOAD) : ALIGN(4) SUBALIGN(4)
     {
         PROVIDE(_pbss_start = .);        
@@ -83,7 +83,7 @@ SECTIONS
         * (.sram3);
         * (.sram3.*);
     } > SRAM3
-    
+
     .sdram (NOLOAD) : ALIGN(4) SUBALIGN(4)
     {
         KEEP(*(.sdram))

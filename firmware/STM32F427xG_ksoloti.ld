@@ -28,30 +28,31 @@ __process_stack_size__  = 0x400;
 TODO look at these
 MEMORY
 {
-    flash (rx) : org = 0x08000000, len = 896k
-    ram : org = 0x20000200, len = 67k
-    SRAM2 : org = 0x2001E000, len = 0x00002000
-    SRAM3 : org = 0x20020000, len = 0x00010000
-    CCMRAMEND : org = 0x1000C000, len = 16k
-    sdram : org = 0xC0000000, len = 0x002000000
+    FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 896k
+    SRAM1      : ORIGIN = 0x20000200, LENGTH = 67k
+    SRAM2      : ORIGIN = 0x2001E000, LENGTH = 0x00002000
+    SRAM3      : ORIGIN = 0x20020000, LENGTH = 0x00010000
+    CCMRAMEND  : ORIGIN = 0x1000C000, LENGTH = 16k
+    SDRAM      : ORIGIN = 0xC0000000, LENGTH = 0x002000000
 }
 */ 
+
 MEMORY
 {
-    FLASH (rx) : org = 0x08000000, len = 896k       /* 896 kB (minus last 128 kB for patch storage) */
-    RAM        : org = 0x20000200, len = 0x0000AE00 /* 44 kB (minus first 0x200 for vector table) */
-    SRAM2      : org = 0x2001E000, len = 0x00002000 /* 8 kB (minus second half (8 kB) for DMA) */
-    SRAM3      : org = 0x20020000, len = 0x00010000 /* 64 kB */
-    CCMRAMEND  : org = 0x1000C800, len = 0x00003800 /* 14 kB for stacks (minus first 50 kB for patch RAM) */
-    SDRAM      : org = 0xC0000000, len = 0x02000000 /* 32 MB */
+    FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 896k       /* 896 kB (minus last 128 kB for patch storage) */
+    SRAM1      : ORIGIN = 0x20000200, LENGTH = 0x0000AE00 /* 44 kB (minus first 0x200 for vector table) */
+    SRAM2      : ORIGIN = 0x2001E000, LENGTH = 0x00002000 /* 8 kB (minus second half (8 kB) for DMA) */
+    SRAM3      : ORIGIN = 0x20020000, LENGTH = 0x00010000 /* 64 kB */
+    CCMRAMEND  : ORIGIN = 0x1000C800, LENGTH = 0x00003800 /* 14 kB for stacks (minus first 50 kB for patch RAM) */
+    SDRAM      : ORIGIN = 0xC0000000, LENGTH = 0x02000000 /* 32 MB */
 }
 
-__ram_start__   = ORIGIN(RAM);
-__ram_size__    = LENGTH(RAM);
+__ram_start__   = ORIGIN(SRAM1);
+__ram_size__    = LENGTH(SRAM1);
 __ram_end__     = __ram_start__ + __ram_size__;
 __ccram_start__ = ORIGIN(CCMRAMEND);
-__ccram_size__ = LENGTH(CCMRAMEND);
-__ccram_end__ = __ccram_start__ + __ccram_size__;
+__ccram_size__  = LENGTH(CCMRAMEND);
+__ccram_end__   = __ccram_start__ + __ccram_size__;
 __sdram_start__ = ORIGIN(SDRAM);
 __sdram_size__  = LENGTH(SDRAM);
 __sdram_end__   = __sdram_start__ + __sdram_size__;
@@ -160,7 +161,7 @@ SECTIONS
         . = ALIGN(4);
         PROVIDE(_edata = .);
         _data_end = .;
-    } > RAM AT > FLASH
+    } > SRAM1 AT > FLASH
 
     .flashend :
     {
@@ -180,7 +181,7 @@ SECTIONS
         *(COMMON)
         . = ALIGN(4);
         PROVIDE(_bss_end = .);
-    } > RAM
+    } > SRAM1
 
     .sram2 (NOLOAD): ALIGN(4) SUBALIGN(4)
     {
