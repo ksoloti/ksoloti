@@ -115,7 +115,6 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        CommandManager.getInstance().startLongOperation();
         super.Do(connection);
 
         setCommandCompleted(false);
@@ -342,7 +341,6 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
         }
         finally {
             connection.setCurrentExecutingCommand(null);
-            CommandManager.getInstance().endLongOperation();
             if (inputStream != null) {
                 try {
                     inputStream.close();
