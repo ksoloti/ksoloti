@@ -368,7 +368,7 @@ public class Axoloti {
                 frame.setVisible(false);
                 AxoObjects objs = new AxoObjects();
                 objs.LoadAxoObjects();
-                System.out.println("Waiting...");
+                System.out.println("Waiting for libraries to load...");
                 Thread.sleep(10000);
                 // if (SplashScreen.getSplashScreen() != null) {
                     // SplashScreen.getSplashScreen().close();
