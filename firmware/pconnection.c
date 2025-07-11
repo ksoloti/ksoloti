@@ -1042,7 +1042,7 @@ void PExReceiveByte(unsigned char c) {
                        values of the variables we are using here.
                        This fine dummy loop was now tested with batches of dozens of files,
                        including file sizes in the hundreds of MB ¯\_(ツ)_/¯ */
-                    for (volatile uint32_t dummy = 0; dummy < 200; dummy++);
+                    for (volatile uint32_t dummy = 0; dummy < 256; dummy++);
 
                     if (value == 0) {
                         // LogTextMessage("Axoa value=0, calling APPNDF length=%u", length);
