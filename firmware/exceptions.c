@@ -27,15 +27,16 @@
 #include "ff.h"
 
 #define ERROR_MAGIC_NUMBER 0xE1212012
+#define exceptiondump ((exceptiondump_t*) BKPSRAM_BASE)
 
-__attribute__ ((naked)) static void report_exception(void) {
+__attribute__((naked)) static void report_exception(void) {
     __asm volatile (
         " tst lr, #4                                                \n"
         " ite eq                                                    \n"
         " mrseq r0, msp                                             \n"
         " mrsne r0, psp                                             \n"
         " ldr r1, [r0, #24]                                         \n"
-        " ldr r2, =handler2_address_const                            \n"
+        " ldr r2, =handler2_address_const                           \n"
         " bx r2                                                     \n"
         " handler2_address_const: .word prvGetRegistersFromStack    \n"
     );
@@ -71,8 +72,6 @@ typedef struct {
     volatile uint32_t bfar;
     volatile uint32_t i;
 } exceptiondump_t;
-
-#define exceptiondump ((exceptiondump_t*) BKPSRAM_BASE)
 
 /**
 * @brief   Jumps into the System ROM bootloader
@@ -409,72 +408,68 @@ static void terminator(void) {
 }
 
 void prvGetRegistersFromStack(uint32_t* pulFaultStackAddress) {
-volatile uint32_t r0;  /* Register R0. */
-volatile uint32_t r1;  /* ... */
-volatile uint32_t r2;
-volatile uint32_t r3;
-volatile uint32_t r12; /* Register R12. */
-volatile uint32_t lr;  /* Link register. */
-volatile uint32_t pc;  /* Program counter. */
-volatile uint32_t psr; /* Program status register. */
+    volatile uint32_t r0;  /* Register R0. */
+    volatile uint32_t r1;  /* ... */
+    volatile uint32_t r2;
+    volatile uint32_t r3;
+    volatile uint32_t r12; /* Register R12. */
+    volatile uint32_t lr;  /* Link register. */
+    volatile uint32_t pc;  /* Program counter. */
+    volatile uint32_t psr; /* Program status register. */
 
-r0 = pulFaultStackAddress[0];
-r1 = pulFaultStackAddress[1];
-r2 = pulFaultStackAddress[2];
-r3 = pulFaultStackAddress[3];
+    r0 = pulFaultStackAddress[0];
+    r1 = pulFaultStackAddress[1];
+    r2 = pulFaultStackAddress[2];
+    r3 = pulFaultStackAddress[3];
 
-r12 = pulFaultStackAddress[4];
-lr = pulFaultStackAddress[5];
-pc = pulFaultStackAddress[6];
-psr = pulFaultStackAddress[7];
+    r12 = pulFaultStackAddress[4];
+    lr = pulFaultStackAddress[5];
+    pc = pulFaultStackAddress[6];
+    psr = pulFaultStackAddress[7];
 
-exceptiondump->magicnumber = ERROR_MAGIC_NUMBER;
-if (WWDG->SR & WWDG_SR_EWIF)
-exceptiondump->type = watchdog_soft;
-else
-exceptiondump->type = fault;
-exceptiondump->r0 = r0;
-exceptiondump->r1 = r1;
-exceptiondump->r2 = r2;
-exceptiondump->r3 = r3;
-exceptiondump->r12 = r12;
-exceptiondump->lr = lr;
-exceptiondump->pc = pc;
-exceptiondump->psr = psr;
-exceptiondump->ipsr = __get_IPSR();
-exceptiondump->cfsr = SCB->CFSR;
-exceptiondump->hfsr = SCB->HFSR;
-exceptiondump->mmfar = SCB->MMFAR;
-exceptiondump->bfar = SCB->BFAR;
+    exceptiondump->magicnumber = ERROR_MAGIC_NUMBER;
+    if (WWDG->SR & WWDG_SR_EWIF)
+        exceptiondump->type = watchdog_soft;
+    else
+        exceptiondump->type = fault;
+    exceptiondump->r0 = r0;
+    exceptiondump->r1 = r1;
+    exceptiondump->r2 = r2;
+    exceptiondump->r3 = r3;
+    exceptiondump->r12 = r12;
+    exceptiondump->lr = lr;
+    exceptiondump->pc = pc;
+    exceptiondump->psr = psr;
+    exceptiondump->ipsr = __get_IPSR();
+    exceptiondump->cfsr = SCB->CFSR;
+    exceptiondump->hfsr = SCB->HFSR;
+    exceptiondump->mmfar = SCB->MMFAR;
+    exceptiondump->bfar = SCB->BFAR;
 
 #if WATCHDOG_ENABLED
-WWDG->CR = WWDG_CR_T;
+    WWDG->CR = WWDG_CR_T;
 #endif
 
-palClearPad(LED1_PORT, LED1_PIN);
-
-codec_clearbuffer();
-
-terminator();
+    palClearPad(LED1_PORT, LED1_PIN);
+    codec_clearbuffer();
+    terminator();
 }
 
-void NMI_Handler(void) __attribute__((alias("report_exception")));
-void HardFaultVector(void) __attribute__((alias("report_exception")));
-void MemManageVector(void) __attribute__((alias("report_exception")));
-void BusFaultVector(void) __attribute__((alias("report_exception")));
+void NMI_Handler(void)      __attribute__((alias("report_exception")));
+void HardFaultVector(void)  __attribute__((alias("report_exception")));
+void MemManageVector(void)  __attribute__((alias("report_exception")));
+void BusFaultVector(void)   __attribute__((alias("report_exception")));
 void UsageFaultVector(void) __attribute__((alias("report_exception")));
-void SVCall_Handler(void) __attribute__((alias("report_exception")));
+void SVCall_Handler(void)   __attribute__((alias("report_exception")));
 
-__attribute__ ((naked))
-CH_IRQ_HANDLER(WWDG_IRQHandler){
-__asm volatile
-(
-" tst lr, #4                                                \n"
-" ite eq                                                    \n"
-" mrseq r0, msp                                             \n"
-" mrsne r0, psp                                             \n"
-" ldr r1, [r0, #24]                                         \n"
-" ldr r2, =handler2_address_const                            \n"
-" bx r2                                                     \n"
-);
+__attribute__((naked)) CH_IRQ_HANDLER(WWDG_IRQHandler){
+    __asm volatile (
+        " tst lr, #4                                        \n"
+        " ite eq                                            \n"
+        " mrseq r0, msp                                     \n"
+        " mrsne r0, psp                                     \n"
+        " ldr r1, [r0, #24]                                 \n"
+        " ldr r2, =handler2_address_const                   \n"
+        " bx r2                                             \n"
+    );
 }
