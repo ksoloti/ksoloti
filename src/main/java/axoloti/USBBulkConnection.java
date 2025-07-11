@@ -1231,7 +1231,7 @@ public class USBBulkConnection extends Connection {
                 if (!pi.GetNeedsTransmit()) {
                     pi.SetValueRaw(value);
                 }
-                // System.out.println(Instant.now() + " [DEBUG] rcv ppc objname:" + pi.axoObj.getInstanceName() + " pname:"+ pi.name);
+                // System.out.println(Instant.now() + " [DEBUG] rcv ppc objname:" + pi.GetObjectInstance().getInstanceName() + " pname:"+ pi.getName());
             }
         });
 
