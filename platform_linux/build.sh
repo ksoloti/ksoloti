@@ -218,8 +218,8 @@ case $OS in
         curl -s "https://get.sdkman.io" | bash
 	    . ~/.sdkman/bin/sdkman-init.sh
         echo "installing java jdk21..."
-        sdk install java 21.0.1.fx-zulu
-        sdk default java 21.0.1.fx-zulu
+        sdk install java 21.0.7.fx-zulu
+        sdk default java 21.0.7.fx-zulu
         ;;
     Archlinux)
         #!! outdated
