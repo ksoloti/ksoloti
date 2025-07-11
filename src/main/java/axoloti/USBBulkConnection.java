@@ -1381,14 +1381,12 @@ public class USBBulkConnection extends Connection {
                     case 0: /* This should always be 'A' or command will be ignored */
                         if (c == 'A') {
                             headerstate = 1;
-                            // System.out.println(Instant.now() + " [DEBUG] Transitioning to headerstate " + headerstate + " after 'A'");
                         }
                         break;
 
                     case 1: /* This should always be 'x' or command will be ignored */
                         if (c == 'x') {
                             headerstate = 2;
-                            // System.out.println(Instant.now() + " [DEBUG] Transitioning to headerstate " + headerstate + " after 'x'");
                         }
                         else {
                             GoIdleState();
@@ -1398,7 +1396,6 @@ public class USBBulkConnection extends Connection {
                     case 2: /* This should always be 'o' or command will be ignored */
                         if (c == 'o') {
                             headerstate = 3;
-                            // System.out.println(Instant.now() + " [DEBUG] Transitioning to headerstate " + headerstate + " after 'o'");
                         }
                         else {
                             GoIdleState();
@@ -1496,11 +1493,9 @@ public class USBBulkConnection extends Connection {
 
             case ackPckt:
                 if (dataIndex < dataLength) {
-                    // System.out.println(Instant.now() + " [DEBUG] ack packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
                     storeDataByte(c);
                 }
                 if (dataIndex == dataLength) {
-                    // System.out.println(Instant.now() + " [DEBUG] ack packet complete");
                     Acknowledge(packetData[0], packetData[1], packetData[2], packetData[3], packetData[4], packetData[5]);
                     GoIdleState();
                 }
@@ -1510,7 +1505,6 @@ public class USBBulkConnection extends Connection {
                 if (dataIndex < dataLength) {
                     storeDataByte(c);
                 }
-                // System.out.println(Instant.now() + " [DEBUG] pch packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
                 if (dataIndex == dataLength) {
                     DisplayPackHeader(packetData[0], packetData[1]);
                 }
