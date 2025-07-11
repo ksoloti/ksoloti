@@ -91,7 +91,7 @@ PACK_STRUCT_BEGIN typedef struct {
 } PACK_STRUCT_STRUCT msd_scsi_read_format_capacities_response_t PACK_STRUCT_END;
 
 /**
- * @brief   Read-write buffers (TODO: need a way of specifying the size of this)
+ * @brief   Read-write buffers
  */
 static uint8_t rw_buf[2][N_BLOCKS_PER_WRITE * MMCSD_BLOCK_SIZE];
 
