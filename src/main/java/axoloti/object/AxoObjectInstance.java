@@ -107,33 +107,49 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public ArrayList<DisplayInstance> displayInstances;
 
     LabelComponent IndexLabel;
-    
     private final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
-
     boolean deferredObjTypeUpdate = false;
 
+    public final JPanel p_params = new JPanel();
+    public final JPanel p_displays = new JPanel();
+    public final JPanel p_iolets = new JPanel();
+    public final JPanel p_inlets = new JPanel();
+    public final JPanel p_outlets = new JPanel();
+
+    public final static String MidiHandlerFunctionHeader = "void MidiInHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t data1, uint8_t data2) {\n";
+
+    Rectangle editorBounds;
+    Integer editorActiveTabIndex;
+
+    public String wrapStringLines(String str, int wrapLength) {
+        String putBackTogetherString = "";
+
+        if (str == null) { return null; }
+        else if (str.isEmpty()) { return ""; }
+
+        /* Chop up string and put it back together with line breaks */
+        String[] splitStrings = str.split(" ");
+        int lineLength = 0;
+        for (String s : splitStrings) {
+            putBackTogetherString += s + " ";
+            lineLength += (s.length()+1);
+            if (s.contains("\n")) {
+                lineLength = 0; /* Reset line length counter if there is going to be a formatted line break */
+            }
+            if (lineLength > wrapLength) {
+                putBackTogetherString += "\n"; /* Insert line break to make text wrap around */
+                lineLength = 0; /* Reset line length counter */
+            }
+        }
+        return putBackTogetherString;
+    }
 
     private void refreshTooltip() {
         String tooltiptxt = "<html>";
         tooltiptxt += "<b>" + typeName + "</b>";
         if (getType().sDescription != null && !getType().sDescription.isEmpty()) {
-            /* Chop up string and put it back together with line breaks */
-            /* TODO: turn this into a callable routine */
-            String[] splitStrings = getType().sDescription.split(" ");
-            String putBackTogetherString = "";
-            int lineLength = 0;
-            for (String s : splitStrings) {
-                putBackTogetherString += s + " ";
-                lineLength += (s.length()+1);
-                if (s.contains("\n")) {
-                    lineLength = 0; /* Reset line length counter if there is going to be a formatted line break */
-                }
-                if (lineLength > 80) {
-                    putBackTogetherString += "\n"; /* Insert line break to make text wrap around */
-                    lineLength = 0; /* Reset line length counter */
-                }
-            }
-            tooltiptxt += "<p><br/>" + putBackTogetherString.replaceAll("\n", "<br/>") + "<br/>";
+            String wrappedDesc = wrapStringLines(getType().sDescription, 80);
+            tooltiptxt += "<p><br/>" + wrappedDesc.replaceAll("\n", "<br/>") + "<br/>";
         }
         if (getType().sAuthor != null && !getType().sAuthor.isEmpty()) {
             tooltiptxt += "<p><br/><i>Author: " + getType().sAuthor + "</p>";
@@ -165,12 +181,6 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public ArrayList<AttributeInstance> getAttributeInstances() {
         return attributeInstances;
     }
-
-    public final JPanel p_params = new JPanel();
-    public final JPanel p_displays = new JPanel();
-    public final JPanel p_iolets = new JPanel();
-    public final JPanel p_inlets = new JPanel();
-    public final JPanel p_outlets = new JPanel();
 
     void updateObj1() {
         getType().addObjectModifiedListener(this);
@@ -226,7 +236,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         /* Execution Index shown in object tooltip for now */
         IndexLabel = new LabelComponent("");
         refreshIndex();
-        
+
         /* IndexLabel only shown in object tooltip for now ...
         Titlebar.add(Box.createHorizontalStrut(3));
         Titlebar.add(Box.createHorizontalGlue());
@@ -464,7 +474,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             if (isAllFrozen) {
                 popm_freezeAllParameters.setText("Unfreeze all parameters");
             }
-            
+
             final boolean f = isAllFrozen; /* "variable defined in an enclosing scope must be final" workaround */
             popm_freezeAllParameters.addActionListener(new ActionListener() {
 
@@ -569,6 +579,11 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         getType().OpenEditor(editorBounds, editorActiveTabIndex);
     }
 
+    public void updateObj() {
+        getPatch().ChangeObjectInstanceType(this, this.getType());
+        getPatch().cleanUpIntermediateChangeStates(3);
+    }
+
     @Override
     public void setInstanceName(String s) {
         super.setInstanceName(s);
@@ -632,11 +647,6 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 p.Lock();
             }
         }
-    }
-
-    public void updateObj() {
-        getPatch().ChangeObjectInstanceType(this, this.getType());
-        getPatch().cleanUpIntermediateChangeStates(3);
     }
 
     @Override
@@ -727,7 +737,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         c += I+I+I + "parent = _parent;\n";
         for (ParameterInstance p : parameterInstances) {
             if (p.isFrozen()) {
-                
+
                 c += I+I+I + p.GetCName() + " = ";
                 /* Do parameter value mapping in Java so save MCU memory.
                  * These are the same functions like in firmware/parameter_functions.h.
@@ -818,7 +828,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                             0x00046E0E, 0x00042E68, 0x0003F254, 0x0003B99F, 0x0003841A, 0x00035195, 0x000321E6, 0x0002F4E4,
                             0x0002CA69, 0x0002CA69
                         };
-                        
+
                         // /* Too accurate java version of pitch table (firmware/axoloti_math.c): */
                         // /* Attempt to emulate single precision and "round to zero" behaviour of Cortex FPU */
                         // MathContext mc = new MathContext(10, RoundingMode.DOWN);
@@ -834,7 +844,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                         /* Scale parameter value to -64.00..64.00  */
                         /* Using BigDecimal for its easy rounding functions. */
                         BigDecimal pindex = BigDecimal.valueOf(signedClampedVal / 2097152.0d).setScale(2, RoundingMode.HALF_UP);
-                        
+
                         /* Get integer part of index */
                         int pindex_int = (int) pindex.doubleValue();
                         /* Emulate round down on negative values */
@@ -903,7 +913,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 s = s.replace(a.GetCName(), a.CValue());
             }
             s = I+I+I + s.replace("\n", "\n\t\t\t");
-            
+
             /* Reverse-analyze if generated init code contains code which changes
              * the audio input or output config. This is a workaround to ensure
              * compatibility with axoloti-factory inconfig and outconfig objects.*/
@@ -983,14 +993,14 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         if (getType().sKRateCode != null && !getType().sKRateCode.isEmpty()) {
             String s = getType().sKRateCode;
             s = I+I+I + s.replace("\n", "\n\t\t\t");
-            
+
             for (AttributeInstance a : attributeInstances) {
                 s = s.replaceAll(a.GetCName(), a.CValue());
             }
-            
+
             s = s.replace("CGENATTR_instancename", getCInstanceName());
             s = s.replace("CGENATTR_legalname", getLegalName());
-            
+
             String h = "\n" + I+I+I + "/* Object K-Rate Code Tab */\n";
             return h + s + "\n";
         }
@@ -1079,8 +1089,6 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
         return s;
     }
-
-    public final static String MidiHandlerFunctionHeader = "void MidiInHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t data1, uint8_t data2) {\n";
 
     @Override
     public String GenerateClass(String ClassName) {
@@ -1245,9 +1253,6 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public ArrayList<DisplayInstance> GetDisplayInstances() {
         return displayInstances;
     }
-
-    Rectangle editorBounds;
-    Integer editorActiveTabIndex;
 
     @Override
     public void ObjectModified(Object src) {
