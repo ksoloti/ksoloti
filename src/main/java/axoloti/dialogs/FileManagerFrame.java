@@ -1037,6 +1037,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     @Override
     public void ShowSDCardMounted() {
         ShowConnect(true);
+        triggerRefresh();
     }
 
     @Override
