@@ -94,6 +94,18 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
     private static AxoSDFileTableModel fileTableModel;
 
+    private axoloti.menus.FileMenu fileMenu1;
+    private javax.swing.JButton jButtonSDRefresh;
+    private javax.swing.JButton jButtonCreateDir;
+    private javax.swing.JButton jButtonDelete;
+    private javax.swing.JButton jButtonUpload;
+    private javax.swing.JTable jFileTable;
+    private javax.swing.JLabel jLabelSDInfo;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
+    private ScrollPaneComponent jScrollPane1;
+    private axoloti.menus.WindowMenu windowMenu1;
+
     public FileManagerFrame() {
         setPreferredSize(new Dimension(640,400));
         initComponents();
@@ -1003,18 +1015,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             System.out.println(Instant.now() + " " + String.format("SD free: %d MB, Cluster size: %d", ((long) clusters * (long) clustersize * (long) sectorsize / (1024 * 1024)), (clustersize * sectorsize)));
         }
     }
-
-    private axoloti.menus.FileMenu fileMenu1;
-    private javax.swing.JButton jButtonSDRefresh;
-    private javax.swing.JButton jButtonCreateDir;
-    private javax.swing.JButton jButtonDelete;
-    private javax.swing.JButton jButtonUpload;
-    private javax.swing.JTable jFileTable;
-    private javax.swing.JLabel jLabelSDInfo;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenuBar jMenuBar1;
-    private ScrollPaneComponent jScrollPane1;
-    private axoloti.menus.WindowMenu windowMenu1;
 
     void ShowConnect(boolean status) {
         jButtonSDRefresh.setEnabled(status);
