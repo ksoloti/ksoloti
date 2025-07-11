@@ -390,11 +390,8 @@ void ReadDirectoryListing(void) {
 
     op_result = f_getfree("/", &clusters, &fsp);
     if (op_result != FR_OK) {
-        /* Even on error, we should signal the result to the host */
-        send_AxoResult(command_byte_to_ack, op_result);
         // LogTextMessage("ERROR:RDL f_getfree,op_result:%u", op_result);
-        report_fatfs_error(op_result, 0);
-        return;
+        goto RDL_result_and_exit;
     }
 
     ((char*) fbuff)[0] = 'A';
@@ -415,11 +412,8 @@ void ReadDirectoryListing(void) {
     // LogTextMessage("RDL:entering scan_files");
     op_result = scan_files((char*) &fbuff[0]);
     if (op_result != FR_OK) {
-        /* Even on error, we should signal the result to the host */
-        send_AxoResult(command_byte_to_ack, op_result);
         // LogTextMessage("ERROR:RDL scan_files,op_result:%u", op_result);
-        report_fatfs_error(op_result, 0);
-        return;
+        goto RDL_result_and_exit;
     }
 
     /* Send the final "Axof" for the root directory to indicate parent context */
@@ -435,9 +429,9 @@ void ReadDirectoryListing(void) {
     // LogTextMessage("RDL:finished sending Axof");
     chThdSleepMilliseconds(10); /* Give some time for the USB buffer to clear */
 
+    RDL_result_and_exit:
     /* Send the Result packet */
     send_AxoResult(command_byte_to_ack, op_result);
-    return;
 }
 
 
@@ -467,7 +461,7 @@ static void ManipulateFile(void) {
 
     if (FileName[0] != 0) { /* backwards compatibility, don't change! */
         // LogTextMessage("Executing backwards compatibility block");
-        
+
         FRESULT op_result = f_open(&pFile, &FileName[0], FA_WRITE | FA_CREATE_ALWAYS);
         if (op_result != FR_OK) {
             // LogTextMessage("ERROR:MNPFL f_open (backw),op_result:%u path:%s", op_result, &FileName[0]);
@@ -501,50 +495,47 @@ static void ManipulateFile(void) {
 
         if (FileName[1] == 'k') { /* create directory (AxoCk) */
             // LogTextMessage("Executing Ck cmd");
-            
+
             FRESULT op_result = f_mkdir(&FileName[6]); /* Path from FileName[6]+ */
             if ((op_result != FR_OK) && (op_result != FR_EXIST)) {
-                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
                 // LogTextMessage("ERROR:MNPFL f_mkdir,op_result:%u path:%s", op_result, &FileName[6]);
-                return;
+                goto Ck_result_and_exit;
             }
-            
+
             FILINFO fno;
             fno.fdate = FileName[2] + (FileName[3]<<8); /* Date from FileName[2/3] */
             fno.ftime = FileName[4] + (FileName[5]<<8); /* Time from FileName[4/5] */
 
             op_result = f_utime(&FileName[6], &fno); /* Path from FileName[6]+ */
             if (op_result != FR_OK) {
-                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
                 // LogTextMessage("ERROR:MNPFL f_utime,op_result:%u path:%s", op_result, &FileName[6]);
-                return;
             }
+
+            Ck_result_and_exit:
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
         else if (FileName[1] == 'f') { /* create file (AxoCf) */
             // LogTextMessage("Executing 'Cf' cmd");
-            
+
             FRESULT op_result = f_open(&pFile, &FileName[6], FA_WRITE | FA_CREATE_ALWAYS); /* Path from FileName[6]+ */
             if (op_result != FR_OK) {
-                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
                 // LogTextMessage("ERROR:MNPFL f_open,op_result:%u path:%s", op_result, &FileName[6]);
-                return;
+                goto Cf_result_and_exit;
             }
 
             op_result = f_lseek(&pFile, pFileSize); /* pFileSize holds the size from received AxoCf command */
             if (op_result != FR_OK) {
-                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
                 // LogTextMessage("ERROR:MNPFL f_lseek1,op_result:%u path:%s", op_result, &FileName[6]);
-                return;
+                goto Cf_result_and_exit;
             }
 
             op_result = f_lseek(&pFile, 0);
             if (op_result != FR_OK) {
-                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
                 // LogTextMessage("ERROR:MNPFL f_lseek2,op_result:%u path:%s", op_result, &FileName[6]);
-                return;
             }
+
+            Cf_result_and_exit:
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
@@ -552,9 +543,8 @@ static void ManipulateFile(void) {
             // LogTextMessage("Executing 'Cc' cmd");
             FRESULT op_result = f_close(&pFile);
             if (op_result != FR_OK) {
-                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
                 // LogTextMessage("ERROR: f_close,op_result:%u path:%s", op_result, &FileName[6]);
-                return;
+                goto Cc_result_and_exit;
             }
 
             FILINFO fno;
@@ -562,10 +552,10 @@ static void ManipulateFile(void) {
             fno.ftime = FileName[4] + (FileName[5]<<8); /* Time from FileName[4/5] */
             op_result = f_utime(&FileName[6], &fno); /* Path from FileName[6]+ */
             if (op_result != FR_OK) {
-                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
                 // LogTextMessage("ERROR:f_utime,Date/Time:%x %x path:%s", fno.fdate, fno.ftime, &FileName[6]);
-                return;
             }
+
+            Cc_result_and_exit:
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
@@ -574,9 +564,7 @@ static void ManipulateFile(void) {
 
             FRESULT op_result = f_unlink(&FileName[6]); /* Path from FileName[6]+ */
             if (op_result != FR_OK) {
-                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
                 // LogTextMessage("ERROR:MNPFL f_unlink,op_result:%u path:%s", op_result, &FileName[6]);
-                return;
             }
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
@@ -586,9 +574,7 @@ static void ManipulateFile(void) {
 
             FRESULT op_result = f_chdir(&FileName[6]); /* Path from FileName[6]+ */
             if (op_result != FR_OK) {
-                send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
                 // LogTextMessage("ERROR:MNPFL f_chdir,op_result:%u path:%s", op_result, &FileName[6]);
-                return;
             }
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
@@ -599,7 +585,7 @@ static void ManipulateFile(void) {
             FILINFO fno;
             fno.lfname = &((char*) fbuff)[0]; // fbuff is a global buffer
             fno.lfsize = 256; // Max size for long file name
-            
+
             FRESULT op_result = f_stat(&FileName[6], &fno); /* Path from FileName[6]+ */
             if (op_result == FR_OK) {
                 char *msg = &((char*) fbuff)[0];
@@ -610,9 +596,7 @@ static void ManipulateFile(void) {
                 int l = strlen(&msg[12]);
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) msg, l+13);
             }
-            // else {
-            //     LogTextMessage("ERROR:MNPFL f_stat,op_result:%u path:%s", op_result, &FileName[6]);
-            // }
+
             send_AxoResult(FileName[1], op_result); /* Explicit AxoR for success or failure */
             return;
         }
@@ -802,7 +786,7 @@ void PExReceiveByte(unsigned char c) {
                     case 'p': /* ping */
                         state = 0; header = 0; AckPending = 1;
                         break;
-                    
+
                     /* --- Commands that DO NOT set AckPending (AxoR**-based) --- */
                     case 'C': /* Unified File System Command (create, delete, mkdir, getinfo, close) */
                         current_filename_idx = 0; /* Reset for filename parsing */
@@ -905,7 +889,7 @@ void PExReceiveByte(unsigned char c) {
                         UINT bytes_written;
 
                         sdcard_attemptMountIfUnmounted();
-                        
+
                         /* NOTE: This uses FileName[0] for path, which is inconsistent with FileName[6] in ManipulateFile.
                            Probably some backwards compatibility thing. Leaving as is. */
                         op_result = f_open(&pFile, &FileName[0], FA_WRITE | FA_CREATE_ALWAYS);
@@ -1001,7 +985,7 @@ void PExReceiveByte(unsigned char c) {
                 current_filename_idx = 6; /* Next byte is FileName[6] (start of filename) */
                 state++; /* Move on to filename parsing state (case 14) */
                 break;
-            
+
             /* --- States for parsing filename (variable length, null-terminated) into FileName[6] onwards --- */
             /* Used by 'f', 'k', 'c', 'D', 'C', 'I' */
             case 14: /* Start/continue filename parsing (into FileName[6]+) */
@@ -1018,7 +1002,7 @@ void PExReceiveByte(unsigned char c) {
                     header = 0; state = 0; /* Error: filename too long */
                 }
                 break;
-            
+
             default: /* Unknown state: reset state machine */
                 // LogTextMessage("PEXRB:Unknown state %u", state);
                 header = 0; state = 0;
