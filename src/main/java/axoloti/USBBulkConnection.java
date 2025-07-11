@@ -134,7 +134,7 @@ public class USBBulkConnection extends Connection {
                     synchronized (usbInLock) {
                         recvbuffer.clear();
                         transfered.clear();
-                        result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, prefs.getPollInterval()*3);
+                        result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 200);
                         sz = transfered.get(0);
 
                         if (result != LibUsb.SUCCESS) {
@@ -1483,7 +1483,6 @@ public class USBBulkConnection extends Connection {
                 if (dataIndex < dataLength) {
                     storeDataByte(c);
                 }
-                // System.out.println(Instant.now() + " [DEBUG] pch packet i=" +dataIndex + " v=" + c + " c="+ (char)(cc));
                 if (dataIndex == dataLength) {
                     // System.out.println(Instant.now() + " [DEBUG] param packet complete 0x" + Integer.toHexString(packetData[1]) + "    0x" + Integer.toHexString(packetData[0]));
                     RPacketParamChange(packetData[2], packetData[1], packetData[0]);

@@ -64,7 +64,7 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
 
         try {
             /* Wait for the final AxoRl response from the MCU */
-            if (!waitForCompletion()) { // 3-second timeout
+            if (!waitForCompletion(10000)) { // 10-second timeout
                 LOGGER.log(Level.SEVERE, "Get file list failed: Core did not acknowledge full listing within timeout (AxoRl).");
                 setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                 setCommandCompleted(false);
