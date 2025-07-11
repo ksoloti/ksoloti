@@ -1029,7 +1029,7 @@ public class USBBulkConnection extends Connection {
         /* Total size:
            "Axoa"           (4) +
            Length           (4)
-           (data is streamed in successive writeByte)
+           (data is streamed in successive writeBytes(buffer))
          */
         int size = buffer.length;
         ByteBuffer headerBuffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN); // "Axoa" + length
