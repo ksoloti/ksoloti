@@ -119,7 +119,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     boolean even = false;
     String LinkFirmwareID;
-    String TargetFirmwareID;
     KeyboardFrame keyboard;
     FileManagerFrame filemanager;
     PreferencesFrame pp;
@@ -1572,14 +1571,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     public void updateLinkFirmwareID() {
         LinkFirmwareID = FirmwareID.getFirmwareID();
-        // TargetFirmwareID = LinkFirmwareID;
         // jLabelFirmwareID.setText("Firmware ID: " + LinkFirmwareID);
         LOGGER.log(Level.INFO, "Patcher linked to firmware {0}", LinkFirmwareID);
         WarnedAboutFWCRCMismatch = false;
     }
 
     void setFirmwareID(String firmwareId) {
-        TargetFirmwareID = firmwareId;
         /* If LinkfirmwareID is a valid 8-digit hex number but not equal to the new firmwareId */
         if (this.LinkFirmwareID.length() != 8) {
             LOGGER.log( Level.WARNING, 
