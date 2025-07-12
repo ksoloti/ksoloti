@@ -1358,7 +1358,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void jMenuItemRefreshFWIDActionPerformed(java.awt.event.ActionEvent evt) {
         updateLinkFirmwareID();
-        setFirmwareID(LinkFirmwareID);
+        qcmdprocessor.AppendToQueue(new QCmdTransmitGetFWVersion());
+        qcmdprocessor.WaitQueueFinished();
     }
 
     private void jMenuItemFlashDFUActionPerformed(java.awt.event.ActionEvent evt) {
