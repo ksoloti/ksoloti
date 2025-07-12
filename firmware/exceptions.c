@@ -268,20 +268,25 @@ void exception_checkandreport(void) {
         }
 
         if (report_registers) {
-            LogTextMessage("pc=0x%x", exceptiondump->pc);
-            LogTextMessage("psr=0x%x", exceptiondump->psr);
-            LogTextMessage("lr=0x%x", exceptiondump->lr);
-            LogTextMessage("r12=0x%x", exceptiondump->r12);
-            LogTextMessage("cfsr=0x%x", exceptiondump->cfsr);
+            // Stacked Registers
+            LogTextMessage("r0   = 0x%X", exceptiondump->r0);
+            LogTextMessage("r1   = 0x%X", exceptiondump->r1);
+            LogTextMessage("r2   = 0x%X", exceptiondump->r2);
+            LogTextMessage("r3   = 0x%X", exceptiondump->r3);
+            LogTextMessage("r12  = 0x%X", exceptiondump->r12);
+            LogTextMessage("lr   = 0x%X", exceptiondump->lr);
+            LogTextMessage("pc   = 0x%X", exceptiondump->pc);
+            LogTextMessage("psr  = 0x%X", exceptiondump->psr);
+            LogTextMessage("ipsr = 0x%X", exceptiondump->ipsr);
+            LogTextMessage("cfsr = 0x%X", exceptiondump->cfsr);
+            LogTextMessage("hfsr = 0x%X", exceptiondump->hfsr);
 
-            if (exceptiondump->cfsr & (1 << 15)) {
-                /* BFARVALID */
-                LogTextMessage("bfar=0x%x", exceptiondump->bfar);
+            if (exceptiondump->cfsr & (1 << 15)) { /* BFARVALID */
+                LogTextMessage("bfar = 0x%X", exceptiondump->bfar);
             }
 
-            if (exceptiondump->cfsr & (1 << 7)) {
-                /* MMARVALID */
-                LogTextMessage("mmfar=0x%x", exceptiondump->mmfar);
+            if (exceptiondump->cfsr & (1 << 7)) { /* MMARVALID */
+                LogTextMessage("mmfar= 0x%X", exceptiondump->mmfar);
             }
         }
         exception_clear();
