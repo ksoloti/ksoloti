@@ -17,6 +17,7 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string.h>
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
@@ -71,6 +72,7 @@ typedef struct {
     volatile uint32_t mmfar;
     volatile uint32_t bfar;
     volatile uint32_t i;
+    char msg_buffer[256];
 } exceptiondump_t;
 
 /**
@@ -244,19 +246,19 @@ void exception_checkandreport(void) {
             report_registers = 1;
         }
         else if (exceptiondump->type == watchdog_hard) {
-            LogTextMessage("Exception: hard watchdog i=0x%x", exceptiondump->i);
+            LogTextMessage("Exception: hard watchdog i=0x%X", exceptiondump->i);
         }
         else if (exceptiondump->type == brownout) {
             LogTextMessage("Exception: brownout");
         }
         else if (exceptiondump->type == fatfs_error) {
-            LogTextMessage("File error: %s, filename:\"%s\"", fs_err_name[exceptiondump->r0], (char*) (BKPSRAM_BASE) + 12);
+            LogTextMessage("File error: %s, filename:\"%s\"", fs_err_name[exceptiondump->r0], exceptiondump->msg_buffer);
         }
         else if (exceptiondump->type == patch_load_crc_fail) {
-            LogTextMessage("Patch <-> firmware version mismatch? \"%s\"", (char*) (BKPSRAM_BASE) + 12);
+            LogTextMessage("Patch <-> firmware version mismatch? \"%s\"", exceptiondump->msg_buffer);
         }
         else if (exceptiondump->type == patch_load_sdram_overflow) {
-            LogTextMessage("SDRAM overflow by %d bytes", exceptiondump->r0);
+            LogTextMessage("SDRAM overflow by %d bytes: \"%s\"", exceptiondump->r0, exceptiondump->msg_buffer);
         }
         else if (exceptiondump->type == usbh_midi_ringbuffer_overflow) {
             LogTextMessage("USB host MIDI output buffer overflow");
@@ -286,36 +288,54 @@ void exception_checkandreport(void) {
     }
 }
 
-void report_fatfs_error(int errno, const char* fn) {
-    if (exceptiondump->magicnumber == ERROR_MAGIC_NUMBER) {
-        return;
-    }
+static void _copy_filename_to_exception_buffer(const char* fn) {
+    char* p = exceptiondump->msg_buffer;
+    const int MAX_PATH_LEN = sizeof(exceptiondump->msg_buffer);
+    int remaining_buffer_space = MAX_PATH_LEN;
 
-    char* p;
-    p = (char*) (BKPSRAM_BASE) + 12;
+    /* Clear the buffer before use, ensure *p initially is 0 */
+    memset(exceptiondump->msg_buffer, 0, MAX_PATH_LEN);
 
     if (fn != 0) {
         if (*fn != '/') {
             /* Prepend CWD */
-            f_getcwd(p, 40);
-
-            while (*p != 0) {
-                p++;
+            FRESULT getcwd_res = f_getcwd(p, remaining_buffer_space);
+            if (getcwd_res == FR_OK) {
+                /* Find null terminator, if none found run until max buffer size */
+                while (*p != 0 && remaining_buffer_space > 0) {
+                    p++;
+                    remaining_buffer_space--;
+                }
+                /* Append '/' only if the CWD is not just "/" and there is buffer space left */
+                if (strcmp(exceptiondump->msg_buffer, "/") != 0 && remaining_buffer_space > 0) {
+                    *p++ = '/';
+                    remaining_buffer_space--;
+                }
             }
-            *p++ = '/';
+            else {
+                /* If getcwd fails, do not prepend CWD, just copy fn directly */
+                p = exceptiondump->msg_buffer; /* Reset p to start of buffer */
+                remaining_buffer_space = MAX_PATH_LEN;
+            }
         }
 
-        int i = 20;
-        while(i-- && *fn) {
+        /* Copy fn, respecting remaining buffer space */
+        while (remaining_buffer_space > 1 && *fn != '\0') { /* Leave 1 byte for null terminator */
             *p++ = *fn++;
+            remaining_buffer_space--;
         }
     }
+    *p = 0; /* Null terminate the string */
+}
 
-    *p = 0;
-
+void report_fatfs_error(int errno, const char* fn) {
+    if (exceptiondump->magicnumber == ERROR_MAGIC_NUMBER) {
+        return;
+    }
     exceptiondump->magicnumber = ERROR_MAGIC_NUMBER;
     exceptiondump->type = fatfs_error;
     exceptiondump->r0 = errno;
+    _copy_filename_to_exception_buffer(fn);
 }
 
 void report_patchLoadFail(const char* fn) {
@@ -324,24 +344,7 @@ void report_patchLoadFail(const char* fn) {
     }
     exceptiondump->magicnumber = ERROR_MAGIC_NUMBER;
     exceptiondump->type = patch_load_crc_fail;
-
-    char* p;
-    p = (char*) (BKPSRAM_BASE) + 12;
-    if (fn != 0) {
-        if (*fn != '/') {
-            /* Prepend CWD */
-            f_getcwd(p, 40);
-            while (*p != 0) {
-                p++;
-            }
-            *p++ = '/';
-        }
-        int i = 20;
-        while (i-- && *fn) {
-            *p++ = *fn++;
-        }
-    }
-    *p = 0;
+    _copy_filename_to_exception_buffer(fn);
 }
 
 void report_patchLoadSDRamOverflow(const char* fn, int amount) {
@@ -351,24 +354,7 @@ void report_patchLoadSDRamOverflow(const char* fn, int amount) {
     exceptiondump->magicnumber = ERROR_MAGIC_NUMBER;
     exceptiondump->r0 = amount;
     exceptiondump->type = patch_load_sdram_overflow;
-
-    char* p;
-    p = (char*) (BKPSRAM_BASE) + 12;
-    if (fn != 0) {
-        if (*fn != '/') {
-            /* Prepend CWD */
-            f_getcwd(p, 40);
-            while(*p != 0) {
-                p++;
-            }
-            *p++ = '/';
-        }
-        int i = 20;
-        while (i-- && *fn) {
-            *p++ = *fn++;
-        }
-    }
-    *p = 0;
+    _copy_filename_to_exception_buffer(fn);
 }
 
 void report_usbh_midi_ringbuffer_overflow(void) {
