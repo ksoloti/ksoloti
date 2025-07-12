@@ -5,6 +5,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import javax.swing.SwingUtilities;
+
 import qcmds.QCmdSerialTask;
 
 /**
@@ -12,6 +14,11 @@ import qcmds.QCmdSerialTask;
  * @author jtaelman
  */
 public abstract class Connection {
+    
+    private ArrayList<ConnectionStatusListener> csls = new ArrayList<ConnectionStatusListener>();
+    private ArrayList<SDCardMountStatusListener> sdcmls = new ArrayList<SDCardMountStatusListener>();
+    private ArrayList<ConnectionFlagsListener> cfcmls = new ArrayList<ConnectionFlagsListener>();
+
     abstract public boolean isConnected();
     abstract public void disconnect();
     abstract public boolean connect();
@@ -54,15 +61,16 @@ public abstract class Connection {
     abstract public int GetConnectionFlags();
     abstract public void setCurrentExecutingCommand(qcmds.QCmdSerialTask command);
     abstract public QCmdSerialTask getCurrentExecutingCommand();
-    
-    private ArrayList<ConnectionStatusListener> csls = new ArrayList<ConnectionStatusListener>();
 
     public void addConnectionStatusListener(ConnectionStatusListener csl) {
-        if (isConnected()) {
-            csl.ShowConnect();
-        } else {
-            csl.ShowDisconnect();
-        }
+        SwingUtilities.invokeLater(() -> {
+            if (isConnected()) {
+                csl.ShowConnect();
+            }
+            else {
+                csl.ShowDisconnect();
+            }
+        });
         csls.add(csl);
     }
 
@@ -72,24 +80,28 @@ public abstract class Connection {
 
     public void ShowDisconnect() {
         for (ConnectionStatusListener csl : csls) {
-            csl.ShowDisconnect();
+            SwingUtilities.invokeLater(() -> {
+                csl.ShowDisconnect();
+            });
         }
     }
 
     public void ShowConnect() {
         for (ConnectionStatusListener csl : csls) {
-            csl.ShowConnect();
+            SwingUtilities.invokeLater(() -> {
+                csl.ShowConnect();
+            });
         }
     }
 
-    private ArrayList<SDCardMountStatusListener> sdcmls = new ArrayList<SDCardMountStatusListener>();
-
     public void addSDCardMountStatusListener(SDCardMountStatusListener sdcml) {
-        if (GetSDCardPresent()) {
-            sdcml.ShowSDCardMounted();
-        } else {
-            sdcml.ShowSDCardUnmounted();
-        }
+        SwingUtilities.invokeLater(() -> {
+            if (GetSDCardPresent()) {
+                sdcml.ShowSDCardMounted();
+            } else {
+                sdcml.ShowSDCardUnmounted();
+            }
+        });
         sdcmls.add(sdcml);
     }
 
@@ -99,20 +111,24 @@ public abstract class Connection {
 
     public void ShowSDCardMounted() {
         for (SDCardMountStatusListener sdcml : sdcmls) {
-            sdcml.ShowSDCardMounted();
+            SwingUtilities.invokeLater(() -> {
+                sdcml.ShowSDCardMounted();
+            });
         }
     }
 
     public void ShowSDCardUnmounted() {
         for (SDCardMountStatusListener sdcml : sdcmls) {
-            sdcml.ShowSDCardUnmounted();
+            SwingUtilities.invokeLater(() -> {
+                sdcml.ShowSDCardUnmounted();
+            });
         }
     }
 
-    private ArrayList<ConnectionFlagsListener> cfcmls = new ArrayList<ConnectionFlagsListener>();
-
     public void addConnectionFlagsListener(ConnectionFlagsListener cfcml) {
-        cfcml.ShowConnectionFlags(GetConnectionFlags());
+        SwingUtilities.invokeLater(() -> {
+            cfcml.ShowConnectionFlags(GetConnectionFlags());
+        });
         cfcmls.add(cfcml);
     }
 
@@ -122,7 +138,9 @@ public abstract class Connection {
 
     public void ShowConnectionFlags(int connectionFlags) {
         for (ConnectionFlagsListener cfcml : cfcmls) {
-            cfcml.ShowConnectionFlags(connectionFlags);
+            SwingUtilities.invokeLater(() -> {
+                cfcml.ShowConnectionFlags(connectionFlags);
+            });
         }
     }
 
