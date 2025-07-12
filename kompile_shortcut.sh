@@ -2,14 +2,14 @@
 set -e
 
 # supported boards
-BUILD_AXOLOTI=0
+BUILD_AXOLOTI=1
 BUILD_KSOLOTI=1
 
 # supported firmware modes
 BUILD_NORMAL=1
-BUILD_SPILINK=0
-BUILD_USBAUDIO=0
-BUILD_I2SCODEC=0
+BUILD_SPILINK=1
+BUILD_USBAUDIO=1
+BUILD_I2SCODEC=1
 
 # usually no edits are necessary, can be turned off during development to save time
 BUILD_FLASHER=1
