@@ -80,6 +80,8 @@ public abstract class Connection {
     abstract public int GetConnectionFlags();
     abstract public void setCurrentExecutingCommand(qcmds.QCmdSerialTask command);
     abstract public QCmdSerialTask getCurrentExecutingCommand();
+    abstract public String getTargetCpuId();
+    abstract public String getDetectedCpuId();
 
     public void addConnectionStatusListener(ConnectionStatusListener csl) {
         SwingUtilities.invokeLater(() -> {
