@@ -73,6 +73,7 @@ public class USBBulkConnection extends Connection {
     private Thread receiverThread;
     private final BlockingQueue<QCmdSerialTask> queueSerialTask;
     private String targetCpuId;
+    private String detectedCpuId;
     private ksoloti_core targetProfile;
     private final Context context;
     private DeviceHandle handle;
@@ -677,6 +678,10 @@ public class USBBulkConnection extends Connection {
         return this.targetCpuId;
     }
 
+    @Override
+    public String getDetectedCpuId() {
+        return this.detectedCpuId;
+    }
 
     @Override
     public void ClearSync() {
