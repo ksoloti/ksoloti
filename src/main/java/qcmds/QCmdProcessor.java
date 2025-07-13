@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package qcmds;
 
 import axoloti.Connection;
@@ -51,6 +52,8 @@ public class QCmdProcessor implements Runnable {
     private final PeriodicDialTransmitter dialTransmitter;
     private final Thread dialTransmitterThread;
     private int progressValue = 0;
+
+    private final Object queueLock = new Object();
 
     class PeriodicPinger implements Runnable {
 
@@ -201,6 +204,10 @@ public class QCmdProcessor implements Runnable {
         return patch;
     }
 
+    public Object getQueueLock() {
+        return queueLock;
+    }
+
     public boolean AppendToQueue(QCmd cmd) {
         /* check if it is a serial task that goes to the USBBulkConnection */
         if (cmd instanceof QCmdSerialTask) {
@@ -215,11 +222,10 @@ public class QCmdProcessor implements Runnable {
 
         try {
             boolean added = queue.offer(cmd, 100, TimeUnit.MILLISECONDS);
-            if (!added) {
-                // System.err.println(Instant.now() + " [DEBUG] QCmdProcessor: Queue full, failed to append command: " + cmd.getClass().getSimpleName());
-            }
-            else {
-                // System.out.println(Instant.now() + " [DEBUG] QCmdProcessor: Appended command: " + cmd.getClass().getSimpleName());
+            if (added) {
+                synchronized (queueLock) {
+                    queueLock.notifyAll();
+                }
             }
             return added;
         }
@@ -278,15 +284,16 @@ public class QCmdProcessor implements Runnable {
     }
 
     public void WaitQueueFinished() {
-        while (true) {
-            if (queue.isEmpty() && queueResponse.isEmpty()) {
-                break;
-            }
-            try {
-                Thread.sleep(10);
-            }
-            catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+        synchronized (queueLock) {
+            while (!queue.isEmpty() || !queueResponse.isEmpty()) {
+                try {
+                    queueLock.wait(5000); // Wait up to 5 seconds
+                }
+                catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                    LOGGER.log(Level.SEVERE, "WaitQueueFinished interrupted.", ex);
+                    return;
+                }
             }
         }
     }
@@ -302,6 +309,9 @@ public class QCmdProcessor implements Runnable {
             try {
                 queueResponse.clear();
                 QCmd cmd = queue.take();
+                synchronized (queueLock) {
+                    queueLock.notifyAll();
+                }
                 if (!((cmd instanceof QCmdPing) || (cmd instanceof QCmdGuiDialTx))) {
                     // System.out.println(cmd);
                     // setProgress((100 * (queue.size() + 1)) / (queue.size() + 2));
@@ -326,6 +336,9 @@ public class QCmdProcessor implements Runnable {
                             /* Only proceed to wait for a response if the command was successfully queued */
                             try {
                                 QCmd response = queueResponse.take(); // This might still block if no response arrives
+                                synchronized (queueLock) {
+                                    queueLock.notifyAll();
+                                }
                                 publish(response);
                                 if (response instanceof QCmdDisconnect){
                                     queue.clear();

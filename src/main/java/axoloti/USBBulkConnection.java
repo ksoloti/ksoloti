@@ -1570,6 +1570,9 @@ public class USBBulkConnection extends Connection {
 
                                 try {
                                     QCmdProcessor.getQCmdProcessor().getQueueResponse().offer(currentExecutingCommand, 10, TimeUnit.MILLISECONDS);
+                                    synchronized (QCmdProcessor.getQCmdProcessor().getQueueLock()) {
+                                        QCmdProcessor.getQCmdProcessor().getQueueLock().notifyAll();
+                                    }
                                 }
                                 catch (InterruptedException e) {
                                     Thread.currentThread().interrupt();
