@@ -72,7 +72,7 @@ public class USBBulkConnection extends Connection {
     private Thread transmitterThread;
     private Thread receiverThread;
     private final BlockingQueue<QCmdSerialTask> queueSerialTask;
-    private String cpuid;
+    private String targetCpuId;
     private ksoloti_core targetProfile;
     private final Context context;
     private DeviceHandle handle;
@@ -385,9 +385,8 @@ public class USBBulkConnection extends Connection {
                         else {
                             String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
 
-                            if (cpuid != null) {
-
-                                if (serial.equals(cpuid)) {
+                            if (targetCpuId != null) {
+                                if (serial.equals(targetCpuId)) {
                                     return h;
                                 }
                             }
@@ -421,8 +420,8 @@ public class USBBulkConnection extends Connection {
                         else {
                             String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
 
-                            if (cpuid != null) {
-                                if (serial.equals(cpuid)) {
+                            if (targetCpuId != null) {
+                                if (serial.equals(targetCpuId)) {
                                     return h;
                                 }
                             }
@@ -499,8 +498,8 @@ public class USBBulkConnection extends Connection {
 
         GoIdleState();
 
-        if (cpuid == null) {
-            cpuid = prefs.getComPortName();
+        if (targetCpuId == null) {
+            targetCpuId = prefs.getComPortName();
         }
 
         targetProfile = new ksoloti_core();
@@ -653,13 +652,13 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public void SelectPort() {
-        USBPortSelectionDlg spsDlg = new USBPortSelectionDlg(null, true, cpuid);
+        USBPortSelectionDlg spsDlg = new USBPortSelectionDlg(null, true, targetCpuId);
         spsDlg.setVisible(true);
-        cpuid = spsDlg.getCPUID();
-        String name = prefs.getBoardName(cpuid);
-        if (cpuid == null) return;
+        targetCpuId = spsDlg.getCPUID();
+        String name = prefs.getBoardName(targetCpuId);
+        if (targetCpuId == null) return;
         if (name == null) {
-            LOGGER.log(Level.INFO, "Selecting CPUID: {0} for connection.", cpuid);
+            LOGGER.log(Level.INFO, "Selecting CPU ID: {0} for connection.", targetCpuId);
         }
         else {
             LOGGER.log(Level.INFO, "Selecting \"{0}\" for connection.", new Object[]{name});
@@ -672,6 +671,12 @@ public class USBBulkConnection extends Connection {
         }
         return conn;
     }
+
+    @Override
+    public String getTargetCpuId() {
+        return this.targetCpuId;
+    }
+
 
     @Override
     public void ClearSync() {
@@ -1559,8 +1564,6 @@ public class USBBulkConnection extends Connection {
                                 currentExecutingCommand.setCommandCompleted(statusCode == 0x00);
 
                                 try {
-                                    /* Put the command that just completed into the QCmdProcessor's response queue.
-                                       This should unblock QCmdProcessor.run()'s queueResponse.take() */
                                     QCmdProcessor.getQCmdProcessor().getQueueResponse().offer(currentExecutingCommand, 10, TimeUnit.MILLISECONDS);
                                 }
                                 catch (InterruptedException e) {
