@@ -81,8 +81,8 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     private javax.swing.JButton jButtonRefresh;
     private javax.swing.JButton jButtonCancel;
     private javax.swing.JButton jButtonOK;
-    private ScrollPaneComponent jScrollPane2;
-    private javax.swing.JTable jTable1;
+    private ScrollPaneComponent jScrollPaneBoardsList;
+    private javax.swing.JTable jTableBoardsList;
 
     /**
      * Creates new form USBPortSelectionDlg
@@ -109,14 +109,14 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
         getRootPane().setDefaultButton(jButtonOK);
 
-        jTable1.getTableHeader().setReorderingAllowed(false);
-        jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        jTableBoardsList.getTableHeader().setReorderingAllowed(false);
+        jTableBoardsList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
             @Override
             public void valueChanged(ListSelectionEvent e) {
 
-                DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-                int r = jTable1.getSelectedRow();
+                DefaultTableModel model = (DefaultTableModel) jTableBoardsList.getModel();
+                int r = jTableBoardsList.getSelectedRow();
 
                 if (r >= 0) {
                     String devName = (String) model.getValueAt(r, 1);
@@ -139,7 +139,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             }
         });
         
-        jTable1.getModel().addTableModelListener(new TableModelListener() {
+        jTableBoardsList.getModel().addTableModelListener(new TableModelListener() {
 
             @Override
             public void tableChanged(TableModelEvent e) {
@@ -149,7 +149,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 
                 TableModel model = (TableModel)e.getSource();
                 String name = (String) model.getValueAt(row, column);
-                String cpuid = (String) ((DefaultTableModel) jTable1.getModel()).getValueAt(row, 3);
+                String cpuid = (String) ((DefaultTableModel) jTableBoardsList.getModel()).getValueAt(row, 3);
                 prefs.setBoardName(cpuid,name);
                 prefs.SavePrefs();
                 String currentlyConnectedCpuId = USBBulkConnection.GetConnection().getDetectedCpuId();
@@ -159,11 +159,11 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             }
         });
 
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setPreferredWidth(100);
-            jTable1.getColumnModel().getColumn(1).setPreferredWidth(100);
-            jTable1.getColumnModel().getColumn(2).setPreferredWidth(20);
-            jTable1.getColumnModel().getColumn(3).setPreferredWidth(100);
+        if (jTableBoardsList.getColumnModel().getColumnCount() > 0) {
+            jTableBoardsList.getColumnModel().getColumn(0).setPreferredWidth(100);
+            jTableBoardsList.getColumnModel().getColumn(1).setPreferredWidth(100);
+            jTableBoardsList.getColumnModel().getColumn(2).setPreferredWidth(20);
+            jTableBoardsList.getColumnModel().getColumn(3).setPreferredWidth(100);
         }
     }
 
@@ -196,7 +196,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     }
 
     final void Populate() {
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        DefaultTableModel model = (DefaultTableModel) jTableBoardsList.getModel();
         model.setRowCount(0);
         DeviceList list = new DeviceList();
 
@@ -317,7 +317,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             for (int r = 0; r < model.getRowCount(); r++) {
                 String id = (String) model.getValueAt(r, 3);
                 if (id.equals(this.defCPUID)) {
-                    jTable1.setRowSelectionInterval(r, r);
+                    jTableBoardsList.setRowSelectionInterval(r, r);
                 }
             }
         }
@@ -336,8 +336,8 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         jButtonOK = new javax.swing.JButton();
         jButtonCancel = new javax.swing.JButton();
         jButtonRefresh = new javax.swing.JButton();
-        jScrollPane2 = new ScrollPaneComponent();
-        jTable1 = new javax.swing.JTable();
+        jScrollPaneBoardsList = new ScrollPaneComponent();
+        jTableBoardsList = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
@@ -366,7 +366,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             }
         });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTableBoardsList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -389,14 +389,14 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
-        jTable1.getTableHeader().setReorderingAllowed(false);
-        jTable1.setRowHeight(24);
-        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+        jTableBoardsList.getTableHeader().setReorderingAllowed(false);
+        jTableBoardsList.setRowHeight(24);
+        jTableBoardsList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable1MouseClicked(evt);
             }
         });
-        jScrollPane2.setViewportView(jTable1);
+        jScrollPaneBoardsList.setViewportView(jTableBoardsList);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -411,7 +411,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                         .addComponent(jButtonCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(15, 15, 15)
                         .addComponent(jButtonOK, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jScrollPaneBoardsList, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(146, 146, 146)
                         .addComponent(jButtonRefresh)
@@ -423,7 +423,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addGap(1, 1, 1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
+                .addComponent(jScrollPaneBoardsList, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
                 .addGap(11, 11, 11)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonRefresh)
@@ -455,10 +455,10 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     }
 
     private void onSelect() {
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        DefaultTableModel model = (DefaultTableModel) jTableBoardsList.getModel();
         int selRow = 0;
-        if (jTable1.getSelectedRowCount() > 0 ) {
-            selRow = jTable1.getSelectedRow();
+        if (jTableBoardsList.getSelectedRowCount() > 0 ) {
+            selRow = jTableBoardsList.getSelectedRow();
             cpuid = (String) model.getValueAt(selRow, 3);
         }
         setVisible(false);        
