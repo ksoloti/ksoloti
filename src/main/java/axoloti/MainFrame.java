@@ -862,12 +862,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelInfoColumn.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jPanelInfoColumn.setLayout(new javax.swing.BoxLayout(jPanelInfoColumn, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jLabelCPUID.setText(" ");
-        jLabelVoltages.setText(" ");
+        jLabelCPUID.setText("");
+        jLabelVoltages.setText("");
         jLabelVoltages.putClientProperty(FlatClientProperties.STYLE, "disabledForeground:#FF0000"); /* "disabledForeground" color here means voltage warning, red */
-        jLabelSDCardPresent.setText(" ");
-        jLabelFlags.setText(" ");
-        jLabelPatch.setText(" ");
+        jLabelSDCardPresent.setText("");
+        jLabelFlags.setText("");
+        jLabelPatch.setText("");
         
         populateInfoColumn();
 
@@ -1519,14 +1519,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         else {
             jToggleButtonConnect.setText("Connect");
-            setCpuID(null);
-            jLabelVoltages.setText(" ");
+            jLabelCPUID.setText("");
+            jLabelCPUID.setToolTipText("");
+            jLabelVoltages.setText("");
             v5000c = 0;
             vdd00c = 0;
             patchIndex = -4;
-            jLabelSDCardPresent.setText(" ");
-            jLabelFlags.setText(" ");
-            jLabelPatch.setText(" ");
+            jLabelSDCardPresent.setText("");
+            jLabelFlags.setText("");
+            jLabelPatch.setText("");
         }
 
         jToggleButtonConnect.setSelected(connect);
@@ -1556,28 +1557,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (DocumentWindowList.GetList().isEmpty()) {
             System.exit(0);
         }
-    }
-
-    public void setCpuID(String cpuId) {
-        if (cpuId == null) {
-            jLabelCPUID.setText(" ");
-        } else {
-            String name = MainFrame.prefs.getBoardName(cpuId);
-            if (name == null) {
-                jLabelCPUID.setText("Board ID:    " + cpuId.substring(0, 8) + " " + cpuId.substring(8, 16) + " " + cpuId.substring(16, 24));
-                jLabelCPUID.setToolTipText("Showing board ID of the currently connected Core.\n" +
-                                           "You can name your Core by disconnecting it from\n" +
-                                           "the Patcher, then going to Board > Select Device... > Name.\n" + 
-                                           "Press Enter in the Name textfield to confirm the entry.");
-            } else {
-                jLabelCPUID.setText("Board Name:    " + name);
-                jLabelCPUID.setToolTipText("Showing the name defined in Board > Select Device... > Name.\n" +
-                                           "This setting is saved in the local ksoloti.prefs file.");
-            }
-        }
-
-        /* Update listeners */
-        ShowUnitName(jLabelCPUID.getText());
     }
 
     public void updateLinkFirmwareID() {
