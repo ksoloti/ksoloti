@@ -545,6 +545,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     public void Close() {
         DocumentWindowList.UnregisterWindow(this);
         USBBulkConnection.GetConnection().removeConnectionStatusListener(this);
+        USBBulkConnection.GetConnection().removeSDCardMountStatusListener(this);
         dispose();
     }
 
