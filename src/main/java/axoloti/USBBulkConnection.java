@@ -568,7 +568,7 @@ public class USBBulkConnection extends Connection {
             qcmdp.AppendToQueue(q);
             targetProfile.setCPUSerial(q.getResult());
             this.detectedCpuId = CpuIdToHexString(targetProfile.getCPUSerial());
-            LOGGER.log(Level.INFO, "[DEBUG] USBBulkConnection: detectedCpuId set to: " + this.detectedCpuId);
+            // System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: detectedCpuId set to: " + this.detectedCpuId);
             ShowConnect();
 
             return true;
