@@ -876,13 +876,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jPanelInfoColumn.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jPanelInfoColumn.setLayout(new javax.swing.BoxLayout(jPanelInfoColumn, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jLabelCPUID.setText("");
-        jLabelVoltages.setText("");
+        jLabelCPUID.setText(" ");
+        jLabelVoltages.setText(" ");
         jLabelVoltages.putClientProperty(FlatClientProperties.STYLE, "disabledForeground:#FF0000"); /* "disabledForeground" color here means voltage warning, red */
-        jLabelSDCardPresent.setText("");
-        jLabelFlags.setText("");
-        jLabelPatch.setText("");
-        
+        jLabelSDCardPresent.setText(" ");
+        jLabelFlags.setText(" ");
+        jLabelPatch.setText(" ");
+
         populateInfoColumn();
 
         jPanelHeader.add(jPanelInfoColumn);
@@ -1641,15 +1641,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         else {
             jToggleButtonConnect.setText("Connect");
-            jLabelCPUID.setText("");
-            jLabelCPUID.setToolTipText("");
-            jLabelVoltages.setText("");
+            jLabelCPUID.setText(" ");
+            jLabelCPUID.setToolTipText(" ");
+            jLabelVoltages.setText(" ");
             v5000c = 0;
             vdd00c = 0;
             patchIndex = -4;
-            jLabelSDCardPresent.setText("");
-            jLabelFlags.setText("");
-            jLabelPatch.setText("");
+            jLabelSDCardPresent.setText(" ");
+            jLabelFlags.setText(" ");
+            jLabelPatch.setText(" ");
         }
 
         jToggleButtonConnect.setSelected(connect);
@@ -1741,7 +1741,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     s = "Running live patch";
                     break;
                 case -5:
-                    s = "";
+                    s = " ";
                     break;
                 default:
                     s = "Running patch #" + patchIndex;
@@ -1940,8 +1940,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     @Override
     public void ShowBoardIDName(String unitId, String friendlyName) {
         if (!USBBulkConnection.GetConnection().isConnected() || unitId == null || unitId.trim().isEmpty()) {
-            jLabelCPUID.setText("");
-            jLabelCPUID.setToolTipText("");
+            jLabelCPUID.setText(" ");
+            jLabelCPUID.setToolTipText(" ");
         }
         else {
             String nameToDisplay = friendlyName;

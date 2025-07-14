@@ -109,7 +109,7 @@ public abstract class Connection {
                 csl.ShowDisconnect();
             });
         }
-        ShowBoardIDName("", null);
+        ShowBoardIDName(" ", null);
     }
 
     public void ShowConnect() {
@@ -184,12 +184,12 @@ public abstract class Connection {
                     // System.out.println(Instant.now() + " [DEBUG] Connection: Replaying current CPU ID " + currentCpuId + " and friendly name '" + (friendlyNameFromPrefs != null ? friendlyNameFromPrefs : "NULL") + "' to new listener.");
                 }
                 else {
-                    unl.ShowBoardIDName("", null);
+                    unl.ShowBoardIDName(" ", null);
                     // System.out.println(Instant.now() + " [DEBUG] Connection: Replaying empty CPU ID (connected but ID not ready) to new listener.");
                 }
             }
             else {
-                unl.ShowBoardIDName("", null);
+                unl.ShowBoardIDName(" ", null);
                 // System.out.println(Instant.now() + " [DEBUG] Connection: Replaying empty CPU ID (not connected) to new listener.");
             }
         });

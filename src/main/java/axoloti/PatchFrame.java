@@ -1546,7 +1546,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     public void ShowBoardIDName(String unitId, String friendlyName) {
 
         if (!USBBulkConnection.GetConnection().isConnected()) {
-            jUnitNameIndicator.setText("");
+            jUnitNameIndicator.setText(" ");
             jUnitNameIndicator.setToolTipText("");
             return;
         }
