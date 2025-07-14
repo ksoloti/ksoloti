@@ -1415,11 +1415,49 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     // }
 
     @Override
-    public void ShowConnectionFlags(int connectionFlags) {
-    }
+    public void ShowUnitName(String unitId, String friendlyName) {
 
-    @Override
-    public void ShowUnitName(String unitName) {
-        jUnitNameIndicator.setText(unitName);
+        if (!USBBulkConnection.GetConnection().isConnected()) {
+            jUnitNameIndicator.setText("");
+            jUnitNameIndicator.setToolTipText("");
+            return;
+        }
+        if (unitId == null || unitId.trim().isEmpty()) {
+            return;
+        }
+
+        String nameToDisplay = friendlyName;
+        if (nameToDisplay == null || nameToDisplay.trim().isEmpty()) {
+            nameToDisplay = prefs.getBoardName(unitId);
+        }
+        if (nameToDisplay == null || nameToDisplay.trim().isEmpty()) {
+            StringBuilder formattedCpuId = new StringBuilder("Board ID:   ");
+            if (unitId.length() >= 24) {
+                formattedCpuId.append(unitId.substring(0, 8)).append(" ")
+                              .append(unitId.substring(8, 16)).append(" ")
+                              .append(unitId.substring(16, 24));
+            }
+            else if (unitId.length() >= 16) {
+                formattedCpuId.append(unitId.substring(0, 8)).append(" ")
+                              .append(unitId.substring(8, 16));
+            }
+            else if (unitId.length() > 0) {
+                formattedCpuId.append(unitId);
+            }
+            else {
+                formattedCpuId.append("N/A");
+            }
+
+            jUnitNameIndicator.setText(formattedCpuId.toString());
+            jUnitNameIndicator.setToolTipText("Showing board ID of the currently connected Core.\n" +
+                                                "You can name your Core by disconnecting it from\n" +
+                                                "the Patcher, then going to Board > Select Device... > Name.\n" +
+                                                "Press Enter in the Name textfield to confirm the entry.");
+        }
+        else {
+            jUnitNameIndicator.setText("Board Name:   " + nameToDisplay);
+            jUnitNameIndicator.setToolTipText("Showing the name defined in Board > Select Device... > Name.\n" +
+                                                "This setting is saved in the local ksoloti.prefs file.");
+        }
     }
 }
