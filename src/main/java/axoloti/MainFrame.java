@@ -149,10 +149,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
-    // private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelCPUID;
     private javax.swing.JLabel jLabelFlags;
-    // private javax.swing.JLabel jLabelFirmwareID;
     private javax.swing.JLabel jLabelIcon;
     private javax.swing.JLabel jLabelPatch;
     private javax.swing.JLabel jLabelProgress;
@@ -777,7 +775,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void initComponents() {
 
-        // jLabel1 = new javax.swing.JLabel();
         jPanelHeader = new javax.swing.JPanel();
         jPanelIconColumn = new javax.swing.JPanel();
         jPanelButtonsColumn = new javax.swing.JPanel();
@@ -787,7 +784,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jToggleButtonConnect = new javax.swing.JToggleButton();
         jLabelCPUID = new javax.swing.JLabel();
         jLabelFlags = new javax.swing.JLabel();
-        // jLabelFirmwareID = new javax.swing.JLabel();
         jLabelVoltages = new javax.swing.JLabel();
         jLabelPatch = new javax.swing.JLabel();
         jLabelSDCardPresent = new javax.swing.JLabel();
@@ -822,8 +818,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemFlashUser = new javax.swing.JMenuItem();
         windowMenu1 = new axoloti.menus.WindowMenu();
         helpMenu1 = new axoloti.menus.HelpMenu();
-
-        // jLabel1.setText(" ");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Ksoloti");
@@ -1669,7 +1663,6 @@ private void jToggleButtonConnectActionPerformed(java.awt.event.ActionEvent evt)
 
     public void updateLinkFirmwareID() {
         LinkFirmwareID = FirmwareID.getFirmwareID();
-        // jLabelFirmwareID.setText("Firmware ID: " + LinkFirmwareID);
         LOGGER.log(Level.INFO, "Patcher linked to firmware {0}", LinkFirmwareID);
         WarnedAboutFWCRCMismatch = false;
     }
