@@ -91,7 +91,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
         initComponents();
 
-        setSize(560, 200);
+        setSize(640, 200);
         setTitle("Select Device");
         setLocationRelativeTo(mainframe);
 
@@ -157,7 +157,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             jTable1.getColumnModel().getColumn(0).setPreferredWidth(100);
             jTable1.getColumnModel().getColumn(1).setPreferredWidth(100);
             jTable1.getColumnModel().getColumn(2).setPreferredWidth(20);
-            jTable1.getColumnModel().getColumn(3).setPreferredWidth(40);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(100);
         }
     }
 
