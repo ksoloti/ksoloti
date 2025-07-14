@@ -40,6 +40,8 @@ public abstract class Connection {
     private ArrayList<ConnectionFlagsListener> cfcmls = new ArrayList<ConnectionFlagsListener>();
     private ArrayList<BoardIDNameListener> uncmls = new ArrayList<BoardIDNameListener>();
 
+    abstract public void setDisconnectRequested(boolean requested);
+    abstract public boolean isDisconnectRequested();
     abstract public boolean isConnected();
     abstract public void disconnect();
     abstract public boolean connect();

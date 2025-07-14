@@ -1141,59 +1141,75 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         USBBulkConnection.GetConnection().SelectPort();
     }
 
-private void jToggleButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {
-    if (!jToggleButtonConnect.isSelected()) {
+    private void jToggleButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {
+        jToggleButtonConnect.setEnabled(false);
 
-        new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                USBBulkConnection.GetConnection().disconnect();
-                return null;
+        if (jToggleButtonConnect.isSelected()) { /* Attempting to connect */
+            /* Guard against rapid "Connect" clicks if a disconnect was previously initiated */
+            if (USBBulkConnection.GetConnection().isDisconnectRequested()) {
+                LOGGER.log(Level.WARNING, "Connection attempt ignored: A previous disconnection is still pending.");
+                /* Revert the button's selected state as connection did not succeed */
+                jToggleButtonConnect.setSelected(false);
+                jToggleButtonConnect.setEnabled(true);
+                return;
             }
 
-            @Override
-            protected void done() {
-                try {
-                    get(); // Check for exceptions that occurred in doInBackground
-                    ShowDisconnect();
+            new SwingWorker<Boolean, Void>() {
+                @Override
+                protected Boolean doInBackground() throws Exception {
+                    return USBBulkConnection.GetConnection().connect();
                 }
-                catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Disconnect worker failed unexpectedly:", e);
-                    MainFrame.mainframe.SetProgressMessage("Disconnect process crashed.");
-                    ShowDisconnect();
-                }
-            }
-        }.execute();
 
-    }
-    else {
-        qcmdprocessor.Panic();
-
-        new SwingWorker<Boolean, String>() {
-            @Override
-            protected Boolean doInBackground() throws Exception {
-                return USBBulkConnection.GetConnection().connect();
-            }
-
-            @Override
-            protected void done() {
-                try {
-                    boolean success = get();
-                    if (success) {
-                        ShowConnect();
+                @Override
+                protected void done() {
+                    try {
+                        get();
                     }
-                    else {
-                        ShowDisconnect();
+                    catch (Exception e) {
+                        LOGGER.log(Level.SEVERE, "Error during connection SwingWorker:", e);
+                        USBBulkConnection.GetConnection().ShowDisconnect();
+                    }
+                    finally {
+                        jToggleButtonConnect.setEnabled(true);
                     }
                 }
-                catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Connection worker failed unexpectedly:", e);
-                    ShowDisconnect();
+            }.execute();
+
+        }
+        else { /* Attempting to disconnect */
+            /* Set guard against rapid "Connect" clicks now that a disconnect was initiated */
+            USBBulkConnection.GetConnection().setDisconnectRequested(true);
+
+            new SwingWorker<Void, Void>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    USBBulkConnection.GetConnection().disconnect();
+                    Thread.sleep(500);
+                    return null;
                 }
-            }
-        }.execute();
+
+                @Override
+                protected void done() {
+                    try {
+                        get();
+                    }
+                    catch (Exception e) {
+                        LOGGER.log(Level.SEVERE, "Error during disconnection SwingWorker:", e);
+                        if (USBBulkConnection.GetConnection().isConnected()) {
+                            USBBulkConnection.GetConnection().ShowConnect();
+                        }
+                        else {
+                            USBBulkConnection.GetConnection().ShowDisconnect();
+                        }
+                    }
+                    finally {
+                        USBBulkConnection.GetConnection().setDisconnectRequested(false);
+                        jToggleButtonConnect.setEnabled(true);
+                    }
+                }
+            }.execute();
+        }
     }
-}
 
     public boolean runAllTests() {
 
@@ -1646,7 +1662,6 @@ private void jToggleButtonConnectActionPerformed(java.awt.event.ActionEvent evt)
         if (prefs.getRestartRequired()) {
             disableConnectUntilRestart();
         }
-
     }
 
     public void Quit() {

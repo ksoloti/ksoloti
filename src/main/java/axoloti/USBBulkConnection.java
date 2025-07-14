@@ -245,6 +245,16 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
+    public void setDisconnectRequested(boolean requested) {
+        this.disconnectRequested = requested;
+    }
+
+    @Override
+    public boolean isDisconnectRequested() {
+        return disconnectRequested;
+    }
+
+    @Override
     public boolean isConnected() {
         return connected && (!disconnectRequested);
     }
@@ -272,7 +282,6 @@ public class USBBulkConnection extends Connection {
     @Override
     public void disconnect() {
         if (connected) {
-            disconnectRequested = true;
             connected = false;
             isSDCardPresent = null;
             ShowDisconnect();
@@ -495,16 +504,18 @@ public class USBBulkConnection extends Connection {
     @Override
     public boolean connect() {
 
-        disconnect();
-        disconnectRequested = false;
-        mainframe.updateLinkFirmwareID();
+        if (isDisconnectRequested()) {
+            System.out.println(Instant.now() + " [DEBUG] Connection attempt aborted: A disconnection is still in progress.");
+            return false;
+        }
 
+        disconnect();
+        mainframe.updateLinkFirmwareID();
         GoIdleState();
 
         if (targetCpuId == null) {
             targetCpuId = prefs.getComPortName();
         }
-
         targetProfile = new ksoloti_core();
 
         handle = OpenDeviceHandle();
@@ -538,7 +549,6 @@ public class USBBulkConnection extends Connection {
             transmitterThread.setName("Transmitter");
             transmitterThread.start();
 
-            connected = true;
             ClearSync();
             TransmitPing();
 
@@ -553,7 +563,7 @@ public class USBBulkConnection extends Connection {
                 }
                 return false;
             }
-
+            connected = true;
             LOGGER.log(Level.WARNING, "Connected\n");
 
             QCmdProcessor qcmdp = MainFrame.mainframe.getQcmdprocessor();
@@ -572,7 +582,6 @@ public class USBBulkConnection extends Connection {
             this.detectedCpuId = CpuIdToHexString(targetProfile.getCPUSerial());
             // System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: detectedCpuId set to: " + this.detectedCpuId);
             ShowConnect();
-
             return true;
         }
         catch (LibUsbException e) {
