@@ -24,5 +24,5 @@ package axoloti;
  * @author AndrewCapon
  */
 public interface UnitNameListener {
-    public void ShowUnitName(String unitName);
+    public void ShowUnitName(String unitId, String friendlyName);
 }

@@ -108,7 +108,7 @@ import qcmds.QCmdUploadPatch;
  *
  * @author Johannes Taelman
  */
-public final class MainFrame extends javax.swing.JFrame implements ActionListener, ConnectionStatusListener, SDCardMountStatusListener, ConnectionFlagsListener {
+public final class MainFrame extends javax.swing.JFrame implements ActionListener, ConnectionStatusListener, SDCardMountStatusListener, ConnectionFlagsListener, UnitNameListener {
 
     private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
 
@@ -185,8 +185,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private axoloti.menus.WindowMenu windowMenu1;
 
     private boolean doAutoScroll = true;
-
-    private ArrayList<UnitNameListener> uncmls = new ArrayList<UnitNameListener>();
 
     /* Usually we run all tests, as many may fail for same reason and you want
        a list of all affected files, but if you want to stop on first failure,
@@ -274,9 +272,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                             LOGGER.log(Level.WARNING, "Warning: File \"" + fn + "\" not found.");
                         }
                     }
-                } catch (UnsupportedFlavorException ex) {
+                }
+                catch (UnsupportedFlavorException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
-                } catch (IOException ex) {
+                }
+                catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
@@ -292,7 +292,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (doAutoScroll) {
                         brm.setValue(brm.getMaximum());
                     }
-                } else {
+                }
+                else {
                     // doAutoScroll will be set to true when user reaches at the bottom of document.
                     doAutoScroll = ((brm.getValue() + brm.getExtent()) == brm.getMaximum());
                 }
@@ -308,7 +309,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 if (e.getWheelRotation() < 0) {
                     // If user trying to scroll up, doAutoScroll should be false.
                     doAutoScroll = false;
-                } else {
+                }
+                else {
                     // doAutoScroll will be set to true when user reaches at the bottom of document.
                     doAutoScroll = ((brm.getValue() + brm.getExtent()) == brm.getMaximum());
                 }
@@ -455,12 +457,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
          * as a stalling error could prevent event loop running and our logging
          * console opening
          */
-        Runnable initr;
-        initr = new Runnable() {
+        Runnable initr = new Runnable() {
             @Override
             public void run() {
                 try {
-
                     populateMainframeTitle();
                     LOGGER.log(Level.WARNING, "Patcher version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
 
@@ -499,6 +499,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     USBBulkConnection.GetConnection().addConnectionStatusListener(MainFrame.this);
                     USBBulkConnection.GetConnection().addSDCardMountStatusListener(MainFrame.this);
                     USBBulkConnection.GetConnection().addConnectionFlagsListener(MainFrame.this);
+                    USBBulkConnection.GetConnection().addUnitNameListener(MainFrame.this);
 
                     ShowDisconnect();
                     // if (!Axoloti.isFailSafeMode()) {
@@ -626,17 +627,20 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                                     // wait for objects be loaded
                                     if (axoObjects.LoaderThread.isAlive()) {
                                         EventQueue.invokeLater(this);
-                                    } else {
+                                    }
+                                    else {
                                         PatchGUI.OpenPatch(f);
                                     }
-                                } catch (Exception e) {
+                                }
+                                catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             }
                         };
                         EventQueue.invokeLater(r);
                     }
-                } else if (arg.endsWith(".axo")) {
+                }
+                else if (arg.endsWith(".axo")) {
                     System.out.println(Instant.now() + " Opening .axo files not implemented yet");
                     // NOP for AXO at the moment - new patch and paste object as embedded inside?
                     // NewPatchWithObjectEmbedded---or something();
@@ -1346,7 +1350,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 LOGGER.log(Level.SEVERE, "UPGRADE FAILED: {0}", f.getPath());
             }
             return status;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "UPGRADE FAILED: " + f.getPath(), ex);
             return false;
         }
@@ -1368,7 +1373,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
             qcmdprocessor.AppendToQueue(new qcmds.QCmdDisconnect());
             qcmdprocessor.AppendToQueue(new qcmds.QCmdFlashDFU());
-        } else {
+        }
+        else {
             LOGGER.log(Level.SEVERE, "No devices in Rescue Mode detected. To bring Ksoloti Core into Rescue Mode:\n1. Remove power.\n2. Hold down button S1 then connect the USB prog port to your computer.\nThe LEDs will stay off when in Rescue Mode.");
         }
     }
@@ -1446,7 +1452,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.AppendToQueue(new QCmdStartMounter());
             qcmdprocessor.AppendToQueue(new QCmdDisconnect());
             ShowDisconnect();
-        } else {
+        }
+        else {
             LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first!\n(File: {0})", fname);
         }
 
@@ -1461,11 +1468,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             InputStream input = new URI(uri).toURL().openStream();
             String name = uri.substring(uri.lastIndexOf("/") + 1, uri.length());
             PatchGUI.OpenPatch(name, input);
-        } catch (MalformedURLException ex) {
+        }
+        catch (MalformedURLException ex) {
             LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
-        } catch (URISyntaxException ex) {
+        }
+        catch (URISyntaxException ex) {
             LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{uri, ex});
         }
     }
@@ -1657,7 +1667,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         if (warning) {
             jLabelVoltages.setEnabled(false);
-        } else {
+        }
+        else {
             jLabelVoltages.setEnabled(true);
         }
     }
@@ -1819,23 +1830,51 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             else {
                 flags.append(" Inactive");
             }
-        } 
+        }
 
         jLabelFlags.setText(flags.toString());
     }
 
-    public void addUnitNameListener(UnitNameListener uncml) {
-        uncmls.add(uncml);
-        uncml.ShowUnitName(jLabelCPUID.getText());
-    }
+    @Override
+    public void ShowUnitName(String unitId, String friendlyName) {
+        if (!USBBulkConnection.GetConnection().isConnected() || unitId == null || unitId.trim().isEmpty()) {
+            jLabelCPUID.setText("");
+            jLabelCPUID.setToolTipText("");
+        }
+        else {
+            String nameToDisplay = friendlyName;
+            if (nameToDisplay == null || nameToDisplay.trim().isEmpty()) {
+                nameToDisplay = prefs.getBoardName(unitId);
+            }
+            if (nameToDisplay == null || nameToDisplay.trim().isEmpty()) {
+                StringBuilder formattedCpuId = new StringBuilder("Board ID:   ");
+                if (unitId.length() >= 24) {
+                    formattedCpuId.append(unitId.substring(0, 8)).append(" ")
+                                  .append(unitId.substring(8, 16)).append(" ")
+                                  .append(unitId.substring(16, 24));
+                }
+                else if (unitId.length() >= 16) {
+                    formattedCpuId.append(unitId.substring(0, 8)).append(" ")
+                                  .append(unitId.substring(8, 16));
+                }
+                else if (unitId.length() > 0) {
+                    formattedCpuId.append(unitId);
+                }
+                else {
+                    formattedCpuId.append("N/A");
+                }
 
-    public void removeUnitNameListener(UnitNameListener uncml) {
-        uncmls.remove(uncml);
-    }
-
-    public void ShowUnitName(String unitName) {
-        for (UnitNameListener uncml : uncmls) {
-            uncml.ShowUnitName(unitName);
+                jLabelCPUID.setText(formattedCpuId.toString());
+                jLabelCPUID.setToolTipText("Showing board ID of the currently connected Core.\n" +
+                                        "You can name your Core by disconnecting it from\n" +
+                                        "the Patcher, then going to Board > Select Device... > Name.\n" +
+                                        "Press Enter in the Name textfield to confirm the entry.");
+            }
+            else {
+                jLabelCPUID.setText("Board Name:   " + nameToDisplay);
+                jLabelCPUID.setToolTipText("Showing the name defined in Board > Select Device... > Name.\n" +
+                                        "This setting is saved in the local ksoloti.prefs file.");
+            }
         }
     }
 }

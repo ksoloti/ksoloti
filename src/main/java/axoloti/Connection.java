@@ -21,6 +21,7 @@ package axoloti;
 
 import axoloti.targetprofile.ksoloti_core;
 import java.nio.ByteBuffer;
+// import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -37,6 +38,7 @@ public abstract class Connection {
     private ArrayList<ConnectionStatusListener> csls = new ArrayList<ConnectionStatusListener>();
     private ArrayList<SDCardMountStatusListener> sdcmls = new ArrayList<SDCardMountStatusListener>();
     private ArrayList<ConnectionFlagsListener> cfcmls = new ArrayList<ConnectionFlagsListener>();
+    private ArrayList<UnitNameListener> uncmls = new ArrayList<UnitNameListener>();
 
     abstract public boolean isConnected();
     abstract public void disconnect();
@@ -105,6 +107,7 @@ public abstract class Connection {
                 csl.ShowDisconnect();
             });
         }
+        ShowUnitName("", null);
     }
 
     public void ShowConnect() {
@@ -119,7 +122,8 @@ public abstract class Connection {
         SwingUtilities.invokeLater(() -> {
             if (GetSDCardPresent()) {
                 sdcml.ShowSDCardMounted();
-            } else {
+            }
+            else {
                 sdcml.ShowSDCardUnmounted();
             }
         });
@@ -155,6 +159,58 @@ public abstract class Connection {
 
     public void removeConnectionFlagsListener(ConnectionFlagsListener cfcml) {
         cfcmls.remove(cfcml);
+    }
+
+    public void addUnitNameListener(UnitNameListener unl) {
+        uncmls.add(unl);
+
+        SwingUtilities.invokeLater(() -> {
+            if (isConnected()) {
+                String currentCpuId = getDetectedCpuId();
+                // System.out.println(Instant.now() + " [DEBUG] Connection.addUnitNameListener: currentCpuId:" + getDetectedCpuId());
+                
+                if (currentCpuId != null && !currentCpuId.trim().isEmpty()) {
+                    if (MainFrame.prefs == null) {
+                        // System.out.println(Instant.now() + " [DEBUG] Connection: MAINFRAME.PREFS OBJECT IS NULL IN addUnitNameListener!");
+                    }
+                    else {
+                        // System.out.println(Instant.now() + " [DEBUG] Connection: MainFrame.prefs object instance hash: " + MainFrame.prefs.hashCode());
+                    }
+                    String friendlyNameFromPrefs = MainFrame.prefs.getBoardName(currentCpuId);
+                    // System.out.println(Instant.now() + " [DEBUG] Connection.addUnitNameListener: friendlyNameFromPrefs:" + MainFrame.prefs.getBoardName(currentCpuId));
+                    unl.ShowUnitName(currentCpuId, friendlyNameFromPrefs);
+                    // System.out.println(Instant.now() + " [DEBUG] Connection: Replaying current CPU ID " + currentCpuId + " and friendly name '" + (friendlyNameFromPrefs != null ? friendlyNameFromPrefs : "NULL") + "' to new listener.");
+                }
+                else {
+                    unl.ShowUnitName("", null);
+                    // System.out.println(Instant.now() + " [DEBUG] Connection: Replaying empty CPU ID (connected but ID not ready) to new listener.");
+                }
+            }
+            else {
+                unl.ShowUnitName("", null);
+                // System.out.println(Instant.now() + " [DEBUG] Connection: Replaying empty CPU ID (not connected) to new listener.");
+            }
+        });
+    }
+
+
+    public void removeUnitNameListener(UnitNameListener unl) {
+        uncmls.remove(unl);
+    }
+
+    public void ShowUnitName(String unitId, String friendlyName) {
+        String actualFriendlyName = friendlyName;
+        if (actualFriendlyName == null || actualFriendlyName.trim().isEmpty()) {
+            if (unitId != null && !unitId.trim().isEmpty()) {
+                actualFriendlyName = MainFrame.prefs.getBoardName(unitId);
+            }
+        }
+        for (UnitNameListener uncml : uncmls) {
+            final String finalActualFriendlyName = actualFriendlyName; // Need final variable for lambda
+            SwingUtilities.invokeLater(() -> {
+                uncml.ShowUnitName(unitId, finalActualFriendlyName);
+            });
+        }
     }
 
     public void ShowConnectionFlags(int connectionFlags) {
