@@ -333,7 +333,36 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         jButtonClose = new javax.swing.JButton();
         jButtonRefresh = new javax.swing.JButton();
         jScrollPaneBoardsList = new ScrollPaneComponent();
-        jTableBoardsList = new javax.swing.JTable();
+        jTableBoardsList = new javax.swing.JTable() {
+            /* Add tooltip functionality */
+            @Override
+            public String getToolTipText(java.awt.event.MouseEvent e) {
+                java.awt.Point p = e.getPoint();
+                int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+
+                /* Ensure the mouse is over a valid cell */
+                if (rowIndex == -1 || colIndex == -1) {
+                    return null;
+                }
+
+                int modelColumnIndex = convertColumnIndexToModel(colIndex);
+
+                switch (modelColumnIndex) {
+                    case 0: /* "Board Name" column */
+                        return "Board Name: Double-click to add a human-readable name for your board.\nMake sure you press 'Enter' to confirm your edit.";
+                    case 1: /* "Device" column */
+                        return "Device: The detected type of the USB device (e.g.,\nKsoloti Core, Axoloti Core, STM DFU Bootloader).\nDouble-click on a row or click \"Select\" below to connect to this device.";
+                    case 2: /* "USB Port" column */
+                        return "USB Port: The hardware USB port the device is connected to, as defined by your OS.\nDouble-click on a row or click \"Select\" below to connect to this device.";
+                    case 3: /* "Board ID" column */
+                        return "Board ID: The unique serial number (CPU ID) of the Axoloti/Ksoloti Core.\nDouble-click on a row or click \"Select\" below to connect to this device.";
+                    default:
+                        return null;
+                }
+            }
+        };
+
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
