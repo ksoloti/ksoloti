@@ -21,7 +21,6 @@ package axoloti.dialogs;
 import axoloti.MainFrame;
 import axoloti.USBBulkConnection;
 
-import static axoloti.MainFrame.mainframe;
 import static axoloti.MainFrame.prefs;
 import static axoloti.usb.Usb.DeviceToPath;
 import static axoloti.usb.Usb.PID_AXOLOTI;
@@ -37,7 +36,6 @@ import static axoloti.usb.Usb.VID_AXOLOTI;
 import static axoloti.usb.Usb.VID_STM;
 
 import axoloti.utils.OSDetect;
-import static axoloti.utils.OSDetect.getOS;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -99,7 +97,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
         setSize(640, 200);
         setTitle("Select Device");
-        setLocationRelativeTo(mainframe);
+        setLocationRelativeTo(MainFrame.mainframe);
 
         System.out.println("default cpuid: " + defCPUID);
         this.defCPUID = defCPUID;
@@ -169,7 +167,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     public static String ErrorString(int result) {
         if (result < 0) {
 
-            if (getOS() == OSDetect.OS.WIN) {
+            if (OSDetect.getOS() == OSDetect.OS.WIN) {
 
                 if (result == LibUsb.ERROR_NOT_FOUND) {
                     LOGGER.log(Level.WARNING, "You may need to install a compatible driver using Zadig. More info at https://ksoloti.github.io/3-4-rescue_mode.html#zadig_bootloader");
@@ -179,7 +177,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                     return "Inaccessible: busy?";
                 }
             }
-            else if (getOS() == OSDetect.OS.LINUX) {
+            else if (OSDetect.getOS() == OSDetect.OS.LINUX) {
 
                 if (result == LibUsb.ERROR_ACCESS) {
                     LOGGER.log(Level.WARNING, "You may need to add permissions by running platform_linux/add_udev_rules.sh. More info at https://ksoloti.github.io/3-install.html#linux_permissions");
@@ -229,7 +227,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             result = LibUsb.open(device, handle);
                             if (result < 0) {
 
-                                if (getOS() == OSDetect.OS.WIN) {
+                                if (OSDetect.getOS() == OSDetect.OS.WIN) {
 
                                     if (result == LibUsb.ERROR_NOT_SUPPORTED) {
                                         model.addRow(new String[]{"",sDFUBootloader, DeviceToPath(device), "Inaccessible: wrong driver installed"});
@@ -270,7 +268,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                         }
                         else {
                             String serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
-                            String name = MainFrame.prefs.getBoardName(serial);
+                            String name = prefs.getBoardName(serial);
                             if(name==null) name = "";
                             model.addRow(new String[]{name, sName, DeviceToPath(device), serial});
                             LibUsb.close(handle);
