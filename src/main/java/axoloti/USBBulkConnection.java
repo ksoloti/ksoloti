@@ -285,7 +285,6 @@ public class USBBulkConnection extends Connection {
         if (connected) {
             connected = false;
             isSDCardPresent = null;
-            ShowDisconnect();
             queueSerialTask.clear();
 
             LOGGER.log(Level.WARNING, "Disconnected\n");
@@ -352,6 +351,7 @@ public class USBBulkConnection extends Connection {
             CpuId0 = 0;
             CpuId1 = 0;
             CpuId2 = 0;
+            ShowDisconnect();
         }
     }
 
@@ -510,7 +510,6 @@ public class USBBulkConnection extends Connection {
             return false;
         }
 
-        disconnect();
         mainframe.updateLinkFirmwareID();
         GoIdleState();
 
