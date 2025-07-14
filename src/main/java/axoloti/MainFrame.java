@@ -1167,6 +1167,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
                     catch (Exception e) {
                         LOGGER.log(Level.SEVERE, "Error during connection SwingWorker:", e);
+                        USBBulkConnection.GetConnection().ShowDisconnect();
                     }
                     finally {
                         jToggleButtonConnect.setEnabled(true);
@@ -1196,9 +1197,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     catch (Exception e) {
                         LOGGER.log(Level.SEVERE, "Error during disconnection SwingWorker:", e);
                         if (USBBulkConnection.GetConnection().isConnected()) {
+                            USBBulkConnection.GetConnection().ShowConnect();
                             // System.out.println(Instant.now() + " [DEBUG] UI updated: Connected (disconnect failed, board still connected).");
                         }
                         else {
+                            USBBulkConnection.GetConnection().ShowDisconnect();
                             // System.out.println(Instant.now() + " [DEBUG] UI updated: Disconnected (disconnect failed, but board is off).");
                         }
                     }
