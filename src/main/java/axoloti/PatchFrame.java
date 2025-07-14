@@ -235,7 +235,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         createBufferStrategy(2);
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
         USBBulkConnection.GetConnection().addSDCardMountStatusListener(this);
-        mainframe.addUnitNameListener(this);
+        USBBulkConnection.GetConnection().addUnitNameListener(this);
     }
     
     public void repositionIfOutsideScreen() {
