@@ -508,6 +508,8 @@ public class Preferences {
 
         try {
             serializer.write(this, f);
+            singleton = null; /* Invalidate current instance */
+            Preferences.LoadPreferences(); /* Reload the freshly saved prefs file */
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, null, ex);
@@ -685,7 +687,7 @@ public class Preferences {
     }
 
     public String getBoardName(String cpu) {
-        if (cpu == null) {
+        if (cpu == null || cpu.trim().isEmpty()) {
             return null;
         }
         if (BoardNames.containsKey(cpu)) {
@@ -695,7 +697,7 @@ public class Preferences {
     }
 
     public void setBoardName(String cpuid, String name) {
-        if (name == null) {
+        if (name == null || name.trim().isEmpty()) {
             BoardNames.remove(cpuid);
         } else {
             BoardNames.put(cpuid, name);
