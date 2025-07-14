@@ -64,7 +64,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 // import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -78,6 +77,7 @@ import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.Box.Filler;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
@@ -101,6 +101,7 @@ import qcmds.QCmdStart;
 import qcmds.QCmdStartFlasher;
 import qcmds.QCmdStartMounter;
 import qcmds.QCmdStop;
+import qcmds.QCmdTransmitGetFWVersion;
 import qcmds.QCmdUploadFWSDRam;
 import qcmds.QCmdUploadPatch;
 
@@ -503,10 +504,29 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     ShowDisconnect();
                     // if (!Axoloti.isFailSafeMode()) {
-                        boolean success = USBBulkConnection.GetConnection().connect();
-                        if (success) {
-                            ShowConnect();
-                        }
+                        new SwingWorker<Boolean, String>() {
+                            @Override
+                            protected Boolean doInBackground() throws Exception {
+                                return USBBulkConnection.GetConnection().connect();
+                            }
+
+                            @Override
+                            protected void done() {
+                                try {
+                                    boolean success = get();
+                                    if (success) {
+                                        ShowConnect();
+                                    }
+                                    else {
+                                        ShowDisconnect();
+                                    }
+                                }
+                                catch (Exception e) {
+                                    LOGGER.log(Level.SEVERE, "Initial connection worker crashed:", e);
+                                    ShowDisconnect();
+                                }
+                            }
+                        }.execute();
                     // }
 
                     // Axoloti user library, ask user if they wish to upgrade, or do manual
@@ -1070,28 +1090,116 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void jMenuItemFDisconnectActionPerformed(java.awt.event.ActionEvent evt) {
-        USBBulkConnection.GetConnection().disconnect();
+        jMenuItemFDisconnect.setEnabled(false);
+
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                USBBulkConnection.GetConnection().disconnect();
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    get(); // Check for exceptions
+                    ShowDisconnect();
+                }
+                catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Disconnect worker failed unexpectedly:", e);
+                    ShowDisconnect();
+                }
+            }
+        }.execute();
     }
 
     private void jMenuItemFConnectActionPerformed(java.awt.event.ActionEvent evt) {
-        USBBulkConnection.GetConnection().connect();
+        jMenuItemFConnect.setEnabled(false);
+        MainFrame.mainframe.SetProgressMessage("Connecting via menu...");
+        qcmdprocessor.Panic();
+
+        new SwingWorker<Boolean, String>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                return USBBulkConnection.GetConnection().connect();
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    boolean success = get();
+                    if (success) {
+                        ShowConnect();
+                    }
+                    else {
+                        ShowDisconnect();
+                    }
+                }
+                catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Connection worker failed unexpectedly:", e);
+                    ShowDisconnect(); // Ensure UI reflects disconnected state
+                }
+            }
+        }.execute();
     }
 
     private void jMenuItemSelectComActionPerformed(java.awt.event.ActionEvent evt) {
         USBBulkConnection.GetConnection().SelectPort();
     }
 
-    private void jToggleButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {
-        if (!jToggleButtonConnect.isSelected()) {
-            USBBulkConnection.GetConnection().disconnect();
-        } else {
-            qcmdprocessor.Panic();
-            boolean success = USBBulkConnection.GetConnection().connect();
-            if (!success) {
-                ShowDisconnect();
+private void jToggleButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {
+    if (!jToggleButtonConnect.isSelected()) {
+
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                USBBulkConnection.GetConnection().disconnect();
+                return null;
             }
-        }
+
+            @Override
+            protected void done() {
+                try {
+                    get(); // Check for exceptions that occurred in doInBackground
+                    ShowDisconnect();
+                }
+                catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Disconnect worker failed unexpectedly:", e);
+                    MainFrame.mainframe.SetProgressMessage("Disconnect process crashed.");
+                    ShowDisconnect();
+                }
+            }
+        }.execute();
+
     }
+    else {
+        qcmdprocessor.Panic();
+
+        new SwingWorker<Boolean, String>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                return USBBulkConnection.GetConnection().connect();
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    boolean success = get();
+                    if (success) {
+                        ShowConnect();
+                    }
+                    else {
+                        ShowDisconnect();
+                    }
+                }
+                catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Connection worker failed unexpectedly:", e);
+                    ShowDisconnect();
+                }
+            }
+        }.execute();
+    }
+}
 
     public boolean runAllTests() {
 
@@ -1618,7 +1726,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     s = "Running live patch";
                     break;
                 case -5:
-                    s = " ";
+                    s = "";
                     break;
                 default:
                     s = "Running patch #" + patchIndex;
