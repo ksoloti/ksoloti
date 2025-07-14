@@ -622,9 +622,10 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
         jButtonUploadIndex.setText("Upload Bank Index");
         jButtonUploadIndex.setToolTipText("Creates or updates a file called \"index.axb\" on SD card.\n"
-                                        + "This is a simple text file containing an ordered list of patches.\n"
-                                        + "You will also have to upload the patch binaries to SD via \"Upload Patches\"\n"
-                                        + "Then you can load these patches via the index and a\"patch/load i\" object."
+                                        + "This is a simple text file containing an ordered list of the\n"
+                                        + "patch names that are currently in the list below.\n"
+                                        + "You will also have to upload the patch binaries to SD via \"Upload Patches.\"\n"
+                                        + "Then you can load these patches live by passing the index to a \"patch/load i\" object."
         );
         jButtonUploadIndex.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -635,6 +636,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         // jLabelDisclaimer.setText("Not (fully) implemented yet!");
 
         jUploadPatches.setText("Upload Patches");
+        jUploadPatches.setToolTipText("Compiles and uploads to SD all patches that are currently in the list below.");
         jUploadPatches.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jUploadPatchesActionPerformed(evt);
@@ -642,6 +644,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         });
 
         jUploadAll.setText("Upload Index & Patches");
+        jUploadAll.setToolTipText("This button is a 'two-in-one' combo, triggering the buttons\n" +
+                                  "\"Upload Bank Index\" and \"Upload Patches\" in one step.");
         jUploadAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jUploadAllActionPerformed(evt);
@@ -708,6 +712,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         getContentPane().add(jScrollPane1);
 
         jButtonUp.setText(" ⇑ Move Up ");
+        jButtonUp.setToolTipText("Moves the selected row(s) up in the list.");
         jButtonUp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonUpActionPerformed(evt);
@@ -715,6 +720,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         });
 
         jButtonDown.setText("⇓ Move Down");
+        jButtonDown.setToolTipText("Moves the selected row(s) down in the list.");
         jButtonDown.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonDownActionPerformed(evt);
@@ -722,6 +728,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         });
 
         jButtonRemove.setText("Remove Selected");
+        jButtonRemove.setToolTipText("Removes the selected entries from the list.");
         jButtonRemove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonRemoveActionPerformed(evt);
@@ -729,6 +736,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         });
 
         jButtonAdd.setText(" Add... ");
+        jButtonAdd.setToolTipText("Opens a file chooser dialog for adding patch files to the list.");
         jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonAddActionPerformed(evt);
@@ -736,6 +744,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         });
 
         jButtonOpen.setText("Open Selected");
+        jButtonOpen.setToolTipText("Opens the selected entries as patch windows in the Patcher editor.");
         jButtonOpen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonOpenActionPerformed(evt);
@@ -743,6 +752,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         });
 
         jButtonUpload.setText("Upload Selected");
+        jButtonUpload.setToolTipText("In contrast to \"Upload Patches\", compiles and Uploads only the selected entries to SD card.");
         jButtonUpload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonUploadActionPerformed(evt);
