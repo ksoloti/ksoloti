@@ -146,6 +146,10 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 String cpuid = (String) ((DefaultTableModel) jTable1.getModel()).getValueAt(row, 3);
                 prefs.setBoardName(cpuid,name);
                 prefs.SavePrefs();
+                String currentlyConnectedCpuId = USBBulkConnection.GetConnection().getDetectedCpuId();
+                if (currentlyConnectedCpuId != null && cpuid.equals(currentlyConnectedCpuId)) {
+                    USBBulkConnection.GetConnection().ShowUnitName(cpuid, name);
+                }
             }
         });
 
