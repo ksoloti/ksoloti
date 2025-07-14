@@ -23,6 +23,6 @@ package axoloti;
  *
  * @author AndrewCapon
  */
-public interface UnitNameListener {
-    public void ShowUnitName(String unitId, String friendlyName);
+public interface BoardIDNameListener {
+    public void ShowBoardIDName(String unitId, String friendlyName);
 }

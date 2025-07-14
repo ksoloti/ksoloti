@@ -79,7 +79,7 @@ import qcmds.QCmdUploadPatch;
  *
  * @author Johannes Taelman
  */
-public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, ConnectionStatusListener, SDCardMountStatusListener,  UnitNameListener {
+public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, ConnectionStatusListener, SDCardMountStatusListener,  BoardIDNameListener {
 
     private static final Logger LOGGER = Logger.getLogger(PatchFrame.class.getName());
     /**
@@ -243,7 +243,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         createBufferStrategy(2);
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
         USBBulkConnection.GetConnection().addSDCardMountStatusListener(this);
-        USBBulkConnection.GetConnection().addUnitNameListener(this);
+        USBBulkConnection.GetConnection().addBoardIDNameListener(this);
     }
 
     public void repositionIfOutsideScreen() {
@@ -333,7 +333,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         DocumentWindowList.UnregisterWindow(this);
         USBBulkConnection.GetConnection().removeConnectionStatusListener(this);
         USBBulkConnection.GetConnection().removeSDCardMountStatusListener(this);
-        USBBulkConnection.GetConnection().removeUnitNameListener(this);
+        USBBulkConnection.GetConnection().removeBoardIDNameListener(this);
         patch.Close();
         super.dispose();
     }
@@ -1543,7 +1543,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     // }
 
     @Override
-    public void ShowUnitName(String unitId, String friendlyName) {
+    public void ShowBoardIDName(String unitId, String friendlyName) {
 
         if (!USBBulkConnection.GetConnection().isConnected()) {
             jUnitNameIndicator.setText("");

@@ -38,7 +38,7 @@ public abstract class Connection {
     private ArrayList<ConnectionStatusListener> csls = new ArrayList<ConnectionStatusListener>();
     private ArrayList<SDCardMountStatusListener> sdcmls = new ArrayList<SDCardMountStatusListener>();
     private ArrayList<ConnectionFlagsListener> cfcmls = new ArrayList<ConnectionFlagsListener>();
-    private ArrayList<UnitNameListener> uncmls = new ArrayList<UnitNameListener>();
+    private ArrayList<BoardIDNameListener> uncmls = new ArrayList<BoardIDNameListener>();
 
     abstract public boolean isConnected();
     abstract public void disconnect();
@@ -107,7 +107,7 @@ public abstract class Connection {
                 csl.ShowDisconnect();
             });
         }
-        ShowUnitName("", null);
+        ShowBoardIDName("", null);
     }
 
     public void ShowConnect() {
@@ -161,54 +161,54 @@ public abstract class Connection {
         cfcmls.remove(cfcml);
     }
 
-    public void addUnitNameListener(UnitNameListener unl) {
+    public void addBoardIDNameListener(BoardIDNameListener unl) {
         uncmls.add(unl);
 
         SwingUtilities.invokeLater(() -> {
             if (isConnected()) {
                 String currentCpuId = getDetectedCpuId();
-                // System.out.println(Instant.now() + " [DEBUG] Connection.addUnitNameListener: currentCpuId:" + getDetectedCpuId());
+                // System.out.println(Instant.now() + " [DEBUG] Connection.addBoardIDNameListener: currentCpuId:" + getDetectedCpuId());
                 
                 if (currentCpuId != null && !currentCpuId.trim().isEmpty()) {
                     if (MainFrame.prefs == null) {
-                        // System.out.println(Instant.now() + " [DEBUG] Connection: MAINFRAME.PREFS OBJECT IS NULL IN addUnitNameListener!");
+                        // System.out.println(Instant.now() + " [DEBUG] Connection: MAINFRAME.PREFS OBJECT IS NULL IN addBoardIDNameListener!");
                     }
                     else {
                         // System.out.println(Instant.now() + " [DEBUG] Connection: MainFrame.prefs object instance hash: " + MainFrame.prefs.hashCode());
                     }
                     String friendlyNameFromPrefs = MainFrame.prefs.getBoardName(currentCpuId);
-                    // System.out.println(Instant.now() + " [DEBUG] Connection.addUnitNameListener: friendlyNameFromPrefs:" + MainFrame.prefs.getBoardName(currentCpuId));
-                    unl.ShowUnitName(currentCpuId, friendlyNameFromPrefs);
+                    // System.out.println(Instant.now() + " [DEBUG] Connection.addBoardIDNameListener: friendlyNameFromPrefs:" + MainFrame.prefs.getBoardName(currentCpuId));
+                    unl.ShowBoardIDName(currentCpuId, friendlyNameFromPrefs);
                     // System.out.println(Instant.now() + " [DEBUG] Connection: Replaying current CPU ID " + currentCpuId + " and friendly name '" + (friendlyNameFromPrefs != null ? friendlyNameFromPrefs : "NULL") + "' to new listener.");
                 }
                 else {
-                    unl.ShowUnitName("", null);
+                    unl.ShowBoardIDName("", null);
                     // System.out.println(Instant.now() + " [DEBUG] Connection: Replaying empty CPU ID (connected but ID not ready) to new listener.");
                 }
             }
             else {
-                unl.ShowUnitName("", null);
+                unl.ShowBoardIDName("", null);
                 // System.out.println(Instant.now() + " [DEBUG] Connection: Replaying empty CPU ID (not connected) to new listener.");
             }
         });
     }
 
 
-    public void removeUnitNameListener(UnitNameListener unl) {
+    public void removeBoardIDNameListener(BoardIDNameListener unl) {
         uncmls.remove(unl);
     }
 
-    public void ShowUnitName(String unitId, String friendlyName) {
+    public void ShowBoardIDName(String unitId, String friendlyName) {
         String actualFriendlyName = friendlyName;
         if (actualFriendlyName == null || actualFriendlyName.trim().isEmpty()) {
             if (unitId != null && !unitId.trim().isEmpty()) {
                 actualFriendlyName = MainFrame.prefs.getBoardName(unitId);
             }
         }
-        for (UnitNameListener uncml : uncmls) {
+        for (BoardIDNameListener uncml : uncmls) {
             final String finalActualFriendlyName = actualFriendlyName; // Need final variable for lambda
             SwingUtilities.invokeLater(() -> {
-                uncml.ShowUnitName(unitId, finalActualFriendlyName);
+                uncml.ShowBoardIDName(unitId, finalActualFriendlyName);
             });
         }
     }

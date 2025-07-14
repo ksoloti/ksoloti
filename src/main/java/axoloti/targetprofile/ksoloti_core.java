@@ -197,11 +197,11 @@ public class ksoloti_core {
             while (b.remaining() > 0) {
                 s = s + String.format("%08X", b.getInt());
             }
-            USBBulkConnection.GetConnection().ShowUnitName(s, null);
+            USBBulkConnection.GetConnection().ShowBoardIDName(s, null);
         }
         else {
             LOGGER.log(Level.SEVERE, "Invalid CPU serial number, invalid protocol?, update firmware",new Object());
-            USBBulkConnection.GetConnection().ShowUnitName("CFCFCFCF", null);
+            USBBulkConnection.GetConnection().ShowBoardIDName("CFCFCFCF", null);
         }
     }
 

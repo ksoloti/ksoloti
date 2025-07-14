@@ -150,7 +150,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 prefs.SavePrefs();
                 String currentlyConnectedCpuId = USBBulkConnection.GetConnection().getDetectedCpuId();
                 if (currentlyConnectedCpuId != null && cpuid.equals(currentlyConnectedCpuId)) {
-                    USBBulkConnection.GetConnection().ShowUnitName(cpuid, name);
+                    USBBulkConnection.GetConnection().ShowBoardIDName(cpuid, name);
                 }
             }
         });
@@ -495,7 +495,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             return;
         }
 
-        String selectedBoardName = prefs.getBoardName(selectedCpuid); /* ShowUnitName below will sort out which to use */
+        String selectedBoardName = prefs.getBoardName(selectedCpuid); /* ShowBoardIDName below will sort out which to use */
         String str = "";
         if (selectedBoardName == null || selectedBoardName.trim().isEmpty()) {
             /* If board does not hava a user name set, display CPU ID */
@@ -523,7 +523,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         boolean connected = USBBulkConnection.GetConnection().connect();
         if (connected) {
             USBBulkConnection.GetConnection().ShowConnect();
-            USBBulkConnection.GetConnection().ShowUnitName(selectedCpuid, selectedBoardName); 
+            USBBulkConnection.GetConnection().ShowBoardIDName(selectedCpuid, selectedBoardName); 
             LOGGER.log(Level.INFO, "Re-connected to selected board: " + str);
             setVisible(false); /* Close the dialog on successful connection */
         }

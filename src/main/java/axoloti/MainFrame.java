@@ -109,7 +109,7 @@ import qcmds.QCmdUploadPatch;
  *
  * @author Johannes Taelman
  */
-public final class MainFrame extends javax.swing.JFrame implements ActionListener, ConnectionStatusListener, SDCardMountStatusListener, ConnectionFlagsListener, UnitNameListener {
+public final class MainFrame extends javax.swing.JFrame implements ActionListener, ConnectionStatusListener, SDCardMountStatusListener, ConnectionFlagsListener, BoardIDNameListener {
 
     private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
 
@@ -500,7 +500,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     USBBulkConnection.GetConnection().addConnectionStatusListener(MainFrame.this);
                     USBBulkConnection.GetConnection().addSDCardMountStatusListener(MainFrame.this);
                     USBBulkConnection.GetConnection().addConnectionFlagsListener(MainFrame.this);
-                    USBBulkConnection.GetConnection().addUnitNameListener(MainFrame.this);
+                    USBBulkConnection.GetConnection().addBoardIDNameListener(MainFrame.this);
 
                     ShowDisconnect();
                     // if (!Axoloti.isFailSafeMode()) {
@@ -1923,7 +1923,7 @@ private void jToggleButtonConnectActionPerformed(java.awt.event.ActionEvent evt)
     }
 
     @Override
-    public void ShowUnitName(String unitId, String friendlyName) {
+    public void ShowBoardIDName(String unitId, String friendlyName) {
         if (!USBBulkConnection.GetConnection().isConnected() || unitId == null || unitId.trim().isEmpty()) {
             jLabelCPUID.setText("");
             jLabelCPUID.setToolTipText("");
