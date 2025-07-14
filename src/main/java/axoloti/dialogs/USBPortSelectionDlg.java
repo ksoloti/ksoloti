@@ -79,8 +79,8 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     private final String sKsolotiCoreUsbAudio = "Ksoloti Core USB Audio";
     
     private javax.swing.JButton jButtonRefresh;
-    private javax.swing.JButton jButtonCancel;
-    private javax.swing.JButton jButtonOK;
+    private javax.swing.JButton jButtonClose;
+    private javax.swing.JButton jButtonSelect;
     private ScrollPaneComponent jScrollPaneBoardsList;
     private javax.swing.JTable jTableBoardsList;
 
@@ -107,11 +107,11 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
         Populate();
 
-        getRootPane().setDefaultButton(jButtonOK);
+        getRootPane().setDefaultButton(jButtonSelect);
 
         jTableBoardsList.getTableHeader().setReorderingAllowed(false);
+        
         jTableBoardsList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
             @Override
             public void valueChanged(ListSelectionEvent e) {
 
@@ -122,15 +122,15 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                     String devName = (String) model.getValueAt(r, 1);
 
                     if (!USBBulkConnection.GetConnection().isConnected() && prefs.getFirmwareMode().contains("Ksoloti Core") && (devName.equals(sKsolotiCore) || devName.equals(sKsolotiCoreUsbAudio))) {
-                        jButtonOK.setEnabled(true);
+                        jButtonSelect.setEnabled(true);
                         cpuid = (String) model.getValueAt(r, 3);
                     }
                     else if (!USBBulkConnection.GetConnection().isConnected() && prefs.getFirmwareMode().contains("Axoloti Core") && (devName.equals(sAxolotiCore) || devName.equals(sAxolotiCoreUsbAudio))) {
-                        jButtonOK.setEnabled(true);
+                        jButtonSelect.setEnabled(true);
                         cpuid = (String) model.getValueAt(r, 3);
                     }
                     else {
-                        jButtonOK.setEnabled(false);
+                        jButtonSelect.setEnabled(false);
                     }
                 }
                 else {
@@ -140,7 +140,6 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         });
         
         jTableBoardsList.getModel().addTableModelListener(new TableModelListener() {
-
             @Override
             public void tableChanged(TableModelEvent e) {
                 int row = e.getFirstRow();
@@ -333,8 +332,8 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
     private void initComponents() {
 
-        jButtonOK = new javax.swing.JButton();
-        jButtonCancel = new javax.swing.JButton();
+        jButtonSelect = new javax.swing.JButton();
+        jButtonClose = new javax.swing.JButton();
         jButtonRefresh = new javax.swing.JButton();
         jScrollPaneBoardsList = new ScrollPaneComponent();
         jTableBoardsList = new javax.swing.JTable();
@@ -343,19 +342,19 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         setModal(true);
         setName("Serial port selection"); // NOI18N
 
-        jButtonOK.setText("Select");
-        jButtonOK.setEnabled(false);
-        jButtonOK.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jButtonOK.addActionListener(new java.awt.event.ActionListener() {
+        jButtonSelect.setText("Select");
+        jButtonSelect.setEnabled(false);
+        jButtonSelect.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jButtonSelect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonOKActionPerformed(evt);
+                jButtonSelectActionPerformed(evt);
             }
         });
 
-        jButtonCancel.setText("Close");
-        jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
+        jButtonClose.setText("Close");
+        jButtonClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCancelActionPerformed(evt);
+                jButtonCloseActionPerformed(evt);
             }
         });
 
@@ -408,9 +407,9 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButtonRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonClose, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(15, 15, 15)
-                        .addComponent(jButtonOK, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jButtonSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPaneBoardsList, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(146, 146, 146)
@@ -427,19 +426,19 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 .addGap(11, 11, 11)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonRefresh)
-                    .addComponent(jButtonCancel)
-                    .addComponent(jButtonOK))
+                    .addComponent(jButtonClose)
+                    .addComponent(jButtonSelect))
                 .addContainerGap())
         );
 
         pack();
     }
 
-    private void jButtonOKActionPerformed(java.awt.event.ActionEvent evt) {
+    private void jButtonSelectActionPerformed(java.awt.event.ActionEvent evt) {
         onSelect();
     }
 
-    private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {
+    private void jButtonCloseActionPerformed(java.awt.event.ActionEvent evt) {
         //port = null;
         setVisible(false);
     }
