@@ -41,7 +41,6 @@ import static axoloti.utils.OSDetect.getOS;
 
 import java.util.logging.Logger;
 
-import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 
 import javax.swing.event.ListSelectionEvent;
@@ -142,7 +141,6 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 TableModel model = (TableModel)e.getSource();
                 String name = (String) model.getValueAt(row, column);
                 String cpuid = (String) ((DefaultTableModel) jTable1.getModel()).getValueAt(row, 3);
-                Preferences prefs = MainFrame.prefs;
                 prefs.setBoardName(cpuid,name);
                 prefs.SavePrefs();
             }
@@ -154,8 +152,6 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             jTable1.getColumnModel().getColumn(2).setPreferredWidth(20);
             jTable1.getColumnModel().getColumn(3).setPreferredWidth(40);
         }
-        
-        
     }
 
     public static String ErrorString(int result) {
@@ -285,10 +281,8 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                         DeviceHandle handle = new DeviceHandle();
 
                         result = LibUsb.open(device, handle);
-                        
                         if (result < 0) {
                             model.addRow(new String[]{"", sName, DeviceToPath(device), ErrorString(result)});
-
                         }
                         else {
                             String serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
