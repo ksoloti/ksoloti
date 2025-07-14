@@ -459,19 +459,6 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             return;
         }
 
-        /* Disconnect whatever board is currently connected */
-        if (USBBulkConnection.GetConnection().isConnected()) {
-            try {
-                USBBulkConnection.GetConnection().disconnect();
-                USBBulkConnection.GetConnection().ShowDisconnect();
-                Thread.sleep(500); /* Delay to ensure the disconnect completes before new connection attempt */
-            }
-            catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, "Error during disconnect of current board: " + ex.getMessage(), ex);
-                return;
-            }
-        }
-
         /* Get the CPU ID from the selected row (column 3 as per TableModel definition) */
         String selectedCpuid = (String) model.getValueAt(selRow, 3);
         if (selectedCpuid == null || selectedCpuid.isEmpty()) {
@@ -489,12 +476,26 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             str = selectedBoardName;
         }
 
+        /* Disconnect whatever board is currently connected */
+        if (USBBulkConnection.GetConnection().isConnected()) {
+            try {
+                LOGGER.log(Level.INFO, "Disconnecting board: " + str);
+                USBBulkConnection.GetConnection().disconnect();
+                USBBulkConnection.GetConnection().ShowDisconnect();
+                Thread.sleep(500); /* Delay to ensure the disconnect completes before new connection attempt */
+            }
+            catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, "Error during disconnect of current board: " + str + ", " + ex.getMessage(), ex);
+                return;
+            }
+        }
+
         /* Connect to the newly selected Core */
         boolean connected = USBBulkConnection.GetConnection().connect();
         if (connected) {
             USBBulkConnection.GetConnection().ShowConnect();
             USBBulkConnection.GetConnection().ShowUnitName(selectedCpuid, selectedBoardName); 
-            LOGGER.log(Level.INFO, "Successfully re-connected to board: " + str);
+            LOGGER.log(Level.INFO, "Re-connected to selected board: " + str);
             setVisible(false); /* Close the dialog on successful connection */
         }
         else {
