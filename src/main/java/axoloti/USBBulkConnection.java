@@ -567,6 +567,8 @@ public class USBBulkConnection extends Connection {
             q = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
             qcmdp.AppendToQueue(q);
             targetProfile.setCPUSerial(q.getResult());
+            this.detectedCpuId = CpuIdToHexString(targetProfile.getCPUSerial());
+            LOGGER.log(Level.INFO, "[DEBUG] USBBulkConnection: detectedCpuId set to: " + this.detectedCpuId);
             ShowConnect();
 
             return true;
@@ -1282,6 +1284,19 @@ public class USBBulkConnection extends Connection {
     private int memReadValue;
     private byte[] fwversion = new byte[4];
     private int patchentrypoint;
+
+    public static String CpuIdToHexString(ByteBuffer buffer) {
+        if (buffer == null) {
+            return null;
+        }
+        ByteBuffer duplicateBuffer = buffer.asReadOnlyBuffer().order(ByteOrder.LITTLE_ENDIAN);
+        StringBuilder sb = new StringBuilder();
+        duplicateBuffer.rewind();
+        while (duplicateBuffer.hasRemaining()) {
+            sb.append(String.format("%08X", duplicateBuffer.getInt()));
+        }
+        return sb.toString();
+    }
 
     @Override
     public ByteBuffer getMemReadBuffer() {
