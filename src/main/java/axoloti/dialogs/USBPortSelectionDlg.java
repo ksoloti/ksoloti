@@ -30,7 +30,6 @@ import static axoloti.usb.Usb.PID_KSOLOTI;
 import static axoloti.usb.Usb.PID_KSOLOTI_SDCARD;
 import static axoloti.usb.Usb.PID_KSOLOTI_USBAUDIO;
 
-
 import static axoloti.usb.Usb.PID_STM_DFU;
 import static axoloti.usb.Usb.VID_AXOLOTI;
 import static axoloti.usb.Usb.VID_STM;
@@ -75,7 +74,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     private final String sKsolotiCore = "Ksoloti Core";
     private final String sKsolotiSDCard = "Ksoloti SD Card Reader";
     private final String sKsolotiCoreUsbAudio = "Ksoloti Core USB Audio";
-    
+
     private javax.swing.JButton jButtonRefresh;
     private javax.swing.JButton jButtonClose;
     private javax.swing.JButton jButtonSelect;
@@ -108,7 +107,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         getRootPane().setDefaultButton(jButtonSelect);
 
         jTableBoardsList.getTableHeader().setReorderingAllowed(false);
-        
+
         jTableBoardsList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -136,14 +135,14 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 }
             }
         });
-        
+
         jTableBoardsList.getModel().addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent e) {
                 int row = e.getFirstRow();
                 int column = e.getColumn();
                 if(column!=0) return;
-                
+
                 TableModel model = (TableModel)e.getSource();
                 String name = (String) model.getValueAt(row, column);
                 String cpuid = (String) ((DefaultTableModel) jTableBoardsList.getModel()).getValueAt(row, 3);
@@ -214,7 +213,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             for (Device device : list) {
 
                 DeviceDescriptor descriptor = new DeviceDescriptor();
-                
+
                 result = LibUsb.getDeviceDescriptor(device, descriptor);
                 if (result == LibUsb.SUCCESS) {
 
@@ -453,11 +452,54 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
     private void onSelect() {
         DefaultTableModel model = (DefaultTableModel) jTableBoardsList.getModel();
-        int selRow = 0;
-        if (jTableBoardsList.getSelectedRowCount() > 0 ) {
-            selRow = jTableBoardsList.getSelectedRow();
-            cpuid = (String) model.getValueAt(selRow, 3);
+        int selRow = jTableBoardsList.getSelectedRow();
+
+        if (selRow < 0) { /* No row selected, should not happen if button is enabled only on selection */
+            LOGGER.log(Level.SEVERE, "No board selected. Please select a board to connect.");
+            return;
         }
-        setVisible(false);        
+
+        /* Disconnect whatever board is currently connected */
+        if (USBBulkConnection.GetConnection().isConnected()) {
+            try {
+                USBBulkConnection.GetConnection().disconnect();
+                USBBulkConnection.GetConnection().ShowDisconnect();
+                Thread.sleep(500); /* Delay to ensure the disconnect completes before new connection attempt */
+            }
+            catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, "Error during disconnect of current board: " + ex.getMessage(), ex);
+                return;
+            }
+        }
+
+        /* Get the CPU ID from the selected row (column 3 as per TableModel definition) */
+        String selectedCpuid = (String) model.getValueAt(selRow, 3);
+        if (selectedCpuid == null || selectedCpuid.isEmpty()) {
+            LOGGER.log(Level.WARNING, "Could not retrieve Board ID for selected row. Please select a valid board.", "Error");
+            return;
+        }
+
+        String selectedBoardName = prefs.getBoardName(selectedCpuid); /* ShowUnitName below will sort out which to use */
+        String str = "";
+        if (selectedBoardName == null || selectedBoardName.trim().isEmpty()) {
+            /* If board does not hava a user name set, display CPU ID */
+            str = selectedCpuid;
+        }
+        else {
+            str = selectedBoardName;
+        }
+
+        /* Connect to the newly selected Core */
+        boolean connected = USBBulkConnection.GetConnection().connect();
+        if (connected) {
+            USBBulkConnection.GetConnection().ShowConnect();
+            USBBulkConnection.GetConnection().ShowUnitName(selectedCpuid, selectedBoardName); 
+            LOGGER.log(Level.INFO, "Successfully re-connected to board: " + str);
+            setVisible(false); /* Close the dialog on successful connection */
+        }
+        else {
+            LOGGER.log(Level.WARNING, "Failed to re-connect to board: " + str);
+            /* Do not close the dialog on failure */
+        }
     }
 }
