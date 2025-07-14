@@ -26,6 +26,8 @@ import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import axoloti.USBBulkConnection;
+
 /**
  *
  * @author Johannes Taelman
@@ -79,7 +81,8 @@ public class ksoloti_core {
             bb.putInt(sdramsize);
 
             return bb;
-        } catch (UnsupportedEncodingException ex) {
+        }
+        catch (UnsupportedEncodingException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
             return null;
         }
@@ -124,7 +127,8 @@ public class ksoloti_core {
         //System.out.println(String.format("idcode = %8X", i));
         if (i==0 || (i & 0x0FFF) == 0x0419) {
             cputype = cputype_e.STM32F42xxx;
-        } else {
+        }
+        else {
             cputype = cputype_e.STM32F40xxx;
         }
     }
@@ -136,7 +140,8 @@ public class ksoloti_core {
     public boolean hasSDRAM() {
         if (cputype == cputype_e.STM32F42xxx) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
@@ -192,10 +197,11 @@ public class ksoloti_core {
             while (b.remaining() > 0) {
                 s = s + String.format("%08X", b.getInt());
             }
-            mainframe.setCpuID(s);
-        } else {
+            USBBulkConnection.GetConnection().ShowUnitName(s, null);
+        }
+        else {
             LOGGER.log(Level.SEVERE, "Invalid CPU serial number, invalid protocol?, update firmware",new Object());
-            mainframe.setCpuID("CFCFCFCF");
+            USBBulkConnection.GetConnection().ShowUnitName("CFCFCFCF", null);
         }
     }
 
