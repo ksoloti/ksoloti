@@ -70,8 +70,8 @@ public class USBBulkConnection extends Connection {
     private Patch patch;
     private volatile boolean disconnectRequested;
     private volatile boolean connected;
-    private Thread transmitterThread;
-    private Thread receiverThread;
+    private volatile Thread transmitterThread;
+    private volatile Thread receiverThread;
     private final BlockingQueue<QCmdSerialTask> queueSerialTask;
     private String targetCpuId;
     private String detectedCpuId;
