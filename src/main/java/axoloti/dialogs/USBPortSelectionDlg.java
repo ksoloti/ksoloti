@@ -39,6 +39,7 @@ import static axoloti.usb.Usb.VID_STM;
 import axoloti.utils.OSDetect;
 import static axoloti.utils.OSDetect.getOS;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import components.ScrollPaneComponent;
@@ -61,6 +62,8 @@ import org.usb4java.LibUsbException;
  * @author Johannes Taelman
  */
 public class USBPortSelectionDlg extends javax.swing.JDialog {
+
+    private static final Logger LOGGER = Logger.getLogger(USBBulkConnection.class.getName());
 
     private String cpuid;
     private final String defCPUID;
@@ -160,7 +163,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             if (getOS() == OSDetect.OS.WIN) {
 
                 if (result == LibUsb.ERROR_NOT_FOUND) {
-                    Logger.getLogger(MainFrame.class.getName(), "You may need to install a compatible driver using Zadig. More info at https://ksoloti.github.io/3-4-rescue_mode.html#zadig_bootloader");
+                    LOGGER.log(Level.WARNING, "You may need to install a compatible driver using Zadig. More info at https://ksoloti.github.io/3-4-rescue_mode.html#zadig_bootloader");
                     return "Inaccessible: driver not installed";
                 }
                 else if (result == LibUsb.ERROR_ACCESS) {
@@ -170,7 +173,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             else if (getOS() == OSDetect.OS.LINUX) {
 
                 if (result == LibUsb.ERROR_ACCESS) {
-                    Logger.getLogger(MainFrame.class.getName(), "You may need to add permissions by running platform_linux/add_udev_rules.sh. More info at https://ksoloti.github.io/3-install.html#linux_permissions");
+                    LOGGER.log(Level.WARNING, "You may need to add permissions by running platform_linux/add_udev_rules.sh. More info at https://ksoloti.github.io/3-install.html#linux_permissions");
                     return "Insufficient permissions";
                 }
             }
