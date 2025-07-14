@@ -19,6 +19,7 @@
 
 package axoloti;
 
+import static axoloti.MainFrame.mainframe;
 import static axoloti.MainFrame.prefs;
 import static axoloti.dialogs.USBPortSelectionDlg.ErrorString;
 
@@ -496,6 +497,7 @@ public class USBBulkConnection extends Connection {
 
         disconnect();
         disconnectRequested = false;
+        mainframe.updateLinkFirmwareID();
 
         GoIdleState();
 
