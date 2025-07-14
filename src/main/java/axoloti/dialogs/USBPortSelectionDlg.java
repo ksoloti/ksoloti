@@ -524,7 +524,6 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         if (connected) {
             USBBulkConnection.GetConnection().ShowConnect();
             USBBulkConnection.GetConnection().ShowBoardIDName(selectedCpuid, selectedBoardName); 
-            LOGGER.log(Level.INFO, "Re-connected to selected board: " + str);
             setVisible(false); /* Close the dialog on successful connection */
         }
         else {
