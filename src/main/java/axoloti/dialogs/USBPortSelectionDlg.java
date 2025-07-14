@@ -510,7 +510,6 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             try {
                 LOGGER.log(Level.INFO, "Disconnecting board: " + str);
                 USBBulkConnection.GetConnection().disconnect();
-                USBBulkConnection.GetConnection().ShowDisconnect();
                 Thread.sleep(500); /* Delay to ensure the disconnect completes before new connection attempt */
             }
             catch (Exception ex) {
@@ -522,7 +521,6 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         /* Connect to the newly selected Core */
         boolean connected = USBBulkConnection.GetConnection().connect();
         if (connected) {
-            USBBulkConnection.GetConnection().ShowConnect();
             USBBulkConnection.GetConnection().ShowBoardIDName(selectedCpuid, selectedBoardName); 
             setVisible(false); /* Close the dialog on successful connection */
         }

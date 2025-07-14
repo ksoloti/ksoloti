@@ -579,7 +579,6 @@ public class Preferences {
             if (USBBulkConnection.GetConnection().isConnected()) {
                 USBBulkConnection.GetConnection().disconnect();
             }
-            MainFrame.mainframe.ShowDisconnect();
         }
         else {
 
