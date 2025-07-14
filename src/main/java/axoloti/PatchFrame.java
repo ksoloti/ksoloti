@@ -77,7 +77,7 @@ import qcmds.QCmdUploadPatch;
  *
  * @author Johannes Taelman
  */
-public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, ConnectionStatusListener, SDCardMountStatusListener, ConnectionFlagsListener, UnitNameListener {
+public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, ConnectionStatusListener, SDCardMountStatusListener,  UnitNameListener {
 
     private static final Logger LOGGER = Logger.getLogger(PatchFrame.class.getName());
     /**
@@ -1409,6 +1409,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuItemUploadSD.setEnabled(false);
         jMenuItemUploadSDStart.setEnabled(false);
     }
+
+    // @Override
+    // public void ShowConnectionFlags(int connectionFlags) {
+    // }
 
     @Override
     public void ShowConnectionFlags(int connectionFlags) {
