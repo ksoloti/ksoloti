@@ -77,6 +77,12 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     private final String sKsolotiCore = "Ksoloti Core";
     private final String sKsolotiSDCard = "Ksoloti SD Card Reader";
     private final String sKsolotiCoreUsbAudio = "Ksoloti Core USB Audio";
+    
+    private javax.swing.JButton jButtonRefresh;
+    private javax.swing.JButton jButtonCancel;
+    private javax.swing.JButton jButtonOK;
+    private ScrollPaneComponent jScrollPane2;
+    private javax.swing.JTable jTable1;
 
     /**
      * Creates new form USBPortSelectionDlg
@@ -325,11 +331,9 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         return cpuid;
     }
 
-
     private void initComponents() {
 
         jButtonOK = new javax.swing.JButton();
-        // jLabel1 = new javax.swing.JLabel();
         jButtonCancel = new javax.swing.JButton();
         jButtonRefresh = new javax.swing.JButton();
         jScrollPane2 = new ScrollPaneComponent();
@@ -409,7 +413,6 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                         .addComponent(jButtonOK, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        // .addComponent(jLabel1)
                         .addGap(146, 146, 146)
                         .addComponent(jButtonRefresh)
                         .addGap(0, 88, Short.MAX_VALUE)))
@@ -419,9 +422,6 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(1, 1, 1)
-                // .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    // .addComponent(jLabel1)
-                    // .addComponent(jButtonRefresh))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
                 .addGap(11, 11, 11)
@@ -463,11 +463,4 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         }
         setVisible(false);        
     }
-    
-    
-    private javax.swing.JButton jButtonRefresh;
-    private javax.swing.JButton jButtonCancel;
-    private javax.swing.JButton jButtonOK;
-    private ScrollPaneComponent jScrollPane2;
-    private javax.swing.JTable jTable1;
 }
