@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package axoloti;
 
 import axoloti.object.AxoObjectInstanceAbstract;
@@ -63,6 +64,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingWorker;
 import javax.swing.text.DefaultEditorKit;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
@@ -832,14 +834,47 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private void jToggleButtonLiveActionPerformed(java.awt.event.ActionEvent evt) {
         if (jToggleButtonLive.isSelected()) {
-            if (GoLive()) {
-                // jToggleButtonLive.setEnabled(false); // SEB not sure what the reason for this is??
-            } else {
-                jToggleButtonLive.setSelected(false);
-            }
-        } else {
+
+            jToggleButtonLive.setEnabled(false);
+            jToggleButtonLive.setSelected(false);
+
+            new SwingWorker<Boolean, String>() {
+                @Override
+                protected Boolean doInBackground() throws Exception {
+                    try {
+                        boolean success = GoLive();
+                        return success;
+                    }
+                    catch (Exception e) {
+                        publish("Go Live failed: " + e.getMessage());
+                        return false;
+                    }
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        boolean success = get();
+                        if (success) {
+                            jToggleButtonLive.setSelected(true);
+                        }
+                        else {
+                            jToggleButtonLive.setSelected(false);
+                        }
+                    }
+                    catch (Exception e) {
+                        jToggleButtonLive.setSelected(false);
+                    }
+                    finally {
+                        jToggleButtonLive.setEnabled(true);
+                    }
+                }
+            }.execute();
+        }
+        else {
             qcmdprocessor.AppendToQueue(new QCmdStop());
             patch.Unlock();
+            jToggleButtonLive.setSelected(false);
         }
     }
 
@@ -1153,15 +1188,49 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private void jCheckBoxMenuItemLiveActionPerformed(java.awt.event.ActionEvent evt) {
         if (jCheckBoxMenuItemLive.isSelected()) {
-            if (GoLive()) {
-                // jCheckBoxMenuItemLive.setEnabled(false) // SEB not sure what the reason for this is??
-            } else {
-                jCheckBoxMenuItemLive.setSelected(false);
 
-            }
-        } else {
+            jCheckBoxMenuItemLive.setEnabled(false);
+            jCheckBoxMenuItemLive.setSelected(false);
+
+            new SwingWorker<Boolean, String>() {
+                @Override
+                protected Boolean doInBackground() throws Exception {
+                    try {
+                        boolean success = GoLive();
+                        return success;
+                    }
+                    catch (Exception e) {
+                        LOGGER.log(Level.SEVERE, "Go Live operation failed:", e);
+                        publish("Go Live failed: " + e.getMessage());
+                        return false;
+                    }
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        boolean success = get();
+                        if (success) {
+                            jCheckBoxMenuItemLive.setSelected(true);
+                        }
+                        else {
+                            jCheckBoxMenuItemLive.setSelected(false);
+                        }
+                    }
+                    catch (Exception e) {
+                        LOGGER.log(Level.SEVERE, "Go Live worker failed unexpectedly:", e);
+                        jCheckBoxMenuItemLive.setSelected(false);
+                    }
+                    finally {
+                        jCheckBoxMenuItemLive.setEnabled(true);
+                    }
+                }
+            }.execute();
+        }
+        else {
             qcmdprocessor.AppendToQueue(new QCmdStop());
             patch.Unlock();
+            jCheckBoxMenuItemLive.setSelected(false);
         }
     }
 
@@ -1178,7 +1247,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         ByteArrayOutputStream baos = new ByteArrayOutputStream(2048);
         try {
             serializer.write(patch, baos);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
         Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -1186,19 +1256,57 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuItemUploadInternalFlashActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.WriteCode(true);
-        qcmdprocessor.AppendToQueue(new qcmds.QCmdCompilePatch(patch));
-        qcmdprocessor.WaitQueueFinished();
-        qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
-        if (patch.getBinFile().exists()) {
-            qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadPatch(patch.getBinFile()));
-            qcmdprocessor.AppendToQueue(new qcmds.QCmdCopyPatchToFlash());
-            qcmdprocessor.WaitQueueFinished();
-        }   
-        else {
-            String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
-            LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
-        }
+
+        jMenuItemUploadInternalFlash.setEnabled(false);
+
+        new SwingWorker<Boolean, String>() {
+
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                try {
+                    boolean success;
+                    patch.WriteCode(true);
+                    qcmdprocessor.AppendToQueue(new qcmds.QCmdCompilePatch(patch));
+                    qcmdprocessor.WaitQueueFinished();
+                    qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
+                    if (patch.getBinFile().exists()) {
+                        qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadPatch(patch.getBinFile()));
+                        qcmdprocessor.AppendToQueue(new qcmds.QCmdCopyPatchToFlash());
+                        qcmdprocessor.WaitQueueFinished();
+                        success = true;
+                    }
+                    else {
+                        String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
+                        LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
+                        success = false;
+                    }
+                    return success;
+                }
+                catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Patch upload to internal Flash failed:", e);
+                    publish("Go Live failed: " + e.getMessage());
+                    return false;
+
+                }
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    boolean success = get();
+                    if (success) {
+                    }
+                    else {
+                    }
+                }
+                catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Upload to internal Flash worker failed unexpectedly:", e);
+                }
+                finally {
+                    jMenuItemUploadInternalFlash.setEnabled(true);
+                }
+            }
+        }.execute();
     }
 
     private void jMenuItemAddObjActionPerformed(java.awt.event.ActionEvent evt) {
