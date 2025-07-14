@@ -92,7 +92,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         try {
             MainFrame.axoObjects.LoaderThread.join(); /* Make sure all object libraries are loaded before creating/opening a patch */
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
 
@@ -107,7 +108,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         presetPanel = new PresetPanel(patch);
         visibleCablePanel = new VisibleCablePanel(patch);
-        
+
         Dimension di = new Dimension(10,0);
 
         jToolbarPanel.add(new Box.Filler(di, di, new Dimension(32767, 32767)));
@@ -147,7 +148,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     StringSelection s = new StringSelection(baos.toString());
                     clip.setContents(s, (ClipboardOwner) null);
                     patch.deleteSelectedAxoObjInstances();
-                } catch (Exception ex) {
+                }
+                catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
@@ -176,7 +178,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     serializer.write(p, baos);
                     StringSelection s = new StringSelection(baos.toString());
                     clip.setContents(s, (ClipboardOwner) null);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
@@ -193,9 +196,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 Clipboard clip = getToolkit().getSystemClipboard();
                 try {
                     patch.paste((String) clip.getData(DataFlavor.stringFlavor), null, false);
-                } catch (UnsupportedFlavorException ex) {
+                }
+                catch (UnsupportedFlavorException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
-                } catch (IOException ex) {
+                }
+                catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
@@ -203,7 +208,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         if (patch.getWindowPos() != null) {
             setBounds(patch.getWindowPos());
-        } else {
+        }
+        else {
             Dimension d = patch.GetInitialSize();
             setSize(d);
         }
@@ -224,7 +230,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         if (USBBulkConnection.GetConnection().isConnected()) {
             ShowConnect();
         }
-        
+
         this.undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, 
                 KeyUtils.CONTROL_OR_CMD_MASK));
         this.redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, 
@@ -237,7 +243,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         USBBulkConnection.GetConnection().addSDCardMountStatusListener(this);
         USBBulkConnection.GetConnection().addUnitNameListener(this);
     }
-    
+
     public void repositionIfOutsideScreen() {
 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -251,7 +257,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 allScreenBounds = allScreenBounds.union(bounds);
             }
         }
-        
+
         Point patchFrameOnScreen = getLocationOnScreen();
         double safetyMargin = 32.0;
 
@@ -275,7 +281,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             jCheckBoxMenuItemLive.setSelected(true);
             jCheckBoxMenuItemLive.setEnabled(true);
             presetPanel.ShowLive(true);
-        } else {
+        }
+        else {
             jToggleButtonLive.setSelected(false);
             jToggleButtonLive.setEnabled(true);
             jCheckBoxMenuItemLive.setSelected(false);
@@ -296,7 +303,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuItemUploadSD.setEnabled(status);
         jMenuItemUploadSDStart.setEnabled(status);
     }
-    
+
     @Override
     public void ShowDisconnect() {
         if (patch.IsLocked()) {
@@ -324,7 +331,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         DocumentWindowList.UnregisterWindow(this);
         USBBulkConnection.GetConnection().removeConnectionStatusListener(this);
         USBBulkConnection.GetConnection().removeSDCardMountStatusListener(this);
-        mainframe.removeUnitNameListener(this);
+        USBBulkConnection.GetConnection().removeUnitNameListener(this);
         patch.Close();
         super.dispose();
     }
@@ -357,7 +364,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 default:
                     return false;
             }
-        } else {
+        }
+        else {
             Close();
             return false;
         }
@@ -482,7 +490,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jProgressBarDSPLoad.setMaximum(200);
         jProgressBarDSPLoad.setStringPainted(true);
         jToolbarPanel.add(jProgressBarDSPLoad);
-        
+
         filler2.setAlignmentX(LEFT_ALIGNMENT);
         jToolbarPanel.add(filler2);
 
@@ -874,7 +882,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             File f = new File(fn);
             patch.setFileNamePath(f.getPath());
             patch.save(f);
-        } else {
+        }
+        else {
             jMenuSaveAsActionPerformed(evt);
         }
     }
@@ -906,11 +915,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         if (ext.equalsIgnoreCase(".axp")) {
             fc.setFileFilter(FileUtils.axpFileFilter);
-        } else if (ext.equalsIgnoreCase(".axs")) {
+        }
+        else if (ext.equalsIgnoreCase(".axs")) {
             fc.setFileFilter(FileUtils.axsFileFilter);
-        } else if (ext.equalsIgnoreCase(".axh")) {
+        }
+        else if (ext.equalsIgnoreCase(".axh")) {
             fc.setFileFilter(FileUtils.axhFileFilter);
-        } else {
+        }
+        else {
             fc.setFileFilter(FileUtils.axpFileFilter);
         }
 
@@ -919,9 +931,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             String filterext = ".axp";
             if (fc.getFileFilter() == FileUtils.axpFileFilter) {
                 filterext = ".axp";
-            } else if (fc.getFileFilter() == FileUtils.axsFileFilter) {
+            }
+            else if (fc.getFileFilter() == FileUtils.axsFileFilter) {
                 filterext = ".axs";
-            } else if (fc.getFileFilter() == FileUtils.axhFileFilter) {
+            }
+            else if (fc.getFileFilter() == FileUtils.axhFileFilter) {
                 filterext = ".axh";
             }
 
@@ -939,7 +953,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
                 fileToBeSaved = new File(fc.getSelectedFile() + filterext);
 
-            } else if (!ext.equals(filterext)) {
+            }
+            else if (!ext.equals(filterext)) {
                 Object[] options = {"Change",
                     "No"};
                 int n = JOptionPane.showOptionDialog(this,
@@ -980,7 +995,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
             fc.updateCurrentSize();
             return fileToBeSaved;
-        } else {
+        }
+        else {
             fc.updateCurrentSize();
             return null;
         }
@@ -1068,7 +1084,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             Point point = p.objectInstances.get(0).getLocationOnScreen();
             robot.mouseMove(point.x + 40,point.y + 22);
             robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-        } catch (Exception e1) {
+        }
+        catch (Exception e1) {
             e1.printStackTrace();
         }
     }
@@ -1099,7 +1116,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         // 
         // if(selObj!=null) {
             // ((AxoObjectInstance) selObj).OpenEditor();
-        // } else {
+        // }
+        // else {
             if (patch.settings == null) {
                 patch.settings = new PatchSettings();
             }
@@ -1336,7 +1354,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         if(previousOverload != overload) {
             if(overload) {
                 jProgressBarDSPLoad.setForeground(Theme.ProgressBar_Overload_Foreground);
-            } else {
+            }
+            else {
                 jProgressBarDSPLoad.setForeground(Theme.Button_Accent_Background); 
             }
         }
@@ -1352,7 +1371,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     public File getFile() {
         if (patch.getFileNamePath() == null) {
             return null;
-        } else {
+        }
+        else {
             return new File(patch.getFileNamePath());
         }
     }
@@ -1392,7 +1412,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     public ArrayList<DocumentWindow> GetChildDocuments() {
         return dwl;
     }
-    
+
     public void updateUndoRedoEnabled() {
         redoItem.setEnabled(patch.canRedo());
         undoItem.setEnabled(patch.canUndo());
