@@ -92,6 +92,7 @@ public class USBBulkConnection extends Connection {
     int CpuId1 = 0;
     int CpuId2 = 0;
     int fwcrc = -1;
+    int temp_fwcrc = -1;
 
     private final byte[] startPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('s')};
     private final byte[] stopPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('S')};
@@ -1820,16 +1821,16 @@ public class USBBulkConnection extends Connection {
                         fwversion[3] = cc;
                         break;
                     case 4:
-                        fwcrc = (cc & 0xFF) << 24;
+                        temp_fwcrc = (cc & 0xFF) << 24;
                         break;
                     case 5:
-                        fwcrc += (cc & 0xFF) << 16;
+                        temp_fwcrc += (cc & 0xFF) << 16;
                         break;
                     case 6:
-                        fwcrc += (cc & 0xFF) << 8;
+                        temp_fwcrc += (cc & 0xFF) << 8;
                         break;
                     case 7:
-                        fwcrc += (cc & 0xFF);
+                        temp_fwcrc += (cc & 0xFF);
                         break;
                     case 8:
                         patchentrypoint = (cc & 0xFF) << 24;
@@ -1842,10 +1843,14 @@ public class USBBulkConnection extends Connection {
                         break;
                     case 11:
                         patchentrypoint += (cc & 0xFF);
-                        String sFwcrc = String.format("%08X", fwcrc);
-                        System.out.println(Instant.now() + String.format("Core Firmware version: %d.%d.%d.%d, CRC: 0x%s, entry point: 0x%08X", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc, patchentrypoint));
-                        LOGGER.log(Level.INFO, String.format("Core running Firmware version %d.%d.%d.%d | CRC %s\n", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
-                        MainFrame.mainframe.setFirmwareID(sFwcrc);
+                        if (fwcrc != temp_fwcrc) {
+                            /* Set & report once, then only if CRC changes during this session (for firmware dev) */
+                            fwcrc = temp_fwcrc;
+                            String sFwcrc = String.format("%08X", fwcrc);
+                            System.out.println(Instant.now() + String.format("Core Firmware version: %d.%d.%d.%d, CRC: 0x%s, entry point: 0x%08X", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc, patchentrypoint));
+                            LOGGER.log(Level.INFO, String.format("Core running Firmware version %d.%d.%d.%d | CRC %s\n", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
+                            MainFrame.mainframe.setFirmwareID(sFwcrc);
+                        }
                         GoIdleState();
                         break;
                 }
