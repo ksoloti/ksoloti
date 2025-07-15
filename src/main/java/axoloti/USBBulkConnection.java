@@ -1846,7 +1846,7 @@ public class USBBulkConnection extends Connection {
                             /* Set & report once, then only if CRC changes during this session (for firmware dev) */
                             fwcrc = temp_fwcrc;
                             String sFwcrc = String.format("%08X", fwcrc);
-                            System.out.println(Instant.now() + String.format("Core Firmware version: %d.%d.%d.%d, CRC: 0x%s, entry point: 0x%08X", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc, patchentrypoint));
+                            System.out.println(Instant.now() + String.format(" Core Firmware version: %d.%d.%d.%d, CRC: 0x%s, entry point: 0x%08X", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc, patchentrypoint));
                             LOGGER.log(Level.INFO, String.format("Core running Firmware version %d.%d.%d.%d | CRC %s\n", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
                             MainFrame.mainframe.setFirmwareID(sFwcrc);
                         }
