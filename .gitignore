@@ -17,6 +17,7 @@ packagetemp/
 /dist/
 /jdks/zulu*.tar.gz
 /jdks/zulu*.zip
+/jdks/zulu*/
 private_key.*
 axoloti.prefs*
 ksoloti.prefs*
