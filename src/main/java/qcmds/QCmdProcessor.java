@@ -318,8 +318,9 @@ public class QCmdProcessor implements Runnable {
                 }
                 String m = cmd.GetStartMessage();
                 if (m != null) {
+                    LOGGER.log(Level.INFO, m);
                     publish(m);
-                    println(m);
+                    // println(m);
                 }
                 if (QCmdShellTask.class.isInstance(cmd)) {
                     // shellprocessor.AppendToQueue((QCmdShellTask)cmd);
@@ -364,8 +365,9 @@ public class QCmdProcessor implements Runnable {
                 }
                 m = cmd.GetDoneMessage();
                 if (m != null) {
-                    println(m);
+                    LOGGER.log(Level.INFO, m);
                     publish(m);
+                    // println(m);
                 }
             }
             catch (InterruptedException ex) {
