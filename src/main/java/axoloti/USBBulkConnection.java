@@ -119,6 +119,42 @@ public class USBBulkConnection extends Connection {
 
     protected volatile QCmdSerialTask currentExecutingCommand = null;
 
+    enum ReceiverState {
+
+        header,
+        ackPckt,                /* general acknowledge */
+        paramchangePckt,        /* parameter changed */
+        displayPcktHdr,         /* object display readbac */
+        displayPckt,            /* object display readback */
+        textPckt,               /* text message to display in log */
+        sdinfo,                 /* sdcard info */
+        fileinfo_fixed_fields,  /* file listing entry, size and timestamp (8 bytes of Axof packet) */
+        fileinfo_filename,      /* file listing entry, variable length filename */
+        memread,                /* one-time programmable bytes */
+        memread1word,           /* one-time programmable bytes */
+        fwversion,
+        commandResultPckt       /* New Response Packet: ['A', 'x', 'o', 'R', command_byte, status_byte] */
+    };
+
+    /*
+     * Protocol documentation:
+     * "AxoP" + bb + vvvv -> parameter change index bb (16bit), value vvvv (32bit)
+     */
+    private ReceiverState state = ReceiverState.header;
+    private int headerstate;
+    private int[] packetData = new int[64];
+    private int dataIndex = 0;  /* in bytes */
+    private int dataLength = 0; /* in bytes */
+    private CharBuffer textRcvBuffer = CharBuffer.allocate(256);
+    private ByteBuffer sdinfoRcvBuffer = ByteBuffer.allocate(12);
+    private ByteBuffer fileinfoRcvBuffer = ByteBuffer.allocate(256);
+    private ByteBuffer memReadBuffer = ByteBuffer.allocate(16 * 4);
+    // private int memReadAddr;
+    private int memReadLength;
+    private int memReadValue;
+    private byte[] fwversion = new byte[4];
+    private int patchentrypoint;
+
     class Sync {
         boolean Acked = false;
     }
@@ -1259,42 +1295,6 @@ public class USBBulkConnection extends Connection {
         });
 
     }
-
-    enum ReceiverState {
-
-        header,
-        ackPckt,                /* general acknowledge */
-        paramchangePckt,        /* parameter changed */
-        displayPcktHdr,         /* object display readbac */
-        displayPckt,            /* object display readback */
-        textPckt,               /* text message to display in log */
-        sdinfo,                 /* sdcard info */
-        fileinfo_fixed_fields,  /* file listing entry, size and timestamp (8 bytes of Axof packet) */
-        fileinfo_filename,      /* file listing entry, variable length filename */
-        memread,                /* one-time programmable bytes */
-        memread1word,           /* one-time programmable bytes */
-        fwversion,
-        commandResultPckt       /* New Response Packet: ['A', 'x', 'o', 'R', command_byte, status_byte] */
-    };
-
-    /*
-     * Protocol documentation:
-     * "AxoP" + bb + vvvv -> parameter change index bb (16bit), value vvvv (32bit)
-     */
-    private ReceiverState state = ReceiverState.header;
-    private int headerstate;
-    private int[] packetData = new int[64];
-    private int dataIndex = 0;  /* in bytes */
-    private int dataLength = 0; /* in bytes */
-    private CharBuffer textRcvBuffer = CharBuffer.allocate(256);
-    private ByteBuffer sdinfoRcvBuffer = ByteBuffer.allocate(12);
-    private ByteBuffer fileinfoRcvBuffer = ByteBuffer.allocate(256);
-    private ByteBuffer memReadBuffer = ByteBuffer.allocate(16 * 4);
-    // private int memReadAddr;
-    private int memReadLength;
-    private int memReadValue;
-    private byte[] fwversion = new byte[4];
-    private int patchentrypoint;
 
     public static String CpuIdToHexString(ByteBuffer buffer) {
         if (buffer == null) {
