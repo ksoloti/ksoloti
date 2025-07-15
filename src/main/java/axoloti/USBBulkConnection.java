@@ -318,6 +318,9 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public void disconnect() {
+        if (disconnectRequested || !isConnected()) { /* Avoid redundant disconnect calls */
+            return;
+        }
         if (connected) {
             connected = false;
             isSDCardPresent = null;
