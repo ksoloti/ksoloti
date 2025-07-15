@@ -201,21 +201,11 @@ public class USBBulkConnection extends Connection {
                 catch (LibUsbException e) {
                     // System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsbException: " + e.getMessage());
                     e.printStackTrace(System.err);
-                    // SwingUtilities.invokeLater(() -> {
-                    //     if (MainFrame.mainframe != null) {
-                    //         MainFrame.mainframe.abortAllOperations("USB connection lost unexpectedly. Please check device and reconnect.");
-                    //     }
-                    // });
                     disconnectRequested = true;
                 }
                 catch (Exception e) {
                     // System.err.println(Instant.now() + " [DEBUG] Receiver: Unexpected exception: " + e.getMessage());
                     e.printStackTrace(System.err);
-                    // SwingUtilities.invokeLater(() -> {
-                    //     if (MainFrame.mainframe != null) {
-                    //         MainFrame.mainframe.abortAllOperations("USB connection lost unexpectedly. Please check device and reconnect.");
-                    //     }
-                    // });
                     disconnectRequested = true;
                 }
             }
