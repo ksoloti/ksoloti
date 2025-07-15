@@ -1147,7 +1147,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (jToggleButtonConnect.isSelected()) { /* Attempting to connect */
             /* Guard against rapid "Connect" clicks if a disconnect was previously initiated */
             if (USBBulkConnection.GetConnection().isDisconnectRequested()) {
-                // System.out.println(Instant.now() + " [DEBUG] Connection attempt ignored: A previous disconnection is still pending.");
+                System.out.println(Instant.now() + " [DEBUG] Connection attempt ignored: A previous disconnection is still pending.");
                 /* Revert the button's selected state as connection did not succeed */
                 jToggleButtonConnect.setSelected(false);
                 jToggleButtonConnect.setEnabled(true);
@@ -1192,23 +1192,23 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 protected void done() {
                     try {
                         get();
-                        // System.out.println(Instant.now() + " [DEBUG] UI updated: Disconnected (successfully).");
+                        System.out.println(Instant.now() + " [DEBUG] UI updated: Disconnected (successfully).");
                     }
                     catch (Exception e) {
                         LOGGER.log(Level.SEVERE, "Error during disconnection SwingWorker:", e);
                         if (USBBulkConnection.GetConnection().isConnected()) {
                             USBBulkConnection.GetConnection().ShowConnect();
-                            // System.out.println(Instant.now() + " [DEBUG] UI updated: Connected (disconnect failed, board still connected).");
+                            System.out.println(Instant.now() + " [DEBUG] UI updated: Connected (disconnect failed, board still connected).");
                         }
                         else {
                             USBBulkConnection.GetConnection().ShowDisconnect();
-                            // System.out.println(Instant.now() + " [DEBUG] UI updated: Disconnected (disconnect failed, but board is off).");
+                            System.out.println(Instant.now() + " [DEBUG] UI updated: Disconnected (disconnect failed, but board is off).");
                         }
                     }
                     finally {
                         USBBulkConnection.GetConnection().setDisconnectRequested(false);
                         jToggleButtonConnect.setEnabled(true);
-                        // System.out.println(Instant.now() + " [DEBUG] Disconnect request flag cleared and connect button re-enabled.");
+                        System.out.println(Instant.now() + " [DEBUG] Disconnect request flag cleared and connect button re-enabled.");
                     }
                 }
             }.execute();
