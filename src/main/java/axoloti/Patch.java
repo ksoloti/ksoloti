@@ -342,6 +342,25 @@ public class Patch {
         return objectInstancesWithoutComments;
     }
 
+    public boolean waitForBinFile() {
+        boolean fileFound = false;
+        for (int i = 0; i < 200; i++) {
+            if (this.getBinFile().exists()) {
+                fileFound = true;
+                return fileFound;
+            }
+            try {
+                Thread.sleep(50);
+            }
+            catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                LOGGER.log(Level.WARNING, "Waiting for .bin file interrupted.", e);
+                break;
+            }
+        }
+        return fileFound;
+    }
+
     void GoLive() {
         ShowPreset(0);
         presetUpdatePending = false;
@@ -357,24 +376,7 @@ public class Patch {
         GetQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
         GetQCmdProcessor().WaitQueueFinished();
 
-
-        boolean fileFound = false;
-        for (int i = 0; i < 200; i++) {
-            if (this.getBinFile().exists()) {
-                fileFound = true;
-                break;
-            }
-            try {
-                Thread.sleep(50);
-            }
-            catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                LOGGER.log(Level.WARNING, "Waiting for bin file interrupted.", e);
-                break;
-            }
-        }
-
-        if (fileFound) {
+        if (waitForBinFile()) {
             GetQCmdProcessor().AppendToQueue(new QCmdStop());
 
             ArrayList<SDFileReference> files = GetDependendSDFiles();
