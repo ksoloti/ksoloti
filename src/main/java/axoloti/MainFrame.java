@@ -1348,7 +1348,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         try {
             boolean status;
             
-            LOGGER.log(Level.INFO, "---------- Testing {0} ----------", f.getPath());
+            LOGGER.log(Level.INFO, "\n---------- Testing {0} ----------", f.getPath());
 
             PatchGUI patch1 = serializer.read(PatchGUI.class, f);
             PatchFrame pf = new PatchFrame(patch1, qcmdprocessor);
@@ -1357,53 +1357,51 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             patch1.PostContructor();
             patch1.WriteCode(true); // generate code as own path/filename .cpp
             qcmdprocessor.WaitQueueFinished();
-            LOGGER.log(Level.INFO, "Done generating code.\n");
+            LOGGER.log(Level.INFO, "Done generating code.");
             Thread.sleep(200); 
 
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1); // compile as own path/filename .bin
             patch1.GetQCmdProcessor().AppendToQueue(cp);
-            Thread.sleep(2000); 
             qcmdprocessor.WaitQueueFinished();
-            LOGGER.log(Level.INFO, "Done compiling patch.\n");
+            patch1.waitForBinFile();
+            if (patch1.getBinFile().exists()) {
+                LOGGER.log(Level.INFO, "Done compiling patch.");
+                /* If a Core is connected and test patch .bin could be created:
+                stop patch, upload test patch .bin to RAM, start patch, report status */
+                if (USBBulkConnection.GetConnection().isConnected()) {
+                    patch1.GetQCmdProcessor().AppendToQueue(new QCmdStop());
+                    patch1.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch1.getBinFile()));
+                    patch1.GetQCmdProcessor().AppendToQueue(new QCmdStart(patch1));
+                    qcmdprocessor.WaitQueueFinished();
+                    Thread.sleep(1000); 
 
-            if (USBBulkConnection.GetConnection().isConnected() && patch1.getBinFile().exists()) {
-                /* If a Core is connected: stop patch, upload test patch to RAM, start test patch, and report status */
-                patch1.GetQCmdProcessor().AppendToQueue(new QCmdStop());
-                qcmdprocessor.WaitQueueFinished();
-                Thread.sleep(100); 
+                    patch1.GetQCmdProcessor().AppendToQueue(new QCmdPing());
+                    Thread.sleep(500); 
 
-                patch1.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch1.getBinFile()));
-                qcmdprocessor.WaitQueueFinished();
+                    float pct = patch1.getDSPLoadPercent();
+                    if (pct < 1.0f) {
+                        LOGGER.log(Level.SEVERE, "No DSP load detected");
+                    }
+                    else if (pct > 95.0f) {
+                        LOGGER.log(Level.SEVERE, "High DSP load detected: {0}%", String.format("%.1f", pct));
+                    }
+                    else {
+                        LOGGER.log(Level.INFO, "DSP load: {0}%", String.format("%.1f", pct));
+                    }
 
-                patch1.GetQCmdProcessor().AppendToQueue(new QCmdStart(patch1));
-                qcmdprocessor.WaitQueueFinished();
-                Thread.sleep(1000); 
-
-                patch1.GetQCmdProcessor().AppendToQueue(new QCmdPing());
-                // patch1.GetQCmdProcessor().AppendToQueue(new QCmdPing(true)); // no-disconnect ping for debug
-                qcmdprocessor.WaitQueueFinished();
-                Thread.sleep(100); 
-
-                float pct = patch1.getDSPLoadPercent();
-                if (pct < 1.0f) {
-                    LOGGER.log(Level.SEVERE, "No DSP load detected\n");
+                    patch1.GetQCmdProcessor().AppendToQueue(new QCmdGuiShowLog());
+                    qcmdprocessor.WaitQueueFinished();
+                    Thread.sleep(100); 
                 }
-                else if (pct > 95.0f) {
-                    LOGGER.log(Level.SEVERE, "High DSP load detected: {0}%\n", String.format("%.1f", pct));
-                }
-                else {
-                    LOGGER.log(Level.INFO, "DSP load: {0}%\n", String.format("%.1f", pct));
-                }
-
-                patch1.GetQCmdProcessor().AppendToQueue(new QCmdGuiShowLog());
-                qcmdprocessor.WaitQueueFinished();
-                Thread.sleep(100); 
             }
+            else {
+                LOGGER.log(Level.INFO, "FAILED compiling patch.");
+            }
+
 
             patch1.Close();
             pf.Close();
             status = cp.success();
-
             Thread.sleep(100);
 
             // if (status == false) {
@@ -1414,7 +1412,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             return status;
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "COMPILATION FAILED: " + f.getPath() + "\n", ex);
+            LOGGER.log(Level.SEVERE, "ERROR DURING PATCH TEST: " + f.getPath() + "\n", ex);
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
             return false;
         }
