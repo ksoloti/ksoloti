@@ -144,8 +144,8 @@ remove_temp_files
 
 chmod 755 ./jre/lib/jspawnhelper
 chmod 755 ./firmware/*.mk
-chmod -R 755 ./platform_osx/bin/*
-chmod -R 755 ./platform_osx/*/bin/*
+chmod -R 755 ./platform_macos/bin/*
+chmod -R 755 ./platform_macos/*/bin/*
 cd ../../..
 
 tar -czf ../ksoloti_patcher-mac-${CUSTOMLABEL}${VERSION_LONG}.tar.gz *

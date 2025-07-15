@@ -269,7 +269,7 @@ public class Axoloti {
                     BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_win");
                     break;
                 case MAC:
-                    BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_osx");
+                    BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_macos");
                     break;
                 case LINUX:
                     BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_linux");

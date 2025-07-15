@@ -12,7 +12,7 @@ case "$unamestr" in
         currentdir="$(cd $(dirname $0); pwd -P)"
         export axoloti_home=${axoloti_home:="$currentdir/.."}
         export axoloti_firmware=${axoloti_firmware:="$currentdir"}
-        export PATH="${axoloti_home}/platform_osx/bin:$PATH"
+        export PATH="${axoloti_home}/platform_macos/bin:$PATH"
     ;;
     *)
         printf "\nUnknown OS: $unamestr - aborting...\n"

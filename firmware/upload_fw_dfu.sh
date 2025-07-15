@@ -8,7 +8,7 @@ case "$unamestr" in
     ;;
     Darwin)
         firmwaredir="$(cd $(dirname $0); pwd -P)"
-        export platformdir="${firmwaredir}/../platform_osx"
+        export platformdir="${firmwaredir}/../platform_macos"
     ;;
     MINGW*)
         firmwaredir="$(cd $(dirname $0); pwd -P)"
