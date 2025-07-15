@@ -9,7 +9,7 @@ firmware*/flasher/.dep
 firmware*/flasher/flasher_build
 firmware*/mounter/.dep
 firmware*/mounter/mounter_build
-packagetemp/
+packagetemp*/
 .preferences.xml
 /target/
 /build/
