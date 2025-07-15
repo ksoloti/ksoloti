@@ -169,8 +169,16 @@ public class USBBulkConnection extends Connection {
                 int result = LibUsb.SUCCESS;
                 int sz = 0;
 
+                if (handle == null) {
+                    /* Re-check handle BEFORE acquiring lock */
+                    System.err.println(Instant.now() + " [DEBUG] Receiver: USB handle is null. Initiating USB disconnect.");
+                    // USBBulkConnection.GetConnection().disconnect(); /* Attempt disconnect? */
+                    break; /* Exit the loop */
+                }
+
                 try {
                     synchronized (usbInLock) {
+
                         recvbuffer.clear();
                         transfered.clear();
                         result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 200);
@@ -238,7 +246,7 @@ public class USBBulkConnection extends Connection {
                     break;
                 }
                 catch (Exception e) {
-                    LOGGER.log(Level.WARNING, "Transmitter: Unexpected exception during command execution: " + e.getMessage(), e);
+                    LOGGER.log(Level.SEVERE, "Transmitter: Unexpected exception during command execution: " + e.getMessage(), e);
                 }
             }
             // System.out.println(Instant.now() + " [DEBUG] Transmitter thread exiting.");
