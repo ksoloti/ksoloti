@@ -77,7 +77,7 @@ public class USBBulkConnection extends Connection {
     private String detectedCpuId;
     private ksoloti_core targetProfile;
     private final Context context;
-    private DeviceHandle handle;
+    private volatile DeviceHandle handle;
     static private USBBulkConnection conn = null;
 
     ByteBuffer dispData;
