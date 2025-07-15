@@ -241,7 +241,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
 
                     for (File f : droppedFiles) {
-                        /* Leave loop if already successfully opened 20 files */ 
+                        /* Leave loop if already successfully opened 20 files */
                         if (openedCount > maxCount) {
                             break;
                         }
@@ -331,7 +331,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     });
                     return; /* Important: exit the current call as it's been re-dispatched. */
                 }
-            
+
                 /* If we reach here, we are guaranteed to be on the Event Dispatch Thread (EDT). */
                 try {
                     String txt;
@@ -1373,11 +1373,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     patch1.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch1.getBinFile()));
                     patch1.GetQCmdProcessor().AppendToQueue(new QCmdStart(patch1));
                     qcmdprocessor.WaitQueueFinished();
-                    Thread.sleep(1000); 
+                    Thread.sleep(1000);
 
                     patch1.GetQCmdProcessor().AppendToQueue(new QCmdPing());
-                    Thread.sleep(500); 
-
                     float pct = patch1.getDSPLoadPercent();
                     if (pct < 1.0f) {
                         LOGGER.log(Level.SEVERE, "No DSP load detected");
@@ -1388,10 +1386,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     else {
                         LOGGER.log(Level.INFO, "DSP load: {0}%", String.format("%.1f", pct));
                     }
+                    Thread.sleep(1000);
 
                     patch1.GetQCmdProcessor().AppendToQueue(new QCmdGuiShowLog());
                     qcmdprocessor.WaitQueueFinished();
-                    Thread.sleep(100); 
+                    Thread.sleep(100);
                 }
             }
             else {
