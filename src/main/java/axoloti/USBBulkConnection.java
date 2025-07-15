@@ -179,13 +179,31 @@ public class USBBulkConnection extends Connection {
                 try {
                     synchronized (usbInLock) {
 
+                        /* Re-check handle AFTER acquiring lock, in case it was nulled just before lock acquisition */
+                        if (handle == null) {
+                            // System.err.println(Instant.now() + " [DEBUG] Receiver: USB handle became null while waiting for lock. Initiating central disconnect.");
+                            disconnect();
+                            break; /* Exit the loop */
+                        }
+
                         recvbuffer.clear();
                         transfered.clear();
                         result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 200);
                         sz = transfered.get(0);
 
+                        /* Check disconnectRequested immediately after bulkTransfer returns */
+                        if (disconnectRequested) {
+                            // System.out.println(Instant.now() + " [DEBUG] Receiver: Disconnect requested after bulkTransfer. Exiting loop.");
+                            break; /* Exit the loop */ 
+                        }
+
                         if (result != LibUsb.SUCCESS) {
                             // System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsb.bulkTransfer returned error: " + result + " (" + LibUsb.strError(result) + ")");
+                            if (result == LibUsb.ERROR_NO_DEVICE || result == LibUsb.ERROR_PIPE || result == LibUsb.ERROR_IO || result == LibUsb.ERROR_INTERRUPTED) {
+                                // System.err.println(Instant.now() + " [DEBUG] Receiver: Critical LibUsb error detected. Initiating USB disconnect.");
+                                disconnect();
+                                break; /* Exit the loop */
+                            }
                         }
                     }
 
@@ -193,20 +211,26 @@ public class USBBulkConnection extends Connection {
                         recvbuffer.position(0);
                         recvbuffer.limit(sz);
                         for (int i = 0; i < sz; i++) {
-                            byte b = recvbuffer.get(i);
-                            processByte(b);
+                            if (disconnectRequested) {
+                                /* Check disconnectRequested here in case disconnect() was triggered by another thread */
+                                // System.err.println(Instant.now() + " [DEBUG] Receiver: Disconnect requested during byte processing. Aborting chunk.");
+                                break; /* Exit inner for loop */
+                            }
+                            processByte(recvbuffer.get(i));
                         }
                     }
                 }
                 catch (LibUsbException e) {
                     // System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsbException: " + e.getMessage());
                     e.printStackTrace(System.err);
-                    disconnectRequested = true;
+                    disconnect();
+                    break;
                 }
                 catch (Exception e) {
                     // System.err.println(Instant.now() + " [DEBUG] Receiver: Unexpected exception: " + e.getMessage());
                     e.printStackTrace(System.err);
-                    disconnectRequested = true;
+                    disconnect();
+                    break;
                 }
             }
             // System.out.println(Instant.now() + " [DEBUG] Receiver thread exiting.");
@@ -217,13 +241,15 @@ public class USBBulkConnection extends Connection {
         @Override
         public void run() {
             while (!disconnectRequested) {
+                QCmdSerialTask cmd = null;
                 try {
-                    QCmdSerialTask cmd = queueSerialTask.take();
+                    cmd = queueSerialTask.take();
 
                     if (disconnectRequested) {
-                        // System.out.println(Instant.now() + " [DEBUG] Transmitter: Disconnect requested while waiting for task.");
+                        // System.out.println(Instant.now() + " [DEBUG] Transmitter: Disconnect requested after taking task.");
                         break;
                     }
+                    if (cmd == null) continue; /* Skip to next iteration if no command was taken (e.g. timeout) */
 
                     QCmd response = cmd.Do(USBBulkConnection.this);
                     if (response != null) {
@@ -558,6 +584,7 @@ public class USBBulkConnection extends Connection {
         handle = OpenDeviceHandle();
         if (handle == null) {
             // System.err.println(Instant.now() + " [DEBUG] USB device not found or inaccessible.");
+            ShowDisconnect();
             return false;
         }
 
@@ -573,6 +600,7 @@ public class USBBulkConnection extends Connection {
                     // System.err.println(Instant.now() + " [DEBUG] Error closing handle after failed claim: " + closeEx.getMessage());
                 }
                 handle = null;
+                ShowDisconnect();
                 return false;
             }
 
@@ -655,7 +683,6 @@ public class USBBulkConnection extends Connection {
         synchronized (usbOutLock) {
 
             if (handle == null) {
-                LOGGER.log(Level.SEVERE, "USB bulk write failed: Connection is not active.");
                 // System.err.println(Instant.now() + " [DEBUG] USB bulk write failed: handle is null. Disconnected?");
                 return LibUsb.ERROR_NO_DEVICE;
             }
