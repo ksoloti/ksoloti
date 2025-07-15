@@ -1,6 +1,6 @@
 {
     "platform": "linux64",
-    "jdk": "jdks/zulu21.42.19-ca-jdk21.0.7-linux_x64.zip",
+    "jdk": "jdks/zulu21.42.19-ca-jdk21.0.7-linux_x64.tar.gz",
     "executable": "Ksoloti",
     "classpath": [
         "dist/Ksoloti.jar"
