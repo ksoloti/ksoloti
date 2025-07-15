@@ -552,7 +552,7 @@ public class USBBulkConnection extends Connection {
     @Override
     public boolean connect() {
 
-        if (isDisconnectRequested()) {
+        if (disconnectRequested) {
             System.out.println(Instant.now() + " [DEBUG] Connection attempt aborted: A disconnection is still in progress.");
             return false;
         }
