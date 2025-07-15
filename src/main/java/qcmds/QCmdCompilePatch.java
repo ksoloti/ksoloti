@@ -22,8 +22,6 @@ import axoloti.Patch;
 import axoloti.utils.OSDetect;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -79,51 +77,30 @@ public class QCmdCompilePatch extends QCmdShellTask {
             }
 
             if (prefs.getFirmwareMode().contains("SPILink")) {
-                fwoptiondef += "FW_SPILINK";
+                fwoptiondef += " FW_SPILINK";
             }
             else if (prefs.getFirmwareMode().contains("USBAudio")) {
-                fwoptiondef += "FW_USBAUDIO";
+                fwoptiondef += " FW_USBAUDIO";
             }
             else if (prefs.getFirmwareMode().contains("I2SCodec")) {
-                fwoptiondef += "FW_I2SCODEC";
+                fwoptiondef += " FW_I2SCODEC";
             }
             else {
-                fwoptiondef += "FW_NORMAL";
+                fwoptiondef += " FW_NORMAL";
             }
 
-            List<String> commandParts = new ArrayList<>();
-            OSDetect.OS currentOS = OSDetect.getOS();
+            String build_filename_stem = " " + p.generateBuildFilenameStem(true);
 
-            if (currentOS == OSDetect.OS.WIN) {
-
-                commandParts.add("cmd.exe");
-                commandParts.add("/c"); /* '/c' tells cmd.exe to execute the following string as a command */
-
-                StringBuilder commandBuilder = new StringBuilder();
-                commandBuilder.append("\"").append(FirmwareDir());
-                commandBuilder.append(File.separator).append("compile_patch_win.bat");
-                commandBuilder.append(" ").append(boarddef);
-                commandBuilder.append(" ").append(fwoptiondef);
-                commandBuilder.append(" ").append(p.generateBuildFilenameStem(true));
-                commandBuilder.append(" | findstr \\\"\\\"");
-                commandBuilder.append("\"");
-                commandParts.add(commandBuilder.toString());
-
-            } else if (currentOS == OSDetect.OS.MAC || currentOS == OSDetect.OS.LINUX) {
-
-                /* For Unix systems, each part is a separate argument in the String[] */
-                commandParts.add("stdbuf");
-                commandParts.add("-oL");
-                commandParts.add(FirmwareDir() + File.separator + "compile_patch.sh");
-                commandParts.add(boarddef);
-                commandParts.add(fwoptiondef);
-                commandParts.add(p.generateBuildFilenameStem(true));
-
+            if (OSDetect.getOS() == OSDetect.OS.WIN) {
+                String str = FirmwareDir() + "\\compile_patch_win.bat " + boarddef + fwoptiondef + build_filename_stem;
+                return str.split("\\s+");
+            } else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {
+                String str = FirmwareDir() + "/compile_patch.sh " + boarddef + fwoptiondef + build_filename_stem;
+                return str.split("\\s+");
             } else {
                 Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");
                 return null;
             }
-            return commandParts.toArray(new String[0]);
     }
 
     @Override
