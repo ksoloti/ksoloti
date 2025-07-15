@@ -113,7 +113,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
         USBBulkConnection.GetConnection().addSDCardMountStatusListener(this);
         setIconImage(Constants.APP_ICON.getImage());
-        jLabelSDInfo.setText("No SD Card");
+        jLabelSDInfo.setText(" ");
 
         jFileTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 
@@ -1018,7 +1018,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         jButtonSDRefresh.setEnabled(status);
         jButtonUpload.setEnabled(status);
         jFileTable.setEnabled(status);
-        if (!status) jLabelSDInfo.setText("No SD Card");
+        if (!status) jLabelSDInfo.setText(" ");
         jButtonDelete.setEnabled(status);
         jButtonCreateDir.setEnabled(status);
     }

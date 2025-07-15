@@ -1898,7 +1898,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     @Override
     public void ShowSDCardUnmounted() {
-        jLabelSDCardPresent.setText("No SD Card");
+        if (USBBulkConnection.GetConnection().isConnected()) {
+            jLabelSDCardPresent.setText("No SD Card");
+        }
         jMenuItemMount.setEnabled(false);
     }
 
