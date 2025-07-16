@@ -159,7 +159,6 @@ java -jar ./jdks/packr-all-4.0.0.jar --verbose --output ./packagetemp/win/ksolot
 
 cd ./packagetemp/win/ksoloti-${VERSION} 
 remove_temp_files
-rm -rf ./platform_win/apache-ant-*
 cd ..
 
 # ----- Compress win package (depending on what system we're building on)

@@ -27,7 +27,6 @@ case "$platform" in
         ;;
         linux)
             ant -q clean
-            #./platform_linux/compile_java.sh #outdated java8 define?
             ant -q
             ./Ksoloti.sh
         ;;
