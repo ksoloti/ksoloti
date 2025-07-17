@@ -17,5 +17,5 @@ sudo cp 49-axoloti.rules /etc/udev/rules.d/
 
 # reload udev rules
 echo "##### Reloading udev rules #####"
-sudo udevadm control --reload-rules
+sudo udevadm control --reload-rules && sudo udevadm trigger
 echo "#####         DONE         #####"
