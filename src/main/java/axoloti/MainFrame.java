@@ -1348,7 +1348,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         try {
             boolean status;
             
-            LOGGER.log(Level.INFO, "\n---------- Testing {0} ----------", f.getPath());
+            LOGGER.log(Level.INFO, "---------- Testing {0} ----------", f.getPath());
 
             PatchGUI patch1 = serializer.read(PatchGUI.class, f);
             PatchFrame pf = new PatchFrame(patch1, qcmdprocessor);
@@ -1365,7 +1365,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.WaitQueueFinished();
             patch1.waitForBinFile();
             if (patch1.getBinFile().exists()) {
-                LOGGER.log(Level.INFO, "Done compiling patch.");
+                LOGGER.log(Level.INFO, "Done compiling patch.\n");
                 /* If a Core is connected and test patch .bin could be created:
                 stop patch, upload test patch .bin to RAM, start patch, report status */
                 if (USBBulkConnection.GetConnection().isConnected()) {
@@ -1378,13 +1378,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     patch1.GetQCmdProcessor().AppendToQueue(new QCmdPing());
                     float pct = patch1.getDSPLoadPercent();
                     if (pct < 1.0f) {
-                        LOGGER.log(Level.SEVERE, "No DSP load detected");
+                        LOGGER.log(Level.SEVERE, "No DSP load detected\n");
                     }
                     else if (pct > 95.0f) {
-                        LOGGER.log(Level.SEVERE, "High DSP load detected: {0}%", String.format("%.1f", pct));
+                        LOGGER.log(Level.SEVERE, "High DSP load detected: {0}%\n", String.format("%.1f", pct));
                     }
                     else {
-                        LOGGER.log(Level.INFO, "DSP load: {0}%", String.format("%.1f", pct));
+                        LOGGER.log(Level.INFO, "DSP load: {0}%\n", String.format("%.1f", pct));
                     }
                     Thread.sleep(1000);
 
@@ -1394,7 +1394,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 }
             }
             else {
-                LOGGER.log(Level.INFO, "FAILED compiling patch.");
+                LOGGER.log(Level.INFO, "FAILED compiling patch.\n");
             }
 
 
