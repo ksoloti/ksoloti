@@ -179,7 +179,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             else if (OSDetect.getOS() == OSDetect.OS.LINUX) {
 
                 if (result == LibUsb.ERROR_ACCESS) {
-                    LOGGER.log(Level.WARNING, "You may need to add permissions by running platform_linux/add_udev_rules.sh. More info at https://ksoloti.github.io/3-install.html#linux_permissions");
+                    LOGGER.log(Level.WARNING, "You may need to add permissions by running platform_linux_*/add_udev_rules.sh. More info at https://ksoloti.github.io/3-install.html#linux_permissions");
                     return "Insufficient permissions";
                 }
             }

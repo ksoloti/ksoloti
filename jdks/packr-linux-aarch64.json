@@ -1,6 +1,6 @@
 {
     "platform": "linux64",
-    "jdk": "jdks/zulu21.42.19-ca-jdk21.0.7-linux_x64.tar.gz",
+    "jdk": "jdks/zulu21.42.19-ca-jdk21.0.7-linux_aarch64.tar.gz",
     "executable": "Ksoloti",
     "classpath": [
         "dist/Ksoloti.jar"
@@ -21,7 +21,7 @@
         "chibios",
         "CMSIS",
         "firmware",
-        "platform_linux_x64",
+        "platform_linux_aarch64",
         "src/main/java/resources/ksoloti_icon_512.png"
     ],
     "minimizejre": "soft",

@@ -123,17 +123,29 @@ rm -rf packagetemp/*
 
 
 # ----- Linux
-java -jar ./jdks/packr-all-4.0.0.jar --verbose --output ./packagetemp/linux/ksoloti-${VERSION} -- ./jdks/packr-linux-x64.json
+java -jar ./jdks/packr-all-4.0.0.jar --verbose --output ./packagetemp/linux_x64/ksoloti-${VERSION} -- ./jdks/packr-linux-x64.json
 
-cd ./packagetemp/linux/ksoloti-${VERSION} 
+cd ./packagetemp/linux_x64/ksoloti-${VERSION} 
 remove_temp_files
 cd ..
 
-tar -czf ../ksoloti_patcher-linux-${CUSTOMLABEL}${VERSION_LONG}.tar.gz *
+tar -czf ../ksoloti_patcher-linux_x64-${CUSTOMLABEL}${VERSION_LONG}.tar.gz *
 
 cd ../..
-rm -rf ./packagetemp/linux
+rm -rf ./packagetemp/linux_x64
 
+
+# ----- Linux aarch64
+java -jar ./jdks/packr-all-4.0.0.jar --verbose --output ./packagetemp/linux_aarch64/ksoloti-${VERSION} -- ./jdks/packr-linux-aarch64.json
+
+cd ./packagetemp/linux_aarch64/ksoloti-${VERSION} 
+remove_temp_files
+cd ..
+
+tar -czf ../ksoloti_patcher-linux_aarch64-${CUSTOMLABEL}${VERSION_LONG}.tar.gz *
+
+cd ../..
+rm -rf ./packagetemp/linux_aarch64
 
 
 # ----- MacOS x64

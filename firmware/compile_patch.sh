@@ -1,12 +1,24 @@
 #!/usr/bin/env bash
 
 unamestr=`uname`
+unamearch=`uname -m`
 case "$unamestr" in
     Linux)
         currentdir="$(dirname $(readlink -f $0))"
         export axoloti_home=${axoloti_home:="$currentdir/.."}
         export axoloti_firmware=${axoloti_firmware:="$currentdir"}
-        export PATH="${axoloti_home}/platform_linux/bin:$PATH"
+        case "$unamearch" in
+            aarch64)
+                export PATH="${axoloti_home}/platform_linux_aarch64/bin:$PATH"
+            ;;
+            x86_64)
+                export PATH="${axoloti_home}/platform_linux_x64/bin:$PATH"
+            ;;
+            *)
+                printf "\nUnknown CPU architecture: $unamearch - aborting...\n"
+                exit
+            ;;
+        esac
     ;;
     Darwin)
         currentdir="$(cd $(dirname $0); pwd -P)"

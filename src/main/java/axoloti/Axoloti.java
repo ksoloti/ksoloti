@@ -20,6 +20,7 @@ package axoloti;
 
 import axoloti.object.AxoObjects;
 import axoloti.utils.OSDetect;
+import axoloti.utils.OSDetect.ARCH;
 import axoloti.utils.OSDetect.OS;
 
 import static axoloti.MainFrame.prefs;
@@ -272,7 +273,12 @@ public class Axoloti {
                     BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_macos");
                     break;
                 case LINUX:
-                    BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_linux");
+                    if (OSDetect.getArch() == ARCH.AARCH64) {
+                        BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_linux_aarch64");
+                    }
+                    else {
+                        BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_linux_x64");
+                    }
                     break;
                 default:
                 break;

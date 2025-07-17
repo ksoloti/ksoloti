@@ -1,10 +1,22 @@
 #!/usr/bin/env bash
 
 unamestr=`uname`
+unamearch=`uname -m`
 case "$unamestr" in
     Linux)
         firmwaredir="$(dirname $(readlink -f $0))"
-        export platformdir="${firmwaredir}/../platform_linux"
+        case "$unamearch" in
+            aarch64)
+                export platformdir="${firmwaredir}/../platform_linux_aarch64"
+            ;;
+            x86_64)
+                export platformdir="${firmwaredir}/../platform_linux_x64"
+            ;;
+            *)
+                printf "\nUnknown CPU architecture: $unamearch - aborting...\n"
+                exit
+            ;;
+        esac
     ;;
     Darwin)
         firmwaredir="$(cd $(dirname $0); pwd -P)"
