@@ -121,6 +121,31 @@ __attribute__((always_inline)) __STATIC_INLINE float ___VDIVF(float op1, float o
     return result;
 }
 
+/* [Floating-point Fused Multiply Add]
+   Performs a fused multiply-add operation.
+   "Fused" means that multiplication and addition are performed
+   with only one rounding step for the entire operation (for speed).
+   (op1 * op2) + op3 */
+__attribute__((always_inline)) __STATIC_INLINE float ___VMLAF(float op1, float op2, float op3)
+{
+    /* Note: The order of operands in ASM for VMLA is Accumulator, Multiplicand1, Multiplicand2 */
+    float result = op3; // Initialize with the accumulator
+    __ASM volatile("vmla.f32 %0, %1, %2" : "+w"(result) : "w"(op1), "w"(op2));
+    return (result);
+}
+
+/* [Floating-point Fused Multiply Subtract]
+   Performs a fused multiply-subtract operation.
+   "Fused" means that multiplication and subtraction are performed
+   with only one rounding step for the entire operation (for speed).
+   op3 - (op1 * op2) */
+__attribute__((always_inline)) __STATIC_INLINE float ___VMLSF(float op1, float op2, float op3)
+{
+    /* Note: The order of operands in ASM for VMLS is Accumulator, Multiplicand1, Multiplicand2 */
+    float result = op3; // Initialize with the accumulator
+    __ASM volatile("vmls.f32 %0, %1, %2" : "+w"(result) : "w"(op1), "w"(op2));
+    return (result);
+}
 __attribute__((always_inline)) __STATIC_INLINE float ___VSQRTF(float op1){
     float result;
     __ASM volatile ("vsqrt.f32 %0, %1" : "=w" (result): "w" (op1));
