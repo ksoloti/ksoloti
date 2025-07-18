@@ -65,42 +65,59 @@ typedef union {
 
 void axoloti_math_init(void);
 
-
+/* [Rotate Right]
+   Performs a bitwise Rotate Right operation on op1 by op2 positions.
+   Bits shifted out from the right end re-enter on the left end. */
 __attribute__((always_inline)) __STATIC_INLINE int32_t ___ROR (int32_t op1, int32_t op2) {
     int32_t result;
     __ASM volatile ("ror %0, %1, %2" : "=r" (result): "r" (op1), "r" (op2));
     return result;
 }
 
-
+/* [Signed Most Significant Word Multiply]
+   Performs a 32-bit by 32-bit signed multiplication and returns
+   the most significant 32 bits of the 64-bit result.
+   (op1 * op2) >> 32 */
 __attribute__((always_inline)) __STATIC_INLINE int32_t ___SMMUL (int32_t op1, int32_t op2) {
     int32_t result;
     __ASM volatile ("smmul %0, %1, %2" : "=r" (result): "r" (op1), "r" (op2));
     return result;
 }
 
-
+/* [Signed Most Significant Word Multiply Accumulate]
+   Performs a 32-bit by 32-bit signed multiplication (op1 * op2),
+   takes the most significant 32 bits of the result,
+   and then adds it to op3 (the accumulator).
+   op3 + ((op1 * op2) >> 32) */
 __attribute__((always_inline)) __STATIC_INLINE int32_t ___SMMLA (int32_t op1, int32_t op2, int32_t op3) {
     int32_t result;
     __ASM volatile ("smmla %0, %1, %2, %3" : "=r" (result): "r" (op1), "r" (op2), "r" (op3));
     return result;
 }
 
-
+/* [Signed Most Significant Word Multiply Subtract]
+   Performs a 32-bit by 32-bit signed multiplication (op1 * op2),
+   takes the most significant 32 bits of the result,
+   and then subtracts it from op3 (the accumulator).
+   op3 - ((op1 * op2) >> 32) */
 __attribute__((always_inline)) __STATIC_INLINE int32_t ___SMMLS (int32_t op1, int32_t op2, int32_t op3) {
     int32_t result;
     __ASM volatile ("smmls %0, %1, %2, %3" : "=r" (result): "r" (op1), "r" (op2), "r" (op3));
     return result;
 }
 
-
+/* [Signed Divide]
+   Performs a 32-bit signed integer division of op1 by op2.
+   op1 / op2 */
 __attribute__((always_inline)) __STATIC_INLINE int32_t ___SDIV (int32_t op1, int32_t op2) {
     int32_t result;
     __ASM volatile ("sdiv %0, %1, %2" : "=r" (result): "r" (op1), "r" (op2));
     return result;
 }
 
-
+/* [Unsigned Divide]
+   Performs a 32-bit unsigned integer division of op1 by op2.
+   op1 / op2 */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t ___UDIV (uint32_t op1, uint32_t op2) {
     uint32_t result;
     __ASM volatile ("udiv %0, %1, %2" : "=r" (result): "r" (op1), "r" (op2));
@@ -108,13 +125,20 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t ___UDIV (uint32_t op1, u
 }
 
 
+/* ALL FLOATING-POINT OPERATIONS ARE SINGLE-PRECISION */
+
+/* [Floating-point Multiply]
+   Performs a floating-point multiplication of op1 by op2.
+   op1 / op2 */
 __attribute__((always_inline)) __STATIC_INLINE float ___VMULF(float op1, float op2){
     float result;
     __ASM volatile ("vmul.f32 %0, %1, %2" : "=w" (result): "w" (op1), "w" (op2));
     return result;
 }
 
-
+/* [Floating-point Divide]
+   Performs a floating-point division of op1 by op2.
+   op1 / op2 */
 __attribute__((always_inline)) __STATIC_INLINE float ___VDIVF(float op1, float op2){
     float result;
     __ASM volatile ("vdiv.f32 %0, %1, %2" : "=w" (result): "w" (op1), "w" (op2));
@@ -146,6 +170,10 @@ __attribute__((always_inline)) __STATIC_INLINE float ___VMLSF(float op1, float o
     __ASM volatile("vmls.f32 %0, %1, %2" : "+w"(result) : "w"(op1), "w"(op2));
     return (result);
 }
+
+/* [Floating-point Square Root]
+   Calculates the square root of a floating-point number.
+   Note: Standard sqrtf() typically compiles to this. */
 __attribute__((always_inline)) __STATIC_INLINE float ___VSQRTF(float op1){
     float result;
     __ASM volatile ("vsqrt.f32 %0, %1" : "=w" (result): "w" (op1));
@@ -153,6 +181,7 @@ __attribute__((always_inline)) __STATIC_INLINE float ___VSQRTF(float op1){
 }
 #define _VSQRTF ___VSQRTF
 
+/* MIDI Note to Frequency (assumes 48 kHz sample rate, output is Q31 fixed-point) */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t mtof48k_q31(int32_t pitch) {
     int32_t p = __SSAT(pitch, 28);
     uint32_t pi = p >> 21;
@@ -166,6 +195,7 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t mtof48k_q31(int32_t pitc
     return r << 1; /* is frequency */
 }
 
+/* MIDI Note to Frequency, Extended Range (assumes 48 kHz sample rate, output is Q31 fixed-point) */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t mtof48k_ext_q31(int32_t pitch) {
     int32_t p = __SSAT(pitch, 29);
     uint32_t pi = p >> 21;
@@ -179,6 +209,7 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t mtof48k_ext_q31(int32_t 
     return r << 1; /* is frequency */
 }
 
+/* Sine Function (input and output Q31 fixed-point) */
 __attribute__((always_inline)) __STATIC_INLINE int32_t sin_q31(int32_t phase) {
     uint32_t p = (uint32_t) (phase);
     uint32_t pi = p >> 20;
@@ -192,6 +223,7 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t sin_q31(int32_t phase) {
     return rr << 1;
 }
 
+/* Hann Window Function (input and output Q31 fixed-point) */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t hann_q31(int32_t phase) {
     uint32_t p = phase;
     uint32_t pi = p >> 22;
@@ -210,12 +242,18 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t hann_q31(int32_t phase) 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 
+/* [Q27 fixed-point to floating point conversion]
+   Converts a 32-bit signed integer in Q27 fixed-point format (aka "blue wire")
+   to a floating-point number. */
 __attribute__((always_inline)) __STATIC_INLINE float q27_to_float(int32_t op1) {
     float fop1 = *(float*) (&op1);
     __ASM volatile ("VCVT.F32.S32 %0, %0, 27" : "+w" (fop1));
     return fop1;
 }
 
+/* [Floating point to Q27 fixed-point (aka "blue wire") conversion]
+   Converts a floating-point number to a 32-bit signed integer
+   in Q27 fixed-point format (aka "blue wire"). */
 __attribute__((always_inline)) __STATIC_INLINE int32_t float_to_q27(float fop1) {
     __ASM volatile ("VCVT.S32.F32 %0, %0, 27" : "+w" (fop1));
     int32_t r = *(int32_t*) (&fop1);
@@ -239,6 +277,7 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t ConvertFloatToFrac(float 
 }
 #define float_to_frac ConvertFloatToFrac
 
+/* Generates a random signed 32-bit integer value (full range: -2^31 to 2^31-1) */
 __attribute__((always_inline)) __STATIC_INLINE int32_t rand_s32(void) {
     /* This function differs from the standard C rand()definition, standard C
      * rand() only returns positive numbers, while rand_s32() returns the full
@@ -257,6 +296,7 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t rand_s32(void) {
 #endif
 #define RAND_MAX INT32_MAX
 
+/* Generates a random unsigned 31-bit integer value (0 to 2^31-1) */
 __attribute__((always_inline)) __STATIC_INLINE int32_t rand_u32(void) {
     /* like standard C rand() */
     return ((uint32_t) rand_s32()) >> 1;
@@ -278,7 +318,7 @@ uint32_t FastLog(uint32_t f);
 #define HANNING2TINTERP(phase, output) output = hann_q31(phase);
 #define HANNING2T_INTERP HANNING2TINTERP
 
-// deprecated functions
+/* Deprecated functions */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t GenerateRandomNumber(void) {
     return rand_s32();
 }
