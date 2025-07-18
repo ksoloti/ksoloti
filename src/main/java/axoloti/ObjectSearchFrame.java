@@ -19,9 +19,9 @@
 package axoloti;
 
 import axoloti.object.AxoObjectAbstract;
+import axoloti.object.AxoObjectIdComparator;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectTreeNode;
-import axoloti.utils.AxoObjectIdComparator;
 import axoloti.utils.Constants;
 import axoloti.utils.OSDetect;
 import components.ScrollPaneComponent;
@@ -44,9 +44,7 @@ import java.awt.event.MouseListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 

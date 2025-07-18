@@ -15,13 +15,11 @@
  * You should have received a copy of the GNU General Public License along with
  * Ksoloti. If not, see <http://www.gnu.org/licenses/>.
  */
-package axoloti.utils;
+package axoloti.object;
 
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import axoloti.object.AxoObjectAbstract;
  
 /**
  *
