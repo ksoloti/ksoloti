@@ -121,12 +121,12 @@ __attribute__((always_inline)) __STATIC_INLINE float ___VDIVF(float op1, float o
     return result;
 }
 
-
-__attribute__((always_inline)) __STATIC_INLINE float _VSQRTF(float op1){
+__attribute__((always_inline)) __STATIC_INLINE float ___VSQRTF(float op1){
     float result;
     __ASM volatile ("vsqrt.f32 %0, %1" : "=w" (result): "w" (op1));
     return result;
 }
+#define _VSQRTF ___VSQRTF
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t mtof48k_q31(int32_t pitch) {
     int32_t p = __SSAT(pitch, 28);
