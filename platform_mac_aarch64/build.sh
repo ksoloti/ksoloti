@@ -83,8 +83,6 @@ then
     
     cd "${PLATFORM_ROOT}/src/libusb-1.0.24"
 
-    # patch -N -p1 < ../libusb.stdfu.patch
-
  #   ./configure --prefix="${PLATFORM_ROOT}/i386" CFLAGS="-arch i386 -mmacosx-version-min=10.6" LDFLAGS="-arch i386"
  #   make 
  #   make install

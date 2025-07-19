@@ -149,8 +149,6 @@ then
 
     cd "${PLATFORM_ROOT}/src/libusb-1.0.24"
 
-    # patch -N -p1 < ../libusb.stdfu.patch # still necessary with 1.0.24??
-
     ./configure --prefix="${PLATFORM_ROOT}"
     make
     make install
