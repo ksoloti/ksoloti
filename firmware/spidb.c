@@ -92,7 +92,7 @@ void dmastream_slave_start(SPIDriver *spip) {
     spip->spi->CR1 |= SPI_CR1_SPE;
 
     /* Wait till not busy */
-    while (spip->spi->SR & SPI_SR_BSY);
+    while (spip->spi->SR & SPI_SR_BSY) {;}
 
     dmaStreamEnable(spip->dmarx);
     dmaStreamEnable(spip->dmatx);
@@ -108,7 +108,7 @@ void spidbSlaveResync(SPIDriver *spip) {
     while (!(spip->spi->SR & SPI_SR_TXE));
 
     /* Wait till transfer is done */
-    while (spip->spi->SR & SPI_SR_BSY);
+    while (spip->spi->SR & SPI_SR_BSY) {;}
 
     spip->spi->CR1 &= ~SPI_CR1_SPE;
 
@@ -260,7 +260,7 @@ void spidbStop(SPIDriver *spip) {
         while (!(spip->spi->SR & SPI_SR_TXE));
 
         /* Wait till transfer is done */
-        while (spip->spi->SR & SPI_SR_BSY);
+        while (spip->spi->SR & SPI_SR_BSY) {;}
 
         spip->spi->CR1 &= ~SPI_CR1_SPE;
 
