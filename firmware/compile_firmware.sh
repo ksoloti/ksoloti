@@ -9,7 +9,7 @@ case "$unamestr" in
         export axoloti_home=${axoloti_home:="$currentdir/.."}
         export axoloti_firmware=${axoloti_firmware:="$currentdir"}
         case "$unamearch" in
-            aarch64)
+            aarch64|arm64)
                 export PATH="${axoloti_home}/platform_linux_aarch64/bin:$PATH"
             ;;
             x86_64)
@@ -25,7 +25,18 @@ case "$unamestr" in
         currentdir="$(cd $(dirname $0); pwd -P)"
         export axoloti_home=${axoloti_home:="$currentdir/.."}
         export axoloti_firmware=${axoloti_firmware:="$currentdir"}
-        export PATH="${axoloti_home}/platform_macos/bin:$PATH"
+        case "$unamearch" in
+            aarch64|arm64)
+                export PATH="${axoloti_home}/platform_mac_aarch64/bin:$PATH"
+            ;;
+            x86_64)
+                export PATH="${axoloti_home}/platform_mac_x64/bin:$PATH"
+            ;;
+            *)
+                printf "\nUnknown CPU architecture: $unamearch - aborting...\n"
+                exit
+            ;;
+        esac
     ;;
     *)
         printf "\nUnknown OS: $unamestr - aborting...\n"

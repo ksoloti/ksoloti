@@ -20,7 +20,7 @@
         "chibios",
         "CMSIS",
         "firmware",
-        "platform_macos"
+        "platform_mac_x64"
     ],
     "minimizejre": "soft",
     "verbose": true,

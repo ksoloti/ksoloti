@@ -267,10 +267,15 @@ public class Axoloti {
         if (os != null) {
             switch (os) {
                 case WIN:
-                    BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_win");
+                    BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_win_x64");
                     break;
                 case MAC:
-                    BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_macos");
+                    if (OSDetect.getArch() == ARCH.AARCH64) {
+                        BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_mac_aarch64");
+                    }
+                    else {
+                        BuildEnv(PLATFORM_DIR, System.getProperty(HOME_DIR) + File.separator + "platform_mac_x64");
+                    }
                     break;
                 case LINUX:
                     if (OSDetect.getArch() == ARCH.AARCH64) {

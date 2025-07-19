@@ -1,0 +1,5 @@
+Scripts in this directory
+-------------------------
+
+build.sh 
+Downloads and builds all needed mac-specific tools. Requires a minimal xcode install.

@@ -14,7 +14,7 @@ before_install:
       ;;
     osx)
       brew install ant
-      ./platform_macos/build.sh
+      ./platform_mac_x64/build.sh
       ;;
     esac;
     javac -version;

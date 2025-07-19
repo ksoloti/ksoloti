@@ -2,7 +2,7 @@
 
 set axoloti_firmware=%~sdp0\
 set axoloti_home=%axoloti_firmware%..\
-set axoloti_platform=%axoloti_home%\platform_win
+set axoloti_platform=%axoloti_home%\platform_win_x64
 
 set PATH=%axoloti_platform%\\bin;%PATH%
 

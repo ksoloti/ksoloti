@@ -1,0 +1,29 @@
+{
+    "platform": "mac",
+    "jdk": "jdks/zulu21.42.19-ca-jdk21.0.7-macosx_aarch64.tar.gz",
+    "executable": "Ksoloti",
+    "classpath": [
+        "dist/Ksoloti.jar"
+    ],
+    "removelibs": [
+        "dist/Ksoloti.jar"
+    ],
+    "mainclass": "axoloti.Axoloti",
+    "vmargs": [
+        "Xms256m",
+        "Xmx2g",
+        "Xbootclasspath/a:lib/marlin-0.9.4.8-Unsafe-OpenJDK17.jar",
+        "Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine",
+        "Dsun.java2d.d3d=false"
+    ],
+    "resources": [
+        "chibios",
+        "CMSIS",
+        "firmware",
+        "platform_mac_aarch64"
+    ],
+    "minimizejre": "soft",
+    "verbose": true,
+    "bundle": "org.axoloti.ksoloti",
+    "icon": "src/main/java/resources/ksoloti_icon.icns"
+}

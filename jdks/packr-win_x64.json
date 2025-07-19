@@ -20,7 +20,7 @@
         "chibios",
         "CMSIS",
         "firmware",
-        "platform_win"
+        "platform_win_x64"
     ],
     "minimizejre": "soft",
     "verbose": true

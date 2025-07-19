@@ -26,7 +26,7 @@ function print_region() {
     echo "$name used: $size / $max_size ($pct%)"
 }
 
-raw=$(../platform_win/bin/arm-none-eabi-size $file)
+raw=$(../platform_win_x64/bin/arm-none-eabi-size $file)
 
 text=$(echo $raw | cut -d ' ' -f 7)
 data=$(echo $raw | cut -d ' ' -f 8)

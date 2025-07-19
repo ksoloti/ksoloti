@@ -6,7 +6,7 @@ case "$unamestr" in
     Linux)
         firmwaredir="$(dirname $(readlink -f $0))"
         case "$unamearch" in
-            aarch64)
+            aarch64|arm64)
                 export platformdir="${firmwaredir}/../platform_linux_aarch64"
             ;;
             x86_64)
@@ -20,11 +20,22 @@ case "$unamestr" in
     ;;
     Darwin)
         firmwaredir="$(cd $(dirname $0); pwd -P)"
-        export platformdir="${firmwaredir}/../platform_macos"
+        case "$unamearch" in
+            aarch64|arm64)
+                export platformdir="${firmwaredir}/../platform_mac_aarch64"
+            ;;
+            x86_64)
+                export platformdir="${firmwaredir}/../platform_mac_x64"
+            ;;
+            *)
+                printf "\nUnknown CPU architecture: $unamearch - aborting...\n"
+                exit
+            ;;
+        esac
     ;;
     MINGW*)
         firmwaredir="$(cd $(dirname $0); pwd -P)"
-        export platformdir="${firmwaredir}/../platform_win"
+        export platformdir="${firmwaredir}/../platform_win_x64"
     ;;
     *)
         printf "\nUnknown OS: $unamestr - aborting...\n"

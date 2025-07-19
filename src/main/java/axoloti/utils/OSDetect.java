@@ -55,7 +55,7 @@ public final class OSDetect {
     public static ARCH getArch() {
         if (arch == ARCH.UNKNOWN) {
             String archname = System.getProperty("os.arch").toLowerCase();
-            if (archname.contains("aarch64")) {
+            if (archname.contains("aarch64") || archname.contains("arm64")) {
                 arch = ARCH.AARCH64;
             }
             else if (archname.contains("x86_64")) { 
