@@ -353,79 +353,129 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public void disconnect() {
-        if (disconnectRequested || !isConnected()) { /* Avoid redundant disconnect calls */
+        System.out.println(Instant.now() + " [DEBUG] Disconnect called. Initiating cleanup.");
+
+        /* Guard against redundant calls */
+        if (this.disconnectRequested && !connected) {
+            System.out.println(Instant.now() + " [DEBUG] Disconnect already in progress/requested and not connected. Aborting redundant call.");
             return;
         }
-        if (connected) {
-            connected = false;
-            isSDCardPresent = null;
+
+        /* 1. Set flag to signal threads to stop */
+        this.disconnectRequested = true;
+
+        /* 2. Clear the queue of tasks for the Transmitter thread */
+        if (queueSerialTask != null) {
             queueSerialTask.clear();
+            System.out.println(Instant.now() + " [DEBUG] Disconnect: Cleared queueSerialTask.");
+        }
 
-            LOGGER.log(Level.WARNING, "Disconnected\n");
+        try {
 
-            synchronized (readsync) {
-                readsync.Acked = false;
-                readsync.notifyAll();
+            /* 3. Interrupt the Receiver thread */
+            if (receiverThread != null && receiverThread.isAlive()) {
+                System.out.println(Instant.now() + " [DEBUG] Disconnect: Interrupting Receiver thread.");
+                receiverThread.interrupt();
             }
-            synchronized (sync) {
-                sync.Acked = false;
-                sync.notifyAll();
+
+            /* 4. Interrupt the Transmitter thread */
+            if (transmitterThread != null && transmitterThread.isAlive()) {
+                System.out.println(Instant.now() + " [DEBUG] Disconnect: Interrupting Transmitter thread.");
+                transmitterThread.interrupt();
             }
+
+            /* 5. Wait for threads to terminate */
+            long threadJoinTimeoutMs = 5000;
 
             if (receiverThread != null && receiverThread.isAlive()) {
-                receiverThread.interrupt();
                 try {
-                    receiverThread.join(3000);
-                }
-                catch (InterruptedException ex) {
-                    // System.err.println(Instant.now() + " [DEBUG] Receiver join interrupted: " + ex.getMessage());
-                    Thread.currentThread().interrupt();
-                }
-            }
-            if (transmitterThread != null && transmitterThread.isAlive()) {
-                transmitterThread.interrupt();
-                try {
-                    transmitterThread.join(3000);
-                }
-                catch (InterruptedException ex) {
-                    // System.err.println(Instant.now() + " [DEBUG] Transmitter join interrupted: " + ex.getMessage());
-                    Thread.currentThread().interrupt();
-                }
-            }
-
-            // if (receiverThread != null && receiverThread.isAlive()) {
-            //     System.err.println(Instant.now() + " [DEBUG] Receiver thread did not terminate gracefully after timeout.");
-            // }
-            // if (transmitterThread != null && transmitterThread.isAlive()) {
-            //     System.err.println(Instant.now() + " [DEBUG] Transmitter thread did not terminate gracefully after timeout.");
-            // }
-            
-            if (handle != null) {
-                try {
-                    int result = LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
-                    if (result != LibUsb.SUCCESS) {
-                        // System.err.println(Instant.now() + " [DEBUG] LibUsb: Unable to release interface: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
+                    System.out.println(Instant.now() + " [DEBUG] Disconnect: Waiting for Receiver thread to join (timeout: " + threadJoinTimeoutMs + "ms).");
+                    receiverThread.join(threadJoinTimeoutMs);
+                    if (receiverThread.isAlive()) { // Check AFTER join to see if it actually terminated
+                        System.err.println(Instant.now() + " [ERROR] Disconnect: Receiver thread did not terminate within timeout.");
+                    }
+                    else {
+                        System.out.println(Instant.now() + " [DEBUG] Disconnect: Receiver thread joined successfully.");
                     }
                 }
-                catch (LibUsbException ex) {
-                    // System.err.println(Instant.now() + " [DEBUG] LibUsb: Exception during interface release: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                catch (InterruptedException e) {
+                    System.err.println(Instant.now() + " [ERROR] Disconnect: Interrupted while waiting for Receiver thread to join: " + e.getMessage());
+                    Thread.currentThread().interrupt(); // Restore interrupt status
                 }
-
-                try {
-                    LibUsb.close(handle);
-                }
-                catch (LibUsbException ex) {
-                    // System.err.println(Instant.now() + " [DEBUG] LibUsb: Exception during device close: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                finally {
+                    receiverThread = null; // Clear reference regardless of join success/failure
                 }
             }
 
-            handle = null;
+            if (transmitterThread != null && transmitterThread.isAlive()) {
+                try {
+                    System.out.println(Instant.now() + " [DEBUG] Disconnect: Waiting for Transmitter thread to join (timeout: " + threadJoinTimeoutMs + "ms).");
+                    transmitterThread.join(threadJoinTimeoutMs);
+                    if (transmitterThread.isAlive()) {
+                        System.err.println(Instant.now() + " [ERROR] Disconnect: Transmitter thread did not terminate within timeout.");
+                    }
+                    else {
+                        System.out.println(Instant.now() + " [DEBUG] Disconnect: Transmitter thread joined successfully.");
+                    }
+                }
+                catch (InterruptedException e) {
+                    System.err.println(Instant.now() + " [ERROR] Disconnect: Interrupted while waiting for Transmitter thread to join: " + e.getMessage());
+                    Thread.currentThread().interrupt();
+                }
+                finally {
+                    transmitterThread = null;
+                }
+            }
+
+            /* 6. Perform USB resource cleanup (only AFTER threads are confirmed stopped or timed out) */
+            if (handle != null) {
+                try {
+                    System.out.println(Instant.now() + " [DEBUG] Attempting to release USB interface " + useBulkInterfaceNumber + ".");
+                    LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
+                    System.out.println(Instant.now() + " [DEBUG] USB interface released successfully.");
+                }
+                catch (LibUsbException releaseEx) {
+                    System.err.println(Instant.now() + " [ERROR] Disconnect: Error releasing interface: " + releaseEx.getMessage());
+                }
+
+                try {
+                    System.out.println(Instant.now() + " [DEBUG] Attempting to close USB device handle.");
+                    LibUsb.close(handle);
+                    System.out.println(Instant.now() + " [DEBUG] USB device handle closed successfully.");
+                }
+                catch (LibUsbException closeEx) {
+                    System.err.println(Instant.now() + " [ERROR] Disconnect: Error closing handle: " + closeEx.getMessage());
+                }
+                finally {
+                    handle = null;
+                }
+            }
+            else {
+                System.out.println(Instant.now() + " [DEBUG] No USB device handle to close (it was null).");
+            }
+
+        }
+        catch (Exception mainEx) {
+            LOGGER.log(Level.SEVERE, "Unexpected exception during disconnect cleanup:", mainEx);
+            System.err.println(Instant.now() + " [ERROR] Disconnect: Unexpected exception during cleanup: " + mainEx.getMessage());
+        }
+        finally {
+
+            /* 7. Reset state variables - always reset these, regardless of cleanup success */
+            connected = false;
+            detectedCpuId = null;
+            isSDCardPresent = null;
             CpuId0 = 0;
             CpuId1 = 0;
             CpuId2 = 0;
+
+            /* 8. Notify UI - always notify UI after cleanup attempt */
             ShowDisconnect();
+            LOGGER.log(Level.WARNING, "Disconnected\n");
+
+            /* 9. Clear `disconnectRequested` flag LAST, after all cleanup and UI updates */
+            this.disconnectRequested = false;
+            System.out.println(Instant.now() + " [DEBUG] Disconnect process completed. Disconnect request flag cleared.");
         }
     }
 
