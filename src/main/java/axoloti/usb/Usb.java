@@ -45,10 +45,14 @@ public class Usb {
     static final public short PID_KSOLOTI_USBAUDIO = (short) 0x0446;
     static final public short PID_AXOLOTI_USBAUDIO = (short) 0x0447;
 
+    static Context context; /* One context for all libusb operations */
+
     public Usb() {
     }
 
-    static Context context;
+    public static Context getContext() {
+        return context;
+    }
 
     public static void initialize() {
         if (context == null) {
