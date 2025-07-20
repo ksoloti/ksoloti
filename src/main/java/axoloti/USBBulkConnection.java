@@ -630,45 +630,55 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public boolean connect() {
-
+        /* 1. Initial State Check: Prevent overlapping operations */
         if (disconnectRequested) {
             System.out.println(Instant.now() + " [DEBUG] Connection attempt aborted: A disconnection is still in progress.");
             return false;
         }
 
-        mainframe.updateLinkFirmwareID();
+        // disconnect(); // Trigger a full disconnect for cleanup first?
         GoIdleState();
 
+        /* Update UI/internal state immediately */
+        this.connected = false;
+
+        /* Internal 'isConnecting' flag to prevent multiple concurrent SwingWorkers */
+        if (isConnecting) {
+            return false;
+        }
+        isConnecting = true;
+
+        /* Try to get targetCpuId if not already set */
         if (targetCpuId == null) {
             targetCpuId = prefs.getComPortName();
         }
-        targetProfile = new ksoloti_core();
-
-        handle = OpenDeviceHandle();
-        if (handle == null) {
-            // System.err.println(Instant.now() + " [DEBUG] USB device not found or inaccessible.");
-            ShowDisconnect();
-            return false;
-        }
+        targetProfile = new ksoloti_core(); // Ensure this is not problematic if re-initialized
 
         try {
-            int result = LibUsb.claimInterface(handle, useBulkInterfaceNumber);
-            if (result != LibUsb.SUCCESS) {
-                LOGGER.log(Level.WARNING, "USB interface already in use or inaccessible.");
-                // System.err.println(Instant.now() + " [DEBUG] LibUsb: Unable to claim USB interface: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
-                try {
-                    LibUsb.close(handle);
-                }
-                catch (LibUsbException closeEx) {
-                    // System.err.println(Instant.now() + " [DEBUG] Error closing handle after failed claim: " + closeEx.getMessage());
-                }
-                handle = null;
-                ShowDisconnect();
+            /* 2. Open Device Handle */
+            handle = OpenDeviceHandle();
+            if (handle == null) {
+                System.err.println(Instant.now() + " [ERROR] Connect: Failed to open USB device handle.");
                 return false;
             }
+            System.out.println(Instant.now() + " [DEBUG] Connect: USB device handle opened successfully.");
+
+            /* 3. Claim Interface */
+            System.out.println(Instant.now() + " [DEBUG] Connect: Attempting to claim interface " + useBulkInterfaceNumber + ".");
+            int result = LibUsb.claimInterface(handle, useBulkInterfaceNumber);
+            if (result != LibUsb.SUCCESS) {
+                System.err.println(Instant.now() + " [ERROR] Connect: Failed to claim interface " + useBulkInterfaceNumber + ": " + LibUsb.errorName(result) + " (Code: " + result + ")");
+                LibUsb.close(handle);
+                handle = null;
+                ShowDisconnect();
+                isConnecting = false;
+                return false;
+            }
+            System.out.println(Instant.now() + " [DEBUG] Connect: USB interface " + useBulkInterfaceNumber + " claimed successfully.");
 
             GoIdleState();
 
+            /* 4. Start Receiver and Transmitter Threads */
             receiverThread = new Thread(new Receiver());
             receiverThread.setName("Receiver");
             receiverThread.start();
@@ -677,66 +687,113 @@ public class USBBulkConnection extends Connection {
             transmitterThread.setName("Transmitter");
             transmitterThread.start();
 
+            /* 5. Initial Communication and Synchronization */
             ClearSync();
             TransmitPing();
 
             if (!WaitSync()) {
-                // System.err.println(Instant.now() + " [DEBUG] Initial ping timeout. Connection failed.");
+                System.err.println(Instant.now() + " [DEBUG] Initial ping timeout. Connection failed.");
                 ShowDisconnect();
-                try {
-                    disconnect();
-                }
-                catch (Exception e) {
-                    // System.err.println(Instant.now() + " [DEBUG] Error during cleanup after failed ping response: " + e.getMessage());
-                }
+                isConnecting = false;
                 return false;
             }
-            connected = true;
+
+            /* If we reach here, initial handshake is successful */
+            this.connected = true;
             LOGGER.log(Level.WARNING, "Connected\n");
 
+            /* 6. Post-Connection Commands (CPU ID, Firmware Version) */
             QCmdProcessor qcmdp = MainFrame.mainframe.getQcmdprocessor();
-            qcmdp.AppendToQueue(new QCmdTransmitGetFWVersion());
-            qcmdp.WaitQueueFinished();
+            
+            try {
+                qcmdp.AppendToQueue(new QCmdTransmitGetFWVersion());
+                qcmdp.WaitQueueFinished();
 
-            QCmdMemRead1Word q1 = new QCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
-            qcmdp.AppendToQueue(q1);
-            targetProfile.setCPUIDCode(q1.getResult());
+                QCmdMemRead1Word q1 = new QCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
+                qcmdp.AppendToQueue(q1);
+                qcmdp.WaitQueueFinished();
+                targetProfile.setCPUIDCode(q1.getResult());
 
-            QCmdMemRead q;
+                QCmdMemRead q = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
+                qcmdp.AppendToQueue(q);
+                qcmdp.WaitQueueFinished();
+                targetProfile.setCPUSerial(q.getResult());
+                this.detectedCpuId = CpuIdToHexString(targetProfile.getCPUSerial());
+                System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: detectedCpuId set to: " + this.detectedCpuId);
+            }
+            catch (Exception cmdEx) {
+                LOGGER.log(Level.SEVERE, "Error during post-connection QCmd processing. Connection might be unstable:", cmdEx);
+                return false;
+            }
 
-            q = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
-            qcmdp.AppendToQueue(q);
-            targetProfile.setCPUSerial(q.getResult());
-            this.detectedCpuId = CpuIdToHexString(targetProfile.getCPUSerial());
-            // System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: detectedCpuId set to: " + this.detectedCpuId);
             ShowConnect();
+            isConnecting = false;
             return true;
+
         }
         catch (LibUsbException e) {
+            LOGGER.log(Level.SEVERE, "LibUsb exception during connection:", e);
             ShowDisconnect();
-            if (handle != null) {
-                try {
-                    LibUsb.close(handle);
-                }
-                catch (LibUsbException ce) {
-                    // System.err.println(Instant.now() + " [DEBUG] Error closing handle after connection exception: " + ce.getMessage());
-                }
-                handle = null;
-            }
+            isConnecting = false;
             return false;
         }
         catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "General exception during connection:", ex);
             ShowDisconnect();
-            if (handle != null) {
-                try {
-                    LibUsb.close(handle);
-                }
-                catch (LibUsbException ce) {
-                    // System.err.println(Instant.now() + " [DEBUG] Error closing handle after connection exception: " + ce.getMessage());
-                }
-                handle = null;
-            }
+            isConnecting = false;
             return false;
+        }
+        finally {
+
+            /* 7. Guaranteed Cleanup */
+            if (!connected) {
+                System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: Performing cleanup after failed connection attempt.");
+
+                if (receiverThread != null && receiverThread.isAlive()) {
+                    receiverThread.interrupt();
+                    try {
+                        receiverThread.join(2000);
+                    }
+                    catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+
+                if (transmitterThread != null && transmitterThread.isAlive()) {
+                    transmitterThread.interrupt();
+                    try {
+                        transmitterThread.join(2000);
+                    }
+                    catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+
+                receiverThread = null;
+                transmitterThread = null;
+
+                /* Release interface if it was claimed */
+                if (handle != null) {
+                    try {
+                        LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
+                    }
+                    catch (LibUsbException releaseEx) {
+                        System.err.println(Instant.now() + " [DEBUG] Error releasing interface during cleanup: " + releaseEx.getMessage());
+                    }
+                    
+                    /* Close the device handle */
+                    try {
+                        LibUsb.close(handle);
+                    }
+                    catch (LibUsbException closeEx) {
+                        System.err.println(Instant.now() + " [DEBUG] Error closing handle during cleanup: " + closeEx.getMessage());
+                    }
+                    finally {
+                        handle = null;
+                    }
+                }
+            }
+            isConnecting = false;
         }
     }
 
