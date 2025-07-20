@@ -1673,6 +1673,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 return;
             }
         }
+
+        Usb.shutdown();
+
         prefs.SavePrefs();
         if (DocumentWindowList.GetList().isEmpty()) {
             System.exit(0);

@@ -64,6 +64,12 @@ public class Usb {
         }
     }
 
+    public static void shutdown() {
+        if (context != null) {
+            LibUsb.exit(context);
+        }
+    }
+
     public static String DeviceToPath(Device device) {
         ByteBuffer path = ByteBuffer.allocateDirect(10);
         int n = LibUsb.getPortNumbers(device, path);
