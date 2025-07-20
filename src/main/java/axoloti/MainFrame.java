@@ -1184,7 +1184,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 @Override
                 protected Void doInBackground() throws Exception {
                     USBBulkConnection.GetConnection().disconnect();
-                    Thread.sleep(200); /* 200ms for disconnect to clear */
+                    Thread.sleep(500); /* 500ms for disconnect to clear */
                     return null;
                 }
 
