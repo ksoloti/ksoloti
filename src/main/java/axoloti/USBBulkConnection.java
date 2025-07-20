@@ -26,6 +26,8 @@ import axoloti.dialogs.USBPortSelectionDlg;
 import axoloti.displays.DisplayInstance;
 import axoloti.parameters.ParameterInstance;
 import axoloti.targetprofile.ksoloti_core;
+import axoloti.usb.Usb;
+
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -288,14 +290,10 @@ public class USBBulkConnection extends Connection {
 
         disconnectRequested = false;
         isConnecting = false;
+        System.out.println(Instant.now() + " [DEBUG] isConnecting state: " + isConnecting + " at line 290");
         connected = false;
         queueSerialTask = new ArrayBlockingQueue<QCmdSerialTask>(20);
-        context = new Context();
-
-        int result = LibUsb.init(context);
-        if (result != LibUsb.SUCCESS) {
-            throw new LibUsbException("Unable to initialize libusb.", result);
-        }
+        this.context = Usb.getContext();
     }
 
     @Override
@@ -337,7 +335,7 @@ public class USBBulkConnection extends Connection {
     public boolean AppendToQueue(QCmdSerialTask cmd) {
         try {
             if (!(cmd instanceof QCmdPing)) {
-                // System.out.println(Instant.now() + " [DEBUG] AppendToQueue: attempting to append " + cmd.getClass().getSimpleName());
+                System.out.println(Instant.now() + " [DEBUG] AppendToQueue: attempting to append " + cmd.getClass().getSimpleName());
             }
             boolean added = queueSerialTask.offer(cmd, 100, TimeUnit.MILLISECONDS);
             if (!added) {
@@ -348,7 +346,7 @@ public class USBBulkConnection extends Connection {
         catch (InterruptedException ex) {
             /* Restore the interrupted status, as per best practice */
             Thread.currentThread().interrupt();
-            // System.err.println(Instant.now() + " [DEBUG] USBBulkConnection AppendToQueue interrupted while offering command: " + cmd.getClass().getSimpleName() + " - " + ex.getMessage());
+            System.err.println(Instant.now() + " [DEBUG] USBBulkConnection AppendToQueue interrupted while offering command: " + cmd.getClass().getSimpleName() + " - " + ex.getMessage());
             return false; /* Command was not added due to interruption */
         }
     }
@@ -592,7 +590,7 @@ public class USBBulkConnection extends Connection {
 
                         result = LibUsb.open(d, h);
                         if (result < 0) {
-                            // System.err.println(Instant.now() + " [DEBUG] LibUsb: Failed to open device handle: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
+                            System.err.println(Instant.now() + " [DEBUG] LibUsb: Failed to open device handle: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
                         }
                         else {
                             return h;
@@ -644,9 +642,11 @@ public class USBBulkConnection extends Connection {
 
         /* Internal 'isConnecting' flag to prevent multiple concurrent SwingWorkers */
         if (isConnecting) {
+            System.out.println(Instant.now() + " [DEBUG] isConnecting state: " + isConnecting + " at line 647");
             return false;
         }
         isConnecting = true;
+        System.out.println(Instant.now() + " [DEBUG] isConnecting state: " + isConnecting + " at line 651");
 
         /* Try to get targetCpuId if not already set */
         if (targetCpuId == null) {
@@ -672,6 +672,7 @@ public class USBBulkConnection extends Connection {
                 handle = null;
                 ShowDisconnect();
                 isConnecting = false;
+                System.out.println(Instant.now() + " [DEBUG] isConnecting state: " + isConnecting + " at line 677");
                 return false;
             }
             System.out.println(Instant.now() + " [DEBUG] Connect: USB interface " + useBulkInterfaceNumber + " claimed successfully.");
@@ -695,6 +696,7 @@ public class USBBulkConnection extends Connection {
                 System.err.println(Instant.now() + " [DEBUG] Initial ping timeout. Connection failed.");
                 ShowDisconnect();
                 isConnecting = false;
+                System.out.println(Instant.now() + " [DEBUG] isConnecting state: " + isConnecting + " at line 701");
                 return false;
             }
 
@@ -728,6 +730,7 @@ public class USBBulkConnection extends Connection {
 
             ShowConnect();
             isConnecting = false;
+            System.out.println(Instant.now() + " [DEBUG] isConnecting state: " + isConnecting + " at line 735");
             return true;
 
         }
@@ -803,7 +806,7 @@ public class USBBulkConnection extends Connection {
         synchronized (usbOutLock) {
 
             if (handle == null) {
-                // System.err.println(Instant.now() + " [DEBUG] USB bulk write failed: handle is null. Disconnected?");
+                System.err.println(Instant.now() + " [DEBUG] USB bulk write failed: handle is null. Disconnected?");
                 return LibUsb.ERROR_NO_DEVICE;
             }
 
@@ -890,15 +893,17 @@ public class USBBulkConnection extends Connection {
     @Override
     public boolean WaitSync(int msec) {
         synchronized (sync) {
-                if (sync.Acked) {
-                    return sync.Acked;
-                }
-                try {
-                    sync.wait(msec);
-                }
-                catch (InterruptedException ex) {
-                    // LOGGER.log(Level.SEVERE, "Sync wait interrupted");
-                }
+            if (sync.Acked) {
+                return sync.Acked;
+            }
+            try {
+                sync.wait(msec);
+            }
+            catch (InterruptedException ex) {
+                LOGGER.log(Level.SEVERE, "Sync wait interrupted", ex);
+                ex.printStackTrace(System.err);
+                Thread.currentThread().interrupt();
+            }
             return sync.Acked;
         }
     }
@@ -925,7 +930,8 @@ public class USBBulkConnection extends Connection {
                 readsync.wait(1000);
             }
             catch (InterruptedException ex) {
-                // LOGGER.log(Level.SEVERE, "Sync wait interrupted");
+                LOGGER.log(Level.SEVERE, "ReadSync wait interrupted", ex);
+                Thread.currentThread().interrupt();
             }
             return readsync.Acked;
         }
@@ -1438,7 +1444,7 @@ public class USBBulkConnection extends Connection {
                 if (!pi.GetNeedsTransmit()) {
                     pi.SetValueRaw(value);
                 }
-                // System.out.println(Instant.now() + " [DEBUG] rcv ppc objname:" + pi.GetObjectInstance().getInstanceName() + " pname:"+ pi.getName());
+                System.out.println(Instant.now() + " [DEBUG] rcv ppc objname:" + pi.GetObjectInstance().getInstanceName() + " pname:"+ pi.getName());
             }
         });
 
