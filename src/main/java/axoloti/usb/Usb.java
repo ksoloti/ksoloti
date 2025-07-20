@@ -81,7 +81,7 @@ public class Usb {
     }
 
     public static void listDevices() {
-        initialize();
+        // initialize();
         DeviceList list = new DeviceList();
         int result = LibUsb.getDeviceList(context, list);
         if (result < 0) {
@@ -166,7 +166,7 @@ public class Usb {
     }
 
     public static boolean isDFUDeviceAvailable() {
-        initialize();
+        // initialize();
         // Read the USB device list
         DeviceList list = new DeviceList();
         int result = LibUsb.getDeviceList(context, list);
@@ -220,7 +220,7 @@ public class Usb {
     }
 
     public static Device findDevice(short vendorId, short productId) {
-        initialize();
+        // initialize();
         // Read the USB device list
         DeviceList list = new DeviceList();
         int result = LibUsb.getDeviceList(context, list);
