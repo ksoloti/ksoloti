@@ -93,12 +93,12 @@ public class USBBulkConnection extends Connection {
     int fwcrc = -1;
     int temp_fwcrc = -1;
 
-    private final byte[] startPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('s')};
-    private final byte[] stopPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('S')};
-    private final byte[] pingPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('p')};
-    private final byte[] getFileListPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('l')};
-    private final byte[] copyToFlashPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('F')};
-    private final byte[] axoFileOpPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('C')};
+    private final byte[] startPckt =        new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('s')};
+    private final byte[] stopPckt =         new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('S')};
+    private final byte[] pingPckt =         new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('p')};
+    private final byte[] getFileListPckt =  new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('l')};
+    private final byte[] copyToFlashPckt =  new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('F')};
+    private final byte[] axoFileOpPckt =    new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('C')};
 
     private final short bulkVID = (short) 0x16C0;
     private final short bulkPIDAxoloti = (short) 0x0442;
@@ -131,7 +131,7 @@ public class USBBulkConnection extends Connection {
         fileinfo_filename,      /* file listing entry, variable length filename */
         memread,                /* one-time programmable bytes */
         memread1word,           /* one-time programmable bytes */
-        fwversion,
+        fwversion,              /* responds with own firmware version, 1.1.0.0 (though not used for anything?) */
         commandResultPckt       /* New Response Packet: ['A', 'x', 'o', 'R', command_byte, status_byte] */
     };
 
@@ -164,75 +164,80 @@ public class USBBulkConnection extends Connection {
             ByteBuffer recvbuffer = ByteBuffer.allocateDirect(4096);
             IntBuffer transfered = IntBuffer.allocate(1);
 
-            while (!disconnectRequested) {
+            System.out.println(Instant.now() + " [DEBUG] Receiver thread started.");
+            while (!Thread.currentThread().isInterrupted() && !disconnectRequested) {
                 int result = LibUsb.SUCCESS;
                 int sz = 0;
 
                 if (handle == null) {
-                    /* Re-check handle BEFORE acquiring lock */
                     System.err.println(Instant.now() + " [DEBUG] Receiver: USB handle is null. Initiating USB disconnect.");
-                    // USBBulkConnection.GetConnection().disconnect(); /* Attempt disconnect? */
+                    /* disconnect(); already handled by critical error below */
                     break; /* Exit the loop */
                 }
 
                 try {
                     synchronized (usbInLock) {
-
-                        /* Re-check handle AFTER acquiring lock, in case it was nulled just before lock acquisition */
                         if (handle == null) {
-                            // System.err.println(Instant.now() + " [DEBUG] Receiver: USB handle became null while waiting for lock. Initiating central disconnect.");
+                            System.err.println(Instant.now() + " [DEBUG] Receiver: USB handle became null while waiting for lock. Initiating central disconnect.");
                             disconnect();
                             break; /* Exit the loop */
                         }
 
                         recvbuffer.clear();
                         transfered.clear();
-                        result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 200);
+                        result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 1000);
                         sz = transfered.get(0);
 
-                        /* Check disconnectRequested immediately after bulkTransfer returns */
+                        /* Check interrupted status immediately after a blocking call returns */
+                        if (Thread.currentThread().isInterrupted()) {
+                            System.out.println(Instant.now() + " [DEBUG] Receiver: Thread interrupted after bulkTransfer. Exiting loop.");
+                            break;
+                        }
                         if (disconnectRequested) {
-                            // System.out.println(Instant.now() + " [DEBUG] Receiver: Disconnect requested after bulkTransfer. Exiting loop.");
-                            break; /* Exit the loop */ 
+                            System.out.println(Instant.now() + " [DEBUG] Receiver: Disconnect requested after bulkTransfer. Exiting loop.");
+                            break;
                         }
 
                         if (result != LibUsb.SUCCESS) {
-                            // System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsb.bulkTransfer returned error: " + result + " (" + LibUsb.strError(result) + ")");
+                            System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsb.bulkTransfer returned error: " + result + " (" + LibUsb.strError(result) + ")");
                             if (result == LibUsb.ERROR_NO_DEVICE || result == LibUsb.ERROR_PIPE || result == LibUsb.ERROR_IO || result == LibUsb.ERROR_INTERRUPTED) {
-                                // System.err.println(Instant.now() + " [DEBUG] Receiver: Critical LibUsb error detected. Initiating USB disconnect.");
+                                System.err.println(Instant.now() + " [DEBUG] Receiver: Critical LibUsb error detected. Initiating USB disconnect.");
                                 disconnect();
                                 break; /* Exit the loop */
                             }
                         }
-                    }
+                    } /* end synchronized (usbInLock) */
 
                     if (result == LibUsb.SUCCESS && sz > 0) {
                         recvbuffer.position(0);
                         recvbuffer.limit(sz);
                         for (int i = 0; i < sz; i++) {
+                            if (Thread.currentThread().isInterrupted()) {
+                                System.err.println(Instant.now() + " [DEBUG] Receiver: Thread interrupted during byte processing. Aborting chunk.");
+                                break;
+                            }
                             if (disconnectRequested) {
-                                /* Check disconnectRequested here in case disconnect() was triggered by another thread */
-                                // System.err.println(Instant.now() + " [DEBUG] Receiver: Disconnect requested during byte processing. Aborting chunk.");
-                                break; /* Exit inner for loop */
+                                System.err.println(Instant.now() + " [DEBUG] Receiver: Disconnect requested during byte processing. Aborting chunk.");
+                                break;
                             }
                             processByte(recvbuffer.get(i));
                         }
                     }
                 }
                 catch (LibUsbException e) {
-                    // System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsbException: " + e.getMessage());
+                    System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsbException: " + e.getMessage());
                     e.printStackTrace(System.err);
                     disconnect();
                     break;
                 }
                 catch (Exception e) {
-                    // System.err.println(Instant.now() + " [DEBUG] Receiver: Unexpected exception: " + e.getMessage());
+                    System.err.println(Instant.now() + " [DEBUG] Receiver: Unexpected exception: " + e.getMessage());
                     e.printStackTrace(System.err);
                     disconnect();
                     break;
                 }
             }
-            // System.out.println(Instant.now() + " [DEBUG] Receiver thread exiting.");
+            System.out.println(Instant.now() + " [DEBUG] Receiver thread exiting gracefully.");
         }
     }
 
