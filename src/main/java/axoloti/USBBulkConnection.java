@@ -68,6 +68,7 @@ public class USBBulkConnection extends Connection {
 
     private Patch patch;
     private volatile boolean disconnectRequested;
+    private volatile boolean isConnecting;
     private volatile boolean connected;
     private volatile Thread transmitterThread;
     private volatile Thread receiverThread;
@@ -286,6 +287,7 @@ public class USBBulkConnection extends Connection {
         this.patch = null;
 
         disconnectRequested = false;
+        isConnecting = false;
         connected = false;
         queueSerialTask = new ArrayBlockingQueue<QCmdSerialTask>(20);
         context = new Context();
