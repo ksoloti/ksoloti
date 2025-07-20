@@ -290,7 +290,6 @@ public class USBBulkConnection extends Connection {
 
         disconnectRequested = false;
         isConnecting = false;
-        System.out.println(Instant.now() + " [DEBUG] isConnecting state: " + isConnecting + " at line 290");
         connected = false;
         queueSerialTask = new ArrayBlockingQueue<QCmdSerialTask>(20);
         this.context = Usb.getContext();
@@ -371,7 +370,6 @@ public class USBBulkConnection extends Connection {
         }
 
         try {
-
             /* 3. Interrupt the Receiver thread */
             if (receiverThread != null && receiverThread.isAlive()) {
                 System.out.println(Instant.now() + " [DEBUG] Disconnect: Interrupting Receiver thread.");
@@ -391,7 +389,7 @@ public class USBBulkConnection extends Connection {
                 try {
                     System.out.println(Instant.now() + " [DEBUG] Disconnect: Waiting for Receiver thread to join (timeout: " + threadJoinTimeoutMs + "ms).");
                     receiverThread.join(threadJoinTimeoutMs);
-                    if (receiverThread.isAlive()) { // Check AFTER join to see if it actually terminated
+                    if (receiverThread.isAlive()) {
                         System.err.println(Instant.now() + " [ERROR] Disconnect: Receiver thread did not terminate within timeout.");
                     }
                     else {
@@ -400,10 +398,10 @@ public class USBBulkConnection extends Connection {
                 }
                 catch (InterruptedException e) {
                     System.err.println(Instant.now() + " [ERROR] Disconnect: Interrupted while waiting for Receiver thread to join: " + e.getMessage());
-                    Thread.currentThread().interrupt(); // Restore interrupt status
+                    Thread.currentThread().interrupt();
                 }
                 finally {
-                    receiverThread = null; // Clear reference regardless of join success/failure
+                    receiverThread = null;
                 }
             }
 
@@ -430,12 +428,30 @@ public class USBBulkConnection extends Connection {
             /* 6. Perform USB resource cleanup (only AFTER threads are confirmed stopped or timed out) */
             if (handle != null) {
                 try {
+                    System.out.println(Instant.now() + " [DEBUG] Attempting to reset USB device using active handle.");
+
+                    /* Calling resetDevice is a bit "risky" but so far has been improving stability a lot
+                       especially during repeated disconnects and re-connects. */
+                    int resetResult = LibUsb.resetDevice(handle);
+                    if (resetResult != LibUsb.SUCCESS) {
+                        System.err.println(Instant.now() + " [ERROR] Disconnect: Error resetting device: " + LibUsb.strError(resetResult) + " (Code: " + resetResult + ")");
+                    }
+                    else {
+                        System.out.println(Instant.now() + " [DEBUG] USB device reset successfully. Device may re-enumerate.");
+                    }
+
+                }
+                catch (LibUsbException resetEx) {
+                    System.err.println(Instant.now() + " [ERROR] Disconnect: LibUsbException during device reset: " + resetEx.getMessage());
+                }
+
+                try {
                     System.out.println(Instant.now() + " [DEBUG] Attempting to release USB interface " + useBulkInterfaceNumber + ".");
                     LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
                     System.out.println(Instant.now() + " [DEBUG] USB interface released successfully.");
                 }
                 catch (LibUsbException releaseEx) {
-                    System.err.println(Instant.now() + " [ERROR] Disconnect: Error releasing interface: " + releaseEx.getMessage());
+                    System.err.println(Instant.now() + " [ERROR] Disconnect: Error releasing interface (may be normal after reset): " + releaseEx.getMessage());
                 }
 
                 try {
@@ -444,7 +460,7 @@ public class USBBulkConnection extends Connection {
                     System.out.println(Instant.now() + " [DEBUG] USB device handle closed successfully.");
                 }
                 catch (LibUsbException closeEx) {
-                    System.err.println(Instant.now() + " [ERROR] Disconnect: Error closing handle: " + closeEx.getMessage());
+                    System.err.println(Instant.now() + " [ERROR] Disconnect: Error closing handle (may be normal after reset): " + closeEx.getMessage());
                 }
                 finally {
                     handle = null;
@@ -453,7 +469,6 @@ public class USBBulkConnection extends Connection {
             else {
                 System.out.println(Instant.now() + " [DEBUG] No USB device handle to close (it was null).");
             }
-
         }
         catch (Exception mainEx) {
             LOGGER.log(Level.SEVERE, "Unexpected exception during disconnect cleanup:", mainEx);
@@ -642,17 +657,15 @@ public class USBBulkConnection extends Connection {
 
         /* Internal 'isConnecting' flag to prevent multiple concurrent SwingWorkers */
         if (isConnecting) {
-            System.out.println(Instant.now() + " [DEBUG] isConnecting state: " + isConnecting + " at line 647");
             return false;
         }
         isConnecting = true;
-        System.out.println(Instant.now() + " [DEBUG] isConnecting state: " + isConnecting + " at line 651");
 
         /* Try to get targetCpuId if not already set */
         if (targetCpuId == null) {
             targetCpuId = prefs.getComPortName();
         }
-        targetProfile = new ksoloti_core(); // Ensure this is not problematic if re-initialized
+        targetProfile = new ksoloti_core();
 
         try {
             /* 2. Open Device Handle */
@@ -672,7 +685,6 @@ public class USBBulkConnection extends Connection {
                 handle = null;
                 ShowDisconnect();
                 isConnecting = false;
-                System.out.println(Instant.now() + " [DEBUG] isConnecting state: " + isConnecting + " at line 677");
                 return false;
             }
             System.out.println(Instant.now() + " [DEBUG] Connect: USB interface " + useBulkInterfaceNumber + " claimed successfully.");
@@ -696,7 +708,6 @@ public class USBBulkConnection extends Connection {
                 System.err.println(Instant.now() + " [DEBUG] Initial ping timeout. Connection failed.");
                 ShowDisconnect();
                 isConnecting = false;
-                System.out.println(Instant.now() + " [DEBUG] isConnecting state: " + isConnecting + " at line 701");
                 return false;
             }
 
@@ -730,7 +741,6 @@ public class USBBulkConnection extends Connection {
 
             ShowConnect();
             isConnecting = false;
-            System.out.println(Instant.now() + " [DEBUG] isConnecting state: " + isConnecting + " at line 735");
             return true;
 
         }
