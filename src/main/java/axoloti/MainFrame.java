@@ -198,6 +198,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     public MainFrame(String args[]) {
         this.args = args;
 
+        Usb.initialize();
+
         initComponents();
         fileMenu.initComponents();
         setIconImage(Constants.APP_ICON.getImage());
