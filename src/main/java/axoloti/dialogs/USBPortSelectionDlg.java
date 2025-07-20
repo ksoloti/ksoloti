@@ -20,6 +20,7 @@ package axoloti.dialogs;
 
 import axoloti.MainFrame;
 import axoloti.USBBulkConnection;
+import axoloti.usb.Usb;
 
 import static axoloti.MainFrame.prefs;
 import static axoloti.usb.Usb.DeviceToPath;
@@ -36,6 +37,7 @@ import static axoloti.usb.Usb.VID_STM;
 
 import axoloti.utils.OSDetect;
 
+import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,6 +49,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+
+import org.usb4java.Context;
 import org.usb4java.Device;
 import org.usb4java.DeviceDescriptor;
 import org.usb4java.DeviceHandle;
@@ -196,16 +200,16 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         model.setRowCount(0);
         DeviceList list = new DeviceList();
 
-        int result = LibUsb.init(null);
-
-        if (result < 0) {
-            throw new LibUsbException("Unable to initialize LibUsb context", result);
+        Context sharedContext = Usb.getContext();
+        if (sharedContext == null) {
+            System.err.println(Instant.now() + " [DEBUG] USB context is null. Cannot populate device list.");
+            return; 
         }
 
-        result = LibUsb.getDeviceList(null, list);
-
+        int result = LibUsb.getDeviceList(sharedContext, list);
         if (result < 0) {
-            throw new LibUsbException("Unable to get device list", result);
+            System.err.println(Instant.now() + " [DEBUG] Unable to get device list: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
+            return; /* Exit if device list cannot be retrieved */
         }
 
         try {
@@ -392,12 +396,8 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         });
 
         jTableBoardsList.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Board Name", "Device", "USB Port", "Board ID"
-            }
+            new Object [][] { },
+            new String [] { "Board Name", "Device", "USB Port", "Board ID" }
         ) {
             Class<?>[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
@@ -513,7 +513,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 Thread.sleep(500); /* Delay to ensure the disconnect completes before new connection attempt */
             }
             catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, "Error during disconnect of current board: " + str + ", " + ex.getMessage(), ex);
+                System.err.println(Instant.now() + " [DEBUG] Error during disconnect of current board: " + str + ", " + ex.getMessage());
                 return;
             }
         }
@@ -525,7 +525,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             setVisible(false); /* Close the dialog on successful connection */
         }
         else {
-            LOGGER.log(Level.WARNING, "Failed to re-connect to board: " + str);
+            LOGGER.log(Level.SEVERE, "Failed to re-connect to board: " + str);
             /* Do not close the dialog on failure */
         }
     }
