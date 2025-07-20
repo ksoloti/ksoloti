@@ -244,16 +244,21 @@ public class USBBulkConnection extends Connection {
     class Transmitter implements Runnable {
         @Override
         public void run() {
-            while (!disconnectRequested) {
+            System.out.println(Instant.now() + " [DEBUG] Transmitter thread started.");
+            while (!Thread.currentThread().isInterrupted() && !disconnectRequested) {
                 QCmdSerialTask cmd = null;
                 try {
                     cmd = queueSerialTask.take();
 
-                    if (disconnectRequested) {
-                        // System.out.println(Instant.now() + " [DEBUG] Transmitter: Disconnect requested after taking task.");
+                    if (Thread.currentThread().isInterrupted()) {
+                        System.out.println(Instant.now() + " [DEBUG] Transmitter: Thread interrupted after taking task. Exiting loop.");
                         break;
                     }
-                    if (cmd == null) continue; /* Skip to next iteration if no command was taken (e.g. timeout) */
+                    if (disconnectRequested) {
+                        System.out.println(Instant.now() + " [DEBUG] Transmitter: Disconnect requested after taking task.");
+                        break;
+                    }
+                    // if (cmd == null) continue; // Should not happen with take()?
 
                     QCmd response = cmd.Do(USBBulkConnection.this);
                     if (response != null) {
@@ -261,15 +266,17 @@ public class USBBulkConnection extends Connection {
                     }
                 }
                 catch (InterruptedException ex) {
-                    // System.out.println(Instant.now() + " [DEBUG] Transmitter: thread interrupted. Exiting loop.");
+                    System.out.println(Instant.now() + " [DEBUG] Transmitter: InterruptedException caught from queue.take(). Exiting loop.");
                     Thread.currentThread().interrupt();
                     break;
                 }
                 catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Transmitter: Unexpected exception during command execution: " + e.getMessage(), e);
+                    disconnect();
+                    break;
                 }
             }
-            // System.out.println(Instant.now() + " [DEBUG] Transmitter thread exiting.");
+            System.out.println(Instant.now() + " [DEBUG] Transmitter thread exiting gracefully.");
         }
     }
 
