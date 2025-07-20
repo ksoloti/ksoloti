@@ -894,15 +894,20 @@ public class USBBulkConnection extends Connection {
     public boolean WaitSync(int msec) {
         synchronized (sync) {
             if (sync.Acked) {
-                return sync.Acked;
+                sync.Acked = false;
+                return true;
             }
             try {
+                if (disconnectRequested) {
+                    System.out.println(Instant.now() + " [DEBUG] WaitSync: Disconnect requested, not waiting.");
+                    return false;
+                }
                 sync.wait(msec);
             }
             catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, "Sync wait interrupted", ex);
-                ex.printStackTrace(System.err);
+                System.out.println(Instant.now() + " [DEBUG] Sync wait interrupted due to disconnect request.," + ex.getMessage());
                 Thread.currentThread().interrupt();
+                return false;
             }
             return sync.Acked;
         }
@@ -927,11 +932,16 @@ public class USBBulkConnection extends Connection {
                 return readsync.Acked;
             }
             try {
+                if (disconnectRequested) {
+                    System.out.println(Instant.now() + " [DEBUG] WaitReadSync: Disconnect requested, not waiting.");
+                    return false;
+                }
                 readsync.wait(1000);
             }
             catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, "ReadSync wait interrupted", ex);
+                System.out.println(Instant.now() + " [DEBUG] ReadSync wait interrupted due to disconnect request.," + ex.getMessage());
                 Thread.currentThread().interrupt();
+                return false;
             }
             return readsync.Acked;
         }
