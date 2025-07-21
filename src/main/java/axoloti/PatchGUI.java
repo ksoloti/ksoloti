@@ -874,6 +874,7 @@ public class PatchGUI extends Patch {
                     break;
             }
             boolean isUpdate = false;
+            Rectangle boundsToRepaint = null;
             for (AxoObjectInstanceAbstract o : objectInstances) {
                 if (o.isSelected()) {
                     isUpdate = true;
@@ -883,12 +884,20 @@ public class PatchGUI extends Patch {
                     p.x = xgrid * (p.x / xgrid);
                     p.y = ygrid * (p.y / ygrid);
                     o.SetLocation(p.x, p.y);
-                    o.repaint();
+                    // o.repaint();
+                    if (boundsToRepaint == null) {
+                        boundsToRepaint = o.getBounds();
+                    } else {
+                        boundsToRepaint.add(o.getBounds());
+                    }
                 }
             }
             if (isUpdate) {
                 AdjustSize();
                 SetDirty();
+                if (boundsToRepaint != null) {
+                    objectLayerPanel.repaint(boundsToRepaint); /* Repaint only the combined area */
+                }
             }
         } else {
             LOGGER.log(Level.INFO, "Cannot move: locked");
