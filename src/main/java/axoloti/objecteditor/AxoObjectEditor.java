@@ -65,6 +65,7 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.stream.Format;
 
 /**
  *
@@ -171,7 +172,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     }
 
     public void updateReferenceXML() {
-        Serializer serializer = new Persister();
+        Serializer serializer = new Persister(new Format(2));
         ByteArrayOutputStream origOS = new ByteArrayOutputStream(2048);
 
         try {
@@ -186,7 +187,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
     void Revert() {
         try {
-            Serializer serializer = new Persister();
+            Serializer serializer = new Persister(new Format(2));
             AxoObject objrev = serializer.read(AxoObject.class, origXML);
             editObj.copy(objrev);
             editObj.FireObjectModified(this);
@@ -403,7 +404,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     boolean hasChanged() {
         updateAcProvider(editObj);
 
-        Serializer serializer = new Persister();
+        Serializer serializer = new Persister(new Format(2));
         ByteArrayOutputStream editOS = new ByteArrayOutputStream(2048);
 
         try {
@@ -433,7 +434,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             jTextAreaMidiCode.setCaretPosition(0);
         }
 
-        Serializer serializer = new Persister();
+        Serializer serializer = new Persister(new Format(2));
         ByteArrayOutputStream os = new ByteArrayOutputStream(2048);
 
         try {

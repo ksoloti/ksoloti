@@ -68,6 +68,7 @@ import javax.swing.SwingWorker;
 import javax.swing.text.DefaultEditorKit;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.stream.Format;
 
 import qcmds.QCmdLock;
 import qcmds.QCmdProcessor;
@@ -142,7 +143,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     return;
                 }
                 p.PreSerialize();
-                Serializer serializer = new Persister();
+                Serializer serializer = new Persister(new Format(2));
                 try {
                     Clipboard clip = getToolkit().getSystemClipboard();
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -173,7 +174,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     return;
                 }
                 p.PreSerialize();
-                Serializer serializer = new Persister();
+                Serializer serializer = new Persister(new Format(2));
                 try {
                     Clipboard clip = getToolkit().getSystemClipboard();
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -885,7 +886,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             return;
         }
         p.PreSerialize();
-        Serializer serializer = new Persister();
+        Serializer serializer = new Persister(new Format(2));
         try {
             Clipboard clip = getToolkit().getSystemClipboard();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -1243,7 +1244,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuSaveClipActionPerformed(java.awt.event.ActionEvent evt) {
-        Serializer serializer = new Persister();
+        Serializer serializer = new Persister(new Format(2));
         ByteArrayOutputStream baos = new ByteArrayOutputStream(2048);
         try {
             serializer.write(patch, baos);

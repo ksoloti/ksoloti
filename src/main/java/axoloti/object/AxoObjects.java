@@ -39,6 +39,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.stream.Format;
 
 /**
  *
@@ -147,7 +148,7 @@ public class AxoObjects {
             return set;
         }
     }
-    protected Serializer serializer = new Persister();
+    protected Serializer serializer = new Persister(new Format(2));
 
     public AxoObjects() {
         ObjectTree = new AxoObjectTreeNode("/");

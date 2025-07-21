@@ -21,6 +21,7 @@ import org.simpleframework.xml.convert.Registry;
 import org.simpleframework.xml.convert.RegistryStrategy;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.strategy.Strategy;
+import org.simpleframework.xml.stream.Format;
 
 @Root
 public class Theme {
@@ -33,7 +34,7 @@ public class Theme {
 
     private static final Registry REGISTRY = new Registry();
     private static final Strategy STRATEGY = new RegistryStrategy(Theme.REGISTRY);
-    private static final Serializer SERIALIZER = new Persister(Theme.STRATEGY);
+    private static final Serializer SERIALIZER = new Persister(Theme.STRATEGY, new Format(2));
 
     static {
         try {

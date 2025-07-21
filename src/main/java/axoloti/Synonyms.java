@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import org.simpleframework.xml.ElementMap;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.stream.Format;
 
 public class Synonyms {
 
@@ -41,7 +42,7 @@ public class Synonyms {
     }
 
     static void load() {
-        Serializer serializer = new Persister();
+        Serializer serializer = new Persister(new Format(2));
         try {
             AxolotiLibrary lib = MainFrame.prefs.getLibrary(AxolotiLibrary.FACTORY_ID);
             if(lib != null) {
@@ -57,7 +58,7 @@ public class Synonyms {
     }
 
     static void save() {
-        Serializer serializer = new Persister();
+        Serializer serializer = new Persister(new Format(2));
         try {
             serializer.write(instance, new File(filename));
         } catch (Exception ex) {

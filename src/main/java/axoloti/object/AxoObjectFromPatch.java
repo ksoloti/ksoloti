@@ -30,6 +30,7 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.strategy.Strategy;
+import org.simpleframework.xml.stream.Format;
 
 /**
  *
@@ -46,7 +47,7 @@ public class AxoObjectFromPatch extends AxoObject {
 
     public AxoObjectFromPatch(File f) {
         this.f = f;
-        Serializer serializer = new Persister();
+        Serializer serializer = new Persister(new Format(2));
         try {
             p = serializer.read(Patch.class, f);
             p.setFileNamePath(f.getAbsolutePath());
@@ -94,7 +95,7 @@ public class AxoObjectFromPatch extends AxoObject {
     public void OpenEditor(Rectangle editorBounds, Integer editorActiveTabIndex) {
         if (pg == null) {
             Strategy strategy = new AnnotationStrategy();
-            Serializer serializer = new Persister(strategy);
+            Serializer serializer = new Persister(strategy, new Format(2));
             try {
                 pg = serializer.read(PatchGUI.class, f);
                 pf = new PatchFrame((PatchGUI) pg, MainFrame.mainframe.getQcmdprocessor());

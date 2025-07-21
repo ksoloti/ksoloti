@@ -50,6 +50,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.stream.Format;
 
 /**
  *
@@ -60,7 +61,7 @@ public class gentools {
 
     private static final Logger LOGGER = Logger.getLogger(gentools.class.getName());
 
-    static protected Serializer serializer = new Persister();
+    static protected Serializer serializer = new Persister(new Format(2));
     static String unstable = "unstable";
 
     static String ConvertToLegalFilename(String s) {

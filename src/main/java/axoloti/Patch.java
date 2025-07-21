@@ -82,6 +82,8 @@ import org.simpleframework.xml.core.Persist;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.core.Validate;
 import org.simpleframework.xml.strategy.Strategy;
+import org.simpleframework.xml.stream.Format;
+
 import qcmds.QCmdChangeWorkingDirectory;
 import qcmds.QCmdCompilePatch;
 import qcmds.QCmdCreateDirectory;
@@ -887,7 +889,7 @@ public class Patch {
         SortByPrefs();
         PreSerialize();
 
-        Serializer serializer = new Persister();
+        Serializer serializer = new Persister(new Format(2));
         ByteArrayOutputStream b = new ByteArrayOutputStream();
 
         try {
@@ -927,7 +929,7 @@ public class Patch {
     private boolean cleanDanglingStates = true;
 
     void loadState() {
-        Serializer serializer = new Persister();
+        Serializer serializer = new Persister(new Format(2));
         ByteArrayInputStream b = new ByteArrayInputStream(previousStates.get(currentState).getBytes());
 
         try {
@@ -975,7 +977,7 @@ public class Patch {
         PreSerialize();
 
         Strategy strategy = new AnnotationStrategy();
-        Serializer serializer = new Persister(strategy);
+        Serializer serializer = new Persister(strategy, new Format(2));
 
         try {
             serializer.write(this, f);
@@ -2229,7 +2231,7 @@ public class Patch {
 
         AxoObjectFile aof = new AxoObjectFile();
         aof.objs.add(ao);
-        Serializer serializer = new Persister();
+        Serializer serializer = new Persister(new Format(2));
 
         try {
             serializer.write(aof, f1);

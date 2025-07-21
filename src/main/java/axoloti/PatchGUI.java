@@ -79,6 +79,8 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.strategy.Strategy;
+import org.simpleframework.xml.stream.Format;
+
 import qcmds.QCmdProcessor;
 
 /**
@@ -263,7 +265,7 @@ public class PatchGUI extends Patch {
                     return;
                 }
                 p.PreSerialize();
-                Serializer serializer = new Persister();
+                Serializer serializer = new Persister(new Format(2));
                 try {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     serializer.write(p, baos);
@@ -585,7 +587,7 @@ public class PatchGUI extends Patch {
             return;
         }
         Strategy strategy = new AnnotationStrategy();
-        Serializer serializer = new Persister(strategy);
+        Serializer serializer = new Persister(strategy, new Format(2));
         try {
             PatchGUI p = serializer.read(PatchGUI.class, v);
             HashMap<String, String> dict = new HashMap<String, String>();
@@ -1126,7 +1128,7 @@ public class PatchGUI extends Patch {
 
     public static void OpenPatch(String name, InputStream stream) {
         Strategy strategy = new AnnotationStrategy();
-        Serializer serializer = new Persister(strategy);
+        Serializer serializer = new Persister(strategy, new Format(2));
         try {
             PatchGUI patch1 = serializer.read(PatchGUI.class, stream);
             PatchFrame pf = new PatchFrame(patch1, QCmdProcessor.getQCmdProcessor());
@@ -1153,7 +1155,7 @@ public class PatchGUI extends Patch {
         }
 
         Strategy strategy = new AnnotationStrategy();
-        Serializer serializer = new Persister(strategy);
+        Serializer serializer = new Persister(strategy, new Format(2));
 
         try {
             PatchGUI patch1 = serializer.read(PatchGUI.class, f);

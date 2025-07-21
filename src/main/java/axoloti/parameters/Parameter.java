@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.stream.Format;
 
 /**
  *
@@ -107,7 +108,7 @@ public abstract class Parameter<T extends ParameterInstance> implements AtomDefi
     public abstract T InstanceFactory();
 
     public Parameter getClone() {
-        Serializer serializer = new Persister();
+        Serializer serializer = new Persister(new Format(2));
         ByteArrayOutputStream os = new ByteArrayOutputStream(2048);
         Parameter p = null;
         try {

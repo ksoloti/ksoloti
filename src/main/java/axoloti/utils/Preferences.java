@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import org.simpleframework.xml.*;
 import org.simpleframework.xml.core.Persist;
 import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.stream.Format;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 
@@ -462,7 +463,7 @@ public class Preferences {
             File p = new File(Preferences.GetPrefsFileLoc());
             if (p.exists()) {
                 Preferences prefs = null;
-                Serializer serializer = new Persister();
+                Serializer serializer = new Persister(new Format(2));
                 try {
                     prefs = serializer.read(Preferences.class, p);
                 } catch (Exception ex) {
@@ -499,7 +500,7 @@ public class Preferences {
 
         LOGGER.log(Level.INFO, "Saving preferences...\n");
 
-        Serializer serializer = new Persister();
+        Serializer serializer = new Persister(new Format(2));
         File f = new File(GetPrefsFileLoc());
         System.out.println(f.getAbsolutePath());
 

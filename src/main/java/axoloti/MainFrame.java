@@ -88,6 +88,7 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.strategy.Strategy;
+import org.simpleframework.xml.stream.Format;
 
 import com.formdev.flatlaf.FlatClientProperties;
 
@@ -1345,7 +1346,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         SetGrabFocusOnSevereErrors(false);
         
         Strategy strategy = new AnnotationStrategy();
-        Serializer serializer = new Persister(strategy);
+        Serializer serializer = new Persister(strategy, new Format(2));
         
         try {
             boolean status;
@@ -1459,7 +1460,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         LOGGER.log(Level.INFO, "Upgrading {0}", f.getPath());
 
         Strategy strategy = new AnnotationStrategy();
-        Serializer serializer = new Persister(strategy);
+        Serializer serializer = new Persister(strategy, new Format(2));
         try {
             boolean status;
             PatchGUI patch1 = serializer.read(PatchGUI.class, f);
