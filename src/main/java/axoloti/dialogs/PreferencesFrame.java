@@ -581,6 +581,15 @@ public class PreferencesFrame extends JFrame {
                             )
 
                             .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabelFirmwareMode, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(ComponentPlacement.RELATED)
+                                .addComponent(jComboBoxFirmwareMode, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButtonSave, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
+                                .addGap(15, 15, 15)
+                            )
+
+                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelDspSafetyLimit, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(jComboBoxDspSafetyLimit, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
@@ -592,14 +601,6 @@ public class PreferencesFrame extends JFrame {
                                 .addComponent(jComboBoxTheme, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
                             )
 
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelFirmwareMode, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(jComboBoxFirmwareMode, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButtonSave, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
-                                .addGap(15, 15, 15)
-                            )
                         )
                         .addContainerGap())
 
@@ -732,8 +733,15 @@ public class PreferencesFrame extends JFrame {
                             .addComponent(jLabelBackupPatchesOnSD)
                             .addComponent(jBackupPatchesOnSDEnabled, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
-
                         .addGap(15, 15, 15)
+
+                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+                            .addComponent(jLabelFirmwareMode)
+                            .addComponent(jComboBoxFirmwareMode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonSave)
+                        )
+                        .addGap(5, 5, 5)
+
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelDspSafetyLimit)
                             .addComponent(jComboBoxDspSafetyLimit, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -743,13 +751,6 @@ public class PreferencesFrame extends JFrame {
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelTheme)
                             .addComponent(jComboBoxTheme, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        )
-                        .addGap(5, 5, 5)
-
-                        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                            .addComponent(jLabelFirmwareMode)
-                            .addComponent(jComboBoxFirmwareMode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonSave)
                         )
                     )
 
