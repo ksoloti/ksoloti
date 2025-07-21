@@ -8,13 +8,13 @@ set JAVA_HOME=
 :getjdklocation
 rem Resolve location of Java JDK environment
 
-set KeyName=HKEY_LOCAL_MACHINE\SOFTWARE\JavaSoft\Java Development Kit\21.0.1
+set KeyName=HKEY_LOCAL_MACHINE\SOFTWARE\JavaSoft\Java Development Kit\21.0.7
 set Cmd=reg query "%KeyName%" /s
 for /f "tokens=2*" %%i in ('%Cmd% ^| find "JavaHome"') do set JAVA_HOME=%%j
 
 if not defined JAVA_HOME (
    echo JDK not installed, please install JDK first
-   echo Azul Zulu JDK 21.30.15 (21.0.1) is required. Direct download: https://www.azul.com/core-post-download/?endpoint=zulu&uuid=d7b2d714-9065-45cb-b9b4-aa286b5a8f81
+   echo Azul Zulu JDK 21.42.19 (21.0.7) is recommended. Direct download: https://www.azul.com/core-post-download/?endpoint=zulu&uuid=e92d2424-0b2b-4236-9d28-73278f5b0dd9
    pause
    goto :end
 )
