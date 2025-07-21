@@ -9,7 +9,7 @@ firmware*/flasher/.dep
 firmware*/flasher/flasher_build
 firmware*/mounter/.dep
 firmware*/mounter/mounter_build
-packagetemp/
+packagetemp*/
 .preferences.xml
 /target/
 /build/
@@ -17,6 +17,8 @@ packagetemp/
 /dist/
 /jdks/zulu*.tar.gz
 /jdks/zulu*.zip
+/jdks/zulu*/
+/jdks/apache-ant*
 private_key.*
 axoloti.prefs*
 ksoloti.prefs*
@@ -40,7 +42,6 @@ platform_*/arm-none-eabi
 platform_*/lib
 platform_*/share
 platform_*/bin/arm-none-eabi-*
-platform_win/apache-ant*
 
 #Version file
 src/main/java/axoloti/Version.java
