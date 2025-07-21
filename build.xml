@@ -104,8 +104,8 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/flatlaf-3.6.1.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/flatlaf-intellij-themes-3.6.1.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/marlin-0.9.4.8-Unsafe-OpenJDK17.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-api-2.0.9.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-simple-2.0.9.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-api-2.0.17.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-simple-2.0.17.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/simple-xml-2.7.1.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/rsyntaxtextarea-3.6.0.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/autocomplete-3.3.2.jar"/>
@@ -282,8 +282,8 @@
                 <include name="flatlaf-3.6.1.jar"/>
                 <include name="flatlaf-intellij-themes-3.6.1.jar"/>
                 <include name="marlin-0.9.4.8-Unsafe-OpenJDK17.jar"/>
-                <include name="slf4j-api-2.0.9.jar"/>
-                <include name="slf4j-simple-2.0.9.jar"/>
+                <include name="slf4j-api-2.0.17.jar"/>
+                <include name="slf4j-simple-2.0.17.jar"/>
                 <include name="simple-xml-2.7.1.jar"/>
                 <include name="rsyntaxtextarea-3.6.0.jar"/>
                 <include name="autocomplete-3.3.2.jar"/>
