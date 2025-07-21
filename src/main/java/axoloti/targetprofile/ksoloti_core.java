@@ -91,7 +91,7 @@ public class ksoloti_core {
     }
 
     public int getPatchAddr() {
-        int addr = 0x20011000; // Default axoloti ksoloti address
+        int addr = 0x2000B000; // Default axoloti ksoloti address
         
         if(prefs.boards.getBoardType() == BoardType.KsolotiGeko) {
             if(prefs.boards.getMemoryLayout() == MemoryLayoutType.Code64Data64) {
