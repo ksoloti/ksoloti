@@ -518,9 +518,8 @@ public class PreferencesFrame extends JFrame {
                             .addGroup(layout.createSequentialGroup()
 
                                 .addGroup(layout.createParallelGroup(Alignment.LEADING)
-                                    .addComponent(jTextFieldFavDir, GroupLayout.PREFERRED_SIZE, 403, GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextFieldFavDir, GroupLayout.PREFERRED_SIZE, 390, GroupLayout.PREFERRED_SIZE)
                                 )
-                                .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             )
                             .addGroup(layout.createSequentialGroup()
 
@@ -533,7 +532,7 @@ public class PreferencesFrame extends JFrame {
                                 .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             )
                         )
-                        .addGap(15, 15, 15)
+                        .addGap(12, 12, 12)
 
                         .addGroup(layout.createParallelGroup(Alignment.LEADING)
                             .addComponent(btnFavDir, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
