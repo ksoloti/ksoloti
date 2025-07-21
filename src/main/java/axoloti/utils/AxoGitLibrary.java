@@ -290,7 +290,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
         try {
             StashApplyCommand cmd = git.stashApply();
             cmd.setStashRef(sref);
-            cmd.setApplyUntracked(true);
+            cmd.setRestoreUntracked(true);
             cmd.call();
             LOGGER.log(Level.INFO, "Changes applied successfully: {0}", new Object[]{logDetails(), ref});
             return true;
@@ -353,7 +353,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
                 if (isDirty && !isAuth()) {
                     LOGGER.log(Level.INFO, "Unauthorised changes, resetting: {0}", logDetails());
                     CheckoutCommand cmd = git.checkout();
-                    cmd.setForce(force);
+                    cmd.setForceRefUpdate(force);
                     cmd.setAllPaths(true);
                     //cmd.setName(branch);
                     try {
