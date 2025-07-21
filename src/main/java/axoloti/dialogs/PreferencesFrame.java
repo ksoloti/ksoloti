@@ -821,6 +821,10 @@ public class PreferencesFrame extends JFrame {
 
         DefaultTableModel model = (DefaultTableModel)jLibraryTable.getModel();
         int idx = jLibraryTable.getSelectedRow();
+        if (idx < 0) { /* Return if nothing selected */
+            return;
+        }
+
         String id = (String)model.getValueAt(idx, 1);
 
         int n = JOptionPane.showConfirmDialog(this,
