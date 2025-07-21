@@ -101,8 +101,8 @@
             <!-- Include external library -->
             <zipfileset excludes="META-INF/*.SF" src="lib/org.eclipse.jgit-6.7.0.202309050840-r.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/jsch-0.1.55.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/flatlaf-3.5.4.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/flatlaf-intellij-themes-3.5.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/flatlaf-3.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/flatlaf-intellij-themes-3.6.1.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/marlin-0.9.4.8-Unsafe-OpenJDK17.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-api-2.0.9.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-simple-2.0.9.jar"/>
@@ -279,8 +279,8 @@
             <fx:fileset dir="lib">
                 <include name="org.eclipse.org.eclipse.jgit-6.7.0.202309050840-r.jar"/>
                 <include name="jsch-0.1.55.jar"/>
-                <include name="flatlaf-3.5.4.jar"/>
-                <include name="flatlaf-intellij-themes-3.5.4.jar"/>
+                <include name="flatlaf-3.6.1.jar"/>
+                <include name="flatlaf-intellij-themes-3.6.1.jar"/>
                 <include name="marlin-0.9.4.8-Unsafe-OpenJDK17.jar"/>
                 <include name="slf4j-api-2.0.9.jar"/>
                 <include name="slf4j-simple-2.0.9.jar"/>

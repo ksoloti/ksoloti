@@ -39,7 +39,6 @@ import com.formdev.flatlaf.intellijthemes.FlatCobalt2IJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatCyanLightIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatDraculaIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatGruvboxDarkHardIJTheme;
-import com.formdev.flatlaf.intellijthemes.FlatGruvboxDarkSoftIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatMaterialDesignDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatMonocaiIJTheme;
@@ -48,15 +47,15 @@ import com.formdev.flatlaf.intellijthemes.FlatSolarizedDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatSolarizedLightIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatSpacegrayIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatXcodeDarkIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneDarkIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneLightIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatLightOwlIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDarkerIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDeepOceanIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialLighterIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialOceanicIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialPalenightIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatNightOwlIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTAtomOneDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTAtomOneLightIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTLightOwlIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMaterialDarkerIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMaterialDeepOceanIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMaterialLighterIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMaterialOceanicIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMaterialPalenightIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTNightOwlIJTheme;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 /**
@@ -165,7 +164,6 @@ public class Preferences {
         // "Gradianto Nature Green",
         // "Flat Gray",
         "Gruvbox Dark Hard",
-        "Gruvbox Dark Soft",
         "Hiberbee Dark",
         // "High Contrast",
         "Monocai",
@@ -418,23 +416,22 @@ public class Preferences {
         else if (this.Theme.equals("Cobalt 2"))                       FlatCobalt2IJTheme.setup();
         else if (this.Theme.equals("Cyan Light"))                     FlatCyanLightIJTheme.setup();
         else if (this.Theme.equals("Gruvbox Dark Hard"))              FlatGruvboxDarkHardIJTheme.setup();
-        else if (this.Theme.equals("Gruvbox Dark Soft"))              FlatGruvboxDarkSoftIJTheme.setup();
         else if (this.Theme.equals("Hiberbee Dark"))                  FlatHiberbeeDarkIJTheme.setup();
-        else if (this.Theme.equals("Light Owl (Material)"))           FlatLightOwlIJTheme.setup();
-        else if (this.Theme.equals("Night Owl (Material)"))           FlatNightOwlIJTheme.setup();
         else if (this.Theme.equals("Monocai"))                        FlatMonocaiIJTheme.setup();
         else if (this.Theme.equals("Nord"))                           FlatNordIJTheme.setup();
         else if (this.Theme.equals("Spacegray"))                      FlatSpacegrayIJTheme.setup();
         else if (this.Theme.equals("Xcode Dark"))                     FlatXcodeDarkIJTheme.setup();
-        else if (this.Theme.equals("Atom One Light (Material)"))      FlatAtomOneLightIJTheme.setup();
-        else if (this.Theme.equals("Atom One Dark (Material)"))       FlatAtomOneDarkIJTheme.setup();
+        else if (this.Theme.equals("Atom One Light (Material)"))      FlatMTAtomOneLightIJTheme.setup();
+        else if (this.Theme.equals("Atom One Dark (Material)"))       FlatMTAtomOneDarkIJTheme.setup();
         else if (this.Theme.equals("Dracula (Material)"))             FlatDraculaIJTheme.setup();
-        else if (this.Theme.equals("Material Lighter (Material)"))    FlatMaterialLighterIJTheme.setup();
+        else if (this.Theme.equals("Light Owl (Material)"))           FlatMTLightOwlIJTheme.setup();
+        else if (this.Theme.equals("Night Owl (Material)"))           FlatMTNightOwlIJTheme.setup();
+        else if (this.Theme.equals("Material Lighter (Material)"))    FlatMTMaterialLighterIJTheme.setup();
         else if (this.Theme.equals("Material Design Dark"))           FlatMaterialDesignDarkIJTheme.setup();
-        else if (this.Theme.equals("Material Darker (Material)"))     FlatMaterialDarkerIJTheme.setup();
-        else if (this.Theme.equals("Material Deep Ocean (Material)")) FlatMaterialDeepOceanIJTheme.setup();
-        else if (this.Theme.equals("Material Oceanic (Material)"))    FlatMaterialOceanicIJTheme.setup();
-        else if (this.Theme.equals("Material Palenight (Material)"))  FlatMaterialPalenightIJTheme.setup();
+        else if (this.Theme.equals("Material Darker (Material)"))     FlatMTMaterialDarkerIJTheme.setup();
+        else if (this.Theme.equals("Material Deep Ocean (Material)")) FlatMTMaterialDeepOceanIJTheme.setup();
+        else if (this.Theme.equals("Material Oceanic (Material)"))    FlatMTMaterialOceanicIJTheme.setup();
+        else if (this.Theme.equals("Material Palenight (Material)"))  FlatMTMaterialPalenightIJTheme.setup();
         else if (this.Theme.equals("Solarized Dark (Material)"))      FlatSolarizedDarkIJTheme.setup();
         else if (this.Theme.equals("Solarized Light (Material)"))     FlatSolarizedLightIJTheme.setup();
         /* Falling through - default to FlatLaf IntelliJ */
