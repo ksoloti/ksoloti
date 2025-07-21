@@ -113,11 +113,8 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.3.0/lib/libusb4java-1.3.0-darwin-x86-64.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.3.0/lib/libusb4java-darwin-aarch64-1.3.0.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.3.0/lib/libusb4java-1.3.0-linux-aarch64.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.3.0/lib/libusb4java-1.3.0-linux-arm.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.3.0/lib/libusb4java-1.3.0-linux-x86-64.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.3.0/lib/libusb4java-1.3.0-linux-x86.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.3.0/lib/libusb4java-1.3.0-win32-x86-64.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.3.0/lib/libusb4java-1.3.0-win32-x86.jar"/>
 
             <!-- include source files -->
             <fileset dir="src">

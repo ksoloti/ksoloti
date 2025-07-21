@@ -1674,7 +1674,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             }
         }
 
-        Usb.shutdown();
+        // Usb.shutdown(); /* java: io.c:2116: handle_events: Assertion `ctx->pollfds_cnt >= internal_nfds' failed. */
 
         prefs.SavePrefs();
         if (DocumentWindowList.GetList().isEmpty()) {
