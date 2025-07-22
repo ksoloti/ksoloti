@@ -8,7 +8,7 @@ import javax.swing.KeyStroke;
 public class KeyUtils {
     public static Boolean isKeyCodeControlOrCommand(KeyEvent ke) {
         return KeyStroke.getKeyStrokeForEvent(ke).equals(
-                KeyStroke.getKeyStroke(ke.getKeyCode(), Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()))
+                KeyStroke.getKeyStroke(ke.getKeyCode(), Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()))
                 || (ke.getKeyCode() == KeyEvent.VK_CONTROL || ke.getKeyCode() == KeyEvent.VK_META);
     }
     
@@ -20,5 +20,5 @@ public class KeyUtils {
         return ke.isAltDown() || ke.isAltGraphDown() || ke.isControlDown() || ke.isMetaDown();
     }
     
-    public static final int CONTROL_OR_CMD_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+    public static final int CONTROL_OR_CMD_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
 }
