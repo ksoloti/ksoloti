@@ -24,5 +24,5 @@ package axoloti;
  * @author AndrewCapon
  */
 public interface BoardIDNameListener {
-    public void ShowBoardIDName(String unitId, String friendlyName);
+    void ShowBoardIDName(String unitId, String friendlyName);
 }
