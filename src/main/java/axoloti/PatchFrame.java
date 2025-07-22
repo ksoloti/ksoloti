@@ -1384,7 +1384,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
         for (AxoObjectInstanceAbstract aoi : patch.objectInstances) {
             if (aoi instanceof AxoObjectInstancePatcher) {
-                ((AxoObjectInstancePatcher)aoi).updateObj();
+                ((AxoObjectInstancePatcher)aoi).updateObj1();
             }
         }
         patch.GoLive();
