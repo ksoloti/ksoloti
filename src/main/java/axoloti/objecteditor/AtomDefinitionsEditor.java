@@ -29,6 +29,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 // import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -181,7 +182,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    T o = (T) AtomDefinitionsList[0].getClass().newInstance();
+                    T o = (T) AtomDefinitionsList[0].getClass().getDeclaredConstructor().newInstance();
                     int i = 0;
                     while (true) {
                         i++;
@@ -203,6 +204,10 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                 } catch (InstantiationException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
                 } catch (IllegalAccessException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                } catch (InvocationTargetException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                } catch (NoSuchMethodException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
@@ -308,7 +313,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                         break;
                     case 1:
                         try {
-                            T j = (T) value.getClass().newInstance();
+                            T j = (T) value.getClass().getDeclaredConstructor().newInstance();
                             j.setName(GetAtomDefinition(rowIndex).getName());
                             j.setDescription(GetAtomDefinition(rowIndex).getDescription());
                             GetAtomDefinitions().set(rowIndex, j);
@@ -317,6 +322,10 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                         } catch (InstantiationException ex) {
                             LOGGER.log(Level.SEVERE, null, ex);
                         } catch (IllegalAccessException ex) {
+                            LOGGER.log(Level.SEVERE, null, ex);
+                        } catch (InvocationTargetException ex) {
+                            LOGGER.log(Level.SEVERE, null, ex);
+                        } catch (NoSuchMethodException ex) {
                             LOGGER.log(Level.SEVERE, null, ex);
                         }
                         break;
