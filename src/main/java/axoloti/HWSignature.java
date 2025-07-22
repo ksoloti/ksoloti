@@ -41,6 +41,9 @@ public class HWSignature {
     private static final String PRIVATE_KEY_FILE = "private_key.der";
     private static final String PUBLIC_KEY_FILE = "/resources/public_key.der";
     public static final int length = 256;
+    public static final int CPU_SERIAL_LENGTH = 12;
+    public static final int OTP_INFO_LENGTH = 32;
+
 
     static PrivateKey ReadPrivateKey(String privateKeyPath) throws Exception {
         File f = new File(privateKeyPath);
@@ -78,7 +81,7 @@ public class HWSignature {
 
     static public void printByteArray(byte[] b) {
         for (int i = 0; i < b.length; i++) {
-            if ((i % 32) == 0) {
+            if ((i % OTP_INFO_LENGTH) == 0) {
                 System.out.println();
             }
             System.out.print(String.format("%02X ", (int) b[i] & 0xFF));
@@ -87,18 +90,18 @@ public class HWSignature {
     }
 
     public static byte[] Sign(ByteBuffer cpuserial, ByteBuffer otpinfo) throws Exception {
-        if (cpuserial.limit() != 12) {
+        if (cpuserial.limit() != CPU_SERIAL_LENGTH) {
             throw new Exception("cpuserial has wrong length");
         }
-        if (otpinfo.limit() != 32) {
+        if (otpinfo.limit() != OTP_INFO_LENGTH) {
             throw new Exception("otpinfo has wrong length");
         }
-        byte[] sdata = new byte[12 + 32];
-        for (int i = 0; i < 12; i++) {
+        byte[] sdata = new byte[CPU_SERIAL_LENGTH + OTP_INFO_LENGTH];
+        for (int i = 0; i < CPU_SERIAL_LENGTH; i++) {
             sdata[i] = cpuserial.get(i);
         }
-        for (int i = 0; i < 32; i++) {
-            sdata[i + 12] = otpinfo.get(i);
+        for (int i = 0; i < OTP_INFO_LENGTH; i++) {
+            sdata[i + CPU_SERIAL_LENGTH] = otpinfo.get(i);
         }
         Signature sig = Signature.getInstance("SHA256withRSA");
         sig.initSign(ReadPrivateKey(PRIVATE_KEY_FILE));
@@ -108,18 +111,18 @@ public class HWSignature {
     }
 
     public static boolean Verify(ByteBuffer cpuserial, ByteBuffer otpinfo, byte[] signature) throws Exception {
-        if (cpuserial.limit() != 12) {
+        if (cpuserial.limit() != CPU_SERIAL_LENGTH) {
             throw new Exception("cpuserial has wrong length");
         }
-        if (otpinfo.limit() != 32) {
+        if (otpinfo.limit() != OTP_INFO_LENGTH) {
             throw new Exception("otpinfo has wrong length");
         }
-        byte[] sdata = new byte[12 + 32];
-        for (int i = 0; i < 12; i++) {
+        byte[] sdata = new byte[CPU_SERIAL_LENGTH + OTP_INFO_LENGTH];
+        for (int i = 0; i < CPU_SERIAL_LENGTH; i++) {
             sdata[i] = cpuserial.get(i);
         }
-        for (int i = 0; i < 32; i++) {
-            sdata[i + 12] = otpinfo.get(i);
+        for (int i = 0; i < OTP_INFO_LENGTH; i++) {
+            sdata[i + CPU_SERIAL_LENGTH] = otpinfo.get(i);
         }
         Signature sig = Signature.getInstance("SHA256withRSA");
         sig.initVerify(ReadPublicKey(PUBLIC_KEY_FILE));
