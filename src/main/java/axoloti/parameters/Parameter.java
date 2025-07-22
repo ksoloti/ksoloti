@@ -115,7 +115,7 @@ public abstract class Parameter<T extends ParameterInstance> implements AtomDefi
             serializer.write(this, os);
             p = serializer.read(this.getClass(), new ByteArrayInputStream(os.toByteArray()));
         } catch (Exception ex) {
-            Logger.getLogger(GeneratedObjects.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Parameter.class.getName()).log(Level.SEVERE, null, ex);
         }
         return p;
     }
