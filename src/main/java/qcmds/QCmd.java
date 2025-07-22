@@ -23,8 +23,6 @@ package qcmds;
  * @author Johannes Taelman
  */
 public interface QCmd {
-
-    public String GetStartMessage();
-
-    public String GetDoneMessage();
+    String GetStartMessage();
+    String GetDoneMessage();
 }

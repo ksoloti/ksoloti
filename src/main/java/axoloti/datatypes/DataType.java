@@ -26,25 +26,15 @@ import java.awt.Color;
  */
 public interface DataType {
     
-    public final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
-
+    final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
     abstract boolean IsConvertableToType(DataType dest);
-
     abstract boolean HasDefaultValue();
-
     abstract String GenerateSetDefaultValueCode();
-
     abstract String GenerateConversionToType(DataType dest, String in);
-
     abstract String CType();
-
     abstract Color GetColor();
-
     abstract Color GetColorHighlighted();
-
     abstract String GenerateCopyCode(String dest, String source);
-
     abstract boolean isPointer();
-
     abstract String UnconnectedSink();
 }

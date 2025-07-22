@@ -29,15 +29,12 @@ import java.util.List;
  * An Axoloti Object Definition is composed out of AtomDefinition
 **/
 public interface AtomDefinition {
-    abstract public String getName();
-    abstract public void setName(String name);
-    abstract public AtomInstance CreateInstance(AxoObjectInstance o);
-    abstract public String getDescription();
-    abstract public void setDescription(String description);
-
-    abstract public String getTypeName();
-
-    abstract public List<String> getEditableFields();
-    
+    abstract String getName();
+    abstract void setName(String name);
+    abstract AtomInstance CreateInstance(AxoObjectInstance o);
+    abstract String getDescription();
+    abstract void setDescription(String description);
+    abstract String getTypeName();
+    abstract List<String> getEditableFields();
 //    abstract public AtomDefinition Factory(String name);    
 }

@@ -47,8 +47,7 @@ public class ButtonComponent extends JComponent implements MouseInputListener, K
     String label;
 
     public interface ActListener {
-
-        public void OnPushed();
+        void OnPushed();
     }
     ArrayList<ActListener> actListeners = new ArrayList<ActListener>();
 

@@ -23,6 +23,5 @@ package qcmds;
  * @author Johannes Taelman
  */
 public interface QCmdGUITask extends QCmd {
-
     void DoGUI(QCmdProcessor processor);
 }

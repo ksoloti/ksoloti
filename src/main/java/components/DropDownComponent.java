@@ -44,8 +44,7 @@ import javax.swing.JPopupMenu;
 public class DropDownComponent extends JComponent implements MouseListener {
     
     public interface DDCListener {
-        
-        public void SelectionChanged();
+        void SelectionChanged();
     }
     
     int SelectedIndex;

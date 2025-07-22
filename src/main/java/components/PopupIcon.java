@@ -34,8 +34,7 @@ import javax.swing.JComponent;
 public class PopupIcon extends JComponent implements MouseListener {
 
     public interface PopupIconListener {
-
-        public void ShowPopup();
+        void ShowPopup();
     }
 
     private PopupIconListener pl;

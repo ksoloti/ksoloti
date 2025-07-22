@@ -23,8 +23,6 @@ package axoloti;
  * @author Johannes Taelman
  */
 public interface SDCardMountStatusListener {
-
-    public void ShowSDCardMounted();
-
-    public void ShowSDCardUnmounted();
+    void ShowSDCardMounted();
+    void ShowSDCardUnmounted();
 }
