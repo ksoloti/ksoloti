@@ -1175,10 +1175,12 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     Runtime.getRuntime().exec(str);
                     break;
                 case MAC:
+                    // TODO: supported?
+                    // desktop.browseFileDirectory(new File(patch.getFileNamePath()));
                 case LINUX:
                 default:
-                    // TODO: supported?
-                    desktop.browseFileDirectory(new File(patch.getFileNamePath()));
+                    // desktop.browseFileDirectory(new File(patch.getFileNamePath())); /* NOT supported, tested on Debian */
+                    desktop.open(new File(patch.getFileNamePath()).getParentFile()); /* Opens folder but doesn't point to file. It's the best we can get */
                     break;
             }
         }
