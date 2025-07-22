@@ -20,7 +20,6 @@ package axoloti;
 
 import axoloti.object.AxoObjectInstanceAbstract;
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  *
