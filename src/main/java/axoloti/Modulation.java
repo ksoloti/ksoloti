@@ -37,7 +37,7 @@ public class Modulation {
     public String modName; // name of modulation (can be null or empty)
 
     @Attribute(name = "value", required = false)
-    public double getValuex() {
+    public double getValueForXml() {
         return value.getDouble();
     }
 

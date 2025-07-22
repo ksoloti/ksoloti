@@ -37,7 +37,7 @@ import org.simpleframework.xml.ElementList;
 public abstract class ParameterInstanceFrac32<Tx extends ParameterFrac32> extends ParameterInstance<Tx> {
 
     @Attribute(name = "value", required = false)
-    public double getValuex() {
+    public double getValueForXml() {
         return value.getDouble();
     }        
     @ElementList(required = false)

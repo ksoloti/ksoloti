@@ -34,7 +34,7 @@ public abstract class ParameterInstanceInt32<T extends Parameter> extends Parame
     final ValueInt32 value = new ValueInt32();
 
     @Attribute(name = "value", required = false)
-    public int getValuex() {
+    public int getValueForXml() {
         return value.getInt();
     }
 
