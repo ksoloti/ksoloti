@@ -14,7 +14,7 @@ public class Synonyms {
 
     private static final Logger LOGGER = Logger.getLogger(Synonyms.class.getName());
 
-    public static Synonyms instance() {
+    public static synchronized Synonyms instance() {
         if (instance == null) {
 //            instance = new Synonyms();
 //            instance.inlet("pitchm", "pitch");
@@ -46,7 +46,7 @@ public class Synonyms {
         try {
             AxolotiLibrary lib = MainFrame.prefs.getLibrary(AxolotiLibrary.FACTORY_ID);
             if(lib != null) {
-                instance = serializer.read(Synonyms.class, new File(lib.getLocalLocation() + filename));
+                instance = serializer.read(Synonyms.class, new File(lib.getLocalLocation(), filename));
             } else {
                 LOGGER.log(Level.WARNING,"Not loading synonyms: cannot find factory library");
             }
