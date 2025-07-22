@@ -167,13 +167,13 @@ public class USBBulkConnection extends Connection {
             ByteBuffer recvbuffer = ByteBuffer.allocateDirect(4096);
             IntBuffer transfered = IntBuffer.allocate(1);
 
-            System.out.println(Instant.now() + " [DEBUG] Receiver thread started.");
+            // System.out.println(Instant.now() + " [DEBUG] Receiver thread started.");
             while (!Thread.currentThread().isInterrupted() && !disconnectRequested) {
                 int result = LibUsb.SUCCESS;
                 int sz = 0;
 
                 if (handle == null) {
-                    System.err.println(Instant.now() + " [DEBUG] Receiver: USB handle is null. Initiating USB disconnect.");
+                    // System.err.println(Instant.now() + " [DEBUG] Receiver: USB handle is null. Initiating USB disconnect.");
                     /* disconnect(); already handled by critical error below */
                     break; /* Exit the loop */
                 }
@@ -181,7 +181,7 @@ public class USBBulkConnection extends Connection {
                 try {
                     synchronized (usbInLock) {
                         if (handle == null) {
-                            System.err.println(Instant.now() + " [DEBUG] Receiver: USB handle became null while waiting for lock. Initiating central disconnect.");
+                            // System.err.println(Instant.now() + " [DEBUG] Receiver: USB handle became null while waiting for lock. Initiating central disconnect.");
                             disconnect();
                             break; /* Exit the loop */
                         }
@@ -193,18 +193,18 @@ public class USBBulkConnection extends Connection {
 
                         /* Check interrupted status immediately after a blocking call returns */
                         if (Thread.currentThread().isInterrupted()) {
-                            System.out.println(Instant.now() + " [DEBUG] Receiver: Thread interrupted after bulkTransfer. Exiting loop.");
+                            // System.out.println(Instant.now() + " [DEBUG] Receiver: Thread interrupted after bulkTransfer. Exiting loop.");
                             break;
                         }
                         if (disconnectRequested) {
-                            System.out.println(Instant.now() + " [DEBUG] Receiver: Disconnect requested after bulkTransfer. Exiting loop.");
+                            // System.out.println(Instant.now() + " [DEBUG] Receiver: Disconnect requested after bulkTransfer. Exiting loop.");
                             break;
                         }
 
                         if (result != LibUsb.SUCCESS) {
-                            System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsb.bulkTransfer returned error: " + result + " (" + LibUsb.strError(result) + ")");
+                            // System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsb.bulkTransfer returned error: " + result + " (" + LibUsb.strError(result) + ")");
                             if (result == LibUsb.ERROR_NO_DEVICE || result == LibUsb.ERROR_PIPE || result == LibUsb.ERROR_IO || result == LibUsb.ERROR_INTERRUPTED) {
-                                System.err.println(Instant.now() + " [DEBUG] Receiver: Critical LibUsb error detected. Initiating USB disconnect.");
+                                // System.err.println(Instant.now() + " [DEBUG] Receiver: Critical LibUsb error detected. Initiating USB disconnect.");
                                 disconnect();
                                 break; /* Exit the loop */
                             }
@@ -216,11 +216,11 @@ public class USBBulkConnection extends Connection {
                         recvbuffer.limit(sz);
                         for (int i = 0; i < sz; i++) {
                             if (Thread.currentThread().isInterrupted()) {
-                                System.err.println(Instant.now() + " [DEBUG] Receiver: Thread interrupted during byte processing. Aborting chunk.");
+                                // System.err.println(Instant.now() + " [DEBUG] Receiver: Thread interrupted during byte processing. Aborting chunk.");
                                 break;
                             }
                             if (disconnectRequested) {
-                                System.err.println(Instant.now() + " [DEBUG] Receiver: Disconnect requested during byte processing. Aborting chunk.");
+                                // System.err.println(Instant.now() + " [DEBUG] Receiver: Disconnect requested during byte processing. Aborting chunk.");
                                 break;
                             }
                             processByte(recvbuffer.get(i));
@@ -228,37 +228,37 @@ public class USBBulkConnection extends Connection {
                     }
                 }
                 catch (LibUsbException e) {
-                    System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsbException: " + e.getMessage());
+                    // System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsbException: " + e.getMessage());
                     e.printStackTrace(System.err);
                     disconnect();
                     break;
                 }
                 catch (Exception e) {
-                    System.err.println(Instant.now() + " [DEBUG] Receiver: Unexpected exception: " + e.getMessage());
+                    // System.err.println(Instant.now() + " [DEBUG] Receiver: Unexpected exception: " + e.getMessage());
                     e.printStackTrace(System.err);
                     disconnect();
                     break;
                 }
             }
-            System.out.println(Instant.now() + " [DEBUG] Receiver thread exiting gracefully.");
+            // System.out.println(Instant.now() + " [DEBUG] Receiver thread exiting gracefully.");
         }
     }
 
     class Transmitter implements Runnable {
         @Override
         public void run() {
-            System.out.println(Instant.now() + " [DEBUG] Transmitter thread started.");
+            // System.out.println(Instant.now() + " [DEBUG] Transmitter thread started.");
             while (!Thread.currentThread().isInterrupted() && !disconnectRequested) {
                 QCmdSerialTask cmd = null;
                 try {
                     cmd = queueSerialTask.take();
 
                     if (Thread.currentThread().isInterrupted()) {
-                        System.out.println(Instant.now() + " [DEBUG] Transmitter: Thread interrupted after taking task. Exiting loop.");
+                        // System.out.println(Instant.now() + " [DEBUG] Transmitter: Thread interrupted after taking task. Exiting loop.");
                         break;
                     }
                     if (disconnectRequested) {
-                        System.out.println(Instant.now() + " [DEBUG] Transmitter: Disconnect requested after taking task.");
+                        // System.out.println(Instant.now() + " [DEBUG] Transmitter: Disconnect requested after taking task.");
                         break;
                     }
                     // if (cmd == null) continue; // Should not happen with take()?
@@ -269,7 +269,7 @@ public class USBBulkConnection extends Connection {
                     }
                 }
                 catch (InterruptedException ex) {
-                    System.out.println(Instant.now() + " [DEBUG] Transmitter: InterruptedException caught from queue.take(). Exiting loop.");
+                    // System.out.println(Instant.now() + " [DEBUG] Transmitter: InterruptedException caught from queue.take(). Exiting loop.");
                     Thread.currentThread().interrupt();
                     break;
                 }
@@ -279,7 +279,7 @@ public class USBBulkConnection extends Connection {
                     break;
                 }
             }
-            System.out.println(Instant.now() + " [DEBUG] Transmitter thread exiting gracefully.");
+            // System.out.println(Instant.now() + " [DEBUG] Transmitter thread exiting gracefully.");
         }
     }
 
@@ -334,7 +334,7 @@ public class USBBulkConnection extends Connection {
     public boolean AppendToQueue(QCmdSerialTask cmd) {
         try {
             if (!(cmd instanceof QCmdPing)) {
-                System.out.println(Instant.now() + " [DEBUG] AppendToQueue: attempting to append " + cmd.getClass().getSimpleName());
+                // System.out.println(Instant.now() + " [DEBUG] AppendToQueue: attempting to append " + cmd.getClass().getSimpleName());
             }
             boolean added = queueSerialTask.offer(cmd, 100, TimeUnit.MILLISECONDS);
             if (!added) {
@@ -345,18 +345,18 @@ public class USBBulkConnection extends Connection {
         catch (InterruptedException ex) {
             /* Restore the interrupted status, as per best practice */
             Thread.currentThread().interrupt();
-            System.err.println(Instant.now() + " [DEBUG] USBBulkConnection AppendToQueue interrupted while offering command: " + cmd.getClass().getSimpleName() + " - " + ex.getMessage());
+            // System.err.println(Instant.now() + " [DEBUG] USBBulkConnection AppendToQueue interrupted while offering command: " + cmd.getClass().getSimpleName() + " - " + ex.getMessage());
             return false; /* Command was not added due to interruption */
         }
     }
 
     @Override
     public void disconnect() {
-        System.out.println(Instant.now() + " [DEBUG] Disconnect called. Initiating cleanup.");
+        // System.out.println(Instant.now() + " [DEBUG] Disconnect called. Initiating cleanup.");
 
         /* Guard against redundant calls */
         if (this.disconnectRequested && !connected) {
-            System.out.println(Instant.now() + " [DEBUG] Disconnect already in progress/requested and not connected. Aborting redundant call.");
+            // System.out.println(Instant.now() + " [DEBUG] Disconnect already in progress/requested and not connected. Aborting redundant call.");
             return;
         }
 
@@ -366,19 +366,19 @@ public class USBBulkConnection extends Connection {
         /* 2. Clear the queue of tasks for the Transmitter thread */
         if (queueSerialTask != null) {
             queueSerialTask.clear();
-            System.out.println(Instant.now() + " [DEBUG] Disconnect: Cleared queueSerialTask.");
+            // System.out.println(Instant.now() + " [DEBUG] Disconnect: Cleared queueSerialTask.");
         }
 
         try {
             /* 3. Interrupt the Receiver thread */
             if (receiverThread != null && receiverThread.isAlive()) {
-                System.out.println(Instant.now() + " [DEBUG] Disconnect: Interrupting Receiver thread.");
+                // System.out.println(Instant.now() + " [DEBUG] Disconnect: Interrupting Receiver thread.");
                 receiverThread.interrupt();
             }
 
             /* 4. Interrupt the Transmitter thread */
             if (transmitterThread != null && transmitterThread.isAlive()) {
-                System.out.println(Instant.now() + " [DEBUG] Disconnect: Interrupting Transmitter thread.");
+                // System.out.println(Instant.now() + " [DEBUG] Disconnect: Interrupting Transmitter thread.");
                 transmitterThread.interrupt();
             }
 
@@ -387,13 +387,13 @@ public class USBBulkConnection extends Connection {
 
             if (receiverThread != null && receiverThread.isAlive()) {
                 try {
-                    System.out.println(Instant.now() + " [DEBUG] Disconnect: Waiting for Receiver thread to join (timeout: " + threadJoinTimeoutMs + "ms).");
+                    // System.out.println(Instant.now() + " [DEBUG] Disconnect: Waiting for Receiver thread to join (timeout: " + threadJoinTimeoutMs + "ms).");
                     receiverThread.join(threadJoinTimeoutMs);
                     if (receiverThread.isAlive()) {
                         System.err.println(Instant.now() + " [ERROR] Disconnect: Receiver thread did not terminate within timeout.");
                     }
                     else {
-                        System.out.println(Instant.now() + " [DEBUG] Disconnect: Receiver thread joined successfully.");
+                        // System.out.println(Instant.now() + " [DEBUG] Disconnect: Receiver thread joined successfully.");
                     }
                 }
                 catch (InterruptedException e) {
@@ -407,13 +407,13 @@ public class USBBulkConnection extends Connection {
 
             if (transmitterThread != null && transmitterThread.isAlive()) {
                 try {
-                    System.out.println(Instant.now() + " [DEBUG] Disconnect: Waiting for Transmitter thread to join (timeout: " + threadJoinTimeoutMs + "ms).");
+                    // System.out.println(Instant.now() + " [DEBUG] Disconnect: Waiting for Transmitter thread to join (timeout: " + threadJoinTimeoutMs + "ms).");
                     transmitterThread.join(threadJoinTimeoutMs);
                     if (transmitterThread.isAlive()) {
                         System.err.println(Instant.now() + " [ERROR] Disconnect: Transmitter thread did not terminate within timeout.");
                     }
                     else {
-                        System.out.println(Instant.now() + " [DEBUG] Disconnect: Transmitter thread joined successfully.");
+                        // System.out.println(Instant.now() + " [DEBUG] Disconnect: Transmitter thread joined successfully.");
                     }
                 }
                 catch (InterruptedException e) {
@@ -428,7 +428,7 @@ public class USBBulkConnection extends Connection {
             /* 6. Perform USB resource cleanup (only AFTER threads are confirmed stopped or timed out) */
             if (handle != null) {
                 try {
-                    System.out.println(Instant.now() + " [DEBUG] Attempting to reset USB device using active handle.");
+                    // System.out.println(Instant.now() + " [DEBUG] Attempting to reset USB device using active handle.");
 
                     /* Calling resetDevice is a bit "risky" but so far has been improving stability a lot
                        especially during repeated disconnects and re-connects. */
@@ -437,7 +437,7 @@ public class USBBulkConnection extends Connection {
                         System.err.println(Instant.now() + " [ERROR] Disconnect: Error resetting device: " + LibUsb.strError(resetResult) + " (Code: " + resetResult + ")");
                     }
                     else {
-                        System.out.println(Instant.now() + " [DEBUG] USB device reset successfully. Device may re-enumerate.");
+                        // System.out.println(Instant.now() + " [DEBUG] USB device reset successfully. Device may re-enumerate.");
                     }
 
                 }
@@ -446,18 +446,18 @@ public class USBBulkConnection extends Connection {
                 }
 
                 try {
-                    System.out.println(Instant.now() + " [DEBUG] Attempting to release USB interface " + useBulkInterfaceNumber + ".");
+                    // System.out.println(Instant.now() + " [DEBUG] Attempting to release USB interface " + useBulkInterfaceNumber + ".");
                     LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
-                    System.out.println(Instant.now() + " [DEBUG] USB interface released successfully.");
+                    // System.out.println(Instant.now() + " [DEBUG] USB interface released successfully.");
                 }
                 catch (LibUsbException releaseEx) {
                     System.err.println(Instant.now() + " [ERROR] Disconnect: Error releasing interface (may be normal after reset): " + releaseEx.getMessage());
                 }
 
                 try {
-                    System.out.println(Instant.now() + " [DEBUG] Attempting to close USB device handle.");
+                    // System.out.println(Instant.now() + " [DEBUG] Attempting to close USB device handle.");
                     LibUsb.close(handle);
-                    System.out.println(Instant.now() + " [DEBUG] USB device handle closed successfully.");
+                    // System.out.println(Instant.now() + " [DEBUG] USB device handle closed successfully.");
                 }
                 catch (LibUsbException closeEx) {
                     System.err.println(Instant.now() + " [ERROR] Disconnect: Error closing handle (may be normal after reset): " + closeEx.getMessage());
@@ -467,7 +467,7 @@ public class USBBulkConnection extends Connection {
                 }
             }
             else {
-                System.out.println(Instant.now() + " [DEBUG] No USB device handle to close (it was null).");
+                // System.out.println(Instant.now() + " [DEBUG] No USB device handle to close (it was null).");
             }
         }
         catch (Exception mainEx) {
@@ -490,7 +490,7 @@ public class USBBulkConnection extends Connection {
 
             /* 9. Clear `disconnectRequested` flag LAST, after all cleanup and UI updates */
             this.disconnectRequested = false;
-            System.out.println(Instant.now() + " [DEBUG] Disconnect process completed. Disconnect request flag cleared.");
+            // System.out.println(Instant.now() + " [DEBUG] Disconnect process completed. Disconnect request flag cleared.");
         }
     }
 
@@ -605,7 +605,7 @@ public class USBBulkConnection extends Connection {
 
                         result = LibUsb.open(d, h);
                         if (result < 0) {
-                            System.err.println(Instant.now() + " [DEBUG] LibUsb: Failed to open device handle: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
+                            // System.err.println(Instant.now() + " [DEBUG] LibUsb: Failed to open device handle: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
                         }
                         else {
                             return h;
@@ -645,7 +645,7 @@ public class USBBulkConnection extends Connection {
     public boolean connect() {
         /* 1. Initial State Check: Prevent overlapping operations */
         if (disconnectRequested) {
-            System.out.println(Instant.now() + " [DEBUG] Connection attempt aborted: A disconnection is still in progress.");
+            // System.out.println(Instant.now() + " [DEBUG] Connection attempt aborted: A disconnection is still in progress.");
             return false;
         }
 
@@ -674,10 +674,10 @@ public class USBBulkConnection extends Connection {
                 System.err.println(Instant.now() + " [ERROR] Connect: Failed to open USB device handle.");
                 return false;
             }
-            System.out.println(Instant.now() + " [DEBUG] Connect: USB device handle opened successfully.");
+            // System.out.println(Instant.now() + " [DEBUG] Connect: USB device handle opened successfully.");
 
             /* 3. Claim Interface */
-            System.out.println(Instant.now() + " [DEBUG] Connect: Attempting to claim interface " + useBulkInterfaceNumber + ".");
+            // System.out.println(Instant.now() + " [DEBUG] Connect: Attempting to claim interface " + useBulkInterfaceNumber + ".");
             int result = LibUsb.claimInterface(handle, useBulkInterfaceNumber);
             if (result != LibUsb.SUCCESS) {
                 System.err.println(Instant.now() + " [ERROR] Connect: Failed to claim interface " + useBulkInterfaceNumber + ": " + LibUsb.errorName(result) + " (Code: " + result + ")");
@@ -687,7 +687,7 @@ public class USBBulkConnection extends Connection {
                 isConnecting = false;
                 return false;
             }
-            System.out.println(Instant.now() + " [DEBUG] Connect: USB interface " + useBulkInterfaceNumber + " claimed successfully.");
+            // System.out.println(Instant.now() + " [DEBUG] Connect: USB interface " + useBulkInterfaceNumber + " claimed successfully.");
 
             GoIdleState();
 
@@ -705,7 +705,7 @@ public class USBBulkConnection extends Connection {
             TransmitPing();
 
             if (!WaitSync()) {
-                System.err.println(Instant.now() + " [DEBUG] Initial ping timeout. Connection failed.");
+                // System.err.println(Instant.now() + " [DEBUG] Initial ping timeout. Connection failed.");
                 ShowDisconnect();
                 isConnecting = false;
                 return false;
@@ -732,7 +732,7 @@ public class USBBulkConnection extends Connection {
                 qcmdp.WaitQueueFinished();
                 targetProfile.setCPUSerial(q.getResult());
                 this.detectedCpuId = CpuIdToHexString(targetProfile.getCPUSerial());
-                System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: detectedCpuId set to: " + this.detectedCpuId);
+                // System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: detectedCpuId set to: " + this.detectedCpuId);
             }
             catch (Exception cmdEx) {
                 LOGGER.log(Level.SEVERE, "Error during post-connection QCmd processing. Connection might be unstable:", cmdEx);
@@ -760,7 +760,7 @@ public class USBBulkConnection extends Connection {
 
             /* 7. Guaranteed Cleanup */
             if (!connected) {
-                System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: Performing cleanup after failed connection attempt.");
+                // System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: Performing cleanup after failed connection attempt.");
 
                 if (receiverThread != null && receiverThread.isAlive()) {
                     receiverThread.interrupt();
@@ -791,7 +791,7 @@ public class USBBulkConnection extends Connection {
                         LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
                     }
                     catch (LibUsbException releaseEx) {
-                        System.err.println(Instant.now() + " [DEBUG] Error releasing interface during cleanup: " + releaseEx.getMessage());
+                        // System.err.println(Instant.now() + " [DEBUG] Error releasing interface during cleanup: " + releaseEx.getMessage());
                     }
                     
                     /* Close the device handle */
@@ -799,7 +799,7 @@ public class USBBulkConnection extends Connection {
                         LibUsb.close(handle);
                     }
                     catch (LibUsbException closeEx) {
-                        System.err.println(Instant.now() + " [DEBUG] Error closing handle during cleanup: " + closeEx.getMessage());
+                        // System.err.println(Instant.now() + " [DEBUG] Error closing handle during cleanup: " + closeEx.getMessage());
                     }
                     finally {
                         handle = null;
@@ -816,7 +816,7 @@ public class USBBulkConnection extends Connection {
         synchronized (usbOutLock) {
 
             if (handle == null) {
-                System.err.println(Instant.now() + " [DEBUG] USB bulk write failed: handle is null. Disconnected?");
+                // System.err.println(Instant.now() + " [DEBUG] USB bulk write failed: handle is null. Disconnected?");
                 return LibUsb.ERROR_NO_DEVICE;
             }
 
@@ -909,13 +909,13 @@ public class USBBulkConnection extends Connection {
             }
             try {
                 if (disconnectRequested) {
-                    System.out.println(Instant.now() + " [DEBUG] WaitSync: Disconnect requested, not waiting.");
+                    // System.out.println(Instant.now() + " [DEBUG] WaitSync: Disconnect requested, not waiting.");
                     return false;
                 }
                 sync.wait(msec);
             }
             catch (InterruptedException ex) {
-                System.out.println(Instant.now() + " [DEBUG] Sync wait interrupted due to disconnect request.," + ex.getMessage());
+                // System.out.println(Instant.now() + " [DEBUG] Sync wait interrupted due to disconnect request.," + ex.getMessage());
                 Thread.currentThread().interrupt();
                 return false;
             }
@@ -943,13 +943,13 @@ public class USBBulkConnection extends Connection {
             }
             try {
                 if (disconnectRequested) {
-                    System.out.println(Instant.now() + " [DEBUG] WaitReadSync: Disconnect requested, not waiting.");
+                    // System.out.println(Instant.now() + " [DEBUG] WaitReadSync: Disconnect requested, not waiting.");
                     return false;
                 }
                 readsync.wait(1000);
             }
             catch (InterruptedException ex) {
-                System.out.println(Instant.now() + " [DEBUG] ReadSync wait interrupted due to disconnect request.," + ex.getMessage());
+                // System.out.println(Instant.now() + " [DEBUG] ReadSync wait interrupted due to disconnect request.," + ex.getMessage());
                 Thread.currentThread().interrupt();
                 return false;
             }
@@ -1464,7 +1464,7 @@ public class USBBulkConnection extends Connection {
                 if (!pi.GetNeedsTransmit()) {
                     pi.SetValueRaw(value);
                 }
-                System.out.println(Instant.now() + " [DEBUG] rcv ppc objname:" + pi.GetObjectInstance().getInstanceName() + " pname:"+ pi.getName());
+                // System.out.println(Instant.now() + " [DEBUG] rcv ppc objname:" + pi.GetObjectInstance().getInstanceName() + " pname:"+ pi.getName());
             }
         });
 

@@ -202,13 +202,13 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
         Context sharedContext = Usb.getContext();
         if (sharedContext == null) {
-            System.err.println(Instant.now() + " [DEBUG] USB context is null. Cannot populate device list.");
+            // System.err.println(Instant.now() + " [DEBUG] USB context is null. Cannot populate device list.");
             return; 
         }
 
         int result = LibUsb.getDeviceList(sharedContext, list);
         if (result < 0) {
-            System.err.println(Instant.now() + " [DEBUG] Unable to get device list: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
+            // System.err.println(Instant.now() + " [DEBUG] Unable to get device list: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
             return; /* Exit if device list cannot be retrieved */
         }
 
@@ -513,7 +513,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 Thread.sleep(500); /* Delay to ensure the disconnect completes before new connection attempt */
             }
             catch (Exception ex) {
-                System.err.println(Instant.now() + " [DEBUG] Error during disconnect of current board: " + str + ", " + ex.getMessage());
+                // System.err.println(Instant.now() + " [DEBUG] Error during disconnect of current board: " + str + ", " + ex.getMessage());
                 return;
             }
         }
