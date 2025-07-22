@@ -38,7 +38,7 @@ public class ShellProcessor extends SwingWorker<Integer, String> {
 
     private final BlockingQueue<QCmdShellTask> queueShellTasks;
 
-    public ShellProcessor(BlockingQueue<QCmd> queueResponse) {
+    public ShellProcessor() {
         super();
         queueShellTasks = new ArrayBlockingQueue<QCmdShellTask>(20);
     }
@@ -62,11 +62,10 @@ public class ShellProcessor extends SwingWorker<Integer, String> {
     @Override
     public Integer doInBackground() {
         while (true) {
-            //          LOGGER.log(Level.INFO, "ShellProcessor Waiting");
+            // LOGGER.log(Level.INFO, "ShellProcessor Waiting");
             try {
                 queueShellTasks.take();
-//                LOGGER.log(Level.INFO, "ShellProcessor: "+ qc.GetStartMessage());
-//                queueResponse.add(qc.Do(this));
+                // LOGGER.log(Level.INFO, "ShellProcessor: "+ qc.GetStartMessage());
             } catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
