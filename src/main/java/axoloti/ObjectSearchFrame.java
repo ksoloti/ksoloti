@@ -424,9 +424,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             AxoObjectInstanceAbstract inst = o.CreateInstance(null, "dummy", new Point(5, 5));
             jPanelObjectPreview.removeAll();
             jPanelObjectPreview.add(inst);
-            inst.invalidate();
-            inst.repaint();
-            inst.revalidate();
+            // inst.invalidate();
+            // inst.repaint();
+            // inst.revalidate();
             jPanelObjectPreview.setPreferredSize(inst.getPreferredSize());
             jPanelObjectPreview.revalidate();
             jPanelObjectPreview.repaint();
