@@ -140,7 +140,8 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
                 while ((c != null) && !(c instanceof IoletAbstract)) {
                     c = c.getParent();
                 }
-                if (this != c) {
+                if (this != c && this instanceof InletInstance) {
+                    /* only remove connection when dragging from an *inlet* to empty space */
                     n = patchGUI.disconnect(this);
                 }
             } else {
