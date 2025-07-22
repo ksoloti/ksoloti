@@ -163,7 +163,7 @@ cd ../../..
 tar -czf ../ksoloti_patcher-mac_x64-${CUSTOMLABEL}${VERSION_LONG}.tar.gz *
 
 cd ../..
-rm -rf ./packagetemp/mac
+rm -rf ./packagetemp/mac_x64
 
 # ----- MacOS aarch64 (arm64)
 java -jar ./jdks/packr-all-4.0.0.jar --verbose --output ./packagetemp/mac_aarch64/Ksoloti-${VERSION}.app -- ./jdks/packr-mac_aarch64.json
@@ -180,7 +180,7 @@ cd ../../..
 tar -czf ../ksoloti_patcher-mac_aarch64-${CUSTOMLABEL}${VERSION_LONG}.tar.gz *
 
 cd ../..
-rm -rf ./packagetemp/mac
+rm -rf ./packagetemp/mac_aarch64
 
 # ----- Windows x64
 java -jar ./jdks/packr-all-4.0.0.jar --verbose --output ./packagetemp/win_x64/ksoloti-${VERSION} -- ./jdks/packr-win_x64.json
