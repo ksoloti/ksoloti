@@ -1331,10 +1331,10 @@ public class Patch {
             /* check if net has multiple sources */
             if ((n.CType() != null) && n.NeedsLatch()) {
                 if(n.CType() == "char*") {
-                    c += I + n.CType() + " " + n.CName() + "Latch" + " = NULL;\n";
+                    c += I + n.CType() + " " + n.GetCName() + "Latch" + " = NULL;\n";
                 }
                 else {
-                    c += I + n.CType() + " " + n.CName() + "Latch" + ";\n";
+                    c += I + n.CType() + " " + n.GetCName() + "Latch" + ";\n";
                 }
             }
         }
@@ -1582,7 +1582,7 @@ public class Patch {
         c += I+I + "/* <nets> */\n";
         for (Net n : nets) {
             if (n.CType() != null) {
-                c += I+I + n.CType() + " " + n.CName() + ";\n";
+                c += I+I + n.CType() + " " + n.GetCName() + ";\n";
             }
             else {
                 LOGGER.log(Level.INFO, "Net has no data type!");
@@ -1613,7 +1613,7 @@ public class Patch {
             // check if net has multiple sources
             if (n.NeedsLatch()) {
                 if (n.GetDataType() != null) {
-                    c += I+I + n.GetDataType().GenerateCopyCode(n.CName() + "Latch", n.CName());
+                    c += I+I + n.GetDataType().GenerateCopyCode(n.GetCName() + "Latch", n.GetCName());
                 }
                 else {
                     LOGGER.log(Level.SEVERE, "Only inlets connected on net!");
@@ -1644,18 +1644,18 @@ public class Patch {
                 if (i.GetDataType().equals(n.GetDataType())) {
                     if (n.NeedsLatch()
                             && (objectInstances.indexOf(n.source.get(0).GetObjectInstance()) >= objectInstances.indexOf(o))) {
-                        c += n.CName() + "Latch";
+                        c += n.GetCName() + "Latch";
                     }
                     else {
-                        c += n.CName();
+                        c += n.GetCName();
                     }
                 }
                 else if (n.NeedsLatch()
                         && (objectInstances.indexOf(n.source.get(0).GetObjectInstance()) >= objectInstances.indexOf(o))) {
-                    c += n.GetDataType().GenerateConversionToType(i.GetDataType(), n.CName() + "Latch");
+                    c += n.GetDataType().GenerateConversionToType(i.GetDataType(), n.GetCName() + "Latch");
                 }
                 else {
-                    c += n.GetDataType().GenerateConversionToType(i.GetDataType(), n.CName());
+                    c += n.GetDataType().GenerateConversionToType(i.GetDataType(), n.GetCName());
                 }
             }
             else if (n == null) {
@@ -1675,10 +1675,10 @@ public class Patch {
             Net n = GetNet(i);
             if ((n != null) && n.isValidNet()) {
                 if (n.IsFirstOutlet(i)) {
-                    c += n.CName();
+                    c += n.GetCName();
                 }
                 else {
-                    c += n.CName() + "+";
+                    c += n.GetCName() + "+";
                 }
             }
             else {

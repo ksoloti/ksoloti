@@ -398,7 +398,7 @@ public class Net extends JComponent {
         }
     }
 
-    public String CName() {
+    public String GetCName() {
         int i = patch.nets.indexOf(this);
         return "net" + i;
     }
