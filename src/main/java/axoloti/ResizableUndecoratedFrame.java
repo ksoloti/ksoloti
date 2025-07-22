@@ -188,7 +188,7 @@ public class ResizableUndecoratedFrame extends javax.swing.JFrame implements Mou
         if (dimension + drag < minimum) {
             drag = minimum - dimension;
         }
-        while (dimension + drag > maximum) {
+        if (dimension + drag > maximum) {
             drag = maximum - dimension;
         }
         return drag;
