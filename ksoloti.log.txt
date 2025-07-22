@@ -1,0 +1,441 @@
+Directories:
+Current = /home/sbcu/Dropbox/pcb-layouts/axo-427-core/ksoloti
+Jar = /home/sbcu/Dropbox/pcb-layouts/axo-427-core/ksoloti/dist
+Home = /home/sbcu/Dropbox/pcb-layouts/axo-427-core/ksoloti
+Firmware = /home/sbcu/Dropbox/pcb-layouts/axo-427-core/ksoloti/firmware
+Libraries = /home/sbcu/ksoloti/1.1.0
+Platform = /home/sbcu/Dropbox/pcb-layouts/axo-427-core/ksoloti/platform_linux_x64
+
+2025-07-22T09:10:43.204488288Z AxoSDFileTableModel: Constructor received list of size: 0
+2025-07-22T17:10:43.300164683  WARNING: Patcher version 1.1.0-505-g92a08e90-dirty | Build time 22 Jul 2025, 17:10:35
+
+2025-07-22T17:10:43.305805579  INFO: Patcher linked to firmware 4E6D1AA2
+2025-07-22T17:10:43.313438235  INFO: Ksoloti Core found.
+2025-07-22T09:10:43.315150131Z [DEBUG] Connect: USB device handle opened successfully.
+2025-07-22T09:10:43.315716049Z [DEBUG] Connect: Attempting to claim interface 2.
+2025-07-22T09:10:43.316424832Z [DEBUG] Connect: USB interface 2 claimed successfully.
+2025-07-22T09:10:43.318303951Z [DEBUG] Receiver thread started.
+2025-07-22T09:10:43.318874249Z [DEBUG] Transmitter thread started.
+2025-07-22T17:10:43.322412502  WARNING: Connected
+
+2025-07-22T09:10:43.325708301Z [DEBUG] AppendToQueue: attempting to append QCmdTransmitGetFWVersion
+2025-07-22T09:10:43.326400747Z Core Firmware version: 1.1.0.0, CRC: 0x4E6D1AA2, entry point: 0x20011000
+2025-07-22T17:10:43.326711634  INFO: Core running Firmware version 1.1.0.0 | CRC 4E6D1AA2
+
+2025-07-22T09:10:43.329061998Z [DEBUG] AppendToQueue: attempting to append QCmdMemRead1Word
+2025-07-22T09:10:43.335321154Z [DEBUG] AppendToQueue: attempting to append QCmdMemRead
+2025-07-22T09:10:43.341957829Z [DEBUG] USBBulkConnection: detectedCpuId set to: 0035003D3432511835393736
+2025-07-22T17:10:43.457894308  INFO: Checking library status...
+2025-07-22T17:10:43.650353965  INFO: Status OK: axoloti-factory (1.1.0, anon) (1.1.0, clean)
+2025-07-22T17:10:44.112806740  INFO: Status OK: axoloti-contrib (1.1.0, anon) (1.1.0, clean)
+2025-07-22T17:10:44.212845185  INFO: Status OK: ksoloti-objects (1.1.0, anon) (1.1.0, clean)
+2025-07-22T17:10:44.225680769  INFO: Status OK: ksoloti-contrib (1.1.0, anon) (1.1.0, clean)
+2025-07-22T17:10:44.227186491  INFO: Done checking library status.
+
+2025-07-22T17:10:44.230996671  INFO: Loading objects...
+2025-07-22T17:10:44.233999823  INFO: Object path: /home/sbcu/ksoloti/1.1.0/axoloti-factory/objects
+2025-07-22T17:10:44.731669798  INFO: Object path: /home/sbcu/ksoloti/1.1.0/axoloti-contrib/objects
+2025-07-22T17:10:46.569956928  INFO: Object path: /home/sbcu/ksoloti/1.1.0/ksoloti-objects/objects
+2025-07-22T17:10:46.670564315  INFO: Object path: /home/sbcu/ksoloti/1.1.0/ksoloti-contrib/objects
+2025-07-22T17:10:46.680226054  INFO: Done loading objects.
+
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+java.awt.Rectangle[x=0,y=0,width=0,height=0]
+java.awt.Dimension[width=0,height=0]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+InletInstance Created: null
+  Bounds: java.awt.Rectangle[x=0,y=0,width=0,height=0]
+  Location in Parent: java.awt.Point[x=0,y=0]
+  Size: java.awt.Dimension[width=0,height=0]
+  isVisible(): true
+  isOpaque(): true
+  getJackLocInCanvas(): java.awt.Point[x=3,y=-104]
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=101,y=134]
+--- Drag Started ---
+OutletInstance.mousePressed: Initial drag point in NetDrawingPanel: java.awt.Point[x=101,y=134]
+OutletInstance.mousePressed: DragWireOverlay instance: axoloti.net.DragWireOverlay[,0,0,5000x5000,invalid,alignmentX=0.0,alignmentY=0.0,border=,flags=16777216,maximumSize=,minimumSize=,preferredSize=]
+OutletInstance.mousePressed: DragWireOverlay isVisible(): true
+OutletInstance.mousePressed: DragWireOverlay getBounds(): java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+OutletInstance.mousePressed: NetDrawingPanel getBounds(): java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+OutletInstance.mousePressed: Layers JLayeredPane getBounds(): java.awt.Rectangle[x=0,y=0,width=894,height=460]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=101,y=134] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=108,y=135]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=108,y=135]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=108,y=135] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=111,y=136]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=111,y=136]
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=114,y=137]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=114,y=137]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=114,y=137] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=121,y=140]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=121,y=140]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=121,y=140] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=124,y=141]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=124,y=141]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=124,y=141] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=130,y=143]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=130,y=143]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=130,y=143] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=138,y=146]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=138,y=146]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=138,y=146] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=146,y=148]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=146,y=148]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=146,y=148] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=153,y=149]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=153,y=149]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=153,y=149] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=155,y=150]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=155,y=150]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=155,y=150] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=162,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=162,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=162,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=165,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=165,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=165,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=171,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=171,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=171,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=180,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=180,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=180,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=183,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=183,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=183,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=190,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=190,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=190,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=198,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=198,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=198,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=202,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=202,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=202,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=204,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=204,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=204,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=206,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=206,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=206,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=207,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=207,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=207,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=208,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=208,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=208,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=209,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=209,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=209,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=213,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=213,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=213,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=216,y=152]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=216,y=152]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=216,y=152] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=217,y=152]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=217,y=152]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=217,y=152] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=218,y=152]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=218,y=152]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=218,y=152] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=225,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=225,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=225,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=226,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=226,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=226,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=232,y=151]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=232,y=151]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=232,y=151] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=237,y=150]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=237,y=150]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=237,y=150] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=238,y=150]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=238,y=150]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=238,y=150] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=238,y=150]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=238,y=150]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=238,y=150] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=239,y=150]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=239,y=150]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=239,y=150] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=241,y=150]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=241,y=150]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=241,y=150] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=242,y=150]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=242,y=150]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=242,y=150] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=242,y=150]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=242,y=150]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=242,y=150] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=243,y=150]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=243,y=150]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=243,y=150] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=244,y=150]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=244,y=150]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=244,y=150] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=244,y=150]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=244,y=150]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=244,y=150] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=245,y=150]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=245,y=150]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=245,y=150] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=246,y=150]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=246,y=150]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=246,y=150] with type axoloti.datatypes.Frac32@5
+NetDragging.UpdateDragPoint: Setting wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=247,y=150]
+OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: java.awt.Point[x=247,y=150]
+DragWireOverlay.paintComponent() called. Current Bounds: java.awt.Rectangle[x=0,y=0,width=5000,height=5000]
+DragWireOverlay: Drawing wire from java.awt.Point[x=105,y=132] to java.awt.Point[x=247,y=150] with type axoloti.datatypes.Frac32@5
+--- OutletInstance Release ---
+Release mouse event point (relative to OutletInstance): java.awt.Point[x=158,y=25]
+Converted release location in NetDrawingPanel: java.awt.Point[x=247,y=150]
+Component found by getDeepestComponentAt(): axoloti.net.NetDrawingPanel[netLayerPanel,0,0,5000x5000,alignmentX=0.0,alignmentY=0.0,border=,flags=16777217,maximumSize=,minimumSize=,preferredSize=]
+Class of component found: axoloti.net.NetDrawingPanel
+FAILURE: Wire released on non-inlet component or empty space. Released on: axoloti.net.NetDrawingPanel[netLayerPanel,0,0,5000x5000,alignmentX=0.0,alignmentY=0.0,border=,flags=16777217,maximumSize=,minimumSize=,preferredSize=]

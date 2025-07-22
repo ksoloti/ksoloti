@@ -16,25 +16,30 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
-package axoloti;
+package axoloti.net;
 
+import axoloti.Patch;
+import axoloti.PatchGUI;
+import axoloti.Theme;
 import axoloti.datatypes.DataType;
 import axoloti.inlets.InletInstance;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.outlets.OutletInstance;
+import axoloti.utils.Constants;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
-import java.awt.Stroke;
 import java.awt.geom.QuadCurve2D;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JComponent;
+
 import javax.swing.SwingUtilities;
+
 import org.simpleframework.xml.*;
 
 /**
@@ -42,16 +47,17 @@ import org.simpleframework.xml.*;
  * @author Johannes Taelman
  */
 @Root(name = "net")
-public class Net extends JComponent {
+public class Net {
 
     private static final Logger LOGGER = Logger.getLogger(Net.class.getName());
 
     @ElementList(inline = true, required = false)
     ArrayList<OutletInstance> source;
     @ElementList(inline = true, required = false)
-    ArrayList<InletInstance> dest = new ArrayList<InletInstance>();
+    ArrayList<InletInstance> dest;
     Patch patch;
     boolean selected = false;
+    float shadowOffset = 0.5f;
 
     public Net() {
         if (source == null) {
@@ -61,14 +67,17 @@ public class Net extends JComponent {
             dest = new ArrayList<InletInstance>();
         }
 
-        setSize(1, 1);
-        setLocation(0, 0);
-        setOpaque(false);
     }
 
     public Net(Patch patch) {
         this();
         this.patch = patch;
+    }
+
+    public void SetPatch(Patch p) {
+        if (p != null) {
+            this.patch = p;
+        }
     }
 
     public void PostConstructor() {
@@ -111,7 +120,6 @@ public class Net extends JComponent {
         }
         source = source2;
         dest = dest2;
-        updateBounds();
     }
 
     public boolean isSelected() {
@@ -129,7 +137,6 @@ public class Net extends JComponent {
         for (InletInstance i : dest) {
             i.setHighlighted(selected);
         }
-        repaint();
     }
 
     public boolean getSelected() {
@@ -141,14 +148,12 @@ public class Net extends JComponent {
             return;
         }
         dest.add(inlet);
-        updateBounds();
     }
 
     public void connectOutlet(OutletInstance outlet) {
         if (outlet.GetObjectInstance().patch == patch) {
             source.add(outlet);
         }
-        updateBounds();
     }
 
     public boolean isValidNet() {
@@ -177,75 +182,35 @@ public class Net extends JComponent {
         return c;
     }
 
-    final static float[] dash = {3.f, 6.f};
-    final static Stroke strokeValidSelected = new BasicStroke(4.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    final static Stroke strokeValidDeselected = new BasicStroke(1.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    final static Stroke strokeBrokenSelected = new BasicStroke(4.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
-    final static Stroke strokeBrokenDeselected = new BasicStroke(1.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
     final QuadCurve2D.Float curve = new QuadCurve2D.Float();
 
-    float CtrlPointY(float x1, float y1, float x2, float y2) {
+    static float GetCtrlPointY(float x1, float y1, float x2, float y2) {
         float looseness = 0.05f;
         return Math.max(y1, y2) + Math.abs(y2 - y1) * looseness + Math.abs(x2 - x1) * looseness;
     }
 
-    void DrawWire(Graphics2D g2, float x1, float y1, float x2, float y2) {
-        curve.setCurve(x1, y1, (x1 + x2) / 2, CtrlPointY(x1, y1, x2, y2), x2, y2);
-        // curve.setCurve(x1, y1, x2, y2, x2, y2); /* this would make straight lines */
-        g2.draw(curve);
-    }
-
-    public void updateBounds() {
-        int min_y = Integer.MAX_VALUE;
-        int min_x = Integer.MAX_VALUE;
-        int max_y = Integer.MIN_VALUE;
-        int max_x = Integer.MIN_VALUE;
-
-        for (InletInstance i : dest) {
-            Point p1 = i.getJackLocInCanvas();
-            min_x = Math.min(min_x, p1.x);
-            min_y = Math.min(min_y, p1.y);
-            max_x = Math.max(max_x, p1.x);
-            max_y = Math.max(max_y, p1.y);
+    public void draw(Graphics g) {
+        if (source.isEmpty()) {
+            return; // Nothing to draw if there's no source
         }
-        for (OutletInstance i : source) {
-            Point p1 = i.getJackLocInCanvas();
-            min_x = Math.min(min_x, p1.x);
-            min_y = Math.min(min_y, p1.y);
-            max_x = Math.max(max_x, p1.x);
-            max_y = Math.max(max_y, p1.y);
-        }
-        int fudge = 8;
-        this.setBounds(min_x - fudge, min_y - fudge,
-                Math.max(1, max_x - min_x + (2 * fudge)),
-                (int)CtrlPointY(min_x, min_y, max_x, max_y) - min_y + (2 * fudge));
-    }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        float shadowOffset = 0.7f;
+        Color c;
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        Point p0;
-        Color c;
-
         if (isValidNet()) {
             if (selected) {
-                g2.setStroke(strokeValidSelected);
-                c = GetDataType().GetColorHighlighted();
+                g2.setStroke(Theme.Cable_Stroke_Valid_Selected);
             } else {
-                g2.setStroke(strokeValidDeselected);
-                c = GetDataType().GetColor();
+                g2.setStroke(Theme.Cable_Stroke_Valid_Deselected);
             }
 
-            p0 = source.get(0).getJackLocInCanvas();
+            c = GetDataType().GetColor();
         } else {
             if (selected) {
-                g2.setStroke(strokeBrokenSelected);
+                g2.setStroke(Theme.Cable_Stroke_Broken_Selected);
             } else {
-                g2.setStroke(strokeBrokenDeselected);
+                g2.setStroke(Theme.Cable_Stroke_Broken_Deselected);
             }
 
             if (GetDataType() != null) {
@@ -253,85 +218,40 @@ public class Net extends JComponent {
             } else {
                 c = Theme.Cable_Shadow;
             }
-
-            if (!source.isEmpty()) {
-                p0 = source.get(0).getJackLocInCanvas();
-            } else if (!dest.isEmpty()) {
-                p0 = dest.get(0).getJackLocInCanvas();
-            } else {
-                throw new Error("Empty nets should not exist");
-            }
+        }
+        
+        Point from = source.get(0).getJackLocInCanvas(); // The single source point for this Net
+        if (from == null) {
+            // Log a warning: source jack location is null
+            // LOGGER.log(Level.WARNING, "Source outlet jack location is null for net.");
+            return;
         }
 
-        Point from = SwingUtilities.convertPoint(getPatchGui().Layers, p0, this);
-        from.x -= 1; /* Compensate for outlet graphic shift */
-        for (InletInstance i : dest) {
-            Point p1 = i.getJackLocInCanvas();
-
-            Point to = SwingUtilities.convertPoint(getPatchGui().Layers, p1, this);
-
-            // g2.setColor(Theme.Cable_Shadow);
-            g2.setColor(c.darker().darker()); /* derive wire shadow color from actual color */
-            if (from.x > to.x) {
-                /* Wire goes right-to-left */
-                if (from.y > to.y) {
-                    /* Wire goes upwards, i.e. starts lower than it ends */
-                    DrawWire(g2, from.x - shadowOffset, from.y + shadowOffset, to.x - shadowOffset, to.y + shadowOffset);
-                }
-                else {
-                    /* Wire goes downwards, i.e. starts higher than it ends */
-                    DrawWire(g2, from.x + shadowOffset, from.y + shadowOffset, to.x + shadowOffset, to.y + shadowOffset);
-                }
-            }
-            else {
-                /* Wire goes left-to-right */
-                if (from.y > to.y) {
-                    /* Wire goes upwards, i.e. starts lower than it ends */
-                    DrawWire(g2, from.x + shadowOffset, from.y + shadowOffset, to.x + shadowOffset, to.y + shadowOffset);
-                }
-                else {
-                    /* Wire goes downwards, i.e. starts higher than it ends */
-                    DrawWire(g2, from.x - shadowOffset, from.y + shadowOffset, to.x - shadowOffset, to.y + shadowOffset);
-                }
+        for (InletInstance d : dest) {
+            Point to = d.getJackLocInCanvas(); // Get the location of this specific destination inlet
+            if (to == null) {
+                // Log a warning: destination jack location is null
+                // LOGGER.log(Level.WARNING, "Destination inlet jack location is null for {0}", d.GetLabel());
+                continue; // Skip this destination but continue with others
             }
 
+            // Draw shadow wire
+            g2.setColor(Theme.Cable_Shadow); // Assuming Theme.Cable_Shadow is defined
+            DrawWire(g2, from.x + shadowOffset, from.y + shadowOffset, to.x + shadowOffset, to.y + shadowOffset);
+
+            // Draw main wire
             g2.setColor(c);
             DrawWire(g2, from.x, from.y, to.x, to.y);
         }
-        for (OutletInstance i : source) {
-            Point p1 = i.getJackLocInCanvas();
+    }
 
-            Point to = SwingUtilities.convertPoint(getPatchGui().Layers, p1, this);
-
-            // g2.setColor(Theme.Cable_Shadow);
-            g2.setColor(c.darker().darker()); /* derive wire shadow color from actual color */
-            if (from.x > to.x) {
-                /* Wire goes right-to-left */
-                if (from.y > to.y) {
-                    /* Wire goes upwards, i.e. starts lower than it ends */
-                    DrawWire(g2, from.x - shadowOffset, from.y + shadowOffset, to.x - shadowOffset, to.y + shadowOffset);
-                }
-                else {
-                    /* Wire goes downwards, i.e. starts higher than it ends */
-                    DrawWire(g2, from.x + shadowOffset, from.y + shadowOffset, to.x + shadowOffset, to.y + shadowOffset);
-                }
-            }
-            else {
-                /* Wire goes left-to-right */
-                if (from.y > to.y) {
-                    /* Wire goes upwards, i.e. starts lower than it ends */
-                    DrawWire(g2, from.x + shadowOffset, from.y + shadowOffset, to.x + shadowOffset, to.y + shadowOffset);
-                }
-                else {
-                    /* Wire goes downwards, i.e. starts higher than it ends */
-                    DrawWire(g2, from.x - shadowOffset, from.y + shadowOffset, to.x - shadowOffset, to.y + shadowOffset);
-                }
-            }
-
-            g2.setColor(c);
-            DrawWire(g2, from.x, from.y, to.x, to.y);
-
-        }
+    private void DrawWire(Graphics2D g2, float x1, float y1, float x2, float y2) {
+        QuadCurve2D q = new QuadCurve2D.Float();
+        float mid_x = (x1 + x2) / 2;
+        float ctrlPointY = GetCtrlPointY(x1, y1, x2, y2);
+        q.setCurve(x1, y1, mid_x, ctrlPointY, x2, y2);
+        // q.setCurve(x1, y1, x2, y2, x2, y2); /* this would make straight lines */
+        g2.draw(q);
     }
 
     public PatchGUI getPatchGui() {
@@ -384,9 +304,45 @@ public class Net extends JComponent {
         DataType t = source.get(0).GetDataType();
         return t;
     }
-    
+
+    public void SetSources(ArrayList<OutletInstance> sources) {
+        if (sources != null) {
+            source = sources;
+        }
+    }
+
+    public void SetDests(ArrayList<InletInstance> dests) {
+        if (dests != null) {
+            dest = dests;
+        }
+    }
+
     public ArrayList<OutletInstance> GetSource() {
         return source;
+    }
+
+    public ArrayList<InletInstance> GetDests() {
+            return dest;
+    }
+
+    public void addSource(OutletInstance o) {
+        if (!source.contains(o)) {
+            source.add(o);
+        }
+    }
+
+    public void addDest(InletInstance d) {
+        if (!dest.contains(d)) {
+            dest.add(d);
+        }
+    }
+
+    public void removeSource(OutletInstance o) {
+        source.remove(o);
+    }
+
+    public void removeDest(InletInstance d) {
+        dest.remove(d);
     }
 
     public String CType() {

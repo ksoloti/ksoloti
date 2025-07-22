@@ -27,6 +27,8 @@ import axoloti.inlets.InletFrac32Buffer;
 import axoloti.inlets.InletInstance;
 import axoloti.inlets.InletInt32;
 import axoloti.iolet.IoletAbstract;
+import axoloti.net.Net;
+
 import static axoloti.MainFrame.prefs;
 import axoloti.object.AxoObject;
 import axoloti.object.AxoObjectAbstract;
@@ -67,6 +69,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -491,7 +494,7 @@ public class Patch {
 
         ArrayList<Net> nets2 = (ArrayList<Net>) nets.clone();
         for (Net n : nets2) {
-            n.patch = this;
+            n.SetPatch(this);
             n.PostConstructor();
         }
 
@@ -634,15 +637,61 @@ public class Patch {
         return null;
     }
 
+    public Net connect(OutletInstance sourceOutlet, InletInstance destInlet) {
+        if (sourceOutlet == null || destInlet == null) {
+            System.err.println("Cannot connect: Source outlet or destination inlet is null.");
+            return null;
+        }
+
+        // Prevent duplicate connections (Crucial!)
+        // Iterate through existing nets to check for duplicates
+        for (Net existingNet : GetNets()) { // Assuming GetNets() returns the list of Net objects
+            // A simple check if this exact source-to-destination connection already exists
+            if (existingNet.GetSource().contains(sourceOutlet) && existingNet.GetDests().contains(destInlet)) {
+                System.out.println("Connection already exists between " + sourceOutlet.getName() + " and " + destInlet.getName());
+                return null; // Connection already exists, do not create duplicate
+            }
+        }
+
+        // Corrected Net instantiation:
+        // 1. Create the Net object, passing 'this' (the Patch instance) to its constructor.
+        Net newNet = new Net(this); // 'this' refers to the current Patch object (or PatchGUI object)
+
+        // 2. Add the source and destination to the newNet's internal lists.
+        //    Assuming Net has public or package-private methods to add sources/destinations,
+        //    or that its 'source' and 'dest' ArrayLists are directly accessible (e.g., protected).
+        //    If 'source' and 'dest' are private in Net, you'll need public setter/add methods in Net.
+        newNet.GetSource().add(sourceOutlet); // Assuming GetSource() returns the modifiable ArrayList
+        newNet.GetDests().add(destInlet);     // Assuming GetDests() returns the modifiable ArrayList
+
+        // Add the new Net to this Patch's collection of nets
+        // Assuming your Patch class has a 'nets' ArrayList or similar collection.
+        // If this 'nets' list is private, you'll need an 'addNet(Net n)' method in Patch.
+        // Since PatchGUI extends Patch, 'this.nets.add(newNet)' might work if 'nets' is protected in Patch.
+        this.nets.add(newNet); // Assuming 'nets' is a field in the Patch class
+
+        this.SetDirty(true); // Mark the patch as modified
+
+        System.out.println("Connected: " + sourceOutlet.getName() + " to " + destInlet.getName());
+        return newNet;
+    }
+
+    public ArrayList<Net> GetNets() {
+        if (nets != null) {
+            return nets;
+        }
+        return null;
+    }
+
     public Net GetNet(IoletAbstract io) {
         for (Net net : nets) {
-            for (InletInstance d : net.dest) {
+            for (InletInstance d : net.GetDests()) {
                 if (d == io) {
                     return net;
                 }
             }
 
-            for (OutletInstance d : net.source) {
+            for (OutletInstance d : net.GetSource()) {
                 if (d == io) {
                     return net;
                 }
@@ -685,7 +734,7 @@ public class Patch {
                 return null;
             }
             else if ((n1 != null) && (n2 == null)) {
-                if (n1.source.isEmpty()) {
+                if (n1.GetSource().isEmpty()) {
                     LOGGER.log(Level.FINE, "Connect: adding outlet to inlet net");
                     n1.connectOutlet(ol);
                     return n1;
@@ -770,17 +819,17 @@ public class Patch {
         return null;
     }
 
-    public Net disconnect(IoletAbstract io) {
+    public Net RemoveConnection(IoletAbstract io) {
         if (!IsLocked()) {
             Net n = GetNet(io);
             if (n != null) {
                 if (io instanceof OutletInstance) {
-                    n.source.remove((OutletInstance) io);
+                    n.GetSource().remove((OutletInstance) io);
                 }
                 else if (io instanceof InletInstance) {
-                    n.dest.remove((InletInstance) io);
+                    n.GetDests().remove((InletInstance) io);
                 }
-                if (n.source.size() + n.dest.size() <= 1) {
+                if (n.GetSource().size() + n.GetDests().size() <= 1) {
                     delete(n);
                 }
                 return n;
@@ -791,6 +840,134 @@ public class Patch {
         }
         return null;
     }
+
+    public boolean disconnect(InletInstance inlet) {
+        if (inlet == null) {
+            return false;
+        }
+
+        boolean disconnectedAny = false;
+        Iterator<Net> iterator = nets.iterator();
+        while (iterator.hasNext()) {
+            Net net = iterator.next();
+            if (net.GetDests().contains(inlet)) {
+                iterator.remove();
+                disconnectedAny = true;
+                // Corrected: Use inlet.getName() as InletInstance has it
+                System.out.println("Disconnected net from inlet: " + inlet.getName());
+            }
+        }
+
+        if (disconnectedAny) {
+            SetDirty(true);
+        }
+        return disconnectedAny;
+    }
+
+    public boolean disconnect(OutletInstance outlet) {
+        if (outlet == null) {
+            return false;
+        }
+
+        boolean disconnectedAny = false;
+        Iterator<Net> iterator = nets.iterator(); // 'nets' is your list of active Net objects
+        while (iterator.hasNext()) {
+            Net net = iterator.next();
+            // Defensive checks for null net or null source list within the net
+            if (net == null || net.GetSource() == null) {
+                System.err.println("Warning: Encountered null net or null source list during disconnect(OutletInstance).");
+                continue; // Skip this problematic net
+            }
+            // Check if this net has the given outlet as a source
+            if (net.GetSource().contains(outlet)) {
+                iterator.remove(); // Safely remove the current net from the list
+                disconnectedAny = true;
+                System.out.println("Disconnected net from outlet: " + outlet.getName());
+            }
+        }
+
+        if (disconnectedAny) {
+            SetDirty(true); // Mark the patch as modified
+            // Trigger repaint if necessary, e.g., getNetDrawingPanel().repaint();
+            // This assumes Patch or PatchGUI has access to NetDrawingPanel and a repaint mechanism.
+        }
+        return disconnectedAny;
+    }
+
+    public boolean disconnect(Net net) {
+        if (net == null) {
+            System.out.println("Disconnected net: null net object passed.");
+            return false;
+        }
+
+        boolean hasNullIolets = false;
+
+        for (OutletInstance src : net.GetSource()) {
+            if (src == null) {
+                // Corrected: Remove net.getName(), just log it as a null source
+                System.out.println("Disconnected net from outlet: null (due to null source in Net)");
+                hasNullIolets = true;
+            }
+        }
+
+        for (InletInstance dest : net.GetDests()) {
+            if (dest == null) {
+                // Corrected: Remove net.getName(), just log it as a null destination
+                System.out.println("Disconnected net from inlet: null (due to null destination in Net)");
+                hasNullIolets = true;
+            }
+        }
+
+        boolean disconnectedAny = false;
+
+        if (hasNullIolets) {
+            // Corrected: Log the Net object itself, not its non-existent name
+            System.out.println("Removing corrupted net from patch: " + net.toString());
+        }
+
+        Iterator<Net> iterator = nets.iterator();
+        while (iterator.hasNext()) {
+            Net existingNet = iterator.next();
+            if (existingNet == net) {
+                iterator.remove();
+                disconnectedAny = true;
+                // Corrected: Log the Net object itself, not its non-existent name
+                System.out.println("Successfully removed net: " + net.toString());
+                break;
+            }
+        }
+
+        if (disconnectedAny) {
+            SetDirty(true);
+        }
+        return disconnectedAny;
+    }
+
+
+    public boolean disconnect(OutletInstance sourceOutlet, InletInstance destInlet) {
+        if (sourceOutlet == null || destInlet == null) {
+            return false;
+        }
+
+        boolean disconnectedSpecific = false;
+        Iterator<Net> iterator = nets.iterator();
+        while (iterator.hasNext()) {
+            Net net = iterator.next();
+            if (net.GetSource().contains(sourceOutlet) && net.GetDests().contains(destInlet)) {
+                iterator.remove();
+                disconnectedSpecific = true;
+                // Corrected: Use outlet/inlet names as they have them
+                System.out.println("Disconnected specific net: " + sourceOutlet.getName() + " -> " + destInlet.getName());
+                break;
+            }
+        }
+
+        if (disconnectedSpecific) {
+            SetDirty(true);
+        }
+        return disconnectedSpecific;
+    }
+
 
     public Net delete(Net n) {
         if (!IsLocked()) {
@@ -808,12 +985,35 @@ public class Patch {
             return;
         }
 
-        for (InletInstance ii : o.GetInletInstances()) {
-            disconnect(ii);
-        }
+        List<InletInstance> inletsToDelete = new ArrayList<>(o.GetInletInstances());
+        List<OutletInstance> outletsToDelete = new ArrayList<>(o.GetOutletInstances());
 
-        for (OutletInstance oi : o.GetOutletInstances()) {
-            disconnect(oi);
+        Iterator<Net> netIterator = nets.iterator();
+        while (netIterator.hasNext()) {
+            Net net = netIterator.next();
+            boolean netInvolvesDeletedObject = false;
+
+            for (OutletInstance src : net.GetSource()) {
+                if (outletsToDelete.contains(src)) {
+                    netInvolvesDeletedObject = true;
+                    break;
+                }
+            }
+            if (!netInvolvesDeletedObject) {
+                for (InletInstance dest : net.GetDests()) {
+                    if (inletsToDelete.contains(dest)) {
+                        netInvolvesDeletedObject = true;
+                        break;
+                    }
+                }
+            }
+
+            if (netInvolvesDeletedObject) {
+                netIterator.remove();
+                // Corrected: Log the Net object itself, not its non-existent name
+                System.out.println("Removed net connected to deleted object: " + net.toString());
+                SetDirty(true);
+            }
         }
 
         int i; for (i = Modulators.size() - 1; i >= 0; i--) {
@@ -821,7 +1021,9 @@ public class Patch {
             if (m1.objInst == o) {
                 Modulators.remove(m1);
                 for (Modulation mt : m1.Modulations) {
-                    mt.destination.removeModulation(mt);
+                    if (mt != null && mt.destination != null) {
+                        mt.destination.removeModulation(mt);
+                    }
                 }
             }
         }
@@ -1643,7 +1845,7 @@ public class Patch {
             if ((n != null) && (n.isValidNet())) {
                 if (i.GetDataType().equals(n.GetDataType())) {
                     if (n.NeedsLatch()
-                            && (objectInstances.indexOf(n.source.get(0).GetObjectInstance()) >= objectInstances.indexOf(o))) {
+                            && (objectInstances.indexOf(n.GetSource().get(0).GetObjectInstance()) >= objectInstances.indexOf(o))) {
                         c += n.CName() + "Latch";
                     }
                     else {
@@ -1651,7 +1853,7 @@ public class Patch {
                     }
                 }
                 else if (n.NeedsLatch()
-                        && (objectInstances.indexOf(n.source.get(0).GetObjectInstance()) >= objectInstances.indexOf(o))) {
+                        && (objectInstances.indexOf(n.GetSource().get(0).GetObjectInstance()) >= objectInstances.indexOf(o))) {
                     c += n.GetDataType().GenerateConversionToType(i.GetDataType(), n.CName() + "Latch");
                 }
                 else {

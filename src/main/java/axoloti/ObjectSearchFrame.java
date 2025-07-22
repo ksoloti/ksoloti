@@ -347,7 +347,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         }
 
-        Point patchFrameOnScreen = p.getPatchframe().patch.objectLayerPanel.getLocationOnScreen();
+        Point patchFrameOnScreen = p.getPatchframe().getPatchGui().objectLayerPanel.getLocationOnScreen();
 
         if(patchFrameOnScreen.getX() + patchLoc.getX() + getWidth() > allScreenBounds.getWidth() + allScreenBounds.getX()) {
             patchLoc.x = (int) (allScreenBounds.getWidth() + allScreenBounds.getX() - patchFrameOnScreen.getX() - getWidth());

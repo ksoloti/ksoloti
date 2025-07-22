@@ -18,18 +18,30 @@
  */
 package axoloti.outlets;
 
+import axoloti.PatchGUI;
 import axoloti.Theme;
 import axoloti.atom.AtomInstance;
 import axoloti.datatypes.DataType;
+import axoloti.inlets.InletInstance;
 import axoloti.iolet.IoletAbstract;
+import axoloti.net.DragWireOverlay;
+import axoloti.net.Net;
+import axoloti.net.NetDragging;
+import axoloti.net.NetDrawingPanel;
 import axoloti.object.AxoObjectInstance;
 import components.LabelComponent;
 import components.SignalMetaDataIcon;
+
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import org.simpleframework.xml.*;
 
@@ -99,13 +111,7 @@ public class OutletInstance<T extends Outlet> extends IoletAbstract implements C
             LabelComponent olbl = new LabelComponent(outlet.name);
             olbl.setHorizontalAlignment(SwingConstants.RIGHT);
             add(olbl);
-            // add(Box.createHorizontalStrut(2));
         }
-        // else if (outlet.name.length()>1) {
-        //     /* show up to two-letter abbreviation */
-        //     add(new LabelComponent(outlet.name.substring(0, Math.min(outlet.name.length(), 2))));
-        // }
-
         add(new SignalMetaDataIcon(outlet.GetSignalMetaData()));
         jack = new components.JackOutputComponent(this);
         jack.setForeground(outlet.getDatatype().GetColor());
@@ -124,5 +130,114 @@ public class OutletInstance<T extends Outlet> extends IoletAbstract implements C
     @Override
     public int compareTo(OutletInstance t) {
         return axoObj.compareTo(t.axoObj);
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (e.isPopupTrigger()) {
+            getPopup().show(this, 0, getHeight() - 1);
+            e.consume();
+            return;
+        }
+
+        if (!axoObj.IsLocked() && e.getButton() == MouseEvent.BUTTON1) {
+            PatchGUI patchGui = getPatchGui();
+            if (patchGui != null) {
+                DragWireOverlay dragWireOverlay = patchGui.getDragWireOverlay();
+
+                NetDragging currentDragging = new NetDragging(dragWireOverlay);
+                currentDragging.StartDraggingFromOutlet(this);
+
+                patchGui.setActiveNetDragging(currentDragging);
+
+                Point mouseLocInDrawingPanel = SwingUtilities.convertPoint(this, e.getPoint(), patchGui.getNetDrawingPanel());
+                currentDragging.UpdateDragPoint(mouseLocInDrawingPanel);
+
+                System.out.println("--- Drag Started ---");
+                System.out.println("OutletInstance.mousePressed: Initial drag point in NetDrawingPanel: " + mouseLocInDrawingPanel);
+                System.out.println("OutletInstance.mousePressed: DragWireOverlay instance: " + dragWireOverlay);
+                System.out.println("OutletInstance.mousePressed: DragWireOverlay isVisible(): " + dragWireOverlay.isVisible());
+                System.out.println("OutletInstance.mousePressed: DragWireOverlay getBounds(): " + dragWireOverlay.getBounds());
+                System.out.println("OutletInstance.mousePressed: NetDrawingPanel getBounds(): " + patchGui.getNetDrawingPanel().getBounds());
+                System.out.println("OutletInstance.mousePressed: Layers JLayeredPane getBounds(): " + patchGui.Layers.getBounds());
+
+                setHighlighted(true);
+                e.consume();
+                return;
+            }
+        }
+        super.mousePressed(e);
+    }
+
+    // In OutletInstance.java - mouseDragged
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        PatchGUI patchGui = getPatchGui();
+        if (patchGui != null) {
+            NetDragging currentDraggedNet = patchGui.getActiveNetDragging();
+            if (currentDraggedNet != null && currentDraggedNet.getDraggingSourceOutlet() == this) {
+                Point mouseLocInDrawingPanel = SwingUtilities.convertPoint(this, e.getPoint(), patchGui.getNetDrawingPanel());
+                currentDraggedNet.UpdateDragPoint(mouseLocInDrawingPanel);
+
+                System.out.println("OutletInstance.mouseDragged: Mouse loc in NetDrawingPanel: " + mouseLocInDrawingPanel);
+
+                e.consume();
+                return;
+            }
+        }
+        super.mouseDragged(e);
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (e.isPopupTrigger()) {
+            getPopup().show(this, 0, getHeight() - 1);
+            e.consume();
+            return;
+        }
+
+        PatchGUI patchGui = getPatchGui();
+        if (patchGui != null) {
+            NetDragging currentDragging = patchGui.getActiveNetDragging();
+            if (currentDragging != null) {
+                currentDragging.EndDragging(); // This should hide the wire
+
+                // --- DEBUGGING START ---
+                System.out.println("--- OutletInstance Release ---");
+                System.out.println("Release mouse event point (relative to OutletInstance): " + e.getPoint());
+
+                // Convert mouse point to NetDrawingPanel coordinates
+                Point mouseLocInDrawingPanel = SwingUtilities.convertPoint(this, e.getPoint(), patchGui.getNetDrawingPanel());
+                System.out.println("Converted release location in NetDrawingPanel: " + mouseLocInDrawingPanel);
+
+                // IMPORTANT: Ensure DragWireOverlay is hidden/disabled before this call
+                // You might need a small delay here if hideWire() has a repaint cycle,
+                // but setVisible(false) and setEnabled(false) should be immediate.
+
+                Component deepestComponent = SwingUtilities.getDeepestComponentAt(
+                    patchGui.getNetDrawingPanel(),
+                    mouseLocInDrawingPanel.x,
+                    mouseLocInDrawingPanel.y
+                );
+                System.out.println("Component found by getDeepestComponentAt(): " + deepestComponent);
+                if (deepestComponent != null) {
+                    System.out.println("Class of component found: " + deepestComponent.getClass().getName());
+                }
+
+                // --- DEBUGGING END ---
+
+                if (deepestComponent instanceof InletInstance) {
+                    InletInstance inlet = (InletInstance) deepestComponent;
+                    System.out.println("SUCCESS: Released on an InletInstance: " + inlet);
+                    // ... (rest of your logic for connecting wires)
+                } else {
+                    System.out.println("FAILURE: Wire released on non-inlet component or empty space. Released on: " + deepestComponent);
+                    // ... (logic for cancelling drag)
+                }
+            }
+        }
+    setHighlighted(false);
+    e.consume();
+    super.mouseReleased(e);
     }
 }

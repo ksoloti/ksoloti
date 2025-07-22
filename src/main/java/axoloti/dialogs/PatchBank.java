@@ -950,7 +950,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         PatchFrame pf = PatchGUI.OpenPatchInvisible(f);
         if (pf != null) {
             boolean isVisible = pf.isVisible();
-            PatchGUI p = pf.getPatch();
+            PatchGUI p = pf.getPatchGui();
             p.UploadToSDCard();
             if (!isVisible) {
                 pf.Close();

@@ -19,8 +19,8 @@
 package axoloti.object;
 
 import axoloti.MainFrame;
-import axoloti.Net;
 import axoloti.Patch;
+import axoloti.PatchFrame;
 import axoloti.PatchGUI;
 import axoloti.SDFileReference;
 import axoloti.Theme;
@@ -142,8 +142,23 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         return patch;
     }
 
-    public PatchGUI getPatchGUI() {
-        return (PatchGUI) patch;
+
+    public PatchGUI getPatchGui() {
+        // 1. Check if the 'patch' field itself is null
+        if (this.patch == null) {
+            return null;
+        }
+
+        // 2. Get the PatchFrame from the patch, and check if it's null
+        //    (This is the source of your current NPE)
+        PatchFrame patchFrame = this.patch.getPatchframe();
+        if (patchFrame == null) {
+            return null;
+        }
+
+        // 3. Get the PatchGUI from the PatchFrame, and return it.
+        //    Assuming PatchFrame.getPatchGui() correctly returns a PatchGUI instance.
+        return patchFrame.getPatchGui();
     }
 
     public String getInstanceName() {
@@ -303,9 +318,12 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     }
 
     private void moveToDraggedLayer(AxoObjectInstanceAbstract o) {
-        if (getPatchGUI().objectLayerPanel.isAncestorOf(o)) {
-            getPatchGUI().objectLayerPanel.remove(o);
-            getPatchGUI().draggedObjectLayerPanel.add(o);
+        PatchGUI gui = getPatchGui(); // Get the PatchGUI instance
+        if (gui != null) { // Check if it's not null
+            if (gui.objectLayerPanel.isAncestorOf(o)) {
+                gui.objectLayerPanel.remove(o);
+                gui.draggedObjectLayerPanel.add(o);
+            }
         }
     }
 
@@ -354,10 +372,10 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     }
 
     private void moveToObjectLayer(AxoObjectInstanceAbstract o, int z) {
-        if (getPatchGUI().draggedObjectLayerPanel.isAncestorOf(o)) {
-            getPatchGUI().draggedObjectLayerPanel.remove(o);
-            getPatchGUI().objectLayerPanel.add(o);
-            getPatchGUI().objectLayerPanel.setComponentZOrder(o, z);
+        if (getPatchGui().draggedObjectLayerPanel.isAncestorOf(o)) {
+            getPatchGui().draggedObjectLayerPanel.remove(o);
+            getPatchGui().objectLayerPanel.add(o);
+            getPatchGui().objectLayerPanel.setComponentZOrder(o, z);
         }
     }
 
@@ -374,8 +392,8 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
                 boolean dirtyOnRelease = false;
                 for (AxoObjectInstanceAbstract o : draggingObjects) {
                     moveToObjectLayer(o, 0);
-                    if (getPatchGUI().objectLayerPanel.getComponentZOrder(o) > maxZIndex) {
-                        maxZIndex = getPatchGUI().objectLayerPanel.getComponentZOrder(o);
+                    if (getPatchGui().objectLayerPanel.getComponentZOrder(o) > maxZIndex) {
+                        maxZIndex = getPatchGui().objectLayerPanel.getComponentZOrder(o);
                     }
                     if (o.x != dragLocation.x || o.y != dragLocation.y) {
                         dirtyOnRelease = true;
@@ -398,20 +416,9 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         this.x = x;
         this.y = y;
         if (patch != null) {
-            repaint();
-            for (InletInstance i : GetInletInstances()) {
-                Net n = getPatch().GetNet(i);
-                if (n != null) {
-                    n.updateBounds();
-                    n.repaint();
-                }
-            }
-            for (OutletInstance i : GetOutletInstances()) {
-                Net n = getPatch().GetNet(i);
-                if (n != null) {
-                    n.updateBounds();
-                    n.repaint();
-                }
+            PatchGUI gui = getPatchGui(); // Get the PatchGUI instance
+            if (gui != null) { // Check if it's not null before using it
+                gui.repaintPatch();
             }
         }
     }
@@ -595,16 +602,11 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         super.setLocation(x1, y1);
         x = x1;
         y = y1;
-
-        if (patch != null) {
-            for (Net n : patch.nets) {
-                n.updateBounds();
-            }
-        }
+        getPatchGui().repaintPatch();
     }
 
     public void moveToFront() {
-        getPatchGUI().objectLayerPanel.setComponentZOrder(this, 0);
+        getPatchGui().objectLayerPanel.setComponentZOrder(this, 0);
     }
 
     public boolean providesModulationSource() {

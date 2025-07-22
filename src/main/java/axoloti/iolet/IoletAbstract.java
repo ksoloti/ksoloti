@@ -1,10 +1,11 @@
 package axoloti.iolet;
 
 import axoloti.MainFrame;
-import axoloti.Net;
-import axoloti.NetDragging;
+import axoloti.Patch;
 import axoloti.PatchGUI;
 import axoloti.inlets.InletInstance;
+import axoloti.net.Net;
+import axoloti.net.NetDragging;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.outlets.OutletInstance;
 import java.awt.Component;
@@ -90,9 +91,6 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
         }
     }
 
-    NetDragging dragnet = null;
-    IoletAbstract dragtarget = null;
-
     @Override
     public void mouseClicked(MouseEvent e) {
     }
@@ -101,25 +99,8 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
     public void mousePressed(MouseEvent e) {
         if (e.isPopupTrigger()) {
             getPopup().show(this, 0, getHeight() - 1);
-            e.consume();
         } else {
             setHighlighted(true);
-            if (!axoObj.IsLocked()) {
-                if (dragnet == null) {
-                    dragnet = new NetDragging(getPatchGui());
-                    dragtarget = null;
-                    if (this instanceof InletInstance) {
-                        dragnet.connectInlet((InletInstance) this);
-                    } else {
-                        dragnet.connectOutlet((OutletInstance) this);
-                    }
-                }
-                dragnet.setVisible(true);
-                if (getPatchGui() != null) {
-                    getPatchGui().selectionRectLayerPanel.add(dragnet);
-                }
-                e.consume();
-            }
         }
     }
 
@@ -127,41 +108,6 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
     public void mouseReleased(MouseEvent e) {
         if (e.isPopupTrigger()) {
             getPopup().show(this, 0, getHeight() - 1);
-            e.consume();
-        } else if ((dragnet != null) && (getPatchGui() != null)) {
-            dragnet.repaint();
-            getPatchGui().selectionRectLayerPanel.remove(dragnet);
-            dragnet = null;
-            Net n = null;
-            if (dragtarget == null) {
-                final PatchGUI patchGUI = getPatchGui();
-                Point p = SwingUtilities.convertPoint(this, e.getPoint(), patchGUI.selectionRectLayerPanel);
-                Component c = patchGUI.objectLayerPanel.findComponentAt(p);
-                while ((c != null) && !(c instanceof IoletAbstract)) {
-                    c = c.getParent();
-                }
-                if (this != c) {
-                    n = patchGUI.disconnect(this);
-                }
-            } else {
-                if (this instanceof InletInstance) {
-                    if (dragtarget instanceof InletInstance) {
-                        n = getPatchGui().AddConnection((InletInstance) this, (InletInstance) dragtarget);
-                    } else if (dragtarget instanceof OutletInstance) {
-                        n = getPatchGui().AddConnection((InletInstance) this, (OutletInstance) dragtarget);
-                    }
-                } else if (this instanceof OutletInstance) {
-                    if (dragtarget instanceof InletInstance) {
-                        n = getPatchGui().AddConnection((InletInstance) dragtarget, (OutletInstance) this);
-                    }
-                }
-                axoObj.patch.PromoteOverloading(false);
-            }
-            if (n != null) {
-                getPatchGui().SetDirty();
-            }
-            getPatchGui().selectionRectLayerPanel.repaint();
-            e.consume();
         }
     }
 
@@ -177,35 +123,6 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (!axoObj.IsLocked()) {
-            final PatchGUI patchGUI = getPatchGui();
-            if (patchGUI == null) {
-                return;
-            }
-            Point p = SwingUtilities.convertPoint(this, e.getPoint(), patchGUI.objectLayerPanel);
-            Component c = patchGUI.objectLayerPanel.findComponentAt(p);
-            while ((c != null) && !(c instanceof IoletAbstract)) {
-                c = c.getParent();
-            }
-            if ((c != null)
-                    && (c != this)
-                    && (!((this instanceof OutletInstance) && (c instanceof OutletInstance)))) {
-                // different target and not myself?
-                if (c != dragtarget) {
-                    // new target
-                    dragtarget = (IoletAbstract) c;
-                    Point jackLocation = dragtarget.getJackLocInCanvas();
-                    dragnet.SetDragPoint(jackLocation);
-                }
-            } else {
-                // floating
-                if (dragnet != null) {
-                    dragnet.SetDragPoint(p);
-                    dragtarget = null;
-                }
-            }
-        }
-        e.consume();
     }
 
     @Override
@@ -235,22 +152,40 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
                 if (axoObj.patch.getPatchframe().getPatchCordsInBackground()) {
                     if (!axoObj.patch.IsLocked()) {
                         /* temporarily raise cables to top */
-                        axoObj.getPatchGUI().SetCordsInBackground(!highlighted);
+                        axoObj.getPatchGui().SetCordsInBackground(!highlighted);
                     }
                     else {
-                        axoObj.getPatchGUI().SetCordsInBackground(true);
+                        axoObj.getPatchGui().SetCordsInBackground(true);
                     }
                 }
+                getPatchGui().repaintPatch();
             }
         }
     }
 
-    public void disconnect() {
+public void disconnect() {
         // only called from GUI action
         if (axoObj.patch != null) {
-            Net n = axoObj.patch.disconnect(this);
-            if (n != null) {
-                axoObj.patch.SetDirty();
+            Patch currentPatch = axoObj.patch; // Get the Patch instance
+
+            boolean disconnectedResult = false; // To track if any disconnection occurred
+
+            // Check if this IoletAbstract instance is an OutletInstance
+            if (this instanceof OutletInstance) {
+                OutletInstance outlet = (OutletInstance) this;
+                disconnectedResult = currentPatch.disconnect(outlet);
+            }
+            // Check if this IoletAbstract instance is an InletInstance
+            else if (this instanceof InletInstance) {
+                InletInstance inlet = (InletInstance) this;
+                disconnectedResult = currentPatch.disconnect(inlet);
+            }
+
+            if (disconnectedResult) {
+                currentPatch.SetDirty(true); // Mark patch as dirty if a disconnection happened
+                // You might also want to trigger a repaint here if your
+                // PatchGUI doesn't automatically repaint on SetDirty()
+                // e.g., if (currentPatch instanceof PatchGUI) { ((PatchGUI) currentPatch).repaintPatch(); }
             }
         }
     }
@@ -262,6 +197,7 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
             n = axoObj.patch.delete(n);
             if (n != null) {
                 axoObj.patch.SetDirty();
+                getPatchGui().repaintPatch();
             }
         }
     }

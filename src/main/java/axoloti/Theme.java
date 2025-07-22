@@ -4,7 +4,10 @@ import static axoloti.FileUtils.axtFileFilter;
 import static axoloti.MainFrame.fc;
 import static axoloti.MainFrame.prefs;
 import axoloti.utils.ColorConverter;
+
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Stroke;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.logging.Level;
@@ -83,6 +86,17 @@ public class Theme {
     public static final Color Console_Warning_Text = UIManager.getColor("Component.accentColor");
 
     /* Nets */
+    @Element
+    public static final float[] dash = {3.f, 6.f};
+    @Element
+    public static final Stroke Cable_Stroke_Valid_Selected = new BasicStroke(4.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    @Element
+    public static final Stroke Cable_Stroke_Valid_Deselected = new BasicStroke(1.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    @Element
+    public static final Stroke Cable_Stroke_Broken_Selected = new BasicStroke(4.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
+    @Element
+    public static final Stroke Cable_Stroke_Broken_Deselected = new BasicStroke(1.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
+
     @Element
     public static final Color Cable_Default = Color.DARK_GRAY;
     @Element

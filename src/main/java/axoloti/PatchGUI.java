@@ -21,6 +21,10 @@ package axoloti;
 import axoloti.datatypes.DataType;
 import axoloti.inlets.InletInstance;
 import axoloti.iolet.IoletAbstract;
+import axoloti.net.DragWireOverlay;
+import axoloti.net.Net;
+import axoloti.net.NetDragging;
+import axoloti.net.NetDrawingPanel;
 import axoloti.object.AxoObjectAbstract;
 import axoloti.object.AxoObjectFromPatch;
 import axoloti.object.AxoObjectInstanceAbstract;
@@ -33,6 +37,7 @@ import axoloti.utils.KeyUtils;
 import static axoloti.MainFrame.prefs;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.datatransfer.Clipboard;
@@ -51,7 +56,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -187,22 +192,29 @@ public class PatchGUI extends Patch {
     private int MousePressedBtn = 0;
     private float dspLoadPercent = 0.0f;
 
-    public JLayeredPane Layers = new JLayeredPane();
+    public NetDrawingPanel netLayerPanel; // Keep this
+    public JPanel objectLayerPanel = new JPanel(); // Keep this
+    public JLayeredPane Layers = new JLayeredPane(); // Keep this
 
-    public JPanel objectLayerPanel = new JPanel();
+    public DragWireOverlay dragWireOverlay; // This is the ONLY DragWireOverlay instance
     public JPanel draggedObjectLayerPanel = new JPanel();
-    public JPanel netLayerPanel = new JPanel();
     public JPanel selectionRectLayerPanel = new JPanel();
 
-    JLayer<JComponent> objectLayer = new JLayer<JComponent>(objectLayerPanel);
+    JLayer<JComponent> objectLayer;
     JLayer<JComponent> draggedObjectLayer = new JLayer<JComponent>(draggedObjectLayerPanel);
-    JLayer<JComponent> netLayer = new JLayer<JComponent>(netLayerPanel);
-    JLayer<JComponent> selectionRectLayer = new JLayer<JComponent>(selectionRectLayerPanel);
+    JLayer<JComponent> netLayer;
+    JLayer<JComponent> selectionRectLayer;
+
+    public NetDragging netDragging;
+    private boolean isDraggingNet = false;
 
     SelectionRectangle selectionrectangle = new SelectionRectangle();
     Point selectionRectStart;
     Point panOrigin;
     public AxoObjectFromPatch ObjEditor;
+    TextEditor NotesTextEditor;
+    public ObjectSearchFrame osf;
+    private Map<DataType, Boolean> cableTypeEnabled = new HashMap<DataType, Boolean>();
 
     public PatchGUI() {
         super();
@@ -211,10 +223,21 @@ public class PatchGUI extends Patch {
         Layers.setSize(Constants.PATCH_SIZE, Constants.PATCH_SIZE);
         Layers.setLocation(0, 0);
         Layers.setFont(Constants.FONT);
+        Layers.setBackground(Theme.Patch_Unlocked_Background);
+        Layers.setVisible(true);
+        Layers.setOpaque(true);
+
+        netLayerPanel = new NetDrawingPanel(this); // Pass 'this' to NetDrawingPanel's constructor
+        netLayer = new JLayer<>(netLayerPanel);
+        objectLayer = new JLayer<>(objectLayerPanel);
+        selectionRectLayer = new JLayer<>(selectionRectLayerPanel);
+
+        dragWireOverlay = new DragWireOverlay(); // ONLY create DragWireOverlay here
+        netDragging = new NetDragging(dragWireOverlay); // Pass THIS instance to NetDragging
 
         JComponent[] layerComponents = {
             objectLayer, objectLayerPanel, draggedObjectLayerPanel, netLayerPanel,
-            selectionRectLayerPanel, draggedObjectLayer, netLayer, selectionRectLayer};
+            selectionRectLayerPanel, draggedObjectLayer, netLayer, selectionRectLayer, dragWireOverlay};
         for (JComponent c : layerComponents) {
             c.setLayout(null);
             c.setSize(Constants.PATCH_SIZE, Constants.PATCH_SIZE);
@@ -223,11 +246,6 @@ public class PatchGUI extends Patch {
             c.setFont(Constants.FONT);
             c.validate();
         }
-
-        Layers.add(objectLayer, Integer.valueOf(1));
-        Layers.add(netLayer, Integer.valueOf(2));
-        Layers.add(draggedObjectLayer, Integer.valueOf(3));
-        Layers.add(selectionRectLayer, Integer.valueOf(4));
 
         objectLayer.setName("objectLayer");
         draggedObjectLayer.setName("draggedObjectLayer");
@@ -245,10 +263,12 @@ public class PatchGUI extends Patch {
         selectionrectangle.setOpaque(true);
         selectionrectangle.setVisible(false);
 
-        Layers.setSize(Constants.PATCH_SIZE, Constants.PATCH_SIZE);
-        Layers.setVisible(true);
-        Layers.setBackground(Theme.Patch_Unlocked_Background);
-        Layers.setOpaque(true);
+        // Add components to Layers with appropriate Z-order
+        Layers.add(objectLayer, Integer.valueOf(1));        // Objects and their Iolets (on top of nets)
+        Layers.add(netLayer, Integer.valueOf(2));           // Permanent nets (as background)
+        Layers.add(draggedObjectLayer, Integer.valueOf(3)); // Dragged objects
+        Layers.add(dragWireOverlay, Integer.valueOf(4));    // Dragged wire (should be above objects/nets)
+        Layers.add(selectionRectLayer, Integer.valueOf(5)); // Selection rectangle (highest)
         Layers.revalidate();
 
         TransferHandler TH = new TransferHandler() {
@@ -453,7 +473,7 @@ public class PatchGUI extends Patch {
                                 osf.Accept();
                             }
                         }
-                        
+
                         Layers.requestFocusInWindow();
                     }
                     me.consume();
@@ -471,24 +491,73 @@ public class PatchGUI extends Patch {
             public void mousePressed(MouseEvent me) {
                 MousePressedBtn = me.getButton();
                 if (MousePressedBtn == MouseEvent.BUTTON1) {
-                    if (!me.isShiftDown()) {
-                        for (AxoObjectInstanceAbstract o : objectInstances) {
-                            o.SetSelected(false);
-                        }
-                    }
-                    selectionRectStart = me.getPoint();
-                    selectionrectangle.setBounds(me.getX(), me.getY(), 1, 1);
-                    //selectionrectangle.setVisible(true);
+                    // --- 1. Check for Net Dragging Start ---
+                    // You'll need methods to find if an OutletInstance or InletInstance
+                    // exists at the mouse click point. Implement these helper methods
+                    // (e.g., findOutletAt(Point p), findInletAt(Point p)).
+                    OutletInstance clickedOutlet = findOutletAt(me.getPoint());
+                    InletInstance clickedInlet = findInletAt(me.getPoint());
 
-                    Layers.requestFocusInWindow();
-                    me.consume();
+                    if (clickedOutlet != null) {
+                        netDragging.StartDraggingFromOutlet(clickedOutlet);
+                        isDraggingNet = true;
+                        me.consume(); // Consume to prevent further processing by other handlers
+                    } else if (clickedInlet != null) {
+                        // This case is for re-routing an existing net or starting a new one from an inlet
+                        netDragging.StartDraggingFromInlet(clickedInlet);
+                        isDraggingNet = true;
+                        me.consume(); // Consume to prevent further processing
+                    }
+                    // --- 2. If not a Net Drag, proceed with existing logic ---
+                    else {
+                        if (!me.isShiftDown()) {
+                            // Deselect all objects only if not starting a shift-selection
+                            for (AxoObjectInstanceAbstract o : objectInstances) {
+                                o.SetSelected(false);
+                            }
+                        }
+                        selectionRectStart = me.getPoint();
+                        selectionrectangle.setBounds(me.getX(), me.getY(), 1, 1);
+                        // selectionrectangle.setVisible(true); // You might set this to true in mouseDragged
+                                                            // if the mouse moves beyond a certain threshold.
+
+                        Layers.requestFocusInWindow();
+                        me.consume();
+                    }
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent me) {
-                    selectionrectangle.setVisible(false);
-                    me.consume();
+                if (MousePressedBtn == MouseEvent.BUTTON1) {
+                    if (isDraggingNet) {
+                        // --- Handle Net Dragging End ---
+                        netDragging.EndDragging();
+                        isDraggingNet = false;
+
+                        // After net drag, attempt to make a connection
+                        // You'll need logic here to:
+                        // 1. Get the dragging source/destination from netDragging (e.g., netDragging.getDraggingSourceOutlet())
+                        // 2. Find an InletInstance/OutletInstance at the current mouse position (me.getPoint())
+                        // 3. If a valid connection can be made, create a new Net object.
+                        //    patch.addNet(new Net(source, dest)); // Example
+                        // 4. Then, always call repaintPatch() to update the display.
+                        repaintPatch(); // Defined in PatchGUI
+
+                    } else {
+                        // --- Handle Selection Rectangle End ---
+                        selectionrectangle.setVisible(false);
+                        // Implement logic here to select objects within the final selectionrectangle bounds
+                        // If selectionRectStart != null and the rectangle has a meaningful size
+                        // For each AxoObjectInstance o:
+                        //   if (selectionrectangle.getBounds().intersects(o.getBounds())) {
+                        //      o.SetSelected(true);
+                        //   }
+                        // Then repaint objects/patch to show selection
+                        repaintPatch(); // Defined in PatchGUI
+                    }
+                }
+                me.consume();
             }
 
             @Override
@@ -539,41 +608,64 @@ public class PatchGUI extends Patch {
         ;
         };
 
-        Layers.addMouseMotionListener(new MouseMotionAdapter() {
+        Layers.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent ev) {
-                if (MousePressedBtn == MouseEvent.BUTTON1) {
-                    int x1 = selectionRectStart.x;
-                    int y1 = selectionRectStart.y;
-                    int x2 = ev.getX();
-                    int y2 = ev.getY();
-                    int xmin = x1 < x2 ? x1 : x2;
-                    int xmax = x1 > x2 ? x1 : x2;
-                    int ymin = y1 < y2 ? y1 : y2;
-                    int ymax = y1 > y2 ? y1 : y2;
-                    int width = xmax - xmin;
-                    int height = ymax - ymin;
-                    selectionrectangle.setBounds(xmin, ymin, width, height);
-                    selectionrectangle.setVisible(true);
+                if (MousePressedBtn == MouseEvent.BUTTON1) { // Only for left-click drags
+                    if (isDraggingNet) {
+                        // --- Handle Net Dragging Update (if a net drag is active) ---
+                        netDragging.UpdateDragPoint(ev.getPoint());
+                        ev.consume(); // Consume to prevent further processing
+                    } else if (selectionRectStart != null) {
+                        // --- Handle Selection Rectangle / Object Dragging Update ---
+                        // (This is your provided logic, integrated here)
 
-                    Rectangle r = selectionrectangle.getBounds();
+                        int x1 = selectionRectStart.x;
+                        int y1 = selectionRectStart.y;
+                        int x2 = ev.getX();
+                        int y2 = ev.getY();
 
-                    for (AxoObjectInstanceAbstract o : objectInstances) {
-                        if (!o.IsLocked()) {
-                            if (ev.isShiftDown()) {
-                                /* Add unlocked objects within rectangle to current selection  */
-                                if (o.getBounds().intersects(r) && !o.isSelected()) {
-                                    o.SetSelected(true);
+                        int xmin = Math.min(x1, x2);
+                        int xmax = Math.max(x1, x2);
+                        int ymin = Math.min(y1, y2);
+                        int ymax = Math.max(y1, y2);
+
+                        int width = xmax - xmin;
+                        int height = ymax - ymin;
+
+                        selectionrectangle.setBounds(xmin, ymin, width, height);
+                        selectionrectangle.setVisible(true); // Ensure it's visible while dragging
+
+                        Rectangle r = selectionrectangle.getBounds();
+
+                        for (AxoObjectInstanceAbstract o : objectInstances) {
+                            if (!o.IsLocked()) {
+                                if (ev.isShiftDown()) {
+                                    /* Add unlocked objects within rectangle to current selection  */
+                                    if (o.getBounds().intersects(r) && !o.isSelected()) {
+                                        o.SetSelected(true);
+                                    }
+                                } else {
+                                    /* Clear selection then add unlocked objects within rectangle to selection */
+                                    o.SetSelected(o.getBounds().intersects(r));
                                 }
                             }
-                            else {
-                                /* Clear selection then add unlocked objects within rectangle to selection */
-                                o.SetSelected(o.getBounds().intersects(r));
-                            }
                         }
+                        // After updating selection, request a repaint of the patch.
+                        // This ensures the selection rectangle and updated object selections are drawn.
+                        repaintPatch();
+                        ev.consume(); // Consume to prevent further processing
                     }
+                    // Else, if neither net dragging nor selection dragging is active,
+                    // it might be an object drag (moving existing selected objects).
+                    // That logic would go here if you have it elsewhere.
                 }
-                ev.consume();
+                // mouseMoved is still empty, handles non-dragged movement.
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent me) {
+                // Keep this empty or add logic for hover effects if needed
             }
         });
 
@@ -680,9 +772,9 @@ public class PatchGUI extends Patch {
             for (Net n : p.nets) {
                 InletInstance connectedInlet = null;
                 OutletInstance connectedOutlet = null;
-                if (n.source != null) {
+                if (n.GetSource() != null) {
                     ArrayList<OutletInstance> source2 = new ArrayList<OutletInstance>();
-                    for (OutletInstance o : n.source) {
+                    for (OutletInstance o : n.GetSource()) {
                         String objname = o.getObjname();
                         String outletname = o.getOutletname();
                         if ((objname != null) && (outletname != null)) {
@@ -704,11 +796,11 @@ public class PatchGUI extends Patch {
                             }
                         }
                     }
-                    n.source = source2;
+                    n.SetSources(source2);
                 }
-                if (n.dest != null) {
+                if (n.GetDests() != null) {
                     ArrayList<InletInstance> dest2 = new ArrayList<InletInstance>();
-                    for (InletInstance o : n.dest) {
+                    for (InletInstance o : n.GetDests()) {
                         String objname = o.getObjname();
                         String inletname = o.getInletname();
                         if ((objname != null) && (inletname != null)) {
@@ -721,29 +813,28 @@ public class PatchGUI extends Patch {
                             }
                         }
                     }
-                    n.dest = dest2;
+                    n.SetDests(dest2);
                 }
-                if (n.source.size() + n.dest.size() > 1) {
+                if (n.GetSource().size() + n.GetDests().size() > 1) {
                     if ((connectedInlet == null) && (connectedOutlet == null)) {
-                        n.patch = this;
-                        n.PostConstructor();
+                        n.SetPatch(this);
+                        // n.PostConstructor();
                         nets.add(n);
-                        netLayerPanel.add(n);
                     } else if (connectedInlet != null) {
-                        for (InletInstance o : n.dest) {
+                        for (InletInstance o : n.GetDests()) {
                             InletInstance o2 = getInletByReference(o.getObjname(), o.getInletname());
                             if ((o2 != null) && (o2 != connectedInlet)) {
                                 AddConnection(connectedInlet, o2);
                             }
                         }
-                        for (OutletInstance o : n.source) {
+                        for (OutletInstance o : n.GetSource()) {
                             OutletInstance o2 = getOutletByReference(o.getObjname(), o.getOutletname());
                             if (o2 != null) {
                                 AddConnection(connectedInlet, o2);
                             }
                         }
                     } else if (connectedOutlet != null) {
-                        for (InletInstance o : n.dest) {
+                        for (InletInstance o : n.GetDests()) {
                             InletInstance o2 = getInletByReference(o.getObjname(), o.getInletname());
                             if (o2 != null) {
                                 AddConnection(o2, connectedOutlet);
@@ -761,7 +852,7 @@ public class PatchGUI extends Patch {
         }
     }
 
-    AxoObjectInstanceAbstract getObjectAtLocation(int x, int y) {
+    private AxoObjectInstanceAbstract getObjectAtLocation(int x, int y) {
         for (AxoObjectInstanceAbstract o : objectInstances) {
             if ((o.getX() == x) && (o.getY() == y)) {
                 return o;
@@ -769,7 +860,6 @@ public class PatchGUI extends Patch {
         }
         return null;
     }
-    public ObjectSearchFrame osf;
 
     public void ShowClassSelector(Point p, AxoObjectInstanceAbstract o, String searchString, boolean selectText) {
         if (IsLocked()) {
@@ -792,7 +882,6 @@ public class PatchGUI extends Patch {
             o.SetSelected(false);
         }
     }
-    TextEditor NotesTextEditor;
 
     void ShowNotesTextEditor() {
         if (NotesTextEditor == null) {
@@ -821,6 +910,14 @@ public class PatchGUI extends Patch {
         UP, LEFT, DOWN, RIGHT
     }
 
+    public NetDrawingPanel getNetDrawingPanel() {
+        return this.netLayerPanel;
+    }
+
+    public DragWireOverlay getDragWireOverlay() {
+        return this.dragWireOverlay;
+    }
+
     Patch GetSelectedObjects() {
         Patch p = new Patch();
         for (AxoObjectInstanceAbstract o : objectInstances) {
@@ -831,12 +928,12 @@ public class PatchGUI extends Patch {
         p.nets = new ArrayList<Net>();
         for (Net n : nets) {
             int sel = 0;
-            for (InletInstance i : n.dest) {
+            for (InletInstance i : n.GetDests()) {
                 if (i.GetObjectInstance().isSelected()) {
                     sel++;
                 }
             }
-            for (OutletInstance i : n.source) {
+            for (OutletInstance i : n.GetSource()) {
                 if (i.GetObjectInstance().isSelected()) {
                     sel++;
                 }
@@ -917,9 +1014,6 @@ public class PatchGUI extends Patch {
         for (AxoObjectInstanceAbstract o : obj2) {
             objectLayerPanel.add(o);
         }
-        for (Net n : nets) {
-            netLayerPanel.add(n);
-        }
         objectLayerPanel.validate();
         netLayerPanel.validate();
 
@@ -927,9 +1021,7 @@ public class PatchGUI extends Patch {
         AdjustSize();
         Layers.validate();
 
-        for (Net n : nets) {
-            n.updateBounds();
-        }
+        repaintPatch();
     }
 
     @Override
@@ -944,7 +1036,7 @@ public class PatchGUI extends Patch {
             String str = FileNamePath.substring(brk) + "  [" + FileNamePath.substring(0, brk-1) + "]";
             patchframe.setTitle(str);
         }
-        else if (patchframe.getPatch().getSettings() != null && patchframe.getPatch().getSettings().subpatchmode != SubPatchMode.no) {
+        else if (patchframe.getPatchGui().getSettings() != null && patchframe.getPatchGui().getSettings().subpatchmode != SubPatchMode.no) {
             /* Subpatch */
             patchframe.setTitle(FileNamePath + "  (subpatch)");
             patchframe.setSaveMenuEnabled(false); /* parent has to be saved to preserve changes */
@@ -957,10 +1049,10 @@ public class PatchGUI extends Patch {
 
     @Override
     public Net AddConnection(InletInstance il, OutletInstance ol) {
-        Net n = super.AddConnection(il, ol);
+        Net n = super.AddConnection(il, ol); // This adds the Net data object to Patch's list
         if (n != null) {
-            netLayerPanel.add(n);
-            n.updateBounds();
+            // REMOVE: netLayerPanel.add(n); // Net is not a JComponent, so it can't be added
+            repaintPatch(); // Request a repaint to draw the new wire
         }
         return n;
     }
@@ -968,30 +1060,53 @@ public class PatchGUI extends Patch {
     @Override
     public Net AddConnection(InletInstance il, InletInstance ol) {
         Net n = super.AddConnection(il, ol);
-        if (n != null) {
-            netLayerPanel.add(n);
-            n.updateBounds();
-        }
+        repaintPatch();
         return n;
     }
 
     @Override
-    public Net disconnect(IoletAbstract io) {
-        Net n = super.disconnect(io);
+    public Net RemoveConnection(IoletAbstract io) {
+        Net n = super.RemoveConnection(io);
         if (n != null) {
-            n.updateBounds();
-            n.repaint();
+            // This method likely modifies an existing Net (e.g., clears its connections)
+            // or implicitly leads to its removal from patch.getNets() if it becomes invalid.
+            // No direct add/remove call needed for the panel.
+            repaintPatch(); // Request a repaint to reflect changes (e.g., wire disappears or changes)
         }
         return n;
+    }
+
+    public NetDragging getActiveNetDragging() {
+        return this.netDragging;
+    }
+
+    /**
+     * Sets the currently active NetDragging instance.
+     * This method is called when a drag starts or ends.
+     * @param activeNetDragging The NetDragging instance to set, or null to clear.
+     */
+    public void setActiveNetDragging(NetDragging activeNetDragging) {
+        this.netDragging = activeNetDragging; // Update the NetDragging instance
+
+        // CORRECTED: Access dragWireOverlay directly from 'this' (PatchGUI)
+        if (this.dragWireOverlay != null) { // Check if the overlay itself is initialized
+            if (activeNetDragging != null) {
+                this.dragWireOverlay.showWire(); // Make the temporary wire visible
+            } else {
+                this.dragWireOverlay.hideWire(); // Hide the temporary wire
+            }
+        }
     }
 
     @Override
     public Net delete(Net n) {
         if (n != null) {
-            netLayerPanel.remove(n);
-            netLayer.repaint(n.getBounds());
+            // REMOVE: netLayerPanel.remove(n); // Net is not a JComponent, so it can't be removed from a panel
+            // The `super.delete(n)` call should remove the Net data object from Patch's list.
         }
-        Net nn = super.delete(n);
+        Net nn = super.delete(n); // This removes the Net data object from Patch's list
+        // Always repaint after deletion to remove the wire visually
+        repaintPatch();
         return nn;
     }
 
@@ -1021,16 +1136,20 @@ public class PatchGUI extends Patch {
     public void SetCordsInBackground(boolean b) {
         if (b) {
             Layers.removeAll();
-            Layers.add(netLayer, Integer.valueOf(1));
-            Layers.add(objectLayer, Integer.valueOf(2));
-            Layers.add(draggedObjectLayer, Integer.valueOf(3));
-            Layers.add(selectionRectLayer, Integer.valueOf(4));
+            Layers.add(netLayer, Integer.valueOf(1));           // Permanent nets (as background)
+            Layers.add(objectLayer, Integer.valueOf(2));        // Objects and their Iolets (on top of nets)
+            Layers.add(draggedObjectLayer, Integer.valueOf(3)); // Dragged objects
+            Layers.add(dragWireOverlay, Integer.valueOf(4));    // Dragged wire (should be above objects/nets)
+            Layers.add(selectionRectLayer, Integer.valueOf(5)); // Selection rectangle (highest)
+            Layers.validate();
         } else {
             Layers.removeAll();
-            Layers.add(objectLayer, Integer.valueOf(1));
-            Layers.add(netLayer, Integer.valueOf(2));
-            Layers.add(draggedObjectLayer, Integer.valueOf(3));
-            Layers.add(selectionRectLayer, Integer.valueOf(4));
+            Layers.add(objectLayer, Integer.valueOf(1));        // Objects and their Iolets (on top of nets)
+            Layers.add(netLayer, Integer.valueOf(2));           // Permanent nets (as background)
+            Layers.add(draggedObjectLayer, Integer.valueOf(3)); // Dragged objects
+            Layers.add(dragWireOverlay, Integer.valueOf(4));    // Dragged wire (should be above objects/nets)
+            Layers.add(selectionRectLayer, Integer.valueOf(5)); // Selection rectangle (highest)
+            Layers.validate();
         }
     }
 
@@ -1064,6 +1183,18 @@ public class PatchGUI extends Patch {
         }
     }
 
+    public void repaintPatch() {
+        if (netLayerPanel != null) {
+            netLayerPanel.repaint(); // Repaint all committed wires
+        }
+        if (objectLayerPanel != null) {
+            objectLayerPanel.repaint(); // Repaint all objects
+        }
+        // If you have other layers for objects or other visual elements, repaint them too.
+        // Or simply call Layers.repaint() for a full repaint of the JLayeredPane.
+        Layers.repaint();
+    }
+
     @Override
     void UpdateDSPLoad(int val200, boolean overload) {
         dspLoadPercent = val200 / 2.0f;
@@ -1074,7 +1205,7 @@ public class PatchGUI extends Patch {
         return dspLoadPercent;
     }
 
-    Dimension GetInitialSize() {
+    public Dimension GetInitialSize() {
         int mx = 480; // min size
         int my = 320;
         for (AxoObjectInstanceAbstract i : objectInstances) {
@@ -1198,28 +1329,54 @@ public class PatchGUI extends Patch {
         return pf;
     }
 
-    private Map<DataType, Boolean> cableTypeEnabled = new HashMap<DataType, Boolean>();
+    private OutletInstance findOutletAt(Point p) {
+        // Iterate through all objects in the patch
+        for (AxoObjectInstanceAbstract obj : objectInstances) {
+            // Iterate through all outlets of each object
+            for (OutletInstance outlet : obj.GetOutletInstances()) {
+                // Get the center location of the outlet's "jack" in canvas coordinates
+                Point jackLoc = outlet.getJackLocInCanvas();
+                // Define a small clickable area around the jack (e.g., 10x10 pixels)
+                // Adjust the size (5, 5, 10, 10) as needed for your UI's hit detection
+                if (new Rectangle(jackLoc.x - 5, jackLoc.y - 5, 10, 10).contains(p)) {
+                    return outlet; // Found an outlet at the clicked point
+                }
+            }
+        }
+        return null; // No outlet found at this point
+    }
+
+    private InletInstance findInletAt(Point p) {
+        // Iterate through all objects in the patch
+        for (AxoObjectInstanceAbstract obj : objectInstances) {
+            // Iterate through all inlets of each object
+            for (InletInstance inlet : obj.GetInletInstances()) {
+                // Get the center location of the inlet's "jack" in canvas coordinates
+                Point jackLoc = inlet.getJackLocInCanvas();
+                // Define a small clickable area around the jack
+                if (new Rectangle(jackLoc.x - 5, jackLoc.y - 5, 10, 10).contains(p)) {
+                    return inlet; // Found an inlet at the clicked point
+                }
+            }
+        }
+        return null; // No inlet found at this point
+    }
 
     public void setCableTypeEnabled(DataType type, boolean enabled) {
         cableTypeEnabled.put(type, enabled);
+        updateNetVisibility(); // Call update to immediately refresh the view
     }
 
     public Boolean isCableTypeEnabled(DataType type) {
         if (cableTypeEnabled.containsKey(type)) {
             return cableTypeEnabled.get(type);
         } else {
-            return true;
+            return true; // Default to visible if no specific setting exists
         }
     }
 
     public void updateNetVisibility() {
-        for (Net n : this.nets) {
-            DataType d = n.GetDataType();
-            if (d != null) {
-                n.setVisible(isCableTypeEnabled(d));
-            }
-        }
-        Layers.repaint();
+        repaintPatch();
     }
 
     @Override

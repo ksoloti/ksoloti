@@ -278,9 +278,9 @@ public class PatchTest {
 
         patch.getController().addConnection(inleti_1, outleti_1);
 
-        assertThat(patch.getNets().size(), equalTo(1));
+        assertThat(patch.GetNets().size(), equalTo(1));
         obj_1.getController().removeInlet(inlet);
-        assertThat(patch.getNets().size(), equalTo(0));
+        assertThat(patch.GetNets().size(), equalTo(0));
     }
 
     /**
@@ -304,9 +304,9 @@ public class PatchTest {
 
         patch.getController().addConnection(inleti_1, outleti_1);
 
-        assertThat(patch.getNets().size(), equalTo(1));
+        assertThat(patch.GetNets().size(), equalTo(1));
         obj_2.getController().removeOutlet(outlet);
-        assertThat(patch.getNets().size(), equalTo(0));
+        assertThat(patch.GetNets().size(), equalTo(0));
     }
 
     /**
@@ -330,9 +330,9 @@ public class PatchTest {
 
         patch.getController().addConnection(inleti_1, outleti_1);
 
-        assertThat(patch.getNets().size(), equalTo(1));
+        assertThat(patch.GetNets().size(), equalTo(1));
         patch.getController().delete(obji_2);
-        assertThat(patch.getNets().size(), equalTo(0));
+        assertThat(patch.GetNets().size(), equalTo(0));
     }
 
 }

@@ -19,7 +19,6 @@
 package axoloti.object;
 
 import axoloti.MainFrame;
-import axoloti.Net;
 import axoloti.Patch;
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
@@ -34,6 +33,7 @@ import axoloti.displays.Display;
 import axoloti.displays.DisplayInstance;
 import axoloti.inlets.Inlet;
 import axoloti.inlets.InletInstance;
+import axoloti.net.Net;
 import axoloti.outlets.Outlet;
 import axoloti.outlets.OutletInstance;
 import axoloti.parameters.*;
@@ -563,6 +563,15 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
 
         p_displays.setBackground(Theme.Object_Default_Background);
         p_displays.setAlignmentX(LEFT_ALIGNMENT);
+
+        System.out.println(getBounds());
+        System.out.println(getSize());
+        System.out.println(p_iolets.getBounds());
+        System.out.println(p_iolets.getSize());
+        System.out.println(p_inlets.getBounds());
+        System.out.println(p_inlets.getSize());
+        System.out.println(p_outlets.getBounds());
+        System.out.println(p_outlets.getSize());
     }
 
     public AxoObjectInstance() {
@@ -1318,7 +1327,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         AxoObjectFromPatch ao = (AxoObjectFromPatch) getType();
         PatchFrame pf = PatchGUI.OpenPatch(ao.f);
         oi.pf = pf;
-        oi.pg = pf.getPatch();
+        oi.pg = pf.getPatchGui();
         oi.setInstanceName(iname);
         oi.updateObj();
         getPatch().delete(this);
