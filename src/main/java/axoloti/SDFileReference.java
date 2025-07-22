@@ -43,6 +43,7 @@ public class SDFileReference {
     public SDFileReference(File localfile, String targetPath) {
         this.localfile = localfile;
         this.targetPath = targetPath;
+        this.localFilename = (localfile != null) ? localfile.getName() : "";
     }
 
     @Persist
@@ -61,7 +62,7 @@ public class SDFileReference {
             return;
         }
         if (p != null) {
-            localfile = p.resolve(localFilename).toFile();
+            localfile = p.resolve(targetPath).resolve(localFilename).toFile();
         }
     }
 }
