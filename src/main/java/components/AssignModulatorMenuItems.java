@@ -53,10 +53,10 @@ public class AssignModulatorMenuItems {
             JPanel p = new JPanel();
             p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
             String modlabel;
-            if ((m.name == null) || (m.name.isEmpty())) {
-                modlabel = m.objInst.getInstanceName();
+            if ((m.getName() == null) || (m.getName().isEmpty())) {
+                modlabel = m.getObjInst().getInstanceName();
             } else {
-                modlabel = m.objInst.getInstanceName() + ":" + m.name;
+                modlabel = m.getObjInst().getInstanceName() + ":" + m.getName();
             }
             JLabel ml = new JLabel(modlabel + "  ");
             p.add(ml);
@@ -64,7 +64,7 @@ public class AssignModulatorMenuItems {
             HSliderComponent hsl = new HSliderComponent();
             if (param.getModulators() != null) {
                 for (Modulation n : param.getModulators()) {
-                    if (m.Modulations.contains(n)) {
+                    if (m.getModulationList().contains(n)) {
                         System.out.println("modulation restored " + n.getValue().getDouble());
                         hsl.setValue(n.getValue().getDouble());
                     }
@@ -74,7 +74,7 @@ public class AssignModulatorMenuItems {
                 @Override
                 public void ACtrlAdjusted(ACtrlEvent e) {
                     int i = hsls.indexOf(e.getSource());
-                    // System.out.println("ctrl " + i + parameterInstance.axoObj.patch.Modulators.get(i).objInst.InstanceName);
+                    // System.out.println("ctrl " + i + parameterInstance.axoObj.patch.Modulators.get(i).getObjInst().InstanceName);
                     ValueFrac32 v = new ValueFrac32(((HSliderComponent) e.getSource()).getValue());
                     param.updateModulation(i, v.getDouble());
                 }

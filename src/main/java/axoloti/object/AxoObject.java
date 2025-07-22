@@ -403,14 +403,14 @@ public class AxoObject extends AxoObjectAbstract {
             Modulator[] m = new Modulator[1];
             //m[0].objInst = this;
             m[0] = new Modulator();
-            m[0].name = "";
+            m[0].setName("");
             return m;
         } else if ((ModulationSources != null) && (!ModulationSources.isEmpty())) {
             Modulator[] m = new Modulator[ModulationSources.size()];
             for (int i = 0; i < ModulationSources.size(); i++) {
                 String n = ModulationSources.get(i);
                 m[i] = new Modulator();
-                m[i].name = n;
+                m[i].setName(n);
             }
             return m;
         } else {

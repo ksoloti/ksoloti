@@ -602,7 +602,7 @@ public class PatchGUI extends Patch {
                             Modulators = new ArrayList<Modulator>();
                         }
                         for (Modulator mm : m) {
-                            mm.objInst = o;
+                            mm.setObjInst(o);
                             Modulators.add(mm);
                         }
                     }

@@ -20,6 +20,7 @@ package axoloti;
 
 import axoloti.object.AxoObjectInstanceAbstract;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  *
@@ -27,9 +28,49 @@ import java.util.ArrayList;
  */
 public class Modulator {
 
-    public String name;
-    public AxoObjectInstanceAbstract objInst;
-    public ArrayList<Modulation> Modulations = new ArrayList<Modulation>();
+    private String name;
+    private AxoObjectInstanceAbstract objInst;
+    private ArrayList<Modulation> Modulations = new ArrayList<Modulation>();
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String str) {
+        if (str != null) {
+            name = str;
+        }
+    }
+
+    public AxoObjectInstanceAbstract getObjInst() {
+        return objInst;
+    }
+
+    public void setObjInst(AxoObjectInstanceAbstract oia) {
+        objInst = oia;
+    }
+
+    public ArrayList<Modulation> getModulationList() {
+        return Modulations;
+    }
+
+    public void resetModulationList() {
+            Modulations = new ArrayList<Modulation>();
+    }
+
+    public Modulation getModulation(int index) {
+        return Modulations.get(index);
+    }
+
+    public void addModulation(Modulation modulation) {
+        if (modulation != null && !Modulations.contains(modulation)) {
+            Modulations.add(modulation);
+        }
+    }
+
+    public void removeModulation(Modulation modulation) {
+        Modulations.remove(modulation);
+    }
 
     public String getCName() {
         if ((name != null) && (!name.isEmpty())) {

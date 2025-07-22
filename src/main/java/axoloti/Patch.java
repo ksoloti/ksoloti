@@ -451,7 +451,7 @@ public class Patch {
                     Modulators = new ArrayList<Modulator>();
                 }
                 for (Modulator mm : m) {
-                    mm.objInst = o;
+                    mm.setObjInst(o);
                     Modulators.add(mm);
                 }
             }
@@ -621,7 +621,7 @@ public class Patch {
                     Modulators = new ArrayList<Modulator>();
                 }
                 for (Modulator mm : m) {
-                    mm.objInst = oi;
+                    mm.setObjInst(oi);
                     Modulators.add(mm);
                 }
             }
@@ -818,9 +818,9 @@ public class Patch {
 
         int i; for (i = Modulators.size() - 1; i >= 0; i--) {
             Modulator m1 = Modulators.get(i);
-            if (m1.objInst == o) {
+            if (m1.getObjInst() == o) {
                 Modulators.remove(m1);
-                for (Modulation mt : m1.Modulations) {
+                for (Modulation mt : m1.getModulationList()) {
                     mt.destination.removeModulation(mt);
                 }
             }
@@ -839,12 +839,12 @@ public class Patch {
         /* find modulator */
         Modulator m = null;
         for (Modulator m1 : Modulators) {
-            if (m1.objInst == n.source) {
-                if ((m1.name == null) || (m1.name.isEmpty())) {
+            if (m1.getObjInst() == n.source) {
+                if ((m1.getName() == null) || (m1.getName().isEmpty())) {
                     m = m1;
                     break;
                 }
-                else if (m1.name.equals(n.modName)) {
+                else if (m1.getName().equals(n.modName)) {
                     m = m1;
                     break;
                 }
@@ -855,8 +855,8 @@ public class Patch {
             throw new UnsupportedOperationException("Modulator not found");
         }
 
-        if (!m.Modulations.contains(n)) {
-            m.Modulations.add(n);
+        if (!m.getModulationList().contains(n)) {
+            m.addModulation(n);
             System.out.println("modulation added to Modulator " + Modulators.indexOf(m));
         }
     }
@@ -1179,7 +1179,7 @@ public class Patch {
             return null;
         }
         for (Modulator m : Modulators) {
-            if (m.Modulations.contains(modulation)) {
+            if (m.getModulationList().contains(modulation)) {
                 return m;
             }
         }
@@ -1191,7 +1191,7 @@ public class Patch {
             return -1;
         }
         for (Modulator m : Modulators) {
-            int i = m.Modulations.indexOf(modulation);
+            int i = m.getModulationList().indexOf(modulation);
             if (i >= 0) {
                 return i;
             }
@@ -1418,8 +1418,8 @@ public class Patch {
             if (i < Modulators.size()) {
                 Modulator m = Modulators.get(i);
                 for (int j = 0; j < settings.GetNModulationTargetsPerSource(); j++) {
-                    if (j < m.Modulations.size()) {
-                        Modulation n = m.Modulations.get(j);
+                    if (j < m.getModulationList().size()) {
+                        Modulation n = m.getModulation(j);
                         if (n.destination.isFrozen()) {
                             s += "{-1, 0}";
                         }

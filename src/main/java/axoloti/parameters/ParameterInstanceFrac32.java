@@ -121,15 +121,15 @@ public abstract class ParameterInstanceFrac32<Tx extends ParameterFrac32> extend
                 modulators = new ArrayList<Modulation>();
             }
             Modulator modulator = axoObj.patch.Modulators.get(index);
-            //System.out.println("updatemodulation2:" + modulator.name);
+            //System.out.println("updatemodulation2:" + modulator.getName());
             Modulation n = null;
             for (Modulation m : modulators) {
-                if (m.source == modulator.objInst) {
-                    if ((modulator.name == null) || (modulator.name.isEmpty())) {
+                if (m.source == modulator.getObjInst()) {
+                    if ((modulator.getName() == null) || (modulator.getName().isEmpty())) {
                         n = m;
                         break;
                     } else {
-                        if (modulator.name.equals(m.modName)) {
+                        if (modulator.getName().equals(m.modName)) {
                             n = m;
                             break;
                         }
@@ -141,9 +141,9 @@ public abstract class ParameterInstanceFrac32<Tx extends ParameterFrac32> extend
                 //System.out.println("updatemodulation3:" + n.sourceName);
                 modulators.add(n);
             }
-            n.source = modulator.objInst;
-            n.sourceName = modulator.objInst.getInstanceName();
-            n.modName = modulator.name;
+            n.source = modulator.getObjInst();
+            n.sourceName = modulator.getObjInst().getInstanceName();
+            n.modName = modulator.getName();
             n.getValue().setDouble(amount);
             n.destination = this;
             axoObj.patch.updateModulation(n);
@@ -153,10 +153,10 @@ public abstract class ParameterInstanceFrac32<Tx extends ParameterFrac32> extend
             if (modulator == null) {
                 return;
             }
-            for (int i = 0; i < modulator.Modulations.size(); i++) {
-                Modulation n = modulator.Modulations.get(index);
+            for (int i = 0; i < modulator.getModulationList().size(); i++) {
+                Modulation n = modulator.getModulation(index);
                 if (n.destination == this) {
-                    modulator.Modulations.remove(n);
+                    modulator.removeModulation(n);
                 }
             }
             if (modulators != null) {

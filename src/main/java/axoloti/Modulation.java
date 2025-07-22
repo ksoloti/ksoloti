@@ -65,10 +65,10 @@ public class Modulation {
         }
         Modulator m = null;
         for (Modulator m1 : p.GetObjectInstance().patch.Modulators) {
-            System.out.println("modulator match? " + m1.objInst.getInstanceName());
-            if (m1.objInst == source) {
-                if ((m1.name != null) && (!m1.name.isEmpty())) {
-                    if (m1.name.equals(modName)) {
+            System.out.println("modulator match? " + m1.getObjInst().getInstanceName());
+            if (m1.getObjInst() == source) {
+                if ((m1.getName() != null) && (!m1.getName().isEmpty())) {
+                    if (m1.getName().equals(modName)) {
                         m = m1;
                     }
                 } else {
@@ -79,11 +79,11 @@ public class Modulation {
         if (m == null) {
             System.out.println("Modulation source missing");
         } else {
-            if (m.Modulations == null) {
-                m.Modulations = new ArrayList<Modulation>();
+            if (m.getModulationList() == null) {
+                m.resetModulationList();
             }
-            if (!m.Modulations.contains(this)) {
-                m.Modulations.add(this);
+            if (!m.getModulationList().contains(this)) {
+                m.getModulationList().add(this);
             }
         }
     }
