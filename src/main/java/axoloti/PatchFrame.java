@@ -86,12 +86,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     /**
      * Creates new form PatchFrame
      */
-    PatchGUI patch;
-
+    PatchGUI patchGUI;
     private PresetPanel presetPanel;
     private VisibleCablePanel visibleCablePanel;
 
-    public PatchFrame(final PatchGUI patch, QCmdProcessor qcmdprocessor) {
+    public PatchFrame(final PatchGUI patchGUI, QCmdProcessor qcmdprocessor) {
 
         try {
             MainFrame.axoObjects.LoaderThread.join(); /* Make sure all object libraries are loaded before creating/opening a patch */
@@ -106,18 +105,18 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         initComponents();
         fileMenuP.initComponents();
-        this.patch = patch;
-        this.patch.patchframe = this;
+        this.patchGUI = patchGUI;
+        this.patchGUI.patchframe = this;
 
-        presetPanel = new PresetPanel(patch);
-        visibleCablePanel = new VisibleCablePanel(patch);
+        presetPanel = new PresetPanel(patchGUI);
+        visibleCablePanel = new VisibleCablePanel(patchGUI);
 
         Dimension di = new Dimension(10,0);
 
         jToolbarPanel.add(new Box.Filler(di, di, new Dimension(32767, 32767)));
         jToolbarPanel.add(presetPanel);
-        if (patch.settings != null) {
-            presetPanel.setVisible(patch.settings.GetNPresets() > 0);
+        if (patchGUI.settings != null) {
+            presetPanel.setVisible(patchGUI.settings.GetNPresets() > 0);
         }
         else {
             presetPanel.setVisible(false);
@@ -126,7 +125,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jToolbarPanel.add(new Box.Filler(di, di, new Dimension(32767, 32767)));
         jToolbarPanel.add(visibleCablePanel);
 
-        jScrollPane1.setViewportView(patch.Layers);
+        jScrollPane1.setViewportView(patchGUI.Layers);
 
         JMenuItem menuItem = new JMenuItem(new DefaultEditorKit.CutAction());
         menuItem.setMnemonic('X');
@@ -137,7 +136,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Patch p = patch.GetSelectedObjects();
+                Patch p = patchGUI.GetSelectedObjects();
                 if (p.objectInstances.isEmpty()) {
                     getToolkit().getSystemClipboard().setContents(new StringSelection(""), null);
                     return;
@@ -150,7 +149,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     serializer.write(p, baos);
                     StringSelection s = new StringSelection(baos.toString());
                     clip.setContents(s, (ClipboardOwner) null);
-                    patch.deleteSelectedAxoObjInstances();
+                    patchGUI.deleteSelectedAxoObjInstances();
                 }
                 catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
@@ -168,7 +167,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Patch p = patch.GetSelectedObjects();
+                Patch p = patchGUI.GetSelectedObjects();
                 if (p.objectInstances.isEmpty()) {
                     getToolkit().getSystemClipboard().setContents(new StringSelection(""), null);
                     return;
@@ -198,7 +197,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             public void actionPerformed(ActionEvent e) {
                 Clipboard clip = getToolkit().getSystemClipboard();
                 try {
-                    patch.paste((String) clip.getData(DataFlavor.stringFlavor), null, false);
+                    patchGUI.paste((String) clip.getData(DataFlavor.stringFlavor), null, false);
                 }
                 catch (UnsupportedFlavorException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
@@ -209,11 +208,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
         });
 
-        if (patch.getWindowPos() != null) {
-            setBounds(patch.getWindowPos());
+        if (patchGUI.getWindowPos() != null) {
+            setBounds(patchGUI.getWindowPos());
         }
         else {
-            Dimension d = patch.GetInitialSize();
+            Dimension d = patchGUI.GetInitialSize();
             setSize(d);
         }
 
@@ -229,7 +228,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
         jMenuPreset.setVisible(false);
         jMenuItemAdjScroll.setVisible(true);
-        patch.Layers.requestFocus();
+        patchGUI.Layers.requestFocus();
         if (USBBulkConnection.GetConnection().isConnected()) {
             ShowConnect();
         }
@@ -298,7 +297,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         presetPanel.setVisible(show);
     }
 
-
     void ShowConnect1(boolean status) {
         jToggleButtonLive.setEnabled(status);
         jCheckBoxMenuItemLive.setEnabled(status);
@@ -309,8 +307,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     @Override
     public void ShowDisconnect() {
-        if (patch.IsLocked()) {
-            patch.Unlock();
+        if (patchGUI.IsLocked()) {
+            patchGUI.Unlock();
         }
         jToggleButtonLive.setSelected(false);
         jCheckBoxMenuItemLive.setSelected(false);
@@ -319,7 +317,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     @Override
     public void ShowConnect() {
-        patch.Unlock();
+        patchGUI.Unlock();
         jToggleButtonLive.setSelected(false);
         jCheckBoxMenuItemLive.setSelected(false);
         ShowConnect1(true);
@@ -335,19 +333,19 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         USBBulkConnection.GetConnection().removeConnectionStatusListener(this);
         USBBulkConnection.GetConnection().removeSDCardMountStatusListener(this);
         USBBulkConnection.GetConnection().removeBoardIDNameListener(this);
-        patch.Close();
+        patchGUI.Close();
         super.dispose();
     }
 
     @Override
     public boolean AskClose() {
-        if (patch.isDirty() && patch.getContainer() == null) {
+        if (patchGUI.isDirty() && patchGUI.getContainer() == null) {
             Object[] options = {"Save",
                 "Discard",
                 "Cancel"};
             int n = JOptionPane.showOptionDialog(
                     this,
-                    "Save changes to \"" + patch.getFileNamePath() + "\"?",
+                    "Save changes to \"" + patchGUI.getFileNamePath() + "\"?",
                     "Unsaved Changes",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
@@ -377,7 +375,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     public ScrollPaneComponent getScrollPane() {
         return this.jScrollPane1;
     }
-
 
     private void initComponents() {
 
@@ -874,13 +871,13 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
         else {
             qcmdprocessor.AppendToQueue(new QCmdStop());
-            patch.Unlock();
+            patchGUI.Unlock();
             jToggleButtonLive.setSelected(false);
         }
     }
 
     private void jMenuCopyActionPerformed(java.awt.event.ActionEvent evt) {
-        Patch p = patch.GetSelectedObjects();
+        Patch p = patchGUI.GetSelectedObjects();
         if (p.objectInstances.isEmpty()) {
             getToolkit().getSystemClipboard().setContents(new StringSelection(""), null);
             return;
@@ -902,7 +899,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private void jMenuPasteActionPerformed(java.awt.event.ActionEvent evt) {
         Clipboard clip = getToolkit().getSystemClipboard();
         try {
-            patch.paste((String)clip.getData(DataFlavor.stringFlavor), null, false);
+            patchGUI.paste((String)clip.getData(DataFlavor.stringFlavor), null, false);
         }
         catch (UnsupportedFlavorException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
@@ -913,11 +910,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuSaveActionPerformed(java.awt.event.ActionEvent evt) { 
-        String fn = patch.getFileNamePath();
+        String fn = patchGUI.getFileNamePath();
         if ((fn != null) && (!fn.equals("untitled"))) {
             File f = new File(fn);
-            patch.setFileNamePath(f.getPath());
-            patch.save(f);
+            patchGUI.setFileNamePath(f.getPath());
+            patchGUI.save(f);
         }
         else {
             jMenuSaveAsActionPerformed(evt);
@@ -936,7 +933,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         fc.addChoosableFileFilter(FileUtils.axsFileFilter);
         fc.addChoosableFileFilter(FileUtils.axhFileFilter);
 
-        String fn = patch.getFileNamePath();
+        String fn = patchGUI.getFileNamePath();
         if (fn == null) {
             fn = "untitled";
         }
@@ -1041,61 +1038,61 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private void jMenuSaveAsActionPerformed(java.awt.event.ActionEvent evt) {
         File fileToBeSaved = FileChooserSave("Save As...");
         if (fileToBeSaved != null) {
-            patch.setFileNamePath(fileToBeSaved.getPath());
-            patch.save(fileToBeSaved);
+            patchGUI.setFileNamePath(fileToBeSaved.getPath());
+            patchGUI.save(fileToBeSaved);
             prefs.setCurrentFileDirectory(fileToBeSaved.getPath());
         }
     }
 
     private void jMenuItemAdjScrollActionPerformed(java.awt.event.ActionEvent evt) {
         jScrollPane1.setAutoscrolls(true);
-        patch.AdjustSize();
+        patchGUI.AdjustSize();
     }
 
     private void jCheckBoxMenuItemCordsInBackgroundActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.SetCordsInBackground(jCheckBoxMenuItemCordsInBackground.isSelected());
+        patchGUI.SetCordsInBackground(jCheckBoxMenuItemCordsInBackground.isSelected());
     }
 
     private void jMenuGenerateCodeActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.WriteCode(true);
+        patchGUI.WriteCode(true);
     }
 
     private void jMenuCompileCodeActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.Compile();
+        patchGUI.Compile();
     }
 
     private void jMenuUploadCodeActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.GetQCmdProcessor().SetPatch(null);
-        patch.GetQCmdProcessor().AppendToQueue(new QCmdStop());
-        if (patch.getBinFile().exists()) {
-            patch.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch.getBinFile()));
-            patch.GetQCmdProcessor().AppendToQueue(new QCmdStart(patch));
-            patch.GetQCmdProcessor().AppendToQueue(new QCmdLock(patch));
+        patchGUI.GetQCmdProcessor().SetPatch(null);
+        patchGUI.GetQCmdProcessor().AppendToQueue(new QCmdStop());
+        if (patchGUI.getBinFile().exists()) {
+            patchGUI.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patchGUI.getBinFile()));
+            patchGUI.GetQCmdProcessor().AppendToQueue(new QCmdStart(patchGUI));
+            patchGUI.GetQCmdProcessor().AppendToQueue(new QCmdLock(patchGUI));
         }
         else {
-            String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
+            String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patchGUI.generateBuildFilenameStem(true);
             LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
         }
     }
 
     private void jMenuItemLockActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.Lock();
+        patchGUI.Lock();
     }
 
     private void jMenuItemUnlockActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.Unlock();
+        patchGUI.Unlock();
     }
 
     private void jMenuItemClearPresetActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.ClearCurrentPreset();
+        patchGUI.ClearCurrentPreset();
     }
 
     private void jMenuItemPresetCurrentToInitActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.CopyCurrentToInit();
+        patchGUI.CopyCurrentToInit();
     }
 
     private void jMenuItemDifferenceToPresetActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.DifferenceToPreset();
+        patchGUI.DifferenceToPreset();
     }
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {
@@ -1103,10 +1100,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuItemDuplicateActionPerformed(java.awt.event.ActionEvent evt) {
-        if (patch.IsLocked()) {
+        if (patchGUI.IsLocked()) {
             return;
         }
-        Patch p = patch.GetSelectedObjects();
+        Patch p = patchGUI.GetSelectedObjects();
         if (p.objectInstances.isEmpty()) {
             return;
         }
@@ -1127,21 +1124,21 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuItemDeleteActionPerformed(java.awt.event.ActionEvent evt) { 
-        patch.deleteSelectedAxoObjInstances();
+        patchGUI.deleteSelectedAxoObjInstances();
     }
 
     private void jMenuItemSelectAllActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.SelectAll();
+        patchGUI.SelectAll();
     }
 
     private void jMenuItemNotesActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.ShowNotesTextEditor();
+        patchGUI.ShowNotesTextEditor();
     }
 
     private void jMenuItemSettingsActionPerformed(java.awt.event.ActionEvent evt) {
         //TODO: create CTRL+SHIFT+I for opening object settings
         // AxoObjectInstanceAbstract selObj = null;
-        // ArrayList<AxoObjectInstanceAbstract> oi = patch.objectInstances;
+        // ArrayList<AxoObjectInstanceAbstract> oi = patchGUI.objectInstances;
         // if(oi != null) {
             // for(AxoObjectInstanceAbstract i : oi) {
                 // if(i.IsSelected() && i instanceof AxoObjectInstance) {
@@ -1154,10 +1151,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             // ((AxoObjectInstance) selObj).OpenEditor();
         // }
         // else {
-            if (patch.settings == null) {
-                patch.settings = new PatchSettings();
+            if (patchGUI.settings == null) {
+                patchGUI.settings = new PatchSettings();
             }
-            patch.settings.showEditor(patch);
+            patchGUI.settings.showEditor(patchGUI);
         // }
     }
 
@@ -1167,18 +1164,18 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         try {
             switch (os) {
                 case WIN:
-                    /* desktop.open(new File(patch.getFileNamePath()).getParentFile()); opens folder but doesn't point to file.
-                     * desktop.browseFileDirectory(new File(patch.getFileNamePath())); not supported on Windows.
+                    /* desktop.open(new File(patchGUI.getFileNamePath()).getParentFile()); opens folder but doesn't point to file.
+                     * desktop.browseFileDirectory(new File(patchGUI.getFileNamePath())); not supported on Windows.
                      * Do explorer.exe workaround instead.
                      */
-                    String[] str = new String("explorer.exe /select,\"" + patch.getFileNamePath() + "\"").split("\\s+");
+                    String[] str = new String("explorer.exe /select,\"" + patchGUI.getFileNamePath() + "\"").split("\\s+");
                     Runtime.getRuntime().exec(str);
                     break;
                 case MAC:
                 case LINUX:
                 default:
                     // TODO: supported?
-                    desktop.browseFileDirectory(new File(patch.getFileNamePath()));
+                    desktop.browseFileDirectory(new File(patchGUI.getFileNamePath()));
                     break;
             }
         }
@@ -1230,24 +1227,24 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
         else {
             qcmdprocessor.AppendToQueue(new QCmdStop());
-            patch.Unlock();
+            patchGUI.Unlock();
             jCheckBoxMenuItemLive.setSelected(false);
         }
     }
 
     private void jMenuItemUploadSDActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.UploadToSDCard();
+        patchGUI.UploadToSDCard();
     }
 
     private void jMenuItemUploadSDStartActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.UploadToSDCard("/start.bin");
+        patchGUI.UploadToSDCard("/start.bin");
     }
 
     private void jMenuSaveClipActionPerformed(java.awt.event.ActionEvent evt) {
         Serializer serializer = new Persister(new Format(2));
         ByteArrayOutputStream baos = new ByteArrayOutputStream(2048);
         try {
-            serializer.write(patch, baos);
+            serializer.write(patchGUI, baos);
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, null, ex);
@@ -1266,18 +1263,18 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             protected Boolean doInBackground() throws Exception {
                 try {
                     boolean success;
-                    patch.WriteCode(true);
-                    qcmdprocessor.AppendToQueue(new qcmds.QCmdCompilePatch(patch));
+                    patchGUI.WriteCode(true);
+                    qcmdprocessor.AppendToQueue(new qcmds.QCmdCompilePatch(patchGUI));
                     qcmdprocessor.WaitQueueFinished();
                     qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
-                    if (patch.getBinFile().exists()) {
-                        qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadPatch(patch.getBinFile()));
+                    if (patchGUI.getBinFile().exists()) {
+                        qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadPatch(patchGUI.getBinFile()));
                         qcmdprocessor.AppendToQueue(new qcmds.QCmdCopyPatchToFlash());
                         qcmdprocessor.WaitQueueFinished();
                         success = true;
                     }
                     else {
-                        String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
+                        String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patchGUI.generateBuildFilenameStem(true);
                         LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
                         success = false;
                     }
@@ -1311,7 +1308,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuItemAddObjActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.ShowClassSelector(new Point(20, 20), null, null, true);
+        patchGUI.ShowClassSelector(new Point(20, 20), null, null, true);
     }
 
     private void jMenuCloseActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1328,34 +1325,34 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private void jMenuSaveCopyActionPerformed(java.awt.event.ActionEvent evt) {
         File fileToBeSaved = FileChooserSave("Save Copy...");
-        patch.getPatchframe().requestFocus();
+        patchGUI.getPatchframe().requestFocus();
         if (fileToBeSaved != null) {
-            patch.save(fileToBeSaved);
+            patchGUI.save(fileToBeSaved);
             prefs.setCurrentFileDirectory(fileToBeSaved.getPath());
         }
     }
 
     private void jMenuGenerateAndCompileCodeActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.WriteCode(true);
-        patch.Compile();
+        patchGUI.WriteCode(true);
+        patchGUI.Compile();
     }
 
     private void undoItemActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.undo();
+        patchGUI.undo();
         this.updateUndoRedoEnabled();
     }
 
     private void redoItemActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.redo();
+        patchGUI.redo();
         this.updateUndoRedoEnabled();
     }
 
     private void undoItemAncestorAdded(javax.swing.event.AncestorEvent evt) {
-        undoItem.setEnabled(patch.canUndo());
+        undoItem.setEnabled(patchGUI.canUndo());
     }
 
     private void redoItemAncestorAdded(javax.swing.event.AncestorEvent evt) {
-        redoItem.setEnabled(patch.canRedo());
+        redoItem.setEnabled(patchGUI.canRedo());
     }
 
     private void formWindowLostFocus(java.awt.event.WindowEvent evt) {
@@ -1363,7 +1360,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private boolean GoLive() {
-        if (patch.getFileNamePath().endsWith(".axs") || patch.getContainer() != null) {
+        if (patchGUI.getFileNamePath().endsWith(".axs") || patchGUI.getContainer() != null) {
             Object[] options = {"Go Live",
                 "Cancel"};
 
@@ -1382,12 +1379,12 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     ; // fall thru
             }
         }
-        for (AxoObjectInstanceAbstract aoi : patch.objectInstances) {
+        for (AxoObjectInstanceAbstract aoi : patchGUI.objectInstances) {
             if (aoi instanceof AxoObjectInstancePatcher) {
                 ((AxoObjectInstancePatcher)aoi).updateObj();
             }
         }
-        patch.GoLive();
+        patchGUI.GoLive();
         return true;
     }
 
@@ -1453,7 +1450,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         if (val200 == pv) {
             return;
         }
-        if (patch.IsLocked()) {
+        if (patchGUI.IsLocked()) {
             jProgressBarDSPLoad.setValue((pv+val200)/2);
         }
         else if (pv != 0) {
@@ -1478,16 +1475,16 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     @Override
     public File getFile() {
-        if (patch.getFileNamePath() == null) {
+        if (patchGUI.getFileNamePath() == null) {
             return null;
         }
         else {
-            return new File(patch.getFileNamePath());
+            return new File(patchGUI.getFileNamePath());
         }
     }
 
-    public PatchGUI getPatch() {
-        return patch;
+    public PatchGUI getPatchGui() {
+        return patchGUI;
     }
 
     public void setSaveMenuEnabled(boolean b) {
@@ -1523,8 +1520,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     public void updateUndoRedoEnabled() {
-        redoItem.setEnabled(patch.canRedo());
-        undoItem.setEnabled(patch.canUndo());
+        redoItem.setEnabled(patchGUI.canRedo());
+        undoItem.setEnabled(patchGUI.canUndo());
     }
 
     @Override
