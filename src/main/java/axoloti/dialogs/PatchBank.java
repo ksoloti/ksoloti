@@ -228,7 +228,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             public synchronized void drop(DropTargetDropEvent evt) {
                 try {
                     evt.acceptDrop(DnDConstants.ACTION_COPY);
-                    @SuppressWarnings("unchecked")
+                    // @SuppressWarnings("unchecked")
                     List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
                     for (File f : droppedFiles) {
                         if (f.isDirectory()) {

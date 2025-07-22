@@ -233,7 +233,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 try {
                     evt.acceptDrop(DnDConstants.ACTION_COPY);
                     System.out.println(Instant.now() + " drag & drop:");
-                    @SuppressWarnings("unchecked")
+                    // @SuppressWarnings("unchecked")
                     List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
 
                     /* Cap max opened files to 32 */

@@ -597,7 +597,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     }
 
 
-    @SuppressWarnings("unchecked")
+    // @SuppressWarnings("unchecked")
     
     private void initComponents() {
 
