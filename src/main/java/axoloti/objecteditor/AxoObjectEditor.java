@@ -32,6 +32,8 @@ import axoloti.outlets.Outlet;
 import axoloti.parameters.Parameter;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
+import axoloti.utils.OSDetect;
+import axoloti.utils.OSDetect.OS;
 
 import static axoloti.MainFrame.prefs;
 
@@ -40,26 +42,33 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaEditorKit;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
@@ -129,12 +138,27 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         rsta.setVisible(true);
         rsta.setToolTipText(null);
 
+        if(OSDetect.getOS() == OS.MAC)
+        {
+            InputMap im = rsta.getInputMap();
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), "caret-begin-line");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, java.awt.event.InputEvent.SHIFT_DOWN_MASK), "selection-begin-line");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, java.awt.event.InputEvent.CTRL_DOWN_MASK), "caret-begin");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK), "selection-begin");
+
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0), "caret-end-line");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_END, java.awt.event.InputEvent.SHIFT_DOWN_MASK), "selection-end-line");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_END, java.awt.event.InputEvent.CTRL_DOWN_MASK), "caret-end");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_END, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK), "selection-end");
+        }
+
         AutoCompletion ac = new AutoCompletion(acpr);
         ac.setAutoCompleteEnabled(true);
         ac.setAutoActivationEnabled(true);
         ac.setAutoActivationDelay(500);
         ac.setShowDescWindow(false);
         ac.install(rsta);
+
         return rsta;
     }
 
