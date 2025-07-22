@@ -183,7 +183,7 @@ public class Timer extends gentools {
         return o;
     }
 
-    //TODO: check... this was PulseX but was not being called, not it also generates a 'delayedpulse' object
+    //check... this was PulseX but was not being called, not it also generates a 'delayedpulse' object
     static AxoObject Pulse() {
         AxoObject o = new AxoObject("delayedpulse", "Generates a single pulse on a rising edge on trigger input. A new trigger before the pulse arrives at the output, will cancel the previous trigger. The generated pulse is so small you won't notice it on a display! Extended range version.");
         o.inlets.add(new InletBool32Rising("trig", "trigger"));
