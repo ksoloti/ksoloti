@@ -42,7 +42,7 @@ public class Timer extends gentools {
         WriteAxoObject(catName, DelayedPulseDurationM());
         WriteAxoObject(catName, PulseLength());
         WriteAxoObject(catName, PulseLengthM());
-        WriteAxoObject(catName, Timer());
+        WriteAxoObject(catName, Timer_());
     }
 
     static AxoObject DelayedPulse() {
@@ -270,7 +270,7 @@ public class Timer extends gentools {
         return o;
     }
 
-    static AxoObject Timer() {
+    static AxoObject Timer_() {
         AxoObject o = new AxoObject("timeri", "measures the time interval between a rising edge on the start input and a rising edge on the stop input");
         o.inlets.add(new InletBool32Rising("start", "start trigger"));
         o.inlets.add(new InletBool32Rising("stop", "stop trigger"));
