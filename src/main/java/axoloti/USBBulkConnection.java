@@ -333,9 +333,9 @@ public class USBBulkConnection extends Connection {
     @Override
     public boolean AppendToQueue(QCmdSerialTask cmd) {
         try {
-            if (!(cmd instanceof QCmdPing)) {
-                // System.out.println(Instant.now() + " [DEBUG] AppendToQueue: attempting to append " + cmd.getClass().getSimpleName());
-            }
+            // if (!(cmd instanceof QCmdPing)) {
+            //     System.out.println(Instant.now() + " [DEBUG] AppendToQueue: attempting to append " + cmd.getClass().getSimpleName());
+            // }
             boolean added = queueSerialTask.offer(cmd, 100, TimeUnit.MILLISECONDS);
             if (!added) {
                 LOGGER.log(Level.WARNING, "USB command queue full. Command not sent: " + cmd.getClass().getSimpleName());
@@ -392,9 +392,9 @@ public class USBBulkConnection extends Connection {
                     if (receiverThread.isAlive()) {
                         System.err.println(Instant.now() + " [ERROR] Disconnect: Receiver thread did not terminate within timeout.");
                     }
-                    else {
-                        // System.out.println(Instant.now() + " [DEBUG] Disconnect: Receiver thread joined successfully.");
-                    }
+                    // else {
+                    //     System.out.println(Instant.now() + " [DEBUG] Disconnect: Receiver thread joined successfully.");
+                    // }
                 }
                 catch (InterruptedException e) {
                     System.err.println(Instant.now() + " [ERROR] Disconnect: Interrupted while waiting for Receiver thread to join: " + e.getMessage());
@@ -412,9 +412,9 @@ public class USBBulkConnection extends Connection {
                     if (transmitterThread.isAlive()) {
                         System.err.println(Instant.now() + " [ERROR] Disconnect: Transmitter thread did not terminate within timeout.");
                     }
-                    else {
-                        // System.out.println(Instant.now() + " [DEBUG] Disconnect: Transmitter thread joined successfully.");
-                    }
+                    // else {
+                    //     System.out.println(Instant.now() + " [DEBUG] Disconnect: Transmitter thread joined successfully.");
+                    // }
                 }
                 catch (InterruptedException e) {
                     System.err.println(Instant.now() + " [ERROR] Disconnect: Interrupted while waiting for Transmitter thread to join: " + e.getMessage());
@@ -436,9 +436,9 @@ public class USBBulkConnection extends Connection {
                     if (resetResult != LibUsb.SUCCESS) {
                         System.err.println(Instant.now() + " [ERROR] Disconnect: Error resetting device: " + LibUsb.strError(resetResult) + " (Code: " + resetResult + ")");
                     }
-                    else {
-                        // System.out.println(Instant.now() + " [DEBUG] USB device reset successfully. Device may re-enumerate.");
-                    }
+                    // else {
+                    //     System.out.println(Instant.now() + " [DEBUG] USB device reset successfully. Device may re-enumerate.");
+                    // }
 
                 }
                 catch (LibUsbException resetEx) {
@@ -605,7 +605,7 @@ public class USBBulkConnection extends Connection {
 
                         result = LibUsb.open(d, h);
                         if (result < 0) {
-                            // System.err.println(Instant.now() + " [DEBUG] LibUsb: Failed to open device handle: " + LibUsb.errorName(result) + " (Error Code: " + result + ")");
+                            LOGGER.log(Level.INFO, ErrorString(result));
                         }
                         else {
                             return h;
@@ -1519,9 +1519,9 @@ public class USBBulkConnection extends Connection {
                        new Object[]{Integer.toHexString(i1),
                        Integer.toHexString(i2)});
         }
-        else {
-            // LOGGER.log(Level.INFO, "OK! " + Integer.toHexString(i1) + " / " + Integer.toHexString(i2));
-        }
+        // else {
+        //     LOGGER.log(Level.INFO, "OK! " + Integer.toHexString(i1) + " / " + Integer.toHexString(i2));
+        // }
 
         if (i2 > 0) {
             dataLength = i2 * 4;
@@ -1779,18 +1779,18 @@ public class USBBulkConnection extends Connection {
                                     LOGGER.log(Level.SEVERE, "Interrupted while offering response to QCmdProcessor queue.", e);
                                 }
                             }
-                            else {
-                                // System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received unexpected AxoR for command: " + (char)commandByte + ". Expected: " + currentExecutingCommand.getExpectedAckCommandByte() + ". Ignoring.");
-                            }
+                            // else {
+                            //     System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received unexpected AxoR for command: " + (char)commandByte + ". Expected: " + currentExecutingCommand.getExpectedAckCommandByte() + ". Ignoring.");
+                            // }
                         }
                         // Generic handling for all other single-step QCmdSerialTasks
-                        else {
-                            // System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received an AxoR for command: " + (char)commandByte + ", but this command does not expect an AxoR for completion. Ignoring.");
-                        }
+                        // else {
+                        //     System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received an AxoR for command: " + (char)commandByte + ", but this command does not expect an AxoR for completion. Ignoring.");
+                        // }
                     }
-                    else {
-                        // System.err.println(Instant.now() + " [DEBUG] Warning: AxoR received but no currentExecutingCommand is set.");
-                    }
+                    // else {
+                    //     System.err.println(Instant.now() + " [DEBUG] Warning: AxoR received but no currentExecutingCommand is set.");
+                    // }
                     GoIdleState();
                 }
                 break;
@@ -1834,7 +1834,7 @@ public class USBBulkConnection extends Connection {
                 }
                 break;
 
-                case fileinfo_fixed_fields: /* State to collect the 8-byte size and timestamp */
+            case fileinfo_fixed_fields: /* State to collect the 8-byte size and timestamp */
                 fileinfoRcvBuffer.put(cc);
                 dataIndex++;
         
@@ -2041,5 +2041,4 @@ public class USBBulkConnection extends Connection {
     public ksoloti_core getTargetProfile() {
         return targetProfile;
     }
-
 }
