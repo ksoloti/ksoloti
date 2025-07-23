@@ -1,8 +1,22 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright (C) 2013 - 2016 Johannes Taelman
+ * Edited 2023 - 2024 by Ksoloti
+ *
+ * This file is part of Axoloti.
+ *
+ * Axoloti is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * Axoloti is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package axoloti.dialogs;
 
 import axoloti.Axoloti;
@@ -454,15 +468,15 @@ public class AxolotiLibraryEditor extends JDialog {
     private void jOKActionPerformed(java.awt.event.ActionEvent evt) {
         if (jId.getText() == null || jId.getText().length() == 0) {
             JOptionPane.showMessageDialog(this,
-                    "Id is required, and must be unique",
-                    "Invalid Library",
+                    "ID is required and must be unique.",
+                    "Invalid ID",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
         if (jLocalDir.getText() == null || jLocalDir.getText().length() == 0) {
             JOptionPane.showMessageDialog(this,
-                    "Local directory is required, and must be valid",
-                    "Invalid Library",
+                    "Local Directory is required and must be valid.",
+                    "Invalid Local Directory",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -472,8 +486,9 @@ public class AxolotiLibraryEditor extends JDialog {
             if ((jPrefix.getText() == null || jPrefix.getText().length() == 0)
                     || (p == null || p.length == 0)) {
                 JOptionPane.showMessageDialog(this,
-                        "Contributors for the community library need to specify username, password and prefix",
-                        "Invalid Library",
+                        "Contributors to the community library need to specify\n" +
+                        "username, password and user prefix.",
+                        "Invalid Contributor Data",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }

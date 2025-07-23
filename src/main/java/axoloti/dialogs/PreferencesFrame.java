@@ -355,7 +355,7 @@ public class PreferencesFrame extends JFrame {
         });
 
         jLabelBackupPatchesOnSD.setText("Backup Patches to SD Card");
-        jLabelBackupPatchesOnSD.setToolTipText("Whenever a patch is \'uploaded to SD card\' or \'uploaded to SD card as startup\',\na backup patch file with timestamp is created in the respective folder on SD card.\nExample: \'myCoolPatch.axp.backup_2025-01-31_09-21-58.axp\'\nIf you ever lose a patch file you previously uploaded to SD card,\nyou can recover a working version from the backup history.\nBackup files in the root directory can hint at the startup patch currently set up on SD card.\n\nRun \'Board > Enter Card Reader Mode\' to get access to the backup files.");
+        jLabelBackupPatchesOnSD.setToolTipText("Whenever a patch is \'uploaded to SD card\' or \'uploaded to SD card as startup\',\na backup patch file with timestamp is created in the respective folder on SD card.\nExample: \'myCoolPatch.axp.backup_2025-01-31_09-21-58.axp\'\nIf you ever lose a patch file you have previously uploaded to SD card,\nyou can recover a working version from the backup history.\nBackup files in the root directory can hint at the startup patch currently set up on SD card.\n\nRun \'Board > Enter Card Reader Mode\' to get access to the backup files on SD card.");
 
         jBackupPatchesOnSDEnabled.setText("Enabled");
         jBackupPatchesOnSDEnabled.setToolTipText(jLabelBackupPatchesOnSD.getToolTipText());
