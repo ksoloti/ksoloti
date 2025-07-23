@@ -504,139 +504,96 @@ public class USBBulkConnection extends Connection {
         }
 
         try {
-            /* Iterate over all devices and scan for the right one */
-            for (Device d : list) {
-                DeviceDescriptor descriptor = new DeviceDescriptor();
-
-                result = LibUsb.getDeviceDescriptor(d, descriptor);
-                if (result != LibUsb.SUCCESS) {
-                    throw new LibUsbException("Unable to read device descriptor", result);
-                }
-
-                if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-
-                    if (descriptor.idVendor() == bulkVID && ((descriptor.idProduct() == bulkPIDKsoloti) || (descriptor.idProduct() == bulkPIDKsolotiUsbAudio))) {
-
-                        if (descriptor.idProduct() == bulkPIDKsolotiUsbAudio) {
-                            useBulkInterfaceNumber = 4;
-                            LOGGER.log(Level.INFO, "Ksoloti Core USBAudio found.");
-                        }
-                        else {
-                            useBulkInterfaceNumber = 2;
-                            LOGGER.log(Level.INFO, "Ksoloti Core found.");
-                        }
-
-                        DeviceHandle h = new DeviceHandle();
-
-                        result = LibUsb.open(d, h);
-                        if (result < 0) {
-                            LOGGER.log(Level.INFO, ErrorString(result));
-                        }
-                        else {
-                            String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
-
-                            if (targetCpuId != null) {
-                                if (serial.equals(targetCpuId)) {
-                                    return h;
-                                }
-                            }
-                            else {
-                                return h;
-                            }
-
-                            LibUsb.close(h);
-                        }
-                    }
-                }
-                else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-
-                    if (descriptor.idVendor() == bulkVID && ((descriptor.idProduct() == bulkPIDAxoloti) || (descriptor.idProduct() == bulkPIDAxolotiUsbAudio))) {
-
-                        if (descriptor.idProduct() == bulkPIDAxolotiUsbAudio) {
-                            useBulkInterfaceNumber = 4;
-                            LOGGER.log(Level.INFO, "Axoloti Core USBAudio found.");
-                        }
-                        else {
-                            useBulkInterfaceNumber = 2;
-                            LOGGER.log(Level.INFO, "Axoloti Core found.");
-                        }
-
-                        DeviceHandle h = new DeviceHandle();
-
-                        result = LibUsb.open(d, h);
-                        if (result < 0) {
-                            LOGGER.log(Level.INFO, ErrorString(result));
-                        }
-                        else {
-                            String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
-
-                            if (targetCpuId != null) {
-                                if (serial.equals(targetCpuId)) {
-                                    return h;
-                                }
-                            }
-                            else {
-                                return h;
-                            }
-
-                            LibUsb.close(h);
-                        }
+            /* First pass: look for a specific device by serial number if targetCpuId is set */
+            if (targetCpuId != null) {
+                for (Device d : list) {
+                    DeviceHandle h = tryOpenAndMatchDevice(d, true);
+                    if (h != null) {
+                        return h;
                     }
                 }
             }
 
-            /* Or else pick the first one */
+            /* Second pass: if no specific device, or targetCpuId is null, pick the first matching device */
             for (Device d : list) {
-
-                DeviceDescriptor descriptor = new DeviceDescriptor();
-
-                result = LibUsb.getDeviceDescriptor(d, descriptor);
-                if (result != LibUsb.SUCCESS) {
-                    throw new LibUsbException("Unable to read device descriptor", result);
-                }
-
-                if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
-
-                    if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDKsoloti) {
-
-                        LOGGER.log(Level.INFO, "Ksoloti Core found.");
-                        DeviceHandle h = new DeviceHandle();
-
-                        result = LibUsb.open(d, h);
-                        if (result < 0) {
-                            LOGGER.log(Level.INFO, ErrorString(result));
-                        }
-                        else {
-                            return h;
-                        }
-                    }
-                }
-                else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
-
-                    if (descriptor.idVendor() == bulkVID && descriptor.idProduct() == bulkPIDAxoloti) {
-
-                        LOGGER.log(Level.INFO, "Axoloti Core found.");
-                        DeviceHandle h = new DeviceHandle();
-
-                        result = LibUsb.open(d, h);
-                        if (result < 0) {
-                            LOGGER.log(Level.INFO, ErrorString(result));
-                        }
-                        else {
-                            return h;
-                        }
-                    }
+                DeviceHandle h = tryOpenAndMatchDevice(d, false);
+                if (h != null) {
+                    return h;
                 }
             }
         }
         finally {
-            /* Ensure the allocated device list is freed */
             LibUsb.freeDeviceList(list, true);
         }
 
         LOGGER.log(Level.SEVERE, "No matching USB devices found.");
+        return null;
+    }
 
-        /* Device not found */
+    private DeviceHandle tryOpenAndMatchDevice(Device d, boolean checkSerialNumber) {
+        DeviceDescriptor descriptor = new DeviceDescriptor();
+        int result = LibUsb.getDeviceDescriptor(d, descriptor);
+        if (result != LibUsb.SUCCESS) {
+            // LOGGER.log(Level.WARNING, "Unable to read device descriptor: " + LibUsb.strError(result));
+            return null;
+        }
+
+        boolean isKsolotiMode = prefs.getFirmwareMode().contains("Ksoloti Core");
+        boolean isAxolotiMode = prefs.getFirmwareMode().contains("Axoloti Core");
+
+        /* Check Vendor ID first */
+        if (descriptor.idVendor() != bulkVID) {
+            return null;
+        }
+
+        short expectedNormalPID;
+        short expectedUsbAudioPID;
+        String deviceType;
+
+        if (isKsolotiMode) {
+            expectedNormalPID = bulkPIDKsoloti;
+            expectedUsbAudioPID = bulkPIDKsolotiUsbAudio;
+            deviceType = "Ksoloti Core";
+        }
+        else if (isAxolotiMode) {
+            expectedNormalPID = bulkPIDAxoloti;
+            expectedUsbAudioPID = bulkPIDAxolotiUsbAudio;
+            deviceType = "Axoloti Core";
+        }
+        else {
+            return null; /* Neither mode matches */
+        }
+
+        if (descriptor.idProduct() == expectedNormalPID || descriptor.idProduct() == expectedUsbAudioPID) {
+            if (descriptor.idProduct() == expectedUsbAudioPID) {
+                useBulkInterfaceNumber = 4;
+                LOGGER.log(Level.INFO, "{0} USBAudio found.", deviceType);
+            }
+            else {
+                useBulkInterfaceNumber = 2;
+                LOGGER.log(Level.INFO, "{0} found.", deviceType);
+            }
+
+            DeviceHandle h = new DeviceHandle();
+            result = LibUsb.open(d, h);
+            if (result < 0) {
+                LOGGER.log(Level.INFO, ErrorString(result));
+                return null;
+            }
+            else {
+                if (checkSerialNumber) {
+                    String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
+                    if (targetCpuId != null && serial != null && serial.equals(targetCpuId)) {
+                        return h; /* Found the specific device */
+                    }
+                    LibUsb.close(h);
+                    return null;
+                }
+                else {
+                    return h;
+                }
+            }
+        }
         return null;
     }
 
