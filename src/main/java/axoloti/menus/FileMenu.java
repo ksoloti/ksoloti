@@ -340,9 +340,6 @@ public class FileMenu extends JMenu {
                     class Thd extends Thread {
                         public void run() {
                             try {
-                                LOGGER.log(Level.WARNING, "Running tests, please wait...");
-                                LOGGER.log(Level.INFO, "Creating log file at " + System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log");
-
                                 /* If previous log exists, delete it */
                                 File log = new File(System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log");
                                 if (log.exists()) {
@@ -358,6 +355,14 @@ public class FileMenu extends JMenu {
                                 SimpleFormatter formatter = new SimpleFormatter();
                                 fh.setFormatter(formatter);
                                 Logger.getLogger("").addHandler(fh);
+
+                                LOGGER.log(Level.WARNING, "Running tests, please wait...");
+                                LOGGER.log(Level.INFO, "Creating log file at " + System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log");
+
+                                /* From now on, Leave out timecode from logging format (easier diff) */
+                                System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s%n");
+                                formatter = new SimpleFormatter();
+                                fh.setFormatter(formatter);
                                 
                                 if (USBBulkConnection.GetConnection().isConnected()) {
                                     LOGGER.log(Level.INFO, "Core is connected - Attempting test upload of patches and measuring DSP load.");
@@ -373,6 +378,10 @@ public class FileMenu extends JMenu {
                             }
                             catch (Exception ex) {
                                 LOGGER.log(Level.SEVERE, null, ex);
+                            }
+                            finally {
+                                /* Revert logging format */
+                                System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tFT%1$tT.%1$tN  %4$s: %5$s%n");
                             }
                         }
                     }
