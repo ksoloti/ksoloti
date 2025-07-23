@@ -770,12 +770,14 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 final String targetDirectory = dir;
                 
                 CommandManager.getInstance().startLongOperation();
-                new SwingWorker<Void, String>() {
-
+                new SwingWorker<String, String>() {
                     @Override
-                    protected Void doInBackground() throws Exception {
+                    protected String doInBackground() throws Exception {
                         // System.out.println(Instant.now() + " [DEBUG] SwingWorker: Starting batch upload in background (FULL TEST with detailed logs)...");
                         // System.out.println(Instant.now() + " [DEBUG] SwingWorker: Array length of selectedFiles: " + selectedFiles.length);
+                        int uploadedCount = 0;
+                        int failedCount = 0;
+                        String lastError = null;
 
                         // int fileCount = 0;
                         for (File file : selectedFiles) {
@@ -783,15 +785,18 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                             // System.out.println(Instant.now() + " [DEBUG] SwingWorker: --- Starting iteration " + fileCount + " for file: " + (file != null ? file.getName() : "null") + " ---");
 
                             if (!USBBulkConnection.GetConnection().isConnected()) {
-                                LOGGER.log(Level.SEVERE, "Batch upload aborted: USB connection lost.");
                                 // System.err.println(Instant.now() + " [DEBUG] SwingWorker: Connection lost. Breaking loop for remaining files.");
+                                lastError = "Batch upload aborted: USB connection lost.";
+                                LOGGER.log(Level.SEVERE, lastError);
                                 break; // Exit the loop for remaining files
                             }
 
                             if (file != null) {
                                 if (!file.canRead()) {
-                                    LOGGER.log(Level.SEVERE, "Cannot read file: " + file.getName());
                                     // System.err.println(Instant.now() + " [DEBUG] SwingWorker: Cannot read file: " + file.getName() + ". Skipping.");
+                                    lastError = "Cannot read file: " + file.getName();
+                                    LOGGER.log(Level.SEVERE, lastError);
+                                    failedCount++;
                                     continue; // Skip to next file if cannot read
                                 }
                                 try {
@@ -801,17 +806,22 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                     // System.out.println(Instant.now() + " [DEBUG] SwingWorker: uploadCommand.Do() returned for: " + file.getName());
 
                                     if (!uploadCommand.isSuccessful()) {
-                                        LOGGER.log(Level.WARNING, "Upload failed for file: " + file.getName() + ". Aborting remaining batch.");
                                         // System.err.println(Instant.now() + " [DEBUG] SwingWorker: uploadCommand.isSuccessful() is FALSE for " + file.getName() + ". Breaking loop.");
+                                        lastError = "Upload failed for file: " + file.getName();
+                                        LOGGER.log(Level.WARNING, lastError + ". Aborting remaining batch.");
+                                        failedCount++;
                                         break;
                                     }
+                                    uploadedCount++;
                                     publish("Uploaded " + file.getName());
                                     // System.out.println(Instant.now() + " [DEBUG] SwingWorker: Successfully processed and published for: " + file.getName());
                                 }
                                 catch (Exception e) {
-                                    LOGGER.log(Level.SEVERE, "Error uploading file: " + file.getName(), e);
                                     // System.err.println(Instant.now() + " [DEBUG] SwingWorker: Caught Exception for " + file.getName() + ": " + e.getMessage());
                                     e.printStackTrace(System.err);
+                                    lastError = "Error uploading file: " + file.getName() + " - " + e.getMessage();
+                                    LOGGER.log(Level.SEVERE, lastError, e);
+                                    failedCount++;
                                     break; // Abort batch on any exception
                                 }
                             }
@@ -824,21 +834,36 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                             catch (InterruptedException ie) {
                                 Thread.currentThread().interrupt(); // Restore interrupt status
                                 // System.err.println(Instant.now() + " [DEBUG] SwingWorker: Delay interrupted.");
+                                lastError = "Batch upload interrupted.";
+                                LOGGER.log(Level.WARNING, lastError);
                                 break; // Abort if interrupted
                             }
                         }
                         // System.out.println(Instant.now() + " [DEBUG] SwingWorker: Loop finished. Processed " + fileCount + " files.");
-                        return null;
+                        if (uploadedCount == selectedFiles.length && failedCount == 0) {
+                            return "All " + uploadedCount + " files uploaded successfully.";
+                        }
+                        else if (uploadedCount > 0 && failedCount > 0) {
+                            return uploadedCount + " file(s) uploaded, but " + failedCount + " failed. Last issue: " + lastError;
+                        }
+                        else if (failedCount == selectedFiles.length) {
+                             return "No files were uploaded. Last issue: " + lastError;
+                        }
+                        else {
+                            return "Upload process completed with issues. Last issue: " + lastError;
+                        }
                     }
 
                     @Override
                     protected void done() {
+                        String result = "Upload operation completed.";
                         try {
-                            get();
-                            System.out.println(Instant.now() + " Batch upload SwingWorker completed successfully.");
+                            result = get();
+                            System.out.println(Instant.now() + " Batch upload SwingWorker completed. Result: " + result);
                         }
                         catch (InterruptedException | ExecutionException e) {
-                            LOGGER.log(Level.SEVERE, "Batch upload SwingWorker failed:", e);
+                            result = "Batch upload failed unexpectedly: " + e.getMessage();
+                            Logger.getLogger(FileManagerFrame.class.getName()).log(Level.SEVERE, result, e);
                         }
                         finally {
                             CommandManager.getInstance().endLongOperation();
@@ -904,7 +929,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
             AxoSDFileTableModel model = (AxoSDFileTableModel) jFileTable.getModel();
 
-            List<String> filesToDeletePaths = Arrays.stream(selectedRows)
+            final List<String> filesToDeletePaths = Arrays.stream(selectedRows)
                                                     .boxed()
                                                     .sorted(Comparator.reverseOrder())
                                                     .map(rowIndex -> model.getDisplayTreeNode(rowIndex).fileInfo.getFilename())
@@ -949,18 +974,28 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 @Override
                 protected void done() {
                     boolean batchOverallSuccess = false;
+                    String message;
+
                     try {
                         batchOverallSuccess = get();
                         if (batchOverallSuccess) {
                             // System.out.println(Instant.now() + " [DEBUG] Batch deletion SwingWorker completed successfully.");
+                            message = "All selected items deleted successfully.";
                         }
                         else {
                             // System.out.println(Instant.now() + " [DEBUG] Batch deletion SwingWorker completed with some failures.");
+                            message = "Deletion completed with some failures. Check console/logs for details.";
                         }
                     }
-                    catch (InterruptedException | ExecutionException e) {
-                        LOGGER.log(Level.SEVERE, "Batch deletion SwingWorker failed unexpectedly:", e);
-                        // System.err.println(Instant.now() + " [DEBUG] Batch deletion SwingWorker crashed.");
+                    catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        message = "Delete operation was interrupted.";
+                        LOGGER.log(Level.WARNING, message, e);
+                    }
+                    catch (ExecutionException e) {
+                        Throwable cause = e.getCause();
+                        message = "An unexpected error occurred during deletion: " + (cause != null ? cause.getMessage() : e.getMessage());
+                        LOGGER.log(Level.SEVERE, "Batch deletion SwingWorker failed unexpectedly:", cause);
                     }
                     finally {
                         triggerRefresh();
