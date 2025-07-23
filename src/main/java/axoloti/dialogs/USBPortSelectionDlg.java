@@ -200,7 +200,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
     private void hideConnectingDialog() {
         connectingDialog.setVisible(false);
-        connectingDialog.dispose();
+        // connectingDialog.dispose();
     }
 
     public static String ErrorString(int result) {
@@ -510,8 +510,10 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     }
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {
-        if (evt.getClickCount() == 2) {
-            onSelect();
+        if (jButtonSelect.isEnabled()) { /* Lazy way of checking if selected entry is valid for connection */
+            if (evt.getClickCount() == 2) {
+                onSelect();
+            }
         }
     }
 
