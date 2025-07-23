@@ -41,8 +41,9 @@ public class MidiAssignments extends javax.swing.JDialog {
      * Creates new form MidiAssignments
      */
     public MidiAssignments(java.awt.Frame parent, boolean modal, ParameterInstance param) {
-        super(null, java.awt.Dialog.ModalityType.TOOLKIT_MODAL);
-        setModal(modal);
+        super(null, ModalityType.TOOLKIT_MODAL);
+        setModalityType(modal ? ModalityType.TOOLKIT_MODAL : ModalityType.MODELESS);
+        setAlwaysOnTop(true);
         setPreferredSize(new Dimension(640, 480));
         setTitle("MIDI CC# Assignment for <" + param.GetObjectInstance().getInstanceName() + " : " + param.getName() + ">");
         initComponents();
