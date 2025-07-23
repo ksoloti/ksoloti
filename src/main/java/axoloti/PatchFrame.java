@@ -299,7 +299,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
 
-    void ShowConnect1(boolean status) {
+    void ShowConnectDisconnect(boolean status) {
         jToggleButtonLive.setEnabled(status);
         jCheckBoxMenuItemLive.setEnabled(status);
         jMenuItemUploadInternalFlash.setEnabled(status);
@@ -314,7 +314,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
         jToggleButtonLive.setSelected(false);
         jCheckBoxMenuItemLive.setSelected(false);
-        ShowConnect1(false);
+        ShowConnectDisconnect(false);
     }
 
     @Override
@@ -322,7 +322,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         patch.Unlock();
         jToggleButtonLive.setSelected(false);
         jCheckBoxMenuItemLive.setSelected(false);
-        ShowConnect1(true);
+        ShowConnectDisconnect(true);
     }
 
     public void ShowCompileFail() {

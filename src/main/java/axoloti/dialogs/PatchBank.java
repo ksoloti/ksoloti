@@ -1041,7 +1041,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         return this;
     }
 
-    public void ShowConnect1(boolean status) {
+    public void ShowConnectDisconnect(boolean status) {
         jButtonUploadIndex.setEnabled(status);
         jUploadPatches.setEnabled(status);
         jUploadAll.setEnabled(status);
@@ -1050,12 +1050,12 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
     @Override
     public void ShowConnect() {
-        ShowConnect1(true);
+        ShowConnectDisconnect(true);
     }
 
     @Override
     public void ShowDisconnect() {
-        ShowConnect1(false);
+        ShowConnectDisconnect(false);
     }
 
     static public void OpenBank(File f) {
@@ -1086,11 +1086,11 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
     @Override
     public void ShowSDCardMounted() {
-        ShowConnect1(true);
+        ShowConnectDisconnect(true);
     }
 
     @Override
     public void ShowSDCardUnmounted() {
-        ShowConnect1(false);
+        ShowConnectDisconnect(false);
     }
 }
