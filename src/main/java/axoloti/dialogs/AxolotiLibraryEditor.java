@@ -47,6 +47,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 
@@ -57,6 +58,35 @@ import javax.swing.filechooser.FileFilter;
 public class AxolotiLibraryEditor extends JDialog {
 
     private AxolotiLibrary library;
+
+    private Box.Filler filler1;
+    private JButton jButtonCancel;
+    private JButton jButtonInitRepo;
+    private JButton jButtonOK;
+    private JButton jButtonSelectDir;
+    private JButton jButtonSync;
+    private JCheckBox jCheckBoxAutoSync;
+    private JCheckBox jCheckBoxEnabled;
+    private JComboBox<String> jComboBoxType;
+    private JLabel jLabelContributorsOnly;
+    private JLabel jLabelDirectory;
+    private JLabel jLabelId;
+    private JLabel jLabelPassword;
+    private JLabel jLabelRemoteLibrary;
+    private JLabel jLabelRemotePath;
+    private JLabel jLabelRevision;
+    private JLabel jLabelType;
+    private JLabel jLabelTypeContributorPrefix;
+    private JLabel jLabelTypeOptional;
+    private JLabel jLabelUserId;
+    private JPasswordField jPasswordField;
+    private JSeparator jSeparator1;
+    private JTextField jTextFieldId;
+    private JTextField jTextFieldLocalDir;
+    private JTextField jTextFieldPrefix;
+    private JTextField jTextFieldRemotePath;
+    private JTextField jTextFieldRevision;
+    private JTextField jTextFieldUserId;
 
     /**
      * Creates new form AxolotiLibrary
@@ -75,31 +105,42 @@ public class AxolotiLibraryEditor extends JDialog {
 
     public AxolotiLibraryEditor(java.awt.Frame parent, boolean modal, AxolotiLibrary lib) {
         super(parent, modal);
+        setLocationRelativeTo(parent);
         initComponents();
         setTitle("Edit Library");
         library = lib;
         populate();
-        jId.setEnabled(false);
+        jTextFieldId.setEnabled(false);
         setVisible(true);
     }
 
     final void populate() {
-        jId.setText(library.getId());
-        jEnabled.setSelected(library.getEnabled());
-        jLocalDir.setText(library.getLocalLocation());
-        jRemotePath.setText(library.getRemoteLocation());
-        jUserId.setText(library.getUserId());
-        jPassword.setText(library.getPassword());
-        jAutoSync.setSelected(library.isAutoSync());
-        jRevision.setText(library.getRevision());
-        jPrefix.setText(library.getContributorPrefix());
+        jTextFieldId.setText(library.getId());
+        jCheckBoxEnabled.setSelected(library.getEnabled());
+        jTextFieldLocalDir.setText(library.getLocalLocation());
+        jTextFieldRemotePath.setText(library.getRemoteLocation());
+        jTextFieldUserId.setText(library.getUserId());
+        
+        char[] passwordChars = library.getPassword();
+        if (passwordChars != null) {
+            String passwordString = new String(passwordChars);
+            jPasswordField.setText(passwordString);
+            java.util.Arrays.fill(passwordChars, '\0'); /* Clear the password variable */
+        }
+        else {
+            jPasswordField.setText("");
+        }
+
+        jCheckBoxAutoSync.setSelected(library.isAutoSync());
+        jTextFieldRevision.setText(library.getRevision());
+        jTextFieldPrefix.setText(library.getContributorPrefix());
 
         String[] types = {AxoFileLibrary.TYPE, AxoGitLibrary.TYPE};
-        jTypeCombo.removeAllItems();
+        jComboBoxType.removeAllItems();
         for (String t : types) {
-            jTypeCombo.addItem(t);
+            jComboBoxType.addItem(t);
         }
-        jTypeCombo.setSelectedItem(library.getType());
+        jComboBoxType.setSelectedItem(library.getType());
 
         boolean expert = MainFrame.prefs.getExpertMode() || Axoloti.isDeveloper();
 
@@ -110,46 +151,45 @@ public class AxolotiLibraryEditor extends JDialog {
 
         boolean lockDown = !expert && isOfficial;
 
-        jRevision.setEditable(!lockDown);
-        jRemotePath.setEditable(!lockDown);
+        jTextFieldRevision.setEditable(!lockDown);
+        jTextFieldRemotePath.setEditable(!lockDown);
     }
-
 
     private void initComponents() {
 
-        jTypeCombo = new JComboBox<String>();
-        jLabelType = new JLabel();
-        jId = new JTextField();
-        jLocalDir = new JTextField();
-        jLabelId = new JLabel();
-        jLabelDirectory = new JLabel();
-        jRemotePath = new JTextField();
-        jLabelRemotePath = new JLabel();
-        jLabelRemoteLibrary = new JLabel();
-        jSeparator1 = new JSeparator();
-        jUserId = new JTextField();
-        jLabelUserId = new JLabel();
-        jLabelPassword = new JLabel();
-        jEnabled = new JCheckBox();
-        jPassword = new JPasswordField();
-        jOK = new JButton();
-        jCancel = new JButton();
-        jInitRepo = new JButton();
-        jAutoSync = new JCheckBox();
-        jSelectDirBtn = new JButton();
         filler1 = new Box.Filler(new java.awt.Dimension(0, 3), new java.awt.Dimension(0, 3), new java.awt.Dimension(32767, 3));
-        jLabelRevision = new JLabel();
-        jRevision = new JTextField();
+        jButtonCancel = new JButton();
+        jButtonInitRepo = new JButton();
+        jButtonOK = new JButton();
+        jButtonSelectDir = new JButton();
+        jButtonSync = new JButton();
+        jCheckBoxAutoSync = new JCheckBox();
+        jCheckBoxEnabled = new JCheckBox();
+        jComboBoxType = new JComboBox<String>();
         jLabelContributorsOnly = new JLabel();
-        jLabelTypeOptional = new JLabel();
+        jLabelDirectory = new JLabel();
+        jLabelId = new JLabel();
+        jLabelPassword = new JLabel();
+        jLabelRemoteLibrary = new JLabel();
+        jLabelRemotePath = new JLabel();
+        jLabelRevision = new JLabel();
+        jLabelType = new JLabel();
         jLabelTypeContributorPrefix = new JLabel();
-        jPrefix = new JTextField();
-        jSyncBtn = new JButton();
+        jLabelTypeOptional = new JLabel();
+        jLabelUserId = new JLabel();
+        jPasswordField = new JPasswordField();
+        jSeparator1 = new JSeparator();
+        jTextFieldId = new JTextField();
+        jTextFieldLocalDir = new JTextField();
+        jTextFieldPrefix = new JTextField();
+        jTextFieldRemotePath = new JTextField();
+        jTextFieldRevision = new JTextField();
+        jTextFieldUserId = new JTextField();
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        jTypeCombo.setPreferredSize(new java.awt.Dimension(100, 28));
-        jTypeCombo.addActionListener(new java.awt.event.ActionListener() {
+        jComboBoxType.setPreferredSize(new java.awt.Dimension(100, 28));
+        jComboBoxType.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTypeComboActionPerformed(evt);
             }
@@ -157,62 +197,61 @@ public class AxolotiLibraryEditor extends JDialog {
 
         jLabelType.setText("Type");
 
-        jId.setMinimumSize(new java.awt.Dimension(100, 28));
-        jId.setPreferredSize(new java.awt.Dimension(100, 28));
+        jTextFieldId.setMinimumSize(new java.awt.Dimension(100, 28));
+        jTextFieldId.setPreferredSize(new java.awt.Dimension(100, 28));
 
-        jLocalDir.setPreferredSize(new java.awt.Dimension(400, 28));
+        jTextFieldLocalDir.setPreferredSize(new java.awt.Dimension(400, 28));
 
         jLabelId.setText("ID");
 
         jLabelDirectory.setText("Directory");
 
-        jRemotePath.setPreferredSize(new java.awt.Dimension(400, 28));
+        jTextFieldRemotePath.setPreferredSize(new java.awt.Dimension(400, 28));
 
         jLabelRemotePath.setMinimumSize(new java.awt.Dimension(100, 28));
         jLabelRemotePath.setText("Remote Path");
 
         jLabelRemoteLibrary.setText("Remote Library");
 
-        jUserId.setMinimumSize(new java.awt.Dimension(14, 50));
-        jUserId.setPreferredSize(new java.awt.Dimension(150, 28));
+        jTextFieldUserId.setMinimumSize(new java.awt.Dimension(14, 50));
+        jTextFieldUserId.setPreferredSize(new java.awt.Dimension(150, 28));
 
         jLabelUserId.setText("User Id");
 
         jLabelPassword.setText("Password");
 
-        jEnabled.setText("Enabled");
+        jCheckBoxEnabled.setText("Enabled");
 
-        jPassword.setText("jPasswordField1");
-        jPassword.setPreferredSize(new java.awt.Dimension(150, 28));
+        jPasswordField.setPreferredSize(new java.awt.Dimension(150, 28));
 
-        jOK.setText("OK");
-        jOK.addActionListener(new java.awt.event.ActionListener() {
+        jButtonOK.setText("OK");
+        jButtonOK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jOKActionPerformed(evt);
             }
         });
 
-        jCancel.setText("Cancel");
-        jCancel.setDefaultCapable(false);
-        jCancel.addActionListener(new java.awt.event.ActionListener() {
+        jButtonCancel.setText("Cancel");
+        jButtonCancel.setDefaultCapable(false);
+        jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCancelActionPerformed(evt);
             }
         });
 
-        jInitRepo.setText("Init");
-        jInitRepo.setDefaultCapable(false);
-        jInitRepo.addActionListener(new java.awt.event.ActionListener() {
+        jButtonInitRepo.setText("Init");
+        jButtonInitRepo.setDefaultCapable(false);
+        jButtonInitRepo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jInitRepoActionPerformed(evt);
             }
         });
 
-        jAutoSync.setText("Auto Sync");
+        jCheckBoxAutoSync.setText("Auto Sync");
 
-        jSelectDirBtn.setText("Browse...");
-        jSelectDirBtn.setDefaultCapable(false);
-        jSelectDirBtn.addActionListener(new java.awt.event.ActionListener() {
+        jButtonSelectDir.setText("Browse...");
+        jButtonSelectDir.setDefaultCapable(false);
+        jButtonSelectDir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jSelectDirBtnActionPerformed(evt);
             }
@@ -220,8 +259,8 @@ public class AxolotiLibraryEditor extends JDialog {
 
         jLabelRevision.setText("Branch");
 
-        jRevision.setMinimumSize(new java.awt.Dimension(100, 28));
-        jRevision.setPreferredSize(new java.awt.Dimension(100, 28));
+        jTextFieldRevision.setMinimumSize(new java.awt.Dimension(100, 28));
+        jTextFieldRevision.setPreferredSize(new java.awt.Dimension(100, 28));
 
         jLabelContributorsOnly.setText("Contributors only:");
 
@@ -229,11 +268,11 @@ public class AxolotiLibraryEditor extends JDialog {
 
         jLabelTypeContributorPrefix.setText("Contributor Prefix");
 
-        jPrefix.setPreferredSize(new java.awt.Dimension(100, 28));
+        jTextFieldPrefix.setPreferredSize(new java.awt.Dimension(100, 28));
 
-        jSyncBtn.setText("Sync");
-        jSyncBtn.setDefaultCapable(false);
-        jSyncBtn.addActionListener(new java.awt.event.ActionListener() {
+        jButtonSync.setText("Sync");
+        jButtonSync.setDefaultCapable(false);
+        jButtonSync.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jSyncBtnActionPerformed(evt);
             }
@@ -251,9 +290,9 @@ public class AxolotiLibraryEditor extends JDialog {
                 .addGroup(layout.createParallelGroup(Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jCancel)
+                        .addComponent(jButtonCancel)
                         .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(jOK)
+                        .addComponent(jButtonOK)
                     )
 
                     .addComponent(jSeparator1)
@@ -267,34 +306,34 @@ public class AxolotiLibraryEditor extends JDialog {
                                 .addPreferredGap(ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(Alignment.LEADING, false)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jRevision, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jTextFieldRevision, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(ComponentPlacement.RELATED)
                                         .addComponent(jLabelTypeOptional)
                                         .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jAutoSync))
-                                    .addComponent(jRemotePath, GroupLayout.PREFERRED_SIZE, 394, GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(jCheckBoxAutoSync))
+                                    .addComponent(jTextFieldRemotePath, GroupLayout.PREFERRED_SIZE, 394, GroupLayout.PREFERRED_SIZE)))
                             .addComponent(jLabelContributorsOnly, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 185, GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabelTypeContributorPrefix)
                                         .addPreferredGap(ComponentPlacement.RELATED)
-                                        .addComponent(jPrefix, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(jTextFieldPrefix, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabelUserId)
                                         .addPreferredGap(ComponentPlacement.RELATED)
-                                        .addComponent(jUserId, GroupLayout.PREFERRED_SIZE, 196, GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(jTextFieldUserId, GroupLayout.PREFERRED_SIZE, 196, GroupLayout.PREFERRED_SIZE)))
                                 .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(jLabelPassword)
                                 .addGap(1, 1, 1)
-                                .addComponent(jPassword, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jPasswordField, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE))
                         )
 
                         .addPreferredGap(ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
 
                         .addGroup(layout.createParallelGroup(Alignment.LEADING)
-                            .addComponent(jInitRepo, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jSyncBtn, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonInitRepo, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonSync, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
                         )
                     )
                     .addGroup(layout.createSequentialGroup()
@@ -309,13 +348,13 @@ public class AxolotiLibraryEditor extends JDialog {
                                 .addGroup(layout.createParallelGroup(Alignment.TRAILING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(Alignment.LEADING)
-                                            .addComponent(jTypeCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jId, GroupLayout.PREFERRED_SIZE, 215, GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(jComboBoxType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jTextFieldId, GroupLayout.PREFERRED_SIZE, 215, GroupLayout.PREFERRED_SIZE))
                                         .addGap(104, 104, 104)
-                                        .addComponent(jEnabled))
-                                    .addComponent(jLocalDir, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(jCheckBoxEnabled))
+                                    .addComponent(jTextFieldLocalDir, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jSelectDirBtn, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jButtonSelectDir, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelRemoteLibrary, GroupLayout.PREFERRED_SIZE, 179, GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))))
@@ -336,24 +375,24 @@ public class AxolotiLibraryEditor extends JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jTypeCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBoxType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelType)
                 )
 
                 .addPreferredGap(ComponentPlacement.RELATED)
 
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelId)
-                    .addComponent(jEnabled)
+                    .addComponent(jCheckBoxEnabled)
                 )
 
                 .addPreferredGap(ComponentPlacement.RELATED)
 
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jLocalDir, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldLocalDir, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelDirectory)
-                    .addComponent(jSelectDirBtn)
+                    .addComponent(jButtonSelectDir)
                 )
 
                 .addGap(18, 18, 18)
@@ -368,18 +407,18 @@ public class AxolotiLibraryEditor extends JDialog {
 
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jLabelRemotePath, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jRemotePath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jInitRepo)
+                    .addComponent(jTextFieldRemotePath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonInitRepo)
                 )
 
                 .addPreferredGap(ComponentPlacement.RELATED)
 
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jLabelRevision)
-                    .addComponent(jRevision, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jAutoSync)
+                    .addComponent(jTextFieldRevision, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCheckBoxAutoSync)
                     .addComponent(jLabelTypeOptional)
-                    .addComponent(jSyncBtn)
+                    .addComponent(jButtonSync)
                 )
 
                 .addPreferredGap(ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
@@ -388,23 +427,23 @@ public class AxolotiLibraryEditor extends JDialog {
 
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jLabelTypeContributorPrefix)
-                    .addComponent(jPrefix, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldPrefix, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 )
 
                 .addGap(2, 2, 2)
 
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jUserId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldUserId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelUserId)
-                    .addComponent(jPassword, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPasswordField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelPassword)
                 )
 
                 .addPreferredGap(ComponentPlacement.UNRELATED)
 
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jOK)
-                    .addComponent(jCancel)
+                    .addComponent(jButtonOK)
+                    .addComponent(jButtonCancel)
                 )
 
                 .addGap(19, 19, 19)
@@ -422,69 +461,55 @@ public class AxolotiLibraryEditor extends JDialog {
         pack();
     }
 
-    private void jTypeComboActionPerformed(java.awt.event.ActionEvent evt) {
+    private void setButtonsEnabled(boolean enabled) {
+        jButtonCancel.setEnabled(enabled);
+        jButtonInitRepo.setEnabled(enabled);
+        jButtonOK.setEnabled(enabled);
+        jButtonSelectDir.setEnabled(enabled);
+        jButtonSync.setEnabled(enabled);
+    }
 
+    private void jTypeComboActionPerformed(java.awt.event.ActionEvent evt) {
         /* Lazy hack to make library edit screen a bit less overwhelming */
-        if (jTypeCombo.getSelectedItem() == "local") {
-            /* Grey out Git part of settings window */
-            jLabelRemotePath.setEnabled(false);
-            jRemotePath.setEnabled(false);
-            jLabelRemoteLibrary.setEnabled(false);
-            jLabelUserId.setEnabled(false);
-            jUserId.setEnabled(false);
-            jLabelUserId.setEnabled(false);
-            jLabelPassword.setEnabled(false);
-            jPassword.setEnabled(false);
-            jLabelContributorsOnly.setEnabled(false);
-            jLabelTypeOptional.setEnabled(false);
-            jLabelTypeContributorPrefix.setEnabled(false);
-            jPrefix.setEnabled(false);
-            jRevision.setEnabled(false);
-            jLabelRevision.setEnabled(false);
-            jInitRepo.setVisible(false);
-            jAutoSync.setVisible(false);
-            jSyncBtn.setVisible(false);
-        } else {
-            jLabelRemotePath.setEnabled(true);
-            jRemotePath.setEnabled(true);
-            jLabelRemoteLibrary.setEnabled(true);
-            jLabelUserId.setEnabled(true);
-            jUserId.setEnabled(true);
-            jLabelUserId.setEnabled(true);
-            jLabelPassword.setEnabled(true);
-            jPassword.setEnabled(true);
-            jLabelContributorsOnly.setEnabled(true);
-            jLabelTypeOptional.setEnabled(true);
-            jLabelTypeContributorPrefix.setEnabled(true);
-            jPrefix.setEnabled(true);
-            jRevision.setEnabled(true);
-            jLabelRevision.setEnabled(true);
-            jInitRepo.setVisible(true);
-            jAutoSync.setVisible(true);
-            jSyncBtn.setVisible(true);
-        }
+        boolean isGit = jComboBoxType.getSelectedItem().equals("git");
+        /* If local, grey out Git part of settings window */
+        jButtonInitRepo.setVisible(isGit);
+        jButtonSync.setVisible(isGit);
+        jCheckBoxAutoSync.setVisible(isGit);
+        jLabelContributorsOnly.setEnabled(isGit);
+        jLabelPassword.setEnabled(isGit);
+        jLabelRemoteLibrary.setEnabled(isGit);
+        jLabelRemotePath.setEnabled(isGit);
+        jLabelRevision.setEnabled(isGit);
+        jLabelTypeContributorPrefix.setEnabled(isGit);
+        jLabelTypeOptional.setEnabled(isGit);
+        jLabelUserId.setEnabled(isGit);
+        jPasswordField.setEnabled(isGit);
+        jTextFieldPrefix.setEnabled(isGit);
+        jTextFieldRemotePath.setEnabled(isGit);
+        jTextFieldRevision.setEnabled(isGit);
+        jTextFieldUserId.setEnabled(isGit);
     }
 
     private void jOKActionPerformed(java.awt.event.ActionEvent evt) {
-        if (jId.getText() == null || jId.getText().length() == 0) {
+        if (jTextFieldId.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this,
                     "ID is required and must be unique.",
                     "Invalid ID",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if (jLocalDir.getText() == null || jLocalDir.getText().length() == 0) {
+        if (jTextFieldLocalDir.getText().trim().isEmpty()) { 
             JOptionPane.showMessageDialog(this,
                     "Local Directory is required and must be valid.",
                     "Invalid Local Directory",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if (jId.getText().equals(AxolotiLibrary.USER_LIBRARY_ID)
-                && (jUserId.getText() != null && jUserId.getText().length() > 0)) {
-            char[] p = jPassword.getPassword();
-            if ((jPrefix.getText() == null || jPrefix.getText().length() == 0)
-                    || (p == null || p.length == 0)) {
+        if (jTextFieldId.getText().equals(AxolotiLibrary.USER_LIBRARY_ID)
+                && (jTextFieldUserId.getText() != null && jTextFieldUserId.getText().length() > 0)) {
+            char[] p = jPasswordField.getPassword();
+            if (jTextFieldPrefix.getText().trim().isEmpty() || (p == null || p.length == 0)) {
                 JOptionPane.showMessageDialog(this,
                         "Contributors to the community library need to specify\n" +
                         "username, password and user prefix.",
@@ -505,6 +530,7 @@ public class AxolotiLibraryEditor extends JDialog {
     }
 
     private void jInitRepoActionPerformed(java.awt.event.ActionEvent evt) {
+
         boolean delete;
         Object[] options = {"Init", "Cancel"};
         int res = JOptionPane.showOptionDialog(this,
@@ -520,13 +546,35 @@ public class AxolotiLibraryEditor extends JDialog {
         }
         delete = (res == JOptionPane.OK_OPTION);
 
-        AxoGitLibrary gitlib = new AxoGitLibrary();
-        populateLib(gitlib);
-        gitlib.init(delete);
+        /* Disable UI elements while in progress */
+        setButtonsEnabled(false);
+
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                AxoGitLibrary gitlib = new AxoGitLibrary();
+                populateLib(gitlib);
+                gitlib.init(delete);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    get();
+                }
+                catch (Exception e) {
+                    Logger.getLogger(AxolotiLibraryEditor.class.getName()).log(Level.SEVERE, "Git init failed", e);
+                }
+                finally {
+                    setButtonsEnabled(true);
+                }
+            }
+        }.execute();
     }
 
     private void jSelectDirBtnActionPerformed(java.awt.event.ActionEvent evt) {
-        String dir = jLocalDir.getText();
+        String dir = jTextFieldLocalDir.getText();
         if (dir == null || dir.length() == 0) {
             dir = prefs.getCurrentFileDirectory();
         }
@@ -557,9 +605,10 @@ public class AxolotiLibraryEditor extends JDialog {
             }
             try {
                 dir = seldir.getCanonicalPath();
-                jLocalDir.setText(dir + File.separator);
-            } catch (IOException ex) {
-                Logger.getLogger(AxolotiLibraryEditor.class.getName()).log(Level.SEVERE, null, ex);
+                jTextFieldLocalDir.setText(dir + File.separator);
+            }
+            catch (IOException ex) {
+                Logger.getLogger(AxolotiLibraryEditor.class.getName()).log(Level.SEVERE, "Error getting canonical path for selected directory", ex);
             }
         }
         fc.updateCurrentSize();
@@ -567,40 +616,32 @@ public class AxolotiLibraryEditor extends JDialog {
     }
 
     private void jSyncBtnActionPerformed(java.awt.event.ActionEvent evt) {
-        AxoGitLibrary gitlib = new AxoGitLibrary();
-        populateLib(gitlib);
-        gitlib.sync();
+        /* Disable UI elements while in progress */
+        setButtonsEnabled(false);
+
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                AxoGitLibrary gitlib = new AxoGitLibrary();
+                populateLib(gitlib);
+                gitlib.sync();
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    get();
+                }
+                catch (Exception e) {
+                    Logger.getLogger(AxolotiLibraryEditor.class.getName()).log(Level.SEVERE, "Git sync failed", e);
+                }
+                finally {
+                    setButtonsEnabled(true);
+                }
+            }
+        }.execute();
     }
-
-
-    private Box.Filler filler1;
-    private JCheckBox jAutoSync;
-    private JButton jCancel;
-    private JCheckBox jEnabled;
-    private JTextField jId;
-    private JButton jInitRepo;
-    private JLabel jLabelType;
-    private JLabel jLabelTypeOptional;
-    private JLabel jLabelTypeContributorPrefix;
-    private JLabel jLabelId;
-    private JLabel jLabelDirectory;
-    private JLabel jLabelRemotePath;
-    private JLabel jLabelRemoteLibrary;
-    private JLabel jLabelUserId;
-    private JLabel jLabelPassword;
-    private JLabel jLabelRevision;
-    private JLabel jLabelContributorsOnly;
-    private JTextField jLocalDir;
-    private JButton jOK;
-    private JPasswordField jPassword;
-    private JTextField jPrefix;
-    private JTextField jRemotePath;
-    private JTextField jRevision;
-    private JButton jSelectDirBtn;
-    private JSeparator jSeparator1;
-    private JButton jSyncBtn;
-    private JComboBox<String> jTypeCombo;
-    private JTextField jUserId;
 
     public AxolotiLibrary getLibrary() {
         return library;
@@ -611,15 +652,19 @@ public class AxolotiLibraryEditor extends JDialog {
     }
 
     private void populateLib(AxolotiLibrary library) {
-        library.setId(jId.getText().trim());
-        library.setLocalLocation(jLocalDir.getText().trim());
-        library.setRemoteLocation(jRemotePath.getText().trim());
-        library.setUserId(jUserId.getText().trim());
-        library.setPassword(new String(jPassword.getPassword()));
-        library.setEnabled(jEnabled.isSelected());
-        library.setType((String) jTypeCombo.getSelectedItem());
-        library.setAutoSync(jAutoSync.isSelected());
-        library.setContributorPrefix(jPrefix.getText().trim());
-        library.setRevision(jRevision.getText().trim());
+        library.setId(jTextFieldId.getText().trim());
+        library.setLocalLocation(jTextFieldLocalDir.getText().trim());
+        library.setRemoteLocation(jTextFieldRemotePath.getText().trim());
+        library.setUserId(jTextFieldUserId.getText().trim());
+
+        char[] passwordChars = jPasswordField.getPassword();
+        library.setPassword(passwordChars);
+        java.util.Arrays.fill(passwordChars, '\0'); /* Clear the password variable */
+
+        library.setEnabled(jCheckBoxEnabled.isSelected());
+        library.setType((String) jComboBoxType.getSelectedItem());
+        library.setAutoSync(jCheckBoxAutoSync.isSelected());
+        library.setContributorPrefix(jTextFieldPrefix.getText().trim());
+        library.setRevision(jTextFieldRevision.getText().trim());
     }
 }
