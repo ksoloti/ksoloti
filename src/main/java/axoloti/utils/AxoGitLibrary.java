@@ -138,7 +138,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
                 LOGGER.log(Level.INFO, "Repo initialisation successful: {0}", logDetails());
             } catch (Exception ex) {
                 LOGGER.log(Level.WARNING, "Repo initialisation FAILED: {0}", getId());
-                LOGGER.log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.WARNING, null, ex);
                 return;
             }
         } else {
@@ -156,7 +156,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             git.getRepository().close();
             return ret;
         }
-        LOGGER.log(Level.SEVERE, "stashChanges FAILED - could not find repo: {0}", getId());
+        LOGGER.log(Level.WARNING, "stashChanges FAILED - could not find repo: {0}", getId());
         return false;
     }
 
@@ -172,7 +172,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             git.getRepository().close();
             return ret;
         }
-        LOGGER.log(Level.SEVERE, "applyStashedChanges FAILED - could not find repo: {0}", getId());
+        LOGGER.log(Level.WARNING, "applyStashedChanges FAILED - could not find repo: {0}", getId());
         return false;
     }
 
@@ -187,7 +187,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
                 return getBranch();
             }
         }
-        LOGGER.log(Level.SEVERE, "getCurrentBranch FAILED - could not find repo: {0}", getId());
+        LOGGER.log(Level.WARNING, "getCurrentBranch FAILED - could not find repo: {0}", getId());
         return getBranch();
     }
 
@@ -210,7 +210,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             git.getRepository().close();
             return;
         }
-        LOGGER.log(Level.SEVERE, "Upgrade FAILED - could not find repo: {0}", getId());
+        LOGGER.log(Level.WARNING, "Upgrade FAILED - could not find repo: {0}", getId());
     }
 
     private Git getGit() {
@@ -250,7 +250,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Stash (stash) FAILED: {0}", logDetails());
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.WARNING, null, ex);
         }
         return false;
 
@@ -274,7 +274,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return -1;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "applyStash (findStash) FAILED: {0}", logDetails());
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.WARNING, null, ex);
         }
         return -1;
     }
@@ -296,7 +296,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "applyStash (stashApply) FAILED: {0}", logDetails());
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.WARNING, null, ex);
         }
 
         return false;
@@ -316,7 +316,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "applyStash (dropStash) FAILED: {0}", logDetails());
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.WARNING, null, ex);
         }
 
         return false;
@@ -337,7 +337,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
 
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Sync (pull) FAILED: {0}", logDetails());
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.WARNING, null, ex);
         }
         return false;
     }
@@ -366,14 +366,14 @@ public class AxoGitLibrary extends AxolotiLibrary {
                         return true;
                     } catch (GitAPIException ex) {
                         LOGGER.log(Level.WARNING, "Sync (checkout) FAILED: {0}", logDetails());
-                        LOGGER.log(Level.SEVERE, null, ex);
+                        LOGGER.log(Level.WARNING, null, ex);
                     }
                 }
                 return true;
             }
         } catch (IOException ex) {
             LOGGER.log(Level.WARNING, "Sync (check local branch) FAILED: {0}", logDetails());
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.WARNING, null, ex);
         }
 
         // check to see if branch is already available locally
@@ -389,7 +389,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             }
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Sync (branch list) FAILED: {0}", logDetails());
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.WARNING, null, ex);
         }
 
         CheckoutCommand cmd = git.checkout();
@@ -410,7 +410,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Sync (checkout) FAILED: {0}", logDetails());
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.WARNING, null, ex);
         }
         return false;
 
@@ -430,7 +430,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Sync (add) FAILED: {0}", logDetails());
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.WARNING, null, ex);
         }
         return false;
 
@@ -442,7 +442,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             cmd.call();
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Upgrade (fetch) FAILED: {0}", logDetails());
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.WARNING, null, ex);
         }
     }
 
@@ -456,7 +456,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Sync (commit) FAILED: {0}", logDetails());
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.WARNING, null, ex);
         }
         return false;
     }
@@ -534,7 +534,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Sync (push) FAILED: {0}", logDetails());
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.WARNING, null, ex);
         }
         return false;
     }
@@ -554,7 +554,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             LOGGER.log(Level.SEVERE, null, ex);
         } catch (NoWorkTreeException ex) {
             LOGGER.log(Level.WARNING, "Sync (isdirty) FAILED: {0}", logDetails());
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.WARNING, null, ex);
         }
         return false;
     }
