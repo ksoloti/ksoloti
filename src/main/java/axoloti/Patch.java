@@ -346,7 +346,7 @@ public class Patch {
 
     public boolean waitForBinFile() {
         boolean fileFound = false;
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 120; i++) {
             if (this.getBinFile().exists()) {
                 fileFound = true;
                 return fileFound;
