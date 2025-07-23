@@ -37,12 +37,17 @@ import static axoloti.usb.Usb.VID_STM;
 
 import axoloti.utils.OSDetect;
 
+import java.awt.Dialog;
 // import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import components.ScrollPaneComponent;
 
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -84,6 +89,9 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
     private javax.swing.JButton jButtonSelect;
     private ScrollPaneComponent jScrollPaneBoardsList;
     private javax.swing.JTable jTableBoardsList;
+
+    private JDialog connectingDialog;
+    private JLabel connectingLabel;
 
     /**
      * Creates new form USBPortSelectionDlg
@@ -165,6 +173,34 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             jTableBoardsList.getColumnModel().getColumn(2).setPreferredWidth(20);
             jTableBoardsList.getColumnModel().getColumn(3).setPreferredWidth(100);
         }
+
+        initConnectingDialog(parent);
+    }
+
+    private void initConnectingDialog(java.awt.Frame parent) {
+        /* Temporary popup window during the re-connection process */
+        connectingDialog = new JDialog(parent, "", Dialog.ModalityType.MODELESS);
+        connectingDialog.setUndecorated(true);
+        connectingDialog.setSize(360, 60);
+        connectingDialog.setResizable(false);
+
+        connectingLabel = new JLabel("Connecting...");
+        connectingLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        connectingLabel.setVerticalAlignment(SwingConstants.CENTER);
+        connectingDialog.add(connectingLabel);
+        
+        connectingDialog.setLocationRelativeTo(parent);
+    }
+
+    private void showConnectingDialog(String boardName) {
+        connectingLabel.setText("Connecting to " + boardName + "...");
+        connectingDialog.setLocationRelativeTo(this);
+        connectingDialog.setVisible(true);
+    }
+
+    private void hideConnectingDialog() {
+        connectingDialog.setVisible(false);
+        connectingDialog.dispose();
     }
 
     public static String ErrorString(int result) {
@@ -496,37 +532,54 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
         }
 
         String selectedBoardName = prefs.getBoardName(selectedCpuid); /* ShowBoardIDName below will sort out which to use */
-        String str = "";
-        if (selectedBoardName == null || selectedBoardName.trim().isEmpty()) {
-            /* If board does not hava a user name set, display CPU ID */
-            str = selectedCpuid;
-        }
-        else {
-            str = selectedBoardName;
-        }
+        String displayedName = (selectedBoardName == null || selectedBoardName.trim().isEmpty()) ? selectedCpuid : selectedBoardName;
 
-        /* Disconnect whatever board is currently connected */
-        if (USBBulkConnection.GetConnection().isConnected()) {
-            try {
-                LOGGER.log(Level.INFO, "Disconnecting board: " + str);
-                USBBulkConnection.GetConnection().disconnect();
-                Thread.sleep(500); /* Delay to ensure the disconnect completes before new connection attempt */
-            }
-            catch (Exception ex) {
-                // System.err.println(Instant.now() + " [DEBUG] Error during disconnect of current board: " + str + ", " + ex.getMessage());
-                return;
-            }
-        }
+        /* Show the connecting popup before starting the connection process */
+        showConnectingDialog(displayedName);
 
-        /* Connect to the newly selected Core */
-        boolean connected = USBBulkConnection.GetConnection().connect();
-        if (connected) {
-            USBBulkConnection.GetConnection().ShowBoardIDName(selectedCpuid, selectedBoardName); 
-            setVisible(false); /* Close the dialog on successful connection */
-        }
-        else {
-            LOGGER.log(Level.SEVERE, "Failed to re-connect to board: " + str);
-            /* Do not close the dialog on failure */
-        }
+        new SwingWorker<Boolean, Void>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                boolean disconnected = true;
+                if (USBBulkConnection.GetConnection().isConnected()) {
+                    try {
+                        /* Disconnect if a board is currently connected */
+                        LOGGER.log(Level.INFO, "Disconnecting board: " + displayedName);
+                        USBBulkConnection.GetConnection().disconnect();
+                        Thread.sleep(100); /* Delay to ensure the disconnect completes before new connection attempt */
+                    }
+                    catch (Exception ex) {
+                        // System.err.println(Instant.now() + " [ERROR] Error during disconnect of current board: " + str + ", " + ex.getMessage());
+                        disconnected = false;
+                    }
+                }
+
+                if (disconnected) {
+                    LOGGER.log(Level.INFO, "Attempting to connect to board: " + displayedName);
+                    return USBBulkConnection.GetConnection().connect();
+                }
+                return false;
+            }
+
+            @Override
+            protected void done() {
+                /* Hide the connecting dialog after the connection attempt is complete */
+                hideConnectingDialog();
+
+                try {
+                    boolean connected = get(); /* Get the result from doInBackground() */
+                    if (connected) {
+                        USBBulkConnection.GetConnection().ShowBoardIDName(selectedCpuid, selectedBoardName);
+                        setVisible(false); /* Close the dialog on successful connection */
+                    }
+                    else {
+                        LOGGER.log(Level.SEVERE, "Failed to re-connect to board: " + displayedName);
+                    }
+                }
+                catch (Exception ex) {
+                    // System.err.println(Instant.now() + " [ERROR] Error during connection SwingWorker task: " + ex.getMessage());
+                }
+            }
+        }.execute();
     }
 }
