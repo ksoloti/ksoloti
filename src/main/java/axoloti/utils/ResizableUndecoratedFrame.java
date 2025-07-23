@@ -1,4 +1,4 @@
-package axoloti;
+package axoloti.utils;
 
 import java.awt.*;
 import java.awt.event.*;
