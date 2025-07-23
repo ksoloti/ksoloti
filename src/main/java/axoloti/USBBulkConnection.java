@@ -229,12 +229,11 @@ public class USBBulkConnection extends Connection {
                 }
                 catch (LibUsbException e) {
                     // System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsbException: " + e.getMessage());
-                    e.printStackTrace(System.err);
                     disconnect();
                     break;
                 }
                 catch (Exception e) {
-                    // System.err.println(Instant.now() + " [DEBUG] Receiver: Unexpected exception: " + e.getMessage());
+                    System.err.println(Instant.now() + " [ERROR] Receiver: Unexpected exception: " + e.getMessage());
                     e.printStackTrace(System.err);
                     disconnect();
                     break;
@@ -274,7 +273,8 @@ public class USBBulkConnection extends Connection {
                     break;
                 }
                 catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Transmitter: Unexpected exception during command execution: " + e.getMessage(), e);
+                    System.err.println(Instant.now() + " [ERROR] Transmitter: Unexpected exception during command execution: " + e.getMessage());
+                    e.printStackTrace(System.err);
                     disconnect();
                     break;
                 }
@@ -471,7 +471,6 @@ public class USBBulkConnection extends Connection {
             }
         }
         catch (Exception mainEx) {
-            LOGGER.log(Level.SEVERE, "Unexpected exception during disconnect cleanup:", mainEx);
             System.err.println(Instant.now() + " [ERROR] Disconnect: Unexpected exception during cleanup: " + mainEx.getMessage());
         }
         finally {
@@ -735,7 +734,7 @@ public class USBBulkConnection extends Connection {
                 // System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: detectedCpuId set to: " + this.detectedCpuId);
             }
             catch (Exception cmdEx) {
-                LOGGER.log(Level.SEVERE, "Error during post-connection QCmd processing. Connection might be unstable:", cmdEx);
+                System.err.println(Instant.now() + " [ERROR] Error during post-connection QCmd processing. Connection might be unstable: " + cmdEx.getMessage());
                 return false;
             }
 
@@ -745,13 +744,13 @@ public class USBBulkConnection extends Connection {
 
         }
         catch (LibUsbException e) {
-            LOGGER.log(Level.SEVERE, "LibUsb exception during connection:", e);
+            System.err.println(Instant.now() + " [ERROR] LibUsb exception during connection: " + e.getMessage());
             ShowDisconnect();
             isConnecting = false;
             return false;
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "General exception during connection:", ex);
+            System.err.println(Instant.now() + " [ERROR] General exception during connection: " + ex.getMessage());
             ShowDisconnect();
             isConnecting = false;
             return false;
@@ -869,7 +868,7 @@ public class USBBulkConnection extends Connection {
         String name = prefs.getBoardName(targetCpuId);
         if (targetCpuId == null) return;
         if (name == null) {
-            LOGGER.log(Level.INFO, "Selecting CPU ID: {0} for connection.", targetCpuId);
+            LOGGER.log(Level.INFO, "Selecting CPU ID {0} for connection.", targetCpuId);
         }
         else {
             LOGGER.log(Level.INFO, "Selecting \"{0}\" for connection.", new Object[]{name});
