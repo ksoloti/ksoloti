@@ -44,7 +44,7 @@ public class MidiAssignments extends javax.swing.JDialog {
         super(null, java.awt.Dialog.ModalityType.TOOLKIT_MODAL);
         setModal(modal);
         setPreferredSize(new Dimension(640, 480));
-        setTitle("MIDI CC# Assignments");
+        setTitle("MIDI CC# Assignment for <" + param.GetObjectInstance().getInstanceName() + " : " + param.getName() + ">");
         initComponents();
         setIconImage(Constants.APP_ICON.getImage());
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
