@@ -548,7 +548,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                         /* Disconnect if a board is currently connected */
                         LOGGER.log(Level.INFO, "Disconnecting board: " + displayedName);
                         USBBulkConnection.GetConnection().disconnect();
-                        Thread.sleep(100); /* Delay to ensure the disconnect completes before new connection attempt */
+                        Thread.sleep(500); /* Delay to ensure the disconnect completes before new connection attempt */
                     }
                     catch (Exception ex) {
                         // System.err.println(Instant.now() + " [ERROR] Error during disconnect of current board: " + str + ", " + ex.getMessage());
