@@ -28,14 +28,11 @@ import javax.swing.JFileChooser;
 public class AxoJFileChooser extends JFileChooser {
 
     private Dimension currentSize;
-
-    public AxoJFileChooser() {
-        currentSize = new Dimension(640, 480);
-        setPreferredSize(currentSize);
-    }
+    private static final Dimension DEFAULT_SIZE = new Dimension(640, 480);
 
     public AxoJFileChooser(String path) {
-        currentSize = new Dimension(640, 480);
+        super(path);
+        currentSize = DEFAULT_SIZE;
         setPreferredSize(currentSize);
     }
 
