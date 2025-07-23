@@ -47,6 +47,7 @@ public class MidiAssignments extends javax.swing.JDialog {
         setTitle("MIDI CC# Assignment for <" + param.GetObjectInstance().getInstanceName() + " : " + param.getName() + ">");
         initComponents();
         setIconImage(Constants.APP_ICON.getImage());
+        setLocationRelativeTo(param.GetObjectInstance().getPatch().getPatchframe());
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         Patch patch = param.GetObjectInstance().patch;
         String CCObj[] = new String[128];
