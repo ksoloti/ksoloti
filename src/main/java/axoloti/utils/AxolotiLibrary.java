@@ -34,7 +34,7 @@ public class AxolotiLibrary {
     @Element(required = false)
     private String UserId;
     @Element(required = false)
-    private String Password;
+    private char[] Password;
     @Element(required = false)
     private boolean AutoSync;
     @Element(required = false)
@@ -54,7 +54,6 @@ public class AxolotiLibrary {
         LocalLocation = "";
         RemoteLocation = "";
         UserId = "";
-        Password = "";
         AutoSync = false;
         Revision = "";
         ContributorPrefix = "";
@@ -67,7 +66,6 @@ public class AxolotiLibrary {
         Enabled = e;
         RemoteLocation = rloc;
         UserId = "";
-        Password = "";
         AutoSync = auto;
     }
 
@@ -78,7 +76,13 @@ public class AxolotiLibrary {
         LocalLocation = lib.LocalLocation;
         RemoteLocation = lib.RemoteLocation;
         UserId = lib.UserId;
-        Password = lib.Password;
+        if (lib.Password != null) { /* Deep copy password */
+            this.Password = new char[lib.Password.length];
+            System.arraycopy(lib.Password, 0, this.Password, 0, lib.Password.length);
+        }
+        else {
+            this.Password = null;
+        }
         AutoSync = lib.AutoSync;
         Revision = lib.Revision;
         ContributorPrefix = lib.ContributorPrefix;
@@ -136,12 +140,31 @@ public class AxolotiLibrary {
         this.UserId = UserId;
     }
 
-    public String getPassword() {
+    public char[] getPassword() {
+        /* For best safety, consumer of this char[] should clear it
+           by filling it with zeros/spaces as soon as it's no longer needed. */
         return Password;
     }
 
-    public void setPassword(String Password) {
-        this.Password = Password;
+    public void setPassword(char[] password) {
+        /* For best safety, the caller of setPassword(char[] password)
+           should immediately clear their source 'char[]' array. */
+        if (password != null) {
+            this.Password = new char[password.length];
+            System.arraycopy(password, 0, this.Password, 0, password.length);
+        } else {
+            if (this.Password != null) {
+                java.util.Arrays.fill(this.Password, '\0'); /* Clear the old password */
+            }
+            this.Password = null;
+        }
+    }
+
+    public void clearPassword() {
+        if (this.Password != null) {
+            java.util.Arrays.fill(this.Password, '\0');
+            this.Password = null;
+        }
     }
 
     public boolean isAutoSync() {
