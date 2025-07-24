@@ -23,6 +23,7 @@ import axoloti.utils.AxoFileLibrary;
 import axoloti.utils.AxoGitLibrary;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
+import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 
@@ -30,8 +31,12 @@ import static axoloti.MainFrame.fc;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -41,18 +46,26 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JRootPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -64,8 +77,48 @@ public class PreferencesFrame extends JFrame {
     private static final Logger LOGGER = Logger.getLogger(PreferencesFrame.class.getName());
 
     static PreferencesFrame singleton = null;
-
     Preferences prefs = Preferences.LoadPreferences();
+    private boolean dirty = false;
+
+    private JButton jButtonFavDir;
+    private JButton jButtonAddLib;
+    private JButton jButtonSave;
+    private JButton jButtonDelLib;
+    private JButton jButtonEditLib;
+    private JButton jButtonLibStatus;
+    private JButton jButtonResetLibs;
+    private JCheckBox jCheckBoxBackupPatchesOnSD;
+    private JCheckBox jCheckBoxNoMouseReCenter;
+    private JCheckBox jCheckBoxControllerEnabled;
+    private JComboBox<String> jComboBoxDialMouseBehaviour;
+    private JComboBox<String> jComboBoxDspSafetyLimit;
+    private JComboBox<String> jComboBoxFirmwareMode;
+    private JComboBox<String> jComboBoxTheme;
+    private JLabel jLabelBackupPatchesOnSD;
+    private JLabel jLabelCodeFontSize;
+    private JLabel jLabelController;
+    private JLabel jLabelDialMouseBehaviour;
+    private JLabel jLabelDspSafetyLimit;
+    private JLabel jLabelFavouritesDir;
+    private JLabel jLabelFirmwareMode;
+    private JLabel jLabelLibraries;
+    private JLabel jLabelPollInterval;
+    private JLabel jLabelTheme;
+    private JLabel jLabelUserShortcut1;
+    private JLabel jLabelUserShortcut2;
+    private JLabel jLabelUserShortcut3;
+    private JLabel jLabelUserShortcut4;
+    private JLabel jLabelUserShortcutTitle;
+    private JTable jTableLibraries;
+    private JTextField jTextFieldCodeFontSize;
+    private JTextField jTextFieldController;
+    private JTextField jTextFieldFavDir;
+    private JTextField jTextFieldPollInterval;
+    private JTextField jTextFieldUserShortcut1;
+    private JTextField jTextFieldUserShortcut2;
+    private JTextField jTextFieldUserShortcut3;
+    private JTextField jTextFieldUserShortcut4;
+    private ScrollPaneComponent jScrollPaneLibraryTable;
 
     public static PreferencesFrame GetPreferencesFrame() {
         if (singleton == null) {
@@ -87,39 +140,22 @@ public class PreferencesFrame extends JFrame {
 
         initComponents();
 
-
-        jTextFieldPollInterval.setText(Integer.toString(prefs.getPollInterval()));
-
-        jTextFieldCodeFontSize.setText(Integer.toString(prefs.getCodeFontSize()));
-
-        jTextFieldFavDir.setText(prefs.getFavouriteDir());
-
-        jTextFieldUserShortcut1.setText(prefs.getUserShortcut(0));
-        jTextFieldUserShortcut2.setText(prefs.getUserShortcut(1));
-        jTextFieldUserShortcut3.setText(prefs.getUserShortcut(2));
-        jTextFieldUserShortcut4.setText(prefs.getUserShortcut(3));
-
-        jControllerEnabled.setSelected(prefs.isControllerEnabled());
-        jBackupPatchesOnSDEnabled.setSelected(prefs.isBackupPatchesOnSDEnabled());
-        jTextFieldController.setText(prefs.getControllerObject());
-        jTextFieldController.setEnabled(prefs.isControllerEnabled());
-
-        jCheckBoxNoMouseReCenter.setSelected(prefs.getMouseDoNotRecenterWhenAdjustingControls());
-
-        if (prefs.getMouseDialAngular()) jComboBoxDialMouseBehaviour.setSelectedItem("Angular"); 
-
-        jComboBoxFirmwareMode.setSelectedItem(prefs.getFirmwareMode()); 
-
-        jComboBoxTheme.setSelectedItem(prefs.getTheme());
-
-        jComboBoxDspSafetyLimit.setSelectedIndex(prefs.getDspSafetyLimit());
-
+        populatePreferences();
         PopulateLibrary();
 
         setResizable(false);
 
+        setupCloseShortcut();
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                attemptClose();
+            }
+        });
+        addChangeListeners();
+
         /* Double click to edit library */
-        jLibraryTable.addMouseListener(new MouseAdapter() {
+        jTableLibraries.addMouseListener(new MouseAdapter() {
 
             @Override
             public void mousePressed(MouseEvent me) {
@@ -134,6 +170,113 @@ public class PreferencesFrame extends JFrame {
                 }
             }
         });
+    }
+
+    private void populatePreferences() {
+        jTextFieldPollInterval.setText(Integer.toString(prefs.getPollInterval()));
+        jTextFieldCodeFontSize.setText(Integer.toString(prefs.getCodeFontSize()));
+        jTextFieldFavDir.setText(prefs.getFavouriteDir());
+        jTextFieldUserShortcut1.setText(prefs.getUserShortcut(0));
+        jTextFieldUserShortcut2.setText(prefs.getUserShortcut(1));
+        jTextFieldUserShortcut3.setText(prefs.getUserShortcut(2));
+        jTextFieldUserShortcut4.setText(prefs.getUserShortcut(3));
+        jCheckBoxNoMouseReCenter.setSelected(prefs.getMouseDoNotRecenterWhenAdjustingControls());
+        jCheckBoxBackupPatchesOnSD.setSelected(prefs.isBackupPatchesOnSDEnabled());
+        jCheckBoxControllerEnabled.setSelected(prefs.isControllerEnabled());
+        jTextFieldController.setText(prefs.getControllerObject());
+        jTextFieldController.setEnabled(prefs.isControllerEnabled());
+        if (prefs.getMouseDialAngular()) jComboBoxDialMouseBehaviour.setSelectedItem("Angular"); 
+        jComboBoxFirmwareMode.setSelectedItem(prefs.getFirmwareMode()); 
+        jComboBoxTheme.setSelectedItem(prefs.getTheme());
+        jComboBoxDspSafetyLimit.setSelectedIndex(prefs.getDspSafetyLimit());
+    }
+
+    private void setDirty(boolean dirty) {
+        this.dirty = dirty;
+        setTitle((dirty ? "*" : "") + "Preferences");
+    }
+
+    private void addChangeListeners() {
+        DocumentListener docListener = new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { setDirty(true); }
+            public void removeUpdate(DocumentEvent e) { setDirty(true); }
+            public void changedUpdate(DocumentEvent e) { setDirty(true); }
+        };
+        jTextFieldFavDir.getDocument().addDocumentListener(docListener);
+        jTextFieldUserShortcut1.getDocument().addDocumentListener(docListener);
+        jTextFieldUserShortcut2.getDocument().addDocumentListener(docListener);
+        jTextFieldUserShortcut3.getDocument().addDocumentListener(docListener);
+        jTextFieldUserShortcut4.getDocument().addDocumentListener(docListener);
+        jTextFieldPollInterval.getDocument().addDocumentListener(docListener);
+        jTextFieldCodeFontSize.getDocument().addDocumentListener(docListener);
+        jTextFieldController.getDocument().addDocumentListener(docListener);
+
+        ActionListener checkboxListener = new ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                setDirty(true);
+            }
+        };
+        jCheckBoxNoMouseReCenter.addActionListener(checkboxListener);
+        jCheckBoxControllerEnabled.addActionListener(checkboxListener);
+        jCheckBoxBackupPatchesOnSD.addActionListener(checkboxListener);
+
+        ActionListener comboBoxListener = new ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                setDirty(true);
+            }
+        };
+        jComboBoxDialMouseBehaviour.addActionListener(comboBoxListener);
+        jComboBoxFirmwareMode.addActionListener(comboBoxListener);
+        jComboBoxDspSafetyLimit.addActionListener(comboBoxListener);
+        jComboBoxTheme.addActionListener(comboBoxListener);
+    }
+
+    private void setupCloseShortcut() {
+        JRootPane rootPane = this.getRootPane();
+        InputMap inputMap = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = rootPane.getActionMap();
+
+        KeyStroke ctrlW = KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyUtils.CONTROL_OR_CMD_MASK);
+
+        inputMap.put(ctrlW, "closePreferences");
+        actionMap.put("closePreferences", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                attemptClose();
+            }
+        });
+    }
+
+    private void attemptClose() {
+        if (dirty) {
+            String[] options = {"Save", "Discard", "Cancel"};
+            int option = JOptionPane.showOptionDialog(
+                this,
+                "Save your changes to preferences?",
+                "Save Changes?",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                options,
+                options[0]
+            );
+
+            if (option == JOptionPane.YES_OPTION) {
+                prefs.SavePrefs();
+                dirty = false;
+                this.dispose();
+            } else if (option == JOptionPane.NO_OPTION) {
+                populatePreferences(); /* Reset to values from ksoloti.prefs */
+                dirty = false;
+                this.dispose();
+            } else if (option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION) {
+                /* Keep window open with current changes pending. */
+            }
+        } else {
+            this.dispose();
+        }
     }
 
     void Apply() {
@@ -167,8 +310,8 @@ public class PreferencesFrame extends JFrame {
         prefs.setFavouriteDir(jTextFieldFavDir.getText());
 
         prefs.setControllerObject(jTextFieldController.getText().trim());
-        prefs.setControllerEnabled(jControllerEnabled.isSelected());
-        prefs.setBackupPatchesOnSDEnabled(jBackupPatchesOnSDEnabled.isSelected());
+        prefs.setControllerEnabled(jCheckBoxControllerEnabled.isSelected());
+        prefs.setBackupPatchesOnSDEnabled(jCheckBoxBackupPatchesOnSD.isSelected());
 
         prefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
         prefs.applyTheme();
@@ -178,7 +321,7 @@ public class PreferencesFrame extends JFrame {
 
     final void PopulateLibrary() {
 
-        DefaultTableModel model = (DefaultTableModel) jLibraryTable.getModel();
+        DefaultTableModel model = (DefaultTableModel) jTableLibraries.getModel();
 
         model.setRowCount(0);
         while (model.getRowCount() > 0) {
@@ -189,58 +332,51 @@ public class PreferencesFrame extends JFrame {
             model.addRow(new Object[]{lib.getType(), lib.getId(), lib.getLocalLocation(), lib.getEnabled()});
         }
 
-        jLibraryTable.setCellSelectionEnabled(false);
-        jLibraryTable.setRowSelectionAllowed(true);
+        jTableLibraries.setCellSelectionEnabled(false);
+        jTableLibraries.setRowSelectionAllowed(true);
     }
-
 
     private void initComponents() {
 
-        jTextFieldPollInterval = new JTextField();
-    
-        jTextFieldCodeFontSize = new JTextField();
-        jLabelLibraries = new JLabel();
-        jLabelPollInterval = new JLabel();
-            
-        jLabelCodeFontSize = new JLabel();
+        jButtonAddLib = new JButton();
+        jButtonDelLib = new JButton();
+        jButtonEditLib = new JButton();
+        jButtonFavDir = new JButton();
+        jButtonLibStatus = new JButton();
+        jButtonResetLibs = new JButton();
         jButtonSave = new JButton();
-        jLabelDialMouseBehaviour = new JLabel();
-        jLabelFirmwareMode = new JLabel();
+        jCheckBoxBackupPatchesOnSD = new JCheckBox();
+        jCheckBoxNoMouseReCenter = new JCheckBox();
         jComboBoxDialMouseBehaviour = new JComboBox<String>();
         jComboBoxFirmwareMode = new JComboBox<String>();
+        jComboBoxDspSafetyLimit = new JComboBox<String>();
+        jComboBoxTheme = new JComboBox<String>();
+        jCheckBoxControllerEnabled = new JCheckBox();
+        jLabelBackupPatchesOnSD = new JLabel();
+        jLabelCodeFontSize = new JLabel();
+        jLabelController = new JLabel();
+        jLabelDialMouseBehaviour = new JLabel();
+        jLabelDspSafetyLimit = new JLabel();
         jLabelFavouritesDir = new JLabel();
-        jLabelUserShortcutTitle = new JLabel();
+        jLabelFirmwareMode = new JLabel();
+        jLabelLibraries = new JLabel();
+        jLabelPollInterval = new JLabel();
+        jLabelTheme = new JLabel();
         jLabelUserShortcut1 = new JLabel();
         jLabelUserShortcut2 = new JLabel();
         jLabelUserShortcut3 = new JLabel();
         jLabelUserShortcut4 = new JLabel();
+        jLabelUserShortcutTitle = new JLabel();
+        jScrollPaneLibraryTable = new ScrollPaneComponent();
+        jTableLibraries = new JTable();
+        jTextFieldCodeFontSize = new JTextField();
+        jTextFieldController = new JTextField();
         jTextFieldFavDir = new JTextField();
-
+        jTextFieldPollInterval = new JTextField();
         jTextFieldUserShortcut1 = new JTextField();
         jTextFieldUserShortcut2 = new JTextField();
         jTextFieldUserShortcut3 = new JTextField();
         jTextFieldUserShortcut4 = new JTextField();
-
-        btnFavDir = new JButton();
-        jLabelController = new JLabel();
-        jTextFieldController = new JTextField();
-        jControllerEnabled = new JCheckBox();
-        jBackupPatchesOnSDEnabled = new JCheckBox();
-        jLabelBackupPatchesOnSD = new JLabel();
-        jScrollPaneLibraryTable = new ScrollPaneComponent();
-        jLibraryTable = new JTable();
-        jAddLibBtn = new JButton();
-        jDelLibBtn = new JButton();
-        jResetLib = new JButton();
-        jEditLib = new JButton();
-        jLibStatus = new JButton();
-        jLabelTheme = new JLabel();
-        jComboBoxTheme = new JComboBox<String>();
-
-        jLabelDspSafetyLimit = new JLabel();
-        jComboBoxDspSafetyLimit = new JComboBox<String>();
-
-        jCheckBoxNoMouseReCenter = new JCheckBox();
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -260,9 +396,8 @@ public class PreferencesFrame extends JFrame {
 
         jLabelLibraries.setText("Libraries");
 
-
-        jButtonSave.setText("Save All");
-        jButtonSave.setToolTipText("Save all settings.");
+        jButtonSave.setText("Save & Close");
+        jButtonSave.setToolTipText("Save all settings and close.");
         jButtonSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSaveActionPerformed(evt);
@@ -330,9 +465,9 @@ public class PreferencesFrame extends JFrame {
         jLabelUserShortcut3.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
         jLabelUserShortcut4.setToolTipText(jTextFieldUserShortcut1.getToolTipText());
 
-        btnFavDir.setText("Browse...");
-        btnFavDir.setToolTipText(jTextFieldFavDir.getToolTipText());
-        btnFavDir.addActionListener(new java.awt.event.ActionListener() {
+        jButtonFavDir.setText("Browse...");
+        jButtonFavDir.setToolTipText(jTextFieldFavDir.getToolTipText());
+        jButtonFavDir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnFavDirActionPerformed(evt);
             }
@@ -346,9 +481,9 @@ public class PreferencesFrame extends JFrame {
         jTextFieldController.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         jTextFieldController.setToolTipText(jLabelController.getToolTipText());
 
-        jControllerEnabled.setText("Enabled");
-        jControllerEnabled.setToolTipText(jLabelController.getToolTipText());
-        jControllerEnabled.addActionListener(new java.awt.event.ActionListener() {
+        jCheckBoxControllerEnabled.setText("Enabled");
+        jCheckBoxControllerEnabled.setToolTipText(jLabelController.getToolTipText());
+        jCheckBoxControllerEnabled.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jControllerEnabledActionPerformed(evt);
             }
@@ -357,17 +492,17 @@ public class PreferencesFrame extends JFrame {
         jLabelBackupPatchesOnSD.setText("Backup Patches to SD Card");
         jLabelBackupPatchesOnSD.setToolTipText("Whenever a patch is \'uploaded to SD card\' or \'uploaded to SD card as startup\',\na backup patch file with timestamp is created in the respective folder on SD card.\nExample: \'myCoolPatch.axp.backup_2025-01-31_09-21-58.axp\'\nIf you ever lose a patch file you have previously uploaded to SD card,\nyou can recover a working version from the backup history.\nBackup files in the root directory can hint at the startup patch currently set up on SD card.\n\nRun \'Board > Enter Card Reader Mode\' to get access to the backup files on SD card.");
 
-        jBackupPatchesOnSDEnabled.setText("Enabled");
-        jBackupPatchesOnSDEnabled.setToolTipText(jLabelBackupPatchesOnSD.getToolTipText());
-        jBackupPatchesOnSDEnabled.addActionListener(new java.awt.event.ActionListener() {
+        jCheckBoxBackupPatchesOnSD.setText("Enabled");
+        jCheckBoxBackupPatchesOnSD.setToolTipText(jLabelBackupPatchesOnSD.getToolTipText());
+        jCheckBoxBackupPatchesOnSD.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jBackupPatchesOnSDEnabledActionPerformed(evt);
             }
         });
 
-        jLibraryTable.getTableHeader().setReorderingAllowed(false);
-        jLibraryTable.setRowHeight(24);
-        jLibraryTable.setModel(new DefaultTableModel(
+        jTableLibraries.getTableHeader().setReorderingAllowed(false);
+        jTableLibraries.setRowHeight(24);
+        jTableLibraries.setModel(new DefaultTableModel(
             new Object [][] {
 
             },
@@ -390,54 +525,54 @@ public class PreferencesFrame extends JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jLibraryTable.setColumnSelectionAllowed(true);
-        jLibraryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        jScrollPaneLibraryTable.setViewportView(jLibraryTable);
-        jLibraryTable.getTableHeader().setReorderingAllowed(false);
-        jLibraryTable.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        jLibraryTable.setRowHeight(24);
-        if (jLibraryTable.getColumnModel().getColumnCount() > 0) {
-            jLibraryTable.getColumnModel().getColumn(0).setPreferredWidth(60);
-            jLibraryTable.getColumnModel().getColumn(1).setPreferredWidth(140);
-            jLibraryTable.getColumnModel().getColumn(2).setPreferredWidth(280);
-            jLibraryTable.getColumnModel().getColumn(3).setPreferredWidth(60);
+        jTableLibraries.setColumnSelectionAllowed(true);
+        jTableLibraries.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jScrollPaneLibraryTable.setViewportView(jTableLibraries);
+        jTableLibraries.getTableHeader().setReorderingAllowed(false);
+        jTableLibraries.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jTableLibraries.setRowHeight(24);
+        if (jTableLibraries.getColumnModel().getColumnCount() > 0) {
+            jTableLibraries.getColumnModel().getColumn(0).setPreferredWidth(60);
+            jTableLibraries.getColumnModel().getColumn(1).setPreferredWidth(140);
+            jTableLibraries.getColumnModel().getColumn(2).setPreferredWidth(280);
+            jTableLibraries.getColumnModel().getColumn(3).setPreferredWidth(60);
         }
 
-        jAddLibBtn.setText("➕");
-        jAddLibBtn.setToolTipText("Add a library...");
-        jAddLibBtn.addActionListener(new java.awt.event.ActionListener() {
+        jButtonAddLib.setText("➕");
+        jButtonAddLib.setToolTipText("Add a library...");
+        jButtonAddLib.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jAddLibBtnActionPerformed(evt);
             }
         });
 
-        jDelLibBtn.setText("❌");
-        jDelLibBtn.setToolTipText("Delete the selected library.");
-        jDelLibBtn.addActionListener(new java.awt.event.ActionListener() {
+        jButtonDelLib.setText("❌");
+        jButtonDelLib.setToolTipText("Delete the selected library.");
+        jButtonDelLib.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jDelLibBtnActionPerformed(evt);
             }
         });
 
-        jResetLib.setText("Reset");
-        jResetLib.setToolTipText("Reset and re-download the factory and community libraries.");
-        jResetLib.addActionListener(new java.awt.event.ActionListener() {
+        jButtonResetLibs.setText("Reset");
+        jButtonResetLibs.setToolTipText("Reset and re-download the factory and community libraries.");
+        jButtonResetLibs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jResetLibActionPerformed(evt);
             }
         });
 
-        jEditLib.setText("Edit");
-        jEditLib.setToolTipText("Edit the selected library.");
-        jEditLib.addActionListener(new java.awt.event.ActionListener() {
+        jButtonEditLib.setText("Edit");
+        jButtonEditLib.setToolTipText("Edit the selected library.");
+        jButtonEditLib.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jEditLibActionPerformed(evt);
             }
         });
 
-        jLibStatus.setText("Status");
-        jLibStatus.setToolTipText("Show in the console if libraries are up-to-date, have unsaved changes etc.");
-        jLibStatus.addActionListener(new java.awt.event.ActionListener() {
+        jButtonLibStatus.setText("Status");
+        jButtonLibStatus.setToolTipText("Show in the console if libraries are up-to-date, have unsaved changes etc.");
+        jButtonLibStatus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jLibStatusActionPerformed(evt);
             }
@@ -535,7 +670,7 @@ public class PreferencesFrame extends JFrame {
                         .addGap(12, 12, 12)
 
                         .addGroup(layout.createParallelGroup(Alignment.LEADING)
-                            .addComponent(btnFavDir, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonFavDir, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
                         )
                         .addGap(15, 15, 15)
                     )
@@ -546,16 +681,16 @@ public class PreferencesFrame extends JFrame {
 
                         .addGroup(layout.createParallelGroup(Alignment.LEADING)
 
-                                .addComponent(jResetLib, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButtonResetLibs, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
 
-                                .addComponent(jLibStatus, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButtonLibStatus, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
 
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jAddLibBtn, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButtonAddLib, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(jDelLibBtn, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButtonDelLib, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
                             )
-                            .addComponent(jEditLib, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonEditLib, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
                         )
                         .addContainerGap(14, Short.MAX_VALUE)
                     )
@@ -567,7 +702,7 @@ public class PreferencesFrame extends JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelController, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(jControllerEnabled, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jCheckBoxControllerEnabled, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jTextFieldController, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE)
                             )
@@ -575,7 +710,7 @@ public class PreferencesFrame extends JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelBackupPatchesOnSD, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED)
-                                .addComponent(jBackupPatchesOnSDEnabled, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jCheckBoxBackupPatchesOnSD, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE)
                             )
 
@@ -595,8 +730,8 @@ public class PreferencesFrame extends JFrame {
                                 .addComponent(jLabelTheme, GroupLayout.PREFERRED_SIZE, 220, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(jComboBoxTheme, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(ComponentPlacement.RELATED, 106, 106)
-                                .addComponent(jButtonSave, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(ComponentPlacement.RELATED, 66, 66)
+                                .addComponent(jButtonSave, GroupLayout.PREFERRED_SIZE, 146, GroupLayout.PREFERRED_SIZE)
                                 .addGap(15, 15, 15)
                             )
 
@@ -644,7 +779,7 @@ public class PreferencesFrame extends JFrame {
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(jTextFieldFavDir)
                     .addComponent(jLabelFavouritesDir)
-                    .addComponent(btnFavDir)
+                    .addComponent(jButtonFavDir)
                 )
                 .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
@@ -679,17 +814,17 @@ public class PreferencesFrame extends JFrame {
                     .addGroup(layout.createSequentialGroup()
 
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                            .addComponent(jAddLibBtn)
-                            .addComponent(jDelLibBtn)
+                            .addComponent(jButtonAddLib)
+                            .addComponent(jButtonDelLib)
                         )
                         .addPreferredGap(ComponentPlacement.RELATED)
 
-                        .addComponent(jEditLib)
+                        .addComponent(jButtonEditLib)
                         .addPreferredGap(ComponentPlacement.RELATED)
 
-                            .addComponent(jResetLib)
+                            .addComponent(jButtonResetLibs)
                         .addPreferredGap(ComponentPlacement.RELATED)
-                            .addComponent(jLibStatus)
+                            .addComponent(jButtonLibStatus)
                     )
 
                     .addGroup(layout.createSequentialGroup()
@@ -723,14 +858,14 @@ public class PreferencesFrame extends JFrame {
 
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelController)
-                            .addComponent(jControllerEnabled)
+                            .addComponent(jCheckBoxControllerEnabled)
                             .addComponent(jTextFieldController, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
                         .addGap(15, 15, 15)
 
                         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                             .addComponent(jLabelBackupPatchesOnSD)
-                            .addComponent(jBackupPatchesOnSDEnabled, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jCheckBoxBackupPatchesOnSD, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
                         .addGap(15, 15, 15)
 
@@ -764,7 +899,7 @@ public class PreferencesFrame extends JFrame {
     private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {
         Apply();
         prefs.SavePrefs();
-        setVisible(false);
+        this.dispose();
     }
 
     private void jComboBoxDialMouseBehaviourActionPerformed(java.awt.event.ActionEvent evt) {
@@ -794,7 +929,7 @@ public class PreferencesFrame extends JFrame {
     }
 
     private void jControllerEnabledActionPerformed(java.awt.event.ActionEvent evt) {
-        jTextFieldController.setEnabled(jControllerEnabled.isSelected());
+        jTextFieldController.setEnabled(jCheckBoxControllerEnabled.isSelected());
     }
 
     private void jBackupPatchesOnSDEnabledActionPerformed(java.awt.event.ActionEvent evt) {
@@ -818,8 +953,8 @@ public class PreferencesFrame extends JFrame {
 
     private void jDelLibBtnActionPerformed(java.awt.event.ActionEvent evt) {
 
-        DefaultTableModel model = (DefaultTableModel)jLibraryTable.getModel();
-        int idx = jLibraryTable.getSelectedRow();
+        DefaultTableModel model = (DefaultTableModel)jTableLibraries.getModel();
+        int idx = jTableLibraries.getSelectedRow();
         if (idx < 0) { /* Return if nothing selected */
             return;
         }
@@ -861,8 +996,8 @@ public class PreferencesFrame extends JFrame {
     }
 
     private void jEditLibActionPerformed(java.awt.event.ActionEvent evt) {
-        // DefaultTableModel model = (DefaultTableModel) jLibraryTable.getModel();
-        int idx = jLibraryTable.getSelectedRow();
+        // DefaultTableModel model = (DefaultTableModel) jTableLibraries.getModel();
+        int idx = jTableLibraries.getSelectedRow();
         if (idx >= 0) {
             editLibraryRow(idx);
         }
@@ -890,7 +1025,7 @@ public class PreferencesFrame extends JFrame {
 
     private void editLibraryRow(int idx) {
         if (idx >= 0) {
-            DefaultTableModel model = (DefaultTableModel) jLibraryTable.getModel();
+            DefaultTableModel model = (DefaultTableModel) jTableLibraries.getModel();
             String id = (String) model.getValueAt(idx, 1);
             AxolotiLibrary lib = prefs.getLibrary(id);
             if (lib != null) {
@@ -910,48 +1045,4 @@ public class PreferencesFrame extends JFrame {
             }
         }
     }
-
-
-    private JButton btnFavDir;
-    private JButton jAddLibBtn;
-    private JButton jButtonSave;
-    private JCheckBox jCheckBoxNoMouseReCenter;
-    private JComboBox<String> jComboBoxDialMouseBehaviour;
-    private JComboBox<String> jComboBoxFirmwareMode;
-    private JCheckBox jControllerEnabled;
-    private JCheckBox jBackupPatchesOnSDEnabled;
-    private JButton jDelLibBtn;
-    private JButton jEditLib;
-    private JLabel jLabelLibraries;
-    private JLabel jLabelPollInterval;
-    private JLabel jLabelDspSafetyLimit;
-    private JComboBox<String> jComboBoxDspSafetyLimit;
-    private JLabel jLabelCodeFontSize;
-    private JLabel jLabelDialMouseBehaviour;
-    private JLabel jLabelFirmwareMode;
-    private JLabel jLabelFavouritesDir;
-    
-    private JLabel jLabelUserShortcutTitle;
-    private JLabel jLabelUserShortcut1;
-    private JLabel jLabelUserShortcut2;
-    private JLabel jLabelUserShortcut3;
-    private JLabel jLabelUserShortcut4;
-
-    private JLabel jLabelController;
-    private JLabel jLabelBackupPatchesOnSD;
-    private JLabel jLabelTheme;
-    private JComboBox<String> jComboBoxTheme;
-    private JButton jLibStatus;
-    private JTable jLibraryTable;
-    private JButton jResetLib;
-    private ScrollPaneComponent jScrollPaneLibraryTable;
-    private JTextField jTextFieldController;
-    private JTextField jTextFieldPollInterval;
-    private JTextField jTextFieldCodeFontSize;
-    private JTextField jTextFieldFavDir;
-
-    private JTextField jTextFieldUserShortcut1;
-    private JTextField jTextFieldUserShortcut2;
-    private JTextField jTextFieldUserShortcut3;
-    private JTextField jTextFieldUserShortcut4;
 }
