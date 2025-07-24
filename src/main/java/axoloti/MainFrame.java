@@ -25,7 +25,7 @@ import axoloti.dialogs.AxoJFileChooser;
 import axoloti.dialogs.FileManagerFrame;
 import axoloti.dialogs.KeyboardFrame;
 import axoloti.dialogs.PatchBank;
-import axoloti.dialogs.PreferencesFrame;
+// import axoloti.dialogs.PreferencesFrame;
 import axoloti.object.AxoObjects;
 import axoloti.usb.Usb;
 import axoloti.utils.AxolotiLibrary;
@@ -123,7 +123,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     String LinkFirmwareID;
     KeyboardFrame keyboard;
     FileManagerFrame filemanager;
-    PreferencesFrame pp;
+    // PreferencesFrame pp;
     // AxolotiRemoteControl remote;
     QCmdProcessor qcmdprocessor;
     Thread qcmdprocessorThread;
