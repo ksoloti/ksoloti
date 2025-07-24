@@ -26,6 +26,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.event.HyperlinkEvent;
@@ -48,9 +49,16 @@ public class ShortcutsFrame extends javax.swing.JFrame {
         initComponents();
         setIconImage(Constants.APP_ICON.getImage());
         try {
-            jTextPaneShortcutsHtml.setPage(getClass().getResource("/resources/shortcuts.html"));
+            URL shortcutsHtmlUrl = getClass().getResource("/resources/shortcuts.html");
+            if (shortcutsHtmlUrl != null) {
+                jTextPaneShortcutsHtml.setPage(shortcutsHtmlUrl);
+            } else {
+                LOGGER.log(Level.WARNING, "shortcuts.html not found in resources.");
+                jTextPaneShortcutsHtml.setText("<html><body><h1>Greetings.</h1>Error: Shortcuts content not found.</body></html>");
+            }
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Failed to load shortcuts HTML content", ex);
+            jTextPaneShortcutsHtml.setText("<html><body><h1>Greetings.</h1>Error loading shortcuts.</body></html>");
         }
 
         jVersionTxt.setText(Version.AXOLOTI_VERSION);
