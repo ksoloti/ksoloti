@@ -39,75 +39,22 @@ public class ThemeEditor extends JFrame {
                 new GridLayout(theme.getClass().getFields().length + 8, 2)
         );
         final JButton load = new JButton("Load");
-        load.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent e) {
-                theme.load(ThemeEditor.this);
-                theme = Theme.getCurrentTheme();
-                update();
-            }
-
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            public void mouseExited(MouseEvent e) {
-
-            }
-
-            public void mouseReleased(MouseEvent e) {
-
-            }
+        load.addActionListener(e -> {
+            theme.load(ThemeEditor.this);
+            theme = Theme.getCurrentTheme();
+            update();
         });
+
         final JButton save = new JButton("Save");
-        save.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent e) {
-                theme.save(ThemeEditor.this);
-            }
-
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            public void mouseExited(MouseEvent e) {
-
-            }
-
-            public void mouseReleased(MouseEvent e) {
-
-            }
+        save.addActionListener(e -> {
+            theme.save(ThemeEditor.this);
         });
 
         final JButton revertToDefault = new JButton("Revert to Default");
-        revertToDefault.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent e) {
-                Theme.loadDefaultTheme();
-                theme = Theme.getCurrentTheme();
-                update();
-            }
-
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            public void mouseExited(MouseEvent e) {
-
-            }
-
-            public void mouseReleased(MouseEvent e) {
-
-            }
+        revertToDefault.addActionListener(e -> {
+            Theme.loadDefaultTheme();
+            theme = Theme.getCurrentTheme();
+            update();
         });
 
         p.add(load);
