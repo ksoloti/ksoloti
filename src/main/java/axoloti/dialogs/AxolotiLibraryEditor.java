@@ -20,7 +20,6 @@
 package axoloti.dialogs;
 
 import axoloti.Axoloti;
-import axoloti.MainFrame;
 
 import static axoloti.MainFrame.fc;
 import static axoloti.MainFrame.prefs;
@@ -142,7 +141,7 @@ public class AxolotiLibraryEditor extends JDialog {
         }
         jComboBoxType.setSelectedItem(library.getType());
 
-        boolean expert = MainFrame.prefs.getExpertMode() || Axoloti.isDeveloper();
+        boolean expert = prefs.getExpertMode() || Axoloti.isDeveloper();
 
         boolean isOfficial = AxolotiLibrary.FACTORY_ID.equals(library.getId()) ||
                             AxolotiLibrary.USER_LIBRARY_ID.equals(library.getId()) ||
@@ -156,8 +155,8 @@ public class AxolotiLibraryEditor extends JDialog {
     }
 
     private void initComponents() {
-
-        filler1 = new Box.Filler(new java.awt.Dimension(0, 3), new java.awt.Dimension(0, 3), new java.awt.Dimension(32767, 3));
+        Dimension d = new java.awt.Dimension(0, 3);
+        filler1 = new Box.Filler(d, d, d);
         jButtonCancel = new JButton();
         jButtonInitRepo = new JButton();
         jButtonOK = new JButton();
@@ -597,7 +596,7 @@ public class AxolotiLibraryEditor extends JDialog {
             }
         });
 
-        int returnVal = fc.showSaveDialog(this);
+        int returnVal = fc.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             seldir = fc.getSelectedFile();
             if (!seldir.exists()) {
