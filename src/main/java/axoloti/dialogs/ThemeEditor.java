@@ -89,7 +89,8 @@ public class ThemeEditor extends JFrame {
                     });
                     p.add(new JPanel());
                     p.add(new JPanel());
-                } else {
+                }
+                else {
                     final JButton t = new JButton();
                     t.setBorder(BorderFactory.createLineBorder(getBackground(), 2));
                     final Color currentColor = (Color) f.get(theme);
@@ -106,7 +107,8 @@ public class ThemeEditor extends JFrame {
                                     e.getComponent().repaint();
                                 }
 
-                            } catch (IllegalAccessException ex) {
+                            }
+                            catch (IllegalAccessException ex) {
                                 LOGGER.log(Level.SEVERE, "{0}", new Object[]{ex});
                             }
                         }
@@ -129,7 +131,8 @@ public class ThemeEditor extends JFrame {
                     });
                     p.add(t);
                 }
-            } catch (IllegalAccessException ex) {
+            }
+            catch (IllegalAccessException ex) {
                 LOGGER.log(Level.SEVERE, "{0}", new Object[]{ex});
             }
         }
@@ -142,15 +145,14 @@ public class ThemeEditor extends JFrame {
         for (final Field f : theme.getClass().getFields()) {
             Component target = p.getComponent(i);
             try {
-                try {
-                    Color color = (Color) f.get(theme);
-                    target.setBackground(color);
-                } catch (ClassCastException e) {
-                    String themeName = (String) f.get(theme);
-                    ((JTextArea) target).setText(themeName);
-                }
-            } catch (IllegalAccessException e) {
-                LOGGER.log(Level.SEVERE, "{0}", new Object[]{e});
+                Color color = (Color) f.get(theme);
+                target.setBackground(color);
+            }
+            catch (IllegalAccessException ex) {
+                LOGGER.log(Level.SEVERE, "Failed to access theme field: {0}", ex);
+            }
+            catch (ClassCastException e) {
+                LOGGER.log(Level.SEVERE, "Type mismatch when updating theme field: {0}", e);
             }
             target.repaint();
             i += 2;
@@ -158,10 +160,13 @@ public class ThemeEditor extends JFrame {
     }
 
     private void updateThemeName(DocumentEvent e) {
+        String str = "";
         try {
-            theme.Theme_Name = e.getDocument().getText(0, e.getDocument().getLength());
-        } catch (BadLocationException ex) {
-            LOGGER.log(Level.SEVERE, "{0}", new Object[]{e});
+            str = e.getDocument().getText(0, e.getDocument().getLength());
+            theme.Theme_Name = str;
+        }
+        catch (BadLocationException ex) {
+            LOGGER.log(Level.SEVERE, "Failed to update theme name to '" + str + "': {0}", ex);
         }
     }
 
