@@ -20,8 +20,7 @@ package qcmds;
 
 import axoloti.Axoloti;
 import axoloti.Connection;
-
-import static axoloti.MainFrame.prefs;
+import axoloti.utils.Preferences;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,19 +64,19 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
         try {
             if (f == null) {
                 String buildDir = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
-                if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+                if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
                     buildDir += File.separator + "ksoloti";
                 } 
-                else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+                else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
                     buildDir += File.separator + "axoloti";
                 }
-                if (prefs.getFirmwareMode().contains("SPILink")) {
+                if (Preferences.getInstance().getFirmwareMode().contains("SPILink")) {
                     buildDir += "_spilink";
                 }
-                if (prefs.getFirmwareMode().contains("USBAudio")) {
+                if (Preferences.getInstance().getFirmwareMode().contains("USBAudio")) {
                     buildDir += "_usbaudio";
                 }
-                if (prefs.getFirmwareMode().contains("I2SCodec")) {
+                if (Preferences.getInstance().getFirmwareMode().contains("I2SCodec")) {
                     buildDir += "_i2scodec";
                 }
                 buildDir += ".bin";

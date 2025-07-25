@@ -23,13 +23,13 @@ import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.OSDetect.OS;
+import axoloti.utils.Preferences;
 import components.PresetPanel;
 import components.ScrollPaneComponent;
 import components.VisibleCablePanel;
 
 import static axoloti.MainFrame.fc;
 import static axoloti.MainFrame.mainframe;
-import static axoloti.MainFrame.prefs;
 
 import java.awt.Cursor;
 import java.awt.Desktop;
@@ -217,7 +217,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             setSize(d);
         }
 
-        if (!prefs.getExpertMode()) {
+        if (!Preferences.getInstance().getExpertMode()) {
             jSeparator6.setVisible(false);
             jMenuItemLock.setVisible(false);
             jMenuGenerateAndCompileCode.setVisible(false);
@@ -927,7 +927,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     File FileChooserSave(String title) {
 
         fc.resetChoosableFileFilters();
-        fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.setCurrentDirectory(new File(Preferences.getInstance().getCurrentFileDirectory()));
         fc.restoreCurrentSize();
         fc.setDialogTitle(title);
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -1043,7 +1043,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         if (fileToBeSaved != null) {
             patch.setFileNamePath(fileToBeSaved.getPath());
             patch.save(fileToBeSaved);
-            prefs.setCurrentFileDirectory(fileToBeSaved.getPath());
+            Preferences.getInstance().setCurrentFileDirectory(fileToBeSaved.getPath());
         }
     }
 
@@ -1333,7 +1333,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         patch.getPatchframe().requestFocus();
         if (fileToBeSaved != null) {
             patch.save(fileToBeSaved);
-            prefs.setCurrentFileDirectory(fileToBeSaved.getPath());
+            Preferences.getInstance().setCurrentFileDirectory(fileToBeSaved.getPath());
         }
     }
 
@@ -1559,7 +1559,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         String nameToDisplay = friendlyName;
         if (nameToDisplay == null || nameToDisplay.trim().isEmpty()) {
-            nameToDisplay = prefs.getBoardName(unitId);
+            nameToDisplay = Preferences.getInstance().getBoardName(unitId);
         }
         if (nameToDisplay == null || nameToDisplay.trim().isEmpty()) {
             StringBuilder formattedCpuId = new StringBuilder("Board ID:   ");

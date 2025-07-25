@@ -19,7 +19,7 @@
 package axoloti.menus;
 
 import axoloti.MainFrame;
-import static axoloti.MainFrame.prefs;
+import axoloti.utils.Preferences;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ public class RecentFileMenu extends JMenu {
             @Override
             public void menuSelected(MenuEvent e) {
 
-                ArrayList<String> r = MainFrame.prefs.getRecentFiles();
+                ArrayList<String> r = Preferences.getInstance().getRecentFiles();
 
                 /* "Garbage bin": collects any strings that point to non-existent files (cannot remove those inside the loop - ConcurrentModificationException) */
                 ArrayList<String> filesNotFound = new ArrayList<String>();
@@ -63,7 +63,7 @@ public class RecentFileMenu extends JMenu {
                 }
                 for (String s : filesNotFound) {
                     /* Now remove any invalid strings */
-                    prefs.removeRecentFile(s);
+                    Preferences.getInstance().removeRecentFile(s);
                 }
             }
 

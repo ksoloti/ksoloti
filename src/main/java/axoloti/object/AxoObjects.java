@@ -18,8 +18,9 @@
  */
 package axoloti.object;
 
-import axoloti.MainFrame;
 import axoloti.utils.AxolotiLibrary;
+import axoloti.utils.Preferences;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -129,7 +130,7 @@ public class AxoObjects {
             }
         }
         if (set.isEmpty()) {
-            String spath[] = MainFrame.prefs.getObjectSearchPath();
+            String spath[] = Preferences.getInstance().getObjectSearchPath();
             for (String s : spath) {
                 String fsname = s + "/" + n + ".axs";
                 LOGGER.log(Level.FINE, "Attempt to create object from subpatch file: {0}", fsname);
@@ -163,7 +164,7 @@ public class AxoObjects {
         if (prefix.length() == 0 && folder.getName().equals("objects")) {
             try {
                 String libpath = folder.getParentFile().getCanonicalPath() + File.separator;
-                for (AxolotiLibrary lib : MainFrame.prefs.getLibraries()) {
+                for (AxolotiLibrary lib : Preferences.getInstance().getLibraries()) {
                     if (lib.getLocalLocation().equals(libpath)) {
                         id = lib.getId();
                         break;
@@ -351,7 +352,7 @@ public class AxoObjects {
                 ObjectTree = new AxoObjectTreeNode("/");
                 ObjectList = new ArrayList<AxoObjectAbstract>();
                 ObjectUUIDMap = new HashMap<String, AxoObjectAbstract>();
-                String spath[] = MainFrame.prefs.getObjectSearchPath();
+                String spath[] = Preferences.getInstance().getObjectSearchPath();
                 if (spath != null) {
                     for (String path : spath) {
                         LOGGER.log(Level.INFO, "Object path: {0}", path);

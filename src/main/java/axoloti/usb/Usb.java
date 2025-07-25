@@ -18,12 +18,13 @@
  */
 package axoloti.usb;
 
-import static axoloti.MainFrame.prefs;
 
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.usb4java.*;
+
+import axoloti.utils.Preferences;
 
 /**
  *
@@ -124,7 +125,7 @@ public class Usb {
                         }
 
                     }
-                    else if (prefs.getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI) {
+                    else if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI) {
                         hasOne = true;
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);
@@ -138,7 +139,7 @@ public class Usb {
                         LOGGER.log(Level.INFO, "  location: {0}", DeviceToPath(device));
 
                     }
-                    else if (prefs.getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI) {
+                    else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI) {
                         hasOne = true;
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);

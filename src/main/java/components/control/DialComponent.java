@@ -91,7 +91,7 @@ public class DialComponent extends ACtrlComponent {
         if (isEnabled()) {
             double v;
             if ((MousePressedBtn == MouseEvent.BUTTON1)) {
-                if (MainFrame.prefs.getMouseDialAngular()) {
+                if (Preferences.getInstance().getMouseDialAngular()) {
                     int y = e.getY();
                     int x = e.getX();
                     int radius = Math.min(getSize().width, getSize().height) / 2 - layoutTick;

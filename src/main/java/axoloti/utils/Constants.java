@@ -18,7 +18,6 @@
  */
 package axoloti.utils;
 
-import static axoloti.MainFrame.prefs;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -113,10 +112,10 @@ public class Constants {
     }
 
     public static void createAppIcon() {
-        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
             APP_ICON = new ImageIcon(Constants.class.getResource("/resources/ksoloti_icon.png"));
         }
-        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+        else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
             APP_ICON = new ImageIcon(Constants.class.getResource("/resources/axoloti_icon.png"));
         }
     }

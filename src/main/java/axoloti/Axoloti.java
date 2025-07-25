@@ -20,10 +20,10 @@ package axoloti;
 
 import axoloti.object.AxoObjects;
 import axoloti.utils.OSDetect;
+import axoloti.utils.Preferences;
 import axoloti.utils.OSDetect.ARCH;
 import axoloti.utils.OSDetect.OS;
 
-import static axoloti.MainFrame.prefs;
 
 import java.awt.EventQueue;
 // import java.awt.SplashScreen;
@@ -61,7 +61,8 @@ public class Axoloti {
             initProperties();
 
             System.setProperty("sun.java2d.dpiaware", "true");
-            prefs.applyTheme();
+            Preferences.LoadPreferences();
+            Preferences.getInstance().applyTheme();
 
             if (OSDetect.getOS() == OSDetect.OS.MAC) {
                 // System.setProperty("apple.laf.useScreenMenuBar", "true"); /* This option breaks menu functions */

@@ -20,6 +20,8 @@
 package axoloti;
 
 import axoloti.targetprofile.ksoloti_core;
+import axoloti.utils.Preferences;
+
 import java.nio.ByteBuffer;
 // import java.time.Instant;
 import java.util.ArrayList;
@@ -172,14 +174,8 @@ public abstract class Connection {
                 // System.out.println(Instant.now() + " [DEBUG] Connection.addBoardIDNameListener: currentCpuId:" + getDetectedCpuId());
                 
                 if (currentCpuId != null && !currentCpuId.trim().isEmpty()) {
-                    if (MainFrame.prefs == null) {
-                        // System.out.println(Instant.now() + " [DEBUG] Connection: MAINFRAME.PREFS OBJECT IS NULL IN addBoardIDNameListener!");
-                    }
-                    else {
-                        // System.out.println(Instant.now() + " [DEBUG] Connection: MainFrame.prefs object instance hash: " + MainFrame.prefs.hashCode());
-                    }
-                    String friendlyNameFromPrefs = MainFrame.prefs.getBoardName(currentCpuId);
-                    // System.out.println(Instant.now() + " [DEBUG] Connection.addBoardIDNameListener: friendlyNameFromPrefs:" + MainFrame.prefs.getBoardName(currentCpuId));
+                    String friendlyNameFromPrefs = Preferences.getInstance().getBoardName(currentCpuId);
+                    // System.out.println(Instant.now() + " [DEBUG] Connection.addBoardIDNameListener: friendlyNameFromPrefs:" + Preferences.getInstance().getBoardName(currentCpuId));
                     unl.ShowBoardIDName(currentCpuId, friendlyNameFromPrefs);
                     // System.out.println(Instant.now() + " [DEBUG] Connection: Replaying current CPU ID " + currentCpuId + " and friendly name '" + (friendlyNameFromPrefs != null ? friendlyNameFromPrefs : "NULL") + "' to new listener.");
                 }
@@ -204,7 +200,7 @@ public abstract class Connection {
         String actualFriendlyName = friendlyName;
         if (actualFriendlyName == null || actualFriendlyName.trim().isEmpty()) {
             if (unitId != null && !unitId.trim().isEmpty()) {
-                actualFriendlyName = MainFrame.prefs.getBoardName(unitId);
+                actualFriendlyName = Preferences.getInstance().getBoardName(unitId);
             }
         }
         for (BoardIDNameListener uncml : uncmls) {

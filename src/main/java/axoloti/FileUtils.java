@@ -19,8 +19,8 @@
 package axoloti;
 
 import static axoloti.MainFrame.fc;
-import static axoloti.MainFrame.prefs;
 import axoloti.dialogs.PatchBank;
+import axoloti.utils.Preferences;
 
 import java.io.File;
 
@@ -146,7 +146,7 @@ public class FileUtils {
 
         fc.resetChoosableFileFilters();
         fc.setMultiSelectionEnabled(true);
-        fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.setCurrentDirectory(new File(Preferences.getInstance().getCurrentFileDirectory()));
         fc.restoreCurrentSize();
         fc.setDialogTitle("Open...");
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -161,7 +161,7 @@ public class FileUtils {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File[] fs = fc.getSelectedFiles();
             if (fs[0] != null) {
-                prefs.setCurrentFileDirectory(fs[0].getParentFile().toString());
+                Preferences.getInstance().setCurrentFileDirectory(fs[0].getParentFile().toString());
             }
 
             for (File f : fs) {

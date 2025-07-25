@@ -29,8 +29,7 @@ import axoloti.object.AxoObjectZombie;
 import axoloti.outlets.OutletInstance;
 import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
-
-import static axoloti.MainFrame.prefs;
+import axoloti.utils.Preferences;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -411,7 +410,7 @@ public class PatchGUI extends Patch {
 
                         /* SHIFT+1...4: user shortcuts 1-4 */
                         Point p = Layers.getMousePosition();
-                        String userstr = prefs.getUserShortcut(ke.getKeyCode() - KeyEvent.VK_1);
+                        String userstr = Preferences.getInstance().getUserShortcut(ke.getKeyCode() - KeyEvent.VK_1);
                         ke.consume();
 
                         if (p != null && userstr != null && !userstr.equals("")) {
@@ -1194,7 +1193,7 @@ public class PatchGUI extends Patch {
         pf.setState(java.awt.Frame.NORMAL);
         pf.repositionIfOutsideScreen();
         pf.toFront();
-        prefs.addRecentFile(f.getAbsolutePath());
+        Preferences.getInstance().addRecentFile(f.getAbsolutePath());
         return pf;
     }
 

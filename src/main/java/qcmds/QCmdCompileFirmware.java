@@ -20,8 +20,7 @@ package qcmds;
 
 import axoloti.MainFrame;
 import axoloti.utils.OSDetect;
-
-import static axoloti.MainFrame.prefs;
+import axoloti.utils.Preferences;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -53,10 +52,10 @@ public class QCmdCompileFirmware extends QCmdShellTask {
     @Override
     String[] GetExec() {
         String boarddef = "";
-        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
             boarddef = "BOARD_KSOLOTI_CORE";
         }
-        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+        else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
             boarddef = "BOARD_AXOLOTI_CORE";
         }
 

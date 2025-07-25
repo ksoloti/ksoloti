@@ -112,7 +112,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
 
-    static public Preferences prefs = Preferences.getInstance();
     static public AxoObjects axoObjects;
     public static MainFrame mainframe;
     public static AxoJFileChooser fc;
@@ -206,7 +205,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         mainframe = this;
         setVisible(true);
 
-        fc = new AxoJFileChooser(prefs.getCurrentFileDirectory());
+        fc = new AxoJFileChooser(Preferences.getInstance().getCurrentFileDirectory());
 
         final Style styleParent = jTextPaneLog.addStyle(null, null);
         jTextPaneLog.setFont(Constants.FONT_MONO);
@@ -430,7 +429,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         // remote.setTitle("Remote");
         // remote.setVisible(false);
 
-        if (!prefs.getExpertMode()) {
+        if (!Preferences.getInstance().getExpertMode()) {
             jMenuItemRefreshFWID.setVisible(false);
         }
 
@@ -442,7 +441,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemFlashDefault.setVisible(!(Axoloti.isDeveloper()));
 
         jMenuItemFlashUser.setVisible(Axoloti.isDeveloper());
-        jMenuItemFCompile.setVisible(Axoloti.isDeveloper() || prefs.getExpertMode());
+        jMenuItemFCompile.setVisible(Axoloti.isDeveloper() || Preferences.getInstance().getExpertMode());
 
         if (!TestDir(HOME_DIR, true)) {
             LOGGER.log(Level.SEVERE, "Invalid home directory: {0} - Does it exist? Can it be written to?", System.getProperty(Axoloti.HOME_DIR));
@@ -462,7 +461,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     populateMainframeTitle();
                     LOGGER.log(Level.WARNING, "Patcher version {0} | Build time {1}\n", new Object[]{Version.AXOLOTI_VERSION, Version.AXOLOTI_BUILD_TIME});
 
-                    if (prefs.getExpertMode()) {
+                    if (Preferences.getInstance().getExpertMode()) {
                         LOGGER.log(Level.WARNING,
                             "Expert Mode is enabled in ksoloti.prefs. The following options are now available:\n" + 
                             "- Compile firmware, Refresh firmware ID (Board -> Firmware)\n" + 
@@ -472,19 +471,19 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         );
                     }
 
-                    if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+                    if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
                         LOGGER.log(Level.WARNING, ">>> Axoloti Legacy Mode <<<\n");
                     }
 
-                    if (prefs.getFirmwareMode().contains("SPILink")) {
+                    if (Preferences.getInstance().getFirmwareMode().contains("SPILink")) {
                         LOGGER.log(Level.WARNING, ">>> SPILink-enabled firmware <<<\nPins PB3, PB4, PD5, PD6 are occupied by SPILink communication in this firmware mode!\n");
                     }
 
-                    if (prefs.getFirmwareMode().contains("USBAudio")) {
+                    if (Preferences.getInstance().getFirmwareMode().contains("USBAudio")) {
                         LOGGER.log(Level.WARNING, ">>> USBAudio-enabled firmware <<<\n");
                     }
 
-                    if (prefs.getFirmwareMode().contains("I2SCodec")) {
+                    if (Preferences.getInstance().getFirmwareMode().contains("I2SCodec")) {
                         LOGGER.log(Level.WARNING, ">>> I2SCodec-enabled firmware <<<\nPins PA15, PB3, PB4, PD6 are occupied by I2S communication in this firmware mode!\n");
                     }
 
@@ -528,7 +527,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     // Axoloti user library, ask user if they wish to upgrade, or do manual
                     // this allows them the opportunity to manually backup their files!
-                    AxolotiLibrary ulib = prefs.getLibrary(AxolotiLibrary.USER_LIBRARY_ID);
+                    AxolotiLibrary ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.USER_LIBRARY_ID);
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
@@ -547,7 +546,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     // Ksoloti user library, ask user if they wish to upgrade, or do manual
                     // this allows them the opportunity to manually backup their files!
-                    AxolotiLibrary kso_ulib = prefs.getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID);
+                    AxolotiLibrary kso_ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID);
                     if (kso_ulib != null) {
                         String cb = kso_ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(kso_ulib.getBranch())) {
@@ -566,7 +565,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     // factory library force and upgrade
                     // Im stashing changes here, just in case, but in reality users should not be altering factory 
-                    ulib = prefs.getLibrary(AxolotiLibrary.FACTORY_ID);
+                    ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.FACTORY_ID);
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
@@ -577,7 +576,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     // ksoloti-objects library force and upgrade
                     // Im stashing changes here, just in case, but in reality users should not be altering factory 
-                    ulib = prefs.getLibrary(AxolotiLibrary.KSOLOTI_LIBRARY_ID);
+                    ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_LIBRARY_ID);
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
@@ -588,7 +587,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     boolean autoSyncMessageDone = false;
 
-                    for (AxolotiLibrary lib : prefs.getLibraries()) {
+                    for (AxolotiLibrary lib : Preferences.getInstance().getLibraries()) {
                         if (lib.isAutoSync() && lib.getEnabled()) {
                             if (!autoSyncMessageDone) {
                                 LOGGER.log(Level.INFO, "Auto-syncing libraries...");
@@ -603,7 +602,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
 
                     LOGGER.log(Level.INFO, "Checking library status...");
-                    for (AxolotiLibrary lib : prefs.getLibraries()) {
+                    for (AxolotiLibrary lib : Preferences.getInstance().getLibraries()) {
                         lib.reportStatus();
                     }
                     LOGGER.log(Level.INFO, "Done checking library status.\n");
@@ -680,7 +679,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         String tstring = "";
         String tsuffix = "";
 
-        if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
             tstring = "Axoloti";
         }
         else {
@@ -691,28 +690,28 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             tsuffix += "Developer";
         }
 
-        if (prefs.getExpertMode()) {
+        if (Preferences.getInstance().getExpertMode()) {
             if (tsuffix.length() > 0) {
                 tsuffix += ", ";
             }
             tsuffix += "Expert Mode";
         }
 
-        if (prefs.getFirmwareMode().contains("SPILink")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("SPILink")) {
             if (tsuffix.length() > 0) {
                 tsuffix += ", ";
             }
             tsuffix += "SPILink";
         }
 
-        if (prefs.getFirmwareMode().contains("USBAudio")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("USBAudio")) {
             if (tsuffix.length() > 0) {
                 tsuffix += ", ";
             }
             tsuffix += "USBAudio";
         }
 
-        if (prefs.getFirmwareMode().contains("I2SCodec")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("I2SCodec")) {
             if (tsuffix.length() > 0) {
                 tsuffix += ", ";
             }
@@ -1240,28 +1239,28 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         SetGrabFocusOnSevereErrors(false);
         boolean result;
 
-        AxolotiLibrary fLib = prefs.getLibrary(AxolotiLibrary.FACTORY_ID);
+        AxolotiLibrary fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.FACTORY_ID);
         if (fLib == null) {
             SetGrabFocusOnSevereErrors(true);
             return false;
         }
         result = runTestDir(new File(fLib.getLocalLocation() + "patches"));
 
-        fLib = prefs.getLibrary(AxolotiLibrary.USER_LIBRARY_ID);
+        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.USER_LIBRARY_ID);
         if (fLib == null) {
             SetGrabFocusOnSevereErrors(true);
             return false;
         }
         result &= runTestDir(new File(fLib.getLocalLocation() + "patches"));
 
-        fLib = prefs.getLibrary(AxolotiLibrary.KSOLOTI_LIBRARY_ID);
+        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_LIBRARY_ID);
         if (fLib == null) {
             SetGrabFocusOnSevereErrors(true);
             return false;
         }
         result &= runTestDir(new File(fLib.getLocalLocation() + "patches"));
 
-        fLib = prefs.getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID);
+        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID);
         if (fLib == null) {
             SetGrabFocusOnSevereErrors(true);
             return false;
@@ -1275,25 +1274,25 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     public boolean runObjectTests() {
         boolean result;
 
-        AxolotiLibrary fLib = prefs.getLibrary(AxolotiLibrary.FACTORY_ID);
+        AxolotiLibrary fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.FACTORY_ID);
         if (fLib == null) {
             return false;
         }
         result = runTestDir(new File(fLib.getLocalLocation() + "objects"));
 
-        fLib = prefs.getLibrary(AxolotiLibrary.USER_LIBRARY_ID);
+        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.USER_LIBRARY_ID);
         if (fLib == null) {
             return false;
         }
         result &= runTestDir(new File(fLib.getLocalLocation() + "objects"));
 
-        fLib = prefs.getLibrary(AxolotiLibrary.KSOLOTI_LIBRARY_ID);
+        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_LIBRARY_ID);
         if (fLib == null) {
             return false;
         }
         result &= runTestDir(new File(fLib.getLocalLocation() + "objects"));
 
-        fLib = prefs.getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID);
+        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID);
         if (fLib == null) {
             return false;
         }
@@ -1500,21 +1499,21 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private void jMenuItemFlashUserActionPerformed(java.awt.event.ActionEvent evt) {
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
         String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
-        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
             fname += File.separator + "ksoloti_flasher.bin";
             pname += File.separator + "ksoloti";
         }
-        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+        else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
             fname += File.separator + "axoloti_flasher.bin";
             pname += File.separator + "axoloti";
         }
-        if (prefs.getFirmwareMode().contains("SPILink")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("SPILink")) {
             pname += "_spilink";
         }
-        if (prefs.getFirmwareMode().contains("USBAudio")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("USBAudio")) {
             pname += "_usbaudio";
         }
-        if (prefs.getFirmwareMode().contains("I2SCodec")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("I2SCodec")) {
             pname += "_i2scodec";
         }
         pname += ".bin";
@@ -1534,21 +1533,21 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
         String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
-        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
             fname += File.separator + "ksoloti_flasher.bin";
             pname += File.separator + "ksoloti";
         }
-        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+        else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
             fname += File.separator + "axoloti_flasher.bin";
             pname += File.separator + "axoloti";
         }
-        if (prefs.getFirmwareMode().contains("SPILink")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("SPILink")) {
             pname += "_spilink";
         }
-        if (prefs.getFirmwareMode().contains("USBAudio")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("USBAudio")) {
             pname += "_usbaudio";
         }
-        if (prefs.getFirmwareMode().contains("I2SCodec")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("I2SCodec")) {
             pname += "_i2scodec";
         }
         pname += ".bin";
@@ -1557,10 +1556,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void jMenuItemMountActionPerformed(java.awt.event.ActionEvent evt) {
         String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "mounter" + File.separator + "mounter_build";
-        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
             fname += File.separator + "ksoloti_mounter.bin";
         }
-        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+        else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
             fname += File.separator + "axoloti_mounter.bin";
         }
         File f = new File(fname);
@@ -1659,7 +1658,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemFlashDefault.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
         jMenuItemFlashUser.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
 
-        if (prefs.getRestartRequired()) {
+        if (Preferences.getInstance().getRestartRequired()) {
             disableConnectUntilRestart();
         }
     }
@@ -1673,7 +1672,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         // Usb.shutdown(); /* java: io.c:2116: handle_events: Assertion `ctx->pollfds_cnt >= internal_nfds' failed. */
 
-        prefs.SavePrefs();
+        Preferences.getInstance().SavePrefs();
         if (DocumentWindowList.GetList().isEmpty()) {
             System.exit(0);
         }
@@ -1793,21 +1792,21 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (s == 0) {
             String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "flasher" + File.separator + "flasher_build";
             String pname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
-            if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+            if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
                 fname += File.separator + "ksoloti_flasher.bin";
                 pname += File.separator + "ksoloti";
             }
-            else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+            else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
                 fname += File.separator + "axoloti_flasher.bin";
                 pname += File.separator + "axoloti";
             }
-            if (prefs.getFirmwareMode().contains("SPILink")) {
+            if (Preferences.getInstance().getFirmwareMode().contains("SPILink")) {
                 pname += "_spilink";
             }
-            if (prefs.getFirmwareMode().contains("USBAudio")) {
+            if (Preferences.getInstance().getFirmwareMode().contains("USBAudio")) {
                 pname += "_usbaudio";
             }
-            if (prefs.getFirmwareMode().contains("I2SCodec")) {
+            if (Preferences.getInstance().getFirmwareMode().contains("I2SCodec")) {
                 pname += "_i2scodec";
             }
             pname += ".bin";
@@ -1838,7 +1837,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         jPanelInfoColumn.add(jLabelSDCardPresent);
 
-        if (prefs.getFirmwareMode().contains("USBAudio")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("USBAudio")) {
             jPanelInfoColumn.add(jLabelFlags);
         }
 
@@ -1947,7 +1946,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         else {
             String nameToDisplay = friendlyName;
             if (nameToDisplay == null || nameToDisplay.trim().isEmpty()) {
-                nameToDisplay = prefs.getBoardName(unitId);
+                nameToDisplay = Preferences.getInstance().getBoardName(unitId);
             }
             if (nameToDisplay == null || nameToDisplay.trim().isEmpty()) {
                 StringBuilder formattedCpuId = new StringBuilder("Board ID:   ");

@@ -19,7 +19,6 @@
 package axoloti.targetprofile;
 
 import static axoloti.MainFrame.mainframe;
-import static axoloti.MainFrame.prefs;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -27,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import axoloti.USBBulkConnection;
+import axoloti.utils.Preferences;
 
 /**
  *
@@ -44,10 +44,10 @@ public class ksoloti_core {
     cputype_e cputype;
 
     public ByteBuffer CreateOTPInfo() {
-        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
             return CreateOTPInfo(1, 1, 0, 32); /* 32MB SDRAM */
         }
-        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+        else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
             return CreateOTPInfo(1, 1, 0, 8); /* 8MB SDRAM */
         }
         return null;
@@ -63,10 +63,10 @@ public class ksoloti_core {
             ByteBuffer bb = ByteBuffer.allocate(32);
 
             String header = "";
-            if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+            if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
                 header = "Ksoloti Core";
             }
-            else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+            else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
                 header = "Axoloti Core";
             }
 
@@ -98,10 +98,10 @@ public class ksoloti_core {
     }
 
     public int getSDRAMSize() {
-        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
             return  32 * 1024 * 1024;  /* 32MB */
         }
-        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+        else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
             return  8 * 1024 * 1024;  /* 8MB */
         }
         return -1;

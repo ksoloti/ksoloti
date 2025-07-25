@@ -20,8 +20,7 @@ package qcmds;
 
 import axoloti.Axoloti;
 import axoloti.utils.OSDetect;
-
-import static axoloti.MainFrame.prefs;
+import axoloti.utils.Preferences;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -57,19 +56,19 @@ public class QCmdFlashDFU extends QCmdShellTask {
     @Override
     String[] GetExec() {
         String bname = "";
-        if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
             bname = "ksoloti";
         }
-        else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+        else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
             bname = "axoloti";
         }
-        if (prefs.getFirmwareMode().contains("SPILink")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("SPILink")) {
             bname += "_spilink";
         }
-        if (prefs.getFirmwareMode().contains("USBAudio")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("USBAudio")) {
             bname += "_usbaudio";
         }
-        if (prefs.getFirmwareMode().contains("I2SCodec")) {
+        if (Preferences.getInstance().getFirmwareMode().contains("I2SCodec")) {
             bname += "_i2scodec";
         }
         bname += ".bin";

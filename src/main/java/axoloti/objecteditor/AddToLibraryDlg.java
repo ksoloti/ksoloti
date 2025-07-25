@@ -24,6 +24,8 @@ import static axoloti.MainFrame.axoObjects;
 import axoloti.object.AxoObject;
 import axoloti.object.AxoObjects;
 import axoloti.utils.AxolotiLibrary;
+import axoloti.utils.Preferences;
+
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -324,7 +326,7 @@ public class AddToLibraryDlg extends javax.swing.JDialog {
        jObjectName.setText(obj.id);
 
         AxolotiLibrary sellib = null;
-        for (AxolotiLibrary lib : MainFrame.prefs.getLibraries()) {
+        for (AxolotiLibrary lib : Preferences.getInstance().getLibraries()) {
             if (!lib.isReadOnly()) {
                 jLibrary.addItem(lib.getId());
             }
@@ -357,7 +359,7 @@ public class AddToLibraryDlg extends javax.swing.JDialog {
 
     String GetDestinationPath() {
         if (jLibrary.getSelectedIndex() >= 0) {
-            AxolotiLibrary lib = MainFrame.prefs.getLibrary((String) jLibrary.getSelectedObjects()[0]);
+            AxolotiLibrary lib = Preferences.getInstance().getLibrary((String) jLibrary.getSelectedObjects()[0]);
             StringBuilder file = new StringBuilder();
  
             file.append(lib.getLocalLocation());

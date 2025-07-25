@@ -22,11 +22,10 @@ package axoloti.dialogs;
 import axoloti.Axoloti;
 
 import static axoloti.MainFrame.fc;
-import static axoloti.MainFrame.prefs;
 import axoloti.utils.AxoFileLibrary;
 import axoloti.utils.AxoGitLibrary;
 import axoloti.utils.AxolotiLibrary;
-
+import axoloti.utils.Preferences;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -141,7 +140,7 @@ public class AxolotiLibraryEditor extends JDialog {
         }
         jComboBoxType.setSelectedItem(library.getType());
 
-        boolean expert = prefs.getExpertMode() || Axoloti.isDeveloper();
+        boolean expert = Preferences.getInstance().getExpertMode() || Axoloti.isDeveloper();
 
         boolean isOfficial = AxolotiLibrary.FACTORY_ID.equals(library.getId()) ||
                             AxolotiLibrary.USER_LIBRARY_ID.equals(library.getId()) ||
@@ -505,7 +504,7 @@ public class AxolotiLibraryEditor extends JDialog {
     private void jSelectDirBtnActionPerformed(java.awt.event.ActionEvent evt) {
         String dir = jTextFieldLocalDir.getText();
         if (dir == null || dir.length() == 0) {
-            dir = prefs.getCurrentFileDirectory();
+            dir = Preferences.getInstance().getCurrentFileDirectory();
         }
 
         File seldir = new File(dir).getParentFile();

@@ -33,8 +33,8 @@ import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.*;
 
 import axoloti.utils.Constants;
+import axoloti.utils.Preferences;
 
-import static axoloti.MainFrame.prefs;
 
 /**
  *
@@ -58,7 +58,7 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
         textArea = new RSyntaxTextArea(20, 60);
         try {
             Theme theme = Theme.load(getClass().getResourceAsStream(
-                "/resources/rsyntaxtextarea/themes/" + prefs.getCodeSyntaxTheme() + ".xml"));
+                "/resources/rsyntaxtextarea/themes/" + Preferences.getInstance().getCodeSyntaxTheme() + ".xml"));
             theme.apply(textArea);
         } catch (IOException ioe) { // Never happens
             ioe.printStackTrace();

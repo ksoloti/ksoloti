@@ -34,9 +34,7 @@ import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
 import axoloti.utils.OSDetect;
 import axoloti.utils.OSDetect.OS;
-
-import static axoloti.MainFrame.prefs;
-
+import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -97,7 +95,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         try {
             Theme theme = Theme.load(Theme.class.getResourceAsStream(
-                "/resources/rsyntaxtextarea/themes/" + prefs.getCodeSyntaxTheme() + ".xml"));
+                "/resources/rsyntaxtextarea/themes/" + Preferences.getInstance().getCodeSyntaxTheme() + ".xml"));
             theme.apply(rsta);
         }
         catch (Exception e) {
@@ -324,7 +322,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         // is it from the factory?
         AxolotiLibrary sellib = null;
-        for (AxolotiLibrary lib : prefs.getLibraries()) {
+        for (AxolotiLibrary lib : Preferences.getInstance().getLibraries()) {
             if (editObj.sObjFilePath != null && editObj.sObjFilePath.startsWith(lib.getLocalLocation())) {
                 if (sellib == null || sellib.getLocalLocation().length() < lib.getLocalLocation().length()) {
                     sellib = lib;
@@ -460,7 +458,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         try {
             serializer.write(editObj, os);
             Theme theme = Theme.load(Theme.class.getResourceAsStream(
-                "/resources/rsyntaxtextarea/themes/" + prefs.getCodeSyntaxTheme() + ".xml"));
+                "/resources/rsyntaxtextarea/themes/" + Preferences.getInstance().getCodeSyntaxTheme() + ".xml"));
             theme.apply(rSyntaxTextAreaXML);
         }
         catch (Exception ex) {

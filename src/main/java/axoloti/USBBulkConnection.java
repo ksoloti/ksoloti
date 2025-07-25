@@ -19,7 +19,6 @@
 
 package axoloti;
 
-import static axoloti.MainFrame.prefs;
 import static axoloti.dialogs.USBPortSelectionDlg.ErrorString;
 
 import axoloti.dialogs.USBPortSelectionDlg;
@@ -27,6 +26,7 @@ import axoloti.displays.DisplayInstance;
 import axoloti.parameters.ParameterInstance;
 import axoloti.targetprofile.ksoloti_core;
 import axoloti.usb.Usb;
+import axoloti.utils.Preferences;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
@@ -537,8 +537,8 @@ public class USBBulkConnection extends Connection {
             return null;
         }
 
-        boolean isKsolotiMode = prefs.getFirmwareMode().contains("Ksoloti Core");
-        boolean isAxolotiMode = prefs.getFirmwareMode().contains("Axoloti Core");
+        boolean isKsolotiMode = Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core");
+        boolean isAxolotiMode = Preferences.getInstance().getFirmwareMode().contains("Axoloti Core");
 
         /* Check Vendor ID first */
         if (descriptor.idVendor() != bulkVID) {
@@ -618,7 +618,7 @@ public class USBBulkConnection extends Connection {
 
         /* Try to get targetCpuId if not already set */
         if (targetCpuId == null) {
-            targetCpuId = prefs.getComPortName();
+            targetCpuId = Preferences.getInstance().getComPortName();
         }
         targetProfile = new ksoloti_core();
 
@@ -821,7 +821,7 @@ public class USBBulkConnection extends Connection {
         USBPortSelectionDlg spsDlg = new USBPortSelectionDlg(null, true, targetCpuId);
         spsDlg.setVisible(true);
         targetCpuId = spsDlg.getCPUID();
-        String name = prefs.getBoardName(targetCpuId);
+        String name = Preferences.getInstance().getBoardName(targetCpuId);
         if (targetCpuId == null) return;
         if (name == null) {
             LOGGER.log(Level.INFO, "Selecting CPU ID {0} for connection.", targetCpuId);
@@ -1313,8 +1313,8 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public void TransmitCosts() {
-        short uUIMidiCost = prefs.getUiMidiThreadCost();
-        byte  uDspLimit200 = (byte)(prefs.getDspLimitPercent()*2);
+        short uUIMidiCost = Preferences.getInstance().getUiMidiThreadCost();
+        byte  uDspLimit200 = (byte)(Preferences.getInstance().getDspLimitPercent()*2);
 
         byte[] data = new byte[7];
         data[0] = 'A';

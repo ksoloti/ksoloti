@@ -3,7 +3,6 @@ package axoloti.utils;
 import axoloti.Axoloti;
 import axoloti.Version;
 
-import static axoloti.MainFrame.prefs;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -95,7 +94,7 @@ public class AxolotiLibrary {
     }
 
     public boolean isReadOnly() {
-        return (Id.equals(FACTORY_ID) || Id.equals(KSOLOTI_LIBRARY_ID)) && !(Axoloti.isDeveloper() || prefs.getExpertMode());
+        return (Id.equals(FACTORY_ID) || Id.equals(KSOLOTI_LIBRARY_ID)) && !(Axoloti.isDeveloper() || Preferences.getInstance().getExpertMode());
     }
 
     public void setId(String Id) {

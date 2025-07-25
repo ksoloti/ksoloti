@@ -23,8 +23,7 @@ import axoloti.Connection;
 import axoloti.MainFrame;
 import axoloti.Patch;
 import axoloti.USBBulkConnection;
-
-import static axoloti.MainFrame.prefs;
+import axoloti.utils.Preferences;
 
 // import java.time.Instant;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -61,19 +60,19 @@ public class QCmdProcessor implements Runnable {
         private long currentSendInterval = 0; /* The dynamic interval for actually sending a ping */
 
         public PeriodicPinger() {
-            this.currentSendInterval = prefs.getPollInterval();
+            this.currentSendInterval = Preferences.getInstance().getPollInterval();
         }
 
         @Override
         public void run() {
             while (true) {
                 try {
-                    Thread.sleep(prefs.getPollInterval());
+                    Thread.sleep(Preferences.getInstance().getPollInterval());
     
                     if (queue.isEmpty() && serialconnection.isConnected()) {
                         if (CommandManager.getInstance().isLongOperationActive()) {
                             /* If long operation, reset interval and continue to next loop iteration */
-                            currentSendInterval = prefs.getPollInterval();
+                            currentSendInterval = Preferences.getInstance().getPollInterval();
                             lastSendAttemptTime = System.currentTimeMillis();
                             // System.out.println(Instant.now() + " [DEBUG] PeriodicPinger: Suppressing ping as long operation is in progress.");
                             continue; /* Skip offering a ping this cycle */
@@ -93,7 +92,7 @@ public class QCmdProcessor implements Runnable {
                             }
                             else {
                                 /* If the command was successfully added, reset the send interval */
-                                currentSendInterval = prefs.getPollInterval();
+                                currentSendInterval = Preferences.getInstance().getPollInterval();
                             }
                             /* Update the time of this sending attempt */
                             lastSendAttemptTime = now;
@@ -101,7 +100,7 @@ public class QCmdProcessor implements Runnable {
                     }
                     else {
                         /* If disconnected, reset the send interval and timer */
-                        currentSendInterval = prefs.getPollInterval();
+                        currentSendInterval = Preferences.getInstance().getPollInterval();
                         lastSendAttemptTime = 0;
                     }
                 }
@@ -114,7 +113,7 @@ public class QCmdProcessor implements Runnable {
                     LOGGER.log(Level.SEVERE, "Error in PeriodicPinger thread.", ex);
                     /* On a general error, add a small sleep to prevent tight looping */
                     try {
-                        Thread.sleep(prefs.getPollInterval() * 5);
+                        Thread.sleep(Preferences.getInstance().getPollInterval() * 5);
                     }
                     catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();
@@ -130,7 +129,7 @@ public class QCmdProcessor implements Runnable {
         private long currentSendInterval = 0;
 
         public PeriodicDialTransmitter() {
-            this.currentSendInterval = prefs.getPollInterval();
+            this.currentSendInterval = Preferences.getInstance().getPollInterval();
         }
 
         @Override
@@ -141,7 +140,7 @@ public class QCmdProcessor implements Runnable {
 
                     if (queue.isEmpty() && serialconnection.isConnected()) {
                         if (CommandManager.getInstance().isLongOperationActive()) {
-                            currentSendInterval = prefs.getPollInterval(); // Reset interval
+                            currentSendInterval = Preferences.getInstance().getPollInterval(); // Reset interval
                             lastSendAttemptTime = System.currentTimeMillis(); // Reset timer
                             // System.out.println(Instant.now() + " [DEBUG] PeriodicDialTransmitter: Suppressing dial command as long operation is in progress.");
                             continue; /* Skip offering a dial command this cycle */
@@ -156,13 +155,13 @@ public class QCmdProcessor implements Runnable {
                                 currentSendInterval = Math.min(currentSendInterval * 2, 500);
                             }
                             else {
-                                currentSendInterval = prefs.getPollInterval();
+                                currentSendInterval = Preferences.getInstance().getPollInterval();
                             }
                             lastSendAttemptTime = now;
                         }
                     }
                     else {
-                        currentSendInterval = prefs.getPollInterval();
+                        currentSendInterval = Preferences.getInstance().getPollInterval();
                         lastSendAttemptTime = 0;
                     }
                 }
@@ -174,7 +173,7 @@ public class QCmdProcessor implements Runnable {
                 catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "Error in PeriodicDialTransmitter thread.", ex);
                     try {
-                        Thread.sleep(prefs.getPollInterval() * 5);
+                        Thread.sleep(Preferences.getInstance().getPollInterval() * 5);
                     }
                     catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();

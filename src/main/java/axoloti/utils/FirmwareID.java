@@ -20,7 +20,6 @@ package axoloti.utils;
 
 import axoloti.Axoloti;
 
-import static axoloti.MainFrame.prefs;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,19 +40,19 @@ public class FirmwareID {
         try {
             String boarddef = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
 
-            if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+            if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
                 boarddef += File.separator + "ksoloti";
             }
-            else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+            else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
                 boarddef += File.separator + "axoloti";
             }
-            if (prefs.getFirmwareMode().contains("SPILink")) {
+            if (Preferences.getInstance().getFirmwareMode().contains("SPILink")) {
                 boarddef += "_spilink";
             }
-            if (prefs.getFirmwareMode().contains("USBAudio")) {
+            if (Preferences.getInstance().getFirmwareMode().contains("USBAudio")) {
                 boarddef += "_usbaudio";
             }
-            if (prefs.getFirmwareMode().contains("I2SCodec")) {
+            if (Preferences.getInstance().getFirmwareMode().contains("I2SCodec")) {
                 boarddef += "_i2scodec";
             }
             boarddef += ".bin";

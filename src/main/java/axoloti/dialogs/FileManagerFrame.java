@@ -22,7 +22,6 @@ import axoloti.ConnectionStatusListener;
 import axoloti.MainFrame;
 
 import static axoloti.MainFrame.fc;
-import static axoloti.MainFrame.prefs;
 
 import axoloti.SDCardInfo;
 import axoloti.SDCardMountStatusListener;
@@ -32,6 +31,7 @@ import axoloti.utils.AxoSDFileTableModel;
 import axoloti.utils.AxoSDFileTreeCellRenderer;
 import axoloti.utils.Constants;
 import axoloti.utils.DisplayTreeNode;
+import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 
 import java.awt.Component;
@@ -748,7 +748,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         }
         if (USBBulkConnection.GetConnection().isConnected()) {
             fc.resetChoosableFileFilters();
-            fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+            fc.setCurrentDirectory(new File(Preferences.getInstance().getCurrentFileDirectory()));
             fc.restoreCurrentSize();
             fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fc.setMultiSelectionEnabled(true);
@@ -764,7 +764,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 }
 
                 if (selectedFiles[0] != null) {
-                    prefs.setCurrentFileDirectory(selectedFiles[0].getParentFile().toString());
+                    Preferences.getInstance().setCurrentFileDirectory(selectedFiles[0].getParentFile().toString());
                 }
 
                 final String targetDirectory = dir;

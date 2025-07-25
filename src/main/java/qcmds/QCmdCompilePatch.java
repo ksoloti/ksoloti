@@ -20,12 +20,12 @@ package qcmds;
 
 import axoloti.Patch;
 import axoloti.utils.OSDetect;
+import axoloti.utils.Preferences;
 
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static axoloti.MainFrame.prefs;
 
 /**
  *
@@ -69,20 +69,20 @@ public class QCmdCompilePatch extends QCmdShellTask {
     String[] GetExec() {
             String boarddef = "";
             String fwoptiondef = "";
-            if (prefs.getFirmwareMode().contains("Ksoloti Core")) {
+            if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
                 boarddef = "BOARD_KSOLOTI_CORE";
             }
-            else if (prefs.getFirmwareMode().contains("Axoloti Core")) {
+            else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
                 boarddef = "BOARD_AXOLOTI_CORE";
             }
 
-            if (prefs.getFirmwareMode().contains("SPILink")) {
+            if (Preferences.getInstance().getFirmwareMode().contains("SPILink")) {
                 fwoptiondef += " FW_SPILINK";
             }
-            else if (prefs.getFirmwareMode().contains("USBAudio")) {
+            else if (Preferences.getInstance().getFirmwareMode().contains("USBAudio")) {
                 fwoptiondef += " FW_USBAUDIO";
             }
-            else if (prefs.getFirmwareMode().contains("I2SCodec")) {
+            else if (Preferences.getInstance().getFirmwareMode().contains("I2SCodec")) {
                 fwoptiondef += " FW_I2SCODEC";
             }
             else {

@@ -25,13 +25,13 @@ import static axoloti.FileUtils.axpFileFilter;
 import axoloti.MainFrame;
 
 import static axoloti.MainFrame.fc;
-import static axoloti.MainFrame.prefs;
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
 import axoloti.SDCardInfo;
 import axoloti.SDCardMountStatusListener;
 import axoloti.SDFileInfo;
 import axoloti.USBBulkConnection;
+import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 
 import java.awt.Dimension;
@@ -428,7 +428,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
     void SaveAs() {
         fc.resetChoosableFileFilters();
-        fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.setCurrentDirectory(new File(Preferences.getInstance().getCurrentFileDirectory()));
         fc.restoreCurrentSize();
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setDialogTitle("Save As...");
@@ -524,7 +524,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
             FilenamePath = fileToBeSaved.getPath();
             setTitle(FilenamePath);
-            prefs.setCurrentFileDirectory(fileToBeSaved.getPath());
+            Preferences.getInstance().setCurrentFileDirectory(fileToBeSaved.getPath());
             Save(fileToBeSaved);
         }
         fc.updateCurrentSize();
@@ -906,7 +906,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {
         fc.resetChoosableFileFilters();
-        fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.setCurrentDirectory(new File(Preferences.getInstance().getCurrentFileDirectory()));
         fc.restoreCurrentSize();
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setMultiSelectionEnabled(true);
@@ -918,7 +918,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File[] fs = fc.getSelectedFiles();
             if (fs[0] != null) {
-                prefs.setCurrentFileDirectory(fs[0].getParentFile().toString());
+                Preferences.getInstance().setCurrentFileDirectory(fs[0].getParentFile().toString());
             }
             for (File f : fs) {
                 if (f != null && f.exists()) {
@@ -1062,7 +1062,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         PatchBank pb = new PatchBank();
         try {
             pb.Open(f);
-            prefs.addRecentFile(f.getAbsolutePath());
+            Preferences.getInstance().addRecentFile(f.getAbsolutePath());
             pb.setVisible(true);
         } catch (IOException ex) {
             pb.Close();

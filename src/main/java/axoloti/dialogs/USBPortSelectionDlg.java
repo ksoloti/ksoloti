@@ -22,7 +22,6 @@ import axoloti.MainFrame;
 import axoloti.USBBulkConnection;
 import axoloti.usb.Usb;
 
-import static axoloti.MainFrame.prefs;
 import static axoloti.usb.Usb.DeviceToPath;
 import static axoloti.usb.Usb.PID_AXOLOTI;
 import static axoloti.usb.Usb.PID_AXOLOTI_SDCARD;
@@ -36,6 +35,7 @@ import static axoloti.usb.Usb.VID_AXOLOTI;
 import static axoloti.usb.Usb.VID_STM;
 
 import axoloti.utils.OSDetect;
+import axoloti.utils.Preferences;
 
 import java.awt.Dialog;
 // import java.time.Instant;
@@ -130,11 +130,11 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 if (r >= 0) {
                     String devName = (String) model.getValueAt(r, 1);
 
-                    if (prefs.getFirmwareMode().contains("Ksoloti Core") && (devName.equals(sKsolotiCore) || devName.equals(sKsolotiCoreUsbAudio))) {
+                    if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core") && (devName.equals(sKsolotiCore) || devName.equals(sKsolotiCoreUsbAudio))) {
                         jButtonSelect.setEnabled(true);
                         cpuid = (String) model.getValueAt(r, 3);
                     }
-                    else if (prefs.getFirmwareMode().contains("Axoloti Core") && (devName.equals(sAxolotiCore) || devName.equals(sAxolotiCoreUsbAudio))) {
+                    else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core") && (devName.equals(sAxolotiCore) || devName.equals(sAxolotiCoreUsbAudio))) {
                         jButtonSelect.setEnabled(true);
                         cpuid = (String) model.getValueAt(r, 3);
                     }
@@ -158,8 +158,8 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 TableModel model = (TableModel) e.getSource();
                 String name = (String) model.getValueAt(row, column);
                 String cpuid = (String) ((DefaultTableModel) jTableBoardsList.getModel()).getValueAt(row, 3);
-                prefs.setBoardName(cpuid, name);
-                prefs.SavePrefs();
+                Preferences.getInstance().setBoardName(cpuid, name);
+                Preferences.getInstance().SavePrefs();
                 String currentlyConnectedCpuId = USBBulkConnection.GetConnection().getDetectedCpuId();
                 if (currentlyConnectedCpuId != null && cpuid.equals(currentlyConnectedCpuId)) {
                     USBBulkConnection.GetConnection().ShowBoardIDName(cpuid, name);
@@ -288,7 +288,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             }
                         }
                     }
-                    else if (prefs.getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && ((descriptor.idProduct() == PID_KSOLOTI) || (descriptor.idProduct() == PID_KSOLOTI_USBAUDIO))) {
+                    else if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && ((descriptor.idProduct() == PID_KSOLOTI) || (descriptor.idProduct() == PID_KSOLOTI_USBAUDIO))) {
 
                         String sName;
 
@@ -307,16 +307,16 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                         }
                         else {
                             String serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
-                            String name = prefs.getBoardName(serial);
+                            String name = Preferences.getInstance().getBoardName(serial);
                             if (name == null) name = "";
                             model.addRow(new String[]{name, sName, DeviceToPath(device), serial});
                             LibUsb.close(handle);
                         }
                     }
-                    else if (prefs.getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD) {
+                    else if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD) {
                         model.addRow(new String[]{"", sKsolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
                     }
-                    else if (prefs.getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && ((descriptor.idProduct() == PID_AXOLOTI) || (descriptor.idProduct() == PID_AXOLOTI_USBAUDIO))) {
+                    else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && ((descriptor.idProduct() == PID_AXOLOTI) || (descriptor.idProduct() == PID_AXOLOTI_USBAUDIO))) {
 
                         String sName;
 
@@ -335,13 +335,13 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                         }
                         else {
                             String serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
-                            String name = MainFrame.prefs.getBoardName(serial);
+                            String name = Preferences.getInstance().getBoardName(serial);
                             if (name == null) name = "";
                             model.addRow(new String[]{name, sName, DeviceToPath(device), serial});
                             LibUsb.close(handle);
                         }
                     }
-                    else if (prefs.getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI_SDCARD) {
+                    else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI_SDCARD) {
                         model.addRow(new String[]{"", sAxolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
                     }
                 }
@@ -533,7 +533,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             return;
         }
 
-        String selectedBoardName = prefs.getBoardName(selectedCpuid); /* ShowBoardIDName below will sort out which to use */
+        String selectedBoardName = Preferences.getInstance().getBoardName(selectedCpuid); /* ShowBoardIDName below will sort out which to use */
         String displayedName = (selectedBoardName == null || selectedBoardName.trim().isEmpty()) ? selectedCpuid : selectedBoardName;
 
         /* Show the connecting popup before starting the connection process */
