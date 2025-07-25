@@ -316,6 +316,7 @@ public class Preferences {
                     libraries.set(idx, newlib);
                 }
                 found = true;
+                break;
             }
         }
         if (!found) {
@@ -350,7 +351,7 @@ public class Preferences {
     }
 
     public int getPollInterval() {
-        if (PollInterval > minimumPollInterval) {
+        if (PollInterval != null && PollInterval > minimumPollInterval) {
             return PollInterval;
         }
         return minimumPollInterval;
@@ -360,18 +361,22 @@ public class Preferences {
         if (i < minimumPollInterval) {
             i = minimumPollInterval;
         }
-        PollInterval = i;
-        // SetDirty();
+        if (this.PollInterval == null || !this.PollInterval.equals(i)) {
+            PollInterval = i;
+        }
     }
 
     public short getUiMidiThreadCost() {
         short costs[] = {0, 280, 150, 100, 80, 60};
-        return costs[DspSafetyLimit];
+        if (DspSafetyLimit != null && DspSafetyLimit >= 0 && DspSafetyLimit < costs.length) {
+            return costs[DspSafetyLimit];
+        }
+        return costs[3]; /* Default if DspSafetyLimit is invalid */
     }
 
 
     public byte getDspLimitPercent() {
-        if(DspSafetyLimit == 0) {
+        if(DspSafetyLimit == null || DspSafetyLimit == 0) {
             return 97;
         } else {
             return 100;
@@ -379,21 +384,22 @@ public class Preferences {
     }
 
     public int getDspSafetyLimit() {
+        if (DspSafetyLimit == null) return 3; // Default
         return DspSafetyLimit;
     }
 
     public void setDspSafetyLimit(int i) {
-        DspSafetyLimit = i;
-        // SetDirty();
+        if (this.DspSafetyLimit == null || !this.DspSafetyLimit.equals(i)) {
+            DspSafetyLimit = i;
+        }
     }
 
     public void setCurrentFileDirectory(String CurrentFileDirectory) {
-        if (this.CurrentFileDirectory.equals(CurrentFileDirectory)) {
+        if (CurrentFileDirectory != null && this.CurrentFileDirectory.equals(CurrentFileDirectory)) {
             return;
         }
         this.CurrentFileDirectory = CurrentFileDirectory;
-        SavePrefs();
-        // SetDirty();
+        // SavePrefs(); /* Removed: Saving should be explicit from PreferencesFrame */
     }
 
     public String getTheme() {
@@ -401,7 +407,7 @@ public class Preferences {
     }
 
     public void setTheme(String Theme) {
-        if (Theme.equals(this.Theme)) {
+        if (Theme != null && Theme.equals(this.Theme)) {
             return;
         }
         this.Theme = Theme;
@@ -413,7 +419,7 @@ public class Preferences {
     }
 
     public void setCodeSyntaxTheme(String codeSyntaxTheme) {
-        if (codeSyntaxTheme.equals(this.codeSyntaxTheme)) {
+        if (codeSyntaxTheme != null && codeSyntaxTheme.equals(this.codeSyntaxTheme)) {
             return;
         }
         this.codeSyntaxTheme = codeSyntaxTheme;
@@ -569,15 +575,14 @@ public class Preferences {
     }
 
     public void setMouseDialAngular(boolean MouseDialAngular) {
-        if (this.MouseDialAngular == MouseDialAngular) {
+        if (this.MouseDialAngular != null && this.MouseDialAngular.equals(MouseDialAngular)) {
             return;
         }
         this.MouseDialAngular = MouseDialAngular;
     }
 
     public void setFirmwareMode(String FirmwareMode) {
-
-        if (this.FirmwareMode.equals(FirmwareMode)) {
+        if (FirmwareMode == null || this.FirmwareMode.equals(FirmwareMode)) {
             return;
         }
 
@@ -617,7 +622,7 @@ public class Preferences {
         if (index < 0 || index > 3) {
             return;
         }
-        if (this.UserShortcuts[index] == userShortcut) {
+        if (this.UserShortcuts[index] != null && this.UserShortcuts[index].equals(userShortcut)) {
             return;
         }
         this.UserShortcuts[index] = userShortcut;
@@ -628,7 +633,7 @@ public class Preferences {
     }
 
     public void setMouseDoNotRecenterWhenAdjustingControls(boolean MouseDoNotRecenterWhenAdjustingControls) {
-        if (MouseDoNotRecenterWhenAdjustingControls == this.MouseDoNotRecenterWhenAdjustingControls) {
+        if (this.MouseDoNotRecenterWhenAdjustingControls != null && this.MouseDoNotRecenterWhenAdjustingControls.equals(MouseDoNotRecenterWhenAdjustingControls)) {
             return;
         }
         this.MouseDoNotRecenterWhenAdjustingControls = MouseDoNotRecenterWhenAdjustingControls;
@@ -689,7 +694,7 @@ public class Preferences {
     }
 
     public void setFavouriteDir(String favouriteDir) {
-        if (this.FavouriteDir.equals(favouriteDir)) {
+        if (favouriteDir != null && this.FavouriteDir.equals(favouriteDir)) {
             return;
         }
         this.FavouriteDir = favouriteDir;
@@ -697,7 +702,7 @@ public class Preferences {
     }
 
     public String getBoardName(String cpu) {
-        if (cpu == null || cpu.trim().isEmpty()) {
+        if (cpu == null || cpu.trim().isEmpty() || BoardNames == null) {
             return null;
         }
         if (BoardNames.containsKey(cpu)) {
@@ -707,6 +712,9 @@ public class Preferences {
     }
 
     public void setBoardName(String cpuid, String name) {
+        if (BoardNames == null) {
+            BoardNames = new HashMap<>();
+        }
         if (name == null || name.trim().isEmpty()) {
             BoardNames.remove(cpuid);
         } else {
@@ -781,6 +789,12 @@ public class Preferences {
                 false
         );
 
+        if (libraries == null) {
+            libraries = new ArrayList<>();
+        } else {
+            libraries.clear();
+        }
+
         /*
          * Check and remove old libraries if they exist.
          * Add back respective default config library, then initialize it.
@@ -824,13 +838,15 @@ public class Preferences {
     private void buildObjectSearchPatch() {
         ArrayList<String> objPath = new ArrayList<String>();
 
-        for (AxolotiLibrary lib : libraries) {
-            if (lib.getEnabled()) {
-                String lpath = lib.getLocalLocation() + "objects";
+        if (libraries != null) {
+            for (AxolotiLibrary lib : libraries) {
+                if (lib.getEnabled()) {
+                    String lpath = lib.getLocalLocation() + "objects";
 
-                //might be two libs pointing to same place
-                if (!objPath.contains(lpath)) {
-                    objPath.add(lpath);
+                    /* Might be two libs pointing to same place */
+                    if (!objPath.contains(lpath)) {
+                        objPath.add(lpath);
+                    }
                 }
             }
         }
@@ -842,6 +858,9 @@ public class Preferences {
     }
 
     public void setThemePath(String themePath) {
+        if (themePath != null && this.themePath.equals(themePath)) {
+            return;
+        }
         this.themePath = themePath;
         SavePrefs();
     }
