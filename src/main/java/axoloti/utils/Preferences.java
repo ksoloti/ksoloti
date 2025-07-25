@@ -509,6 +509,13 @@ public class Preferences {
         return singleton;
     }
 
+    public static Preferences getInstance() {
+        if (singleton == null) {
+            return LoadPreferences();
+        }
+        return singleton;
+    }
+
     public void SavePrefs() {
 
         LOGGER.log(Level.INFO, "Saving preferences...\n");
