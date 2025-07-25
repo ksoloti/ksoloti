@@ -18,6 +18,7 @@
  */
 package axoloti.utils;
 
+import axoloti.Axoloti;
 import axoloti.MainFrame;
 import axoloti.USBBulkConnection;
 import axoloti.Version;
@@ -435,7 +436,7 @@ public class Preferences {
     }
 
     static String GetPrefsFileLoc() {
-        return System.getProperty(axoloti.Axoloti.HOME_DIR) + File.separator + "ksoloti.prefs";
+        return System.getProperty(Axoloti.HOME_DIR) + File.separator + "ksoloti.prefs";
     }
 
     private static Preferences singleton;
@@ -706,7 +707,7 @@ public class Preferences {
         AxoGitLibrary axo_fact = new AxoGitLibrary(
                 AxolotiLibrary.FACTORY_ID,
                 "git",
-                System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
+                System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator
                     + "axoloti-factory" + File.separator,
                 true,
                 "https://github.com/ksoloti/axoloti-factory.git", /* Notice we're now pointing to the forked&fixed /KSOLOTI/axoloti-factory! */
@@ -716,7 +717,7 @@ public class Preferences {
         AxoGitLibrary axo_comm = new AxoGitLibrary(
                 AxolotiLibrary.USER_LIBRARY_ID,
                 "git",
-                System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
+                System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator
                     + "axoloti-contrib" + File.separator,
                 true,
                 "https://github.com/ksoloti/axoloti-contrib.git", /* Will point to /KSOLOTI/axoloti-contrib in the future */
@@ -726,7 +727,7 @@ public class Preferences {
         AxoGitLibrary kso_fact = new AxoGitLibrary(
                 AxolotiLibrary.KSOLOTI_LIBRARY_ID,
                 "git",
-                System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
+                System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator
                     + "ksoloti-objects" + File.separator,
                 true,
                 "https://github.com/ksoloti/ksoloti-objects.git", /* Should be merged into ksoloti-contrib? */
@@ -736,7 +737,7 @@ public class Preferences {
         AxoGitLibrary kso_comm = new AxoGitLibrary(
                 AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID,
                 "git",
-                System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator
+                System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator
                     + "ksoloti-contrib" + File.separator,
                 true,
                 "https://github.com/ksoloti/ksoloti-contrib.git",
