@@ -842,6 +842,6 @@ public class Preferences {
             return;
         }
         this.themePath = themePath;
-        SavePrefs();
+        // SavePrefs(); /* Removed: Saving should be explicit from PreferencesFrame */
     }
 }
