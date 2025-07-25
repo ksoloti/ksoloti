@@ -49,6 +49,9 @@ public class Axoloti {
     public final static String LIBRARIES_DIR  = "axoloti_libraries";
     public final static String FIRMWARE_DIR   = "axoloti_firmware";
     public final static String PLATFORM_DIR   = "axoloti_platform";
+
+    private static String cacheFWDir = null;
+    private static boolean cacheDeveloper = false;
     
     /**
      * @param args the command line arguments
@@ -58,7 +61,6 @@ public class Axoloti {
             initProperties();
 
             System.setProperty("sun.java2d.dpiaware", "true");
-
             prefs.applyTheme();
 
             if (OSDetect.getOS() == OSDetect.OS.MAC) {
@@ -136,10 +138,6 @@ public class Axoloti {
         }
         return true;
     }
-
-    // cache this, as it linked to checks on the UI/menu
-    private static String cacheFWDir = null;
-    private static boolean cacheDeveloper = false;
 
     public static boolean isDeveloper() {
         

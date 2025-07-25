@@ -1,5 +1,7 @@
 package axoloti;
 
+import static axoloti.MainFrame.prefs;
+
 import axoloti.utils.AxolotiLibrary;
 import java.io.File;
 import java.util.HashMap;
@@ -44,7 +46,7 @@ public class Synonyms {
     static void load() {
         Serializer serializer = new Persister(new Format(2));
         try {
-            AxolotiLibrary lib = MainFrame.prefs.getLibrary(AxolotiLibrary.FACTORY_ID);
+            AxolotiLibrary lib = prefs.getLibrary(AxolotiLibrary.FACTORY_ID);
             if(lib != null) {
                 instance = serializer.read(Synonyms.class, new File(lib.getLocalLocation(), filename));
             } else {

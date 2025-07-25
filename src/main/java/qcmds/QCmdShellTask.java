@@ -18,9 +18,6 @@
  */
 package qcmds;
 
-// import static axoloti.MainFrame.prefs;
-// import static axoloti.MainFrame.mainframe;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;

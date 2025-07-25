@@ -54,7 +54,6 @@ import qcmds.QCmdGetFileInfo;
 import qcmds.QCmdGetFileList;
 import qcmds.QCmdMemRead;
 import qcmds.QCmdMemRead1Word;
-import qcmds.QCmdPing;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdSerialTask;
 import qcmds.QCmdTransmitGetFWVersion;

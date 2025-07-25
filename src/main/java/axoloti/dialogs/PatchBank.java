@@ -524,7 +524,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
             FilenamePath = fileToBeSaved.getPath();
             setTitle(FilenamePath);
-            MainFrame.prefs.setCurrentFileDirectory(fileToBeSaved.getPath());
+            prefs.setCurrentFileDirectory(fileToBeSaved.getPath());
             Save(fileToBeSaved);
         }
         fc.updateCurrentSize();
@@ -1062,7 +1062,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         PatchBank pb = new PatchBank();
         try {
             pb.Open(f);
-            MainFrame.prefs.addRecentFile(f.getAbsolutePath());
+            prefs.addRecentFile(f.getAbsolutePath());
             pb.setVisible(true);
         } catch (IOException ex) {
             pb.Close();

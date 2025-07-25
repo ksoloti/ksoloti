@@ -1194,7 +1194,7 @@ public class PatchGUI extends Patch {
         pf.setState(java.awt.Frame.NORMAL);
         pf.repositionIfOutsideScreen();
         pf.toFront();
-        MainFrame.prefs.addRecentFile(f.getAbsolutePath());
+        prefs.addRecentFile(f.getAbsolutePath());
         return pf;
     }
 

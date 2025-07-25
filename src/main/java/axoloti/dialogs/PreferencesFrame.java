@@ -28,6 +28,7 @@ import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 
 import static axoloti.MainFrame.fc;
+import static axoloti.MainFrame.prefs;
 
 import java.awt.Color;
 import java.awt.Point;
