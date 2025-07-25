@@ -59,9 +59,7 @@ public class AxolotiLibraryEditor extends JDialog {
     private AxolotiLibrary library;
 
     private Box.Filler filler1;
-    private JButton jButtonCancel;
     private JButton jButtonInitRepo;
-    private JButton jButtonOK;
     private JButton jButtonSelectDir;
     private JButton jButtonSync;
     private JCheckBox jCheckBoxAutoSync;
@@ -157,9 +155,7 @@ public class AxolotiLibraryEditor extends JDialog {
     private void initComponents() {
         Dimension d = new java.awt.Dimension(0, 3);
         filler1 = new Box.Filler(d, d, d);
-        jButtonCancel = new JButton();
         jButtonInitRepo = new JButton();
-        jButtonOK = new JButton();
         jButtonSelectDir = new JButton();
         jButtonSync = new JButton();
         jCheckBoxAutoSync = new JCheckBox();
@@ -223,21 +219,6 @@ public class AxolotiLibraryEditor extends JDialog {
 
         jPasswordField.setPreferredSize(new java.awt.Dimension(150, 28));
 
-        jButtonOK.setText("OK");
-        jButtonOK.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jOKActionPerformed(evt);
-            }
-        });
-
-        jButtonCancel.setText("Cancel");
-        jButtonCancel.setDefaultCapable(false);
-        jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCancelActionPerformed(evt);
-            }
-        });
-
         jButtonInitRepo.setText("Init");
         jButtonInitRepo.setDefaultCapable(false);
         jButtonInitRepo.addActionListener(new java.awt.event.ActionListener() {
@@ -287,12 +268,6 @@ public class AxolotiLibraryEditor extends JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addGap(17, 17, 17)
                 .addGroup(layout.createParallelGroup(Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButtonCancel)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(jButtonOK)
-                    )
 
                     .addComponent(jSeparator1)
 
@@ -438,13 +413,6 @@ public class AxolotiLibraryEditor extends JDialog {
                     .addComponent(jLabelPassword)
                 )
 
-                .addPreferredGap(ComponentPlacement.UNRELATED)
-
-                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(jButtonOK)
-                    .addComponent(jButtonCancel)
-                )
-
                 .addGap(19, 19, 19)
             )
 
@@ -461,9 +429,7 @@ public class AxolotiLibraryEditor extends JDialog {
     }
 
     private void setButtonsEnabled(boolean enabled) {
-        jButtonCancel.setEnabled(enabled);
         jButtonInitRepo.setEnabled(enabled);
-        jButtonOK.setEnabled(enabled);
         jButtonSelectDir.setEnabled(enabled);
         jButtonSync.setEnabled(enabled);
     }
@@ -488,44 +454,6 @@ public class AxolotiLibraryEditor extends JDialog {
         jTextFieldRemotePath.setEnabled(isGit);
         jTextFieldRevision.setEnabled(isGit);
         jTextFieldUserId.setEnabled(isGit);
-    }
-
-    private void jOKActionPerformed(java.awt.event.ActionEvent evt) {
-        if (jTextFieldId.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "ID is required and must be unique.",
-                    "Invalid ID",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if (jTextFieldLocalDir.getText().trim().isEmpty()) { 
-            JOptionPane.showMessageDialog(this,
-                    "Local Directory is required and must be valid.",
-                    "Invalid Local Directory",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if (jTextFieldId.getText().equals(AxolotiLibrary.USER_LIBRARY_ID)
-                && (jTextFieldUserId.getText() != null && jTextFieldUserId.getText().length() > 0)) {
-            char[] p = jPasswordField.getPassword();
-            if (jTextFieldPrefix.getText().trim().isEmpty() || (p == null || p.length == 0)) {
-                JOptionPane.showMessageDialog(this,
-                        "Contributors to the community library need to specify\n" +
-                        "username, password and user prefix.",
-                        "Invalid Contributor Data",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-
-        populateLib(library);
-        setVisible(false);
-        dispose();
-    }
-
-    private void jCancelActionPerformed(java.awt.event.ActionEvent evt) {
-        setVisible(false);
-        dispose();
     }
 
     private void jInitRepoActionPerformed(java.awt.event.ActionEvent evt) {
