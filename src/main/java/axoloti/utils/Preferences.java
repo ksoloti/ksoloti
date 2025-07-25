@@ -277,7 +277,22 @@ public class Preferences {
             clonedPrefs.UserShortcuts = new String[this.UserShortcuts.length];
             System.arraycopy(this.UserShortcuts, 0, clonedPrefs.UserShortcuts, 0, this.UserShortcuts.length);
         } else {
-            clonedPrefs.UserShortcuts = new String[4]; // Or whatever default size
+            clonedPrefs.UserShortcuts = new String[4];
+        }
+
+        /* Deep copy library entries */
+        clonedPrefs.libraries = new ArrayList<>();
+        if (this.libraries != null) {
+            for (AxolotiLibrary lib : this.libraries) {
+                if (lib instanceof AxoGitLibrary) {
+                    clonedPrefs.libraries.add(new AxoGitLibrary((AxoGitLibrary) lib));
+                } else if (lib instanceof AxoFileLibrary) {
+                    clonedPrefs.libraries.add(new AxoFileLibrary((AxoFileLibrary) lib));
+                } else {
+                    /* Fallback */
+                    clonedPrefs.libraries.add(new AxolotiLibrary(lib));
+                }
+            }
         }
 
         return clonedPrefs;
