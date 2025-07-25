@@ -523,9 +523,6 @@ public class Preferences {
     }
 
     public void SavePrefs() {
-
-        LOGGER.log(Level.INFO, "Saving preferences...\n");
-
         Serializer serializer = new Persister(new Format(2));
         File f = new File(GetPrefsFileLoc());
         System.out.println(f.getAbsolutePath());
@@ -536,8 +533,10 @@ public class Preferences {
             Preferences.LoadPreferences(); /* Reload the freshly saved prefs file */
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Failed to save preferences.", ex);
+            return;
         }
+        LOGGER.log(Level.INFO, "Saved preferences.\n");
 
         if (restartRequired) {
             LOGGER.log(Level.SEVERE, ">>> RESTART REQUIRED <<<");
