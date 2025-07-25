@@ -491,12 +491,14 @@ public class Preferences {
                 }
                 singleton = prefs;
 
-                if (prefs.libraries.isEmpty()) {
-                    prefs.ResetLibraries(false);
+                if (singleton.libraries == null) {
+                    singleton.libraries = new ArrayList<>();
+                }
+                if (singleton.libraries.isEmpty()) {
+                    singleton.ResetLibraries(false);
                 }
 
-                prefs.buildObjectSearchPatch();
-
+                singleton.buildObjectSearchPatch();
                 singleton.MidiInputDevice = null; // clear it out for the future
             }
             else {
