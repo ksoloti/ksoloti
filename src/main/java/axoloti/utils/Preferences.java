@@ -195,8 +195,7 @@ public class Preferences {
         "Solarized Dark (Material)"
     };
 
-
-    protected Preferences() {
+    public Preferences() {
         if (CurrentFileDirectory == null) {
             CurrentFileDirectory = "";
         }
