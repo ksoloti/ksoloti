@@ -56,6 +56,8 @@ import javax.swing.filechooser.FileFilter;
  */
 public class AxolotiLibraryEditor extends JDialog {
 
+    private static final Logger LOGGER = Logger.getLogger(AxolotiLibraryEditor.class.getName());
+
     private AxolotiLibrary library;
 
     private Box.Filler filler1;
