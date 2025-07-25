@@ -535,6 +535,10 @@ public class Preferences {
         return singleton;
     }
 
+    public static void setInstance(Preferences prefs) {
+        singleton = prefs;
+    }
+
     public void SavePrefs() {
         Serializer serializer = new Persister(new Format(2));
         File f = new File(GetPrefsFileLoc());
