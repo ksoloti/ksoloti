@@ -1358,6 +1358,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             LOGGER.log(Level.INFO, "Done generating code.");
             Thread.sleep(200); 
 
+            if (USBBulkConnection.GetConnection().isConnected()) {
+                patch1.GetQCmdProcessor().AppendToQueue(new QCmdStop());
+            }
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1); // compile as own path/filename .bin
             patch1.GetQCmdProcessor().AppendToQueue(cp);
             qcmdprocessor.WaitQueueFinished();
@@ -1367,7 +1370,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 /* If a Core is connected and test patch .bin could be created:
                 stop patch, upload test patch .bin to RAM, start patch, report status */
                 if (USBBulkConnection.GetConnection().isConnected()) {
-                    patch1.GetQCmdProcessor().AppendToQueue(new QCmdStop());
                     patch1.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch1.getBinFile()));
                     patch1.GetQCmdProcessor().AppendToQueue(new QCmdStart(patch1));
                     qcmdprocessor.WaitQueueFinished();
@@ -1387,6 +1389,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     Thread.sleep(1000);
 
                     patch1.GetQCmdProcessor().AppendToQueue(new QCmdGuiShowLog());
+                    patch1.GetQCmdProcessor().AppendToQueue(new QCmdStop());
                     qcmdprocessor.WaitQueueFinished();
                     Thread.sleep(100);
                 }
