@@ -39,6 +39,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -77,7 +78,7 @@ public class PreferencesFrame extends JFrame {
     private static final Logger LOGGER = Logger.getLogger(PreferencesFrame.class.getName());
 
     static PreferencesFrame singleton = null;
-    Preferences prefs = Preferences.getInstance(); /* Live preferences */
+    private Preferences tempPrefs; /* Temporary copy of prefs to collect pending edits and/or discard edits and revert to live prefs */
     private boolean dirty = false;
 
     private JButton jButtonFavDir;
@@ -132,26 +133,20 @@ public class PreferencesFrame extends JFrame {
      *
      */
     private PreferencesFrame() {
-
         setTitle("Preferences");
         setIconImage(Constants.APP_ICON.getImage());
-
         setLocation((int)MainFrame.mainframe.getLocation().getX() + 120, (int)MainFrame.mainframe.getLocation().getY() + 60);
 
         initComponents();
 
+        tempPrefs = Preferences.getInstance().clone(); /* Initialize tempPrefs from prefs */
         populatePreferences();
-        PopulateLibrary();
+        populateLibraryTable();
 
         setResizable(false);
 
         setupCloseShortcut();
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                attemptClose();
-            }
-        });
+        setupWindowClosingListener();
         addChangeListeners();
 
         /* Double click to edit library */
@@ -173,25 +168,25 @@ public class PreferencesFrame extends JFrame {
     }
 
     private void populatePreferences() {
-        jTextFieldPollInterval.setText(Integer.toString(prefs.getPollInterval()));
-        jTextFieldCodeFontSize.setText(Integer.toString(prefs.getCodeFontSize()));
-        jTextFieldFavDir.setText(prefs.getFavouriteDir());
-        jTextFieldUserShortcut1.setText(prefs.getUserShortcut(0));
-        jTextFieldUserShortcut2.setText(prefs.getUserShortcut(1));
-        jTextFieldUserShortcut3.setText(prefs.getUserShortcut(2));
-        jTextFieldUserShortcut4.setText(prefs.getUserShortcut(3));
-        jCheckBoxNoMouseReCenter.setSelected(prefs.getMouseDoNotRecenterWhenAdjustingControls());
-        jCheckBoxBackupPatchesOnSD.setSelected(prefs.isBackupPatchesOnSDEnabled());
-        jCheckBoxControllerEnabled.setSelected(prefs.isControllerEnabled());
-        jTextFieldController.setText(prefs.getControllerObject());
-        jTextFieldController.setEnabled(prefs.isControllerEnabled());
-        if (prefs.getMouseDialAngular()) jComboBoxDialMouseBehaviour.setSelectedItem("Angular"); 
-        jComboBoxFirmwareMode.setSelectedItem(prefs.getFirmwareMode()); 
-        jComboBoxTheme.setSelectedItem(prefs.getTheme());
-        jComboBoxDspSafetyLimit.setSelectedIndex(prefs.getDspSafetyLimit());
+        jTextFieldPollInterval.setText(Integer.toString(tempPrefs.getPollInterval()));
+        jTextFieldCodeFontSize.setText(Integer.toString(tempPrefs.getCodeFontSize()));
+        jTextFieldFavDir.setText(tempPrefs.getFavouriteDir());
+        jTextFieldUserShortcut1.setText(tempPrefs.getUserShortcut(0));
+        jTextFieldUserShortcut2.setText(tempPrefs.getUserShortcut(1));
+        jTextFieldUserShortcut3.setText(tempPrefs.getUserShortcut(2));
+        jTextFieldUserShortcut4.setText(tempPrefs.getUserShortcut(3));
+        jCheckBoxNoMouseReCenter.setSelected(tempPrefs.getMouseDoNotRecenterWhenAdjustingControls());
+        jCheckBoxBackupPatchesOnSD.setSelected(tempPrefs.isBackupPatchesOnSDEnabled());
+        jCheckBoxControllerEnabled.setSelected(tempPrefs.isControllerEnabled());
+        jTextFieldController.setText(tempPrefs.getControllerObject());
+        jTextFieldController.setEnabled(tempPrefs.isControllerEnabled());
+        if (tempPrefs.getMouseDialAngular()) jComboBoxDialMouseBehaviour.setSelectedItem("Angular");
+        jComboBoxFirmwareMode.setSelectedItem(tempPrefs.getFirmwareMode());
+        jComboBoxTheme.setSelectedItem(tempPrefs.getTheme());
+        jComboBoxDspSafetyLimit.setSelectedIndex(tempPrefs.getDspSafetyLimit());
     }
 
-    private void setDirty(boolean dirty) {
+    public void setDirty(boolean dirty) {
         this.dirty = dirty;
         setTitle((dirty ? "*" : "") + "Preferences");
     }
@@ -233,6 +228,16 @@ public class PreferencesFrame extends JFrame {
         jComboBoxTheme.addActionListener(comboBoxListener);
     }
 
+    private void setupWindowClosingListener() {
+        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                attemptClose();
+            }
+        });
+    }
+
     private void setupCloseShortcut() {
         JRootPane rootPane = this.getRootPane();
         InputMap inputMap = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -250,11 +255,21 @@ public class PreferencesFrame extends JFrame {
     }
 
     private void attemptClose() {
-        if (dirty) {
+        boolean overallDirty = dirty;
+        if (!overallDirty) { // Only check editors if PreferencesFrame itself isn't already dirty
+            for (AxolotiLibraryEditor editor : AxolotiLibraryEditor.getOpenEditors()) {
+                if (editor.isDirty()) {
+                    overallDirty = true;
+                    break;
+                }
+            }
+        }
+
+        if (overallDirty) {
             String[] options = {"Save", "Discard", "Cancel"};
             int option = JOptionPane.showOptionDialog(
                 this,
-                "Save your changes to preferences?",
+                "Save changes to preferences?",
                 "Save Changes?",
                 JOptionPane.YES_NO_CANCEL_OPTION,
                 JOptionPane.WARNING_MESSAGE,
@@ -264,14 +279,24 @@ public class PreferencesFrame extends JFrame {
             );
 
             if (option == JOptionPane.YES_OPTION) {
-                prefs.SavePrefs();
-                dirty = false;
-                this.dispose();
+                jButtonSaveActionPerformed(null);
             } else if (option == JOptionPane.NO_OPTION) {
-                populatePreferences(); /* Reset to values from ksoloti.prefs */
+                LOGGER.log(Level.INFO, "Discarding changes to preferences.");
+                Preferences.LoadPreferences(); /* Reload live prefs from file */
+                tempPrefs = Preferences.getInstance().clone(); /* Reset current working copy to values from ksoloti.prefs */
+                populatePreferences();
+                populateLibraryTable();
+
+                List<AxolotiLibraryEditor> editorsToReload = AxolotiLibraryEditor.getOpenEditors();
+                LOGGER.log(Level.INFO, "PreferencesFrame: Notifying {0} open library editors to reload.", editorsToReload.size());
+                for (AxolotiLibraryEditor editor : editorsToReload) {
+                    editor.reload(); // Call the new reload method on each editor
+                }
+
                 dirty = false;
                 this.dispose();
             } else if (option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION) {
+                LOGGER.log(Level.INFO, "PreferencesFrame: User cancelled closing action. Keeping window open.");
                 /* Keep window open with current changes pending. */
             }
         } else {
@@ -280,46 +305,45 @@ public class PreferencesFrame extends JFrame {
     }
 
     void Apply() {
+        String oldFirmwareMode = Preferences.getInstance().getFirmwareMode();
 
-        prefs.setPollInterval(Integer.parseInt(jTextFieldPollInterval.getText()));
+        tempPrefs.setPollInterval(Integer.parseInt(jTextFieldPollInterval.getText()));
+        tempPrefs.setCodeFontSize(Integer.parseInt(jTextFieldCodeFontSize.getText()));
+        tempPrefs.setMouseDialAngular(jComboBoxDialMouseBehaviour.getSelectedItem().equals("Angular"));
+        tempPrefs.setMouseDoNotRecenterWhenAdjustingControls(jCheckBoxNoMouseReCenter.isSelected());
 
-        prefs.setCodeFontSize(Integer.parseInt(jTextFieldCodeFontSize.getText()));
-        Constants.FONT_MONO = Constants.FONT_MONO.deriveFont((float)prefs.getCodeFontSize());
-        MainFrame.mainframe.updateConsoleFont();
-
-        prefs.setMouseDialAngular(jComboBoxDialMouseBehaviour.getSelectedItem().equals("Angular"));
-
-        prefs.setMouseDoNotRecenterWhenAdjustingControls(jCheckBoxNoMouseReCenter.isSelected());
-
-        if (!jComboBoxFirmwareMode.getSelectedItem().toString().equals(prefs.getFirmwareMode())) {
-
-            prefs.setFirmwareMode(jComboBoxFirmwareMode.getSelectedItem().toString());
-
-            /* Flush old .h.gch file (Will be recompiled for new firmware mode the next time a patch goes live) */
-            axoloti.Axoloti.deletePrecompiledHeaderFile();
-
-            MainFrame.mainframe.updateLinkFirmwareID();
-            
+        if (!jComboBoxFirmwareMode.getSelectedItem().toString().equals(tempPrefs.getFirmwareMode())) {
+            tempPrefs.setFirmwareMode(jComboBoxFirmwareMode.getSelectedItem().toString());
         }
 
-        prefs.setUserShortcut(0, jTextFieldUserShortcut1.getText());
-        prefs.setUserShortcut(1, jTextFieldUserShortcut2.getText());
-        prefs.setUserShortcut(2, jTextFieldUserShortcut3.getText());
-        prefs.setUserShortcut(3, jTextFieldUserShortcut4.getText());
+        tempPrefs.setUserShortcut(0, jTextFieldUserShortcut1.getText());
+        tempPrefs.setUserShortcut(1, jTextFieldUserShortcut2.getText());
+        tempPrefs.setUserShortcut(2, jTextFieldUserShortcut3.getText());
+        tempPrefs.setUserShortcut(3, jTextFieldUserShortcut4.getText());
+        tempPrefs.setFavouriteDir(jTextFieldFavDir.getText());
+        tempPrefs.setControllerObject(jTextFieldController.getText().trim());
+        tempPrefs.setControllerEnabled(jCheckBoxControllerEnabled.isSelected());
+        tempPrefs.setBackupPatchesOnSDEnabled(jCheckBoxBackupPatchesOnSD.isSelected());
+        tempPrefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
+        tempPrefs.setDspSafetyLimit(jComboBoxDspSafetyLimit.getSelectedIndex());
 
-        prefs.setFavouriteDir(jTextFieldFavDir.getText());
+        /* Update actual 'prefs' */
+        Preferences.setInstance(tempPrefs.clone());
 
-        prefs.setControllerObject(jTextFieldController.getText().trim());
-        prefs.setControllerEnabled(jCheckBoxControllerEnabled.isSelected());
-        prefs.setBackupPatchesOnSDEnabled(jCheckBoxBackupPatchesOnSD.isSelected());
+        /* Update settings based on updated 'prefs', not tempPrefs */
+        Constants.FONT_MONO = Constants.FONT_MONO.deriveFont((float)Preferences.getInstance().getCodeFontSize());
+        MainFrame.mainframe.updateConsoleFont();
+        Preferences.getInstance().applyTheme();
 
-        prefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
-        prefs.applyTheme();
-        
-        prefs.setDspSafetyLimit(jComboBoxDspSafetyLimit.getSelectedIndex());
+        if (!Preferences.getInstance().getFirmwareMode().equals(oldFirmwareMode)) {
+            // The firmware mode has truly changed. Perform necessary actions.
+            axoloti.Axoloti.deletePrecompiledHeaderFile();
+            MainFrame.mainframe.updateLinkFirmwareID();
+        }
     }
 
-    final void PopulateLibrary() {
+    final void populateLibraryTable() {
+        LOGGER.log(Level.INFO, "PreferencesFrame: Populating library table.");
 
         DefaultTableModel model = (DefaultTableModel) jTableLibraries.getModel();
 
@@ -328,7 +352,7 @@ public class PreferencesFrame extends JFrame {
             model.removeRow(0);
         }
 
-        for (AxolotiLibrary lib : prefs.getLibraries()) {
+        for (AxolotiLibrary lib : tempPrefs.getLibraries()) {
             model.addRow(new Object[]{lib.getType(), lib.getId(), lib.getLocalLocation(), lib.getEnabled()});
         }
 
@@ -377,8 +401,6 @@ public class PreferencesFrame extends JFrame {
         jTextFieldUserShortcut2 = new JTextField();
         jTextFieldUserShortcut3 = new JTextField();
         jTextFieldUserShortcut4 = new JTextField();
-
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         jTextFieldPollInterval.setText("jTextField1");
         jTextFieldPollInterval.setToolTipText("Interval at which the Patcher displays the newest parameter data coming from the Core.");
@@ -583,7 +605,7 @@ public class PreferencesFrame extends JFrame {
         jLabelTheme.setEnabled(true);
 
 
-        for (String i : prefs.getThemeList()) {
+        for (String i : Preferences.getInstance().getThemeList()) {
             jComboBoxTheme.addItem(i);
         }
 
@@ -898,7 +920,8 @@ public class PreferencesFrame extends JFrame {
 
     private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {
         Apply();
-        prefs.SavePrefs();
+        Preferences.getInstance().SavePrefs();
+        dirty = false;
         this.dispose();
     }
 
@@ -910,7 +933,7 @@ public class PreferencesFrame extends JFrame {
 
     private void btnFavDirActionPerformed(java.awt.event.ActionEvent evt) {
         fc.resetChoosableFileFilters();
-        fc.setCurrentDirectory(new File(prefs.getCurrentFileDirectory()));
+        fc.setCurrentDirectory(new File(Preferences.getInstance().getCurrentFileDirectory()));
         fc.restoreCurrentSize();
         fc.setDialogTitle("Open...");
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -919,7 +942,7 @@ public class PreferencesFrame extends JFrame {
             String dir;
             try {
                 dir = fc.getSelectedFile().getCanonicalPath();
-                prefs.setFavouriteDir(dir);
+                tempPrefs.setFavouriteDir(dir);
                 jTextFieldFavDir.setText(dir);
             } catch (IOException ex) {
                 Logger.getLogger(PreferencesFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -947,8 +970,8 @@ public class PreferencesFrame extends JFrame {
             newlib = new AxoFileLibrary();
         }
         newlib.clone(lib);
-        prefs.updateLibrary(lib.getId(), newlib);
-        PopulateLibrary();
+        tempPrefs.updateLibrary(lib.getId(), newlib);
+        populateLibraryTable();
     }
 
     private void jDelLibBtnActionPerformed(java.awt.event.ActionEvent evt) {
@@ -968,10 +991,10 @@ public class PreferencesFrame extends JFrame {
         switch (n) {
             case JOptionPane.YES_OPTION: {
                 if (idx >= 0) {
-                    prefs.removeLibrary(id);
+                    tempPrefs.removeLibrary(id);
                 }
 
-                PopulateLibrary();
+                populateLibraryTable();
                 break;
             }
             case JOptionPane.NO_OPTION:
@@ -991,8 +1014,8 @@ public class PreferencesFrame extends JFrame {
         }
         delete = (res == JOptionPane.OK_OPTION);
 
-        prefs.ResetLibraries(delete);
-        PopulateLibrary();
+        tempPrefs.ResetLibraries(delete);
+        populateLibraryTable();
     }
 
     private void jEditLibActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1005,15 +1028,15 @@ public class PreferencesFrame extends JFrame {
 
     private void jLibStatusActionPerformed(java.awt.event.ActionEvent evt) {
         LOGGER.log(Level.INFO, "Checking library status...");
-        for (AxolotiLibrary lib : prefs.getLibraries()) {
+        for (AxolotiLibrary lib : tempPrefs.getLibraries()) {
             lib.reportStatus();
         }
         // LOGGER.log(Level.INFO, "Done checking library status.\n");
     }
 
     private void jComboBoxThemeActionPerformed(java.awt.event.ActionEvent evt) {
-        prefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
-        prefs.applyTheme();
+        tempPrefs.setTheme(jComboBoxTheme.getSelectedItem().toString());
+        tempPrefs.applyTheme();
         SwingUtilities.updateComponentTreeUI(this); /* Preview theme via preferences window */
     }
 
@@ -1027,7 +1050,7 @@ public class PreferencesFrame extends JFrame {
         if (idx >= 0) {
             DefaultTableModel model = (DefaultTableModel) jTableLibraries.getModel();
             String id = (String) model.getValueAt(idx, 1);
-            AxolotiLibrary lib = prefs.getLibrary(id);
+            AxolotiLibrary lib = tempPrefs.getLibrary(id);
             if (lib != null) {
                 String type = lib.getType();
                 new AxolotiLibraryEditor(this, true, lib);
@@ -1040,8 +1063,8 @@ public class PreferencesFrame extends JFrame {
                    }
                   updlib.clone(lib);
                 }
-                prefs.updateLibrary(lib.getId(), updlib);
-                PopulateLibrary();
+                tempPrefs.updateLibrary(lib.getId(), updlib);
+                populateLibraryTable();
             }
         }
     }
