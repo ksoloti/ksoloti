@@ -88,7 +88,7 @@ public class Constants {
     public static void createFontMono() {
         try {
             String fstr = "/resources/fonts/NotoSansMono-Regular.ttf";
-            FONT_MONO = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(fstr)).deriveFont((float)Preferences.LoadPreferences().getCodeFontSize());
+            FONT_MONO = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(fstr)).deriveFont((float)Preferences.getInstance().getCodeFontSize());
         }
         catch (IOException e) {
             e.printStackTrace();

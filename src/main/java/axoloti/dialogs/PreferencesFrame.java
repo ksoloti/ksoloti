@@ -77,7 +77,7 @@ public class PreferencesFrame extends JFrame {
     private static final Logger LOGGER = Logger.getLogger(PreferencesFrame.class.getName());
 
     static PreferencesFrame singleton = null;
-    Preferences prefs = Preferences.LoadPreferences();
+    Preferences prefs = Preferences.getInstance(); /* Live preferences */
     private boolean dirty = false;
 
     private JButton jButtonFavDir;

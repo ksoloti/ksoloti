@@ -50,7 +50,7 @@ public abstract class RControlEncoder extends JComponent {
 
     public RControlEncoder() {
         try {
-            if (Preferences.LoadPreferences().getMouseDoNotRecenterWhenAdjustingControls()) {
+            if (Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) {
                 robot = null;
             } else {
                 robot = new Robot(MouseInfo.getPointerInfo().getDevice());

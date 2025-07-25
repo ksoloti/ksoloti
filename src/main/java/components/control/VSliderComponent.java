@@ -119,7 +119,7 @@ public class VSliderComponent extends ACtrlComponent {
             popup = popupFactory.getPopup(this, popupTip, MousePressedCoordX+8, MousePressedCoordY);
             popup.show();
             robot = createRobot();
-            if (!Preferences.LoadPreferences().getMouseDoNotRecenterWhenAdjustingControls()) {
+            if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) {
                 getRootPane().setCursor(MainFrame.transparentCursor);
             }
             e.consume();

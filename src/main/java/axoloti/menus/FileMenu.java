@@ -248,7 +248,7 @@ public class FileMenu extends JMenu {
         add(jMenuQuit);
 
         jMenuRegenerateObjects.setVisible(false);
-        if (!Preferences.LoadPreferences().getExpertMode()) {
+        if (!Preferences.getInstance().getExpertMode()) {
             // jMenuAutoTestObjects.setVisible(false);
             // jMenuAutoTestPatches.setVisible(false);
             // jMenuAutoTestAll.setVisible(false);
@@ -436,7 +436,7 @@ public class FileMenu extends JMenu {
         class Thd extends Thread {
             public void run() {
                 LOGGER.log(Level.INFO, "Syncing Libraries...");
-                for (AxolotiLibrary lib : Preferences.LoadPreferences().getLibraries()) {
+                for (AxolotiLibrary lib : Preferences.getInstance().getLibraries()) {
                     lib.sync();
                 }
                 LOGGER.log(Level.INFO, "Done syncing Libraries.\n");

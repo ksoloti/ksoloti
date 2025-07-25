@@ -114,7 +114,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
 
-    static public Preferences prefs = Preferences.LoadPreferences();
+    static public Preferences prefs = Preferences.getInstance();
     static public AxoObjects axoObjects;
     public static MainFrame mainframe;
     public static AxoJFileChooser fc;

@@ -105,7 +105,7 @@ public class HSliderComponent extends ACtrlComponent {
                 MousePressedCoordX = e.getXOnScreen();
                 MousePressedCoordY = e.getYOnScreen();
                 robot = createRobot();
-                if (!Preferences.LoadPreferences().getMouseDoNotRecenterWhenAdjustingControls()) {
+                if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) {
                     getRootPane().setCursor(MainFrame.transparentCursor);
                 }
             }

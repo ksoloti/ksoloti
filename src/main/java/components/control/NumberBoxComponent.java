@@ -151,7 +151,7 @@ public class NumberBoxComponent extends ACtrlComponent {
                 MousePressedCoordX = e.getXOnScreen();
                 MousePressedCoordY = e.getYOnScreen();
                 MousePressedBtn = e.getButton();
-                if (!Preferences.LoadPreferences().getMouseDoNotRecenterWhenAdjustingControls()) {
+                if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) {
                     getRootPane().setCursor(MainFrame.transparentCursor);
                 }
                 fireEventAdjustmentBegin();

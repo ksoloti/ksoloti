@@ -141,8 +141,8 @@ public class DialComponent extends ACtrlComponent {
                 }
 
                 if (MousePressedBtn == MouseEvent.BUTTON1) {
-                    if (!Preferences.LoadPreferences().getMouseDoNotRecenterWhenAdjustingControls()
-                        && !Preferences.LoadPreferences().getMouseDialAngular()) {
+                    if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()
+                        && !Preferences.getInstance().getMouseDialAngular()) {
                         getRootPane().setCursor(MainFrame.transparentCursor);
                     }
                     fireEventAdjustmentBegin();

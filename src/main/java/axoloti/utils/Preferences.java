@@ -294,9 +294,9 @@ public class Preferences {
     }
 
     public AxolotiLibrary getLibrary(String id) {
-        if(libraries == null) return null;
+        if (id == null || libraries == null) return null;
         for (AxolotiLibrary lib : libraries) {
-            if (lib.getId().equals(id)) {
+            if (id.equals(lib.getId())) {
                 return lib;
             }
         }
@@ -476,41 +476,39 @@ public class Preferences {
     private static Preferences singleton;
 
     public static Preferences LoadPreferences() {
-        if (singleton == null) {
-            File p = new File(Preferences.GetPrefsFileLoc());
-            if (p.exists()) {
-                Preferences prefs = null;
-                Serializer serializer = new Persister(new Format(2));
+        File p = new File(Preferences.GetPrefsFileLoc());
+        if (p.exists()) {
+            Preferences prefs = null;
+            Serializer serializer = new Persister(new Format(2));
+            try {
+                prefs = serializer.read(Preferences.class, p);
+            } catch (Exception ex) {
                 try {
-                    prefs = serializer.read(Preferences.class, p);
-                } catch (Exception ex) {
-                    try {
-                        LOGGER.log(Level.SEVERE, null, ex);
-                        LOGGER.log(Level.INFO,"Attempting to load preferences in relaxed mode");
-                        prefs = serializer.read(Preferences.class, p,false);
-                    } catch (Exception ex1) {
-                        LOGGER.log(Level.SEVERE, null, ex1);
-                    }
+                    LOGGER.log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.INFO,"Attempting to load preferences in relaxed mode");
+                    prefs = serializer.read(Preferences.class, p,false);
+                } catch (Exception ex1) {
+                    LOGGER.log(Level.SEVERE, null, ex1);
                 }
-                if (prefs == null){
-                    prefs = new Preferences();
-                }
-                singleton = prefs;
-
-                if (singleton.libraries == null) {
-                    singleton.libraries = new ArrayList<>();
-                }
-                if (singleton.libraries.isEmpty()) {
-                    singleton.ResetLibraries(false);
-                }
-
-                singleton.buildObjectSearchPatch();
-                singleton.MidiInputDevice = null; // clear it out for the future
             }
-            else {
-                singleton = new Preferences();
+            if (prefs == null) {
+                prefs = new Preferences();
+            }
+            singleton = prefs;
+
+            if (singleton.libraries == null) {
+                singleton.libraries = new ArrayList<>();
+            }
+            if (singleton.libraries.isEmpty()) {
                 singleton.ResetLibraries(false);
             }
+
+            singleton.buildObjectSearchPatch();
+            singleton.MidiInputDevice = null; // clear it out for the future
+        }
+        else {
+            singleton = new Preferences();
+            singleton.ResetLibraries(false);
         }
         return singleton;
     }
@@ -530,7 +528,7 @@ public class Preferences {
         try {
             serializer.write(this, f);
             singleton = null; /* Invalidate current instance */
-            Preferences.LoadPreferences(); /* Reload the freshly saved prefs file */
+            LoadPreferences(); /* Reload the freshly saved prefs file */
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Failed to save preferences.", ex);

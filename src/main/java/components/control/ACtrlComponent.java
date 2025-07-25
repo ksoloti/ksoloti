@@ -310,7 +310,7 @@ public abstract class ACtrlComponent extends JComponent {
 
     Robot createRobot() {
         try {
-            if (Preferences.LoadPreferences().getMouseDoNotRecenterWhenAdjustingControls()) {
+            if (Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) {
                 return null;
             } else {
                 Robot r = new Robot(MouseInfo.getPointerInfo().getDevice());

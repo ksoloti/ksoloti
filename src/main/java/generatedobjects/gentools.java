@@ -342,7 +342,7 @@ public class gentools {
             f = new File(path);
             fn = f.getName();
             String objPath = null;
-            for (String s : Preferences.LoadPreferences().getObjectSearchPath()) {
+            for (String s : Preferences.getInstance().getObjectSearchPath()) {
                 if (path.startsWith(s)) {
                     objPath = path.substring(s.length() + 1);
                     break;
