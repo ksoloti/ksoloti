@@ -21,7 +21,7 @@ public class AxoSDFileTableModel extends AbstractTableModel {
 
     public AxoSDFileTableModel(List<DisplayTreeNode> fileTreeData) {
         this.data = (fileTreeData != null) ? fileTreeData : new ArrayList<>();
-        System.out.println(Instant.now() + " AxoSDFileTableModel: Constructor received list of size: " + (data != null ? data.size() : "null"));
+        // System.out.println(Instant.now() + " AxoSDFileTableModel: Constructor received list of size: " + (data != null ? data.size() : "null"));
 
     }
 
