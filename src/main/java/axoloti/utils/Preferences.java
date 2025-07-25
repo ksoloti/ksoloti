@@ -655,37 +655,18 @@ public class Preferences {
     }
 
     public void addRecentFile(String filename) {
-        boolean alreadyInMenu = false;
-        for (String r : recentFiles) {
-            if (r.equals(filename)) {
-                /* Schedule to remove from current position, will be added to top */
-                /* Can't remove while iterating - will trigger ConcurrentModificationException */
-                alreadyInMenu = true;
-            }
+        if (filename == null || filename.trim().isEmpty()) return;
+        recentFiles.remove(filename); 
+        while (recentFiles.size() >= nRecentFiles) {
+            recentFiles.remove(0); /* Remove oldest */
         }
-        if (alreadyInMenu) {
-            recentFiles.remove(filename);
-        }
-        else if (recentFiles.size() == nRecentFiles) {
-            recentFiles.remove(0);
-        }
-        /* Add to top */
-        recentFiles.add(filename);
-        // SetDirty();
+
+        recentFiles.add(filename); /* Add to top */
     }
 
     public void removeRecentFile(String filename) {
-        boolean alreadyInMenu = false;
-        for (String r : recentFiles) {
-            if (r.equals(filename)) {
-                /* Schedule to remove from current position, will be added to top */
-                /* Can't remove while iterating - will trigger ConcurrentModificationException */
-                alreadyInMenu = true;
-            }
-        }
-        if (alreadyInMenu) {
-            recentFiles.remove(filename);
-        }
+        if (filename == null || filename.trim().isEmpty()) return;
+        recentFiles.remove(filename);
     }
 
     public String getFavouriteDir() {
