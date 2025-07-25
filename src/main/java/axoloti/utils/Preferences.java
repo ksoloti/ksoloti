@@ -325,24 +325,24 @@ public class Preferences {
     }
 
     public void removeLibrary(String id) {
-        for (AxolotiLibrary lib : libraries) {
-            if (lib.getId().equals(id)) {
-                libraries.remove(lib);
+        /* Iterate using index to avoid ConcurrentModificationException */
+        for (int i = 0; i < libraries.size(); i++) {
+            if (libraries.get(i).getId().equals(id)) {
+                libraries.remove(i);
+                buildObjectSearchPatch();
                 return;
             }
         }
-        // SetDirty();
-        buildObjectSearchPatch();
     }
 
     public void enableLibrary(String id, boolean e) {
         for (AxolotiLibrary lib : libraries) {
             if (lib.getId().equals(id)) {
                 lib.setEnabled(e);
+                buildObjectSearchPatch();
+                return; /* Found and updated, no need to continue */
             }
         }
-        // SetDirty();
-        buildObjectSearchPatch();
     }
 
     public String getCurrentFileDirectory() {
