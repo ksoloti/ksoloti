@@ -254,6 +254,35 @@ public class Preferences {
         }
     }
 
+    /* Makes a deep copy of the source Preferences object into this object. */
+    public Preferences clone() {
+        Preferences clonedPrefs = new Preferences();
+        /* Manually copy all primitive fields: */
+        clonedPrefs.PollInterval = this.PollInterval;
+        clonedPrefs.CodeFontSize = this.CodeFontSize;
+        clonedPrefs.FavouriteDir = this.FavouriteDir;
+        clonedPrefs.MouseDialAngular = this.MouseDialAngular;
+        clonedPrefs.MouseDoNotRecenterWhenAdjustingControls = this.MouseDoNotRecenterWhenAdjustingControls;
+        clonedPrefs.FirmwareMode = this.FirmwareMode;
+        clonedPrefs.ControllerObject = this.ControllerObject;
+        clonedPrefs.ControllerEnabled = this.ControllerEnabled;
+        clonedPrefs.BackupPatchesOnSDEnabled = this.BackupPatchesOnSDEnabled;
+        clonedPrefs.Theme = this.Theme;
+        clonedPrefs.DspSafetyLimit = this.DspSafetyLimit;
+        clonedPrefs.ExpertMode = this.ExpertMode;
+        clonedPrefs.SortByExecution = this.SortByExecution;
+        clonedPrefs.FirmwareWarnDisable = this.FirmwareWarnDisable;
+
+        if (this.UserShortcuts != null) {
+            clonedPrefs.UserShortcuts = new String[this.UserShortcuts.length];
+            System.arraycopy(this.UserShortcuts, 0, clonedPrefs.UserShortcuts, 0, this.UserShortcuts.length);
+        } else {
+            clonedPrefs.UserShortcuts = new String[4]; // Or whatever default size
+        }
+
+        return clonedPrefs;
+    }
+
     @Persist
     public void Persist() {
         // called prior to serialization
