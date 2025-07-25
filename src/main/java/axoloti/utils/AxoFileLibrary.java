@@ -18,6 +18,10 @@ public class AxoFileLibrary extends AxolotiLibrary {
         super(id, type, lloc, e, null, false);
     }
 
+    public AxoFileLibrary(AxoFileLibrary other) {
+        super(other);
+    }
+
     @Override
     public void sync() {
         // NOP

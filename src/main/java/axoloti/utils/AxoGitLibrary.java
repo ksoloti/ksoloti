@@ -45,6 +45,10 @@ public class AxoGitLibrary extends AxolotiLibrary {
     public AxoGitLibrary() {
     }
 
+    public AxoGitLibrary(AxoGitLibrary other) {
+        super(other);
+    }
+
     @Override
     public void reportStatus() {
         File f = new File(getLocalLocation());

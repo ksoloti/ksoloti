@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
+import org.simpleframework.xml.convert.Convert;
 
 /**
  * Represents a location for objects and patches to be picked up
@@ -34,6 +35,7 @@ public class AxolotiLibrary {
     @Element(required = false)
     private String UserId;
     @Element(required = false)
+    @Convert(PasswordConverter.class)
     private char[] Password;
     @Element(required = false)
     private boolean AutoSync;
@@ -67,6 +69,10 @@ public class AxolotiLibrary {
         RemoteLocation = rloc;
         UserId = "";
         AutoSync = auto;
+    }
+
+    public AxolotiLibrary(AxolotiLibrary lib) {
+        clone(lib);
     }
 
     public void clone(AxolotiLibrary lib) {
