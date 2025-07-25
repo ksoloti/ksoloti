@@ -41,14 +41,12 @@ public class MidiAssignments extends javax.swing.JDialog {
      * Creates new form MidiAssignments
      */
     public MidiAssignments(java.awt.Frame parent, boolean modal, ParameterInstance param) {
-        super(null, ModalityType.TOOLKIT_MODAL);
-        setModalityType(modal ? ModalityType.TOOLKIT_MODAL : ModalityType.MODELESS);
-        setAlwaysOnTop(true);
+        super(parent, modal);
+        setLocationRelativeTo(param.GetObjectInstance().getPatch().getPatchframe());
         setPreferredSize(new Dimension(640, 480));
-        setTitle("MIDI CC# Assignment for <" + param.GetObjectInstance().getInstanceName() + " : " + param.getName() + ">");
+        setTitle("MIDI CC# Assignment for [ " + param.GetObjectInstance().getInstanceName() + ":" + param.getName() + " ]");
         initComponents();
         setIconImage(Constants.APP_ICON.getImage());
-        setLocationRelativeTo(param.GetObjectInstance().getPatch().getPatchframe());
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         Patch patch = param.GetObjectInstance().patch;
         String CCObj[] = new String[128];
