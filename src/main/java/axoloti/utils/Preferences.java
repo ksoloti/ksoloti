@@ -126,7 +126,6 @@ public class Preferences {
     @ElementMap(required = false, entry = "Boards", key = "cpuid", attribute = true, inline = true)
     HashMap<String, String> BoardNames;
 
-//    @Path("outlets")
     @ElementListUnion({
         @ElementList(entry = "gitlib", type = AxoGitLibrary.class, inline = true, required = false),
         @ElementList(entry = "filelib", type = AxoFileLibrary.class, inline = true, required = false)
@@ -136,7 +135,6 @@ public class Preferences {
 
     String[] ObjectPath;
 
-    // private boolean isDirty = false;
     private boolean restartRequired = false;
 
     private final int nRecentFiles = 16;
@@ -262,18 +260,6 @@ public class Preferences {
         appVersion = Version.AXOLOTI_SHORT_VERSION;
     }
 
-    // void SetDirty() {
-    //     isDirty = true;
-    // }
-
-    // void ClearDirty() {
-    //     isDirty = false;
-    // }
-
-    // boolean isDirty() {
-    //     return isDirty;
-    // }
-
     public ArrayList<AxolotiLibrary> getLibraries() {
         return libraries;
     }
@@ -307,7 +293,6 @@ public class Preferences {
             libraries.add(newlib);
         }
         buildObjectSearchPatch();
-        // SetDirty();
     }
 
     public void removeLibrary(String id) {
@@ -392,7 +377,6 @@ public class Preferences {
         }
         this.Theme = Theme;
         restartRequired = true;
-        // SetDirty();
     }
 
     public String getCodeSyntaxTheme() {
@@ -405,7 +389,6 @@ public class Preferences {
         }
         this.codeSyntaxTheme = codeSyntaxTheme;
         restartRequired = true;
-        // SetDirty();
     }
 
     public void applyTheme() {
@@ -449,7 +432,6 @@ public class Preferences {
             return;
         }
         this.CodeFontSize = sz;
-        // SetDirty();
     }
 
     static String GetPrefsFileLoc() {
@@ -516,8 +498,6 @@ public class Preferences {
         if (restartRequired) {
             LOGGER.log(Level.SEVERE, ">>> RESTART REQUIRED <<<");
         }
-
-        // ClearDirty();
     }
 
 
@@ -555,7 +535,6 @@ public class Preferences {
             return;
         }
         this.MouseDialAngular = MouseDialAngular;
-        // SetDirty();
     }
 
     public void setFirmwareMode(String FirmwareMode) {
@@ -566,13 +545,13 @@ public class Preferences {
 
         if (FirmwareMode.contains("Axoloti") && !this.FirmwareMode.contains("Axoloti") || FirmwareMode.contains("Ksoloti") && !this.FirmwareMode.contains("Ksoloti")) {
             /* If switching to another board model... */
-            
+
             this.FirmwareMode = FirmwareMode;
             MainFrame.mainframe.populateMainframeTitle();
             MainFrame.mainframe.refreshAppIcon();
 
             restartRequired = true;
-            
+
             /* Disconnect automatically. User will have to restart the Patcher anyway. */
             if (USBBulkConnection.GetConnection().isConnected()) {
                 USBBulkConnection.GetConnection().disconnect();
@@ -590,7 +569,6 @@ public class Preferences {
         }
 
         MainFrame.mainframe.populateInfoColumn();
-        // SetDirty();
     }
 
     public boolean getRestartRequired() {
@@ -605,7 +583,6 @@ public class Preferences {
             return;
         }
         this.UserShortcuts[index] = userShortcut;
-        // SetDirty();
     }
 
     public boolean getMouseDoNotRecenterWhenAdjustingControls() {
@@ -617,7 +594,6 @@ public class Preferences {
             return;
         }
         this.MouseDoNotRecenterWhenAdjustingControls = MouseDoNotRecenterWhenAdjustingControls;
-        // SetDirty();
     }
 
     public Boolean getExpertMode() {
@@ -680,7 +656,6 @@ public class Preferences {
         }
         this.FavouriteDir = favouriteDir;
         restartRequired = true;
-        // SetDirty();
     }
 
     public String getBoardName(String cpu) {
@@ -699,7 +674,6 @@ public class Preferences {
         } else {
             BoardNames.put(cpuid, name);
         }
-        // SetDirty();
     }
 
     public String getControllerObject() {
@@ -824,11 +798,11 @@ public class Preferences {
         }
         ObjectPath = objPath.toArray(new String[0]);
     }
-    
+
     public String getThemePath() {
         return themePath;
     }
-    
+
     public void setThemePath(String themePath) {
         this.themePath = themePath;
         SavePrefs();
