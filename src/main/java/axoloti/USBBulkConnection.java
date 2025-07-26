@@ -1462,9 +1462,7 @@ public class USBBulkConnection extends Connection {
                 packetData[dataIndex >> 2] += (c << 24);
                 break;
         }
-        // System.out.println(Instant.now() + " [DEBUG] s=" + dataIndex + "  v=" + Integer.toHexString(packetData[dataIndex>>2]) + " c=" + Integer.toHexString(c));
         dataIndex++;
-
     }
 
     void DisplayPackHeader(int i1, int i2) {
