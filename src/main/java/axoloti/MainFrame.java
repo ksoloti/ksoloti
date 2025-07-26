@@ -63,6 +63,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -1324,6 +1325,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     return b;
                 }
             });
+            /* Simple sorting method for easier diff-ability of logs */
+            Arrays.sort(files, (f1, f2) -> f1.getAbsolutePath().compareToIgnoreCase(f2.getAbsolutePath()));
+
             for (File s : files) {
                 if (!runTestDir(s) && stopOnFirstFail) {
                     return false;
