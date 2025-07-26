@@ -747,7 +747,7 @@ public class Preferences {
 
         /* Create default configs */
         AxoGitLibrary axo_fact = new AxoGitLibrary(
-                AxolotiLibrary.FACTORY_ID,
+                AxolotiLibrary.AXOLOTI_FACTORY_ID,
                 "git",
                 System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator
                     + "axoloti-factory" + File.separator,
@@ -757,7 +757,7 @@ public class Preferences {
         );
 
         AxoGitLibrary axo_comm = new AxoGitLibrary(
-                AxolotiLibrary.USER_LIBRARY_ID,
+                AxolotiLibrary.AXOLOTI_CONTRIB_ID,
                 "git",
                 System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator
                     + "axoloti-contrib" + File.separator,
@@ -767,7 +767,7 @@ public class Preferences {
         );
 
         AxoGitLibrary kso_fact = new AxoGitLibrary(
-                AxolotiLibrary.KSOLOTI_LIBRARY_ID,
+                AxolotiLibrary.KSOLOTI_OBJECTS_ID,
                 "git",
                 System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator
                     + "ksoloti-objects" + File.separator,
@@ -777,7 +777,7 @@ public class Preferences {
         );
 
         AxoGitLibrary kso_comm = new AxoGitLibrary(
-                AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID,
+                AxolotiLibrary.KSOLOTI_CONTRIB_ID,
                 "git",
                 System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator
                     + "ksoloti-contrib" + File.separator,
@@ -797,32 +797,32 @@ public class Preferences {
          * Add back respective default config library, then initialize it.
          */
         libraries = getLibraries();
-        if (getLibrary(AxoGitLibrary.FACTORY_ID) != null) {
-            libraries.remove(getLibrary(AxoGitLibrary.FACTORY_ID));
+        if (getLibrary(AxoGitLibrary.AXOLOTI_FACTORY_ID) != null) {
+            libraries.remove(getLibrary(AxoGitLibrary.AXOLOTI_FACTORY_ID));
         }
         libraries.add(axo_fact);
         if (axo_fact.getEnabled()) {
             axo_fact.init(delete);
         }
 
-        if (getLibrary(AxoGitLibrary.USER_LIBRARY_ID) != null) {
-            libraries.remove(getLibrary(AxoGitLibrary.USER_LIBRARY_ID));
+        if (getLibrary(AxoGitLibrary.AXOLOTI_CONTRIB_ID) != null) {
+            libraries.remove(getLibrary(AxoGitLibrary.AXOLOTI_CONTRIB_ID));
         }
         libraries.add(axo_comm);
         if (axo_comm.getEnabled()) {
             axo_comm.init(delete);
         }
 
-        if (getLibrary(AxoGitLibrary.KSOLOTI_LIBRARY_ID) != null) {
-            libraries.remove(getLibrary(AxoGitLibrary.KSOLOTI_LIBRARY_ID));
+        if (getLibrary(AxoGitLibrary.KSOLOTI_OBJECTS_ID) != null) {
+            libraries.remove(getLibrary(AxoGitLibrary.KSOLOTI_OBJECTS_ID));
         }
         libraries.add(kso_fact);
         if (kso_fact.getEnabled()) {
             kso_fact.init(delete);
         }
 
-        if (getLibrary(AxoGitLibrary.KSOLOTI_CONTRIB_LIBRARY_ID) != null) {
-            libraries.remove(getLibrary(AxoGitLibrary.KSOLOTI_CONTRIB_LIBRARY_ID));
+        if (getLibrary(AxoGitLibrary.KSOLOTI_CONTRIB_ID) != null) {
+            libraries.remove(getLibrary(AxoGitLibrary.KSOLOTI_CONTRIB_ID));
         }
         libraries.add(kso_comm);
         if (kso_comm.getEnabled()) {

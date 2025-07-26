@@ -525,7 +525,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     // Axoloti user library, ask user if they wish to upgrade, or do manual
                     // this allows them the opportunity to manually backup their files!
-                    AxolotiLibrary ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.USER_LIBRARY_ID);
+                    AxolotiLibrary ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.AXOLOTI_CONTRIB_ID);
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
@@ -544,7 +544,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     // Ksoloti user library, ask user if they wish to upgrade, or do manual
                     // this allows them the opportunity to manually backup their files!
-                    AxolotiLibrary kso_ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID);
+                    AxolotiLibrary kso_ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_ID);
                     if (kso_ulib != null) {
                         String cb = kso_ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(kso_ulib.getBranch())) {
@@ -563,7 +563,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     // factory library force and upgrade
                     // Im stashing changes here, just in case, but in reality users should not be altering factory 
-                    ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.FACTORY_ID);
+                    ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.AXOLOTI_FACTORY_ID);
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
@@ -574,7 +574,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     // ksoloti-objects library force and upgrade
                     // Im stashing changes here, just in case, but in reality users should not be altering factory 
-                    ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_LIBRARY_ID);
+                    ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_OBJECTS_ID);
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
@@ -1237,28 +1237,28 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         SetGrabFocusOnSevereErrors(false);
         boolean result;
 
-        AxolotiLibrary fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.FACTORY_ID);
+        AxolotiLibrary fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.AXOLOTI_FACTORY_ID);
         if (fLib == null) {
             SetGrabFocusOnSevereErrors(true);
             return false;
         }
         result = runTestDir(new File(fLib.getLocalLocation() + "patches"));
 
-        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.USER_LIBRARY_ID);
+        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.AXOLOTI_CONTRIB_ID);
         if (fLib == null) {
             SetGrabFocusOnSevereErrors(true);
             return false;
         }
         result &= runTestDir(new File(fLib.getLocalLocation() + "patches"));
 
-        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_LIBRARY_ID);
+        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_OBJECTS_ID);
         if (fLib == null) {
             SetGrabFocusOnSevereErrors(true);
             return false;
         }
         result &= runTestDir(new File(fLib.getLocalLocation() + "patches"));
 
-        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID);
+        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_ID);
         if (fLib == null) {
             SetGrabFocusOnSevereErrors(true);
             return false;
@@ -1272,25 +1272,25 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     public boolean runObjectTests() {
         boolean result;
 
-        AxolotiLibrary fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.FACTORY_ID);
+        AxolotiLibrary fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.AXOLOTI_FACTORY_ID);
         if (fLib == null) {
             return false;
         }
         result = runTestDir(new File(fLib.getLocalLocation() + "objects"));
 
-        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.USER_LIBRARY_ID);
+        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.AXOLOTI_CONTRIB_ID);
         if (fLib == null) {
             return false;
         }
         result &= runTestDir(new File(fLib.getLocalLocation() + "objects"));
 
-        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_LIBRARY_ID);
+        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_OBJECTS_ID);
         if (fLib == null) {
             return false;
         }
         result &= runTestDir(new File(fLib.getLocalLocation() + "objects"));
 
-        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID);
+        fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_ID);
         if (fLib == null) {
             return false;
         }

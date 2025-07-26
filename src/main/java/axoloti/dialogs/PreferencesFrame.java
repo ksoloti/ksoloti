@@ -343,8 +343,6 @@ public class PreferencesFrame extends JFrame {
     }
 
     final void populateLibraryTable() {
-        LOGGER.log(Level.INFO, "PreferencesFrame: Populating library table.");
-
         DefaultTableModel model = (DefaultTableModel) jTableLibraries.getModel();
 
         model.setRowCount(0);

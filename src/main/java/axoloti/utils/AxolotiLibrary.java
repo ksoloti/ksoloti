@@ -43,10 +43,10 @@ public class AxolotiLibrary {
     @Element(required = false)
     private String ContributorPrefix;
 
-    public static String FACTORY_ID = "axoloti-factory";
-    public static String USER_LIBRARY_ID = "axoloti-contrib";
-    public static String KSOLOTI_LIBRARY_ID = "ksoloti-objects";
-    public static String KSOLOTI_CONTRIB_LIBRARY_ID = "ksoloti-contrib";
+    public static String AXOLOTI_FACTORY_ID = "axoloti-factory";
+    public static String AXOLOTI_CONTRIB_ID = "axoloti-contrib";
+    public static String KSOLOTI_OBJECTS_ID = "ksoloti-objects";
+    public static String KSOLOTI_CONTRIB_ID = "ksoloti-contrib";
 
     public AxolotiLibrary() {
         Id = "";
@@ -94,7 +94,8 @@ public class AxolotiLibrary {
     }
 
     public boolean isReadOnly() {
-        return (Id.equals(FACTORY_ID) || Id.equals(KSOLOTI_LIBRARY_ID)) && !(Axoloti.isDeveloper() || Preferences.getInstance().getExpertMode());
+        return (Id.equals(AXOLOTI_FACTORY_ID) || Id.equals(KSOLOTI_OBJECTS_ID)) &&
+                (!(Axoloti.isDeveloper() || Preferences.getInstance().getExpertMode()));
     }
 
     public void setId(String Id) {
@@ -204,10 +205,10 @@ public class AxolotiLibrary {
     public String getBranch() {
         String branch = getRevision();
         if (branch == null || branch.length() == 0) {
-            boolean isOfficial = getId().equals(FACTORY_ID) || 
-                                getId().equals(USER_LIBRARY_ID) || 
-                                getId().equals(KSOLOTI_LIBRARY_ID) ||
-                                getId().equals(KSOLOTI_CONTRIB_LIBRARY_ID);
+            boolean isOfficial = getId().equals(AXOLOTI_FACTORY_ID) || 
+                                 getId().equals(AXOLOTI_CONTRIB_ID) || 
+                                 getId().equals(KSOLOTI_OBJECTS_ID) ||
+                                 getId().equals(KSOLOTI_CONTRIB_ID);
             if (isOfficial) {
                 branch = Version.AXOLOTI_SHORT_VERSION;
             }

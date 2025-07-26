@@ -338,10 +338,10 @@ public class AddToLibraryDlg extends javax.swing.JDialog {
         }
 
         if (sellib == null) {
-            jLibrary.setSelectedItem(AxolotiLibrary.USER_LIBRARY_ID);
+            jLibrary.setSelectedItem(AxolotiLibrary.AXOLOTI_CONTRIB_ID);
         } else {
             if(sellib.isReadOnly()) {
-                 jLibrary.setSelectedItem(AxolotiLibrary.USER_LIBRARY_ID);
+                 jLibrary.setSelectedItem(AxolotiLibrary.AXOLOTI_CONTRIB_ID);
             } else {
                 jLibrary.setSelectedItem(sellib.getId());
             }

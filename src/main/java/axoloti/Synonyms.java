@@ -47,7 +47,7 @@ public class Synonyms {
     static void load() {
         Serializer serializer = new Persister(new Format(2));
         try {
-            AxolotiLibrary lib = Preferences.getInstance().getLibrary(AxolotiLibrary.FACTORY_ID);
+            AxolotiLibrary lib = Preferences.getInstance().getLibrary(AxolotiLibrary.AXOLOTI_FACTORY_ID);
             if(lib != null) {
                 instance = serializer.read(Synonyms.class, new File(lib.getLocalLocation(), filename));
             } else {

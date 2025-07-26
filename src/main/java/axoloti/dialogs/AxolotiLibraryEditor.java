@@ -200,10 +200,10 @@ public class AxolotiLibraryEditor extends JDialog {
 
         boolean expert = Preferences.getInstance().getExpertMode() || Axoloti.isDeveloper();
 
-        boolean isOfficial = AxolotiLibrary.FACTORY_ID.equals(library.getId()) ||
-                            AxolotiLibrary.USER_LIBRARY_ID.equals(library.getId()) ||
-                            AxolotiLibrary.KSOLOTI_LIBRARY_ID.equals(library.getId()) ||
-                            AxolotiLibrary.KSOLOTI_CONTRIB_LIBRARY_ID.equals(library.getId());
+        boolean isOfficial = AxolotiLibrary.AXOLOTI_FACTORY_ID.equals(library.getId()) ||
+                             AxolotiLibrary.AXOLOTI_CONTRIB_ID.equals(library.getId()) ||
+                             AxolotiLibrary.KSOLOTI_OBJECTS_ID.equals(library.getId()) ||
+                             AxolotiLibrary.KSOLOTI_CONTRIB_ID.equals(library.getId());
 
         boolean lockDown = !expert && isOfficial;
 
@@ -714,8 +714,8 @@ public class AxolotiLibraryEditor extends JDialog {
                     JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        if (jTextFieldId.getText().equals(AxolotiLibrary.USER_LIBRARY_ID)
-                && (jTextFieldUserId.getText() != null && jTextFieldUserId.getText().length() > 0)) {
+        if (jTextFieldId.getText().equals(AxolotiLibrary.AXOLOTI_CONTRIB_ID) &&
+            (jTextFieldUserId.getText() != null && jTextFieldUserId.getText().length() > 0)) {
             char[] p = jPasswordField.getPassword();
             if (jTextFieldPrefix.getText().trim().isEmpty() || (p == null || p.length == 0)) {
                 JOptionPane.showMessageDialog(this,
