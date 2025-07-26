@@ -499,7 +499,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     USBBulkConnection.GetConnection().addBoardIDNameListener(MainFrame.this);
 
                     ShowDisconnect();
-                    // if (!Axoloti.isFailSafeMode()) {
                         new SwingWorker<Boolean, String>() {
                             @Override
                             protected Boolean doInBackground() throws Exception {
@@ -523,7 +522,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                                 }
                             }
                         }.execute();
-                    // }
 
                     // Axoloti user library, ask user if they wish to upgrade, or do manual
                     // this allows them the opportunity to manually backup their files!

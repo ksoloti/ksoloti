@@ -175,35 +175,6 @@ public class Axoloti {
         return cacheDeveloper;
     }
 
-    // static boolean failSafeMode = false;
-
-    // static void checkFailSafeModeActive()
-    // {
-    //     failSafeMode = false;
-    //     String homedir = System.getProperty(HOME_DIR);
-    //     if (homedir == null)
-    //     {
-    //         return;
-    //     }
-    //     try
-    //     {
-    //         File f = new File(homedir + File.separator + "failsafe");
-    //         if (f.exists())
-    //         {
-    //             System.err.print("fail safe mode");
-    //             failSafeMode = true;
-    //         }
-    //     }
-    //     catch (Throwable e)
-    //     {
-    //     }
-    // }
-
-    // public static boolean isFailSafeMode()
-    // {
-    //     return failSafeMode;
-    // }
-
     private static void initProperties() throws URISyntaxException, IOException {
         File jarFile = new File(Axoloti.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         String defaultHome = ".";
@@ -256,7 +227,6 @@ public class Axoloti {
         }
 
         deletePrecompiledHeaderFile();
-        // checkFailSafeModeActive(); // do this as as possible after home dir setup
 
         BuildEnv(FIRMWARE_DIR, System.getProperty(HOME_DIR) + File.separator + "firmware");
         if (!TestDir(FIRMWARE_DIR)) {
