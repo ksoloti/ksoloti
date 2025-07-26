@@ -223,7 +223,7 @@ public class Axoloti {
         if (os != null) {
             switch (os) {
                 case WIN:
-                    // not sure which versions of Windows this is valid for, good for 10!
+                    /* Expected to stay valid for future Windows versions, good for Win 7, 10, 11! */
                     osHomeDir = System.getenv("HOMEDRIVE") + System.getenv("HOMEPATH");
                     break;
                 case MAC:
