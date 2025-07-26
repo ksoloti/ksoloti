@@ -121,27 +121,26 @@ public class USBBulkConnection extends Connection {
     protected volatile QCmdSerialTask currentExecutingCommand = null;
 
     enum ReceiverState {
-
-        header,
-        ackPckt,                /* general acknowledge */
-        paramchangePckt,        /* parameter changed */
-        displayPcktHdr,         /* object display readbac */
-        displayPckt,            /* object display readback */
-        textPckt,               /* text message to display in log */
-        sdinfo,                 /* sdcard info */
-        fileinfo_fixed_fields,  /* file listing entry, size and timestamp (8 bytes of Axof packet) */
-        fileinfo_filename,      /* file listing entry, variable length filename */
-        memread,                /* one-time programmable bytes */
-        memread1word,           /* one-time programmable bytes */
-        fwversion,              /* responds with own firmware version, 1.1.0.0 (though not used for anything?) */
-        commandResultPckt       /* New Response Packet: ['A', 'x', 'o', 'R', command_byte, status_byte] */
+        HEADER,
+        ACK_PCKT,               /* general acknowledge */
+        PARAMCHANGE_PCKT,       /* parameter changed */
+        DISPLAY_PCKT_HDR,       /* object display readbac */
+        DISPLAY_PCKT,           /* object display readback */
+        TEXT_PCKT,              /* text message to display in log */
+        SDINFO,                 /* sdcard info */
+        FILEINFO_FIXED_FIELDS,  /* file listing entry, size and timestamp (8 bytes of Axof packet) */
+        FILEINFO_FILENAME,      /* file listing entry, variable length filename */
+        MEMREAD,                /* one-time programmable bytes */
+        MEMREAD_1WORD,          /* one-time programmable bytes */
+        FWVERSION,              /* responds with own firmware version, 1.1.0.0 (though not used for anything?) */
+        COMMANDRESULT_PCKT      /* New Response Packet: ['A', 'x', 'o', 'R', command_byte, status_byte] */
     };
 
     /*
      * Protocol documentation:
      * "AxoP" + bb + vvvv -> parameter change index bb (16bit), value vvvv (32bit)
      */
-    private ReceiverState state = ReceiverState.header;
+    private ReceiverState state = ReceiverState.HEADER;
     private int headerstate;
     private int[] packetData = new int[64];
     private int dataIndex = 0;  /* in bytes */
@@ -1483,7 +1482,7 @@ public class USBBulkConnection extends Connection {
             dataIndex = 0;
             dispData = ByteBuffer.allocate(dataLength);
             dispData.order(ByteOrder.LITTLE_ENDIAN);
-            state = ReceiverState.displayPckt;
+            state = ReceiverState.DISPLAY_PCKT;
         }
         else {
             GoIdleState();
@@ -1523,7 +1522,7 @@ public class USBBulkConnection extends Connection {
 
     void GoIdleState() {
         headerstate = 0;
-        state = ReceiverState.header;
+        state = ReceiverState.HEADER;
     }
 
     void processByte(byte cc) {
@@ -1541,7 +1540,7 @@ public class USBBulkConnection extends Connection {
 
         switch (state) {
 
-            case header:
+            case HEADER:
                 switch (headerstate) {
                     case 0: /* This should always be 'A' or command will be ignored */
                         if (c == 'A') {
@@ -1570,63 +1569,63 @@ public class USBBulkConnection extends Connection {
                     case 3:
                         switch (c) {
                             case 'Q':
-                                state = ReceiverState.paramchangePckt;
+                                state = ReceiverState.PARAMCHANGE_PCKT;
                                 dataIndex = 0;
                                 dataLength = 12;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'Q'");
                                 break;
                             case 'A':
-                                state = ReceiverState.ackPckt;
+                                state = ReceiverState.ACK_PCKT;
                                 dataIndex = 0;
                                 dataLength = 24;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'A'");
                                 break;
                             case 'D':
-                                state = ReceiverState.displayPcktHdr;
+                                state = ReceiverState.DISPLAY_PCKT_HDR;
                                 dataIndex = 0;
                                 dataLength = 8;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'D'");
                                 break;
                             case 'R': /* New case for 'R' header (AxoR packet from MCU) */
-                                state = ReceiverState.commandResultPckt;
+                                state = ReceiverState.COMMANDRESULT_PCKT;
                                 dataIndex = 0;
                                 dataLength = 2; /* Expecting command_byte (1 byte) + status_byte (1 byte) */
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'R'");
                                 break;
                             case 'T':
-                                state = ReceiverState.textPckt;
+                                state = ReceiverState.TEXT_PCKT;
                                 textRcvBuffer.clear();
                                 dataIndex = 0;
                                 dataLength = 255;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'T'");
                                 break;
                             case 'l':
-                                state = ReceiverState.sdinfo;
+                                state = ReceiverState.SDINFO;
                                 sdinfoRcvBuffer.rewind();
                                 dataIndex = 0;
                                 dataLength = 12;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'l'");
                                 break;
                             case 'f':
-                                state = ReceiverState.fileinfo_fixed_fields;
+                                state = ReceiverState.FILEINFO_FIXED_FIELDS;
                                 fileinfoRcvBuffer.clear();
                                 dataIndex = 0;
                                 dataLength = 8;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'f'");
                                 break;
                             case 'r':
-                                state = ReceiverState.memread;
+                                state = ReceiverState.MEMREAD;
                                 memReadBuffer.clear();
                                 dataIndex = 0;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'r'");
                                 break;
                             case 'y':
-                                state = ReceiverState.memread1word;
+                                state = ReceiverState.MEMREAD_1WORD;
                                 dataIndex = 0;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'y'");
                                 break;
                             case 'V':
-                                state = ReceiverState.fwversion;
+                                state = ReceiverState.FWVERSION;
                                 dataIndex = 0;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'V'");
                                 break;
@@ -1644,7 +1643,7 @@ public class USBBulkConnection extends Connection {
                 }
                 break;
 
-            case paramchangePckt:
+            case PARAMCHANGE_PCKT:
                 if (dataIndex < dataLength) {
                     storeDataByte(c);
                 }
@@ -1655,7 +1654,7 @@ public class USBBulkConnection extends Connection {
                 }
                 break;
 
-            case ackPckt:
+            case ACK_PCKT:
                 if (dataIndex < dataLength) {
                     storeDataByte(c);
                 }
@@ -1665,7 +1664,7 @@ public class USBBulkConnection extends Connection {
                 }
                 break;
 
-            case displayPcktHdr:
+            case DISPLAY_PCKT_HDR:
                 if (dataIndex < dataLength) {
                     storeDataByte(c);
                 }
@@ -1674,7 +1673,7 @@ public class USBBulkConnection extends Connection {
                 }
                 break;
 
-            case displayPckt:
+            case DISPLAY_PCKT:
                 if (dataIndex < dataLength) {
                     dispData.put(cc);
                     dataIndex++;
@@ -1685,7 +1684,7 @@ public class USBBulkConnection extends Connection {
                 }
                 break;
 
-            case commandResultPckt:
+            case COMMANDRESULT_PCKT:
                 if (dataIndex < dataLength) {
                     storeDataByte(c);
                 }
@@ -1750,7 +1749,7 @@ public class USBBulkConnection extends Connection {
                 }
                 break;
 
-            case textPckt:
+            case TEXT_PCKT:
                 if (c != 0) {
                     textRcvBuffer.append((char) cc);
                 }
@@ -1770,7 +1769,7 @@ public class USBBulkConnection extends Connection {
                 }
                 break;
 
-            case sdinfo:
+            case SDINFO:
                 if (dataIndex < dataLength) {
                     sdinfoRcvBuffer.put(cc);
                     dataIndex++;
@@ -1789,7 +1788,7 @@ public class USBBulkConnection extends Connection {
                 }
                 break;
 
-            case fileinfo_fixed_fields: /* State to collect the 8-byte size and timestamp */
+            case FILEINFO_FIXED_FIELDS: /* State to collect the 8-byte size and timestamp */
                 fileinfoRcvBuffer.put(cc);
                 dataIndex++;
         
@@ -1808,11 +1807,11 @@ public class USBBulkConnection extends Connection {
                     /* Prepare to collect the variable-length filename */
                     fileinfoRcvBuffer.clear();
                     dataIndex = 0;
-                    state = ReceiverState.fileinfo_filename; /* Transition to the next sub-state */
+                    state = ReceiverState.FILEINFO_FILENAME; /* Transition to the next sub-state */
                 }
                 break;
         
-            case fileinfo_filename: /* State to collect filename bytes until null terminator */
+            case FILEINFO_FILENAME: /* State to collect filename bytes until null terminator */
                 if (cc == 0x00) {
                     // System.out.println(Instant.now() + " [DEBUG] processByte: Null terminator found for Axof filename. Processing.");
         
@@ -1842,7 +1841,7 @@ public class USBBulkConnection extends Connection {
                 }
                 break;
         
-            case memread:
+            case MEMREAD:
                 switch (dataIndex) {
                     case 0:
                         memReadAddr = (cc & 0xFF);
@@ -1899,7 +1898,7 @@ public class USBBulkConnection extends Connection {
                 dataIndex++;
                 break;
 
-            case memread1word:
+            case MEMREAD_1WORD:
                 switch (dataIndex) {
                     case 0:
                         memReadAddr = (cc & 0xFF);
@@ -1934,7 +1933,7 @@ public class USBBulkConnection extends Connection {
                 dataIndex++;
                 break;
 
-            case fwversion:
+            case FWVERSION:
                 switch (dataIndex) {
                     case 0:
                         fwversion[0] = cc;
