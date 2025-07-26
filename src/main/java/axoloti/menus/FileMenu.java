@@ -327,68 +327,71 @@ public class FileMenu extends JMenu {
     // }
 
     private void jMenuAutoTestDirActionPerformed(java.awt.event.ActionEvent evt) {
-        int res = JOptionPane.showConfirmDialog(mainframe, "Running these tests may take a long time and/or freeze the UI until complete. Continue?", "Warning", JOptionPane.OK_CANCEL_OPTION);
-        if (res == JOptionPane.OK_OPTION) {
 
-            String path = JOptionPane.showInputDialog(mainframe, "Enter directory to test:\n(Default: Test all stock libraries)", System.getProperty(Axoloti.LIBRARIES_DIR));
+        String path = JOptionPane.showInputDialog(
+            mainframe,
+            "Enter directory to test:\n" + 
+            "(Default: Test all stock libraries)\n\n" + 
+            "WARNING: Running these tests may take a long time and/or freeze the UI.",
+            System.getProperty(Axoloti.LIBRARIES_DIR)
+        );
 
-            if (path != null && !path.isEmpty()) {
+        if (path != null && !path.isEmpty()) {
 
-                File f = new File(path);
-                if (f.exists() && f.canRead()) {
-                    
-                    class Thd extends Thread {
-                        public void run() {
-                            try {
-                                /* If previous log exists, delete it */
-                                File log = new File(System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log");
-                                if (log.exists()) {
-                                    log.delete();
-                                }
-                                /* If previous lock exists, delete it (happens if test was interrupted) */
-                                File lock = new File(System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log.lck");
-                                if (lock.exists()) {
-                                    lock.delete();
-                                }
-
-                                FileHandler fh = new FileHandler(System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log", true);
-                                SimpleFormatter formatter = new SimpleFormatter();
-                                fh.setFormatter(formatter);
-                                Logger.getLogger("").addHandler(fh);
-
-                                LOGGER.log(Level.WARNING, "Running tests, please wait...");
-                                LOGGER.log(Level.INFO, "Creating log file at " + System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log");
-
-                                /* From now on, Leave out timecode from logging format (easier diff) */
-                                System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s%n");
-                                formatter = new SimpleFormatter();
-                                fh.setFormatter(formatter);
-                                
-                                if (USBBulkConnection.GetConnection().isConnected()) {
-                                    LOGGER.log(Level.INFO, "Core is connected - Attempting test upload of patches and measuring DSP load.");
-                                }
-
-                                mainframe.runTestDir(f);
-                                
-                                LOGGER.log(Level.WARNING, "Done running tests.\n");
-
-                                Logger.getLogger("").removeHandler(fh);
-                                fh.close();
-
+            File f = new File(path);
+            if (f.exists() && f.canRead()) {
+                
+                class Thd extends Thread {
+                    public void run() {
+                        try {
+                            /* If previous log exists, delete it */
+                            File log = new File(System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log");
+                            if (log.exists()) {
+                                log.delete();
                             }
-                            catch (Exception ex) {
-                                LOGGER.log(Level.SEVERE, null, ex);
+                            /* If previous lock exists, delete it (happens if test was interrupted) */
+                            File lock = new File(System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log.lck");
+                            if (lock.exists()) {
+                                lock.delete();
                             }
-                            finally {
-                                /* Revert logging format */
-                                System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tFT%1$tT.%1$tN  %4$s: %5$s%n");
+
+                            FileHandler fh = new FileHandler(System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log", true);
+                            SimpleFormatter formatter = new SimpleFormatter();
+                            fh.setFormatter(formatter);
+                            Logger.getLogger("").addHandler(fh);
+
+                            LOGGER.log(Level.WARNING, "Running tests, please wait...");
+                            LOGGER.log(Level.INFO, "Creating log file at " + System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log");
+
+                            /* From now on, Leave out timecode from logging format (easier diff) */
+                            System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s%n");
+                            formatter = new SimpleFormatter();
+                            fh.setFormatter(formatter);
+                            
+                            if (USBBulkConnection.GetConnection().isConnected()) {
+                                LOGGER.log(Level.INFO, "Core is connected - Attempting test upload of patches and measuring DSP load.");
                             }
+
+                            mainframe.runTestDir(f);
+                            
+                            LOGGER.log(Level.WARNING, "Done running tests.\n");
+
+                            Logger.getLogger("").removeHandler(fh);
+                            fh.close();
+
+                        }
+                        catch (Exception ex) {
+                            LOGGER.log(Level.SEVERE, null, ex);
+                        }
+                        finally {
+                            /* Revert logging format */
+                            System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tFT%1$tT.%1$tN  %4$s: %5$s%n");
                         }
                     }
-
-                    Thd thread = new Thd();
-                    thread.start();
                 }
+
+                Thd thread = new Thd();
+                thread.start();
             }
         }
     }
