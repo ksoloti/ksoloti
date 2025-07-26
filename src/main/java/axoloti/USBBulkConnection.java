@@ -1878,9 +1878,9 @@ public class USBBulkConnection extends Connection {
                             while (memReadBuffer.hasRemaining()) {
                                 System.out.print(" " + String.format("%02X", memReadBuffer.get()));
                                 i++;
-                                // if ((i % 4) == 0) {
+                                if ((i % 4) == 0) {
                                     System.out.print(" ");
-                                // }
+                                }
                                 if ((i % 32) == 0) {
                                     System.out.println();
                                 }
