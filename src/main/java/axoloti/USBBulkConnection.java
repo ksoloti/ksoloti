@@ -659,7 +659,7 @@ public class USBBulkConnection extends Connection {
             TransmitPing();
 
             if (!WaitSync()) {
-                // System.err.println(Instant.now() + " [DEBUG] Initial ping timeout. Connection failed.");
+                LOGGER.log(Level.SEVERE, "Core not responding - firmware may be stuck running a problematic patch?\nRestart the Core and try again.");
                 ShowDisconnect();
                 isConnecting = false;
                 return false;
