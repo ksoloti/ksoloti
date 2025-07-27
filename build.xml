@@ -6,13 +6,6 @@
     <description>Builds, tests, and runs the project Ksoloti.</description>
     <import file="nbproject/build-impl.xml"/>
 
-    <!-- =================================================================== -->
-    <!-- CUSTOM PROPERTIES (if any, but typically managed in project.properties) -->
-    <!-- =================================================================== -->
-
-    <!-- =================================================================== -->
-    <!-- CUSTOM TARGETS (Your existing ones for JAR, Runtime, Bundle, Version) -->
-    <!-- =================================================================== -->
 
     <property name="built_by"  value="${user.name}"/>
     <tstamp/>
@@ -30,7 +23,6 @@
                 <attribute name="Implementation-Version" value="${build.version}"/>
             </manifest>
             <fileset dir="build/classes"/>
-            <!-- Include all necessary libraries directly in the JAR or as zipfileset -->
             <zipfileset excludes="META-INF/*.SF" src="lib/org.eclipse.jgit-7.3.0.202506031305-r.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/jsch-2.27.2.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/flatlaf-3.6.1.jar"/>
@@ -48,7 +40,6 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.3.0/lib/libusb4java-1.3.0-linux-x86-64.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.3.0/lib/libusb4java-1.3.0-win32-x86-64.jar"/>
 
-            <!-- include source files -->
             <fileset dir="src">
                 <include name="**/*.java"/>
             </fileset>
@@ -262,7 +253,7 @@
                 <attribute name="Built-Date" value="${TODAY}"/>
                 <!-- <attribute name="SplashScreen-Image" value="resources/ksoloti_splash.png"/> -->
             </manifest>
-        </fx:jar> 
+        </fx:jar>
 
         <fx:deploy os="Linux" nativeBundles="deb" width="100" height="100" outdir="build/" outfile="KsolotiApp" version="${build.version}">
             <fx:info title="Ksoloti"
@@ -279,8 +270,8 @@
         </fx:deploy>
 
         <fx:deploy os="Mac OS X" nativeBundles="dmg" width="100" height="100" outdir="build/" outfile="KsolotiApp" version="${build.version}">
-            <fx:info title="Ksoloti" 
-                    vendor="ksoloti" 
+            <fx:info title="Ksoloti"
+                    vendor="ksoloti"
                     description="Ksoloti application"
                     license="GPL"
                     copyright="Axoloti.com" >
@@ -301,8 +292,8 @@
         </exec>
 
         <fx:deploy os="Windows" nativeBundles="msi" width="100" height="100" outdir="build/" outfile="KsolotiApp" version="${build.version}">
-            <fx:info title="Ksoloti" 
-                    vendor="ksoloti" 
+            <fx:info title="Ksoloti"
+                    vendor="ksoloti"
                     description="Ksoloti application"
                     license="GPL"
                     copyright="Axoloti.com" >
@@ -352,5 +343,5 @@
         <echo output="src/main/java/axoloti/Version.java" append="true">    public final static String AXOLOTI_BUILD_TIME = "${build.time}";${line.separator}</echo>
         <echo output="src/main/java/axoloti/Version.java" append="true">};${line.separator}</echo>
     </target>
-      
+
 </project>
