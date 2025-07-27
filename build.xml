@@ -207,7 +207,7 @@
                 <include name="ksoloti-app.jar"/>
             </fx:fileset>
             <fileset dir="lib">
-                <include name="org.eclipse.org.eclipse.jgit-7.3.0.202506031305-r.jar"/>
+                <include name="org.eclipse.jgit-7.3.0.202506031305-r.jar"/>
                 <include name="jsch-2.27.2.jar"/>
                 <include name="flatlaf-3.6.1.jar"/>
                 <include name="flatlaf-intellij-themes-3.6.1.jar"/>
