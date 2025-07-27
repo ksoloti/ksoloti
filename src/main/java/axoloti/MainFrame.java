@@ -1368,7 +1368,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             qcmdprocessor.WaitQueueFinished();
             patch1.waitForBinFile();
             if (patch1.getBinFile().exists()) {
-                LOGGER.log(Level.INFO, "Done compiling patch.\n");
+                // LOGGER.log(Level.INFO, "Done compiling patch.\n");
                 /* If a Core is connected and test patch .bin could be created:
                 stop patch, upload test patch .bin to RAM, start patch, report status */
                 if (USBBulkConnection.GetConnection().isConnected()) {
