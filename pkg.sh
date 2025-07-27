@@ -103,16 +103,13 @@ sh ./kompile_shortcut.sh
 # ----- Compile jar (OS differentiation in case of necessary changes on certain systems)
 case "$platform" in
         mac)
-            ant -q clean
-            ant -q
+            ant -q clean && ant -q
         ;;
         linux)
-            ant -q clean
-            ant -q
+            ant -q clean && ant -q
         ;;
         windows)
-            ant -q clean
-            ant -q
+            ant -q clean && ant -q
         ;;
 esac
 

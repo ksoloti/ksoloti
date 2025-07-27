@@ -21,18 +21,15 @@ esac
 
 case "$platform" in
         mac)
-            ant -q clean
-            ant -q
+            ant -q clean && ant -q
             ./Ksoloti.sh
         ;;
         linux)
-            ant -q clean
-            ant -q
+            ant -q clean && ant -q
             ./Ksoloti.sh
         ;;
         windows)
-            ant -q clean
-            ant -q
+            ant -q clean && ant -q
             ./Ksoloti.sh
         ;;
 esac
