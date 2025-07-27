@@ -1357,8 +1357,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             patch1.PostContructor();
             patch1.WriteCode(true); // generate code as own path/filename .cpp
             qcmdprocessor.WaitQueueFinished();
-            LOGGER.log(Level.INFO, "Done generating code.");
             Thread.sleep(200); 
+            LOGGER.log(Level.INFO, "Done generating code.");
 
             if (USBBulkConnection.GetConnection().isConnected()) {
                 patch1.GetQCmdProcessor().AppendToQueue(new QCmdStop());
@@ -1404,11 +1404,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             patch1.Close();
             pf.Close();
             status = cp.success();
-            Thread.sleep(100);
-
-            // if (status == false) {
-            //     LOGGER.log(Level.SEVERE, "COMPILATION FAILED: {0}\n", f.getPath());
-            // }
+            Thread.sleep(200);
 
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
             return status;
