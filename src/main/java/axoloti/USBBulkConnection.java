@@ -626,6 +626,8 @@ public class USBBulkConnection extends Connection {
             handle = OpenDeviceHandle();
             if (handle == null) {
                 System.err.println(Instant.now() + " [ERROR] Connect: Failed to open USB device handle.");
+                ShowDisconnect();
+                isConnecting = false;
                 return false;
             }
             // System.out.println(Instant.now() + " [DEBUG] Connect: USB device handle opened successfully.");
