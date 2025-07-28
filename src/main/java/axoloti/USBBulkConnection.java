@@ -711,21 +711,20 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public int writeBytes(byte[] bytes) {
+
+        ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length);
+        buffer.put(bytes);
+        buffer.rewind();
+        IntBuffer transfered = IntBuffer.allocate(1);
+
         /* Acquire the OUT lock for writing */
         synchronized (usbOutLock) {
-
             if (handle == null) {
                 // System.err.println(Instant.now() + " [DEBUG] USB bulk write failed: handle is null. Disconnected?");
                 return LibUsb.ERROR_NO_DEVICE;
             }
-
-            ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length);
-            buffer.put(bytes);
-            buffer.rewind();
-
-            IntBuffer transfered = IntBuffer.allocate(1);
     
-            int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 1000); /* 1s timeout */
+            int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 100); /* 100ms timeout */
             if (result != LibUsb.SUCCESS) {
 
                 if (result == -99) {
@@ -757,7 +756,7 @@ public class USBBulkConnection extends Connection {
                 QCmdProcessor.getQCmdProcessor().Abort();
             }
             return result;
-        }
+        } /* end synchronize (usbOutLock) */
     }
 
     @Override
