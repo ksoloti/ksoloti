@@ -135,7 +135,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JMenuItem jMenuUploadCode;
     private javax.swing.JMenu jMenuView;
     private javax.swing.JProgressBar jProgressBarDSPLoad;
-    private javax.swing.JLabel jLabelBoardNameId;
+    private javax.swing.JLabel jLabelBoardIDName;
     private ScrollPaneComponent jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
@@ -442,7 +442,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0));
         jLabelDSPLoad = new javax.swing.JLabel();
         jProgressBarDSPLoad = new javax.swing.JProgressBar();
-        jLabelBoardNameId = new javax.swing.JLabel(" USB");
+        jLabelBoardIDName = new javax.swing.JLabel(" USB");
         jScrollPane1 = new ScrollPaneComponent();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenuP = new axoloti.menus.FileMenu();
@@ -551,7 +551,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         filler2.setAlignmentX(LEFT_ALIGNMENT);
         jToolbarPanel.add(filler2);
 
-        jToolbarPanel.add(jLabelBoardNameId);
+        jToolbarPanel.add(jLabelBoardIDName);
 
         filler3.setAlignmentX(LEFT_ALIGNMENT);
         jToolbarPanel.add(filler3);
@@ -1544,8 +1544,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     public void ShowBoardIDName(String unitId, String friendlyName) {
 
         if (!USBBulkConnection.GetConnection().isConnected()) {
-            jLabelBoardNameId.setText(" ");
-            jLabelBoardNameId.setToolTipText("");
+            jLabelBoardIDName.setText(" ");
+            jLabelBoardIDName.setToolTipText("");
             return;
         }
         if (unitId == null || unitId.trim().isEmpty()) {
@@ -1574,15 +1574,15 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 formattedCpuId.append("N/A");
             }
 
-            jLabelBoardNameId.setText(formattedCpuId.toString());
-            jLabelBoardNameId.setToolTipText("Showing board ID of the currently connected Core.\n" +
+            jLabelBoardIDName.setText(formattedCpuId.toString());
+            jLabelBoardIDName.setToolTipText("Showing board ID of the currently connected Core.\n" +
                                                 "You can name your Core by disconnecting it from\n" +
                                                 "the Patcher, then going to Board > Select Device... > Name.\n" +
                                                 "Press Enter in the Name textfield to confirm the entry.");
         }
         else {
-            jLabelBoardNameId.setText("Board Name:   " + nameToDisplay);
-            jLabelBoardNameId.setToolTipText("Showing the name defined in Board > Select Device... > Name.\n" +
+            jLabelBoardIDName.setText("Board Name:   " + nameToDisplay);
+            jLabelBoardIDName.setToolTipText("Showing the name defined in Board > Select Device... > Name.\n" +
                                                 "This setting is saved in the local ksoloti.prefs file.");
         }
     }
