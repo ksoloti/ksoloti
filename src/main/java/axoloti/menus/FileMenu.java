@@ -346,7 +346,7 @@ public class FileMenu extends JMenu {
                         try {
                             String logpath = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log";
                             /* If previous log exists, delete it */
-                            File logf = new File(System.getProperty(logpath));
+                            File logf = new File(logpath);
                             if (logf.exists()) {
                                 logf.delete();
                             }
