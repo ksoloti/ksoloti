@@ -346,7 +346,7 @@ public class Patch {
 
     public boolean waitForBinFile() {
         boolean fileFound = false;
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < 100; i++) {
             if (this.getBinFile().exists()) {
                 fileFound = true;
                 return fileFound;
@@ -408,6 +408,7 @@ public class Patch {
         else {
             String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + this.generateBuildFilenameStem(true);
             LOGGER.log(Level.INFO, "Timeout:" + path.replace('\\', '/') + ".bin could not be created.");
+            ShowCompileFail();
         }
     }
 
