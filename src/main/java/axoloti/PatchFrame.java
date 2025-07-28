@@ -94,6 +94,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     ArrayList<DocumentWindow> dwl;
 
     private boolean previousOverload;
+    private boolean firstShow = true;
 
     private axoloti.menus.FileMenu fileMenuP;
     private javax.swing.Box.Filler filler1;
@@ -163,6 +164,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         this.dwl = new ArrayList<DocumentWindow>();
 
         initComponents();
+        jScrollPane1.setVisible(false);
         fileMenuP.initComponents();
         this.patch = patch;
         this.patch.patchframe = this;
@@ -1376,6 +1378,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private void formComponentShown(java.awt.event.ComponentEvent evt) {
         DocumentWindowList.RegisterWindow(this);
+        if (firstShow) {
+            if (jScrollPane1 != null && jScrollPane1.getViewport() != null) {
+                /* When patch is first opened, scroll to top-left scroll position */
+                jScrollPane1.getViewport().setViewPosition(new Point(0,0));
+            }
+            jScrollPane1.setVisible(true);
+            firstShow = false;
+        }
     }
 
     private void formComponentHidden(java.awt.event.ComponentEvent evt) {
