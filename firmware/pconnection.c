@@ -253,7 +253,7 @@ static FRESULT scan_files(char *path) {
 
     // LogTextMessage("Entered scan_files:%s", (char*) &fbuff[0]);
     FRESULT op_result;
-    FILINFO fno;
+    static FILINFO fno;
     DIR dir;
 
     uint32_t current_path_len;
