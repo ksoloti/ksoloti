@@ -253,9 +253,11 @@ public class USBBulkConnection extends Connection {
                         break;
                     }
 
-                    QCmd response = cmd.Do(USBBulkConnection.this);
-                    if (response != null) {
-                        QCmdProcessor.getQCmdProcessor().getQueueResponse().add(response);
+                    if (cmd != null) {
+                        QCmd response = cmd.Do(USBBulkConnection.this);
+                        if (response != null) {
+                            QCmdProcessor.getQCmdProcessor().getQueueResponse().add(response);
+                        }
                     }
                 }
                 catch (InterruptedException ex) {
