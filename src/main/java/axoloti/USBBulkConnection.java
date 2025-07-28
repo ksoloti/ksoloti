@@ -1874,10 +1874,10 @@ public class USBBulkConnection extends Connection {
                         if (dataIndex == memReadLength + 7) {
                             memReadBuffer.rewind();
                             memReadBuffer.order(ByteOrder.LITTLE_ENDIAN);
-                            System.out.println(Instant.now() + " [DEBUG] memread offset 0x" + Integer.toHexString(memReadAddr));
+                            System.out.print(Instant.now() + " memread offset 0x" + Integer.toHexString(memReadAddr) + ": ");
                             int i = 0;
                             while (memReadBuffer.hasRemaining()) {
-                                System.out.print(" " + String.format("%02X", memReadBuffer.get()));
+                                System.out.print(String.format("%02X", memReadBuffer.get()));
                                 i++;
                                 if ((i % 4) == 0) {
                                     System.out.print(" ");
