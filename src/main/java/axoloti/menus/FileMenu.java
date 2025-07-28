@@ -344,24 +344,25 @@ public class FileMenu extends JMenu {
                 class Thd extends Thread {
                     public void run() {
                         try {
+                            String logpath = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log";
                             /* If previous log exists, delete it */
-                            File log = new File(System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log");
-                            if (log.exists()) {
-                                log.delete();
+                            File logf = new File(System.getProperty(logpath));
+                            if (logf.exists()) {
+                                logf.delete();
                             }
                             /* If previous lock exists, delete it (happens if test was interrupted) */
-                            File lock = new File(System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log.lck");
-                            if (lock.exists()) {
-                                lock.delete();
+                            File lockf = new File(logpath + ".lck");
+                            if (lockf.exists()) {
+                                lockf.delete();
                             }
 
-                            FileHandler fh = new FileHandler(System.getProperty(axoloti.Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log", true);
+                            FileHandler fh = new FileHandler(logpath, true);
                             SimpleFormatter formatter = new SimpleFormatter();
                             fh.setFormatter(formatter);
                             Logger.getLogger("").addHandler(fh);
 
                             LOGGER.log(Level.WARNING, "Running tests, please wait...");
-                            LOGGER.log(Level.INFO, "Creating log file at " + System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log");
+                            LOGGER.log(Level.INFO, "Creating log file at " + logpath);
 
                             /* From now on, Leave out timecode from logging format (easier diff) */
                             System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s%n");
