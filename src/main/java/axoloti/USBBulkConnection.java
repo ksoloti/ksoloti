@@ -479,6 +479,7 @@ public class USBBulkConnection extends Connection {
             CpuId0 = 0;
             CpuId1 = 0;
             CpuId2 = 0;
+            isConnecting = false;
 
             /* 8. Notify UI - always notify UI after cleanup attempt */
             ShowDisconnect();
@@ -625,8 +626,7 @@ public class USBBulkConnection extends Connection {
             handle = OpenDeviceHandle();
             if (handle == null) {
                 System.err.println(Instant.now() + " [ERROR] Connect: Failed to open USB device handle.");
-                ShowDisconnect();
-                isConnecting = false;
+                disconnect();
                 return false;
             }
             // System.out.println(Instant.now() + " [DEBUG] Connect: USB device handle opened successfully.");
@@ -636,10 +636,7 @@ public class USBBulkConnection extends Connection {
             int result = LibUsb.claimInterface(handle, useBulkInterfaceNumber);
             if (result != LibUsb.SUCCESS) {
                 System.err.println(Instant.now() + " [ERROR] Connect: Failed to claim interface " + useBulkInterfaceNumber + ": " + LibUsb.errorName(result) + " (Code: " + result + ")");
-                LibUsb.close(handle);
-                handle = null;
-                ShowDisconnect();
-                isConnecting = false;
+                disconnect();
                 return false;
             }
             // System.out.println(Instant.now() + " [DEBUG] Connect: USB interface " + useBulkInterfaceNumber + " claimed successfully.");
@@ -661,8 +658,7 @@ public class USBBulkConnection extends Connection {
 
             if (!WaitSync()) {
                 LOGGER.log(Level.SEVERE, "Core not responding - firmware may be stuck running a problematic patch?\nRestart the Core and try again.");
-                ShowDisconnect();
-                isConnecting = false;
+                disconnect();
                 return false;
             }
 
@@ -697,70 +693,18 @@ public class USBBulkConnection extends Connection {
             ShowConnect();
             isConnecting = false;
             return true;
-
         }
         catch (LibUsbException e) {
             System.err.println(Instant.now() + " [ERROR] LibUsb exception during connection: " + e.getMessage());
-            ShowDisconnect();
-            isConnecting = false;
+            disconnect();
             return false;
         }
         catch (Exception ex) {
             System.err.println(Instant.now() + " [ERROR] General exception during connection: " + ex.getMessage());
-            ShowDisconnect();
-            isConnecting = false;
+            disconnect();
             return false;
         }
         finally {
-
-            /* 7. Guaranteed Cleanup */
-            if (!connected) {
-                // System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: Performing cleanup after failed connection attempt.");
-
-                if (receiverThread != null && receiverThread.isAlive()) {
-                    receiverThread.interrupt();
-                    try {
-                        receiverThread.join(2000);
-                    }
-                    catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                    }
-                }
-
-                if (transmitterThread != null && transmitterThread.isAlive()) {
-                    transmitterThread.interrupt();
-                    try {
-                        transmitterThread.join(2000);
-                    }
-                    catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                    }
-                }
-
-                receiverThread = null;
-                transmitterThread = null;
-
-                /* Release interface if it was claimed */
-                if (handle != null) {
-                    try {
-                        LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
-                    }
-                    catch (LibUsbException releaseEx) {
-                        // System.err.println(Instant.now() + " [DEBUG] Error releasing interface during cleanup: " + releaseEx.getMessage());
-                    }
-                    
-                    /* Close the device handle */
-                    try {
-                        LibUsb.close(handle);
-                    }
-                    catch (LibUsbException closeEx) {
-                        // System.err.println(Instant.now() + " [DEBUG] Error closing handle during cleanup: " + closeEx.getMessage());
-                    }
-                    finally {
-                        handle = null;
-                    }
-                }
-            }
             isConnecting = false;
         }
     }
