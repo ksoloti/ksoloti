@@ -332,14 +332,19 @@ public class QCmdProcessor implements Runnable {
                         if (appended) {
                             /* Only proceed to wait for a response if the command was successfully queued */
                             try {
-                                QCmd response = queueResponse.take(); // This might still block if no response arrives
-                                synchronized (queueLock) {
-                                    queueLock.notifyAll();
+                                QCmd response = queueResponse.poll(5, TimeUnit.SECONDS);
+                                if (response != null) {
+                                    synchronized (queueLock) {
+                                        queueLock.notifyAll();
+                                    }
+                                    publish(response);
+                                    if (response instanceof QCmdDisconnect){
+                                        queue.clear();
+                                    }
                                 }
-                                publish(response);
-                                if (response instanceof QCmdDisconnect){
-                                    queue.clear();
-                                }
+                                // else {
+                                //      System.out.println(Instant.now() + " [DEBUG] Timeout: No response received for serial command: " + cmd.getClass().getSimpleName() + " after 5 seconds.");
+                                // }
                             }
                             catch (InterruptedException e) {
                                 /* Handle interruption while waiting for response */
