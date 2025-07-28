@@ -140,8 +140,8 @@ public class QCmdProcessor implements Runnable {
 
                     if (queue.isEmpty() && serialconnection.isConnected()) {
                         if (CommandManager.getInstance().isLongOperationActive()) {
-                            currentSendInterval = Preferences.getInstance().getPollInterval(); // Reset interval
-                            lastSendAttemptTime = System.currentTimeMillis(); // Reset timer
+                            currentSendInterval = Preferences.getInstance().getPollInterval(); /* Reset interval */
+                            lastSendAttemptTime = System.currentTimeMillis(); /* Reset timer */
                             // System.out.println(Instant.now() + " [DEBUG] PeriodicDialTransmitter: Suppressing dial command as long operation is in progress.");
                             continue; /* Skip offering a dial command this cycle */
                         }
@@ -214,9 +214,9 @@ public class QCmdProcessor implements Runnable {
 
             if (!CommandManager.getInstance().shouldOfferCommand(serialCmd)) {
                 // System.out.println(Instant.now() + " [DEBUG] QCmdProcessor: Command " + serialCmd.getClass().getSimpleName() + " suppressed.");
-                return false; // Command was suppressed, so don't add to queue
+                return false; /* Command was suppressed, so don't add to queue */
             }
-            // If not in a long operation, fall through to add to queue below
+            /* If not in a long operation, fall through to add to queue below */
         }
 
         try {
@@ -311,19 +311,16 @@ public class QCmdProcessor implements Runnable {
                 synchronized (queueLock) {
                     queueLock.notifyAll();
                 }
-                if (!((cmd instanceof QCmdPing) || (cmd instanceof QCmdGuiDialTx))) {
-                    // System.out.println(cmd);
-                    // setProgress((100 * (queue.size() + 1)) / (queue.size() + 2));
-                }
+                // if (!((cmd instanceof QCmdPing) || (cmd instanceof QCmdGuiDialTx))) {
+                //     System.out.println(cmd);
+                //     setProgress((100 * (queue.size() + 1)) / (queue.size() + 2));
+                // }
                 String m = cmd.GetStartMessage();
                 if (m != null) {
                     LOGGER.log(Level.INFO, m);
                     publish(m);
-                    // println(m);
                 }
                 if (QCmdShellTask.class.isInstance(cmd)) {
-                    // shellprocessor.AppendToQueue((QCmdShellTask)cmd);
-                    // publish(queueResponse.take());
                     QCmd response = ((QCmdShellTask) cmd).Do(this);
                     if ((response != null)) {
                         ((QCmdGUITask) response).DoGUI(this);
@@ -366,7 +363,6 @@ public class QCmdProcessor implements Runnable {
                 if (m != null) {
                     LOGGER.log(Level.INFO, m);
                     publish(m);
-                    // println(m);
                 }
             }
             catch (InterruptedException ex) {
