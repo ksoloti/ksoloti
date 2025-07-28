@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingWorker;
-import qcmds.QCmd;
 import qcmds.QCmdShellTask;
 
 /**
@@ -63,13 +62,30 @@ public class ShellProcessor extends SwingWorker<Integer, String> {
     public Integer doInBackground() {
         while (true) {
             // LOGGER.log(Level.INFO, "ShellProcessor Waiting");
+            QCmdShellTask qc = null;
             try {
-                queueShellTasks.take();
-                // LOGGER.log(Level.INFO, "ShellProcessor: "+ qc.GetStartMessage());
-            } catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+                qc = queueShellTasks.poll(5, TimeUnit.SECONDS);
+                if (qc != null) {
+                    // TODO Not doing anything with the poll result here... why?
+                    // LOGGER.log(Level.INFO, "ShellProcessor: "+ qc.GetStartMessage());
+                }
+            }
+            catch (InterruptedException ex) {
+                LOGGER.log(Level.SEVERE, "ShellProcessor interrupted while waiting for task.", ex);
+                Thread.currentThread().interrupt();
+                break;
+            }
+            catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, "Unexpected error in ShellProcessor doInBackground.", ex);
+                try {
+                    Thread.sleep(1000);
+                }
+                catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
+        return 0;
     }
 
     public void println(String s) {

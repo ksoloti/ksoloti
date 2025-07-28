@@ -258,7 +258,6 @@ public class USBBulkConnection extends Connection {
                         // System.out.println(Instant.now() + " [DEBUG] Transmitter: Disconnect requested after taking task.");
                         break;
                     }
-                    // if (cmd == null) continue; // Should not happen with take()?
 
                     QCmd response = cmd.Do(USBBulkConnection.this);
                     if (response != null) {
