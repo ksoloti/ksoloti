@@ -248,7 +248,7 @@ public class USBBulkConnection extends Connection {
             while (!Thread.currentThread().isInterrupted() && !disconnectRequested) {
                 QCmdSerialTask cmd = null;
                 try {
-                    cmd = queueSerialTask.take();
+                    cmd = queueSerialTask.poll(5, TimeUnit.SECONDS);
 
                     if (Thread.currentThread().isInterrupted()) {
                         // System.out.println(Instant.now() + " [DEBUG] Transmitter: Thread interrupted after taking task. Exiting loop.");
@@ -266,7 +266,7 @@ public class USBBulkConnection extends Connection {
                     }
                 }
                 catch (InterruptedException ex) {
-                    // System.out.println(Instant.now() + " [DEBUG] Transmitter: InterruptedException caught from queue.take(). Exiting loop.");
+                    // System.out.println(Instant.now() + " [DEBUG] Transmitter: InterruptedException caught from queue.poll(). Exiting loop.");
                     Thread.currentThread().interrupt();
                     break;
                 }
