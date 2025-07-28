@@ -90,6 +90,63 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private PresetPanel presetPanel;
     private VisibleCablePanel visibleCablePanel;
+    QCmdProcessor qcmdprocessor;
+    ArrayList<DocumentWindow> dwl;
+
+    private boolean previousOverload;
+
+    private axoloti.menus.FileMenu fileMenuP;
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.Box.Filler filler2;
+    private javax.swing.Box.Filler filler3;
+    private axoloti.menus.HelpMenu helpMenu1;
+    private javax.swing.JToggleButton jToggleButtonLive;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemCordsInBackground;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemLive;
+    private javax.swing.JLabel jLabelDSPLoad;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuClose;
+    private javax.swing.JMenuItem jMenuCompileCode;
+    private javax.swing.JMenu jMenuEdit;
+    private javax.swing.JMenuItem jMenuGenerateAndCompileCode;
+    private javax.swing.JMenuItem jMenuGenerateCode;
+    private javax.swing.JMenuItem jMenuItemAddObj;
+    private javax.swing.JMenuItem jMenuItemAdjScroll;
+    private javax.swing.JMenuItem jMenuItemClearPreset;
+    private javax.swing.JMenuItem jMenuItemDuplicate;
+    private javax.swing.JMenuItem jMenuItemDelete;
+    private javax.swing.JMenuItem jMenuItemDifferenceToPreset;
+    private javax.swing.JMenuItem jMenuItemLock;
+    private javax.swing.JMenuItem jMenuItemNotes;
+    private javax.swing.JMenuItem jMenuItemPresetCurrentToInit;
+    private javax.swing.JMenuItem jMenuItemSelectAll;
+    private javax.swing.JMenuItem jMenuItemSettings;
+    private javax.swing.JMenuItem jMenuItemOpenFileLocation;
+    private javax.swing.JMenuItem jMenuItemUnlock;
+    private javax.swing.JMenuItem jMenuItemUploadInternalFlash;
+    private javax.swing.JMenuItem jMenuItemUploadSD;
+    private javax.swing.JMenuItem jMenuItemUploadSDStart;
+    private javax.swing.JMenu jMenuPatch;
+    private javax.swing.JMenu jMenuPreset;
+    private javax.swing.JMenuItem jMenuSave;
+    private javax.swing.JMenuItem jMenuSaveAs;
+    private javax.swing.JMenuItem jMenuSaveClip;
+    private javax.swing.JMenuItem jMenuSaveCopy;
+    private javax.swing.JMenuItem jMenuUploadCode;
+    private javax.swing.JMenu jMenuView;
+    private javax.swing.JProgressBar jProgressBarDSPLoad;
+    private javax.swing.JLabel jLabelBoardNameId;
+    private ScrollPaneComponent jScrollPane1;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
+    private javax.swing.JPopupMenu.Separator jSeparator5;
+    private javax.swing.JPopupMenu.Separator jSeparator6;
+    private javax.swing.JPanel jToolbarPanel;
+    private javax.swing.JMenuItem redoItem;
+    private javax.swing.JMenuItem undoItem;
+    private axoloti.menus.WindowMenu windowMenu1;
 
     public PatchFrame(final PatchGUI patch, QCmdProcessor qcmdprocessor) {
 
@@ -103,6 +160,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         setMinimumSize(new Dimension(200,120));
         setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axp.png")).getImage());
         this.qcmdprocessor = qcmdprocessor;
+        this.dwl = new ArrayList<DocumentWindow>();
 
         initComponents();
         fileMenuP.initComponents();
@@ -275,8 +333,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
     }
 
-    QCmdProcessor qcmdprocessor;
-
     public void SetLive(boolean b) {
         if (b) {
             jToggleButtonLive.setSelected(true);
@@ -297,7 +353,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     public void showPresetPanel(boolean show) {
         presetPanel.setVisible(show);
     }
-
 
     void ShowConnectDisconnect(boolean status) {
         jToggleButtonLive.setEnabled(status);
@@ -377,7 +432,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     public ScrollPaneComponent getScrollPane() {
         return this.jScrollPane1;
     }
-
 
     private void initComponents() {
 
@@ -506,7 +560,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jScrollPane1.setAutoscrolls(true);
         getContentPane().add(jScrollPane1);
-
+        
         fileMenuP.setMnemonic('F');
         fileMenuP.setText("File");
         fileMenuP.add(jSeparator1);
@@ -1393,63 +1447,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         return true;
     }
 
-    /* write to sdcard...
-     */
-    private axoloti.menus.FileMenu fileMenuP;
-    private javax.swing.Box.Filler filler1;
-    private javax.swing.Box.Filler filler2;
-    private javax.swing.Box.Filler filler3;
-    private axoloti.menus.HelpMenu helpMenu1;
-    private javax.swing.JToggleButton jToggleButtonLive;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemCordsInBackground;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemLive;
-    private javax.swing.JLabel jLabelDSPLoad;
-    private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuClose;
-    private javax.swing.JMenuItem jMenuCompileCode;
-    private javax.swing.JMenu jMenuEdit;
-    private javax.swing.JMenuItem jMenuGenerateAndCompileCode;
-    private javax.swing.JMenuItem jMenuGenerateCode;
-    private javax.swing.JMenuItem jMenuItemAddObj;
-    private javax.swing.JMenuItem jMenuItemAdjScroll;
-    private javax.swing.JMenuItem jMenuItemClearPreset;
-    private javax.swing.JMenuItem jMenuItemDuplicate;
-    private javax.swing.JMenuItem jMenuItemDelete;
-    private javax.swing.JMenuItem jMenuItemDifferenceToPreset;
-    private javax.swing.JMenuItem jMenuItemLock;
-    private javax.swing.JMenuItem jMenuItemNotes;
-    private javax.swing.JMenuItem jMenuItemPresetCurrentToInit;
-    private javax.swing.JMenuItem jMenuItemSelectAll;
-    private javax.swing.JMenuItem jMenuItemSettings;
-    private javax.swing.JMenuItem jMenuItemOpenFileLocation;
-    private javax.swing.JMenuItem jMenuItemUnlock;
-    private javax.swing.JMenuItem jMenuItemUploadInternalFlash;
-    private javax.swing.JMenuItem jMenuItemUploadSD;
-    private javax.swing.JMenuItem jMenuItemUploadSDStart;
-    private javax.swing.JMenu jMenuPatch;
-    private javax.swing.JMenu jMenuPreset;
-    private javax.swing.JMenuItem jMenuSave;
-    private javax.swing.JMenuItem jMenuSaveAs;
-    private javax.swing.JMenuItem jMenuSaveClip;
-    private javax.swing.JMenuItem jMenuSaveCopy;
-    private javax.swing.JMenuItem jMenuUploadCode;
-    private javax.swing.JMenu jMenuView;
-    private javax.swing.JProgressBar jProgressBarDSPLoad;
-    private javax.swing.JLabel jLabelBoardNameId;
-    private ScrollPaneComponent jScrollPane1;
-    private javax.swing.JPopupMenu.Separator jSeparator1;
-    private javax.swing.JPopupMenu.Separator jSeparator2;
-    private javax.swing.JPopupMenu.Separator jSeparator3;
-    private javax.swing.JPopupMenu.Separator jSeparator4;
-    private javax.swing.JPopupMenu.Separator jSeparator5;
-    private javax.swing.JPopupMenu.Separator jSeparator6;
-    private javax.swing.JPanel jToolbarPanel;
-    private javax.swing.JMenuItem redoItem;
-    private javax.swing.JMenuItem undoItem;
-    private axoloti.menus.WindowMenu windowMenu1;
-
-    private boolean previousOverload;
-
     void ShowDSPLoad(int val200, boolean overload) {
         int pv = jProgressBarDSPLoad.getValue();
         if (val200 == pv) {
@@ -1516,8 +1513,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
         }
     }
-
-    ArrayList<DocumentWindow> dwl = new ArrayList<DocumentWindow>();
 
     @Override
     public ArrayList<DocumentWindow> GetChildDocuments() {
