@@ -30,6 +30,9 @@ import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+
+import axoloti.utils.LinkUtils;
+
 import static javax.swing.JOptionPane.DEFAULT_OPTION;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 
@@ -48,30 +51,44 @@ public class CheckForUpdates {
         }
         try {
             URI uri = new URI("http://www.axoloti.com/updates/" + Version.AXOLOTI_SHORT_VERSION + "-2");
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(uri.toURL().openStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(uri.toURL().openStream()));
             in.close();
 
             int result = JOptionPane.showOptionDialog(null, "There is an update available", null, DEFAULT_OPTION, INFORMATION_MESSAGE, null,
                     new String[]{"Take me to the website", "Not now..."
                     /*, "Remind me next week", "Never remind me again"*/
-                    }, in);
+                    }, null);
             switch (result) {
                 case 0: {
-                        Desktop.getDesktop().browse(uri);
+                    try {
+                        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                            Desktop.getDesktop().browse(uri);
+                        }
+                        else {
+                            LinkUtils.openLinkUsingSystemBrowser(uri.toString());
+                        }
+                    }
+                    catch (IOException ex) {
+                        LinkUtils.openLinkUsingSystemBrowser(uri.toString()); /* Try fallback even after IOException */
+                    }
                 }
                 break;
                 default:
             }
-        } catch (MalformedURLException ex) {
+        }
+        catch (MalformedURLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
-        } catch (URISyntaxException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(null, "No updated release available", "Checking for updates", JOptionPane.INFORMATION_MESSAGE);
-        } catch (UnknownHostException ex) {
+        }
+        catch (URISyntaxException ex) {
+            LOGGER.log(Level.WARNING, "Hyperlink: Invalid update link", ex);
+        }
+        catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(null, "No new release available", "Checking for updates", JOptionPane.INFORMATION_MESSAGE);
+        }
+        catch (UnknownHostException ex) {
             JOptionPane.showMessageDialog(null, "Server not reachable", "Checking for updates", JOptionPane.ERROR_MESSAGE);
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
     }

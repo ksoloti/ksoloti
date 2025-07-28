@@ -18,12 +18,11 @@
  */
 package axoloti.menus;
 
-// import axoloti.CheckForUpdates;
-// import axoloti.MainFrame;
 import axoloti.dialogs.AboutFrame;
 import axoloti.dialogs.ShortcutsFrame;
+import axoloti.utils.LinkUtils;
+
 import java.awt.Desktop;
-// import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -44,7 +43,6 @@ public class HelpMenu extends JMenu {
     private javax.swing.JMenuItem jMenuHelpContents;
     private javax.swing.JMenuItem jMenuAbout;
     private javax.swing.JMenuItem jMenuShortcuts;
-    // private javax.swing.JMenuItem jMenuUpdates;
     private javax.swing.JMenuItem jMenuCommunity;
     private javax.swing.JMenuItem jMenuAxolotiCommunityBackup;
     private javax.swing.JPopupMenu.Separator jSeparator1;
@@ -152,7 +150,6 @@ public class HelpMenu extends JMenu {
         helpLibraryMenu1.setMnemonic('P');
         helpLibraryMenu1.setDisplayedMnemonicIndex(5);
         add(helpLibraryMenu1);
-
     }
 
     private void jMenuAboutActionPerformed(java.awt.event.ActionEvent evt) {
@@ -168,33 +165,56 @@ public class HelpMenu extends JMenu {
     // }
 
     private void jMenuHelpContentsActionPerformed(java.awt.event.ActionEvent evt) {
+        String url = "https://sebiik.github.io/community.axoloti.com.backup/t/axoloti-user-guide/50.html";
         try {
-            Desktop.getDesktop().browse(new URI("https://sebiik.github.io/community.axoloti.com.backup/t/axoloti-user-guide/50.html"));
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        } catch (URISyntaxException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                Desktop.getDesktop().browse(new URI(url));
+            }
+            else {
+                LinkUtils.openLinkUsingSystemBrowser(url);
+            }
+        }
+        catch (IOException ex) {
+            LinkUtils.openLinkUsingSystemBrowser(url); /* Try fallback even after IOException */
+        }
+        catch (URISyntaxException ex) {
+            LOGGER.log(Level.WARNING, "Invalid URI syntax for help contents link: " + url, ex);
         }
     }
 
     private void jMenuCommunityActionPerformed(java.awt.event.ActionEvent evt) {
+        String url = "https://ksoloti.discourse.group/";
         try {
-            Desktop.getDesktop().browse(new URI("https://ksoloti.discourse.group/"));
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        } catch (URISyntaxException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                Desktop.getDesktop().browse(new URI(url));
+            }
+            else {
+                LinkUtils.openLinkUsingSystemBrowser(url);
+            }
+        }
+        catch (IOException ex) {
+            LinkUtils.openLinkUsingSystemBrowser(url); /* Try fallback even after IOException */
+        }
+        catch (URISyntaxException ex) {
+            LOGGER.log(Level.WARNING, "Invalid URI syntax for community link: " + url, ex);
         }
     }
 
     private void jMenuAxolotiCommunityBackupActionPerformed(java.awt.event.ActionEvent evt) {
+        String url = "https://sebiik.github.io/community.axoloti.com.backup/";
         try {
-            Desktop.getDesktop().browse(new URI("https://sebiik.github.io/community.axoloti.com.backup/"));
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        } catch (URISyntaxException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                Desktop.getDesktop().browse(new URI(url));
+            }
+            else {
+                LinkUtils.openLinkUsingSystemBrowser(url);
+            }
+        }
+        catch (IOException ex) {
+            LinkUtils.openLinkUsingSystemBrowser(url); /* Try fallback even after IOException */
+        }
+        catch (URISyntaxException ex) {
+            LOGGER.log(Level.WARNING, "Invalid URI syntax for community backup link: " + url, ex);
         }
     }
-
 }
