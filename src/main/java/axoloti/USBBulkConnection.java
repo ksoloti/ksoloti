@@ -169,12 +169,8 @@ public class USBBulkConnection extends Connection {
             while (!Thread.currentThread().isInterrupted() && !disconnectRequested) {
                 int result = LibUsb.SUCCESS;
                 int sz = 0;
-
-                if (handle == null) {
-                    // System.err.println(Instant.now() + " [DEBUG] Receiver: USB handle is null. Initiating USB disconnect.");
-                    /* disconnect(); already handled by critical error below */
-                    break; /* Exit the loop */
-                }
+                recvbuffer.clear();
+                transfered.clear();
 
                 try {
                     synchronized (usbInLock) {
@@ -184,9 +180,7 @@ public class USBBulkConnection extends Connection {
                             break; /* Exit the loop */
                         }
 
-                        recvbuffer.clear();
-                        transfered.clear();
-                        result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 1000);
+                        result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 100);
                         sz = transfered.get(0);
 
                         /* Check interrupted status immediately after a blocking call returns */
