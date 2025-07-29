@@ -1366,8 +1366,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1); // compile as own path/filename .bin
             patch1.GetQCmdProcessor().AppendToQueue(cp);
             qcmdprocessor.WaitQueueFinished();
-            patch1.waitForBinFile();
-            if (patch1.getBinFile().exists()) {
+            if (patch1.waitForBinFile()) {
                 // LOGGER.log(Level.INFO, "Done compiling patch.\n");
                 /* If a Core is connected and test patch .bin could be created:
                 stop patch, upload test patch .bin to RAM, start patch, report status */
