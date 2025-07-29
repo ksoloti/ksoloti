@@ -180,7 +180,7 @@ public class USBBulkConnection extends Connection {
                             break; /* Exit the loop */
                         }
 
-                        result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 5000);
+                        result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 3000);
                         sz = transfered.get(0);
 
                         /* Check interrupted status immediately after a blocking call returns */
@@ -720,7 +720,7 @@ public class USBBulkConnection extends Connection {
                 return LibUsb.ERROR_NO_DEVICE;
             }
 
-            int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 5000); /* 100ms timeout */
+            int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 3000);
             if (result != LibUsb.SUCCESS) {
 
                 if (result == -99) {

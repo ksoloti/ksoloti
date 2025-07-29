@@ -286,7 +286,7 @@ public class QCmdProcessor implements Runnable {
         synchronized (queueLock) {
             while (!queue.isEmpty() || !queueResponse.isEmpty()) {
                 try {
-                    queueLock.wait(5000); // Wait up to 5 seconds
+                    queueLock.wait(3000); // Wait up to 3 seconds
                 }
                 catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
