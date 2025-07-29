@@ -272,12 +272,39 @@ public class Preferences {
         clonedPrefs.ExpertMode = this.ExpertMode;
         clonedPrefs.SortByExecution = this.SortByExecution;
         clonedPrefs.FirmwareWarnDisable = this.FirmwareWarnDisable;
+        clonedPrefs.themePath = this.themePath;
+        clonedPrefs.codeSyntaxTheme = this.codeSyntaxTheme;
+        clonedPrefs.CurrentFileDirectory = this.CurrentFileDirectory;
+        clonedPrefs.restartRequired = this.restartRequired;
+
+        if (this.BoardNames != null) {
+            clonedPrefs.BoardNames = (HashMap<String, String>) this.BoardNames.clone();
+        }
+        else {
+            clonedPrefs.BoardNames = new HashMap<String, String>();
+        }
 
         if (this.UserShortcuts != null) {
             clonedPrefs.UserShortcuts = new String[this.UserShortcuts.length];
             System.arraycopy(this.UserShortcuts, 0, clonedPrefs.UserShortcuts, 0, this.UserShortcuts.length);
-        } else {
+        }
+        else {
             clonedPrefs.UserShortcuts = new String[4];
+        }
+
+        if (this.ObjectPath != null) {
+            clonedPrefs.ObjectPath = new String[this.ObjectPath.length];
+            System.arraycopy(this.ObjectPath, 0, clonedPrefs.ObjectPath, 0, this.ObjectPath.length);
+        }
+        else {
+            clonedPrefs.ObjectPath = new String[0];
+        }
+
+        if (this.recentFiles != null) {
+            clonedPrefs.recentFiles = (ArrayList<String>) this.recentFiles.clone();
+        }
+        else {
+            clonedPrefs.recentFiles = new ArrayList<String>();
         }
 
         /* Deep copy library entries */
