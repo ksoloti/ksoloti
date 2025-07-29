@@ -725,7 +725,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(800, 480));
+        setPreferredSize(new java.awt.Dimension(960, 480));
 
         addWindowFocusListener(new java.awt.event.WindowFocusListener() {
             public void windowGainedFocus(java.awt.event.WindowEvent evt) {
