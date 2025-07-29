@@ -272,6 +272,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
     public AxoObjectEditor(final AxoObject origObj) {
         initComponents();
+        setLocationRelativeTo(getParent());
 
         acProvider = new AxoCompletionProvider();
 
