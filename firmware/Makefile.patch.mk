@@ -8,6 +8,8 @@ BUILDFILENAME =
 # Added a few flags that speed up floating-point calculation at the expense of precision. Graciously shared by https://github.com/malyzajko/daisy/blob/master/doc/documentation.md#running-generated-code
 CCFLAGS = \
   --param max-completely-peeled-insns=100 \
+  --param max-unroll-times=8 \
+  --param max-unrolled-insns=200 \
   -O3 \
   -Wno-implicit-fallthrough \
   -Wno-return-type \
@@ -19,10 +21,12 @@ CCFLAGS = \
   -ffunction-sections \
   -fno-common \
   -fno-math-errno \
+  -fno-prefetch-loop-arrays \
   -fno-reorder-blocks \
   -fno-rtti \
   -fno-signed-zeros \
   -fno-threadsafe-statics \
+  -fno-tree-vectorize \
   -fno-unsafe-math-optimizations \
   -fno-use-cxa-atexit \
   -fpermissive \
