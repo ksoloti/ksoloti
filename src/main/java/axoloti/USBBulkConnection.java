@@ -180,7 +180,7 @@ public class USBBulkConnection extends Connection {
                             break; /* Exit the loop */
                         }
 
-                        result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 100);
+                        result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 5000);
                         sz = transfered.get(0);
 
                         /* Check interrupted status immediately after a blocking call returns */
@@ -664,7 +664,7 @@ public class USBBulkConnection extends Connection {
 
             /* 6. Post-Connection Commands (CPU ID, Firmware Version) */
             QCmdProcessor qcmdp = MainFrame.mainframe.getQcmdprocessor();
-            
+
             try {
                 qcmdp.AppendToQueue(new QCmdTransmitGetFWVersion());
                 qcmdp.WaitQueueFinished();
@@ -719,8 +719,8 @@ public class USBBulkConnection extends Connection {
                 // System.err.println(Instant.now() + " [DEBUG] USB bulk write failed: handle is null. Disconnected?");
                 return LibUsb.ERROR_NO_DEVICE;
             }
-    
-            int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 100); /* 100ms timeout */
+
+            int result = LibUsb.bulkTransfer(handle, (byte) OUT_ENDPOINT, buffer, transfered, 5000); /* 100ms timeout */
             if (result != LibUsb.SUCCESS) {
 
                 if (result == -99) {
@@ -1729,33 +1729,33 @@ public class USBBulkConnection extends Connection {
             case FILEINFO_FIXED_FIELDS: /* State to collect the 8-byte size and timestamp */
                 fileinfoRcvBuffer.put(cc);
                 dataIndex++;
-        
+
                 if (dataIndex == dataLength) { /* exactly 8 bytes (size + timestamp) */ 
                     // System.out.println(Instant.now() + " [DEBUG] processByte: Received fixed fields for Axof. Processing.");
-        
+
                     fileinfoRcvBuffer.order(ByteOrder.LITTLE_ENDIAN);
                     fileinfoRcvBuffer.limit(fileinfoRcvBuffer.position());
                     fileinfoRcvBuffer.rewind();
-        
+
                     /* Read the 4-byte size and 4-byte timestamp */
                     currentFileSize = fileinfoRcvBuffer.getInt();
                     currentFileTimestamp = fileinfoRcvBuffer.getInt();
                     // System.out.println(Instant.now() + " [DEBUG] processByte: Parsed preliminary size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
-        
+
                     /* Prepare to collect the variable-length filename */
                     fileinfoRcvBuffer.clear();
                     dataIndex = 0;
                     state = ReceiverState.FILEINFO_FILENAME; /* Transition to the next sub-state */
                 }
                 break;
-        
+
             case FILEINFO_FILENAME: /* State to collect filename bytes until null terminator */
                 if (cc == 0x00) {
                     // System.out.println(Instant.now() + " [DEBUG] processByte: Null terminator found for Axof filename. Processing.");
-        
+
                     fileinfoRcvBuffer.limit(fileinfoRcvBuffer.position());
                     fileinfoRcvBuffer.rewind();
-        
+
                     /* Get the collected filename bytes as an array */
                     byte[] filenameBytes = new byte[fileinfoRcvBuffer.remaining()];
                     fileinfoRcvBuffer.get(filenameBytes);
@@ -1763,14 +1763,14 @@ public class USBBulkConnection extends Connection {
 
                     SDCardInfo.getInstance().AddFile(fname, currentFileSize, currentFileTimestamp);
                     // System.out.println(Instant.now() + " [DEBUG] processByte: Parsed file: \'" + fname + "\', size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
-        
+
                     GoIdleState(); /* Packet complete, return to idle */
                 }
                 else {
                     /* Collect the current byte as part of the filename */
                     fileinfoRcvBuffer.put(cc);
                     dataIndex++;
-        
+
                     /* Protection against malformed Axof */
                     if (dataIndex >= fileinfoRcvBuffer.capacity()) {
                         LOGGER.log(Level.SEVERE, "processByte: Filename exceeds maximum expected length. Aborting packet.");
@@ -1778,7 +1778,7 @@ public class USBBulkConnection extends Connection {
                     }
                 }
                 break;
-        
+
             case MEMREAD:
                 switch (dataIndex) {
                     case 0:
