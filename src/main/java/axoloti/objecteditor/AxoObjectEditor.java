@@ -90,6 +90,60 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private boolean readonly = false;
     private AxoCompletionProvider acProvider;
 
+    private axoloti.objecteditor.AttributeDefinitionsEditorPanel attributeDefinitionsEditorPanel1;
+    private axoloti.objecteditor.DisplayDefinitionsEditorPanel displayDefinitionsEditorPanel1;
+    private axoloti.menus.FileMenu fileMenu1;
+    private axoloti.menus.HelpMenu helpMenu1;
+    private axoloti.objecteditor.InletDefinitionsEditorPanel inletDefinitionsEditor1;
+    private javax.swing.JInternalFrame jInternalFrame1;
+    private javax.swing.JLabel jLabelTitleLibrary;
+    private javax.swing.JLabel jLabelDescription;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabelIncludes;
+    private javax.swing.JLabel jLabelDepends;
+    private javax.swing.JLabel jLabelTitleName;
+    private javax.swing.JLabel jLabeltitleAuthor;
+    private javax.swing.JLabel jLabelTitleLicense;
+    private javax.swing.JLabel jLabelHelp;
+    private javax.swing.JLabel jLabelLibrary;
+    private javax.swing.JLabel jLabelMidiPrototype;
+    private javax.swing.JLabel jLabelMidiPrototypeEnd;
+    private javax.swing.JLabel jLabelName;
+    private javax.swing.JList jListDepends;
+    private javax.swing.JList jListIncludes;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItemCopyToLibrary;
+    private javax.swing.JMenuItem jMenuItemRevert;
+    private javax.swing.JMenuItem jMenuItemSave;
+    private javax.swing.JPanel jPanelTabs;
+    private javax.swing.JPanel jPanelBasicInfo;
+    private javax.swing.JPanel jPanelDetails;
+    private javax.swing.JPanel jPanelDisposeCode;
+    private javax.swing.JPanel jPanelInitCode;
+    private javax.swing.JPanel jPanelKRateCode;
+    private javax.swing.JPanel jPanelKRateCode2;
+    private javax.swing.JPanel jPanelLocalData;
+    private javax.swing.JPanel jPanelMidiCode;
+    private javax.swing.JPanel jPanelMidiCode2;
+    private javax.swing.JPanel jPanelOverview;
+    private javax.swing.JPanel jPanelSRateCode;
+    private javax.swing.JPanel jPanelXML;
+    private ScrollPaneComponent jScrollPaneDepends;
+    private ScrollPaneComponent jScrollPaneDescription;
+    private ScrollPaneComponent jScrollPaneIncludes;
+    private ScrollPaneComponent jScrollPaneXML;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTextArea jTextDesc;
+    private javax.swing.JTextField jTextFieldAuthor;
+    private javax.swing.JTextField jTextFieldHelp;
+    private javax.swing.JTextField jTextFieldLicense;
+    private axoloti.objecteditor.OutletDefinitionsEditorPanel outletDefinitionsEditorPanel1;
+    private axoloti.objecteditor.ParamDefinitionsEditorPanel paramDefinitionsEditorPanel1;
+    private org.fife.ui.rsyntaxtextarea.RSyntaxTextArea rSyntaxTextAreaXML;
+    private axoloti.menus.WindowMenu windowMenu1;
+
     static RSyntaxTextArea initCodeEditor(JPanel p, AxoCompletionProvider acpr) {
         RSyntaxTextArea rsta = new RSyntaxTextArea(20, 60);
 
@@ -1053,59 +1107,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private void formWindowLostFocus(java.awt.event.WindowEvent evt) {
     }
 
-    private axoloti.objecteditor.AttributeDefinitionsEditorPanel attributeDefinitionsEditorPanel1;
-    private axoloti.objecteditor.DisplayDefinitionsEditorPanel displayDefinitionsEditorPanel1;
-    private axoloti.menus.FileMenu fileMenu1;
-    private axoloti.menus.HelpMenu helpMenu1;
-    private axoloti.objecteditor.InletDefinitionsEditorPanel inletDefinitionsEditor1;
-    private javax.swing.JInternalFrame jInternalFrame1;
-    private javax.swing.JLabel jLabelTitleLibrary;
-    private javax.swing.JLabel jLabelDescription;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabelIncludes;
-    private javax.swing.JLabel jLabelDepends;
-    private javax.swing.JLabel jLabelTitleName;
-    private javax.swing.JLabel jLabeltitleAuthor;
-    private javax.swing.JLabel jLabelTitleLicense;
-    private javax.swing.JLabel jLabelHelp;
-    private javax.swing.JLabel jLabelLibrary;
-    private javax.swing.JLabel jLabelMidiPrototype;
-    private javax.swing.JLabel jLabelMidiPrototypeEnd;
-    private javax.swing.JLabel jLabelName;
-    private javax.swing.JList jListDepends;
-    private javax.swing.JList jListIncludes;
-    private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItemCopyToLibrary;
-    private javax.swing.JMenuItem jMenuItemRevert;
-    private javax.swing.JMenuItem jMenuItemSave;
-    private javax.swing.JPanel jPanelTabs;
-    private javax.swing.JPanel jPanelBasicInfo;
-    private javax.swing.JPanel jPanelDetails;
-    private javax.swing.JPanel jPanelDisposeCode;
-    private javax.swing.JPanel jPanelInitCode;
-    private javax.swing.JPanel jPanelKRateCode;
-    private javax.swing.JPanel jPanelKRateCode2;
-    private javax.swing.JPanel jPanelLocalData;
-    private javax.swing.JPanel jPanelMidiCode;
-    private javax.swing.JPanel jPanelMidiCode2;
-    private javax.swing.JPanel jPanelOverview;
-    private javax.swing.JPanel jPanelSRateCode;
-    private javax.swing.JPanel jPanelXML;
-    private ScrollPaneComponent jScrollPaneDepends;
-    private ScrollPaneComponent jScrollPaneDescription;
-    private ScrollPaneComponent jScrollPaneIncludes;
-    private ScrollPaneComponent jScrollPaneXML;
-    private javax.swing.JPopupMenu.Separator jSeparator1;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextArea jTextDesc;
-    private javax.swing.JTextField jTextFieldAuthor;
-    private javax.swing.JTextField jTextFieldHelp;
-    private javax.swing.JTextField jTextFieldLicense;
-    private axoloti.objecteditor.OutletDefinitionsEditorPanel outletDefinitionsEditorPanel1;
-    private axoloti.objecteditor.ParamDefinitionsEditorPanel paramDefinitionsEditorPanel1;
-    private org.fife.ui.rsyntaxtextarea.RSyntaxTextArea rSyntaxTextAreaXML;
-    private axoloti.menus.WindowMenu windowMenu1;
+
 
     @Override
     public JFrame GetFrame() {
