@@ -173,7 +173,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     if (USBBulkConnection.GetConnection().isConnected()) {
                         if (droppedFiles.size() > 1) {
                             Object[] options = {"Upload", "Cancel"};
-                            int n = JOptionPane.showOptionDialog(
+                            int n = KeyboardNavigableOptionPane.showOptionDialog(
                                 null,
                                 "Upload " + droppedFiles.size() + " files to SD card?",
                                 "Upload multiple Files",
@@ -914,7 +914,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         }
 
         Object[] options = {"Delete", "Cancel"};
-        int confirmResult = JOptionPane.showOptionDialog(
+        int confirmResult = KeyboardNavigableOptionPane.showOptionDialog(
             this,
             confirmationText,
             "Confirm Delete",

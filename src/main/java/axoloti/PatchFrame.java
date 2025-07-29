@@ -19,6 +19,7 @@
 
 package axoloti;
 
+import axoloti.dialogs.KeyboardNavigableOptionPane;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
 import axoloti.utils.KeyUtils;
@@ -402,7 +403,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             Object[] options = {"Save",
                 "Discard",
                 "Cancel"};
-            int n = JOptionPane.showOptionDialog(
+            int n = KeyboardNavigableOptionPane.showOptionDialog(
                     this,
                     "Save changes to \"" + patch.getFileNamePath() + "\"?",
                     "Unsaved Changes",
@@ -1049,7 +1050,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             else if (!ext.equals(filterext)) {
                 Object[] options = {"Change",
                     "No"};
-                int n = JOptionPane.showOptionDialog(this,
+                int n = KeyboardNavigableOptionPane.showOptionDialog(this,
                         "File extension does not match filter. Change extension to " + filterext + "?",
                         "File Extension",
                         JOptionPane.YES_NO_OPTION,
@@ -1069,7 +1070,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             if (fileToBeSaved.exists()) {
                 Object[] options = {"Overwrite",
                     "Cancel"};
-                int n = JOptionPane.showOptionDialog(this,
+                int n = KeyboardNavigableOptionPane.showOptionDialog(this,
                         "File exists! Overwrite?",
                         "File Exists",
                         JOptionPane.YES_NO_OPTION,
@@ -1433,7 +1434,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             Object[] options = {"Go Live",
                 "Cancel"};
 
-            int n = JOptionPane.showOptionDialog(this,
+            int n = KeyboardNavigableOptionPane.showOptionDialog(this,
                     "This is a subpatch intended to be placed inside a main patch and possibly has no input or output.\nDo you still want to take it live?",
                     "File is Subpatch",
                     JOptionPane.YES_NO_OPTION,

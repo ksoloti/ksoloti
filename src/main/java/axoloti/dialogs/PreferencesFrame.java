@@ -267,7 +267,7 @@ public class PreferencesFrame extends JFrame {
 
         if (overallDirty) {
             String[] options = {"Save", "Discard", "Cancel"};
-            int option = JOptionPane.showOptionDialog(
+            int option = KeyboardNavigableOptionPane.showOptionDialog(
                 this,
                 "Save changes to preferences?",
                 "Save Changes?",
@@ -982,7 +982,7 @@ public class PreferencesFrame extends JFrame {
 
         String id = (String)model.getValueAt(idx, 1);
 
-        int n = JOptionPane.showConfirmDialog(this,
+        int n = KeyboardNavigableOptionPane.showConfirmDialog(this,
                                             "Are you sure you want to remove the library \"" + id + "\"?",
                                              "Warning",
                                              JOptionPane.YES_NO_OPTION);
@@ -1004,7 +1004,7 @@ public class PreferencesFrame extends JFrame {
         boolean delete = false;
 
         int options = JOptionPane.OK_CANCEL_OPTION;
-        int res = JOptionPane.showConfirmDialog(this, "Reset will re-download the factory and community libraries.\n" +
+        int res = KeyboardNavigableOptionPane.showConfirmDialog(this, "Reset will re-download the factory and community libraries.\n" +
                                                       "Your custom library entries will be preserved.\n" +
                                                       "Continue?", "Warning", options);
         if (res == JOptionPane.CANCEL_OPTION) {

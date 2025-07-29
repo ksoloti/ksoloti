@@ -26,6 +26,7 @@ import static axoloti.MainFrame.mainframe;
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
 import axoloti.USBBulkConnection;
+// import axoloti.dialogs.KeyboardNavigableOptionPane;
 import axoloti.dialogs.PatchBank;
 import axoloti.dialogs.PreferencesFrame;
 import axoloti.utils.AxolotiLibrary;
@@ -283,7 +284,7 @@ public class FileMenu extends JMenu {
     }
 
     // private void jMenuAutoTestObjectsActionPerformed(java.awt.event.ActionEvent evt) {
-    //     if (JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and may freeze the UI until complete. Continue?") == JOptionPane.YES_OPTION) {
+    //     if (KeyboardNavigableOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and may freeze the UI until complete. Continue?") == JOptionPane.YES_OPTION) {
     //         class Thd extends Thread {
     //             public void run() {
     //                 LOGGER.log(Level.WARNING, "Running object tests, please wait...");
@@ -297,7 +298,7 @@ public class FileMenu extends JMenu {
     // }
 
     // private void jMenuAutoTestPatchesActionPerformed(java.awt.event.ActionEvent evt) {
-    //     if (JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and may freeze the UI until complete. Continue?") == JOptionPane.YES_OPTION) {
+    //     if (KeyboardNavigableOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and may freeze the UI until complete. Continue?") == JOptionPane.YES_OPTION) {
     //         class Thd extends Thread {
     //             public void run() {
     //                 LOGGER.log(Level.WARNING, "Running patch tests, please wait...");
@@ -312,7 +313,7 @@ public class FileMenu extends JMenu {
 
 
     // private void jMenuAutoTestAllActionPerformed(java.awt.event.ActionEvent evt) {
-    //     int res = JOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and may freeze the UI until complete. Continue?", "Warning", JOptionPane.OK_CANCEL_OPTION);
+    //     int res = KeyboardNavigableOptionPane.showConfirmDialog(mainframe, "Running these tests will take a long time and may freeze the UI until complete. Continue?", "Warning", JOptionPane.OK_CANCEL_OPTION);
     //     if (res == JOptionPane.OK_OPTION) {
     //         class Thd extends Thread {
     //             public void run() {

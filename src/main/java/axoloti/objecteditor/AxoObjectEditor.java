@@ -22,6 +22,7 @@ import axoloti.DocumentWindow;
 import axoloti.DocumentWindowList;
 import axoloti.MainFrame;
 import axoloti.attributedefinition.AxoAttribute;
+import axoloti.dialogs.KeyboardNavigableOptionPane;
 import axoloti.displays.Display;
 import axoloti.inlets.Inlet;
 import axoloti.object.AxoObject;
@@ -553,7 +554,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         if (hasChanged()) {
             if (!readonly) {
                 Object[] options = {"Save", "Discard", "Cancel"};
-                int n = JOptionPane.showOptionDialog(
+                int n = KeyboardNavigableOptionPane.showOptionDialog(
                         this,
                         "Save changes to \"" + editObj.getCName() + "\" ?",
                         "Unsaved Changes",

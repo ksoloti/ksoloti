@@ -24,6 +24,7 @@ import static axoloti.Axoloti.HOME_DIR;
 import axoloti.dialogs.AxoJFileChooser;
 import axoloti.dialogs.FileManagerFrame;
 import axoloti.dialogs.KeyboardFrame;
+import axoloti.dialogs.KeyboardNavigableOptionPane;
 import axoloti.dialogs.PatchBank;
 import axoloti.object.AxoObjects;
 import axoloti.usb.Usb;
@@ -531,7 +532,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         String cb = ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(ulib.getBranch())) {
                             LOGGER.log(Level.INFO, "Current axoloti-contrib library does not match specified version: {0} <-> {1}", new Object[]{cb, ulib.getBranch()});
-                            int s = JOptionPane.showConfirmDialog(MainFrame.this,
+                            int s = KeyboardNavigableOptionPane.showConfirmDialog(MainFrame.this,
                                     "Axoloti community library version mismatch detected. Upgrade now?\n"
                                     + "This will stash any local changes and reapply them to the new version.\n"
                                     + "If you choose no, you will need to manually backup your changes and then sync libraries.",
@@ -550,7 +551,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         String cb = kso_ulib.getCurrentBranch();
                         if (!cb.equalsIgnoreCase(kso_ulib.getBranch())) {
                             LOGGER.log(Level.INFO, "Current ksoloti-contrib library does not match specified version: {0} <-> {1}", new Object[]{cb, kso_ulib.getBranch()});
-                            int s = JOptionPane.showConfirmDialog(MainFrame.this,
+                            int s = KeyboardNavigableOptionPane.showConfirmDialog(MainFrame.this,
                                     "Ksoloti community library version mismatch detected. Upgrade now?\n"
                                     + "This will stash any local changes and reapply them to the new version.\n"
                                     + "If you choose no, you will need to manually backup your changes and then sync libraries.",
@@ -1781,7 +1782,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     public void interactiveFirmwareUpdate() {
 
         Object[] options = {"Update", "Cancel"};
-        int s = JOptionPane.showOptionDialog(this,
+        int s = KeyboardNavigableOptionPane.showOptionDialog(this,
                 "Firmware mismatch detected!\n"
                 + "Update the firmware now?\n"
                 + "This process will cause a disconnect and the LEDs will blink for a while.\n"

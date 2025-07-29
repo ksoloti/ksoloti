@@ -2,6 +2,8 @@ package axoloti;
 
 import static axoloti.FileUtils.axtFileFilter;
 import static axoloti.MainFrame.fc;
+
+import axoloti.dialogs.KeyboardNavigableOptionPane;
 import axoloti.utils.ColorConverter;
 import axoloti.utils.Preferences;
 
@@ -268,7 +270,7 @@ public class Theme {
             else if (!ext.equals(filterext)) {
                 Object[] options = {"Change",
                     "Cancel"};
-                int n = JOptionPane.showOptionDialog(frame,
+                int n = KeyboardNavigableOptionPane.showOptionDialog(frame,
                         "File does not match filter. Change extension to " + filterext + "?",
                         "File Extension",
                         JOptionPane.YES_NO_OPTION,
@@ -288,7 +290,7 @@ public class Theme {
             if (fileToBeSaved.exists()) {
                 Object[] options = {"Overwrite",
                     "Cancel"};
-                int n = JOptionPane.showOptionDialog(frame,
+                int n = KeyboardNavigableOptionPane.showOptionDialog(frame,
                         "File exists! Overwrite?",
                         "File Exists",
                         JOptionPane.YES_NO_OPTION,

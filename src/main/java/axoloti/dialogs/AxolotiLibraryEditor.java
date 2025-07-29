@@ -162,7 +162,7 @@ public class AxolotiLibraryEditor extends JDialog {
         }
         else {
             LOGGER.log(Level.INFO, "AxolotiLibraryEditor: Library ID {0} not found after preferences reload. Closing editor.", this.library.getId());
-            JOptionPane.showMessageDialog(this,
+            KeyboardNavigableOptionPane.showMessageDialog(this,
                     "The library '" + (this.library.getId() != null ? this.library.getId() : "New Library") + "' was discarded or removed from preferences. Closing its editor.",
                     "Library Discarded/Removed",
                     JOptionPane.INFORMATION_MESSAGE);
@@ -520,7 +520,7 @@ public class AxolotiLibraryEditor extends JDialog {
 
         boolean delete;
         Object[] options = {"Init", "Cancel"};
-        int res = JOptionPane.showOptionDialog(this,
+        int res = KeyboardNavigableOptionPane.showOptionDialog(this,
                                                "The existing directory will be replaced/overwritten.\nContinue?",
                                                "Initialise Library",
                                                JOptionPane.OK_CANCEL_OPTION,
@@ -701,14 +701,14 @@ public class AxolotiLibraryEditor extends JDialog {
 
     private boolean isLibraryValid() {
         if (jTextFieldId.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this,
+            KeyboardNavigableOptionPane.showMessageDialog(this,
                     "ID is required and must be unique.",
                     "Invalid ID",
                     JOptionPane.ERROR_MESSAGE);
             return false;
         }
         if (jTextFieldLocalDir.getText().trim().isEmpty()) { 
-            JOptionPane.showMessageDialog(this,
+            KeyboardNavigableOptionPane.showMessageDialog(this,
                     "Local Directory is required and must be valid.",
                     "Invalid Local Directory",
                     JOptionPane.ERROR_MESSAGE);
@@ -718,7 +718,7 @@ public class AxolotiLibraryEditor extends JDialog {
             (jTextFieldUserId.getText() != null && jTextFieldUserId.getText().length() > 0)) {
             char[] p = jPasswordField.getPassword();
             if (jTextFieldPrefix.getText().trim().isEmpty() || (p == null || p.length == 0)) {
-                JOptionPane.showMessageDialog(this,
+                KeyboardNavigableOptionPane.showMessageDialog(this,
                         "Contributors to the community library need to specify\n" +
                         "username, password and user prefix.",
                         "Invalid Contributor Data",

@@ -31,6 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
+import axoloti.dialogs.KeyboardNavigableOptionPane;
 import axoloti.utils.LinkUtils;
 
 import static javax.swing.JOptionPane.DEFAULT_OPTION;
@@ -46,7 +47,7 @@ public class CheckForUpdates {
 
     static public void checkForUpdates() {
         if (Version.AXOLOTI_VERSION.equalsIgnoreCase("(git missing)")) {
-            JOptionPane.showMessageDialog(null, "No version info found.", "Checking for updates", JOptionPane.ERROR_MESSAGE);
+            KeyboardNavigableOptionPane.showMessageDialog(null, "No version info found.", "Checking for updates", JOptionPane.ERROR_MESSAGE);
             return;
         }
         try {
@@ -54,7 +55,7 @@ public class CheckForUpdates {
             BufferedReader in = new BufferedReader(new InputStreamReader(uri.toURL().openStream()));
             in.close();
 
-            int result = JOptionPane.showOptionDialog(null, "There is an update available", null, DEFAULT_OPTION, INFORMATION_MESSAGE, null,
+            int result = KeyboardNavigableOptionPane.showOptionDialog(null, "There is an update available", null, DEFAULT_OPTION, INFORMATION_MESSAGE, null,
                     new String[]{"Take me to the website", "Not now..."
                     /*, "Remind me next week", "Never remind me again"*/
                     }, null);
@@ -83,10 +84,10 @@ public class CheckForUpdates {
             LOGGER.log(Level.WARNING, "Hyperlink: Invalid update link", ex);
         }
         catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(null, "No new release available", "Checking for updates", JOptionPane.INFORMATION_MESSAGE);
+            KeyboardNavigableOptionPane.showMessageDialog(null, "No new release available", "Checking for updates", JOptionPane.INFORMATION_MESSAGE);
         }
         catch (UnknownHostException ex) {
-            JOptionPane.showMessageDialog(null, "Server not reachable", "Checking for updates", JOptionPane.ERROR_MESSAGE);
+            KeyboardNavigableOptionPane.showMessageDialog(null, "Server not reachable", "Checking for updates", JOptionPane.ERROR_MESSAGE);
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);

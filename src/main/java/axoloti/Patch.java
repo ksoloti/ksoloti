@@ -19,6 +19,7 @@
 package axoloti;
 
 import axoloti.attributedefinition.AxoAttributeComboBox;
+import axoloti.dialogs.KeyboardNavigableOptionPane;
 import axoloti.displays.DisplayInstance;
 import axoloti.inlets.InletBool32;
 import axoloti.inlets.InletCharPtr32;
@@ -953,7 +954,7 @@ public class Patch {
         if (hasZombies()) {
             Object[] options = {"Save Anyway",
                 "Cancel"};
-            int n = JOptionPane.showOptionDialog(
+            int n = KeyboardNavigableOptionPane.showOptionDialog(
                     this.getPatchframe(),
                     this.FileNamePath + " contains one or more unresolved (zombie) objects.\n\nSaving the patch now will overwrite the unresolved objects with hard zombies. You will have to replace them manually later for the patch to be usable, even if the object library is found later.\n\nThe zombie objects\' names and connections will be preserved, but you may lose some parameter and attribute values you had originally set when the objects were alive, depending on how closely the manually replaced object matches the original one.",
                     "Zombie Infestation",
