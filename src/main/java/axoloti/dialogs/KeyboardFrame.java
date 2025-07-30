@@ -93,7 +93,6 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         jSpinnerMidiChannel = new javax.swing.JSpinner();
         jLabelControlChange = new javax.swing.JLabel();
         jSpinnerControlChange = new javax.swing.JSpinner();
-        jLabelVelocity = new javax.swing.JLabel();
         jButtonAllNotesOff = new javax.swing.JButton();
 
         Dimension di = new java.awt.Dimension(5,0);
@@ -106,9 +105,11 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         filler_x_fivepx7 = new javax.swing.Box.Filler(di, di, di);
         filler_x_fivepx8 = new javax.swing.Box.Filler(di, di, di);
         filler_x_fivepx9 = new javax.swing.Box.Filler(di, di, di);
-        filler_x_fivepx10 = new javax.swing.Box.Filler(di, di, di);
-        filler_x_fivepx11 = new javax.swing.Box.Filler(di, di, di);
-        filler_x_fivepx12 = new javax.swing.Box.Filler(di, di, di);
+        
+        Dimension d10 = new java.awt.Dimension(10,0);
+        filler_x_tenpx1 = new javax.swing.Box.Filler(d10, d10, d10);
+        filler_x_tenpx2 = new javax.swing.Box.Filler(d10, d10, d10);
+        filler_x_tenpx3 = new javax.swing.Box.Filler(d10, d10, d10);
 
         Dimension dv = new java.awt.Dimension(0,50);
         filler_y_fiftypx1 = new javax.swing.Box.Filler(dv, dv, dv);
@@ -465,7 +466,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
 
         jPanelMain.add(filler_y_fiftypx1);
 
-        jPanelMain.add(filler_x_fivepx2);
+        jPanelMain.add(filler_x_tenpx1);
         pbenddial = new DialComponent(0.0, -64, 63, 1);
         pbenddial.setFocusable(false);
         pbenddial.addMouseListener(new MouseListener() {
@@ -507,10 +508,10 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
             public void ACtrlAdjustmentFinished(ACtrlEvent e) {
             }
         });
-        jPanelMain.add(new JLabel("Pitchbend "));
-        jPanelMain.add(filler_x_fivepx3);
+        jPanelMain.add(new JLabel("Pitchbend"));
+        jPanelMain.add(filler_x_fivepx2);
         jPanelMain.add(pbenddial);
-        jPanelMain.add(filler_x_fivepx4);
+        jPanelMain.add(filler_x_tenpx2);
 
         moddial = new DialComponent(0, 0, 127, 1);
         moddial.setFocusable(false);
@@ -528,15 +529,11 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
             public void ACtrlAdjustmentFinished(ACtrlEvent e) {
             }
         });
-        jPanelMain.add(new JLabel("Modwheel "));
-        jPanelMain.add(filler_x_fivepx5);
+        jPanelMain.add(new JLabel("Modwheel"));
+        jPanelMain.add(filler_x_fivepx3);
         jPanelMain.add(moddial);
-        jPanelMain.add(filler_x_fivepx10);
+        jPanelMain.add(filler_x_tenpx3);
         
-        jLabelVelocity.setText("Velocity");
-        jPanelMain.add(jLabelVelocity);
-        jPanelMain.add(filler_x_fivepx11);
-
         velodial = new DialComponent(100, 0, 127, 1);
         velodial.setFocusable(false);
         velodial.addMouseListener(new MouseListener() {
@@ -564,19 +561,21 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
             public void mouseExited(MouseEvent e) {
             }
         });
+        jPanelMain.add(new JLabel("Velocity"));
+        jPanelMain.add(filler_x_fivepx4);
         jPanelMain.add(velodial);
         jPanelMain.add(filler_x_stretch2);
 
         jLabelControlChange.setText("CC#");
         jPanelMain.add(jLabelControlChange);
-        jPanelMain.add(filler_x_fivepx6);
+        jPanelMain.add(filler_x_fivepx5);
 
         jSpinnerControlChange.setModel(new javax.swing.SpinnerNumberModel(7, 0, 127, 1));
         jSpinnerControlChange.setMaximumSize(new java.awt.Dimension(70, 30));
         jSpinnerControlChange.setMinimumSize(new java.awt.Dimension(70, 30));
         jSpinnerControlChange.setPreferredSize(new java.awt.Dimension(70, 30));
         jPanelMain.add(jSpinnerControlChange);
-        jPanelMain.add(filler_x_fivepx7);
+        jPanelMain.add(filler_x_fivepx6);
 
         ccdial = new DialComponent(0, 0, 127, 1);
         ccdial.setFocusable(false);
@@ -599,14 +598,14 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
 
         jLabelMidiChannel.setText("MIDI Channel");
         jPanelMain.add(jLabelMidiChannel);
-        jPanelMain.add(filler_x_fivepx8);
+        jPanelMain.add(filler_x_fivepx7);
 
         jSpinnerMidiChannel.setModel(new javax.swing.SpinnerNumberModel(1, 1, 16, 1));
         jSpinnerMidiChannel.setMaximumSize(new java.awt.Dimension(60, 30));
         jSpinnerMidiChannel.setMinimumSize(new java.awt.Dimension(60, 30));
         jSpinnerMidiChannel.setPreferredSize(new java.awt.Dimension(60, 30));
         jPanelMain.add(jSpinnerMidiChannel);
-        jPanelMain.add(filler_x_fivepx9);
+        jPanelMain.add(filler_x_fivepx8);
 
         jButtonAllNotesOff.setText("All Notes Off");
         jButtonAllNotesOff.setFocusable(false);
@@ -616,7 +615,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
             }
         });
         jPanelMain.add(jButtonAllNotesOff);
-        jPanelMain.add(filler_x_fivepx12);
+        jPanelMain.add(filler_x_fivepx9);
 
         getContentPane().add(jPanelMain);
 
@@ -637,9 +636,10 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
     private javax.swing.Box.Filler filler_x_fivepx7;
     private javax.swing.Box.Filler filler_x_fivepx8;
     private javax.swing.Box.Filler filler_x_fivepx9;
-    private javax.swing.Box.Filler filler_x_fivepx10;
-    private javax.swing.Box.Filler filler_x_fivepx11;
-    private javax.swing.Box.Filler filler_x_fivepx12;
+
+    private javax.swing.Box.Filler filler_x_tenpx1;
+    private javax.swing.Box.Filler filler_x_tenpx2;
+    private javax.swing.Box.Filler filler_x_tenpx3;
 
     private javax.swing.Box.Filler filler_y_fiftypx1;
 
@@ -649,7 +649,6 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
     private javax.swing.JButton jButtonAllNotesOff;
     private javax.swing.JLabel jLabelMidiChannel;
     private javax.swing.JLabel jLabelControlChange;
-    private javax.swing.JLabel jLabelVelocity;
     private javax.swing.JPanel jPanelMain;
     private javax.swing.JPanel jPanelPiano;
     private javax.swing.JSpinner jSpinnerMidiChannel;
