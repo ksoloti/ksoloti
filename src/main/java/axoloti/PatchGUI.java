@@ -619,6 +619,7 @@ public class PatchGUI extends Patch {
                 }
             }
 
+            int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
             for (AxoObjectInstanceAbstract o : p.objectInstances) {
                 String original_name = o.getInstanceName();
                 if (original_name != null) {
@@ -657,33 +658,55 @@ public class PatchGUI extends Patch {
                     dict.put(original_name, new_name);
                 }
 
-                int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
                 if (o.getX() < minX) {
                     minX = o.getX();
                 }
                 if (o.getY() < minY) {
                     minY = o.getY();
                 }
+            }
 
+            int finalOffsetX = 0, finalOffsetY = 0;
+            if (pos != null) {
+                finalOffsetX = Constants.X_GRID * ((pos.x - minX + Constants.X_GRID / 2) / Constants.X_GRID);
+                finalOffsetY = Constants.Y_GRID * ((pos.y - minY + Constants.Y_GRID / 2) / Constants.Y_GRID);
+            }
+
+            /* Loop to find a non-overlapping spot for the entire group */
+            boolean overlapFound = true;
+            while (overlapFound) {
+                overlapFound = false;
+                for (AxoObjectInstanceAbstract o : p.objectInstances) {
+                    int newposx = o.getX() + finalOffsetX;
+                    int newposy = o.getY() + finalOffsetY;
+
+                    AxoObjectInstanceAbstract existingObj = getObjectAtLocation(newposx, newposy);
+                    if (existingObj != null) {
+                        /* Check that the overlapping object is not part of the pasted group itself */
+                        if (!dict.containsValue(existingObj.getInstanceName())) {
+                            overlapFound = true;
+                            break; /* Overlap found, shift the whole group */
+                        }
+                    }
+                }
+                if (overlapFound) {
+                    finalOffsetX += Constants.X_GRID;
+                    finalOffsetY += Constants.Y_GRID;
+                }
+            }
+
+            /* Apply the final valid position to all objects in the group */
+            for (AxoObjectInstanceAbstract o : p.objectInstances) {
                 o.patch = this;
                 objectInstances.add(o);
                 objectLayerPanel.add(o, 0);
                 o.PostConstructor();
-                int newposx = o.getX();
-                int newposy = o.getY();
-
-                if (pos != null) {
-                    /* Paste at cursor position with delta snapped to grid */
-                    newposx += Constants.X_GRID * ((pos.x - minX + Constants.X_GRID / 2) / Constants.X_GRID);
-                    newposy += Constants.Y_GRID * ((pos.y - minY + Constants.Y_GRID / 2) / Constants.Y_GRID);
-                }
-                while (getObjectAtLocation(newposx, newposy) != null) {
-                    newposx += Constants.X_GRID;
-                    newposy += Constants.Y_GRID;
-                }
+                int newposx = o.getX() + finalOffsetX;
+                int newposy = o.getY() + finalOffsetY;
                 o.setLocation(newposx, newposy);
                 o.SetSelected(true);
             }
+
             objectLayerPanel.validate();
 
             for (Net n : p.nets) {
