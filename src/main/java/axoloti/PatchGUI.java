@@ -580,17 +580,20 @@ public class PatchGUI extends Patch {
         Layers.setVisible(true);
     }
 
-    void paste(String v, Point pos, boolean restoreConnectionsToExternalOutlets) {
+    void paste(String v, Point pos, boolean applyWiresFromExternalOutlets) {
         SelectNone();
         if (v.isEmpty()) {
             return;
         }
+
         Strategy strategy = new AnnotationStrategy();
         Serializer serializer = new Persister(strategy, new Format(2));
+
         try {
             PatchGUI p = serializer.read(PatchGUI.class, v);
             HashMap<String, String> dict = new HashMap<String, String>();
             ArrayList<AxoObjectInstanceAbstract> obj2 = (ArrayList<AxoObjectInstanceAbstract>) p.objectInstances.clone();
+
             for (AxoObjectInstanceAbstract o : obj2) {
                 o.patch = this;
                 AxoObjectAbstract obj = o.resolveType();
@@ -605,8 +608,8 @@ public class PatchGUI extends Patch {
                             Modulators.add(mm);
                         }
                     }
-                } else {
-                    //o.patch = this;
+                }
+                else {
                     p.objectInstances.remove(o);
                     AxoObjectInstanceZombie zombie = new AxoObjectInstanceZombie(new AxoObjectZombie(), this, o.getInstanceName(), new Point(o.getX(), o.getY()));
                     zombie.patch = this;
@@ -615,7 +618,7 @@ public class PatchGUI extends Patch {
                     p.objectInstances.add(zombie);
                 }
             }
-            int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+
             for (AxoObjectInstanceAbstract o : p.objectInstances) {
                 String original_name = o.getInstanceName();
                 if (original_name != null) {
@@ -626,7 +629,8 @@ public class PatchGUI extends Patch {
                         if ((ss.length > 1) && (Integer.toString(Integer.parseInt(ss[ss.length - 1]))).equals(ss[ss.length - 1])) {
                             hasNumeralSuffix = true;
                         }
-                    } catch (NumberFormatException e) {
+                    }
+                    catch (NumberFormatException e) {
                     }
                     if (hasNumeralSuffix) {
                         int n = Integer.parseInt(ss[ss.length - 1]) + 1;
@@ -637,7 +641,8 @@ public class PatchGUI extends Patch {
                         while (dict.containsKey(new_name)) {
                             new_name = bs + n++;
                         }
-                    } else {
+                    }
+                    else {
                         while (GetObjectInstance(new_name) != null) {
                             new_name = new_name + "_";
                         }
@@ -645,17 +650,21 @@ public class PatchGUI extends Patch {
                             new_name = new_name + "_";
                         }
                     }
+
                     if (!new_name.equals(original_name)) {
                         o.setInstanceName(new_name);
                     }
                     dict.put(original_name, new_name);
                 }
+
+                int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
                 if (o.getX() < minX) {
                     minX = o.getX();
                 }
                 if (o.getY() < minY) {
                     minY = o.getY();
                 }
+
                 o.patch = this;
                 objectInstances.add(o);
                 objectLayerPanel.add(o, 0);
@@ -664,7 +673,7 @@ public class PatchGUI extends Patch {
                 int newposy = o.getY();
 
                 if (pos != null) {
-                    // paste at cursor position, with delta snapped to grid
+                    /* Paste at cursor position with delta snapped to grid */
                     newposx += Constants.X_GRID * ((pos.x - minX + Constants.X_GRID / 2) / Constants.X_GRID);
                     newposy += Constants.Y_GRID * ((pos.y - minY + Constants.Y_GRID / 2) / Constants.Y_GRID);
                 }
@@ -676,95 +685,105 @@ public class PatchGUI extends Patch {
                 o.SetSelected(true);
             }
             objectLayerPanel.validate();
+
             for (Net n : p.nets) {
-                InletInstance connectedInlet = null;
-                OutletInstance connectedOutlet = null;
-                if (n.source != null) {
-                    ArrayList<OutletInstance> source2 = new ArrayList<OutletInstance>();
+                ArrayList<OutletInstance> newSources = new ArrayList<>();
+                ArrayList<InletInstance> newDests = new ArrayList<>();
+                OutletInstance externalSourceOutlet = null;
+
+                boolean hasInternalSource = false;
+                boolean hasInternalDest = false;
+                boolean hasExternalSource = false;
+                boolean hasExternalDest = false;
+
+                /* Process sources */
+                if (n.source != null && !n.source.isEmpty()) {
                     for (OutletInstance o : n.source) {
                         String objname = o.getObjname();
-                        String outletname = o.getOutletname();
-                        if ((objname != null) && (outletname != null)) {
-                            String on2 = dict.get(objname);
-                            if (on2 != null) {
-//                                o.name = on2 + " " + r[1];
-                                OutletInstance i = new OutletInstance();
-                                i.outletname = outletname;
-                                i.objname = on2;
-                                source2.add(i);
-                            } else if (restoreConnectionsToExternalOutlets) {
-                                AxoObjectInstanceAbstract obj = GetObjectInstance(objname);
-                                if ((obj != null) && (connectedOutlet == null)) {
-                                    OutletInstance oi = obj.GetOutletInstance(outletname);
-                                    if (oi != null) {
-                                        connectedOutlet = oi;
-                                    }
-                                }
-                            }
+                        if (dict.containsKey(objname)) {
+                            hasInternalSource = true;
+                            OutletInstance i = new OutletInstance();
+                            i.outletname = o.getOutletname();
+                            i.objname = dict.get(objname);
+                            newSources.add(i);
                         }
-                    }
-                    n.source = source2;
-                }
-                if (n.dest != null) {
-                    ArrayList<InletInstance> dest2 = new ArrayList<InletInstance>();
-                    for (InletInstance o : n.dest) {
-                        String objname = o.getObjname();
-                        String inletname = o.getInletname();
-                        if ((objname != null) && (inletname != null)) {
-                            String on2 = dict.get(objname);
-                            if (on2 != null) {
-                                InletInstance i = new InletInstance();
-                                i.inletname = inletname;
-                                i.objname = on2;
-                                dest2.add(i);
-                            } else if (restoreConnectionsToExternalOutlets) {
+                        else {
+                            hasExternalSource = true;
+                            if (applyWiresFromExternalOutlets) {
                                 AxoObjectInstanceAbstract obj = GetObjectInstance(objname);
                                 if (obj != null) {
-                                    InletInstance ii = obj.GetInletInstance(inletname);
-                                    if (ii != null) {
-                                        connectedInlet = ii;
-                                    }
+                                    externalSourceOutlet = obj.GetOutletInstance(o.getOutletname());
                                 }
                             }
                         }
                     }
-                    n.dest = dest2;
                 }
-                if (n.source.size() + n.dest.size() > 1) {
-                    if ((connectedInlet == null) && (connectedOutlet == null)) {
-                        n.patch = this;
-                        n.PostConstructor();
-                        nets.add(n);
-                        netLayerPanel.add(n);
-                    } else if (connectedInlet != null) {
-                        for (InletInstance o : n.dest) {
-                            InletInstance o2 = getInletByReference(o.getObjname(), o.getInletname());
-                            if ((o2 != null) && (o2 != connectedInlet)) {
-                                AddConnection(connectedInlet, o2);
+
+                /* Process destinations */
+                if (n.dest != null && !n.dest.isEmpty()) {
+                    for (InletInstance o : n.dest) {
+                        String objname = o.getObjname();
+                        if (dict.containsKey(objname)) {
+                            hasInternalDest = true;
+                            InletInstance i = new InletInstance();
+                            i.inletname = o.getInletname();
+                            i.objname = dict.get(objname);
+                            newDests.add(i);
+                        }
+                        else {
+                            hasExternalDest = true;
+                        }
+                    }
+                }
+
+                if (hasInternalSource && hasInternalDest) {
+                    /* This is a purely internal net, always create it */
+                    Net newNet = new Net();
+                    newNet.source = newSources;
+                    newNet.dest = newDests;
+                    newNet.patch = this;
+                    newNet.PostConstructor();
+                    nets.add(newNet);
+                    netLayerPanel.add(newNet);
+                }
+                else if (hasInternalSource && hasExternalDest) {
+                    /* This is an outgoing connection. It should be discarded */
+                }
+                else if (hasExternalSource && hasInternalDest) {
+                    /* This is a connection from an external source to internal destination(s) */
+                    if (applyWiresFromExternalOutlets && externalSourceOutlet != null) {
+                        /* Patch (duplicate) the connection coming in from the existing external outlet */
+                        for (InletInstance newInletRef : newDests) {
+                            InletInstance newInlet = getInletByReference(newInletRef.getObjname(), newInletRef.getInletname());
+                            if (newInlet != null) {
+                                AddConnection(newInlet, externalSourceOutlet);
                             }
                         }
-                        for (OutletInstance o : n.source) {
-                            OutletInstance o2 = getOutletByReference(o.getObjname(), o.getOutletname());
-                            if (o2 != null) {
-                                AddConnection(connectedInlet, o2);
-                            }
+                    }
+                    else {
+                        /* If the net has multiple destinations within the group, it's a floating net (dashed lines) */
+                        if (newDests.size() > 1) {
+                            Net newNet = new Net();
+                            newNet.source = new ArrayList<>();
+                            newNet.dest = newDests;
+                            newNet.patch = this;
+                            newNet.PostConstructor();
+                            nets.add(newNet);
+                            netLayerPanel.add(newNet);
                         }
-                    } else if (connectedOutlet != null) {
-                        for (InletInstance o : n.dest) {
-                            InletInstance o2 = getInletByReference(o.getObjname(), o.getInletname());
-                            if (o2 != null) {
-                                AddConnection(o2, connectedOutlet);
-                            }
-                        }
+                        /* If there is only one destination within the group, the net is discarded */
                     }
                 }
             }
+
             AdjustSize();
             SetDirty();
-        } catch (javax.xml.stream.XMLStreamException ex) {
-            // silence
-        } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+        }
+        catch (javax.xml.stream.XMLStreamException ex) {
+            /* Silence, machine! */
+        }
+        catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "An unexpected error occurred during the paste operation.", ex);
         }
     }
 
