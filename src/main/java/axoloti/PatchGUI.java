@@ -717,6 +717,14 @@ public class PatchGUI extends Patch {
                                 i.inletname = inletname;
                                 i.objname = on2;
                                 dest2.add(i);
+                            } else if (restoreConnectionsToExternalOutlets) {
+                                AxoObjectInstanceAbstract obj = GetObjectInstance(objname);
+                                if (obj != null) {
+                                    InletInstance ii = obj.GetInletInstance(inletname);
+                                    if (ii != null) {
+                                        connectedInlet = ii;
+                                    }
+                                }
                             }
                         }
                     }
