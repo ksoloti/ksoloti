@@ -531,6 +531,40 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         jPanelMain.add(new JLabel("Modwheel "));
         jPanelMain.add(filler_x_fivepx5);
         jPanelMain.add(moddial);
+        jPanelMain.add(filler_x_fivepx10);
+        
+        jLabelVelocity.setText("Velocity");
+        jPanelMain.add(jLabelVelocity);
+        jPanelMain.add(filler_x_fivepx11);
+
+        velodial = new DialComponent(100, 0, 127, 1);
+        velodial.setFocusable(false);
+        velodial.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if ((e.getClickCount() == 2) && (e.getButton() == MouseEvent.BUTTON1)) {
+                    velodial.setValue(100.0);
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+        jPanelMain.add(velodial);
         jPanelMain.add(filler_x_stretch2);
 
         jLabelControlChange.setText("CC#");
@@ -573,40 +607,6 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         jSpinnerMidiChannel.setPreferredSize(new java.awt.Dimension(60, 30));
         jPanelMain.add(jSpinnerMidiChannel);
         jPanelMain.add(filler_x_fivepx9);
-
-        jLabelVelocity.setText("Velocity");
-        jPanelMain.add(jLabelVelocity);
-        jPanelMain.add(filler_x_fivepx10);
-
-        velodial = new DialComponent(100, 0, 127, 1);
-        velodial.setFocusable(false);
-        velodial.addMouseListener(new MouseListener() {
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if ((e.getClickCount() == 2) && (e.getButton() == MouseEvent.BUTTON1)) {
-                    velodial.setValue(100.0);
-                }
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-        });
-        jPanelMain.add(velodial);
-        jPanelMain.add(filler_x_fivepx11);
 
         jButtonAllNotesOff.setText("All Notes Off");
         jButtonAllNotesOff.setFocusable(false);
