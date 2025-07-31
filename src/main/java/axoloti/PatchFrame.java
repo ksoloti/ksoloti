@@ -22,6 +22,7 @@ package axoloti;
 import axoloti.dialogs.KeyboardNavigableOptionPane;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
+import axoloti.parameters.ParameterInstance;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.OSDetect.OS;
 import axoloti.utils.Preferences;
@@ -384,6 +385,23 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 @Override
                 protected Boolean doInBackground() throws Exception {
                     try {
+
+                        /* Update logic for all subpatches */
+                        for (AxoObjectInstanceAbstract aoi : patch.objectInstances) {
+                            if (aoi instanceof AxoObjectInstancePatcher) {
+                                ((AxoObjectInstancePatcher) aoi).updateObj1();
+                            }
+                        }
+                        
+                        /* Clear needsTransmit flags on all non-frozen parameters */
+                        for (AxoObjectInstanceAbstract o : patch.objectInstances) {
+                            for (ParameterInstance pi : o.getParameterInstances()) {
+                                if (!pi.isFrozen()) {
+                                    pi.ClearNeedsTransmit();
+                                }
+                            }
+                        }
+
                         /* Check if there is a previously live patch */
                         previouslyLive = mainframe.getCurrentLivePatch();
                         if (previouslyLive != null && previouslyLive != patch) {
@@ -451,6 +469,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             }
                             /* Only set the patch to live after a successful process */
                             mainframe.setCurrentLivePatch(patch);
+                            patch.ShowPreset(0);
                             patch.Lock();
                         } else {
                             /* If it failed, show a message and clear the live state. */
