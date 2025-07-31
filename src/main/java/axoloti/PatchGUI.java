@@ -1095,14 +1095,12 @@ public class PatchGUI extends Patch {
     @Override
     public void Lock() {
         super.Lock();
-        patchframe.SetLive(true);
         Layers.setBackground(Theme.Patch_Locked_Background);
     }
 
     @Override
     public void Unlock() {
         super.Unlock();
-        patchframe.SetLive(false);
         Layers.setBackground(Theme.Patch_Unlocked_Background);
     }
 

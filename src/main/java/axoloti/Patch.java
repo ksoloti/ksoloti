@@ -374,6 +374,13 @@ public class Patch {
                 }
             }
         }
+
+        File binFile = getBinFile();
+        if (binFile.exists()) {
+            /* Delete previous .bin to ensure waitForBinFile() below won't trigger false positive */
+            binFile.delete();
+        }
+
         WriteCode(true);
         GetQCmdProcessor().SetPatch(null);
         GetQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
@@ -381,9 +388,8 @@ public class Patch {
 
         if (waitForBinFile()) {
             GetQCmdProcessor().AppendToQueue(new QCmdStop());
-
             ArrayList<SDFileReference> files = GetDependendSDFiles();
-            if (USBBulkConnection.GetConnection().GetSDCardPresent()) { 
+            if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
                 if (files.size() > 0) {
                     /* If there are dependent files, create patch folder and upload files */
                     String f = "/" + getSDCardPath();
@@ -401,15 +407,13 @@ public class Patch {
                     LOGGER.log(Level.WARNING, "Patch requires file {0} on SD card, but no SD card connected.", files.get(0).targetPath);
                 }
             }
-
             GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(this.getBinFile()));
             GetQCmdProcessor().AppendToQueue(new QCmdStart(this));
-            GetQCmdProcessor().AppendToQueue(new QCmdLock(this));
-        }
-        else {
+            GetQCmdProcessor().WaitQueueFinished();
+        } else {
             String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + this.generateBuildFilenameStem(true);
             LOGGER.log(Level.INFO, "Timeout:" + path.replace('\\', '/') + ".bin could not be created.");
-            ShowCompileFail();
+            Unlock();
         }
     }
 

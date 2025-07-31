@@ -336,21 +336,76 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
     }
 
+    private void handleLiveAction(boolean selected) {
+        // Disable both components immediately to prevent further clicks
+        jToggleButtonLive.setEnabled(false);
+        jCheckBoxMenuItemLive.setEnabled(false);
+
+        if (selected) {
+            new SwingWorker<Boolean, String>() {
+                @Override
+                protected Boolean doInBackground() throws Exception {
+                    try {
+                        // All non-UI, long-running tasks go here.
+                        patch.GoLive();
+                        return true;
+                    } catch (Exception e) {
+                        return false;
+                    }
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        boolean success = get();
+
+                        if (success) {
+                            patch.Lock();
+                        } else {
+                            patch.Unlock();
+                        }
+
+                        // Update the UI based on success/failure
+                        SetLive(success);
+
+                    } catch (Exception e) {
+                        // If an exception occurs in `get()`, we assume failure.
+                        patch.Unlock();
+                        SetLive(false);
+
+                    } finally {
+                        // Re-enable both components, regardless of the outcome.
+                        jToggleButtonLive.setEnabled(true);
+                        jCheckBoxMenuItemLive.setEnabled(true);
+                    }
+                }
+            }.execute();
+        } else {
+            new SwingWorker<Void, Void>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    qcmdprocessor.AppendToQueue(new QCmdStop());
+                    qcmdprocessor.WaitQueueFinished(); // Wait for the stop command to complete
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    // Update the UI state after the background task is done.
+                    patch.Unlock();
+                    SetLive(false);
+                    // Re-enable both components
+                    jToggleButtonLive.setEnabled(true);
+                    jCheckBoxMenuItemLive.setEnabled(true);
+                }
+            }.execute();
+        }
+    }
+
     public void SetLive(boolean b) {
-        if (b) {
-            jToggleButtonLive.setSelected(true);
-            jToggleButtonLive.setEnabled(true);
-            jCheckBoxMenuItemLive.setSelected(true);
-            jCheckBoxMenuItemLive.setEnabled(true);
-            presetPanel.ShowLive(true);
-        }
-        else {
-            jToggleButtonLive.setSelected(false);
-            jToggleButtonLive.setEnabled(true);
-            jCheckBoxMenuItemLive.setSelected(false);
-            jCheckBoxMenuItemLive.setEnabled(true);
-            presetPanel.ShowLive(false);
-        }
+        jToggleButtonLive.setSelected(b);
+        jCheckBoxMenuItemLive.setSelected(b);
+        presetPanel.ShowLive(b);
     }
 
     public void showPresetPanel(boolean show) {
@@ -370,16 +425,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         if (patch.IsLocked()) {
             patch.Unlock();
         }
-        jToggleButtonLive.setSelected(false);
-        jCheckBoxMenuItemLive.setSelected(false);
+        SetLive(false);
         ShowConnectDisconnect(false);
     }
 
     @Override
     public void ShowConnect() {
         patch.Unlock();
-        jToggleButtonLive.setSelected(false);
-        jCheckBoxMenuItemLive.setSelected(false);
+        SetLive(false);
         ShowConnectDisconnect(true);
     }
 
@@ -891,49 +944,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jToggleButtonLiveActionPerformed(java.awt.event.ActionEvent evt) {
-        if (jToggleButtonLive.isSelected()) {
-
-            jToggleButtonLive.setEnabled(false);
-            jToggleButtonLive.setSelected(false);
-
-            new SwingWorker<Boolean, String>() {
-                @Override
-                protected Boolean doInBackground() throws Exception {
-                    try {
-                        boolean success = GoLive();
-                        return success;
-                    }
-                    catch (Exception e) {
-                        publish("Go Live failed: " + e.getMessage());
-                        return false;
-                    }
-                }
-
-                @Override
-                protected void done() {
-                    try {
-                        boolean success = get();
-                        if (success) {
-                            jToggleButtonLive.setSelected(true);
-                        }
-                        else {
-                            jToggleButtonLive.setSelected(false);
-                        }
-                    }
-                    catch (Exception e) {
-                        jToggleButtonLive.setSelected(false);
-                    }
-                    finally {
-                        jToggleButtonLive.setEnabled(true);
-                    }
-                }
-            }.execute();
-        }
-        else {
-            qcmdprocessor.AppendToQueue(new QCmdStop());
-            patch.Unlock();
-            jToggleButtonLive.setSelected(false);
-        }
+        handleLiveAction(jToggleButtonLive.isSelected());
     }
 
     private void jMenuCopyActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1247,51 +1258,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jCheckBoxMenuItemLiveActionPerformed(java.awt.event.ActionEvent evt) {
-        if (jCheckBoxMenuItemLive.isSelected()) {
-
-            jCheckBoxMenuItemLive.setEnabled(false);
-            jCheckBoxMenuItemLive.setSelected(false);
-
-            new SwingWorker<Boolean, String>() {
-                @Override
-                protected Boolean doInBackground() throws Exception {
-                    try {
-                        boolean success = GoLive();
-                        return success;
-                    }
-                    catch (Exception e) {
-                        LOGGER.log(Level.SEVERE, "Go Live operation failed:", e);
-                        publish("Go Live failed: " + e.getMessage());
-                        return false;
-                    }
-                }
-
-                @Override
-                protected void done() {
-                    try {
-                        boolean success = get();
-                        if (success) {
-                            jCheckBoxMenuItemLive.setSelected(true);
-                        }
-                        else {
-                            jCheckBoxMenuItemLive.setSelected(false);
-                        }
-                    }
-                    catch (Exception e) {
-                        LOGGER.log(Level.SEVERE, "Go Live worker failed unexpectedly:", e);
-                        jCheckBoxMenuItemLive.setSelected(false);
-                    }
-                    finally {
-                        jCheckBoxMenuItemLive.setEnabled(true);
-                    }
-                }
-            }.execute();
-        }
-        else {
-            qcmdprocessor.AppendToQueue(new QCmdStop());
-            patch.Unlock();
-            jCheckBoxMenuItemLive.setSelected(false);
-        }
+        handleLiveAction(jCheckBoxMenuItemLive.isSelected());
     }
 
     private void jMenuItemUploadSDActionPerformed(java.awt.event.ActionEvent evt) {
