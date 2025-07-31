@@ -1404,7 +1404,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 }
             }
             else {
-                if (USBBulkConnection.GetConnection().isConnected()) {
+                if (!USBBulkConnection.GetConnection().WaitSync()) {
                     USBBulkConnection.GetConnection().disconnect();
                 }
                 LOGGER.log(Level.INFO, "FAILED compiling patch.\n");
