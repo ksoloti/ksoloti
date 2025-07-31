@@ -79,7 +79,7 @@ public class USBBulkConnection extends Connection {
     private ksoloti_core targetProfile;
     private final Context context;
     private volatile DeviceHandle handle;
-    static private USBBulkConnection conn = null;
+    static private volatile USBBulkConnection conn = null;
 
     ByteBuffer dispData;
 
