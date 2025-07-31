@@ -772,7 +772,11 @@ public class USBBulkConnection extends Connection {
 
     public static Connection GetConnection() {
         if (conn == null) {
-            conn = new USBBulkConnection();
+            synchronized (USBBulkConnection.class) {
+                if (conn == null) {
+                    conn = new USBBulkConnection();
+                }
+            }
         }
         return conn;
     }
