@@ -117,6 +117,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     static public AxoObjects axoObjects;
     public static MainFrame mainframe;
     public static AxoJFileChooser fc;
+    private PatchGUI currentLivePatch = null; /* Tracks which patch is currently live */
 
     boolean even = false;
     String LinkFirmwareID;
@@ -1607,6 +1608,25 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{uri, ex});
+        }
+    }
+
+    public PatchGUI getCurrentLivePatch() {
+        return currentLivePatch;
+    }
+
+    public void setCurrentLivePatch(PatchGUI patch) {
+        currentLivePatch = patch;
+        updatePatchLiveStates();
+    }
+
+    public void updatePatchLiveStates() { /* Signals all open patch windows the current live patch state */
+        for (DocumentWindow docWindow : DocumentWindowList.GetList()) {
+            if (docWindow != null && docWindow instanceof PatchFrame) {
+                PatchFrame frame = (PatchFrame) docWindow;
+                boolean isLive = (frame.getPatch() == currentLivePatch);
+                frame.SetLive(isLive);
+            }
         }
     }
 
