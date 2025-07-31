@@ -341,15 +341,28 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jToggleButtonLive.setEnabled(false);
         jCheckBoxMenuItemLive.setEnabled(false);
 
-        if (selected) {
+        if (selected) { /* Signal mainframe that this patch will be the current live one */
+            mainframe.setCurrentLivePatch(patch);
+        }
+        else {
+            mainframe.setCurrentLivePatch(null);
+        }
+
+        if (selected) { /* Go Live action */
             new SwingWorker<Boolean, String>() {
                 @Override
                 protected Boolean doInBackground() throws Exception {
                     try {
-                        // All non-UI, long-running tasks go here.
+                        PatchGUI currentLive = mainframe.getCurrentLivePatch();
+                        if (currentLive != null && currentLive != patch) {
+                            qcmdprocessor.AppendToQueue(new QCmdStop());
+                            qcmdprocessor.WaitQueueFinished();
+                            currentLive.Unlock();
+                        }
                         patch.GoLive();
                         return true;
-                    } catch (Exception e) {
+                    }
+                    catch (Exception e) {
                         return false;
                     }
                 }
@@ -360,27 +373,29 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                         boolean success = get();
 
                         if (success) {
+                            mainframe.setCurrentLivePatch(patch);
                             patch.Lock();
-                        } else {
+                        }
+                        else {
+                            mainframe.setCurrentLivePatch(null);
                             patch.Unlock();
                         }
 
-                        // Update the UI based on success/failure
-                        SetLive(success);
-
-                    } catch (Exception e) {
-                        // If an exception occurs in `get()`, we assume failure.
+                    }
+                    catch (Exception e) {
+                        /* If an exception occurs in get(), assume failure */
+                        mainframe.setCurrentLivePatch(null);
                         patch.Unlock();
-                        SetLive(false);
 
-                    } finally {
-                        // Re-enable both components, regardless of the outcome.
+                    }
+                    finally {
                         jToggleButtonLive.setEnabled(true);
                         jCheckBoxMenuItemLive.setEnabled(true);
                     }
                 }
             }.execute();
-        } else {
+        }
+        else { /* Stop Live action */
             new SwingWorker<Void, Void>() {
                 @Override
                 protected Void doInBackground() throws Exception {
@@ -391,10 +406,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
                 @Override
                 protected void done() {
-                    // Update the UI state after the background task is done.
+                    mainframe.setCurrentLivePatch(null); /* Signal mainframe that currently no patch is live */
                     patch.Unlock();
-                    SetLive(false);
-                    // Re-enable both components
                     jToggleButtonLive.setEnabled(true);
                     jCheckBoxMenuItemLive.setEnabled(true);
                 }
