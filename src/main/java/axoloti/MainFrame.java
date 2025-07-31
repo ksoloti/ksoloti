@@ -1364,6 +1364,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             if (USBBulkConnection.GetConnection().isConnected()) {
                 patch1.GetQCmdProcessor().AppendToQueue(new QCmdStop());
             }
+
+            File binFile = patch1.getBinFile();
+            if (binFile.exists()) {
+                /* Delete previous .bin to ensure waitForBinFile() below won't trigger false positive */
+                binFile.delete();
+            }
+
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1); // compile as own path/filename .bin
             patch1.GetQCmdProcessor().AppendToQueue(cp);
             qcmdprocessor.WaitQueueFinished();
