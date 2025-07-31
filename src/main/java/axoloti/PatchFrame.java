@@ -275,6 +275,28 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
         });
 
+        menuItem = new JMenuItem("Paste and Fork Incoming Wires");
+        menuItem.setMnemonic('W');
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
+                KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
+        jMenuEdit.add(menuItem);
+        menuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Clipboard clip = getToolkit().getSystemClipboard();
+                try {
+                    /* applyWiresFromExternalOutlets is set to true */
+                    patch.paste((String) clip.getData(DataFlavor.stringFlavor), null, true);
+                }
+                catch (UnsupportedFlavorException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                }
+                catch (IOException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
         if (patch.getWindowPos() != null) {
             setBounds(patch.getWindowPos());
         }
