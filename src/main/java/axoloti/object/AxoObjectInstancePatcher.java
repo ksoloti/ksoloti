@@ -84,6 +84,21 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
         validate();
     }
 
+    public void updatePatchState() {
+        /* Lightweight version of updateObj1 - updates subpatch data
+           relevant for patch compilation but not the GUI. Call before
+           patch compile to refresh all subpatches to the newest state. */
+        if (pg != null) {
+            AxoObject ao = pg.GenerateAxoObj(new AxoObjectPatcher());
+            setType(ao);
+            ao.id = "patch/patcher";
+            ao.sDescription = pg.getNotes();
+            ao.sLicense = pg.getSettings().getLicense();
+            ao.sAuthor = pg.getSettings().getAuthor();
+            pg.setContainer(patch);
+        }
+    }
+
     @Override
     public void Unlock() {
         super.Unlock();
