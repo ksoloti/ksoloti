@@ -360,11 +360,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 @Override
                 protected Boolean doInBackground() throws Exception {
                     try {
-                        PatchGUI currentLive = mainframe.getCurrentLivePatch();
-                        if (currentLive != null && currentLive != patch) {
+                        PatchGUI previouslyLive = mainframe.getCurrentLivePatch();
+                        if (previouslyLive != null && previouslyLive != patch) {
                             qcmdprocessor.AppendToQueue(new QCmdStop());
                             qcmdprocessor.WaitQueueFinished();
-                            currentLive.Unlock();
+                            previouslyLive.Unlock();
                         }
                         patch.GoLive();
                         return true;
