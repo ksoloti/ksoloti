@@ -351,28 +351,91 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jToggleButtonLive.setEnabled(false);
         jCheckBoxMenuItemLive.setEnabled(false);
 
-        if (selected) { /* Signal mainframe that this patch will be the current live one */
-            mainframe.setCurrentLivePatch(patch);
-        }
-        else {
-            mainframe.setCurrentLivePatch(null);
-        }
-
         if (selected) { /* Go Live action */
+
+            /* If patch is a subpatch, display "disclaimer" */
+            if (patch.getFileNamePath().endsWith(".axs") || patch.getContainer() != null) {
+                Object[] options = {"Go Live",
+                    "Cancel"};
+
+                int n = KeyboardNavigableOptionPane.showOptionDialog(this,
+                        "This is a subpatch intended to be placed inside a main patch and possibly has no input or output.\nDo you still want to take it live?",
+                        "File is Subpatch",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[1]);
+                switch (n) {
+                    case JOptionPane.NO_OPTION:
+                        /* Re-enable buttons and leave */
+                        jToggleButtonLive.setEnabled(true);
+                        jCheckBoxMenuItemLive.setEnabled(true);
+                        return;
+                    case JOptionPane.YES_OPTION:
+                        ; // fall thru
+                }
+            }
+
             new SwingWorker<Boolean, String>() {
+                PatchGUI previouslyLive = null;
+                boolean compilationTimeout = false;
+
                 @Override
                 protected Boolean doInBackground() throws Exception {
                     try {
-                        PatchGUI previouslyLive = mainframe.getCurrentLivePatch();
+                        /* Check if there is a previously live patch */
+                        previouslyLive = mainframe.getCurrentLivePatch();
                         if (previouslyLive != null && previouslyLive != patch) {
-                            qcmdprocessor.AppendToQueue(new QCmdStop());
-                            qcmdprocessor.WaitQueueFinished();
-                            previouslyLive.Unlock();
+                            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
+                            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                         }
-                        patch.GoLive();
-                        return true;
-                    }
-                    catch (Exception e) {
+
+                        /* Prepare for compilation (host-side) */
+                        File binFile = patch.getBinFile();
+                        if (binFile.exists()) {
+                            binFile.delete();
+                        }
+
+                        /* Compile the patch. This is a long, host-side operation */
+                        CommandManager.getInstance().startLongOperation();
+                        patch.WriteCode(true);
+                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCompilePatch(patch));
+                        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                        CommandManager.getInstance().endLongOperation();
+
+                        /* Handle SD card and dependent files */
+                        if (patch.waitForBinFile()) {
+                            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
+                            ArrayList<SDFileReference> files = patch.GetDependendSDFiles();
+                            if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
+                                if (files.size() > 0) {
+                                    String f = "/" + patch.getSDCardPath();
+                                    if (SDCardInfo.getInstance().find(f) == null) {
+                                        Calendar cal = Calendar.getInstance();
+                                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(f, cal));
+                                    }
+                                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdChangeWorkingDirectory(f));
+                                    patch.UploadDependentFiles("/" + patch.getSDCardPath());
+                                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                                }
+                            } else {
+                                if (files.size() > 0) {
+                                    LOGGER.log(Level.WARNING, "Patch requires file {0} on SD card, but no SD card connected.", files.get(0).targetPath);
+                                }
+                            }
+
+                            /* Upload and start the new patch */
+                            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch.getBinFile()));
+                            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(patch));
+                            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+
+                            return true;
+                        } else {
+                            compilationTimeout = true;
+                            return false;
+                        }
+                    } catch (Exception e) {
                         return false;
                     }
                 }
@@ -383,10 +446,18 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                         boolean success = get();
 
                         if (success) {
+                            if (previouslyLive != null && previouslyLive != patch) {
+                                previouslyLive.Unlock();
+                            }
+                            /* Only set the patch to live after a successful process */
                             mainframe.setCurrentLivePatch(patch);
                             patch.Lock();
-                        }
-                        else {
+                        } else {
+                            /* If it failed, show a message and clear the live state. */
+                            if (compilationTimeout) {
+                                String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
+                                LOGGER.log(Level.INFO, "Timeout:" + path.replace('\\', '/') + ".bin could not be created.");
+                            }
                             mainframe.setCurrentLivePatch(null);
                             patch.Unlock();
                         }
@@ -639,7 +710,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jScrollPane1.setAutoscrolls(true);
         getContentPane().add(jScrollPane1);
-        
+
         fileMenuP.setMnemonic('F');
         fileMenuP.setText("File");
         fileMenuP.add(jSeparator1);
