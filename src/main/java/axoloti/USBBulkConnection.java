@@ -925,18 +925,20 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public void TransmitUpdatedPreset(byte[] b) {
-        byte[] data = new byte[8];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'R';
-        int len = b.length;
-        data[4] = (byte) len;
-        data[5] = (byte) (len >> 8);
-        data[6] = (byte) (len >> 16);
-        data[7] = (byte) (len >> 24);
-        writeBytes(data);
-        writeBytes(b);
+        synchronized (usbOutLock) {
+            byte[] data = new byte[8];
+            data[0] = 'A';
+            data[1] = 'x';
+            data[2] = 'o';
+            data[3] = 'R';
+            int len = b.length;
+            data[4] = (byte) len;
+            data[5] = (byte) (len >> 8);
+            data[6] = (byte) (len >> 16);
+            data[7] = (byte) (len >> 24);
+            writeBytes(data);
+            writeBytes(b);
+        }
     }
 
     @Override
@@ -988,31 +990,33 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public int TransmitUploadFragment(byte[] buffer, int offset) {
-        byte[] data = new byte[12];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'W';
-        int tvalue = offset;
-        int nRead = buffer.length;
-        data[4] = (byte) tvalue;
-        data[5] = (byte) (tvalue >> 8);
-        data[6] = (byte) (tvalue >> 16);
-        data[7] = (byte) (tvalue >> 24);
-        data[8] = (byte) (nRead);
-        data[9] = (byte) (nRead >> 8);
-        data[10] = (byte) (nRead >> 16);
-        data[11] = (byte) (nRead >> 24);
-        ClearSync();
-        int result = writeBytes(data);
-        result |= writeBytes(buffer);
-        if (!WaitSync()) {
-            result |= 1;
-        };
-        LOGGER.log(Level.INFO, "Block uploaded @ 0x{0} length {1}",
-                   new Object[]{Integer.toHexString(offset).toUpperCase(),
-                   Integer.toString(buffer.length)});
-        return result;
+        synchronized (usbOutLock) {
+            byte[] data = new byte[12];
+            data[0] = 'A';
+            data[1] = 'x';
+            data[2] = 'o';
+            data[3] = 'W';
+            int tvalue = offset;
+            int nRead = buffer.length;
+            data[4] = (byte) tvalue;
+            data[5] = (byte) (tvalue >> 8);
+            data[6] = (byte) (tvalue >> 16);
+            data[7] = (byte) (tvalue >> 24);
+            data[8] = (byte) (nRead);
+            data[9] = (byte) (nRead >> 8);
+            data[10] = (byte) (nRead >> 16);
+            data[11] = (byte) (nRead >> 24);
+            ClearSync();
+            int result = writeBytes(data);
+            result |= writeBytes(buffer);
+            if (!WaitSync()) {
+                result |= 1;
+            };
+            LOGGER.log(Level.INFO, "Block uploaded @ 0x{0} length {1}",
+                    new Object[]{Integer.toHexString(offset).toUpperCase(),
+                    Integer.toString(buffer.length)});
+            return result;
+        }
     }
 
     @Override
@@ -1164,19 +1168,21 @@ public class USBBulkConnection extends Connection {
            Length           (4)
            (data is streamed in successive writeBytes(buffer))
          */
-        int size = buffer.length;
-        ByteBuffer headerBuffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN); // "Axoa" + length
+        synchronized (usbOutLock) {
+            int size = buffer.length;
+            ByteBuffer headerBuffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN); // "Axoa" + length
 
-        headerBuffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'a');
-        headerBuffer.putInt(size);  // Length of the data chunk
+            headerBuffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'a');
+            headerBuffer.putInt(size);  // Length of the data chunk
 
-        // ClearSync();
-        int writeResult = writeBytes(headerBuffer.array());
-        if (writeResult != LibUsb.SUCCESS) {
+            // ClearSync();
+            int writeResult = writeBytes(headerBuffer.array());
+            if (writeResult != LibUsb.SUCCESS) {
+                return writeResult;
+            }
+            writeResult = writeBytes(buffer); /* Send the actual data payload */
             return writeResult;
         }
-        writeResult = writeBytes(buffer); /* Send the actual data payload */
-        return writeResult;
     }
 
     @Override
@@ -1192,86 +1198,94 @@ public class USBBulkConnection extends Connection {
            filename bytes   (variable length) +
            null terminator  (1)
          */
-        byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
-        ByteBuffer buffer = ByteBuffer.allocate(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+        synchronized (usbOutLock) {
+            byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
+            ByteBuffer buffer = ByteBuffer.allocate(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put(axoFileOpPckt);  // "AxoC" header
-        buffer.putInt(0);           // pFileSize placeholder (4 bytes)
-        buffer.put((byte)0x00);     // FileName[0] (always 0)
-        buffer.put((byte)'c');      // FileName[1] (sub-command 'c')
+            buffer.put(axoFileOpPckt);  // "AxoC" header
+            buffer.putInt(0);           // pFileSize placeholder (4 bytes)
+            buffer.put((byte)0x00);     // FileName[0] (always 0)
+            buffer.put((byte)'c');      // FileName[1] (sub-command 'c')
 
-        /* Calculate FatFs date/time */
-        int dy = date.get(Calendar.YEAR);
-        int dm = date.get(Calendar.MONTH) + 1;
-        int dd = date.get(Calendar.DAY_OF_MONTH);
-        int th = date.get(Calendar.HOUR_OF_DAY);
-        int tm = date.get(Calendar.MINUTE);
-        int ts = date.get(Calendar.SECOND);
-        short fatFsDate = (short)(((dy - 1980) << 9) | (dm << 5) | dd);
-        short fatFsTime = (short)((th << 11) | (tm << 5) | (ts / 2));
+            /* Calculate FatFs date/time */
+            int dy = date.get(Calendar.YEAR);
+            int dm = date.get(Calendar.MONTH) + 1;
+            int dd = date.get(Calendar.DAY_OF_MONTH);
+            int th = date.get(Calendar.HOUR_OF_DAY);
+            int tm = date.get(Calendar.MINUTE);
+            int ts = date.get(Calendar.SECOND);
+            short fatFsDate = (short)(((dy - 1980) << 9) | (dm << 5) | dd);
+            short fatFsTime = (short)((th << 11) | (tm << 5) | (ts / 2));
 
-        buffer.putShort(fatFsDate);  // FileName[2/3]
-        buffer.putShort(fatFsTime);  // FileName[4/5]
-        buffer.put(filenameBytes);   // FileName[6]+ (variable length)
-        buffer.put((byte)0x00);      // Null terminator
+            buffer.putShort(fatFsDate);  // FileName[2/3]
+            buffer.putShort(fatFsTime);  // FileName[4/5]
+            buffer.put(filenameBytes);   // FileName[6]+ (variable length)
+            buffer.put((byte)0x00);      // Null terminator
 
-        ClearSync();
-        int writeResult = writeBytes(buffer.array());
-        return writeResult;
+            ClearSync();
+            int writeResult = writeBytes(buffer.array());
+            return writeResult;
+        }
     }
 
     @Override
     public void TransmitMemoryRead(int addr, int length) {
-        byte[] data = new byte[12];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'r';
-        data[4] = (byte) addr;
-        data[5] = (byte) (addr >> 8);
-        data[6] = (byte) (addr >> 16);
-        data[7] = (byte) (addr >> 24);
-        data[8] = (byte) length;
-        data[9] = (byte) (length >> 8);
-        data[10] = (byte) (length >> 16);
-        data[11] = (byte) (length >> 24);
-        ClearSync();
-        writeBytes(data);
-        WaitSync();
+        synchronized (usbOutLock) {
+            byte[] data = new byte[12];
+            data[0] = 'A';
+            data[1] = 'x';
+            data[2] = 'o';
+            data[3] = 'r';
+            data[4] = (byte) addr;
+            data[5] = (byte) (addr >> 8);
+            data[6] = (byte) (addr >> 16);
+            data[7] = (byte) (addr >> 24);
+            data[8] = (byte) length;
+            data[9] = (byte) (length >> 8);
+            data[10] = (byte) (length >> 16);
+            data[11] = (byte) (length >> 24);
+            ClearSync();
+            writeBytes(data);
+            WaitSync();
+        }
     }
 
     @Override
     public void TransmitMemoryRead1Word(int addr) {
-        byte[] data = new byte[8];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'y';
-        data[4] = (byte) addr;
-        data[5] = (byte) (addr >> 8);
-        data[6] = (byte) (addr >> 16);
-        data[7] = (byte) (addr >> 24);
-        ClearSync();
-        writeBytes(data);
-        WaitSync();
+        synchronized (usbOutLock) {
+            byte[] data = new byte[8];
+            data[0] = 'A';
+            data[1] = 'x';
+            data[2] = 'o';
+            data[3] = 'y';
+            data[4] = (byte) addr;
+            data[5] = (byte) (addr >> 8);
+            data[6] = (byte) (addr >> 16);
+            data[7] = (byte) (addr >> 24);
+            ClearSync();
+            writeBytes(data);
+            WaitSync();
+        }
     }
 
     @Override
     public void TransmitCosts() {
-        short uUIMidiCost = Preferences.getInstance().getUiMidiThreadCost();
-        byte  uDspLimit200 = (byte)(Preferences.getInstance().getDspLimitPercent()*2);
+        synchronized (usbOutLock) {
+            short uUIMidiCost = Preferences.getInstance().getUiMidiThreadCost();
+            byte  uDspLimit200 = (byte)(Preferences.getInstance().getDspLimitPercent()*2);
 
-        byte[] data = new byte[7];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'U';
-        data[4] = (byte) uUIMidiCost;
-        data[5] = (byte) (uUIMidiCost >> 8);
-        data[6] = uDspLimit200;
-        ClearSync();
-        writeBytes(data);
-        WaitSync();
+            byte[] data = new byte[7];
+            data[0] = 'A';
+            data[1] = 'x';
+            data[2] = 'o';
+            data[3] = 'U';
+            data[4] = (byte) uUIMidiCost;
+            data[5] = (byte) (uUIMidiCost >> 8);
+            data[6] = uDspLimit200;
+            ClearSync();
+            writeBytes(data);
+            WaitSync();
+        }
     }
 
     public void SetSDCardPresent(boolean i) {
