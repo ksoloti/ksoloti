@@ -1084,15 +1084,6 @@ public class PatchGUI extends Patch {
     }
 
     @Override
-    void GoLive() {
-        Patch p = GetQCmdProcessor().getPatch();
-        if (p != null) {
-            p.Unlock();
-        }
-        super.GoLive();
-    }
-
-    @Override
     public void Lock() {
         super.Lock();
         Layers.setBackground(Theme.Patch_Locked_Background);
@@ -1187,7 +1178,7 @@ public class PatchGUI extends Patch {
         Serializer serializer = new Persister(strategy, new Format(2));
         try {
             PatchGUI patch1 = serializer.read(PatchGUI.class, stream);
-            PatchFrame pf = new PatchFrame(patch1, QCmdProcessor.getQCmdProcessor());
+            PatchFrame pf = new PatchFrame(patch1);
             patch1.setFileNamePath(name);
             patch1.PostContructor();
             patch1.setFileNamePath(name);
@@ -1215,7 +1206,7 @@ public class PatchGUI extends Patch {
 
         try {
             PatchGUI patch1 = serializer.read(PatchGUI.class, f);
-            PatchFrame pf = new PatchFrame(patch1, QCmdProcessor.getQCmdProcessor());
+            PatchFrame pf = new PatchFrame(patch1);
             patch1.setFileNamePath(f.getAbsolutePath());
             patch1.PostContructor();
             patch1.setFileNamePath(f.getPath());

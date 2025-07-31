@@ -124,8 +124,7 @@ public class AxolotiRemoteControl extends javax.swing.JFrame implements Connecti
             encoders[i] = new RControlEncoder() {
                 @Override
                 public void DoRotation(int ticks) {
-                    QCmdProcessor processor = MainFrame.mainframe.getQcmdprocessor();
-                    processor.AppendToQueue(new QCmdVirtualButton(ticks, 0, 0, 0));
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdVirtualButton(ticks, 0, 0, 0));
                 }
             };
             jPanelRight.add(encoders[i]);
@@ -366,8 +365,7 @@ public class AxolotiRemoteControl extends javax.swing.JFrame implements Connecti
     }
 
     void tx(int b_or, int b_and) {
-        QCmdProcessor processor = MainFrame.mainframe.getQcmdprocessor();
-        processor.AppendToQueue(new QCmdVirtualButton(b_or, b_and));
+        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdVirtualButton(b_or, b_and));
     }
 
     void tx_pressed(int k) {

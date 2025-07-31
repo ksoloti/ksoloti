@@ -56,6 +56,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -72,6 +73,10 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.stream.Format;
 
+import qcmds.CommandManager;
+import qcmds.QCmdChangeWorkingDirectory;
+import qcmds.QCmdCompilePatch;
+import qcmds.QCmdCreateDirectory;
 import qcmds.QCmdLock;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdStart;
@@ -92,7 +97,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private PresetPanel presetPanel;
     private VisibleCablePanel visibleCablePanel;
-    QCmdProcessor qcmdprocessor;
     ArrayList<DocumentWindow> dwl;
 
     private boolean previousOverload;
@@ -151,7 +155,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JMenuItem undoItem;
     private axoloti.menus.WindowMenu windowMenu1;
 
-    public PatchFrame(final PatchGUI patch, QCmdProcessor qcmdprocessor) {
+    public PatchFrame(final PatchGUI patch) {
 
         try {
             MainFrame.axoObjects.LoaderThread.join(); /* Make sure all object libraries are loaded before creating/opening a patch */
@@ -162,7 +166,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         setMinimumSize(new Dimension(200,120));
         setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axp.png")).getImage());
-        this.qcmdprocessor = qcmdprocessor;
         this.dwl = new ArrayList<DocumentWindow>();
 
         initComponents();
@@ -339,7 +342,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private void handleLiveAction(boolean selected) {
 
-        if (mainframe == null || patch == null || qcmdprocessor == null) {
+        if (mainframe == null || patch == null) {
             System.err.println(Instant.now() + " [ERROR] Cannot perform live action: Core components are missing.");
             return;
         }
@@ -406,8 +409,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             new SwingWorker<Void, Void>() {
                 @Override
                 protected Void doInBackground() throws Exception {
-                    qcmdprocessor.AppendToQueue(new QCmdStop());
-                    qcmdprocessor.WaitQueueFinished(); // Wait for the stop command to complete
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
+                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                     return null;
                 }
 
@@ -1153,12 +1156,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuUploadCodeActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.GetQCmdProcessor().SetPatch(null);
-        patch.GetQCmdProcessor().AppendToQueue(new QCmdStop());
+        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
         if (patch.getBinFile().exists()) {
-            patch.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch.getBinFile()));
-            patch.GetQCmdProcessor().AppendToQueue(new QCmdStart(patch));
-            patch.GetQCmdProcessor().AppendToQueue(new QCmdLock(patch));
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch.getBinFile()));
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(patch));
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdLock(patch));
         }
         else {
             String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
@@ -1313,13 +1315,13 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 try {
                     boolean success;
                     patch.WriteCode(true);
-                    qcmdprocessor.AppendToQueue(new qcmds.QCmdCompilePatch(patch));
-                    qcmdprocessor.WaitQueueFinished();
-                    qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdCompilePatch(patch));
+                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdStop());
                     if (patch.getBinFile().exists()) {
-                        qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadPatch(patch.getBinFile()));
-                        qcmdprocessor.AppendToQueue(new qcmds.QCmdCopyPatchToFlash());
-                        qcmdprocessor.WaitQueueFinished();
+                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdUploadPatch(patch.getBinFile()));
+                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdCopyPatchToFlash());
+                        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                         success = true;
                     }
                     else {

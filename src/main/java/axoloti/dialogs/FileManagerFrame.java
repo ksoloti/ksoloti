@@ -168,7 +168,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     evt.acceptDrop(DnDConstants.ACTION_COPY);
                     // @SuppressWarnings("unchecked")
                     List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-                    QCmdProcessor processor = MainFrame.mainframe.getQcmdprocessor();
 
                     if (USBBulkConnection.GetConnection().isConnected()) {
                         if (droppedFiles.size() > 1) {
@@ -191,7 +190,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                             LOGGER.log(Level.SEVERE, "Cannot read file: " + f.getName());
                                         }
                                         else {
-                                            processor.AppendToQueue(new QCmdUploadFile(f, f.getName()));
+                                            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadFile(f, f.getName()));
                                         }
                                     }
                                 }
@@ -208,7 +207,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                 LOGGER.log(Level.SEVERE, "Cannot read file: " + f.getName());
                             }
                             else {
-                                processor.AppendToQueue(new QCmdUploadFile(f, f.getName()));
+                                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadFile(f, f.getName()));
                             }
                         }
                         triggerRefresh();
@@ -585,8 +584,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             String pathForFatFsDelete = normalizePathForDeletion(sdCardPath);
             System.out.println(Instant.now() + " Attempting to delete empty directory: '" + sdCardPath + "' (normalized for FatFs: '" + pathForFatFsDelete + "')");
             QCmdDeleteFile deleteDirCmd = new QCmdDeleteFile(pathForFatFsDelete);
-            QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
-            processor.AppendToQueue(deleteDirCmd);
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(deleteDirCmd);
 
             boolean success = false;
             try {
@@ -616,8 +614,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             String pathForFatFsDelete = normalizePathForDeletion(sdCardPath);
             System.out.println(Instant.now() + " Identified as file. Attempting to delete file: '" + sdCardPath + "' (normalized for FatFs: '" + pathForFatFsDelete + "')");
             QCmdDeleteFile deleteFileCmd = new QCmdDeleteFile(pathForFatFsDelete);
-            QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
-            processor.AppendToQueue(deleteFileCmd);
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(deleteFileCmd);
 
             boolean success = false;
             try {
@@ -1020,9 +1017,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         String fn = JOptionPane.showInputDialog(this, "Enter folder name:");
         if (fn != null && !fn.isEmpty()) {
             Calendar cal = Calendar.getInstance();
-            QCmdProcessor processor = QCmdProcessor.getQCmdProcessor();
-            processor.AppendToQueue(new QCmdCreateDirectory(dir + fn, cal));
-            processor.WaitQueueFinished();
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(dir + fn, cal));
+            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
         }
         UpdateButtons();
         triggerRefresh();

@@ -27,27 +27,31 @@ import axoloti.parameters.ParameterInstance;
  */
 public class QCmdGuiDialTx implements QCmdGUITask {
 
+    private final Patch patch;
+
+    public QCmdGuiDialTx(Patch patch) {
+        this.patch = patch;
+    }
+
     @Override
     public void DoGUI(QCmdProcessor processor) {
         if (processor.isQueueEmpty()) {
-            Patch patch = processor.getPatch();
-            if (patch != null) {
-                for (ParameterInstance p : patch.getParameterInstances()) {
+            if (this.patch != null) {
+                for (ParameterInstance p : this.patch.getParameterInstances()) {
                     if (p.GetNeedsTransmit()) {
                         if (processor.hasQueueSpaceLeft()) {
                             processor.AppendToQueue(new QCmdSerialDialTX(p.TXData()));
-                           //processor.println("tx dial " + p.getName());
                         } else {
                             break;
                         }
                     }
                 }
-                if (patch.presetUpdatePending && processor.hasQueueSpaceLeft()) {
-                    byte pb[] = new byte[patch.getSettings().GetNPresets() * patch.getSettings().GetNPresetEntries() * 8];
+                if (this.patch.presetUpdatePending && processor.hasQueueSpaceLeft()) {
+                    byte pb[] = new byte[this.patch.getSettings().GetNPresets() * this.patch.getSettings().GetNPresetEntries() * 8];
                     int p = 0;
-                    for (int i = 0; i < patch.getSettings().GetNPresets(); i++) {
-                        int pi[] = patch.DistillPreset(i + 1);
-                        for (int j = 0; j < patch.getSettings().GetNPresetEntries() * 2; j++) {
+                    for (int i = 0; i < this.patch.getSettings().GetNPresets(); i++) {
+                        int pi[] = this.patch.DistillPreset(i + 1);
+                        for (int j = 0; j < this.patch.getSettings().GetNPresetEntries() * 2; j++) {
                             pb[p++] = (byte) (pi[j]);
                             pb[p++] = (byte) (pi[j] >> 8);
                             pb[p++] = (byte) (pi[j] >> 16);
@@ -55,7 +59,7 @@ public class QCmdGuiDialTx implements QCmdGUITask {
                         }
                     }
                     processor.AppendToQueue(new QCmdUpdatePreset(pb));
-                    patch.presetUpdatePending = false;
+                    this.patch.presetUpdatePending = false;
                 }
             }
         }

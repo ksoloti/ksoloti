@@ -265,13 +265,6 @@ public class Patch {
         return MainFrame.mainframe;
     }
 
-    QCmdProcessor GetQCmdProcessor() {
-        if (patchframe == null) {
-            return null;
-        }
-        return patchframe.qcmdprocessor;
-    }
-
     public PatchSettings getSettings() {
         return settings;
     }
@@ -303,11 +296,11 @@ public class Patch {
             }
 
             if (!SDCardInfo.getInstance().exists(targetfn, f.lastModified(), f.length())) {
-                GetQCmdProcessor().AppendToQueue(new qcmds.QCmdGetFileInfo(targetfn));
-                GetQCmdProcessor().WaitQueueFinished();
-                GetQCmdProcessor().AppendToQueue(new qcmds.QCmdPing());
-                // GetQCmdProcessor().AppendToQueue(new qcmds.QCmdPing(true)); // no-disconnect ping for debug
-                GetQCmdProcessor().WaitQueueFinished();
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdGetFileInfo(targetfn));
+                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdPing());
+                // QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdPing(true)); // no-disconnect ping for debug
+                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
 
                 if (!SDCardInfo.getInstance().exists(targetfn, f.lastModified(), f.length())) {
                     if (f.length() > 8 * 1024 * 1024) {
@@ -318,12 +311,12 @@ public class Patch {
                     for (int i = 1; i < targetfn.length(); i++) {
                         if (targetfn.charAt(i) == '/') {
                             Calendar cal = Calendar.getInstance();
-                            GetQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(targetfn.substring(0, i), cal));
-                            GetQCmdProcessor().WaitQueueFinished();
+                            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(targetfn.substring(0, i), cal));
+                            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                         }
                     }
-                    GetQCmdProcessor().AppendToQueue(new QCmdUploadFile(f, targetfn));
-                    GetQCmdProcessor().WaitQueueFinished();
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadFile(f, targetfn));
+                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                 }
                 else {
                     LOGGER.log(Level.INFO, "File {0} matches timestamp and size, skipping upload.", f.getName());
@@ -382,12 +375,11 @@ public class Patch {
         }
 
         WriteCode(true);
-        GetQCmdProcessor().SetPatch(null);
-        GetQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
-        GetQCmdProcessor().WaitQueueFinished();
+        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
+        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
 
         if (waitForBinFile()) {
-            GetQCmdProcessor().AppendToQueue(new QCmdStop());
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
             ArrayList<SDFileReference> files = GetDependendSDFiles();
             if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
                 if (files.size() > 0) {
@@ -395,9 +387,9 @@ public class Patch {
                     String f = "/" + getSDCardPath();
                     if (SDCardInfo.getInstance().find(f) == null) {
                         Calendar cal = Calendar.getInstance();
-                        GetQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(f, cal));
+                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(f, cal));
                     }
-                    GetQCmdProcessor().AppendToQueue(new QCmdChangeWorkingDirectory(f));
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdChangeWorkingDirectory(f));
                     UploadDependentFiles("/" + getSDCardPath());
                 }
             }
@@ -407,9 +399,9 @@ public class Patch {
                     LOGGER.log(Level.WARNING, "Patch requires file {0} on SD card, but no SD card connected.", files.get(0).targetPath);
                 }
             }
-            GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(this.getBinFile()));
-            GetQCmdProcessor().AppendToQueue(new QCmdStart(this));
-            GetQCmdProcessor().WaitQueueFinished();
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadPatch(this.getBinFile()));
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(this));
+            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
         } else {
             String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + this.generateBuildFilenameStem(true);
             LOGGER.log(Level.INFO, "Timeout:" + path.replace('\\', '/') + ".bin could not be created.");
@@ -2788,7 +2780,7 @@ public class Patch {
     }
 
     public void Compile() {
-        GetQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
+        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
     }
 
     public void ShowPreset(int i) {
@@ -2929,7 +2921,7 @@ public class Patch {
     }
 
     public void RecallPreset(int i) {
-        GetQCmdProcessor().AppendToQueue(new QCmdRecallPreset(i));
+        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdRecallPreset(i));
     }
 
     /**
@@ -3085,20 +3077,19 @@ public class Patch {
         WriteCode(true);
         LOGGER.log(Level.INFO, "SD card filename: {0}", sdfilename);
 
-        QCmdProcessor qcmdprocessor = QCmdProcessor.getQCmdProcessor();
-        qcmdprocessor.AppendToQueue(new qcmds.QCmdCompilePatch(this));
-        qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
+        QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdCompilePatch(this));
+        QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdStop());
         // create subdirs...
 
         for (int i = 1; i < sdfilename.length(); i++) {
             if (sdfilename.charAt(i) == '/') {
                 Calendar cal = Calendar.getInstance();
-                qcmdprocessor.AppendToQueue(new QCmdCreateDirectory(sdfilename.substring(0, i), cal));
-                qcmdprocessor.WaitQueueFinished();
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(sdfilename.substring(0, i), cal));
+                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
             }
         }
 
-        qcmdprocessor.WaitQueueFinished();
+        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
         
         Calendar cal;
         File f = new File(FileNamePath);
@@ -3115,8 +3106,8 @@ public class Patch {
         }
 
         if (getBinFile().exists()) {
-            qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadFile(getBinFile(), sdfilename, cal));
-            qcmdprocessor.WaitQueueFinished();
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdUploadFile(getBinFile(), sdfilename, cal));
+            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
 
             String dir;
             int i = sdfilename.lastIndexOf("/");
@@ -3128,18 +3119,18 @@ public class Patch {
             }
     
             UploadDependentFiles(dir);
-            qcmdprocessor.WaitQueueFinished();
+            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
 
             if (Preferences.getInstance().isBackupPatchesOnSDEnabled() && FileNamePath != null && !FileNamePath.isEmpty()) {
                 if (f.exists()) {
-                    qcmdprocessor.AppendToQueue(new qcmds.QCmdUploadFile(f,
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdUploadFile(f,
                         dir + "/" +
                         f.getName() + ".backup" +
                         DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(ZonedDateTime.now()) +
                         f.getName().substring(f.getName().lastIndexOf(".")), cal));
                 }
             }
-            qcmdprocessor.WaitQueueFinished();
+            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
         }
         else {
             String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + this.generateBuildFilenameStem(true);

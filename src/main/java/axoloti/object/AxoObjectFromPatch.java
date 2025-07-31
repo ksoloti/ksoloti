@@ -22,6 +22,8 @@ import axoloti.MainFrame;
 import axoloti.Patch;
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
+import qcmds.QCmdProcessor;
+
 import java.awt.Rectangle;
 import java.io.File;
 import java.util.logging.Level;
@@ -98,7 +100,7 @@ public class AxoObjectFromPatch extends AxoObject {
             Serializer serializer = new Persister(strategy, new Format(2));
             try {
                 pg = serializer.read(PatchGUI.class, f);
-                pf = new PatchFrame((PatchGUI) pg, MainFrame.mainframe.getQcmdprocessor());
+                pf = new PatchFrame(pg);
                 pg.setFileNamePath(f.getPath());
                 pg.PostContructor();
                 pg.ObjEditor = this;
@@ -107,7 +109,7 @@ public class AxoObjectFromPatch extends AxoObject {
             }
         }
         if (pf == null) {
-            pf = new PatchFrame((PatchGUI) pg, MainFrame.mainframe.getQcmdprocessor());
+            pf = new PatchFrame(pg);
             pg.setFileNamePath(id);
             pg.PostContructor();
         }

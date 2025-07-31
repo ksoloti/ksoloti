@@ -123,7 +123,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     String LinkFirmwareID;
     KeyboardFrame keyboard;
     FileManagerFrame filemanager;
-    QCmdProcessor qcmdprocessor;
     Thread qcmdprocessorThread;
     static public Cursor transparentCursor;
     private final String[] args;
@@ -492,8 +491,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     updateLinkFirmwareID();
 
-                    qcmdprocessor = QCmdProcessor.getQCmdProcessor();
-                    qcmdprocessorThread = new Thread(qcmdprocessor);
+                    qcmdprocessorThread = new Thread(QCmdProcessor.getQCmdProcessor());
                     qcmdprocessorThread.setName("QCmdProcessor");
                     qcmdprocessorThread.start();
                     USBBulkConnection.GetConnection().addConnectionStatusListener(MainFrame.this);
@@ -752,11 +750,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
             if (f.canRead()) {
                 if (p.canRead()) {
-                    qcmdprocessor.AppendToQueue(new QCmdStop());
-                    qcmdprocessor.AppendToQueue(new QCmdUploadFWSDRam(p));
-                    qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
-                    qcmdprocessor.AppendToQueue(new QCmdStartFlasher());
-                    qcmdprocessor.AppendToQueue(new QCmdDisconnect());
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadFWSDRam(p));
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadPatch(f));
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStartFlasher());
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
                     ShowDisconnect();
                 }
                 else {
@@ -1074,12 +1072,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void jMenuItemPanicActionPerformed(java.awt.event.ActionEvent evt) {
-        qcmdprocessor.Panic();
+        QCmdProcessor.getQCmdProcessor().Panic();
     }
 
     private void jMenuItemPingActionPerformed(java.awt.event.ActionEvent evt) {
-        qcmdprocessor.AppendToQueue(new QCmdPing());
-        // qcmdprocessor.AppendToQueue(new QCmdPing(true)); // no-disconnect ping for debug
+        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdPing());
+        // QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdPing(true)); // no-disconnect ping for debug
     }
 
     private void jMenuItemFDisconnectActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1109,7 +1107,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private void jMenuItemFConnectActionPerformed(java.awt.event.ActionEvent evt) {
         jMenuItemFConnect.setEnabled(false);
         MainFrame.mainframe.SetProgressMessage("Connecting via menu...");
-        qcmdprocessor.Panic();
+        QCmdProcessor.getQCmdProcessor().Panic();
 
         new SwingWorker<Boolean, String>() {
             @Override
@@ -1353,17 +1351,17 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             LOGGER.log(Level.INFO, "---------- Testing {0} ----------", f.getPath());
 
             PatchGUI patch1 = serializer.read(PatchGUI.class, f);
-            PatchFrame pf = new PatchFrame(patch1, qcmdprocessor);
+            PatchFrame pf = new PatchFrame(patch1);
             pf.createBufferStrategy(1);
             patch1.setFileNamePath(f.getPath());
             patch1.PostContructor();
             patch1.WriteCode(true); // generate code as own path/filename .cpp
-            qcmdprocessor.WaitQueueFinished();
+            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
             Thread.sleep(200); 
             LOGGER.log(Level.INFO, "Done generating code.");
 
             if (USBBulkConnection.GetConnection().isConnected()) {
-                patch1.GetQCmdProcessor().AppendToQueue(new QCmdStop());
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
             }
 
             File binFile = patch1.getBinFile();
@@ -1373,19 +1371,19 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             }
 
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1); // compile as own path/filename .bin
-            patch1.GetQCmdProcessor().AppendToQueue(cp);
-            qcmdprocessor.WaitQueueFinished();
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(cp);
+            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
             if (patch1.waitForBinFile()) {
                 // LOGGER.log(Level.INFO, "Done compiling patch.\n");
                 /* If a Core is connected and test patch .bin could be created:
                 stop patch, upload test patch .bin to RAM, start patch, report status */
                 if (USBBulkConnection.GetConnection().isConnected()) {
-                    patch1.GetQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch1.getBinFile()));
-                    patch1.GetQCmdProcessor().AppendToQueue(new QCmdStart(patch1));
-                    qcmdprocessor.WaitQueueFinished();
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch1.getBinFile()));
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(patch1));
+                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                     Thread.sleep(1000);
 
-                    patch1.GetQCmdProcessor().AppendToQueue(new QCmdPing());
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdPing());
                     float pct = patch1.getDSPLoadPercent();
                     if (pct < 1.0f) {
                         LOGGER.log(Level.SEVERE, "No DSP load detected\n");
@@ -1398,9 +1396,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
                     Thread.sleep(1000);
 
-                    patch1.GetQCmdProcessor().AppendToQueue(new QCmdGuiShowLog());
-                    patch1.GetQCmdProcessor().AppendToQueue(new QCmdStop());
-                    qcmdprocessor.WaitQueueFinished();
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdGuiShowLog());
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
+                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                     Thread.sleep(100);
                 }
             }
@@ -1471,7 +1469,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         try {
             boolean status;
             PatchGUI patch1 = serializer.read(PatchGUI.class, f);
-            new PatchFrame(patch1, qcmdprocessor);
+            new PatchFrame(patch1);
             patch1.setFileNamePath(f.getPath());
             patch1.PostContructor();
             status = patch1.save(f);
@@ -1493,17 +1491,17 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private void jMenuItemRefreshFWIDActionPerformed(java.awt.event.ActionEvent evt) {
         updateLinkFirmwareID();
         if (USBBulkConnection.GetConnection().isConnected()) {
-            qcmdprocessor.AppendToQueue(new QCmdTransmitGetFWVersion());
-            qcmdprocessor.WaitQueueFinished();
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdTransmitGetFWVersion());
+            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
         }
     }
 
     private void jMenuItemFlashDFUActionPerformed(java.awt.event.ActionEvent evt) {
         if (Usb.isDFUDeviceAvailable()) {
             updateLinkFirmwareID();
-            qcmdprocessor.AppendToQueue(new qcmds.QCmdStop());
-            qcmdprocessor.AppendToQueue(new qcmds.QCmdDisconnect());
-            qcmdprocessor.AppendToQueue(new qcmds.QCmdFlashDFU());
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdStop());
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdDisconnect());
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdFlashDFU());
         }
         else {
             LOGGER.log(Level.SEVERE, "No devices in Rescue Mode detected. To bring Ksoloti Core into Rescue Mode:\n1. Remove power.\n2. Hold down button S1 then connect the USB prog port to your computer.\nThe LEDs will stay off when in Rescue Mode.");
@@ -1535,12 +1533,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void jMenuItemFCompileActionPerformed(java.awt.event.ActionEvent evt) {
-        qcmdprocessor.AppendToQueue(new qcmds.QCmdCompileFirmware());
+        QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdCompileFirmware());
     }
 
     private void jMenuItemEnterDFUActionPerformed(java.awt.event.ActionEvent evt) {
-        qcmdprocessor.AppendToQueue(new QCmdBringToDFUMode());
-        qcmdprocessor.AppendToQueue(new QCmdDisconnect());
+        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdBringToDFUMode());
+        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
     }
 
     private void jMenuItemFlashDefaultActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1578,10 +1576,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         File f = new File(fname);
         if (f.canRead()) {
-            qcmdprocessor.AppendToQueue(new QCmdStop());
-            qcmdprocessor.AppendToQueue(new QCmdUploadPatch(f));
-            qcmdprocessor.AppendToQueue(new QCmdStartMounter());
-            qcmdprocessor.AppendToQueue(new QCmdDisconnect());
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadPatch(f));
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStartMounter());
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
             ShowDisconnect();
         }
         else {
@@ -1632,7 +1630,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     public void NewPatch() {
         PatchGUI patch1 = new PatchGUI();
-        PatchFrame pf = new PatchFrame(patch1, qcmdprocessor);
+        PatchFrame pf = new PatchFrame(patch1);
         patch1.PostContructor();
         patch1.setFileNamePath("untitled");
         pf.setVisible(true);
@@ -1736,7 +1734,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 + "- Restart the Patcher.\n"
             );
             WarnedAboutFWCRCMismatch = true;
-            qcmdprocessor.AppendToQueue(new QCmdDisconnect());
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
             ShowDisconnect();
         }
         else if (!firmwareId.equals(this.LinkFirmwareID)) {
@@ -1875,10 +1873,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
 
         jPanelInfoColumn.add(jLabelPatch);
-    }
-
-    public QCmdProcessor getQcmdprocessor() {
-        return qcmdprocessor;
     }
 
     @Override

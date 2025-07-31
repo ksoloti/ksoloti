@@ -665,20 +665,18 @@ public class USBBulkConnection extends Connection {
             LOGGER.log(Level.WARNING, "Connected\n");
 
             /* 6. Post-Connection Commands (CPU ID, Firmware Version) */
-            QCmdProcessor qcmdp = MainFrame.mainframe.getQcmdprocessor();
-
             try {
-                qcmdp.AppendToQueue(new QCmdTransmitGetFWVersion());
-                qcmdp.WaitQueueFinished();
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdTransmitGetFWVersion());
+                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
 
                 QCmdMemRead1Word q1 = new QCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
-                qcmdp.AppendToQueue(q1);
-                qcmdp.WaitQueueFinished();
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(q1);
+                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                 targetProfile.setCPUIDCode(q1.getResult());
 
                 QCmdMemRead q = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
-                qcmdp.AppendToQueue(q);
-                qcmdp.WaitQueueFinished();
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(q);
+                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                 targetProfile.setCPUSerial(q.getResult());
                 this.detectedCpuId = CpuIdToHexString(targetProfile.getCPUSerial());
                 // System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: detectedCpuId set to: " + this.detectedCpuId);

@@ -46,7 +46,6 @@ public class QCmdLock implements QCmdGUITask {
 
     @Override
     public void DoGUI(QCmdProcessor processor) {
-        processor.SetPatch(p);
         p.Lock();
     }
 }

@@ -836,9 +836,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
     private void jButtonUploadBankActionPerformed(java.awt.event.ActionEvent evt) {
         LOGGER.log(Level.INFO, "Uploading patchbank index...");
-        QCmdProcessor processor = MainFrame.mainframe.getQcmdprocessor();
         if (USBBulkConnection.GetConnection().isConnected()) {
-            processor.AppendToQueue(new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb"));
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb"));
         }
         // LOGGER.log(Level.INFO, "Done uploading index.");
         refresh();
@@ -996,9 +995,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     private void jUploadAllActionPerformed(java.awt.event.ActionEvent evt) {
         class Thd extends Thread {
             public void run() {
-                QCmdProcessor processor = MainFrame.mainframe.getQcmdprocessor();
                 if (USBBulkConnection.GetConnection().isConnected()) {
-                    processor.AppendToQueue(new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb"));
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb"));
                 }
 
                 for (File f : files) {

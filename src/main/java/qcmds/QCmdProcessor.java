@@ -21,7 +21,7 @@ package qcmds;
 
 import axoloti.Connection;
 import axoloti.MainFrame;
-import axoloti.Patch;
+import axoloti.PatchGUI;
 import axoloti.USBBulkConnection;
 import axoloti.utils.Preferences;
 
@@ -45,7 +45,6 @@ public class QCmdProcessor implements Runnable {
     private final BlockingQueue<QCmd> queue;
     private final BlockingQueue<QCmd> queueResponse;
     protected Connection serialconnection;
-    private Patch patch;
     private final PeriodicPinger pinger;
     private final Thread pingerThread;
     private final PeriodicDialTransmitter dialTransmitter;
@@ -146,18 +145,29 @@ public class QCmdProcessor implements Runnable {
                             continue; /* Skip offering a dial command this cycle */
                         }
 
-                        long now = System.currentTimeMillis();
-                        if (now - lastSendAttemptTime >= currentSendInterval) {
-    
-                            boolean added = queue.offer(new QCmdGuiDialTx(), 10, TimeUnit.MILLISECONDS);
-                            if (!added) {
-                                // System.out.println(Instant.now() + " [DEBUG] QCmd queue full, dropping dial command. Backing off outbound rate.");
-                                currentSendInterval = Math.min(currentSendInterval * 2, 500);
+                        /* Get the currently live patch from the MainFrame */
+                        PatchGUI currentLivePatch = MainFrame.mainframe.getCurrentLivePatch();
+
+                        /* Only send dial commands if a patch is live */
+                        if (currentLivePatch != null) {
+                            long now = System.currentTimeMillis();
+                            if (now - lastSendAttemptTime >= currentSendInterval) {
+
+                                /* Pass the live patch to the QCmdGuiDialTx constructor */
+                                boolean added = queue.offer(new QCmdGuiDialTx(currentLivePatch), 10, TimeUnit.MILLISECONDS);
+                                if (!added) {
+                                    // System.out.println(Instant.now() + " [DEBUG] QCmd queue full, dropping dial command. Backing off outbound rate.");
+                                    currentSendInterval = Math.min(currentSendInterval * 2, 500);
+                                }
+                                else {
+                                    currentSendInterval = Preferences.getInstance().getPollInterval();
+                                }
+                                lastSendAttemptTime = now;
                             }
-                            else {
-                                currentSendInterval = Preferences.getInstance().getPollInterval();
-                            }
-                            lastSendAttemptTime = now;
+                        } else {
+                            /* If no patch is live, reset the interval and timer */
+                            currentSendInterval = Preferences.getInstance().getPollInterval();
+                            lastSendAttemptTime = 0;
                         }
                     }
                     else {
@@ -197,10 +207,6 @@ public class QCmdProcessor implements Runnable {
         if (singleton == null)
             singleton = new QCmdProcessor();
         return singleton;
-    }
-    
-    public Patch getPatch() {
-        return patch;
     }
 
     public Object getQueueLock() {
@@ -286,7 +292,8 @@ public class QCmdProcessor implements Runnable {
         synchronized (queueLock) {
             while (!queue.isEmpty() || !queueResponse.isEmpty()) {
                 try {
-                    queueLock.wait(3000); // Wait up to 3 seconds
+                    /* We can wait longer here, as the CommandManager handles ping suppression? */
+                    queueLock.wait(10000);
                 }
                 catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
@@ -307,43 +314,37 @@ public class QCmdProcessor implements Runnable {
             setProgress(0);
             try {
                 queueResponse.clear();
+
                 QCmd cmd = queue.take();
-                synchronized (queueLock) {
-                    queueLock.notifyAll();
-                }
-                // if (!((cmd instanceof QCmdPing) || (cmd instanceof QCmdGuiDialTx))) {
-                //     System.out.println(cmd);
-                //     setProgress((100 * (queue.size() + 1)) / (queue.size() + 2));
-                // }
+
                 String m = cmd.GetStartMessage();
                 if (m != null) {
                     LOGGER.log(Level.INFO, m);
                     publish(m);
                 }
+
                 if (QCmdShellTask.class.isInstance(cmd)) {
                     QCmd response = ((QCmdShellTask) cmd).Do(this);
                     if ((response != null)) {
                         ((QCmdGUITask) response).DoGUI(this);
                     }
                 }
+
                 if (QCmdSerialTask.class.isInstance(cmd)) {
                     if (serialconnection.isConnected()) {
                         boolean appended = serialconnection.AppendToQueue((QCmdSerialTask) cmd);
                         if (appended) {
                             /* Only proceed to wait for a response if the command was successfully queued */
                             try {
-                                QCmd response = queueResponse.poll(5, TimeUnit.SECONDS);
+                                QCmd response = queueResponse.poll(10, TimeUnit.SECONDS);
                                 if (response != null) {
-                                    synchronized (queueLock) {
-                                        queueLock.notifyAll();
-                                    }
                                     publish(response);
                                     if (response instanceof QCmdDisconnect){
                                         queue.clear();
                                     }
                                 }
                                 // else {
-                                //      System.out.println(Instant.now() + " [DEBUG] Timeout: No response received for serial command: " + cmd.getClass().getSimpleName() + " after 5 seconds.");
+                                //      System.out.println(Instant.now() + " [DEBUG] Timeout: No response received for serial command: " + cmd.getClass().getSimpleName() + " after 10 seconds.");
                                 // }
                             }
                             catch (InterruptedException e) {
@@ -373,7 +374,12 @@ public class QCmdProcessor implements Runnable {
             catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
-            setProgress(0);
+            finally {
+                /* Notify waiting threads that the queue might be empty now */
+                synchronized (queueLock) {
+                    queueLock.notifyAll();
+                }
+            }
         }
     }
 
@@ -387,13 +393,6 @@ public class QCmdProcessor implements Runnable {
                 LOGGER.log(Level.INFO, s);
             }
         });
-    }
-
-    public void SetPatch(Patch patch) {
-        if (this.patch != null) {
-            this.patch.Unlock();
-        }
-        this.patch = patch;
     }
 
     public BlockingQueue<QCmd> getQueueResponse() {

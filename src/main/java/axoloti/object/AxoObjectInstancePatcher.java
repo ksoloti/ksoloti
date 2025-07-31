@@ -25,6 +25,8 @@ import axoloti.PatchGUI;
 import axoloti.Theme;
 import components.ButtonComponent;
 import components.ButtonComponent.ActListener;
+import qcmds.QCmdProcessor;
+
 // import java.awt.Component;
 import java.awt.Point;
 
@@ -57,7 +59,7 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
             pg = new PatchGUI();
         }
         if (pf == null) {
-            pf = new PatchFrame((PatchGUI) pg, MainFrame.mainframe.getQcmdprocessor());
+            pf = new PatchFrame(pg);
             pg.setFileNamePath(getInstanceName());
             pg.PostContructor();
         }
@@ -103,7 +105,7 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
             pg = new PatchGUI();
         }
         if (pf == null) {
-            pf = new PatchFrame((PatchGUI) pg, MainFrame.mainframe.getQcmdprocessor());
+            pf = new PatchFrame(pg);
             pg.setFileNamePath(getInstanceName());
             pf.setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axs.png")).getImage());
             pg.PostContructor();

@@ -377,7 +377,7 @@ public class FileMenu extends JMenu {
 
     public void NewPatch() {
         PatchGUI patch1 = new PatchGUI();
-        PatchFrame pf = new PatchFrame(patch1, QCmdProcessor.getQCmdProcessor());
+        PatchFrame pf = new PatchFrame(patch1);
         patch1.PostContructor();
         pf.setLocation((int)pf.getLocation().getX() + 240 , (int)pf.getLocation().getY() + 160);
         patch1.setFileNamePath("untitled");
