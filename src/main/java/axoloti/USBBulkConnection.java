@@ -450,13 +450,14 @@ public class USBBulkConnection extends Connection {
                 try {
                     // System.out.println(Instant.now() + " [DEBUG] Attempting to close USB device handle.");
                     LibUsb.close(handle);
+                    handle = null; /* Null immediately to prevent race conditions */
                     // System.out.println(Instant.now() + " [DEBUG] USB device handle closed successfully.");
                 }
                 catch (LibUsbException closeEx) {
                     System.err.println(Instant.now() + " [ERROR] Disconnect: Error closing handle (may be normal after reset): " + closeEx.getMessage());
                 }
                 finally {
-                    handle = null;
+                    handle = null; /* Should already be null but just to be sure */
                 }
             }
             else {
@@ -581,6 +582,7 @@ public class USBBulkConnection extends Connection {
                         return h; /* Found the specific device */
                     }
                     LibUsb.close(h);
+                    h = null; /* Null immediately to prevent race conditions */
                     return null;
                 }
                 else {

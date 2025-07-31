@@ -285,6 +285,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             else {
                                 model.addRow(new String[]{"", sDFUBootloader, DeviceToPath(device), "Driver OK"});
                                 LibUsb.close(handle);
+                                handle = null; /* Null immediately to prevent race conditions */
                             }
                         }
                     }
@@ -311,6 +312,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             if (name == null) name = "";
                             model.addRow(new String[]{name, sName, DeviceToPath(device), serial});
                             LibUsb.close(handle);
+                            handle = null; /* Null immediately to prevent race conditions */
                         }
                     }
                     else if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD) {
@@ -339,6 +341,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                             if (name == null) name = "";
                             model.addRow(new String[]{name, sName, DeviceToPath(device), serial});
                             LibUsb.close(handle);
+                            handle = null; /* Null immediately to prevent race conditions */
                         }
                     }
                     else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI_SDCARD) {
