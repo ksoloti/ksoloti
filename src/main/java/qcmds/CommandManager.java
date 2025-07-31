@@ -52,7 +52,7 @@ public class CommandManager {
 
     public void endLongOperation() {
         longOperationInProgress = false;
-        lastLongOperationEndTime = System.currentTimeMillis();
+        // lastLongOperationEndTime = System.currentTimeMillis();
         // System.out.println(Instant.now() + " [DEBUG] CommandManager: Long operation ended. Cooldown started. Resuming pings.");
     }
 
