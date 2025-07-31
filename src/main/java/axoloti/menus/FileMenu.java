@@ -52,8 +52,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import qcmds.QCmdProcessor;
-
 /**
  *
  * @author jtaelman

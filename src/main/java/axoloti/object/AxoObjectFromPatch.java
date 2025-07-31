@@ -22,7 +22,6 @@ import axoloti.MainFrame;
 import axoloti.Patch;
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
-import qcmds.QCmdProcessor;
 
 import java.awt.Rectangle;
 import java.io.File;

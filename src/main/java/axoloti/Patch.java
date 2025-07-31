@@ -88,7 +88,6 @@ import org.simpleframework.xml.stream.Format;
 import qcmds.QCmdChangeWorkingDirectory;
 import qcmds.QCmdCompilePatch;
 import qcmds.QCmdCreateDirectory;
-import qcmds.QCmdLock;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdRecallPreset;
 import qcmds.QCmdStart;

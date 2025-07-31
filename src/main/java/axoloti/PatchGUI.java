@@ -80,8 +80,6 @@ import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.strategy.Strategy;
 import org.simpleframework.xml.stream.Format;
 
-import qcmds.QCmdProcessor;
-
 /**
  *
  * @author Johannes Taelman

@@ -18,14 +18,12 @@
  */
 package axoloti.object;
 
-import axoloti.MainFrame;
 import axoloti.Patch;
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
 import axoloti.Theme;
 import components.ButtonComponent;
 import components.ButtonComponent.ActListener;
-import qcmds.QCmdProcessor;
 
 // import java.awt.Component;
 import java.awt.Point;

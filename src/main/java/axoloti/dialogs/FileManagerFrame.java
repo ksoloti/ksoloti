@@ -19,7 +19,6 @@
 package axoloti.dialogs;
 
 import axoloti.ConnectionStatusListener;
-import axoloti.MainFrame;
 
 import static axoloti.MainFrame.fc;
 

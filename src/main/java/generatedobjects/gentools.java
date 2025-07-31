@@ -18,7 +18,6 @@
  */
 package generatedobjects;
 
-import axoloti.MainFrame;
 import axoloti.attributedefinition.AxoAttribute;
 import axoloti.inlets.Inlet;
 import axoloti.inlets.InletFrac32;

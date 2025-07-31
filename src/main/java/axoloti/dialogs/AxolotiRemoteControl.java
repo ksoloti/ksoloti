@@ -19,7 +19,6 @@
 package axoloti.dialogs;
 
 import axoloti.ConnectionStatusListener;
-import axoloti.MainFrame;
 import axoloti.USBBulkConnection;
 import axoloti.utils.Constants;
 import components.RControlButtonWithLed;

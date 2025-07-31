@@ -22,7 +22,6 @@ import axoloti.atom.AtomDefinition;
 import axoloti.datatypes.DataType;
 import axoloti.object.AxoObjectInstance;
 import static axoloti.utils.CharEscape.charEscape;
-import generatedobjects.GeneratedObjects;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.security.MessageDigest;

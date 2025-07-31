@@ -22,7 +22,6 @@ import axoloti.ConnectionStatusListener;
 import axoloti.DocumentWindow;
 import axoloti.DocumentWindowList;
 import static axoloti.FileUtils.axpFileFilter;
-import axoloti.MainFrame;
 
 import static axoloti.MainFrame.fc;
 import axoloti.PatchFrame;
