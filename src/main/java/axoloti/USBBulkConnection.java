@@ -819,7 +819,7 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public boolean WaitSync() {
-        return WaitSync(1000);
+        return WaitSync(3000);
     }
 
     @Override
@@ -840,7 +840,7 @@ public class USBBulkConnection extends Connection {
                     // System.out.println(Instant.now() + " [DEBUG] WaitReadSync: Disconnect requested, not waiting.");
                     return false;
                 }
-                readsync.wait(1000);
+                readsync.wait(3000);
             }
             catch (InterruptedException ex) {
                 // System.out.println(Instant.now() + " [DEBUG] ReadSync wait interrupted due to disconnect request.," + ex.getMessage());
