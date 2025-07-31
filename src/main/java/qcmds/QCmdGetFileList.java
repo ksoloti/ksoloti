@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 
 import axoloti.Connection;
 import axoloti.SDCardInfo;
-import axoloti.USBBulkConnection;
 
 /**
  *
@@ -54,7 +53,7 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
         setMcuStatusCode((byte)0xFF);
 
         /* This method sends the Axol packet to the MCU. */
-        int writeResult = USBBulkConnection.GetConnection().TransmitGetFileList();
+        int writeResult = connection.TransmitGetFileList();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Get file list failed: USB write error.");
             setMcuStatusCode((byte)0x01); // FR_DISK_ERR

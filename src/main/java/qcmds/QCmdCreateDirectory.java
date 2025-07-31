@@ -20,7 +20,6 @@ package qcmds;
 
 import axoloti.Connection;
 import axoloti.SDCardInfo;
-import axoloti.USBBulkConnection;
 
 import java.time.Instant;
 import java.util.Calendar;
@@ -61,7 +60,7 @@ public class QCmdCreateDirectory extends AbstractQCmdSerialTask {
         // Reset MCU status for this execution
         setMcuStatusCode((byte)0xFF);
 
-        int writeResult = USBBulkConnection.GetConnection().TransmitCreateDirectory(dirname, date);
+        int writeResult = connection.TransmitCreateDirectory(dirname, date);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Create directory failed for " + dirname + ": USB write error.");
             setMcuStatusCode((byte)0x01); // FR_DISK_ERR or custom error for USB comms

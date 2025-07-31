@@ -21,7 +21,6 @@ package qcmds;
 import axoloti.Connection;
 import axoloti.MainFrame;
 import axoloti.SDCardInfo;
-import axoloti.USBBulkConnection;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -168,7 +167,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
             }
 
             createFileLatch = new CountDownLatch(1); // New latch for this step
-            USBBulkConnection.GetConnection().TransmitCreateFile(filename, tlength, ts);
+            connection.TransmitCreateFile(filename, tlength, ts);
 
             if (!createFileLatch.await(3, TimeUnit.SECONDS)) { // Wait for create file ACK
                 LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": Core did not acknowledge file creation within timeout.");
@@ -215,7 +214,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
                 }
 
                 appendFileLatch = new CountDownLatch(1); // New latch for this chunk
-                USBBulkConnection.GetConnection().TransmitAppendFile(buffer);
+                connection.TransmitAppendFile(buffer);
 
                 if (!appendFileLatch.await(3, TimeUnit.SECONDS)) { // Wait for append chunk ACK
                     LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": Core did not acknowledge chunk receipt within timeout.");
@@ -303,7 +302,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
             }
 
             closeFileLatch = new CountDownLatch(1); // New latch for this step
-            USBBulkConnection.GetConnection().TransmitCloseFile(filename, ts); 
+            connection.TransmitCloseFile(filename, ts); 
 
             if (!closeFileLatch.await(3, TimeUnit.SECONDS)) { // Wait for close file ACK
                 LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": Core did not acknowledge file close within timeout.");

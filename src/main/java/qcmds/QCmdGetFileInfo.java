@@ -20,7 +20,6 @@ package qcmds;
 
 import axoloti.Connection;
 import axoloti.SDCardInfo;
-import axoloti.USBBulkConnection;
 
 import java.time.Instant;
 import java.util.logging.Level;
@@ -57,7 +56,7 @@ public class QCmdGetFileInfo extends AbstractQCmdSerialTask {
 
         setMcuStatusCode((byte)0xFF);
 
-        int writeResult = USBBulkConnection.GetConnection().TransmitGetFileInfo(filename);
+        int writeResult = connection.TransmitGetFileInfo(filename);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Get file info failed for " + filename + ": USB write error.");
             setMcuStatusCode((byte)0x01); // FR_DISK_ERR

@@ -20,7 +20,6 @@ package qcmds;
 
 import axoloti.Connection;
 import axoloti.SDCardInfo;
-import axoloti.USBBulkConnection;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,7 +56,7 @@ public class QCmdDeleteFile extends AbstractQCmdSerialTask {
 
         setMcuStatusCode((byte)0xFF);
 
-        int writeResult = USBBulkConnection.GetConnection().TransmitDeleteFile(filename); // Pass 'this' as senderCommand
+        int writeResult = connection.TransmitDeleteFile(filename); // Pass 'this' as senderCommand
         if (writeResult != LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Delete file failed for " + filename + ": USB write error.");
             setMcuStatusCode((byte)0x01); // FR_DISK_ERR

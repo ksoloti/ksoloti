@@ -22,7 +22,6 @@ import axoloti.SDCardInfo;
 import axoloti.Connection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import axoloti.USBBulkConnection;
 
 /**
  *
@@ -55,7 +54,7 @@ public class QCmdChangeWorkingDirectory extends AbstractQCmdSerialTask {
 
         setMcuStatusCode((byte)0xFF);
 
-        int writeResult = USBBulkConnection.GetConnection().TransmitChangeWorkingDirectory(path);
+        int writeResult = connection.TransmitChangeWorkingDirectory(path);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Change directory failed for " + path + ": USB write error.");
             setMcuStatusCode((byte)0x01); // FR_DISK_ERR
