@@ -54,6 +54,7 @@ import java.awt.event.KeyEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -337,7 +338,13 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void handleLiveAction(boolean selected) {
-        // Disable both components immediately to prevent further clicks
+
+        if (mainframe == null || patch == null || qcmdprocessor == null) {
+            System.err.println(Instant.now() + " [ERROR] Cannot perform live action: Core components are missing.");
+            return;
+        }
+
+        /* Disable both components immediately to prevent further clicks */
         jToggleButtonLive.setEnabled(false);
         jCheckBoxMenuItemLive.setEnabled(false);
 
