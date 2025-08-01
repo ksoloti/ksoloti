@@ -19,7 +19,7 @@
 package axoloti.parameters;
 
 import axoloti.Preset;
-import axoloti.Theme;
+import axoloti.ui.Theme;
 import components.control.VSliderComponent;
 import org.simpleframework.xml.Attribute;
 

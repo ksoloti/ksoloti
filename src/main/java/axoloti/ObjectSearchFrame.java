@@ -22,6 +22,7 @@ import axoloti.object.AxoObjectAbstract;
 import axoloti.object.AxoObjectIdComparator;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectTreeNode;
+import axoloti.ui.Theme;
 import axoloti.utils.Constants;
 import axoloti.utils.OSDetect;
 import axoloti.utils.ResizableUndecoratedFrame;

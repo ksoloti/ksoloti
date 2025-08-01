@@ -21,6 +21,8 @@ package axoloti;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import axoloti.ui.Theme;
+
 /**
  *
  * @author Johannes Taelman

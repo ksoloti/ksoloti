@@ -23,6 +23,7 @@ import axoloti.dialogs.KeyboardNavigableOptionPane;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
 import axoloti.parameters.ParameterInstance;
+import axoloti.ui.Theme;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.OSDetect.OS;
 import axoloti.utils.Preferences;

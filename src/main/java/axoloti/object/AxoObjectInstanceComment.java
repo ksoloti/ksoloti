@@ -19,7 +19,7 @@
 package axoloti.object;
 
 import axoloti.Patch;
-import axoloti.Theme;
+import axoloti.ui.Theme;
 import axoloti.utils.Constants;
 import components.TextPaneComponent;
 import components.TextFieldComponent;

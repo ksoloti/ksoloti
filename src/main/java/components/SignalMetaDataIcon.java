@@ -18,8 +18,9 @@
  */
 package components;
 
-import axoloti.Theme;
 import axoloti.datatypes.SignalMetaData;
+import axoloti.ui.Theme;
+
 // import static axoloti.datatypes.SignalMetaData.bipolar;
 import java.awt.BasicStroke;
 import java.awt.Dimension;

@@ -20,7 +20,6 @@ package axoloti.object;
 
 import axoloti.Patch;
 import axoloti.PatchGUI;
-import axoloti.Theme;
 import axoloti.attribute.*;
 import axoloti.datatypes.Value;
 import axoloti.datatypes.ValueFrac32;
@@ -30,6 +29,7 @@ import axoloti.inlets.InletInstanceZombie;
 import axoloti.outlets.OutletInstance;
 import axoloti.outlets.OutletInstanceZombie;
 import axoloti.parameters.*;
+import axoloti.ui.Theme;
 import axoloti.utils.Constants;
 import components.LabelComponent;
 import components.PopupIcon;

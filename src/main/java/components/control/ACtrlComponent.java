@@ -18,8 +18,8 @@
  */
 package components.control;
 
-import axoloti.Theme;
 import axoloti.object.AxoObjectInstance;
+import axoloti.ui.Theme;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import java.awt.AWTException;

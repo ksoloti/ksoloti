@@ -19,11 +19,12 @@
 package axoloti.parameters;
 
 import axoloti.Preset;
-import axoloti.Theme;
 import axoloti.atom.AtomInstance;
 import axoloti.datatypes.Value;
 import axoloti.object.AxoObjectInstance;
 import axoloti.realunits.NativeToReal;
+import axoloti.ui.Theme;
+
 import static axoloti.utils.CharEscape.charEscape;
 import components.AssignMidiCCComponent;
 import components.AssignPresetMenuItems;

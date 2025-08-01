@@ -18,8 +18,8 @@
  */
 package components;
 
-import axoloti.Theme;
 import axoloti.parameters.ParameterInstanceFrac32UMap;
+import axoloti.ui.Theme;
 import axoloti.utils.Constants;
 import java.awt.Dimension;
 import java.awt.Graphics;

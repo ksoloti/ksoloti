@@ -1,6 +1,5 @@
 package axoloti.dialogs;
 
-import axoloti.Theme;
 import components.ScrollPaneComponent;
 
 import java.awt.Color;
@@ -22,6 +21,8 @@ import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
+
+import axoloti.ui.Theme;
 
 public class ThemeEditor extends JFrame {
 

@@ -19,8 +19,8 @@
 package components.control;
 
 import axoloti.MainFrame;
-import axoloti.Theme;
 import axoloti.realunits.NativeToReal;
+import axoloti.ui.Theme;
 import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;

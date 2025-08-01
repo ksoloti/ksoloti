@@ -19,10 +19,11 @@
 package axoloti.attribute;
 
 import axoloti.SDFileReference;
-import axoloti.Theme;
 import axoloti.atom.AtomInstance;
 import axoloti.attributedefinition.AxoAttribute;
 import axoloti.object.AxoObjectInstance;
+import axoloti.ui.Theme;
+
 import static axoloti.utils.CharEscape.charEscape;
 import components.LabelComponent;
 import java.util.ArrayList;

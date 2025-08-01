@@ -20,6 +20,8 @@ package axoloti;
 
 import axoloti.inlets.InletInstance;
 import axoloti.outlets.OutletInstance;
+import axoloti.ui.Theme;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;

@@ -18,7 +18,7 @@
  */
 package components.control;
 
-import axoloti.Theme;
+import axoloti.ui.Theme;
 import axoloti.utils.KeyUtils;
 import java.awt.BasicStroke;
 import java.awt.Dimension;

@@ -19,8 +19,8 @@
 package axoloti.object;
 
 import axoloti.Patch;
-import axoloti.Theme;
 import axoloti.objecteditor.AxoObjectEditor;
+import axoloti.ui.Theme;
 import components.ButtonComponent;
 import components.ButtonComponent.ActListener;
 // import java.awt.Component;

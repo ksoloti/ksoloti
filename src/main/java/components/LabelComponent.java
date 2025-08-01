@@ -18,7 +18,7 @@
  */
 package components;
 
-import axoloti.Theme;
+import axoloti.ui.Theme;
 import axoloti.utils.Constants;
 
 import java.awt.Dimension;

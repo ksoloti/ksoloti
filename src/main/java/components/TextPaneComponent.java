@@ -17,9 +17,10 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 package components;
-import axoloti.Theme;
 import java.awt.Dimension;
 import javax.swing.JTextPane;
+
+import axoloti.ui.Theme;
 
 /**
  *

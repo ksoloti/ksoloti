@@ -1,13 +1,13 @@
 package components;
 
 import axoloti.PatchGUI;
-import axoloti.Theme;
 import axoloti.datatypes.Bool32;
 import axoloti.datatypes.CharPtr32;
 import axoloti.datatypes.Frac32;
 import axoloti.datatypes.Frac32buffer;
 import axoloti.datatypes.Int32;
 // import axoloti.datatypes.Int32Ptr;
+import axoloti.ui.Theme;
 
 public class VisibleCablePanel extends javax.swing.JPanel {
 

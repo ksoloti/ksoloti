@@ -19,8 +19,8 @@
 package axoloti.parameters;
 
 import axoloti.Preset;
-import axoloti.Theme;
 import axoloti.datatypes.Value;
+import axoloti.ui.Theme;
 import components.AssignMidiCCComponent;
 import components.AssignMidiCCMenuItems;
 import components.AssignModulatorComponent;

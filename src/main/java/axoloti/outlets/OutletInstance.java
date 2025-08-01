@@ -18,11 +18,11 @@
  */
 package axoloti.outlets;
 
-import axoloti.Theme;
 import axoloti.atom.AtomInstance;
 import axoloti.datatypes.DataType;
 import axoloti.iolet.IoletAbstract;
 import axoloti.object.AxoObjectInstance;
+import axoloti.ui.Theme;
 import components.LabelComponent;
 import components.SignalMetaDataIcon;
 import java.awt.Dimension;

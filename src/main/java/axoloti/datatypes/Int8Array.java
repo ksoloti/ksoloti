@@ -17,8 +17,9 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */package axoloti.datatypes;
 
-import axoloti.Theme;
 import java.awt.Color;
+
+import axoloti.ui.Theme;
 
 /**
  *

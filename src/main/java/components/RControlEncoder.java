@@ -19,7 +19,7 @@
 package components;
 
 import axoloti.MainFrame;
-import axoloti.Theme;
+import axoloti.ui.Theme;
 import axoloti.utils.Preferences;
 import components.control.DialComponent;
 import java.awt.AWTException;

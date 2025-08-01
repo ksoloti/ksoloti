@@ -22,6 +22,8 @@ import axoloti.datatypes.DataType;
 import axoloti.inlets.InletInstance;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.outlets.OutletInstance;
+import axoloti.ui.Theme;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;

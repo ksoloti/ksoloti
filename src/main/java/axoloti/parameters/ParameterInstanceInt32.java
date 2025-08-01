@@ -19,10 +19,11 @@
 package axoloti.parameters;
 
 import axoloti.Preset;
-import axoloti.Theme;
 import axoloti.datatypes.Value;
 import axoloti.datatypes.ValueInt32;
 import axoloti.object.AxoObjectInstance;
+import axoloti.ui.Theme;
+
 import org.simpleframework.xml.Attribute;
 
 /**

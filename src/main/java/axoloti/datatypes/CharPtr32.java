@@ -18,8 +18,9 @@
  */
 package axoloti.datatypes;
 
-import axoloti.Theme;
 import java.awt.Color;
+
+import axoloti.ui.Theme;
 
 /**
  *

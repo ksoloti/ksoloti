@@ -18,12 +18,13 @@
  */
 package components;
 
-import axoloti.Theme;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import javax.swing.JComponent;
+
+import axoloti.ui.Theme;
 
 /**
  *

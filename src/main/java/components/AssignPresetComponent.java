@@ -18,8 +18,8 @@
  */
 package components;
 
-import axoloti.Theme;
 import axoloti.parameters.ParameterInstanceFrac32UMap;
+import axoloti.ui.Theme;
 import axoloti.utils.Constants;
 import components.control.HSliderComponent;
 import java.awt.Dimension;

@@ -10,8 +10,8 @@ import org.kordamp.ikonli.fontawesome6.FontAwesomeSolid;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.swing.FontIcon;
 
-import axoloti.Theme;
 import axoloti.ui.CustomTabbedPaneUI;
+import axoloti.ui.Theme;
 
 /**
  * A custom tabbed pane UI that displays a colored icon instead of a colored stripe.

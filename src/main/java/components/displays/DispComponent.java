@@ -18,7 +18,7 @@
  */
 package components.displays;
 
-import axoloti.Theme;
+import axoloti.ui.Theme;
 import axoloti.utils.Constants;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
