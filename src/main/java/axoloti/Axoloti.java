@@ -18,6 +18,7 @@
  */
 package axoloti;
 
+import axoloti.dialogs.AxoSplashScreen;
 import axoloti.object.AxoObjects;
 import axoloti.utils.OSDetect;
 import axoloti.utils.Preferences;
@@ -26,10 +27,11 @@ import axoloti.utils.OSDetect.OS;
 
 
 import java.awt.EventQueue;
-// import java.awt.SplashScreen;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,6 +59,18 @@ public class Axoloti {
      * @param args the command line arguments
      */
     public static void main(final String[] args) {
+
+        AxoSplashScreen splashScreen = null;
+        try {
+            URL splashImageUrl = Axoloti.class.getResource("/resources/ksoloti_splash.png");
+            if (splashImageUrl != null) {
+                splashScreen = new AxoSplashScreen(splashImageUrl, true);
+                splashScreen.showSplashScreen();
+            }
+        } catch (Exception e) {
+            System.out.println(Instant.now() + " [DEBUG] Splash screen could not be created: " + e.getMessage());
+        }
+
         try {
             initProperties();
 
@@ -104,7 +118,7 @@ public class Axoloti {
         System.setProperty("line.separator", "\n");
 
         Synonyms.instance(); // prime it
-        handleCommandLine(args);
+        handleCommandLine(args, splashScreen);
     }
 
     static void BuildEnv(String var, String def) {
@@ -290,7 +304,7 @@ public class Axoloti {
         }
     }
 
-    private static void handleCommandLine(final String args[]) {
+    private static void handleCommandLine(final String args[], final AxoSplashScreen splashScreen) {
         boolean cmdLineOnly = false;
         boolean cmdRunAllTest = false;
         boolean cmdRunPatchTest = false;
@@ -350,9 +364,9 @@ public class Axoloti {
                 objs.LoadAxoObjects();
                 System.out.println("Waiting for libraries to load...");
                 Thread.sleep(10000);
-                // if (SplashScreen.getSplashScreen() != null) {
-                    // SplashScreen.getSplashScreen().close();
-                // }
+                if (splashScreen != null) {
+                    splashScreen.dispose();
+                }
 
                 System.out.println("Ksoloti command line initialised.");
                 int exitCode = 0;
@@ -380,6 +394,9 @@ public class Axoloti {
                     try {
                         MainFrame frame = new MainFrame(args);
                         frame.setVisible(true);
+                        if (splashScreen != null) {
+                            splashScreen.dispose();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
