@@ -31,6 +31,7 @@ import axoloti.ui.Theme;
 import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
+import axoloti.utils.StringRef;
 
 import java.awt.Dimension;
 import java.awt.Point;

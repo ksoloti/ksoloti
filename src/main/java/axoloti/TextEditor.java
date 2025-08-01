@@ -34,6 +34,7 @@ import org.fife.ui.rtextarea.*;
 
 import axoloti.utils.Constants;
 import axoloti.utils.Preferences;
+import axoloti.utils.StringRef;
 
 
 /**

@@ -18,10 +18,10 @@
  */
 package axoloti.attribute;
 
-import axoloti.StringRef;
 import axoloti.TextEditor;
 import axoloti.attributedefinition.AxoAttributeTextEditor;
 import axoloti.object.AxoObjectInstance;
+import axoloti.utils.StringRef;
 import components.ButtonComponent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
