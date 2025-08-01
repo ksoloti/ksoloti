@@ -290,7 +290,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 Clipboard clip = getToolkit().getSystemClipboard();
                 try {
                     /* applyWiresFromExternalOutlets is set to true */
-                    patch.paste((String) clip.getData(DataFlavor.stringFlavor), null, true);
+                    Point mousePos = patch.Layers.getMousePosition();
+                    patch.paste((String) clip.getData(DataFlavor.stringFlavor), mousePos, true);
                 }
                 catch (UnsupportedFlavorException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
