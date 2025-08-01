@@ -40,6 +40,8 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.3.0/lib/libusb4java-1.3.0-linux-aarch64.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.3.0/lib/libusb4java-1.3.0-linux-x86-64.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.3.0/lib/libusb4java-1.3.0-win32-x86-64.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/ikonli-fontawesome6-pack-12.4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/ikonli-swing-12.4.0.jar"/>
 
             <!-- Include source in the .jar for debugging -->
             <fileset dir="src">
@@ -167,6 +169,8 @@
                 <include name="rsyntaxtextarea-*.jar"/>
                 <include name="autocomplete-*.jar"/>
                 <include name="usb4java-*/**/*"/>
+                <include name="ikonli-fontawesome6-pack-*.jar"/>
+                <include name="ikonli-swing-*.jar"/>
             </fileset>
             <fileset dir=".">
                 <include name="doc/*"/>
