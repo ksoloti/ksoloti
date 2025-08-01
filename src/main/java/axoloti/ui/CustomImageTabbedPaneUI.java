@@ -112,6 +112,6 @@ public class CustomImageTabbedPaneUI extends FlatTabbedPaneUI {
     protected Insets getTabInsets(int tabPlacement, int tabIndex) {
         Insets defaultInsets = super.getTabInsets(tabPlacement, tabIndex);
         // We need to increase the left inset to make room for our custom icon.
-        return new Insets(defaultInsets.top, defaultInsets.left + 35, defaultInsets.bottom, defaultInsets.right);
+        return new Insets(defaultInsets.top, defaultInsets.left + 28, defaultInsets.bottom, defaultInsets.right);
     }
 }
