@@ -664,45 +664,22 @@ public class PatchGUI extends Patch {
                 if (o.getY() < minY) {
                     minY = o.getY();
                 }
-            }
-
-            int finalOffsetX = 0, finalOffsetY = 0;
-            if (pos != null) {
-                finalOffsetX = Constants.X_GRID * ((pos.x - minX + Constants.X_GRID / 2) / Constants.X_GRID);
-                finalOffsetY = Constants.Y_GRID * ((pos.y - minY + Constants.Y_GRID / 2) / Constants.Y_GRID);
-            }
-
-            /* Loop to find a non-overlapping spot for the entire group */
-            boolean overlapFound = true;
-            while (overlapFound) {
-                overlapFound = false;
-                for (AxoObjectInstanceAbstract o : p.objectInstances) {
-                    int newposx = o.getX() + finalOffsetX;
-                    int newposy = o.getY() + finalOffsetY;
-
-                    AxoObjectInstanceAbstract existingObj = getObjectAtLocation(newposx, newposy);
-                    if (existingObj != null) {
-                        /* Check that the overlapping object is not part of the pasted group itself */
-                        if (!dict.containsValue(existingObj.getInstanceName())) {
-                            overlapFound = true;
-                            break; /* Overlap found, shift the whole group */
-                        }
-                    }
-                }
-                if (overlapFound) {
-                    finalOffsetX += Constants.X_GRID;
-                    finalOffsetY += Constants.Y_GRID;
-                }
-            }
-
-            /* Apply the final valid position to all objects in the group */
-            for (AxoObjectInstanceAbstract o : p.objectInstances) {
                 o.patch = this;
                 objectInstances.add(o);
                 objectLayerPanel.add(o, 0);
                 o.PostConstructor();
-                int newposx = o.getX() + finalOffsetX;
-                int newposy = o.getY() + finalOffsetY;
+                int newposx = o.getX();
+                int newposy = o.getY();
+
+                if (pos != null) {
+                    // paste at cursor position, with delta snapped to grid
+                    newposx += Constants.X_GRID * ((pos.x - minX + Constants.X_GRID / 2) / Constants.X_GRID);
+                    newposy += Constants.Y_GRID * ((pos.y - minY + Constants.Y_GRID / 2) / Constants.Y_GRID);
+                }
+                while (getObjectAtLocation(newposx, newposy) != null) {
+                    newposx += Constants.X_GRID;
+                    newposy += Constants.Y_GRID;
+                }
                 o.setLocation(newposx, newposy);
                 o.SetSelected(true);
             }
@@ -710,95 +687,89 @@ public class PatchGUI extends Patch {
             objectLayerPanel.validate();
 
             for (Net n : p.nets) {
-                ArrayList<OutletInstance> newSources = new ArrayList<>();
-                ArrayList<InletInstance> newDests = new ArrayList<>();
-                OutletInstance externalSourceOutlet = null;
-
-                boolean hasInternalSource = false;
-                boolean hasInternalDest = false;
-                boolean hasExternalSource = false;
-                boolean hasExternalDest = false;
-
-                /* Process sources */
-                if (n.source != null && !n.source.isEmpty()) {
+                InletInstance connectedInlet = null;
+                OutletInstance connectedOutlet = null;
+                if (n.source != null) {
+                    ArrayList<OutletInstance> source2 = new ArrayList<OutletInstance>();
                     for (OutletInstance o : n.source) {
                         String objname = o.getObjname();
-                        if (dict.containsKey(objname)) {
-                            hasInternalSource = true;
+                        String outletname = o.getOutletname();
+                        if ((objname != null) && (outletname != null)) {
+                            String on2 = dict.get(objname);
+                            if (on2 != null) {
+//                                o.name = on2 + " " + r[1];
                             OutletInstance i = new OutletInstance();
-                            i.outletname = o.getOutletname();
-                            i.objname = dict.get(objname);
-                            newSources.add(i);
-                        }
-                        else {
-                            hasExternalSource = true;
-                            if (applyWiresFromExternalOutlets) {
+                                i.outletname = outletname;
+                                i.objname = on2;
+                                source2.add(i);
+                            } else if (applyWiresFromExternalOutlets) {
                                 AxoObjectInstanceAbstract obj = GetObjectInstance(objname);
-                                if (obj != null) {
-                                    externalSourceOutlet = obj.GetOutletInstance(o.getOutletname());
+                                if ((obj != null) && (connectedOutlet == null)) {
+                                    OutletInstance oi = obj.GetOutletInstance(outletname);
+                                    if (oi != null) {
+                                        connectedOutlet = oi;
                                 }
                             }
                         }
                     }
                 }
+                    n.source = source2;
+                }
 
-                /* Process destinations */
-                if (n.dest != null && !n.dest.isEmpty()) {
+                if (n.dest != null) {
+                    ArrayList<InletInstance> dest2 = new ArrayList<InletInstance>();
                     for (InletInstance o : n.dest) {
                         String objname = o.getObjname();
-                        if (dict.containsKey(objname)) {
-                            hasInternalDest = true;
+                        String inletname = o.getInletname();
+                        if ((objname != null) && (inletname != null)) {
+                            String on2 = dict.get(objname);
+                            if (on2 != null) {
                             InletInstance i = new InletInstance();
-                            i.inletname = o.getInletname();
-                            i.objname = dict.get(objname);
-                            newDests.add(i);
-                        }
-                        else {
-                            hasExternalDest = true;
-                        }
-                    }
-                }
-
-                if (hasInternalSource && hasInternalDest) {
-                    /* This is a purely internal net, always create it */
-                    Net newNet = new Net();
-                    newNet.source = newSources;
-                    newNet.dest = newDests;
-                    newNet.patch = this;
-                    newNet.PostConstructor();
-                    nets.add(newNet);
-                    netLayerPanel.add(newNet);
-                }
-                else if (hasInternalSource && hasExternalDest) {
-                    /* This is an outgoing connection. It should be discarded */
-                }
-                else if (hasExternalSource && hasInternalDest) {
-                    /* This is a connection from an external source to internal destination(s) */
-                    if (applyWiresFromExternalOutlets && externalSourceOutlet != null) {
-                        /* Patch (duplicate) the connection coming in from the existing external outlet */
-                        for (InletInstance newInletRef : newDests) {
-                            InletInstance newInlet = getInletByReference(newInletRef.getObjname(), newInletRef.getInletname());
-                            if (newInlet != null) {
-                                AddConnection(newInlet, externalSourceOutlet);
+                                i.inletname = inletname;
+                                i.objname = on2;
+                                dest2.add(i);
+                            } else if (applyWiresFromExternalOutlets) {
+                                AxoObjectInstanceAbstract obj = GetObjectInstance(objname);
+                                if (obj != null) {
+                                    InletInstance ii = obj.GetInletInstance(inletname);
+                                    if (ii != null) {
+                                        connectedInlet = ii;
+                                    }
+                                }
                             }
                         }
                     }
-                    else {
-                        /* If the net has multiple destinations within the group, it's a floating net (dashed lines) */
-                        if (newDests.size() > 1) {
-                            Net newNet = new Net();
-                            newNet.source = new ArrayList<>();
-                            newNet.dest = newDests;
-                            newNet.patch = this;
-                            newNet.PostConstructor();
-                            nets.add(newNet);
-                            netLayerPanel.add(newNet);
+                    n.dest = dest2;
+                }
+                if (n.source.size() + n.dest.size() > 1) {
+                    if ((connectedInlet == null) && (connectedOutlet == null)) {
+                        n.patch = this;
+                        n.PostConstructor();
+                        nets.add(n);
+                        netLayerPanel.add(n);
+                    } else if (connectedInlet != null) {
+                        for (InletInstance o : n.dest) {
+                            InletInstance o2 = getInletByReference(o.getObjname(), o.getInletname());
+                            if ((o2 != null) && (o2 != connectedInlet)) {
+                                AddConnection(connectedInlet, o2);
+                            }
                         }
-                        /* If there is only one destination within the group, the net is discarded */
+                        for (OutletInstance o : n.source) {
+                            OutletInstance o2 = getOutletByReference(o.getObjname(), o.getOutletname());
+                            if (o2 != null) {
+                                AddConnection(connectedInlet, o2);
+                            }
+                        }
+                    } else if (connectedOutlet != null) {
+                        for (InletInstance o : n.dest) {
+                            InletInstance o2 = getInletByReference(o.getObjname(), o.getInletname());
+                            if (o2 != null) {
+                                AddConnection(o2, connectedOutlet);
                     }
                 }
             }
-
+                }
+            }
             AdjustSize();
             SetDirty();
         }
