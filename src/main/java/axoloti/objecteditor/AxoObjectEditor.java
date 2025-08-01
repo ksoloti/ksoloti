@@ -32,6 +32,7 @@ import axoloti.object.AxoObjectInstance;
 import axoloti.outlets.Outlet;
 import axoloti.parameters.Parameter;
 import axoloti.ui.CustomImageTabbedPaneUI;
+import axoloti.ui.MaterialColors;
 import axoloti.ui.SvgIconLoader;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
@@ -283,19 +284,19 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         acProvider = new AxoCompletionProvider();
 
         Map<Integer, Icon> customIcons = new HashMap<>();
-        customIcons.put(0, SvgIconLoader.load("/resources/icons/message-square-info-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
-        customIcons.put(1, SvgIconLoader.load("/resources/icons/tags-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
-        customIcons.put(2, SvgIconLoader.load("/resources/icons/coins-alt-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
-        customIcons.put(3, SvgIconLoader.load("/resources/icons/monitor-heart-rate-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
-        customIcons.put(4, SvgIconLoader.load("/resources/icons/gem-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
-        customIcons.put(5, SvgIconLoader.load("/resources/icons/arrow-narrow-right-alignment-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
-        customIcons.put(6, SvgIconLoader.load("/resources/icons/arrow-narrow-right-move-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
-        customIcons.put(7, SvgIconLoader.load("/resources/icons/sliders-up-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
-        customIcons.put(8, SvgIconLoader.load("/resources/icons/shuffle-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
-        customIcons.put(9, SvgIconLoader.load("/resources/icons/wave-pulse-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
-        customIcons.put(10, SvgIconLoader.load("/resources/icons/music-note-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
-        customIcons.put(11, SvgIconLoader.load("/resources/icons/trash-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
-        customIcons.put(12, SvgIconLoader.load("/resources/icons/code-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
+        customIcons.put(0, SvgIconLoader.load("/resources/icons/message-square-info-svgrepo-com.svg", 16, MaterialColors.RED_500));
+        customIcons.put(1, SvgIconLoader.load("/resources/icons/tags-svgrepo-com.svg", 16, MaterialColors.PURPLE_500));
+        customIcons.put(2, SvgIconLoader.load("/resources/icons/coins-alt-svgrepo-com.svg", 16, MaterialColors.INDIGO_500));
+        customIcons.put(3, SvgIconLoader.load("/resources/icons/monitor-heart-rate-svgrepo-com.svg", 16, MaterialColors.LIGHT_BLUE_500));
+        customIcons.put(4, SvgIconLoader.load("/resources/icons/gem-svgrepo-com.svg", 16, MaterialColors.TEAL_500));
+        customIcons.put(5, SvgIconLoader.load("/resources/icons/arrow-narrow-right-alignment-svgrepo-com.svg", 16, MaterialColors.LIGHT_GREEN_500));
+        customIcons.put(6, SvgIconLoader.load("/resources/icons/arrow-narrow-right-move-svgrepo-com.svg", 16, MaterialColors.YELLOW_500));
+        customIcons.put(7, SvgIconLoader.load("/resources/icons/sliders-up-svgrepo-com.svg", 16, MaterialColors.ORANGE_500));
+        customIcons.put(8, SvgIconLoader.load("/resources/icons/shuffle-svgrepo-com.svg", 16, MaterialColors.PINK_500));
+        customIcons.put(9, SvgIconLoader.load("/resources/icons/wave-pulse-svgrepo-com.svg", 16, MaterialColors.DEEP_PURPLE_500));
+        customIcons.put(10, SvgIconLoader.load("/resources/icons/music-note-svgrepo-com.svg", 16, MaterialColors.BLUE_500));
+        customIcons.put(11, SvgIconLoader.load("/resources/icons/trash-svgrepo-com.svg", 16, MaterialColors.CYAN_500));
+        customIcons.put(12, SvgIconLoader.load("/resources/icons/code-svgrepo-com.svg", 16, MaterialColors.GREY_500));
 
         CustomImageTabbedPaneUI customTabUI = new CustomImageTabbedPaneUI(customIcons);
         jTabbedPane1.setUI(customTabUI);
@@ -676,7 +677,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
     // @SuppressWarnings("unchecked")
     
-    private void initComponents() {
+private void initComponents() {
 
         jInternalFrame1 = new javax.swing.JInternalFrame();
         jLabel4 = new javax.swing.JLabel();
@@ -763,10 +764,10 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
         getContentPane().add(jLabel4);
-
+        
         jPanelTabs.setPreferredSize(new java.awt.Dimension(640, 100));
         jPanelTabs.setLayout(new BoxLayout(jPanelTabs, BoxLayout.PAGE_AXIS));
-
+        
         jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.LEFT);
         jTabbedPane1.setPreferredSize(new java.awt.Dimension(640, 100));
         jTabbedPane1.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
