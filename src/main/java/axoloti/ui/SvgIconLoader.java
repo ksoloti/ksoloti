@@ -19,24 +19,25 @@
 
 package axoloti.ui;
 
-    
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import com.github.weisj.jsvg.SVGDocument;
-import com.github.weisj.jsvg.parser.SVGLoader;
-import com.github.weisj.jsvg.view.ViewBox;
+
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.ImageTranscoder;
+import org.apache.batik.util.XMLResourceDescriptor;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.svg.SVGDocument;
+
 
 /**
  * A utility class to load SVG files from the classpath and convert them into 
@@ -49,48 +50,119 @@ public class SvgIconLoader {
     private static final Logger LOGGER = Logger.getLogger(SvgIconLoader.class.getName());
 
     /**
-     * Loads an SVG file from the specified resource path, resizes it,
-     * and returns it as an ImageIcon.
-     * @param resourcePath The path to the SVG file (e.g., "/resources/icons/myicon.svg").
+     * Loads an SVG file from the classpath, transcodes it to an Icon, and dynamically
+     * applies a color to all of its visible elements.
+     *
+     * @param path The path to the SVG file, e.g., "/resources/icons/my-icon.svg".
      * @param size The desired size (width and height) of the icon in pixels.
-     * @return An ImageIcon representing the rendered SVG, or null if loading fails.
+     * @param color The color to apply to the icon's 'fill' and 'stroke' properties.
+     * @return A Swing Icon object, or null if loading fails.
      */
-    public static Icon load(String resourcePath, int size) {
-        try (InputStream in = SvgIconLoader.class.getResourceAsStream(resourcePath)) {
-            if (in == null) {
-                LOGGER.log(Level.SEVERE, "Could not find SVG resource at: " + resourcePath);
-                return null;
-            }
-            
-            byte[] svgBytes = in.readAllBytes();
-            String base64Svg = Base64.getEncoder().encodeToString(svgBytes);
-            String svgData = "data:image/svg+xml;base64," + base64Svg;
-            URI tempUri = new URI(svgData);
-            URL tempUrl = tempUri.toURL();
-
-            SVGLoader loader = new SVGLoader();
-            SVGDocument document = loader.load(tempUrl);
-
-            if (document == null) {
-                LOGGER.log(Level.SEVERE, "Failed to parse SVG document from URL: " + tempUrl);
+    public static Icon load(String path, int size, Color color) {
+        try (InputStream inputStream = SvgIconLoader.class.getResourceAsStream(path)) {
+            // Check if the resource stream is available
+            if (inputStream == null) {
+                LOGGER.log(Level.SEVERE, "Error: SVG resource not found at " + path);
                 return null;
             }
 
-            BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2d = image.createGraphics();
+            String parser = XMLResourceDescriptor.getXMLParserClassName();
+            SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(parser);
+            SVGDocument svgDocument = factory.createSVGDocument(path, inputStream);
 
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            // Get the root element of the SVG document
+            Element rootElement = svgDocument.getDocumentElement();
+
+            // Recursively apply the new color to all relevant SVG elements
+            applyColorToSvg(rootElement, color);
+
+            // Create a custom transcoder to convert the SVG to a BufferedImage
+            CustomImageTranscoder transcoder = new CustomImageTranscoder();
             
-            document.render(null, g2d, new ViewBox(0, 0, size, size));
+            // Set the desired size for the transcoded image
+            transcoder.addTranscodingHint(ImageTranscoder.KEY_WIDTH, (float) size);
+            transcoder.addTranscodingHint(ImageTranscoder.KEY_HEIGHT, (float) size);
+
+            // Transcode the SVG document
+            TranscoderInput input = new TranscoderInput(svgDocument);
+            transcoder.transcode(input, null);
             
-            g2d.dispose();
-            
+            // Get the transcoded image and return it as an Icon
+            BufferedImage image = transcoder.getBufferedImage();
             return new ImageIcon(image);
 
-        } catch (IOException | URISyntaxException e) {
-            LOGGER.log(Level.SEVERE, "Error loading SVG from resource: " + resourcePath, e);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error loading or transcoding SVG: " + e.getMessage());
+            e.printStackTrace();
             return null;
+        }
+    }
+
+    /**
+     * Helper method to recursively traverse the SVG DOM and change the color of elements.
+     * This method looks for a 'fill' or 'stroke' attribute and sets it to the specified color,
+     * but only if the existing attribute is not set to "none".
+     *
+     * @param node The current node in the DOM tree.
+     * @param color The color to apply.
+     */
+    private static void applyColorToSvg(Node node, Color color) {
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+            Element element = (Element) node;
+
+            // Convert the color to a hex string format, e.g., "#FF0000"
+            String colorHex = "#" + Integer.toHexString(color.getRGB()).substring(2);
+
+            // Apply color to the fill property ONLY IF it's not set to "none"
+            if (element.hasAttribute("fill") && !element.getAttribute("fill").equalsIgnoreCase("none")) {
+                element.setAttribute("fill", colorHex);
+            }
+            // Apply color to the stroke property ONLY IF it's not set to "none"
+            if (element.hasAttribute("stroke") && !element.getAttribute("stroke").equalsIgnoreCase("none")) {
+                element.setAttribute("stroke", colorHex);
+            }
+            
+            // Also handle the 'style' attribute carefully
+            if (element.hasAttribute("style")) {
+                String style = element.getAttribute("style");
+                // Check if the style contains a fill that is not 'none' before replacing
+                if (!style.contains("fill:none")) {
+                    style = style.replaceAll("fill:#[a-fA-F0-9]{6}|fill:rgb\\(.*\\)", "fill:" + colorHex);
+                }
+                if (!style.contains("stroke:none")) {
+                    style = style.replaceAll("stroke:#[a-fA-F0-9]{6}|stroke:rgb\\(.*\\)", "stroke:" + colorHex);
+                }
+                element.setAttribute("style", style);
+            }
+        }
+
+        // Recursively call for all child nodes
+        NodeList children = node.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            applyColorToSvg(children.item(i), color);
+        }
+    }
+
+    /**
+     * A simple, named class to extend the abstract ImageTranscoder and allow us
+     * to capture the transcoded BufferedImage.
+     */
+    private static class CustomImageTranscoder extends ImageTranscoder {
+        private BufferedImage image;
+
+        @Override
+        public BufferedImage createImage(int w, int h) {
+            this.image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            return this.image;
+        }
+
+        @Override
+        public void writeImage(BufferedImage img, TranscoderOutput output) {
+            // Do nothing, we will use the internal image buffer
+        }
+
+        public BufferedImage getBufferedImage() {
+            return image;
         }
     }
 }

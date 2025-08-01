@@ -20,6 +20,7 @@
 package axoloti.ui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -29,68 +30,88 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.Icon;
 
+import com.formdev.flatlaf.ui.FlatTabbedPaneUI;
+
 /**
  * A custom tabbed pane UI that displays a custom image icon instead of a colored stripe.
  * It uses the same color mapping and layout as the parent CustomTabbedPaneUI.
  * 
  * @author Ksoloti
  */
-public class CustomImageTabbedPaneUI extends CustomTabbedPaneUI {
+public class CustomImageTabbedPaneUI extends FlatTabbedPaneUI {
 
     private Map<Integer, Icon> tabIcons = new HashMap<>();
-    
-    // We'll use a constructor to accept a map of custom images.
+    private Map<Integer, Color> tabColors = new HashMap<>();
+
     public CustomImageTabbedPaneUI(Map<Integer, Icon> icons) {
-        super(); // Call the parent constructor to initialize tabColors
+        super();
         this.tabIcons = icons;
     }
-    
-    // We can define the fixed position of the icons and text labels here.
-    private static final int ICON_X_CENTER_OFFSET = 18; // Adjust to move icons left/right
-    private static final int TEXT_X_OFFSET = 38;        // Adjust to move text left/right
+
+    public void setTabColor(int tabIndex, Color color) {
+        tabColors.put(tabIndex, color);
+    }
+
+    // Define the fixed position of the icons and text labels here.
+    private static final int ICON_X_CENTER_OFFSET = 18;
+    private static final int TEXT_X_OFFSET = 38;
 
     @Override
     protected void paintTab(Graphics g, int tabPlacement, Rectangle[] rects, int tabIndex, Rectangle iconRect, Rectangle textRect) {
+        // Let the parent class (FlatTabbedPaneUI) handle the default painting of the entire tab.
+        // This includes the background, selection marker, and hover effects.
+        super.paintTab(g, tabPlacement, rects, tabIndex, iconRect, textRect);
+
         Graphics2D g2d = (Graphics2D) g.create();
         Rectangle tabRect = rects[tabIndex];
 
-        // 1. Get the custom icon for this tab
+        // Get the custom icon for this tab.
         Icon icon = tabIcons.get(tabIndex);
         if (icon == null) {
-            // Fallback: If no icon is provided, paint the tab normally.
-            super.paintTab(g, tabPlacement, rects, tabIndex, iconRect, textRect);
+            // If no icon is provided, we'll let the default text be drawn by the parent.
+            g2d.dispose();
             return;
         }
 
-        // 2. Get the color from the parent's map for the text
-        Color tabColor = tabColors.getOrDefault(tabIndex, Color.LIGHT_GRAY);
-        
-        // We do not call the parent's paintTabBackground() here to prevent stripes.
-
-        // 3. Calculate icon position for centering, based on the icon's width
+        // Calculate icon position for centering.
         int iconX = tabRect.x + ICON_X_CENTER_OFFSET - (icon.getIconWidth() / 2);
         int iconY = tabRect.y + (tabRect.height - icon.getIconHeight()) / 2;
-
-        // 4. Calculate text position for left alignment
-        int textX = tabRect.x + TEXT_X_OFFSET;
-        FontMetrics metrics = g.getFontMetrics();
-        int textY = tabRect.y + (tabRect.height - metrics.getHeight()) / 2 + metrics.getAscent();
-
-        // 5. Paint the icon and the text
+        
+        // Paint the icon.
         icon.paintIcon(tabPane, g2d, iconX, iconY);
-        
-        g2d.setColor(Color.WHITE); // Use white text for better contrast on the dark background
-        g2d.setFont(g.getFont());
-        g2d.drawString(tabPane.getTitleAt(tabIndex), textX, textY);
-        
+
         g2d.dispose();
     }
-    
+
+    @Override
+    protected void paintText(Graphics g, int tabPlacement, Font font, FontMetrics metrics, int tabIndex, String title, Rectangle textRect, boolean isSelected) {
+        // Only paint the text if there is NO custom icon.
+        // This prevents the double-drawing issue.
+        if (tabIcons.get(tabIndex) == null) {
+            super.paintText(g, tabPlacement, font, metrics, tabIndex, title, textRect, isSelected);
+        } else {
+            // If a custom icon is present, we draw our own text.
+            Graphics2D g2d = (Graphics2D) g.create();
+            Rectangle tabRect = getTabBounds(tabIndex, new Rectangle());
+            
+            // Calculate text position for left alignment.
+            int textX = tabRect.x + TEXT_X_OFFSET;
+            int textY = tabRect.y + (tabRect.height - metrics.getHeight()) / 2 + metrics.getAscent();
+
+            // Get the custom color for the text, or use the default foreground.
+            Color tabColor = tabColors.getOrDefault(tabIndex, tabPane.getForeground());
+            g2d.setColor(tabColor);
+            g2d.setFont(g.getFont());
+            g2d.drawString(title, textX, textY);
+            
+            g2d.dispose();
+        }
+    }
+
     @Override
     protected Insets getTabInsets(int tabPlacement, int tabIndex) {
         Insets defaultInsets = super.getTabInsets(tabPlacement, tabIndex);
-        // The total padding is now controlled by the new X offsets.
-        // We set a large enough value here to ensure no clipping occurs.
-        return new Insets(defaultInsets.top, defaultInsets.left + 50, defaultInsets.bottom, defaultInsets.right);
+        // We need to increase the left inset to make room for our custom icon.
+        return new Insets(defaultInsets.top, defaultInsets.left + 35, defaultInsets.bottom, defaultInsets.right);
     }
 }
