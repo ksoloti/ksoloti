@@ -39,7 +39,7 @@ public class CustomTabbedPaneUI extends FlatTabbedPaneUI {
 
     /* Adds a colored stripe to a tab */
 
-    private Map<Integer, Color> tabColors = new HashMap<>();
+    protected Map<Integer, Color> tabColors = new HashMap<>();
     private int stripeWidth = 3; /* Width of the colored stripe. Currently 3 to match FlatLaf's selected tab stripe on the right */ 
 
     public CustomTabbedPaneUI() {
