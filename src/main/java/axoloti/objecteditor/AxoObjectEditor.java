@@ -279,7 +279,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         acProvider = new AxoCompletionProvider();
 
-        CustomTabbedPaneUI customTabUI = new CustomTabbedPaneUI();
+        IconTabbedPaneUI customTabUI = new IconTabbedPaneUI();
         jTabbedPane1.setUI(customTabUI);
         
         fileMenu1.initComponents();
