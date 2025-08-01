@@ -11,6 +11,7 @@ import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.swing.FontIcon;
 
 import axoloti.Theme;
+import axoloti.ui.CustomTabbedPaneUI;
 
 /**
  * A custom tabbed pane UI that displays a colored icon instead of a colored stripe.
