@@ -17,7 +17,7 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package axoloti;
+package axoloti.listener;
 
 /**
  *

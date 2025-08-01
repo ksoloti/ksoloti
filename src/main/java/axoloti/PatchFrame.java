@@ -20,6 +20,7 @@
 package axoloti;
 
 import axoloti.dialogs.KeyboardNavigableOptionPane;
+import axoloti.listener.BoardIDNameListener;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
 import axoloti.parameters.ParameterInstance;

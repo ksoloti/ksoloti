@@ -26,6 +26,7 @@ import axoloti.dialogs.FileManagerFrame;
 import axoloti.dialogs.KeyboardFrame;
 import axoloti.dialogs.KeyboardNavigableOptionPane;
 import axoloti.dialogs.PatchBank;
+import axoloti.listener.BoardIDNameListener;
 import axoloti.object.AxoObjects;
 import axoloti.ui.Theme;
 import axoloti.usb.Usb;
