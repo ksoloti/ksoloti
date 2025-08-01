@@ -43,6 +43,7 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/ikonli-fontawesome6-pack-12.4.0.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/ikonli-core-12.4.0.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/ikonli-swing-12.4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/jsvg-2.0.0.jar"/>
 
             <!-- Include source in the .jar for debugging -->
             <fileset dir="src">
@@ -173,6 +174,7 @@
                 <include name="ikonli-fontawesome6-pack-*.jar"/>
                 <include name="ikonli-core-*.jar"/>
                 <include name="ikonli-swing-*.jar"/>
+                <include name="jsvg-*.jar"/>
             </fileset>
             <fileset dir=".">
                 <include name="doc/*"/>

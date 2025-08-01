@@ -10,3 +10,4 @@ flatlaf-intellij-themes - for modern UI
 marlin - for more efficient graphic rendering
 rsyntaxtextarea, autocomplete - object editor code syntax
 ikonli.fontawesome6 - icon packs
+jsvg - handle SVG icons
