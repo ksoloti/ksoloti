@@ -4,7 +4,7 @@ import static axoloti.FileUtils.axtFileFilter;
 import static axoloti.MainFrame.fc;
 
 import axoloti.dialogs.KeyboardNavigableOptionPane;
-import axoloti.utils.ColorConverter;
+import axoloti.ui.ColorConverter;
 import axoloti.utils.Preferences;
 
 import java.awt.Color;
