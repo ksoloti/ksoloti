@@ -21,8 +21,8 @@ package axoloti.objecteditor;
 import axoloti.atom.AtomDefinition;
 import axoloti.datatypes.ValueFrac32;
 import axoloti.datatypes.ValueInt32;
+import axoloti.listener.ObjectModifiedListener;
 import axoloti.object.AxoObject;
-import axoloti.object.ObjectModifiedListener;
 import components.ScrollPaneComponent;
 
 import java.awt.event.ActionEvent;

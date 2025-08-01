@@ -66,6 +66,7 @@ import axoloti.inlets.InletFrac32Pos;
 import axoloti.inlets.InletInt32;
 import axoloti.inlets.InletInt32Bipolar;
 import axoloti.inlets.InletInt32Pos;
+import axoloti.listener.ObjectModifiedListener;
 import axoloti.objecteditor.AxoObjectEditor;
 import axoloti.outlets.Outlet;
 import axoloti.outlets.OutletBool32;

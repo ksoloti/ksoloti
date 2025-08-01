@@ -21,6 +21,7 @@ package axoloti.object;
 import axoloti.Modulator;
 import axoloti.Patch;
 import axoloti.inlets.Inlet;
+import axoloti.listener.ObjectModifiedListener;
 import axoloti.outlets.Outlet;
 import java.awt.Point;
 import java.util.ArrayList;
