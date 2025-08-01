@@ -18,14 +18,13 @@
  */
 package axoloti.dialogs;
 
-import axoloti.ConnectionStatusListener;
-
 import static axoloti.MainFrame.fc;
 
 import axoloti.SDCardInfo;
-import axoloti.SDCardMountStatusListener;
 import axoloti.SDFileInfo;
 import axoloti.USBBulkConnection;
+import axoloti.listener.ConnectionStatusListener;
+import axoloti.listener.SDCardMountStatusListener;
 import axoloti.utils.AxoSDFileTableModel;
 import axoloti.utils.AxoSDFileTreeCellRenderer;
 import axoloti.utils.Constants;

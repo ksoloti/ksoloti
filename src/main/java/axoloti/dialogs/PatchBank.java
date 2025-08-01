@@ -18,7 +18,6 @@
  */
 package axoloti.dialogs;
 
-import axoloti.ConnectionStatusListener;
 import axoloti.DocumentWindow;
 import axoloti.DocumentWindowList;
 import static axoloti.FileUtils.axpFileFilter;
@@ -27,9 +26,10 @@ import static axoloti.MainFrame.fc;
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
 import axoloti.SDCardInfo;
-import axoloti.SDCardMountStatusListener;
 import axoloti.SDFileInfo;
 import axoloti.USBBulkConnection;
+import axoloti.listener.ConnectionStatusListener;
+import axoloti.listener.SDCardMountStatusListener;
 import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 

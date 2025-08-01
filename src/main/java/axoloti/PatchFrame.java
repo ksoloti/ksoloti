@@ -21,6 +21,8 @@ package axoloti;
 
 import axoloti.dialogs.KeyboardNavigableOptionPane;
 import axoloti.listener.BoardIDNameListener;
+import axoloti.listener.ConnectionStatusListener;
+import axoloti.listener.SDCardMountStatusListener;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
 import axoloti.parameters.ParameterInstance;

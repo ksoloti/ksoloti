@@ -18,8 +18,8 @@
  */
 package axoloti.dialogs;
 
-import axoloti.ConnectionStatusListener;
 import axoloti.USBBulkConnection;
+import axoloti.listener.ConnectionStatusListener;
 import axoloti.utils.KeyUtils;
 import components.PianoComponent;
 import components.control.ACtrlEvent;

@@ -20,6 +20,9 @@
 package axoloti;
 
 import axoloti.listener.BoardIDNameListener;
+import axoloti.listener.ConnectionFlagsListener;
+import axoloti.listener.ConnectionStatusListener;
+import axoloti.listener.SDCardMountStatusListener;
 import axoloti.targetprofile.ksoloti_core;
 import axoloti.utils.Preferences;
 
