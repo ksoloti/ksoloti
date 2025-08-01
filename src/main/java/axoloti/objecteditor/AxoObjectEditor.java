@@ -31,6 +31,8 @@ import axoloti.object.AxoObjectAbstract;
 import axoloti.object.AxoObjectInstance;
 import axoloti.outlets.Outlet;
 import axoloti.parameters.Parameter;
+import axoloti.ui.CustomImageTabbedPaneUI;
+import axoloti.ui.SvgIconLoader;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
 import axoloti.utils.OSDetect;
@@ -45,12 +47,15 @@ import java.awt.event.KeyEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JFrame;
@@ -62,8 +67,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.kordamp.ikonli.fontawesome6.FontAwesomeSolid;
-import org.kordamp.ikonli.swing.FontIcon;
 import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
@@ -279,7 +282,22 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         acProvider = new AxoCompletionProvider();
 
-        IconTabbedPaneUI customTabUI = new IconTabbedPaneUI();
+        Map<Integer, Icon> customIcons = new HashMap<>();
+        customIcons.put(0, SvgIconLoader.load("/resources/icons/message-square-info-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
+        customIcons.put(1, SvgIconLoader.load("/resources/icons/tags-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
+        customIcons.put(2, SvgIconLoader.load("/resources/icons/coins-alt-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
+        customIcons.put(3, SvgIconLoader.load("/resources/icons/monitor-heart-rate-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
+        customIcons.put(4, SvgIconLoader.load("/resources/icons/gem-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
+        customIcons.put(5, SvgIconLoader.load("/resources/icons/arrow-narrow-right-alignment-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
+        customIcons.put(6, SvgIconLoader.load("/resources/icons/arrow-narrow-right-move-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
+        customIcons.put(7, SvgIconLoader.load("/resources/icons/sliders-up-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
+        customIcons.put(8, SvgIconLoader.load("/resources/icons/shuffle-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
+        customIcons.put(9, SvgIconLoader.load("/resources/icons/wave-pulse-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
+        customIcons.put(10, SvgIconLoader.load("/resources/icons/music-note-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
+        customIcons.put(11, SvgIconLoader.load("/resources/icons/trash-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
+        customIcons.put(12, SvgIconLoader.load("/resources/icons/code-svgrepo-com.svg", 16, axoloti.ui.Theme.Component_Foreground));
+
+        CustomImageTabbedPaneUI customTabUI = new CustomImageTabbedPaneUI(customIcons);
         jTabbedPane1.setUI(customTabUI);
         
         fileMenu1.initComponents();
