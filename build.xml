@@ -6,7 +6,6 @@
     <description>Builds, tests, and runs the project Ksoloti.</description>
     <import file="nbproject/build-impl.xml"/>
 
-
     <property name="built_by"  value="${user.name}"/>
     <tstamp/>
 
@@ -22,7 +21,9 @@
                 <attribute name="Built-Date" value="${TODAY}"/>
                 <attribute name="Implementation-Version" value="${build.version}"/>
             </manifest>
+
             <fileset dir="build/classes"/>
+
             <zipfileset excludes="META-INF/*.SF" src="lib/org.eclipse.jgit-7.3.0.202506031305-r.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/jsch-2.27.2.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/flatlaf-3.6.1.jar"/>
@@ -40,6 +41,7 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.3.0/lib/libusb4java-1.3.0-linux-x86-64.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/usb4java-1.3.0/lib/libusb4java-1.3.0-win32-x86-64.jar"/>
 
+            <!-- Include source in the .jar for debugging -->
             <fileset dir="src">
                 <include name="**/*.java"/>
             </fileset>
@@ -49,145 +51,101 @@
     <target name="-post-jar" depends="bundle, runtime"></target>
 
     <target name="runtime" if="build.runtime" depends="calc.short.version">
-        <exec dir="." executable="rm" >
-            <arg line="-rf build/runtime/"/>
-        </exec>
+        <delete dir="build/runtime" includeemptydirs="true"/>
+
         <mkdir dir="build/runtime"/>
-        <mkdir dir="build/runtime/macosx" />
-        <mkdir dir="build/runtime/tmp/axoloti_runtime" />
+        <mkdir dir="build/runtime/macosx"/>
+        <mkdir dir="build/runtime/tmp/axoloti_runtime"/>
 
         <!--Mac -->
-        <exec dir="." executable="cp" os="Mac OS X">
-            <arg line="-R platform_macos build/runtime/tmp/axoloti_runtime"/>
-        </exec>
+        <copy todir="build/runtime/tmp/axoloti_runtime" if="is.mac">
+            <fileset dir="platform_macos"/>
+        </copy>
 
-        <exec dir="." executable="rm" os="Mac OS X">
-            <arg line="-rf build/runtime/tmp/axoloti_runtime/platform_macos/share"/>
-        </exec>
-
-        <exec dir="." executable="rm" os="Mac OS X">
-            <arg line="-rf build/runtime/tmp/axoloti_runtime/platform_macos/src"/>
-        </exec>
-
-        <exec dir="." executable="rm" os="Mac OS X">
-            <arg line="-rf build/runtime/tmp/axoloti_runtime/platform_macos/arm-none-eabi/lib/armv6-m build/runtime/tmp/axoloti_runtime/platform_macos/arm-none-eabi/lib/armv7-ar build/runtime/tmp/axoloti_runtime/platform_macos/arm-none-eabi/lib/armv7-m "/>
-        </exec>
-
-        <exec dir="." executable="rm" os="Mac OS X">
-            <arg line="-rf build/runtime/tmp/axoloti_runtime/platform_macos/lib/gcc/arm-none-eabi/4.9.3/armv6-m build/runtime/tmp/axoloti_runtime/platform_macos/lib/gcc/arm-none-eabi/4.9.3/armv7-ar build/runtime/tmp/axoloti_runtime/platform_macos/lib/gcc/arm-none-eabi/4.9.3/armv7-m "/>
-        </exec>
+        <delete dir="build/runtime/tmp/axoloti_runtime/platform_macos/share" if="is.mac"/>
+        <delete dir="build/runtime/tmp/axoloti_runtime/platform_macos/src" if="is.mac"/>
+        <delete if="is.mac">
+            <fileset dir="build/runtime/tmp/axoloti_runtime/platform_macos/arm-none-eabi/lib">
+                <include name="armv6-m"/>
+                <include name="armv7-ar"/>
+                <include name="armv7-m"/>
+            </fileset>
+        </delete>
+        <delete if="is.mac">
+            <fileset dir="build/runtime/tmp/axoloti_runtime/platform_macos/lib/gcc/arm-none-eabi/4.9.3">
+                <include name="armv6-m"/>
+                <include name="armv7-ar"/>
+                <include name="armv7-m"/>
+            </fileset>
+        </delete>
 
         <exec dir="." executable="hdiutil" os="Mac OS X">
-            <arg line="create -megabytes 512 build/runtime/macosx/axo_runtime_mac_${short.version}.dmg -volname 'Axoloti Runtime' -srcfolder build/runtime/tmp" />
+            <arg line="create -megabytes 512 build/runtime/macosx/axo_runtime_mac_${short.version}.dmg -volname 'Axoloti Runtime' -srcfolder build/runtime/tmp"/>
         </exec>
 
         <!--Linux -->
-        <exec dir="." executable="cp" os="Linux">
-            <arg line="-R platform_linux build/runtime/tmp/axoloti_runtime"/>
-        </exec>
+        <copy todir="build/runtime/tmp/axoloti_runtime" if="is.linux">
+            <fileset dir="platform_linux"/>
+        </copy>
 
-        <exec dir="." executable="rm" os="Linux">
-            <arg line="-rf build/runtime/tmp/axoloti_runtime/platform_linux/share"/>
-        </exec>
-
-        <exec dir="." executable="rm" os="Linux">
-            <arg line="-rf build/runtime/tmp/axoloti_runtime/platform_linux/src"/>
-        </exec>
-
-        <exec dir="." executable="rm" os="Linux">
-            <arg line="-rf build/runtime/tmp/axoloti_runtime/platform_linux/arm-none-eabi/lib/armv6-m build/runtime/tmp/axoloti_runtime/platform_linux/arm-none-eabi/lib/armv7-ar build/runtime/tmp/axoloti_runtime/platform_linux/arm-none-eabi/lib/armv7-m "/>
-        </exec>
-
-        <exec dir="." executable="rm" os="Linux">
-            <arg line="-rf build/runtime/tmp/axoloti_runtime/platform_linux/lib/gcc/arm-none-eabi/4.9.3/armv6-m build/runtime/tmp/axoloti_runtime/platform_linux/lib/gcc/arm-none-eabi/4.9.3/armv7-ar build/runtime/tmp/axoloti_runtime/platform_linux/lib/gcc/arm-none-eabi/4.9.3/armv7-m "/>
-        </exec>
+        <delete dir="build/runtime/tmp/axoloti_runtime/platform_linux/share" if="is.linux"/>
+        <delete dir="build/runtime/tmp/axoloti_runtime/platform_linux/src" if="is.linux"/>
+        <delete if="is.linux">
+            <fileset dir="build/runtime/tmp/axoloti_runtime/platform_linux/arm-none-eabi/lib">
+                <include name="armv6-m"/>
+                <include name="armv7-ar"/>
+                <include name="armv7-m"/>
+            </fileset>
+        </delete>
+        <delete if="is.linux">
+            <fileset dir="build/runtime/tmp/axoloti_runtime/platform_linux/lib/gcc/arm-none-eabi/4.9.3">
+                <include name="armv6-m"/>
+                <include name="armv7-ar"/>
+                <include name="armv7-m"/>
+            </fileset>
+        </delete>
 
         <mkdir dir="build/runtime/linux"/>
-        <exec dir="build/runtime/tmp" executable="tar" os="Linux">
-
-            <arg value="-zcvf"/>
-            <arg value="../linux/axo_runtime_linux_${short.version}.tgz"/>
-            <arg value="."/>
-        </exec>
+        <tar destfile="build/runtime/linux/axo_runtime_linux_${short.version}.tgz" compression="gzip" if="is.linux">
+            <fileset dir="build/runtime/tmp"/>
+        </tar>
 
         <!--Windows -->
         <mkdir dir="build/runtime/tmp_win/axoloti_runtime"/>
 
-        <exec dir="." executable="cp" osfamily="Windows">
-            <arg line="-R platform_win build/runtime/tmp_win/axoloti_runtime"/>
-        </exec>
+        <copy todir="build/runtime/tmp_win/axoloti_runtime" if="is.windows">
+            <fileset dir="platform_win"/>
+        </copy>
 
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-rf build/runtime/tmp_win/axoloti_runtime/platform_win/share"/>
-        </exec>
-
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-rf build/runtime/tmp_win/axoloti_runtime/platform_win/src"/>
-        </exec>
-
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-rf build/runtime/tmp_win/axoloti_runtime/platform_win/man"/>
-        </exec>
-
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-f build/runtime/tmp_win/axoloti_runtime/platform_win/mrproper.bat"/>
-        </exec>
-
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-rf build/runtime/tmp_win/axoloti_runtime/platform_win/apache-ant-1.10.14"/>
-        </exec>
-
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-rf build/runtime/tmp_win/axoloti_runtime/platform_win/include"/>
-        </exec>
-
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-rf build/runtime/tmp_win/axoloti_runtime/platform_win/contrib"/>
-        </exec>
-
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-f build/runtime/tmp_win/axoloti_runtime/platform_win/build.bat"/>
-        </exec>
-
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-f build/runtime/tmp_win/axoloti_runtime/platform_win/build.sh"/>
-        </exec>
-
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-f build/runtime/tmp_win/axoloti_runtime/platform_win/build_gui.bat"/>
-        </exec>
-
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-f build/runtime/tmp_win/axoloti_runtime/platform_win/build_dist.bat"/>
-        </exec>
-
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-f build/runtime/tmp_win/axoloti_runtime/platform_win/build-libusb.sh"/>
-        </exec>
-
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-f build/runtime/tmp_win/axoloti_runtime/platform_win/zadig.html"/>
-        </exec>
-
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-rf build/runtime/tmp_win/axoloti_runtime/platform_win/arm-none-eabi/lib/armv6-m build/runtime/tmp_win/axoloti_runtime/platform_win/arm-none-eabi/tmp_win/armv7-ar build/runtime/tmp_win/axoloti_runtime/platform_win/arm-none-eabi/lib/armv7-m "/>
-        </exec>
-
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-rf build/runtime/tmp_win/axoloti_runtime/platform_win/arm-none-eabi/lib/armv6-m build/runtime/tmp_win/axoloti_runtime/platform_win/arm-none-eabi/lib/armv7-ar build/runtime/tmp_win/axoloti_runtime/platform_win/arm-none-eabi/lib/armv7-m "/>
-        </exec>
-
-        <exec dir="." executable="rm" osfamily="Windows">
-            <arg line="-rf build/runtime/tmp_win/axoloti_runtime/platform_win/lib/gcc/arm-none-eabi/4.9.3/armv6-m build/runtime/tmp_win/axoloti_runtime/platform_win/lib/gcc/arm-none-eabi/4.9.3/armv7-ar build/runtime/tmp_win/axoloti_runtime/platform_win/lib/gcc/arm-none-eabi/4.9.3/armv7-m "/>
-        </exec>
+        <delete dir="build/runtime/tmp_win/axoloti_runtime/platform_win/share" if="is.windows"/>
+        <delete dir="build/runtime/tmp_win/axoloti_runtime/platform_win/src" if="is.windows"/>
+        <delete dir="build/runtime/tmp_win/axoloti_runtime/platform_win/man" if="is.windows"/>
+        <delete file="build/runtime/tmp_win/axoloti_runtime/platform_win/mrproper.bat" if="is.windows"/>
+        <delete dir="build/runtime/tmp_win/axoloti_runtime/platform_win/apache-ant-1.10.14" if="is.windows"/>
+        <delete if="is.windows">
+            <fileset dir="build/runtime/tmp_win/axoloti_runtime/platform_win">
+                <include name="include"/>
+                <include name="contrib"/>
+                <include name="arm-none-eabi/lib/armv6-m"/>
+                <include name="arm-none-eabi/lib/armv7-ar"/>
+                <include name="arm-none-eabi/lib/armv7-m"/>
+                <include name="lib/gcc/arm-none-eabi/4.9.3/armv6-m"/>
+                <include name="lib/gcc/arm-none-eabi/4.9.3/armv7-ar"/>
+                <include name="lib/gcc/arm-none-eabi/4.9.3/armv7-m"/>
+                <include name="build.bat"/>
+                <include name="build.sh"/>
+                <include name="build_gui.bat"/>
+                <include name="build_dist.bat"/>
+                <include name="build-libusb.sh"/>
+                <include name="zadig.html"/>
+            </fileset>
+        </delete>
     </target>
 
     <target name="bundle" if="build.bundle" depends="calc.build.version, calc.short.version">
         <echo>bundling ${build.version} ${short.version}</echo>
         <echo>${java.home}</echo>
-        <exec dir="." executable="rm" >
-            <arg line="-rf build/bundles/"/>
-        </exec>
+        <delete dir="build/bundles" includeemptydirs="true"/>
 
         <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
             uri="javafx:com.sun.javafx.tools.ant"
@@ -198,38 +156,32 @@
                 <include name="ksoloti-app.jar"/>
             </fx:fileset>
             <fileset dir="lib">
-                <include name="org.eclipse.jgit-7.3.0.202506031305-r.jar"/>
-                <include name="jsch-2.27.2.jar"/>
-                <include name="flatlaf-3.6.1.jar"/>
-                <include name="flatlaf-intellij-themes-3.6.1.jar"/>
-                <include name="marlin-0.9.4.8-Unsafe-OpenJDK17.jar"/>
-                <include name="slf4j-api-2.0.17.jar"/>
-                <include name="slf4j-simple-2.0.17.jar"/>
-                <include name="simple-xml-2.7.1.jar"/>
-                <include name="rsyntaxtextarea-3.6.0.jar"/>
-                <include name="autocomplete-3.3.2.jar"/>
-                <include name="usb4java-1.3.0/lib/usb4java-1.3.0.jar"/>
-                <include name="usb4java-1.3.0/lib/libusb4java-1.3.0-darwin-x86-64.jar"/>
-                <include name="usb4java-1.3.0/lib/libusb4java-darwin-aarch64-1.3.0.jar"/>
-                <include name="usb4java-1.3.0/lib/libusb4java-1.3.0-linux-aarch64.jar"/>
-                <include name="usb4java-1.3.0/lib/libusb4java-1.3.0-linux-arm.jar"/>
-                <include name="usb4java-1.3.0/lib/libusb4java-1.3.0-linux-x86-64.jar"/>
-                <include name="usb4java-1.3.0/lib/libusb4java-1.3.0-win32-x86-64.jar"/>
+                <include name="org.eclipse.jgit-*.jar"/>
+                <include name="jsch-*.jar"/>
+                <include name="flatlaf-*.jar"/>
+                <include name="flatlaf-intellij-themes-*.jar"/>
+                <include name="marlin-*.jar"/>
+                <include name="slf4j-api-*.jar"/>
+                <include name="slf4j-simple-*.jar"/>
+                <include name="simple-xml-*.jar"/>
+                <include name="rsyntaxtextarea-*.jar"/>
+                <include name="autocomplete-*.jar"/>
+                <include name="usb4java-*/**/*"/>
             </fileset>
             <fileset dir=".">
                 <include name="doc/*"/>
-                <include name="firmware/*" />
-                <include name="firmware/STM*/**/*" />
-                <include name="firmware/mutable_instruments/**/*" />
-                <include name="firmware/build/*.bin" />
-                <include name="firmware/build/*.elf" />
-                <include name="firmware/flasher/*" />
-                <include name="firmware/flasher/flasher_build/*.bin" />
-                <include name="firmware/flasher/flasher_build/*.elf" />
-                <include name="firmware/mounter/*" />
-                <include name="firmware/mounter/mass_storage/*" />
-                <include name="firmware/mounter/mounter_build/*.bin" />
-                <include name="firmware/mounter/mounter_build/*.elf" />
+                <include name="firmware/*"/>
+                <include name="firmware/STM*/**/*"/>
+                <include name="firmware/mutable_instruments/**/*"/>
+                <include name="firmware/build/*.bin"/>
+                <include name="firmware/build/*.elf"/>
+                <include name="firmware/flasher/*"/>
+                <include name="firmware/flasher/flasher_build/*.bin"/>
+                <include name="firmware/flasher/flasher_build/*.elf"/>
+                <include name="firmware/mounter/*"/>
+                <include name="firmware/mounter/mass_storage/*"/>
+                <include name="firmware/mounter/mounter_build/*.bin"/>
+                <include name="firmware/mounter/mounter_build/*.elf"/>
                 <include name="chibios/*"/>
                 <include name="chibios/ext/**/*"/>
                 <include name="chibios/os/**/*"/>
@@ -240,6 +192,7 @@
                 <include name="public_key.der"/>
             </fileset>
         </fx:resources>
+
         <fx:jar destfile="dist/ksoloti-app.jar">
             <fx:application name="Ksoloti" mainClass="axoloti.Axoloti" version="${build.version}"/>
             <fx:resources refid="appRes"/>
@@ -283,13 +236,9 @@
             <fx:resources refid="appRes"/>
         </fx:deploy>
 
-        <exec dir="." executable="mv" os="Mac OS X">
-            <arg line="build/bundles/Ksoloti-${short.version}.dmg build/bundles/ksoloti-mac-${short.version}.dmg"/>
-        </exec>
+        <move file="build/bundles/Ksoloti-${short.version}.dmg" tofile="build/bundles/ksoloti-mac-${short.version}.dmg" if="is.mac"/>
 
-        <exec dir="." executable="mv" os="Linux">
-            <arg line="build/bundles/ksoloti-${short.version}.deb build/bundles/ksoloti-linux-${short.version}.deb"/>
-        </exec>
+        <move file="build/bundles/ksoloti-${short.version}.deb" tofile="build/bundles/ksoloti-linux-${short.version}.deb" if="is.linux"/>
 
         <fx:deploy os="Windows" nativeBundles="msi" width="100" height="100" outdir="build/" outfile="KsolotiApp" version="${build.version}">
             <fx:info title="Ksoloti"
@@ -305,19 +254,17 @@
         <fx:resources refid="appRes"/>
         </fx:deploy>
 
-        <exec dir="." executable="mv" osfamily="Windows">
-            <arg line="build/bundles/ksoloti-${short.version}.msi build/bundles/ksoloti-win-${short.version}.msi"/>
-        </exec>
+        <move file="build/bundles/ksoloti-${short.version}.msi" tofile="build/bundles/ksoloti-win-${short.version}.msi" if="is.windows"/>
 
     </target>
 
     <target name="calc.short.version">
         <exec executable="git" outputproperty="tag.short.version" failifexecutionfails="false">
-            <arg line = "describe --tags --always" />
+            <arg line = "describe --tags --always"/>
         </exec>
         <property name="tag.short.version" value="(git missing)"/>
         <exec executable="sed" inputstring="${tag.short.version}" outputproperty="short.version" failifexecutionfails="false">
-            <arg line = "'s/[a-zA-Z\-].*//'" />
+            <arg line = "'s/[a-zA-Z\-].*//'"/>
         </exec>
         <property name="short.version" value="${tag.short.version}"/>
         <echo> calculated short ${short.version}</echo>
@@ -325,7 +272,7 @@
 
     <target name="calc.build.version">
         <exec executable="git" outputproperty="build.version" failifexecutionfails="false">
-            <arg line = "describe --long --tags --dirty --always" />
+            <arg line = "describe --long --tags --dirty --always"/>
         </exec>
         <echo> calculated ${build.version}</echo>
     </target>
@@ -343,5 +290,20 @@
         <echo output="src/main/java/axoloti/Version.java" append="true">    public final static String AXOLOTI_BUILD_TIME = "${build.time}";${line.separator}</echo>
         <echo output="src/main/java/axoloti/Version.java" append="true">};${line.separator}</echo>
     </target>
+    
+    <condition property="is.mac">
+        <os family="mac"/>
+    </condition>
+    <condition property="is.linux">
+        <and>
+            <os family="unix"/>
+            <not>
+                <os family="mac"/>
+            </not>
+        </and>
+    </condition>
+    <condition property="is.windows">
+        <os family="windows"/>
+    </condition>
 
 </project>
