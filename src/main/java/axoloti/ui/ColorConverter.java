@@ -46,4 +46,8 @@ public class ColorConverter implements Converter<Color> {
         node.setAttribute("blue", blue.toString());
         node.setAttribute("alpha", alpha.toString());
     }
+
+    public static Color withAlpha(Color color, int alpha) {
+        return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+    }
 }
