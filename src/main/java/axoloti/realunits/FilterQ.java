@@ -35,7 +35,7 @@ public class FilterQ implements NativeToReal {
         if (q > 99.9) {
             return "Q max";
         }
-        return (String.format("Q %2.1f", q));
+        return (String.format("Q %2.3f", q));
     }
 
     @Override
