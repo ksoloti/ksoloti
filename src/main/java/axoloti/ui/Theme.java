@@ -75,7 +75,7 @@ public class Theme {
     @Element
     public static final Color Button_Default_Foreground = UIManager.getColor("Button.foreground");
     @Element
-    public static final Color Selection_Rectangle_Fill = new Color(Patch_Unlocked_Background.brighter().getRed(), Patch_Unlocked_Background.brighter().getGreen(), Patch_Unlocked_Background.brighter().getBlue(), 0x40);
+    public static final Color Selection_Rectangle_Fill = ColorConverter.withAlpha(Patch_Unlocked_Background.brighter(), 0x40);
 
     /* Text */
     @Element
