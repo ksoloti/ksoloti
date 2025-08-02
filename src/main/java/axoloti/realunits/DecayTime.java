@@ -46,7 +46,7 @@ public class DecayTime implements NativeToReal {
 
     @Override
     public double FromReal(String s) throws ParseException {
-        Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]*)\\p{Space}*(?<unit>[mM]?)[sS]");
+        Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]*)\\p{Space}*(?<unit>(?:[mM][sS]?|[sS]))");
         Matcher matcher = pattern.matcher(s);
 
         if (matcher.matches()) {
