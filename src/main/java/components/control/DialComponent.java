@@ -20,6 +20,7 @@ package components.control;
 
 import axoloti.MainFrame;
 import axoloti.realunits.NativeToReal;
+import axoloti.realunits.PitchHz;
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
@@ -215,14 +216,26 @@ public class DialComponent extends ACtrlComponent {
                 case KeyEvent.VK_ENTER:
                     fireEventAdjustmentBegin();
                     boolean converted = false;
-                    // parseFloat accepts d & f - try the convs first
-                    if (convs != null) {
-                        for (NativeToReal c : convs) {
-                            try {
-                                setValue(c.FromReal(keybBuffer));
-                                converted = true;
-                                break;
-                            } catch (ParseException ex2) {
+                    /* First, try to convert the buffer as a frequency */
+                    try {
+                        PitchHz pitchHz = new PitchHz();
+                        setValue(pitchHz.FromReal(keybBuffer));
+                        converted = true;
+                    } catch (ParseException ex) {
+                        /* Not a frequency, so we'll try other conversions */
+                    }
+
+                    /* Try other conversions if the frequency parsing failed */
+                    if (!converted) {
+                        // parseFloat accepts d & f - try the convs first
+                        if (convs != null) {
+                            for (NativeToReal c : convs) {
+                                try {
+                                    setValue(c.FromReal(keybBuffer));
+                                    converted = true;
+                                    break;
+                                } catch (ParseException ex2) {
+                                }
                             }
                         }
                     }
@@ -271,43 +284,12 @@ public class DialComponent extends ACtrlComponent {
                 case '9':
                 case '0':
                 case '.':
-                // case ' ':
-                // case '+':
-                // case '*':
-                // case '/':
-                // case '#':
-                // case 'a':
-                // case 'A':
-                // case 'b':
-                // case 'B':
-                // case 'c':
-                // case 'C':
-                // case 'd':
-                // case 'D':
-                // case 'e':
-                // case 'E':
-                // case 'f':
-                // case 'F':
-                // case 'g':
-                // case 'G':
-                // case 'h':
-                // case 'H':
-                // case 'i':
-                // case 'I':
-                // case 'k':
-                // case 'K':
-                // case 'm':
-                // case 'M':
-                // case 'n':
-                // case 'N':
-                // case 'q':
-                // case 'Q':
-                // case 's':
-                // case 'S':
-                // case 'x':
-                // case 'X':
-                // case 'z':
-                // case 'Z':
+                case 'h': /* Hertz */
+                case 'H':
+                case 'k': /* Kilo-Hertz */
+                case 'K':
+                case 'm': /* Milli-Hertz */
+                case 'M':
                     if (!KeyUtils.isControlOrCommandDown(ke)) {
                         keybBuffer += ke.getKeyChar();
                         ke.consume();

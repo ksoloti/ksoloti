@@ -48,13 +48,18 @@ public class PitchHz implements NativeToReal {
 
     @Override
     public double FromReal(String s) throws ParseException {
-        Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]*)\\p{Space}*(?<unit>[kKmM]?)[hH][zZ]?");
+        /* Improved regex: triggers Hertz input if at least one unit character is used (k, m, or h)
+           Handles the following formats (plus optional decimals):
+           '1h' -> 1 Hertz
+           '1k', '1kh', '1khz' -> 1 KiloHertz
+           '1m', '1mh', '1mhz' -> 1 MilliHertz (practically not achievable but maybe for future implementation in LFO) */
+            Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]*)\\p{Space}*(?<unit>(?:[kKmM][hH]?[zZ]?|[hH][zZ]?))");
         Matcher matcher = pattern.matcher(s);
         if (matcher.matches()) {
             double num, mul = 1.0;
 
             try {
-                num = Float.parseFloat(matcher.group("num"));
+                num = Double.parseDouble(matcher.group("num")); /* Use Double for higher precision */
             } catch (java.lang.NumberFormatException ex) {
                 throw new ParseException("Not PitchHz", 0);
             }
