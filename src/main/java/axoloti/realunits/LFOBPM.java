@@ -51,7 +51,7 @@ public class LFOBPM implements NativeToReal {
             double num = 1.0;
 
             try {
-                num = Float.parseFloat(matcher.group("num"));
+                num = Double.parseDouble(matcher.group("num"));
             } catch (java.lang.NumberFormatException ex) {
                 throw new ParseException("Not LFOBPM", 0);
             }

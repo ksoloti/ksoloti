@@ -47,7 +47,7 @@ public class FilterQ implements NativeToReal {
             double num;
 
             try {
-                num = Float.parseFloat(matcher.group("num"));
+                num = Double.parseDouble(matcher.group("num"));
             } catch (java.lang.NumberFormatException ex) {
                 throw new ParseException("Not DecayTime", 0);
             }

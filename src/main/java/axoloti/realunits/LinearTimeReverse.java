@@ -50,7 +50,7 @@ public class LinearTimeReverse implements NativeToReal {
             double num, mul = 1.0;
 
             try {
-                num = Float.parseFloat(matcher.group("num"));
+                num = Double.parseDouble(matcher.group("num"));
             } catch (java.lang.NumberFormatException ex) {
                 throw new ParseException("Not LinearTimeReverse", 0);
             }

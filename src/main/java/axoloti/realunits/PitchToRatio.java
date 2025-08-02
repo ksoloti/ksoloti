@@ -42,7 +42,7 @@ public class PitchToRatio implements NativeToReal {
             double num;
 
             try {
-                num = Float.parseFloat(matcher.group("num"));
+                num = Double.parseDouble(matcher.group("num"));
             } catch (java.lang.NumberFormatException ex) {
                 throw new ParseException("Not PitchToRatio", 0);
             }
