@@ -21,6 +21,7 @@ package axoloti.realunits;
 import axoloti.datatypes.Value;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 
 /**
@@ -33,18 +34,33 @@ public class LFOBPM implements NativeToReal {
     public String ToReal(Value v) {
         double hz = 440.0 * Math.pow(2.0, (v.getDouble() + 64 - 69) / 12.0) / 64;
         double bpm = 60.0 * hz;
-        if (bpm > 1) {
-            return (String.format("%.2f/min", bpm));
-        } else if (bpm > 1) {
-            return (String.format("%.1f/min", bpm));
-        } else {
-            return (String.format("%.1f/min", bpm));
+
+        /* Special case for zero */
+        if (bpm <= 0.0) {
+            return "   0 BPM";
+        }
+
+        /* Round to avoid floating point inaccuracies at boundaries */
+        double roundedBpm = Math.round(bpm * 10000.0) / 10000.0;
+
+        /* Get the number of digits before the decimal point */
+        int preDecimalDigits = (int) Math.log10(roundedBpm) + 1;
+
+        if (preDecimalDigits >= 4) { // "99999 BPM" / "9999 BPM"
+            return (String.format("%.0f BPM", bpm));
+        } else if (preDecimalDigits >= 3) { // "999.9 BPM"
+            return (String.format("%.1f BPM", bpm));
+        } else if (preDecimalDigits >= 2) { // "99.99 BPM"
+            return (String.format("%.2f BPM", bpm));
+        } else { // '9.999 BPM"
+            return (String.format("%.3f BPM", bpm));
         }
     }
 
     @Override
     public double FromReal(String s) throws ParseException {
-        Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]*)\\p{Space}*/[mM]?[iI]?[nN]?");
+        /* Updated regex to handle "bpm", "bp", or "b" */
+        Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]+)\\p{Space}*(?<unit>[bB][pP]?[mM]?)");
         Matcher matcher = pattern.matcher(s);
 
         if (matcher.matches()) {

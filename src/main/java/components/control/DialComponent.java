@@ -272,12 +272,16 @@ public class DialComponent extends ACtrlComponent {
                 case '9':
                 case '0':
                 case '.':
+                case 'b': /* BPM */
+                case 'B':
                 case 'h': /* Hertz */
                 case 'H':
                 case 'k': /* Kilo-Hertz */
                 case 'K':
-                case 'm': /* Milli-Hertz */
+                case 'm': /* Milli-Hertz, BP[M] */
                 case 'M':
+                case 'p': /* B[P]M */
+                case 'P':
                 case 'q': /* Filter Q */
                 case 'Q':
                 case 's': /* Seconds */
