@@ -218,45 +218,31 @@ public class DialComponent extends ACtrlComponent {
                 case KeyEvent.VK_ENTER:
                     fireEventAdjustmentBegin();
                     boolean converted = false;
-                    /* First, try to convert the buffer as a frequency */
-                    try {
-                        PitchHz pitchHz = new PitchHz();
-                        setValue(pitchHz.FromReal(keybBuffer));
-                        converted = true;
-                    } catch (ParseException ex) {
-                        /* Not a frequency, so we'll try other conversions */
-                    }
-
-                    /* Try other conversions if the frequency parsing failed */
-                    if (!converted) {
-                        // parseFloat accepts d & f - try the convs first
-                        if (convs != null) {
-                            for (NativeToReal c : convs) {
-                                try {
-                                    setValue(c.FromReal(keybBuffer));
-                                    converted = true;
-                                    break;
-                                } catch (ParseException ex2) {
-                                }
+                    
+                    /* Iterate through the converters for this specific dial */
+                    if (convs != null) {
+                        for (NativeToReal c : convs) {
+                            try {
+                                setValue(c.FromReal(keybBuffer));
+                                converted = true;
+                                break; /* Found a matching converter so exit the loop */
+                            } catch (ParseException ex) {
+                                /* This converter didn't match, try the next one */
                             }
                         }
                     }
+
+                    /* If no converter matched, try to parse as a plain number */
                     if (!converted) {
-                        // otherwise, try parsing
                         try {
                             setValue(Double.parseDouble(keybBuffer));
+                            converted = true;
                         } catch (java.lang.NumberFormatException ex) {
+                            /* It's not a valid number either so do nothing */
                         }
                     }
                     fireEventAdjustmentFinished();
                     keybBuffer = "";
-                    ke.consume();
-                    repaint();
-                    break;
-                case KeyEvent.VK_BACK_SPACE:
-                    if (keybBuffer.length() > 0) {
-                        keybBuffer = keybBuffer.substring(0, keybBuffer.length() - 1);
-                    }
                     ke.consume();
                     repaint();
                     break;
