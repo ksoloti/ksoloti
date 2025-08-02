@@ -278,6 +278,8 @@ public class DialComponent extends ACtrlComponent {
                 case 'K':
                 case 'm': /* Milli-Hertz */
                 case 'M':
+                case 'q': /* Filter Q */
+                case 'Q':
                 case 's': /* Seconds */
                 case 'S':
                     if (!KeyUtils.isControlOrCommandDown(ke)) {

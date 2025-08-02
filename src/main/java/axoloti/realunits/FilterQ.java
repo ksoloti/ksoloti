@@ -40,22 +40,24 @@ public class FilterQ implements NativeToReal {
 
     @Override
     public double FromReal(String s) throws ParseException {
-        Pattern pattern = Pattern.compile("(?<unit1>[qQ]?)(?<num>[\\d\\.\\-\\+]*)\\p{Space}*(?<unit2>[qQ]?)");
+        /* Regex to handle "Q10", "10Q", "Q 10", "10 Q" and a naked number "10" */
+        Pattern pattern = Pattern.compile("(?<unit1>[qQ]?)\\p{Space}*(?<num>[\\d\\.\\-\\+]+)\\p{Space}*(?<unit2>[qQ]?)");
         Matcher matcher = pattern.matcher(s);
 
         if (matcher.matches()) {
             double num;
 
+            /* Check if the 'Q' keyword is present. If not,
+               treat as Axo-unit parameter number */
+            if (matcher.group("unit1").isEmpty() && matcher.group("unit2").isEmpty()) {
+                throw new ParseException("Not FilterQ", 0);
+            }
+            
             try {
                 num = Double.parseDouble(matcher.group("num"));
             } catch (java.lang.NumberFormatException ex) {
-                throw new ParseException("Not DecayTime", 0);
-            }
-
-            String units1 = matcher.group("unit1");
-            String units2 = matcher.group("unit2");
-            if (!(units1.contains("q") || units1.contains("Q") || units2.contains("q") || units2.contains("Q")))
                 throw new ParseException("Not FilterQ", 0);
+            }
 
             double q = num;
             return -((32 / q) - 64);
