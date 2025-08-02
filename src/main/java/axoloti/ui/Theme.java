@@ -98,7 +98,7 @@ public class Theme {
     @Element
     public static final Color Cable_Bool32 = ColorConverter.withAlpha(MaterialColors.YELLOW_A400, cable_opacity);
     @Element
-    public static final Color Cable_Bool32_Highlighted = MaterialColors.YELLOW_A200;
+    public static final Color Cable_Bool32_Highlighted = MaterialColors.YELLOW_A100;
 
     @Element
     public static final Color Cable_CharPointer32 = new Color(0xFF, 0x00, 0xFF, cable_opacity);
