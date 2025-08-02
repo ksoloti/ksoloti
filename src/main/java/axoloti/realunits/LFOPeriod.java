@@ -33,18 +33,34 @@ public class LFOPeriod implements NativeToReal {
     public String ToReal(Value v) {
         double hz = 440.0 * Math.pow(2.0, (v.getDouble() + 64 - 69) / 12.0) / 64;
         double t = 1.0 / hz;
-        if (t > 1) {
-            return (String.format("%.2f s", t));
-        } else if (t > 0.1) {
-            return (String.format("%.1f ms", t * 1000));
+
+        /* Round the period to a clean precision before performing checks */
+        double roundedT = Math.round(t * 10000.0) / 10000.0;
+
+        if (roundedT >= 100.0) {
+            return (String.format("%.1f s", t)); // "123.4 s"
+        } else if (roundedT >= 10.0) {
+            return (String.format("%.2f s", t)); // "12.34 s"
+        } else if (roundedT >= 1.0) {
+            return (String.format("%.3f s", t)); // "1.234 s"
         } else {
-            return (String.format("%.2f ms", t * 1000));
+            /* Less than 1s displayed in milliseconds */
+            double ms = t * 1000;
+            double roundedMs = Math.round(ms * 10000.0) / 10000.0;
+            
+            if (roundedMs >= 100.0) {
+                return (String.format("%.1f ms", ms)); // "123.4 ms"
+            } else if (roundedMs >= 10.0) {
+                return (String.format("%.2f ms", ms)); // "12.34 ms"
+            } else {
+                return (String.format("%.3f ms", ms)); // "1.234 ms"
+            }
         }
     }
 
     @Override
     public double FromReal(String s) throws ParseException {
-        Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]*)\\p{Space}*(?<unit>(?:[mM][sS]?|[sS]))");
+        Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]+)\\p{Space}*(?<unit>(?:[sS]|[mM][sS]))");
         Matcher matcher = pattern.matcher(s);
 
         if (matcher.matches()) {
