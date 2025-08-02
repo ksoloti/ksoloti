@@ -149,8 +149,8 @@ public final class MaterialColors {
     public static final Color GREEN_900 = new Color(0x1B5E20);
 
     // Light Green
-    public static final Color LIGHT_GREEN_50 = new Color(0xF7F9F0);
-    public static final Color LIGHT_GREEN_100 = new Color(0xF1F8E9);
+    public static final Color LIGHT_GREEN_50 = new Color(0xF1F8E9);
+    public static final Color LIGHT_GREEN_100 = new Color(0xDCEDC8);
     public static final Color LIGHT_GREEN_200 = new Color(0xC5E1A5);
     public static final Color LIGHT_GREEN_300 = new Color(0xAED581);
     public static final Color LIGHT_GREEN_400 = new Color(0x9CCC65);
@@ -174,14 +174,14 @@ public final class MaterialColors {
 
     // Yellow
     public static final Color YELLOW_50 = new Color(0xFFFDE7);
-    public static final Color YELLOW_100 = new Color(0xFFFDE7);
+    public static final Color YELLOW_100 = new Color(0xFFF9C4);
     public static final Color YELLOW_200 = new Color(0xFFF59D);
     public static final Color YELLOW_300 = new Color(0xFFF176);
     public static final Color YELLOW_400 = new Color(0xFFEE58);
     public static final Color YELLOW_500 = new Color(0xFFEB3B);
-    public static final Color YELLOW_600 = new Color(0xFFE082);
-    public static final Color YELLOW_700 = new Color(0xFFD600);
-    public static final Color YELLOW_800 = new Color(0xF9A825);
+    public static final Color YELLOW_600 = new Color(0xFFAA00);
+    public static final Color YELLOW_700 = new Color(0xF9A825);
+    public static final Color YELLOW_800 = new Color(0xFBC02D);
     public static final Color YELLOW_900 = new Color(0xF57F17);
 
     // Amber
@@ -232,23 +232,101 @@ public final class MaterialColors {
     public static final Color BROWN_800 = new Color(0x4E342E);
     public static final Color BROWN_900 = new Color(0x3E2723);
 
-    // Accent Colors
+    // Red Accent
+    public static final Color RED_A100 = new Color(0xFF8A80);
+    public static final Color RED_A200 = new Color(0xFF5252);
+    public static final Color RED_A400 = new Color(0xFF1744);
     public static final Color RED_A700 = new Color(0xD50000);
+
+    // Pink Accent
+    public static final Color PINK_A100 = new Color(0xFF80AB);
+    public static final Color PINK_A200 = new Color(0xFF4081);
+    public static final Color PINK_A400 = new Color(0xF50057);
     public static final Color PINK_A700 = new Color(0xC51162);
+
+    // Purple Accent
+    public static final Color PURPLE_A100 = new Color(0xEA80FC);
+    public static final Color PURPLE_A200 = new Color(0xE040FB);
+    public static final Color PURPLE_A400 = new Color(0xD500F9);
     public static final Color PURPLE_A700 = new Color(0xAA00FF);
-    public static final Color DEEP_PURPLE_A700 = new Color(0x651FFF);
+
+    // Deep Purple Accent
+    public static final Color DEEP_PURPLE_A100 = new Color(0xB388FF);
+    public static final Color DEEP_PURPLE_A200 = new Color(0x7C4DFF);
+    public static final Color DEEP_PURPLE_A400 = new Color(0x651FFF);
+    public static final Color DEEP_PURPLE_A700 = new Color(0x6200EA);
+
+    // Indigo Accent
+    public static final Color INDIGO_A100 = new Color(0x8C9EFF);
+    public static final Color INDIGO_A200 = new Color(0x536DFE);
+    public static final Color INDIGO_A400 = new Color(0x3D5AFE);
     public static final Color INDIGO_A700 = new Color(0x304FFE);
+
+    // Blue Accent
+    public static final Color BLUE_A100 = new Color(0x82B1FF);
+    public static final Color BLUE_A200 = new Color(0x448AFF);
+    public static final Color BLUE_A400 = new Color(0x2979FF);
     public static final Color BLUE_A700 = new Color(0x2962FF);
+
+    // Light Blue Accent
+    public static final Color LIGHT_BLUE_A100 = new Color(0x80D8FF);
+    public static final Color LIGHT_BLUE_A200 = new Color(0x40C4FF);
+    public static final Color LIGHT_BLUE_A400 = new Color(0x00B0FF);
     public static final Color LIGHT_BLUE_A700 = new Color(0x0091EA);
+
+    // Cyan Accent
+    public static final Color CYAN_A100 = new Color(0x84FFFF);
+    public static final Color CYAN_A200 = new Color(0x18FFFF);
+    public static final Color CYAN_A400 = new Color(0x00E5FF);
     public static final Color CYAN_A700 = new Color(0x00B8D4);
+
+    // Teal Accent
+    public static final Color TEAL_A100 = new Color(0xA7FFEB);
+    public static final Color TEAL_A200 = new Color(0x64FFDA);
+    public static final Color TEAL_A400 = new Color(0x1DE9B6);
     public static final Color TEAL_A700 = new Color(0x00BFA5);
+
+    // Green Accent
+    public static final Color GREEN_A100 = new Color(0xB9F6CA);
+    public static final Color GREEN_A200 = new Color(0x69F0AE);
+    public static final Color GREEN_A400 = new Color(0x00E676);
     public static final Color GREEN_A700 = new Color(0x00C853);
+
+    // Light Green Accent
+    public static final Color LIGHT_GREEN_A100 = new Color(0xCCFF90);
+    public static final Color LIGHT_GREEN_A200 = new Color(0xB2FF59);
+    public static final Color LIGHT_GREEN_A400 = new Color(0x76FF03);
     public static final Color LIGHT_GREEN_A700 = new Color(0x64DD17);
+
+    // Lime Accent
+    public static final Color LIME_A100 = new Color(0xF4FF81);
+    public static final Color LIME_A200 = new Color(0xEEFF41);
+    public static final Color LIME_A400 = new Color(0xC6FF00);
     public static final Color LIME_A700 = new Color(0xAEEA00);
+
+    // Yellow Accent
+    public static final Color YELLOW_A100 = new Color(0xFFFF8D);
+    public static final Color YELLOW_A200 = new Color(0xFFFF40);
+    public static final Color YELLOW_A400 = new Color(0xFFEA00);
     public static final Color YELLOW_A700 = new Color(0xFFD600);
-    public static final Color AMBER_A700 = new Color(0xFFC400);
-    public static final Color ORANGE_A700 = new Color(0xFF9100);
-    public static final Color DEEP_ORANGE_A700 = new Color(0xFF3D00);
+
+    // Amber Accent
+    public static final Color AMBER_A100 = new Color(0xFFE57F);
+    public static final Color AMBER_A200 = new Color(0xFFD740);
+    public static final Color AMBER_A400 = new Color(0xFFC400);
+    public static final Color AMBER_A700 = new Color(0xFFAB00);
+
+    // Orange Accent
+    public static final Color ORANGE_A100 = new Color(0xFFD180);
+    public static final Color ORANGE_A200 = new Color(0xFFAB40);
+    public static final Color ORANGE_A400 = new Color(0xFF9100);
+    public static final Color ORANGE_A700 = new Color(0xFF6D00);
+
+    // Deep Orange Accent
+    public static final Color DEEP_ORANGE_A100 = new Color(0xFF9E80);
+    public static final Color DEEP_ORANGE_A200 = new Color(0xFF6E40);
+    public static final Color DEEP_ORANGE_A400 = new Color(0xFF3D00);
+    public static final Color DEEP_ORANGE_A700 = new Color(0xDD2C00);
 
     // Grayscales
     public static final Color WHITE = new Color(0xFFFFFF);
