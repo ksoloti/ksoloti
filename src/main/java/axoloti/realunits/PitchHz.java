@@ -53,7 +53,7 @@ public class PitchHz implements NativeToReal {
            '1h' -> 1 Hertz
            '1k', '1kh', '1khz' -> 1 KiloHertz
            '1m', '1mh', '1mhz' -> 1 MilliHertz (practically not achievable but maybe for future implementation in LFO) */
-            Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]*)\\p{Space}*(?<unit>(?:[kKmM][hH]?[zZ]?|[hH][zZ]?))");
+        Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]+)\\p{Space}*(?<unit>(?:[kKmM][hH]?[zZ]?|[hH][zZ]?))");
         Matcher matcher = pattern.matcher(s);
         if (matcher.matches()) {
             double num, mul = 1.0;
