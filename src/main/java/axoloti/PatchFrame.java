@@ -1147,6 +1147,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         fc.addChoosableFileFilter(FileUtils.axhFileFilter);
 
         String fn = patch.getFileNamePath();
+            Point mousePos = patch.Layers.getMousePosition();
         if (fn == null) {
             fn = "untitled";
         }
@@ -1319,19 +1320,27 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         if (p.objectInstances.isEmpty()) {
             return;
         }
-        jMenuCopyActionPerformed(evt);
-        jMenuPasteActionPerformed(evt);
 
-        /* emulate mouse dragging */
-        Robot robot;
+        p.PreSerialize();
+        Serializer serializer = new Persister(new Format(2));
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        
         try {
-            robot = new Robot();
+            serializer.write(p, baos);
+            String s = new String(baos.toString());
+            patch.paste(s, null, false);
+
+            /* emulate mouse dragging */
+            Robot robot = new Robot();
             Point point = p.objectInstances.get(0).getLocationOnScreen();
             robot.mouseMove(point.x + 40,point.y + 22);
             robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
         }
-        catch (Exception e1) {
-            e1.printStackTrace();
+        catch (UnsupportedFlavorException ex) {
+            LOGGER.log(Level.SEVERE, "Paste error: Unknown clipboard content", ex);
+        }
+        catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "An unexpected error occurred during the duplicate operation.", ex);
         }
     }
 
