@@ -68,7 +68,6 @@ public class Theme {
     @Element
     public static final Color Button_Accent_Foreground = UIManager.getColor("ProgressBar.selectionForeground");
     @Element
-    // public static final Color ProgressBar_Overload_Foreground = new Color(0xA0, UIManager.getColor("Component.accentColor").darker().darker().getGreen(), UIManager.getColor("Component.accentColor").darker().darker().getBlue());
     public static final Color ProgressBar_Overload_Foreground = new Color(0x90, 0, 0);
     @Element
     public static final Color Button_Default_Background = UIManager.getColor("Button.background");
@@ -79,7 +78,7 @@ public class Theme {
 
     /* Text */
     @Element
-    public static final Color Error_Text = Color.RED;
+    public static final Color Error_Text = MaterialColors.RED_A700;
     @Element
     public static final Color Console_Normal_Text = UIManager.getColor("Viewport.foreground");
     @Element
@@ -87,49 +86,49 @@ public class Theme {
 
     /* Nets */
     @Element
-    public static final Color Cable_Default = Color.DARK_GRAY;
+    public static final Color Cable_Default = MaterialColors.GREY_800;
     @Element
-    public static final Color Cable_Default_Highlighted = Color.GRAY;
+    public static final Color Cable_Default_Highlighted = MaterialColors.GREY_600;
 
     @Element
-    public static final Color Cable_Shadow = Color.BLACK;
+    public static final Color Cable_Shadow = MaterialColors.BLACK;
     @Element
-    public static final Color Cable_Shadow_Highlighted = Color.DARK_GRAY;
+    public static final Color Cable_Shadow_Highlighted = MaterialColors.GREY_800;
 
     @Element
-    public static final Color Cable_Bool32 = new Color(0xF7, 0xF7, 0x50, cable_opacity);
+    public static final Color Cable_Bool32 = ColorConverter.withAlpha(MaterialColors.YELLOW_A400, cable_opacity);
     @Element
-    public static final Color Cable_Bool32_Highlighted = new Color(0xF7, 0xF7, 0x50).brighter();
+    public static final Color Cable_Bool32_Highlighted = MaterialColors.YELLOW_A200;
 
     @Element
     public static final Color Cable_CharPointer32 = new Color(0xFF, 0x00, 0xFF, cable_opacity);
     @Element
-    public static final Color Cable_CharPointer32_Highlighted = new Color(0xFF, 0x90, 0xFF);
+    public static final Color Cable_CharPointer32_Highlighted = MaterialColors.PINK_100;
 
     @Element
-    public static final Color Cable_Zombie = Color.WHITE;
+    public static final Color Cable_Zombie = MaterialColors.WHITE;
     @Element
-    public static final Color Cable_Zombie_Highlighted = new Color(0x9F, 0x00, 0x00);
+    public static final Color Cable_Zombie_Highlighted = MaterialColors.RED_A700;
 
     @Element
-    public static final Color Cable_Frac32 = new Color(0x30, 0x50, 0xFF, cable_opacity);
+    public static final Color Cable_Frac32 = ColorConverter.withAlpha(MaterialColors.BLUE_A400, cable_opacity);
     @Element
-    public static final Color Cable_Frac32_Highlighted = new Color(0x30, 0x50, 0xFF).brighter().brighter();
+    public static final Color Cable_Frac32_Highlighted = MaterialColors.BLUE_A100;
 
     @Element
-    public static final Color Cable_Frac32Buffer = new Color(0xFF, 0x30, 0x50, cable_opacity);
+    public static final Color Cable_Frac32Buffer = ColorConverter.withAlpha(MaterialColors.RED_A400, cable_opacity);
     @Element
-    public static final Color Cable_Frac32Buffer_Highlighted = new Color(0xFF, 0x70, 0x90);
+    public static final Color Cable_Frac32Buffer_Highlighted = MaterialColors.RED_A100;
 
     @Element
-    public static final Color Cable_Int32 = new Color(0x30, 0xFF, 0x50, cable_opacity);
+    public static final Color Cable_Int32 = ColorConverter.withAlpha(MaterialColors.GREEN_A700, cable_opacity);
     @Element
-    public static final Color Cable_Int32_Highlighted = new Color(0x30, 0xFF, 0x50).brighter().brighter();
+    public static final Color Cable_Int32_Highlighted = MaterialColors.GREEN_A200;
 
     @Element
-    public static final Color Cable_Int32Pointer = new Color(0xFF, 0xAF, 0xAF, cable_opacity);
+    public static final Color Cable_Int32Pointer = ColorConverter.withAlpha(MaterialColors.PINK_100, cable_opacity);
     @Element
-    public static final Color Cable_Int32Pointer_Highlighted = new Color(0xFF, 0xAF, 0xAF).brighter();
+    public static final Color Cable_Int32Pointer_Highlighted = MaterialColors.RED_50;
 
     @Element
     public static final Color Cable_Int8Array = Cable_Int32Pointer;
@@ -169,19 +168,18 @@ public class Theme {
     @Element
     public static final Color Object_Border_Unselected_Locked = Patch_Locked_Background;
     @Element
-    // public static final Color Object_Border_Selected = new Color(0xFF, 0x80, 0x00); /* Juicy orange */
     public static final Color Object_Border_Selected = UIManager.getColor("Component.accentColor");
     @Element
-    public static final Color Object_Zombie_Background = Color.RED;
+    public static final Color Object_Zombie_Background = MaterialColors.RED_A700;
 
     @Element
     public static final Color Parameter_Default_Background = Object_Default_Background;
     @Element
     public static final Color Parameter_Default_Foreground = Object_Default_Foreground;
     @Element
-    public static final Color Parameter_On_Parent_Background = isBgDark ? new Color(0x00,0x00,0x60) : new Color(0xE0, 0xE0, 0xFF);
+    public static final Color Parameter_On_Parent_Background = isBgDark ? ColorConverter.withAlpha(MaterialColors.CYAN_900, 0x80) : ColorConverter.withAlpha(MaterialColors.CYAN_A200, 0x80);
     @Element
-    public static final Color Parameter_On_Parent_Foreground = isBgDark ? new Color(0x60, 0x60, 0xFF) : Color.BLUE;
+    public static final Color Parameter_On_Parent_Foreground = isBgDark ? MaterialColors.CYAN_A200 : MaterialColors.CYAN_900;
 
     @Element
     public static final Color Parameter_Frozen_Background = isBgDark ? Parameter_Default_Background.brighter().brighter().brighter() : Parameter_Default_Background.darker();
@@ -193,20 +191,20 @@ public class Theme {
     @Element
     public static final Color Component_Mid_Dark = Color.getHSBColor(0.0f, 0.0f, isBgDark ? 0.66f : 0.33f); /* Invert grey values when dark theme is active */
     @Element
-    public static final Color Component_Mid = Color.GRAY;
+    public static final Color Component_Mid = MaterialColors.GREY_600;
     @Element
     public static final Color Component_Mid_Light = Color.getHSBColor(0.0f, 0.0f, isBgDark ? 0.33f : 0.66f);
     @Element
     public static final Color Component_Background = isBgDark ? Object_Default_Background.darker() : Object_Default_Background.brighter();
     @Element
-    public static final Color Component_Illuminated = Color.ORANGE;
+    public static final Color Component_Illuminated = MaterialColors.ORANGE_A700;
 
     @Element
-    public static final Color Keyboard_Light = Color.WHITE;
+    public static final Color Keyboard_Light = MaterialColors.WHITE;
     @Element
-    public static final Color Keyboard_Mid = Color.GRAY;
+    public static final Color Keyboard_Mid = MaterialColors.GREY_600;
     @Element
-    public static final Color Keyboard_Dark = Color.BLACK;
+    public static final Color Keyboard_Dark = MaterialColors.BLACK;
 
     @Element
     public static final Color Led_Strip_On = new Color(0.f, 1.f, 0.f, 1.0f);
@@ -224,7 +222,7 @@ public class Theme {
     @Element
     public static final Color VU_Bright_Yellow = new Color(0.8f, 0.8f, 0.0f);
     @Element
-    public static final Color VU_Bright_Red = new Color(0.8f, 0.0f, 0.0f);
+    public static final Color VU_Bright_Red = new Color(1.0f, 0.0f, 0.0f);
 
     private File FileChooserSave(JFrame frame) {
         fc.resetChoosableFileFilters();
