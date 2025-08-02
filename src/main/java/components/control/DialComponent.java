@@ -242,7 +242,7 @@ public class DialComponent extends ACtrlComponent {
                     if (!converted) {
                         // otherwise, try parsing
                         try {
-                            setValue(Float.parseFloat(keybBuffer));
+                            setValue(Double.parseDouble(keybBuffer));
                         } catch (java.lang.NumberFormatException ex) {
                         }
                     }

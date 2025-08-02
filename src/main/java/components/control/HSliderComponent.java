@@ -173,7 +173,7 @@ public class HSliderComponent extends ACtrlComponent {
             case KeyEvent.VK_ENTER:
                 fireEventAdjustmentBegin();
                 try {
-                    setValue(Float.parseFloat(keybBuffer));
+                    setValue(Double.parseDouble(keybBuffer));
                 } catch (java.lang.NumberFormatException ex) {
                 }
                 fireEventAdjustmentFinished();
