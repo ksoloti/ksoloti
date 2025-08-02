@@ -389,7 +389,11 @@ public class DialComponent extends ACtrlComponent {
 
         if (convs != null) {
             String s = "<html>";
-            for (NativeToReal c : convs) {
+
+            DecimalFormat df = new DecimalFormat("0.00####"); /* Formatter for min 2, max 6 decimal places */
+            s += df.format(this.value) + "<br>"; /* Show precise 'Axo-units' value */
+
+            for (NativeToReal c : convs) { /* Show all conversions for this type (Hz, seconds, dB etc.) */
                 s += c.ToReal(new ValueFrac32(value)) + "<br>";
             }
             this.setToolTipText(s);
