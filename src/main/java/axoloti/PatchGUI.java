@@ -74,6 +74,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
+import javax.xml.stream.XMLStreamException;
 
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Serializer;
@@ -773,7 +774,7 @@ public class PatchGUI extends Patch {
             AdjustSize();
             SetDirty();
         }
-        catch (javax.xml.stream.XMLStreamException ex) {
+        catch (XMLStreamException ex) {
             /* Silence, machine! */
         }
         catch (Exception ex) {
