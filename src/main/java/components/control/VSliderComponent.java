@@ -211,7 +211,7 @@ public class VSliderComponent extends ACtrlComponent {
             default:
         }
         switch (ke.getKeyChar()) {
-            case ',': /* German decimal "dot" - convert to '.' */
+            case ',': /* Comma is decimal "dot" in some countries - convert to '.' */
                 if (!KeyUtils.isControlOrCommandDown(ke)) {
                     keybBuffer += '.';
                     ke.consume();
