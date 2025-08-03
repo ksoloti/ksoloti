@@ -69,7 +69,7 @@ public class RealUnitFormatter {
         double roundedBpm = Math.round(bpm * 10000.0) / 10000.0;
 
         if (roundedBpm <= 0.0) {
-            return "0.000 BPM";
+            return "    0 BPM";
         }
 
         /* Get the number of digits before the decimal point */
