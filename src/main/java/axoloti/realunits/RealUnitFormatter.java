@@ -24,7 +24,7 @@ public class RealUnitFormatter {
 
     public static String formatFrequency(double hz) {
         /* Round to avoid floating point inaccuracies at boundaries */
-        double roundedHz = Math.round(hz * 100.0) / 100.0;
+        double roundedHz = Math.round(hz * 10000.0) / 10000.0;
 
         if (roundedHz >= 10000.0) {
             return (String.format("%.2f kHz", hz / 1000)); // "12.34 kHz"
@@ -82,7 +82,7 @@ public class RealUnitFormatter {
         } else if (preDecimalDigits >= 2) {
             return (String.format("%.2f BPM", bpm)); // "12.34 BPM"
         } else {
-            return (String.format("%.3f BPM", bpm)); // '1.234 BPM"
+            return (String.format("%.3f BPM", bpm)); // "1.234 BPM"
         }
     }
 
