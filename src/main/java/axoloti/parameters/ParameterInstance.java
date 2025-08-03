@@ -21,6 +21,7 @@ package axoloti.parameters;
 import axoloti.Preset;
 import axoloti.atom.AtomInstance;
 import axoloti.datatypes.Value;
+import axoloti.datatypes.ValueFrac32;
 import axoloti.object.AxoObjectInstance;
 import axoloti.realunits.NativeToReal;
 import axoloti.ui.Theme;
@@ -37,6 +38,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBoxMenuItem;
@@ -99,6 +101,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     void UpdateUnit() {
         if (convs != null) {
             valuelbl.setText(convs[selectedConv].ToReal(getValue()));
+            setCtrlToolTip();
         }
     }
 
@@ -651,11 +654,13 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 
     private void setCtrlToolTip() {
         if(ctrl == null) return;
+        
+        StringBuilder tooltipBuilder = new StringBuilder("<html>");
 
         if (parameter.description != null) {
-            ctrl.setToolTipText("<html>" + parameter.description);
+            tooltipBuilder.append(parameter.description);
         } else {
-            ctrl.setToolTipText("<html>" + parameter.name);
+            tooltipBuilder.append(parameter.name);
         }
 
         ctrl.setForeground(Theme.Parameter_Default_Foreground);
@@ -663,14 +668,26 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 
         if (isOnParent()) {
             ctrl.setForeground(Theme.Parameter_On_Parent_Foreground);
-            ctrl.setToolTipText(ctrl.getToolTipText() + "<p><b>This parameter is being controlled from the parent patch.</b>");
+            tooltipBuilder.append("<p><b>This parameter is being controlled from the parent patch.</b>");
         }
         if (isFrozen()) {
             ctrl.setBackground(Theme.Parameter_Frozen_Background);
-            ctrl.setToolTipText(ctrl.getToolTipText() + "<p><b>This parameter is currently frozen to save memory and DSP power.</b>");
+            tooltipBuilder.append("<p><b>This parameter is currently frozen to save memory and DSP power.</b>");
         }
         else {
             ctrl.setBackground(Theme.Component_Background);
         }
+
+        tooltipBuilder.append("<p>");
+        double currentValue = getValue().getDouble(); 
+        DecimalFormat df = new DecimalFormat("0.00####"); 
+        tooltipBuilder.append("<br>").append(df.format(currentValue)); 
+
+        if (convs != null) {
+            for (NativeToReal c : convs) { 
+                tooltipBuilder.append("<br>").append(c.ToRealHighPrecision(new ValueFrac32(currentValue)));
+            }
+        }
+        ctrl.setToolTipText(tooltipBuilder.toString());
     }
 }
