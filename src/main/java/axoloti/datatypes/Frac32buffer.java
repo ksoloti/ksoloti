@@ -61,7 +61,7 @@ public class Frac32buffer extends DataTypeBuffer {
         if (Int32.d.equals(dest)) {
             return "(" + in + "[0]>>21)";
         }
-        throw new Error("no conversion for " + dest);
+        throw new IllegalArgumentException("No conversion for " + dest);
     }
 
     @Override

@@ -52,7 +52,7 @@ public class Bool32 implements DataType {
         if (Frac32.d.equals(dest)) {
             return "(" + in + "?(1<<27)-1:0)";
         }
-        throw new Error("no conversion for " + dest);
+        throw new IllegalArgumentException("No conversion for " + dest);
     }
 
     @Override

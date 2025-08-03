@@ -57,7 +57,7 @@ public class Frac32 implements DataType {
         if (Bool32.d.equals(dest)) {
             return "(" + in + ">0)";
         }
-        throw new Error("no conversion for " + dest);
+        throw new IllegalArgumentException("No conversion for " + dest);
     }
 
     @Override

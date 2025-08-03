@@ -43,7 +43,7 @@ public class CharPtr32 implements DataType {
         if (Int32.d.equals(dest)) {
             return "(int32_t)(" + in + "[0])";
         }
-        throw new Error("no conversion for " + dest);
+        throw new IllegalArgumentException("No conversion for " + dest);
     }
 
     @Override

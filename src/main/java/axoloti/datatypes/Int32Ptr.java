@@ -41,7 +41,7 @@ public class Int32Ptr implements DataType {
 
     @Override
     public String GenerateConversionToType(DataType dest, String in) {
-        throw new Error("no conversion for " + dest);
+        throw new IllegalArgumentException("No conversion for " + dest);
     }
 
     @Override
