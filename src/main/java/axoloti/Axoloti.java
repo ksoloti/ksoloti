@@ -110,10 +110,10 @@ public class Axoloti {
 
         }
         catch (URISyntaxException e) {
-            throw new Error(e);
+            throw new IllegalStateException("Failed to initialize due to URI syntax error", e);
         }
         catch (IOException e) {
-            throw new Error(e);
+            throw new IllegalStateException("Failed to initialize due to I/O error", e);
         }
 
         System.setProperty("line.separator", "\n");
