@@ -31,7 +31,8 @@ public class PitchToRatio implements NativeToReal {
 
     @Override
     public String ToReal(Value v) {
-        return (String.format("×%.3f", Math.pow(2.0, (v.getDouble()) / 12.0)));
+        double ratio = Math.pow(2.0, (v.getDouble()) / 12.0);
+        return RealUnitFormatter.formatRatio(ratio);
     }
 
     @Override

@@ -38,7 +38,8 @@ public class SquareRatio implements NativeToReal {
     @Override
     public String ToReal(Value v) {
         double d = v.getDouble();
-        return (String.format("×%.3f", d * d / 4096.0));
+        double ratio = d * d / 4096.0;
+        return RealUnitFormatter.formatRatio(ratio);
     }
 
     @Override

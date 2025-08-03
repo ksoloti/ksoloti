@@ -37,11 +37,8 @@ public class SquareDB implements NativeToReal {
 
     @Override
     public String ToReal(Value v) {
-        if (v.getDouble() != 0) {
-            return (String.format("%.1fdB", maxGain + 40 * Math.log10(Math.abs(v.getDouble() / 64.0))));
-        } else {
-            return "-infdB";
-        }
+        double squareDb = maxGain + 40 * Math.log10(Math.abs(v.getDouble() / 64.0));
+        return RealUnitFormatter.formatDb(squareDb);
     }
 
     @Override

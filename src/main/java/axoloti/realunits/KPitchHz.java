@@ -33,18 +33,7 @@ public class KPitchHz implements NativeToReal {
     @Override
     public String ToReal(Value v) {
         double hz = 440.0 * Math.pow(2.0, (v.getDouble() + 64 - 69) / 12.0) / 16.0;
-        if (hz > 10000.0) {
-            return (String.format("%.2f kHz", hz / 1000));
-        }
-        if (hz > 1000.0) {
-            return (String.format("%.3f kHz", hz / 1000));
-        } else if (hz > 100.0) {
-            return (String.format("%.1f Hz", hz));
-        } else if (hz > 10.0) {
-            return (String.format("%.2f Hz", hz));
-        } else {
-            return (String.format("%.3f Hz", hz));
-        }
+        return RealUnitFormatter.formatFrequency(hz);
     }
 
     @Override

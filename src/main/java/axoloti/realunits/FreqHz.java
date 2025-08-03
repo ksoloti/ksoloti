@@ -32,16 +32,7 @@ public class FreqHz implements NativeToReal {
     @Override
     public String ToReal(Value v) {
         double hz = 48000.0 * 0.5 * v.getDouble() / 64.0;
-        if (hz > 10000.0) {
-            return (String.format("%.1f kHz", hz / 1000));
-        }
-        if (hz > 1000.0) {
-            return (String.format("%.2f kHz", hz / 1000));
-        } else if (hz > 100.0) {
-            return (String.format("%.1f Hz", hz));
-        } else {
-            return (String.format("%.2f Hz", hz));
-        }
+        return RealUnitFormatter.formatFrequency(hz);
     }
 
     @Override

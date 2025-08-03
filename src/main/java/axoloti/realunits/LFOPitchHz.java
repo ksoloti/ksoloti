@@ -32,13 +32,7 @@ public class LFOPitchHz implements NativeToReal {
     @Override
     public String ToReal(Value v) {
         double hz = 440.0 * Math.pow(2.0, (v.getDouble() + 64 - 69) / 12.0) / 64;
-        if (hz > 1000.0) {
-            return (String.format("%.2f kHz", hz / 1000));
-        } else if (hz > 100.0) {
-            return (String.format("%.1f Hz", hz));
-        } else {
-            return (String.format("%.2f Hz", hz));
-        }
+        return RealUnitFormatter.formatFrequency(hz);
     }
 
     @Override

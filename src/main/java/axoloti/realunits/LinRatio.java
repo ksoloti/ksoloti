@@ -37,7 +37,8 @@ public class LinRatio implements NativeToReal {
 
     @Override
     public String ToReal(Value v) {
-        return (String.format("×%.3f", range * v.getDouble() / 64.0));
+        double ratio = range * v.getDouble() / 64.0;
+        return RealUnitFormatter.formatRatio(ratio);
     }
 
     @Override

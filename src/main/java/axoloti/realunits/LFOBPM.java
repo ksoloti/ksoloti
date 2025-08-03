@@ -34,27 +34,7 @@ public class LFOBPM implements NativeToReal {
     public String ToReal(Value v) {
         double hz = 440.0 * Math.pow(2.0, (v.getDouble() + 64 - 69) / 12.0) / 64;
         double bpm = 60.0 * hz;
-
-        /* Special case for zero */
-        if (bpm <= 0.0) {
-            return "   0 BPM";
-        }
-
-        /* Round to avoid floating point inaccuracies at boundaries */
-        double roundedBpm = Math.round(bpm * 10000.0) / 10000.0;
-
-        /* Get the number of digits before the decimal point */
-        int preDecimalDigits = (int) Math.log10(roundedBpm) + 1;
-
-        if (preDecimalDigits >= 4) { // "99999 BPM" / "9999 BPM"
-            return (String.format("%.0f BPM", bpm));
-        } else if (preDecimalDigits >= 3) { // "999.9 BPM"
-            return (String.format("%.1f BPM", bpm));
-        } else if (preDecimalDigits >= 2) { // "99.99 BPM"
-            return (String.format("%.2f BPM", bpm));
-        } else { // '9.999 BPM"
-            return (String.format("%.3f BPM", bpm));
-        }
+        return RealUnitFormatter.formatBPM(bpm);
     }
 
     @Override

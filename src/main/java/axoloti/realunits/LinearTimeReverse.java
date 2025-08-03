@@ -32,13 +32,7 @@ public class LinearTimeReverse implements NativeToReal {
     @Override
     public String ToReal(Value v) {
         double t = (1.0 / v.getDouble()) * (16 / 48000.0) * 8192;
-        if (t > 1.0) {
-            return (String.format("%.2f s", t));
-        } else if (t > 0.1) {
-            return (String.format("%.0f ms", t * 1000));
-        } else {
-            return (String.format("%.1f ms", t * 1000));
-        }
+        return RealUnitFormatter.formatPeriod(t);
     }
 
     @Override

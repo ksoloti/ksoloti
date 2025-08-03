@@ -33,13 +33,7 @@ public class LinearTimeExp implements NativeToReal {
     public String ToReal(Value v) {
         double hz = 440.0 * Math.pow(2.0, (-v.getDouble() + 64 - 69) / 12.0) / 32;
         double t = 1.0 / hz;
-        if (t > 1) {
-            return (String.format("%.2f s", t));
-        } else if (t > 0.1) {
-            return (String.format("%.1f ms", t * 1000));
-        } else {
-            return (String.format("%.2f ms", t * 1000));
-        }
+        return RealUnitFormatter.formatPeriod(t);
     }
 
     @Override

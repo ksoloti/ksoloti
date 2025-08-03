@@ -33,29 +33,7 @@ public class LFOPeriod implements NativeToReal {
     public String ToReal(Value v) {
         double hz = 440.0 * Math.pow(2.0, (v.getDouble() + 64 - 69) / 12.0) / 64;
         double t = 1.0 / hz;
-
-        /* Round the period to a clean precision before performing checks */
-        double roundedT = Math.round(t * 10000.0) / 10000.0;
-
-        if (roundedT >= 100.0) {
-            return (String.format("%.1f s", t)); // "123.4 s"
-        } else if (roundedT >= 10.0) {
-            return (String.format("%.2f s", t)); // "12.34 s"
-        } else if (roundedT >= 1.0) {
-            return (String.format("%.3f s", t)); // "1.234 s"
-        } else {
-            /* Less than 1s displayed in milliseconds */
-            double ms = t * 1000;
-            double roundedMs = Math.round(ms * 10000.0) / 10000.0;
-            
-            if (roundedMs >= 100.0) {
-                return (String.format("%.1f ms", ms)); // "123.4 ms"
-            } else if (roundedMs >= 10.0) {
-                return (String.format("%.2f ms", ms)); // "12.34 ms"
-            } else {
-                return (String.format("%.3f ms", ms)); // "1.234 ms"
-            }
-        }
+        return RealUnitFormatter.formatPeriod(t);
     }
 
     @Override

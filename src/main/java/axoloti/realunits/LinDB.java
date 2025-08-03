@@ -37,11 +37,8 @@ public class LinDB implements NativeToReal {
 
     @Override
     public String ToReal(Value v) {
-        if (v.getDouble() != 0) {
-            return (String.format("%.1fdB", maxGain + 20 * Math.log10(Math.abs(v.getDouble() / 64.0))));
-        } else {
-            return "-infdB";
-        }
+        double linDb = maxGain + 20 * Math.log10(Math.abs(v.getDouble() / 64.0));
+        return RealUnitFormatter.formatDb(linDb);
     }
 
     @Override

@@ -32,10 +32,7 @@ public class FilterQ implements NativeToReal {
     @Override
     public String ToReal(Value v) {
         double q = 32 / (64 - v.getDouble());
-        if (q > 99.9) {
-            return "Q max";
-        }
-        return (String.format("Q %2.3f", q));
+        return RealUnitFormatter.formatQ(q);
     }
 
     @Override

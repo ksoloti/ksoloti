@@ -35,13 +35,7 @@ public class DecayTime implements NativeToReal {
     @Override
     public String ToReal(Value v) {
         double t = Math.log(2.0) * (1.0 / (64 - v.getDouble())) * (16 / 48000.0) * 4096;
-        if (t > 1.0) {
-            return (String.format("%.2f s", t));
-        } else if (t > 0.1) {
-            return (String.format("%.0f ms", t * 1000));
-        } else {
-            return (String.format("%.1f ms", t * 1000));
-        }
+        return RealUnitFormatter.formatPeriod(t);
     }
 
     @Override
