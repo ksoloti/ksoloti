@@ -99,13 +99,13 @@ public class Net extends JComponent {
             String inletname = i.getInletname();
             AxoObjectInstanceAbstract o = patch.GetObjectInstance(objname);
             if (o == null) {
-                LOGGER.log(Level.SEVERE, "Could not resolve net dest obj :{0}::{1}", new Object[]{i.getObjname(), i.getInletname()});
+                LOGGER.log(Level.SEVERE, "Could not resolve net dest obj: {0}::{1}", new Object[]{i.getObjname(), i.getInletname()});
                 patch.nets.remove(this);
                 return;
             }
             InletInstance r = o.GetInletInstance(inletname);
             if (r == null) {
-                LOGGER.log(Level.SEVERE, "Could not resolve net dest inlet :{0}::{1}", new Object[]{i.getObjname(), i.getInletname()});
+                LOGGER.log(Level.SEVERE, "Could not resolve net dest inlet: {0}::{1}", new Object[]{i.getObjname(), i.getInletname()});
                 patch.nets.remove(this);
                 return;
             }
