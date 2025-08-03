@@ -267,13 +267,14 @@ public class Net extends JComponent {
 
         Point from = SwingUtilities.convertPoint(getPatchGui().Layers, p0, this);
         from.x -= 1; /* Compensate for outlet graphic shift */
+        Color c_shadow = c.darker().darker();
         for (InletInstance i : dest) {
             Point p1 = i.getJackLocInCanvas();
 
             Point to = SwingUtilities.convertPoint(getPatchGui().Layers, p1, this);
 
             // g2.setColor(Theme.Cable_Shadow);
-            g2.setColor(c.darker().darker()); /* derive wire shadow color from actual color */
+            g2.setColor(c_shadow); /* derive wire shadow color from actual color */
             if (from.x > to.x) {
                 /* Wire goes right-to-left */
                 if (from.y > to.y) {
