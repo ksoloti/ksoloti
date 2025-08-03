@@ -153,11 +153,16 @@ public class RealUnitFormatter {
     }
 
     public static String formatDb(double db) {
+        if (Double.isInfinite(db) && db < 0.0) {
+            return "-inf dB";
+        }
+
         /* Round to avoid floating point inaccuracies at boundaries */
         double roundedDb = Math.round(db * 10000.0) / 10000.0;
-
-        if (roundedDb <= 0.0) {
-            return "-inf dB";
+        
+        /* Handle 0.0 dB case separately */
+        if (roundedDb == 0.0) {
+            return "   0 dB"; /* Return padded plain 0 for readability */
         } else if (roundedDb >= 100.0) {
             return (String.format("%.0f dB", db)); // "120 dB"
         } else if (roundedDb >= 10.0) {
