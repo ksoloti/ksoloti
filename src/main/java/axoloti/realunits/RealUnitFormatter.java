@@ -159,16 +159,19 @@ public class RealUnitFormatter {
 
         /* Round to avoid floating point inaccuracies at boundaries */
         double roundedDb = Math.round(db * 10000.0) / 10000.0;
-        
+
         /* Handle 0.0 dB case separately */
         if (roundedDb == 0.0) {
             return "   0 dB"; /* Return padded plain 0 for readability */
-        } else if (roundedDb >= 100.0) {
-            return (String.format("%.0f dB", db)); // "120 dB"
-        } else if (roundedDb >= 10.0) {
-            return (String.format("%.1f dB", db)); // "12.3 dB"
+        }
+
+        double absoluteDb = Math.abs(roundedDb);
+        if (absoluteDb >= 100.0) {
+            return (String.format("%.0f dB", db)); // "120 dB", "-120 dB"
+        } else if (absoluteDb >= 10.0) {
+            return (String.format("%.1f dB", db)); // "12.3 dB", "-12.3 dB"
         } else {
-            return (String.format("%.2f dB", db)); // "1.23 dB"
+            return (String.format("%.2f dB", db)); // "1.23 dB", "-1.23 dB"
         }
     }
 
