@@ -67,36 +67,36 @@ public class NetDragging extends Net {
         }
         if (p0 != null) {
             Point from = SwingUtilities.convertPoint(getPatchGui().Layers, p0, this);
-            for (InletInstance i : dest) {
-                Point p1 = i.getJackLocInCanvas();
-                Point to = SwingUtilities.convertPoint(getPatchGui().Layers, p1, this);
+            // for (InletInstance i : dest) {
+            //     Point p1 = i.getJackLocInCanvas();
+            //     Point to = SwingUtilities.convertPoint(getPatchGui().Layers, p1, this);
 
-                g2.setColor(c.darker().darker()); /* derive wire shadow color from actual color */
-                if (from.x > to.x) {
-                    /* Wire goes right-to-left */
-                    if (from.y > to.y) {
-                        /* Wire goes upwards, i.e. starts lower than it ends */
-                        DrawWire(g2, from.x - shadowOffset, from.y + shadowOffset, to.x - shadowOffset, to.y + shadowOffset);
-                    }
-                    else {
-                        /* Wire goes downwards, i.e. starts higher than it ends */
-                        DrawWire(g2, from.x + shadowOffset, from.y + shadowOffset, to.x + shadowOffset, to.y + shadowOffset);
-                    }
-                }
-                else {
-                    /* Wire goes left-to-right */
-                    if (from.y > to.y) {
-                        /* Wire goes upwards, i.e. starts lower than it ends */
-                        DrawWire(g2, from.x + shadowOffset, from.y + shadowOffset, to.x + shadowOffset, to.y + shadowOffset);
-                    }
-                    else {
-                        /* Wire goes downwards, i.e. starts higher than it ends */
-                        DrawWire(g2, from.x - shadowOffset, from.y + shadowOffset, to.x - shadowOffset, to.y + shadowOffset);
-                    }
-                }
-                    g2.setColor(c); /* paint wire color */
-                    DrawWire(g2, from.x, from.y, to.x, to.y);
-                }
+            //     g2.setColor(c.darker().darker()); /* derive wire shadow color from actual color */
+            //     if (from.x > to.x) {
+            //         /* Wire goes right-to-left */
+            //         if (from.y > to.y) {
+            //             /* Wire goes upwards, i.e. starts lower than it ends */
+            //             DrawWire(g2, from.x - shadowOffset, from.y + shadowOffset, to.x - shadowOffset, to.y + shadowOffset);
+            //         }
+            //         else {
+            //             /* Wire goes downwards, i.e. starts higher than it ends */
+            //             DrawWire(g2, from.x + shadowOffset, from.y + shadowOffset, to.x + shadowOffset, to.y + shadowOffset);
+            //         }
+            //     }
+            //     else {
+            //         /* Wire goes left-to-right */
+            //         if (from.y > to.y) {
+            //             /* Wire goes upwards, i.e. starts lower than it ends */
+            //             DrawWire(g2, from.x + shadowOffset, from.y + shadowOffset, to.x + shadowOffset, to.y + shadowOffset);
+            //         }
+            //         else {
+            //             /* Wire goes downwards, i.e. starts higher than it ends */
+            //             DrawWire(g2, from.x - shadowOffset, from.y + shadowOffset, to.x - shadowOffset, to.y + shadowOffset);
+            //         }
+            //     }
+            //         g2.setColor(c); /* paint wire color */
+            //         DrawWire(g2, from.x, from.y, to.x, to.y);
+            //     }
             for (OutletInstance o : source) {
                 Point p1 = o.getJackLocInCanvas();
                 Point to = SwingUtilities.convertPoint(getPatchGui().Layers, p1, this);
@@ -126,7 +126,6 @@ public class NetDragging extends Net {
                 }
                 g2.setColor(c); /* paint wire color */
                 DrawWire(g2, from.x, from.y, to.x, to.y);
-
             }
         }
     }
