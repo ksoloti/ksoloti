@@ -387,7 +387,7 @@ public class DialComponent extends ACtrlComponent {
             s += df.format(this.value) + "<br>"; /* Show precise 'Axo-units' value */
 
             for (NativeToReal c : convs) { /* Show all conversions for this type (Hz, seconds, dB etc.) */
-                s += c.ToReal(new ValueFrac32(value)) + "<br>";
+                s += c.ToRealHighPrecision(new ValueFrac32(value)) + "<br>";
             }
             this.setToolTipText(s);
         }

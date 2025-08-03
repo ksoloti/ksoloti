@@ -36,6 +36,12 @@ public class LinearTimeReverse implements NativeToReal {
     }
 
     @Override
+    public String ToRealHighPrecision(Value v) {
+        double t = (1.0 / v.getDouble()) * (16 / 48000.0) * 8192;
+        return RealUnitFormatter.formatPeriodHighPrecision(t);
+    }
+
+    @Override
     public double FromReal(String s) throws ParseException {
         Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]+)\\p{Space}*(?<unit>(?:[mM][sS]?|[sS]))");
         Matcher matcher = pattern.matcher(s);

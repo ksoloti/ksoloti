@@ -36,6 +36,12 @@ public class PitchHz implements NativeToReal {
     }
 
     @Override
+    public String ToRealHighPrecision(Value v) {
+        double hz = 440.0 * Math.pow(2.0, (v.getDouble() + 64 - 69) / 12.0);
+        return RealUnitFormatter.formatFrequencyHighPrecision(hz);
+    }
+
+    @Override
     public double FromReal(String s) throws ParseException {
         /* Improved regex: triggers Hertz input if at least one unit character is used (k, m, or h)
            Handles the following formats (plus optional decimals):

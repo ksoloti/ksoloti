@@ -36,6 +36,12 @@ public class FreqHz implements NativeToReal {
     }
 
     @Override
+    public String ToRealHighPrecision(Value v) {
+        double hz = 48000.0 * 0.5 * v.getDouble() / 64.0;
+        return RealUnitFormatter.formatFrequencyHighPrecision(hz);
+    }
+
+    @Override
     public double FromReal(String s) throws ParseException {
         Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]+)\\p{Space}*(?<unit>(?:[kKmM][hH]?[zZ]?|[hH][zZ]?))");
         Matcher matcher = pattern.matcher(s);

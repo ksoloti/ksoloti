@@ -91,6 +91,11 @@ public class PitchToNote implements NativeToReal {
     }
 
     @Override
+    public String ToRealHighPrecision(Value v) {
+        return ToReal(v); /* No higher precision necessary for now? */
+    }
+
+    @Override
     public double FromReal(String s) throws ParseException {
         Pattern pattern = Pattern.compile("(?<note>[a-gA-G])\\p{Space}*(?<sharp>[#bB]?)\\p{Space}*(?<oct>\\d+)\\p{Space}*(?<sign>[-\\+]?)\\p{Space}*(?<delta>\\d*)");
         Matcher matcher = pattern.matcher(s);

@@ -37,6 +37,13 @@ public class LinearTimeExp implements NativeToReal {
     }
 
     @Override
+    public String ToRealHighPrecision(Value v) {
+        double hz = 440.0 * Math.pow(2.0, (-v.getDouble() + 64 - 69) / 12.0) / 32;
+        double t = 1.0 / hz;
+        return RealUnitFormatter.formatPeriodHighPrecision(t);
+    }
+
+    @Override
     public double FromReal(String s) throws ParseException {
         Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]+)\\p{Space}*(?<unit>(?:[mM][sS]?|[sS]))");
         Matcher matcher = pattern.matcher(s);

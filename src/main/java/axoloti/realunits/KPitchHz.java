@@ -37,6 +37,12 @@ public class KPitchHz implements NativeToReal {
     }
 
     @Override
+    public String ToRealHighPrecision(Value v) {
+        double hz = 440.0 * Math.pow(2.0, (v.getDouble() + 64 - 69) / 12.0) / 16.0;
+        return RealUnitFormatter.formatFrequencyHighPrecision(hz);
+    }
+
+    @Override
     public double FromReal(String s) throws ParseException {
         Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]+)\\p{Space}*(?<unit>(?:[kKmM][hH]?[zZ]?|[hH][zZ]?))");
         Matcher matcher = pattern.matcher(s);

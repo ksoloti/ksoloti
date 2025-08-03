@@ -36,6 +36,11 @@ public class FilterQ implements NativeToReal {
     }
 
     @Override
+    public String ToRealHighPrecision(Value v) {
+        return ToReal(v); /* No higher precision necessary */
+    }
+
+    @Override
     public double FromReal(String s) throws ParseException {
         /* Regex to handle "Q10", "10Q", "Q 10", "10 Q" and a naked number "10" */
         Pattern pattern = Pattern.compile("(?<unit1>[qQ]?)\\p{Space}*(?<num>[\\d\\.\\-\\+]+)\\p{Space}*(?<unit2>[qQ]?)");

@@ -27,6 +27,7 @@ import java.text.ParseException;
  */
 public interface NativeToReal {
 
-    String ToReal(Value v);
+    String ToReal(Value v); /* Used for GUI labels */
+    String ToRealHighPrecision(Value v); /* Used to show higher precision value in dial's tooltip */
     double FromReal(String s) throws ParseException;
 }

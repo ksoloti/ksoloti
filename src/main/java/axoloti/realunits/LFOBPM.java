@@ -38,6 +38,13 @@ public class LFOBPM implements NativeToReal {
     }
 
     @Override
+    public String ToRealHighPrecision(Value v) {
+        double hz = 440.0 * Math.pow(2.0, (v.getDouble() + 64 - 69) / 12.0) / 64;
+        double bpm = 60.0 * hz;
+        return RealUnitFormatter.formatBPMHighPrecision(bpm);
+    }
+
+    @Override
     public double FromReal(String s) throws ParseException {
         /* Updated regex to handle "bpm", "bp", or "b" */
         Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]+)\\p{Space}*(?<unit>[bB][pP]?[mM]?)");

@@ -43,6 +43,13 @@ public class SquareRatio implements NativeToReal {
     }
 
     @Override
+    public String ToRealHighPrecision(Value v) {
+        double d = v.getDouble();
+        double ratio = d * d / 4096.0;
+        return RealUnitFormatter.formatRatioHighPrecision(ratio);
+    }
+
+    @Override
     public double FromReal(String s) throws ParseException {
         Pattern pattern = Pattern.compile("(?<unit1>[xX\\*]?)\\p{Space}*(?<num>[\\d\\.\\-\\+]+)\\p{Space}*(?<unit2>[xX\\*]?)");
         Matcher matcher = pattern.matcher(s);

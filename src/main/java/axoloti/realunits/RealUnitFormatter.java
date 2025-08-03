@@ -18,6 +18,8 @@
  */
 package axoloti.realunits;
 
+import java.text.DecimalFormat;
+
 public class RealUnitFormatter {
 
     private RealUnitFormatter() {}
@@ -37,6 +39,11 @@ public class RealUnitFormatter {
         } else {
             return (String.format("%.3f Hz", hz)); // "1.234 Hz"
         }
+    }
+
+    public static String formatFrequencyHighPrecision(double hz) {
+        DecimalFormat df = new DecimalFormat("0.###");
+        return df.format(hz) + " hz"; // Always display Hz with up to 3 decimals precision
     }
 
     public static String formatPeriod(double t) {
@@ -64,12 +71,26 @@ public class RealUnitFormatter {
         }
     }
 
+    public static String formatPeriodHighPrecision(double t) {
+        /* Round to avoid floating point inaccuracies at boundaries */
+        double roundedT = Math.round(t * 10000.0) / 10000.0;
+
+        DecimalFormat df = new DecimalFormat("0.###");
+        if (roundedT >= 1.0) {
+            return df.format(t) + " s"; // Display seconds with up to 3 decimals precision
+        } else {
+            /* Less than 1s is displayed in milliseconds */
+            double ms = t * 1000;
+            return df.format(ms) + " ms"; // Display milliseconds with up to 3 decimals precision
+        }
+    }
+
     public static String formatBPM(double bpm) {
         /* Round to avoid floating point inaccuracies at boundaries */
         double roundedBpm = Math.round(bpm * 10000.0) / 10000.0;
 
         if (roundedBpm <= 0.0) {
-            return "    0 BPM";
+            return "    0 BPM"; /* Return padded plain 0 for readability */
         }
 
         /* Get the number of digits before the decimal point */
@@ -84,6 +105,18 @@ public class RealUnitFormatter {
         } else {
             return (String.format("%.3f BPM", bpm)); // "1.234 BPM"
         }
+    }
+
+    public static String formatBPMHighPrecision(double bpm) {
+        /* Round to avoid floating point inaccuracies at boundaries */
+        double roundedBpm = Math.round(bpm * 10000.0) / 10000.0;
+
+        if (roundedBpm <= 0.0) {
+            return "0 BPM"; /* Return plain 0 for readability */
+        }
+
+        DecimalFormat df = new DecimalFormat("0.###");
+        return df.format(bpm) + " BPM"; // Always display with up to 3 decimals precision
     }
 
     public static String formatQ(double q) {
@@ -101,6 +134,8 @@ public class RealUnitFormatter {
         }
     }
 
+    /* No formatQHighPrecision necessary */
+
     public static String formatRatio(double ratio) {
         /* Round to avoid floating point inaccuracies at boundaries */
         double roundedRatio = Math.round(ratio * 10000.0) / 10000.0;
@@ -110,6 +145,11 @@ public class RealUnitFormatter {
         } else {
             return (String.format("× %.3f", ratio)); // "× 1.234"
         }
+    }
+
+    public static String formatRatioHighPrecision(double ratio) {
+        DecimalFormat df = new DecimalFormat("0.######");
+        return "× " + df.format(ratio); // Always display with up to 6 decimals precision
     }
 
     public static String formatDb(double db) {
@@ -126,4 +166,6 @@ public class RealUnitFormatter {
             return (String.format("%.2f dB", db)); // "1.23 dB"
         }
     }
+
+    /* No formatDbHighPrecision necessary */
 }

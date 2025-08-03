@@ -42,6 +42,11 @@ public class LinDB implements NativeToReal {
     }
 
     @Override
+    public String ToRealHighPrecision(Value v) {
+        return ToReal(v); /* No higher precision necessary */
+    }
+
+    @Override
     public double FromReal(String s) throws ParseException {
         Pattern pattern = Pattern.compile("(?<num>[\\d\\.\\-\\+]+)\\p{Space}*[dD][bB]?");
         Matcher matcher = pattern.matcher(s);
