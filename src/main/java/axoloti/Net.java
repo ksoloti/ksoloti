@@ -204,20 +204,26 @@ public class Net extends JComponent {
         int max_y = Integer.MIN_VALUE;
         int max_x = Integer.MIN_VALUE;
 
+        /* Create a single list to hold all points that define the net */
+        ArrayList<Point> points = new ArrayList<>();
+        
+        /* Add all inlet points */
         for (InletInstance i : dest) {
-            Point p1 = i.getJackLocInCanvas();
-            min_x = Math.min(min_x, p1.x);
-            min_y = Math.min(min_y, p1.y);
-            max_x = Math.max(max_x, p1.x);
-            max_y = Math.max(max_y, p1.y);
+            points.add(i.getJackLocInCanvas());
         }
+        /* Add all outlet points (for a valid net, this will be just one) */
         for (OutletInstance i : source) {
-            Point p1 = i.getJackLocInCanvas();
-            min_x = Math.min(min_x, p1.x);
-            min_y = Math.min(min_y, p1.y);
-            max_x = Math.max(max_x, p1.x);
-            max_y = Math.max(max_y, p1.y);
+            points.add(i.getJackLocInCanvas());
         }
+
+        /* Iterate over the single list to find the bounds */
+        for (Point p : points) {
+            min_x = Math.min(min_x, p.x);
+            min_y = Math.min(min_y, p.y);
+            max_x = Math.max(max_x, p.x);
+            max_y = Math.max(max_y, p.y);
+        }
+        
         int fudge = 8;
         this.setBounds(min_x - fudge, min_y - fudge,
                 Math.max(1, max_x - min_x + (2 * fudge)),
