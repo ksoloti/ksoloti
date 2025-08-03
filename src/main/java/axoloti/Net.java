@@ -382,7 +382,7 @@ public class Net extends JComponent {
         if (source.size() == 1) {
             return source.get(0).GetDataType();
         }
-        java.util.Collections.sort(source);
+        // java.util.Collections.sort(source);
         DataType t = source.get(0).GetDataType();
         return t;
     }
