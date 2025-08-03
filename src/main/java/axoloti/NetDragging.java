@@ -63,7 +63,7 @@ public class NetDragging extends Net {
             if (GetDataType() != null) {
                 c = GetDataType().GetColor();
             } else {
-                c = Theme.Cable_Shadow;
+            c = Theme.Cable_Sourceless;
         }
         if (p0 != null) {
             Point from = SwingUtilities.convertPoint(getPatchGui().Layers, p0, this);

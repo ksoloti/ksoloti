@@ -91,9 +91,9 @@ public class Theme {
     public static final Color Cable_Default_Highlighted = MaterialColors.GREY_600;
 
     @Element
-    public static final Color Cable_Shadow = MaterialColors.BLACK;
+    public static final Color Cable_Sourceless = MaterialColors.BLACK;
     @Element
-    public static final Color Cable_Shadow_Highlighted = MaterialColors.GREY_800;
+    public static final Color Cable_Sourceless_Highlighted = MaterialColors.GREY_800;
 
     @Element
     public static final Color Cable_Bool32 = ColorConverter.withAlpha(MaterialColors.YELLOW_A400, cable_opacity);
