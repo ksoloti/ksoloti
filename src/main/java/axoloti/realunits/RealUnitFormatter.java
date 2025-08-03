@@ -43,7 +43,7 @@ public class RealUnitFormatter {
 
     public static String formatFrequencyHighPrecision(double hz) {
         DecimalFormat df = new DecimalFormat("0.###");
-        return df.format(hz) + " hz"; // Always display Hz with up to 3 decimals precision
+        return df.format(hz) + " Hz"; // Always display Hz with up to 3 decimals precision
     }
 
     public static String formatPeriod(double t) {
