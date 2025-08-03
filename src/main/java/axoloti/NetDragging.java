@@ -97,11 +97,12 @@ public class NetDragging extends Net {
             //         g2.setColor(c); /* paint wire color */
             //         DrawWire(g2, from.x, from.y, to.x, to.y);
             //     }
+            Color c_shadow = c.darker().darker();
             for (OutletInstance o : source) {
                 Point p1 = o.getJackLocInCanvas();
                 Point to = SwingUtilities.convertPoint(getPatchGui().Layers, p1, this);
 
-                g2.setColor(c.darker().darker()); /* derive wire shadow color from actual color */
+                g2.setColor(c_shadow); /* derive wire shadow color from actual color */
                 if (from.x > to.x) {
                     /* Wire goes right-to-left */
                     if (from.y > to.y) {
