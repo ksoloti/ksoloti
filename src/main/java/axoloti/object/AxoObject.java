@@ -112,9 +112,15 @@ import axoloti.parameters.ParameterInt32Box;
 import axoloti.parameters.ParameterInt32BoxSmall;
 import axoloti.parameters.ParameterInt32HRadio;
 import axoloti.parameters.ParameterInt32VRadio;
+import axoloti.utils.AxolotiLibrary;
+import axoloti.utils.Preferences;
+
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -502,94 +508,87 @@ public class AxoObject extends AxoObjectAbstract {
     //     return relative.toString();
     // }
 
+    private ArrayList<Path> getSearchPaths(Path objectPath) {
+        ArrayList<Path> paths = new ArrayList<>();
+
+        /* 1. The object's local folder (highest priority) */
+        if (objectPath != null && objectPath.getParent() != null) {
+            paths.add(objectPath.getParent());
+        }
+
+        /* 2. Each library's 'includes' folder (from Preferences) */
+        for (AxolotiLibrary lib : Preferences.getInstance().getLibraries()) {
+            Path libraryIncludePath = Paths.get(lib.getLocalLocation(), "includes");
+            if (Files.isDirectory(libraryIncludePath)) {
+                paths.add(libraryIncludePath);
+            }
+        }
+
+        /* 3. The firmware and chibios folder (lowest priority) */
+        String firmwareDir = System.getProperty(FIRMWARE_DIR);
+        if (firmwareDir != null) {
+            Path firmwarePath = Paths.get(firmwareDir);
+            paths.add(firmwarePath);
+            paths.add(firmwarePath.resolve("../chibios"));
+        }
+        
+        return paths;
+    }
+
+    private Path findIncludeFile(String includeName, ArrayList<Path> searchPaths) {
+
+        /* First, check for the special "chibios/" includes */
+        if (includeName.startsWith("chibios/")) {
+            for (Path searchPath : searchPaths) {
+                if (searchPath.getFileName().toString().equals("chibios")) {
+                    String strippedIncludeName = includeName.substring(8);
+                    Path resolvedPath = searchPath.resolve(strippedIncludeName).normalize();
+                    if (Files.isRegularFile(resolvedPath) && Files.isReadable(resolvedPath)) {
+                        return resolvedPath;
+                    }
+                }
+            }
+        }
+        
+        /* For all other includes, use the general search logic */
+        for (Path searchPath : searchPaths) {
+            Path resolvedPath = searchPath.resolve(includeName).normalize();
+            if (Files.isRegularFile(resolvedPath) && Files.isReadable(resolvedPath)) {
+                return resolvedPath;
+            }
+        }
+        
+        return null;
+    }
+
     @Override
     public HashSet<String> GetIncludes(String patchFilePath) {
-        /* Optional String argument makes is possible to
-         * search includes relative to containing patch file.
-         * Can be passed null.
-         */
-
-        if ((includes == null) || includes.isEmpty()) {
+        if (includes == null || includes.isEmpty()) {
             return null;
         }
 
-        HashSet<String> r = new HashSet<String>();
-        if (sObjFilePath != null) {
-            for (String s : includes) {
-                if (sObjFilePath.lastIndexOf(File.separatorChar) >= 0) {
-                    if (s.startsWith("./")) {
-                        String strippedPath = sObjFilePath.substring(0, sObjFilePath.lastIndexOf(File.separatorChar));
-                        File f = new File(strippedPath + "/" + s.substring(2));
-                        if (f.isFile() && f.canRead()) {
-                            String s2 = f.getAbsolutePath();
-                            s2 = s2.replace('\\', '/');
-                            r.add(s2);
-                        }
-                    }
-                    else if (s.startsWith("../")) {
-                        String strippedPath = sObjFilePath.substring(0, sObjFilePath.lastIndexOf(File.separatorChar));
-                        File f = new File(strippedPath + "/" + s);
-                            String s2 = f.getAbsolutePath();
-                            s2 = s2.replace('\\', '/');
-                            r.add(s2);
-                    }
-                    else if (s.startsWith("chibios/")) {
-                        String s2 = (new File(System.getProperty(FIRMWARE_DIR))).getAbsolutePath() + "/../chibios" + s.substring(7);
-                        s2 = s2.replace('\\', '/');
-                        r.add(s2);
-                    }
-                }
-                else {
-                    s = s.replace('\\', '/');
-                    r.add(s);
-                }
-            }
-        }
-        else if (patchFilePath != null) {
-            /* try to resolve via patch directory */
-            for (String s : includes) {
-                if (patchFilePath.lastIndexOf(File.separatorChar) >= 0) {
-                    if (s.startsWith("./")) {
-                        String strippedPath = patchFilePath.substring(0, patchFilePath.lastIndexOf(File.separatorChar));
-                        File f = new File(strippedPath + "/" + s.substring(2));
-                        if (f.isFile() && f.canRead()) {
-                            String s2 = f.getAbsolutePath();
-                            s2 = s2.replace('\\', '/');
-                            r.add(s2);
-                        }
-                    }
-                    else if (s.startsWith("chibios/")) {
-                        String s2 = (new File(System.getProperty(FIRMWARE_DIR))).getAbsolutePath() + "/../chibios" + s.substring(7);
-                        s2 = s2.replace('\\', '/');
-                        r.add(s2);
-                    }
-                    else {
-                        /* includes "../" and "naked" filenames */
-                        String strippedPath = patchFilePath.substring(0, patchFilePath.lastIndexOf(File.separatorChar));
-                        File f = new File(strippedPath + "/" + s);
-                        if (f.isFile() && f.canRead()) {
-                            String s2 = f.getAbsolutePath();
-                            s2 = s2.replace('\\', '/');
-                            r.add(s2);
-                        }
-                    }
-                }
-                else if (s.startsWith("chibios/")) {
-                    String s2 = (new File(System.getProperty(FIRMWARE_DIR))).getAbsolutePath() + "/../chibios" + s.substring(7);
-                    s2 = s2.replace('\\', '/');
-                    r.add(s2);
-                }
+        HashSet<String> resolvedPaths = new HashSet<>();
+        Path objectPath = (sObjFilePath != null) ? Paths.get(sObjFilePath) : null;
+        Path patchPath = (patchFilePath != null) ? Paths.get(patchFilePath) : null;
+
+        /* Use the object's path or the patch's path as the local context */
+        Path basePath = objectPath != null ? objectPath : patchPath;
+        
+        ArrayList<Path> searchPaths = getSearchPaths(basePath);
+
+        for (String includeName : includes) {
+            Path resolvedFile = findIncludeFile(includeName, searchPaths);
+            if (resolvedFile != null) {
+                resolvedPaths.add(resolvedFile.toString());
             }
         }
 
-        if (r != null && !r.isEmpty()) {
-            return r;
-        }
-        else if (includes.isEmpty()) {
+        if (!resolvedPaths.isEmpty()) {
+            return resolvedPaths;
+        } else if (includes.isEmpty()) {
             return null;
-        }
-        else {
-            return includes;
+        } else {
+            return includes; /* Fallback: return the original includes if none could be resolved */
         }
     }
 
@@ -671,7 +670,7 @@ public class AxoObject extends AxoObjectAbstract {
             copy.inlets = new ArrayList<>();
             for (Inlet i : original.inlets) {
                 copy.inlets.add(i.clone());
-        }
+            }
         }
         
         /* outlets */
@@ -679,7 +678,7 @@ public class AxoObject extends AxoObjectAbstract {
             copy.outlets = new ArrayList<>();
             for (Outlet o : original.outlets) {
                 copy.outlets.add(o.clone());
-        }
+            }
         }
         
         /* attributes */
@@ -687,7 +686,7 @@ public class AxoObject extends AxoObjectAbstract {
             copy.attributes = new ArrayList<>();
             for (AxoAttribute attr : original.attributes) {
                 copy.attributes.add(attr.clone());
-        }
+            }
         }
 
         /* params */
@@ -695,7 +694,7 @@ public class AxoObject extends AxoObjectAbstract {
             copy.params = new ArrayList<>();
             for (Parameter p : original.params) {
                 copy.params.add(p.clone());
-        }
+            }
         }
         
         /* displays */
@@ -703,7 +702,7 @@ public class AxoObject extends AxoObjectAbstract {
             copy.displays = new ArrayList<>();
             for (Display d : original.displays) {
                 copy.displays.add(d.clone());
-        }
+            }
         }
 
         /* ModulationSources (ArrayList<String> can be deep-copied by copying the list) */
