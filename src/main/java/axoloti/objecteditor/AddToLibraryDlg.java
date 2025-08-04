@@ -52,11 +52,7 @@ public class AddToLibraryDlg extends javax.swing.JDialog {
         jAxoFile.setVisible(false);
         jAxoFileLabel.setVisible(false);
         this.obj = new AxoObject();
-        try {
-            this.obj.copy(obj);
-        } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(AddToLibraryDlg.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.obj.copy(obj);
         populateFields();
         jObjectName.getDocument().addDocumentListener(new DocumentListener() {
             void Update() {

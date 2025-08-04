@@ -94,8 +94,13 @@ public abstract class Inlet implements AtomDefinition, Cloneable {
     }
 
     @Override
-    public Inlet clone() throws CloneNotSupportedException {
-        return (Inlet)super.clone();
+    public Inlet clone() {
+        try {
+            Inlet clonedInlet = (Inlet) super.clone();
+            return clonedInlet;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override

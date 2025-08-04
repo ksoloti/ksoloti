@@ -637,82 +637,133 @@ public class AxoObject extends AxoObjectAbstract {
         instances.remove(oml);
     }
 
-    @Override
-    public AxoObject clone() throws CloneNotSupportedException {
-        AxoObject c = (AxoObject) super.clone();
-        c.inlets = new ArrayList<Inlet>();
-        for (Inlet i : inlets) {
-            c.inlets.add(i.clone());
+    private void deepCopyFields(AxoObject original, AxoObject copy) {
+
+        /* --- Copy simple fields (direct assignment) --- */
+        copy.helpPatch = original.helpPatch;
+        copy.providesModulationSource = original.providesModulationSource;
+        copy.rotatedParams = original.rotatedParams;
+        copy.sLocalData = original.sLocalData;
+        copy.sInitCode = original.sInitCode;
+        copy.sDisposeCode = original.sDisposeCode;
+        copy.sKRateCode = original.sKRateCode;
+        copy.sSRateCode = original.sSRateCode;
+        copy.sMidiCode = original.sMidiCode;
+
+        /* --- Copy deprecated MIDI code fields for completeness --- */
+        copy.sMidiCCCode = original.sMidiCCCode;
+        copy.sMidiNoteOnCode = original.sMidiNoteOnCode;
+        copy.sMidiNoteOffCode = original.sMidiNoteOffCode;
+        copy.sMidiPBendCode = original.sMidiPBendCode;
+        copy.sMidiChannelPressure = original.sMidiChannelPressure;
+        copy.sMidiAllNotesOffCode = original.sMidiAllNotesOffCode;
+        copy.sMidiResetControllersCode = original.sMidiResetControllersCode;
+
+        /* --- Copy fields from AxoObjectAbstract --- */ 
+        copy.sAuthor = original.sAuthor;
+        copy.sLicense = original.sLicense;
+        copy.sDescription = original.sDescription;
+
+        /* --- Deep-copy complex fields --- */
+
+        /* inlets */
+        if (original.inlets != null) {
+            copy.inlets = new ArrayList<>();
+            for (Inlet i : original.inlets) {
+                copy.inlets.add(i.clone());
         }
-        c.outlets = new ArrayList<Outlet>();
-        for (Outlet i : outlets) {
-            c.outlets.add(i.clone());
         }
-        c.attributes = new ArrayList<AxoAttribute>();
-        for (AxoAttribute i : attributes) {
-            c.attributes.add(i.clone());
+        
+        /* outlets */
+        if (original.outlets != null) {
+            copy.outlets = new ArrayList<>();
+            for (Outlet o : original.outlets) {
+                copy.outlets.add(o.clone());
         }
-        c.params = new ArrayList<Parameter>();
-        for (Parameter i : params) {
-            c.params.add(i.clone());
         }
-        c.displays = new ArrayList<Display>();
-        for (Display i : displays) {
-            c.displays.add(i.clone());
+        
+        /* attributes */
+        if (original.attributes != null) {
+            copy.attributes = new ArrayList<>();
+            for (AxoAttribute attr : original.attributes) {
+                copy.attributes.add(attr.clone());
         }
-        return c;
+        }
+
+        /* params */
+        if (original.params != null) {
+            copy.params = new ArrayList<>();
+            for (Parameter p : original.params) {
+                copy.params.add(p.clone());
+        }
+        }
+        
+        /* displays */
+        if (original.displays != null) {
+            copy.displays = new ArrayList<>();
+            for (Display d : original.displays) {
+                copy.displays.add(d.clone());
+        }
+        }
+
+        /* ModulationSources (ArrayList<String> can be deep-copied by copying the list) */
+        if (original.ModulationSources != null) {
+            copy.ModulationSources = new ArrayList<>(original.ModulationSources);
+        } else {
+            copy.ModulationSources = null;
+        }
+        
+        /* includes (HashSet<String> can be deep-copied by copying the set) */
+        if (original.includes != null) {
+            copy.includes = new HashSet<>(original.includes);
+        } else {
+            copy.includes = null;
+        }
+
+        /* depends (HashSet<String> can be deep-copied by copying the set) */
+        if (original.depends != null) {
+            copy.depends = new HashSet<>(original.depends);
+        } else {
+            copy.depends = null;
+        }
+
+        /* filedepends */
+        if (original.filedepends != null) {
+            copy.filedepends = new ArrayList<>();
+            for (SDFileReference fileRef : original.filedepends) {
+                copy.filedepends.add(fileRef.clone());
+            }
+        }
+
+        /* Instances should not be copied; a new object starts with no instances */
+        copy.instances = new ArrayList<>();
+        
+        /* The editor should not be copied. A new object doesn't have an open editor */
+        copy.editor = null;
+
+        /* editorBounds is a mutable Rectangle so create a new one */
+        if (original.editorBounds != null) {
+            copy.editorBounds = new Rectangle(original.editorBounds);
+        } else {
+            copy.editorBounds = null;
+        }
+
+        copy.editorActiveTabIndex = original.editorActiveTabIndex;
     }
 
-    public void copy(AxoObject o) throws CloneNotSupportedException {
+    @Override
+    public AxoObject clone() throws CloneNotSupportedException {
+        AxoObject clonedObject = (AxoObject) super.clone();
+        deepCopyFields(this, clonedObject);
 
-        inlets = new ArrayList<Inlet>();
-        for (Inlet i : o.inlets) {
-            inlets.add(i.clone());
-        }
-        outlets = new ArrayList<Outlet>();
-        for (Outlet i : o.outlets) {
-            outlets.add(i.clone());
-        }
-        attributes = new ArrayList<AxoAttribute>();
-        for (AxoAttribute i : o.attributes) {
-            attributes.add(i.clone());
-        }
-        params = new ArrayList<Parameter>();
-        for (Parameter i : o.params) {
-            params.add(i.clone());
-        }
-        displays = new ArrayList<Display>();
-        for (Display i : o.displays) {
-            displays.add(i.clone());
-        }
+        clonedObject.id = GenerateUUID();
+        clonedObject.sObjFilePath = null;
+        clonedObject.shortId = null;
 
-        helpPatch = o.helpPatch;
-        providesModulationSource = o.providesModulationSource;
-        rotatedParams = o.rotatedParams;
-        if (o.ModulationSources != null) {
-            ModulationSources = (ArrayList<String>) o.ModulationSources.clone();
-        } else {
-            ModulationSources = null;
-        }
-        if (o.includes != null) {
-            includes = (HashSet<String>) o.includes.clone();
-        } else {
-            o.includes = null;
-        }
-        if (o.depends != null) {
-            depends = (HashSet<String>) o.depends.clone();
-        } else {
-            o.depends = null;
+        return clonedObject;
+    }
 
-        }
-        sLocalData = o.sLocalData;
-        sInitCode = o.sInitCode;
-        sDisposeCode = o.sDisposeCode;
-        sKRateCode = o.sKRateCode;
-        sSRateCode = o.sSRateCode;
-        sMidiCode = o.sMidiCode;
-        sAuthor = o.sAuthor;
-        sLicense = o.sLicense;
-        sDescription = o.sDescription;
+    public void copy(AxoObject o) {
+        deepCopyFields(o, this);
     }
 }

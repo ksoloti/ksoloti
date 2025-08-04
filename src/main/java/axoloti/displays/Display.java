@@ -100,8 +100,13 @@ public abstract class Display<T extends DisplayInstance> implements AtomDefiniti
     }
 
     @Override
-    public Display clone() throws CloneNotSupportedException {
-        return (Display) super.clone();
+    public Display clone() {
+        try {
+            Display clonedDisplay = (Display) super.clone();
+            return clonedDisplay;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override

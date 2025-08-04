@@ -99,8 +99,13 @@ public abstract class AxoAttribute implements AtomDefinition, Cloneable {
     }
 
     @Override
-    public AxoAttribute clone() throws CloneNotSupportedException {
-        return (AxoAttribute) super.clone();
+    public AxoAttribute clone() {
+        try {
+            AxoAttribute clonedAttribute = (AxoAttribute) super.clone();
+            return clonedAttribute;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override

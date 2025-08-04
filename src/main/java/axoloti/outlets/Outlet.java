@@ -99,8 +99,13 @@ public abstract class Outlet implements AtomDefinition, Cloneable {
     }
 
     @Override
-    public Outlet clone() throws CloneNotSupportedException {
-        return (Outlet) super.clone();
+    public Outlet clone() {
+        try {
+            Outlet clonedOutlet = (Outlet) super.clone();
+            return clonedOutlet;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override

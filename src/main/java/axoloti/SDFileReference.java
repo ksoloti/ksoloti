@@ -40,6 +40,16 @@ public class SDFileReference {
     public SDFileReference() {
     }
 
+    @Override
+    public SDFileReference clone() {
+        try {
+            return (SDFileReference) super.clone();
+        } catch (CloneNotSupportedException e) {
+            // It catches it and re-throws it as an unchecked exception.
+            throw new AssertionError(e);
+        }
+    }
+
     public SDFileReference(File localfile, String targetPath) {
         this.localfile = localfile;
         this.targetPath = targetPath;

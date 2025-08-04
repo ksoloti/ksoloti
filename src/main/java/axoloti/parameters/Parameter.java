@@ -129,8 +129,13 @@ public abstract class Parameter<T extends ParameterInstance> implements AtomDefi
     }
 
     @Override
-    public Parameter clone() throws CloneNotSupportedException {
-        return (Parameter) super.clone();
+    public Parameter clone() {
+        try {
+            Parameter clonedParameter = (Parameter) super.clone();
+            return clonedParameter;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override

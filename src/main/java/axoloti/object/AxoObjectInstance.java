@@ -1329,26 +1329,22 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         if (IsLocked()) {
             return;
         }
-        try {
 
-            ArrayList<AxoObjectAbstract> ol = MainFrame.axoObjects.GetAxoObjectFromName("patch/object", null);
-            assert (!ol.isEmpty());
-            AxoObjectAbstract o = ol.get(0);
-            String iname = getInstanceName();
-            AxoObjectInstancePatcherObject oi = (AxoObjectInstancePatcherObject) getPatch().ChangeObjectInstanceType1(this, o);
-            AxoObject ao = getType();
-            oi.ao = new AxoObjectPatcherObject(ao.id, ao.sDescription);
-            oi.ao.copy(ao);
-            oi.ao.sObjFilePath = "";
-            oi.ao.upgradeSha = null;
-            oi.ao.CloseEditor();
-            oi.setInstanceName(iname);
-            oi.updateObj();
-            getPatch().delete(this);
-            getPatch().SetDirty();
-        } catch (CloneNotSupportedException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
+        ArrayList<AxoObjectAbstract> ol = MainFrame.axoObjects.GetAxoObjectFromName("patch/object", null);
+        assert (!ol.isEmpty());
+        AxoObjectAbstract o = ol.get(0);
+        String iname = getInstanceName();
+        AxoObjectInstancePatcherObject oi = (AxoObjectInstancePatcherObject) getPatch().ChangeObjectInstanceType1(this, o);
+        AxoObject ao = getType();
+        oi.ao = new AxoObjectPatcherObject(ao.id, ao.sDescription);
+        oi.ao.copy(ao);
+        oi.ao.sObjFilePath = "";
+        oi.ao.upgradeSha = null;
+        oi.ao.CloseEditor();
+        oi.setInstanceName(iname);
+        oi.updateObj();
+        getPatch().delete(this);
+        getPatch().SetDirty();
     }
 
     @Persist
