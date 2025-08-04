@@ -416,7 +416,7 @@ private void traverseTreeForDisplay(AxoSDFileNode node, int currentDepth,
             case 17: return "FR_NOT_ENOUGH_CORE";     /* (17) LFN working buffer could not be allocated */
             case 18: return "FR_TOO_MANY_OPEN_FILES"; /* (18) Number of open files > _FS_SHARE */
             case 19: return "FR_INVALID_PARAMETER";   /* (19) Given parameter is invalid */
-            default: return "FR_???";
+            default: return "FR_??? (" + error_code + ")";
         }
     }
 }
