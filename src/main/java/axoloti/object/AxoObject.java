@@ -141,7 +141,7 @@ public class AxoObject extends AxoObjectAbstract {
     @ElementList(required = false)
     public ArrayList<String> ModulationSources;
 
-    @Path("inlets")
+    @org.simpleframework.xml.Path("inlets")
     @ElementListUnion({
         @ElementList(entry = InletBool32.TypeName, type = InletBool32.class, inline = true, required = false),
         @ElementList(entry = InletBool32Rising.TypeName, type = InletBool32Rising.class, inline = true, required = false),
@@ -159,7 +159,7 @@ public class AxoObject extends AxoObjectAbstract {
     })
     public ArrayList<Inlet> inlets;
 
-    @Path("outlets")
+    @org.simpleframework.xml.Path("outlets")
     @ElementListUnion({
         @ElementList(entry = OutletBool32.TypeName, type = OutletBool32.class, inline = true, required = false),
         @ElementList(entry = OutletBool32Pulse.TypeName, type = OutletBool32Pulse.class, inline = true, required = false),
@@ -176,7 +176,7 @@ public class AxoObject extends AxoObjectAbstract {
     })
     public ArrayList<Outlet> outlets;
 
-    @Path("displays")
+    @org.simpleframework.xml.Path("displays")
     @ElementListUnion({
         @ElementList(entry = DisplayBool32.TypeName, type = DisplayBool32.class, inline = true, required = false),
         @ElementList(entry = DisplayFrac32SChart.TypeName, type = DisplayFrac32SChart.class, inline = true, required = false),
@@ -202,7 +202,7 @@ public class AxoObject extends AxoObjectAbstract {
     })
     public ArrayList<Display> displays; // readouts
 
-    @Path("params")
+    @org.simpleframework.xml.Path("params")
     @ElementListUnion({
         @ElementList(entry = ParameterFrac32UMap.TypeName, type = ParameterFrac32UMap.class, inline = true, required = false),
         @ElementList(entry = ParameterFrac32UMapFreq.TypeName, type = ParameterFrac32UMapFreq.class, inline = true, required = false),
@@ -237,7 +237,7 @@ public class AxoObject extends AxoObjectAbstract {
     })
     public ArrayList<Parameter> params; // variables
 
-    @Path("attribs")
+    @org.simpleframework.xml.Path("attribs")
     @ElementListUnion({
         @ElementList(entry = AxoAttributeObjRef.TypeName, type = AxoAttributeObjRef.class, inline = true, required = false),
         @ElementList(entry = AxoAttributeTablename.TypeName, type = AxoAttributeTablename.class, inline = true, required = false),
