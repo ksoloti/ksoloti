@@ -60,6 +60,8 @@ public class FileMenu extends JMenu {
 
     private static final Logger LOGGER = Logger.getLogger(FileMenu.class.getName());
 
+    String currentTestPath; /* Retains the previously entered batch test path */
+
     public FileMenu(String s) {
         super(s);
         setDelay(300);
@@ -73,6 +75,8 @@ public class FileMenu extends JMenu {
     public void initComponents() {
 
         int pos = 0;
+        currentTestPath = System.getProperty(Axoloti.LIBRARIES_DIR); /* Init to "all stock libraries" path */
+
         jMenuNewBank = new JMenuItem();
         jMenuNewPatch = new JMenuItem();
         jMenuOpen = new JMenuItem();
@@ -251,12 +255,13 @@ public class FileMenu extends JMenu {
             "Enter directory to test:\n" + 
             "(Default: Test all stock libraries)\n\n" + 
             "WARNING: Running these tests may take a long time and/or freeze the UI.",
-            System.getProperty(Axoloti.LIBRARIES_DIR)
+            currentTestPath
         );
 
         if (path != null && !path.isEmpty()) {
 
-            File f = new File(path);
+            currentTestPath = path; /* Store for this session */
+            File f = new File(currentTestPath);
             if (f.exists() && f.canRead()) {
                 
                 class Thd extends Thread {
