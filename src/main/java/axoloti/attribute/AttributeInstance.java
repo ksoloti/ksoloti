@@ -95,7 +95,7 @@ public abstract class AttributeInstance<T extends AxoAttribute> extends JPanel i
         return attr;
     }
 
-    public ArrayList<SDFileReference> GetDependendSDFiles() {
+    public ArrayList<SDFileReference> GetDependentSDFiles() {
         return null;
     }
 

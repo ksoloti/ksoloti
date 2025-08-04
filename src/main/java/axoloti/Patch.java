@@ -269,7 +269,7 @@ public class Patch {
     }
 
     void UploadDependentFiles(String sdpath) {
-        ArrayList<SDFileReference> files = GetDependendSDFiles();
+        ArrayList<SDFileReference> files = GetDependentSDFiles();
         for (SDFileReference fref : files) {
             File f = fref.localfile;
             if (f == null) {
@@ -379,7 +379,7 @@ public class Patch {
 
         if (waitForBinFile()) {
             QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
-            ArrayList<SDFileReference> files = GetDependendSDFiles();
+            ArrayList<SDFileReference> files = GetDependentSDFiles();
             if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
                 if (files.size() > 0) {
                     /* If there are dependent files, create patch folder and upload files */
@@ -3014,11 +3014,11 @@ public class Patch {
         return notes;
     }
 
-    public ArrayList<SDFileReference> GetDependendSDFiles() {
+    public ArrayList<SDFileReference> GetDependentSDFiles() {
         ArrayList<SDFileReference> files = new ArrayList<SDFileReference>();
 
         for (AxoObjectInstanceAbstract o : objectInstances) {
-            ArrayList<SDFileReference> f2 = o.GetDependendSDFiles();
+            ArrayList<SDFileReference> f2 = o.GetDependentSDFiles();
             if (f2 != null) {
                 files.addAll(f2);
             }

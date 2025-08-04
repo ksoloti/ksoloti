@@ -688,7 +688,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     public void ObjectModified(Object src) {
     }
 
-    public ArrayList<SDFileReference> GetDependendSDFiles() {
+    public ArrayList<SDFileReference> GetDependentSDFiles() {
         return null;
     }
 

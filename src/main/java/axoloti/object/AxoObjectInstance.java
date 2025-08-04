@@ -1277,7 +1277,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     }
 
     @Override
-    public ArrayList<SDFileReference> GetDependendSDFiles() {
+    public ArrayList<SDFileReference> GetDependentSDFiles() {
         ArrayList<SDFileReference> files = getType().filedepends;
         if (files == null){
             files = new ArrayList<SDFileReference>();
@@ -1297,7 +1297,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
         }
         for (AttributeInstance a : attributeInstances) {
-            ArrayList<SDFileReference> f2 = a.GetDependendSDFiles();
+            ArrayList<SDFileReference> f2 = a.GetDependentSDFiles();
             if (f2 != null) {
                 files.addAll(f2);
             }

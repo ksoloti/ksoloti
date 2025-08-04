@@ -179,7 +179,7 @@ public class AttributeInstanceSDFile extends AttributeInstanceString<AxoAttribut
     }
 
     @Override
-    public ArrayList<SDFileReference> GetDependendSDFiles() {
+    public ArrayList<SDFileReference> GetDependentSDFiles() {
         ArrayList<SDFileReference> files = new ArrayList<SDFileReference>();
         File f = getFile();
         if (f != null && f.exists()) {

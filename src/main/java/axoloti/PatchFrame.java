@@ -453,7 +453,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                         /* Handle SD card and dependent files */
                         if (patch.waitForBinFile()) {
                             QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
-                            ArrayList<SDFileReference> files = patch.GetDependendSDFiles();
+                            ArrayList<SDFileReference> files = patch.GetDependentSDFiles();
                             if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
                                 if (files.size() > 0) {
                                     String f = "/" + patch.getSDCardPath();
