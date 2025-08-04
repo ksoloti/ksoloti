@@ -23,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import axoloti.Connection;
-import axoloti.SDCardInfo;
+import axoloti.sd.SDCardInfo;
 
 /**
  *

@@ -21,7 +21,6 @@ package axoloti.object;
 import static axoloti.Axoloti.FIRMWARE_DIR;
 import axoloti.Modulator;
 import axoloti.Patch;
-import axoloti.SDFileReference;
 import axoloti.attributedefinition.AxoAttribute;
 import axoloti.attributedefinition.AxoAttributeComboBox;
 import axoloti.attributedefinition.AxoAttributeInt32;
@@ -112,6 +111,7 @@ import axoloti.parameters.ParameterInt32Box;
 import axoloti.parameters.ParameterInt32BoxSmall;
 import axoloti.parameters.ParameterInt32HRadio;
 import axoloti.parameters.ParameterInt32VRadio;
+import axoloti.sd.SDFileReference;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Preferences;
 

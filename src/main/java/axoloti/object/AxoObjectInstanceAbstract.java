@@ -22,13 +22,13 @@ import axoloti.MainFrame;
 import axoloti.Net;
 import axoloti.Patch;
 import axoloti.PatchGUI;
-import axoloti.SDFileReference;
 import axoloti.attribute.AttributeInstance;
 import axoloti.displays.DisplayInstance;
 import axoloti.inlets.InletInstance;
 import axoloti.listener.ObjectModifiedListener;
 import axoloti.outlets.OutletInstance;
 import axoloti.parameters.ParameterInstance;
+import axoloti.sd.SDFileReference;
 import axoloti.ui.Theme;
 
 import static axoloti.utils.CharEscape.charEscape;

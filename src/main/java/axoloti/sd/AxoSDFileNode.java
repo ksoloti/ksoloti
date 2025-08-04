@@ -1,11 +1,9 @@
-package axoloti.utils;
+package axoloti.sd;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import axoloti.SDFileInfo;
 
 /**
  *

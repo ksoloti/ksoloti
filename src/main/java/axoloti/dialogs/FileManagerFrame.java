@@ -20,15 +20,15 @@ package axoloti.dialogs;
 
 import static axoloti.MainFrame.fc;
 
-import axoloti.SDCardInfo;
-import axoloti.SDFileInfo;
 import axoloti.USBBulkConnection;
 import axoloti.listener.ConnectionStatusListener;
 import axoloti.listener.SDCardMountStatusListener;
-import axoloti.utils.AxoSDFileTableModel;
-import axoloti.utils.AxoSDFileTreeCellRenderer;
+import axoloti.sd.AxoSDFileTableModel;
+import axoloti.sd.AxoSDFileTreeCellRenderer;
+import axoloti.sd.DisplayTreeNode;
+import axoloti.sd.SDCardInfo;
+import axoloti.sd.SDFileInfo;
 import axoloti.utils.Constants;
-import axoloti.utils.DisplayTreeNode;
 import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 

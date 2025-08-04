@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
-package axoloti;
+package axoloti.sd;
 
 import java.io.File;
 import java.nio.file.Path;

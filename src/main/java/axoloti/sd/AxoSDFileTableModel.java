@@ -1,4 +1,4 @@
-package axoloti.utils;
+package axoloti.sd;
 
 import java.text.DateFormat;
 import java.text.DecimalFormatSymbols;
@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.swing.table.AbstractTableModel;
-
-import axoloti.SDFileInfo;
 
 public class AxoSDFileTableModel extends AbstractTableModel {
 

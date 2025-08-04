@@ -16,11 +16,9 @@
  * Ksoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package axoloti.utils;
+package axoloti.sd;
 
 import java.util.Comparator;
-
-import axoloti.SDFileInfo;
 
 /**
  *

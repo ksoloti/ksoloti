@@ -24,6 +24,7 @@ import static axoloti.dialogs.USBPortSelectionDlg.ErrorString;
 import axoloti.dialogs.USBPortSelectionDlg;
 import axoloti.displays.DisplayInstance;
 import axoloti.parameters.ParameterInstance;
+import axoloti.sd.SDCardInfo;
 import axoloti.targetprofile.ksoloti_core;
 import axoloti.usb.Usb;
 import axoloti.utils.Preferences;

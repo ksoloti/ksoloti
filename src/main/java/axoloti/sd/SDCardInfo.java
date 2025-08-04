@@ -17,7 +17,7 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package axoloti;
+package axoloti.sd;
 
 import static axoloti.MainFrame.mainframe;
 
@@ -29,10 +29,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import axoloti.utils.AxoSDFileComparator;
-import axoloti.utils.AxoSDFileNode;
-import axoloti.utils.DisplayTreeNode;
 
 /**
  *

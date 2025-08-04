@@ -1,4 +1,4 @@
-package axoloti.utils;
+package axoloti.sd;
 
 import java.awt.Component;
 

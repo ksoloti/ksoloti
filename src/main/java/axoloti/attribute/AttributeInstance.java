@@ -18,10 +18,10 @@
  */
 package axoloti.attribute;
 
-import axoloti.SDFileReference;
 import axoloti.atom.AtomInstance;
 import axoloti.attributedefinition.AxoAttribute;
 import axoloti.object.AxoObjectInstance;
+import axoloti.sd.SDFileReference;
 import axoloti.ui.Theme;
 
 import static axoloti.utils.CharEscape.charEscape;

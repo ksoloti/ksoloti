@@ -18,9 +18,9 @@
  */
 package axoloti.attribute;
 
-import axoloti.SDFileReference;
 import axoloti.attributedefinition.AxoAttributeSDFile;
 import axoloti.object.AxoObjectInstance;
+import axoloti.sd.SDFileReference;
 import axoloti.utils.Constants;
 import components.ButtonComponent;
 

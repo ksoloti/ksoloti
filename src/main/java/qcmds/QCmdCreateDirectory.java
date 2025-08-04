@@ -19,7 +19,7 @@
 package qcmds;
 
 import axoloti.Connection;
-import axoloti.SDCardInfo;
+import axoloti.sd.SDCardInfo;
 
 import java.time.Instant;
 import java.util.Calendar;

@@ -20,7 +20,7 @@ package qcmds;
 
 import axoloti.Connection;
 import axoloti.MainFrame;
-import axoloti.SDCardInfo;
+import axoloti.sd.SDCardInfo;
 
 import java.io.File;
 import java.io.FileInputStream;

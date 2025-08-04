@@ -48,6 +48,8 @@ import axoloti.outlets.OutletFrac32Buffer;
 import axoloti.outlets.OutletInstance;
 import axoloti.outlets.OutletInt32;
 import axoloti.parameters.ParameterInstance;
+import axoloti.sd.SDCardInfo;
+import axoloti.sd.SDFileReference;
 import axoloti.utils.OSDetect;
 import axoloti.utils.OSDetect.OS;
 import axoloti.utils.Preferences;

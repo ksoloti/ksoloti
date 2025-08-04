@@ -18,8 +18,9 @@
  */
 package qcmds;
 
-import axoloti.SDCardInfo;
 import axoloti.Connection;
+import axoloti.sd.SDCardInfo;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

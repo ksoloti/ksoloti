@@ -26,6 +26,8 @@ import axoloti.listener.SDCardMountStatusListener;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
 import axoloti.parameters.ParameterInstance;
+import axoloti.sd.SDCardInfo;
+import axoloti.sd.SDFileReference;
 import axoloti.ui.Theme;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.OSDetect.OS;
