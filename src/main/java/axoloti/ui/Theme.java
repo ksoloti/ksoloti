@@ -1,10 +1,10 @@
 package axoloti.ui;
 
-import static axoloti.FileUtils.axtFileFilter;
 import static axoloti.MainFrame.fc;
+import static axoloti.utils.FileUtils.axtFileFilter;
 
-import axoloti.FileUtils;
 import axoloti.dialogs.KeyboardNavigableOptionPane;
+import axoloti.utils.FileUtils;
 import axoloti.utils.Preferences;
 
 import java.awt.Color;

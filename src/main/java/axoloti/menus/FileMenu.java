@@ -19,7 +19,7 @@
 package axoloti.menus;
 
 import axoloti.Axoloti;
-import axoloti.FileUtils;
+
 import static axoloti.MainFrame.axoObjects;
 import static axoloti.MainFrame.mainframe;
 
@@ -29,6 +29,7 @@ import axoloti.USBBulkConnection;
 import axoloti.dialogs.PatchBank;
 import axoloti.dialogs.PreferencesFrame;
 import axoloti.utils.AxolotiLibrary;
+import axoloti.utils.FileUtils;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import generatedobjects.GeneratedObjects;

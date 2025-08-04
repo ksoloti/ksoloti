@@ -21,6 +21,7 @@ package axoloti;
 import axoloti.dialogs.AxoSplashScreen;
 import axoloti.object.AxoObjects;
 import axoloti.ui.Theme;
+import axoloti.utils.FileUtils;
 import axoloti.utils.OSDetect;
 import axoloti.utils.Preferences;
 import axoloti.utils.OSDetect.ARCH;

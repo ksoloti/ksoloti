@@ -16,11 +16,14 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
-package axoloti;
+package axoloti.utils;
 
 import static axoloti.MainFrame.fc;
+
+import axoloti.DocumentWindow;
+import axoloti.DocumentWindowList;
+import axoloti.PatchGUI;
 import axoloti.dialogs.PatchBank;
-import axoloti.utils.Preferences;
 
 import java.io.File;
 

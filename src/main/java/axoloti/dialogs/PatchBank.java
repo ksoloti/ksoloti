@@ -20,9 +20,10 @@ package axoloti.dialogs;
 
 import axoloti.DocumentWindow;
 import axoloti.DocumentWindowList;
-import static axoloti.FileUtils.axpFileFilter;
 
 import static axoloti.MainFrame.fc;
+import static axoloti.utils.FileUtils.axpFileFilter;
+
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
 import axoloti.USBBulkConnection;
