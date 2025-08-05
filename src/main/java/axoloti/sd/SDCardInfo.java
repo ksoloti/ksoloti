@@ -387,7 +387,7 @@ private void traverseTreeForDisplay(AxoSDFileNode node, int currentDepth,
             name = "/" + name;
         }
         for (SDFileInfo f : files) {
-            if (f.getFilename().equalsIgnoreCase(name) && f.getSize() == size && (Math.abs(f.getTimestamp().getTimeInMillis() - timestampEpoch) < 3000)) {
+            if (f.getFilename().equalsIgnoreCase(name) && f.getSize() == size && (Math.abs(f.getTimestamp().getTimeInMillis() - timestampEpoch) < 1000)) {
                 return true;
             }
         }
