@@ -31,7 +31,7 @@ public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
     protected char expectedAckCommandByte = 0; /* Default value, only used by - and will be set by - subclasses that use AxoR<expectedAckCommandByte><statusbyte> */
 
     @Override
-    public void setCommandCompleted(boolean success) {
+    public void setCompletedWithStatus(boolean success) {
         this.commandSuccess = success;
         latch.countDown(); // Signal that the command completed (successfully or not)
     }

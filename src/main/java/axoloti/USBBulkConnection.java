@@ -1677,7 +1677,7 @@ public class USBBulkConnection extends Connection {
 
                             if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) { // for example, ('l' == 'l') -> TRUE
                                 currentExecutingCommand.setMcuStatusCode((byte)statusCode);
-                                currentExecutingCommand.setCommandCompleted(statusCode == 0x00);
+                                currentExecutingCommand.setCompletedWithStatus(statusCode == 0x00);
 
                                 try {
                                     QCmdProcessor.getQCmdProcessor().getQueueResponse().offer(currentExecutingCommand, 10, TimeUnit.MILLISECONDS);

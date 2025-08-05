@@ -319,24 +319,24 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
             SDCardInfo.getInstance().AddFile(filename, (int) size, ts);
             LOGGER.log(Level.INFO, "Done uploading file.\n");
             setMcuStatusCode((byte)0x00); // FR_OK for overall command
-            setCommandCompleted(true); // Signal overall success
+            setCompletedWithStatus(true); // Signal overall success
 
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "File I/O error during upload for " + filename + ": {0}", ex.getMessage());
             setMcuStatusCode((byte)0x01); // FR_DISK_ERR or custom I/O error
-            setCommandCompleted(false);
+            setCompletedWithStatus(false);
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Upload interrupted for " + filename + ": {0}", ex.getMessage());
             setMcuStatusCode((byte)0x02); // FR_INT_ERR or custom interrupted error
-            setCommandCompleted(false);
+            setCompletedWithStatus(false);
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "An unexpected error occurred during upload for " + filename + ": {0}", ex.getMessage());
             setMcuStatusCode((byte)0xFF); // Generic error
-            setCommandCompleted(false);
+            setCompletedWithStatus(false);
         }
         finally {
             connection.setCurrentExecutingCommand(null);
