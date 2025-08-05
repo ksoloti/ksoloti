@@ -294,7 +294,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         customIcons.put(7, SvgIconLoader.load("/resources/icons/sliders-up-svgrepo-com.svg", 16, MaterialColors.RED_500));
         customIcons.put(8, SvgIconLoader.load("/resources/icons/shuffle-svgrepo-com.svg", 16, MaterialColors.BLUE_500));
         customIcons.put(9, SvgIconLoader.load("/resources/icons/wave-pulse-svgrepo-com.svg", 16, MaterialColors.PINK_500));
-        customIcons.put(10, SvgIconLoader.load("/resources/icons/music-note-svgrepo-com.svg", 16, MaterialColors.INDIGO_500));
+        customIcons.put(10, SvgIconLoader.load("/resources/icons/midi-player-svgrepo-com.svg", 16, MaterialColors.INDIGO_500));
         customIcons.put(11, SvgIconLoader.load("/resources/icons/trash-svgrepo-com.svg", 16, MaterialColors.TEAL_500));
         customIcons.put(12, SvgIconLoader.load("/resources/icons/code-svgrepo-com.svg", 16, MaterialColors.GREY_500));
 

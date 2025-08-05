@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+
+<svg
+   width="800px"
+   height="800px"
+   viewBox="0 0 192 192"
+   version="1.1"
+   id="svg10"
+   sodipodi:docname="midi-player-svgrepo-com.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs14" />
+  <sodipodi:namedview
+     id="namedview12"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="0.89875"
+     inkscape:cx="400"
+     inkscape:cy="399.44367"
+     inkscape:window-width="1920"
+     inkscape:window-height="1019"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg10" />
+  <g
+     fill="none"
+     stroke="#000000"
+     stroke-width="12"
+     id="g8"
+     style="stroke-width:16.00008;stroke-miterlimit:4;stroke-dasharray:none">
+    <path
+       d="M78 153a24 17 0 0 1-24 17 24 17 0 0 1-24-17 24 17 0 0 1 24-17 24 17 0 0 1 24 17zm80-27a24 17 0 0 1-24 17 24 17 0 0 1-24-17 24 17 0 0 1 24-17 24 17 0 0 1 24 17z"
+       id="path2"
+       style="stroke-width:16.00008;stroke-miterlimit:4;stroke-dasharray:none" />
+    <path
+       stroke-linejoin="round"
+       d="M78 153V45l80-20v101"
+       id="path4"
+       style="stroke-width:16.00008;stroke-miterlimit:4;stroke-dasharray:none" />
+    <path
+       d="m78 69 80-20"
+       id="path6"
+       style="stroke-width:16.00008;stroke-miterlimit:4;stroke-dasharray:none" />
+  </g>
+</svg>
