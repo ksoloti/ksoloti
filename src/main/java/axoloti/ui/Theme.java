@@ -118,7 +118,7 @@ public class Theme {
     @Element
     public static final Color Cable_Frac32Buffer = ColorConverter.withAlpha(MaterialColors.RED_A400, cable_opacity);
     @Element
-    public static final Color Cable_Frac32Buffer_Highlighted = MaterialColors.RED_A100;
+    public static final Color Cable_Frac32Buffer_Highlighted = new Color(0xFF, 0x90, 0x90); /* almost RED_A100 but less orangy */
 
     @Element
     public static final Color Cable_Int32 = ColorConverter.withAlpha(MaterialColors.GREEN_A700, cable_opacity);
