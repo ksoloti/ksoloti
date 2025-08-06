@@ -167,55 +167,71 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     // @SuppressWarnings("unchecked")
                     List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
 
-                    if (USBBulkConnection.GetConnection().isConnected()) {
-                        if (droppedFiles.size() > 1) {
-                            Object[] options = {"Upload", "Cancel"};
-                            int n = KeyboardNavigableOptionPane.showOptionDialog(
-                                null,
-                                "Upload " + droppedFiles.size() + " files to SD card?",
-                                "Upload multiple Files",
-                                JOptionPane.YES_NO_OPTION,
-                                JOptionPane.WARNING_MESSAGE,
-                                null,
-                                options,
-                                options[1]
-                            );
-                            switch (n) {
-                                case JOptionPane.YES_OPTION: {
-                                    for (File f : droppedFiles) {
-                                        System.out.println(Instant.now() + " " + f.getName());
-                                        if (!f.canRead()) {
-                                            LOGGER.log(Level.SEVERE, "Cannot read file: " + f.getName());
-                                        }
-                                        else {
-                                            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadFile(f, f.getName()));
-                                        }
+                    if (!USBBulkConnection.GetConnection().isConnected()) {
+                        LOGGER.log(Level.WARNING, "Cannot upload files: USB connection not active.");
+                        return;
+                    }
+
+                    if (droppedFiles.size() > 1) {
+                        Object[] options = {"Upload", "Cancel"};
+                        int n = KeyboardNavigableOptionPane.showOptionDialog(
+                            null,
+                            "Upload " + droppedFiles.size() + " files to SD card?",
+                            "Upload multiple Files",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.WARNING_MESSAGE,
+                            null,
+                            options,
+                            options[1]
+                        );
+                        if (n != JOptionPane.YES_OPTION) {
+                            return; /* User canceled the upload */
+                        }
+                    }
+
+                    CommandManager.getInstance().startLongOperation();
+                    new SwingWorker<Void, String>() {
+                        @Override
+                        protected Void doInBackground() throws Exception {
+                            try {
+                                for (File f : droppedFiles) {
+                                    System.out.println(Instant.now() + " Drag & drop uploading " + f.getName());
+
+                                    if (!USBBulkConnection.GetConnection().isConnected()) {
+                                        LOGGER.log(Level.SEVERE, "Upload aborted: USB connection lost during transfer.");
+                                        break; /* Exit the loop for remaining files */
+                                    }
+
+                                    if (!f.canRead()) {
+                                        LOGGER.log(Level.SEVERE, "Cannot read file: " + f.getName());
+                                        publish("Failed to upload " + f.getName() + ": Cannot read file.");
+                                        continue; /* Skip to next file */
+                                    }
+
+                                    QCmdUploadFile uploadCommand = new QCmdUploadFile(f, f.getName());
+                                    uploadCommand.Do(USBBulkConnection.GetConnection());
+
+                                    if (uploadCommand.isSuccessful()) {
+                                        publish("Uploaded " + f.getName());
+                                    } else {
+                                        LOGGER.log(Level.SEVERE, "Upload failed for " + f.getName());
+                                        break; /* Break loop on first failure */
                                     }
                                 }
-                                break;
+                            } finally {
+                                CommandManager.getInstance().endLongOperation();
+                            }
+                            return null;
+                        }
 
-                                case JOptionPane.NO_OPTION:
-                                break;
-                            }
+                        @Override
+                        protected void done() {
+                            triggerRefresh();
                         }
-                        else if (droppedFiles.size() == 1) {
-                            File f = droppedFiles.get(0);
-                            System.out.println(Instant.now() + " " + f.getName());
-                            if (!f.canRead()) {
-                                LOGGER.log(Level.SEVERE, "Cannot read file: " + f.getName());
-                            }
-                            else {
-                                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadFile(f, f.getName()));
-                            }
-                        }
-                        triggerRefresh();
-                    }
+                    }.execute();
                 }
-                catch (UnsupportedFlavorException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
-                }
-                catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
+                catch (UnsupportedFlavorException | IOException ex) {
+                    LOGGER.log(Level.SEVERE, "Error during drag and drop file upload: " + ex.getMessage(), ex);
                 }
             }
         });
