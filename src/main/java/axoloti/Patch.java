@@ -347,10 +347,11 @@ public class Patch {
             }
 
             if (!SDCardInfo.getInstance().exists(targetfn, f.lastModified(), f.length())) {
-                if (f.length() > 8 * 1024 * 1024) {
-                    LOGGER.log(Level.INFO, "File {0} is larger than 8MB, skipping upload.", f.getName());
-                    continue;
-                }
+                // TODO: show upload all / skip all / cancel if at least one file is larger than... a few MB. then notify that those files have to be uploaded manually
+                // if (f.length() > 8 * 1024 * 1024) {
+                //     LOGGER.log(Level.INFO, "File {0} is larger than 8MB, skipping upload.", f.getName());
+                //     continue;
+                // }
                 
                 LOGGER.log(Level.INFO, "Uploading file to SD card: {0}", targetfn);
                 QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, targetfn);
