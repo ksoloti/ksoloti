@@ -52,11 +52,11 @@ public abstract class QCmdShellTask implements QCmd {
 
         @Override
         public void run() {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            String line;
+            BufferedReader br = null;
             try {
-                line = br.readLine();
-                while (line != null) {
+                br = new BufferedReader(new InputStreamReader(in));
+                String line;
+                while ((line = br.readLine()) != null) {
                     if (line.contains("overflowed by")) {
                         LOGGER.log(Level.SEVERE, "{0}\n>>> Patch is too complex to fit in internal RAM. <<<", line);
                     }
@@ -85,10 +85,16 @@ public abstract class QCmdShellTask implements QCmd {
                     else {
                         LOGGER.log(Level.INFO, "{0}", line);
                     }
-                    line = br.readLine();
                 }
             } catch (IOException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+            } finally {
+                if (br != null) {
+                    try {
+                        br.close(); // Ensure the reader is closed
+                    } catch (IOException e) {
+                        LOGGER.log(Level.WARNING, "Error closing BufferedReader: {0}", e.getMessage());
+                    }
+                }
             }
         }
     }
@@ -137,6 +143,11 @@ public abstract class QCmdShellTask implements QCmd {
 
     public QCmd Do(QCmdProcessor shellProcessor) {
         try {
+            String startMsg = GetStartMessage();
+            if (startMsg != null) {
+                LOGGER.log(Level.INFO, startMsg);
+            }
+
             Process p1;
             p1 = Runtime.getRuntime().exec(GetExec(), GetEnv(), GetWorkingDir());
 
@@ -149,17 +160,37 @@ public abstract class QCmdShellTask implements QCmd {
             thd_err.join();
             if (p1.exitValue() == 0) {
                 success = true;
+                String doneMsg = GetDoneMessage();
+                if (doneMsg != null) {
+                    LOGGER.log(Level.INFO, doneMsg);
+                }
+                return null;
             } else {
                 LOGGER.log(Level.SEVERE, "Shell task failed, exit value: {0}", p1.exitValue());
                 success = false;
+                String doneMsg = GetDoneMessage();
+                if (doneMsg != null) {
+                    LOGGER.log(Level.INFO, doneMsg);
+                }
                 return err();
             }
         } catch (InterruptedException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Shell task interrupted.", ex);
+            success = false;
+            String doneMsg = GetDoneMessage();
+            if (doneMsg != null) {
+                LOGGER.log(Level.INFO, doneMsg);
+            }
+            return err();
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Shell task IO error.", ex);
+            success = false;
+            String doneMsg = GetDoneMessage();
+            if (doneMsg != null) {
+                LOGGER.log(Level.INFO, doneMsg);
+            }
+            return err();
         }
-        return null;
     }
 
     abstract QCmd err();
