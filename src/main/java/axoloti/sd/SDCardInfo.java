@@ -141,44 +141,44 @@ public class SDCardInfo {
         traverseTreeForDisplay(rootNode, 0, new ArrayList<>(), sortedDisplayNodes);
     }
 
-private boolean isLastChildInParentList(AxoSDFileNode childNode, AxoSDFileNode parentNode) {
-    if (parentNode == null || parentNode.getChildren() == null || parentNode.getChildren().isEmpty()) {
-        return true; /* If no children or no parent, it is the 'last' (or the only) */
+    private boolean isLastChildInParentList(AxoSDFileNode childNode, AxoSDFileNode parentNode) {
+        if (parentNode == null || parentNode.getChildren() == null || parentNode.getChildren().isEmpty()) {
+            return true; /* If no children or no parent, it is the 'last' (or the only) */
+        }
+
+        List<AxoSDFileNode> children = parentNode.getChildren();
+        return children.get(children.size() - 1) == childNode;
     }
 
-    List<AxoSDFileNode> children = parentNode.getChildren();
-    return children.get(children.size() - 1) == childNode;
-}
 
+    private void traverseTreeForDisplay(AxoSDFileNode node, int currentDepth,
+                                        List<Boolean> parentIsLastChildFlags,
+                                        List<DisplayTreeNode> displayList) {
 
-private void traverseTreeForDisplay(AxoSDFileNode node, int currentDepth,
-                                    List<Boolean> parentIsLastChildFlags,
-                                    List<DisplayTreeNode> displayList) {
+        if (!node.getFileInfo().getFilename().equals("/") || currentDepth > 0) {
+            DisplayTreeNode displayNode = new DisplayTreeNode(
+                node.getFileInfo(),
+                currentDepth,
+                node.getParent() != null && isLastChildInParentList(node, node.getParent()),
+                new ArrayList<>(parentIsLastChildFlags)
+            );
+            displayList.add(displayNode);
+        }
 
-    if (!node.getFileInfo().getFilename().equals("/") || currentDepth > 0) {
-        DisplayTreeNode displayNode = new DisplayTreeNode(
-            node.getFileInfo(),
-            currentDepth,
-            node.getParent() != null && isLastChildInParentList(node, node.getParent()),
-            new ArrayList<>(parentIsLastChildFlags)
-        );
-        displayList.add(displayNode);
-    }
+        if (node.isDirectory() && node.getChildren() != null) {
+            for (int i = 0; i < node.getChildren().size(); i++) {
+                AxoSDFileNode child = node.getChildren().get(i);
+                boolean childIsLast = (i == node.getChildren().size() - 1);
 
-    if (node.isDirectory() && node.getChildren() != null) {
-        for (int i = 0; i < node.getChildren().size(); i++) {
-            AxoSDFileNode child = node.getChildren().get(i);
-            boolean childIsLast = (i == node.getChildren().size() - 1);
+                List<Boolean> childParentFlags = new ArrayList<>(parentIsLastChildFlags);
+                if (!node.getFileInfo().getFilename().equals("/")) {
+                    childParentFlags.add(childIsLast);
+                }
 
-            List<Boolean> childParentFlags = new ArrayList<>(parentIsLastChildFlags);
-            if (!node.getFileInfo().getFilename().equals("/")) {
-                 childParentFlags.add(childIsLast);
+                traverseTreeForDisplay(child, currentDepth + 1, childParentFlags, displayList);
             }
-
-            traverseTreeForDisplay(child, currentDepth + 1, childParentFlags, displayList);
         }
     }
-}
 
     private String getParentPath(String filePath) {
         if (filePath.equals("/")) {
@@ -200,7 +200,7 @@ private void traverseTreeForDisplay(AxoSDFileNode node, int currentDepth,
         }
 
         return "/"; /* Default to root if no parent found */
-}
+    }
 
     private void sortTreeChildren(AxoSDFileNode node, Comparator<AxoSDFileNode> comparator) {
         if (node.isDirectory() && node.getChildren() != null) {
