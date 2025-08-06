@@ -459,13 +459,13 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
 
                             ArrayList<SDFileReference> files = patch.GetDependentSDFiles();
-                                if (files.size() > 0) {
+                            if (files.size() > 0) {
                                 if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
                                     CommandManager.getInstance().startLongOperation();
                                     try {
-                                    String f = "/" + patch.getSDCardPath();
-                                    if (SDCardInfo.getInstance().find(f) == null) {
-                                        Calendar cal = Calendar.getInstance();
+                                        String f = "/" + patch.getSDCardPath();
+                                        if (SDCardInfo.getInstance().find(f) == null) {
+                                            Calendar cal = Calendar.getInstance();
                                             QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(f, cal);
                                             createDirCmd.Do(USBBulkConnection.GetConnection());
                                             try {
@@ -477,13 +477,13 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                         }
                                         QCmdChangeWorkingDirectory chdCmd = new QCmdChangeWorkingDirectory(f);
                                         chdCmd.Do(USBBulkConnection.GetConnection());
-                                    patch.UploadDependentFiles("/" + patch.getSDCardPath());
+                                        patch.UploadDependentFiles("/" + patch.getSDCardPath());
                                     } catch (Exception e) {
                                         LOGGER.log(Level.SEVERE, "Patch dependent files upload to SD failed with exception: ", e);
                                     } finally {
                                         CommandManager.getInstance().endLongOperation();
-                                }
-                            } else {
+                                    }
+                                } else {
                                     LOGGER.log(Level.WARNING, "Patch requires file {0} on SD card, but no SD card connected.", files.get(0).targetPath);
                                 }
                             }
@@ -491,24 +491,24 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             /* Upload and start the new patch */
                             if (USBBulkConnection.GetConnection().isConnected()) {
                                 try {
-                                CommandManager.getInstance().startLongOperation();
+                                    CommandManager.getInstance().startLongOperation();
                                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
                                     uploadCmd.Do(USBBulkConnection.GetConnection());
                                     boolean completed = uploadCmd.waitForCompletion();
                                     if (!completed) {
                                         System.out.println(Instant.now() + " Patch upload timed out");
-                                return false;
-                            }
+                                        return false;
+                                    }
                                     CommandManager.getInstance().endLongOperation();
 
                                     if (uploadCmd.isSuccessful()) {
-                            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(patch));
+                                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(patch));
                                         QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdLock(patch));
                                         
-                            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                                        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
 
                                         LOGGER.log(Level.INFO, "Patch upload successful, starting and locking patch...");
-                            return true;
+                                        return true;
                                     } else {
                                         System.out.println(Instant.now() + " Failed to upload patch");
                                         return false;
@@ -1320,17 +1320,39 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuUploadCodeActionPerformed(java.awt.event.ActionEvent evt) {
-        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
-        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
-        if (patch.getBinFile().exists()) {
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch.getBinFile()));
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(patch));
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdLock(patch));
+        if (USBBulkConnection.GetConnection().isConnected()) {
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
             QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
-        }
-        else {
-            String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
-            LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
+            if (patch.getBinFile().exists()) {
+                try {
+                    CommandManager.getInstance().startLongOperation();
+                    QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
+                    uploadCmd.Do(USBBulkConnection.GetConnection());
+                    boolean completed = uploadCmd.waitForCompletion();
+                    if (!completed) {
+                        System.out.println(Instant.now() + " Patch upload timed out");
+                    }
+                    CommandManager.getInstance().endLongOperation();
+
+                    if (uploadCmd.isSuccessful()) {
+                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(patch));
+                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdLock(patch));
+                        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+
+                        LOGGER.log(Level.INFO, "Patch upload successful, starting and locking patch...");
+                    } else {
+                        System.out.println(Instant.now() + " Failed to upload patch");
+                    }
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Patch upload failed with exception: ", e);
+                }
+            }
+            else {
+                String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
+                LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
+            }
+        } else {
+            LOGGER.log(Level.SEVERE, "USB connection lost, patch upload aborted.");
         }
     }
 
@@ -1487,29 +1509,58 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             @Override
             protected Boolean doInBackground() throws Exception {
                 try {
-                    boolean success;
+                    CommandManager.getInstance().startLongOperation();
                     patch.WriteCode(true);
                     QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdCompilePatch(patch));
                     QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                    CommandManager.getInstance().endLongOperation();
+
                     QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdStop());
+                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+
                     if (patch.getBinFile().exists()) {
-                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdUploadPatch(patch.getBinFile()));
-                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdCopyPatchToFlash());
-                        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
-                        success = true;
+                        if (USBBulkConnection.GetConnection().isConnected()) {
+                            try {
+                                CommandManager.getInstance().startLongOperation();
+                                QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
+                                uploadCmd.Do(USBBulkConnection.GetConnection());
+                                boolean completed = uploadCmd.waitForCompletion();
+                                if (!completed) {
+                                    System.out.println(Instant.now() + " Patch upload timed out");
+                                    return false;
+                                }
+                                CommandManager.getInstance().endLongOperation();
+                                
+                                if (uploadCmd.isSuccessful()) {
+                                    // TODO
+                                    
+                                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+
+                                    LOGGER.log(Level.INFO, "Patch upload to internal Flash successful.");
+                                    return true;
+                                } else {
+                                    System.out.println(Instant.now() + " Failed to upload patch to internal Flash");
+                                    return false;
+                                }
+                            } catch (Exception e) {
+                                LOGGER.log(Level.SEVERE, "Patch to internal Flash upload failed with exception: ", e);
+                                return false;
+                            }
+                        } else {
+                            LOGGER.log(Level.SEVERE, "USB connection lost, patch upload to internal Flash aborted.");
+                            return false;
+                        }
                     }
                     else {
                         String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
                         LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
-                        success = false;
+                        return false;
                     }
-                    return success;
                 }
                 catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Patch upload to internal Flash failed:", e);
                     publish("Go Live failed: " + e.getMessage());
                     return false;
-
                 }
             }
 
