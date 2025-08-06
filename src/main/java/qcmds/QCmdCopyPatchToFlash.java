@@ -33,7 +33,7 @@ public class QCmdCopyPatchToFlash extends AbstractQCmdSerialTask {
     public QCmd Do(Connection connection) {
         connection.ClearSync();
         connection.TransmitCopyToFlash();
-        if (connection.WaitSync(3000)) {
+        if (connection.WaitSync(5000)) {
             return this;
         } else {
             return new QCmdDisconnect();

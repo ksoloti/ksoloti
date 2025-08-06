@@ -50,8 +50,8 @@ public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
 
     @Override
     public boolean waitForCompletion() throws InterruptedException {
-        /* standard 3-second timeout */
-        return latch.await(3000, TimeUnit.MILLISECONDS);
+        /* standard 5-second timeout */
+        return latch.await(5000, TimeUnit.MILLISECONDS);
     }
 
     @Override
