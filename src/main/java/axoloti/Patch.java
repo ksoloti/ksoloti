@@ -89,7 +89,7 @@ import org.simpleframework.xml.stream.Format;
 
 import qcmds.QCmdCompilePatch;
 import qcmds.QCmdCreateDirectory;
-import qcmds.QCmdGetFileInfo;
+import qcmds.QCmdGetFileList;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdRecallPreset;
 import qcmds.QCmdUploadFile;
@@ -268,6 +268,18 @@ public class Patch {
     }
 
     void UploadDependentFiles(String sdpath) {
+
+        /* Get current latest file list from SD to compare to */
+        QCmdGetFileList getFileListCmd = new QCmdGetFileList();
+        getFileListCmd.Do(USBBulkConnection.GetConnection());
+        try {
+            getFileListCmd.waitForCompletion();
+        } catch (InterruptedException e) {
+            LOGGER.log(Level.SEVERE, "Thread interrupted while getting file list.", e);
+            Thread.currentThread().interrupt();
+            return;
+        }
+
         ArrayList<SDFileReference> files = GetDependentSDFiles();
         for (SDFileReference fref : files) {
             File f = fref.localfile;
@@ -292,54 +304,39 @@ public class Patch {
             }
 
             if (!SDCardInfo.getInstance().exists(targetfn, f.lastModified(), f.length())) {
-                QCmdGetFileInfo getInfoCmd = new qcmds.QCmdGetFileInfo(targetfn);
-                getInfoCmd.Do(USBBulkConnection.GetConnection());
-                try {
-                    getInfoCmd.waitForCompletion();
-                } catch (InterruptedException e) {
-                    LOGGER.log(Level.SEVERE, "Thread interrupted while waiting for file info.", e);
-                    Thread.currentThread().interrupt();
+                if (f.length() > 8 * 1024 * 1024) {
+                    LOGGER.log(Level.INFO, "File {0} is larger than 8MB, skipping upload.", f.getName());
                     continue;
                 }
-
-                if (!SDCardInfo.getInstance().exists(targetfn, f.lastModified(), f.length())) {
-                    if (f.length() > 8 * 1024 * 1024) {
-                        LOGGER.log(Level.INFO, "File {0} is larger than 8MB, skipping upload.", f.getName());
-                        continue;
-                    }
-                    
-                    String path = targetfn.substring(0, targetfn.lastIndexOf('/'));
-                    String currentPath = "";
-                    String[] pathComponents = path.split("/");
-                    for (String component : pathComponents) {
-                        if (!component.isEmpty()) {
-                            currentPath += "/" + component;
-                            QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(currentPath, Calendar.getInstance());
-                            createDirCmd.Do(USBBulkConnection.GetConnection());
-                            try {
-                                createDirCmd.waitForCompletion();
-                            } catch (InterruptedException e) {
-                                LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory.", e);
-                                Thread.currentThread().interrupt();
-                                continue;
-                            }
+                
+                String path = targetfn.substring(0, targetfn.lastIndexOf('/'));
+                String currentPath = "";
+                String[] pathComponents = path.split("/");
+                for (String component : pathComponents) {
+                    if (!component.isEmpty()) {
+                        currentPath += "/" + component;
+                        QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(currentPath, Calendar.getInstance());
+                        createDirCmd.Do(USBBulkConnection.GetConnection());
+                        try {
+                            createDirCmd.waitForCompletion();
+                        } catch (InterruptedException e) {
+                            LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory.", e);
+                            Thread.currentThread().interrupt();
+                            continue;
                         }
                     }
-
-                    // Log and queue the upload command.
-                    LOGGER.log(Level.INFO, "Uploading file to SD card: {0}", targetfn);
-                    QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, targetfn);
-                    uploadFileCmd.Do(USBBulkConnection.GetConnection());
-                    try {
-                        uploadFileCmd.waitForCompletion();
-                    } catch (InterruptedException e) {
-                        LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file.", e);
-                        Thread.currentThread().interrupt();
-                        continue;
-                    }
                 }
-                else {
-                    LOGGER.log(Level.INFO, "File {0} matches timestamp and size after refresh, skipping upload.", f.getName());
+
+                // Log and queue the upload command.
+                LOGGER.log(Level.INFO, "Uploading file to SD card: {0}", targetfn);
+                QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, targetfn);
+                uploadFileCmd.Do(USBBulkConnection.GetConnection());
+                try {
+                    uploadFileCmd.waitForCompletion();
+                } catch (InterruptedException e) {
+                    LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file.", e);
+                    Thread.currentThread().interrupt();
+                    continue;
                 }
             }
             else {
