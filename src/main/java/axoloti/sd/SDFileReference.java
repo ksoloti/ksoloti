@@ -40,39 +40,38 @@ public class SDFileReference {
     public SDFileReference() {
     }
 
+public SDFileReference(File localfile, String targetDirOnSDCard) {
+        this.localfile = localfile;
+        this.localFilename = (localfile != null) ? localfile.getName() : "";
+        this.targetPath = targetDirOnSDCard;
+    }
+
     @Override
     public SDFileReference clone() {
         try {
             return (SDFileReference) super.clone();
         } catch (CloneNotSupportedException e) {
-            // It catches it and re-throws it as an unchecked exception.
             throw new AssertionError(e);
         }
     }
 
-    public SDFileReference(File localfile, String targetPath) {
-        this.localfile = localfile;
-        this.targetPath = targetPath;
-        this.localFilename = (localfile != null) ? localfile.getName() : "";
-    }
-
     @Persist
     public void Persist() {
-        if (localFilename == null) {
-            if (localfile != null) {
-                localFilename = localfile.getName();
-            } else {
-                localFilename = "";
-            }
+        /* nop */
+    }
+
+    public void Resolve(Path basePath) {
+        if (this.localfile != null || this.localFilename == null) {
+            return;
+        }
+
+        if (basePath != null) {
+            this.localfile = basePath.resolve(this.localFilename).toFile();
         }
     }
 
-    public void Resolve(Path p) {
-        if (localfile != null) {
-            return;
-        }
-        if (p != null) {
-            localfile = p.resolve(targetPath).resolve(localFilename).toFile();
-        }
+    public File getResolvedFile(Path basePath) {
+        Resolve(basePath);
+        return localfile;
     }
 }
