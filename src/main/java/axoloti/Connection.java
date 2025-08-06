@@ -58,6 +58,9 @@ public abstract class Connection {
     abstract public void TransmitPing();
     abstract public void TransmitRecallPreset(int presetNo);
     abstract public int  TransmitUploadFragment(byte[] buffer, int offset);
+    abstract public int  TransmitStartMemWrite(int startAddr, int totalLen);
+    abstract public int  TransmitAppendMemWrite(byte[] buffer);
+    abstract public int  TransmitCloseMemWrite(int startAddr, int totalLen);
     abstract public int  TransmitGetFileList();
     abstract public int  TransmitGetFileInfo(String filename);
     abstract public int  TransmitCreateFile(String filename, int size, Calendar date);

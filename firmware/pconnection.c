@@ -71,6 +71,8 @@ static int32_t position;
 static int32_t offset;
 static uint32_t length;
 static uint32_t patchid;
+static uint32_t start_memory_address;
+static uint32_t total_patch_length;
 
 MUTEX_DECL(LogMutex);
 char    LogBuffer[LOG_BUFFER_SIZE];
@@ -746,7 +748,7 @@ void PExReceiveByte(unsigned char c) {
                     case 'P': /* param change */
                     case 'R': /* preset change */
                     case 'W': /* generic write */
-                    case 'w': /* write file to SD (old protocol) */
+                    case 'w': /* append to memory during 'W' generic write */
                     case 'T': /* apply preset */
                     case 'M': /* midi command */
                     case 'U': /* Set cpU safety */
@@ -838,83 +840,69 @@ void PExReceiveByte(unsigned char c) {
                 state = 0; header = 0; AckPending = 1;
         }
     }
-    else if (header == 'W') { /* generic write */
+    else if (header == 'W') { /* 'AxoW' memory write commands */
         switch (state) {
-            case 4: offset  = c; state++; break;
+            case 4: offset = c; state++; break; /* Address byte 0 */
             case 5: offset |= (int32_t)c <<  8; state++; break;
             case 6: offset |= (int32_t)c << 16; state++; break;
             case 7: offset |= (int32_t)c << 24; state++; break;
-            case 8:  value  = c; state++; break;
-            case 9:  value |= (int32_t)c <<  8; state++; break;
+            case 8: value = c; state++; break; /* Length byte 0 */
+            case 9: value |= (int32_t)c <<  8; state++; break;
             case 10: value |= (int32_t)c << 16; state++; break;
-            case 11: value |= (int32_t)c << 24; state++; break; /* value is now length */
-            default: /* Data streaming state */
-                if (value > 0) {
-                    value--;
-                    *((unsigned char*) offset) = c;
-                    offset++;
-                    if (value == 0) {
-                        state = 0; header = 0; AckPending = 1;
-                    }
+            case 11: value |= (int32_t)c << 24; state++; break;
+            case 12: /* Sub-command can be 's' or 'c' */
+                switch(c) {
+                    case 's': /* start Memory Write */
+                        start_memory_address = (unsigned char*)offset;
+                        position = start_memory_address; /* Initialize position here */
+                        total_patch_length = (uint32_t)value;
+                        send_AxoResult('s', FR_OK);
+                        state = 0; header = 0;
+                        break;
+                    case 'c': /* close Memory Write */
+                        send_AxoResult('c', FR_OK);
+                        state = 0; header = 0;
+                        break;
+                    default:
+                        send_AxoResult('W', FR_INVALID_PARAMETER);
+                        state = 0; header = 0;
+                        break;
                 }
-                else { /* Should not happen, or error */
-                    state = 0; header = 0; AckPending = 1;
-                }
+                break;
+            default:
+                send_AxoResult('W', FR_DISK_ERR);
+                state = 0; header = 0;
         }
     }
-    else if (header == 'w') { /* write file to SD (old protocol)*/
+    /* 'Axow' NOW USED FOR STREAMING CHUNKS BETWEEN 'AxoWs' start memory write AND 'AxoWc' close memory write */
+    else if (header == 'w') { /* Handle 'Axow' streaming command */
         switch (state) {
-            case 4: offset  = c; state++; break;
-            case 5: offset |= (int32_t)c <<  8; state++; break;
-            case 6: offset |= (int32_t)c << 16; state++; break;
-            case 7: offset |= (int32_t)c << 24; state++; break;
-            case 8:  value  = c; state++; break;
-            case 9:  value |= (int32_t)c <<  8; state++; break;
-            case 10: value |= (int32_t)c << 16; state++; break;
-            case 11: value |= (int32_t)c << 24; /* value is now length */
-                length = (uint32_t)value; /* Initial length for the file */
-                position = offset; /* Start address for data in RAM */
-                state++;
+            case 4: value = c; state++; break; /* Chunk length byte 0 */
+            case 5: value |= (int32_t)c << 8; state++; break;
+            case 6: value |= (int32_t)c << 16; state++; break;
+            case 7: value |= (int32_t)c << 24; /* Chunk length */
+                length = (uint32_t)value; // Store the length of the new chunk
+                // NOTE: The 'position' pointer is NOT reset here.
+                state = 8;
                 break;
-            case 12: case 13: case 14: case 15: case 16: case 17: case 18: case 19: case 20: case 21: case 22: case 23:
-                FileName[state - 12] = c; /* Filename parsing */
-                state++;
-                break;
-            default: /* Data streaming state */
-                if (value > 0) { /* 'value' tracks remaining bytes to write */
-                    value--;
+            case 8: /* Data streaming state */
+                if (length > 0) { // Now consistently using 'length' as the counter
+                    length--;
                     *((unsigned char*) position) = c;
                     position++;
-                    if (value == 0) {
-
-                        FRESULT op_result;
-                        UINT bytes_written;
-
-                        sdcard_attemptMountIfUnmounted();
-
-                        /* NOTE: This uses FileName[0] for path, which is inconsistent with FileName[6] in ManipulateFile.
-                           Probably some backwards compatibility thing. Leaving as is. */
-                        op_result = f_open(&pFile, &FileName[0], FA_WRITE | FA_CREATE_ALWAYS);
-                        if (op_result != FR_OK) {
-                            LogTextMessage("File open failed");
-                        }
-                        op_result = f_write(&pFile, (char*) offset, length, &bytes_written); /* 'length' is initial total length */
-                        if (op_result != FR_OK) {
-                            LogTextMessage("File write failed");
-                        }
-                        // if (bytes_written != length) {
-                        //     LogTextMessage("ERROR:Axow f_write,op_result:%u requested:%u written:%u path:%s", op_result, length, bytes_written, FileName[6]);
-                        // }
-                        op_result = f_close(&pFile);
-                        if (op_result != FR_OK) {
-                            LogTextMessage("File close failed");
-                        }
-                        state = 0; header = 0; AckPending = 1;
+                    if (length == 0) {
+                        send_AxoResult('w', FR_OK);
+                        state = 0; header = 0;
                     }
+                } else {
+                    send_AxoResult('w', FR_DISK_ERR);
+                    state = 0; header = 0;
                 }
-                else { /* Should not happen, or error */
-                    state = 0; header = 0; AckPending = 1;
-                }
+                break;
+            default:
+                send_AxoResult('w', FR_DISK_ERR);
+                state = 0; header = 0;
+                break;
         }
     }
     else if (header == 'T') { /* apply preset */
@@ -1017,7 +1005,7 @@ void PExReceiveByte(unsigned char c) {
             case 4: value  = c; state++; break;
             case 5: value |= (int32_t)c <<  8; state++; break;
             case 6: value |= (int32_t)c << 16; state++; break;
-            case 7: value |= (int32_t)c << 24; /* Total length */
+            case 7: value |= (int32_t)c << 24; /* Chunk length */
                 length = (uint32_t)value; /* Store the length to be received */
                 position = PATCHMAINLOC; /* Set base address for data buffer */
                 state = 8; /* Move on to data streaming state */

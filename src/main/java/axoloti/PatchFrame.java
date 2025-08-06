@@ -475,11 +475,34 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             }
 
                             /* Upload and start the new patch */
-                            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch.getBinFile()));
+                            boolean uploadSuccess = false;
+                            if (USBBulkConnection.GetConnection().isConnected()) {
+                                CommandManager.getInstance().startLongOperation();
+                                try {
+                                    QCmdUploadPatch uploadPatchCmd = new QCmdUploadPatch(patch.getBinFile());
+                                    uploadPatchCmd.Do(USBBulkConnection.GetConnection());
+                                    uploadSuccess = uploadPatchCmd.isSuccessful();
+                                } catch (Exception e) {
+                                    LOGGER.log(Level.SEVERE, "Patch upload failed with exception: ", e);
+                                } finally {
+                                    CommandManager.getInstance().endLongOperation();
+                                }
+                            } else {
+                                LOGGER.log(Level.SEVERE, "USB connection lost, patch upload aborted.");
+                                return false;
+                            }
+
+                            if (uploadSuccess) {
+                                // Start the patch (simple command, can use the queue)
                             QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(patch));
                             QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
-
+                                LOGGER.log(Level.INFO, "Patch upload successful, starting patch...");
                             return true;
+                            }
+                            else {
+                                LOGGER.log(Level.INFO, "Patch upload failed, aborting...");
+                                return false;
+                            }
                         } else {
                             compilationTimeout = true;
                             return false;

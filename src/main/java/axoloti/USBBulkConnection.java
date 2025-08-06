@@ -59,6 +59,7 @@ import qcmds.QCmdProcessor;
 import qcmds.QCmdSerialTask;
 import qcmds.QCmdTransmitGetFWVersion;
 import qcmds.QCmdUploadFile;
+import qcmds.QCmdUploadPatch;
 
 /**
  *
@@ -102,6 +103,7 @@ public class USBBulkConnection extends Connection {
     private final byte[] getFileListPckt =  new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('l')};
     private final byte[] copyToFlashPckt =  new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('F')};
     private final byte[] axoFileOpPckt =    new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('C')};
+    private final byte[] axoMemWritePckt =  new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('W')};
 
     private final short bulkVID = (short) 0x16C0;
     private final short bulkPIDAxoloti = (short) 0x0442;
@@ -257,7 +259,7 @@ public class USBBulkConnection extends Connection {
                     if (cmd != null) {
                         QCmd response = cmd.Do(USBBulkConnection.this);
                         if (response != null) {
-                            QCmdProcessor.getQCmdProcessor().getQueueResponse().add(response);
+                            QCmdProcessor.getQCmdProcessor().getQueueResponse().put(response);
                         }
                     }
                 }
@@ -994,7 +996,7 @@ public class USBBulkConnection extends Connection {
             data[0] = 'A';
             data[1] = 'x';
             data[2] = 'o';
-            data[3] = 'W';
+            data[3] = '%'; // TODO: set to something unused until UploadFW command is reworked to the new AxoR response system
             int tvalue = offset;
             int nRead = buffer.length;
             data[4] = (byte) tvalue;
@@ -1005,17 +1007,76 @@ public class USBBulkConnection extends Connection {
             data[9] = (byte) (nRead >> 8);
             data[10] = (byte) (nRead >> 16);
             data[11] = (byte) (nRead >> 24);
-            ClearSync();
+
             int result = writeBytes(data);
             result |= writeBytes(buffer);
-            if (!WaitSync()) {
-                result |= 1;
-            };
             LOGGER.log(Level.INFO, "Block uploaded @ 0x{0} length {1}",
                     new Object[]{Integer.toHexString(offset).toUpperCase(),
                     Integer.toString(buffer.length)});
             return result;
         }
+    }
+
+    @Override
+    public int TransmitStartMemWrite(int startAddr, int totalLen) {
+
+        /* Total size:
+           "AxoW"           (4) +
+           start address    (4) +
+           Total length     (4) +
+           sub-command      (1)     // 's'
+         */
+        ByteBuffer buffer = ByteBuffer.allocate(13).order(ByteOrder.LITTLE_ENDIAN);
+
+        buffer.put(axoMemWritePckt);  // "AxoW" header
+        buffer.putInt(startAddr);     // memory start address   (4 bytes)
+        buffer.putInt(totalLen);      // total write size (not chunk) (4 bytes)
+        buffer.put((byte)'s');        // sub-command 's'
+
+        int writeResult = writeBytes(buffer.array());
+        return writeResult;
+    }
+
+    @Override
+    public int TransmitAppendMemWrite(byte[] buffer) {
+        /* Total size:
+           "Axow"           (4) +
+           Length           (4)
+           (data is streamed in successive writeBytes(buffer))
+         */
+        synchronized (usbOutLock) {
+            int size = buffer.length;
+            ByteBuffer headerBuffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN); // "Axow" + length
+
+            headerBuffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'w');
+            headerBuffer.putInt(size);  // Length of the data chunk
+
+            int writeResult = writeBytes(headerBuffer.array());
+            if (writeResult != LibUsb.SUCCESS) {
+                return writeResult;
+            }
+            writeResult = writeBytes(buffer); /* Send the actual data payload */
+            return writeResult;
+        }
+    }
+
+    @Override
+    public int TransmitCloseMemWrite(int startAddr, int totalLen) {
+        /* Total size:
+           "AxoW"           (4) +
+           start address    (4) +
+           Total length     (4) +
+           sub-command      (1)     // 'c'
+         */
+        ByteBuffer buffer = ByteBuffer.allocate(13).order(ByteOrder.LITTLE_ENDIAN);
+
+        buffer.put(axoMemWritePckt);  // "AxoW" header
+        buffer.putInt(startAddr);     // memory start address   (4 bytes)
+        buffer.putInt(totalLen);      // total write size (not chunk) (4 bytes)
+        buffer.put((byte)'c');        // sub-command 'c'
+
+        int writeResult = writeBytes(buffer.array());
+        return writeResult;
     }
 
     @Override
@@ -1666,6 +1727,22 @@ public class USBBulkConnection extends Connection {
                             }
                             else {
                                 // System.err.println(Instant.now() + " [DEBUG] Warning: QCmdUploadFile received unexpected AxoR for command: " + (char)commandByte);
+                            }
+                        }
+                        // Special handling for QCmdUploadPatch's sub-command
+                        else if (currentExecutingCommand instanceof QCmdUploadPatch) {
+                            QCmdUploadPatch uploadCmd = (QCmdUploadPatch) currentExecutingCommand;
+                            if (commandByte == 's') {
+                                uploadCmd.setStartMemWriteCompleted((byte)statusCode);
+                            }
+                            else if (commandByte == 'w') {
+                                uploadCmd.setAppendMemWriteCompleted((byte)statusCode);
+                            }
+                            else if (commandByte == 'c') {
+                                uploadCmd.setCloseMemWriteCompleted((byte)statusCode);
+                            }
+                            else if (commandByte == 'W') {
+                                uploadCmd.setInvalidCommandSequenceError((byte)statusCode);
                             }
                         }
                         // Handling for other commands that expect an AxoR for their completion
