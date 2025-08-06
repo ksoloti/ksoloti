@@ -562,6 +562,7 @@ static void ManipulateFile(void) {
         else if (FileName[1] == 'D') { /* delete file (AxoCD) */
             // LogTextMessage("Executing 'CD' cmd");
 
+            f_chdir("/"); /* Change to root to avoid FR_DENIED for currently open directory */
             FRESULT op_result = f_unlink(&FileName[6]); /* Path from FileName[6]+ */
             if (op_result != FR_OK) {
                 // LogTextMessage("ERROR:MNPFL f_unlink,op_result:%u path:%s", op_result, &FileName[6]);
