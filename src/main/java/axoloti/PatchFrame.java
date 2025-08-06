@@ -456,6 +456,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                         /* Handle SD card and dependent files */
                         if (patch.waitForBinFile()) {
                             QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
+                            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+
                             ArrayList<SDFileReference> files = patch.GetDependentSDFiles();
                             if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
                                 if (files.size() > 0) {
@@ -1303,10 +1305,12 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private void jMenuUploadCodeActionPerformed(java.awt.event.ActionEvent evt) {
         QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
+        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
         if (patch.getBinFile().exists()) {
             QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch.getBinFile()));
             QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(patch));
             QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdLock(patch));
+            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
         }
         else {
             String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
