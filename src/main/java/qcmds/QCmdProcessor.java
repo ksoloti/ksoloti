@@ -279,14 +279,14 @@ public class QCmdProcessor implements Runnable {
         }
     }
 
-    private void publish(final String m) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                MainFrame.mainframe.SetProgressMessage(m);
-            }
-        });
-    }
+    // private void publish(final String m) {
+    //     SwingUtilities.invokeLater(new Runnable() {
+    //         @Override
+    //         public void run() {
+    //             MainFrame.mainframe.SetProgressMessage(m);
+    //         }
+    //     });
+    // }
 
     public void WaitQueueFinished() {
         synchronized (queueLock) {
@@ -313,69 +313,28 @@ public class QCmdProcessor implements Runnable {
         while (true) {
             setProgress(0);
             try {
-                queueResponse.clear();
+                QCmd response = queueResponse.poll();
+                while (response != null) {
+                    publish(response);
+                    response = queueResponse.poll();
+                }
 
                 QCmd cmd = queue.take();
 
-                String m = cmd.GetStartMessage();
-                if (m != null) {
-                    LOGGER.log(Level.INFO, m);
-                    publish(m);
-                }
+                if (cmd instanceof QCmdSerialTask) {
+                    serialconnection.AppendToQueue((AbstractQCmdSerialTask) cmd);
 
-                if (QCmdShellTask.class.isInstance(cmd)) {
-                    QCmd response = ((QCmdShellTask) cmd).Do(this);
-                    if ((response != null)) {
-                        ((QCmdGUITask) response).DoGUI(this);
+                } else if (cmd instanceof QCmdShellTask) {
+                    QCmd shellResponse = ((QCmdShellTask) cmd).Do(this);
+                    if ((shellResponse != null)) {
+                        ((QCmdGUITask) shellResponse).DoGUI(this);
                     }
-                }
-
-                if (QCmdSerialTask.class.isInstance(cmd)) {
-                    if (serialconnection.isConnected()) {
-                        boolean appended = serialconnection.AppendToQueue((QCmdSerialTask) cmd);
-                        if (appended) {
-                            /* Only proceed to wait for a response if the command was successfully queued */
-                            try {
-                                QCmd response = queueResponse.poll(10, TimeUnit.SECONDS);
-                                if (response != null) {
-                                    publish(response);
-                                    if (response instanceof QCmdDisconnect){
-                                        queue.clear();
-                                    }
-                                }
-                                // else {
-                                //      System.out.println(Instant.now() + " [DEBUG] Timeout: No response received for serial command: " + cmd.getClass().getSimpleName() + " after 10 seconds.");
-                                // }
-                            }
-                            catch (InterruptedException e) {
-                                /* Handle interruption while waiting for response */
-                                LOGGER.log(Level.SEVERE, "Interrupted while waiting for response to serial command: " + cmd.getClass().getSimpleName(), e);
-                                Thread.currentThread().interrupt();
-                            }
-                        }
-                        else {
-                            LOGGER.log(Level.SEVERE, "Failed to append serial command to USBBulkConnection queue. Command: " + cmd.getClass().getSimpleName());
-                        }
-                    }
-                    else {
-                        /* Handle case where serialconnection is not connected when trying to send a serial command. */
-                        LOGGER.log(Level.WARNING, "Attempted to send serial command " + cmd.getClass().getSimpleName() + " but connection is not active.");
-                    }
-                }
-                if (QCmdGUITask.class.isInstance(cmd)) {
+                } else if (cmd instanceof QCmdGUITask) {
                     publish(cmd);
                 }
-                m = cmd.GetDoneMessage();
-                if (m != null) {
-                    LOGGER.log(Level.INFO, m);
-                    publish(m);
-                }
-            }
-            catch (InterruptedException ex) {
+            } catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
-            }
-            finally {
-                /* Notify waiting threads that the queue might be empty now */
+            } finally {
                 synchronized (queueLock) {
                     queueLock.notifyAll();
                 }
