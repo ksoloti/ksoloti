@@ -281,6 +281,49 @@ public class Patch {
         }
 
         ArrayList<SDFileReference> files = GetDependentSDFiles();
+
+        /* Check for and create required directories before the file upload loop */
+        Set<String> requiredDirectories = new HashSet<>();
+        for (SDFileReference fref : files) {
+            String targetfn = fref.targetPath;
+            if (targetfn.isEmpty()) {
+                targetfn = fref.localfile.getName();
+            } else if (targetfn.charAt(0) != '/') {
+                targetfn = sdpath + "/" + fref.targetPath;
+            }
+
+            String path = targetfn.substring(0, targetfn.lastIndexOf('/'));
+            if (!path.isEmpty()) {
+                requiredDirectories.add(path);
+            }
+        }
+
+        for (String path : requiredDirectories) {
+            String currentPath = "";
+            String[] pathComponents = path.split("/");
+            for (String component : pathComponents) {
+                if (!component.isEmpty()) {
+                    currentPath += "/" + component;
+                    /* Check if the directory already exists */
+                    if (SDCardInfo.getInstance().find(currentPath) == null) {
+                        LOGGER.log(Level.INFO, "Creating directory: {0}", currentPath);
+                        QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(currentPath, Calendar.getInstance());
+                        createDirCmd.Do(USBBulkConnection.GetConnection());
+                        try {
+                            createDirCmd.waitForCompletion();
+                        } catch (InterruptedException e) {
+                            LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory.", e);
+                            Thread.currentThread().interrupt();
+                            continue;
+                        }
+                    } else {
+                        LOGGER.log(Level.INFO, "Directory already exists: {0}", currentPath);
+                    }
+                }
+            }
+        }
+
+        /* Proceed with the file uploads */
         for (SDFileReference fref : files) {
             File f = fref.localfile;
             if (f == null) {
@@ -309,25 +352,6 @@ public class Patch {
                     continue;
                 }
                 
-                String path = targetfn.substring(0, targetfn.lastIndexOf('/'));
-                String currentPath = "";
-                String[] pathComponents = path.split("/");
-                for (String component : pathComponents) {
-                    if (!component.isEmpty()) {
-                        currentPath += "/" + component;
-                        QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(currentPath, Calendar.getInstance());
-                        createDirCmd.Do(USBBulkConnection.GetConnection());
-                        try {
-                            createDirCmd.waitForCompletion();
-                        } catch (InterruptedException e) {
-                            LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory.", e);
-                            Thread.currentThread().interrupt();
-                            continue;
-                        }
-                    }
-                }
-
-                // Log and queue the upload command.
                 LOGGER.log(Level.INFO, "Uploading file to SD card: {0}", targetfn);
                 QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, targetfn);
                 uploadFileCmd.Do(USBBulkConnection.GetConnection());
@@ -3049,8 +3073,14 @@ public class Patch {
         for (int i = 1; i < sdfilename.length(); i++) {
             if (sdfilename.charAt(i) == '/') {
                 Calendar cal = Calendar.getInstance();
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(sdfilename.substring(0, i), cal));
-                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(sdfilename.substring(0, i), cal);
+                createDirCmd.Do(USBBulkConnection.GetConnection());
+                try {
+                    createDirCmd.waitForCompletion();
+                } catch (InterruptedException e) {
+                    LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory.", e);
+                    Thread.currentThread().interrupt();
+                }
             }
         }
 
