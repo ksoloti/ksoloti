@@ -289,10 +289,8 @@ public class Patch {
 
             String targetfn = fref.targetPath;
             if (targetfn.isEmpty()) {
-                LOGGER.log(Level.SEVERE, "Target filename is empty: {0}", f.getName());
-                continue;
-            }
-            if (targetfn.charAt(0) != '/') {
+                targetfn = f.getName();
+            } else if (targetfn.charAt(0) != '/') {
                 targetfn = sdpath + "/" + fref.targetPath;
             }
 
