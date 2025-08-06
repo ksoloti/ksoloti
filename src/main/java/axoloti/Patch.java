@@ -307,7 +307,7 @@ public class Patch {
                         LOGGER.log(Level.INFO, "File {0} is larger than 8MB, skipping upload.", f.getName());
                         continue;
                     }
-
+                    
                     String path = targetfn.substring(0, targetfn.lastIndexOf('/'));
                     String currentPath = "";
                     String[] pathComponents = path.split("/");
@@ -322,8 +322,8 @@ public class Patch {
                                 LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory.", e);
                                 Thread.currentThread().interrupt();
                                 continue;
+                            }
                         }
-                    }
                     }
 
                     // Log and queue the upload command.
@@ -375,58 +375,6 @@ public class Patch {
             }
         }
         return fileFound;
-    }
-
-    void GoLive() {
-        ShowPreset(0);
-        presetUpdatePending = false;
-        for (AxoObjectInstanceAbstract o : objectInstances) {
-            for (ParameterInstance pi : o.getParameterInstances()) {
-                if (!pi.isFrozen()) {
-                    pi.ClearNeedsTransmit();
-                }
-            }
-        }
-
-        File binFile = getBinFile();
-        if (binFile.exists()) {
-            /* Delete previous .bin to ensure waitForBinFile() below won't trigger false positive */
-            binFile.delete();
-        }
-
-        WriteCode(true);
-        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
-        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
-
-        if (waitForBinFile()) {
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
-            ArrayList<SDFileReference> files = GetDependentSDFiles();
-            if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
-                if (files.size() > 0) {
-                    /* If there are dependent files, create patch folder and upload files */
-                    String f = "/" + getSDCardPath();
-                    if (SDCardInfo.getInstance().find(f) == null) {
-                        Calendar cal = Calendar.getInstance();
-                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(f, cal));
-                    }
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdChangeWorkingDirectory(f));
-                    UploadDependentFiles("/" + getSDCardPath());
-                }
-            }
-            else {
-                /* Issue warning when no SD card but there are dependent files */
-                if (files.size() > 0) {
-                    LOGGER.log(Level.WARNING, "Patch requires file {0} on SD card, but no SD card connected.", files.get(0).targetPath);
-                }
-            }
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadPatch(this.getBinFile()));
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(this));
-            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
-        } else {
-            String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + this.generateBuildFilenameStem(true);
-            LOGGER.log(Level.INFO, "Timeout:" + path.replace('\\', '/') + ".bin could not be created.");
-            Unlock();
-        }
     }
 
     public void ShowCompileFail() {

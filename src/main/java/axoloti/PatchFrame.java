@@ -1572,35 +1572,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         getRootPane().setCursor(Cursor.getDefaultCursor());
     }
 
-    private boolean GoLive() {
-        if (patch.getFileNamePath().endsWith(".axs") || patch.getContainer() != null) {
-            Object[] options = {"Go Live",
-                "Cancel"};
-
-            int n = KeyboardNavigableOptionPane.showOptionDialog(this,
-                    "This is a subpatch intended to be placed inside a main patch and possibly has no input or output.\nDo you still want to take it live?",
-                    "File is Subpatch",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    options,
-                    options[1]);
-            switch (n) {
-                case JOptionPane.NO_OPTION:
-                    return false;
-                case JOptionPane.YES_OPTION:
-                    ; // fall thru
-            }
-        }
-        for (AxoObjectInstanceAbstract aoi : patch.objectInstances) {
-            if (aoi instanceof AxoObjectInstancePatcher) {
-                ((AxoObjectInstancePatcher)aoi).updateObj1();
-            }
-        }
-        patch.GoLive();
-        return true;
-    }
-
     void ShowDSPLoad(int val200, boolean overload) {
         int pv = jProgressBarDSPLoad.getValue();
         if (val200 == pv) {
