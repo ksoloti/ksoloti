@@ -82,7 +82,7 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
         validate();
     }
 
-    public void updatePatchState() {
+    public void refreshObjectCode() {
         /* Lightweight version of updateObj1 - updates subpatch data
            relevant for patch compilation but not the GUI. Call before
            patch compile to refresh all subpatches to the newest state. */
