@@ -387,7 +387,7 @@ public class SDCardInfo {
             name = "/" + name;
         }
         for (SDFileInfo f : files) {
-            if (f.getFilename().equalsIgnoreCase(name) && f.getSize() == size && (Math.abs(f.getTimestamp().getTimeInMillis() - timestampEpoch) < 1000)) {
+            if (f.getFilename().equalsIgnoreCase(name) && f.getSize() == size && (Math.abs(f.getTimestamp().getTimeInMillis() - timestampEpoch) < 3000)) {
                 return true;
             }
         }
