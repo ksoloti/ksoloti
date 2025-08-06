@@ -405,7 +405,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                         jCheckBoxMenuItemLive.setEnabled(true);
                         return;
                     case JOptionPane.YES_OPTION:
-                        ; // fall thru
+                        ; /* fall thru */
                 }
             }
 
@@ -440,7 +440,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                         }
 
-                        /* Prepare for compilation (host-side) */
+                        /* Ensure there is no .bin file to avoid false positive at waitForBinFile() */
                         File binFile = patch.getBinFile();
                         if (binFile.exists()) {
                             binFile.delete();
@@ -459,50 +459,66 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
 
                             ArrayList<SDFileReference> files = patch.GetDependentSDFiles();
-                            if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
                                 if (files.size() > 0) {
+                                if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
+                                    CommandManager.getInstance().startLongOperation();
+                                    try {
                                     String f = "/" + patch.getSDCardPath();
                                     if (SDCardInfo.getInstance().find(f) == null) {
                                         Calendar cal = Calendar.getInstance();
-                                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(f, cal));
-                                    }
-                                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdChangeWorkingDirectory(f));
+                                            QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(f, cal);
+                                            createDirCmd.Do(USBBulkConnection.GetConnection());
+                                            try {
+                                                createDirCmd.waitForCompletion();
+                                            } catch (InterruptedException e) {
+                                                LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory.", e);
+                                                Thread.currentThread().interrupt();
+                                            }
+                                        }
+                                        QCmdChangeWorkingDirectory chdCmd = new QCmdChangeWorkingDirectory(f);
+                                        chdCmd.Do(USBBulkConnection.GetConnection());
                                     patch.UploadDependentFiles("/" + patch.getSDCardPath());
-                                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                                    } catch (Exception e) {
+                                        LOGGER.log(Level.SEVERE, "Patch dependent files upload to SD failed with exception: ", e);
+                                    } finally {
+                                        CommandManager.getInstance().endLongOperation();
                                 }
                             } else {
-                                if (files.size() > 0) {
                                     LOGGER.log(Level.WARNING, "Patch requires file {0} on SD card, but no SD card connected.", files.get(0).targetPath);
                                 }
                             }
 
                             /* Upload and start the new patch */
-                            boolean uploadSuccess = false;
                             if (USBBulkConnection.GetConnection().isConnected()) {
-                                CommandManager.getInstance().startLongOperation();
                                 try {
-                                    QCmdUploadPatch uploadPatchCmd = new QCmdUploadPatch(patch.getBinFile());
-                                    uploadPatchCmd.Do(USBBulkConnection.GetConnection());
-                                    uploadSuccess = uploadPatchCmd.isSuccessful();
+                                CommandManager.getInstance().startLongOperation();
+                                    QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
+                                    uploadCmd.Do(USBBulkConnection.GetConnection());
+                                    boolean completed = uploadCmd.waitForCompletion();
+                                    if (!completed) {
+                                        System.out.println(Instant.now() + " Patch upload timed out");
+                                return false;
+                            }
+                                    CommandManager.getInstance().endLongOperation();
+
+                                    if (uploadCmd.isSuccessful()) {
+                            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(patch));
+                                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdLock(patch));
+                                        
+                            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+
+                                        LOGGER.log(Level.INFO, "Patch upload successful, starting and locking patch...");
+                            return true;
+                                    } else {
+                                        System.out.println(Instant.now() + " Failed to upload patch");
+                                        return false;
+                                    }
                                 } catch (Exception e) {
                                     LOGGER.log(Level.SEVERE, "Patch upload failed with exception: ", e);
-                                } finally {
-                                    CommandManager.getInstance().endLongOperation();
+                                    return false;
                                 }
                             } else {
                                 LOGGER.log(Level.SEVERE, "USB connection lost, patch upload aborted.");
-                                return false;
-                            }
-
-                            if (uploadSuccess) {
-                                // Start the patch (simple command, can use the queue)
-                            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(patch));
-                            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
-                                LOGGER.log(Level.INFO, "Patch upload successful, starting patch...");
-                            return true;
-                            }
-                            else {
-                                LOGGER.log(Level.INFO, "Patch upload failed, aborting...");
                                 return false;
                             }
                         } else {
