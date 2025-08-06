@@ -87,15 +87,12 @@ import org.simpleframework.xml.core.Validate;
 import org.simpleframework.xml.strategy.Strategy;
 import org.simpleframework.xml.stream.Format;
 
-import qcmds.QCmdChangeWorkingDirectory;
 import qcmds.QCmdCompilePatch;
 import qcmds.QCmdCreateDirectory;
+import qcmds.QCmdGetFileInfo;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdRecallPreset;
-import qcmds.QCmdStart;
-import qcmds.QCmdStop;
 import qcmds.QCmdUploadFile;
-import qcmds.QCmdUploadPatch;
 
 /**
  *
@@ -295,11 +292,15 @@ public class Patch {
             }
 
             if (!SDCardInfo.getInstance().exists(targetfn, f.lastModified(), f.length())) {
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdGetFileInfo(targetfn));
-                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdPing());
-                // QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdPing(true)); // no-disconnect ping for debug
-                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                QCmdGetFileInfo getInfoCmd = new qcmds.QCmdGetFileInfo(targetfn);
+                getInfoCmd.Do(USBBulkConnection.GetConnection());
+                try {
+                    getInfoCmd.waitForCompletion();
+                } catch (InterruptedException e) {
+                    LOGGER.log(Level.SEVERE, "Thread interrupted while waiting for file info.", e);
+                    Thread.currentThread().interrupt();
+                    continue;
+                }
 
                 if (!SDCardInfo.getInstance().exists(targetfn, f.lastModified(), f.length())) {
                     if (f.length() > 8 * 1024 * 1024) {
@@ -307,18 +308,38 @@ public class Patch {
                         continue;
                     }
 
-                    for (int i = 1; i < targetfn.length(); i++) {
-                        if (targetfn.charAt(i) == '/') {
-                            Calendar cal = Calendar.getInstance();
-                            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(targetfn.substring(0, i), cal));
-                            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                    String path = targetfn.substring(0, targetfn.lastIndexOf('/'));
+                    String currentPath = "";
+                    String[] pathComponents = path.split("/");
+                    for (String component : pathComponents) {
+                        if (!component.isEmpty()) {
+                            currentPath += "/" + component;
+                            QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(currentPath, Calendar.getInstance());
+                            createDirCmd.Do(USBBulkConnection.GetConnection());
+                            try {
+                                createDirCmd.waitForCompletion();
+                            } catch (InterruptedException e) {
+                                LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory.", e);
+                                Thread.currentThread().interrupt();
+                                continue;
                         }
                     }
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadFile(f, targetfn));
-                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                    }
+
+                    // Log and queue the upload command.
+                    LOGGER.log(Level.INFO, "Uploading file to SD card: {0}", targetfn);
+                    QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, targetfn);
+                    uploadFileCmd.Do(USBBulkConnection.GetConnection());
+                    try {
+                        uploadFileCmd.waitForCompletion();
+                    } catch (InterruptedException e) {
+                        LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file.", e);
+                        Thread.currentThread().interrupt();
+                        continue;
+                    }
                 }
                 else {
-                    LOGGER.log(Level.INFO, "File {0} matches timestamp and size, skipping upload.", f.getName());
+                    LOGGER.log(Level.INFO, "File {0} matches timestamp and size after refresh, skipping upload.", f.getName());
                 }
             }
             else {
