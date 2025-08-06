@@ -500,21 +500,18 @@ static void ManipulateFile(void) {
             // LogTextMessage("Executing Ck cmd");
 
             FRESULT op_result = f_mkdir(&FileName[6]); /* Path from FileName[6]+ */
-            if ((op_result != FR_OK) && (op_result != FR_EXIST)) {
-                // LogTextMessage("ERROR:MNPFL f_mkdir,op_result:%u path:%s", op_result, &FileName[6]);
-                goto Ck_result_and_exit;
+
+            if (op_result == FR_OK) { /* Dir was newly created, so update timestamp */
+                FILINFO fno;
+                fno.fdate = FileName[2] + (FileName[3]<<8); /* Date from FileName[2/3] */
+                fno.ftime = FileName[4] + (FileName[5]<<8); /* Time from FileName[4/5] */
+
+                op_result = f_utime(&FileName[6], &fno); /* Path from FileName[6]+ */
+                if (op_result != FR_OK) {
+                    // LogTextMessage("ERROR:MNPFL f_utime,op_result:%u path:%s", op_result, &FileName[6]);
+                }
             }
 
-            FILINFO fno;
-            fno.fdate = FileName[2] + (FileName[3]<<8); /* Date from FileName[2/3] */
-            fno.ftime = FileName[4] + (FileName[5]<<8); /* Time from FileName[4/5] */
-
-            op_result = f_utime(&FileName[6], &fno); /* Path from FileName[6]+ */
-            if (op_result != FR_OK) {
-                // LogTextMessage("ERROR:MNPFL f_utime,op_result:%u path:%s", op_result, &FileName[6]);
-            }
-
-            Ck_result_and_exit:
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
