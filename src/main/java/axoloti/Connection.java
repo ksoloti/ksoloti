@@ -87,6 +87,8 @@ public abstract class Connection {
     abstract public boolean WaitReadSync();
     abstract public void setPatch(Patch patch);
     abstract public ksoloti_core getTargetProfile();
+    abstract public byte[] getFwVersion();
+    abstract public String getFwVersionString();
     abstract public ByteBuffer getMemReadBuffer();
     abstract public int getMemRead1Word();
     abstract public boolean GetSDCardPresent();

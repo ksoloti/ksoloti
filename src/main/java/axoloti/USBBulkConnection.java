@@ -2039,4 +2039,15 @@ public class USBBulkConnection extends Connection {
     public ksoloti_core getTargetProfile() {
         return targetProfile;
     }
+
+
+    @Override
+    public byte[] getFwVersion() {
+        return fwversion;
+    }
+
+    @Override
+    public String getFwVersionString() {
+        return String.format("%d.%d.%d.%d", fwversion[0], fwversion[1], fwversion[2], fwversion[3]);
+    }
 }
