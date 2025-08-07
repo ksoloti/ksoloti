@@ -58,6 +58,7 @@ import qcmds.QCmdMemRead1Word;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdSerialTask;
 import qcmds.QCmdTransmitGetFWVersion;
+import qcmds.QCmdUploadFWSDRam;
 import qcmds.QCmdUploadFile;
 import qcmds.QCmdUploadPatch;
 
@@ -1024,14 +1025,14 @@ public class USBBulkConnection extends Connection {
            "AxoW"           (4) +
            start address    (4) +
            Total length     (4) +
-           sub-command      (1)     // 's'
+           sub-command      (1)     // 'W'
          */
         ByteBuffer buffer = ByteBuffer.allocate(13).order(ByteOrder.LITTLE_ENDIAN);
 
         buffer.put(axoMemWritePckt);  // "AxoW" header
         buffer.putInt(startAddr);     // memory start address   (4 bytes)
         buffer.putInt(totalLen);      // total write size (not chunk) (4 bytes)
-        buffer.put((byte)'s');        // sub-command 's'
+        buffer.put((byte)'W');        // sub-command 'W'
 
         int writeResult = writeBytes(buffer.array());
         return writeResult;
@@ -1732,7 +1733,7 @@ public class USBBulkConnection extends Connection {
                         // Special handling for QCmdUploadPatch's sub-command
                         else if (currentExecutingCommand instanceof QCmdUploadPatch) {
                             QCmdUploadPatch uploadCmd = (QCmdUploadPatch) currentExecutingCommand;
-                            if (commandByte == 's') {
+                            if (commandByte == 'W') {
                                 uploadCmd.setStartMemWriteCompleted((byte)statusCode);
                             }
                             else if (commandByte == 'w') {
@@ -1741,8 +1742,17 @@ public class USBBulkConnection extends Connection {
                             else if (commandByte == 'c') {
                                 uploadCmd.setCloseMemWriteCompleted((byte)statusCode);
                             }
-                            else if (commandByte == 'W') {
-                                uploadCmd.setInvalidCommandSequenceError((byte)statusCode);
+                        }
+                        else if (currentExecutingCommand instanceof QCmdUploadFWSDRam) {
+                            QCmdUploadFWSDRam uploadFwCmd = (QCmdUploadFWSDRam) currentExecutingCommand;
+                            if (commandByte == 'W') { // Acknowledgment for TransmitStartMemWrite (AxoWs)
+                                uploadFwCmd.setStartMemWriteCompleted((byte)statusCode);
+                            }
+                            else if (commandByte == 'w') { // Acknowledgment for TransmitAppendMemWrite (Axow)
+                                uploadFwCmd.setAppendMemWriteCompleted((byte)statusCode);
+                            }
+                            else if (commandByte == 'c') { // Acknowledgment for TransmitCloseMemWrite (AxoWc)
+                                uploadFwCmd.setCloseMemWriteCompleted((byte)statusCode);
                             }
                         }
                         // Handling for other commands that expect an AxoR for their completion

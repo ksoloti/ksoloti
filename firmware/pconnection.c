@@ -67,12 +67,11 @@ static int32_t pFileSize;
 /* now static global */
 static uint32_t preset_index;
 static int32_t value;
-static int32_t position;
+static int32_t write_position;
 static int32_t offset;
 static uint32_t length;
 static uint32_t patchid;
-static uint32_t start_memory_address;
-static uint32_t total_patch_length;
+static uint32_t total_write_length;
 
 MUTEX_DECL(LogMutex);
 char    LogBuffer[LOG_BUFFER_SIZE];
@@ -442,8 +441,8 @@ void ReadDirectoryListing(void) {
  *
  * "AxoP" (int value, int16 preset_index) -> parameter set
  * "AxoR" (uint length, data) -> preset data set
- * "AxoW" (uint length, int addr, char[length] data) -> generic memory write
- * "Axow" (uint length, int offset, char[12] filename, char[length] data) -> data write to SD card
+ * "AxoW" (int startAddress, int totalLength) -> Start or close generic memory write
+ * "Axow" (uint chunkLength) -> append chunk during generic memory write
  * "Axor" (int offset, uint length) -> generic memory read
  * "Axoy" (int offset) -> generic memory read, single 32bit aligned
  * "AxoY" returns true if Core SPILink jumper is set, i.e. Core is set up to be synced
@@ -745,7 +744,7 @@ void PExReceiveByte(unsigned char c) {
                     /* --- Commands that keep AckPending = 1; (AxoA-based or dual-ack) --- */
                     case 'P': /* param change */
                     case 'R': /* preset change */
-                    case 'W': /* generic write */
+                    case 'W': /* generic write start, close */
                     case 'w': /* append to memory during 'W' generic write */
                     case 'T': /* apply preset */
                     case 'M': /* midi command */
@@ -848,16 +847,16 @@ void PExReceiveByte(unsigned char c) {
             case 9: value |= (int32_t)c <<  8; state++; break;
             case 10: value |= (int32_t)c << 16; state++; break;
             case 11: value |= (int32_t)c << 24; state++; break;
-            case 12: /* Sub-command can be 's' or 'c' */
+            case 12: /* Sub-command can be 'W' or 'c' */
                 switch(c) {
-                    case 's': /* start Memory Write */
-                        start_memory_address = (unsigned char*)offset;
-                        position = start_memory_address; /* Initialize position here */
-                        total_patch_length = (uint32_t)value;
-                        send_AxoResult('s', FR_OK);
+                    case 'W': /* start Memory Write */
+                        write_position = offset; /* Initialize write_position here */
+                        total_write_length = (uint32_t)value;
+                        send_AxoResult('W', FR_OK);
                         state = 0; header = 0;
                         break;
                     case 'c': /* close Memory Write */
+                        // TODO: error checking based on total_write_length?
                         send_AxoResult('c', FR_OK);
                         state = 0; header = 0;
                         break;
@@ -880,15 +879,15 @@ void PExReceiveByte(unsigned char c) {
             case 6: value |= (int32_t)c << 16; state++; break;
             case 7: value |= (int32_t)c << 24; /* Chunk length */
                 length = (uint32_t)value; // Store the length of the new chunk
-                // NOTE: The 'position' pointer is NOT reset here.
+                // NOTE: The 'write_position' pointer is NOT reset here.
                 state = 8;
                 break;
             case 8: /* Data streaming state */
-                if (length > 0) { // Now consistently using 'length' as the counter
-                    length--;
-                    *((unsigned char*) position) = c;
-                    position++;
-                    if (length == 0) {
+                if (value > 0) { // Now consistently using 'value' as the counter
+                    value--;
+                    *((unsigned char*) write_position) = c;
+                    write_position++;
+                    if (value == 0) {
                         send_AxoResult('w', FR_OK);
                         state = 0; header = 0;
                     }
@@ -1005,15 +1004,15 @@ void PExReceiveByte(unsigned char c) {
             case 6: value |= (int32_t)c << 16; state++; break;
             case 7: value |= (int32_t)c << 24; /* Chunk length */
                 length = (uint32_t)value; /* Store the length to be received */
-                position = PATCHMAINLOC; /* Set base address for data buffer */
+                write_position = PATCHMAINLOC; /* Set base address for data buffer */
                 state = 8; /* Move on to data streaming state */
-                // LogTextMessage("Axoa done c=%x lgth=%u pos=%x state=%u", c, length, position, state);
+                // LogTextMessage("Axoa done c=%x lgth=%u pos=%x state=%u", c, length, write_position, state);
                 break;
             case 8: /* Data streaming state */
                 if (value > 0) { /* 'value' now tracks remaining bytes to receive */
                     value--;
-                    *((unsigned char*) position) = c;
-                    position++;
+                    *((unsigned char*) write_position) = c;
+                    write_position++;
 
                     /* A week of debugging failed to shed any light on the reason
                        why after several appends (<10), the Core would fail to send an AxoR<a><0> response
@@ -1047,20 +1046,20 @@ void PExReceiveByte(unsigned char c) {
     }
     else if (header == 'R') { /* preset change */
         switch (state) {
-            case 4: length  = c; state++; break;
-            case 5: length |= (uint32_t)c <<  8; state++; break;
-            case 6: length |= (uint32_t)c << 16; state++; break;
-            case 7: length |= (uint32_t)c << 24; state++;
+            case 4: value  = c; state++; break;
+            case 5: value |= (uint32_t)c <<  8; state++; break;
+            case 6: value |= (uint32_t)c << 16; state++; break;
+            case 7: value |= (uint32_t)c << 24; state++;
                 offset = (int32_t)patchMeta.pPresets;
                 break;
             default: /* Data streaming state */
-                if (length > 0) {
-                    length--;
+                if (value > 0) {
+                    value--;
                     if (offset) { /* Check if offset is valid */
                         *((unsigned char*) offset) = c;
                         offset++;
                     }
-                    if (length == 0) {
+                    if (value == 0) {
                         state = 0; header = 0; AckPending = 1;
                     }
                 }

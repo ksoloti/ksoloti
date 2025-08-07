@@ -105,10 +105,6 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
         }
     }
 
-    public void setInvalidCommandSequenceError(byte statusCode) {
-        LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": invalid command sequence. " + SDCardInfo.getFatFsErrorString(statusCode));
-    }
-
     @Override
     public QCmd Do(Connection connection) {
         super.Do(connection);
