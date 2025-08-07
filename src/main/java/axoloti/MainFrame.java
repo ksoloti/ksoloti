@@ -97,6 +97,7 @@ import org.simpleframework.xml.stream.Format;
 
 import com.formdev.flatlaf.FlatClientProperties;
 
+import qcmds.CommandManager;
 import qcmds.QCmdBringToDFUMode;
 import qcmds.QCmdCompilePatch;
 import qcmds.QCmdDisconnect;
@@ -747,31 +748,61 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     void flashUsingSDRam(String fname_flasher, String pname) {
-        try {
-            updateLinkFirmwareID();
+        updateLinkFirmwareID();
 
-            File f = new File(fname_flasher);
-            File p = new File(pname);
+        File f = new File(fname_flasher);
+        File p = new File(pname);
 
-            if (f.canRead()) {
-                if (p.canRead()) {
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadFWSDRam(p));
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadPatch(f));
+        if (f.canRead()) {
+            if (p.canRead()) {
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
+                try {
+                    CommandManager.getInstance().startLongOperation();
+                    QCmdUploadFWSDRam uploadFwCmd = new QCmdUploadFWSDRam(p);
+                    uploadFwCmd.Do(USBBulkConnection.GetConnection());
+                    boolean completed = uploadFwCmd.waitForCompletion();
+                    if (!completed) {
+                        LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM timed out");
+                        CommandManager.getInstance().endLongOperation();
+                        return;
+                    }
+                    if (!uploadFwCmd.isSuccessful()) {
+                        LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed");
+                        CommandManager.getInstance().endLongOperation();
+                        return;
+                    }
+
+                    QCmdUploadPatch uploadPatchCmd = new QCmdUploadPatch(f);
+                    uploadPatchCmd.Do(USBBulkConnection.GetConnection());
+                    completed = uploadPatchCmd.waitForCompletion();
+                    if (!completed) {
+                        LOGGER.log(Level.SEVERE, "Flasher Patch upload timed out");
+                        CommandManager.getInstance().endLongOperation();
+                        return;
+                    }
+                    if (!uploadFwCmd.isSuccessful()) {
+                        LOGGER.log(Level.SEVERE, "Flasher Patch upload failed");
+                        CommandManager.getInstance().endLongOperation();
+                        return;
+                    }
+                    CommandManager.getInstance().endLongOperation();
+
+                    /* If code reaches here, the process was successful so far */
                     QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStartFlasher());
                     QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
+                    LOGGER.log(Level.INFO, "Firmware and Flasher upload successful, disconnecting for flash write...");
+                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                     ShowDisconnect();
-                }
-                else {
-                    LOGGER.log(Level.SEVERE, "Cannot read firmware, please compile firmware! (File: {0})", pname);
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Firmware and Flasher upload failed with exception: ", e);
                 }
             }
             else {
-                LOGGER.log(Level.SEVERE, "Cannot read flasher, please compile firmware! (File: {0})", fname_flasher);
+                LOGGER.log(Level.SEVERE, "Cannot read firmware, please compile firmware! (File: {0})", pname);
             }
         }
-        catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An error occurred during firmware flashing sequence.", e);
+        else {
+            LOGGER.log(Level.SEVERE, "Cannot read flasher, please compile firmware! (File: {0})", fname_flasher);
         }
     }
 
