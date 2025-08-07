@@ -598,23 +598,19 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             String pathForFatFsDelete = normalizePathForDeletion(sdCardPath);
             System.out.println(Instant.now() + " Attempting to delete empty directory: '" + sdCardPath + "' (normalized for FatFs: '" + pathForFatFsDelete + "')");
             QCmdDeleteFile deleteDirCmd = new QCmdDeleteFile(pathForFatFsDelete);
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(deleteDirCmd);
-
-            boolean success = false;
+            deleteDirCmd.Do(USBBulkConnection.GetConnection());
             try {
-                if (deleteDirCmd.waitForCompletion()) { // Wait up to 3 seconds for ACK
-                    success = deleteDirCmd.isSuccessful(); // Now, check its success flag
-                }
-                else {
+                boolean completed = deleteDirCmd.waitForCompletion();
+                if (!completed) {
                     System.out.println(Instant.now() + " QCmdDeleteFile timeout waiting for directory deletion ACK: '" + sdCardPath + "'");
-                    success = false; // Timeout is a failure
+                    return false;
                 }
-            }
-            catch (InterruptedException ex) {
-                System.out.println(Instant.now() + " Directory deletion interrupted for: '" + sdCardPath + "'");
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.SEVERE, "Thread interrupted while deleting directory.", e);
                 Thread.currentThread().interrupt();
-                success = false;
             }
+
+            boolean success = deleteDirCmd.isSuccessful();
             if (success) {
                 SDCardInfo.getInstance().Delete(sdCardPath);
                 System.out.println(Instant.now() + " Successfully deleted directory: '" + sdCardPath + "'");
@@ -628,24 +624,19 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             String pathForFatFsDelete = normalizePathForDeletion(sdCardPath);
             System.out.println(Instant.now() + " Identified as file. Attempting to delete file: '" + sdCardPath + "' (normalized for FatFs: '" + pathForFatFsDelete + "')");
             QCmdDeleteFile deleteFileCmd = new QCmdDeleteFile(pathForFatFsDelete);
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(deleteFileCmd);
-
-            boolean success = false;
+            deleteFileCmd.Do(USBBulkConnection.GetConnection());
             try {
-                if (deleteFileCmd.waitForCompletion()) { // Wait up to 3 seconds for ACK
-                    success = deleteFileCmd.isSuccessful(); // Now, check its success flag
+                boolean completed = deleteFileCmd.waitForCompletion();
+                if (!completed) {
+                    System.out.println(Instant.now() + " QCmdDeleteFile timeout waiting for directory deletion ACK: '" + sdCardPath + "'");
+                    return false;
                 }
-                else {
-                    System.out.println(Instant.now() + " QCmdDeleteFile timeout waiting for file deletion ACK: '" + sdCardPath + "'");
-                    success = false; // Timeout is a failure
-                }
-            }
-            catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, "File deletion interrupted for: ''{0}''", sdCardPath);
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.SEVERE, "Thread interrupted while deleting directory.", e);
                 Thread.currentThread().interrupt();
-                success = false;
             }
 
+            boolean success = deleteFileCmd.isSuccessful();
             if (success) {
                 SDCardInfo.getInstance().Delete(sdCardPath);
                 System.out.println(Instant.now() + " Successfully deleted file: '" + sdCardPath + "'");
@@ -1031,8 +1022,14 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         String fn = JOptionPane.showInputDialog(this, "Enter folder name:");
         if (fn != null && !fn.isEmpty()) {
             Calendar cal = Calendar.getInstance();
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCreateDirectory(dir + fn, cal));
-            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+            QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(dir + fn, cal);
+            createDirCmd.Do(USBBulkConnection.GetConnection());
+            try {
+                createDirCmd.waitForCompletion();
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory.", e);
+                Thread.currentThread().interrupt();
+            }
         }
         UpdateButtons();
         triggerRefresh();
