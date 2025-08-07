@@ -54,6 +54,8 @@ import axoloti.utils.OSDetect;
 import axoloti.utils.OSDetect.OS;
 import axoloti.utils.Preferences;
 
+import static axoloti.MainFrame.mainframe;
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -3068,7 +3070,7 @@ public class Patch {
         LOGGER.log(Level.INFO, "SD card filename: {0}", sdfilename);
 
         QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdCompilePatch(this));
-        QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdStop());
+        mainframe.setCurrentLivePatch(null);
         // create subdirs...
 
         for (int i = 1; i < sdfilename.length(); i++) {

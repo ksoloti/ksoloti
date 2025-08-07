@@ -102,6 +102,7 @@ import qcmds.QCmdBringToDFUMode;
 import qcmds.QCmdCompilePatch;
 import qcmds.QCmdDisconnect;
 import qcmds.QCmdGuiShowLog;
+import qcmds.QCmdLock;
 import qcmds.QCmdPing;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdStart;
@@ -762,11 +763,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             return;
         }
 
-        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
-        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
-
+        setCurrentLivePatch(null);
+        
         CommandManager.getInstance().startLongOperation();
-
         new SwingWorker<Boolean, String>() {
             @Override
             protected Boolean doInBackground() throws Exception {
@@ -776,12 +775,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     boolean completed = uploadFwCmd.waitForCompletion();
                     if (!completed) {
                         LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM timed out");
-                        CommandManager.getInstance().endLongOperation();
                         return false;
                     }
                     if (!uploadFwCmd.isSuccessful()) {
                         LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed");
-                        CommandManager.getInstance().endLongOperation();
                         return false;
                     }
 
@@ -790,26 +787,23 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     completed = uploadPatchCmd.waitForCompletion();
                     if (!completed) {
                         LOGGER.log(Level.SEVERE, "Flasher Patch upload timed out");
-                        CommandManager.getInstance().endLongOperation();
                         return false;
                     }
                     if (!uploadPatchCmd.isSuccessful()) {
                         LOGGER.log(Level.SEVERE, "Flasher Patch upload failed");
-                        CommandManager.getInstance().endLongOperation();
                         return false;
                     }
-                    CommandManager.getInstance().endLongOperation();
                     return true;
 
                 } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Exception during firmware/flasher upload worker:", e); // Log to CLI/technical log
+                    LOGGER.log(Level.SEVERE, "Exception during firmware/flasher upload worker:", e);
                     return false;
                 }
-
             }
 
             @Override
             protected void done() {
+                CommandManager.getInstance().endLongOperation();
                 try {
                     boolean success = get();
                     if (success) {
@@ -1422,9 +1416,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             Thread.sleep(200); 
             LOGGER.log(Level.INFO, "Done generating code.");
 
-            if (USBBulkConnection.GetConnection().isConnected()) {
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
-            }
+            setCurrentLivePatch(null);
 
             File binFile = patch1.getBinFile();
             if (binFile.exists()) {
@@ -1441,7 +1433,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 stop patch, upload test patch .bin to RAM, start patch, report status */
                 if (USBBulkConnection.GetConnection().isConnected()) {
                     QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch1.getBinFile()));
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(patch1));
+                    setCurrentLivePatch(patch1);
                     QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                     Thread.sleep(1000);
 
@@ -1459,7 +1451,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     Thread.sleep(1000);
 
                     QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdGuiShowLog());
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
+                    setCurrentLivePatch(null);
                     QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                     Thread.sleep(100);
                 }
@@ -1561,7 +1553,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private void jMenuItemFlashDFUActionPerformed(java.awt.event.ActionEvent evt) {
         if (Usb.isDFUDeviceAvailable()) {
             updateLinkFirmwareID();
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdStop());
+            setCurrentLivePatch(null);
             QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdDisconnect());
             QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdFlashDFU());
         }
@@ -1638,7 +1630,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         File f = new File(fname);
         if (f.canRead()) {
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
+            setCurrentLivePatch(null);
             QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadPatch(f));
             QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStartMounter());
             QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
@@ -1675,8 +1667,65 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         return currentLivePatch;
     }
 
-    public void setCurrentLivePatch(PatchGUI patch) {
-        currentLivePatch = patch;
+    public void setCurrentLivePatch(PatchGUI newLivePatch) {
+        // Ensure this method is called on the EDT, as it manipulates GUI components
+        if (!SwingUtilities.isEventDispatchThread()) {
+            SwingUtilities.invokeLater(() -> setCurrentLivePatch(newLivePatch));
+            return;
+        }
+
+        // Only proceed if the live patch is actually changing
+        if (this.currentLivePatch == newLivePatch) {
+            // If the same patch is being set live again, or if it's already null, just update states.
+            updatePatchLiveStates();
+            return;
+        }
+
+        // --- Step 1: Unlock the previously live patch (if any) ---
+        if (this.currentLivePatch != null) {
+            this.currentLivePatch.Unlock(); // GUI-side unlock (cascades down to disable editing)
+            LOGGER.log(Level.INFO, "Unlocked previous live patch: " + this.currentLivePatch.getFileNamePath());
+            try {
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
+                QCmdProcessor.getQCmdProcessor().WaitQueueFinished(); // Wait for MCU to process stop command
+                LOGGER.log(Level.INFO, "Sent QCmdStop to MCU for previous patch.");
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Failed to send QCmdStop to MCU for previous patch: " + this.currentLivePatch.getFileNamePath(), e);
+            }
+        }
+
+        // --- Step 2: Update the reference to the new live patch ---
+        this.currentLivePatch = newLivePatch;
+
+        // --- Step 3: Lock the newly live patch (if any) and send MCU commands ---
+        if (this.currentLivePatch != null) {
+            // Send QCmdStart and QCmdLock to MCU *before* GUI-side Lock()
+            // These must be handled by the QCmdProcessor.
+            try {
+                // Ensure the patch is actually started on the MCU
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(this.currentLivePatch));
+                // Send the lock command to the MCU
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdLock(this.currentLivePatch));
+                // Wait for these MCU commands to be processed before proceeding with GUI lock
+                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+
+                this.currentLivePatch.Lock(); // GUI-side lock (cascades down to disable editing)
+                LOGGER.log(Level.INFO, "Locked new live patch: " + this.currentLivePatch.getFileNamePath());
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Failed to send QCmdStart/QCmdLock to MCU for patch: " + this.currentLivePatch.getFileNamePath(), e);
+                // Critical error: The patch is not truly live on the MCU.
+                // Revert the GUI state to reflect this.
+                if (this.currentLivePatch != null) { // Defensive check
+                    this.currentLivePatch.Unlock(); // Unlock GUI
+                }
+                this.currentLivePatch = null; // Clear live patch reference
+                LOGGER.log(Level.SEVERE, "Patch could not be set live on MCU. Reverting GUI state.");
+            }
+        } else {
+            LOGGER.log(Level.INFO, "No patch is currently live.");
+        }
+
+        // --- Step 4: Update all open patch windows about the new live state ---
         updatePatchLiveStates();
     }
 

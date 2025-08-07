@@ -1389,17 +1389,12 @@ public class USBBulkConnection extends Connection {
             @Override
             public void run() {
                 if (patch != null) {
-                    if ((patch.GetIID() != PatchID) && patch.IsLocked()) {
-                        patch.Unlock();
-                    }
-                    else {
-                        boolean dspOverload = 0 != (ConnectionFlags & 1);
-                        patch.UpdateDSPLoad(DSPLoad, dspOverload);
-                    }
+                    boolean dspOverload = 0 != (ConnectionFlags & 1);
+                    patch.UpdateDSPLoad(DSPLoad, dspOverload);
                 }
                 MainFrame.mainframe.showPatchIndex(patchIndex);
                 targetProfile.setVoltages(Voltages);
-                SetSDCardPresent(sdcardPresent!=0);
+                SetSDCardPresent(sdcardPresent != 0);
                 SetConnectionFlags(ConnectionFlags);
             }
         });
