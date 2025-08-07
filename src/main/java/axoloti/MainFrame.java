@@ -753,56 +753,55 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         File f = new File(fname_flasher);
         File p = new File(pname);
 
-        if (f.canRead()) {
-            if (p.canRead()) {
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
-                try {
-                    CommandManager.getInstance().startLongOperation();
-                    QCmdUploadFWSDRam uploadFwCmd = new QCmdUploadFWSDRam(p);
-                    uploadFwCmd.Do(USBBulkConnection.GetConnection());
-                    boolean completed = uploadFwCmd.waitForCompletion();
-                    if (!completed) {
-                        LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM timed out");
-                        CommandManager.getInstance().endLongOperation();
-                        return;
-                    }
-                    if (!uploadFwCmd.isSuccessful()) {
-                        LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed");
-                        CommandManager.getInstance().endLongOperation();
-                        return;
-                    }
-
-                    QCmdUploadPatch uploadPatchCmd = new QCmdUploadPatch(f);
-                    uploadPatchCmd.Do(USBBulkConnection.GetConnection());
-                    completed = uploadPatchCmd.waitForCompletion();
-                    if (!completed) {
-                        LOGGER.log(Level.SEVERE, "Flasher Patch upload timed out");
-                        CommandManager.getInstance().endLongOperation();
-                        return;
-                    }
-                    if (!uploadFwCmd.isSuccessful()) {
-                        LOGGER.log(Level.SEVERE, "Flasher Patch upload failed");
-                        CommandManager.getInstance().endLongOperation();
-                        return;
-                    }
-                    CommandManager.getInstance().endLongOperation();
-
-                    /* If code reaches here, the process was successful so far */
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStartFlasher());
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
-                    LOGGER.log(Level.INFO, "Firmware and Flasher upload successful, disconnecting for flash write...");
-                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
-                    ShowDisconnect();
-                } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Firmware and Flasher upload failed with exception: ", e);
-                }
-            }
-            else {
-                LOGGER.log(Level.SEVERE, "Cannot read firmware, please compile firmware! (File: {0})", pname);
-            }
-        }
-        else {
+        if (!f.canRead()) {
             LOGGER.log(Level.SEVERE, "Cannot read flasher, please compile firmware! (File: {0})", fname_flasher);
+            return;
+        }
+        if (!p.canRead()) {
+            LOGGER.log(Level.SEVERE, "Cannot read firmware, please compile firmware! (File: {0})", pname);
+            return;
+        }
+
+        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
+        try {
+            CommandManager.getInstance().startLongOperation();
+            QCmdUploadFWSDRam uploadFwCmd = new QCmdUploadFWSDRam(p);
+            uploadFwCmd.Do(USBBulkConnection.GetConnection());
+            boolean completed = uploadFwCmd.waitForCompletion();
+            if (!completed) {
+                LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM timed out");
+                CommandManager.getInstance().endLongOperation();
+                return;
+            }
+            if (!uploadFwCmd.isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed");
+                CommandManager.getInstance().endLongOperation();
+                return;
+            }
+
+            QCmdUploadPatch uploadPatchCmd = new QCmdUploadPatch(f);
+            uploadPatchCmd.Do(USBBulkConnection.GetConnection());
+            completed = uploadPatchCmd.waitForCompletion();
+            if (!completed) {
+                LOGGER.log(Level.SEVERE, "Flasher Patch upload timed out");
+                CommandManager.getInstance().endLongOperation();
+                return;
+            }
+            if (!uploadFwCmd.isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Flasher Patch upload failed");
+                CommandManager.getInstance().endLongOperation();
+                return;
+            }
+            CommandManager.getInstance().endLongOperation();
+
+            /* If code reaches here, the process was successful so far */
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStartFlasher());
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
+            LOGGER.log(Level.INFO, "Firmware and Flasher upload successful, disconnecting for flash write...");
+            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+            ShowDisconnect();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Firmware and Flasher upload failed with exception: ", e);
         }
     }
 
