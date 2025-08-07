@@ -122,11 +122,11 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
 
         try (FileInputStream inputStream = new FileInputStream(f)) {
             if (this.f == null) {
-                String buildDir=System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build";
+                String buildDir = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build";
                 f = new File(buildDir + File.separator + "xpatch.bin");
             }
 
-            /* --- Step 1: Start memory write (AxoWs) --- */
+            /* --- Step 1: Start memory write (AxoWW) --- */
             if (!connection.isConnected()) {
                 LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": USB connection lost before transfer.");
                 setMcuStatusCode((byte)0x03); // FR_NOT_READY (connection lost)
@@ -136,10 +136,10 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
             int tlength = (int) f.length();
             int offset = connection.getTargetProfile().getPatchAddr();
 
-            startMemWriteLatch = new CountDownLatch(1); // New latch for this step
+            startMemWriteLatch = new CountDownLatch(1);
             connection.TransmitStartMemWrite(offset, tlength);
 
-            if (!startMemWriteLatch.await(3, TimeUnit.SECONDS)) { // Wait for create file ACK
+            if (!startMemWriteLatch.await(5, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core did not acknowledge memory write within timeout.");
                 setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                 return this;
@@ -174,7 +174,7 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
                     LOGGER.log(Level.WARNING, "Partial read for " + filename + ": Expected " + bytesToRead + " bytes, read " + nRead + ".");
                     byte[] actualBuffer = new byte[nRead];
                     System.arraycopy(buffer, 0, actualBuffer, 0, nRead);
-                    buffer = actualBuffer; // Use the actually read bytes
+                    buffer = actualBuffer;
                 }
 
                 if (!connection.isConnected()) {
@@ -183,15 +183,15 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
                     return this;
                 }
 
-                appendMemWriteLatch = new CountDownLatch(1); // New latch for this chunk
+                appendMemWriteLatch = new CountDownLatch(1);
                 connection.TransmitAppendMemWrite(buffer);
 
-                if (!appendMemWriteLatch.await(3, TimeUnit.SECONDS)) { // Wait for append chunk ACK
+                if (!appendMemWriteLatch.await(5, TimeUnit.SECONDS)) {
                     LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core did not acknowledge chunk receipt within timeout.");
                     setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                     return this;
                 }
-                if (appendMemWriteStatus != 0x00) { // Check status from MCU
+                if (appendMemWriteStatus != 0x00) {
                     LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(appendMemWriteStatus) + ") during chunk append.");
                     setMcuStatusCode(appendMemWriteStatus);
                     return this;
@@ -263,8 +263,7 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
                 pct = newpct;
             } while (remLength > 0);
 
-            inputStream.close();
-
+            /* --- Step 3: Close Memory Write (AxoWc) --- */
             if (!connection.isConnected()) {
                 LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": USB connection lost before write close.");
                 setMcuStatusCode((byte)0x03); // FR_NOT_READY
@@ -274,7 +273,7 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
             closeMemWriteLatch = new CountDownLatch(1); // New latch for this step
             connection.TransmitCloseMemWrite(offset, tlength); 
 
-            if (!closeMemWriteLatch.await(3, TimeUnit.SECONDS)) { // Wait for close file ACK (AxoRc)
+            if (!closeMemWriteLatch.await(5, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core did not acknowledge write close within timeout.");
                 setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                 return this;
