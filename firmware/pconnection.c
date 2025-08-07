@@ -887,6 +887,10 @@ void PExReceiveByte(unsigned char c) {
                     value--;
                     *((unsigned char*) write_position) = c;
                     write_position++;
+
+                    /* Dummy loop required?? See (header == 'a') below */
+                    for (volatile uint32_t dummy = 0; dummy < 256; dummy++);
+
                     if (value == 0) {
                         send_AxoResult('w', FR_OK);
                         state = 0; header = 0;
