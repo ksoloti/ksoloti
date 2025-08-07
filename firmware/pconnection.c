@@ -850,6 +850,7 @@ void PExReceiveByte(unsigned char c) {
             case 12: /* Sub-command can be 'W' or 'c' */
                 switch(c) {
                     case 'W': /* start Memory Write */
+                        StopPatch();
                         write_position = offset; /* Initialize write_position here */
                         total_write_length = (uint32_t)value;
                         send_AxoResult('W', FR_OK);
