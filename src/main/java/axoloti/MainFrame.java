@@ -1685,7 +1685,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             if (docWindow != null && docWindow instanceof PatchFrame) {
                 PatchFrame frame = (PatchFrame) docWindow;
                 boolean isLive = (frame.getPatch() == currentLivePatch);
-                frame.SetLive(isLive);
+                frame.GUIShowLiveState(isLive);
             }
         }
     }

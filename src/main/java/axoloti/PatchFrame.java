@@ -587,10 +587,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
     }
 
-    public void SetLive(boolean b) {
+    public void GUIShowLiveState(boolean b) {
         jToggleButtonLive.setSelected(b);
         jCheckBoxMenuItemLive.setSelected(b);
-        presetPanel.ShowLive(b);
+        presetPanel.GUIShowLiveState(b);
     }
 
     public void showPresetPanel(boolean show) {

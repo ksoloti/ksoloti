@@ -38,7 +38,7 @@ public class PresetPanel extends javax.swing.JPanel {
         initComponents();
     }
 
-    public void ShowLive(boolean live) {
+    public void GUIShowLiveState(boolean live) {
         jButtonRI.setEnabled(live);
         jButtonR1.setEnabled(live);
         jButtonR2.setEnabled(live);
