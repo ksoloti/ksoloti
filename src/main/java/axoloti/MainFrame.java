@@ -1784,6 +1784,19 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
+    public void setAllPatchFramesActionButtonsEnabled(boolean enabled) {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            SwingUtilities.invokeLater(() -> setAllPatchFramesActionButtonsEnabled(enabled));
+            return;
+        }
+        for (DocumentWindow docWindow : DocumentWindowList.GetList()) {
+            if (docWindow instanceof PatchFrame) {
+                PatchFrame frame = (PatchFrame) docWindow;
+                frame.setActionButtonsEnabled(enabled);
+            }
+        }
+    }
+
     public void NewPatch() {
         PatchGUI patch1 = new PatchGUI();
         PatchFrame pf = new PatchFrame(patch1);

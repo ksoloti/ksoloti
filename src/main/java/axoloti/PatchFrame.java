@@ -75,6 +75,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.text.DefaultEditorKit;
 import org.simpleframework.xml.Serializer;
@@ -375,9 +376,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             return;
         }
 
-        /* Disable both components immediately to prevent further clicks */
-        jToggleButtonLive.setEnabled(false);
-        jCheckBoxMenuItemLive.setEnabled(false);
+        /* Disable live buttons & menu entries immediately to prevent further clicks */
+        mainframe.setAllPatchFramesActionButtonsEnabled(false);
 
         if (selected) { /* Go Live action */
 
@@ -536,8 +536,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
                     }
                     finally {
-                        jToggleButtonLive.setEnabled(true);
-                        jCheckBoxMenuItemLive.setEnabled(true);
+                        mainframe.setAllPatchFramesActionButtonsEnabled(true);
                     }
                 }
             }.execute();
@@ -546,14 +545,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             new SwingWorker<Void, Void>() {
                 @Override
                 protected Void doInBackground() throws Exception {
+                    mainframe.setCurrentLivePatch(null); /* Signal mainframe that currently no patch is live */
                     return null;
                 }
+                
 
                 @Override
                 protected void done() {
-                    mainframe.setCurrentLivePatch(null); /* Signal mainframe that currently no patch is live */
-                    jToggleButtonLive.setEnabled(true);
-                    jCheckBoxMenuItemLive.setEnabled(true);
+                    mainframe.setAllPatchFramesActionButtonsEnabled(true);
                 }
             }.execute();
         }
@@ -563,6 +562,19 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jToggleButtonLive.setSelected(b);
         jCheckBoxMenuItemLive.setSelected(b);
         presetPanel.GUIShowLiveState(b);
+    }
+
+    public void setActionButtonsEnabled(boolean enabled) {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            SwingUtilities.invokeLater(() -> setActionButtonsEnabled(enabled));
+            return;
+        }
+        jToggleButtonLive.setEnabled(enabled);
+        jCheckBoxMenuItemLive.setEnabled(enabled);
+        jMenuItemUploadInternalFlash.setEnabled(enabled);
+        jMenuItemUploadSD.setEnabled(enabled);
+        jMenuItemUploadSDStart.setEnabled(enabled);
+        presetPanel.GUIShowLiveState(enabled);
     }
 
     public void showPresetPanel(boolean show) {
