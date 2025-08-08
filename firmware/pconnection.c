@@ -367,12 +367,20 @@ static void send_AxoResult(char cmd_byte, FRESULT status) {
     /* Send command response: AxoR<command_byte><status_byte> 
        Required by Patcher to mark operations as completed and see if they were successful.
        Currently the following commands require an AxoR<c><s> response:
-       - create directory
-       - change directory
-       - create file
-       - append to file
-       - close file
-       - delete file */
+       - create directory    AxoR<k><status>
+       - change directory    AxoR<C><status>
+       - create file         AxoR<f><status>
+       - append to file      AxoR<a><status>
+       - close file          AxoR<c><status>
+       - delete file         AxoR<D><status>
+       - get file list       AxoR<l><status>
+       - get file info       AxoR<I><status>
+       - Start memory write  AxoR<W><status>
+       - append to memory    AxoR<w><status>
+       - close memory write  AxoR<c><status>
+       - start patch         AxoR<s><status>
+       - stop patch          AxoR<S><status>
+       - copy patch to flash AxoR<F><status> */
     char res_msg[6];
     res_msg[0] = 'A'; res_msg[1] = 'x'; res_msg[2] = 'o'; res_msg[3] = 'R';
     res_msg[4] = cmd_byte;
