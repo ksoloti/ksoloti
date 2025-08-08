@@ -83,7 +83,6 @@ import org.simpleframework.xml.stream.Format;
 
 import qcmds.CommandManager;
 import qcmds.QCmdChangeWorkingDirectory;
-import qcmds.QCmdCompilePatch;
 import qcmds.QCmdCreateDirectory;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdUploadPatch;
@@ -445,7 +444,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                         /* Compile the patch. This is a long, host-side operation */
                         CommandManager.getInstance().startLongOperation();
                         patch.WriteCode(true);
-                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCompilePatch(patch));
+                        patch.Compile();
                         QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
 
                         /* Handle SD card and dependent files */
@@ -1474,7 +1473,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 try {
                     CommandManager.getInstance().startLongOperation();
                     patch.WriteCode(true);
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdCompilePatch(patch));
+                    patch.Compile();
                     QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                     CommandManager.getInstance().endLongOperation();
 

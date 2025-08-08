@@ -3069,7 +3069,7 @@ public class Patch {
         WriteCode(true);
         LOGGER.log(Level.INFO, "SD card filename: {0}", sdfilename);
 
-        QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdCompilePatch(this));
+        this.Compile();
         mainframe.setCurrentLivePatch(null);
         // create subdirs...
 
