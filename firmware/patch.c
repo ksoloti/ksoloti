@@ -544,7 +544,7 @@ static int StartPatch1(void) {
 
 
 void StopPatch(void) {
-    if (!patchStatus) {
+    if (patchStatus == RUNNING) {
         SetPatchStatus(STOPPING);
 
         while (1) {

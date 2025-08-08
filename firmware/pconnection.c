@@ -218,7 +218,7 @@ void PExTransmit(void) {
 //             chprintf((BaseSequentialStream*) &SD2, "ack!\r\n");
 // #endif
 
-            if (!patchStatus) {
+            if (patchStatus == RUNNING) {
                 TransmitDisplayPckt();
             }
 
@@ -227,7 +227,7 @@ void PExTransmit(void) {
             AckPending = 0;
         }
 
-        if (!patchStatus) {
+        if (patchStatus == RUNNING) {
             uint16_t i;
             for (i = 0; i < patchMeta.numPEx; i++) {
                 if (patchMeta.pPExch[i].signals & 0x01) {
