@@ -1440,6 +1440,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 stop patch, upload test patch .bin to RAM, start patch, report status */
                 if (USBBulkConnection.GetConnection().isConnected()) {
                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch1.getBinFile());
+                    uploadCmd.Do(USBBulkConnection.GetConnection());
                     boolean completed = uploadCmd.waitForCompletion();
                     if (!completed) {
                         LOGGER.log(Level.SEVERE, "Test patch upload timed out");
