@@ -184,8 +184,10 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
             long totalBytesSent = 0;
             int remLength = tlength;
             long pct = 0;
+            int chunkNum = 0;
 
             do {
+                chunkNum++;
                 int bytesToRead = Math.min(remLength, MaxBlockSize);
                 if (bytesToRead <= 0) { // No more bytes to read
                     break;
@@ -195,7 +197,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
                 int nRead = inputStream.read(buffer, 0, bytesToRead);
 
                 if (nRead == -1) { // Unexpected end of stream
-                    LOGGER.log(Level.SEVERE, "Unexpected end of file or read error for " + filename + ". Read " + nRead + " bytes.");
+                    LOGGER.log(Level.SEVERE, "Unexpected end of file or read error for " + filename + ". Read " + nRead + " bytes. Chunk number " + chunkNum);
                     setMcuStatusCode((byte)0x01); // FR_DISK_ERR or custom I/O error
                     return this;
                 }
@@ -207,7 +209,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
                 }
 
                 if (!connection.isConnected()) {
-                    LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": USB connection lost during file transfer.");
+                    LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": USB connection lost during file transfer. Chunk number " + chunkNum);
                     setMcuStatusCode((byte)0x03); // FR_NOT_READY
                     return this;
                 }
@@ -216,12 +218,12 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
                 connection.TransmitAppendFile(buffer);
 
                 if (!appendFileLatch.await(3, TimeUnit.SECONDS)) { // Wait for append chunk ACK
-                    LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": Core did not acknowledge chunk receipt within timeout.");
+                    LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
                     setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                     return this;
                 }
                 if (appendFileStatus != 0x00) { // Check status from MCU
-                    LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(appendFileStatus) + ") during chunk append.");
+                    LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(appendFileStatus) + ") during chunk append. Chunk number " + chunkNum);
                     setMcuStatusCode(appendFileStatus);
                     return this;
                 }

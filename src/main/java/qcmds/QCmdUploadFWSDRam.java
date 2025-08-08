@@ -216,6 +216,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
             long currentBytesSent = 0;
             int remLength = (int) totalBytesToTransfer;
             long pct = 0;
+            int chunkNum = 1;
 
             /* Use a new FileInputStream to re-read the file for chunking */
             inputStream = new FileInputStream(f);
@@ -255,8 +256,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
                 return this;
             }
             if (appendMemWriteStatus != 0x00) {
-                LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core reported error ({0}) during first chunk append.",
-                        SDCardInfo.getFatFsErrorString(appendMemWriteStatus));
+                LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core reported error ({0}) during first chunk append.", SDCardInfo.getFatFsErrorString(appendMemWriteStatus));
                 setMcuStatusCode(appendMemWriteStatus);
                 return this;
             }
@@ -266,6 +266,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
 
             /* Continue with remaining chunks (only firmware data) */
             while (remLength > 0) {
+                chunkNum++;
                 int bytesToRead = Math.min(remLength, MaxBlockSize);
                 if (bytesToRead <= 0) { /* No more bytes to read */
                     break;
@@ -275,19 +276,19 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
                 int nReadChunk = inputStream.read(buffer, 0, bytesToRead);
 
                 if (nReadChunk == -1) { /* Unexpected end of stream */
-                    LOGGER.log(Level.SEVERE, "Unexpected end of firmware file or read error during chunking. Read {0} bytes.", nReadChunk);
+                    LOGGER.log(Level.SEVERE, "Unexpected end of firmware file or read error during chunking. Read "+ nReadChunk +" bytes. Chunk number " + chunkNum);
                     setMcuStatusCode((byte)0x01); // FR_DISK_ERR
                     return this;
                 }
                 if (nReadChunk != bytesToRead) {
-                    LOGGER.log(Level.WARNING, "Partial read for firmware chunk: Expected " + bytesToRead + " bytes, read " + nReadChunk);
+                    LOGGER.log(Level.WARNING, "Partial read for firmware chunk: Expected " + bytesToRead + " bytes, read " + nReadChunk + ". Chunk number " + chunkNum);
                     byte[] actualBuffer = new byte[nReadChunk];
                     System.arraycopy(buffer, 0, actualBuffer, 0, nReadChunk);
                     buffer = actualBuffer;
                 }
 
                 if (!connection.isConnected()) {
-                    LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: USB connection lost during data transfer.");
+                    LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: USB connection lost during data transfer. chunk number " + chunkNum);
                     setMcuStatusCode((byte)0x03); // FR_NOT_READY
                     return this;
                 }
@@ -296,13 +297,12 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
                 connection.TransmitAppendMemWrite(buffer);
 
                 if (!appendMemWriteLatch.await(5, TimeUnit.SECONDS)) {
-                    LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core did not acknowledge chunk receipt within timeout.");
+                    LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
                     setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                     return this;
                 }
                 if (appendMemWriteStatus != 0x00) {
-                    LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core reported error ({0}) during chunk append.",
-                            SDCardInfo.getFatFsErrorString(appendMemWriteStatus));
+                    LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core reported error (" + SDCardInfo.getFatFsErrorString(appendMemWriteStatus) + ") during chunk append. Chunk number " + chunkNum);
                     setMcuStatusCode(appendMemWriteStatus);
                     return this;
                 }
@@ -388,8 +388,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
                 return this;
             }
             if (closeMemWriteStatus != 0x00) {
-                LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core reported error ({0}) during memory write close.",
-                        SDCardInfo.getFatFsErrorString(closeMemWriteStatus));
+                LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core reported error (" + SDCardInfo.getFatFsErrorString(closeMemWriteStatus) +") during memory write close.");
                 setMcuStatusCode(closeMemWriteStatus);
                 return this;
             }

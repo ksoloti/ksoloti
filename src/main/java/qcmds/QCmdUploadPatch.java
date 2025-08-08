@@ -155,8 +155,10 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
             long totalBytesSent = 0;
             int remLength = tlength;
             long pct = 0;
+            int chunkNum = 0;
 
             do {
+                chunkNum++;
                 int bytesToRead = Math.min(remLength, MaxBlockSize);
                 if (bytesToRead <= 0) { // No more bytes to read
                     break;
@@ -166,19 +168,19 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
                 int nRead = inputStream.read(buffer, 0, bytesToRead);
 
                 if (nRead == -1) { // Unexpected end of stream
-                    LOGGER.log(Level.SEVERE, "Unexpected end of file or read error for " + filename + ". Read " + nRead + " bytes.");
+                    LOGGER.log(Level.SEVERE, "Unexpected end of file or read error for " + filename + ". Read " + nRead + " bytes. Chunk number " + chunkNum);
                     setMcuStatusCode((byte)0x01); // FR_DISK_ERR or custom I/O error
                     return this;
                 }
                 if (nRead != bytesToRead) {
-                    LOGGER.log(Level.WARNING, "Partial read for " + filename + ": Expected " + bytesToRead + " bytes, read " + nRead + ".");
+                    LOGGER.log(Level.WARNING, "Partial read for " + filename + ": Expected " + bytesToRead + " bytes, read " + nRead + ". Chunk Number " + chunkNum);
                     byte[] actualBuffer = new byte[nRead];
                     System.arraycopy(buffer, 0, actualBuffer, 0, nRead);
                     buffer = actualBuffer;
                 }
 
                 if (!connection.isConnected()) {
-                    LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": USB connection lost during file transfer.");
+                    LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": USB connection lost during file transfer. Chunk number " + chunkNum);
                     setMcuStatusCode((byte)0x03); // FR_NOT_READY
                     return this;
                 }
@@ -187,12 +189,12 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
                 connection.TransmitAppendMemWrite(buffer);
 
                 if (!appendMemWriteLatch.await(5, TimeUnit.SECONDS)) {
-                    LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core did not acknowledge chunk receipt within timeout.");
+                    LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
                     setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                     return this;
                 }
                 if (appendMemWriteStatus != 0x00) {
-                    LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(appendMemWriteStatus) + ") during chunk append.");
+                    LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(appendMemWriteStatus) + ") during chunk append. Chunk Number " + chunkNum);
                     setMcuStatusCode(appendMemWriteStatus);
                     return this;
                 }
