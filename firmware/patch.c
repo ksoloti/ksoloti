@@ -543,19 +543,27 @@ static int StartPatch1(void) {
 }
 
 
-void StopPatch(void) {
-    if (patchStatus == RUNNING) {
-        SetPatchStatus(STOPPING);
+int StopPatch(void) {
+    if (patchStatus == STOPPED) { /* If already stopped, nothing to do */
+        // LogTextMessage("StopPatch: Nothing to do");
+        return 0;
+    }
 
-        while (1) {
-          chThdSleepMilliseconds(1);
-            if (patchStatus == STOPPED) {
-                break;
-            }  
+    if (patchStatus == RUNNING) { /* Only act if patch is properly RUNNING */
+        SetPatchStatus(STOPPING); /* Signal DSPThread to stop */
+
+        uint32_t startTime = chVTGetSystemTimeX(); /* Set up timeout */
+        uint32_t timeoutTicks = MS2ST(1000); /* 1000 ms */
+
+        while (patchStatus != STOPPED) {
+            if (chVTGetSystemTimeX() - startTime >= timeoutTicks) {
+                // LogTextMessage("StopPatch: Timeout");
+                return -1;
+            }
+            chThdSleepMilliseconds(1);
         }
-
-        StopPatch1();
-        SetPatchStatus(STOPPED);
+        // LogTextMessage("StopPatch: Success");
+        return 0;
     }
 }
 

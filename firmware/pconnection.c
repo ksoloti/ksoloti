@@ -744,19 +744,18 @@ void PExReceiveByte(unsigned char c) {
                     /* --- Commands that keep AckPending = 1; (AxoA-based or dual-ack) --- */
                     case 'P': /* param change */
                     case 'R': /* preset change */
-                    case 'W': /* generic write start, close */
-                    case 'w': /* append to memory during 'W' generic write */
                     case 'T': /* apply preset */
                     case 'M': /* midi command */
-                    case 'U': /* Set cpU safety */
                     case 'r': /* generic read */
                     case 'y': /* generic read, 32 bit */
                         state = 4; /* All the above pass on directly to state 4. */
                         break;
-                    case 'S': /* stop patch */
-                        state = 0; header = 0; AckPending = 1;
-                        StopPatch();
+                    case 'S': { /* stop patch */
+                        state = 0; header = 0;
+                        int res = StopPatch();
+                        send_AxoResult(c, (FRESULT)res);
                         break;
+                    }
                     case 'D': /* go to DFU mode */
                         state = 0; header = 0; AckPending = 1;
                         StopPatch();
@@ -771,11 +770,6 @@ void PExReceiveByte(unsigned char c) {
                         state = 0; header = 0; AckPending = 1; /* Immediate AxoA for receipt */
                         ReadDirectoryListing(); /* Will send AxoRl when done */
                         break;
-                    case 's': /* start patch */
-                        state = 0; header = 0; AckPending = 1;
-                        loadPatchIndex = LIVE;
-                        StartPatch();
-                        break;
                     case 'V': /* FW version number */
                         state = 0; header = 0; AckPending = 1;
                         ReplyFWVersion();
@@ -789,12 +783,15 @@ void PExReceiveByte(unsigned char c) {
                         break;
 
                     /* --- Commands that DO NOT set AckPending (AxoR**-based) --- */
+                    case 'a': /* append data to opened sdcard file (top-level Axoa) */
+                    case 's': /* start patch (includes midi cost and dsp limit) */
+                    case 'W': /* generic write start, close */
+                    case 'w': /* append to memory during 'W' generic write */
+                        state = 4; /* All the above pass on directly to state 4. */
+                        break;
                     case 'C': /* Unified File System Command (create, delete, mkdir, getinfo, close) */
                         current_filename_idx = 0; /* Reset for filename parsing */
                         state = 4; /* Next state will receive the 4-byte pFileSize/placeholder */
-                        break;
-                    case 'a': /* append data to opened sdcard file (top-level Axoa) */
-                        state = 4; /* Start parsing length for append. */
                         break;
                     default:
                         state = 0; break; /* Unknown Axo* header */
@@ -822,19 +819,23 @@ void PExReceiveByte(unsigned char c) {
                 state = 0; header = 0; AckPending = 1;
         }
     }
-    else if (header == 'U') { /* set cpU satefy */
+    else if (header == 's') { /* start patch (includes midi cost and dsp limit) */
         static uint16_t uUIMidiCost = 0; /* Local static */
         static uint8_t  uDspLimit200 = 0; /* Local static */
-
         switch (state) {
             case 4:  uUIMidiCost  = c; state++; break;
             case 5:  uUIMidiCost |= (uint16_t)c << 8; state++; break;
-            case 6: uDspLimit200  = c;
+            case 6: { 
+                uDspLimit200  = c;
+                state = 0; header = 0;
                 SetPatchSafety(uUIMidiCost, uDspLimit200);
-                state = 0; header = 0; AckPending = 1;
+                loadPatchIndex = LIVE;
+                int res = StartPatch();
+                send_AxoResult('s', (FRESULT)res);
                 break;
+            }
             default:
-                state = 0; header = 0; AckPending = 1;
+                state = 0; header = 0;
         }
     }
     else if (header == 'W') { /* 'AxoW' memory write commands */
@@ -853,12 +854,12 @@ void PExReceiveByte(unsigned char c) {
                         StopPatch();
                         write_position = offset; /* Initialize write_position here */
                         total_write_length = (uint32_t)value;
-                        send_AxoResult('W', FR_OK);
+                        send_AxoResult(c, FR_OK);
                         state = 0; header = 0;
                         break;
                     case 'c': /* close Memory Write */
                         // TODO: error checking based on total_write_length?
-                        send_AxoResult('c', FR_OK);
+                        send_AxoResult(c, FR_OK);
                         state = 0; header = 0;
                         break;
                     default:
@@ -893,16 +894,16 @@ void PExReceiveByte(unsigned char c) {
                     for (volatile uint32_t dummy = 0; dummy < 256; dummy++);
 
                     if (value == 0) {
-                        send_AxoResult('w', FR_OK);
+                        send_AxoResult(header, FR_OK);
                         state = 0; header = 0;
                     }
                 } else {
-                    send_AxoResult('w', FR_DISK_ERR);
+                    send_AxoResult(header, FR_DISK_ERR);
                     state = 0; header = 0;
                 }
                 break;
             default:
-                send_AxoResult('w', FR_DISK_ERR);
+                send_AxoResult(header, FR_DISK_ERR);
                 state = 0; header = 0;
                 break;
         }
