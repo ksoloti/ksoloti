@@ -316,7 +316,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                         }
                     }
                     else if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI_SDCARD) {
-                        model.addRow(new String[]{"", sKsolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
+                        model.addRow(new String[]{"", sKsolotiSDCard, DeviceToPath(device), "Eject/unmount disk to connect"});
                     }
                     else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && ((descriptor.idProduct() == PID_AXOLOTI) || (descriptor.idProduct() == PID_AXOLOTI_USBAUDIO))) {
 
@@ -345,7 +345,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                         }
                     }
                     else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI_SDCARD) {
-                        model.addRow(new String[]{"", sAxolotiSDCard, DeviceToPath(device), "Unmount disk to connect"});
+                        model.addRow(new String[]{"", sAxolotiSDCard, DeviceToPath(device), "Eject/unmount disk to connect"});
                     }
                 }
                 else {
