@@ -76,7 +76,7 @@ public class QCmdCreateDirectory extends AbstractQCmdSerialTask {
             }
             else {
                 // Status code and completion flag are already set by processByte()
-                System.out.println(Instant.now() + "Create directory " + dirname + " completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
+                System.out.println(Instant.now() + " Create directory " + dirname + " completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
             }
         }
         catch (InterruptedException e) {

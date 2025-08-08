@@ -71,7 +71,7 @@ public class QCmdGetFileInfo extends AbstractQCmdSerialTask {
                 setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                 setCompletedWithStatus(false);
             } else {
-                System.out.println(Instant.now() + "Get file info for " + filename + " completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
+                System.out.println(Instant.now() + " Get file info for " + filename + " completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
