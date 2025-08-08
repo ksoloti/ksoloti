@@ -62,22 +62,16 @@ public class CommandManager {
     }
 
     /* Determines if a given QCmdSerialTask should be offered to the USB queue
-       based on the current busy state and cooldown period. */
+       based on the current busy state. */
     public boolean shouldOfferCommand(QCmdSerialTask command) {
 
-        /* --- STEP 1: Always allow pings and dials to be offered to the queue --- */
-        if (command instanceof QCmdPing || command.getClass().getSimpleName().equals("QCmdGuiDialTx")) {
-            // System.out.println(Instant.now() + " [DEBUG] CommandManager: Allowing ping/dial command to be offered.");
-            return true;
-        }
-
-        /* --- STEP 2: Suppress ALL other commands if a long operation is currently active --- */
+        /* Suppress ALL commands if a long operation is currently active */
         if (isLongOperationActive()) {
             // System.out.println(Instant.now() + " [DEBUG] CommandManager: Suppressing command " + command.getClass().getSimpleName() + " because long operation is in progress.");
             return false;
         }
 
-        /* If none of the above conditions apply, the command is allowed */
+        /* Otherwise, the command is allowed */
         return true;
     }
 }
