@@ -953,7 +953,7 @@ public class USBBulkConnection extends Connection {
     @Override
     public int TransmitGetFileInfo(String filename) {
 
-        /* Total size:
+        /* Total size (bytes):
            "AxoC"           (4) +
            pFileSize        (4) +
            FileName[0]      (1) +
@@ -1021,7 +1021,7 @@ public class USBBulkConnection extends Connection {
     @Override
     public int TransmitStartMemWrite(int startAddr, int totalLen) {
 
-        /* Total size:
+        /* Total size (bytes):
            "AxoW"           (4) +
            start address    (4) +
            Total length     (4) +
@@ -1040,7 +1040,7 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public int TransmitAppendMemWrite(byte[] buffer) {
-        /* Total size:
+        /* Total size (bytes):
            "Axow"           (4) +
            Length           (4)
            (data is streamed in successive writeBytes(buffer))
@@ -1063,7 +1063,7 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public int TransmitCloseMemWrite(int startAddr, int totalLen) {
-        /* Total size:
+        /* Total size (bytes):
            "AxoW"           (4) +
            start address    (4) +
            Total length     (4) +
@@ -1083,7 +1083,7 @@ public class USBBulkConnection extends Connection {
     @Override
     public int TransmitCreateFile(String filename, int size, Calendar date) {
 
-        /* Total size:
+        /* Total size (bytes):
            "AxoC"           (4) +
            pFileSize        (4) +
            FileName[0]      (1) +
@@ -1124,7 +1124,7 @@ public class USBBulkConnection extends Connection {
     @Override
     public int TransmitDeleteFile(String filename) {
 
-        /* Total size:
+        /* Total size (bytes):
            "AxoC"           (4) +
            pFileSize        (4) +
            FileName[0]      (1) +
@@ -1153,7 +1153,7 @@ public class USBBulkConnection extends Connection {
     @Override
     public int TransmitChangeWorkingDirectory(String path) {
 
-        /* Total size:
+        /* Total size (bytes):
            "AxoC"           (4) +
            pFileSize        (4) +
            FileName[0]      (1) +
@@ -1183,7 +1183,7 @@ public class USBBulkConnection extends Connection {
     @Override
     public int TransmitCreateDirectory(String filename, Calendar date) {
 
-        /* Total size:
+        /* Total size (bytes):
            "AxoC"           (4) +
            pFileSize        (4) +
            FileName[0]      (1) +
@@ -1224,7 +1224,7 @@ public class USBBulkConnection extends Connection {
     @Override
     public int TransmitAppendFile(byte[] buffer) {
 
-        /* Total size:
+        /* Total size (bytes):
            "Axoa"           (4) +
            Length           (4)
            (data is streamed in successive writeBytes(buffer))
@@ -1249,7 +1249,7 @@ public class USBBulkConnection extends Connection {
     @Override
     public int TransmitCloseFile(String filename, Calendar date) {
 
-        /* Total size:
+        /* Total size (bytes):
            "AxoC"           (4) +
            pFileSize        (4) +
            FileName[0]      (1) +
