@@ -69,13 +69,13 @@ public abstract class Connection {
     abstract public int  TransmitChangeWorkingDirectory(String path);
     abstract public int  TransmitAppendFile(byte[] buffer);
     abstract public int  TransmitCloseFile(String filename, Calendar date);
+    abstract public int  TransmitCopyToFlash();
     abstract public void TransmitMemoryRead(int addr, int length);
     abstract public void TransmitMemoryRead1Word(int addr);    
     abstract public void TransmitUpdatedPreset(byte[] b);
     abstract public void TransmitMidi(int m0, int m1, int m2);
     abstract public void TransmitGetFWVersion();
     abstract public void TransmitGetSpilinkSynced();
-    abstract public void TransmitCopyToFlash();
     abstract public void TransmitBringToDFU();
     
     abstract public boolean AppendToQueue(QCmdSerialTask cmd);

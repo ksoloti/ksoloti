@@ -49,6 +49,7 @@ import javax.swing.SwingUtilities;
 import org.usb4java.*;
 import qcmds.QCmd;
 import qcmds.QCmdChangeWorkingDirectory;
+import qcmds.QCmdCopyPatchToFlash;
 import qcmds.QCmdCreateDirectory;
 import qcmds.QCmdDeleteFile;
 import qcmds.QCmdGetFileInfo;
@@ -1006,8 +1007,9 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public void TransmitCopyToFlash() {
-        writeBytes(copyToFlashPckt);
+    public int TransmitCopyToFlash() {
+        int writeResult = writeBytes(copyToFlashPckt);
+        return writeResult;
     }
 
     @Override
@@ -1755,6 +1757,7 @@ public class USBBulkConnection extends Connection {
                                  currentExecutingCommand instanceof QCmdStartFlasher ||
                                  currentExecutingCommand instanceof QCmdStartMounter ||
                                  currentExecutingCommand instanceof QCmdStop ||
+                                 currentExecutingCommand instanceof QCmdCopyPatchToFlash ||
                                  currentExecutingCommand instanceof QCmdGetFileList ||
                                  currentExecutingCommand instanceof QCmdCreateDirectory ||
                                  currentExecutingCommand instanceof QCmdChangeWorkingDirectory ||
