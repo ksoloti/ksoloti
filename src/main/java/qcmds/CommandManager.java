@@ -77,26 +77,6 @@ public class CommandManager {
             return false;
         }
 
-        // /* --- STEP 3: Handle cooldown for commands AFTER a long operation has just ended --- */
-        // /* Allow certain commands immediately after a long operation (override cooldown for it) */
-        // if (command instanceof QCmdGetFileList ||
-        //     command instanceof QCmdUploadPatch ||
-        //     command instanceof QCmdStart ||
-        //     command instanceof QCmdStop) {
-
-        //     /* If we are within the cooldown period, but it's a file list request, allow it. */
-        //     if (System.currentTimeMillis() - lastLongOperationEndTime < COOLDOWN_MILLIS) {
-        //         // System.out.println(Instant.now() + " [DEBUG] CommandManager: Allowing QCmdGetFileList during cooldown.");
-        //         return true;
-        //     }
-        // }
-
-        // /* For all other commands, apply the general cooldown */
-        // if (System.currentTimeMillis() - lastLongOperationEndTime < COOLDOWN_MILLIS) {
-        //     // System.out.println(Instant.now() + " [DEBUG] CommandManager: Suppressing command " + command.getClass().getSimpleName() + " due to cooldown.");
-        //     return false;
-        // }
-
         /* If none of the above conditions apply, the command is allowed */
         return true;
     }
