@@ -619,7 +619,7 @@ static void AppendFile(uint32_t length) {
 }
 
 
-static void CopyPatchToFlash(void) {
+static int CopyPatchToFlash(void) {
     flash_unlock();
     flash_Erase_sector(11);
 
@@ -650,10 +650,9 @@ static void CopyPatchToFlash(void) {
     }
 
     if (err) {
-        while (1); /* Flash verify failed */
+        return -1; /* Flash verify failed */
     }
-
-    AckPending = 1;
+    return 0;
 }
 
 
@@ -761,11 +760,13 @@ void PExReceiveByte(unsigned char c) {
                         StopPatch();
                         exception_initiate_dfu();
                         break;
-                    case 'F': /* copy to flash */
+                    case 'F': { /* copy to flash */
                         state = 0; header = 0; AckPending = 1;
                         StopPatch();
-                        CopyPatchToFlash();
+                        int res = CopyPatchToFlash();
+                        send_AxoResult(c, (FRESULT)res);
                         break;
+                    }
                     case 'l': /* read directory listing */
                         state = 0; header = 0; AckPending = 1; /* Immediate AxoA for receipt */
                         ReadDirectoryListing(); /* Will send AxoRl when done */
