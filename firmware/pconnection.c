@@ -379,7 +379,6 @@ static void send_AxoResult(char cmd_byte, FRESULT status) {
     res_msg[5] = (char)status;
     // LogTextMessage("send_AxoResult called,cmd=%c (0x%02x) sta=%u", res_msg[4], res_msg[4], res_msg[5]);
     chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) res_msg, 6);
-    chThdSleepMilliseconds(10); /* Give some time for the USB buffer to clear */
 }
 
 
