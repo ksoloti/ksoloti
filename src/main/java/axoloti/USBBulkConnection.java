@@ -1769,7 +1769,10 @@ public class USBBulkConnection extends Connection {
                                 currentExecutingCommand.setCompletedWithStatus(statusCode == 0x00);
 
                                 try {
-                                    QCmdProcessor.getQCmdProcessor().getQueueResponse().offer(currentExecutingCommand, 10, TimeUnit.MILLISECONDS);
+                                    boolean offeredSuccessfully = QCmdProcessor.getQCmdProcessor().getQueueResponse().offer(currentExecutingCommand, 10, TimeUnit.MILLISECONDS);
+                                    if (!offeredSuccessfully) {
+                                        LOGGER.log(Level.WARNING, "Failed to offer completed QCmd (" + currentExecutingCommand.getClass().getSimpleName() + ") to QCmdProcessor queue within timeout. Queue might be full.");
+                                    }
                                     synchronized (QCmdProcessor.getQCmdProcessor().getQueueLock()) {
                                         QCmdProcessor.getQCmdProcessor().getQueueLock().notifyAll();
                                     }
