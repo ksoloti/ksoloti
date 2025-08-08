@@ -749,12 +749,6 @@ void PExReceiveByte(unsigned char c) {
                     case 'y': /* generic read, 32 bit */
                         state = 4; /* All the above pass on directly to state 4. */
                         break;
-                    case 'S': { /* stop patch */
-                        state = 0; header = 0;
-                        int res = StopPatch();
-                        send_AxoResult(c, (FRESULT)res);
-                        break;
-                    }
                     case 'D': /* go to DFU mode */
                         state = 0; header = 0; AckPending = 1;
                         StopPatch();
@@ -794,6 +788,12 @@ void PExReceiveByte(unsigned char c) {
                         current_filename_idx = 0; /* Reset for filename parsing */
                         state = 4; /* Next state will receive the 4-byte pFileSize/placeholder */
                         break;
+                    case 'S': { /* stop patch */
+                        state = 0; header = 0;
+                        int res = StopPatch();
+                        send_AxoResult(c, (FRESULT)res);
+                        break;
+                    }
                     default:
                         state = 0; break; /* Unknown Axo* header */
                 }
