@@ -569,9 +569,9 @@ int StartPatch(void) {
 
     if (patchStatus == STARTFAILED) {
         SetPatchStatus(STOPPED);
-        LogTextMessage("Patch start failed", patchStatus);
+        // LogTextMessage("Patch start failed", patchStatus);
+        return -1;
     }
-
     return 0;
 }
 
