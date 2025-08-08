@@ -1731,9 +1731,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             try {
                 QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
                 QCmdProcessor.getQCmdProcessor().WaitQueueFinished(); // Wait for MCU to process stop command
-                LOGGER.log(Level.INFO, "Sent QCmdStop to MCU for previous patch.");
+                LOGGER.log(Level.INFO, "Sent QCmdStop to Core for previous patch.");
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Failed to send QCmdStop to MCU for previous patch: " + this.currentLivePatch.getFileNamePath(), e);
+                LOGGER.log(Level.SEVERE, "Failed to send QCmdStop to Core for previous patch: " + this.currentLivePatch.getFileNamePath(), e);
             }
         }
 
@@ -1758,14 +1758,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 this.currentLivePatch.Lock(); // GUI-side lock (cascades down to disable editing)
                 LOGGER.log(Level.INFO, "Locked new live patch: " + this.currentLivePatch.getFileNamePath());
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Failed to send QCmdStart/QCmdLock to MCU for patch: " + this.currentLivePatch.getFileNamePath(), e);
+                LOGGER.log(Level.SEVERE, "Failed to send QCmdStart/QCmdLock to Core for patch: " + this.currentLivePatch.getFileNamePath(), e);
                 // Critical error: The patch is not truly live on the MCU.
                 // Revert the GUI state to reflect this.
                 if (this.currentLivePatch != null) { // Defensive check
                     this.currentLivePatch.Unlock(); // Unlock GUI
                 }
                 this.currentLivePatch = null; // Clear live patch reference
-                LOGGER.log(Level.SEVERE, "Patch could not be set live on MCU. Reverting GUI state.");
+                LOGGER.log(Level.SEVERE, "Patch could not be set live on Core. Reverting GUI state.");
             }
         } else {
             LOGGER.log(Level.INFO, "No patch is currently live.");
