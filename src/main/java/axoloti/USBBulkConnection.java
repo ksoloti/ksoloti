@@ -1754,8 +1754,6 @@ public class USBBulkConnection extends Connection {
                         }
                         // Handling for other commands that expect an AxoR for their completion
                         else if (currentExecutingCommand instanceof QCmdStart ||
-                                 currentExecutingCommand instanceof QCmdStartFlasher ||
-                                 currentExecutingCommand instanceof QCmdStartMounter ||
                                  currentExecutingCommand instanceof QCmdStop ||
                                  currentExecutingCommand instanceof QCmdCopyPatchToFlash ||
                                  currentExecutingCommand instanceof QCmdGetFileList ||
@@ -1786,14 +1784,17 @@ public class USBBulkConnection extends Connection {
                             //     System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received unexpected AxoR for command: " + (char)commandByte + ". Expected: " + currentExecutingCommand.getExpectedAckCommandByte() + ". Ignoring.");
                             // }
                         }
-                        // Generic handling for all other single-step QCmdSerialTasks
-                        // else {
-                        //     System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received an AxoR for command: " + (char)commandByte + ", but this command does not expect an AxoR for completion. Ignoring.");
-                        // }
+                        else if (currentExecutingCommand instanceof QCmdStartFlasher ||
+                                 currentExecutingCommand instanceof QCmdStartMounter) {
+                            /* We won't get any useful "start patch " response from these commands
+                               as they force a reboot into Flasher/Mounter mode.
+                               Hard-coded success here. So alpha. */
+                            if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) {
+                                currentExecutingCommand.setMcuStatusCode((byte)0);
+                                currentExecutingCommand.setCompletedWithStatus(true);
+                            }
+                        }
                     }
-                    // else {
-                    //     System.err.println(Instant.now() + " [DEBUG] Warning: AxoR received but no currentExecutingCommand is set.");
-                    // }
                     GoIdleState();
                 }
                 break;
