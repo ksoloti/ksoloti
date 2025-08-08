@@ -223,7 +223,7 @@ int main(void) {
          * CH_DBG_FILL_THREADS
          * CH_DBG_ENABLE_STACK_CHECK
          */
-        // ReportThreadStacks();
+        ReportThreadStacks();
 
         chThdSleepMilliseconds(1000);
     }
