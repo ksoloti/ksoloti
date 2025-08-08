@@ -1303,7 +1303,7 @@ public class USBBulkConnection extends Connection {
             buffer.put(filenameBytes);   // FileName[6]+ (variable length)
             buffer.put((byte)0x00);      // Null terminator
 
-            ClearSync();
+            // ClearSync();
             int writeResult = writeBytes(buffer.array());
             return writeResult;
         }
