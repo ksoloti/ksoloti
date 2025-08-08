@@ -135,9 +135,8 @@ void usb_clearbuffer(void);
 extern bool usbAudioResample;
 #endif
 
-
 void SetPatchSafety(uint16_t uUIMidiCost, uint8_t uDspLimit200);
-
+void ReportThreadStacks(void);
 
 int get_USBH_LL_GetURBState(void);
 int get_USBH_LL_SubmitURB(void);
