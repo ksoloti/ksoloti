@@ -76,7 +76,6 @@ import qcmds.CommandManager;
 import qcmds.QCmdCreateDirectory;
 import qcmds.QCmdDeleteFile;
 import qcmds.QCmdGetFileList;
-import qcmds.QCmdProcessor;
 import qcmds.QCmdUploadFile;
 
 /**
@@ -204,15 +203,13 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
                                     if (!f.canRead()) {
                                         LOGGER.log(Level.SEVERE, "Cannot read file: " + f.getName());
-                                        publish("Failed to upload " + f.getName() + ": Cannot read file.");
                                         continue; /* Skip to next file */
                                     }
 
                                     QCmdUploadFile uploadCommand = new QCmdUploadFile(f, f.getName());
                                     uploadCommand.Do(USBBulkConnection.GetConnection());
-
-                                    if (uploadCommand.isSuccessful()) {
-                                        publish("Uploaded " + f.getName());
+                                    if (uploadCommand.waitForCompletion() && uploadCommand.isSuccessful()) {
+                                        // publish("Uploaded " + f.getName());
                                     } else {
                                         LOGGER.log(Level.SEVERE, "Upload failed for " + f.getName());
                                         break; /* Break loop on first failure */
@@ -807,7 +804,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                     uploadCommand.Do(USBBulkConnection.GetConnection());
                                     // System.out.println(Instant.now() + " [DEBUG] SwingWorker: uploadCommand.Do() returned for: " + file.getName());
 
-                                    if (!uploadCommand.isSuccessful()) {
+                                    if (!uploadCommand.waitForCompletion() || !uploadCommand.isSuccessful()) {
                                         // System.err.println(Instant.now() + " [DEBUG] SwingWorker: uploadCommand.isSuccessful() is FALSE for " + file.getName() + ". Breaking loop.");
                                         lastError = "Upload failed for file: " + file.getName();
                                         LOGGER.log(Level.WARNING, lastError + ". Aborting remaining batch.");
