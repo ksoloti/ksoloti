@@ -1439,9 +1439,17 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 /* If a Core is connected and test patch .bin could be created:
                 stop patch, upload test patch .bin to RAM, start patch, report status */
                 if (USBBulkConnection.GetConnection().isConnected()) {
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadPatch(patch1.getBinFile()));
+                    QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch1.getBinFile());
+                    boolean completed = uploadCmd.waitForCompletion();
+                    if (!completed) {
+                        LOGGER.log(Level.SEVERE, "Test patch upload timed out");
+                        status = false;
+                    }
+                    if (!uploadCmd.isSuccessful()) {
+                        LOGGER.log(Level.SEVERE, "Test patch upload failed");
+                        status = false;
+                    }
                     setCurrentLivePatch(patch1);
-                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                     Thread.sleep(1000);
 
                     QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdPing());
