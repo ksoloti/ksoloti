@@ -57,6 +57,10 @@ import qcmds.QCmdMemRead;
 import qcmds.QCmdMemRead1Word;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdSerialTask;
+import qcmds.QCmdStart;
+import qcmds.QCmdStartFlasher;
+import qcmds.QCmdStartMounter;
+import qcmds.QCmdStop;
 import qcmds.QCmdTransmitGetFWVersion;
 import qcmds.QCmdUploadFWSDRam;
 import qcmds.QCmdUploadFile;
@@ -860,13 +864,29 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public void TransmitStart() {
-        writeBytes(startPckt);
+    public int TransmitStart() {
+
+        /* Total size (bytes):
+           "Axos"           (4) +
+           uUIMidiCost      (2) +
+           uDspLimit200     (1)
+         */
+        ByteBuffer buffer = ByteBuffer.allocate(7).order(ByteOrder.LITTLE_ENDIAN);
+        short uUIMidiCost = Preferences.getInstance().getUiMidiThreadCost();
+        byte  uDspLimit200 = (byte)(Preferences.getInstance().getDspLimitPercent()*2);
+
+        buffer.put(startPckt);          // "Axos" header
+        buffer.putShort(uUIMidiCost);   // MIDI cost 
+        buffer.put(uDspLimit200);       // DSP limit
+
+        int writeResult = writeBytes(buffer.array());
+        return writeResult;
     }
 
     @Override
-    public void TransmitStop() {
-        writeBytes(stopPckt);
+    public int TransmitStop() {
+        int writeResult = writeBytes(stopPckt);
+        return writeResult;
     }
 
     @Override
@@ -1329,26 +1349,6 @@ public class USBBulkConnection extends Connection {
         }
     }
 
-    @Override
-    public void TransmitCosts() {
-        synchronized (usbOutLock) {
-            short uUIMidiCost = Preferences.getInstance().getUiMidiThreadCost();
-            byte  uDspLimit200 = (byte)(Preferences.getInstance().getDspLimitPercent()*2);
-
-            byte[] data = new byte[7];
-            data[0] = 'A';
-            data[1] = 'x';
-            data[2] = 'o';
-            data[3] = 'U';
-            data[4] = (byte) uUIMidiCost;
-            data[5] = (byte) (uUIMidiCost >> 8);
-            data[6] = uDspLimit200;
-            ClearSync();
-            writeBytes(data);
-            WaitSync();
-        }
-    }
-
     public void SetSDCardPresent(boolean i) {
         if ((isSDCardPresent != null) && (i == isSDCardPresent)) return;
         isSDCardPresent = i;
@@ -1751,7 +1751,11 @@ public class USBBulkConnection extends Connection {
                             }
                         }
                         // Handling for other commands that expect an AxoR for their completion
-                        else if (currentExecutingCommand instanceof QCmdGetFileList ||
+                        else if (currentExecutingCommand instanceof QCmdStart ||
+                                 currentExecutingCommand instanceof QCmdStartFlasher ||
+                                 currentExecutingCommand instanceof QCmdStartMounter ||
+                                 currentExecutingCommand instanceof QCmdStop ||
+                                 currentExecutingCommand instanceof QCmdGetFileList ||
                                  currentExecutingCommand instanceof QCmdCreateDirectory ||
                                  currentExecutingCommand instanceof QCmdChangeWorkingDirectory ||
                                  currentExecutingCommand instanceof QCmdDeleteFile ||

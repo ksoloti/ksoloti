@@ -102,7 +102,6 @@ import qcmds.QCmdBringToDFUMode;
 import qcmds.QCmdCompilePatch;
 import qcmds.QCmdDisconnect;
 import qcmds.QCmdGuiShowLog;
-import qcmds.QCmdLock;
 import qcmds.QCmdPing;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdStart;
@@ -808,7 +807,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     boolean success = get();
                     if (success) {
                         /* If code reaches here, the background process was successful */
-                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStartFlasher());
+                        QCmdStart startFlasherCmd = new QCmdStartFlasher();
+                        startFlasherCmd.Do(USBBulkConnection.GetConnection());
+                        startFlasherCmd.waitForCompletion();
+                        if (startFlasherCmd.isSuccessful()) {
+                            LOGGER.log(Level.INFO, "Flasher Patch started.");
+                        } else {
+                            LOGGER.log(Level.SEVERE, "Flasher Patch start failed.");
+                            return;
+                        }
                         LOGGER.log(Level.INFO, "Firmware and Flasher upload successful, disconnecting for flash write...");
                         ShowDisconnect();
                         QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
@@ -1400,10 +1407,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         
         Strategy strategy = new AnnotationStrategy();
         Serializer serializer = new Persister(strategy, new Format(2));
+        boolean status = false;
         
         try {
-            boolean status;
-            
             LOGGER.log(Level.INFO, "---------- Testing {0} ----------", f.getPath());
 
             PatchGUI patch1 = serializer.read(PatchGUI.class, f);
@@ -1412,7 +1418,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             patch1.setFileNamePath(f.getPath());
             patch1.PostContructor();
             patch1.WriteCode(true); // generate code as own path/filename .cpp
-            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
             Thread.sleep(200); 
             LOGGER.log(Level.INFO, "Done generating code.");
 
@@ -1451,22 +1456,20 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     Thread.sleep(1000);
 
                     QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdGuiShowLog());
-                    setCurrentLivePatch(null);
                     QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                     Thread.sleep(100);
+                    status = true;
                 }
             }
             else {
                 if (!USBBulkConnection.GetConnection().WaitSync()) {
                     USBBulkConnection.GetConnection().disconnect();
                 }
-                LOGGER.log(Level.INFO, "FAILED compiling patch.\n");
+                LOGGER.log(Level.INFO, "FAILED compiling patch binary.\n");
+                status = false;
             }
-
-
             patch1.Close();
             pf.Close();
-            status = cp.success();
             Thread.sleep(200);
 
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
@@ -1631,15 +1634,44 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         File f = new File(fname);
         if (f.canRead()) {
             setCurrentLivePatch(null);
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadPatch(f));
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStartMounter());
+        try {
+            QCmdUploadPatch uploadMounterCmd = new QCmdUploadPatch(f);
+            uploadMounterCmd.Do(USBBulkConnection.GetConnection());
+            boolean completed = uploadMounterCmd.waitForCompletion();
+            if (!completed) {
+                LOGGER.log(Level.SEVERE, "Mounter upload timed out.");
+                return;
+            }
+            if (!uploadMounterCmd.isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Mounter upload failed.");
+                return;
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An error occurred while uploading Mounter.");
+        }
+
+        try {
+            QCmdStartMounter startMounterCmd = new QCmdStartMounter();
+            startMounterCmd.Do(USBBulkConnection.GetConnection());
+            boolean completed = startMounterCmd.waitForCompletion();
+            if (!completed) {
+                LOGGER.log(Level.SEVERE, "Mounter start timed out.");
+                return;
+            }
+            if (!startMounterCmd.isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Mounter start failed.");
+                return;
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An error occurred while starting Mounter.");
+            return;
+        }
             QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
             ShowDisconnect();
         }
         else {
             LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first!\n(File: {0})", fname);
         }
-
     }
 
     public void OpenURL() {
@@ -1703,11 +1735,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             // These must be handled by the QCmdProcessor.
             try {
                 // Ensure the patch is actually started on the MCU
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStart(this.currentLivePatch));
-                // Send the lock command to the MCU
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdLock(this.currentLivePatch));
-                // Wait for these MCU commands to be processed before proceeding with GUI lock
-                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                QCmdStart startCmd = new QCmdStart(this.currentLivePatch);
+                startCmd.Do(USBBulkConnection.GetConnection());
+                if (startCmd.isSuccessful()) {
+                    LOGGER.log(Level.INFO, "Patch started: " + this.currentLivePatch.getFileNamePath());
+                } else {
+                    LOGGER.log(Level.SEVERE, "Patch start failed for " + this.currentLivePatch.getFileNamePath());
+                    return;
+                }
 
                 this.currentLivePatch.Lock(); // GUI-side lock (cascades down to disable editing)
                 LOGGER.log(Level.INFO, "Locked new live patch: " + this.currentLivePatch.getFileNamePath());

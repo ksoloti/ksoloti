@@ -20,6 +20,9 @@ package qcmds;
 
 import axoloti.Connection;
 import axoloti.Patch;
+import axoloti.sd.SDCardInfo;
+
+import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,13 +31,13 @@ import java.util.logging.Logger;
  * @author Johannes Taelman
  */
 public class QCmdStart extends AbstractQCmdSerialTask {
-
+    
+    private static final Logger LOGGER = Logger.getLogger(QCmdStart.class.getName());
     Patch p;
-
-    static int patch_start_timeout = 15000; //msec
 
     public QCmdStart(Patch p) {
         this.p = p;
+        this.expectedAckCommandByte = 's';
     }
 
     @Override
@@ -55,18 +58,37 @@ public class QCmdStart extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        connection.ClearSync();
+        super.Do(connection); // Sets 'this' as currentExecutingCommand
+        setMcuStatusCode((byte)0xFF);
 
         connection.setPatch(p);
 
-        connection.TransmitCosts();
-        
-        connection.TransmitStart();
-        if (connection.WaitSync(patch_start_timeout)) {
+        int writeResult = connection.TransmitStart();
+        if (writeResult != org.usb4java.LibUsb.SUCCESS) {
+            LOGGER.log(Level.SEVERE, "QCmdStart: Failed to send TransmitStart: USB write error.");
+            setMcuStatusCode((byte)0x01); // FR_DISK_ERR
+            setCompletedWithStatus(false);
             return this;
-        } else {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, GetTimeOutMessage());
-            return new QCmdDisconnect();
         }
+
+        try {
+            if (!waitForCompletion()) {
+                LOGGER.log(Level.SEVERE, "QCmdStart: Core did not acknowledge within timeout.");
+                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
+                setCompletedWithStatus(false);
+            } else {
+                System.out.println(Instant.now() + "QCmdStart completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.log(Level.SEVERE, "QCmdStart interrupted: {0}", e.getMessage());
+            setMcuStatusCode((byte)0x02); // FR_INT_ERR
+            setCompletedWithStatus(false);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An unexpected error occurred during QCmdStart: {0}", e.getMessage());
+            setMcuStatusCode((byte)0xFF); // Generic error
+            setCompletedWithStatus(false);
+        }
+        return this;
     }
 }

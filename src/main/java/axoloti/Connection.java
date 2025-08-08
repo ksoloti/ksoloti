@@ -53,8 +53,8 @@ public abstract class Connection {
     abstract public boolean connect();
     abstract public void SelectPort();
     
-    abstract public void TransmitStop();
-    abstract public void TransmitStart();
+    abstract public int  TransmitStart();
+    abstract public int  TransmitStop();
     abstract public void TransmitPing();
     abstract public void TransmitRecallPreset(int presetNo);
     abstract public int  TransmitUploadFragment(byte[] buffer, int offset);
@@ -71,7 +71,6 @@ public abstract class Connection {
     abstract public int  TransmitCloseFile(String filename, Calendar date);
     abstract public void TransmitMemoryRead(int addr, int length);
     abstract public void TransmitMemoryRead1Word(int addr);    
-    abstract public void TransmitCosts();
     abstract public void TransmitUpdatedPreset(byte[] b);
     abstract public void TransmitMidi(int m0, int m1, int m2);
     abstract public void TransmitGetFWVersion();

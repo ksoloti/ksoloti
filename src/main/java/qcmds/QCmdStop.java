@@ -18,7 +18,12 @@
  */
 package qcmds;
 
+import java.time.Instant;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import axoloti.Connection;
+import axoloti.sd.SDCardInfo;
 
 /**
  *
@@ -26,7 +31,10 @@ import axoloti.Connection;
  */
 public class QCmdStop extends AbstractQCmdSerialTask {
 
+    private static final Logger LOGGER = Logger.getLogger(QCmdStop.class.getName());
+
     public QCmdStop() {
+        this.expectedAckCommandByte = 'S';
     }
     
     @Override
@@ -41,12 +49,35 @@ public class QCmdStop extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        connection.ClearSync();
-        connection.TransmitStop();
-        if (connection.WaitSync()) {
+        super.Do(connection); // Sets 'this' as currentExecutingCommand
+        setMcuStatusCode((byte)0xFF);
+
+        int writeResult = connection.TransmitStop();
+        if (writeResult != org.usb4java.LibUsb.SUCCESS) {
+            LOGGER.log(Level.SEVERE, "QCmdStop: Failed to send TransmitStop: USB write error.");
+            setMcuStatusCode((byte)0x01); // FR_DISK_ERR
+            setCompletedWithStatus(false);
             return this;
-        } else {
-            return new QCmdDisconnect();
         }
+
+        try {
+            if (!waitForCompletion()) {
+                LOGGER.log(Level.SEVERE, "QCmdStop: Core did not acknowledge within timeout.");
+                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
+                setCompletedWithStatus(false);
+            } else {
+                System.out.println(Instant.now() + "QCmdtart completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.log(Level.SEVERE, "QCmdStop interrupted: {0}", e.getMessage());
+            setMcuStatusCode((byte)0x02); // FR_INT_ERR
+            setCompletedWithStatus(false);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An unexpected error occurred during QCmdStop: {0}", e.getMessage());
+            setMcuStatusCode((byte)0xFF); // Generic error
+            setCompletedWithStatus(false);
+        }
+        return this;
     }
 }
