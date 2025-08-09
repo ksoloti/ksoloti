@@ -530,7 +530,7 @@ public class USBBulkConnection extends Connection {
             LibUsb.freeDeviceList(list, true);
         }
 
-        LOGGER.log(Level.SEVERE, "No matching USB devices found.");
+        LOGGER.log(Level.WARNING, "No matching USB devices found.");
         return null;
     }
 
