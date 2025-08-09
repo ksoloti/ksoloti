@@ -189,7 +189,7 @@ public class USBBulkConnection extends Connection {
                             break; /* Exit the loop */
                         }
 
-                        result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 3000);
+                        result = LibUsb.bulkTransfer(handle, (byte) IN_ENDPOINT, recvbuffer, transfered, 100);
                         sz = transfered.get(0);
 
                         /* Check interrupted status immediately after a blocking call returns */
