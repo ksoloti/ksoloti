@@ -898,7 +898,19 @@ void PExReceiveByte(unsigned char c) {
                     *((unsigned char*) write_position) = c;
                     write_position++;
 
-                    /* Dummy loop required?? See (header == 'a') below */
+                    /* A week of debugging failed to shed any light on the reason
+                       why after several appends (<10), the Core would fail to send an AxoR<a><0> response
+                       even though the f_write following below was successful...
+                       USB FIFO overloaded? Or AxoRa is sent but Java would not receive it?
+                       The upload progress would then time out from the Patcher side
+                       but the Core didn't crash, it just got locked in some waiting loop.
+                       By adding a blocking dummy loop like this file uploads succeed...
+                       I am done here and will just leave this dummy in.
+                       Calling chThdSleep* did not work here - same hang up. Possibly because sleep will allow
+                       the CPU to go away and process other things, including changing the current
+                       values of the variables we are using here.
+                       This fine dummy loop was now tested with batches of dozens of files,
+                       including file sizes in the hundreds of MB ¯\_(ツ)_/¯ */
                     for (volatile uint32_t dummy = 0; dummy < 256; dummy++);
 
                     if (value == 0) {
@@ -1028,19 +1040,8 @@ void PExReceiveByte(unsigned char c) {
                     *((unsigned char*) write_position) = c;
                     write_position++;
 
-                    /* A week of debugging failed to shed any light on the reason
-                       why after several appends (<10), the Core would fail to send an AxoR<a><0> response
-                       even though the f_write following below was successful...
-                       USB FIFO overloaded? Or AxoRa is sent but Java would not receive it?
-                       The upload progress would then time out from the Patcher side
-                       but the Core didn't crash, it just got locked in some waiting loop.
-                       By adding a blocking dummy loop like this file uploads succeed...
-                       I am done here and will just leave this dummy in.
-                       Calling chThdSleep* did not work here - same hang up. Possibly because sleep will allow
-                       the CPU to go away and process other things, including changing the current
-                       values of the variables we are using here.
-                       This fine dummy loop was now tested with batches of dozens of files,
-                       including file sizes in the hundreds of MB ¯\_(ツ)_/¯ */
+                    
+                    /* Dummy loop required?? See (header == 'w') above */
                     for (volatile uint32_t dummy = 0; dummy < 256; dummy++);
 
                     if (value == 0) {
