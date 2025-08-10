@@ -280,7 +280,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
         });
 
-        menuItem = new JMenuItem("Paste and Fork Incoming Wires");
+        menuItem = new JMenuItem("Paste with Incoming Wires");
         menuItem.setMnemonic('W');
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
                 KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
