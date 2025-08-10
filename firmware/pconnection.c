@@ -67,8 +67,8 @@ static int32_t pFileSize;
 /* now static global */
 static uint32_t preset_index;
 static int32_t value;
-static int32_t write_position;
-static int32_t offset;
+static uint32_t write_position;
+static uint32_t offset;
 static uint32_t length;
 static uint32_t patchid;
 static uint32_t total_write_length;
@@ -849,9 +849,9 @@ void PExReceiveByte(unsigned char c) {
     else if (header == 'W') { /* 'AxoW' memory write commands */
         switch (state) {
             case 4: offset = c; state++; break; /* Address byte 0 */
-            case 5: offset |= (int32_t)c <<  8; state++; break;
-            case 6: offset |= (int32_t)c << 16; state++; break;
-            case 7: offset |= (int32_t)c << 24; state++; break;
+            case 5: offset |= (uint32_t)c <<  8; state++; break;
+            case 6: offset |= (uint32_t)c << 16; state++; break;
+            case 7: offset |= (uint32_t)c << 24; state++; break;
             case 8: value = c; state++; break; /* Length byte 0 */
             case 9: value |= (int32_t)c <<  8; state++; break;
             case 10: value |= (int32_t)c << 16; state++; break;
@@ -1065,7 +1065,7 @@ void PExReceiveByte(unsigned char c) {
             case 5: value |= (uint32_t)c <<  8; state++; break;
             case 6: value |= (uint32_t)c << 16; state++; break;
             case 7: value |= (uint32_t)c << 24; state++;
-                offset = (int32_t)patchMeta.pPresets;
+                offset = (uint32_t)patchMeta.pPresets;
                 break;
             default: /* Data streaming state */
                 if (value > 0) {
@@ -1086,9 +1086,9 @@ void PExReceiveByte(unsigned char c) {
     else if (header == 'r') { /* generic read */
         switch (state) {
             case 4: offset  = c; state++; break;
-            case 5: offset |= (int32_t)c <<  8; state++; break;
-            case 6: offset |= (int32_t)c << 16; state++; break;
-            case 7: offset |= (int32_t)c << 24; state++; break;
+            case 5: offset |= (uint32_t)c <<  8; state++; break;
+            case 6: offset |= (uint32_t)c << 16; state++; break;
+            case 7: offset |= (uint32_t)c << 24; state++; break;
             case 8:  value  = c; state++; break;
             case 9:  value |= (int32_t)c <<  8; state++; break;
             case 10: value |= (int32_t)c << 16; state++; break;
@@ -1111,9 +1111,9 @@ void PExReceiveByte(unsigned char c) {
     else if (header == 'y') { /* generic read, 32-bit */
         switch (state) {
             case 4: offset  = c; state++; break;
-            case 5: offset |= (int32_t)c <<  8; state++; break;
-            case 6: offset |= (int32_t)c << 16; state++; break;
-            case 7: offset |= (int32_t)c << 24;
+            case 5: offset |= (uint32_t)c <<  8; state++; break;
+            case 6: offset |= (uint32_t)c << 16; state++; break;
+            case 7: offset |= (uint32_t)c << 24;
                 uint32_t read_reply_header[3];
                 ((char*) read_reply_header)[0] = 'A';
                 ((char*) read_reply_header)[1] = 'x';
