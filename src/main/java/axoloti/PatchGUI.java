@@ -673,9 +673,8 @@ public class PatchGUI extends Patch {
                 int newposy = o.getY();
 
                 if (pos != null) {
-                    // paste at cursor position, with delta snapped to grid
-                    newposx += Constants.X_GRID * ((pos.x - minX + Constants.X_GRID / 2) / Constants.X_GRID);
-                    newposy += Constants.Y_GRID * ((pos.y - minY + Constants.Y_GRID / 2) / Constants.Y_GRID);
+                    newposx += ((pos.x - minX + (Constants.X_GRID / 2)) / Constants.X_GRID) * Constants.X_GRID;
+                    newposy += ((pos.y - minY + (Constants.Y_GRID / 2)) / Constants.Y_GRID) * Constants.Y_GRID;
                 }
                 while (getObjectAtLocation(newposx, newposy) != null) {
                     newposx += Constants.X_GRID;
