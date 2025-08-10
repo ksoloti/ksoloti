@@ -206,23 +206,23 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                         continue; /* Skip to next file */
                                     }
 
-                                    QCmdUploadFile uploadCommand = new QCmdUploadFile(f, f.getName());
-                                    uploadCommand.Do(USBBulkConnection.GetConnection());
-                                    if (uploadCommand.waitForCompletion() && uploadCommand.isSuccessful()) {
-                                        // publish("Uploaded " + f.getName());
-                                    } else {
+                                    QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, f.getName());
+                                    uploadFileCmd.Do(USBBulkConnection.GetConnection());
+                                    if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
                                         LOGGER.log(Level.SEVERE, "Upload failed for " + f.getName());
                                         break; /* Break loop on first failure */
                                     }
                                 }
-                            } finally {
-                                CommandManager.getInstance().endLongOperation();
+                            } catch (InterruptedException e) {
+                                LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file.", e);
+                                Thread.currentThread().interrupt();
                             }
                             return null;
                         }
 
                         @Override
                         protected void done() {
+                            CommandManager.getInstance().endLongOperation();
                             triggerRefresh();
                         }
                     }.execute();
@@ -799,21 +799,16 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                     continue; // Skip to next file if cannot read
                                 }
                                 try {
-                                    // System.out.println(Instant.now() + " [DEBUG] SwingWorker: About to call uploadCommand.Do() for: " + file.getName());
-                                    QCmdUploadFile uploadCommand = new QCmdUploadFile(file, targetDirectory + file.getName());
-                                    uploadCommand.Do(USBBulkConnection.GetConnection());
-                                    // System.out.println(Instant.now() + " [DEBUG] SwingWorker: uploadCommand.Do() returned for: " + file.getName());
+                                    QCmdUploadFile uploadFileCmd = new QCmdUploadFile(file, targetDirectory + file.getName());
+                                    uploadFileCmd.Do(USBBulkConnection.GetConnection());
 
-                                    if (!uploadCommand.waitForCompletion() || !uploadCommand.isSuccessful()) {
-                                        // System.err.println(Instant.now() + " [DEBUG] SwingWorker: uploadCommand.isSuccessful() is FALSE for " + file.getName() + ". Breaking loop.");
+                                    if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
                                         lastError = "Upload failed for file: " + file.getName();
                                         LOGGER.log(Level.WARNING, lastError + ". Aborting remaining batch.");
                                         failedCount++;
                                         break;
                                     }
                                     uploadedCount++;
-                                    publish("Uploaded " + file.getName());
-                                    // System.out.println(Instant.now() + " [DEBUG] SwingWorker: Successfully processed and published for: " + file.getName());
                                 }
                                 catch (Exception e) {
                                     // System.err.println(Instant.now() + " [DEBUG] SwingWorker: Caught Exception for " + file.getName() + ": " + e.getMessage());
@@ -953,11 +948,9 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                             boolean deleteSuccess = deleteSdCardEntryRecursive(fullPath);
                             if (!deleteSuccess) {
                                 overallSuccess = false;
-                                String msg = "Failed to delete: " + fullPath + " (See console/logs for details.)";
-                                System.out.println(Instant.now() + " " + msg);
-                                publish(msg); // Publish failure message
+                                System.out.println(Instant.now() + "Failed to delete: " + fullPath + " (See console/logs for details.)");
                             } else {
-                                publish("Deleted " + fullPath); // Publish success message
+                                LOGGER.log(Level.INFO, "Deleted " + fullPath);
                             }
                         }
                         catch (Exception e) {

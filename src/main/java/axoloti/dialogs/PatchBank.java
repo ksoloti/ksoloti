@@ -837,9 +837,18 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     private void jButtonUploadBankActionPerformed(java.awt.event.ActionEvent evt) {
         LOGGER.log(Level.INFO, "Uploading patchbank index...");
         if (USBBulkConnection.GetConnection().isConnected()) {
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb"));
+            try {
+                QCmdUploadFile uploadFileCmd = new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
+                uploadFileCmd.Do(USBBulkConnection.GetConnection());
+                if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
+                    LOGGER.log(Level.SEVERE, "Upload failed for Patchbank index");
+                }
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.SEVERE, "Thread interrupted while uploading Patchbank index.", e);
+                Thread.currentThread().interrupt();
+            }
         }
-        // LOGGER.log(Level.INFO, "Done uploading index.");
+        // LOGGER.log(Level.INFO, "Done uploading Patchbank index.");
         refresh();
     }
 
@@ -996,14 +1005,25 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         class Thd extends Thread {
             public void run() {
                 if (USBBulkConnection.GetConnection().isConnected()) {
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb"));
-                }
+                    LOGGER.log(Level.INFO, "Uploading patchbank index...");
+                    try {
+                        QCmdUploadFile uploadFileCmd = new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
+                        uploadFileCmd.Do(USBBulkConnection.GetConnection());
+                        if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
+                            LOGGER.log(Level.SEVERE, "Upload failed for Patchbank index");
+                        }
+                    } catch (InterruptedException e) {
+                        LOGGER.log(Level.SEVERE, "Thread interrupted while uploading Patchbank index.", e);
+                        Thread.currentThread().interrupt();
+                    }
+                    // LOGGER.log(Level.INFO, "Done uploading Patchbank index.");
 
-                for (File f : files) {
-                    LOGGER.log(Level.INFO, "Compiling and uploading: {0}", f.getName());
-                    UploadOneFile(f);
+                    for (File f : files) {
+                        LOGGER.log(Level.INFO, "Compiling and uploading: {0}", f.getName());
+                        UploadOneFile(f);
+                    }
+                    LOGGER.log(Level.INFO, "Done uploading index and patches.");
                 }
-                LOGGER.log(Level.INFO, "Done uploading index and patches.");
             }
         }
         Thd thread = new Thd();

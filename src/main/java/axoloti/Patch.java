@@ -355,11 +355,14 @@ public class Patch {
                 //     continue;
                 // }
                 
-                LOGGER.log(Level.INFO, "Uploading file to SD card: {0}", targetfn);
-                QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, targetfn);
-                uploadFileCmd.Do(USBBulkConnection.GetConnection());
+                LOGGER.log(Level.INFO, "Uploading file to SD card: " + targetfn);
                 try {
-                    uploadFileCmd.waitForCompletion();
+                    QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, targetfn);
+                    uploadFileCmd.Do(USBBulkConnection.GetConnection());
+                    if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
+                        LOGGER.log(Level.SEVERE, "Upload failed for " + f.getName());
+                        continue;
+                    }
                 } catch (InterruptedException e) {
                     LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file.", e);
                     Thread.currentThread().interrupt();
@@ -367,7 +370,7 @@ public class Patch {
                 }
             }
             else {
-                LOGGER.log(Level.INFO, "File {0} matches timestamp and size, skipping upload.", f.getName());
+                LOGGER.log(Level.INFO, "File " + f.getName() + " matches timestamp and size, skipping upload.");
             }
         }
     }
@@ -3104,8 +3107,16 @@ public class Patch {
         }
 
         if (getBinFile().exists()) {
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdUploadFile(getBinFile(), sdfilename, cal));
-            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+            try {
+                QCmdUploadFile uploadFileCmd = new QCmdUploadFile(getBinFile(), sdfilename, cal);
+                uploadFileCmd.Do(USBBulkConnection.GetConnection());
+                if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
+                    LOGGER.log(Level.SEVERE, "Upload failed for " + f.getName());
+                }
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file.", e);
+                Thread.currentThread().interrupt();
+            }
 
             String dir;
             int i = sdfilename.lastIndexOf("/");
@@ -3117,24 +3128,28 @@ public class Patch {
             }
     
             UploadDependentFiles(dir);
-            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
 
             if (Preferences.getInstance().isBackupPatchesOnSDEnabled() && FileNamePath != null && !FileNamePath.isEmpty()) {
                 if (f.exists()) {
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdUploadFile(f,
-                        dir + "/" +
-                        f.getName() + ".backup" +
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(ZonedDateTime.now()) +
-                        f.getName().substring(f.getName().lastIndexOf(".")), cal));
+                    String backupFilePath = dir + "/" + f.getName() + ".backup" + DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(ZonedDateTime.now()) + f.getName().substring(f.getName().lastIndexOf("."));
+
+                    try {
+                        QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, backupFilePath, cal);
+                        uploadFileCmd.Do(USBBulkConnection.GetConnection());
+                        if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
+                            LOGGER.log(Level.SEVERE, "Upload failed for " + f.getName());
+                        }
+                    } catch (InterruptedException e) {
+                        LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file.", e);
+                        Thread.currentThread().interrupt();
+                    }
                 }
             }
-            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
         }
         else {
             String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + this.generateBuildFilenameStem(true);
             LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
         }
-
     }
 
     public void UploadToSDCard() {
