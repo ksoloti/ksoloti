@@ -1318,7 +1318,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         AxoObjectFromPatch ao = (AxoObjectFromPatch) getType();
         PatchFrame pf = PatchGUI.OpenPatch(ao.f);
         oi.pf = pf;
-        oi.pg = pf.getPatch();
+        oi.pg = pf.getPatchGUI();
         oi.setInstanceName(iname);
         oi.updateObj();
         getPatch().delete(this);

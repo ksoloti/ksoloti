@@ -1654,7 +1654,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
     }
 
-    public PatchGUI getPatch() {
+    public PatchGUI getPatchGUI() {
         return patch;
     }
 

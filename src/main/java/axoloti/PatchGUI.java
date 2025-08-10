@@ -943,7 +943,7 @@ public class PatchGUI extends Patch {
             String str = FileNamePath.substring(brk) + "  [" + FileNamePath.substring(0, brk-1) + "]";
             patchframe.setTitle(str);
         }
-        else if (patchframe.getPatch().getSettings() != null && patchframe.getPatch().getSettings().subpatchmode != SubPatchMode.no) {
+        else if (patchframe.getPatchGUI().getSettings() != null && patchframe.getPatchGUI().getSettings().subpatchmode != SubPatchMode.no) {
             /* Subpatch */
             patchframe.setTitle(FileNamePath + "  (subpatch)");
             patchframe.setSaveMenuEnabled(false); /* parent has to be saved to preserve changes */

@@ -273,13 +273,13 @@ public class Net extends JComponent {
             }
         }
 
-        Point from = SwingUtilities.convertPoint(getPatchGui().Layers, p0, this);
+        Point from = SwingUtilities.convertPoint(getPatchGUI().Layers, p0, this);
         from.x -= 1; /* Compensate for outlet graphic shift */
         Color c_shadow = c.darker().darker();
         for (InletInstance i : dest) {
             Point p1 = i.getJackLocInCanvas();
 
-            Point to = SwingUtilities.convertPoint(getPatchGui().Layers, p1, this);
+            Point to = SwingUtilities.convertPoint(getPatchGUI().Layers, p1, this);
 
             g2.setColor(c_shadow); /* derive wire shadow color from actual color */
             if (from.x > to.x) {
@@ -342,7 +342,7 @@ public class Net extends JComponent {
         // }
     }
 
-    public PatchGUI getPatchGui() {
+    public PatchGUI getPatchGUI() {
         return (PatchGUI) patch;
     }
 
