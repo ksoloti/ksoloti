@@ -323,9 +323,16 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
                 if (me.getButton() == MouseEvent.BUTTON1) {
                     // if (me.getClickCount() == 1) {
                         if (me.isShiftDown()) {
-                            SetSelected(!isSelected());
+                            if (!patch.getPatchframe().getIgnoreShiftKey()) {
+                                SetSelected(!isSelected());
+                            }
+                            else {
+                                /* Skip shift + left click to select/unselect, clear ignoreShiftKey flag */
+                                patch.getPatchframe().setIgnoreShiftKey(false);
+                            }
                             me.consume();
-                        } else if (Selected == false) {
+                        }
+                        else if (Selected == false) {
                             ((PatchGUI) patch).SelectNone();
                             SetSelected(true);
                             me.consume();

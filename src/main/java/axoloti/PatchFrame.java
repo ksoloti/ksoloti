@@ -106,6 +106,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private boolean previousOverload;
     private boolean firstShow = true;
+    private boolean ignoreShiftKey = false;
 
     private axoloti.menus.FileMenu fileMenuP;
     private javax.swing.Box.Filler filler1;
@@ -575,6 +576,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuItemUploadSD.setEnabled(enabled);
         jMenuItemUploadSDStart.setEnabled(enabled);
         presetPanel.GUIShowLiveState(enabled);
+    }
+
+    public boolean getIgnoreShiftKey() {
+        return this.ignoreShiftKey;
+    }
+
+    public void setIgnoreShiftKey(boolean ignore) {
+        this.ignoreShiftKey = ignore;
     }
 
     public void showPresetPanel(boolean show) {
