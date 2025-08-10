@@ -698,8 +698,7 @@ public class PatchGUI extends Patch {
                         if ((objname != null) && (outletname != null)) {
                             String on2 = dict.get(objname);
                             if (on2 != null) {
-//                                o.name = on2 + " " + r[1];
-                            OutletInstance i = new OutletInstance();
+                                OutletInstance i = new OutletInstance();
                                 i.outletname = outletname;
                                 i.objname = on2;
                                 source2.add(i);
@@ -729,14 +728,6 @@ public class PatchGUI extends Patch {
                                 i.inletname = inletname;
                                 i.objname = on2;
                                 dest2.add(i);
-                            } else if (applyWiresFromExternalOutlets) {
-                                AxoObjectInstanceAbstract obj = GetObjectInstance(objname);
-                                if (obj != null) {
-                                    InletInstance ii = obj.GetInletInstance(inletname);
-                                    if (ii != null) {
-                                        connectedInlet = ii;
-                                    }
-                                }
                             }
                         }
                     }
@@ -748,27 +739,14 @@ public class PatchGUI extends Patch {
                         n.PostConstructor();
                         nets.add(n);
                         netLayerPanel.add(n);
-                    } else if (connectedInlet != null) {
-                        for (InletInstance o : n.dest) {
-                            InletInstance o2 = getInletByReference(o.getObjname(), o.getInletname());
-                            if ((o2 != null) && (o2 != connectedInlet)) {
-                                AddConnection(connectedInlet, o2);
-                            }
-                        }
-                        for (OutletInstance o : n.source) {
-                            OutletInstance o2 = getOutletByReference(o.getObjname(), o.getOutletname());
-                            if (o2 != null) {
-                                AddConnection(connectedInlet, o2);
-                            }
-                        }
                     } else if (connectedOutlet != null) {
                         for (InletInstance o : n.dest) {
                             InletInstance o2 = getInletByReference(o.getObjname(), o.getInletname());
                             if (o2 != null) {
                                 AddConnection(o2, connectedOutlet);
+                            }
+                        }
                     }
-                }
-            }
                 }
             }
             AdjustSize();
