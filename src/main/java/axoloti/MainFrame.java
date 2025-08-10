@@ -1859,6 +1859,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemMount.setEnabled(connect);
         jMenuItemFlashDefault.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
         jMenuItemFlashUser.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
+        jMenuItemRefreshFWID.setEnabled(connect);
 
         if (Preferences.getInstance().getRestartRequired()) {
             disableConnectUntilRestart();
