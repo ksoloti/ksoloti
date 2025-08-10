@@ -127,6 +127,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JMenuItem jMenuItemAdjScroll;
     private javax.swing.JMenuItem jMenuItemClearPreset;
     private javax.swing.JMenuItem jMenuItemDuplicate;
+    private javax.swing.JMenuItem jMenuItemDuplicateWithWires;
     private javax.swing.JMenuItem jMenuItemDelete;
     private javax.swing.JMenuItem jMenuItemDifferenceToPreset;
     private javax.swing.JMenuItem jMenuItemLock;
@@ -689,6 +690,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         undoItem = new javax.swing.JMenuItem();
         redoItem = new javax.swing.JMenuItem();
         jMenuItemDuplicate = new javax.swing.JMenuItem();
+        jMenuItemDuplicateWithWires = new javax.swing.JMenuItem();
         jMenuItemDelete = new javax.swing.JMenuItem();
         jMenuItemSelectAll = new javax.swing.JMenuItem();
         jMenuItemAddObj = new javax.swing.JMenuItem();
@@ -885,6 +887,16 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuItemDuplicate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemDuplicateActionPerformed(evt);
+            }
+        });
+
+        jMenuItemDuplicateWithWires.setMnemonic('P');
+        jMenuItemDuplicateWithWires.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
+        jMenuItemDuplicateWithWires.setText("Duplicate with Incoming Wires");
+        jMenuEdit.add(jMenuItemDuplicateWithWires);
+        jMenuItemDuplicateWithWires.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemDuplicateWithWiresActionPerformed(evt);
             }
         });
 
@@ -1369,7 +1381,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
         Patch p = patch.GetSelectedObjects();
         if (p.objectInstances.isEmpty()) {
-            return;
+            return; // TODO: duplicate unselected object under cursor
         }
 
         p.PreSerialize();
@@ -1386,6 +1398,40 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             Point point = p.objectInstances.get(0).getLocationOnScreen();
             robot.mouseMove(point.x + 40,point.y + 22);
             robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        }
+        catch (UnsupportedFlavorException ex) {
+            LOGGER.log(Level.SEVERE, "Paste error: Unknown clipboard content", ex);
+        }
+        catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "An unexpected error occurred during the duplicate operation.", ex);
+        }
+    }
+
+    private void jMenuItemDuplicateWithWiresActionPerformed(java.awt.event.ActionEvent evt) {
+        if (patch.IsLocked()) {
+            return;
+        }
+        Patch p = patch.GetSelectedObjects();
+        if (p.objectInstances.isEmpty()) {
+            return; // TODO: duplicate unselected object under cursor
+        }
+
+        p.PreSerialize();
+        Serializer serializer = new Persister(new Format(2));
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        
+        try {
+            serializer.write(p, baos);
+            String s = new String(baos.toString());
+            patch.paste(s, null, true);
+
+            /* emulate mouse dragging */
+            Robot robot = new Robot();
+            Point point = p.objectInstances.get(0).getLocationOnScreen();
+            robot.mouseMove(point.x + 40,point.y + 22);
+            setIgnoreShiftKey(true);
+            robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+            /* ignoreShiftKey is cleared in AxoObjectInstanceAbstract keylistener */
         }
         catch (UnsupportedFlavorException ex) {
             LOGGER.log(Level.SEVERE, "Paste error: Unknown clipboard content", ex);
