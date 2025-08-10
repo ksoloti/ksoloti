@@ -1784,16 +1784,16 @@ public class USBBulkConnection extends Connection {
                             //     System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received unexpected AxoR for command: " + (char)commandByte + ". Expected: " + currentExecutingCommand.getExpectedAckCommandByte() + ". Ignoring.");
                             // }
                         }
-                        else if (currentExecutingCommand instanceof QCmdStartFlasher ||
-                                 currentExecutingCommand instanceof QCmdStartMounter) {
-                            /* We won't get any useful "start patch " response from these commands
-                               as they force a reboot into Flasher/Mounter mode.
-                               Hard-coded success here. So alpha. */
-                            if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) {
-                                currentExecutingCommand.setMcuStatusCode((byte)0);
-                                currentExecutingCommand.setCompletedWithStatus(true);
-                            }
-                        }
+                                // else if (currentExecutingCommand instanceof QCmdStartFlasher ||
+                                //         currentExecutingCommand instanceof QCmdStartMounter) {
+                                //     /* We won't get any useful "start patch " response from these commands
+                                //     as they force a reboot into Flasher/Mounter mode.
+                                //     Hard-coded success here. So alpha. */
+                                //     if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) {
+                                //         currentExecutingCommand.setMcuStatusCode((byte)0);
+                                //         currentExecutingCommand.setCompletedWithStatus(true);
+                                //     }
+                                // }
                     }
                     GoIdleState();
                 }

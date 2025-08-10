@@ -807,19 +807,19 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     boolean success = get();
                     if (success) {
                         /* If code reaches here, the background process was successful */
-                        QCmdStart startFlasherCmd = new QCmdStartFlasher();
+                        QCmdStartFlasher startFlasherCmd = new QCmdStartFlasher();
                         startFlasherCmd.Do(USBBulkConnection.GetConnection());
-                        startFlasherCmd.waitForCompletion();
-                        if (startFlasherCmd.isSuccessful()) {
-                            LOGGER.log(Level.INFO, "Flasher Patch started.");
-                        } else {
-                            LOGGER.log(Level.SEVERE, "Flasher Patch start failed.");
-                            return;
-                        }
-                        LOGGER.log(Level.INFO, "Firmware and Flasher upload successful, disconnecting for flash write...");
+                        // startFlasherCmd.waitForCompletion();
+                        // if (startFlasherCmd.isSuccessful()) {
+                        //     LOGGER.log(Level.INFO, "Flasher Patch started.");
+                        // } else {
+                        //     LOGGER.log(Level.SEVERE, "Flasher Patch start failed.");
+                        //     return;
+                        // }
+                        // LOGGER.log(Level.INFO, "Firmware and Flasher upload successful, disconnecting for flash write...");
                         ShowDisconnect();
-                        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
-                        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                        // QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
+                        // QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                     } else {
                         /* Above error messages should have handled all failures */
                     }
@@ -1645,40 +1645,41 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         File f = new File(fname);
         if (f.canRead()) {
             setCurrentLivePatch(null);
-        try {
-            QCmdUploadPatch uploadMounterCmd = new QCmdUploadPatch(f);
-            uploadMounterCmd.Do(USBBulkConnection.GetConnection());
-            boolean completed = uploadMounterCmd.waitForCompletion();
-            if (!completed) {
-                LOGGER.log(Level.SEVERE, "Mounter upload timed out.");
-                return;
+            try {
+                QCmdUploadPatch uploadMounterCmd = new QCmdUploadPatch(f);
+                uploadMounterCmd.Do(USBBulkConnection.GetConnection());
+                boolean completed = uploadMounterCmd.waitForCompletion();
+                if (!completed) {
+                    LOGGER.log(Level.SEVERE, "Mounter upload timed out.");
+                    return;
+                }
+                if (!uploadMounterCmd.isSuccessful()) {
+                    LOGGER.log(Level.SEVERE, "Mounter upload failed.");
+                    return;
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "An error occurred while uploading Mounter.");
             }
-            if (!uploadMounterCmd.isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "Mounter upload failed.");
-                return;
-            }
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An error occurred while uploading Mounter.");
-        }
 
-        try {
-            QCmdStartMounter startMounterCmd = new QCmdStartMounter();
-            startMounterCmd.Do(USBBulkConnection.GetConnection());
-            boolean completed = startMounterCmd.waitForCompletion();
-            if (!completed) {
-                LOGGER.log(Level.SEVERE, "Mounter start timed out.");
+            try {
+                QCmdStartMounter startMounterCmd = new QCmdStartMounter();
+                startMounterCmd.Do(USBBulkConnection.GetConnection());
+                // boolean completed = startMounterCmd.waitForCompletion();
+                // if (!completed) {
+                //     LOGGER.log(Level.SEVERE, "Mounter start timed out.");
+                //     return;
+                // }
+                // if (!startMounterCmd.isSuccessful()) {
+                //     LOGGER.log(Level.SEVERE, "Mounter start failed.");
+                //     return;
+                // }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "An error occurred while starting Mounter.");
                 return;
+            } finally {
+                // QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
+                ShowDisconnect();
             }
-            if (!startMounterCmd.isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "Mounter start failed.");
-                return;
-            }
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An error occurred while starting Mounter.");
-            return;
-        }
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
-            ShowDisconnect();
         }
         else {
             LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first!\n(File: {0})", fname);

@@ -72,6 +72,15 @@ public class QCmdStart extends AbstractQCmdSerialTask {
         }
 
         try {
+            if (this instanceof QCmdStartFlasher || this instanceof QCmdStartMounter) {
+                /* We won't get any "start patch" response from these commands
+                   as they force an immediate reboot into Flasher/Mounter mode.
+                   Hard-coded success here. So alpha. */
+                setMcuStatusCode((byte)0x00); // FR_OK
+                setCompletedWithStatus(true);
+                return this;
+            }
+
             if (!waitForCompletion()) {
                 LOGGER.log(Level.SEVERE, "QCmdStart: Core did not acknowledge within timeout.");
                 setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
