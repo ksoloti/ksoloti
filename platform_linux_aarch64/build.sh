@@ -95,6 +95,7 @@ mkdir -p "${PLATFORM_ROOT}/lib"
 mkdir -p "${PLATFORM_ROOT}/src"
 
 
+
 if [ ! -f "$PLATFORM_ROOT/bin/arm-none-eabi-gcc" ];
 then
     cd "${PLATFORM_ROOT}/src"
@@ -176,6 +177,16 @@ then
 else
     echo "##### ${JDK_ARCHIVE_LINUX} already downloaded #####"
 fi
+
+JDK_ARCHIVE_LINUX_ARCH64="zulu21.42.19-ca-jdk21.0.7-linux_arch64.tar.gz"
+if [ ! -f "${JDK_ARCHIVE_LINUX_ARCH64}" ];
+then
+    echo "##### downloading ${JDK_ARCHIVE_LINUX_ARCH64} #####"
+    curl -L https://cdn.azul.com/zulu/bin/$JDK_ARCHIVE_LINUX_ARCH64 > $JDK_ARCHIVE_LINUX_ARCH64
+else
+    echo "##### ${JDK_ARCHIVE_LINUX_ARCH64} already downloaded #####"
+fi
+
 
 JDK_ARCHIVE_MAC="zulu21.42.19-ca-jdk21.0.7-macosx_x64.tar.gz"
 if [ ! -f "${JDK_ARCHIVE_MAC}" ];
