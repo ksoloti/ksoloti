@@ -70,12 +70,12 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "Uploading firmware to SDRAM...";
+        return "Sending firmware packets...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Firmware upload to SDRAM " + (isSuccessful() ? "successful" : "failed") + ".\n";
+        return "Done sending firmware packets.";
     }
 
     /* These methods are called by USBBulkConnection.processByte() */

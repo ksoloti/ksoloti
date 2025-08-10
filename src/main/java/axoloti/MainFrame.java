@@ -770,9 +770,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             protected Boolean doInBackground() throws Exception {
                 try {
                     QCmdUploadFWSDRam uploadFwCmd = new QCmdUploadFWSDRam(p);
+                    LOGGER.log(Level.INFO, uploadFwCmd.GetStartMessage());
                     uploadFwCmd.Do(USBBulkConnection.GetConnection());
-                    boolean completed = uploadFwCmd.waitForCompletion();
-                    if (!completed) {
+                    if (!uploadFwCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM timed out");
                         return false;
                     }
@@ -780,11 +780,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed");
                         return false;
                     }
+                    LOGGER.log(Level.INFO, uploadFwCmd.GetDoneMessage());
 
                     QCmdUploadPatch uploadPatchCmd = new QCmdUploadPatch(f);
                     uploadPatchCmd.Do(USBBulkConnection.GetConnection());
-                    completed = uploadPatchCmd.waitForCompletion();
-                    if (!completed) {
+                    if (!uploadPatchCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Flasher Patch upload timed out");
                         return false;
                     }
@@ -809,6 +809,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         /* If code reaches here, the background process was successful */
                         QCmdStartFlasher startFlasherCmd = new QCmdStartFlasher();
                         startFlasherCmd.Do(USBBulkConnection.GetConnection());
+                        LOGGER.log(Level.SEVERE, startFlasherCmd.GetDoneMessage());
                         // startFlasherCmd.waitForCompletion();
                         // if (startFlasherCmd.isSuccessful()) {
                         //     LOGGER.log(Level.INFO, "Flasher Patch started.");
@@ -1441,8 +1442,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 if (USBBulkConnection.GetConnection().isConnected()) {
                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch1.getBinFile());
                     uploadCmd.Do(USBBulkConnection.GetConnection());
-                    boolean completed = uploadCmd.waitForCompletion();
-                    if (!completed) {
+                    if (!uploadCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Test patch upload timed out");
                         status = false;
                     }
@@ -1648,8 +1648,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             try {
                 QCmdUploadPatch uploadMounterCmd = new QCmdUploadPatch(f);
                 uploadMounterCmd.Do(USBBulkConnection.GetConnection());
-                boolean completed = uploadMounterCmd.waitForCompletion();
-                if (!completed) {
+                if (!uploadMounterCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Mounter upload timed out.");
                     return;
                 }
@@ -1663,9 +1662,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
             try {
                 QCmdStartMounter startMounterCmd = new QCmdStartMounter();
+                LOGGER.log(Level.INFO, startMounterCmd.GetStartMessage());
                 startMounterCmd.Do(USBBulkConnection.GetConnection());
-                // boolean completed = startMounterCmd.waitForCompletion();
-                // if (!completed) {
+                LOGGER.log(Level.WARNING, startMounterCmd.GetDoneMessage());
+                // if (!startMounterCmd.waitForCompletion()) {
                 //     LOGGER.log(Level.SEVERE, "Mounter start timed out.");
                 //     return;
                 // }
