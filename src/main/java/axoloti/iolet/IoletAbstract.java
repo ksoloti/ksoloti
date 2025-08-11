@@ -23,6 +23,9 @@ import org.simpleframework.xml.Attribute;
 
 public abstract class IoletAbstract extends JPanel implements MouseListener, MouseMotionListener {
 
+    NetDragging dragnet = null;
+    IoletAbstract dragtarget = null;
+
     @Deprecated
     @Attribute(required = false)
     public String name;
@@ -89,9 +92,6 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
             return null;
         }
     }
-
-    NetDragging dragnet = null;
-    IoletAbstract dragtarget = null;
 
     @Override
     public void mouseClicked(MouseEvent e) {
