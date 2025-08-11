@@ -22,6 +22,7 @@ import java.awt.Dimension;
 import javax.swing.JFileChooser;
 
 import axoloti.ui.SvgFileView;
+import com.googlecode.jfilechooserbookmarks.DefaultBookmarksPanel;
 
 /**
  *
@@ -37,6 +38,9 @@ public class AxoJFileChooser extends JFileChooser {
         currentSize = DEFAULT_SIZE;
         setPreferredSize(currentSize);
         this.setFileView(new SvgFileView());
+        DefaultBookmarksPanel panel = new DefaultBookmarksPanel();
+        panel.setOwner(this);
+        this.setAccessory(panel);
     }
 
     public void restoreCurrentSize() {

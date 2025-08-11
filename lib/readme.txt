@@ -11,3 +11,4 @@ marlin - for more efficient graphic rendering
 rsyntaxtextarea, autocomplete - object editor code syntax
 jsvg - handle SVG icons
 batik - SVG graphic tools
+jfilechooserbookmarks - simple little bookmarks manager inside the file chooser
