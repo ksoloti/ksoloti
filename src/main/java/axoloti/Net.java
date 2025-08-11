@@ -55,6 +55,14 @@ public class Net extends JComponent {
     Patch patch;
     boolean selected = false;
 
+    final static float[] dash = {3.f, 6.f};
+    final static Stroke strokeValidSelected = new BasicStroke(4.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    final static Stroke strokeValidDeselected = new BasicStroke(1.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    final static Stroke strokeBrokenSelected = new BasicStroke(4.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
+    final static Stroke strokeBrokenDeselected = new BasicStroke(1.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
+    final static Stroke strokeDragging = new BasicStroke(3.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
+    final QuadCurve2D.Float curve = new QuadCurve2D.Float();
+
     public Net() {
         if (source == null) {
             source = new ArrayList<OutletInstance>();
@@ -178,14 +186,6 @@ public class Net extends JComponent {
         }
         return c;
     }
-
-    final static float[] dash = {3.f, 6.f};
-    final static Stroke strokeValidSelected = new BasicStroke(4.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    final static Stroke strokeValidDeselected = new BasicStroke(1.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    final static Stroke strokeBrokenSelected = new BasicStroke(4.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
-    final static Stroke strokeBrokenDeselected = new BasicStroke(1.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
-    final static Stroke strokeDragging = new BasicStroke(3.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, dash, 0.f);
-    final QuadCurve2D.Float curve = new QuadCurve2D.Float();
 
     float CtrlPointY(float x1, float y1, float x2, float y2) {
         float looseness = 0.05f;
