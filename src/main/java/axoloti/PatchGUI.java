@@ -625,7 +625,41 @@ public class PatchGUI extends Patch {
                 }
             }
 
+            /* Find offset */
             int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+            for (AxoObjectInstanceAbstract o : p.objectInstances) {
+                if (o.getX() < minX) {
+                    minX = o.getX();
+                }
+                if (o.getY() < minY) {
+                    minY = o.getY();
+                }
+            }
+
+            int xOffset = 0, yOffset = 0;
+            if (pos != null) {
+                xOffset = ((pos.x - minX + (Constants.X_GRID / 2)) / Constants.X_GRID) * Constants.X_GRID;
+                yOffset = ((pos.y - minY + (Constants.Y_GRID / 2)) / Constants.Y_GRID) * Constants.Y_GRID;
+            }
+
+            /* Check for object collisions */
+            int xCollisionShift = 0;
+            int yCollisionShift = 0;
+            boolean hasCollision;
+            do {
+                hasCollision = false;
+                for (AxoObjectInstanceAbstract o : p.objectInstances) {
+                    int newposx = o.getX() + xOffset + xCollisionShift;
+                    int newposy = o.getY() + yOffset + yCollisionShift;
+
+                    if (getObjectAtLocation(newposx, newposy) != null) {
+                        hasCollision = true;
+                        xCollisionShift += Constants.X_GRID;
+                        yCollisionShift += Constants.Y_GRID;
+                        break;
+                    }
+                }
+            } while (hasCollision);
             
             // System.out.println(Instant.now() + " Starting second pass: Naming and positioning objects.");
             for (AxoObjectInstanceAbstract o : p.objectInstances) {
@@ -669,30 +703,14 @@ public class PatchGUI extends Patch {
                     dict.put(original_name, new_name);
                     // System.out.println(Instant.now() + " Dictionary mapping: " + original_name + " -> " + new_name);
                 }
-
-                if (o.getX() < minX) {
-                    minX = o.getX();
-                }
-                if (o.getY() < minY) {
-                    minY = o.getY();
-                }
                 
-                o.patch = this;
                 objectInstances.add(o);
                 objectLayerPanel.add(o, 0);
                 o.PostConstructor();
                 
-                int newposx = o.getX();
-                int newposy = o.getY();
+                int newposx = o.getX() + xOffset + xCollisionShift;
+                int newposy = o.getY() + yOffset + yCollisionShift;
 
-                if (pos != null) {
-                    newposx += ((pos.x - minX + (Constants.X_GRID / 2)) / Constants.X_GRID) * Constants.X_GRID;
-                    newposy += ((pos.y - minY + (Constants.Y_GRID / 2)) / Constants.Y_GRID) * Constants.Y_GRID;
-                }
-                while (getObjectAtLocation(newposx, newposy) != null) {
-                    newposx += Constants.X_GRID;
-                    newposy += Constants.Y_GRID;
-                }
                 o.setLocation(newposx, newposy);
                 o.SetSelected(true);
                 // System.out.println(Instant.now() + " Pasted object: " + o.getInstanceName() + " at new location: (" + newposx + ", " + newposy + ")");
