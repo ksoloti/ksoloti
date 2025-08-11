@@ -57,6 +57,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -584,6 +585,7 @@ public class PatchGUI extends Patch {
     void paste(String v, Point pos, boolean applyWiresFromExternalOutlets) {
         SelectNone();
         if (v.isEmpty()) {
+            LOGGER.log(Level.INFO, "Clipboard is empty, nothing to paste.");
             return;
         }
 
@@ -595,10 +597,12 @@ public class PatchGUI extends Patch {
             HashMap<String, String> dict = new HashMap<String, String>();
             ArrayList<AxoObjectInstanceAbstract> obj2 = (ArrayList<AxoObjectInstanceAbstract>) p.objectInstances.clone();
 
+            // System.out.println(Instant.now() + " Starting first pass: Pre-processing objects.");
             for (AxoObjectInstanceAbstract o : obj2) {
                 o.patch = this;
                 AxoObjectAbstract obj = o.resolveType();
                 if (obj != null) {
+                    // System.out.println(Instant.now() + " Found object type for: " + o.getInstanceName());
                     Modulator[] m = obj.getModulators();
                     if (m != null) {
                         if (Modulators == null) {
@@ -611,6 +615,7 @@ public class PatchGUI extends Patch {
                     }
                 }
                 else {
+                    LOGGER.log(Level.WARNING, "Object type not found for: " + o.getInstanceName() + ". Creating zombie object.");
                     p.objectInstances.remove(o);
                     AxoObjectInstanceZombie zombie = new AxoObjectInstanceZombie(new AxoObjectZombie(), this, o.getInstanceName(), new Point(o.getX(), o.getY()));
                     zombie.patch = this;
@@ -621,6 +626,8 @@ public class PatchGUI extends Patch {
             }
 
             int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+            
+            // System.out.println(Instant.now() + " Starting second pass: Naming and positioning objects.");
             for (AxoObjectInstanceAbstract o : p.objectInstances) {
                 String original_name = o.getInstanceName();
                 if (original_name != null) {
@@ -633,7 +640,9 @@ public class PatchGUI extends Patch {
                         }
                     }
                     catch (NumberFormatException e) {
+                        /* Ignore if the suffix is not a number */
                     }
+                    
                     if (hasNumeralSuffix) {
                         int n = Integer.parseInt(ss[ss.length - 1]) + 1;
                         String bs = original_name.substring(0, original_name.length() - ss[ss.length - 1].length());
@@ -655,8 +664,10 @@ public class PatchGUI extends Patch {
 
                     if (!new_name.equals(original_name)) {
                         o.setInstanceName(new_name);
+                        // System.out.println(Instant.now() + " Renamed object from: " + original_name + " to: " + new_name);
                     }
                     dict.put(original_name, new_name);
+                    // System.out.println(Instant.now() + " Dictionary mapping: " + original_name + " -> " + new_name);
                 }
 
                 if (o.getX() < minX) {
@@ -665,10 +676,12 @@ public class PatchGUI extends Patch {
                 if (o.getY() < minY) {
                     minY = o.getY();
                 }
+                
                 o.patch = this;
                 objectInstances.add(o);
                 objectLayerPanel.add(o, 0);
                 o.PostConstructor();
+                
                 int newposx = o.getX();
                 int newposy = o.getY();
 
@@ -682,14 +695,25 @@ public class PatchGUI extends Patch {
                 }
                 o.setLocation(newposx, newposy);
                 o.SetSelected(true);
+                // System.out.println(Instant.now() + " Pasted object: " + o.getInstanceName() + " at new location: (" + newposx + ", " + newposy + ")");
             }
 
             objectLayerPanel.validate();
 
+            // System.out.println(Instant.now() + " Starting third pass: Recreating wires (nets).");
+            Map<OutletInstance, List<InletInstance>> externalConnectionsToMake = null;
+            if (applyWiresFromExternalOutlets) {
+                externalConnectionsToMake = new HashMap<>();
+            }
+
             for (Net n : p.nets) {
-                InletInstance connectedInlet = null;
+                /* Assign patch before any other operations on the net */
+                n.patch = this;
+
                 OutletInstance connectedOutlet = null;
-                if (n.source != null) {
+
+                /* Handles the source (outlets) of the net */
+                if (n.source != null && n.source.size() > 0) {
                     ArrayList<OutletInstance> source2 = new ArrayList<OutletInstance>();
                     for (OutletInstance o : n.source) {
                         String objname = o.getObjname();
@@ -697,54 +721,92 @@ public class PatchGUI extends Patch {
                         if ((objname != null) && (outletname != null)) {
                             String on2 = dict.get(objname);
                             if (on2 != null) {
-                                OutletInstance i = new OutletInstance();
-                                i.outletname = outletname;
-                                i.objname = on2;
-                                source2.add(i);
-                            } else if (applyWiresFromExternalOutlets) {
+                                /* It's an internal connection. Get the new, valid instance */
+                                AxoObjectInstanceAbstract newObj = GetObjectInstance(on2);
+                                if (newObj != null) {
+                                    OutletInstance newOutletInstance = newObj.GetOutletInstance(outletname);
+                                    if (newOutletInstance != null) {
+                                        source2.add(newOutletInstance);
+                                        // System.out.println(Instant.now() + " Found internal outlet and retrieved new instance: " + objname + ":" + outletname + " -> " + on2 + ":" + outletname);
+                                    }
+                                    // else {
+                                    //     System.out.println(Instant.now() + " Could not find outlet instance for new object: " + on2 + ":" + outletname);
+                                    // }
+                                }
+                            }
+                            else if (applyWiresFromExternalOutlets) {
+                                /* It's an external connection */
                                 AxoObjectInstanceAbstract obj = GetObjectInstance(objname);
                                 if ((obj != null) && (connectedOutlet == null)) {
                                     OutletInstance oi = obj.GetOutletInstance(outletname);
                                     if (oi != null) {
                                         connectedOutlet = oi;
+                                        // System.out.println(Instant.now() + " Found external outlet: " + objname + ":" + outletname);
+                                    }
                                 }
                             }
                         }
                     }
-                }
                     n.source = source2;
                 }
 
-                if (n.dest != null) {
-                    ArrayList<InletInstance> dest2 = new ArrayList<InletInstance>();
+                /* Handles the destination (inlets) of the net. */
+                ArrayList<InletInstance> dest2 = new ArrayList<InletInstance>();
+                if (n.dest != null && n.dest.size() > 0) {
+                    // System.out.println(Instant.now() + " Net: " + n.GetCName() + " has " + n.dest.size() + " destinations in clipboard.");
                     for (InletInstance o : n.dest) {
                         String objname = o.getObjname();
                         String inletname = o.getInletname();
                         if ((objname != null) && (inletname != null)) {
                             String on2 = dict.get(objname);
                             if (on2 != null) {
-                            InletInstance i = new InletInstance();
-                                i.inletname = inletname;
-                                i.objname = on2;
-                                dest2.add(i);
+                                /* It's an internal connection. Get the new, valid instance */
+                                AxoObjectInstanceAbstract newObj = GetObjectInstance(on2);
+                                if (newObj != null) {
+                                    InletInstance newInletInstance = newObj.GetInletInstance(inletname);
+                                    if (newInletInstance != null) {
+                                        dest2.add(newInletInstance);
+                                        // System.out.println(Instant.now() + " Found internal inlet and retrieved new instance: " + objname + ":" + inletname + " -> " + on2 + ":" + inletname);
+                                    }
+                                    // else {
+                                    //     System.out.println(Instant.now() + " Could not find inlet instance for new object: " + on2 + ":" + inletname);
+                                    // }
+                                }
                             }
                         }
                     }
-                    n.dest = dest2;
                 }
-                if (n.source.size() + n.dest.size() > 1) {
-                    if ((connectedInlet == null) && (connectedOutlet == null)) {
-                        n.patch = this;
-                        n.PostConstructor();
-                        nets.add(n);
-                        netLayerPanel.add(n);
-                    } else if (connectedOutlet != null) {
-                        for (InletInstance o : n.dest) {
-                            InletInstance o2 = getInletByReference(o.getObjname(), o.getInletname());
-                            if (o2 != null) {
-                                AddConnection(o2, connectedOutlet);
-                            }
-                        }
+                n.dest = dest2;
+
+                /* After processing sources and destinations, decide how to create the new net */
+                if (n.source.size() > 0 && n.dest.size() > 0) {
+                    /* It's a new internal net to be created */
+                    n.PostConstructor();
+                    nets.add(n);
+                    netLayerPanel.add(n);
+                    // System.out.println(Instant.now() + " Creating internal net: " + n.GetCName());
+                }
+                else if (connectedOutlet != null && n.dest.size() > 0 && applyWiresFromExternalOutlets) {
+                    /* Net has an external source and needs to be connected to the new inlets */
+                    if (!externalConnectionsToMake.containsKey(connectedOutlet)) {
+                        externalConnectionsToMake.put(connectedOutlet, new ArrayList<>());
+                    }
+                    externalConnectionsToMake.get(connectedOutlet).addAll(n.dest);
+                    // System.out.println(Instant.now() + " Queuing external connection from: " + connectedOutlet.GetCName() + " to " + n.dest.size() + " new inlets.");
+                }
+                // else if (n.source.size() == 0 && n.dest.size() > 0) {
+                //     System.out.println(Instant.now() + " Pasting a net with a destination but no source. Skipping.");
+                // }
+            }
+            
+            // Fourth Pass: Create the new external connections
+            if (applyWiresFromExternalOutlets && externalConnectionsToMake != null) {
+                for (Map.Entry<OutletInstance, List<InletInstance>> entry : externalConnectionsToMake.entrySet()) {
+                    OutletInstance sourceOutlet = entry.getKey();
+                    List<InletInstance> destinationInlets = entry.getValue();
+
+                    for (InletInstance destinationInlet : destinationInlets) {
+                        AddConnection(destinationInlet, sourceOutlet);
                     }
                 }
             }
@@ -752,7 +814,7 @@ public class PatchGUI extends Patch {
             SetDirty();
         }
         catch (XMLStreamException ex) {
-            /* Silence, machine! */
+            LOGGER.log(Level.INFO, "Paste: Clipboard does not contain valid content.");
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "An unexpected error occurred during the paste operation.", ex);
