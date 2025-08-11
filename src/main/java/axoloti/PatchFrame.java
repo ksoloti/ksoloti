@@ -1131,39 +1131,39 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         handleLiveAction(jToggleButtonLive.isSelected());
     }
 
-    private void jMenuCopyActionPerformed(java.awt.event.ActionEvent evt) {
-        Patch p = patch.GetSelectedObjects();
-        if (p.objectInstances.isEmpty()) {
-            getToolkit().getSystemClipboard().setContents(new StringSelection(""), null);
-            return;
-        }
-        p.PreSerialize();
-        Serializer serializer = new Persister(new Format(2));
-        try {
-            Clipboard clip = getToolkit().getSystemClipboard();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            serializer.write(p, baos);
-            StringSelection s = new StringSelection(baos.toString());
-            clip.setContents(s, (ClipboardOwner)null);
-        }
-        catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
-    }
+    // private void jMenuCopyActionPerformed(java.awt.event.ActionEvent evt) {
+    //     Patch p = patch.GetSelectedObjects();
+    //     if (p.objectInstances.isEmpty()) {
+    //         getToolkit().getSystemClipboard().setContents(new StringSelection(""), null);
+    //         return;
+    //     }
+    //     p.PreSerialize();
+    //     Serializer serializer = new Persister(new Format(2));
+    //     try {
+    //         Clipboard clip = getToolkit().getSystemClipboard();
+    //         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    //         serializer.write(p, baos);
+    //         StringSelection s = new StringSelection(baos.toString());
+    //         clip.setContents(s, (ClipboardOwner)null);
+    //     }
+    //     catch (Exception ex) {
+    //         LOGGER.log(Level.SEVERE, null, ex);
+    //     }
+    // }
 
-    private void jMenuPasteActionPerformed(java.awt.event.ActionEvent evt) {
-        Clipboard clip = getToolkit().getSystemClipboard();
-        try {
-            Point mousePos = patch.Layers.getMousePosition();
-            patch.paste((String)clip.getData(DataFlavor.stringFlavor), mousePos, false);
-        }
-        catch (UnsupportedFlavorException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
-        catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
-    }
+    // private void jMenuPasteActionPerformed(java.awt.event.ActionEvent evt) {
+    //     Clipboard clip = getToolkit().getSystemClipboard();
+    //     try {
+    //         Point mousePos = patch.Layers.getMousePosition();
+    //         patch.paste((String)clip.getData(DataFlavor.stringFlavor), mousePos, false);
+    //     }
+    //     catch (UnsupportedFlavorException ex) {
+    //         LOGGER.log(Level.SEVERE, null, ex);
+    //     }
+    //     catch (IOException ex) {
+    //         LOGGER.log(Level.SEVERE, null, ex);
+    //     }
+    // }
 
     private void jMenuSaveActionPerformed(java.awt.event.ActionEvent evt) { 
         String fn = patch.getFileNamePath();
@@ -1190,7 +1190,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         fc.addChoosableFileFilter(FileUtils.axhFileFilter);
 
         String fn = patch.getFileNamePath();
-            Point mousePos = patch.Layers.getMousePosition();
+        // Point mousePos = patch.Layers.getMousePosition();
         if (fn == null) {
             fn = "untitled";
         }
