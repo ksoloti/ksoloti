@@ -72,6 +72,65 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     public AxoObjectInstanceAbstract target_object;
     private AxoObjectTreeNode objectTree;
 
+    /* Shortcut strings */
+    public static final String shortcutList[] = {
+
+        /* Lower case shortcuts should ideally point to low-level and basic objects */
+        /* a */ null,
+        /* b */ null,
+        /* c */ "ctrl/",
+        /* d */ "disp/",
+        /* e */ "patch/object",
+        /* f */ null,
+        /* g */ "gain/",
+        /* h */ "harmony/",
+        /* i */ "audio/in",
+        /* j */ null,
+        /* k */ null,
+        /* l */ "logic/",
+        /* m */ "math/",
+        /* n */ "noise/",
+        /* o */ "audio/out",
+        /* p */ "patch/",
+        /* q */ null,
+        /* r */ "(read|write)",
+        /* s */ "string/",
+        /* t */ "table/",
+        /* u */ "util/",
+        /* v */ null,
+        /* w */ "wave/",
+        /* x */ "mix/",
+        /* y */ null,
+        /* z */ null,
+
+        /* Upper case shortcuts should ideally point to more high-level and abstracted objects */
+        /* A */ null,
+        /* B */ "big genes/",
+        /* C */ "patch/comment", /* special case - will never get here */
+        /* D */ "delay/",
+        /* E */ "env/",
+        /* F */ "filter/",
+        /* G */ "gills/",
+        /* H */ null,
+        /* I */ "patch/inlet",
+        /* J */ null,
+        /* K */ "ksoloti/",
+        /* L */ "lfo/",
+        /* M */ "midi/",
+        /* N */ null,
+        /* O */ "patch/outlet",
+        /* P */ "patch/patcher",
+        /* Q */ "(seq|sequencer)",
+        /* R */ "reverb",
+        /* S */ "script",
+        /* T */ null,
+        /* U */ null,
+        /* V */ null,
+        /* W */ "osc/",
+        /* X */ "fx/",
+        /* Y */ null,
+        /* Z */ null,
+    };
 
     /**
      * Creates new form ObjectSearchFrame

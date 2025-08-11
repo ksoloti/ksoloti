@@ -94,94 +94,35 @@ public class PatchGUI extends Patch {
     private static final Logger LOGGER = Logger.getLogger(PatchGUI.class.getName());
 
     /* KeyCode integers */
-    static final int keyCodeList[] = {
-        KeyEvent.VK_A,
-        KeyEvent.VK_B,
-        KeyEvent.VK_C,
-        KeyEvent.VK_D,
-        KeyEvent.VK_E,
-        KeyEvent.VK_F,
-        KeyEvent.VK_G,
-        KeyEvent.VK_H,
-        KeyEvent.VK_I,
-        KeyEvent.VK_J,
-        KeyEvent.VK_K,
-        KeyEvent.VK_L,
-        KeyEvent.VK_M,
-        KeyEvent.VK_N,
-        KeyEvent.VK_O,
-        KeyEvent.VK_P,
-        KeyEvent.VK_Q,
-        KeyEvent.VK_R,
-        KeyEvent.VK_S,
-        KeyEvent.VK_T,
-        KeyEvent.VK_U,
-        KeyEvent.VK_V,
-        KeyEvent.VK_W,
-        KeyEvent.VK_X,
-        KeyEvent.VK_Y,
-        KeyEvent.VK_Z
-    };
+    // static final int keyCodeList[] = {
+    //     KeyEvent.VK_A,
+    //     KeyEvent.VK_B,
+    //     KeyEvent.VK_C,
+    //     KeyEvent.VK_D,
+    //     KeyEvent.VK_E,
+    //     KeyEvent.VK_F,
+    //     KeyEvent.VK_G,
+    //     KeyEvent.VK_H,
+    //     KeyEvent.VK_I,
+    //     KeyEvent.VK_J,
+    //     KeyEvent.VK_K,
+    //     KeyEvent.VK_L,
+    //     KeyEvent.VK_M,
+    //     KeyEvent.VK_N,
+    //     KeyEvent.VK_O,
+    //     KeyEvent.VK_P,
+    //     KeyEvent.VK_Q,
+    //     KeyEvent.VK_R,
+    //     KeyEvent.VK_S,
+    //     KeyEvent.VK_T,
+    //     KeyEvent.VK_U,
+    //     KeyEvent.VK_V,
+    //     KeyEvent.VK_W,
+    //     KeyEvent.VK_X,
+    //     KeyEvent.VK_Y,
+    //     KeyEvent.VK_Z
+    // };
 
-    /* Shortcut strings */
-    static final String shortcutList[] = {
-
-        /* Lower case shortcuts should ideally point to low-level and basic objects */
-        /* a */ null,
-        /* b */ null,
-        /* c */ "ctrl/",
-        /* d */ "disp/",
-        /* e */ "patch/object",
-        /* f */ null,
-        /* g */ "gain/",
-        /* h */ "harmony/",
-        /* i */ "audio/in",
-        /* j */ null,
-        /* k */ null,
-        /* l */ "logic/",
-        /* m */ "math/",
-        /* n */ "noise/",
-        /* o */ "audio/out",
-        /* p */ "patch/",
-        /* q */ null,
-        /* r */ "(read|write)",
-        /* s */ "string/",
-        /* t */ "table/",
-        /* u */ "util/",
-        /* v */ null,
-        /* w */ "wave/",
-        /* x */ "mix/",
-        /* y */ null,
-        /* z */ null,
-
-        /* Upper case shortcuts should ideally point to more high-level and abstracted objects */
-        /* A */ null,
-        /* B */ "big genes/",
-        /* C */ "patch/comment", /* special case - will never get here */
-        /* D */ "delay/",
-        /* E */ "env/",
-        /* F */ "filter/",
-        /* G */ "gills/",
-        /* H */ null,
-        /* I */ "patch/inlet",
-        /* J */ null,
-        /* K */ "ksoloti/",
-        /* L */ "lfo/",
-        /* M */ "midi/",
-        /* N */ null,
-        /* O */ "patch/outlet",
-        /* P */ "patch/patcher",
-        /* Q */ "(seq|sequencer)",
-        /* R */ "reverb",
-        /* S */ "script",
-        /* T */ null,
-        /* U */ null,
-        /* V */ null,
-        /* W */ "osc/",
-        /* X */ "fx/",
-        /* Y */ null,
-        /* Z */ null,
-    };
 
     private final static int capitalLetterOffset = 26;
 
@@ -429,8 +370,8 @@ public class PatchGUI extends Patch {
                         }
                         ke.consume();
 
-                        if (p != null && shortcutList[i] != null) {
-                            ShowClassSelector(p, null, shortcutList[i], false);
+                        if (p != null && ObjectSearchFrame.shortcutList[i] != null) {
+                            ShowClassSelector(p, null, ObjectSearchFrame.shortcutList[i], false);
                         }
                     }
                 }
