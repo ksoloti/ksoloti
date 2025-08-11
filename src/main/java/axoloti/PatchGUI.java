@@ -812,9 +812,13 @@ public class PatchGUI extends Patch {
                     externalConnectionsToMake.get(connectedOutlet).addAll(n.dest);
                     // System.out.println(Instant.now() + " Queuing external connection from: " + connectedOutlet.GetCName() + " to " + n.dest.size() + " new inlets.");
                 }
-                // else if (n.source.size() == 0 && n.dest.size() > 0) {
-                //     System.out.println(Instant.now() + " Pasting a net with a destination but no source. Skipping.");
-                // }
+                else if (n.source.size() == 0 && n.dest.size() > 1) {
+                    /* Floating net: the net connects two or more inlets in the group but the connection to the external outlet is severed. */
+                    n.PostConstructor();
+                    nets.add(n);
+                    netLayerPanel.add(n);
+                    // System.out.println(Instant.now() + " Pasting a 'floating' net with two or more destinations but no source.");
+                }
             }
             
             // Fourth Pass: Create the new external connections
