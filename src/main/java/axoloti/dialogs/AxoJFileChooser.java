@@ -21,6 +21,8 @@ package axoloti.dialogs;
 import java.awt.Dimension;
 import javax.swing.JFileChooser;
 
+import axoloti.ui.SvgFileView;
+
 /**
  *
  * @author Ksoloti
@@ -34,6 +36,7 @@ public class AxoJFileChooser extends JFileChooser {
         super(path);
         currentSize = DEFAULT_SIZE;
         setPreferredSize(currentSize);
+        this.setFileView(new SvgFileView());
     }
 
     public void restoreCurrentSize() {
