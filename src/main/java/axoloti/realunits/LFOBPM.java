@@ -21,7 +21,7 @@ package axoloti.realunits;
 import axoloti.datatypes.Value;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.text.DecimalFormat;
+// import java.text.DecimalFormat;
 import java.text.ParseException;
 
 /**

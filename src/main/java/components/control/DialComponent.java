@@ -19,7 +19,7 @@
 package components.control;
 
 import axoloti.MainFrame;
-import axoloti.datatypes.ValueFrac32;
+// import axoloti.datatypes.ValueFrac32;
 import axoloti.realunits.NativeToReal;
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
@@ -39,7 +39,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.text.DecimalFormat;
+// import java.text.DecimalFormat;
 // import java.util.logging.Level;
 // import java.util.logging.Logger;
 import java.text.ParseException;

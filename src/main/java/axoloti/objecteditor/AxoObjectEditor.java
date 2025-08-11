@@ -32,7 +32,7 @@ import axoloti.object.AxoObjectInstance;
 import axoloti.outlets.Outlet;
 import axoloti.parameters.Parameter;
 import axoloti.ui.CustomImageTabbedPaneUI;
-import axoloti.ui.MaterialColors;
+// import axoloti.ui.MaterialColors;
 import axoloti.ui.SvgIconLoader;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
