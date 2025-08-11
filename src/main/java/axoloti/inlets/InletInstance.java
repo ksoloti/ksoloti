@@ -71,6 +71,11 @@ public class InletInstance<T extends Inlet> extends IoletAbstract implements Ato
         PostConstructor();
     }
 
+    @Override
+    public String getDisplayName() {
+        return getInletname();
+    }
+
     public final void RefreshName() {
         name = axoObj.getInstanceName() + " " + inlet.name;
         objname = axoObj.getInstanceName();

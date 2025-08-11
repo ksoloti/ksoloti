@@ -74,6 +74,7 @@ import javax.swing.JLayer;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.xml.stream.XMLStreamException;
 
@@ -1016,6 +1017,28 @@ public class PatchGUI extends Patch {
         }
         Net nn = super.delete(n);
         return nn;
+    }
+
+    public IoletAbstract getIoletAtLocation(Point p) {
+        for (int i = objectInstances.size() - 1; i >= 0; i--) {
+            AxoObjectInstanceAbstract o = objectInstances.get(i);
+            Point p_obj = SwingUtilities.convertPoint(Layers, p, o);
+
+            for (InletInstance inlet : o.GetInletInstances()) {
+                Point p_inlet = SwingUtilities.convertPoint(o, p_obj, inlet);
+                if (inlet.contains(p_inlet)) {
+                    return inlet;
+                }
+            }
+
+            for (OutletInstance outlet : o.GetOutletInstances()) {
+                Point p_outlet = SwingUtilities.convertPoint(o, p_obj, outlet);
+                if (outlet.contains(p_outlet)) {
+                    return outlet;
+                }
+            }
+        }
+        return null;
     }
 
     @Override

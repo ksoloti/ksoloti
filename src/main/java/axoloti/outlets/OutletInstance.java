@@ -71,6 +71,11 @@ public class OutletInstance<T extends Outlet> extends IoletAbstract implements C
         PostConstructor();
     }
 
+    @Override
+    public String getDisplayName() {
+        return getOutletname();
+    }
+
     public final void RefreshName() {
         name = axoObj.getInstanceName() + " " + outlet.name;
         objname = axoObj.getInstanceName();

@@ -154,6 +154,13 @@ public class Net extends JComponent {
         updateBounds();
     }
 
+    public boolean disconnectInlet(InletInstance inlet) {
+        if (inlet != null) {
+            return dest.remove(inlet);
+        }
+        return false;
+    }
+
     public void connectOutlet(OutletInstance outlet) {
         if (outlet.GetObjectInstance().patch == patch) {
             source.add(outlet);
@@ -395,6 +402,10 @@ public class Net extends JComponent {
     
     public ArrayList<OutletInstance> GetSource() {
         return source;
+    }
+
+    public ArrayList<InletInstance> GetDest() {
+        return dest;
     }
 
     public String CType() {

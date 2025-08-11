@@ -14,6 +14,9 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+// import java.util.logging.Level;
+// import java.util.logging.Logger;
+
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,8 +26,14 @@ import org.simpleframework.xml.Attribute;
 
 public abstract class IoletAbstract extends JPanel implements MouseListener, MouseMotionListener {
 
+    // private static final Logger LOGGER = Logger.getLogger(IoletAbstract.class.getName());
+
     NetDragging dragnet = null;
     IoletAbstract dragtarget = null;
+    Net originalNet = null;
+    private boolean isRepatching = false;
+    private boolean isDuplicating = false;
+    private Point pressPoint;
 
     @Deprecated
     @Attribute(required = false)
@@ -38,7 +47,7 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
 
     @Deprecated
     public String getName() {
-        return name;
+        return (name != null) ? name : "unnamed-io";
     }
 
     public String getObjname() {
@@ -49,6 +58,8 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
             return name.substring(0, sepIndex);
         }
     }
+
+    public abstract String getDisplayName();
 
     public AxoObjectInstanceAbstract GetObjectInstance() {
         return axoObj;
@@ -105,21 +116,26 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
         } else {
             setHighlighted(true);
             if (!axoObj.IsLocked()) {
+                pressPoint = e.getPoint();
+                isRepatching = false;
+                /* If shift is held during mouse button press, the wire will be duplicated/forked */
+                isDuplicating = e.isShiftDown();
+
                 if (dragnet == null) {
                     dragnet = new NetDragging(getPatchGUI());
-                    dragtarget = null;
-                    if (this instanceof InletInstance) {
-                        dragnet.connectInlet((InletInstance) this);
-                    } else {
+                    if (this instanceof OutletInstance) {
                         dragnet.connectOutlet((OutletInstance) this);
+                    } else if (this instanceof InletInstance && isConnected()) {
+                        originalNet = axoObj.patch.GetNet(this);
+                        if (originalNet != null && !originalNet.GetSource().isEmpty()) {
+                            dragnet.connectOutlet(originalNet.GetSource().get(0));
+                        }
+                    } else {
+                        dragnet.connectInlet((InletInstance) this);
                     }
                 }
-                dragnet.setVisible(true);
-                if (getPatchGUI() != null) {
-                    getPatchGUI().selectionRectLayerPanel.add(dragnet);
-                }
-                e.consume();
             }
+            e.consume();
         }
     }
 
@@ -128,40 +144,70 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
         if (e.isPopupTrigger()) {
             getPopup().show(this, 0, getHeight() - 1);
             e.consume();
-        } else if ((dragnet != null) && (getPatchGUI() != null)) {
+        } else if (dragnet != null) {
+            final PatchGUI pg = getPatchGUI();
+            if (pg == null) return;
+
             dragnet.repaint();
-            getPatchGUI().selectionRectLayerPanel.remove(dragnet);
-            dragnet = null;
+            pg.selectionRectLayerPanel.remove(dragnet);
+            
             Net n = null;
-            if (dragtarget == null) {
-                final PatchGUI patchGUI = getPatchGUI();
-                Point p = SwingUtilities.convertPoint(this, e.getPoint(), patchGUI.selectionRectLayerPanel);
-                Component c = patchGUI.objectLayerPanel.findComponentAt(p);
-                while ((c != null) && !(c instanceof IoletAbstract)) {
-                    c = c.getParent();
+            
+            // String sourceName = this.getName();
+            // String targetName = (dragtarget != null) ? dragtarget.getName() : "null-target";
+            // LOGGER.info("mouseReleased on IoletAbstract. Dragnet is null: " + (dragnet == null) + ", dragtarget is null: " + (dragtarget == null));
+
+            if (this instanceof OutletInstance) {
+                if (dragtarget instanceof InletInstance) {
+                    // LOGGER.info("New connection from outlet to inlet: " + sourceName + " -> " + targetName);
+                    n = pg.AddConnection((InletInstance) dragtarget, (OutletInstance) this);
                 }
-                if (this != c && this instanceof InletInstance) {
-                    /* only remove connection when dragging from an *inlet* to empty space */
-                    n = patchGUI.disconnect(this);
-                }
-            } else {
-                if (this instanceof InletInstance) {
-                    if (dragtarget instanceof InletInstance) {
-                        n = getPatchGUI().AddConnection((InletInstance) this, (InletInstance) dragtarget);
-                    } else if (dragtarget instanceof OutletInstance) {
-                        n = getPatchGUI().AddConnection((InletInstance) this, (OutletInstance) dragtarget);
+            } else if (this instanceof InletInstance) {
+                if (dragtarget instanceof InletInstance) {
+                    // LOGGER.info("Repatch attempt from inlet to inlet. Dragging from: " + sourceName + " to: " + targetName);
+
+                    if (originalNet != null && !originalNet.GetSource().isEmpty()) {
+                        OutletInstance sourceOutlet = originalNet.GetSource().get(0);
+                        
+                        if (dragtarget == this) {
+                            // LOGGER.info("Re-patch to same inlet detected. Restoring original connection.");
+                            /* Allows to reconnect the net to its original inlet */
+                            originalNet.connectInlet((InletInstance) dragtarget);
+                            originalNet.updateBounds();
+                            n = originalNet;
+                        } else {
+                            // LOGGER.info("Connecting to a new inlet: " + targetName);
+                            n = pg.AddConnection((InletInstance) dragtarget, sourceOutlet);
+                        }
+                        
+                        if (n != null && n != originalNet && originalNet != null) {
+                            pg.delete(originalNet);
+                            // LOGGER.info("Deleted original net after successful repatch.");
+                        }
+                    } else {
+                        // LOGGER.warning("Cannot repatch: Original net is invalid.");
                     }
-                } else if (this instanceof OutletInstance) {
-                    if (dragtarget instanceof InletInstance) {
-                        n = getPatchGUI().AddConnection((InletInstance) dragtarget, (OutletInstance) this);
+
+                } else {
+                    // LOGGER.info("Drag from " + sourceName + " released in empty space. Checking for net deletion.");
+                    if (originalNet != null && originalNet.GetDest().isEmpty()) {
+                        pg.delete(originalNet);
+                        // LOGGER.info("Single-destination net deleted due to release in empty space.");
                     }
                 }
-                axoObj.patch.PromoteOverloading(false);
             }
+            
             if (n != null) {
-                getPatchGUI().SetDirty();
+                pg.SetDirty();
+                // LOGGER.info("Change made. Setting patch dirty.");
             }
-            getPatchGUI().selectionRectLayerPanel.repaint();
+            
+            /* Final cleanup */
+            dragnet = null;
+            dragtarget = null;
+            originalNet = null;
+            isRepatching = false;
+            pg.selectionRectLayerPanel.repaint();
             e.consume();
         }
     }
@@ -179,30 +225,40 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
     @Override
     public void mouseDragged(MouseEvent e) {
         if (!axoObj.IsLocked()) {
-            final PatchGUI patchGUI = getPatchGUI();
-            if (patchGUI == null) {
-                return;
-            }
-            Point p = SwingUtilities.convertPoint(this, e.getPoint(), patchGUI.objectLayerPanel);
-            Component c = patchGUI.objectLayerPanel.findComponentAt(p);
-            while ((c != null) && !(c instanceof IoletAbstract)) {
-                c = c.getParent();
-            }
-            if ((c != null)
-                    && (c != this)
-                    && (!((this instanceof OutletInstance) && (c instanceof OutletInstance)))) {
-                // different target and not myself?
-                if (c != dragtarget) {
-                    // new target
-                    dragtarget = (IoletAbstract) c;
-                    Point jackLocation = dragtarget.getJackLocInCanvas();
-                    dragnet.SetDragPoint(jackLocation);
+            if (!isRepatching && pressPoint.distance(e.getPoint()) > 5) {
+                isRepatching = true;
+
+                /* Only disconnect if not duplicating (shift + mouse press) */
+                if (!isDuplicating && this instanceof InletInstance && isConnected() && originalNet != null) {
+                    originalNet.disconnectInlet((InletInstance) this);
+                    originalNet.updateBounds();
                 }
-            } else {
-                // floating
-                if (dragnet != null) {
-                    dragnet.SetDragPoint(p);
-                    dragtarget = null;
+                dragnet.setVisible(true);
+                getPatchGUI().selectionRectLayerPanel.add(dragnet);
+            }
+
+            /* Handle the visual movement of the wire */
+            if (dragnet != null) {
+                final PatchGUI patchGUI = getPatchGUI();
+                if (patchGUI == null) return;
+                
+                Point p = SwingUtilities.convertPoint(this, e.getPoint(), patchGUI.objectLayerPanel);
+                Component c = patchGUI.objectLayerPanel.findComponentAt(p);
+                while ((c != null) && !(c instanceof IoletAbstract)) {
+                    c = c.getParent();
+                }
+
+                if ((c != null) && !((this instanceof OutletInstance) && (c instanceof OutletInstance))) {
+                    if (c != dragtarget) {
+                        dragtarget = (IoletAbstract) c;
+                        Point jackLocation = dragtarget.getJackLocInCanvas();
+                        dragnet.SetDragPoint(jackLocation);
+                    }
+                } else {
+                    if (dragnet != null) {
+                        dragnet.SetDragPoint(p);
+                        dragtarget = null;
+                    }
                 }
             }
         }
