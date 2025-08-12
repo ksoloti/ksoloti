@@ -20,6 +20,7 @@
 package axoloti.ui;
 
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.logging.Level;
@@ -48,6 +49,41 @@ import org.w3c.dom.svg.SVGDocument;
 public class SvgIconLoader {
 
     private static final Logger LOGGER = Logger.getLogger(SvgIconLoader.class.getName());
+
+    /**
+     * Loads an SVG file from the classpath and returns it as an Icon, preserving its original colors.
+     *
+     * @param path The path to the SVG file, e.g., "/resources/icons/my-icon.svg".
+     * @param size The desired size (width and height) of the icon in pixels.
+     * @return A Swing Icon object, or null if loading fails.
+     */
+    public static Icon load(String path, int size) {
+        try (InputStream inputStream = SvgIconLoader.class.getResourceAsStream(path)) {
+            if (inputStream == null) {
+                LOGGER.log(Level.SEVERE, "Error: SVG resource not found at " + path);
+                return null;
+            }
+
+            String parser = XMLResourceDescriptor.getXMLParserClassName();
+            SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(parser);
+            SVGDocument svgDocument = factory.createSVGDocument(path, inputStream);
+
+            CustomImageTranscoder transcoder = new CustomImageTranscoder();
+            transcoder.addTranscodingHint(ImageTranscoder.KEY_WIDTH, (float) size);
+            transcoder.addTranscodingHint(ImageTranscoder.KEY_HEIGHT, (float) size);
+
+            TranscoderInput input = new TranscoderInput(svgDocument);
+            transcoder.transcode(input, null);
+            
+            BufferedImage image = transcoder.getBufferedImage();
+            return new ImageIcon(image);
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error loading or transcoding SVG: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     /**
      * Loads an SVG file from the classpath, transcodes it to an Icon, and dynamically
@@ -96,6 +132,14 @@ public class SvgIconLoader {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public Image loadIcon(String svgPath, String pngPath, int size, Color color) {
+        Icon svgIcon = SvgIconLoader.load(svgPath, size, color);
+        if (svgIcon instanceof ImageIcon) {
+            return ((ImageIcon) svgIcon).getImage();
+        }
+        return new ImageIcon(getClass().getResource(pngPath)).getImage();
     }
 
     /**
