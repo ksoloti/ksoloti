@@ -19,13 +19,17 @@
 package axoloti.utils;
 
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
+
+import axoloti.ui.SvgIconLoader;
 
 // import java.io.InputStream;
 
@@ -112,11 +116,25 @@ public class Constants {
     }
 
     public static void createAppIcon() {
+        Icon svgIcon;
+
         if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
-            APP_ICON = new ImageIcon(Constants.class.getResource("/resources/ksoloti_icon.png"));
+            svgIcon = SvgIconLoader.load("/resources/appicons/ksoloti_icon.svg", 64);
+            if (svgIcon instanceof ImageIcon) {
+                APP_ICON = (ImageIcon) svgIcon;
+            } else {
+                /* Fallback to PNG if SVG loading fails */
+                APP_ICON = new ImageIcon(Constants.class.getResource("/resources/appicons/ksoloti_icon.png"));
+            }
         }
         else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
-            APP_ICON = new ImageIcon(Constants.class.getResource("/resources/axoloti_icon.png"));
+            svgIcon = SvgIconLoader.load("/resources/appicons/axoloti_icon.svg", 64);
+            if (svgIcon instanceof ImageIcon) {
+                APP_ICON = (ImageIcon) svgIcon;
+            } else {
+                /* Fallback to PNG if SVG loading fails */
+                APP_ICON = new ImageIcon(Constants.class.getResource("/resources/appicons/axoloti_icon.png"));
+            }
         }
     }
 }
