@@ -1099,7 +1099,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuFirmware.add(jDevSeparator);
 
         jMenuItemFCompile.setMnemonic('C');
-        jMenuItemFCompile.setText("Compile");
+        jMenuItemFCompile.setText("Compile Firmware");
         jMenuItemFCompile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemFCompileActionPerformed(evt);
