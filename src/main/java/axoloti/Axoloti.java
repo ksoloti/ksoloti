@@ -31,8 +31,11 @@ import axoloti.utils.OSDetect.OS;
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,6 +51,8 @@ import javax.swing.UIManager;
 public class Axoloti {
     private final static Logger LOGGER = Logger.getLogger(Axoloti.class.getName());
 
+    public final static int SINGLE_INSTANCE_PORT = 55555; /* For checking if another Patcher instance is running */
+
     public final static String HOME_DIR       = "axoloti_home";
     public final static String LIBRARIES_DIR  = "axoloti_libraries";
     public final static String FIRMWARE_DIR   = "axoloti_firmware";
@@ -61,10 +66,32 @@ public class Axoloti {
      */
     public static void main(final String[] args) {
 
+        /* Single-instance check based on command-line args */
+        String filePath = null;
+        for (String arg : args) {
+            if (arg != null && !arg.startsWith("-")) {
+                filePath = arg;
+                break; /* Stop after finding the first file path */
+            }
+        }
+
+        if (filePath != null) {
+            try (Socket socket = new Socket("localhost", SINGLE_INSTANCE_PORT)) {
+                /* Another instance is running, send the file path and exit */
+                PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+                writer.println(filePath);
+                System.out.println("File '" + filePath + "' sent to existing instance.");
+                System.exit(0);
+            } catch (IOException e) {
+                /* No other instance is running, proceed to start as the primary */
+                System.out.println("No existing instance found. Starting new instance.");
+            }
+        }
+
         AxoSplashScreen splashScreen = null;
         try {
             splashScreen = new AxoSplashScreen(true);
-                splashScreen.showSplashScreen();
+            splashScreen.showSplashScreen();
         } catch (Exception e) {
             System.out.println(Instant.now() + " [DEBUG] Splash screen could not be created: " + e.getMessage());
         }
@@ -310,10 +337,14 @@ public class Axoloti {
         boolean cmdRunFileTest = false;
         boolean cmdRunUpgrade = false;
         String cmdFile = null;
+        ArrayList<String> guiArgs = new ArrayList<>();
+
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
+
             if (arg.equalsIgnoreCase("-exitOnFirstFail")) {
                 MainFrame.stopOnFirstFail = true;
+                guiArgs.add(arg);
             }
 
             // exclusive options
@@ -345,15 +376,20 @@ public class Axoloti {
                     System.exit(-1);
                 }
             } else if (arg.equalsIgnoreCase("-help")) {
-                System.out.println("Axoloti "
+                System.out.println("Ksoloti "
                         + " [-runAllTests|-runPatchTests|-runObjTests] "
                         + " [-runTest patchfile|dir]"
                         + " [-runUpgrade patchfile|dir]"
                         + " [-exitOnFirstFail");
                 System.exit(0);
             }
+            else {
+                guiArgs.add(arg);
+            }
         }
 
+        String[] finalGuiArgs = guiArgs.toArray(new String[0]);
+        
         if (cmdLineOnly) {
             try {
                 MainFrame frame = new MainFrame(args);
@@ -390,7 +426,7 @@ public class Axoloti {
                 @Override
                 public void run() {
                     try {
-                        MainFrame frame = new MainFrame(args);
+                        MainFrame frame = new MainFrame(finalGuiArgs); 
                         frame.setVisible(true);
                         if (splashScreen != null) {
                             splashScreen.dispose();

@@ -58,14 +58,18 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -131,7 +135,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     FileManagerFrame filemanager;
     Thread qcmdprocessorThread;
     static public Cursor transparentCursor;
+
     private final String[] args;
+    private static Thread singleInstanceListenerThread;
+
     JMenu favouriteMenu;
     boolean bGrabFocusOnSevereErrors = true;
     public boolean WarnedAboutFWCRCMismatch = false;
@@ -573,9 +580,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         };
 
         EventQueue.invokeLater(initr);
+        initializeAfterFrameIsReady(args);
+        startSingleInstanceListener();
+    }
 
+    private void initializeAfterFrameIsReady(String args[]) {
         String argMessage = "";
-        for (String arg : this.args) { //TODO check why always opening new instance
+        for (String arg : this.args) {
 
             if (argMessage.isEmpty()) {
                 argMessage += "CLI arguments:";
@@ -621,6 +632,44 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     }
 
+    private static void startSingleInstanceListener() {
+        if (singleInstanceListenerThread == null || !singleInstanceListenerThread.isAlive()) {
+            singleInstanceListenerThread = new Thread(() -> {
+                try (ServerSocket serverSocket = new ServerSocket(Axoloti.SINGLE_INSTANCE_PORT)) {
+                    System.out.println(Instant.now() +" Main instance listening for new files...");
+                    
+                    while (true) {
+                        try (Socket clientSocket = serverSocket.accept();
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
+                            String filePath = reader.readLine();
+
+                            if (filePath != null) {
+                                SwingUtilities.invokeLater(() -> {
+                                    File f = new File(filePath);
+                                    if (f.exists()) {
+                                        System.out.println(Instant.now() + " Main instance received new file: " + filePath);
+                                        if (mainframe != null && MainFrame.axoObjects != null) {
+                                            PatchGUI.OpenPatch(f);
+                                        }
+                                        else {
+                                            System.err.println(Instant.now() + " Mainframe is not yet initialized to open file: " + filePath);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+                catch (IOException e) {
+                        System.err.println(Instant.now() + " Single-instance listener failed: " + e.getMessage());
+                }
+            });
+
+            singleInstanceListenerThread.setDaemon(true);
+            singleInstanceListenerThread.start();
+        }
+    }
+
     private void setupDragAndDrop() {
         jTextPaneLog.setDropTarget(new DropTarget() {
             @Override
@@ -644,7 +693,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         }
 
                         String fn = f.getName();
-                        System.out.println(fn);
+                        System.out.println(Instant.now() + " " + fn);
                         if (f != null && f.exists()) {
                             if (f.canRead()) {
                                 if (fn.endsWith(".axp") || fn.endsWith(".axs") || fn.endsWith(".axh")) {
