@@ -31,6 +31,7 @@ import axoloti.listener.ConnectionStatusListener;
 import axoloti.listener.SDCardMountStatusListener;
 import axoloti.sd.SDCardInfo;
 import axoloti.sd.SDFileInfo;
+import axoloti.ui.SvgIconLoader;
 import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 
@@ -58,6 +59,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -103,7 +106,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         files = new ArrayList<File>();
         DocumentWindowList.RegisterWindow(this);
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
-        setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_icon_axb.png")).getImage());
+        Icon icon = SvgIconLoader.load("/resources/appicons/ksoloti_icon_axb.svg", 32);
+        setIconImage(((ImageIcon)icon).getImage());
 
         jTable1.setModel(new AbstractTableModel() {
             private final String[] columnNames = {"Index", "File", "Found locally", "Found on SD"};

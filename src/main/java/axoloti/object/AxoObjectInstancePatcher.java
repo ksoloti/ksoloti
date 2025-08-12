@@ -21,6 +21,7 @@ package axoloti.object;
 import axoloti.Patch;
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
+import axoloti.ui.SvgIconLoader;
 import axoloti.ui.Theme;
 import components.ButtonComponent;
 import components.ButtonComponent.ActListener;
@@ -28,6 +29,7 @@ import components.ButtonComponent.ActListener;
 // import java.awt.Component;
 import java.awt.Point;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.simpleframework.xml.Element;
@@ -120,7 +122,8 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
         if (pf == null) {
             pf = new PatchFrame(pg);
             pg.setFileNamePath(getInstanceName());
-            pf.setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_icon_axs.png")).getImage());
+            Icon icon = SvgIconLoader.load("/resources/appicons/ksoloti_icon_axs.svg", 32);
+            pf.setIconImage(((ImageIcon)icon).getImage());
             pg.PostContructor();
         }
         pf.setState(java.awt.Frame.NORMAL);

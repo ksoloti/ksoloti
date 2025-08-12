@@ -20,6 +20,7 @@ package axoloti.dialogs;
 
 import axoloti.USBBulkConnection;
 import axoloti.listener.ConnectionStatusListener;
+import axoloti.ui.SvgIconLoader;
 import axoloti.utils.KeyUtils;
 import components.PianoComponent;
 import components.control.ACtrlEvent;
@@ -33,6 +34,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SpinnerNumberModel;
@@ -56,7 +58,8 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
 
     public KeyboardFrame() {
         initComponents();
-        setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_keyboard_icon.png")).getImage());
+        Icon icon = SvgIconLoader.load("/resources/appicons/ksoloti_keyboard_icon.svg", 32);
+        setIconImage(((ImageIcon)icon).getImage());
         piano = new PianoComponent() {
             @Override
             public void KeyDown(int key) {

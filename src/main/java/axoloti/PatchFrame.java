@@ -28,6 +28,7 @@ import axoloti.object.AxoObjectInstancePatcher;
 import axoloti.parameters.ParameterInstance;
 import axoloti.sd.SDCardInfo;
 import axoloti.sd.SDFileReference;
+import axoloti.ui.SvgIconLoader;
 import axoloti.ui.Theme;
 import axoloti.utils.FileUtils;
 import axoloti.utils.KeyUtils;
@@ -69,6 +70,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.Box;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -172,7 +174,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
 
         setMinimumSize(new Dimension(200,120));
-        setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_icon_axp.png")).getImage());
+        Icon icon = SvgIconLoader.load("/resources/appicons/ksoloti_icon_axp.svg", 32);
+        setIconImage(((ImageIcon)icon).getImage());
         this.dwl = new ArrayList<DocumentWindow>();
 
         initComponents();

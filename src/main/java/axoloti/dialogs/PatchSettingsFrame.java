@@ -22,6 +22,8 @@ import axoloti.DocumentWindow;
 import axoloti.Patch;
 import axoloti.PatchSettings;
 import axoloti.SubPatchMode;
+import axoloti.ui.SvgIconLoader;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -30,6 +32,7 @@ import javax.swing.JFrame;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.Icon;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.GroupLayout;
 
@@ -54,7 +57,8 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         initComponents();
         this.patch = patch;
         setTitle("Patch Settings");
-        setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_icon_axp.png")).getImage());
+        Icon icon = SvgIconLoader.load("/resources/appicons/ksoloti_icon_axp.svg", 32);
+        setIconImage(((ImageIcon)icon).getImage());
         this.settings = settings;
         ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setValue(settings.GetMidiChannel());
         // ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setMinimum(1);

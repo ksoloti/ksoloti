@@ -323,7 +323,8 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         jTextAreaSRateCode = initCodeEditor(jPanelSRateCode, acProvider);
         jTextAreaDisposeCode = initCodeEditor(jPanelDisposeCode, acProvider);
         jTextAreaMidiCode = initCodeEditor(jPanelMidiCode2, acProvider);
-        setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_icon_axo.png")).getImage());
+        Icon icon = SvgIconLoader.load("/resources/appicons/ksoloti_icon_axo.svg", 32);
+        setIconImage(((ImageIcon)icon).getImage());
         editObj = origObj;
         updateAcProvider(editObj);
 
