@@ -101,13 +101,22 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     public PatchBank() {
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         setPreferredSize(new Dimension(800, 600));
+
         initComponents();
+
         fileMenu1.initComponents();
         files = new ArrayList<File>();
+
         DocumentWindowList.RegisterWindow(this);
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
+
         Icon icon = SvgIconLoader.load("/resources/appicons/ksoloti_icon_axb.svg", 32);
-        setIconImage(((ImageIcon)icon).getImage());
+        if (icon != null && icon instanceof ImageIcon) {
+            setIconImage(((ImageIcon) icon).getImage());
+        } else {
+            System.err.println("Failed to load SVG icon. Falling back to PNG.");
+            setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_icon_axb.png")).getImage());
+        }
 
         jTable1.setModel(new AbstractTableModel() {
             private final String[] columnNames = {"Index", "File", "Found locally", "Found on SD"};

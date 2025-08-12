@@ -58,8 +58,15 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
 
     public KeyboardFrame() {
         initComponents();
+
         Icon icon = SvgIconLoader.load("/resources/appicons/ksoloti_keyboard_icon.svg", 32);
-        setIconImage(((ImageIcon)icon).getImage());
+        if (icon != null && icon instanceof ImageIcon) {
+            setIconImage(((ImageIcon) icon).getImage());
+        } else {
+            System.err.println("Failed to load SVG icon. Falling back to PNG.");
+            setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_keyboard_icon.png")).getImage());
+        }
+
         piano = new PianoComponent() {
             @Override
             public void KeyDown(int key) {

@@ -46,7 +46,7 @@ import javax.swing.UIManager;
  * @author Johannes Taelman
  */
 public class Axoloti {
-    private static final Logger LOGGER = Logger.getLogger(Axoloti.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(Axoloti.class.getName());
 
     public final static String HOME_DIR       = "axoloti_home";
     public final static String LIBRARIES_DIR  = "axoloti_libraries";

@@ -123,7 +123,7 @@ public class Constants {
             if (svgIcon instanceof ImageIcon) {
                 APP_ICON = (ImageIcon) svgIcon;
             } else {
-                /* Fallback to PNG if SVG loading fails */
+                System.err.println("Failed to load SVG icon. Falling back to PNG.");
                 APP_ICON = new ImageIcon(Constants.class.getResource("/resources/appicons/ksoloti_icon.png"));
             }
         }
@@ -132,7 +132,7 @@ public class Constants {
             if (svgIcon instanceof ImageIcon) {
                 APP_ICON = (ImageIcon) svgIcon;
             } else {
-                /* Fallback to PNG if SVG loading fails */
+                System.err.println("Failed to load SVG icon. Falling back to PNG.");
                 APP_ICON = new ImageIcon(Constants.class.getResource("/resources/appicons/axoloti_icon.png"));
             }
         }

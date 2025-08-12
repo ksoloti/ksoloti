@@ -58,8 +58,15 @@ public class AxoSplashScreen extends JWindow {
         setAlwaysOnTop(true);
 
         try {
+            JLabel label = null;
             Icon splashSvg = SvgIconLoader.load("/resources/appicons/ksoloti_splash.svg", 512);
-            JLabel label = new JLabel((ImageIcon) splashSvg);
+            if (splashSvg != null && splashSvg instanceof ImageIcon) {
+                label = new JLabel((ImageIcon) splashSvg);
+            } else {
+                System.err.println("Failed to load SVG icon. Falling back to PNG.");
+                setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_splash.png")).getImage());
+            }
+
             label.setOpaque(false);
             this.getContentPane().add(label);
             this.pack();

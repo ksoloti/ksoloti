@@ -58,7 +58,12 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         this.patch = patch;
         setTitle("Patch Settings");
         Icon icon = SvgIconLoader.load("/resources/appicons/ksoloti_icon_axp.svg", 32);
-        setIconImage(((ImageIcon)icon).getImage());
+        if (icon != null && icon instanceof ImageIcon) {
+            setIconImage(((ImageIcon) icon).getImage());
+        } else {
+            System.err.println("Failed to load SVG icon. Falling back to PNG.");
+            setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_icon_axp.png")).getImage());
+        }
         this.settings = settings;
         ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setValue(settings.GetMidiChannel());
         // ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setMinimum(1);
