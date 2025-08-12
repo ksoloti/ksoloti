@@ -208,6 +208,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         fileMenu.initComponents();
         setIconImage(Constants.APP_ICON.getImage());
 
+        setupDragAndDrop();
+
         transparentCursor = getToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(), null);
 
         mainframe = this;
@@ -230,62 +232,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         DefaultCaret caret = (DefaultCaret) jTextPaneLog.getCaret();
         caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
 
-        jTextPaneLog.setDropTarget(new DropTarget() {
-            @Override
-            public synchronized void drop(DropTargetDropEvent evt) {
-                try {
-                    evt.acceptDrop(DnDConstants.ACTION_COPY);
-                    System.out.println(Instant.now() + " drag & drop:");
-                    // @SuppressWarnings("unchecked")
-                    List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-
-                    /* Cap max opened files to 32 */
-                    int openedCount = 0, maxCount = 32;
-                    if (droppedFiles.size() > maxCount) {
-                        /* Display "whoa" message first */
-                        LOGGER.log(Level.WARNING, "Whoa, slow down. Only the first " + maxCount + " files were opened.");
-                    }
-
-                    for (File f : droppedFiles) {
-                        /* Leave loop if already successfully opened 20 files */
-                        if (openedCount > maxCount) {
-                            break;
-                        }
-
-                        String fn = f.getName();
-                        System.out.println(fn);
-                        if (f != null && f.exists()) {
-                            if (f.canRead()) {
-                                if (fn.endsWith(".axp") || fn.endsWith(".axs") || fn.endsWith(".axh")) {
-                                    PatchGUI.OpenPatch(f);
-                                    openedCount++;
-                                }
-                                else if (fn.endsWith(".axb")) {
-                                    PatchBank.OpenBank(f);
-                                    openedCount++;
-                                }
-                                else if (fn.endsWith(".axo")) {
-                                    System.out.println(Instant.now() + " Opening .axo files not implemented yet");
-                                    // TODO
-                                }
-                            }
-                            else {
-                                LOGGER.log(Level.SEVERE, "Error: Cannot read file \"" + fn + "\".)");
-                            }
-                        }
-                        else {
-                            LOGGER.log(Level.WARNING, "Warning: File \"" + fn + "\" not found.");
-                        }
-                    }
-                }
-                catch (UnsupportedFlavorException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
-                }
-                catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
-                }
-            }
-        });
 
         jScrollPaneLog.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
             BoundedRangeModel brm = jScrollPaneLog.getVerticalScrollBar().getModel();
@@ -673,6 +619,64 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             LOGGER.log(Level.WARNING, argMessage);
         }
 
+    }
+
+    private void setupDragAndDrop() {
+        jTextPaneLog.setDropTarget(new DropTarget() {
+            @Override
+            public synchronized void drop(DropTargetDropEvent evt) {
+                try {
+                    evt.acceptDrop(DnDConstants.ACTION_COPY);
+                    System.out.println(Instant.now() + " drag & drop:");
+                    List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+
+                    /* Cap max opened files to 32 */
+                    int openedCount = 0, maxCount = 32;
+                    if (droppedFiles.size() > maxCount) {
+                        /* Display "whoa" message first */
+                        LOGGER.log(Level.WARNING, "Whoa, slow down. Only the first " + maxCount + " files were opened.");
+                    }
+
+                    for (File f : droppedFiles) {
+                        /* Leave loop if already successfully opened 20 files */
+                        if (openedCount > maxCount) {
+                            break;
+                        }
+
+                        String fn = f.getName();
+                        System.out.println(fn);
+                        if (f != null && f.exists()) {
+                            if (f.canRead()) {
+                                if (fn.endsWith(".axp") || fn.endsWith(".axs") || fn.endsWith(".axh")) {
+                                    PatchGUI.OpenPatch(f);
+                                    openedCount++;
+                                }
+                                else if (fn.endsWith(".axb")) {
+                                    PatchBank.OpenBank(f);
+                                    openedCount++;
+                                }
+                                else if (fn.endsWith(".axo")) {
+                                    System.out.println(Instant.now() + " Opening .axo files not implemented yet");
+                                    // TODO
+                                }
+                            }
+                            else {
+                                LOGGER.log(Level.SEVERE, "Error: Cannot read file \"" + fn + "\".)");
+                            }
+                        }
+                        else {
+                            LOGGER.log(Level.WARNING, "Warning: File \"" + fn + "\" not found.");
+                        }
+                    }
+                }
+                catch (UnsupportedFlavorException ex) {
+                    LOGGER.log(Level.WARNING, "Drag and drop: Unknown file format.");
+                }
+                catch (IOException ex) {
+                    LOGGER.log(Level.SEVERE, "An error occurred during drag and drop.", ex); 
+                }
+            }
+        });
     }
 
     public void updateConsoleFont() {
