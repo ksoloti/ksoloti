@@ -28,9 +28,9 @@ public class SvgFileView extends FileView {
     @Override
     public Icon getIcon(File f) {
         if (f.isDirectory()) {
-            return SvgIconLoader.load("/resources/icons/folder-svgrepo-com.svg", 16, Theme.Button_Accent_Background);
+            return SvgIconLoader.load("/resources/icons/folder-svgrepo-com.svg", 18, Theme.Button_Accent_Background);
         } else {
-            return SvgIconLoader.load("/resources/icons/file-code-svgrepo-com.svg", 16, Theme.Button_Accent_Background);
+            return SvgIconLoader.load("/resources/icons/file-code-svgrepo-com.svg", 18, Theme.Button_Accent_Background);
         }
     }
 }
