@@ -103,7 +103,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         files = new ArrayList<File>();
         DocumentWindowList.RegisterWindow(this);
         USBBulkConnection.GetConnection().addConnectionStatusListener(this);
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axb.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_icon_axb.png")).getImage());
 
         jTable1.setModel(new AbstractTableModel() {
             private final String[] columnNames = {"Index", "File", "Found locally", "Found on SD"};

@@ -22,16 +22,17 @@ package axoloti.dialogs;
 import java.awt.Color;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JWindow;
 import javax.swing.Timer;
+
+import axoloti.ui.SvgIconLoader;
 
 /**
  *
@@ -43,7 +44,7 @@ public class AxoSplashScreen extends JWindow {
     private float opacity = 0.0f;
     private boolean fadeIn = false;
 
-    public AxoSplashScreen(URL splashImageUrl, boolean fadeIn) {
+    public AxoSplashScreen(boolean fadeIn) {
         
         this.fadeIn = fadeIn;
         if (this.fadeIn) {
@@ -57,8 +58,8 @@ public class AxoSplashScreen extends JWindow {
         setAlwaysOnTop(true);
 
         try {
-            Image splashImage = new ImageIcon(splashImageUrl).getImage();
-            JLabel label = new JLabel(new ImageIcon(splashImage));
+            Icon splashSvg = SvgIconLoader.load("/resources/appicons/ksoloti_splash.svg", 512);
+            JLabel label = new JLabel((ImageIcon) splashSvg);
             label.setOpaque(false);
             this.getContentPane().add(label);
             this.pack();

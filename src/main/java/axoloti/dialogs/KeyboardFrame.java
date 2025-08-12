@@ -56,7 +56,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
 
     public KeyboardFrame() {
         initComponents();
-        setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_keyboard_icon.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_keyboard_icon.png")).getImage());
         piano = new PianoComponent() {
             @Override
             public void KeyDown(int key) {

@@ -120,7 +120,7 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
         if (pf == null) {
             pf = new PatchFrame(pg);
             pg.setFileNamePath(getInstanceName());
-            pf.setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_icon_axs.png")).getImage());
+            pf.setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_icon_axs.png")).getImage());
             pg.PostContructor();
         }
         pf.setState(java.awt.Frame.NORMAL);

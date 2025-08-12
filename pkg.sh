@@ -193,12 +193,12 @@ case "$platform" in
         ;;
         linux)
             # apply icon (requires wine! Wine only runs 32bit so we need to use rcedit-x86.exe)
-            wine "../../jdks/rcedit-x86.exe" "./ksoloti-${VERSION}/Ksoloti.exe" --set-icon "../../src/main/java/resources/ksoloti_icon.ico" --set-product-version "${VERSION}"
+            wine "../../jdks/rcedit-x86.exe" "./ksoloti-${VERSION}/Ksoloti.exe" --set-icon "../../src/main/java/resources/appicons/ksoloti_icon.ico" --set-product-version "${VERSION}"
             zip -q -r ../ksoloti_patcher-windows_x64-${CUSTOMLABEL}${VERSION_LONG}.zip *
         ;;
         windows)
             # apply icon
-            ../../jdks/rcedit-x64.exe ./ksoloti-${VERSION}/Ksoloti.exe --set-icon ../../src/main/java/resources/ksoloti_icon.ico --set-product-version "${VERSION}"
+            ../../jdks/rcedit-x64.exe ./ksoloti-${VERSION}/Ksoloti.exe --set-icon ../../src/main/java/resources/appicons/ksoloti_icon.ico --set-product-version "${VERSION}"
             # zip using 7-zip
             "C:/Program Files/7-Zip/7z.exe" a -tzip ../ksoloti_patcher-windows_x64-${CUSTOMLABEL}${VERSION_LONG}.zip *
         ;;

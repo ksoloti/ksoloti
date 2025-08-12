@@ -22,7 +22,7 @@
         "CMSIS",
         "firmware",
         "platform_linux_aarch64",
-        "src/main/java/resources/ksoloti_icon_512.png"
+        "src/main/java/resources/appicons/ksoloti_icon_512.png"
     ],
     "minimizejre": "soft",
     "verbose": true

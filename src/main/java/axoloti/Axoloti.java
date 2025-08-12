@@ -32,7 +32,6 @@ import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,11 +63,8 @@ public class Axoloti {
 
         AxoSplashScreen splashScreen = null;
         try {
-            URL splashImageUrl = Axoloti.class.getResource("/resources/ksoloti_splash.png");
-            if (splashImageUrl != null) {
-                splashScreen = new AxoSplashScreen(splashImageUrl, true);
+            splashScreen = new AxoSplashScreen(true);
                 splashScreen.showSplashScreen();
-            }
         } catch (Exception e) {
             System.out.println(Instant.now() + " [DEBUG] Splash screen could not be created: " + e.getMessage());
         }

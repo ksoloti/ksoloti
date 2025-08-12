@@ -25,5 +25,5 @@
     "minimizejre": "soft",
     "verbose": true,
     "bundle": "org.axoloti.ksoloti",
-    "icon": "src/main/java/resources/ksoloti_icon.icns"
+    "icon": "src/main/java/resources/appicons/ksoloti_icon.icns"
 }

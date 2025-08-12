@@ -249,14 +249,14 @@ case "${TARGET_OS}" in
             # --linux-package-name "$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]')" # Standard Linux package name is lowercase
             # --linux-deb-maintainer "Your Name <your.email@example.com>" # Recommended for .deb
             # --linux-menu-group "Audio;Midi;Music;Development;Education" # Category for desktop menu
-            --icon src/main/java/resources/ksoloti_icon_512.png # PNG is typical for Linux .desktop files
+            --icon src/main/java/resources/appicons/ksoloti_icon_512.png # PNG is typical for Linux .desktop files
         )
         ;;
     "win")
         JPACKAGE_ARGS+=(
             --type app-image # 'exe' or 'msi' for installers
-            --icon src/main/java/resources/ksoloti_icon_512.png
-            # --icon src/main/java/resources/ksoloti_icon.ico # (only .png allowed!)
+            --icon src/main/java/resources/appicons/ksoloti_icon_512.png
+            # --icon src/main/java/resources/appicons/ksoloti_icon.ico # (only .png allowed!)
             # --win-dir-chooser # Allow user to choose installation directory
             # --win-menu # Create Start Menu entry
             # --win-shortcut # Create Desktop shortcut
@@ -267,7 +267,7 @@ case "${TARGET_OS}" in
     "mac")
         JPACKAGE_ARGS+=(
             --type app-image # 'dmg' for installable disk images
-            --icon src/main/java/resources/ksoloti_icon.icns # Use the .icns file for macOS
+            --icon src/main/java/resources/appicons/ksoloti_icon.icns # Use the .icns file for macOS
             # --mac-sign # Requires macOS codesigning setup (certificate, keychain)
             # --mac-entitlements /path/to/entitlements.plist # For sandboxing etc.
             # --mac-app-store-runtime # For App Store submissions
@@ -316,7 +316,7 @@ case "${TARGET_OS}_${TARGET_ARCH}" in
 esac
 
 # Copy other application-specific resources
-cp src/main/java/resources/ksoloti_icon_512.png "$APP_ROOT_DIR/lib/app/" # Or wherever your app expects it at runtime
+cp src/main/java/resources/appicons/ksoloti_icon_512.png "$APP_ROOT_DIR/lib/app/" # Or wherever your app expects it at runtime
 cp lib/marlin-0.9.4.8-Unsafe-OpenJDK17.jar "$APP_ROOT_DIR/lib/app/"
 
 printf "Resource copying complete.\n"
