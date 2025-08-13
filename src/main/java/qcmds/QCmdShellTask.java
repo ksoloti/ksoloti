@@ -58,13 +58,13 @@ public abstract class QCmdShellTask implements QCmd {
                 String line;
                 while ((line = br.readLine()) != null) {
                     if (line.contains("overflowed by")) {
-                        LOGGER.log(Level.SEVERE, "{0}\n>>> Patch is too complex to fit in internal RAM. <<<", line);
+                        LOGGER.log(Level.SEVERE, "{0}\n\n>>> Patch is too complex to fit in internal RAM. <<<\n", line);
                     }
                     else if (line.contains("has no member named \'objectinstance__i\'")) {
-                        LOGGER.log(Level.SEVERE, "{0}\n>>> A required reference text field in the patch has been left empty. (table, delay read/write, filename, ...) <<<", line);
+                        LOGGER.log(Level.SEVERE, "{0}\n\n>>> A required reference text field in the patch has been left empty. (table, delay read/write, filename, ...) <<<\n", line);
                     }
                     else if (line.contains("one or more PCH files were found, but they were invalid")) {
-                        LOGGER.log(Level.SEVERE, "{0}\n>>> Go to " + LibrariesDir() + File.separator + "build and manually delete all files inside it. <<<", line);
+                        LOGGER.log(Level.SEVERE, "{0}\n\n>>> Go to " + LibrariesDir() + File.separator + "build and manually delete all files inside it. <<<\n", line);
                     }
                     else if (line.contains("error:") || line.contains("#error")) {
                         LOGGER.log(Level.SEVERE, "{0}", line);

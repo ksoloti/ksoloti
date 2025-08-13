@@ -583,7 +583,7 @@ public class Preferences {
         LOGGER.log(Level.INFO, "Saved preferences.\n");
 
         if (restartRequired) {
-            LOGGER.log(Level.SEVERE, ">>> RESTART REQUIRED <<<");
+            LOGGER.log(Level.SEVERE, "\n>>> RESTART REQUIRED <<<\n");
         }
     }
 

@@ -438,19 +438,19 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
 
                     if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
-                        LOGGER.log(Level.WARNING, ">>> Axoloti Legacy Mode <<<\n");
+                        LOGGER.log(Level.WARNING, "\n>>> Axoloti Legacy Mode <<<\n");
                     }
 
                     if (Preferences.getInstance().getFirmwareMode().contains("SPILink")) {
-                        LOGGER.log(Level.WARNING, ">>> SPILink-enabled firmware <<<\nPins PB3, PB4, PD5, PD6 are occupied by SPILink communication in this firmware mode!\n");
+                        LOGGER.log(Level.WARNING, "\n>>> SPILink-enabled firmware <<<\nPins PB3, PB4, PD5, PD6 are occupied by SPILink communication in this firmware mode!\n");
                     }
 
                     if (Preferences.getInstance().getFirmwareMode().contains("USBAudio")) {
-                        LOGGER.log(Level.WARNING, ">>> USBAudio-enabled firmware <<<\n");
+                        LOGGER.log(Level.WARNING, "\n>>> USBAudio-enabled firmware <<<\n");
                     }
 
                     if (Preferences.getInstance().getFirmwareMode().contains("I2SCodec")) {
-                        LOGGER.log(Level.WARNING, ">>> I2SCodec-enabled firmware <<<\nPins PA15, PB3, PB4, PD6 are occupied by I2S communication in this firmware mode!\n");
+                        LOGGER.log(Level.WARNING, "\n>>> I2SCodec-enabled firmware <<<\nPins PA15, PB3, PB4, PD6 are occupied by I2S communication in this firmware mode!\n");
                     }
 
                     updateLinkFirmwareID();
