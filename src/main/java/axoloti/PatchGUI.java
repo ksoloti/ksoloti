@@ -474,37 +474,40 @@ public class PatchGUI extends Patch {
                                         AxoObject loadedObject = AxoObject.loadAxoObjectFromFile(f.toPath());
 
                                         if (loadedObject != null) {
-                                            LOGGER.info("Dropped .axo file loaded. ID: " + loadedObject.id + ", shortId: " + loadedObject.shortId + ", UUID: " + loadedObject.getUUID());
                                         
                                             AxoObjectAbstract libraryObject = null;
 
-                                            LOGGER.info("Attempting to find library object by UUID: " + loadedObject.getUUID());
                                             libraryObject = MainFrame.axoObjects.GetAxoObjectFromUUID(loadedObject.getUUID());
 
                                             if (libraryObject == null && loadedObject.id != null) {
-                                                LOGGER.info("No library object found by UUID. Attempting to find by ID: " + loadedObject.id);
                                                 ArrayList<AxoObjectAbstract> foundObjects = MainFrame.axoObjects.GetAxoObjectFromName(loadedObject.id, null);
                                                 if (foundObjects != null && !foundObjects.isEmpty()) {
                                                     libraryObject = foundObjects.get(0);
                                                 }
                                             }
+                                            
+                                            AxoObjectInstanceAbstract abstractInstance;
 
                                             if (libraryObject != null) {
-                                                AddObjectInstance(libraryObject, dtde.getLocation());
-                                                LOGGER.info("Placed reference to library object: " + libraryObject.id);
+                                                /* Object found in library. Placing a reference to it */
+                                                abstractInstance = AddObjectInstance(libraryObject, dtde.getLocation());
+                                                LOGGER.info("Placed reference to library object " + libraryObject.id + ", labeled \"" + abstractInstance.getInstanceName() + "\"");
                                             } else {
-                                                AxoObjectInstanceAbstract newInstance = AddObjectInstance(loadedObject, dtde.getLocation());
-                                                if (newInstance != null) {
-                                                    AxoObjectInstance concreteInstance = (AxoObjectInstance) newInstance;
+                                                /* Not found in any library. Placing an embedded instance to avoid zombiism */
+                                                abstractInstance = AddObjectInstance(loadedObject, dtde.getLocation());
+                                                if (abstractInstance != null) {
+                                                    AxoObjectInstance concreteInstance = (AxoObjectInstance) abstractInstance;
                                                     String uniqueName = getSimpleUniqueName(loadedObject.id);
                                                     concreteInstance.setInstanceName(uniqueName);
                                                     concreteInstance.ConvertToEmbeddedObj();
-                                                    LOGGER.info("Placed new embedded object from file: " + loadedObject.id);
+                                                    LOGGER.info("Placed new embedded object labeled \"" + uniqueName + "\" from file " + f.getName());
                                                 }
                                             }
+                                            SetDirty();
                                         }
                                     } catch (Exception ex) {
-                                        LOGGER.log(Level.SEVERE, "Failed to load dropped .axo file", ex);
+                                        LOGGER.log(Level.SEVERE, "Error: Failed to parse AxoObject from file: " + f.getName() + "\n" + ex.getMessage());
+                                        ex.printStackTrace(System.err);
                                         AddObjectInstance(new AxoObjectFromPatch(f), dtde.getLocation());
                                     }
                                 } else if (fn.endsWith(".axp") || fn.endsWith(".axh") || fn.endsWith(".axs")) {
@@ -514,6 +517,7 @@ public class PatchGUI extends Patch {
                                         o.createdFromRelativePath = true;
                                     }
                                     AddObjectInstance(o, dtde.getLocation());
+                                    SetDirty();
                                 }
                             }
                         }
@@ -521,7 +525,8 @@ public class PatchGUI extends Patch {
                     } catch (UnsupportedFlavorException ex) {
                         LOGGER.log(Level.SEVERE, null, ex);
                     } catch (IOException ex) {
-                        LOGGER.log(Level.SEVERE, null, ex);
+                        LOGGER.log(Level.SEVERE, "Error dropping file(s): " + ex.getMessage());
+                        ex.printStackTrace(System.err);
                     }
                     return;
                 }
