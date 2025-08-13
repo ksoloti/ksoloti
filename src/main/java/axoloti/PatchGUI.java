@@ -21,8 +21,10 @@ package axoloti;
 import axoloti.datatypes.DataType;
 import axoloti.inlets.InletInstance;
 import axoloti.iolet.IoletAbstract;
+import axoloti.object.AxoObject;
 import axoloti.object.AxoObjectAbstract;
 import axoloti.object.AxoObjectFromPatch;
+import axoloti.object.AxoObjectInstance;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstanceZombie;
 import axoloti.object.AxoObjectZombie;
@@ -65,6 +67,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -237,7 +242,7 @@ public class PatchGUI extends Patch {
                         }
                     }
                 } catch (UnsupportedFlavorException ex) {
-                    LOGGER.log(Level.SEVERE, "Paste", ex);
+                    LOGGER.log(Level.WARNING, "Paste: Unknown file format.");
                 } catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, "Paste", ex);
                 }
@@ -459,14 +464,57 @@ public class PatchGUI extends Patch {
                     try {
                         dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
                         List<File> flist = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
+
                         for (File f : flist) {
                             if (f.exists() && f.canRead()) {
-                                AxoObjectAbstract o = new AxoObjectFromPatch(f);
-                                String fn = f.getCanonicalPath();
-                                if (GetCurrentWorkingDirectory() != null && fn.startsWith(GetCurrentWorkingDirectory())) {
-                                    o.createdFromRelativePath = true;
+                                String fn = f.getName();
+
+                                if (fn.endsWith(".axo")) {
+                                    try {
+                                        AxoObject loadedObject = AxoObject.loadAxoObjectFromFile(f.toPath());
+
+                                        if (loadedObject != null) {
+                                            LOGGER.info("Dropped .axo file loaded. ID: " + loadedObject.id + ", shortId: " + loadedObject.shortId + ", UUID: " + loadedObject.getUUID());
+                                        
+                                            AxoObjectAbstract libraryObject = null;
+
+                                            LOGGER.info("Attempting to find library object by UUID: " + loadedObject.getUUID());
+                                            libraryObject = MainFrame.axoObjects.GetAxoObjectFromUUID(loadedObject.getUUID());
+
+                                            if (libraryObject == null && loadedObject.id != null) {
+                                                LOGGER.info("No library object found by UUID. Attempting to find by ID: " + loadedObject.id);
+                                                ArrayList<AxoObjectAbstract> foundObjects = MainFrame.axoObjects.GetAxoObjectFromName(loadedObject.id, null);
+                                                if (foundObjects != null && !foundObjects.isEmpty()) {
+                                                    libraryObject = foundObjects.get(0);
+                                                }
+                                            }
+
+                                            if (libraryObject != null) {
+                                                AddObjectInstance(libraryObject, dtde.getLocation());
+                                                LOGGER.info("Placed reference to library object: " + libraryObject.id);
+                                            } else {
+                                                AxoObjectInstanceAbstract newInstance = AddObjectInstance(loadedObject, dtde.getLocation());
+                                                if (newInstance != null) {
+                                                    AxoObjectInstance concreteInstance = (AxoObjectInstance) newInstance;
+                                                    String uniqueName = getSimpleUniqueName(loadedObject.id);
+                                                    concreteInstance.setInstanceName(uniqueName);
+                                                    concreteInstance.ConvertToEmbeddedObj();
+                                                    LOGGER.info("Placed new embedded object from file: " + loadedObject.id);
+                                                }
+                                            }
+                                        }
+                                    } catch (Exception ex) {
+                                        LOGGER.log(Level.SEVERE, "Failed to load dropped .axo file", ex);
+                                        AddObjectInstance(new AxoObjectFromPatch(f), dtde.getLocation());
+                                    }
+                                } else if (fn.endsWith(".axp") || fn.endsWith(".axh") || fn.endsWith(".axs")) {
+                                    AxoObjectAbstract o = new AxoObjectFromPatch(f);
+                                    String canonicalPath = f.getCanonicalPath();
+                                    if (GetCurrentWorkingDirectory() != null && canonicalPath.startsWith(GetCurrentWorkingDirectory())) {
+                                        o.createdFromRelativePath = true;
+                                    }
+                                    AddObjectInstance(o, dtde.getLocation());
                                 }
-                                AddObjectInstance(o, dtde.getLocation());
                             }
                         }
                         dtde.dropComplete(true);
@@ -601,12 +649,12 @@ public class PatchGUI extends Patch {
                     }
                 }
             } while (hasCollision);
-            
+
             // System.out.println(Instant.now() + " Starting second pass: Naming and positioning objects.");
             for (AxoObjectInstanceAbstract o : p.objectInstances) {
                 String original_name = o.getInstanceName();
                 if (original_name != null) {
-                    String new_name = deriveUniqueInstanceName(original_name);
+                    String new_name = getSmartUniqueName(original_name);
 
                     if (!new_name.equals(original_name)) {
                         o.setInstanceName(new_name);
@@ -755,33 +803,44 @@ public class PatchGUI extends Patch {
         }
     }
 
-    public String deriveUniqueInstanceName(String desiredName) {
-        String uniqueName = desiredName;
+    public String getSimpleUniqueName(String baseName) {
         int suffix = 1;
-        while (GetObjectInstance(uniqueName) != null) {
-            String[] parts = uniqueName.split("_");
-            boolean hasNumeralSuffix = false;
-            String baseName = uniqueName;
-
-            if (parts.length > 1) {
-                try {
-                    suffix = Integer.parseInt(parts[parts.length - 1]);
-                    suffix++;
-                    hasNumeralSuffix = true;
-                    baseName = uniqueName.substring(0, uniqueName.lastIndexOf("_"));
-                } catch (NumberFormatException e) {
-                    /* If the suffix is not a number, baseName remains the same
-                       and the suffix will be initialized to _1. */
-                }
+        String uniqueName;
+        
+        while (true) {
+            uniqueName = baseName + "_" + suffix;
+            if (GetObjectInstance(uniqueName) == null) {
+                return uniqueName;
             }
+            suffix++;
+        }
+    }
 
-            if (hasNumeralSuffix) {
-                uniqueName = baseName + "_" + suffix;
-            } else {
-                uniqueName = baseName + "_1";
+    public String getSmartUniqueName(String desiredName) {
+        String baseName = desiredName;
+        int suffix = 1;
+
+        Pattern underscorePattern = Pattern.compile("_((\\d)+)$");
+        Matcher underscoreMatcher = underscorePattern.matcher(desiredName);
+
+        if (underscoreMatcher.find()) {
+            try {
+                suffix = Integer.parseInt(underscoreMatcher.group(1));
+                baseName = desiredName.substring(0, underscoreMatcher.start());
+            } catch (NumberFormatException e) {
+                baseName = desiredName;
             }
         }
-        return uniqueName;
+        
+        String uniqueName;
+        while (true) {
+            uniqueName = baseName + "_" + suffix;
+
+            if (GetObjectInstance(uniqueName) == null) {
+                return uniqueName;
+            }
+            suffix++;
+        }
     }
 
     AxoObjectInstanceAbstract getObjectAtLocation(int x, int y) {

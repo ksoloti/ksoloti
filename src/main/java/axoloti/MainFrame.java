@@ -1837,8 +1837,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     AxoObjectInstanceAbstract abstractInstance = newPatch.AddObjectInstance(loadedObject, initialLocation);
                     
                     AxoObjectInstance newInstance = (AxoObjectInstance) abstractInstance;
-                    String filename = f.getName().substring(0, f.getName().lastIndexOf('.'));
-                    String uniqueName = newPatch.deriveUniqueInstanceName(filename);
+                    String uniqueName = newPatch.getSimpleUniqueName(loadedObject.id);
                     newInstance.setInstanceName(uniqueName);
                     newInstance.ConvertToEmbeddedObj();
 
