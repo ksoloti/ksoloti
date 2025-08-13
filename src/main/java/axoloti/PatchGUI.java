@@ -479,7 +479,6 @@ public class PatchGUI extends Patch {
                 }
                 super.drop(dtde);
             }
-        ;
         };
 
         Layers.addMouseMotionListener(new MouseMotionAdapter() {
