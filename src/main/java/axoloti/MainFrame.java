@@ -690,7 +690,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
 
                     for (File f : droppedFiles) {
-                        /* Leave loop if already successfully opened 20 files */
+                        /* Leave loop if already successfully opened 32 files */
                         if (openedCount > maxCount) {
                             break;
                         }
