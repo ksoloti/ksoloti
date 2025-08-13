@@ -477,7 +477,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                                     }
                                 }
                                 catch (Exception e) {
-                                    LOGGER.log(Level.SEVERE, "Initial connection worker crashed:", e);
+                                    LOGGER.log(Level.SEVERE, "Initial connection worker crashed: " + e.getMessage());
+                                    e.printStackTrace(System.err);
                                     ShowDisconnect();
                                 }
                             }
@@ -574,7 +575,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     // System.exit(1);
                 }
                 catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.SEVERE, "An error occurred during MainFrame init task: " + e.getMessage());
+                    e.printStackTrace(System.err);
                 }
             }
         };
@@ -611,7 +613,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                                     }
                                 }
                                 catch (Exception e) {
-                                    e.printStackTrace();
+                                    LOGGER.log(Level.SEVERE, "An error occurred during patch file opening task: " + e.getMessage());
+                                    e.printStackTrace(System.err);
                                 }
                             }
                         };
@@ -661,7 +664,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
                 }
                 catch (IOException e) {
-                        System.err.println(Instant.now() + " Single-instance listener failed: " + e.getMessage());
+                    System.out.println(Instant.now() + " Single-instance listener not started, likely another instance is running.");
                 }
             });
 
@@ -676,7 +679,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             public synchronized void drop(DropTargetDropEvent evt) {
                 try {
                     evt.acceptDrop(DnDConstants.ACTION_COPY);
-                    System.out.println(Instant.now() + " drag & drop:");
+                    System.out.println(Instant.now() + " drag & drop: ");
                     List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
 
                     /* Cap max opened files to 32 */
@@ -722,7 +725,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     LOGGER.log(Level.WARNING, "Drag and drop: Unknown file format.");
                 }
                 catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, "An error occurred during drag and drop.", ex); 
+                    LOGGER.log(Level.SEVERE, "An error occurred during drag and drop: " + ex.getMessage()); 
+                    ex.printStackTrace(System.err);
                 }
             }
         });
@@ -848,7 +852,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     return true;
 
                 } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Exception during firmware/flasher upload worker:", e);
+                    System.err.println(Instant.now() + " Exception during firmware/flasher upload worker: " + e.getMessage());
+                    e.printStackTrace(System.err);
                     return false;
                 }
             }
@@ -879,9 +884,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
                 } catch (InterruptedException e) {
                     LOGGER.log(Level.WARNING, "Firmware update process was interrupted.", e);
+                    e.printStackTrace(System.err);
                     Thread.currentThread().interrupt(); // Restore interrupt status
                 } catch (java.util.concurrent.ExecutionException e) {
-                    LOGGER.log(Level.SEVERE, "An unexpected error occurred in background task: " + e.getCause().getMessage(), e.getCause());
+                    LOGGER.log(Level.SEVERE, "An unexpected error occurred in background task: " + e.getMessage());
+                    e.printStackTrace(System.err);
                 }
             }
         }.execute();
@@ -1214,7 +1221,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     ShowDisconnect();
                 }
                 catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Disconnect worker failed unexpectedly:", e);
+                    LOGGER.log(Level.SEVERE, "Disconnect worker failed unexpectedly: " + e.getMessage());
+                    e.printStackTrace(System.err);
                     ShowDisconnect();
                 }
             }
@@ -1244,7 +1252,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
                 }
                 catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Connection worker failed unexpectedly:", e);
+                    LOGGER.log(Level.SEVERE, "Connection worker failed unexpectedly: " + e.getMessage());
+                    e.printStackTrace(System.err);
                     ShowDisconnect(); // Ensure UI reflects disconnected state
                 }
             }
@@ -1280,7 +1289,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         get();
                     }
                     catch (Exception e) {
-                        LOGGER.log(Level.SEVERE, "Error during connection SwingWorker:", e);
+                        LOGGER.log(Level.SEVERE, "An error occurred during connection SwingWorker: " + e.getMessage());
+                        e.printStackTrace(System.err);
                         USBBulkConnection.GetConnection().ShowDisconnect();
                     }
                     finally {
@@ -1309,7 +1319,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         // System.out.println(Instant.now() + " [DEBUG] UI updated: Disconnected (successfully).");
                     }
                     catch (Exception e) {
-                        LOGGER.log(Level.SEVERE, "Error during disconnection SwingWorker:", e);
+                        LOGGER.log(Level.SEVERE, "An error occurred during disconnection SwingWorker: " + e.getMessage());
+                        e.printStackTrace(System.err);
                         if (USBBulkConnection.GetConnection().isConnected()) {
                             USBBulkConnection.GetConnection().ShowConnect();
                             // System.out.println(Instant.now() + " [DEBUG] UI updated: Connected (disconnect failed, board still connected).");
@@ -1345,7 +1356,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "An error occurred during runAllTests: " + e.getMessage());
+            e.printStackTrace(System.err);
             return r1 && r2;
         }
         return r1 && r2;
@@ -1540,7 +1552,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             return status;
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "ERROR DURING PATCH TEST: " + f.getPath() + "\n", ex);
+            LOGGER.log(Level.SEVERE, "An error occurred while testing patch: " + f.getPath() + "\n" + ex.getMessage());
+            ex.printStackTrace(System.err);
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
             return false;
         }
@@ -1600,7 +1613,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             return status;
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "UPGRADE FAILED: " + f.getPath(), ex);
+            LOGGER.log(Level.SEVERE, "An error occurred during file upgrade: " + f.getPath() + "\n" + ex.getMessage());
+            ex.printStackTrace(System.err);
             return false;
         }
     }
@@ -1710,7 +1724,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     return;
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "An error occurred while uploading Mounter.");
+                LOGGER.log(Level.SEVERE, "An error occurred while uploading Mounter: " + e.getMessage());
+                e.printStackTrace(System.err);
             }
 
             try {
@@ -1727,7 +1742,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 //     return;
                 // }
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "An error occurred while starting Mounter.");
+                LOGGER.log(Level.SEVERE, "An error occurred while starting Mounter: " + e.getMessage());
+                e.printStackTrace(System.err);
                 return;
             } finally {
                 // QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
@@ -1751,9 +1767,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         catch (MalformedURLException ex) {
             LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
+            ex.printStackTrace(System.err);
         }
         catch (URISyntaxException ex) {
             LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
+            ex.printStackTrace(System.err);
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{uri, ex});
@@ -1787,7 +1805,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 QCmdProcessor.getQCmdProcessor().WaitQueueFinished(); // Wait for MCU to process stop command
                 LOGGER.log(Level.INFO, "Sent QCmdStop to Core for previous patch.");
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Failed to send QCmdStop to Core for previous patch: " + this.currentLivePatch.getFileNamePath(), e);
+                LOGGER.log(Level.SEVERE, "Failed to send stop command to Core for previous patch: " + this.currentLivePatch.getFileNamePath() + "\n" + e.getMessage());
+                e.printStackTrace(System.err);
             }
         }
 
@@ -1812,7 +1831,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 this.currentLivePatch.Lock(); // GUI-side lock (cascades down to disable editing)
                 LOGGER.log(Level.INFO, "Locked new live patch: " + this.currentLivePatch.getFileNamePath());
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Failed to send QCmdStart/QCmdLock to Core for patch: " + this.currentLivePatch.getFileNamePath(), e);
+                LOGGER.log(Level.SEVERE, "Failed to send start command to Core for patch: " + this.currentLivePatch.getFileNamePath() + "\n" + e.getMessage());
+                e.printStackTrace(System.err);
                 // Critical error: The patch is not truly live on the MCU.
                 // Revert the GUI state to reflect this.
                 if (this.currentLivePatch != null) { // Defensive check
@@ -1822,7 +1842,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 LOGGER.log(Level.SEVERE, "Patch could not be set live on Core. Reverting GUI state.");
             }
         } else {
-            LOGGER.log(Level.INFO, "No patch is currently live.");
+            System.out.println(Instant.now() + " No patch is currently live.");
         }
 
         // --- Step 4: Update all open patch windows about the new live state ---
