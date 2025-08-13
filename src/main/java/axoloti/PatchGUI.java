@@ -465,52 +465,15 @@ public class PatchGUI extends Patch {
                         dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
                         List<File> flist = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
 
+                        /* Create a list to store all dropped .axo files */
+                        List<File> axoFilesToProcess = new ArrayList<>();
+
                         for (File f : flist) {
                             if (f.exists() && f.canRead()) {
                                 String fn = f.getName();
 
-                                if (fn.endsWith(".axo")) {
-                                    try {
-                                        AxoObject loadedObject = AxoObject.loadAxoObjectFromFile(f.toPath());
-
-                                        if (loadedObject != null) {
-                                        
-                                            AxoObjectAbstract libraryObject = null;
-
-                                            libraryObject = MainFrame.axoObjects.GetAxoObjectFromUUID(loadedObject.getUUID());
-
-                                            if (libraryObject == null && loadedObject.id != null) {
-                                                ArrayList<AxoObjectAbstract> foundObjects = MainFrame.axoObjects.GetAxoObjectFromName(loadedObject.id, null);
-                                                if (foundObjects != null && !foundObjects.isEmpty()) {
-                                                    libraryObject = foundObjects.get(0);
-                                                }
-                                            }
-                                            
-                                            AxoObjectInstanceAbstract abstractInstance;
-
-                                            if (libraryObject != null) {
-                                                /* Object found in library. Placing a reference to it */
-                                                abstractInstance = AddObjectInstance(libraryObject, dtde.getLocation());
-                                                LOGGER.info("Placed reference to library object " + libraryObject.id + ", labeled \"" + abstractInstance.getInstanceName() + "\"");
-                                            } else {
-                                                /* Not found in any library. Placing an embedded instance to avoid zombiism */
-                                                abstractInstance = AddObjectInstance(loadedObject, dtde.getLocation());
-                                                if (abstractInstance != null) {
-                                                    AxoObjectInstance concreteInstance = (AxoObjectInstance) abstractInstance;
-                                                    String uniqueName = getSimpleUniqueName(loadedObject.id);
-                                                    concreteInstance.setInstanceName(uniqueName);
-                                                    concreteInstance.ConvertToEmbeddedObj();
-                                                    LOGGER.info("Placed new embedded object labeled \"" + uniqueName + "\" from file " + f.getName());
-                                                }
-                                            }
-                                            SetDirty();
-                                        }
-                                    } catch (Exception ex) {
-                                        LOGGER.log(Level.SEVERE, "Error: Failed to parse AxoObject from file: " + f.getName() + "\n" + ex.getMessage());
-                                        ex.printStackTrace(System.err);
-                                        AddObjectInstance(new AxoObjectFromPatch(f), dtde.getLocation());
-                                    }
-                                } else if (fn.endsWith(".axp") || fn.endsWith(".axh") || fn.endsWith(".axs")) {
+                                if (fn.endsWith(".axp") || fn.endsWith(".axh") || fn.endsWith(".axs")) {
+                                    // Existing logic for other file types
                                     AxoObjectAbstract o = new AxoObjectFromPatch(f);
                                     String canonicalPath = f.getCanonicalPath();
                                     if (GetCurrentWorkingDirectory() != null && canonicalPath.startsWith(GetCurrentWorkingDirectory())) {
@@ -518,6 +481,56 @@ public class PatchGUI extends Patch {
                                     }
                                     AddObjectInstance(o, dtde.getLocation());
                                     SetDirty();
+                                } else if (fn.endsWith(".axo")) {
+                                    /* Collect .axo files to a list for opening them in a single new patch later */
+                                    axoFilesToProcess.add(f);
+                                }
+                            }
+                        }
+
+                        if (!axoFilesToProcess.isEmpty()) {
+                            /* Open all the collected .axo files aligned to each other */
+                            Point dropLocation = dtde.getLocation();
+                            int xOffset = 0;
+
+                            for (File f : axoFilesToProcess) {
+                                try {
+                                    AxoObject loadedObject = AxoObject.loadAxoObjectFromFile(f.toPath());
+
+                                    if (loadedObject != null) {
+                                        AxoObjectAbstract libraryObject = MainFrame.axoObjects.GetAxoObjectFromUUID(loadedObject.getUUID());
+
+                                        if (libraryObject == null && loadedObject.id != null) {
+                                            ArrayList<AxoObjectAbstract> foundObjects = MainFrame.axoObjects.GetAxoObjectFromName(loadedObject.id, null);
+                                            if (foundObjects != null && !foundObjects.isEmpty()) {
+                                                libraryObject = foundObjects.get(0);
+                                            }
+                                        }
+
+                                        AxoObjectInstanceAbstract abstractInstance;
+                                        Point instanceLocation = new Point(dropLocation.x + xOffset, dropLocation.y);
+
+                                        if (libraryObject != null) {
+                                            abstractInstance = AddObjectInstance(libraryObject, instanceLocation);
+                                            LOGGER.info("Placed reference to library object " + libraryObject.id + ", labeled \"" + abstractInstance.getInstanceName() + "\"");
+                                        } else {
+                                            abstractInstance = AddObjectInstance(loadedObject, instanceLocation);
+                                            if (abstractInstance != null) {
+                                                AxoObjectInstance concreteInstance = (AxoObjectInstance) abstractInstance;
+                                                String uniqueName = getSimpleUniqueName(loadedObject.id);
+                                                concreteInstance.setInstanceName(uniqueName);
+                                                concreteInstance.ConvertToEmbeddedObj();
+                                                LOGGER.info("Placed new embedded object labeled \"" + uniqueName + "\" from file " + f.getName());
+                                            }
+                                        }
+                                        SetDirty();
+                                        
+                                        xOffset += abstractInstance.getWidth() + Constants.X_GRID * 2;
+                                    }
+                                } catch (Exception ex) {
+                                    LOGGER.log(Level.SEVERE, "Error: Failed to parse AxoObject from file: " + f.getName() + "\n" + ex.getMessage());
+                                    ex.printStackTrace(System.err);
+                                    AddObjectInstance(new AxoObjectFromPatch(f), dtde.getLocation());
                                 }
                             }
                         }

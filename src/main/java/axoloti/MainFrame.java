@@ -637,8 +637,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             }
         }
 
-        /* Open all the collected .axo files in one new patch */
         if (!axoFilesToOpen.isEmpty()) {
+            /* Open all the collected .axo files in one new patch */
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
