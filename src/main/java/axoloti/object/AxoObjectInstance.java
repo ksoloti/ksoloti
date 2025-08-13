@@ -1325,7 +1325,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         getPatch().SetDirty();
     }
 
-    void ConvertToEmbeddedObj() {
+    public void ConvertToEmbeddedObj() {
         if (IsLocked()) {
             return;
         }
