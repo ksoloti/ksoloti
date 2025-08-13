@@ -607,36 +607,7 @@ public class PatchGUI extends Patch {
             for (AxoObjectInstanceAbstract o : p.objectInstances) {
                 String original_name = o.getInstanceName();
                 if (original_name != null) {
-                    String new_name = original_name;
-                    String ss[] = new_name.split("_");
-                    boolean hasNumeralSuffix = false;
-                    try {
-                        if ((ss.length > 1) && (Integer.toString(Integer.parseInt(ss[ss.length - 1]))).equals(ss[ss.length - 1])) {
-                            hasNumeralSuffix = true;
-                        }
-                    }
-                    catch (NumberFormatException e) {
-                        /* Ignore if the suffix is not a number */
-                    }
-                    
-                    if (hasNumeralSuffix) {
-                        int n = Integer.parseInt(ss[ss.length - 1]) + 1;
-                        String bs = original_name.substring(0, original_name.length() - ss[ss.length - 1].length());
-                        while (GetObjectInstance(new_name) != null) {
-                            new_name = bs + n++;
-                        }
-                        while (dict.containsKey(new_name)) {
-                            new_name = bs + n++;
-                        }
-                    }
-                    else {
-                        while (GetObjectInstance(new_name) != null) {
-                            new_name = new_name + "_";
-                        }
-                        while (dict.containsKey(new_name)) {
-                            new_name = new_name + "_";
-                        }
-                    }
+                    String new_name = deriveUniqueInstanceName(original_name);
 
                     if (!new_name.equals(original_name)) {
                         o.setInstanceName(new_name);
@@ -783,6 +754,35 @@ public class PatchGUI extends Patch {
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "An unexpected error occurred during the paste operation.", ex);
         }
+    }
+
+    public String deriveUniqueInstanceName(String desiredName) {
+        String uniqueName = desiredName;
+        int suffix = 1;
+        while (GetObjectInstance(uniqueName) != null) {
+            String[] parts = uniqueName.split("_");
+            boolean hasNumeralSuffix = false;
+            String baseName = uniqueName;
+
+            if (parts.length > 1) {
+                try {
+                    suffix = Integer.parseInt(parts[parts.length - 1]);
+                    suffix++;
+                    hasNumeralSuffix = true;
+                    baseName = uniqueName.substring(0, uniqueName.lastIndexOf("_"));
+                } catch (NumberFormatException e) {
+                    /* If the suffix is not a number, baseName remains the same
+                       and the suffix will be initialized to _1. */
+                }
+            }
+
+            if (hasNumeralSuffix) {
+                uniqueName = baseName + "_" + suffix;
+            } else {
+                uniqueName = baseName + "_1";
+            }
+        }
+        return uniqueName;
     }
 
     AxoObjectInstanceAbstract getObjectAtLocation(int x, int y) {
