@@ -31,6 +31,7 @@ import axoloti.listener.ConnectionFlagsListener;
 import axoloti.listener.ConnectionStatusListener;
 import axoloti.listener.SDCardMountStatusListener;
 import axoloti.object.AxoObject;
+import axoloti.object.AxoObjectAbstract;
 import axoloti.object.AxoObjectInstance;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjects;
@@ -647,8 +648,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                             EventQueue.invokeLater(this);
                         }
                         else {
-                            LOGGER.log(Level.INFO, "Opening .axo file(s) as embedded objects in new patch window.");
-                            openEmbedAxoObjectsInNewPatch(axoFilesToOpen);
+                            LOGGER.log(Level.INFO, "Opening .axo file(s) for preview in new patch window.");
+                            openAxoObjectsInNewPatch(axoFilesToOpen);
                         }
                     }
                     catch (Exception e) {
@@ -752,8 +753,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     /* After the loop, open all the collected .axo files in one new patch. */
                     if (!axoFilesToOpen.isEmpty()) {
-                        LOGGER.log(Level.INFO, "Opening .axo file(s) as embedded objects in new patch window.");
-                        openEmbedAxoObjectsInNewPatch(axoFilesToOpen);
+                        LOGGER.log(Level.INFO, "Opening .axo file(s) for preview in new patch window.");
+                        openAxoObjectsInNewPatch(axoFilesToOpen);
                     }
                 }
                 catch (UnsupportedFlavorException ex) {
@@ -1814,7 +1815,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
     }
 
-    public void openEmbedAxoObjectsInNewPatch(List<File> files) {
+    public void openAxoObjectsInNewPatch(List<File> files) {
         if (files == null || files.isEmpty()) {
             return;
         }
@@ -1834,130 +1835,120 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                 if (loadedObject != null) {
                     Point initialLocation = new Point(xPosition, yPosition);
-                    AxoObjectInstanceAbstract abstractInstance = newPatch.AddObjectInstance(loadedObject, initialLocation);
+
+                    /* Check if this UUID exists in any library */
+                    AxoObjectAbstract libraryObject = MainFrame.axoObjects.GetAxoObjectFromUUID(loadedObject.getUUID());
                     
-                    AxoObjectInstance newInstance = (AxoObjectInstance) abstractInstance;
-                    String uniqueName = newPatch.getSimpleUniqueName(loadedObject.id);
-                    newInstance.setInstanceName(uniqueName);
-                    newInstance.ConvertToEmbeddedObj();
+                    /* If not, check if this ID (typeName?) exists in any library */
+                    if (libraryObject == null && loadedObject.id != null) {
+                        ArrayList<AxoObjectAbstract> foundObjects = MainFrame.axoObjects.GetAxoObjectFromName(loadedObject.id, null);
+                        if (foundObjects != null && !foundObjects.isEmpty()) {
+                            libraryObject = foundObjects.get(0);
+                        }
+                    }
 
+                    AxoObjectInstanceAbstract abstractInstance;
+
+                    if (libraryObject != null) {
+                        /* Object found in library. Placing a reference to it */
+                        abstractInstance = newPatch.AddObjectInstance(libraryObject, initialLocation);
+                        LOGGER.info("Placed reference to library object " + libraryObject.id + ", labeled \"" + abstractInstance.getInstanceName() + "\"");
+                    } else {
+                        /* Not found in any library. Placing an embedded instance to avoid zombiism */
+                        abstractInstance = newPatch.AddObjectInstance(loadedObject, initialLocation);
+                        AxoObjectInstance newInstance = (AxoObjectInstance) abstractInstance;
+                        String uniqueName = newPatch.getSimpleUniqueName(loadedObject.id);
+                        newInstance.setInstanceName(uniqueName);
+                        newInstance.ConvertToEmbeddedObj();
+                        LOGGER.info("Placed new embedded object labeled \"" + uniqueName + "\" from file \"" + f.getName());
+                    }
+                    
                     newPatch.SetDirty();
-                    xPosition += newInstance.getWidth() + Constants.X_GRID * 2;
-
+                    xPosition += abstractInstance.getWidth() + Constants.X_GRID * 2;
                 } else {
                     LOGGER.log(Level.SEVERE, "Error: Failed to parse AxoObject from file: " + f.getName());
                 }
             }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error opening .axo file(s):" + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error opening .axo file(s): " + e.getMessage());
             e.printStackTrace(System.err);
         }
     }
 
-    public void openEmbedAxoObjectInNewPatch(File f) {
-        /* wrap the single file in a list and call the List<File> method above */
-        openEmbedAxoObjectsInNewPatch(Collections.singletonList(f));
+    public void openAxoObjectInNewPatch(File f) {
+        /* Wrap the single file in a list and call the List<File> method above */
+        openAxoObjectsInNewPatch(Collections.singletonList(f));
     }
-
-    // public void OpenAxoObjectInNewPatch(File f) {
-    //     try {
-    //         PatchGUI newPatch = new PatchGUI();
-    //         PatchFrame pf = new PatchFrame(newPatch);
-    //         newPatch.PostContructor();
-    //         newPatch.setFileNamePath("untitled");
-    //         pf.setVisible(true);
-
-    //         AxoObject loadedObject = AxoObject.LoadAxoObjectFromFile(f.toPath());
-
-    //         if (loadedObject != null) {
-    //             Point initialLocation = new Point(100, 100);
-    //             AxoObjectInstanceAbstract abstractInstance = newPatch.AddObjectInstance(loadedObject, initialLocation);
-                
-    //             AxoObjectInstance newInstance = (AxoObjectInstance) abstractInstance;
-    //             String filename = f.getName().substring(0, f.getName().lastIndexOf('.'));
-    //             String uniqueName = newPatch.deriveUniqueInstanceName(filename);
-    //             newInstance.setInstanceName(uniqueName);
-    //             newInstance.ConvertToEmbeddedObj();
-
-    //             newPatch.SetDirty();
-    //         } else {
-    //             LOGGER.log(Level.SEVERE, "Error: Failed to parse AxoObject from file: " + f.getName());
-    //         }
-
-    //     } catch (Exception e) {
-    //         LOGGER.log(Level.SEVERE, "Error opening .axo file: " + f.getName() + "\n" + e.getMessage());
-    //         e.printStackTrace(System.err);
-    //     }
-    // }
 
     public PatchGUI getCurrentLivePatch() {
         return currentLivePatch;
     }
 
     public void setCurrentLivePatch(PatchGUI newLivePatch) {
-        // Ensure this method is called on the EDT, as it manipulates GUI components
+        /* Call this method on the EDT, as it manipulates GUI components */
         if (!SwingUtilities.isEventDispatchThread()) {
             SwingUtilities.invokeLater(() -> setCurrentLivePatch(newLivePatch));
             return;
         }
 
-        // Only proceed if the live patch is actually changing
+        /* Only proceed if the live patch is actually changing */
         if (this.currentLivePatch == newLivePatch) {
-            // If the same patch is being set live again, or if it's already null, just update states.
+            /* If the same patch is being set live again, or if it's already null, just update states. */
             updatePatchLiveStates();
             return;
         }
 
-        // --- Step 1: Unlock the previously live patch (if any) ---
+        /* Unlock the previously live patch (if any) --- */
         if (this.currentLivePatch != null) {
-            this.currentLivePatch.Unlock(); // GUI-side unlock (cascades down to disable editing)
+            this.currentLivePatch.Unlock(); /* GUI-side unlock */
             LOGGER.log(Level.INFO, "Unlocked previous live patch: " + this.currentLivePatch.getFileNamePath());
             try {
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
-                QCmdProcessor.getQCmdProcessor().WaitQueueFinished(); // Wait for MCU to process stop command
-                LOGGER.log(Level.INFO, "Sent QCmdStop to Core for previous patch.");
+                QCmdStop stopCmd = new QCmdStop();
+                stopCmd.Do(USBBulkConnection.GetConnection());
+                if (stopCmd.waitForCompletion() && stopCmd.isSuccessful()) {
+                    LOGGER.log(Level.INFO, "Patch stopped.");
+                } else {
+                    LOGGER.log(Level.SEVERE, "Patch stop failed.");
+                    return;
+                }
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Failed to send stop command to Core for previous patch: " + this.currentLivePatch.getFileNamePath() + "\n" + e.getMessage());
                 e.printStackTrace(System.err);
             }
         }
 
-        // --- Step 2: Update the reference to the new live patch ---
+        /* Update the reference to the new live patch --- */
         this.currentLivePatch = newLivePatch;
 
-        // --- Step 3: Lock the newly live patch (if any) and send MCU commands ---
+        /* Lock the newly live patch (if any) and send MCU commands --- */
         if (this.currentLivePatch != null) {
-            // Send QCmdStart and QCmdLock to MCU *before* GUI-side Lock()
-            // These must be handled by the QCmdProcessor.
+            /* Send QCmdStart to MCU before GUI-side Lock() */
             try {
-                // Ensure the patch is actually started on the MCU
                 QCmdStart startCmd = new QCmdStart(this.currentLivePatch);
                 startCmd.Do(USBBulkConnection.GetConnection());
-                if (startCmd.isSuccessful()) {
+                if (startCmd.waitForCompletion() && startCmd.isSuccessful()) {
                     LOGGER.log(Level.INFO, "Patch started: " + this.currentLivePatch.getFileNamePath());
                 } else {
                     LOGGER.log(Level.SEVERE, "Patch start failed for " + this.currentLivePatch.getFileNamePath());
                     return;
                 }
 
-                this.currentLivePatch.Lock(); // GUI-side lock (cascades down to disable editing)
+                this.currentLivePatch.Lock(); /* GUI-side lock */
                 LOGGER.log(Level.INFO, "Locked new live patch: " + this.currentLivePatch.getFileNamePath());
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Failed to send start command to Core for patch: " + this.currentLivePatch.getFileNamePath() + "\n" + e.getMessage());
                 e.printStackTrace(System.err);
-                // Critical error: The patch is not truly live on the MCU.
-                // Revert the GUI state to reflect this.
-                if (this.currentLivePatch != null) { // Defensive check
-                    this.currentLivePatch.Unlock(); // Unlock GUI
+                if (this.currentLivePatch != null) {
+                    this.currentLivePatch.Unlock(); /* Unlock GUI */
                 }
-                this.currentLivePatch = null; // Clear live patch reference
+                this.currentLivePatch = null; /* Clear live patch reference */
                 LOGGER.log(Level.SEVERE, "Patch could not be set live on Core. Reverting GUI state.");
             }
         } else {
             System.out.println(Instant.now() + " No patch is currently live.");
         }
 
-        // --- Step 4: Update all open patch windows about the new live state ---
+        /* Update all open patch windows about the new live state --- */
         updatePatchLiveStates();
     }
 
@@ -2255,7 +2246,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 }
                 else if (fn.endsWith(".axo")) {
                     LOGGER.log(Level.INFO, "Opening .axo file as embedded object in new patch window.");
-                    openEmbedAxoObjectInNewPatch(f);
+                    openAxoObjectInNewPatch(f);
                 }
             }
             else {
