@@ -128,6 +128,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.simpleframework.xml.*;
+import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.stream.Format;
 
 /**
  *
@@ -355,6 +357,34 @@ public class AxoObject extends AxoObjectAbstract {
     public void CloseEditor() {
         FireObjectModified(this);
         editor = null;
+    }
+
+    public static AxoObject loadAxoObjectFromFile(Path path) {
+        File file = path.toFile();
+        Serializer serializer = new Persister(new Format(2));
+        
+        try {
+            /* Read the file into the container class (AxoObjectFile) */
+            AxoObjectFile axoFile = serializer.read(AxoObjectFile.class, file);
+            
+            /* Extract the AxoObject from the container's list */
+            if (axoFile != null && !axoFile.objs.isEmpty()) {
+                AxoObjectAbstract loadedObject = axoFile.objs.get(0);
+                if (loadedObject instanceof AxoObject) {
+                    return (AxoObject) loadedObject;
+                } else {
+                    LOGGER.log(Level.WARNING, "File " + file.getName() + " is not a valid AxoObject.");
+                    return null;
+                }
+            } else {
+                LOGGER.log(Level.SEVERE, "File " + file.getName() + " is empty or invalid.");
+                return null;
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error loading AxoObject from file: " + file.getName() + "\n" + e.getMessage());
+            e.printStackTrace(System.err);
+            return null;
+        }
     }
 
     @Override
