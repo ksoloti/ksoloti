@@ -30,6 +30,9 @@ import axoloti.listener.BoardIDNameListener;
 import axoloti.listener.ConnectionFlagsListener;
 import axoloti.listener.ConnectionStatusListener;
 import axoloti.listener.SDCardMountStatusListener;
+import axoloti.object.AxoObject;
+import axoloti.object.AxoObjectInstance;
+import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjects;
 import axoloti.ui.Theme;
 import axoloti.usb.Usb;
@@ -73,7 +76,9 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -588,6 +593,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void initializeAfterFrameIsReady(String args[]) {
         String argMessage = "";
+        /* Create a list to store all dropped .axo files */
+        List<File> axoFilesToOpen = new ArrayList<>();
+
         for (String arg : this.args) {
 
             if (argMessage.isEmpty()) {
@@ -597,9 +605,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             argMessage += " " + arg;
 
             if (!arg.startsWith("-")) {
-                if (arg.endsWith(".axp") || arg.endsWith(".axs") || arg.endsWith(".axh")) {
-                    final File f = new File(arg);
-                    if (f.exists() && f.canRead()) {
+                final File f = new File(arg);
+                if (f.exists() && f.canRead()) {
+                    if (arg.endsWith(".axp") || arg.endsWith(".axs") || arg.endsWith(".axh")) {
                         Runnable r = new Runnable() {
                             @Override
                             public void run() {
@@ -620,13 +628,36 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         };
                         EventQueue.invokeLater(r);
                     }
-                }
-                else if (arg.endsWith(".axo")) {
-                    System.out.println(Instant.now() + " Opening .axo files not implemented yet");
-                    // NOP for AXO at the moment - new patch and paste object as embedded inside?
-                    // NewPatchWithObjectEmbedded---or something();
+                    else if (arg.endsWith(".axo")) {
+                        /* Collect .axo files to a list for opening them in a single new patch later */
+                        axoFilesToOpen.add(f);
+                    }
                 }
             }
+        }
+
+        /* Open all the collected .axo files in one new patch */
+        if (!axoFilesToOpen.isEmpty()) {
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        /* wait for object libraries to be loaded */
+                        if (axoObjects.LoaderThread.isAlive()) {
+                            EventQueue.invokeLater(this);
+                        }
+                        else {
+                            LOGGER.log(Level.INFO, "Opening .axo file(s) as embedded objects in new patch window.");
+                            openEmbedAxoObjectsInNewPatch(axoFilesToOpen);
+                        }
+                    }
+                    catch (Exception e) {
+                        LOGGER.log(Level.SEVERE, "An error occurred during .axo file opening task: " + e.getMessage());
+                        e.printStackTrace(System.err);
+                    }
+                }
+            };
+            EventQueue.invokeLater(r);
         }
 
         if (!argMessage.isEmpty()) {
@@ -682,6 +713,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     System.out.println(Instant.now() + " drag & drop: ");
                     List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
 
+                    /* Create a list to store all dropped .axo files */
+                    List<File> axoFilesToOpen = new ArrayList<>();
+
                     /* Cap max opened files to 32 */
                     int openedCount = 0, maxCount = 32;
                     if (droppedFiles.size() > maxCount) {
@@ -697,28 +731,29 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                         String fn = f.getName();
                         System.out.println(Instant.now() + " " + fn);
-                        if (f != null && f.exists()) {
-                            if (f.canRead()) {
-                                if (fn.endsWith(".axp") || fn.endsWith(".axs") || fn.endsWith(".axh")) {
-                                    PatchGUI.OpenPatch(f);
-                                    openedCount++;
-                                }
-                                else if (fn.endsWith(".axb")) {
-                                    PatchBank.OpenBank(f);
-                                    openedCount++;
-                                }
-                                else if (fn.endsWith(".axo")) {
-                                    System.out.println(Instant.now() + " Opening .axo files not implemented yet");
-                                    // TODO
-                                }
+
+                        if (f != null && f.exists() && f.canRead()) {
+                            if (fn.endsWith(".axp") || fn.endsWith(".axs") || fn.endsWith(".axh")) {
+                                PatchGUI.OpenPatch(f);
+                                openedCount++;
+                            } else if (fn.endsWith(".axb")) {
+                                PatchBank.OpenBank(f);
+                                openedCount++;
+                            } else if (fn.endsWith(".axo")) {
+                                /* Collect .axo files to a list for opening them in a single new patch later */
+                                axoFilesToOpen.add(f);
                             }
-                            else {
-                                LOGGER.log(Level.SEVERE, "Error: Cannot read file \"" + fn + "\".)");
-                            }
-                        }
-                        else {
+                        } else if (f != null && !f.exists()) {
                             LOGGER.log(Level.WARNING, "Warning: File \"" + fn + "\" not found.");
+                        } else {
+                            LOGGER.log(Level.SEVERE, "Error: Cannot read file \"" + fn + "\".");
                         }
+                    }
+
+                    /* After the loop, open all the collected .axo files in one new patch. */
+                    if (!axoFilesToOpen.isEmpty()) {
+                        LOGGER.log(Level.INFO, "Opening .axo file(s) as embedded objects in new patch window.");
+                        openEmbedAxoObjectsInNewPatch(axoFilesToOpen);
                     }
                 }
                 catch (UnsupportedFlavorException ex) {
@@ -1775,8 +1810,86 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{uri, ex});
+            ex.printStackTrace(System.err);
         }
     }
+
+    public void openEmbedAxoObjectsInNewPatch(List<File> files) {
+        if (files == null || files.isEmpty()) {
+            return;
+        }
+
+        try {
+            PatchGUI newPatch = new PatchGUI();
+            PatchFrame pf = new PatchFrame(newPatch);
+            newPatch.PostContructor();
+            newPatch.setFileNamePath("untitled");
+            pf.setVisible(true);
+
+            int xPosition = Constants.X_GRID * 4;
+            int yPosition = Constants.Y_GRID * 4;
+
+            for (File f : files) {
+                AxoObject loadedObject = AxoObject.loadAxoObjectFromFile(f.toPath());
+
+                if (loadedObject != null) {
+                    Point initialLocation = new Point(xPosition, yPosition);
+                    AxoObjectInstanceAbstract abstractInstance = newPatch.AddObjectInstance(loadedObject, initialLocation);
+                    
+                    AxoObjectInstance newInstance = (AxoObjectInstance) abstractInstance;
+                    String filename = f.getName().substring(0, f.getName().lastIndexOf('.'));
+                    String uniqueName = newPatch.deriveUniqueInstanceName(filename);
+                    newInstance.setInstanceName(uniqueName);
+                    newInstance.ConvertToEmbeddedObj();
+
+                    newPatch.SetDirty();
+                    xPosition += newInstance.getWidth() + Constants.X_GRID * 2;
+
+                } else {
+                    LOGGER.log(Level.SEVERE, "Error: Failed to parse AxoObject from file: " + f.getName());
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error opening .axo file(s):" + e.getMessage());
+            e.printStackTrace(System.err);
+        }
+    }
+
+    public void openEmbedAxoObjectInNewPatch(File f) {
+        /* wrap the single file in a list and call the List<File> method above */
+        openEmbedAxoObjectsInNewPatch(Collections.singletonList(f));
+    }
+
+    // public void OpenAxoObjectInNewPatch(File f) {
+    //     try {
+    //         PatchGUI newPatch = new PatchGUI();
+    //         PatchFrame pf = new PatchFrame(newPatch);
+    //         newPatch.PostContructor();
+    //         newPatch.setFileNamePath("untitled");
+    //         pf.setVisible(true);
+
+    //         AxoObject loadedObject = AxoObject.LoadAxoObjectFromFile(f.toPath());
+
+    //         if (loadedObject != null) {
+    //             Point initialLocation = new Point(100, 100);
+    //             AxoObjectInstanceAbstract abstractInstance = newPatch.AddObjectInstance(loadedObject, initialLocation);
+                
+    //             AxoObjectInstance newInstance = (AxoObjectInstance) abstractInstance;
+    //             String filename = f.getName().substring(0, f.getName().lastIndexOf('.'));
+    //             String uniqueName = newPatch.deriveUniqueInstanceName(filename);
+    //             newInstance.setInstanceName(uniqueName);
+    //             newInstance.ConvertToEmbeddedObj();
+
+    //             newPatch.SetDirty();
+    //         } else {
+    //             LOGGER.log(Level.SEVERE, "Error: Failed to parse AxoObject from file: " + f.getName());
+    //         }
+
+    //     } catch (Exception e) {
+    //         LOGGER.log(Level.SEVERE, "Error opening .axo file: " + f.getName() + "\n" + e.getMessage());
+    //         e.printStackTrace(System.err);
+    //     }
+    // }
 
     public PatchGUI getCurrentLivePatch() {
         return currentLivePatch;
@@ -2142,8 +2255,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     PatchBank.OpenBank(f);
                 }
                 else if (fn.endsWith(".axo")) {
-                    System.out.println(Instant.now() + " Opening .axo files not implemented yet");
-                    // TODO
+                    LOGGER.log(Level.INFO, "Opening .axo file as embedded object in new patch window.");
+                    openEmbedAxoObjectInNewPatch(f);
                 }
             }
             else {
