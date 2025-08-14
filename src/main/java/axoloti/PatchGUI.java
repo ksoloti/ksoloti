@@ -490,15 +490,17 @@ public class PatchGUI extends Patch {
 
                         /* Open the collected files aligned next to each other */
                         Point dropLocation = dtde.getLocation();
+                        int alignedX = ((dropLocation.x + (Constants.X_GRID / 2)) / Constants.X_GRID) * Constants.X_GRID;
+                        int alignedY = ((dropLocation.y + (Constants.Y_GRID / 2)) / Constants.Y_GRID) * Constants.Y_GRID;
+                        Point alignedDropLocation = new Point(alignedX, alignedY);
                         int xOffset = 0;
 
                         if (!axoFilesToProcess.isEmpty()) {
-
                             for (File f : axoFilesToProcess) {
                                 try {
                                     AxoObject loadedObject = AxoObject.loadAxoObjectFromFile(f.toPath());
-                                    AxoObjectInstanceAbstract abstractInstance;
-                                    Point instanceLocation = new Point(dropLocation.x + xOffset, dropLocation.y);
+                                    AxoObjectInstanceAbstract abstractInstance = null;
+                                    Point instanceLocation = new Point(alignedDropLocation.x + xOffset, alignedDropLocation.y);
 
                                     if (loadedObject != null) {
                                         AxoObjectAbstract libraryObject = MainFrame.axoObjects.GetAxoObjectFromUUID(loadedObject.getUUID());
@@ -537,13 +539,12 @@ public class PatchGUI extends Patch {
                         if (!axsFilesToProcess.isEmpty()) {
                             for (File f : axsFilesToProcess) {
                                 try {
+                                    AxoObjectInstanceAbstract abstractInstance = null;
                                     String canonicalId = MainFrame.axoObjects.getCanonicalObjectIdFromPath(f);
-                                    AxoObjectInstanceAbstract abstractInstance;
-                                    Point instanceLocation = new Point(dropLocation.x + xOffset, dropLocation.y);
+                                    Point instanceLocation = new Point(alignedDropLocation.x + xOffset, alignedDropLocation.y);
 
                                     if (canonicalId != null) {
                                         /* The dropped subpatch is a library subpatch */
-                                        /* Find the existing library object and use its correct ID */
                                         ArrayList<AxoObjectAbstract> objs = MainFrame.axoObjects.GetAxoObjectFromName(canonicalId, GetCurrentWorkingDirectory());
                                         if (objs != null && !objs.isEmpty()) {
                                             abstractInstance = AddObjectInstance(objs.get(0), instanceLocation);
@@ -552,19 +553,16 @@ public class PatchGUI extends Patch {
                                         }
                                     } else {
                                         /* The dropped subpatch is a local subpatch (not found in any library). */
-                                        /* Create a new object and give it a file-based ID */
                                         AxoObjectFromPatch loadedObject = new AxoObjectFromPatch(f);
 
                                         String absolutePath = f.getAbsolutePath();
                                         String currentDirectory = GetCurrentWorkingDirectory();
 
                                         if (currentDirectory != null && absolutePath.startsWith(currentDirectory)) {
-                                            /* Use a relative path if the subpatch is in the current directory */
                                             loadedObject.createdFromRelativePath = true;
                                             String relativePath = absolutePath.substring(currentDirectory.length() + File.separator.length());
                                             loadedObject.id = relativePath.substring(0, relativePath.lastIndexOf('.'));
                                         } else {
-                                            /* Use the full absolute path as the ID */
                                             loadedObject.id = absolutePath.substring(0, absolutePath.lastIndexOf('.'));
                                         }
                                         
@@ -600,7 +598,7 @@ public class PatchGUI extends Patch {
                                         loadedObject.id = absolutePath.substring(0, absolutePath.lastIndexOf('.'));
                                     }
 
-                                    Point instanceLocation = new Point(dropLocation.x + xOffset, dropLocation.y);
+                                    Point instanceLocation = new Point(alignedDropLocation.x + xOffset, alignedDropLocation.y);
                                     AxoObjectInstanceAbstract abstractInstance = AddObjectInstance(loadedObject, instanceLocation);
                                     
                                     if (abstractInstance != null) {
