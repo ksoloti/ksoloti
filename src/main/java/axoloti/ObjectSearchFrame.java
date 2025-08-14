@@ -69,8 +69,14 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     DefaultTreeModel tm;
     public AxoObjectAbstract type;
     private final PatchGUI p;
-    public AxoObjectInstanceAbstract target_object;
+    private AxoObjectInstanceAbstract target_object;
     private AxoObjectTreeNode objectTree;
+
+    AxoObjectAbstract previewObj;
+    private int patchLocX;
+    private int patchLocY;
+    
+    private boolean accepted = false;
 
     /* Shortcut strings */
     public static final String shortcutList[] = {
@@ -80,7 +86,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         /* b */ null,
         /* c */ "ctrl/",
         /* d */ "disp/",
-        /* e */ "patch/object",
+        /* e */ "patch/object", /* 'e'mbed object */
         /* f */ null,
         /* g */ "gain/",
         /* h */ "harmony/",
@@ -126,11 +132,69 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         /* T */ null,
         /* U */ null,
         /* V */ null,
-        /* W */ "osc/",
+        /* W */ "osc/", /* 'W'aveform generator */
         /* X */ "fx/",
         /* Y */ null,
         /* Z */ null,
     };
+
+    private ScrollPaneComponent jScrollPaneObjectInfo;
+    private ScrollPaneComponent jScrollPaneObjectPreview;
+    private ScrollPaneComponent jScrollPaneObjectSearch;
+    private ScrollPaneComponent jScrollPaneObjectTree;
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.Box.Filler filler2;
+    private javax.swing.JButton jButtonAccept;
+    private javax.swing.JButton jButtonCancel;
+    private javax.swing.JList jResultList;
+    private javax.swing.JPanel jPanelLeft;
+    private javax.swing.JPanel jPanelMain;
+    private javax.swing.JPanel jPanelObjectPreview;
+    private javax.swing.JPanel jPanelSearchField;
+    private javax.swing.JSplitPane jSplitPaneLeft;
+    private javax.swing.JSplitPane jSplitPaneMain;
+    private javax.swing.JSplitPane jSplitPaneRight;
+    private javax.swing.JTextField jTextFieldObjName;
+    private javax.swing.JTextPane jTextPaneObjectInfo;
+    private javax.swing.JTree jObjectTree;
+
+    class StringIcon implements Icon {
+
+        final String str;
+        final int w, h;
+
+        public StringIcon(String str) {
+            this(str, 20, 20);
+        }
+
+        public StringIcon(String str, int w, int h) {
+            this.str = str;
+            this.w = w;
+            this.h = h;
+        }
+
+        @Override
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            FontMetrics metrics = g2.getFontMetrics(g2.getFont());
+            Rectangle2D bounds = metrics.getStringBounds(str, g2);
+            int xc = (w / 2) + x;
+            int yc = (h / 2) + y;
+            g2.drawString(str, xc - (int) bounds.getCenterX(), yc - (int) bounds.getCenterY());
+        }
+
+        @Override
+        public int getIconWidth() {
+            return w;
+        }
+
+        @Override
+        public int getIconHeight() {
+            return h;
+        }
+    }
 
     /**
      * Creates new form ObjectSearchFrame
@@ -384,10 +448,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         });
     }
 
-    AxoObjectAbstract previewObj;
-    int patchLocX;
-    int patchLocY;
-    
     private Point snapToGrid(Point p) {
         p.x = Constants.X_GRID * (p.x / Constants.X_GRID);
         p.y = Constants.Y_GRID * (p.y / Constants.Y_GRID);
@@ -485,9 +545,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             AxoObjectInstanceAbstract inst = o.CreateInstance(null, "dummy", new Point(5, 5));
             jPanelObjectPreview.removeAll();
             jPanelObjectPreview.add(inst);
-            // inst.invalidate();
-            // inst.repaint();
-            // inst.revalidate();
             jPanelObjectPreview.setPreferredSize(inst.getPreferredSize());
             jPanelObjectPreview.revalidate();
             jPanelObjectPreview.repaint();
@@ -642,8 +699,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         this.setTitle(String.format("    %d found", listData.size()));
     }
 
-    boolean accepted = false;
-
     void Cancel() {
         accepted = false;
         MainFrame.mainframe.SetGrabFocusOnSevereErrors(true);
@@ -740,6 +795,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         });
         jPanelSearchField.add(jTextFieldObjName);
         jPanelSearchField.add(filler1);
+
         jButtonAccept.setText("✔");
         jButtonAccept.setToolTipText("Accept");
         jButtonAccept.setActionCommand("");
@@ -768,8 +824,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         });
         jPanelSearchField.add(jButtonCancel);
-
-
         jPanelLeft.add(jPanelSearchField);
 
         jSplitPaneLeft.setResizeWeight(0.5);
@@ -837,11 +891,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         );
 
         jSplitPaneRight.setRightComponent(jScrollPaneObjectPreview);
-
         jSplitPaneMain.setRightComponent(jSplitPaneRight);
-
         jPanelMain.add(jSplitPaneMain, java.awt.BorderLayout.CENTER);
-
         getContentPane().add(jPanelMain, java.awt.BorderLayout.CENTER);
 
         pack();
@@ -871,69 +922,5 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
     private void jButtonAcceptActionPerformed(java.awt.event.ActionEvent evt) {
         Accept();
-    }
-
-    private javax.swing.JPanel jPanelMain;
-    private javax.swing.JPanel jPanelLeft;
-    private javax.swing.JPanel jPanelSearchField;
-    private javax.swing.JPanel jPanelObjectPreview;
-
-    private javax.swing.JSplitPane jSplitPaneMain;
-    private javax.swing.JSplitPane jSplitPaneLeft;
-    private javax.swing.JSplitPane jSplitPaneRight;
-
-    private javax.swing.JTextField jTextFieldObjName;
-    private javax.swing.JButton jButtonAccept;
-    private javax.swing.JButton jButtonCancel;
-    private javax.swing.JList jResultList;
-    private javax.swing.JTree jObjectTree;
-    private javax.swing.JTextPane jTextPaneObjectInfo;
-
-    private javax.swing.Box.Filler filler1;
-    private javax.swing.Box.Filler filler2;
-
-    private ScrollPaneComponent jScrollPaneObjectSearch;
-    private ScrollPaneComponent jScrollPaneObjectTree;
-    private ScrollPaneComponent jScrollPaneObjectInfo;
-    private ScrollPaneComponent jScrollPaneObjectPreview;
-
-
-    class StringIcon implements Icon {
-
-        final String str;
-        final int w, h;
-
-        public StringIcon(String str) {
-            this(str, 20, 20);
-        }
-
-        public StringIcon(String str, int w, int h) {
-            this.str = str;
-            this.w = w;
-            this.h = h;
-        }
-
-        @Override
-        public void paintIcon(Component c, Graphics g, int x, int y) {
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            FontMetrics metrics = g2.getFontMetrics(g2.getFont());
-            Rectangle2D bounds = metrics.getStringBounds(str, g2);
-            int xc = (w / 2) + x;
-            int yc = (h / 2) + y;
-            g2.drawString(str, xc - (int) bounds.getCenterX(), yc - (int) bounds.getCenterY());
-            // g.fillOval(xm, ym, 1, 1);
-        }
-
-        @Override
-        public int getIconWidth() {
-            return w;
-        }
-
-        @Override
-        public int getIconHeight() {
-            return h;
-        }
     }
 }
