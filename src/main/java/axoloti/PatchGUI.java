@@ -539,7 +539,6 @@ public class PatchGUI extends Patch {
                                 } catch (Exception ex) {
                                     LOGGER.log(Level.SEVERE, "Error: Failed to parse AxoObject from file: " + f.getName() + "\n" + ex.getMessage());
                                     ex.printStackTrace(System.err);
-                                    // AddObjectInstance(new AxoObjectFromPatch(f), dtde.getLocation());
                                 }
                             }
                         }
