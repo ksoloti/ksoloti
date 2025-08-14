@@ -100,7 +100,11 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     public AxoObjectInstanceAbstract(AxoObjectAbstract type, Patch patch1, String InstanceName1, Point location) {
         super();
         this.type = type;
-        typeName = type.id;
+        if (type != null && type.id != null) {
+            typeName = type.id;
+        } else {
+            typeName = "unnamed";
+        }
         if (type.createdFromRelativePath && (patch1 != null)) {
             String pPath = patch1.getFileNamePath();
             String oPath = type.sObjFilePath;
@@ -194,6 +198,12 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         }
 
         if (type == null) {
+
+            if (typeName == null || patch == null) {
+                LOGGER.log(Level.SEVERE, "Cannot resolve object. typeName or patch is null.");
+                return null;
+            }
+
             ArrayList<AxoObjectAbstract> types = MainFrame.axoObjects.GetAxoObjectFromName(typeName, patch.GetCurrentWorkingDirectory());
             if (types == null) {
                 LOGGER.log(Level.SEVERE, "Object not found: \"" + typeName + "\", labeled \"" + InstanceName + "\"");
@@ -214,6 +224,9 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
             }
         }
 
+        if (type == null) {
+            LOGGER.log(Level.SEVERE, "Failed to resolve type for " + InstanceName);
+        }
         return type;
     }
 
