@@ -366,7 +366,7 @@ public class AxoObjects {
         LoaderThread = new Thread(objloader);
         LoaderThread.start();
     }
-    
+
     public static String ConvertToLegalFilename(String s) {
         s = s.replaceAll("<", "LT");
         s = s.replaceAll(">", "GT");
@@ -384,14 +384,14 @@ public class AxoObjects {
         try {
             String filePath = f.getCanonicalPath();
             String[] objectSearchPaths = Preferences.getInstance().getObjectSearchPath();
-            
+
             for (String libraryPath : objectSearchPaths) {
                 String canonicalLibraryPath = new File(libraryPath).getCanonicalPath() + File.separator;
-                
+
                 if (filePath.startsWith(canonicalLibraryPath)) {
                     /* If the file path is within a library path, strip the prefix */
                     String canonicalId = filePath.substring(canonicalLibraryPath.length());
-                    
+
                     /* Remove the file extension, if any */
                     int lastDot = canonicalId.lastIndexOf('.');
                     if (lastDot != -1) {
@@ -401,12 +401,12 @@ public class AxoObjects {
                     return canonicalId;
                 }
             }
-            
+
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Could not get canonical path for file: " + f.getAbsolutePath() + "\n" + ex.getMessage());
             ex.printStackTrace(System.err);
         }
-        
+
         /* If no library match is found, return null */
         return null;
     }
