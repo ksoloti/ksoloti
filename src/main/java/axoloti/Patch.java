@@ -599,11 +599,23 @@ public class Patch {
                 return null;
             }
 
+            String baseName = obj.getDefaultInstanceName();
+            /* Check if the object has a canonical ID and use the short name */
+            if (obj.id != null && !obj.id.isEmpty()) {
+                int lastSlash = obj.id.lastIndexOf('/');
+                baseName = (lastSlash != -1) ? obj.id.substring(lastSlash + 1) : obj.id;
+            } else if (obj.shortId != null && !obj.shortId.isEmpty()) {
+                /* Use shortId for subpatches */
+                baseName = obj.shortId;
+            }
+
+            /* Find unique number suffix */
             int i = 1;
-            String n = obj.getDefaultInstanceName() + "_";
+            String n = baseName + "_";
             while (GetObjectInstance(n + i) != null) {
                 i++;
             }
+
             AxoObjectInstanceAbstract oi = obj.CreateInstance(this, n + i, loc);
 
             SetDirty();
