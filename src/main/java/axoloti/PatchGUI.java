@@ -519,7 +519,10 @@ public class PatchGUI extends Patch {
 
                                         if (libraryObject != null) {
                                             abstractInstance = AddObjectInstance(libraryObject, instanceLocation);
-                                            LOGGER.info("Placed reference to library object " + libraryObject.id + ", labeled \"" + abstractInstance.getInstanceName() + "\"");
+                                            if (abstractInstance != null) {
+                                                xOffset += abstractInstance.getWidth() + Constants.X_GRID * 2;
+                                                LOGGER.info("Placed reference to library object " + libraryObject.id + ", labeled \"" + abstractInstance.getInstanceName() + "\"");
+                                            }
                                         } else {
                                             abstractInstance = AddObjectInstance(loadedObject, instanceLocation);
                                             if (abstractInstance != null) {
@@ -527,11 +530,11 @@ public class PatchGUI extends Patch {
                                                 String uniqueName = getSimpleUniqueName(loadedObject.id);
                                                 concreteInstance.setInstanceName(uniqueName);
                                                 concreteInstance.ConvertToEmbeddedObj();
+                                                xOffset += concreteInstance.getWidth() + Constants.X_GRID * 2;
                                                 LOGGER.info("Placed new embedded object labeled \"" + uniqueName + "\" from file " + f.getName());
                                             }
                                         }
                                         SetDirty();
-                                        xOffset += abstractInstance.getWidth() + Constants.X_GRID * 2;
                                     }
                                 } catch (Exception ex) {
                                     LOGGER.log(Level.SEVERE, "Error: Failed to parse AxoObject from file: " + f.getName() + "\n" + ex.getMessage());
@@ -553,8 +556,10 @@ public class PatchGUI extends Patch {
                                         ArrayList<AxoObjectAbstract> objs = MainFrame.axoObjects.GetAxoObjectFromName(canonicalId, GetCurrentWorkingDirectory());
                                         if (objs != null && !objs.isEmpty()) {
                                             abstractInstance = AddObjectInstance(objs.get(0), instanceLocation);
-                                            LOGGER.info("Placed reference to library subpatch " + canonicalId + ", labeled \"" + abstractInstance.getInstanceName() + "\"");
-                                            xOffset += abstractInstance.getWidth() + Constants.X_GRID * 2;
+                                            if (abstractInstance != null) {
+                                                xOffset += abstractInstance.getWidth() + Constants.X_GRID * 2;
+                                                LOGGER.info("Placed reference to library subpatch " + canonicalId + ", labeled \"" + abstractInstance.getInstanceName() + "\"");
+                                            }
                                         }
                                     } else {
                                         /* The dropped subpatch is a local subpatch (not found in any library). */
@@ -574,10 +579,10 @@ public class PatchGUI extends Patch {
                                         abstractInstance = AddObjectInstance(loadedObject, instanceLocation);
                                         if (abstractInstance != null) {
                                             /* Embed the newly created subpatch to avoid zombiism */
-                                            AxoObjectInstance newInstance = (AxoObjectInstance) abstractInstance;
-                                            newInstance.ConvertToPatchPatcher(); 
-                                            LOGGER.info("Placed new embedded subpatch labeled \"" + newInstance.getInstanceName() + "\" from file " + f.getName());
-                                            xOffset += newInstance.getWidth() + Constants.X_GRID * 2;
+                                            AxoObjectInstance concreteInstance = (AxoObjectInstance) abstractInstance;
+                                            concreteInstance.ConvertToPatchPatcher(); 
+                                            xOffset += concreteInstance.getWidth() + Constants.X_GRID * 2;
+                                            LOGGER.info("Placed new embedded subpatch labeled \"" + concreteInstance.getInstanceName() + "\" from file " + f.getName());
                                         }
                                     }
                                     SetDirty();
@@ -607,10 +612,10 @@ public class PatchGUI extends Patch {
                                     AxoObjectInstanceAbstract abstractInstance = AddObjectInstance(loadedObject, instanceLocation);
                                     
                                     if (abstractInstance != null) {
-                                        AxoObjectInstance newInstance = (AxoObjectInstance) abstractInstance;
-                                        newInstance.ConvertToPatchPatcher(); 
-                                        LOGGER.info("Placed new embedded subpatch labeled \"" + newInstance.getInstanceName() + "\" from file " + f.getName());
-                                        xOffset += newInstance.getWidth() + Constants.X_GRID * 2;
+                                        AxoObjectInstance concreteInstance = (AxoObjectInstance) abstractInstance;
+                                        concreteInstance.ConvertToPatchPatcher(); 
+                                        LOGGER.info("Placed new embedded subpatch labeled \"" + concreteInstance.getInstanceName() + "\" from file " + f.getName());
+                                        xOffset += concreteInstance.getWidth() + Constants.X_GRID * 2;
                                     }
                                     SetDirty();
                                 } catch (Exception ex) {
