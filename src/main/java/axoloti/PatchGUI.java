@@ -63,6 +63,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -493,6 +494,8 @@ public class PatchGUI extends Patch {
                             }
                         }
 
+                        /* Collect names of successfully placed instances so we can set them as selected later */
+                        HashSet<String> placedInstanceNames = new HashSet<>();
                         /* Open the collected files aligned next to each other */
                         Point dropLocation = dtde.getLocation();
                         int alignedX = ((dropLocation.x + (Constants.X_GRID / 2)) / Constants.X_GRID) * Constants.X_GRID;
@@ -520,6 +523,7 @@ public class PatchGUI extends Patch {
                                         if (libraryObject != null) {
                                             abstractInstance = AddObjectInstance(libraryObject, instanceLocation);
                                             if (abstractInstance != null) {
+                                                placedInstanceNames.add(abstractInstance.getInstanceName().split("__temp")[0]);
                                                 xOffset += abstractInstance.getWidth() + Constants.X_GRID * 2;
                                                 LOGGER.info("Placed reference to library object " + libraryObject.id + ", labeled \"" + abstractInstance.getInstanceName() + "\"");
                                             }
@@ -530,6 +534,7 @@ public class PatchGUI extends Patch {
                                                 String uniqueName = getSimpleUniqueName(loadedObject.id);
                                                 concreteInstance.setInstanceName(uniqueName);
                                                 concreteInstance.ConvertToEmbeddedObj();
+                                                placedInstanceNames.add(concreteInstance.getInstanceName().split("__temp")[0]);
                                                 xOffset += concreteInstance.getWidth() + Constants.X_GRID * 2;
                                                 LOGGER.info("Placed new embedded object labeled \"" + uniqueName + "\" from file " + f.getName());
                                             }
@@ -556,6 +561,7 @@ public class PatchGUI extends Patch {
                                         if (objs != null && !objs.isEmpty()) {
                                             abstractInstance = AddObjectInstance(objs.get(0), instanceLocation);
                                             if (abstractInstance != null) {
+                                                placedInstanceNames.add(abstractInstance.getInstanceName().split("__temp")[0]);
                                                 xOffset += abstractInstance.getWidth() + Constants.X_GRID * 2;
                                                 LOGGER.info("Placed reference to library subpatch " + canonicalId + ", labeled \"" + abstractInstance.getInstanceName() + "\"");
                                             }
@@ -580,6 +586,7 @@ public class PatchGUI extends Patch {
                                             /* Embed the newly created subpatch to avoid zombiism */
                                             AxoObjectInstance concreteInstance = (AxoObjectInstance) abstractInstance;
                                             concreteInstance.ConvertToPatchPatcher(); 
+                                            placedInstanceNames.add(concreteInstance.getInstanceName().split("__temp")[0]);
                                             xOffset += concreteInstance.getWidth() + Constants.X_GRID * 2;
                                             LOGGER.info("Placed new embedded subpatch labeled \"" + concreteInstance.getInstanceName() + "\" from file " + f.getName());
                                         }
@@ -613,6 +620,7 @@ public class PatchGUI extends Patch {
                                     if (abstractInstance != null) {
                                         AxoObjectInstance concreteInstance = (AxoObjectInstance) abstractInstance;
                                         concreteInstance.ConvertToPatchPatcher(); 
+                                        placedInstanceNames.add(concreteInstance.getInstanceName().split("__temp")[0]);
                                         LOGGER.info("Placed new embedded subpatch labeled \"" + concreteInstance.getInstanceName() + "\" from file " + f.getName());
                                         xOffset += concreteInstance.getWidth() + Constants.X_GRID * 2;
                                     }
@@ -621,6 +629,13 @@ public class PatchGUI extends Patch {
                                     LOGGER.log(Level.SEVERE, "Error: Failed to parse patch from file: " + f.getName() + "\n" + ex.getMessage());
                                     ex.printStackTrace(System.err);
                                 }
+                            }
+                        }
+
+                        SelectNone();
+                        for (AxoObjectInstanceAbstract instance : objectInstances) {
+                            if (placedInstanceNames.contains(instance.getInstanceName())) {
+                                instance.SetSelected(true);
                             }
                         }
 
