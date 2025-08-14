@@ -1309,7 +1309,6 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         if (IsLocked()) {
             return;
         }
-        // ArrayList<AxoObjectAbstract> ol = MainFrame.mainframe.axoObjects.GetAxoObjectFromName("patch/patcher", null);
         ArrayList<AxoObjectAbstract> ol = MainFrame.axoObjects.GetAxoObjectFromName("patch/patcher", null);
         assert (!ol.isEmpty());
         AxoObjectAbstract o = ol.get(0);
