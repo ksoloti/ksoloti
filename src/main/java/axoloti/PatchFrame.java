@@ -1465,25 +1465,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private void jMenuItemSettingsActionPerformed(java.awt.event.ActionEvent evt) {
         //TODO: create CTRL+SHIFT+I for opening object settings
-        // AxoObjectInstanceAbstract selObj = null;
-        // ArrayList<AxoObjectInstanceAbstract> oi = patch.objectInstances;
-        // if(oi != null) {
-            // for(AxoObjectInstanceAbstract i : oi) {
-                // if(i.IsSelected() && i instanceof AxoObjectInstance) {
-                    // selObj = i;
-                // }
-            // }
-        // }
-        // 
-        // if(selObj!=null) {
-            // ((AxoObjectInstance) selObj).OpenEditor();
-        // }
-        // else {
-            if (patch.settings == null) {
-                patch.settings = new PatchSettings();
-            }
-            patch.settings.showEditor(patch);
-        // }
+        if (patch.settings == null) {
+            patch.settings = new PatchSettings();
+        }
+        patch.settings.showEditor(patch);
     }
 
     private void jMenuItemOpenFileLocationActionPerformed(java.awt.event.ActionEvent evt) {
