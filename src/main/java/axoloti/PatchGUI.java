@@ -129,14 +129,11 @@ public class PatchGUI extends Patch {
     //     KeyEvent.VK_Z
     // };
 
-
     private final static int capitalLetterOffset = 26;
-
     private int MousePressedBtn = 0;
     private float dspLoadPercent = 0.0f;
 
     public JLayeredPane Layers = new JLayeredPane();
-
     public JPanel objectLayerPanel = new JPanel();
     public JPanel draggedObjectLayerPanel = new JPanel();
     public JPanel netLayerPanel = new JPanel();
@@ -147,10 +144,18 @@ public class PatchGUI extends Patch {
     JLayer<JComponent> netLayer = new JLayer<JComponent>(netLayerPanel);
     JLayer<JComponent> selectionRectLayer = new JLayer<JComponent>(selectionRectLayerPanel);
 
+    public AxoObjectFromPatch ObjEditor;
+    public ObjectSearchFrame osf;
+    TextEditor NotesTextEditor;
+
     SelectionRectangle selectionrectangle = new SelectionRectangle();
     Point selectionRectStart;
     Point panOrigin;
-    public AxoObjectFromPatch ObjEditor;
+    private Map<DataType, Boolean> cableTypeEnabled = new HashMap<DataType, Boolean>();
+
+    enum Direction {
+        UP, LEFT, DOWN, RIGHT
+    }
 
     public PatchGUI() {
         super();
@@ -951,7 +956,6 @@ public class PatchGUI extends Patch {
         }
         return null;
     }
-    public ObjectSearchFrame osf;
 
     public void ShowClassSelector(Point p, AxoObjectInstanceAbstract o, String searchString, boolean selectText) {
         if (IsLocked()) {
@@ -974,7 +978,6 @@ public class PatchGUI extends Patch {
             o.SetSelected(false);
         }
     }
-    TextEditor NotesTextEditor;
 
     void ShowNotesTextEditor() {
         if (NotesTextEditor == null) {
@@ -996,11 +999,6 @@ public class PatchGUI extends Patch {
         }
         NotesTextEditor.setVisible(true);
         NotesTextEditor.toFront();
-    }
-
-    enum Direction {
-
-        UP, LEFT, DOWN, RIGHT
     }
 
     Patch GetSelectedObjects() {
@@ -1390,8 +1388,6 @@ public class PatchGUI extends Patch {
         Preferences.getInstance().addRecentFile(f.getAbsolutePath());
         return pf;
     }
-
-    private Map<DataType, Boolean> cableTypeEnabled = new HashMap<DataType, Boolean>();
 
     public void setCableTypeEnabled(DataType type, boolean enabled) {
         cableTypeEnabled.put(type, enabled);
