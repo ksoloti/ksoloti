@@ -488,10 +488,11 @@ public class PatchGUI extends Patch {
                             }
                         }
 
+                        /* Open the collected files aligned next to each other */
+                        Point dropLocation = dtde.getLocation();
+                        int xOffset = 0;
+
                         if (!axoFilesToProcess.isEmpty()) {
-                            /* Open all the collected files aligned to each other */
-                            Point dropLocation = dtde.getLocation();
-                            int xOffset = 0;
 
                             for (File f : axoFilesToProcess) {
                                 try {
@@ -534,10 +535,6 @@ public class PatchGUI extends Patch {
                         }
 
                         if (!axsFilesToProcess.isEmpty()) {
-                            /* Open all the collected files aligned to each other */
-                            Point dropLocation = dtde.getLocation();
-                            int xOffset = 0;
-
                             for (File f : axsFilesToProcess) {
                                 try {
                                     String canonicalId = MainFrame.axoObjects.getCanonicalObjectIdFromPath(f);
@@ -589,9 +586,6 @@ public class PatchGUI extends Patch {
                         }
 
                         if (!patchFilesToProcess.isEmpty()) {
-                            Point dropLocation = dtde.getLocation();
-                            int xOffset = 0;
-
                             for (File f : patchFilesToProcess) {
                                 try {
                                     AxoObjectFromPatch loadedObject = new AxoObjectFromPatch(f);
