@@ -381,7 +381,38 @@ public class AxoObjects {
         //if (!cn.equals(o.id)) o.sCName = cn;        
         return s;
     }
-    
+
+    public String getCanonicalObjectIdFromPath(File f) {
+        try {
+            String filePath = f.getCanonicalPath();
+            String[] objectSearchPaths = Preferences.getInstance().getObjectSearchPath();
+            
+            for (String libraryPath : objectSearchPaths) {
+                String canonicalLibraryPath = new File(libraryPath).getCanonicalPath() + File.separator;
+                
+                if (filePath.startsWith(canonicalLibraryPath)) {
+                    /* If the file path is within a library path, strip the prefix */
+                    String canonicalId = filePath.substring(canonicalLibraryPath.length());
+                    
+                    /* Remove the file extension, if any */
+                    int lastDot = canonicalId.lastIndexOf('.');
+                    if (lastDot != -1) {
+                        return canonicalId.substring(0, lastDot);
+                    }
+                    /* Handle cases where the path might be a directory itself */
+                    return canonicalId;
+                }
+            }
+            
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, "Could not get canonical path for file: " + f.getAbsolutePath() + "\n" + ex.getMessage());
+            ex.printStackTrace(System.err);
+        }
+        
+        /* If no library match is found, return null */
+        return null;
+    }
+
     void PostProcessObject(AxoObjectAbstract o) {
         if (o instanceof AxoObject) {
             // remove labels when there's only a single parameter
