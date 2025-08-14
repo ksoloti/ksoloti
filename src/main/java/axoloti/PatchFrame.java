@@ -1472,30 +1472,40 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuItemOpenFileLocationActionPerformed(java.awt.event.ActionEvent evt) {
-        Desktop desktop = Desktop.getDesktop();
-        OS os = axoloti.utils.OSDetect.getOS();
-        try {
-            switch (os) {
-                case WIN:
-                    /* desktop.open(new File(patch.getFileNamePath()).getParentFile()); opens folder but doesn't point to file.
-                     * desktop.browseFileDirectory(new File(patch.getFileNamePath())); not supported on Windows.
-                     * Do explorer.exe workaround instead.
-                     */
-                    String[] str = new String("explorer.exe /select,\"" + patch.getFileNamePath() + "\"").split("\\s+");
-                    Runtime.getRuntime().exec(str);
-                    break;
-                case MAC:
-                    // TODO: supported?
-                    // desktop.browseFileDirectory(new File(patch.getFileNamePath()));
-                case LINUX:
-                default:
-                    // desktop.browseFileDirectory(new File(patch.getFileNamePath())); /* NOT supported, tested on Debian */
-                    desktop.open(new File(patch.getFileNamePath()).getParentFile()); /* Opens folder but doesn't point to file. It's the best we can get */
-                    break;
+        String filePath = patch.getFileNamePath();
+
+        if (filePath != null) {
+            File f = new File(filePath);
+            if (f.exists()) {
+                OS os = axoloti.utils.OSDetect.getOS();
+                try {
+                    String[] cmdStr;
+                    switch (os) {
+                        case WIN:
+                            /* Windows command to open explorer and select the file */
+                            cmdStr = new String[]{"explorer.exe", "/select,", f.getAbsolutePath()};
+                            break;
+                        case MAC:
+                            /* macOS command to reveal the file in Finder */
+                            cmdStr = new String[]{"open", "-R", f.getAbsolutePath()};
+                            break;
+                        case LINUX:
+                        default:
+                            /* Linux command to open the containing folder.
+                               Note: xdg-open doesn't support selecting the file. */
+                            cmdStr = new String[]{"xdg-open", f.getParentFile().getAbsolutePath()};
+                            break;
+                        }
+                        Runtime.getRuntime().exec(cmdStr); /* Send command to OS */
+                } catch (Exception ex) {
+                    LOGGER.log(Level.SEVERE, "Failed to reveal file location using OS commands: " + ex.getMessage());
+                    ex.printStackTrace(System.err);
+                }
+            } else {
+                LOGGER.log(Level.WARNING, "Patch file does not exist. New, unsaved patch?");
             }
-        }
-        catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+        } else {
+            LOGGER.log(Level.WARNING, "Patch file location cannot be read. New, unsaved patch?");
         }
     }
 
