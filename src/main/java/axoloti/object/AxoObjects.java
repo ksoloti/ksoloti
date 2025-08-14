@@ -54,10 +54,18 @@ public class AxoObjects {
     public ArrayList<AxoObjectAbstract> ObjectList;
     HashMap<String, AxoObjectAbstract> ObjectUUIDMap;
 
+    protected Serializer serializer = new Persister(new Format(2));
+    public Thread LoaderThread;
+
+    public AxoObjects() {
+        ObjectTree = new AxoObjectTreeNode("/");
+        ObjectList = new ArrayList<AxoObjectAbstract>();
+        ObjectUUIDMap = new HashMap<String, AxoObjectAbstract>();
+    }
+
     public AxoObjectAbstract GetAxoObjectFromUUID(String n) {
         return ObjectUUIDMap.get(n);
     }
-
 
     public ArrayList<AxoObjectAbstract> GetAxoObjectFromName(String n, String cwd) {
         String bfname = null;
@@ -137,7 +145,6 @@ public class AxoObjects {
                 File fs = new File(fsname);
                 if (fs.isFile()) {
                     AxoObjectAbstract o = new AxoObjectFromPatch(fs);
-//                    o.createdFromRelativePath = true;
                     o.sObjFilePath = n + ".axs";
                     LOGGER.log(Level.INFO, "Subpatch loaded: {0}", fsname);
                     set.add(o);
@@ -148,13 +155,6 @@ public class AxoObjects {
         } else {
             return set;
         }
-    }
-    protected Serializer serializer = new Persister(new Format(2));
-
-    public AxoObjects() {
-        ObjectTree = new AxoObjectTreeNode("/");
-        ObjectList = new ArrayList<AxoObjectAbstract>();
-        ObjectUUIDMap = new HashMap<String, AxoObjectAbstract>();
     }
 
     public AxoObjectTreeNode LoadAxoObjectsFromFolder(File folder, String prefix) {
@@ -342,8 +342,6 @@ public class AxoObjects {
         }
     }
 
-    public Thread LoaderThread;
-
     public void LoadAxoObjects() {
         Runnable objloader = new Runnable() {
             @Override
@@ -506,7 +504,7 @@ public class AxoObjects {
         }
     }
 
-     public void WriteAxoObject(String path, AxoObjectAbstract o) {
+    public void WriteAxoObject(String path, AxoObjectAbstract o) {
         File f =new File(path);
 
         AxoObjectFile a = new AxoObjectFile();
@@ -576,6 +574,4 @@ public class AxoObjects {
         }
         o.id = id;
     }
-    
-    
 }
