@@ -466,28 +466,23 @@ public class PatchGUI extends Patch {
                         dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
                         List<File> flist = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
 
-                        /* Create lists to store all dropped .axo and .axs files */
+                        /* Create lists to store all dropped .ax* files */
                         List<File> axoFilesToProcess = new ArrayList<>();
                         List<File> axsFilesToProcess = new ArrayList<>();
+                        List<File> patchFilesToProcess = new ArrayList<>();
 
                         for (File f : flist) {
                             if (f.exists() && f.canRead()) {
                                 String fn = f.getName();
 
                                 if (fn.endsWith(".axp") || fn.endsWith(".axh")) {
-                                    // Existing logic for other file types
-                                    AxoObjectAbstract o = new AxoObjectFromPatch(f);
-                                    String canonicalPath = f.getCanonicalPath();
-                                    if (GetCurrentWorkingDirectory() != null && canonicalPath.startsWith(GetCurrentWorkingDirectory())) {
-                                        o.createdFromRelativePath = true;
-                                    }
-                                    AddObjectInstance(o, dtde.getLocation());
-                                    SetDirty();
+                                    /* Collect .axp and .axh files to a list for opening them aligned next to each other later */
+                                    patchFilesToProcess.add(f);
                                 } else if (fn.endsWith(".axo")) {
-                                    /* Collect .axo files to a list for opening them in a single new patch later */
+                                    /* Collect .axo files to a list for opening them aligned next to each other later */
                                     axoFilesToProcess.add(f);
                                 } else if (fn.endsWith(".axs")) {
-                                    /* Collect .axs files to a list for opening them in a single new patch later */
+                                    /* Collect .axs files to a list for opening them aligned next to each other later */
                                     axsFilesToProcess.add(f);
                                 }
                             }
@@ -555,6 +550,7 @@ public class PatchGUI extends Patch {
                                         ArrayList<AxoObjectAbstract> objs = MainFrame.axoObjects.GetAxoObjectFromName(canonicalId, GetCurrentWorkingDirectory());
                                         if (objs != null && !objs.isEmpty()) {
                                             abstractInstance = AddObjectInstance(objs.get(0), instanceLocation);
+                                            LOGGER.info("Placed reference to library subpatch " + canonicalId + ", labeled \"" + abstractInstance.getInstanceName() + "\"");
                                             xOffset += abstractInstance.getWidth() + Constants.X_GRID * 2;
                                         }
                                     } else {
@@ -580,6 +576,7 @@ public class PatchGUI extends Patch {
                                             /* Embed the newly created subpatch to avoid zombiism */
                                             AxoObjectInstance newInstance = (AxoObjectInstance) abstractInstance;
                                             newInstance.ConvertToPatchPatcher(); 
+                                            LOGGER.info("Placed new embedded subpatch labeled \"" + newInstance.getInstanceName() + "\" from file " + f.getName());
                                             xOffset += newInstance.getWidth() + Constants.X_GRID * 2;
                                         }
                                     }
@@ -590,7 +587,44 @@ public class PatchGUI extends Patch {
                                 }
                             }
                         }
+
+                        if (!patchFilesToProcess.isEmpty()) {
+                            Point dropLocation = dtde.getLocation();
+                            int xOffset = 0;
+
+                            for (File f : patchFilesToProcess) {
+                                try {
+                                    AxoObjectFromPatch loadedObject = new AxoObjectFromPatch(f);
+                                    String absolutePath = f.getAbsolutePath();
+                                    String currentDirectory = GetCurrentWorkingDirectory();
+
+                                    if (currentDirectory != null && absolutePath.startsWith(currentDirectory)) {
+                                        loadedObject.createdFromRelativePath = true;
+                                        String relativePath = absolutePath.substring(currentDirectory.length() + File.separator.length());
+                                        loadedObject.id = relativePath.substring(0, relativePath.lastIndexOf('.'));
+                                    } else {
+                                        loadedObject.id = absolutePath.substring(0, absolutePath.lastIndexOf('.'));
+                                    }
+
+                                    Point instanceLocation = new Point(dropLocation.x + xOffset, dropLocation.y);
+                                    AxoObjectInstanceAbstract abstractInstance = AddObjectInstance(loadedObject, instanceLocation);
+                                    
+                                    if (abstractInstance != null) {
+                                        AxoObjectInstance newInstance = (AxoObjectInstance) abstractInstance;
+                                        newInstance.ConvertToPatchPatcher(); 
+                                        LOGGER.info("Placed new embedded subpatch labeled \"" + newInstance.getInstanceName() + "\" from file " + f.getName());
+                                        xOffset += newInstance.getWidth() + Constants.X_GRID * 2;
+                                    }
+                                    SetDirty();
+                                } catch (Exception ex) {
+                                    LOGGER.log(Level.SEVERE, "Error: Failed to parse patch from file: " + f.getName() + "\n" + ex.getMessage());
+                                    ex.printStackTrace(System.err);
+                                }
+                            }
+                        }
+
                         dtde.dropComplete(true);
+
                     } catch (UnsupportedFlavorException ex) {
                         LOGGER.log(Level.WARNING, "Drag and drop: Unknown file format.");
                     } catch (IOException ex) {
