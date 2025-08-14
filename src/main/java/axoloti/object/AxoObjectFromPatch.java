@@ -58,22 +58,16 @@ public class AxoObjectFromPatch extends AxoObject {
         }
         shortId = f.getName().substring(0, f.getName().lastIndexOf("."));
         sObjFilePath = f.getAbsolutePath();
-        UpdateObject();
+        UpdateObject(p); 
         MainFrame.axoObjects.ObjectList.add(this);
-        // strip file extension
     }
 
-    final public void UpdateObject() {
-        AxoObject o;
-        if (pg == null) {
-            o = p.GenerateAxoObj(new AxoObject());
-        } else {
-            o = pg.GenerateAxoObj(new AxoObject());
-        }
+    final public void UpdateObject(Patch patchToCopyFrom) {
+        AxoObject o = patchToCopyFrom.GenerateAxoObj(new AxoObject());
         attributes = o.attributes;
         depends = o.depends;
         displays = o.displays;
-        id = f.getName().substring(0, f.getName().length() - 4);
+        // id = f.getName().substring(0, f.getName().length() - 4); // problematic
         includes = o.includes;
         inlets = o.inlets;
         outlets = o.outlets;
@@ -100,7 +94,7 @@ public class AxoObjectFromPatch extends AxoObject {
             try {
                 pg = serializer.read(PatchGUI.class, f);
                 pf = new PatchFrame(pg);
-                pg.setFileNamePath(f.getPath());
+                pg.setFileNamePath(id);
                 pg.PostContructor();
                 pg.ObjEditor = this;
             } catch (Exception ex) {
@@ -116,5 +110,4 @@ public class AxoObjectFromPatch extends AxoObject {
         pf.setVisible(true);
         pf.repositionIfOutsideScreen();
     }
-
 }

@@ -459,20 +459,22 @@ public class PatchGUI extends Patch {
 
             @Override
             public synchronized void drop(DropTargetDropEvent dtde) {
+                            // TODO: select all dropped
                 Transferable t = dtde.getTransferable();
                 if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                     try {
                         dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
                         List<File> flist = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
 
-                        /* Create a list to store all dropped .axo files */
+                        /* Create lists to store all dropped .axo and .axs files */
                         List<File> axoFilesToProcess = new ArrayList<>();
+                        List<File> axsFilesToProcess = new ArrayList<>();
 
                         for (File f : flist) {
                             if (f.exists() && f.canRead()) {
                                 String fn = f.getName();
 
-                                if (fn.endsWith(".axp") || fn.endsWith(".axh") || fn.endsWith(".axs")) {
+                                if (fn.endsWith(".axp") || fn.endsWith(".axh")) {
                                     // Existing logic for other file types
                                     AxoObjectAbstract o = new AxoObjectFromPatch(f);
                                     String canonicalPath = f.getCanonicalPath();
@@ -484,18 +486,23 @@ public class PatchGUI extends Patch {
                                 } else if (fn.endsWith(".axo")) {
                                     /* Collect .axo files to a list for opening them in a single new patch later */
                                     axoFilesToProcess.add(f);
+                                } else if (fn.endsWith(".axs")) {
+                                    /* Collect .axs files to a list for opening them in a single new patch later */
+                                    axsFilesToProcess.add(f);
                                 }
                             }
                         }
 
                         if (!axoFilesToProcess.isEmpty()) {
-                            /* Open all the collected .axo files aligned to each other */
+                            /* Open all the collected files aligned to each other */
                             Point dropLocation = dtde.getLocation();
                             int xOffset = 0;
 
                             for (File f : axoFilesToProcess) {
                                 try {
                                     AxoObject loadedObject = AxoObject.loadAxoObjectFromFile(f.toPath());
+                                    AxoObjectInstanceAbstract abstractInstance;
+                                    Point instanceLocation = new Point(dropLocation.x + xOffset, dropLocation.y);
 
                                     if (loadedObject != null) {
                                         AxoObjectAbstract libraryObject = MainFrame.axoObjects.GetAxoObjectFromUUID(loadedObject.getUUID());
@@ -506,9 +513,6 @@ public class PatchGUI extends Patch {
                                                 libraryObject = foundObjects.get(0);
                                             }
                                         }
-
-                                        AxoObjectInstanceAbstract abstractInstance;
-                                        Point instanceLocation = new Point(dropLocation.x + xOffset, dropLocation.y);
 
                                         if (libraryObject != null) {
                                             abstractInstance = AddObjectInstance(libraryObject, instanceLocation);
@@ -524,19 +528,71 @@ public class PatchGUI extends Patch {
                                             }
                                         }
                                         SetDirty();
-                                        
                                         xOffset += abstractInstance.getWidth() + Constants.X_GRID * 2;
                                     }
                                 } catch (Exception ex) {
                                     LOGGER.log(Level.SEVERE, "Error: Failed to parse AxoObject from file: " + f.getName() + "\n" + ex.getMessage());
                                     ex.printStackTrace(System.err);
-                                    AddObjectInstance(new AxoObjectFromPatch(f), dtde.getLocation());
+                                    // AddObjectInstance(new AxoObjectFromPatch(f), dtde.getLocation());
+                                }
+                            }
+                        }
+
+                        if (!axsFilesToProcess.isEmpty()) {
+                            /* Open all the collected files aligned to each other */
+                            Point dropLocation = dtde.getLocation();
+                            int xOffset = 0;
+
+                            for (File f : axsFilesToProcess) {
+                                try {
+                                    String canonicalId = MainFrame.axoObjects.getCanonicalObjectIdFromPath(f);
+                                    AxoObjectInstanceAbstract abstractInstance;
+                                    Point instanceLocation = new Point(dropLocation.x + xOffset, dropLocation.y);
+
+                                    if (canonicalId != null) {
+                                        /* The dropped subpatch is a library subpatch */
+                                        /* Find the existing library object and use its correct ID */
+                                        ArrayList<AxoObjectAbstract> objs = MainFrame.axoObjects.GetAxoObjectFromName(canonicalId, GetCurrentWorkingDirectory());
+                                        if (objs != null && !objs.isEmpty()) {
+                                            abstractInstance = AddObjectInstance(objs.get(0), instanceLocation);
+                                            xOffset += abstractInstance.getWidth() + Constants.X_GRID * 2;
+                                        }
+                                    } else {
+                                        /* The dropped subpatch is a local subpatch (not found in any library). */
+                                        /* Create a new object and give it a file-based ID */
+                                        AxoObjectFromPatch loadedObject = new AxoObjectFromPatch(f);
+
+                                        String absolutePath = f.getAbsolutePath();
+                                        String currentDirectory = GetCurrentWorkingDirectory();
+
+                                        if (currentDirectory != null && absolutePath.startsWith(currentDirectory)) {
+                                            /* Use a relative path if the subpatch is in the current directory */
+                                            loadedObject.createdFromRelativePath = true;
+                                            String relativePath = absolutePath.substring(currentDirectory.length() + File.separator.length());
+                                            loadedObject.id = relativePath.substring(0, relativePath.lastIndexOf('.'));
+                                        } else {
+                                            /* Use the full absolute path as the ID */
+                                            loadedObject.id = absolutePath.substring(0, absolutePath.lastIndexOf('.'));
+                                        }
+                                        
+                                        abstractInstance = AddObjectInstance(loadedObject, instanceLocation);
+                                        if (abstractInstance != null) {
+                                            /* Embed the newly created subpatch to avoid zombiism */
+                                            AxoObjectInstance newInstance = (AxoObjectInstance) abstractInstance;
+                                            newInstance.ConvertToPatchPatcher(); 
+                                            xOffset += newInstance.getWidth() + Constants.X_GRID * 2;
+                                        }
+                                    }
+                                    SetDirty();
+                                } catch (Exception ex) {
+                                    LOGGER.log(Level.SEVERE, "Error: Failed to parse subpatch from file: " + f.getName() + "\n" + ex.getMessage());
+                                    ex.printStackTrace(System.err);
                                 }
                             }
                         }
                         dtde.dropComplete(true);
                     } catch (UnsupportedFlavorException ex) {
-                        LOGGER.log(Level.SEVERE, null, ex);
+                        LOGGER.log(Level.WARNING, "Drag and drop: Unknown file format.");
                     } catch (IOException ex) {
                         LOGGER.log(Level.SEVERE, "Error dropping file(s): " + ex.getMessage());
                         ex.printStackTrace(System.err);
@@ -1241,7 +1297,7 @@ public class PatchGUI extends Patch {
     boolean save(File f) {
         boolean b = super.save(f);
         if (ObjEditor != null) {
-            ObjEditor.UpdateObject();
+            ObjEditor.UpdateObject(this);
         }
         return b;
     }

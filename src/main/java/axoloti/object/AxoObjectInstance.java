@@ -1305,7 +1305,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         return files;
     }
 
-    void ConvertToPatchPatcher() {
+    public void ConvertToPatchPatcher() {
         if (IsLocked()) {
             return;
         }
