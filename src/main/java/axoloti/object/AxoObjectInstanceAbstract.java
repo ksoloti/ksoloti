@@ -573,12 +573,14 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
     // static Border borderUnselectedLocked = BorderFactory.createLineBorder(Theme.Object_Border_Unselected_Locked);
 
     public void SetSelected(boolean Selected) {
-        if (this.Selected != Selected) {
+        boolean changed = (this.Selected != Selected);
+        this.Selected = Selected; /* Update the state immediately */
+
+        if (changed) {
             if (Selected) {
                 setBorder(borderSelected);
                 Titlebar.setBackground(Theme.Object_Border_Selected);
             } else {
-                // if (Locked) setBorder(borderUnselectedLocked);
                 setBorder(borderUnselected);
                 if (this instanceof AxoObjectInstancePatcher) {
                     Titlebar.setBackground(Theme.Object_TitleBar_Subpatch_Background);
@@ -592,7 +594,6 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
             }
             repaint();
         }
-        this.Selected = Selected;
     }
 
     public boolean isSelected() {
