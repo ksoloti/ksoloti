@@ -528,7 +528,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                         boolean success = get();
                         if (success) {
                             /* Only set the patch to live after a successful process */
-                            LOGGER.log(Level.INFO, "Patch upload successful, starting patch...");
+                            System.out.println(Instant.now() + " Patch upload successful, starting patch...");
                             mainframe.setCurrentLivePatch(patch);
                             patch.ShowPreset(0);
                         } else {
@@ -1338,17 +1338,18 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     boolean completed = uploadCmd.waitForCompletion();
                     CommandManager.getInstance().endLongOperation();
                     if (!completed) {
-                        System.out.println(Instant.now() + " Patch upload timed out");
+                        LOGGER.log(Level.SEVERE, "Patch upload timed out.");
                     }
 
                     if (uploadCmd.isSuccessful()) {
-                        LOGGER.log(Level.INFO, "Patch upload successful, starting and locking patch...");
+                        System.out.println(Instant.now() + " Patch upload successful, starting patch...");
                         mainframe.setCurrentLivePatch(patch);
                     } else {
                         System.out.println(Instant.now() + " Failed to upload patch");
                     }
                 } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Patch upload failed with exception: ", e);
+                    LOGGER.log(Level.SEVERE, "Patch upload failed: " + e.getMessage());
+                    e.printStackTrace(System.err);
                 }
             }
             else {

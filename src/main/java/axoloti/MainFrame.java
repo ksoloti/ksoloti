@@ -1901,12 +1901,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         /* Unlock the previously live patch (if any) --- */
         if (this.currentLivePatch != null) {
             this.currentLivePatch.Unlock(); /* GUI-side unlock */
-            LOGGER.log(Level.INFO, "Unlocked previous live patch: " + this.currentLivePatch.getFileNamePath());
+            System.out.println(Instant.now() + " Unlocked previous live patch: " + this.currentLivePatch.getFileNamePath());
             try {
                 QCmdStop stopCmd = new QCmdStop();
                 stopCmd.Do(USBBulkConnection.GetConnection());
                 if (stopCmd.waitForCompletion() && stopCmd.isSuccessful()) {
-                    LOGGER.log(Level.INFO, "Patch stopped.");
+                    System.out.println(Instant.now() + " Patch stopped.");
                 } else {
                     LOGGER.log(Level.SEVERE, "Patch stop failed.");
                     return;
@@ -1927,14 +1927,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 QCmdStart startCmd = new QCmdStart(this.currentLivePatch);
                 startCmd.Do(USBBulkConnection.GetConnection());
                 if (startCmd.waitForCompletion() && startCmd.isSuccessful()) {
-                    LOGGER.log(Level.INFO, "Patch started: " + this.currentLivePatch.getFileNamePath());
+                    System.out.println(Instant.now() + " Patch started: " + this.currentLivePatch.getFileNamePath());
                 } else {
                     LOGGER.log(Level.SEVERE, "Patch start failed for " + this.currentLivePatch.getFileNamePath());
                     return;
                 }
 
                 this.currentLivePatch.Lock(); /* GUI-side lock */
-                LOGGER.log(Level.INFO, "Locked new live patch: " + this.currentLivePatch.getFileNamePath());
+                System.out.println(Instant.now() + " Locked new live patch: " + this.currentLivePatch.getFileNamePath());
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Failed to send start command to Core for patch: " + this.currentLivePatch.getFileNamePath() + "\n" + e.getMessage());
                 e.printStackTrace(System.err);
