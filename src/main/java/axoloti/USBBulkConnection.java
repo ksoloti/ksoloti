@@ -756,7 +756,7 @@ public class USBBulkConnection extends Connection {
                     default:  errstr = Integer.toString(result); break;
                 }
                 LOGGER.log(Level.SEVERE, "USB bulk write failed: " + errstr);
-                QCmdProcessor.getQCmdProcessor().Abort();
+                // QCmdProcessor.getQCmdProcessor().Abort();
             }
             return result;
         } /* end synchronize (usbOutLock) */
