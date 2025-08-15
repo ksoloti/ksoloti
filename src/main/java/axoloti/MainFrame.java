@@ -1893,11 +1893,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             try {
                 QCmdStop stopCmd = new QCmdStop();
                 stopCmd.Do(USBBulkConnection.GetConnection());
-                if (stopCmd.waitForCompletion() && stopCmd.isSuccessful()) {
-                    System.out.println(Instant.now() + " Patch stopped.");
-                } else {
+                if (!stopCmd.waitForCompletion()) {
+                    LOGGER.log(Level.SEVERE, "Patch stop command timed out.");
+                    return;
+                }
+                if (!stopCmd.isSuccessful()) {
                     LOGGER.log(Level.SEVERE, "Patch stop failed.");
                     return;
+                } else {
+                    System.out.println(Instant.now() + " Patch stopped.");
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Failed to send stop command to Core for previous patch: " + this.currentLivePatch.getFileNamePath() + "\n" + e.getMessage());
