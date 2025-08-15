@@ -160,7 +160,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
             // --- Step 1: Create the file on SD card (AxoCf) ---
             if (!connection.isConnected()) {
-                LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": USB connection lost before file creation.");
+                LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost before file creation.");
                 setMcuStatusCode((byte)0x03); // FR_NOT_READY (connection lost)
                 return this;
             }
@@ -169,12 +169,12 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
             connection.TransmitCreateFile(filename, tlength, ts);
 
             if (!createFileLatch.await(3, TimeUnit.SECONDS)) { // Wait for create file ACK
-                LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": Core did not acknowledge file creation within timeout.");
+                LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge file creation within timeout.");
                 setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                 return this;
             }
             if (createFileStatus != 0x00) { // Check status from MCU (0x00 is FR_OK)
-                LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(createFileStatus) + ") during file creation.");
+                LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(createFileStatus) + ") during file creation.");
                 setMcuStatusCode(createFileStatus);
                 return this;
             }
@@ -209,7 +209,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
                 }
 
                 if (!connection.isConnected()) {
-                    LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": USB connection lost during file transfer. Chunk number " + chunkNum);
+                    LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost during file transfer. Chunk number " + chunkNum);
                     setMcuStatusCode((byte)0x03); // FR_NOT_READY
                     return this;
                 }
@@ -218,12 +218,12 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
                 connection.TransmitAppendFile(buffer);
 
                 if (!appendFileLatch.await(3, TimeUnit.SECONDS)) { // Wait for append chunk ACK
-                    LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
+                    LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
                     setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                     return this;
                 }
                 if (appendFileStatus != 0x00) { // Check status from MCU
-                    LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(appendFileStatus) + ") during chunk append. Chunk number " + chunkNum);
+                    LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(appendFileStatus) + ") during chunk append. Chunk number " + chunkNum);
                     setMcuStatusCode(appendFileStatus);
                     return this;
                 }
@@ -297,7 +297,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
             inputStream.close();
 
             if (!connection.isConnected()) {
-                LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": USB connection lost before file close.");
+                LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost before file close.");
                 setMcuStatusCode((byte)0x03); // FR_NOT_READY
                 return this;
             }
@@ -306,12 +306,12 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
             connection.TransmitCloseFile(filename, ts); 
 
             if (!closeFileLatch.await(3, TimeUnit.SECONDS)) { // Wait for close file ACK
-                LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": Core did not acknowledge file close within timeout.");
+                LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge file close within timeout.");
                 setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                 return this;
             }
             if (closeFileStatus != 0x00) { // Check status from MCU
-                LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(closeFileStatus) + ") during file close.");
+                LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(closeFileStatus) + ") during file close.");
                 setMcuStatusCode(closeFileStatus);
                 return this;
             }

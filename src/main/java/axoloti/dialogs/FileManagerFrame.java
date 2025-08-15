@@ -638,7 +638,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 }
                 else {
                     SDCardInfo.getInstance().Delete(sdCardPath);
-                    System.out.println(Instant.now() + " Successfully deleted file: " + sdCardPath);
+                    LOGGER.log(Level.INFO, "Done deleting file.\n");
                     return true;
                 }
             } catch (InterruptedException e) {
@@ -785,7 +785,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     protected String doInBackground() throws Exception {
                         int uploadedCount = 0;
                         int failedCount = 0;
-
+                        
+                        LOGGER.log(Level.INFO, "Uploading " + selectedFiles.length + " file(s)...");
                         for (File file : selectedFiles) {
 
                             if (!USBBulkConnection.GetConnection().isConnected()) {
@@ -835,26 +836,26 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         }
 
                         if (uploadedCount == selectedFiles.length && failedCount == 0) {
-                            return "All " + uploadedCount + " file(s) uploaded successfully.";
+                            return "All " + uploadedCount + " file(s) uploaded successfully.\n";
                         } else if (uploadedCount > 0 && failedCount > 0) {
-                            return uploadedCount + " file(s) uploaded, but " + failedCount + " failed.";
+                            return uploadedCount + " file(s) uploaded, but " + failedCount + " failed.\n";
                         } else if (failedCount == selectedFiles.length) {
-                             return "No files were uploaded.";
+                             return "No files were uploaded.\n";
                         } else {
-                            return "Upload process completed with issues.";
+                            return "Upload process completed with issues.\n";
                         }
                     }
 
                     @Override
                     protected void done() {
-                        String result = "Upload operation completed.";
+                        String result = "Upload operation completed.\n";
                         try {
                             result = get();
                             LOGGER.log(Level.INFO, result);
                         }
                         catch (InterruptedException | ExecutionException e) {
-                            result = "Batch upload failed unexpectedly: " + e.getMessage();
-                            LOGGER.log(Level.SEVERE, result, e);
+                            result = "Batch upload failed unexpectedly: " + e.getMessage() + "\n";
+                            e.printStackTrace(System.err);
                         }
                         finally {
                             CommandManager.getInstance().endLongOperation();
@@ -934,6 +935,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
                 @Override
                 protected String doInBackground() throws Exception {
+                    LOGGER.log(Level.INFO, "Deleting " + selectedRows.length + " item(s)...");
                     for (String fullPath : filesToDeletePaths) {
                         if (deleteSdCardEntryRecursive(fullPath)) {
                             deletedCount++;
@@ -943,25 +945,25 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     }
 
                     if (deletedCount == filesToDeletePaths.size() && failedCount == 0) {
-                        return "All " + deletedCount + " item(s) deleted successfully.";
+                        return "All " + deletedCount + " item(s) deleted successfully.\n";
                     } else if (deletedCount > 0 && failedCount > 0) {
-                        return deletedCount + " item(s) deleted, but " + failedCount + " failed.";
+                        return deletedCount + " item(s) deleted, but " + failedCount + " failed.\n";
                     } else if (failedCount == filesToDeletePaths.size()) {
-                        return "No items were deleted.";
+                        return "No items were deleted.\n";
                     } else {
-                        return "Deletion process completed with issues.";
+                        return "Deletion process completed with issues.\n";
                     }
                 }
 
                 @Override
                 protected void done() {
-                    String message = "Deletion process completed.";
+                    String message = "Deletion process completed.\n";
                     try {
                         message = get();
                         LOGGER.log(Level.INFO, message);
                     } catch (InterruptedException | ExecutionException e) {
-                        message = "Batch delete failed unexpectedly: " + e.getMessage();
-                        LOGGER.log(Level.SEVERE, message, e);
+                        message = "Batch delete failed unexpectedly: " + e.getMessage() + "\n";
+                        e.printStackTrace(System.err);
                     } finally {
                         CommandManager.getInstance().endLongOperation();
                         triggerRefresh();

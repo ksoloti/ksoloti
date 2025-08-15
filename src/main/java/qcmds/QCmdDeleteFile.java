@@ -57,9 +57,17 @@ public class QCmdDeleteFile extends AbstractQCmdSerialTask {
 
         setMcuStatusCode((byte)0xFF);
 
+        LOGGER.log(Level.INFO, "Deleting file from SD card: " + filename);
+
+        if (!connection.isConnected()) {
+            LOGGER.log(Level.SEVERE, "Failed to delete file " + filename + ": USB connection lost before file creation.");
+            setMcuStatusCode((byte)0x03); // FR_NOT_READY (connection lost)
+            return this;
+        }
+
         int writeResult = connection.TransmitDeleteFile(filename); // Pass 'this' as senderCommand
         if (writeResult != LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "Delete file failed for " + filename + ": USB write error.");
+            LOGGER.log(Level.SEVERE, "Failed to delete file " + filename + ": USB write error.");
             setMcuStatusCode((byte)0x01); // FR_DISK_ERR
             setCompletedWithStatus(false);
             return this;
@@ -67,7 +75,7 @@ public class QCmdDeleteFile extends AbstractQCmdSerialTask {
 
         try {
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "Delete file failed for " + filename + ": Core did not acknowledge within timeout.");
+                LOGGER.log(Level.SEVERE, "Failed to delete file " + filename + ": Core did not acknowledge within timeout.");
                 setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                 setCompletedWithStatus(false);
             } else {
@@ -75,7 +83,7 @@ public class QCmdDeleteFile extends AbstractQCmdSerialTask {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Delete file for " + filename + " interrupted: {0}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Delete interrupted for " + filename + ": {0}", e.getMessage());
             setMcuStatusCode((byte)0x02); // FR_INT_ERR
             setCompletedWithStatus(false);
         } catch (Exception e) {
