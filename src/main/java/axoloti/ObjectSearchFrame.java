@@ -649,7 +649,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                         }
                     }
                     catch (PatternSyntaxException e) {
-                        e.printStackTrace();
+                        e.printStackTrace(System.err);
                     }
                 }
                 else {
@@ -667,7 +667,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                         }
                     }
                     catch (PatternSyntaxException e) {
-                        e.printStackTrace();
+                        e.printStackTrace(System.err);
                     }
                 }
     

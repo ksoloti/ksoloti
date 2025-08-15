@@ -80,10 +80,10 @@ public class Constants {
             FONT = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(fstr)).deriveFont(11f);
         }
         catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
         catch (FontFormatException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 
@@ -93,10 +93,10 @@ public class Constants {
             FONT_MONO = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(fstr)).deriveFont((float)Preferences.getInstance().getCodeFontSize());
         }
         catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
         catch (FontFormatException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 
@@ -107,10 +107,10 @@ public class Constants {
             FONT_MENU = UIManager.getFont("defaultFont");
         // }
         // catch (IOException e) {
-        //     e.printStackTrace();
+        //     e.printStackTrace(System.err);
         // }
         // catch (FontFormatException e) {
-        //     e.printStackTrace();
+        //     e.printStackTrace(System.err);
         // }
     }
 

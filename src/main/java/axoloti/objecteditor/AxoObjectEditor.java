@@ -160,7 +160,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             theme.apply(rsta);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
 
         rsta.setFont(Constants.FONT_MONO);

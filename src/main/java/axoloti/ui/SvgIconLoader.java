@@ -80,7 +80,7 @@ public class SvgIconLoader {
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error loading or transcoding SVG: " + e.getMessage());
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return null;
         }
     }
@@ -129,7 +129,7 @@ public class SvgIconLoader {
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error loading or transcoding SVG: " + e.getMessage());
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return null;
         }
     }

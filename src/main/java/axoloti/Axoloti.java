@@ -418,7 +418,7 @@ public class Axoloti {
                 System.out.println("Axoloti cmd line complete");
                 System.exit(exitCode);
             } catch (Exception e) {
-                e.printStackTrace();
+                e.printStackTrace(System.err);
                 System.exit(-2);
             }
         } else {
@@ -432,7 +432,7 @@ public class Axoloti {
                             splashScreen.dispose();
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        e.printStackTrace(System.err);
                     }
                 }
             });

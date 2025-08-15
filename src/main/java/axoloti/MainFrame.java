@@ -577,7 +577,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                 // }
                 // catch (BindException e) {
-                    // e.printStackTrace();
+                    // e.printStackTrace(System.err);
                     // System.exit(1);
                 }
                 catch (Exception e) {
