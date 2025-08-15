@@ -758,7 +758,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             fc.restoreCurrentSize();
             fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fc.setMultiSelectionEnabled(true);
-            fc.setDialogTitle("Select File...");
+            fc.setDialogTitle("Select Files...");
 
             int returnVal = fc.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
