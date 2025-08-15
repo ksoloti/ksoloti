@@ -309,10 +309,17 @@ public class Patch {
                     /* Check if the directory already exists */
                     if (SDCardInfo.getInstance().find(currentPath) == null) {
                         LOGGER.log(Level.INFO, "Creating directory: {0}", currentPath);
-                        QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(currentPath, Calendar.getInstance());
-                        createDirCmd.Do(USBBulkConnection.GetConnection());
                         try {
-                            createDirCmd.waitForCompletion();
+                            QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(currentPath, Calendar.getInstance());
+                            createDirCmd.Do(USBBulkConnection.GetConnection());
+                            if (!createDirCmd.waitForCompletion()) {
+                                LOGGER.log(Level.SEVERE, "Create directory command timed out.");
+                                return;
+                            }
+                            if (!createDirCmd.isSuccessful()) {
+                                LOGGER.log(Level.SEVERE, "Failed to create directory.");
+                                return;
+                            }
                         } catch (InterruptedException e) {
                             LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory.", e);
                             Thread.currentThread().interrupt();
@@ -3091,10 +3098,17 @@ public class Patch {
         for (int i = 1; i < sdfilename.length(); i++) {
             if (sdfilename.charAt(i) == '/') {
                 Calendar cal = Calendar.getInstance();
-                QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(sdfilename.substring(0, i), cal);
-                createDirCmd.Do(USBBulkConnection.GetConnection());
                 try {
-                    createDirCmd.waitForCompletion();
+                    QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(sdfilename.substring(0, i), cal);
+                    createDirCmd.Do(USBBulkConnection.GetConnection());
+                    if (!createDirCmd.waitForCompletion()) {
+                        LOGGER.log(Level.SEVERE, "Create directory command timed out.");
+                        return;
+                    }
+                    if (!createDirCmd.isSuccessful()) {
+                        LOGGER.log(Level.SEVERE, "Failed to create directory.");
+                        return;
+                    }
                 } catch (InterruptedException e) {
                     LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory.", e);
                     Thread.currentThread().interrupt();

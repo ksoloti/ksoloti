@@ -1012,10 +1012,17 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         String fn = JOptionPane.showInputDialog(this, "Enter folder name:");
         if (fn != null && !fn.isEmpty()) {
             Calendar cal = Calendar.getInstance();
-            QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(dir + fn, cal);
-            createDirCmd.Do(USBBulkConnection.GetConnection());
             try {
-                createDirCmd.waitForCompletion();
+                QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(dir + fn, cal);
+                createDirCmd.Do(USBBulkConnection.GetConnection());
+                if (!createDirCmd.waitForCompletion()) {
+                    LOGGER.log(Level.SEVERE, "Create directory command timed out.");
+                    return;
+                }
+                if (!createDirCmd.isSuccessful()) {
+                    LOGGER.log(Level.SEVERE, "Failed to create directory.");
+                    return;
+                }
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory.", e);
                 Thread.currentThread().interrupt();

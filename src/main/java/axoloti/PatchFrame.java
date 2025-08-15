@@ -468,13 +468,16 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                         String f = "/" + patch.getSDCardPath();
                                         if (SDCardInfo.getInstance().find(f) == null) {
                                             Calendar cal = Calendar.getInstance();
+
                                             QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(f, cal);
                                             createDirCmd.Do(USBBulkConnection.GetConnection());
-                                            try {
-                                                createDirCmd.waitForCompletion();
-                                            } catch (InterruptedException e) {
-                                                LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory.", e);
-                                                Thread.currentThread().interrupt();
+                                            if (!createDirCmd.waitForCompletion()) {
+                                                LOGGER.log(Level.SEVERE, "Create directory command timed out.");
+                                                return false;
+                                            }
+                                            if (!createDirCmd.isSuccessful()) {
+                                                LOGGER.log(Level.SEVERE, "Failed to create directory.");
+                                                return false;
                                             }
                                         }
 
