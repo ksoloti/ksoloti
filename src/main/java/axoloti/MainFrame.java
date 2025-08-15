@@ -1914,11 +1914,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             try {
                 QCmdStart startCmd = new QCmdStart(this.currentLivePatch);
                 startCmd.Do(USBBulkConnection.GetConnection());
-                if (startCmd.waitForCompletion() && startCmd.isSuccessful()) {
-                    System.out.println(Instant.now() + " Patch started: " + this.currentLivePatch.getFileNamePath());
-                } else {
-                    LOGGER.log(Level.SEVERE, "Patch start failed for " + this.currentLivePatch.getFileNamePath());
+                if (!startCmd.waitForCompletion()) {
+                    LOGGER.log(Level.SEVERE, "Patch start command for " + this.currentLivePatch.getFileNamePath() + " timed out.");
                     return;
+                }
+                if (!startCmd.isSuccessful()) {
+                    LOGGER.log(Level.SEVERE, "Patch start failed for " + this.currentLivePatch.getFileNamePath() + ".");
+                    return;
+                } else {
+                    System.out.println(Instant.now() + " Patch started: " + this.currentLivePatch.getFileNamePath());
                 }
 
                 this.currentLivePatch.Lock(); /* GUI-side lock */
