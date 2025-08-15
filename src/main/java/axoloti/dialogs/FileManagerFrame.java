@@ -786,7 +786,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         int uploadedCount = 0;
                         int failedCount = 0;
                         
-                        LOGGER.log(Level.INFO, "Uploading " + selectedFiles.length + " file(s)...");
+                        LOGGER.log(Level.INFO, "Uploading " + selectedFiles.length + " file(s)...\n");
                         for (File file : selectedFiles) {
 
                             if (!USBBulkConnection.GetConnection().isConnected()) {
@@ -935,7 +935,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
                 @Override
                 protected String doInBackground() throws Exception {
-                    LOGGER.log(Level.INFO, "Deleting " + selectedRows.length + " item(s)...");
+                    LOGGER.log(Level.INFO, "Deleting " + selectedRows.length + " item(s)...\n");
                     for (String fullPath : filesToDeletePaths) {
                         if (deleteSdCardEntryRecursive(fullPath)) {
                             deletedCount++;
