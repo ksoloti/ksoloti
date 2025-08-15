@@ -826,7 +826,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                             }
                             
                             try {
-                                Thread.sleep(100);
+                                Thread.sleep(50);
                             }
                             catch (InterruptedException ie) {
                                 LOGGER.log(Level.SEVERE, "Batch upload interrupted.");
@@ -941,6 +941,14 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                             deletedCount++;
                         } else {
                             failedCount++;
+                        }
+                        try {
+                            Thread.sleep(50);
+                        }
+                        catch (InterruptedException ie) {
+                            LOGGER.log(Level.SEVERE, "Batch deletion interrupted.");
+                            Thread.currentThread().interrupt();
+                            break; /* Abort all */
                         }
                     }
 
