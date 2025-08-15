@@ -2806,6 +2806,7 @@ public class Patch {
 
     public void Compile() {
         QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
+        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
     }
 
     public void ShowPreset(int i) {
