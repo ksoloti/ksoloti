@@ -1598,6 +1598,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             finally {
                                 CommandManager.getInstance().endLongOperation();
                             }
+
+                            /* If code reaches here, success */
+                            return true;
                         } else {
                             LOGGER.log(Level.SEVERE, "USB connection lost, patch upload to internal Flash aborted.");
                             return false;
