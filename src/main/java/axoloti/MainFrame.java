@@ -1540,11 +1540,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     uploadCmd.Do(USBBulkConnection.GetConnection());
                     if (!uploadCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Test patch upload command timed out.");
-                        status = false;
+                        return false; /* Abort test of this patch */
                     }
                     if (!uploadCmd.isSuccessful()) {
                         LOGGER.log(Level.SEVERE, "Failed to upload test patch.");
-                        status = false;
+                        return false; /* Abort test of this patch */
                     }
                     setCurrentLivePatch(patch1);
                     Thread.sleep(1000);
