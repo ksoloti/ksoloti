@@ -1339,6 +1339,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private void jMenuCompileCodeActionPerformed(java.awt.event.ActionEvent evt) {
         patch.Compile();
+        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
     }
 
     private void jMenuUploadCodeActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1673,6 +1674,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private void jMenuGenerateAndCompileCodeActionPerformed(java.awt.event.ActionEvent evt) {
         patch.WriteCode(true);
         patch.Compile();
+        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
     }
 
     private void undoItemActionPerformed(java.awt.event.ActionEvent evt) {

@@ -2806,7 +2806,6 @@ public class Patch {
 
     public void Compile() {
         QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
-        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
     }
 
     public void ShowPreset(int i) {
@@ -3104,6 +3103,7 @@ public class Patch {
         LOGGER.log(Level.INFO, "SD card filename: {0}", sdfilename);
 
         this.Compile();
+        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
         mainframe.setCurrentLivePatch(null);
         // create subdirs...
 
