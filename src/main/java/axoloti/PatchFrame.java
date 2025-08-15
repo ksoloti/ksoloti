@@ -1571,7 +1571,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                 QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
                                 uploadCmd.Do(USBBulkConnection.GetConnection());
                                 if (!uploadCmd.waitForCompletion()) {
-                                    System.out.println(Instant.now() + " Patch upload timed out");
+                                    LOGGER.log(Level.SEVERE, "Patch upload command timed out.");
+                                    return false;
+                                }
+                                if (!uploadCmd.isSuccessful()) {
+                                    LOGGER.log(Level.SEVERE, "Failed to upload patch.");
                                     return false;
                                 }
 

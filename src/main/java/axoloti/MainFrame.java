@@ -866,11 +866,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     LOGGER.log(Level.INFO, uploadFwCmd.GetStartMessage());
                     uploadFwCmd.Do(USBBulkConnection.GetConnection());
                     if (!uploadFwCmd.waitForCompletion()) {
-                        LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM timed out");
+                        LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM command timed out.");
                         return false;
                     }
                     if (!uploadFwCmd.isSuccessful()) {
-                        LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed");
+                        LOGGER.log(Level.SEVERE, "Failed to upload firmware to SDRAM.");
                         return false;
                     }
                     LOGGER.log(Level.INFO, uploadFwCmd.GetDoneMessage());
@@ -878,13 +878,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     QCmdUploadPatch uploadPatchCmd = new QCmdUploadPatch(f);
                     uploadPatchCmd.Do(USBBulkConnection.GetConnection());
                     if (!uploadPatchCmd.waitForCompletion()) {
-                        LOGGER.log(Level.SEVERE, "Flasher Patch upload timed out");
+                        LOGGER.log(Level.SEVERE, "Flasher upload command timed out.");
                         return false;
                     }
                     if (!uploadPatchCmd.isSuccessful()) {
-                        LOGGER.log(Level.SEVERE, "Flasher Patch upload failed");
+                        LOGGER.log(Level.SEVERE, "Failed to upload Flasher.");
                         return false;
                     }
+
+                    /* If code reaches here, success */
                     return true;
 
                 } catch (Exception e) {
@@ -1537,11 +1539,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch1.getBinFile());
                     uploadCmd.Do(USBBulkConnection.GetConnection());
                     if (!uploadCmd.waitForCompletion()) {
-                        LOGGER.log(Level.SEVERE, "Test patch upload timed out");
+                        LOGGER.log(Level.SEVERE, "Test patch upload command timed out.");
                         status = false;
                     }
                     if (!uploadCmd.isSuccessful()) {
-                        LOGGER.log(Level.SEVERE, "Test patch upload failed");
+                        LOGGER.log(Level.SEVERE, "Failed to upload test patch.");
                         status = false;
                     }
                     setCurrentLivePatch(patch1);
@@ -1570,7 +1572,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 if (!USBBulkConnection.GetConnection().WaitSync()) {
                     USBBulkConnection.GetConnection().disconnect();
                 }
-                LOGGER.log(Level.INFO, "FAILED compiling patch binary.\n");
+                LOGGER.log(Level.INFO, "FAILED to compile patch binary.\n");
                 status = false;
             }
             patch1.Close();
@@ -1745,11 +1747,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 QCmdUploadPatch uploadMounterCmd = new QCmdUploadPatch(f);
                 uploadMounterCmd.Do(USBBulkConnection.GetConnection());
                 if (!uploadMounterCmd.waitForCompletion()) {
-                    LOGGER.log(Level.SEVERE, "Mounter upload timed out.");
+                    LOGGER.log(Level.SEVERE, "Mounter upload command timed out.");
                     return;
                 }
                 if (!uploadMounterCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Mounter upload failed.");
+                    LOGGER.log(Level.SEVERE, "Failed to upload Mounter.");
                     return;
                 }
             } catch (Exception e) {
@@ -1898,7 +1900,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     return;
                 }
                 if (!stopCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Patch stop failed.");
+                    LOGGER.log(Level.SEVERE, "Failed to stop patch.");
                     return;
                 } else {
                     System.out.println(Instant.now() + " Patch stopped.");
@@ -1923,7 +1925,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     return;
                 }
                 if (!startCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Patch start failed for " + this.currentLivePatch.getFileNamePath());
+                    LOGGER.log(Level.SEVERE, "Failed to start patch: " + this.currentLivePatch.getFileNamePath());
                     return;
                 } else {
                     System.out.println(Instant.now() + " Patch started: " + this.currentLivePatch.getFileNamePath());
@@ -1932,7 +1934,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 this.currentLivePatch.Lock(); /* GUI-side lock */
                 System.out.println(Instant.now() + " Locked new live patch: " + this.currentLivePatch.getFileNamePath());
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Failed to send start command to Core for patch: " + this.currentLivePatch.getFileNamePath() + "\n" + e.getMessage());
+                LOGGER.log(Level.SEVERE, "Failed to send start command for patch: " + this.currentLivePatch.getFileNamePath() + "\n" + e.getMessage());
                 e.printStackTrace(System.err);
                 if (this.currentLivePatch != null) {
                     this.currentLivePatch.Unlock(); /* Unlock GUI */
