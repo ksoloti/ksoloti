@@ -848,7 +848,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     }
 
     private void jButtonUploadBankActionPerformed(java.awt.event.ActionEvent evt) {
-        LOGGER.log(Level.INFO, "Uploading patchbank index...");
+        LOGGER.log(Level.INFO, "Uploading Patchbank index...");
         if (USBBulkConnection.GetConnection().isConnected()) {
             try {
                 QCmdUploadFile uploadFileCmd = new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
@@ -1018,7 +1018,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         class Thd extends Thread {
             public void run() {
                 if (USBBulkConnection.GetConnection().isConnected()) {
-                    LOGGER.log(Level.INFO, "Uploading patchbank index...");
+                    LOGGER.log(Level.INFO, "Uploading Patchbank index...");
                     try {
                         QCmdUploadFile uploadFileCmd = new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
                         uploadFileCmd.Do(USBBulkConnection.GetConnection());

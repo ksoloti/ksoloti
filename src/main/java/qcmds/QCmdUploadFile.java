@@ -202,7 +202,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
                     return this;
                 }
                 if (nRead != bytesToRead) {
-                    LOGGER.log(Level.WARNING, "Partial read for " + filename + ": Expected " + bytesToRead + " bytes, read " + nRead + ".");
+                    LOGGER.log(Level.WARNING, "Partial read for " + filename + ": Expected " + bytesToRead + " bytes, read " + nRead);
                     byte[] actualBuffer = new byte[nRead];
                     System.arraycopy(buffer, 0, actualBuffer, 0, nRead);
                     buffer = actualBuffer; // Use the actually read bytes

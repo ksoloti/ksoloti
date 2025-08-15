@@ -446,7 +446,7 @@ public class USBBulkConnection extends Connection {
                 }
 
                 try {
-                    // System.out.println(Instant.now() + " [DEBUG] Attempting to release USB interface " + useBulkInterfaceNumber + ".");
+                    // System.out.println(Instant.now() + " [DEBUG] Attempting to release USB interface " + useBulkInterfaceNumber);
                     LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
                     // System.out.println(Instant.now() + " [DEBUG] USB interface released successfully.");
                 }
@@ -637,7 +637,7 @@ public class USBBulkConnection extends Connection {
             // System.out.println(Instant.now() + " [DEBUG] Connect: USB device handle opened successfully.");
 
             /* 3. Claim Interface */
-            // System.out.println(Instant.now() + " [DEBUG] Connect: Attempting to claim interface " + useBulkInterfaceNumber + ".");
+            // System.out.println(Instant.now() + " [DEBUG] Connect: Attempting to claim interface " + useBulkInterfaceNumber);
             int result = LibUsb.claimInterface(handle, useBulkInterfaceNumber);
             if (result != LibUsb.SUCCESS) {
                 System.err.println(Instant.now() + " [ERROR] Connect: Failed to claim interface " + useBulkInterfaceNumber + ": " + LibUsb.errorName(result) + " (Code: " + result + ")");

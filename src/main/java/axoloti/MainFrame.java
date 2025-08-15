@@ -1923,7 +1923,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     return;
                 }
                 if (!startCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Patch start failed for " + this.currentLivePatch.getFileNamePath() + ".");
+                    LOGGER.log(Level.SEVERE, "Patch start failed for " + this.currentLivePatch.getFileNamePath());
                     return;
                 } else {
                     System.out.println(Instant.now() + " Patch started: " + this.currentLivePatch.getFileNamePath());
