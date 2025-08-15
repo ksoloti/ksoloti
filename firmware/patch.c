@@ -568,7 +568,7 @@ uint8_t StopPatch(void) {
 }
 
 
-int StartPatch(void) {
+uint8_t StartPatch(void) {
     chEvtSignal(pThreadDSP, (eventmask_t)EVENT_START_PATCH);
 
     while ((patchStatus != RUNNING) && (patchStatus != STARTFAILED)) {
@@ -578,7 +578,7 @@ int StartPatch(void) {
     if (patchStatus == STARTFAILED) {
         SetPatchStatus(STOPPED);
         // LogTextMessage("Patch start failed", patchStatus);
-        return -1;
+        return FR_TIMEOUT; /* 15 */
     }
     return 0;
 }
