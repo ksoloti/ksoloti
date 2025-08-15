@@ -692,9 +692,16 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             protected Void doInBackground() throws Exception {
                 try {
                     System.out.println(Instant.now() + " Sending QCmdGetFileList()...");
-                    QCmdGetFileList getFileListCommand = new QCmdGetFileList();
-                    /* This call blocks until AxoRd or timeout */
-                    getFileListCommand.Do(USBBulkConnection.GetConnection());
+                    QCmdGetFileList getFileListCmd = new QCmdGetFileList();
+                    getFileListCmd.Do(USBBulkConnection.GetConnection());
+                    if (!getFileListCmd.waitForCompletion()) {
+                        LOGGER.log(Level.SEVERE, "Get file list command timed out.");
+                        return null;
+                    }
+                    if (!getFileListCmd.isSuccessful()) {
+                        LOGGER.log(Level.SEVERE, "Failed to get file list.");
+                        return null;
+                    }
                     System.out.println(Instant.now() + " File list refresh command completed. SwingWorker's background task finishing.");
                 }
                 catch (Exception e) {

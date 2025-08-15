@@ -272,10 +272,17 @@ public class Patch {
     void UploadDependentFiles(String sdpath) {
 
         /* Get current latest file list from SD to compare to */
-        QCmdGetFileList getFileListCmd = new QCmdGetFileList();
-        getFileListCmd.Do(USBBulkConnection.GetConnection());
         try {
-            getFileListCmd.waitForCompletion();
+            QCmdGetFileList getFileListCmd = new QCmdGetFileList();
+            getFileListCmd.Do(USBBulkConnection.GetConnection());
+            if (!getFileListCmd.waitForCompletion()) {
+                LOGGER.log(Level.SEVERE, "Get file list command timed out.");
+                return;
+            }
+            if (!getFileListCmd.isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Failed to get file list.");
+                return;
+            }
         } catch (InterruptedException e) {
             LOGGER.log(Level.SEVERE, "Thread interrupted while getting file list.", e);
             Thread.currentThread().interrupt();
