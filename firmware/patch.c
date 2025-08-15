@@ -543,7 +543,7 @@ static int StartPatch1(void) {
 }
 
 
-int StopPatch(void) {
+uint8_t StopPatch(void) {
     if (patchStatus == STOPPED) { /* If already stopped, nothing to do */
         // LogTextMessage("StopPatch: Nothing to do");
         return 0;
@@ -558,9 +558,9 @@ int StopPatch(void) {
         while (patchStatus != STOPPED) {
             if (chVTGetSystemTimeX() - startTime >= timeoutTicks) {
                 // LogTextMessage("StopPatch: Timeout");
-                return -1;
+                return FR_TIMEOUT; /* 15 */
             }
-            chThdSleepMilliseconds(1);
+            chThdSleepMilliseconds(5);
         }
         // LogTextMessage("StopPatch: Success");
         return 0;

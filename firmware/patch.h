@@ -111,7 +111,7 @@ extern uint8_t i2ctxbuf[8];
 
 void InitPatch0(void);
 int StartPatch(void);
-int StopPatch(void);
+uint8_t StopPatch(void);
 
 void start_dsp_thread(void);
 

@@ -838,7 +838,7 @@ void PExReceiveByte(unsigned char c) {
                 state = 0; header = 0;
                 SetPatchSafety(uUIMidiCost, uDspLimit200);
                 loadPatchIndex = LIVE;
-                int res = StartPatch();
+                uint8_t res = StartPatch();
                 send_AxoResult('s', (FRESULT)res);
                 break;
             }
