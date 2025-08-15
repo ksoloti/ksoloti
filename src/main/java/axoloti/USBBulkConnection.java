@@ -1762,7 +1762,14 @@ public class USBBulkConnection extends Connection {
 
                             if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) { // for example, ('l' == 'l') -> TRUE
                                 currentExecutingCommand.setMcuStatusCode((byte)statusCode);
-                                currentExecutingCommand.setCompletedWithStatus(statusCode == 0x00);
+                                if (currentExecutingCommand instanceof QCmdCreateDirectory) {
+                                    /* CreateDirectory returns status FR_OK when the directory was created, and
+                                        FR_EXIST, 0x08, when the directory already exists. Treat both as success. */
+                                    currentExecutingCommand.setCompletedWithStatus(statusCode == 0x00 || statusCode == 0x08);
+                                }
+                                else {
+                                    currentExecutingCommand.setCompletedWithStatus(statusCode == 0x00);
+                                }
 
                                 try {
                                     boolean offeredSuccessfully = QCmdProcessor.getQCmdProcessor().getQueueResponse().offer(currentExecutingCommand, 10, TimeUnit.MILLISECONDS);

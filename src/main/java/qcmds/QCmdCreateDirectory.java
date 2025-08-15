@@ -92,4 +92,11 @@ public class QCmdCreateDirectory extends AbstractQCmdSerialTask {
         }
         return this;
     }
+
+    @Override
+    public boolean isSuccessful() {
+        // For QCmdCreateDirectory, success means both commandSuccess (no Java-side comms error)
+        // AND mcuStatusCode is FR_OK (0x00) OR FR_EXIST (0x08).
+        return commandSuccess && (mcuStatusCode == 0x00 || mcuStatusCode == 0x08);
+    }
 }
