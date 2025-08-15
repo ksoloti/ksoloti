@@ -595,53 +595,53 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             String pathForFatFsDelete = normalizePathForDeletion(sdCardPath);
             System.out.println(Instant.now() + " Attempting to delete empty directory: '" + sdCardPath + "' (normalized for FatFs: '" + pathForFatFsDelete + "')");
 
-            QCmdDeleteFile deleteDirCmd = new QCmdDeleteFile(pathForFatFsDelete);
-            deleteDirCmd.Do(USBBulkConnection.GetConnection());
             try {
+                QCmdDeleteFile deleteDirCmd = new QCmdDeleteFile(pathForFatFsDelete);
+                deleteDirCmd.Do(USBBulkConnection.GetConnection());
                 if (!deleteDirCmd.waitForCompletion()) {
-                    System.out.println(Instant.now() + " QCmdDeleteFile timeout waiting for directory deletion ACK: '" + sdCardPath + "'");
+                    LOGGER.log(Level.SEVERE, "Delete file command timed out: " + sdCardPath);
                     return false;
+                }
+                if (!deleteDirCmd.isSuccessful()) {
+                    LOGGER.log(Level.SEVERE, "Failed to delete empty directory: " + sdCardPath);
+                    return false;
+                }
+                else {
+                    SDCardInfo.getInstance().Delete(sdCardPath);
+                    System.out.println(Instant.now() + " Successfully deleted directory: " + sdCardPath);
+                    return true;
                 }
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Thread interrupted while deleting directory.", e);
                 Thread.currentThread().interrupt();
+                return false;
             }
-
-            boolean success = deleteDirCmd.isSuccessful();
-            if (success) {
-                SDCardInfo.getInstance().Delete(sdCardPath);
-                System.out.println(Instant.now() + " Successfully deleted directory: '" + sdCardPath + "'");
-            }
-            else {
-                System.out.println(Instant.now() + " Failed to delete empty directory: '" + sdCardPath + "'. Check device status/logs.");
-            }
-            return success;
         }
         else { /* It's a file */
             String pathForFatFsDelete = normalizePathForDeletion(sdCardPath);
             System.out.println(Instant.now() + " Identified as file. Attempting to delete file: '" + sdCardPath + "' (normalized for FatFs: '" + pathForFatFsDelete + "')");
 
-            QCmdDeleteFile deleteFileCmd = new QCmdDeleteFile(pathForFatFsDelete);
-            deleteFileCmd.Do(USBBulkConnection.GetConnection());
             try {
+                QCmdDeleteFile deleteFileCmd = new QCmdDeleteFile(pathForFatFsDelete);
+                deleteFileCmd.Do(USBBulkConnection.GetConnection());
                 if (!deleteFileCmd.waitForCompletion()) {
-                    System.out.println(Instant.now() + " QCmdDeleteFile timeout waiting for directory deletion ACK: '" + sdCardPath + "'");
+                    LOGGER.log(Level.SEVERE, "Delete file command timed out: " + sdCardPath);
                     return false;
+                }
+                if (!deleteFileCmd.isSuccessful()) {
+                    LOGGER.log(Level.SEVERE, "Failed to delete file: " + sdCardPath);
+                    return false;
+                }
+                else {
+                    SDCardInfo.getInstance().Delete(sdCardPath);
+                    System.out.println(Instant.now() + " Successfully deleted file: " + sdCardPath);
+                    return true;
                 }
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Thread interrupted while deleting directory.", e);
                 Thread.currentThread().interrupt();
+                return false;
             }
-
-            boolean success = deleteFileCmd.isSuccessful();
-            if (success) {
-                SDCardInfo.getInstance().Delete(sdCardPath);
-                System.out.println(Instant.now() + " Successfully deleted file: '" + sdCardPath + "'");
-            }
-            else {
-                System.out.println(Instant.now() + " Failed to delete file: '" + sdCardPath + "'. Check device status/logs.");
-            }
-            return success;
         }
     }
 
