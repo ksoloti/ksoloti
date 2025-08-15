@@ -484,16 +484,16 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                         QCmdChangeWorkingDirectory changeDirCmd = new QCmdChangeWorkingDirectory(f);
                                         changeDirCmd.Do(USBBulkConnection.GetConnection());
                                         if (!changeDirCmd.waitForCompletion()) {
-                                            System.out.println(Instant.now() + " Change working directory timed out");
+                                            LOGGER.log(Level.SEVERE, "Change working directory command timed out.");
+                                            return false;
+                                        }
+                                        if (!changeDirCmd.isSuccessful()) {
+                                            LOGGER.log(Level.SEVERE, "Failed to change working directory.");
                                             return false;
                                         }
 
-                                        if (changeDirCmd.isSuccessful()) {
-                                            patch.UploadDependentFiles("/" + patch.getSDCardPath());
-                                        } else {
-                                            System.out.println(Instant.now() + " Failed to change working directory.");
-                                            return false;
-                                        }
+                                        /* If code reaches here, all preparations were successful */
+                                        patch.UploadDependentFiles("/" + patch.getSDCardPath());
                                     } catch (Exception e) {
                                         LOGGER.log(Level.SEVERE, "Patch dependent files upload to SD failed with exception: ", e);
                                     }
