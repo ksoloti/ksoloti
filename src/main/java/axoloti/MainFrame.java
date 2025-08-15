@@ -904,17 +904,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         QCmdStartFlasher startFlasherCmd = new QCmdStartFlasher();
                         startFlasherCmd.Do(USBBulkConnection.GetConnection());
                         LOGGER.log(Level.SEVERE, startFlasherCmd.GetDoneMessage());
-                        // startFlasherCmd.waitForCompletion();
-                        // if (startFlasherCmd.isSuccessful()) {
-                        //     LOGGER.log(Level.INFO, "Flasher Patch started.");
-                        // } else {
-                        //     LOGGER.log(Level.SEVERE, "Flasher Patch start failed.");
-                        //     return;
-                        // }
-                        // LOGGER.log(Level.INFO, "Firmware and Flasher upload successful, disconnecting for flash write...");
+                        /* Do not waitForCompletion or check isSuccessful here 
+                           because MCU will have rebooted automatically by now,
+                           which counts as success */
                         ShowDisconnect();
-                        // QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
-                        // QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                     } else {
                         /* Above error messages should have handled all failures */
                     }
@@ -1769,14 +1762,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 LOGGER.log(Level.INFO, startMounterCmd.GetStartMessage());
                 startMounterCmd.Do(USBBulkConnection.GetConnection());
                 LOGGER.log(Level.WARNING, startMounterCmd.GetDoneMessage());
-                // if (!startMounterCmd.waitForCompletion()) {
-                //     LOGGER.log(Level.SEVERE, "Mounter start timed out.");
-                //     return;
-                // }
-                // if (!startMounterCmd.isSuccessful()) {
-                //     LOGGER.log(Level.SEVERE, "Mounter start failed.");
-                //     return;
-                // }
+                /* Do not waitForCompletion or check isSuccessful here 
+                   because MCU will have rebooted automatically by now,
+                   which counts as success */
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "An error occurred while starting Mounter: " + e.getMessage());
                 e.printStackTrace(System.err);
