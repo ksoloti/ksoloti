@@ -21,6 +21,7 @@ package qcmds;
 import axoloti.Connection;
 import axoloti.sd.SDCardInfo;
 
+import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,7 +71,7 @@ public class QCmdDeleteFile extends AbstractQCmdSerialTask {
                 setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                 setCompletedWithStatus(false);
             } else {
-                LOGGER.log(Level.INFO, "Delete file " + filename + " completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
+                System.out.println(Instant.now() + " Delete file " + filename + " completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

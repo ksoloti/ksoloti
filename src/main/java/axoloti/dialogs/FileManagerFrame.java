@@ -835,7 +835,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         }
 
                         if (uploadedCount == selectedFiles.length && failedCount == 0) {
-                            return "All " + uploadedCount + " files were uploaded successfully.";
+                            return "All " + uploadedCount + " file(s) uploaded successfully.";
                         } else if (uploadedCount > 0 && failedCount > 0) {
                             return uploadedCount + " file(s) uploaded, but " + failedCount + " failed.";
                         } else if (failedCount == selectedFiles.length) {
@@ -890,16 +890,13 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         String confirmationText;
         if (selectedRows.length > 1) {
             confirmationText = "Delete " + selectedRows.length + " items?";
-        }
-        else {
-
+        } else {
             AxoSDFileTableModel model = (AxoSDFileTableModel) jFileTable.getModel();
             DisplayTreeNode displayNode = model.getDisplayTreeNode(selectedRows[0]);
             SDFileInfo selectedFile = displayNode.fileInfo;
             if (selectedFile.isDirectory()) {
                 confirmationText = "Delete \"" + selectedFile.getFilename() + "\" and all its contents?";
-            }
-            else {
+            } else {
                 confirmationText = "Delete \"" + selectedFile.getFilename() + "\"?";
             }
         }
@@ -917,7 +914,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         );
 
         if (confirmResult == JOptionPane.YES_OPTION) {
-
             AxoSDFileTableModel model = (AxoSDFileTableModel) jFileTable.getModel();
 
             final List<String> filesToDeletePaths = Arrays.stream(selectedRows)
@@ -931,62 +927,43 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 return;
             }
 
-            new SwingWorker<Boolean, String>() {
+            CommandManager.getInstance().startLongOperation();
+            new SwingWorker<String, String>() {
+                private int deletedCount = 0;
+                private int failedCount = 0;
 
                 @Override
-                protected Boolean doInBackground() throws Exception {
-                    // System.out.println(Instant.now() + " [DEBUG] Starting batch deletion in background...");
-                    boolean overallSuccess = true;
-
+                protected String doInBackground() throws Exception {
                     for (String fullPath : filesToDeletePaths) {
-                        try {
-                            // System.out.println(Instant.now() + " [DEBUG] Initiating deletion for selected item: " + fullPath + "");
-                            // Call the internal recursive deletion helper
-                            boolean deleteSuccess = deleteSdCardEntryRecursive(fullPath);
-                            if (!deleteSuccess) {
-                                overallSuccess = false;
-                                System.out.println(Instant.now() + "Failed to delete: " + fullPath + " (See console/logs for details.)");
-                            } else {
-                                LOGGER.log(Level.INFO, "Deleted " + fullPath);
-                            }
-                        }
-                        catch (Exception e) {
-                            overallSuccess = false;
-                            String errMsg = "An unexpected error occurred during deletion of " + fullPath + ": " + e.getMessage();
-                            LOGGER.log(Level.SEVERE, errMsg, e);
-                            publish(errMsg);
+                        if (deleteSdCardEntryRecursive(fullPath)) {
+                            deletedCount++;
+                        } else {
+                            failedCount++;
                         }
                     }
-                    return overallSuccess;
+
+                    if (deletedCount == filesToDeletePaths.size() && failedCount == 0) {
+                        return "All " + deletedCount + " item(s) deleted successfully.";
+                    } else if (deletedCount > 0 && failedCount > 0) {
+                        return deletedCount + " item(s) deleted, but " + failedCount + " failed.";
+                    } else if (failedCount == filesToDeletePaths.size()) {
+                        return "No items were deleted.";
+                    } else {
+                        return "Deletion process completed with issues.";
+                    }
                 }
 
                 @Override
                 protected void done() {
-                    boolean batchOverallSuccess = false;
-                    String message;
-
+                    String message = "Deletion process completed.";
                     try {
-                        batchOverallSuccess = get();
-                        if (batchOverallSuccess) {
-                            // System.out.println(Instant.now() + " [DEBUG] Batch deletion SwingWorker completed successfully.");
-                            message = "All selected items deleted successfully.";
-                        }
-                        else {
-                            // System.out.println(Instant.now() + " [DEBUG] Batch deletion SwingWorker completed with some failures.");
-                            message = "Deletion completed with some failures. Check console/logs for details.";
-                        }
-                    }
-                    catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        message = "Delete operation was interrupted.";
-                        LOGGER.log(Level.WARNING, message, e);
-                    }
-                    catch (ExecutionException e) {
-                        Throwable cause = e.getCause();
-                        message = "An unexpected error occurred during deletion: " + (cause != null ? cause.getMessage() : e.getMessage());
-                        LOGGER.log(Level.SEVERE, "Batch deletion SwingWorker failed unexpectedly:", cause);
-                    }
-                    finally {
+                        message = get();
+                        LOGGER.log(Level.INFO, message);
+                    } catch (InterruptedException | ExecutionException e) {
+                        message = "Batch delete failed unexpectedly: " + e.getMessage();
+                        LOGGER.log(Level.SEVERE, message, e);
+                    } finally {
+                        CommandManager.getInstance().endLongOperation();
                         triggerRefresh();
                     }
                 }
