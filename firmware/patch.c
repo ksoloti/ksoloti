@@ -553,14 +553,14 @@ uint8_t StopPatch(void) {
         SetPatchStatus(STOPPING); /* Signal DSPThread to stop */
 
         uint32_t startTime = chVTGetSystemTimeX(); /* Set up timeout */
-        uint32_t timeoutTicks = MS2ST(1000); /* 1000 ms */
+        uint32_t timeoutTicks = MS2ST(1000); /* 1s timeout */
 
         while (patchStatus != STOPPED) {
             if (chVTGetSystemTimeX() - startTime >= timeoutTicks) {
                 // LogTextMessage("StopPatch: Timeout");
                 return FR_TIMEOUT; /* 15 */
             }
-            chThdSleepMilliseconds(5);
+            chThdSleepMilliseconds(1);
         }
         // LogTextMessage("StopPatch: Success");
         return 0;
@@ -571,15 +571,23 @@ uint8_t StopPatch(void) {
 uint8_t StartPatch(void) {
     chEvtSignal(pThreadDSP, (eventmask_t)EVENT_START_PATCH);
 
+    uint32_t startTime = chVTGetSystemTimeX();
+    uint32_t timeoutTicks = MS2ST(1000); // 1s timeout enough?
+
     while ((patchStatus != RUNNING) && (patchStatus != STARTFAILED)) {
+        if (chVTGetSystemTimeX() - startTime >= timeoutTicks) {
+            // LogTextMessage("StartPatch: Timeout");
+            return FR_TIMEOUT; /* 15 */
+        }
         chThdSleepMilliseconds(1);
     }
 
     if (patchStatus == STARTFAILED) {
         SetPatchStatus(STOPPED);
-        // LogTextMessage("Patch start failed", patchStatus);
+        // LogTextMessage("StartPatch failed");
         return FR_TIMEOUT; /* 15 */
     }
+    // LogTextMessage("StartPatch: Success");
     return 0;
 }
 
