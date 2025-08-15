@@ -86,6 +86,7 @@ import org.simpleframework.xml.stream.Format;
 
 import qcmds.CommandManager;
 import qcmds.QCmdChangeWorkingDirectory;
+import qcmds.QCmdCopyPatchToFlash;
 import qcmds.QCmdCreateDirectory;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdUploadPatch;
@@ -1562,8 +1563,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
                     if (patch.getBinFile().exists()) {
                         if (USBBulkConnection.GetConnection().isConnected()) {
+                            CommandManager.getInstance().startLongOperation();
                             try {
-                                CommandManager.getInstance().startLongOperation();
                                 QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
                                 uploadCmd.Do(USBBulkConnection.GetConnection());
                                 if (!uploadCmd.waitForCompletion()) {
@@ -1572,19 +1573,30 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                 }
                                 
                                 if (uploadCmd.isSuccessful()) {
-                                    // TODO
+                                    QCmdCopyPatchToFlash copyToFlashCmd = new QCmdCopyPatchToFlash();
+                                    copyToFlashCmd.Do(USBBulkConnection.GetConnection());
+                                    if (!copyToFlashCmd.waitForCompletion()) {
+                                        System.out.println(Instant.now() + " Patch upload to internal Flash timed out");
+                                        return false;
+                                    }
                                     
-                                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
-
-                                    LOGGER.log(Level.INFO, "Patch upload to internal Flash successful.");
-                                    return true;
+                                    if (copyToFlashCmd.isSuccessful()) {
+                                        LOGGER.log(Level.INFO, "Patch upload to internal Flash successful.");
+                                        return true;
+                                    } else {
+                                        System.out.println(Instant.now() + " Failed to upload patch to internal Flash");
+                                        return false;
+                                    }                                    
                                 } else {
                                     System.out.println(Instant.now() + " Failed to upload patch to internal Flash");
                                     return false;
                                 }
                             } catch (Exception e) {
-                                LOGGER.log(Level.SEVERE, "Patch to internal Flash upload failed with exception: ", e);
+                                LOGGER.log(Level.SEVERE, "Patch upload to internal Flash failed with exception: ", e);
                                 return false;
+                            }
+                            finally {
+                                CommandManager.getInstance().endLongOperation();
                             }
                         } else {
                             LOGGER.log(Level.SEVERE, "USB connection lost, patch upload to internal Flash aborted.");
