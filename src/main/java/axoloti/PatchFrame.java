@@ -1574,24 +1574,17 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                     System.out.println(Instant.now() + " Patch upload timed out");
                                     return false;
                                 }
-                                
-                                if (uploadCmd.isSuccessful()) {
-                                    QCmdCopyPatchToFlash copyToFlashCmd = new QCmdCopyPatchToFlash();
-                                    copyToFlashCmd.Do(USBBulkConnection.GetConnection());
-                                    if (!copyToFlashCmd.waitForCompletion()) {
-                                        System.out.println(Instant.now() + " Patch upload to internal Flash timed out");
-                                        return false;
-                                    }
-                                    
-                                    if (copyToFlashCmd.isSuccessful()) {
-                                        LOGGER.log(Level.INFO, "Patch upload to internal Flash successful.");
-                                        return true;
-                                    } else {
-                                        System.out.println(Instant.now() + " Failed to upload patch to internal Flash");
-                                        return false;
-                                    }                                    
-                                } else {
-                                    System.out.println(Instant.now() + " Failed to upload patch to internal Flash");
+
+                                CommandManager.getInstance().startLongOperation();
+                                QCmdCopyPatchToFlash copyToFlashCmd = new QCmdCopyPatchToFlash();
+                                copyToFlashCmd.Do(USBBulkConnection.GetConnection());
+                                CommandManager.getInstance().endLongOperation();
+                                if (!copyToFlashCmd.waitForCompletion()) {
+                                    LOGGER.log(Level.SEVERE, "Copy patch to internal Flash command timed out.");
+                                    return false;
+                                }
+                                if (!copyToFlashCmd.isSuccessful()) {
+                                    LOGGER.log(Level.SEVERE, "Failed to copy patch to internal Flash.");
                                     return false;
                                 }
                             } catch (Exception e) {
@@ -1614,7 +1607,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 }
                 catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Patch upload to internal Flash failed:", e);
-                    publish("Go Live failed: " + e.getMessage());
                     return false;
                 }
             }
