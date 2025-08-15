@@ -381,7 +381,7 @@ public class AxoObject extends AxoObjectAbstract {
                 return null;
             }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error loading AxoObject from file: " + file.getName() + "\n" + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error loading AxoObject from file: " + file.getName() + " " + e.getMessage());
             e.printStackTrace(System.err);
             return null;
         }

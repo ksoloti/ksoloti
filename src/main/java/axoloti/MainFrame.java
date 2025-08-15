@@ -696,6 +696,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
                 }
                 catch (IOException e) {
+                    /* Harmless exception, simply means another Ksoloti instance is already running */
                     System.out.println(Instant.now() + " Single-instance listener not started, likely another instance is running.");
                 }
             });
@@ -890,7 +891,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     return true;
 
                 } catch (Exception e) {
-                    System.err.println(Instant.now() + " Exception during firmware/flasher upload worker: " + e.getMessage());
+                    LOGGER.log(Level.SEVERE, "Exception during firmware/Flasher upload: " + e.getMessage());
                     e.printStackTrace(System.err);
                     return false;
                 }
@@ -914,7 +915,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         /* Above error messages should have handled all failures */
                     }
                 } catch (InterruptedException e) {
-                    LOGGER.log(Level.WARNING, "Firmware update process was interrupted.", e);
+                    LOGGER.log(Level.WARNING, "Firmware update process was interrupted: " + e.getMessage());
                     e.printStackTrace(System.err);
                     Thread.currentThread().interrupt(); // Restore interrupt status
                 } catch (java.util.concurrent.ExecutionException e) {
@@ -1583,7 +1584,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             return status;
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "An error occurred while testing patch: " + f.getPath() + "\n" + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "An error occurred while testing patch: " + f.getPath() + " " + ex.getMessage());
             ex.printStackTrace(System.err);
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
             return false;
@@ -1644,7 +1645,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             return status;
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "An error occurred during file upgrade: " + f.getPath() + "\n" + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "An error occurred during file upgrade: " + f.getPath() + " " + ex.getMessage());
             ex.printStackTrace(System.err);
             return false;
         }
@@ -1792,15 +1793,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             PatchGUI.OpenPatch(name, input);
         }
         catch (MalformedURLException ex) {
-            LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
+            LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex.getMessage()});
             ex.printStackTrace(System.err);
         }
         catch (URISyntaxException ex) {
-            LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
+            LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex.getMessage()});
             ex.printStackTrace(System.err);
         }
         catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{uri, ex});
+            LOGGER.log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{uri, ex.getMessage()});
             ex.printStackTrace(System.err);
         }
     }
@@ -1906,7 +1907,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     System.out.println(Instant.now() + " Patch stopped.");
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Failed to send stop command to Core for previous patch: " + this.currentLivePatch.getFileNamePath() + "\n" + e.getMessage());
+                LOGGER.log(Level.SEVERE, "Failed to send stop command to Core for previous patch: " + this.currentLivePatch.getFileNamePath() + " " + e.getMessage());
                 e.printStackTrace(System.err);
             }
         }

@@ -403,7 +403,7 @@ public class AxoObjects {
             }
 
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "Could not get canonical path for file: " + f.getAbsolutePath() + "\n" + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Could not get canonical path for file: " + f.getAbsolutePath() + " " + ex.getMessage());
             ex.printStackTrace(System.err);
         }
 
