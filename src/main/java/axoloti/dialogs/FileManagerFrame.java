@@ -208,9 +208,13 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
                                     QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, f.getName());
                                     uploadFileCmd.Do(USBBulkConnection.GetConnection());
-                                    if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
-                                        LOGGER.log(Level.SEVERE, "Upload failed for " + f.getName());
-                                        break; /* Break loop on first failure */
+                                    if (!uploadFileCmd.waitForCompletion()) {
+                                        LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
+                                        continue; /* Skip to next file */
+                                    }
+                                    if (!uploadFileCmd.isSuccessful()) {
+                                        LOGGER.log(Level.SEVERE, "Failed to upload file " + f.getName());
+                                        continue; /* Skip to next file */
                                     }
                                 }
                             } catch (InterruptedException e) {
@@ -779,79 +783,65 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 new SwingWorker<String, String>() {
                     @Override
                     protected String doInBackground() throws Exception {
-                        // System.out.println(Instant.now() + " [DEBUG] SwingWorker: Starting batch upload in background (FULL TEST with detailed logs)...");
-                        // System.out.println(Instant.now() + " [DEBUG] SwingWorker: Array length of selectedFiles: " + selectedFiles.length);
                         int uploadedCount = 0;
                         int failedCount = 0;
-                        String lastError = null;
 
-                        // int fileCount = 0;
                         for (File file : selectedFiles) {
-                            // fileCount++;
-                            // System.out.println(Instant.now() + " [DEBUG] SwingWorker: --- Starting iteration " + fileCount + " for file: " + (file != null ? file.getName() : "null") + " ---");
 
                             if (!USBBulkConnection.GetConnection().isConnected()) {
-                                // System.err.println(Instant.now() + " [DEBUG] SwingWorker: Connection lost. Breaking loop for remaining files.");
-                                lastError = "Batch upload aborted: USB connection lost.";
-                                LOGGER.log(Level.SEVERE, lastError);
-                                break; // Exit the loop for remaining files
+                                LOGGER.log(Level.SEVERE, "Batch upload aborted: USB connection lost.");
+                                break; /* Abort loop through files */
                             }
 
                             if (file != null) {
                                 if (!file.canRead()) {
-                                    // System.err.println(Instant.now() + " [DEBUG] SwingWorker: Cannot read file: " + file.getName() + ". Skipping.");
-                                    lastError = "Cannot read file: " + file.getName();
-                                    LOGGER.log(Level.SEVERE, lastError);
+                                    LOGGER.log(Level.SEVERE, "Cannot read file: " + file.getName());
                                     failedCount++;
-                                    continue; // Skip to next file if cannot read
+                                    continue; /* Skip to next file if failed */
                                 }
                                 try {
                                     QCmdUploadFile uploadFileCmd = new QCmdUploadFile(file, targetDirectory + file.getName());
                                     uploadFileCmd.Do(USBBulkConnection.GetConnection());
 
-                                    if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
-                                        lastError = "Upload failed for file: " + file.getName();
-                                        LOGGER.log(Level.WARNING, lastError + ". Aborting remaining batch.");
+                                    if (!uploadFileCmd.waitForCompletion()) {
+                                        LOGGER.log(Level.SEVERE, "File upload command for " + file.getName() + " timed out.");
                                         failedCount++;
-                                        break;
+                                        continue; /* Skip to next file if failed */
                                     }
+                                    if (!uploadFileCmd.isSuccessful()) {
+                                        LOGGER.log(Level.SEVERE, "Failed to upload file " + file.getName());
+                                        failedCount++;
+                                        continue; /* Skip to next file if failed */
+                                    }
+                                    /* If code reaches here, success */
                                     uploadedCount++;
                                 }
                                 catch (Exception e) {
-                                    // System.err.println(Instant.now() + " [DEBUG] SwingWorker: Caught Exception for " + file.getName() + ": " + e.getMessage());
+                                    LOGGER.log(Level.SEVERE, "Error uploading file: " + file.getName());
                                     e.printStackTrace(System.err);
-                                    lastError = "Error uploading file: " + file.getName() + " - " + e.getMessage();
-                                    LOGGER.log(Level.SEVERE, lastError, e);
                                     failedCount++;
-                                    break; // Abort batch on any exception
+                                    continue; /* Skip to next file if failed */
                                 }
                             }
-                            // System.out.println(Instant.now() + " [DEBUG] SwingWorker: --- Finished iteration " + fileCount + " for file: " + (file != null ? file.getName() : "null") + " ---");
                             
                             try {
-                                Thread.sleep(100); // Wait for 100 milliseconds
-                                // System.out.println(Instant.now() + " [DEBUG] SwingWorker: Paused for 100ms before next file.");
+                                Thread.sleep(100);
                             }
                             catch (InterruptedException ie) {
-                                Thread.currentThread().interrupt(); // Restore interrupt status
-                                // System.err.println(Instant.now() + " [DEBUG] SwingWorker: Delay interrupted.");
-                                lastError = "Batch upload interrupted.";
-                                LOGGER.log(Level.WARNING, lastError);
-                                break; // Abort if interrupted
+                                LOGGER.log(Level.SEVERE, "Batch upload interrupted.");
+                                Thread.currentThread().interrupt();
+                                break; /* Abort all */
                             }
                         }
-                        // System.out.println(Instant.now() + " [DEBUG] SwingWorker: Loop finished. Processed " + fileCount + " files.");
+
                         if (uploadedCount == selectedFiles.length && failedCount == 0) {
-                            return "All " + uploadedCount + " files uploaded successfully.";
-                        }
-                        else if (uploadedCount > 0 && failedCount > 0) {
-                            return uploadedCount + " file(s) uploaded, but " + failedCount + " failed. Last issue: " + lastError;
-                        }
-                        else if (failedCount == selectedFiles.length) {
-                             return "No files were uploaded. Last issue: " + lastError;
-                        }
-                        else {
-                            return "Upload process completed with issues. Last issue: " + lastError;
+                            return "All " + uploadedCount + " files were uploaded successfully.";
+                        } else if (uploadedCount > 0 && failedCount > 0) {
+                            return uploadedCount + " file(s) uploaded, but " + failedCount + " failed.";
+                        } else if (failedCount == selectedFiles.length) {
+                             return "No files were uploaded.";
+                        } else {
+                            return "Upload process completed with issues.";
                         }
                     }
 
@@ -860,11 +850,11 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         String result = "Upload operation completed.";
                         try {
                             result = get();
-                            System.out.println(Instant.now() + " Batch upload SwingWorker completed. Result: " + result);
+                            LOGGER.log(Level.INFO, result);
                         }
                         catch (InterruptedException | ExecutionException e) {
                             result = "Batch upload failed unexpectedly: " + e.getMessage();
-                            Logger.getLogger(FileManagerFrame.class.getName()).log(Level.SEVERE, result, e);
+                            LOGGER.log(Level.SEVERE, result, e);
                         }
                         finally {
                             CommandManager.getInstance().endLongOperation();

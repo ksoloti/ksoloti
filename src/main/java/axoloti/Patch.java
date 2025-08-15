@@ -373,8 +373,12 @@ public class Patch {
                 try {
                     QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, targetfn);
                     uploadFileCmd.Do(USBBulkConnection.GetConnection());
-                    if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
-                        LOGGER.log(Level.SEVERE, "Upload failed for " + f.getName());
+                    if (!uploadFileCmd.waitForCompletion()) {
+                        LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
+                        continue;
+                    }
+                    if (!uploadFileCmd.isSuccessful()) {
+                        LOGGER.log(Level.SEVERE, "Failed to upload file " + f.getName());
                         continue;
                     }
                 } catch (InterruptedException e) {
@@ -3143,8 +3147,11 @@ public class Patch {
             try {
                 QCmdUploadFile uploadFileCmd = new QCmdUploadFile(getBinFile(), sdfilename, cal);
                 uploadFileCmd.Do(USBBulkConnection.GetConnection());
-                if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Upload failed for " + f.getName());
+                if (!uploadFileCmd.waitForCompletion()) {
+                    LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
+                }
+                if (!uploadFileCmd.isSuccessful()) {
+                    LOGGER.log(Level.SEVERE, "Failed to upload file " + f.getName());
                 }
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file.", e);
@@ -3169,8 +3176,11 @@ public class Patch {
                     try {
                         QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, backupFilePath, cal);
                         uploadFileCmd.Do(USBBulkConnection.GetConnection());
-                        if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
-                            LOGGER.log(Level.SEVERE, "Upload failed for " + f.getName());
+                        if (!uploadFileCmd.waitForCompletion()) {
+                            LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
+                        }
+                        if (!uploadFileCmd.isSuccessful()) {
+                            LOGGER.log(Level.SEVERE, "Failed to upload file " + f.getName());
                         }
                     } catch (InterruptedException e) {
                         LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file.", e);

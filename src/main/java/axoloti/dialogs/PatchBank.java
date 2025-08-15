@@ -853,8 +853,11 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             try {
                 QCmdUploadFile uploadFileCmd = new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
                 uploadFileCmd.Do(USBBulkConnection.GetConnection());
-                if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Upload failed for Patchbank index");
+                if (!uploadFileCmd.waitForCompletion()) {
+                    LOGGER.log(Level.SEVERE, "File upload command for Patchbank index timed out.");
+                }
+                if (!uploadFileCmd.isSuccessful()) {
+                    LOGGER.log(Level.SEVERE, "Failed to upload Patchbank index.");
                 }
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Thread interrupted while uploading Patchbank index.", e);
@@ -1022,8 +1025,11 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                     try {
                         QCmdUploadFile uploadFileCmd = new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
                         uploadFileCmd.Do(USBBulkConnection.GetConnection());
-                        if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
-                            LOGGER.log(Level.SEVERE, "Upload failed for Patchbank index");
+                        if (!uploadFileCmd.waitForCompletion()) {
+                            LOGGER.log(Level.SEVERE, "File upload command for Patchbank index timed out.");
+                        }
+                        if (!uploadFileCmd.isSuccessful()) {
+                            LOGGER.log(Level.SEVERE, "Failed to upload Patchbank index.");
                         }
                     } catch (InterruptedException e) {
                         LOGGER.log(Level.SEVERE, "Thread interrupted while uploading Patchbank index.", e);
