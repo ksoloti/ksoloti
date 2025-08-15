@@ -554,20 +554,20 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         SDFileInfo fileInfo = getFileInfoByPath(sdCardPath);
         if (fileInfo == null) {
             System.out.println(Instant.now() + " Entry '" + sdCardPath + "' does not exist in local SD card model. Nothing to delete.");
-            return true; // Already "deleted"
+            return true; /* Already "deleted" */
         }
 
         if (fileInfo.isDirectory()) {
             System.out.println(Instant.now() + " Identified as directory. Listing contents for recursive deletion: '" + sdCardPath + "'");
 
-            // Loop for ensuring the directory is empty on the client model side
+            /* Loop for ensuring the directory is empty */
             while (true) {
                 List<SDFileInfo> children = SDCardInfo.getInstance().getFiles().stream()
                     .filter(f -> f.getFilename().startsWith(sdCardPath) && !f.getFilename().equals(sdCardPath))
                     .collect(Collectors.toList());
 
                 if (children.isEmpty()) {
-                    // Directory is truly empty in the *current* model.
+                    /* Directory is truly empty in the current model. */
                     break;
                 }
 
@@ -580,8 +580,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 String childPath = childToProcess.getFilename();
 
                 System.out.println(Instant.now() + " Processing child: '" + childPath + "'");
-                // RECURSIVE CALL: This will eventually hit the file deletion block below.
-                // The key is that this recursive call *itself* must correctly wait for its command.
+                /* Recursive call: this will eventually hit the file deletion block below.
+                   This recursive call itself must correctly wait for its command. */
                 if (!deleteSdCardEntryRecursive(childPath)) {
                     System.out.println(Instant.now() + " Failed to recursively delete child: '" + childPath + "'. Aborting directory deletion for: '" + sdCardPath + "'");
                     return false;
@@ -591,14 +591,14 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 }
             }
 
-            // --- Delete the now-empty directory itself ---
+            /* Delete the now-empty directory itself */
             String pathForFatFsDelete = normalizePathForDeletion(sdCardPath);
             System.out.println(Instant.now() + " Attempting to delete empty directory: '" + sdCardPath + "' (normalized for FatFs: '" + pathForFatFsDelete + "')");
+
             QCmdDeleteFile deleteDirCmd = new QCmdDeleteFile(pathForFatFsDelete);
             deleteDirCmd.Do(USBBulkConnection.GetConnection());
             try {
-                boolean completed = deleteDirCmd.waitForCompletion();
-                if (!completed) {
+                if (!deleteDirCmd.waitForCompletion()) {
                     System.out.println(Instant.now() + " QCmdDeleteFile timeout waiting for directory deletion ACK: '" + sdCardPath + "'");
                     return false;
                 }
@@ -617,14 +617,14 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
             return success;
         }
-        else { // It's a file
+        else { /* It's a file */
             String pathForFatFsDelete = normalizePathForDeletion(sdCardPath);
             System.out.println(Instant.now() + " Identified as file. Attempting to delete file: '" + sdCardPath + "' (normalized for FatFs: '" + pathForFatFsDelete + "')");
+
             QCmdDeleteFile deleteFileCmd = new QCmdDeleteFile(pathForFatFsDelete);
             deleteFileCmd.Do(USBBulkConnection.GetConnection());
             try {
-                boolean completed = deleteFileCmd.waitForCompletion();
-                if (!completed) {
+                if (!deleteFileCmd.waitForCompletion()) {
                     System.out.println(Instant.now() + " QCmdDeleteFile timeout waiting for directory deletion ACK: '" + sdCardPath + "'");
                     return false;
                 }

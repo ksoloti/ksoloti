@@ -492,8 +492,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                 try {
                                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
                                     uploadCmd.Do(USBBulkConnection.GetConnection());
-                                    boolean completed = uploadCmd.waitForCompletion();
-                                    if (!completed) {
+                                    if (!uploadCmd.waitForCompletion()) {
                                         System.out.println(Instant.now() + " Patch upload timed out");
                                         return false;
                                     }
@@ -1335,11 +1334,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     CommandManager.getInstance().startLongOperation();
                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
                     uploadCmd.Do(USBBulkConnection.GetConnection());
-                    boolean completed = uploadCmd.waitForCompletion();
-                    CommandManager.getInstance().endLongOperation();
-                    if (!completed) {
+                    if (!uploadCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Patch upload timed out.");
                     }
+                    CommandManager.getInstance().endLongOperation();
 
                     if (uploadCmd.isSuccessful()) {
                         System.out.println(Instant.now() + " Patch upload successful, starting patch...");
@@ -1557,9 +1555,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                 CommandManager.getInstance().startLongOperation();
                                 QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
                                 uploadCmd.Do(USBBulkConnection.GetConnection());
-                                boolean completed = uploadCmd.waitForCompletion();
-                                CommandManager.getInstance().endLongOperation();
-                                if (!completed) {
+                                if (!uploadCmd.waitForCompletion()) {
                                     System.out.println(Instant.now() + " Patch upload timed out");
                                     return false;
                                 }
