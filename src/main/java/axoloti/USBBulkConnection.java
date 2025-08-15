@@ -232,7 +232,7 @@ public class USBBulkConnection extends Connection {
                     break;
                 }
                 catch (Exception e) {
-                    System.err.println(Instant.now() + " [ERROR] Receiver: Unexpected exception: " + e.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error during Receiver thread: " + e.getMessage());
                     e.printStackTrace(System.err);
                     disconnect();
                     break;
@@ -273,7 +273,7 @@ public class USBBulkConnection extends Connection {
                     break;
                 }
                 catch (Exception e) {
-                    System.err.println(Instant.now() + " [ERROR] Transmitter: Unexpected exception during command execution: " + e.getMessage());
+                    LOGGER.log(Level.SEVERE, "Erropr during Transmitter thread: " + e.getMessage());
                     e.printStackTrace(System.err);
                     disconnect();
                     break;
@@ -397,7 +397,8 @@ public class USBBulkConnection extends Connection {
                     // }
                 }
                 catch (InterruptedException e) {
-                    System.err.println(Instant.now() + " [ERROR] Disconnect: Interrupted while waiting for Receiver thread to join: " + e.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error trying to close Receiver thread: " + e.getMessage());
+                    e.printStackTrace(System.err);
                     Thread.currentThread().interrupt();
                 }
                 finally {
@@ -417,7 +418,8 @@ public class USBBulkConnection extends Connection {
                     // }
                 }
                 catch (InterruptedException e) {
-                    System.err.println(Instant.now() + " [ERROR] Disconnect: Interrupted while waiting for Transmitter thread to join: " + e.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error trying to close Transmitter thread: " + e.getMessage());
+                    e.printStackTrace(System.err);
                     Thread.currentThread().interrupt();
                 }
                 finally {
@@ -472,7 +474,8 @@ public class USBBulkConnection extends Connection {
             }
         }
         catch (Exception mainEx) {
-            System.err.println(Instant.now() + " [ERROR] Disconnect: Unexpected exception during cleanup: " + mainEx.getMessage());
+            LOGGER.log(Level.SEVERE, "Unexpected error during Disconnect cleanup: " + mainEx.getMessage());
+            mainEx.printStackTrace(System.err);
         }
         finally {
 
@@ -689,7 +692,8 @@ public class USBBulkConnection extends Connection {
                 // System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: detectedCpuId set to: " + this.detectedCpuId);
             }
             catch (Exception cmdEx) {
-                System.err.println(Instant.now() + " [ERROR] Error during post-connection QCmd processing. Connection might be unstable: " + cmdEx.getMessage());
+                LOGGER.log(Level.SEVERE, "Error during post-connection QCmd processing. Connection might be unstable: " + cmdEx.getMessage());
+                cmdEx.printStackTrace(System.err);
                 return false;
             }
 
@@ -703,7 +707,8 @@ public class USBBulkConnection extends Connection {
             return false;
         }
         catch (Exception ex) {
-            System.err.println(Instant.now() + " [ERROR] General exception during connection: " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during connection process: " + ex.getMessage());
+            ex.printStackTrace(System.err);
             disconnect();
             return false;
         }
@@ -1527,7 +1532,8 @@ public class USBBulkConnection extends Connection {
             });
         }
         catch (InterruptedException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            // System.out.println(Instant.now() + " [DEBUG] ReadSync wait interrupted due to disconnect request.," + ex.getMessage());
+            Thread.currentThread().interrupt();
         }
         catch (InvocationTargetException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
@@ -1781,8 +1787,9 @@ public class USBBulkConnection extends Connection {
                                     }
                                 }
                                 catch (InterruptedException e) {
+                                    LOGGER.log(Level.SEVERE, "Interrupted while offering response to QCmdProcessor queue: " + e.getMessage());
+                                    e.printStackTrace(System.err);
                                     Thread.currentThread().interrupt();
-                                    LOGGER.log(Level.SEVERE, "Interrupted while offering response to QCmdProcessor queue.", e);
                                 }
                             }
                             // else {

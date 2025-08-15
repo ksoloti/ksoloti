@@ -171,7 +171,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             MainFrame.axoObjects.LoaderThread.join(); /* Make sure all object libraries are loaded before creating/opening a patch */
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error during AxoObject loader thread: " + ex.getMessage());
+            ex.printStackTrace(System.err);
         }
 
         setMinimumSize(new Dimension(200,120));
@@ -235,7 +236,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     patch.deleteSelectedAxoObjInstances();
                 }
                 catch (Exception ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, "Error during cut action: " + ex.getMessage());
+                    ex.printStackTrace(System.err);
                 }
             }
         });
@@ -265,7 +267,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     clip.setContents(s, (ClipboardOwner) null);
                 }
                 catch (Exception ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, "Error during copy action: " + ex.getMessage());
+                    ex.printStackTrace(System.err);
                 }
             }
         });
@@ -284,10 +287,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     patch.paste((String) clip.getData(DataFlavor.stringFlavor), mousePos, false);
                 }
                 catch (UnsupportedFlavorException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.WARNING, "Paste: Unknown file format.");
                 }
                 catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, "Error during paste action: " + ex.getMessage());
+                    ex.printStackTrace(System.err);
                 }
             }
         });
@@ -307,7 +311,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     patch.paste((String) clip.getData(DataFlavor.stringFlavor), mousePos, true);
                 }
                 catch (UnsupportedFlavorException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.WARNING, "Paste: Unknown file format.");
                 }
                 catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
@@ -1181,7 +1185,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     //         patch.paste((String)clip.getData(DataFlavor.stringFlavor), mousePos, false);
     //     }
     //     catch (UnsupportedFlavorException ex) {
-    //         LOGGER.log(Level.SEVERE, null, ex);
+    //         LOGGER.log(Level.WARNING, "Paste: Unknown file format.");
     //     }
     //     catch (IOException ex) {
     //         LOGGER.log(Level.SEVERE, null, ex);
@@ -1424,7 +1428,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
         }
         catch (UnsupportedFlavorException ex) {
-            LOGGER.log(Level.SEVERE, "Paste error: Unknown clipboard content", ex);
+            LOGGER.log(Level.WARNING, "Paste: Unknown file format.");
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "An unexpected error occurred during the duplicate operation.", ex);
@@ -1458,7 +1462,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             /* ignoreShiftKey is cleared in AxoObjectInstanceAbstract keylistener */
         }
         catch (UnsupportedFlavorException ex) {
-            LOGGER.log(Level.SEVERE, "Paste error: Unknown clipboard content", ex);
+            LOGGER.log(Level.WARNING, "Paste: Unknown file format.");
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "An unexpected error occurred during the duplicate operation.", ex);

@@ -226,7 +226,8 @@ public class PatchGUI extends Patch {
                     StringSelection s = new StringSelection(baos.toString());
                     clip.setContents(s, (ClipboardOwner) null);
                 } catch (Exception ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, "Error during export to clipboard: " + ex.getMessage());
+                    ex.printStackTrace(System.err);
                 }
                 if (action == MOVE) {
                     deleteSelectedAxoObjInstances();
@@ -250,7 +251,7 @@ public class PatchGUI extends Patch {
                 } catch (UnsupportedFlavorException ex) {
                     LOGGER.log(Level.WARNING, "Paste: Unknown file format.");
                 } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, "Paste", ex);
+                    LOGGER.log(Level.SEVERE, "Error during paste: " + ex.getMessage());
                 }
                 return true;
             }
@@ -923,7 +924,8 @@ public class PatchGUI extends Patch {
             LOGGER.log(Level.INFO, "Paste: Clipboard does not contain valid content.");
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "An unexpected error occurred during the paste operation.", ex);
+            LOGGER.log(Level.SEVERE, "An unexpected error occurred during the paste operation: " + ex.getMessage());
+            ex.printStackTrace(System.err);
         }
     }
 
@@ -1357,7 +1359,8 @@ public class PatchGUI extends Patch {
             pf.setVisible(true);
             pf.repositionIfOutsideScreen();
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error during patch open: " + ex.getMessage());
+            ex.printStackTrace(System.err);
         }
     }
 
@@ -1389,11 +1392,12 @@ public class PatchGUI extends Patch {
                 LOGGER.log(Level.SEVERE, "Patch \"{0}\" was saved with a newer version of Ksoloti: {1}",
                         new Object[]{f.getAbsoluteFile(), pve.getMessage()});
             } else {
-                LOGGER.log(Level.SEVERE, null, ite);
+                LOGGER.log(Level.SEVERE, "Error during patch open:" + ite.getMessage());
+                ite.printStackTrace(System.err);
             }
             return null;
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error during patch open: " + ex.getMessage());
             return null;
         }
     }

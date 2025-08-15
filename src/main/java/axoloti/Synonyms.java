@@ -56,7 +56,8 @@ public class Synonyms {
 
             
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error during synonyms load: " + ex.getMessage());
+            ex.printStackTrace(System.err);
         }
     }
 
@@ -65,7 +66,8 @@ public class Synonyms {
         try {
             serializer.write(instance, new File(filename));
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error during synonyms save: " + ex.getMessage());
+            ex.printStackTrace(System.err);
         }
     }
 

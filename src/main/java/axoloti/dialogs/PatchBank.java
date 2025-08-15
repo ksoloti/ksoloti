@@ -291,9 +291,10 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                     refresh();
 
                 } catch (UnsupportedFlavorException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.WARNING, "Drag and Drop: Unknown file format.");
                 } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, "Error during drag and drop: " + ex.getMessage());
+                    ex.printStackTrace(System.err);
                 }
             }
         });
@@ -418,11 +419,9 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             pw.close();
             clearDirty();
         } catch (FileNotFoundException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error during Patchbank save: " + ex.getMessage());
+            ex.printStackTrace(System.err);
         }
-        //  catch (IOException ex) {
-        //     LOGGER.log(Level.SEVERE, null, ex);
-        // }
     }
 
     void Save() {
@@ -860,7 +859,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                     LOGGER.log(Level.SEVERE, "Failed to upload Patchbank index.");
                 }
             } catch (InterruptedException e) {
-                LOGGER.log(Level.SEVERE, "Thread interrupted while uploading Patchbank index.", e);
+                LOGGER.log(Level.SEVERE, "Thread interrupted while uploading Patchbank index: " + e.getMessage());
+                e.printStackTrace(System.err);
                 Thread.currentThread().interrupt();
             }
         }
@@ -1032,7 +1032,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                             LOGGER.log(Level.SEVERE, "Failed to upload Patchbank index.");
                         }
                     } catch (InterruptedException e) {
-                        LOGGER.log(Level.SEVERE, "Thread interrupted while uploading Patchbank index.", e);
+                        LOGGER.log(Level.SEVERE, "Thread interrupted while uploading Patchbank index: " + e.getMessage());
+                        e.printStackTrace(System.err);
                         Thread.currentThread().interrupt();
                     }
                     // LOGGER.log(Level.INFO, "Done uploading Patchbank index.");
@@ -1103,7 +1104,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             pb.setVisible(true);
         } catch (IOException ex) {
             pb.Close();
-            LOGGER.log(Level.SEVERE, "Patchbank file not found or inaccessible: {0}", f.getName());
+            LOGGER.log(Level.SEVERE, "Patchbank file not found or inaccessible: " + f.getName() + " " + ex.getMessage());
         }
     }
 

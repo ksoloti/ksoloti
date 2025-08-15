@@ -194,7 +194,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         protected Void doInBackground() throws Exception {
                             try {
                                 for (File f : droppedFiles) {
-                                    System.out.println(Instant.now() + " Drag & drop uploading " + f.getName());
+                                    System.out.println(Instant.now() + " Drag and drop uploading " + f.getName());
 
                                     if (!USBBulkConnection.GetConnection().isConnected()) {
                                         LOGGER.log(Level.SEVERE, "Upload aborted: USB connection lost during transfer.");
@@ -231,7 +231,10 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         }
                     }.execute();
                 }
-                catch (UnsupportedFlavorException | IOException ex) {
+                catch (UnsupportedFlavorException ex) {
+                    LOGGER.log(Level.WARNING, "Drag and drop: Unknown file format.");
+                }
+                catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, "Error during drag and drop file upload: " + ex.getMessage(), ex);
                 }
             }

@@ -526,11 +526,12 @@ public class Preferences {
                 prefs = serializer.read(Preferences.class, p);
             } catch (Exception ex) {
                 try {
-                    LOGGER.log(Level.SEVERE, null, ex);
-                    LOGGER.log(Level.INFO,"Attempting to load preferences in relaxed mode");
+                    LOGGER.log(Level.INFO, ex.getMessage());
+                    LOGGER.log(Level.INFO, "Attempting to load preferences in relaxed mode.");
                     prefs = serializer.read(Preferences.class, p,false);
                 } catch (Exception ex1) {
-                    LOGGER.log(Level.SEVERE, null, ex1);
+                    LOGGER.log(Level.SEVERE, "Error trying to load prefrences: " + ex1.getMessage());
+                    ex1.printStackTrace(System.err);
                 }
             }
             if (prefs == null) {
@@ -577,7 +578,8 @@ public class Preferences {
             LoadPreferences(); /* Reload the freshly saved prefs file */
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Failed to save preferences.", ex);
+            LOGGER.log(Level.SEVERE, "Failed to save preferences: " + ex.getMessage());
+            ex.printStackTrace(System.err);
             return;
         }
         LOGGER.log(Level.INFO, "Saved preferences.\n");

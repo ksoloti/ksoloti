@@ -2792,10 +2792,12 @@ public class Patch {
             fos.close();
         }
         catch (FileNotFoundException ex) {
-            LOGGER.log(Level.SEVERE, ex.toString());
+            LOGGER.log(Level.SEVERE, "File not found: " + ex.getMessage());
+            ex.printStackTrace(System.err);
         }
         catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, ex.toString());
+            LOGGER.log(Level.SEVERE, "File error: " + ex.getMessage());
+            ex.printStackTrace(System.err);
         }
         // LOGGER.log(Level.INFO, "Done generating code.\n");
     }
