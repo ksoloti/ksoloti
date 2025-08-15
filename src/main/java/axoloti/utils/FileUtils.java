@@ -51,7 +51,7 @@ public class FileUtils {
 
         @Override
         public String getDescription() {
-            return "Axoloti Patch";
+            return "Axoloti Patch (.axp)";
         }
     };
 
@@ -68,7 +68,7 @@ public class FileUtils {
 
         @Override
         public String getDescription() {
-            return "Axoloti Help";
+            return "Axoloti Help Patch (.axh)";
         }
     };
 
@@ -85,7 +85,7 @@ public class FileUtils {
 
         @Override
         public String getDescription() {
-            return "Axoloti Subpatch";
+            return "Axoloti Subpatch (.axs)";
         }
     };
 
@@ -102,7 +102,7 @@ public class FileUtils {
 
         @Override
         public String getDescription() {
-            return "Axoloti Patchbank";
+            return "Axoloti Patchbank (.axb)";
         }
     };
 
@@ -119,7 +119,7 @@ public class FileUtils {
 
         @Override
         public String getDescription() {
-            return "Axoloti Object";
+            return "Axoloti Object (.axo)";
         }
     };
     
@@ -136,7 +136,7 @@ public class FileUtils {
 
         @Override
         public String getDescription() {
-            return "Axoloti Patcher Theme";
+            return "Axoloti Patcher Theme (.axt)";
         }
     };
 
