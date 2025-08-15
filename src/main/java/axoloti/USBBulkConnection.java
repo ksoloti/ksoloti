@@ -291,7 +291,7 @@ public class USBBulkConnection extends Connection {
         disconnectRequested = false;
         isConnecting = false;
         connected = false;
-        queueSerialTask = new ArrayBlockingQueue<QCmdSerialTask>(20);
+        queueSerialTask = new ArrayBlockingQueue<QCmdSerialTask>(99);
         this.context = Usb.getContext();
     }
 

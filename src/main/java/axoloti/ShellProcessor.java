@@ -39,7 +39,7 @@ public class ShellProcessor extends SwingWorker<Integer, String> {
 
     public ShellProcessor() {
         super();
-        queueShellTasks = new ArrayBlockingQueue<QCmdShellTask>(20);
+        queueShellTasks = new ArrayBlockingQueue<QCmdShellTask>(99);
     }
 
     public boolean AppendToQueue(QCmdShellTask cmd) {
