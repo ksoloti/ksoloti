@@ -797,8 +797,8 @@ void PExReceiveByte(unsigned char c) {
                         break;
                     case 'S': { /* stop patch */
                         state = 0; header = 0;
-                        int res = StopPatch();
-                        send_AxoResult(c, (FRESULT)res);
+                        uint8_t res = StopPatch();
+                        send_AxoResult('S', (FRESULT)res);
                         break;
                     }
                     default:
