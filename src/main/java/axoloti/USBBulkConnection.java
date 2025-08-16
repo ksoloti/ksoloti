@@ -614,7 +614,7 @@ public class USBBulkConnection extends Connection {
         }
 
         // disconnect(); // Trigger a full disconnect for cleanup first?
-        GoIdleState();
+        setIdleState();
 
         /* Update UI/internal state immediately */
         this.connected = false;
@@ -651,7 +651,7 @@ public class USBBulkConnection extends Connection {
             }
             // System.out.println(Instant.now() + " [DEBUG] Connect: USB interface " + useBulkInterfaceNumber + " claimed successfully.");
 
-            GoIdleState();
+            setIdleState();
 
             /* 4. Start Receiver and Transmitter Threads */
             receiverThread = new Thread(new Receiver());
@@ -1500,13 +1500,12 @@ public class USBBulkConnection extends Connection {
 
         if (i2 > 0) {
             dataLength = i2 * 4;
-            dataIndex = 0;
             dispData = ByteBuffer.allocate(dataLength);
             dispData.order(ByteOrder.LITTLE_ENDIAN);
-            state = ReceiverState.DISPLAY_PCKT;
+            setNextState(ReceiverState.DISPLAY_PCKT);
         }
         else {
-            GoIdleState();
+            setIdleState();
         }
     }
 
@@ -1542,9 +1541,14 @@ public class USBBulkConnection extends Connection {
         }
     }
 
-    void GoIdleState() {
-        headerstate = 0;
-        state = ReceiverState.HEADER;
+    private void setIdleState() {
+        this.headerstate = 0;
+        this.state = ReceiverState.HEADER;
+    }
+
+    private void setNextState(ReceiverState nextState) {
+        this.state = nextState;
+        this.dataIndex = 0;
     }
 
     void processByte(byte cc) {
@@ -1575,7 +1579,7 @@ public class USBBulkConnection extends Connection {
                             headerstate = 2;
                         }
                         else {
-                            GoIdleState();
+                            setIdleState();
                         }
                         break;
 
@@ -1584,75 +1588,65 @@ public class USBBulkConnection extends Connection {
                             headerstate = 3;
                         }
                         else {
-                            GoIdleState();
+                            setIdleState();
                         }
                         break;
 
                     case 3:
                         switch (c) {
                             case 'Q':
-                                state = ReceiverState.PARAMCHANGE_PCKT;
-                                dataIndex = 0;
+                                setNextState(ReceiverState.PARAMCHANGE_PCKT);
                                 dataLength = 12;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'Q'");
                                 break;
                             case 'A':
-                                state = ReceiverState.ACK_PCKT;
-                                dataIndex = 0;
+                                setNextState(ReceiverState.ACK_PCKT);
                                 dataLength = 24;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'A'");
                                 break;
                             case 'D':
-                                state = ReceiverState.DISPLAY_PCKT_HDR;
-                                dataIndex = 0;
+                                setNextState(ReceiverState.DISPLAY_PCKT_HDR);
                                 dataLength = 8;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'D'");
                                 break;
                             case 'R': /* New case for 'R' header (AxoR packet from MCU) */
-                                state = ReceiverState.COMMANDRESULT_PCKT;
-                                dataIndex = 0;
+                                setNextState(ReceiverState.COMMANDRESULT_PCKT);
                                 dataLength = 2; /* Expecting command_byte (1 byte) + status_byte (1 byte) */
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'R'");
                                 break;
                             case 'T':
-                                state = ReceiverState.TEXT_PCKT;
+                                setNextState(ReceiverState.TEXT_PCKT);
                                 textRcvBuffer.clear();
-                                dataIndex = 0;
                                 dataLength = 255;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'T'");
                                 break;
                             case 'l':
-                                state = ReceiverState.SDINFO;
+                                setNextState(ReceiverState.SDINFO);
                                 sdinfoRcvBuffer.rewind();
-                                dataIndex = 0;
                                 dataLength = 12;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'l'");
                                 break;
                             case 'f':
-                                state = ReceiverState.FILEINFO_FIXED_FIELDS;
+                                setNextState(ReceiverState.FILEINFO_FIXED_FIELDS);
                                 fileinfoRcvBuffer.clear();
-                                dataIndex = 0;
                                 dataLength = 8;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'f'");
                                 break;
                             case 'r':
-                                state = ReceiverState.MEMREAD;
+                                setNextState(ReceiverState.MEMREAD);
                                 memReadBuffer.clear();
-                                dataIndex = 0;
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'r'");
                                 break;
                             case 'y':
-                                state = ReceiverState.MEMREAD_1WORD;
-                                dataIndex = 0;
+                                setNextState(ReceiverState.MEMREAD_1WORD);
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'y'");
                                 break;
                             case 'V':
-                                state = ReceiverState.FWVERSION;
-                                dataIndex = 0;
+                                setNextState(ReceiverState.FWVERSION);
                                 // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'V'");
                                 break;
                             default:
-                                GoIdleState();
+                                setIdleState();
                                 // System.err.println(Instant.now() + " [DEBUG] Error trying to complete headerstate after valid 'Axo'");
                                 break;
                         }
@@ -1660,7 +1654,7 @@ public class USBBulkConnection extends Connection {
 
                     default:
                         // System.err.println(Instant.now() + " [DEBUG] processByte: invalid header");
-                        GoIdleState();
+                        setIdleState();
                         break;
                 }
                 break;
@@ -1672,7 +1666,7 @@ public class USBBulkConnection extends Connection {
                 if (dataIndex == dataLength) {
                     // System.out.println(Instant.now() + " [DEBUG] param packet complete 0x" + Integer.toHexString(packetData[1]) + "    0x" + Integer.toHexString(packetData[0]));
                     RPacketParamChange(packetData[2], packetData[1], packetData[0]);
-                    GoIdleState();
+                    setIdleState();
                 }
                 break;
 
@@ -1682,7 +1676,7 @@ public class USBBulkConnection extends Connection {
                 }
                 if (dataIndex == dataLength) {
                     Acknowledge(packetData[0], packetData[1], packetData[2], packetData[3], packetData[4], packetData[5]);
-                    GoIdleState();
+                    setIdleState();
                 }
                 break;
 
@@ -1702,7 +1696,7 @@ public class USBBulkConnection extends Connection {
                 }
                 if (dataIndex == dataLength) {
                     DistributeToDisplays(dispData);
-                    GoIdleState();
+                    setIdleState();
                 }
                 break;
 
@@ -1799,7 +1793,7 @@ public class USBBulkConnection extends Connection {
                             // }
                         }
                     }
-                    GoIdleState();
+                    setIdleState();
                 }
                 break;
 
@@ -1819,7 +1813,7 @@ public class USBBulkConnection extends Connection {
                         LOGGER.log(Level.WARNING, "{0}", textRcvBuffer.toString());
                     }
                     // System.out.println(Instant.now() + " [DEBUG] FINAL MCU Text Message (AxoT): " + textRcvBuffer.toString());
-                    GoIdleState();
+                    setIdleState();
                 }
                 break;
 
@@ -1838,7 +1832,7 @@ public class USBBulkConnection extends Connection {
                     // System.out.println(Instant.now() +  " [DEBUG] processByte sdinfo: clusters:" + clusters + " clsize:" + clustersize + " blsize:" + blocksize);
 
                     SDCardInfo.getInstance().SetInfo(clusters, clustersize, blocksize);
-                    GoIdleState();
+                    setIdleState();
                 }
                 break;
 
@@ -1860,8 +1854,7 @@ public class USBBulkConnection extends Connection {
 
                     /* Prepare to collect the variable-length filename */
                     fileinfoRcvBuffer.clear();
-                    dataIndex = 0;
-                    state = ReceiverState.FILEINFO_FILENAME; /* Transition to the next sub-state */
+                    setNextState(ReceiverState.FILEINFO_FILENAME); /* Transition to the next sub-state */
                 }
                 break;
 
@@ -1880,7 +1873,7 @@ public class USBBulkConnection extends Connection {
                     SDCardInfo.getInstance().AddFile(fname, currentFileSize, currentFileTimestamp);
                     // System.out.println(Instant.now() + " [DEBUG] processByte: Parsed file: \'" + fname + "\', size: " + currentFileSize + ", timestamp: " + currentFileTimestamp);
 
-                    GoIdleState(); /* Packet complete, return to idle */
+                    setIdleState(); /* Packet complete, return to idle */
                 }
                 else {
                     /* Collect the current byte as part of the filename */
@@ -1890,7 +1883,7 @@ public class USBBulkConnection extends Connection {
                     /* Protection against malformed Axof */
                     if (dataIndex >= fileinfoRcvBuffer.capacity()) {
                         LOGGER.log(Level.SEVERE, "processByte: Filename exceeds maximum expected length. Aborting packet.");
-                        GoIdleState();
+                        setIdleState();
                     }
                 }
                 break;
@@ -1946,7 +1939,8 @@ public class USBBulkConnection extends Connection {
                                 readsync.Acked = true;
                                 readsync.notifyAll();
                             }
-                            GoIdleState();
+                            memReadBuffer.clear();
+                            setIdleState();
                         }
                 }
                 dataIndex++;
@@ -1982,7 +1976,7 @@ public class USBBulkConnection extends Connection {
                             readsync.Acked = true;
                             readsync.notifyAll();
                         }
-                        GoIdleState();
+                        setIdleState();
                 }
                 dataIndex++;
                 break;
@@ -2032,14 +2026,14 @@ public class USBBulkConnection extends Connection {
                             LOGGER.log(Level.INFO, String.format("Core running Firmware version %d.%d.%d.%d | CRC %s\n", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
                             MainFrame.mainframe.setFirmwareID(sFwcrc);
                         }
-                        GoIdleState();
+                        setIdleState();
                         break;
                 }
                 dataIndex++;
                 break;
 
             default:
-                GoIdleState();
+                setIdleState();
                 // System.out.println(Instant.now() + " [DEBUG] Unhandled byte c=" + String.format("%02x", c) + "(char=" + (char)c + ") in state=" + state);
                 break;
         }
@@ -2049,7 +2043,6 @@ public class USBBulkConnection extends Connection {
     public ksoloti_core getTargetProfile() {
         return targetProfile;
     }
-
 
     @Override
     public byte[] getFwVersion() {
