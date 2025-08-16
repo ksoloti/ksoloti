@@ -1530,7 +1530,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             CommandManager.getInstance().startLongOperation();
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1); // compile as own path/filename .bin
             QCmdProcessor.getQCmdProcessor().AppendToQueue(cp);
-            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
             CommandManager.getInstance().endLongOperation();
             if (patch1.waitForBinFile()) {
                 // LOGGER.log(Level.INFO, "Done compiling patch.\n");
@@ -1564,7 +1563,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     Thread.sleep(1000);
 
                     QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdGuiShowLog());
-                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                     Thread.sleep(100);
                     status = true;
                 }

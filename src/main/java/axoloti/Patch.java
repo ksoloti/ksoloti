@@ -3105,7 +3105,6 @@ public class Patch {
         LOGGER.log(Level.INFO, "SD card filename: {0}", sdfilename);
 
         this.Compile();
-        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
         mainframe.setCurrentLivePatch(null);
         // create subdirs...
 
@@ -3130,7 +3129,6 @@ public class Patch {
             }
         }
 
-        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
         
         Calendar cal;
         File f = new File(FileNamePath);

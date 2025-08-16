@@ -461,7 +461,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                         CommandManager.getInstance().startLongOperation();
                         patch.WriteCode(true);
                         patch.Compile();
-                        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
 
                         /* Handle SD card and dependent files */
                         if (patch.waitForBinFile()) {
@@ -1343,7 +1342,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private void jMenuCompileCodeActionPerformed(java.awt.event.ActionEvent evt) {
         patch.Compile();
-        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
     }
 
     private void jMenuUploadCodeActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1564,7 +1562,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     CommandManager.getInstance().startLongOperation();
                     patch.WriteCode(true);
                     patch.Compile();
-                    QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
                     CommandManager.getInstance().endLongOperation();
 
                     mainframe.setCurrentLivePatch(null);
@@ -1678,7 +1675,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private void jMenuGenerateAndCompileCodeActionPerformed(java.awt.event.ActionEvent evt) {
         patch.WriteCode(true);
         patch.Compile();
-        QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
     }
 
     private void undoItemActionPerformed(java.awt.event.ActionEvent evt) {
