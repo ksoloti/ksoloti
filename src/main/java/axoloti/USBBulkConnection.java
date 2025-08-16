@@ -40,6 +40,7 @@ import java.time.Instant;
 import java.util.Calendar;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,7 +80,9 @@ public class USBBulkConnection extends Connection {
     private volatile boolean connected;
     private volatile Thread transmitterThread;
     private volatile Thread receiverThread;
+    private volatile Thread byteProcessorThread;
     private final BlockingQueue<QCmdSerialTask> queueSerialTask;
+    private final BlockingQueue<Byte> receiverBlockingQueue;
     private String targetCpuId;
     private String detectedCpuId;
     private ksoloti_core targetProfile;
@@ -213,18 +216,16 @@ public class USBBulkConnection extends Connection {
                     } /* end synchronized (usbInLock) */
 
                     if (result == LibUsb.SUCCESS && sz > 0) {
-                        recvbuffer.position(0);
-                        recvbuffer.limit(sz);
+                        byte[] receivedData = new byte[sz]; /* Copy chunk to faster in-memory array */
+                        recvbuffer.position(0); 
+                        recvbuffer.get(receivedData);
                         for (int i = 0; i < sz; i++) {
-                            if (Thread.currentThread().isInterrupted()) {
-                                // System.err.println(Instant.now() + " [DEBUG] Receiver: Thread interrupted during byte processing. Aborting chunk.");
+                            try {
+                                receiverBlockingQueue.put(receivedData[i]); 
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
                                 break;
                             }
-                            if (disconnectRequested) {
-                                // System.err.println(Instant.now() + " [DEBUG] Receiver: Disconnect requested during byte processing. Aborting chunk.");
-                                break;
-                            }
-                            processByte(recvbuffer.get(i));
                         }
                     }
                 }
@@ -285,6 +286,22 @@ public class USBBulkConnection extends Connection {
         }
     }
 
+    private class ByteProcessor implements Runnable {
+        @Override
+        public void run() {
+            try {
+                // Continuously take bytes from the queue and process them
+                while (!Thread.currentThread().isInterrupted() && !disconnectRequested) {
+                    Byte b = receiverBlockingQueue.take();
+                    processByte(b);
+                }
+            } catch (InterruptedException e) {
+                // Thread was interrupted, exit gracefully
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
 	protected USBBulkConnection() {
         this.sync = new Sync();
         this.readsync = new Sync();
@@ -294,6 +311,7 @@ public class USBBulkConnection extends Connection {
         isConnecting = false;
         connected = false;
         queueSerialTask = new ArrayBlockingQueue<QCmdSerialTask>(99);
+        receiverBlockingQueue = new LinkedBlockingQueue<>();
         this.context = Usb.getContext();
     }
 
@@ -661,6 +679,10 @@ public class USBBulkConnection extends Connection {
             transmitterThread = new Thread(new Transmitter());
             transmitterThread.setName("Transmitter");
             transmitterThread.start();
+
+            byteProcessorThread = new Thread(new ByteProcessor());
+            byteProcessorThread.setName("ByteProcessor");
+            byteProcessorThread.start();
 
             /* 5. Initial Communication and Synchronization */
             ClearSync();
