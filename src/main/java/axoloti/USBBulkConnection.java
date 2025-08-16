@@ -127,6 +127,8 @@ public class USBBulkConnection extends Connection {
 
     protected volatile QCmdSerialTask currentExecutingCommand = null;
 
+    private final static Pattern sdFoundNoStartupPattern = Pattern.compile("File error:.*filename:\"/start.bin\"");
+
     enum ReceiverState {
         HEADER,
         ACK_PCKT,               /* general acknowledge */
@@ -1809,7 +1811,7 @@ public class USBBulkConnection extends Connection {
                     // textRcvBuffer.append((char) cc);
                     textRcvBuffer.limit(textRcvBuffer.position());
                     textRcvBuffer.rewind();
-                    if (Pattern.compile("File error:.*filename:\"/start.bin\"").matcher(textRcvBuffer.toString()).find()) {
+                    if (sdFoundNoStartupPattern.matcher(textRcvBuffer.toString()).find()) {
                         /* Filter out error if SD card is connected but no start.bin is found */
                         LOGGER.log(Level.INFO, "SD card connected, no startup patch found.");
                     }
