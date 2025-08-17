@@ -1002,19 +1002,34 @@ public class PreferencesFrame extends JFrame {
     }
 
     private void jResetLibActionPerformed(java.awt.event.ActionEvent evt) {
-        boolean delete = false;
 
-        int options = JOptionPane.OK_CANCEL_OPTION;
-        int res = KeyboardNavigableOptionPane.showConfirmDialog(this, "Reset will re-download the factory and community libraries.\n" +
-                                                      "Your custom library entries will be preserved.\n" +
-                                                      "Continue?", "Warning", options);
-        if (res == JOptionPane.CANCEL_OPTION) {
-            return;
+        Object[] options = {"Reset", "Cancel"};
+        int res = KeyboardNavigableOptionPane.showOptionDialog(this,
+            "Reset will re-download the factory and community libraries.\n" +
+            "Your custom library entries will be preserved.\n" +
+            "Continue?",
+            "Warning",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE,
+            null,
+            options,
+            options[1]);
+                                                      
+        if (res == JOptionPane.OK_OPTION) {
+            new Thread(() -> {
+                try {
+                    LOGGER.log(Level.INFO, "Resetting Libraries, please wait...");
+                    tempPrefs.ResetLibraries(true);
+                    SwingUtilities.invokeLater(() -> {
+                        populateLibraryTable();
+                        LOGGER.log(Level.INFO, "Done resetting Libraries.\n");
+                    });
+                } catch (Exception ex) {
+                    LOGGER.log(Level.SEVERE, "An error occurred during library reset: " + ex.getMessage());
+                    ex.printStackTrace(System.err);
+                }
+            }).start();
         }
-        delete = (res == JOptionPane.OK_OPTION);
-
-        tempPrefs.ResetLibraries(delete);
-        populateLibraryTable();
     }
 
     private void jEditLibActionPerformed(java.awt.event.ActionEvent evt) {
