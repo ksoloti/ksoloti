@@ -27,9 +27,7 @@ import components.ScrollPaneComponent;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-// import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.logging.Level;
