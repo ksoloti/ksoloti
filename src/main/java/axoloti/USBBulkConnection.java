@@ -111,6 +111,7 @@ public class USBBulkConnection extends Connection {
     private final byte[] copyToFlashPckt =  new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('F')};
     private final byte[] axoFileOpPckt =    new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('C')};
     private final byte[] axoMemWritePckt =  new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('W')};
+    private final byte[] startMounterPckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('m')};
 
     private final short bulkVID = (short) 0x16C0;
     private final short bulkPIDAxoloti = (short) 0x0442;
@@ -1037,6 +1038,11 @@ public class USBBulkConnection extends Connection {
     public int TransmitCopyToFlash() {
         int writeResult = writeBytes(copyToFlashPckt);
         return writeResult;
+    }
+
+    @Override
+    public void TransmitStartMounter() {
+        writeBytes(startMounterPckt);
     }
 
     @Override

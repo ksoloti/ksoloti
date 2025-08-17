@@ -46,6 +46,10 @@
 #include "spilink.h"
 #endif
 
+#if INBUILT_MOUNTER
+extern void StartMounter(void);
+#endif
+
 #include "stdio.h"
 #include "memstreams.h"
 
@@ -462,7 +466,8 @@ void ReadDirectoryListing(void) {
  * "AxoF" -> copy patch code to flash (assumes patch is stopped)
  * "Axol" -> read directory listing
  * "AxoC" (uint length) (char[] filename)" -> create, append to, close, delete file (directory) on SD card
- */
+ * "Axom" -> start mounter
+  */
 
 static void ManipulateFile(void) {
     // LogTextMessage("Entered MNPFL");
@@ -801,6 +806,12 @@ void PExReceiveByte(unsigned char c) {
                         send_AxoResult('S', (FRESULT)res);
                         break;
                     }
+                    case 'm': {
+                        state = 0; header = 0;
+                        StopPatch();
+                        StartMounter();
+                        break;
+                    }                    
                     default:
                         state = 0; break; /* Unknown Axo* header */
                 }

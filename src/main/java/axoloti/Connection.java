@@ -77,6 +77,7 @@ public abstract class Connection {
     abstract public void TransmitGetFWVersion();
     abstract public void TransmitGetSpilinkSynced();
     abstract public void TransmitBringToDFU();
+    abstract public void TransmitStartMounter();        
     
     abstract public boolean AppendToQueue(QCmdSerialTask cmd);
     abstract public void ClearSync();

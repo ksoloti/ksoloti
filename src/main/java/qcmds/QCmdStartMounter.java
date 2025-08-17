@@ -17,6 +17,7 @@
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
 package qcmds;
+import axoloti.Connection;
 
 /**
  *
@@ -24,8 +25,16 @@ package qcmds;
  */
 public class QCmdStartMounter extends QCmdStart {
 
+    boolean inbuiltMounterFlasher;
+
     public QCmdStartMounter() {
         super(null);
+        inbuiltMounterFlasher = false;
+    }
+
+    public QCmdStartMounter(boolean useInbuiltMounterFlasher) {
+        super(null);
+        inbuiltMounterFlasher = useInbuiltMounterFlasher;
     }
 
     @Override
@@ -38,9 +47,14 @@ public class QCmdStartMounter extends QCmdStart {
         return "Unmount/eject the SD card in your OS file manager to re-enable Patcher connection.\n";
     }
 
-    // @Override
-    // public String GetTimeOutMessage() {
-    //     return "Unmount/eject the SD card volume in your file manager to enable Patcher connection.";
-    // }
 
+    public QCmd Do(Connection connection) {
+        if(inbuiltMounterFlasher) {
+            connection.ClearSync();
+            connection.TransmitStartMounter();
+        }
+        
+        return this;
+    }
+ 
 }

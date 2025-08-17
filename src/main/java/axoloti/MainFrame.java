@@ -1732,52 +1732,61 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void jMenuItemMountActionPerformed(java.awt.event.ActionEvent evt) {
-        String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "mounter" + File.separator + "mounter_build";
-        if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
-            fname += File.separator + "ksoloti_mounter.bin";
-        }
-        else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
-            fname += File.separator + "axoloti_mounter.bin";
-        }
-        File f = new File(fname);
-        if (f.canRead()) {
-            setCurrentLivePatch(null);
-            try {
-                QCmdUploadPatch uploadMounterCmd = new QCmdUploadPatch(f);
-                uploadMounterCmd.Do(USBBulkConnection.GetConnection());
-                if (!uploadMounterCmd.waitForCompletion()) {
-                    LOGGER.log(Level.SEVERE, "Mounter upload command timed out.");
-                    return;
-                }
-                if (!uploadMounterCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Failed to upload Mounter.");
-                    return;
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "An error occurred while uploading Mounter: " + e.getMessage());
-                e.printStackTrace(System.err);
-            }
 
-            try {
-                QCmdStartMounter startMounterCmd = new QCmdStartMounter();
-                LOGGER.log(Level.INFO, startMounterCmd.GetStartMessage());
-                startMounterCmd.Do(USBBulkConnection.GetConnection());
-                LOGGER.log(Level.WARNING, startMounterCmd.GetDoneMessage());
-                /* Do not waitForCompletion or check isSuccessful here 
-                   because MCU will have rebooted automatically by now,
-                   which counts as success */
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "An error occurred while starting Mounter: " + e.getMessage());
-                e.printStackTrace(System.err);
-                return;
-            } finally {
-                // QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
-                ShowDisconnect();
-            }
-        }
-        else {
-            LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first!\n(File: {0})", fname);
-        }
+        // on 1.2 I use Stop, StartMounter and then disconnect.
+        // This is not working here
+        // removing the Stop, gets it further but after the mounter has run and is ejected everything goes wrong in the patcher.
+    
+        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStop());
+        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdStartMounter(true));
+        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
+
+        // String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "mounter" + File.separator + "mounter_build";
+        // if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
+        //     fname += File.separator + "ksoloti_mounter.bin";
+        // }
+        // else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
+        //     fname += File.separator + "axoloti_mounter.bin";
+        // }
+        // File f = new File(fname);
+        // if (f.canRead()) {
+        //     setCurrentLivePatch(null);
+        //     try {
+        //         QCmdUploadPatch uploadMounterCmd = new QCmdUploadPatch(f);
+        //         uploadMounterCmd.Do(USBBulkConnection.GetConnection());
+        //         if (!uploadMounterCmd.waitForCompletion()) {
+        //             LOGGER.log(Level.SEVERE, "Mounter upload command timed out.");
+        //             return;
+        //         }
+        //         if (!uploadMounterCmd.isSuccessful()) {
+        //             LOGGER.log(Level.SEVERE, "Failed to upload Mounter.");
+        //             return;
+        //         }
+        //     } catch (Exception e) {
+        //         LOGGER.log(Level.SEVERE, "An error occurred while uploading Mounter: " + e.getMessage());
+        //         e.printStackTrace(System.err);
+        //     }
+
+        //     try {
+        //         QCmdStartMounter startMounterCmd = new QCmdStartMounter();
+        //         LOGGER.log(Level.INFO, startMounterCmd.GetStartMessage());
+        //         startMounterCmd.Do(USBBulkConnection.GetConnection());
+        //         LOGGER.log(Level.WARNING, startMounterCmd.GetDoneMessage());
+        //         /* Do not waitForCompletion or check isSuccessful here 
+        //            because MCU will have rebooted automatically by now,
+        //            which counts as success */
+        //     } catch (Exception e) {
+        //         LOGGER.log(Level.SEVERE, "An error occurred while starting Mounter: " + e.getMessage());
+        //         e.printStackTrace(System.err);
+        //         return;
+        //     } finally {
+        //         // QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
+        //         ShowDisconnect();
+        //     }
+        // }
+        // else {
+        //     LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first!\n(File: {0})", fname);
+        // }
     }
 
     public void OpenURL() {

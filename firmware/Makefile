@@ -4,6 +4,7 @@
 #
 BOARDDEF=
 FWOPTIONDEF=
+INBUILT_MOUNTER=yes
 
 # Compiler options here.
 
@@ -282,7 +283,8 @@ CSRC = ${FIRMWARE}/exceptions.c \
   ${FIRMWARE}/watchdog.c \
   ${FIRMWARE}/sysmon.c \
   ${FIRMWARE}/axoloti_memory.c \
-  ${FIRMWARE}/analyser.c
+  ${FIRMWARE}/analyser.c \
+  ${FIRMWARE}/ksoloti_boot_options.c \
 
 #optional modules
 ifneq (,$(findstring BRAIDS,$(AXO_OPT_MODULES)))
@@ -413,6 +415,13 @@ INCDIR = \
   ${MUTABLE_INSTRUMENTS}/elements \
   ${MUTABLE_INSTRUMENTS}/stmlib \
 	$(CHIBIOS)/os/hal/lib/streams
+
+
+ifeq ($(INBUILT_MOUNTER),yes)  
+  CSRC += ${FIRMWARE}/mounter.c \
+          ${FIRMWARE}/mass_storage/usb_msd.c 
+  USE_OPT += -DINBUILT_MOUNTER=1
+endif
 
 #
 # Project, sources and paths

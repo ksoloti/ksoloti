@@ -49,6 +49,7 @@
 #include "sdram.c"
 #include "stm32f4xx_fmc.c"
 
+#include "ksoloti_boot_options.h"
 #include "analyser.h"
 
 /*===========================================================================*/
@@ -81,6 +82,9 @@ int main(void) {
 #ifdef FW_SPILINK
     pThreadSpilink = 0;
 #endif
+
+    // Check to see if we need to start the Mounter.
+    CheckForMounterBoot();
 
     sdcard_init();
     sysmon_init();

@@ -329,4 +329,7 @@
  */
 #define STM32_SDC_SDIO_DMA_STREAM           STM32_DMA_STREAM_ID(2, 6)
 
+#define MSD_DATA_SECTION        __attribute__ ((section (".sram2")))
+
+
 #endif /* _MCUCONF_H */
