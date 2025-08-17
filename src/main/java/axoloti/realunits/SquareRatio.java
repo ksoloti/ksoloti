@@ -60,7 +60,7 @@ public class SquareRatio implements NativeToReal {
             try {
                 num = Double.parseDouble(matcher.group("num"));
             } catch (java.lang.NumberFormatException ex) {
-                throw new ParseException("Not PitchToRatio", 0);
+                throw new ParseException("Not SquareRatio", 0);
             }
 
             String units1 = matcher.group("unit1");
@@ -68,11 +68,11 @@ public class SquareRatio implements NativeToReal {
             if (!(units1.toLowerCase().contains("x") || units1.contains("*") || units1.contains("×")
                || units2.toLowerCase().contains("x") || units2.contains("*") || units2.contains("×"))
             )
-                throw new ParseException("Not PitchToRatio", 0);
+                throw new ParseException("Not SquareRatio", 0);
 
             return Math.sqrt(num * 4096.0);
         }
 
-        throw new ParseException("Not PitchToRatio", 0);
+        throw new ParseException("Not SquareRatio", 0);
     }
 }
