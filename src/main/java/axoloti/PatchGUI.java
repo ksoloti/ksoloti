@@ -1392,7 +1392,7 @@ public class PatchGUI extends Patch {
                 LOGGER.log(Level.SEVERE, "Patch \"{0}\" was saved with a newer version of Ksoloti: {1}",
                         new Object[]{f.getAbsoluteFile(), pve.getMessage()});
             } else {
-                LOGGER.log(Level.SEVERE, "Error during patch open:" + ite.getMessage());
+                LOGGER.log(Level.SEVERE, "Error during patch open: " + ite.getMessage());
                 ite.printStackTrace(System.err);
             }
             return null;

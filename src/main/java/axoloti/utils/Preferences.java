@@ -526,11 +526,11 @@ public class Preferences {
                 prefs = serializer.read(Preferences.class, p);
             } catch (Exception ex) {
                 try {
-                    LOGGER.log(Level.INFO, ex.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error trying to load preferences: " + ex.getMessage());
                     LOGGER.log(Level.INFO, "Attempting to load preferences in relaxed mode.");
                     prefs = serializer.read(Preferences.class, p,false);
                 } catch (Exception ex1) {
-                    LOGGER.log(Level.SEVERE, "Error trying to load prefrences: " + ex1.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error trying to load preferences in relaxed mode: " + ex1.getMessage());
                     ex1.printStackTrace(System.err);
                 }
             }

@@ -552,7 +552,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             /* If it failed, show a message and clear the live state. */
                             if (compilationTimeout) {
                                 String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
-                                LOGGER.log(Level.INFO, "Timeout:" + path.replace('\\', '/') + ".bin could not be created.");
+                                LOGGER.log(Level.INFO, "Timeout: " + path.replace('\\', '/') + ".bin could not be created.");
                             }
                             mainframe.setCurrentLivePatch(null);
                         }

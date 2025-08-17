@@ -23,6 +23,8 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -37,6 +39,9 @@ import axoloti.ui.SvgIconLoader;
  * @author Johannes Taelman
  */
 public class Constants {
+
+    private static final Logger LOGGER = Logger.getLogger(Constants.class.getName());
+
     static Constants constants = new Constants();
 
     // public static final Font FONT = new Font("SansSerif", Font.PLAIN, 10);
@@ -79,10 +84,8 @@ public class Constants {
             String fstr = "/resources/fonts/NotoSans_SemiCondensed-Medium.ttf";
             FONT = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(fstr)).deriveFont(11f);
         }
-        catch (IOException e) {
-            e.printStackTrace(System.err);
-        }
-        catch (FontFormatException e) {
+        catch (FontFormatException | IOException e) {
+            LOGGER.log(Level.SEVERE, "Error trying to create patch GUI font: " + e.getMessage());
             e.printStackTrace(System.err);
         }
     }
@@ -92,10 +95,8 @@ public class Constants {
             String fstr = "/resources/fonts/NotoSansMono-Regular.ttf";
             FONT_MONO = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(fstr)).deriveFont((float)Preferences.getInstance().getCodeFontSize());
         }
-        catch (IOException e) {
-            e.printStackTrace(System.err);
-        }
-        catch (FontFormatException e) {
+        catch (FontFormatException | IOException e) {
+            LOGGER.log(Level.SEVERE, "Error trying to create monospace GUI font: " + e.getMessage());
             e.printStackTrace(System.err);
         }
     }
@@ -105,11 +106,8 @@ public class Constants {
             // String fstr = "/resources/fonts/NotoSans-Regular.ttf";
             // FONT_MENU = Font.createFont(Font.TRUETYPE_FONT, Constants.class.getResourceAsStream(fstr)).deriveFont(14f);
             FONT_MENU = UIManager.getFont("defaultFont");
-        // }
-        // catch (IOException e) {
-        //     e.printStackTrace(System.err);
-        // }
-        // catch (FontFormatException e) {
+        // } catch (FontFormatException | IOException e) {
+        //     LOGGER.log(Level.SEVERE, "Error trying to create menu GUI font: " + e.getMessage());
         //     e.printStackTrace(System.err);
         // }
     }

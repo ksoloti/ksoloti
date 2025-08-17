@@ -43,7 +43,8 @@ public class Theme {
         try {
             REGISTRY.bind(Color.class, ColorConverter.class);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, null, e);
+            LOGGER.log(Level.SEVERE, "Error trying to bind ColorConverter: " + e.getMessage());
+            e.printStackTrace(System.err);
         }
     }
 
@@ -330,7 +331,8 @@ public class Theme {
                     currentTheme = Theme.SERIALIZER.read(Theme.class, inputStream);
                     Preferences.getInstance().setThemePath(f.getAbsolutePath());
                 } catch (Exception ex) {
-                    LOGGER.log(Level.SEVERE, "Unable to open theme {0}", new Object[]{ex});
+                    LOGGER.log(Level.SEVERE, "Error trying to open theme: " + ex.getMessage());
+                    ex.printStackTrace(System.err);
                 }
             }
         }
@@ -343,7 +345,8 @@ public class Theme {
                 Theme.SERIALIZER.write(this, fileToBeSaved);
                 Preferences.getInstance().setThemePath(fileToBeSaved.getAbsolutePath());
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, null, e);
+                LOGGER.log(Level.SEVERE, "Error trying to save theme: " + e.getMessage());
+                e.printStackTrace(System.err);
             }
         }
     }
