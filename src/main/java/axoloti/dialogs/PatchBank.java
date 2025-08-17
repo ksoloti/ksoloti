@@ -984,7 +984,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                ;
+                /* Silent */
             }
 
             QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
@@ -1104,7 +1104,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             pb.setVisible(true);
         } catch (IOException ex) {
             pb.Close();
-            LOGGER.log(Level.SEVERE, "Patchbank file not found or inaccessible: " + f.getName() + " " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Patchbank file not found or inaccessible: " + f.getName() + ", " + ex.getMessage());
+            ex.printStackTrace(System.err);
         }
     }
 

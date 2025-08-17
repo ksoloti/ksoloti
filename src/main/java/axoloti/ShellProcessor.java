@@ -53,7 +53,7 @@ public class ShellProcessor extends SwingWorker<Integer, String> {
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt(); // Restore interrupt status
-            LOGGER.log(Level.SEVERE, "ShellProcessor AppendToQueue interrupted while offering command: " + cmd.getClass().getSimpleName() + " " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "ShellProcessor AppendToQueue interrupted while offering command: " + cmd.getClass().getSimpleName() + ", " + ex.getMessage());
             ex.printStackTrace(System.err);
             return false; // Command not added due to interruption
         }

@@ -178,7 +178,8 @@ public class HelpMenu extends JMenu {
             LinkUtils.openLinkUsingSystemBrowser(url); /* Try fallback even after IOException */
         }
         catch (URISyntaxException ex) {
-            LOGGER.log(Level.WARNING, "Invalid URI syntax for help contents link: " + url, ex);
+            LOGGER.log(Level.WARNING, "Invalid URI syntax for help contents link: " + url + ", " + ex.getMessage());
+            ex.printStackTrace(System.err);
         }
     }
 
@@ -196,7 +197,8 @@ public class HelpMenu extends JMenu {
             LinkUtils.openLinkUsingSystemBrowser(url); /* Try fallback even after IOException */
         }
         catch (URISyntaxException ex) {
-            LOGGER.log(Level.WARNING, "Invalid URI syntax for community link: " + url, ex);
+            LOGGER.log(Level.WARNING, "Invalid URI syntax for community link: " + url + ", " + ex.getMessage());
+            ex.printStackTrace(System.err);
         }
     }
 
@@ -214,7 +216,8 @@ public class HelpMenu extends JMenu {
             LinkUtils.openLinkUsingSystemBrowser(url); /* Try fallback even after IOException */
         }
         catch (URISyntaxException ex) {
-            LOGGER.log(Level.WARNING, "Invalid URI syntax for community backup link: " + url, ex);
+            LOGGER.log(Level.WARNING, "Invalid URI syntax for community backup link: " + url + ", " + ex.getMessage());
+            ex.printStackTrace(System.err);
         }
     }
 }

@@ -54,7 +54,8 @@ public class AxoObjectFromPatch extends AxoObject {
             p.setFileNamePath(f.getAbsolutePath());
             p.PostContructor();
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error while parsing patch: " + f.getAbsolutePath() + ", " + ex.getMessage());
+            ex.printStackTrace(System.err);
         }
         shortId = f.getName().substring(0, f.getName().lastIndexOf("."));
         sObjFilePath = f.getAbsolutePath();
@@ -98,7 +99,8 @@ public class AxoObjectFromPatch extends AxoObject {
                 pg.PostContructor();
                 pg.ObjEditor = this;
             } catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, "Error while parsing patch: " + f.getAbsolutePath() + ", " + ex.getMessage());
+                ex.printStackTrace(System.err);
             }
         }
         if (pf == null) {

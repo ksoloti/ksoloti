@@ -1582,7 +1582,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             return status;
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "An error occurred while testing patch: " + f.getPath() + " " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "An error occurred while testing patch: " + f.getPath() + ", " + ex.getMessage());
             ex.printStackTrace(System.err);
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
             return false;
@@ -1643,7 +1643,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             return status;
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "An error occurred during file upgrade: " + f.getPath() + " " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "An error occurred during file upgrade: " + f.getPath() + ", " + ex.getMessage());
             ex.printStackTrace(System.err);
             return false;
         }
@@ -1905,7 +1905,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     System.out.println(Instant.now() + " Patch stopped.");
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Failed to send stop command to Core for previous patch: " + this.currentLivePatch.getFileNamePath() + " " + e.getMessage());
+                LOGGER.log(Level.SEVERE, "Failed to send stop command to Core for previous patch: " + this.currentLivePatch.getFileNamePath() + ", " + e.getMessage());
                 e.printStackTrace(System.err);
             }
         }

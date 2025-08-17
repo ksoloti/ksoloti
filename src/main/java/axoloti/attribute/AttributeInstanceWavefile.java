@@ -153,9 +153,11 @@ public class AttributeInstanceWavefile extends AttributeInstance<AxoAttributeWav
             }
             s = s + " 0}";
         } catch (UnsupportedAudioFileException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Unsupported audio format: " + ex.getMessage());
+            ex.printStackTrace(System.err);
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error trying to read audio file: " + ex.getMessage());
+            ex.printStackTrace(System.err);
         }
 
         return s;

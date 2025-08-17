@@ -80,7 +80,8 @@ public class AxoObjectInstanceHyperlink extends AxoObjectInstanceAbstract {
                 LinkUtils.openLinkUsingSystemBrowser(link); /* Try fallback even after IOException */
             }
             catch (URISyntaxException ex) {
-                LOGGER.log(Level.WARNING, "Hyperlink: Invalid link syntax: " + link, ex);
+                LOGGER.log(Level.WARNING, "Hyperlink: Invalid link syntax: " + link + ", " + ex.getMessage());
+                ex.printStackTrace(System.err);
             }
         }
         else if (link.endsWith(".axp") || link.endsWith(".axh") || link.endsWith(".axs")) {
@@ -91,7 +92,7 @@ public class AxoObjectInstanceHyperlink extends AxoObjectInstanceAbstract {
                 PatchGUI.OpenPatch(f);
             }
             else {
-                LOGGER.log(Level.WARNING, "Hyperlink: Cannot read file {0}", f.getAbsolutePath());
+                LOGGER.log(Level.WARNING, "Hyperlink: Cannot read file: " + f.getAbsolutePath());
             }
         }
     }

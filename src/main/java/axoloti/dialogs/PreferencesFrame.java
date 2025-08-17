@@ -943,7 +943,8 @@ public class PreferencesFrame extends JFrame {
                 tempPrefs.setFavouriteDir(dir);
                 jTextFieldFavDir.setText(dir);
             } catch (IOException ex) {
-                Logger.getLogger(PreferencesFrame.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(PreferencesFrame.class.getName()).log(Level.SEVERE, "Error trying to set favourite dir: " + ex.getMessage());
+                ex.printStackTrace(System.err);
             }
         }
         fc.updateCurrentSize();

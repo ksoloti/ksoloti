@@ -1273,6 +1273,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
                 this.getType().editorActiveTabIndex = editorActiveTabIndex;
             }
         } catch (ClassCastException ex) {
+            /* Silent */
         }
     }
 

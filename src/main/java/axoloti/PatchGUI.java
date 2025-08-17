@@ -543,7 +543,7 @@ public class PatchGUI extends Patch {
                                         SetDirty();
                                     }
                                 } catch (Exception ex) {
-                                    LOGGER.log(Level.SEVERE, "Error: Failed to parse AxoObject from file: " + f.getName() + " " + ex.getMessage());
+                                    LOGGER.log(Level.SEVERE, "Error: Failed to parse AxoObject from file: " + f.getName() + ", " + ex.getMessage());
                                     ex.printStackTrace(System.err);
                                 }
                             }
@@ -594,7 +594,7 @@ public class PatchGUI extends Patch {
                                     }
                                     SetDirty();
                                 } catch (Exception ex) {
-                                    LOGGER.log(Level.SEVERE, "Error: Failed to parse subpatch from file: " + f.getName() + " " + ex.getMessage());
+                                    LOGGER.log(Level.SEVERE, "Error: Failed to parse subpatch from file: " + f.getName() + ", " + ex.getMessage());
                                     ex.printStackTrace(System.err);
                                 }
                             }
@@ -627,7 +627,7 @@ public class PatchGUI extends Patch {
                                     }
                                     SetDirty();
                                 } catch (Exception ex) {
-                                    LOGGER.log(Level.SEVERE, "Error: Failed to parse patch from file: " + f.getName() + " " + ex.getMessage());
+                                    LOGGER.log(Level.SEVERE, "Error: Failed to parse patch from file: " + f.getName() + ", " + ex.getMessage());
                                     ex.printStackTrace(System.err);
                                 }
                             }

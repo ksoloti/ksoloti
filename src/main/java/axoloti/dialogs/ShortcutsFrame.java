@@ -57,7 +57,8 @@ public class ShortcutsFrame extends javax.swing.JFrame {
                 jTextPaneShortcutsHtml.setText("<html><body><h1>Greetings.</h1>Error: Shortcuts content not found.</body></html>");
             }
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "Failed to load shortcuts HTML content", ex);
+            LOGGER.log(Level.SEVERE, "Failed to load shortcuts.html: " + ex.getMessage());
+            ex.printStackTrace(System.err);
             jTextPaneShortcutsHtml.setText("<html><body><h1>Greetings.</h1>Error loading shortcuts.</body></html>");
         }
 
@@ -77,15 +78,15 @@ public class ShortcutsFrame extends javax.swing.JFrame {
                         try {
                             desktop.browse(f.toURI());
                         } catch (IOException ex) {
-                            LOGGER.log(Level.SEVERE, null, ex);
+                            LOGGER.log(Level.SEVERE, "Error trying to access hyperlink: " + ex.getMessage());
+                            ex.printStackTrace(System.err);
                         }
                     } else {
                         try {
                             desktop.browse(hle.getURL().toURI());
-                        } catch (IOException ex) {
-                            LOGGER.log(Level.SEVERE, null, ex);
-                        } catch (URISyntaxException ex) {
-                            LOGGER.log(Level.SEVERE, null, ex);
+                        } catch (Exception ex) {
+                            LOGGER.log(Level.SEVERE, "Error trying to access hyperlink event: " + ex.getMessage());
+                            ex.printStackTrace(System.err);
                         }
                     }
                 }

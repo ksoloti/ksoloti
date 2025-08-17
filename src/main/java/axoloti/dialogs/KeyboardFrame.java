@@ -323,6 +323,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
                         jSpinnerMidiChannel.setValue(jSpinnerMidiChannel.getModel().getPreviousValue());
                     }
                     catch (Exception e) {
+                        /* Silent */
                     }
                     ke.consume();
                 }
@@ -331,6 +332,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
                         jSpinnerMidiChannel.setValue(jSpinnerMidiChannel.getModel().getNextValue());
                     }
                     catch (Exception e) {
+                        /* Silent */
                     }
                     ke.consume();
                 }

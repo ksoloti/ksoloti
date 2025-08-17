@@ -148,7 +148,9 @@ public class AxoObjectIdComparator implements Comparator<AxoObjectAbstract> {
             prefix1WithoutNumber = m1.group(1);
             try {
                 num1 = Integer.parseInt(m1.group(2));
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) { 
+                /* Silent */
+            }
             suffix1 = m1.group(3);
         }
 
@@ -156,7 +158,9 @@ public class AxoObjectIdComparator implements Comparator<AxoObjectAbstract> {
             prefix2WithoutNumber = m2.group(1);
             try {
                 num2 = Integer.parseInt(m2.group(2));
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) {
+                /* Silent */
+            }
             suffix1 = m2.group(3);
         }
 

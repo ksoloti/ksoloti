@@ -218,7 +218,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                     }
                                 }
                             } catch (InterruptedException e) {
-                                LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file.", e);
+                                LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file: " + e.getMessage());
+                                e.printStackTrace(System.err);
                                 Thread.currentThread().interrupt();
                             }
                             return null;
@@ -235,7 +236,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     LOGGER.log(Level.WARNING, "Drag and drop: Unknown file format.");
                 }
                 catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, "Error during drag and drop file upload: " + ex.getMessage(), ex);
+                    LOGGER.log(Level.SEVERE, "Error during drag and drop file upload: " + ex.getMessage());
+                    ex.printStackTrace(System.err);
                 }
             }
         });
@@ -619,7 +621,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     return true;
                 }
             } catch (InterruptedException e) {
-                LOGGER.log(Level.SEVERE, "Thread interrupted while deleting directory.", e);
+                LOGGER.log(Level.SEVERE, "Thread interrupted while deleting directory: " + e.getMessage());
+                e.printStackTrace(System.err);
                 Thread.currentThread().interrupt();
                 return false;
             }
@@ -645,7 +648,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     return true;
                 }
             } catch (InterruptedException e) {
-                LOGGER.log(Level.SEVERE, "Thread interrupted while deleting directory.", e);
+                LOGGER.log(Level.SEVERE, "Thread interrupted while deleting directory: " + e.getMessage());
+                e.printStackTrace(System.err);
                 Thread.currentThread().interrupt();
                 return false;
             }
@@ -712,7 +716,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     System.out.println(Instant.now() + " File list refresh command completed. SwingWorker's background task finishing.");
                 }
                 catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Error during background refresh command execution:", e);
+                    LOGGER.log(Level.SEVERE, "Error during background refresh command execution: " + e.getMessage());
+                    e.printStackTrace(System.err);
                     throw e; /* Re-throw to be caught by done() */
                 }
                 return null;
@@ -727,7 +732,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     refreshUI();
                 }
                 catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Error during UI refresh processing:", e);
+                    LOGGER.log(Level.SEVERE, "Error during UI refresh processing: " + e.getMessage());
+                    e.printStackTrace(System.err);
                 }
                 finally {
                     jButtonSDRefresh.setEnabled(true);
@@ -821,7 +827,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                     uploadedCount++;
                                 }
                                 catch (Exception e) {
-                                    LOGGER.log(Level.SEVERE, "Error uploading file: " + file.getName());
+                                    LOGGER.log(Level.SEVERE, "Error uploading file: " + file.getName() + ": " + e.getMessage());
                                     e.printStackTrace(System.err);
                                     failedCount++;
                                     continue; /* Skip to next file if failed */
@@ -832,7 +838,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                 Thread.sleep(50);
                             }
                             catch (InterruptedException ie) {
-                                LOGGER.log(Level.SEVERE, "Batch upload interrupted.");
+                                LOGGER.log(Level.SEVERE, "Batch upload interrupted: " + ie.getMessage());
+                                ie.printStackTrace(System.err);
                                 Thread.currentThread().interrupt();
                                 break; /* Abort all */
                             }
@@ -949,7 +956,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                             Thread.sleep(50);
                         }
                         catch (InterruptedException ie) {
-                            LOGGER.log(Level.SEVERE, "Batch deletion interrupted.");
+                            LOGGER.log(Level.SEVERE, "Batch deletion interrupted: " + ie.getMessage());
+                            ie.printStackTrace(System.err);
                             Thread.currentThread().interrupt();
                             break; /* Abort all */
                         }
@@ -1011,7 +1019,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     return;
                 }
             } catch (InterruptedException e) {
-                LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory.", e);
+                LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory: " + e.getMessage());
+                e.printStackTrace(System.err);
                 Thread.currentThread().interrupt();
             }
         }

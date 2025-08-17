@@ -64,6 +64,7 @@ public class AxoObjectFile {
                 try {
                     return Integer.valueOf(v);
                 } catch (NumberFormatException e) {
+                    /* Silent */
                 }
             }
         }
@@ -80,7 +81,7 @@ public class AxoObjectFile {
                     try {
                         return Integer.valueOf(v);
                     } catch (NumberFormatException e) {
-
+                        /* Silent */
                     }
                 }
             }
@@ -98,7 +99,7 @@ public class AxoObjectFile {
                     try {
                         return Integer.valueOf(v);
                     } catch (NumberFormatException e) {
-
+                        /* Silent */
                     }
                 }
             }

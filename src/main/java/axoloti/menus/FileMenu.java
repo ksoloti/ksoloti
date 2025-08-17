@@ -306,7 +306,8 @@ public class FileMenu extends JMenu {
 
                         }
                         catch (Exception ex) {
-                            LOGGER.log(Level.SEVERE, null, ex);
+                            LOGGER.log(Level.SEVERE, "Error during batch test process: " + ex.getMessage());
+                            ex.printStackTrace(System.err);
                         }
                         finally {
                             /* Revert logging format */
@@ -343,12 +344,12 @@ public class FileMenu extends JMenu {
             InputStream input = new URI(uri).toURL().openStream();
             String name = uri.substring(uri.lastIndexOf("/") + 1, uri.length());
             PatchGUI.OpenPatch(name, input);
-        } catch (MalformedURLException ex) {
-            LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
-        } catch (URISyntaxException ex) {
-            LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex});
+        } catch (MalformedURLException | URISyntaxException ex) {
+            LOGGER.log(Level.SEVERE, "Invalid URL: " + uri + ", " + ex.getMessage());
+            ex.printStackTrace(System.err);
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{uri, ex});
+            LOGGER.log(Level.SEVERE, "Failed to open URL: " + uri + ", " + ex.getMessage());
+            ex.printStackTrace(System.err);
         }
     }
 

@@ -554,7 +554,8 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                         Thread.sleep(500); /* Delay to ensure the disconnect completes before new connection attempt */
                     }
                     catch (Exception ex) {
-                        // System.err.println(Instant.now() + " [ERROR] Error during disconnect of current board: " + str + ", " + ex.getMessage());
+                        LOGGER.log(Level.SEVERE, "Error during disconnect of current board: " + displayedName + ", " + ex.getMessage());
+                        ex.printStackTrace(System.err);
                         disconnected = false;
                     }
                 }
@@ -582,7 +583,8 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                     }
                 }
                 catch (Exception ex) {
-                    // System.err.println(Instant.now() + " [ERROR] Error during connection SwingWorker task: " + ex.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error during connection SwingWorker task: " + ex.getMessage());
+                    ex.printStackTrace(System.err);
                 }
             }
         }.execute();
