@@ -183,7 +183,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             System.err.println("Failed to load SVG icon. Falling back to PNG.");
             setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_icon_axp.png")).getImage());
         }
-        setIconImage(((ImageIcon)icon).getImage());
         this.dwl = new ArrayList<DocumentWindow>();
 
         initComponents();
