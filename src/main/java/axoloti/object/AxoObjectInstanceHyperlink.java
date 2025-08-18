@@ -81,7 +81,7 @@ public class AxoObjectInstanceHyperlink extends AxoObjectInstanceAbstract {
             }
             catch (URISyntaxException ex) {
                 LOGGER.log(Level.WARNING, "Hyperlink: Invalid link syntax: " + link + ", " + ex.getMessage());
-                ex.printStackTrace(System.err);
+                ex.printStackTrace(System.out);
             }
         }
         else if (link.endsWith(".axp") || link.endsWith(".axh") || link.endsWith(".axs")) {

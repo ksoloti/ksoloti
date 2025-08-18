@@ -76,7 +76,7 @@ public class FirmwareID {
             return String.format("%08X", zcrcv);
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Error trying to get firmware ID: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         return "";
     }

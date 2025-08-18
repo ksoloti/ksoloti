@@ -307,7 +307,7 @@ public class FileMenu extends JMenu {
                         }
                         catch (Exception ex) {
                             LOGGER.log(Level.SEVERE, "Error during batch test process: " + ex.getMessage());
-                            ex.printStackTrace(System.err);
+                            ex.printStackTrace(System.out);
                         }
                         finally {
                             /* Revert logging format */
@@ -346,10 +346,10 @@ public class FileMenu extends JMenu {
             PatchGUI.OpenPatch(name, input);
         } catch (MalformedURLException | URISyntaxException ex) {
             LOGGER.log(Level.SEVERE, "Invalid URL: " + uri + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Failed to open URL: " + uri + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
     }
 

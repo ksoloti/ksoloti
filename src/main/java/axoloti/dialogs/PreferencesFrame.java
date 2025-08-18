@@ -944,7 +944,7 @@ public class PreferencesFrame extends JFrame {
                 jTextFieldFavDir.setText(dir);
             } catch (IOException ex) {
                 Logger.getLogger(PreferencesFrame.class.getName()).log(Level.SEVERE, "Error trying to set favourite dir: " + ex.getMessage());
-                ex.printStackTrace(System.err);
+                ex.printStackTrace(System.out);
             }
         }
         fc.updateCurrentSize();
@@ -1026,7 +1026,7 @@ public class PreferencesFrame extends JFrame {
                     });
                 } catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "An error occurred during library reset: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
             }).start();
         }

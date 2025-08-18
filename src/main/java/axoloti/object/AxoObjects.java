@@ -91,13 +91,13 @@ public class AxoObjects {
                         loadOK = true;
                     } catch (Exception ex) {
                         LOGGER.log(Level.SEVERE, "Error trying to load AxoObjectFile: " + f.getAbsolutePath() + ", " + ex.getMessage());
-                        ex.printStackTrace(System.err);
+                        ex.printStackTrace(System.out);
                         try {
                             of = serializer.read(AxoObjectFile.class, f, false);
                             loadOK = true;
                         } catch (Exception ex1) {
                             LOGGER.log(Level.SEVERE, "Error while parsing AxoObjectFile: " + f.getAbsolutePath() + ", " + ex1.getMessage());
-                            ex1.printStackTrace(System.err);
+                            ex1.printStackTrace(System.out);
                         }
                     }
                     if (loadOK) {
@@ -174,7 +174,7 @@ public class AxoObjects {
                 }
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "Error trying to get library path ID: " + ex.getMessage());
-                ex.printStackTrace(System.err);
+                ex.printStackTrace(System.out);
             }
         }
         AxoObjectTreeNode t = new AxoObjectTreeNode(id);
@@ -192,7 +192,7 @@ public class AxoObjects {
                 t.description = result.toString();
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "Failed to read file: " + fdescription.getAbsolutePath() + ", " + ex.getMessage());
-                ex.printStackTrace(System.err);
+                ex.printStackTrace(System.out);
             } finally {
                 try {
                     if (reader != null) {
@@ -200,7 +200,7 @@ public class AxoObjects {
                     }
                 } catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, "Failed to read file: " + fdescription.getAbsolutePath() + ", " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
             }
         }
@@ -242,7 +242,7 @@ public class AxoObjects {
                         if(ite.getTargetException() instanceof AxoObjectFile.ObjectVersionException) {
                             AxoObjectFile.ObjectVersionException ove = (AxoObjectFile.ObjectVersionException) ite.getTargetException();
                             LOGGER.log(Level.SEVERE, "Object \"" + fileEntry.getAbsoluteFile() + "\" was saved with a newer version of Ksoloti: " + ove.getMessage()); 
-                            ite.printStackTrace(System.err);
+                            ite.printStackTrace(System.out);
                         } else {
                             LOGGER.log(Level.SEVERE, fileEntry.getAbsolutePath(), ite);
                             try {
@@ -250,7 +250,7 @@ public class AxoObjects {
                                 o = serializer.read(AxoObjectFile.class, fileEntry, false);
                             } catch (Exception ex1) {
                                 LOGGER.log(Level.SEVERE, "Error trying to read AxoObjectFile in relaxed mode: " + fileEntry.getAbsolutePath() + ", " + ex1.getMessage());
-                                ex1.printStackTrace(System.err);
+                                ex1.printStackTrace(System.out);
                             }
                         }
                     } catch (Exception ex) {
@@ -260,7 +260,7 @@ public class AxoObjects {
                             o = serializer.read(AxoObjectFile.class, fileEntry, false);
                         } catch (Exception ex1) {
                             LOGGER.log(Level.SEVERE, "Error trying to read AxoObjectFile in relaxed mode: " + fileEntry.getAbsolutePath() + ", " + ex1.getMessage());
-                            ex1.printStackTrace(System.err);
+                            ex1.printStackTrace(System.out);
                         }
                     }
                     if (o!=null) {
@@ -305,7 +305,7 @@ public class AxoObjects {
                         ObjectList.add(a);
                     } catch (Exception ex) {
                         LOGGER.log(Level.SEVERE, "Error: " + fileEntry.getAbsolutePath() + ", " + ex.getMessage());
-                        ex.printStackTrace(System.err);
+                        ex.printStackTrace(System.out);
                     }
                 }
             }
@@ -330,7 +330,7 @@ public class AxoObjects {
                         pname = folder.getCanonicalFile().getParent();
                     } catch (IOException ex) {
                         LOGGER.log(Level.SEVERE, "Error trying to get parent folder of: " + folder + ", " + ex.getMessage());
-                        ex.printStackTrace(System.err);
+                        ex.printStackTrace(System.out);
                     }
                     if (!ObjectTree.SubNodes.containsKey(pname)) {
                         ObjectTree.SubNodes.put(pname, t);
@@ -411,7 +411,7 @@ public class AxoObjects {
 
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Could not get canonical path for file: " + f.getAbsolutePath() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
 
         /* If no library match is found, return null */
@@ -529,7 +529,7 @@ public class AxoObjects {
                 serializer.write(a, os);
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, "Error trying to write serial stream: " + f.getAbsolutePath() + ", " + ex.getMessage());
-                ex.printStackTrace(System.err);
+                ex.printStackTrace(System.out);
             }
 
             boolean identical = false;
@@ -557,7 +557,7 @@ public class AxoObjects {
                 is1.close(); is2.close();
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "Error trying to read serial stream: " + f.getAbsolutePath() + ", " + ex.getMessage());
-                ex.printStackTrace(System.err);
+                ex.printStackTrace(System.out);
             }
             if (!identical) {
                 // overwrite with new
@@ -566,7 +566,7 @@ public class AxoObjects {
                     serializer.write(a, f);
                 } catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "Error trying to write serial stream: " + f.getAbsolutePath() + ", " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
             } else {
                 System.out.println("object file unchanged : " + f.getName());
@@ -578,7 +578,7 @@ public class AxoObjects {
                 System.out.println("object file created : " + f.getName());
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, "Error trying to write serial stream: " + f.getAbsolutePath() + ", " + ex.getMessage());
-                ex.printStackTrace(System.err);
+                ex.printStackTrace(System.out);
             }
         }
         o.id = id;

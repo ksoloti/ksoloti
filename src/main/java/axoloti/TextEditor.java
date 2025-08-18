@@ -62,7 +62,7 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
                 "/resources/rsyntaxtextarea/themes/" + Preferences.getInstance().getCodeSyntaxTheme() + ".xml"));
             theme.apply(textArea);
         } catch (IOException ioe) { // Never happens
-            ioe.printStackTrace(System.err);
+            ioe.printStackTrace(System.out);
         }
         textArea.setFont(Constants.FONT_MONO);
         // textArea.setBackground(axoloti.Theme.Object_Default_Background);

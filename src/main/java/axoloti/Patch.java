@@ -2793,11 +2793,11 @@ public class Patch {
         }
         catch (FileNotFoundException ex) {
             LOGGER.log(Level.SEVERE, "File not found: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "File error: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         // LOGGER.log(Level.INFO, "Done generating code.\n");
     }

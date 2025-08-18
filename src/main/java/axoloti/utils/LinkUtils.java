@@ -51,7 +51,7 @@ public final class LinkUtils {
         }
         catch (IOException e) {
             LOGGER.log(Level.WARNING, "Hyperlink: Failed to open link via external command: " + urlString + ", " + e.getMessage());
-            e.printStackTrace(System.err);
+            e.printStackTrace(System.out);
         }
     }
 }

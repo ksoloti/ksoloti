@@ -353,15 +353,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 }
                 catch (BadLocationException ex) {
                     System.err.println(Instant.now() + " BadLocationException when logging to GUI: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
                 catch (UnsupportedEncodingException ex) {
                     System.err.println(Instant.now() + " UnsupportedEncodingException in log handler: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
                 catch (Exception ex) {
                     System.err.println(Instant.now() + " Unexpected exception in log handler: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
             }
 
@@ -484,7 +484,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                                 }
                                 catch (Exception e) {
                                     LOGGER.log(Level.SEVERE, "Initial connection worker crashed: " + e.getMessage());
-                                    e.printStackTrace(System.err);
+                                    e.printStackTrace(System.out);
                                     ShowDisconnect();
                                 }
                             }
@@ -577,12 +577,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                 // }
                 // catch (BindException e) {
-                    // e.printStackTrace(System.err);
+                    // e.printStackTrace(System.out);
                     // System.exit(1);
                 }
                 catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "An error occurred during MainFrame init task: " + e.getMessage());
-                    e.printStackTrace(System.err);
+                    e.printStackTrace(System.out);
                 }
             }
         };
@@ -623,7 +623,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                                 }
                                 catch (Exception e) {
                                     LOGGER.log(Level.SEVERE, "An error occurred during patch file opening task: " + e.getMessage());
-                                    e.printStackTrace(System.err);
+                                    e.printStackTrace(System.out);
                                 }
                             }
                         };
@@ -654,7 +654,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
                     catch (Exception e) {
                         LOGGER.log(Level.SEVERE, "An error occurred during .axo file opening task: " + e.getMessage());
-                        e.printStackTrace(System.err);
+                        e.printStackTrace(System.out);
                     }
                 }
             };
@@ -763,7 +763,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 }
                 catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, "An error occurred during drag and drop: " + ex.getMessage()); 
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
             }
         });
@@ -892,7 +892,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Exception during firmware/Flasher upload: " + e.getMessage());
-                    e.printStackTrace(System.err);
+                    e.printStackTrace(System.out);
                     return false;
                 }
             }
@@ -916,11 +916,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
                 } catch (InterruptedException e) {
                     LOGGER.log(Level.WARNING, "Firmware update process was interrupted: " + e.getMessage());
-                    e.printStackTrace(System.err);
+                    e.printStackTrace(System.out);
                     Thread.currentThread().interrupt(); // Restore interrupt status
                 } catch (java.util.concurrent.ExecutionException e) {
                     LOGGER.log(Level.SEVERE, "An unexpected error occurred in background task: " + e.getMessage());
-                    e.printStackTrace(System.err);
+                    e.printStackTrace(System.out);
                 }
             }
         }.execute();
@@ -1254,7 +1254,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 }
                 catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Disconnect worker failed unexpectedly: " + e.getMessage());
-                    e.printStackTrace(System.err);
+                    e.printStackTrace(System.out);
                     ShowDisconnect();
                 }
             }
@@ -1285,7 +1285,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 }
                 catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Connection worker failed unexpectedly: " + e.getMessage());
-                    e.printStackTrace(System.err);
+                    e.printStackTrace(System.out);
                     ShowDisconnect(); // Ensure UI reflects disconnected state
                 }
             }
@@ -1322,7 +1322,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
                     catch (Exception e) {
                         LOGGER.log(Level.SEVERE, "An error occurred during connection SwingWorker: " + e.getMessage());
-                        e.printStackTrace(System.err);
+                        e.printStackTrace(System.out);
                         USBBulkConnection.GetConnection().ShowDisconnect();
                     }
                     finally {
@@ -1352,7 +1352,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
                     catch (Exception e) {
                         LOGGER.log(Level.SEVERE, "An error occurred during disconnection SwingWorker: " + e.getMessage());
-                        e.printStackTrace(System.err);
+                        e.printStackTrace(System.out);
                         if (USBBulkConnection.GetConnection().isConnected()) {
                             USBBulkConnection.GetConnection().ShowConnect();
                             // System.out.println(Instant.now() + " [DEBUG] UI updated: Connected (disconnect failed, board still connected).");
@@ -1389,7 +1389,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         catch (Exception e) {
             LOGGER.log(Level.SEVERE, "An error occurred during runAllTests: " + e.getMessage());
-            e.printStackTrace(System.err);
+            e.printStackTrace(System.out);
             return r1 && r2;
         }
         return r1 && r2;
@@ -1583,7 +1583,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "An error occurred while testing patch: " + f.getPath() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
             return false;
         }
@@ -1644,7 +1644,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "An error occurred during file upgrade: " + f.getPath() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
             return false;
         }
     }
@@ -1755,7 +1755,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "An error occurred while uploading Mounter: " + e.getMessage());
-                e.printStackTrace(System.err);
+                e.printStackTrace(System.out);
             }
 
             try {
@@ -1768,7 +1768,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                    which counts as success */
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "An error occurred while starting Mounter: " + e.getMessage());
-                e.printStackTrace(System.err);
+                e.printStackTrace(System.out);
                 return;
             } finally {
                 // QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
@@ -1792,15 +1792,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         catch (MalformedURLException ex) {
             LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex.getMessage()});
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         catch (URISyntaxException ex) {
             LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex.getMessage()});
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{uri, ex.getMessage()});
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
     }
 
@@ -1860,7 +1860,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error opening .axo file(s): " + e.getMessage());
-            e.printStackTrace(System.err);
+            e.printStackTrace(System.out);
         }
     }
 
@@ -1906,7 +1906,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Failed to send stop command to Core for previous patch: " + this.currentLivePatch.getFileNamePath() + ", " + e.getMessage());
-                e.printStackTrace(System.err);
+                e.printStackTrace(System.out);
             }
         }
 
@@ -1934,7 +1934,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 System.out.println(Instant.now() + " Locked new live patch: " + this.currentLivePatch.getFileNamePath());
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Failed to send start command for patch: " + this.currentLivePatch.getFileNamePath() + "\n" + e.getMessage());
-                e.printStackTrace(System.err);
+                e.printStackTrace(System.out);
                 if (this.currentLivePatch != null) {
                     this.currentLivePatch.Unlock(); /* Unlock GUI */
                 }

@@ -172,7 +172,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error during AxoObject loader thread: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
 
         setMinimumSize(new Dimension(200,120));
@@ -236,7 +236,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 }
                 catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "Error during cut action: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
             }
         });
@@ -267,7 +267,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 }
                 catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "Error during copy action: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
             }
         });
@@ -290,7 +290,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 }
                 catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, "Error during paste action: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
             }
         });
@@ -1364,7 +1364,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     }
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Patch upload failed: " + e.getMessage());
-                    e.printStackTrace(System.err);
+                    e.printStackTrace(System.out);
                 }
             }
             else {
@@ -1514,7 +1514,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                         Runtime.getRuntime().exec(cmdStr); /* Send command to OS */
                 } catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "Failed to reveal file location using OS commands: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
             } else {
                 LOGGER.log(Level.WARNING, "Patch file does not exist. New, unsaved patch?");

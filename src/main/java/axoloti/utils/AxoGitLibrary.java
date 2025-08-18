@@ -121,7 +121,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
                     delete(ldir);
                 } catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, "Error trying to init repo: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
             }
 
@@ -143,7 +143,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
                 LOGGER.log(Level.INFO, "Repo initialisation successful: " + logDetails());
             } catch (Exception ex) {
                 LOGGER.log(Level.WARNING, "Repo initialisation failed: " + getId() + ", " + ex.getMessage());
-                ex.printStackTrace(System.err);
+                ex.printStackTrace(System.out);
                 return;
             }
         } else {
@@ -189,7 +189,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
                 return git.getRepository().getBranch();
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "Error trying to get current branch: " + ex.getMessage());
-                ex.printStackTrace(System.err);
+                ex.printStackTrace(System.out);
                 return getBranch();
             }
         }
@@ -241,7 +241,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
 
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Error trying to find git submodule: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         return git;
     }
@@ -257,7 +257,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Git stash failed: " + logDetails() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         return false;
 
@@ -281,7 +281,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return -1;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "git applyStash (findStash) failed: " + logDetails() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         return -1;
     }
@@ -303,7 +303,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "applyStash (stashApply) failed: " + logDetails() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
 
         return false;
@@ -323,7 +323,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "applyStash (dropStash) failed: " + logDetails() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
 
         return false;
@@ -344,7 +344,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
 
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Sync (pull) failed: " + logDetails() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         return false;
     }
@@ -373,14 +373,14 @@ public class AxoGitLibrary extends AxolotiLibrary {
                         return true;
                     } catch (GitAPIException ex) {
                         LOGGER.log(Level.WARNING, "Sync (checkout) failed: " + logDetails() + ", " + ex.getMessage());
-                        ex.printStackTrace(System.err);
+                        ex.printStackTrace(System.out);
                     }
                 }
                 return true;
             }
         } catch (IOException ex) {
             LOGGER.log(Level.WARNING, "Sync (check local branch) failed: " + logDetails() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
 
         // check to see if branch is already available locally
@@ -396,7 +396,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             }
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Sync (branch list) failed: " + logDetails() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
 
         CheckoutCommand cmd = git.checkout();
@@ -417,7 +417,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Sync (checkout) failed: " + logDetails() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         return false;
 
@@ -437,7 +437,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Sync (add) failed: " + logDetails() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         return false;
 
@@ -449,7 +449,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             cmd.call();
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Upgrade (fetch) failed: " + logDetails() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
     }
 
@@ -463,7 +463,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Sync (commit) failed: " + logDetails() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         return false;
     }
@@ -522,7 +522,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException | NoWorkTreeException ex) {
             LOGGER.log(Level.INFO, "Status EXCEPTION - " + logDetails() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         return false;
     }
@@ -538,7 +538,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return true;
         } catch (GitAPIException ex) {
             LOGGER.log(Level.WARNING, "Sync (push) failed: " + logDetails() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         return false;
     }
@@ -556,7 +556,7 @@ public class AxoGitLibrary extends AxolotiLibrary {
             return !status.isClean();
         } catch (GitAPIException | NoWorkTreeException ex) {
             LOGGER.log(Level.WARNING, "Sync (isdirty) failed: " + logDetails() + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         return false;
     }

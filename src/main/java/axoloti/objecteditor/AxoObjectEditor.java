@@ -161,7 +161,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         }
         catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error trying to apply theme: " + e.getMessage());
-            e.printStackTrace(System.err);
+            e.printStackTrace(System.out);
         }
 
         rsta.setFont(Constants.FONT_MONO);
@@ -260,7 +260,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error trying to write reference XML: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
 
         origXML = origOS.toString();
@@ -276,7 +276,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error trying to revert data: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
     }
 
@@ -534,7 +534,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error trying to write stream: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
 
         return !(origXML.equals(editOS.toString()));
@@ -568,7 +568,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error trying to apply theme: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
 
         rSyntaxTextAreaXML.setFont(Constants.FONT_MONO);

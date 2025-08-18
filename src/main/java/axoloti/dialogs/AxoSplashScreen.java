@@ -80,7 +80,7 @@ public class AxoSplashScreen extends JWindow {
 
         } catch (Exception e) {
             System.err.println("Error loading splash screen image: " + e.getMessage());
-            e.printStackTrace(System.err);
+            e.printStackTrace(System.out);
             this.dispose();
         }
 

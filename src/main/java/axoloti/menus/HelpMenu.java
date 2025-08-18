@@ -179,7 +179,7 @@ public class HelpMenu extends JMenu {
         }
         catch (URISyntaxException ex) {
             LOGGER.log(Level.WARNING, "Invalid URI syntax for help contents link: " + url + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
     }
 
@@ -198,7 +198,7 @@ public class HelpMenu extends JMenu {
         }
         catch (URISyntaxException ex) {
             LOGGER.log(Level.WARNING, "Invalid URI syntax for community link: " + url + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
     }
 
@@ -217,7 +217,7 @@ public class HelpMenu extends JMenu {
         }
         catch (URISyntaxException ex) {
             LOGGER.log(Level.WARNING, "Invalid URI syntax for community backup link: " + url + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
     }
 }

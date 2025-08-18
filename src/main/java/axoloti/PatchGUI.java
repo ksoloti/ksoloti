@@ -227,7 +227,7 @@ public class PatchGUI extends Patch {
                     clip.setContents(s, (ClipboardOwner) null);
                 } catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "Error during export to clipboard: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
                 if (action == MOVE) {
                     deleteSelectedAxoObjInstances();
@@ -544,7 +544,7 @@ public class PatchGUI extends Patch {
                                     }
                                 } catch (Exception ex) {
                                     LOGGER.log(Level.SEVERE, "Error: Failed to parse AxoObject from file: " + f.getName() + ", " + ex.getMessage());
-                                    ex.printStackTrace(System.err);
+                                    ex.printStackTrace(System.out);
                                 }
                             }
                         }
@@ -595,7 +595,7 @@ public class PatchGUI extends Patch {
                                     SetDirty();
                                 } catch (Exception ex) {
                                     LOGGER.log(Level.SEVERE, "Error: Failed to parse subpatch from file: " + f.getName() + ", " + ex.getMessage());
-                                    ex.printStackTrace(System.err);
+                                    ex.printStackTrace(System.out);
                                 }
                             }
                         }
@@ -628,7 +628,7 @@ public class PatchGUI extends Patch {
                                     SetDirty();
                                 } catch (Exception ex) {
                                     LOGGER.log(Level.SEVERE, "Error: Failed to parse patch from file: " + f.getName() + ", " + ex.getMessage());
-                                    ex.printStackTrace(System.err);
+                                    ex.printStackTrace(System.out);
                                 }
                             }
                         }
@@ -646,7 +646,7 @@ public class PatchGUI extends Patch {
                         LOGGER.log(Level.WARNING, "Drag and drop: Unknown file format.");
                     } catch (IOException ex) {
                         LOGGER.log(Level.SEVERE, "Error dropping file(s): " + ex.getMessage());
-                        ex.printStackTrace(System.err);
+                        ex.printStackTrace(System.out);
                     }
                     return;
                 }
@@ -925,7 +925,7 @@ public class PatchGUI extends Patch {
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "An unexpected error occurred during the paste operation: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
     }
 
@@ -1357,10 +1357,12 @@ public class PatchGUI extends Patch {
             patch1.PostContructor();
             patch1.setFileNamePath(name);
             pf.setVisible(true);
+            pf.setState(java.awt.Frame.NORMAL);
             pf.repositionIfOutsideScreen();
+            pf.toFront();
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error during patch open: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
     }
 
@@ -1393,7 +1395,7 @@ public class PatchGUI extends Patch {
                         new Object[]{f.getAbsoluteFile(), pve.getMessage()});
             } else {
                 LOGGER.log(Level.SEVERE, "Error during patch open: " + ite.getMessage());
-                ite.printStackTrace(System.err);
+                ite.printStackTrace(System.out);
             }
             return null;
         } catch (Exception ex) {

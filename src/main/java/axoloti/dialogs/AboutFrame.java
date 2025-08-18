@@ -51,7 +51,7 @@ public class AboutFrame extends javax.swing.JFrame {
             jTextPaneAboutHtml.setPage(getClass().getResource("/resources/about.html"));
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Failed to load about.html: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
 
         jBuildVersionTxt.setText(Version.AXOLOTI_VERSION);
@@ -74,14 +74,14 @@ public class AboutFrame extends javax.swing.JFrame {
                             desktop.browse(f.toURI());
                         } catch (IOException ex) {
                             LOGGER.log(Level.SEVERE, "Error trying to access hyperlink: " + ex.getMessage());
-                            ex.printStackTrace(System.err);
+                            ex.printStackTrace(System.out);
                         }
                     } else {
                         try {
                             desktop.browse(hle.getURL().toURI());
                         } catch (Exception ex) {
                             LOGGER.log(Level.SEVERE, "Error trying to access hyperlink event: " + ex.getMessage());
-                            ex.printStackTrace(System.err);
+                            ex.printStackTrace(System.out);
                         }
                     }
                 }

@@ -86,7 +86,7 @@ public class Constants {
         }
         catch (FontFormatException | IOException e) {
             LOGGER.log(Level.SEVERE, "Error trying to create patch GUI font: " + e.getMessage());
-            e.printStackTrace(System.err);
+            e.printStackTrace(System.out);
         }
     }
 
@@ -97,7 +97,7 @@ public class Constants {
         }
         catch (FontFormatException | IOException e) {
             LOGGER.log(Level.SEVERE, "Error trying to create monospace GUI font: " + e.getMessage());
-            e.printStackTrace(System.err);
+            e.printStackTrace(System.out);
         }
     }
 
@@ -108,7 +108,7 @@ public class Constants {
             FONT_MENU = UIManager.getFont("defaultFont");
         // } catch (FontFormatException | IOException e) {
         //     LOGGER.log(Level.SEVERE, "Error trying to create menu GUI font: " + e.getMessage());
-        //     e.printStackTrace(System.err);
+        //     e.printStackTrace(System.out);
         // }
     }
 

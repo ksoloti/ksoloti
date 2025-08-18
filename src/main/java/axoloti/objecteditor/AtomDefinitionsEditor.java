@@ -201,7 +201,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                     AtomDefinitionsEditor.this.obj.FireObjectModified(this);
                 } catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "Error while handling AtomDefinition: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
             }
         });
@@ -314,7 +314,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                             UpdateTable2();
                         } catch (Exception ex) {
                             LOGGER.log(Level.SEVERE, "Error while handling AtomDefinition: " + ex.getMessage());
-                            ex.printStackTrace(System.err);
+                            ex.printStackTrace(System.out);
                         }
                         break;
                     case 2:
@@ -427,7 +427,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                                 AtomDefinitionsEditor.this.obj.FireObjectModified(this);
                             } catch (IllegalArgumentException | IllegalAccessException ex) {
                                 LOGGER.log(Level.SEVERE, "Error trying to set value: " + value.toString() + ", " + ex.getMessage());
-                                ex.printStackTrace(System.err);
+                                ex.printStackTrace(System.out);
                             }
                         } else if (t == ArrayList.class) {
                             try {
@@ -438,7 +438,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                                 AtomDefinitionsEditor.this.obj.FireObjectModified(this);
                             } catch (IllegalArgumentException | IllegalAccessException ex) {
                                 LOGGER.log(Level.SEVERE, "Error trying to set value: " + value.toString() + ", " + ex.getMessage());
-                                ex.printStackTrace(System.err);
+                                ex.printStackTrace(System.out);
                             }
                         } else if (t == ValueInt32.class) {
                             try {
@@ -452,7 +452,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                                 AtomDefinitionsEditor.this.obj.FireObjectModified(this);
                             } catch (IllegalArgumentException | IllegalAccessException ex) {
                                 LOGGER.log(Level.SEVERE, "Error trying to set value: " + value.toString() + ", " + ex.getMessage());
-                                ex.printStackTrace(System.err);
+                                ex.printStackTrace(System.out);
                             }
                         } else if (t == ValueFrac32.class) {
                             try {
@@ -475,7 +475,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                                 AtomDefinitionsEditor.this.obj.FireObjectModified(this);
                             } catch (IllegalArgumentException | IllegalAccessException ex) {
                                 LOGGER.log(Level.SEVERE, "Error trying to set value: " + value.toString() + ", " + ex.getMessage());
-                                ex.printStackTrace(System.err);
+                                ex.printStackTrace(System.out);
                             }
                         } else if (t == String.class) {
                             try {
@@ -483,7 +483,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                                 AtomDefinitionsEditor.this.obj.FireObjectModified(this);
                             } catch (IllegalArgumentException | IllegalAccessException ex) {
                                 LOGGER.log(Level.SEVERE, "Error trying to set value: " + value.toString() + ", " + ex.getMessage());
-                                ex.printStackTrace(System.err);
+                                ex.printStackTrace(System.out);
                             }
                         }
                         break;
@@ -519,10 +519,10 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                                 returnValue = v.toString();
                             }
                         } catch (IllegalArgumentException ex) {
-                            ex.printStackTrace(System.err);
+                            ex.printStackTrace(System.out);
                             return "Illegal argument: " + ex.getMessage();
                         } catch (IllegalAccessException ex) {
-                            ex.printStackTrace(System.err);
+                            ex.printStackTrace(System.out);
                             return "Illegal access: " + ex.getMessage();
                         }
                     }
@@ -569,10 +569,10 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                     fields.add(f);
                 } catch (NoSuchFieldException ex) {
                     LOGGER.log(Level.SEVERE, "Error: No such field: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 } catch (SecurityException ex) {
                     LOGGER.log(Level.SEVERE, "Error: security exception: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
             }
         }

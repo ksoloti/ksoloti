@@ -79,23 +79,23 @@ public class CheckForUpdates {
         }
         catch (MalformedURLException ex) {
             LOGGER.log(Level.SEVERE, "Hyperlink: malformed URL: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         catch (URISyntaxException ex) {
             LOGGER.log(Level.WARNING, "Hyperlink: Invalid update link: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         catch (FileNotFoundException ex) {
             KeyboardNavigableOptionPane.showMessageDialog(null, "No new release available", "Checking for updates", JOptionPane.INFORMATION_MESSAGE);
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         catch (UnknownHostException ex) {
             KeyboardNavigableOptionPane.showMessageDialog(null, "Server not reachable", "Checking for updates", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Hyperlink: IO Exceprtion: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
         }
     }
 }

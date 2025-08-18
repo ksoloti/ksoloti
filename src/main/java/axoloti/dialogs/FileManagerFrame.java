@@ -219,7 +219,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                 }
                             } catch (InterruptedException e) {
                                 LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file: " + e.getMessage());
-                                e.printStackTrace(System.err);
+                                e.printStackTrace(System.out);
                                 Thread.currentThread().interrupt();
                             }
                             return null;
@@ -237,7 +237,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 }
                 catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, "Error during drag and drop file upload: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
             }
         });
@@ -622,7 +622,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 }
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Thread interrupted while deleting directory: " + e.getMessage());
-                e.printStackTrace(System.err);
+                e.printStackTrace(System.out);
                 Thread.currentThread().interrupt();
                 return false;
             }
@@ -649,7 +649,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 }
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Thread interrupted while deleting directory: " + e.getMessage());
-                e.printStackTrace(System.err);
+                e.printStackTrace(System.out);
                 Thread.currentThread().interrupt();
                 return false;
             }
@@ -717,7 +717,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 }
                 catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Error during background refresh command execution: " + e.getMessage());
-                    e.printStackTrace(System.err);
+                    e.printStackTrace(System.out);
                     throw e; /* Re-throw to be caught by done() */
                 }
                 return null;
@@ -733,7 +733,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 }
                 catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Error during UI refresh processing: " + e.getMessage());
-                    e.printStackTrace(System.err);
+                    e.printStackTrace(System.out);
                 }
                 finally {
                     jButtonSDRefresh.setEnabled(true);
@@ -828,7 +828,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                 }
                                 catch (Exception e) {
                                     LOGGER.log(Level.SEVERE, "Error uploading file: " + file.getName() + ": " + e.getMessage());
-                                    e.printStackTrace(System.err);
+                                    e.printStackTrace(System.out);
                                     failedCount++;
                                     continue; /* Skip to next file if failed */
                                 }
@@ -839,7 +839,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                             }
                             catch (InterruptedException ie) {
                                 LOGGER.log(Level.SEVERE, "Batch upload interrupted: " + ie.getMessage());
-                                ie.printStackTrace(System.err);
+                                ie.printStackTrace(System.out);
                                 Thread.currentThread().interrupt();
                                 break; /* Abort all */
                             }
@@ -865,7 +865,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         }
                         catch (InterruptedException | ExecutionException e) {
                             result = "Batch upload failed unexpectedly: " + e.getMessage() + "\n";
-                            e.printStackTrace(System.err);
+                            e.printStackTrace(System.out);
                         }
                         finally {
                             CommandManager.getInstance().endLongOperation();
@@ -957,7 +957,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         }
                         catch (InterruptedException ie) {
                             LOGGER.log(Level.SEVERE, "Batch deletion interrupted: " + ie.getMessage());
-                            ie.printStackTrace(System.err);
+                            ie.printStackTrace(System.out);
                             Thread.currentThread().interrupt();
                             break; /* Abort all */
                         }
@@ -982,7 +982,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         LOGGER.log(Level.INFO, message);
                     } catch (InterruptedException | ExecutionException e) {
                         message = "Batch delete failed unexpectedly: " + e.getMessage() + "\n";
-                        e.printStackTrace(System.err);
+                        e.printStackTrace(System.out);
                     } finally {
                         CommandManager.getInstance().endLongOperation();
                         triggerRefresh();
@@ -1020,7 +1020,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 }
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory: " + e.getMessage());
-                e.printStackTrace(System.err);
+                e.printStackTrace(System.out);
                 Thread.currentThread().interrupt();
             }
         }

@@ -552,7 +552,7 @@ public class AxolotiLibraryEditor extends JDialog {
                 }
                 catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Git init failed: " + e.getMessage());
-                    e.printStackTrace(System.err);
+                    e.printStackTrace(System.out);
                 }
                 finally {
                     setButtonsEnabled(true);
@@ -597,7 +597,7 @@ public class AxolotiLibraryEditor extends JDialog {
             }
             catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "Error getting canonical path for selected directory: " + ex.getMessage());
-                ex.printStackTrace(System.err);
+                ex.printStackTrace(System.out);
             }
         }
         fc.updateCurrentSize();
@@ -624,7 +624,7 @@ public class AxolotiLibraryEditor extends JDialog {
                 }
                 catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Git sync failed: " + e.getMessage());
-                    e.printStackTrace(System.err);
+                    e.printStackTrace(System.out);
                 }
                 finally {
                     setButtonsEnabled(true);

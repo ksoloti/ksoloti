@@ -54,7 +54,7 @@ public class ShellProcessor extends SwingWorker<Integer, String> {
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt(); // Restore interrupt status
             LOGGER.log(Level.SEVERE, "ShellProcessor AppendToQueue interrupted while offering command: " + cmd.getClass().getSimpleName() + ", " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
             return false; // Command not added due to interruption
         }
     }
@@ -73,18 +73,18 @@ public class ShellProcessor extends SwingWorker<Integer, String> {
             }
             catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, "ShellProcessor interrupted while waiting for task. " + ex.getMessage());
-                ex.printStackTrace(System.err);
+                ex.printStackTrace(System.out);
                 Thread.currentThread().interrupt();
                 break;
             }
             catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, "Unexpected error in ShellProcessor doInBackground. " + ex.getMessage());
-                ex.printStackTrace(System.err);
+                ex.printStackTrace(System.out);
                 try {
                     Thread.sleep(1000);
                 }
                 catch (InterruptedException ie) {
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                     Thread.currentThread().interrupt();
                 }
             }

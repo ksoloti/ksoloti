@@ -555,7 +555,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                     }
                     catch (Exception ex) {
                         LOGGER.log(Level.SEVERE, "Error during disconnect of current board: " + displayedName + ", " + ex.getMessage());
-                        ex.printStackTrace(System.err);
+                        ex.printStackTrace(System.out);
                         disconnected = false;
                     }
                 }
@@ -584,7 +584,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 }
                 catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "Error during connection SwingWorker task: " + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    ex.printStackTrace(System.out);
                 }
             }
         }.execute();

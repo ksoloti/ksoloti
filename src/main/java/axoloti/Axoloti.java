@@ -160,7 +160,7 @@ public class Axoloti {
                 ev = f.getCanonicalPath();
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "Error attempting to get canonical path: " + ex.getMessage());
-                ex.printStackTrace(System.err);
+                ex.printStackTrace(System.out);
             }
         }
         System.setProperty(var, ev);
@@ -203,7 +203,7 @@ public class Axoloti {
             }
             catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "Error attempting to compare canonical paths: " + ex.getMessage());
-                ex.printStackTrace(System.err);
+                ex.printStackTrace(System.out);
                 cacheDeveloper = false;
             }
         }
@@ -420,7 +420,7 @@ public class Axoloti {
                 System.out.println("Axoloti cmd line complete");
                 System.exit(exitCode);
             } catch (Exception e) {
-                e.printStackTrace(System.err);
+                e.printStackTrace(System.out);
                 System.exit(-2);
             }
         } else {
@@ -434,7 +434,7 @@ public class Axoloti {
                             splashScreen.dispose();
                         }
                     } catch (Exception e) {
-                        e.printStackTrace(System.err);
+                        e.printStackTrace(System.out);
                     }
                 }
             });

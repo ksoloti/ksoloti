@@ -84,7 +84,7 @@ public class ksoloti_core {
         }
         catch (UnsupportedEncodingException ex) {
             LOGGER.log(Level.SEVERE, "Error: unsupported encoding: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
             return null;
         }
     }
