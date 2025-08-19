@@ -878,7 +878,7 @@ void PExReceiveByte(unsigned char c) {
                 state = 0; header = 0;
         }
     }
-    /* 'Axow' NOW USED FOR STREAMING CHUNKS BETWEEN 'AxoWs' start memory write AND 'AxoWc' close memory write */
+    /* 'Axow' NOW USED FOR STREAMING CHUNKS BETWEEN 'AxoWW' start memory write AND 'AxoWe' close memory write */
     else if (header == 'w') { /* Handle 'Axow' streaming command */
         switch (state) {
             case 4: value = c; state++; break; /* Chunk length byte 0 */
