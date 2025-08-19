@@ -871,247 +871,299 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public int TransmitStart() {
-
         /* Total size (bytes):
            "Axos"           (4) +
+           CmdUID           (1) +
            uUIMidiCost      (2) +
            uDspLimit200     (1)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(7).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
         short uUIMidiCost = Preferences.getInstance().getUiMidiThreadCost();
         byte  uDspLimit200 = (byte)(Preferences.getInstance().getDspLimitPercent()*2);
 
-        buffer.put(startPckt);          // "Axos" header
-        buffer.putShort(uUIMidiCost);   // MIDI cost 
-        buffer.put(uDspLimit200);       // DSP limit
-
-        int writeResult = writeBytes(buffer.array());
-        return writeResult;
+        buffer.put(startPckt);
+        buffer.put((byte) 0x80); // PLACEHOLDER FOR CmdUID
+        buffer.putShort(uUIMidiCost);
+        buffer.put(uDspLimit200);
+        return writeBytes(buffer.array());
     }
 
     @Override
     public int TransmitStop() {
-        int writeResult = writeBytes(stopPckt);
-        return writeResult;
+        /* Total size (bytes):
+           "AxoS"           (4) +
+           CmdUID           (1)
+         */
+        ByteBuffer buffer = ByteBuffer.allocate(5).order(ByteOrder.LITTLE_ENDIAN);
+
+        buffer.put(stopPckt);
+        buffer.put((byte) 0x80); // PLACEHOLDER FOR CmdUID
+        return writeBytes(buffer.array());
     }
 
     @Override
-    public void TransmitRecallPreset(int presetNo) {
-        byte[] data = new byte[5];
+    public int TransmitRecallPreset(int presetNo) {
+        /* Total size (bytes):
+           "AxoT"           (4) +
+           CmdUID           (1) +
+           presetNo         (1)
+         */
+        byte[] data = new byte[6];
         data[0] = 'A';
         data[1] = 'x';
         data[2] = 'o';
         data[3] = 'T';
-        data[4] = (byte) presetNo;
-        writeBytes(data);
+        data[4] = (byte) 0x80; // PLACEHOLDER FOR CmdUID
+        data[5] = (byte) presetNo;
+        return writeBytes(data);
     }
 
     @Override
-    public void TransmitBringToDFU() {
-        byte[] data = new byte[4];
+    public int TransmitBringToDFU() {
+        /* Total size (bytes):
+           "Axou"           (4) +
+           CmdUID           (1)
+         */
+        byte[] data = new byte[5];
         data[0] = 'A';
         data[1] = 'x';
         data[2] = 'o';
-        data[3] = 'D';
-        writeBytes(data);
+        data[3] = 'u';
+        data[4] = (byte) 0x80; // PLACEHOLDER FOR CmdUID
+        return writeBytes(data);
     }
 
     @Override
-    public void TransmitGetFWVersion() {
-        byte[] data = new byte[4];
+    public int TransmitGetFWVersion() {
+        /* Total size (bytes):
+           "AxoV"           (4) +
+           CmdUID           (1)
+         */
+        byte[] data = new byte[5];
         data[0] = 'A';
         data[1] = 'x';
         data[2] = 'o';
         data[3] = 'V';
-        writeBytes(data);
+        data[4] = (byte) 0x80; // PLACEHOLDER FOR CmdUID
+        return writeBytes(data);
     }
 
     @Override
-    public void TransmitGetSpilinkSynced() {
-        byte[] data = new byte[4];
+    public int TransmitGetSpilinkSynced() {
+        /* Total size (bytes):
+           "AxoY"           (4) +
+           CmdUID           (1)
+         */
+        byte[] data = new byte[5];
         data[0] = 'A';
         data[1] = 'x';
         data[2] = 'o';
         data[3] = 'Y';
-        writeBytes(data);
+        data[4] = (byte) 0x80; // PLACEHOLDER FOR CmdUID
+        return writeBytes(data);
     }
 
     @Override
-    public void TransmitMidi(int m0, int m1, int m2) {
-        if (isConnected()) {
-            byte[] data = new byte[7];
-            data[0] = 'A';
-            data[1] = 'x';
-            data[2] = 'o';
-            data[3] = 'M';
-            data[4] = (byte) m0;
-            data[5] = (byte) m1;
-            data[6] = (byte) m2;
-            writeBytes(data);
-        }
+    public int TransmitMidi(int m0, int m1, int m2) {
+        /* Total size (bytes):
+           "AxoM"           (4) +
+           CmdUID           (1) +
+           MIDI message     (3)
+         */
+        byte[] data = new byte[8];
+        data[0] = 'A';
+        data[1] = 'x';
+        data[2] = 'o';
+        data[3] = 'M';
+        data[4] = (byte) 0x80; // PLACEHOLDER FOR CmdUID
+        data[5] = (byte) m0;
+        data[6] = (byte) m1;
+        data[7] = (byte) m2;
+        return writeBytes(data);
     }
 
     @Override
-    public void TransmitUpdatedPreset(byte[] b) {
-        synchronized (usbOutLock) {
-            byte[] data = new byte[8];
-            data[0] = 'A';
-            data[1] = 'x';
-            data[2] = 'o';
-            data[3] = 'R';
-            int len = b.length;
-            data[4] = (byte) len;
-            data[5] = (byte) (len >> 8);
-            data[6] = (byte) (len >> 16);
-            data[7] = (byte) (len >> 24);
-            writeBytes(data);
-            writeBytes(b);
+    public int TransmitUpdatedPreset(byte[] buffer) {
+        /* Total size (bytes):
+           "AxoR"           (4) +
+           CmdUID           (1) +
+           data length      (4) +
+           data bytes       (variable length)
+         */
+        byte[] header = new byte[9];
+        header[0] = 'A';
+        header[1] = 'x';
+        header[2] = 'o';
+        header[3] = 'R';
+        header[4] = (byte) 0x80; // PLACEHOLDER FOR CmdUID
+        int len = buffer.length;
+        header[5] = (byte) len;
+        header[6] = (byte) (len >> 8);
+        header[7] = (byte) (len >> 16);
+        header[8] = (byte) (len >> 24);
+        int writeResult = writeBytes(header);
+        if (writeResult != LibUsb.SUCCESS) {
+            return writeResult;
         }
+        return writeBytes(buffer);
     }
 
     @Override
     public int TransmitGetFileList() {
-        // ClearSync();
-        int writeResult = writeBytes(getFileListPckt);
-        return writeResult;
+        /* Total size (bytes):
+           "Axol"           (4) +
+           CmdUID           (1)
+         */
+        ByteBuffer buffer = ByteBuffer.allocate(5).order(ByteOrder.LITTLE_ENDIAN);
+
+        buffer.put(getFileListPckt);
+        buffer.put((byte) 0x80); // PLACEHOLDER FOR CmdUID
+        return writeBytes(buffer.array());
     }
 
     @Override
     public int TransmitGetFileInfo(String filename) {
-
         /* Total size (bytes):
            "AxoC"           (4) +
+           CmdUID           (1) +
            pFileSize        (4) +
            FileName[0]      (1) +
            FileName[1]      (1) +
-           (skip fdate)
-           (skip ftime)
            filename bytes   (variable length) +
            null terminator  (1)
         */
         byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
-        ByteBuffer buffer = ByteBuffer.allocate(10 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocate(11 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put(axoFileOpPckt);  // "AxoC" header
-        buffer.putInt(0);           // pFileSize placeholder (4 bytes)
-        buffer.put((byte)0x00);     // FileName[0] (always 0 for new protocol)
-        buffer.put((byte)'I');      // FileName[1] (sub-command 'I')
-        // buffer.putShort((short)0);  // fdate placeholder (2 bytes)
-        // buffer.putShort((short)0);  // ftime placeholder (2 bytes)
-        buffer.put(filenameBytes);  // FileName[6]+ (variable length)
-        buffer.put((byte)0x00);     // Null terminator
-
-        // ClearSync();
-        int writeResult = writeBytes(buffer.array());
-        return writeResult;
+        buffer.put(axoFileOpPckt);
+        buffer.put((byte) 0x80); // PLACEHOLDER FOR CmdUID
+        buffer.putInt(0);
+        buffer.put((byte)0x00);
+        buffer.put((byte)'I');
+        buffer.put(filenameBytes);
+        buffer.put((byte)0x00);
+        return writeBytes(buffer.array());
     }
 
     @Override
-    public void TransmitPing() {
-        writeBytes(pingPckt);
+    public int TransmitPing() {
+        /* Total size (bytes):
+           "Axop"           (4) +
+           CmdUID           (1)
+         */
+        ByteBuffer buffer = ByteBuffer.allocate(5).order(ByteOrder.LITTLE_ENDIAN);
+
+        buffer.put(pingPckt);
+        buffer.put((byte) 0x80); // PLACEHOLDER FOR CmdUID
+        return writeBytes(buffer.array());
     }
 
     @Override
     public int TransmitCopyToFlash() {
-        int writeResult = writeBytes(copyToFlashPckt);
-        return writeResult;
+        /* Total size (bytes):
+           "AxoF"           (4) +
+           CmdUID           (1)
+         */
+        ByteBuffer buffer = ByteBuffer.allocate(5).order(ByteOrder.LITTLE_ENDIAN);
+
+        buffer.put(copyToFlashPckt);
+        buffer.put((byte) 0x80); // PLACEHOLDER FOR CmdUID
+        return writeBytes(buffer.array());
     }
 
     @Override
     public int TransmitUploadFragment(byte[] buffer, int offset) {
-        synchronized (usbOutLock) {
-            byte[] data = new byte[12];
-            data[0] = 'A';
-            data[1] = 'x';
-            data[2] = 'o';
-            data[3] = '%'; // TODO: set to something unused until UploadFW command is reworked to the new AxoR response system
-            int tvalue = offset;
-            int nRead = buffer.length;
-            data[4] = (byte) tvalue;
-            data[5] = (byte) (tvalue >> 8);
-            data[6] = (byte) (tvalue >> 16);
-            data[7] = (byte) (tvalue >> 24);
-            data[8] = (byte) (nRead);
-            data[9] = (byte) (nRead >> 8);
-            data[10] = (byte) (nRead >> 16);
-            data[11] = (byte) (nRead >> 24);
+        byte[] data = new byte[13];
+        data[0] = 'A';
+        data[1] = 'x';
+        data[2] = 'o';
+        data[3] = '%';
+        data[4] = (byte) 0x80; // PLACEHOLDER FOR CmdUID
+        int tvalue = offset;
+        int nRead = buffer.length;
+        data[5] = (byte) tvalue;
+        data[6] = (byte) (tvalue >> 8);
+        data[7] = (byte) (tvalue >> 16);
+        data[8] = (byte) (tvalue >> 24);
+        data[9] = (byte) (nRead);
+        data[10] = (byte) (nRead >> 8);
+        data[11] = (byte) (nRead >> 16);
+        data[12] = (byte) (nRead >> 24);
 
-            int result = writeBytes(data);
-            result |= writeBytes(buffer);
-            LOGGER.log(Level.INFO, "Block uploaded @ 0x{0} length {1}",
-                    new Object[]{Integer.toHexString(offset).toUpperCase(),
-                    Integer.toString(buffer.length)});
-            return result;
+        int writeResult = writeBytes(data);
+        if (writeResult != LibUsb.SUCCESS) {
+            return writeResult;
         }
+        writeResult = writeBytes(buffer);
+        if (writeResult == LibUsb.SUCCESS) {
+            LOGGER.log(Level.INFO, "Block uploaded @ 0x{0} length {1}", new Object[]{Integer.toHexString(offset).toUpperCase(), Integer.toString(buffer.length)});
+        }
+        return writeResult;
     }
 
     @Override
     public int TransmitStartMemWrite(int startAddr, int totalLen) {
-
         /* Total size (bytes):
            "AxoW"           (4) +
+           CmdUID           (1) +
            start address    (4) +
            Total length     (4) +
-           sub-command      (1)     // 'W'
+           sub-command      (1)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(13).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocate(14).order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put(axoMemWritePckt);  // "AxoW" header
-        buffer.putInt(startAddr);     // memory start address   (4 bytes)
-        buffer.putInt(totalLen);      // total write size (not chunk) (4 bytes)
-        buffer.put((byte)'W');        // sub-command 'W'
-
-        int writeResult = writeBytes(buffer.array());
-        return writeResult;
+        buffer.put(axoMemWritePckt);
+        buffer.put((byte) 0x80); // PLACEHOLDER FOR CmdUID
+        buffer.putInt(startAddr);
+        buffer.putInt(totalLen);
+        buffer.put((byte)'W');
+        return writeBytes(buffer.array());
     }
 
     @Override
     public int TransmitAppendMemWrite(byte[] buffer) {
         /* Total size (bytes):
            "Axow"           (4) +
+           CmdUID           (1) +
            Length           (4)
            (data is streamed in successive writeBytes(buffer))
          */
-        synchronized (usbOutLock) {
-            int size = buffer.length;
-            ByteBuffer headerBuffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN); // "Axow" + length
-
-            headerBuffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'w');
-            headerBuffer.putInt(size);  // Length of the data chunk
-
-            int writeResult = writeBytes(headerBuffer.array());
-            if (writeResult != LibUsb.SUCCESS) {
-                return writeResult;
-            }
-            writeResult = writeBytes(buffer); /* Send the actual data payload */
+        int size = buffer.length;
+        ByteBuffer headerBuffer = ByteBuffer.allocate(9).order(ByteOrder.LITTLE_ENDIAN);
+        headerBuffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'w');
+        headerBuffer.put((byte) 0); // PLACEHOLDER FOR CmdUID
+        headerBuffer.putInt(size);
+        int writeResult = writeBytes(headerBuffer.array());
+        if (writeResult != LibUsb.SUCCESS) {
             return writeResult;
         }
+        return writeBytes(buffer); /* Send the actual data payload */
     }
 
     @Override
     public int TransmitCloseMemWrite(int startAddr, int totalLen) {
         /* Total size (bytes):
            "AxoW"           (4) +
+           CmdUID           (1) +
            start address    (4) +
            Total length     (4) +
-           sub-command      (1)     // 'c'
+           sub-command      (1)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(13).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocate(14).order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put(axoMemWritePckt);  // "AxoW" header
-        buffer.putInt(startAddr);     // memory start address   (4 bytes)
-        buffer.putInt(totalLen);      // total write size (not chunk) (4 bytes)
-        buffer.put((byte)'c');        // sub-command 'c'
-
-        int writeResult = writeBytes(buffer.array());
-        return writeResult;
+        buffer.put(axoMemWritePckt);
+        buffer.put((byte) 0x80); // PLACEHOLDER FOR CmdUID
+        buffer.putInt(startAddr);
+        buffer.putInt(totalLen);
+        buffer.put((byte)'e');
+        return writeBytes(buffer.array());
     }
 
     @Override
     public int TransmitCreateFile(String filename, int size, Calendar date) {
-
         /* Total size (bytes):
            "AxoC"           (4) +
+           CmdUID           (1) +
            pFileSize        (4) +
            FileName[0]      (1) +
            FileName[1]      (1) +
@@ -1121,13 +1173,13 @@ public class USBBulkConnection extends Connection {
            null terminator  (1)
          */
         byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
-        ByteBuffer buffer = ByteBuffer.allocate(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocate(15 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put(axoFileOpPckt);  // "AxoC" header
-        buffer.putInt(size);        // pFileSize (4 bytes)
-        buffer.put((byte)0x00);     // FileName[0] (always 0 for new protocol)
-        buffer.put((byte)'f');      // FileName[1] (sub-command 'f')
-
+        buffer.put(axoFileOpPckt);
+        buffer.put((byte) 0x80); // PLACEHOLDER FOR CmdUID
+        buffer.putInt(size);
+        buffer.put((byte)0x00);
+        buffer.put((byte)'f');
         /* Calculate FatFs date/time */
         int dy = date.get(Calendar.YEAR);
         int dm = date.get(Calendar.MONTH) + 1;
@@ -1138,21 +1190,18 @@ public class USBBulkConnection extends Connection {
         short fatFsDate = (short)(((dy - 1980) << 9) | (dm << 5) | dd);
         short fatFsTime = (short)((th << 11) | (tm << 5) | (ts / 2));
 
-        buffer.putShort(fatFsDate); // FileName[2/3]
-        buffer.putShort(fatFsTime); // FileName[4/5]
-        buffer.put(filenameBytes);  // FileName[6]+ (variable length)
-        buffer.put((byte)0x00);     // Null terminator
-
-        // ClearSync();
-        int writeResult = writeBytes(buffer.array());
-        return writeResult;
+        buffer.putShort(fatFsDate);
+        buffer.putShort(fatFsTime);
+        buffer.put(filenameBytes);
+        buffer.put((byte)0x00);
+        return writeBytes(buffer.array());
     }
 
     @Override
     public int TransmitDeleteFile(String filename) {
-
         /* Total size (bytes):
            "AxoC"           (4) +
+           CmdUID           (1) +
            pFileSize        (4) +
            FileName[0]      (1) +
            FileName[1]      (1) +
@@ -1162,26 +1211,23 @@ public class USBBulkConnection extends Connection {
            null terminator  (1)
          */
         byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
-        ByteBuffer buffer = ByteBuffer.allocate(10 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocate(11 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put(axoFileOpPckt);  // "AxoC" header
-        buffer.putInt(0);           // pFileSize placeholder (4 bytes)
-        buffer.put((byte)0x00);     // FileName[0] (always 0)
-        buffer.put((byte)'D');      // FileName[1] (sub-command 'D')
-        // buffer.putShort((short)0);  // fdate placeholder (2 bytes)
-        // buffer.putShort((short)0);  // ftime placeholder (2 bytes)
-        buffer.put(filenameBytes);  // FileName[6]+ (variable length)
-        buffer.put((byte)0x00);     // Null terminator
-
-        int writeResult = writeBytes(buffer.array());
-        return writeResult;
+        buffer.put(axoFileOpPckt);
+        buffer.put((byte) 0x80); // PLACEHOLDER FOR CmdUID
+        buffer.putInt(0);
+        buffer.put((byte)0x00);
+        buffer.put((byte)'D');
+        buffer.put(filenameBytes);
+        buffer.put((byte)0x00);
+        return writeBytes(buffer.array());
     }
 
     @Override
     public int TransmitChangeWorkingDirectory(String path) {
-
         /* Total size (bytes):
            "AxoC"           (4) +
+           CmdUID           (1) +
            pFileSize        (4) +
            FileName[0]      (1) +
            FileName[1]      (1) +
@@ -1191,27 +1237,23 @@ public class USBBulkConnection extends Connection {
            null terminator  (1)
          */
         byte[] pathBytes = path.getBytes(StandardCharsets.US_ASCII);
-        ByteBuffer buffer = ByteBuffer.allocate(10 + pathBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocate(11 + pathBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put(axoFileOpPckt);  // "AxoC" header
-        buffer.putInt(0);           // pFileSize placeholder (4 bytes)
-        buffer.put((byte)0x00);     // FileName[0] (always 0)
-        buffer.put((byte)'C');      // FileName[1] (sub-command 'C')
-        // buffer.putShort((short)0);  // fdate placeholder (2 bytes)
-        // buffer.putShort((short)0);  // ftime placeholder (2 bytes)
-        buffer.put(pathBytes);      // FileName[6]+ (variable length)
-        buffer.put((byte)0x00);     // Null terminator
-
-        // ClearSync();
-        int writeResult = writeBytes(buffer.array());
-        return writeResult;
+        buffer.put(axoFileOpPckt);
+        buffer.put((byte) 0x80); // PLACEHOLDER FOR CmdUID
+        buffer.putInt(0);
+        buffer.put((byte)0x00);
+        buffer.put((byte)'h');
+        buffer.put(pathBytes);
+        buffer.put((byte)0x00);
+        return writeBytes(buffer.array());
     }
 
     @Override
     public int TransmitCreateDirectory(String filename, Calendar date) {
-
         /* Total size (bytes):
            "AxoC"           (4) +
+           CmdUID           (1) +
            pFileSize        (4) +
            FileName[0]      (1) +
            FileName[1]      (1) +
@@ -1221,13 +1263,13 @@ public class USBBulkConnection extends Connection {
            null terminator  (1)
          */
         byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
-        ByteBuffer buffer = ByteBuffer.allocate(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocate(15 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put(axoFileOpPckt);  // "AxoC" header
-        buffer.putInt(0);           // pFileSize placeholder (4 bytes)
-        buffer.put((byte)0x00);     // FileName[0] (always 0)
-        buffer.put((byte)'k');      // FileName[1] (sub-command 'k')
-
+        buffer.put(axoFileOpPckt);
+        buffer.put((byte) 0x80); // PLACEHOLDER FOR CmdUID
+        buffer.putInt(0);
+        buffer.put((byte)0x00);
+        buffer.put((byte)'k');
         /* Calculate FatFs date/time */
         int dy = date.get(Calendar.YEAR);
         int dm = date.get(Calendar.MONTH) + 1;
@@ -1238,46 +1280,38 @@ public class USBBulkConnection extends Connection {
         short fatFsDate = (short)(((dy - 1980) << 9) | (dm << 5) | dd);
         short fatFsTime = (short)((th << 11) | (tm << 5) | (ts / 2));
 
-        buffer.putShort(fatFsDate);  // FileName[2/3]
-        buffer.putShort(fatFsTime);  // FileName[4/5]
-        buffer.put(filenameBytes);   // FileName[6]+ (variable length)
-        buffer.put((byte)0x00);      // Null terminator
-
-        // ClearSync();
-        int writeResult = writeBytes(buffer.array());
-        return writeResult;
+        buffer.putShort(fatFsDate);
+        buffer.putShort(fatFsTime);
+        buffer.put(filenameBytes);
+        buffer.put((byte)0x00);
+        return writeBytes(buffer.array());
     }
 
     @Override
     public int TransmitAppendFile(byte[] buffer) {
-
         /* Total size (bytes):
            "Axoa"           (4) +
+           CmdUID           (1) +
            Length           (4)
            (data is streamed in successive writeBytes(buffer))
          */
-        synchronized (usbOutLock) {
-            int size = buffer.length;
-            ByteBuffer headerBuffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN); // "Axoa" + length
-
-            headerBuffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'a');
-            headerBuffer.putInt(size);  // Length of the data chunk
-
-            // ClearSync();
-            int writeResult = writeBytes(headerBuffer.array());
-            if (writeResult != LibUsb.SUCCESS) {
-                return writeResult;
-            }
-            writeResult = writeBytes(buffer); /* Send the actual data payload */
+        int size = buffer.length;
+        ByteBuffer headerBuffer = ByteBuffer.allocate(9).order(ByteOrder.LITTLE_ENDIAN);
+        headerBuffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'a');
+        headerBuffer.put((byte) 0x80); // PLACEHOLDER FOR CmdUID
+        headerBuffer.putInt(size);
+        int writeResult = writeBytes(headerBuffer.array());
+        if (writeResult != LibUsb.SUCCESS) {
             return writeResult;
         }
+        return writeBytes(buffer); /* Send the actual data payload */
     }
 
     @Override
     public int TransmitCloseFile(String filename, Calendar date) {
-
         /* Total size (bytes):
            "AxoC"           (4) +
+           CmdUID           (1) +
            pFileSize        (4) +
            FileName[0]      (1) +
            FileName[1]      (1) +
@@ -1286,74 +1320,63 @@ public class USBBulkConnection extends Connection {
            filename bytes   (variable length) +
            null terminator  (1)
          */
-        synchronized (usbOutLock) {
-            byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
-            ByteBuffer buffer = ByteBuffer.allocate(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+        byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
+        ByteBuffer buffer = ByteBuffer.allocate(15 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
 
-            buffer.put(axoFileOpPckt);  // "AxoC" header
-            buffer.putInt(0);           // pFileSize placeholder (4 bytes)
-            buffer.put((byte)0x00);     // FileName[0] (always 0)
-            buffer.put((byte)'c');      // FileName[1] (sub-command 'c')
+        buffer.put(axoFileOpPckt);
+        buffer.put((byte) 0x80); // PLACEHOLDER FOR CmdUID
+        buffer.putInt(0);
+        buffer.put((byte)0x00);
+        buffer.put((byte)'c');
+        /* Calculate FatFs date/time */
+        int dy = date.get(Calendar.YEAR);
+        int dm = date.get(Calendar.MONTH) + 1;
+        int dd = date.get(Calendar.DAY_OF_MONTH);
+        int th = date.get(Calendar.HOUR_OF_DAY);
+        int tm = date.get(Calendar.MINUTE);
+        int ts = date.get(Calendar.SECOND);
+        short fatFsDate = (short)(((dy - 1980) << 9) | (dm << 5) | dd);
+        short fatFsTime = (short)((th << 11) | (tm << 5) | (ts / 2));
 
-            /* Calculate FatFs date/time */
-            int dy = date.get(Calendar.YEAR);
-            int dm = date.get(Calendar.MONTH) + 1;
-            int dd = date.get(Calendar.DAY_OF_MONTH);
-            int th = date.get(Calendar.HOUR_OF_DAY);
-            int tm = date.get(Calendar.MINUTE);
-            int ts = date.get(Calendar.SECOND);
-            short fatFsDate = (short)(((dy - 1980) << 9) | (dm << 5) | dd);
-            short fatFsTime = (short)((th << 11) | (tm << 5) | (ts / 2));
-
-            buffer.putShort(fatFsDate);  // FileName[2/3]
-            buffer.putShort(fatFsTime);  // FileName[4/5]
-            buffer.put(filenameBytes);   // FileName[6]+ (variable length)
-            buffer.put((byte)0x00);      // Null terminator
-
-            // ClearSync();
-            int writeResult = writeBytes(buffer.array());
-            return writeResult;
-        }
+        buffer.putShort(fatFsDate);
+        buffer.putShort(fatFsTime);
+        buffer.put(filenameBytes);
+        buffer.put((byte)0x00);
+        return writeBytes(buffer.array());
     }
 
     @Override
-    public void TransmitMemoryRead(int addr, int length) {
-        synchronized (usbOutLock) {
-            byte[] data = new byte[12];
-            data[0] = 'A';
-            data[1] = 'x';
-            data[2] = 'o';
-            data[3] = 'r';
-            data[4] = (byte) addr;
-            data[5] = (byte) (addr >> 8);
-            data[6] = (byte) (addr >> 16);
-            data[7] = (byte) (addr >> 24);
-            data[8] = (byte) length;
-            data[9] = (byte) (length >> 8);
-            data[10] = (byte) (length >> 16);
-            data[11] = (byte) (length >> 24);
-            ClearSync();
-            writeBytes(data);
-            WaitSync();
-        }
+    public int TransmitMemoryRead(int addr, int length) {
+        byte[] data = new byte[13];
+        data[0] = 'A';
+        data[1] = 'x';
+        data[2] = 'o';
+        data[3] = 'r';
+        data[4] = (byte) 0x80; // PLACEHOLDER FOR CmdUID
+        data[5] = (byte) addr;
+        data[6] = (byte) (addr >> 8);
+        data[7] = (byte) (addr >> 16);
+        data[8] = (byte) (addr >> 24);
+        data[9] = (byte) length;
+        data[10] = (byte) (length >> 8);
+        data[11] = (byte) (length >> 16);
+        data[12] = (byte) (length >> 24);
+        return writeBytes(data);
     }
 
     @Override
-    public void TransmitMemoryRead1Word(int addr) {
-        synchronized (usbOutLock) {
-            byte[] data = new byte[8];
-            data[0] = 'A';
-            data[1] = 'x';
-            data[2] = 'o';
-            data[3] = 'y';
-            data[4] = (byte) addr;
-            data[5] = (byte) (addr >> 8);
-            data[6] = (byte) (addr >> 16);
-            data[7] = (byte) (addr >> 24);
-            ClearSync();
-            writeBytes(data);
-            WaitSync();
-        }
+    public int TransmitMemoryRead1Word(int addr) {
+        byte[] data = new byte[9];
+        data[0] = 'A';
+        data[1] = 'x';
+        data[2] = 'o';
+        data[3] = 'y';
+        data[4] = (byte) 0x80; // PLACEHOLDER FOR CmdUID
+        data[5] = (byte) addr;
+        data[6] = (byte) (addr >> 8);
+        data[7] = (byte) (addr >> 16);
+        data[8] = (byte) (addr >> 24);
+        return writeBytes(data);
     }
 
     public void SetSDCardPresent(boolean i) {
