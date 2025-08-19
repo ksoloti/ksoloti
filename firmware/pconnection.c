@@ -124,7 +124,6 @@ void InitPConnection(void) {
 #endif
 
     chMtxObjectInit(&LogMutex);
-
     chThdCreateStatic(waThreadUSBDMidi, sizeof(waThreadUSBDMidi), MIDI_USB_PRIO, (void*) ThreadUSBDMidi, NULL);
 }
 
@@ -143,7 +142,6 @@ void TransmitDisplayPckt(void) {
     if (length > 2048) {
         return; // FIXME
     }
-
     chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) &patchMeta.pDisplayVector[0], length);
 }
 
@@ -611,7 +609,7 @@ static void ManipulateFile(void) {
 }
 
 
-static void AppendFile(uint32_t length) {
+static FRESULT AppendFile(uint32_t length) {
 
     UINT bytes_written;
     FRESULT op_result = f_write(&pFile, (char*) PATCHMAINLOC, length, &bytes_written);
@@ -621,7 +619,6 @@ static void AppendFile(uint32_t length) {
         // LogTextMessage("ERROR:APPNDF f_write,op_result:%u requested:%u written:%u path:%s", op_result, length, bytes_written, FileName[6]);
         op_result = FR_DISK_ERR;
     }
-    send_AxoResult('a', op_result); /* Completed successfully */
 }
 
 
@@ -1051,8 +1048,9 @@ void PExReceiveByte(unsigned char c) {
 
                     if (value == 0) {
                         // LogTextMessage("Axoa value=0, calling APPNDF length=%u", length);
-                        AppendFile(length); /* Call AppendFile with the total length */
-                        state = 0; header = 0; /* Reset state machine, no AckPending */
+                        FRESULT res = AppendFile(length); /* Call AppendFile with the total length */
+                        send_AxoResult('a', res);
+                        state = 0; header = 0;
                     }
                 }
                 else { /* Should not happen, or error */
