@@ -28,10 +28,6 @@ public class CommandManager {
     // private static final Logger LOGGER = Logger.getLogger(CommandManager.class.getName());
 
     private volatile boolean longOperationInProgress = false;
-    // private volatile long lastLongOperationEndTime = 0;
-
-    // private static final long COOLDOWN_MILLIS = 2000;
-
     private static CommandManager instance;
 
     public static synchronized CommandManager getInstance() {
@@ -52,7 +48,6 @@ public class CommandManager {
 
     public void endLongOperation() {
         longOperationInProgress = false;
-        // lastLongOperationEndTime = System.currentTimeMillis();
         // System.out.println(Instant.now() + " [DEBUG] CommandManager: Long operation ended. Cooldown started. Resuming pings.");
     }
 
