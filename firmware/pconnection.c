@@ -766,34 +766,26 @@ void PExReceiveByte(unsigned char c) {
                         exception_initiate_dfu();
                         break;
                     case 'F': { /* copy to flash */
-                        state = 0; header = 0; AckPending = 1;
+                        state = 0; header = 0;
                         StopPatch();
                         uint8_t res = CopyPatchToFlash();
                         send_AxoResult('F', (FRESULT)res);
                         break;
                     }
                     case 'l': /* read directory listing */
-                        state = 0; header = 0; AckPending = 1; /* Immediate AxoA for receipt */
+                        state = 0; header = 0;
                         ReadDirectoryListing(); /* Will send AxoRl when done */
                         break;
                     case 'V': /* FW version number */
-                        state = 0; header = 0; AckPending = 1;
+                        state = 0; header = 0;
                         ReplyFWVersion();
                         break;
                     case 'Y': /* is this Core SPILINK synced */
-                        state = 0; header = 0; AckPending = 1;
+                        state = 0; header = 0;
                         ReplySpilinkSynced();
                         break;
                     case 'p': /* ping */
-                        state = 0; header = 0; AckPending = 1;
-                        break;
-
-                    /* --- Commands that DO NOT set AckPending (AxoR**-based) --- */
-                    case 'a': /* append data to opened sdcard file (top-level Axoa) */
-                    case 's': /* start patch (includes midi cost and dsp limit) */
-                    case 'W': /* generic write start, close */
-                    case 'w': /* append to memory during 'W' generic write */
-                        state = 4; /* All the above pass on directly to state 4. */
+                        state = 0; header = 0; AckPending = 1; /* Ping explicitly triggers AxoA */
                         break;
                     case 'C': /* Unified File System Command (create, delete, mkdir, getinfo, close) */
                         current_filename_idx = 0; /* Reset for filename parsing */
@@ -825,10 +817,10 @@ void PExReceiveByte(unsigned char c) {
                 if ((patchid == patchMeta.patchID) && (preset_index < patchMeta.numPEx)) {
                     PExParameterChange(&(patchMeta.pPExch)[preset_index], value, 0xFFFFFFEE);
                 }
-                state = 0; header = 0; AckPending = 1;
+                state = 0; header = 0;
                 break;
             default:
-                state = 0; header = 0; AckPending = 1;
+                state = 0; header = 0;
         }
     }
     else if (header == 's') { /* start patch (includes midi cost and dsp limit) */
