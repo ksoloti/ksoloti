@@ -317,7 +317,8 @@ public abstract class ACtrlComponent extends JComponent {
                 return r;
             }
         } catch (AWTException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error during mouse drag simulation: " + ex.getMessage());
+            ex.printStackTrace(System.out);
             return null;
         }
     }

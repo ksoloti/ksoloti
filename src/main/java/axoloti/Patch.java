@@ -936,7 +936,8 @@ public class Patch {
             }
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error while saving patch undo state: " + ex.getMessage());
+            ex.printStackTrace(System.out);
         }
     }
 
@@ -967,7 +968,8 @@ public class Patch {
             AdjustSize();
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error while loading patch undo state: " + ex.getMessage());
+            ex.printStackTrace(System.out);
         }
     }
 
@@ -1008,7 +1010,8 @@ public class Patch {
             dirty = false;
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error trying to save patch file: " + ex.getMessage());
+            ex.printStackTrace(System.out);
             return false;
         }
 
@@ -2260,9 +2263,11 @@ public class Patch {
             serializer.write(aof, f1);
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error trying to export object: " + ex.getMessage());
+            ex.printStackTrace(System.out);
+            return;
         }
-        LOGGER.log(Level.INFO, "Export obj complete");
+        LOGGER.log(Level.INFO, "Object export completed successfully.");
     }
 
 //    void ExportAxoObjPoly2(File f1) {

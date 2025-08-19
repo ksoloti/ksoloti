@@ -56,7 +56,8 @@ public abstract class RControlEncoder extends JComponent {
                 robot = new Robot(MouseInfo.getPointerInfo().getDevice());
             }
         } catch (AWTException ex) {
-            Logger.getLogger(DialComponent.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DialComponent.class.getName()).log(Level.SEVERE, "Error during mouse drag simulation: " + ex.getMessage());
+            ex.printStackTrace(System.out);
         }
         addMouseListener(new MouseListener() {
             @Override

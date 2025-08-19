@@ -313,7 +313,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     LOGGER.log(Level.WARNING, "Paste: Unknown file format.");
                 }
                 catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, "Paste: Error trying to paste valid content: " + ex.getMessage());
+                    ex.printStackTrace(System.out);
                 }
             }
         });
@@ -1172,7 +1173,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     //         clip.setContents(s, (ClipboardOwner)null);
     //     }
     //     catch (Exception ex) {
-    //         LOGGER.log(Level.SEVERE, null, ex);
+    //         LOGGER.log(Level.SEVERE, "Error trying to copy content: " + ex.getMessage());
+    //         ex.printStackTrace(System.out);
     //     }
     // }
 
@@ -1186,7 +1188,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     //         LOGGER.log(Level.WARNING, "Paste: Unknown file format.");
     //     }
     //     catch (IOException ex) {
-    //         LOGGER.log(Level.SEVERE, null, ex);
+    //         LOGGER.log(Level.SEVERE, "Error trying to paste content: " + ex.getMessage());
+    //         ex.printStackTrace(System.out);
     //     }
     // }
 
@@ -1543,7 +1546,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             serializer.write(patch, baos);
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error while copying content to clipboard: " + ex.getMessage());
+            ex.printStackTrace(System.out);
         }
         Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
         c.setContents(new StringSelection(baos.toString()), null);

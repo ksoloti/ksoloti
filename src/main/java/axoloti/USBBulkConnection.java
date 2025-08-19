@@ -1533,11 +1533,13 @@ public class USBBulkConnection extends Connection {
             });
         }
         catch (InterruptedException ex) {
-            // System.out.println(Instant.now() + " [DEBUG] ReadSync wait interrupted due to disconnect request.," + ex.getMessage());
             Thread.currentThread().interrupt();
+            LOGGER.log(Level.SEVERE, "Error: DistributeToDisplays was interrupted: " + ex.getMessage());
+            ex.printStackTrace(System.out);
         }
         catch (InvocationTargetException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error during DistributeToDisplays: " + ex.getMessage());
+            ex.printStackTrace(System.out);
         }
     }
 
