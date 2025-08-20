@@ -97,6 +97,19 @@ __attribute__((noreturn)) static msg_t ThreadUSBDMidi(void *arg) {
 }
 
 
+void uint32_to_le_bytes(uint32_t value, uint8_t* dest) {
+    dest[0] = (value >> 0) & 0xFF;
+    dest[1] = (value >> 8) & 0xFF;
+    dest[2] = (value >> 16) & 0xFF;
+    dest[3] = (value >> 24) & 0xFF;
+}
+
+
+uint32_t le_bytes_to_uint32(const uint8_t* src) {
+    return src[0] | (src[1] << 8) | (src[2] << 16) | (src[3] << 24);
+}
+
+
 void InitPConnection(void) {
 
     extern int32_t _flash_end;
