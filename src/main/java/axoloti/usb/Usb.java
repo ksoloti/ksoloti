@@ -82,7 +82,6 @@ public class Usb {
     }
 
     public static void listDevices() {
-        // initialize();
         DeviceList list = new DeviceList();
         int result = LibUsb.getDeviceList(context, list);
         if (result < 0) {
@@ -91,7 +90,6 @@ public class Usb {
         try {
             LOGGER.log(Level.INFO, "Relevant USB Devices currently attached:");
             boolean hasOne = false;
-            // Iterate over all devices and scan for the right one
             for (Device device : list) {
                 DeviceDescriptor descriptor = new DeviceDescriptor();
                 result = LibUsb.getDeviceDescriptor(device, descriptor);
@@ -104,7 +102,6 @@ public class Usb {
                         else if (descriptor.idProduct() == PID_STM_DFU) {
                             hasOne = true;
                             LOGGER.log(Level.INFO, "* DFU device");
-                            // try to open it to check if correct driver is installed
                             DeviceHandle handle = new DeviceHandle();
                             result = LibUsb.open(device, handle);
                             if (result < 0) {
@@ -164,14 +161,11 @@ public class Usb {
                 LOGGER.log(Level.INFO, "None found...");
             }
         } finally {
-            // Ensure the allocated device list is freed
             LibUsb.freeDeviceList(list, true);
         }
     }
 
     public static boolean isDFUDeviceAvailable() {
-        // initialize();
-        // Read the USB device list
         DeviceList list = new DeviceList();
         int result = LibUsb.getDeviceList(context, list);
         if (result < 0) {
@@ -180,7 +174,6 @@ public class Usb {
         }
 
         try {
-            // Iterate over all devices and scan for the right one
             for (Device device : list) {
                 DeviceDescriptor descriptor = new DeviceDescriptor();
                 result = LibUsb.getDeviceDescriptor(device, descriptor);
@@ -213,7 +206,6 @@ public class Usb {
             }
         }
         finally {
-            // Ensure the allocated device list is freed
             LibUsb.freeDeviceList(list, true);
         }
         return false;
@@ -225,8 +217,6 @@ public class Usb {
     }
 
     public static Device findDevice(short vendorId, short productId) {
-        // initialize();
-        // Read the USB device list
         DeviceList list = new DeviceList();
         int result = LibUsb.getDeviceList(context, list);
         if (result < 0) {
@@ -234,7 +224,6 @@ public class Usb {
         }
 
         try {
-            // Iterate over all devices and scan for the right one
             for (Device device : list) {
                 DeviceDescriptor descriptor = new DeviceDescriptor();
                 result = LibUsb.getDeviceDescriptor(device, descriptor);
@@ -247,11 +236,9 @@ public class Usb {
             }
         }
         finally {
-            // Ensure the allocated device list is freed
             LibUsb.freeDeviceList(list, true);
         }
 
-        // Device not found
         return null;
     }
 
