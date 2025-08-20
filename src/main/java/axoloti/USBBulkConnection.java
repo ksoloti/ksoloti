@@ -698,8 +698,30 @@ public class USBBulkConnection extends Connection {
             this.connected = true;
             LOGGER.log(Level.WARNING, "Connected\n");
 
+            /* 6. Post-Connection Commands (CPU ID, Firmware Version) */
+            try {
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdTransmitGetFWVersion());
+                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+
+                QCmdMemRead1Word q1 = new QCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(q1);
+                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                targetProfile.setCPUIDCode(q1.getResult());
+
+                QCmdMemRead q = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(q);
+                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                targetProfile.setCPUSerial(q.getResult());
+                this.detectedCpuId = CpuIdToHexString(targetProfile.getCPUSerial());
+                // System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: detectedCpuId set to: " + this.detectedCpuId);
+            }
+            catch (Exception cmdEx) {
+                LOGGER.log(Level.SEVERE, "Error during post-connection QCmd processing. Connection might be unstable: " + cmdEx.getMessage());
+                cmdEx.printStackTrace(System.out);
+                return false;
+            }
+
             ShowConnect();
-            postConnectInit();
             isConnecting = false;
             return true;
         }
@@ -1533,13 +1555,11 @@ public class USBBulkConnection extends Connection {
             });
         }
         catch (InterruptedException ex) {
+            // System.out.println(Instant.now() + " [DEBUG] ReadSync wait interrupted due to disconnect request.," + ex.getMessage());
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Error: DistributeToDisplays was interrupted: " + ex.getMessage());
-            ex.printStackTrace(System.out);
         }
         catch (InvocationTargetException ex) {
-            LOGGER.log(Level.SEVERE, "Error during DistributeToDisplays: " + ex.getMessage());
-            ex.printStackTrace(System.out);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -1704,32 +1724,96 @@ public class USBBulkConnection extends Connection {
 
             case COMMANDRESULT_PCKT:
                 if (dataIndex < dataLength) {
-                    rawPacketRcvBuffer.put((byte) cc);
-                    dataIndex++;
+                    storeDataByte(c);
                 }
-                if (dataIndex == dataLength) {
-                    rawPacketRcvBuffer.rewind();
-                    int commandByte = rawPacketRcvBuffer.get() & 0xFF;
-                    int statusCode = rawPacketRcvBuffer.get() & 0xFF;
+                if (dataIndex == dataLength) { // Once both bytes are received
+                    int commandByte = packetData[0] & 0xFF;
+                    int statusCode = (packetData[0] >> 8) & 0xFF;
+
+                    // System.out.println(Instant.now() + " [DEBUG] AxoR received for '" + (char)commandByte + "': Status = " + SDCardInfo.getFatFsErrorString(statusCode));
+
                     if (currentExecutingCommand != null) {
-                        try {
-                            boolean handled = currentExecutingCommand.handleResponse(commandByte, statusCode);
-                            if (handled) {
-                                boolean offeredSuccessfully = QCmdProcessor.getQCmdProcessor().getQueueResponse().offer(currentExecutingCommand, 10, TimeUnit.MILLISECONDS);
-                                if (!offeredSuccessfully) {
-                                    LOGGER.log(Level.WARNING, "Failed to offer completed QCmd to response queue. Queue might be full.");
+                        // Special handling for QCmdUploadFile's sub-commands
+                        if (currentExecutingCommand instanceof QCmdUploadFile) {
+                            QCmdUploadFile uploadCmd = (QCmdUploadFile) currentExecutingCommand;
+                            if (commandByte == 'f') {
+                                uploadCmd.setCreateFileCompleted((byte)statusCode);
+                            }
+                            else if (commandByte == 'a') {
+                                uploadCmd.setAppendFileCompleted((byte)statusCode);
+                            }
+                            else if (commandByte == 'c') {
+                                uploadCmd.setCloseFileCompleted((byte)statusCode);
+                            }
+                            else {
+                                // System.err.println(Instant.now() + " [DEBUG] Warning: QCmdUploadFile received unexpected AxoR for command: " + (char)commandByte);
+                            }
+                        }
+                        // Special handling for QCmdUploadPatch's sub-command
+                        else if (currentExecutingCommand instanceof QCmdUploadPatch) {
+                            QCmdUploadPatch uploadCmd = (QCmdUploadPatch) currentExecutingCommand;
+                            if (commandByte == 'W') {
+                                uploadCmd.setStartMemWriteCompleted((byte)statusCode);
+                            }
+                            else if (commandByte == 'w') {
+                                uploadCmd.setAppendMemWriteCompleted((byte)statusCode);
+                            }
+                            else if (commandByte == 'c') {
+                                uploadCmd.setCloseMemWriteCompleted((byte)statusCode);
+                            }
+                        }
+                        else if (currentExecutingCommand instanceof QCmdUploadFWSDRam) {
+                            QCmdUploadFWSDRam uploadFwCmd = (QCmdUploadFWSDRam) currentExecutingCommand;
+                            if (commandByte == 'W') { // Acknowledgment for TransmitStartMemWrite (AxoWs)
+                                uploadFwCmd.setStartMemWriteCompleted((byte)statusCode);
+                            }
+                            else if (commandByte == 'w') { // Acknowledgment for TransmitAppendMemWrite (Axow)
+                                uploadFwCmd.setAppendMemWriteCompleted((byte)statusCode);
+                            }
+                            else if (commandByte == 'c') { // Acknowledgment for TransmitCloseMemWrite (AxoWc)
+                                uploadFwCmd.setCloseMemWriteCompleted((byte)statusCode);
+                            }
+                        }
+                        // Handling for other commands that expect an AxoR for their completion
+                        else if (currentExecutingCommand instanceof QCmdStart ||
+                                 currentExecutingCommand instanceof QCmdStop ||
+                                 currentExecutingCommand instanceof QCmdCopyPatchToFlash ||
+                                 currentExecutingCommand instanceof QCmdGetFileList ||
+                                 currentExecutingCommand instanceof QCmdCreateDirectory ||
+                                 currentExecutingCommand instanceof QCmdChangeWorkingDirectory ||
+                                 currentExecutingCommand instanceof QCmdDeleteFile ||
+                                 currentExecutingCommand instanceof QCmdGetFileInfo) {
+
+                            if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) { // for example, ('l' == 'l') -> TRUE
+                                currentExecutingCommand.setMcuStatusCode((byte)statusCode);
+                                if (currentExecutingCommand instanceof QCmdCreateDirectory) {
+                                    /* CreateDirectory returns status FR_OK when the directory was created, and
+                                        FR_EXIST, 0x08, when the directory already exists. Treat both as success. */
+                                    currentExecutingCommand.setCompletedWithStatus(statusCode == 0x00 || statusCode == 0x08);
+                                }
+                                else {
+                                    currentExecutingCommand.setCompletedWithStatus(statusCode == 0x00);
+                                }
+
+                                try {
+                                    boolean offeredSuccessfully = QCmdProcessor.getQCmdProcessor().getQueueResponse().offer(currentExecutingCommand, 10, TimeUnit.MILLISECONDS);
+                                    if (!offeredSuccessfully) {
+                                        LOGGER.log(Level.WARNING, "Failed to offer completed QCmd (" + currentExecutingCommand.getClass().getSimpleName() + ") to QCmdProcessor queue within timeout. Queue might be full.");
+                                    }
+                                    synchronized (QCmdProcessor.getQCmdProcessor().getQueueLock()) {
+                                        QCmdProcessor.getQCmdProcessor().getQueueLock().notifyAll();
+                                    }
+                                }
+                                catch (InterruptedException e) {
+                                    LOGGER.log(Level.SEVERE, "Interrupted while offering response to QCmdProcessor queue: " + e.getMessage());
+                                    e.printStackTrace(System.out);
+                                    Thread.currentThread().interrupt();
                                 }
                             }
-                        } catch (Exception e) {
-                            LOGGER.log(Level.SEVERE, "Error handling command response for " + currentExecutingCommand.getClass().getSimpleName(), e);
-                            currentExecutingCommand.setMcuStatusCode((byte)0xFF);
-                            currentExecutingCommand.setCompletedWithStatus(false);
-                            try {
-                                QCmdProcessor.getQCmdProcessor().getQueueResponse().offer(currentExecutingCommand, 10, TimeUnit.MILLISECONDS);
-                            } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                            // else {
+                            //     System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received unexpected AxoR for command: " + (char)commandByte + ". Expected: " + currentExecutingCommand.getExpectedAckCommandByte() + ". Ignoring.");
+                            // }
                         }
-                    } else {
-                         LOGGER.log(Level.WARNING, "Received AxoR for command " + (char)commandByte + " but no active QCmd.");
                     }
                     setIdleState();
                 }
