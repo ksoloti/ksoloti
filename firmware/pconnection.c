@@ -406,6 +406,7 @@ void ReadDirectoryListing(void) {
     FATFS *fsp;
     uint32_t clusters;
     FRESULT op_result;
+    uint8_t command_byte_to_ack = 'l';
 
     op_result = f_getfree("/", &clusters, &fsp);
     if (op_result != FR_OK) {
@@ -450,7 +451,7 @@ void ReadDirectoryListing(void) {
 
     RDL_result_and_exit:
     /* Send the Result packet */
-    send_AxoResult('l', op_result);
+    send_AxoResult(command_byte_to_ack, op_result);
 }
 
 
@@ -467,7 +468,7 @@ void ReadDirectoryListing(void) {
  * "Axos" -> stop patch
  * "AxoT" (char number) -> apply preset
  * "AxoM" (char char char) -> 3 byte midi message
- * "Axou" -> go to DFU mode
+ * "AxoD" -> go to DFU mode
  * "AxoV" -> reply FW version number (4 bytes)
  * "AxoF" -> copy patch code to flash (assumes patch is stopped)
  * "Axol" -> read directory listing
@@ -528,7 +529,7 @@ static void ManipulateFile(void) {
                 }
             }
 
-            send_AxoResult('k', op_result); /* FileName[1] contains sub-command char */
+            send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
         else if (FileName[1] == 'f') { /* create file (AxoCf) */
@@ -552,7 +553,7 @@ static void ManipulateFile(void) {
             }
 
             Cf_result_and_exit:
-            send_AxoResult('f', op_result); /* FileName[1] contains sub-command char */
+            send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
         else if (FileName[1] == 'c') { /* close currently open file (AxoCc) */
@@ -572,7 +573,7 @@ static void ManipulateFile(void) {
             }
 
             Cc_result_and_exit:
-            send_AxoResult('c', op_result); /* FileName[1] contains sub-command char */
+            send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
         else if (FileName[1] == 'D') { /* delete file (AxoCD) */
@@ -583,17 +584,17 @@ static void ManipulateFile(void) {
             if (op_result != FR_OK) {
                 // LogTextMessage("ERROR:MNPFL f_unlink,op_result:%u path:%s", op_result, &FileName[6]);
             }
-            send_AxoResult('D', op_result); /* FileName[1] contains sub-command char */
+            send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
-        else if (FileName[1] == 'h') { /* change working directory (AxoCh) */
+        else if (FileName[1] == 'C') { /* change working directory (AxoCC) */
             // LogTextMessage("Executing 'CC' cmd");
 
             FRESULT op_result = f_chdir(&FileName[6]); /* Path from FileName[6]+ */
             if (op_result != FR_OK) {
                 // LogTextMessage("ERROR:MNPFL f_chdir,op_result:%u path:%s", op_result, &FileName[6]);
             }
-            send_AxoResult('h', op_result); /* FileName[1] contains sub-command char */
+            send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
         else if (FileName[1] == 'I') { /* get file info (AxoCI) */
@@ -615,7 +616,7 @@ static void ManipulateFile(void) {
                 chThdSleepMilliseconds(10); /* Give some time for the USB buffer to clear */
             }
 
-            send_AxoResult('I', op_result); /* Explicit AxoR for success or failure */
+            send_AxoResult(FileName[1], op_result); /* Explicit AxoR for success or failure */
             return;
         }
     }
@@ -635,7 +636,7 @@ static FRESULT AppendFile(uint32_t length) {
 }
 
 
-static uint8_t CopyPatchToFlash(void) {
+static int CopyPatchToFlash(void) {
     flash_unlock();
     flash_Erase_sector(11);
 
@@ -760,29 +761,25 @@ void PExReceiveByte(unsigned char c) {
                 header = c;
                 switch (c) {
 
-                    case 'M': /* midi command */
+                    /* --- Commands that keep AckPending = 1; (AxoA-based or dual-ack) --- */
                     case 'P': /* param change */
                     case 'R': /* preset change */
                     case 'T': /* apply preset */
-                    case 'W': /* generic write start, close */
-                    case 'a': /* append data to opened sdcard file (top-level Axoa) */
+                    case 'M': /* midi command */
                     case 'r': /* generic read */
-                    case 's': /* start patch (includes midi cost and dsp limit) */
-                    case 'w': /* append to memory during 'W' generic write */
                     case 'y': /* generic read, 32 bit */
                         state = 4; /* All the above pass on directly to state 4. */
                         break;
-                    case 'u': /* go to DFU mode */
-                        state = 0; header = 0;
+                    case 'D': /* go to DFU mode */
+                        state = 0; header = 0; AckPending = 1;
                         StopPatch();
-                        send_AxoResult('u', FR_OK);
                         exception_initiate_dfu();
                         break;
                     case 'F': { /* copy to flash */
                         state = 0; header = 0;
                         StopPatch();
-                        uint8_t res = CopyPatchToFlash();
-                        send_AxoResult('F', (FRESULT)res);
+                        int res = CopyPatchToFlash();
+                        send_AxoResult(c, (FRESULT)res);
                         break;
                     }
                     case 'l': /* read directory listing */
@@ -844,15 +841,14 @@ void PExReceiveByte(unsigned char c) {
             case 5:  uUIMidiCost |= (uint16_t)c << 8; state++; break;
             case 6: { 
                 uDspLimit200  = c;
+                state = 0; header = 0;
                 SetPatchSafety(uUIMidiCost, uDspLimit200);
                 loadPatchIndex = LIVE;
                 uint8_t res = StartPatch();
                 send_AxoResult('s', (FRESULT)res);
-                state = 0; header = 0;
                 break;
             }
             default:
-                send_AxoResult('s', FR_DISK_ERR);
                 state = 0; header = 0;
         }
     }
@@ -866,28 +862,28 @@ void PExReceiveByte(unsigned char c) {
             case 9: value |= (int32_t)c <<  8; state++; break;
             case 10: value |= (int32_t)c << 16; state++; break;
             case 11: value |= (int32_t)c << 24; state++; break;
-            case 12: /* Sub-command can be 'W' or 'e' */
+            case 12: /* Sub-command can be 'W' or 'c' */
                 switch(c) {
                     case 'W': /* start Memory Write */
                         StopPatch();
                         write_position = offset; /* Initialize write_position here */
                         total_write_length = (uint32_t)value;
-                        send_AxoResult('W', FR_OK);
+                        send_AxoResult(c, FR_OK);
                         state = 0; header = 0;
                         break;
-                    case 'e': /* end Memory Write */
+                    case 'c': /* close Memory Write */
                         // TODO: error checking based on total_write_length?
-                        send_AxoResult('e', FR_OK);
+                        send_AxoResult(c, FR_OK);
                         state = 0; header = 0;
                         break;
                     default:
-                        send_AxoResult('W', FR_DISK_ERR);
+                        send_AxoResult('W', FR_INVALID_PARAMETER);
                         state = 0; header = 0;
                         break;
                 }
                 break;
             default:
-                send_AxoResult('W', FR_INVALID_PARAMETER);
+                send_AxoResult('W', FR_DISK_ERR);
                 state = 0; header = 0;
         }
     }
@@ -924,24 +920,23 @@ void PExReceiveByte(unsigned char c) {
                     for (volatile uint32_t dummy = 0; dummy < 256; dummy++);
 
                     if (value == 0) {
-                        send_AxoResult('w', FR_OK);
+                        send_AxoResult(header, FR_OK);
                         state = 0; header = 0;
                     }
                 } else {
-                    send_AxoResult('w', FR_DISK_ERR);
+                    send_AxoResult(header, FR_DISK_ERR);
                     state = 0; header = 0;
                 }
                 break;
             default:
-                send_AxoResult('w', FR_INVALID_PARAMETER);
+                send_AxoResult(header, FR_DISK_ERR);
                 state = 0; header = 0;
                 break;
         }
     }
     else if (header == 'T') { /* apply preset */
         ApplyPreset(c); /* 'c' is the preset index */
-        send_AxoResult('T', FR_OK);
-        state = 0; header = 0;
+        state = 0; header = 0; AckPending = 1;
     }
     else if (header == 'M') { /* midi message */
         static uint8_t midi_r[3]; /* Local static */
@@ -950,10 +945,10 @@ void PExReceiveByte(unsigned char c) {
             case 5: midi_r[1] = c; state++; break;
             case 6: midi_r[2] = c;
                 MidiInMsgHandler(MIDI_DEVICE_INTERNAL, 1, midi_r[0], midi_r[1], midi_r[2]);
-                state = 0; header = 0;
+                state = 0; header = 0; AckPending = 1;
                 break;
             default:
-                state = 0; header = 0;
+                state = 0; header = 0; AckPending = 1;
         }
     }
     else if (header == 'C') { /* create/edit/close/delete file, create/change directory on SD */ 
@@ -980,20 +975,20 @@ void PExReceiveByte(unsigned char c) {
                 FileName[0] = c; /* Should always be 0 */
                 state++;
                 break;
-            case 9: /* Expecting FileName[1] (sub-command: 'c', 'f', 'k', 'D', 'h', 'I') */
+            case 9: /* Expecting FileName[1] (sub-command: 'f', 'k', 'c', 'D', 'C', 'I') */
                 FileName[1] = c; /* Store the sub-command */
                 // LogTextMessage("PEXRB:FileName[1]=%c (0x%02x)", FileName[1], FileName[1]);
 
                 if (FileName[1] == 'c' || FileName[1] == 'f' || FileName[1] == 'k') {
                     /* These expect fdate/ftime next (FileName[2]...[5]) */
                     state = 10; /* Go to state to receive FileName[2] (fdate byte 0) */
-                } else if (FileName[1] == 'D' || FileName[1] == 'h' || FileName[1] == 'I') {
+                } else if (FileName[1] == 'C' || FileName[1] == 'D' || FileName[1] == 'I') {
                     /* These skip fdate/ftime and go straight to filename (FileName[6]+) */
                     current_filename_idx = 6; /* Start filename parsing from FileName[6] */
                     state = 14; /* Go to state to receive FileName[6] (filename byte 0) */
                 } else {
                     /* Unknown sub-command for AxoC */
-                    header = 0; state = 0;
+                    header = 0; state = 0; /* Reset state machine, no AckPending */
                 }
                 break;
             /* --- States for parsing fdate/ftime (2 bytes each) into FileName[2] to FileName[5] --- */
@@ -1011,7 +1006,7 @@ void PExReceiveByte(unsigned char c) {
                 break;
 
             /* --- States for parsing filename (variable length, null-terminated) into FileName[6] onwards --- */
-            /* Used by 'c', 'f', 'k', 'D', 'h', 'I' */
+            /* Used by 'f', 'k', 'c', 'D', 'C', 'I' */
             case 14: /* Start/continue filename parsing (into FileName[6]+) */
                 if (current_filename_idx < sizeof(FileName)) {
                     FileName[current_filename_idx++] = c;
@@ -1019,7 +1014,7 @@ void PExReceiveByte(unsigned char c) {
                         /* Filename complete, dispatch command */
                         StopPatch();
                         ManipulateFile(); /* ManipulateFile will now use FileName and pFileSize */
-                        header = 0; state = 0;
+                        header = 0; state = 0; /* Reset state machine, no AckPending */
                     }
                 }
                 else {
@@ -1063,13 +1058,11 @@ void PExReceiveByte(unsigned char c) {
                     }
                 }
                 else { /* Should not happen, or error */
-                    send_AxoResult('a', FR_DISK_ERR);
-                    state = 0; header = 0;
+                    state = 0; header = 0; /* Reset state machine, no AckPending */
                 }
                 break;
             default: /* Error or unexpected state */
-                send_AxoResult('a', FR_INVALID_PARAMETER);
-                state = 0; header = 0;
+                state = 0; header = 0; /* Reset state machine, no AckPending */
                 break;
         }
     }
@@ -1089,13 +1082,11 @@ void PExReceiveByte(unsigned char c) {
                         offset++;
                     }
                     if (value == 0) {
-                        send_AxoResult('R', FR_OK);
-                        state = 0; header = 0;
+                        state = 0; header = 0; AckPending = 1;
                     }
                 }
                 else {
-                    send_AxoResult('R', FR_DISK_ERR);
-                    state = 0; header = 0;
+                    state = 0; header = 0; AckPending = 1;
                 }
         }
     }
@@ -1118,10 +1109,10 @@ void PExReceiveByte(unsigned char c) {
                 read_reply_header[2] = (uint32_t)value;
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12); /* 3*4 bytes */
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (offset), (uint32_t)value);
-                state = 0; header = 0;
+                state = 0; header = 0; AckPending = 1;
                 break;
             default:
-                state = 0; header = 0;
+                state = 0; header = 0; AckPending = 1;
         }
     }
     else if (header == 'y') { /* generic read, 32-bit */
@@ -1138,15 +1129,15 @@ void PExReceiveByte(unsigned char c) {
                 read_reply_header[1] = (uint32_t)offset;
                 read_reply_header[2] = *((uint32_t*) offset);
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12); /* 3*4 bytes */
-                state = 0; header = 0;
+                state = 0; header = 0; AckPending = 1;
                 break;
             default:
-                state = 0; header = 0;
+                state = 0; header = 0; AckPending = 1;
         }
     }
     else { /* unknown command */
         // LogTextMessage("Unknown cmd received Axo%c c=%x", header, c);
-        state = 0; header = 0;
+        state = 0; header = 0; AckPending = 1;
     }
 }
 
