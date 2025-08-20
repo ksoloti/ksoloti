@@ -64,25 +64,14 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
             System.err.println("Failed to load SVG icon. Falling back to PNG.");
             setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_icon_axp.png")).getImage());
         }
+
         this.settings = settings;
         ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setValue(settings.GetMidiChannel());
-        // ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setMinimum(1);
-        // ((SpinnerNumberModel) jSpinnerMidiChannel.getModel()).setMaximum(16);
         ((SpinnerNumberModel) jSpinnerMPENumberOfMemberChannels.getModel()).setValue(settings.getMPENumberOfMemberChannels());
-        // ((SpinnerNumberModel) jSpinnerMPENumberOfMemberChannels.getModel()).setMinimum(1);
-        // ((SpinnerNumberModel) jSpinnerMPENumberOfMemberChannels.getModel()).setMaximum(15);
         ((SpinnerNumberModel) jSpinnerNumPresets.getModel()).setValue(settings.GetNPresets());
-        // ((SpinnerNumberModel) jSpinnerNumPresets.getModel()).setMinimum(0);
-        // ((SpinnerNumberModel) jSpinnerNumPresets.getModel()).setMaximum(127);
         ((SpinnerNumberModel) jSpinnerPresetEntries.getModel()).setValue(settings.GetNPresetEntries());
-        // ((SpinnerNumberModel) jSpinnerPresetEntries.getModel()).setMinimum(0);
-        // ((SpinnerNumberModel) jSpinnerPresetEntries.getModel()).setMaximum(127);
         ((SpinnerNumberModel) jSpinnerModulationSources.getModel()).setValue(settings.GetNModulationSources());
-        // ((SpinnerNumberModel) jSpinnerModulationSources.getModel()).setMinimum(0);
-        // ((SpinnerNumberModel) jSpinnerModulationSources.getModel()).setMaximum(127);
         ((SpinnerNumberModel) jSpinnerModulationTargets.getModel()).setValue(settings.GetNModulationTargetsPerSource());
-        // ((SpinnerNumberModel) jSpinnerModulationTargets.getModel()).setMinimum(0);
-        // ((SpinnerNumberModel) jSpinnerModulationTargets.getModel()).setMaximum(127);
         jTextFieldAuthor.setText(settings.getAuthor());
         jComboBoxLicense.setSelectedItem(settings.getLicense());
         jTextFieldAttributions.setText(settings.getAttributions());

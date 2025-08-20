@@ -34,6 +34,7 @@ import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import axoloti.utils.StringRef;
+import qcmds.QCmdProcessor;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -1353,7 +1354,6 @@ public class PatchGUI extends Patch {
         try {
             PatchGUI patch1 = serializer.read(PatchGUI.class, stream);
             PatchFrame pf = new PatchFrame(patch1);
-            patch1.setFileNamePath(name);
             patch1.PostContructor();
             patch1.setFileNamePath(name);
             pf.setVisible(true);

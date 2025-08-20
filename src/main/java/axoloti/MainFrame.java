@@ -865,6 +865,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 try {
                     QCmdUploadFWSDRam uploadFwCmd = new QCmdUploadFWSDRam(p);
                     LOGGER.log(Level.INFO, uploadFwCmd.GetStartMessage());
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(uploadFwCmd);
                     uploadFwCmd.Do(USBBulkConnection.GetConnection());
                     if (!uploadFwCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM command timed out.");
@@ -877,6 +878,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     LOGGER.log(Level.INFO, uploadFwCmd.GetDoneMessage());
 
                     QCmdUploadPatch uploadPatchCmd = new QCmdUploadPatch(f);
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(uploadPatchCmd);
                     uploadPatchCmd.Do(USBBulkConnection.GetConnection());
                     if (!uploadPatchCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Flasher upload command timed out.");
@@ -905,6 +907,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (success) {
                         /* If code reaches here, the background process was successful */
                         QCmdStartFlasher startFlasherCmd = new QCmdStartFlasher();
+                        QCmdProcessor.getQCmdProcessor().AppendToQueue(startFlasherCmd);
                         startFlasherCmd.Do(USBBulkConnection.GetConnection());
                         LOGGER.log(Level.SEVERE, startFlasherCmd.GetDoneMessage());
                         /* Do not waitForCompletion or check isSuccessful here 
@@ -1537,6 +1540,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 stop patch, upload test patch .bin to RAM, start patch, report status */
                 if (USBBulkConnection.GetConnection().isConnected()) {
                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch1.getBinFile());
+                    QCmdProcessor.getQCmdProcessor().AppendToQueue(uploadCmd);
                     uploadCmd.Do(USBBulkConnection.GetConnection());
                     if (!uploadCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Test patch upload command timed out.");
@@ -1568,9 +1572,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 }
             }
             else {
-                if (!USBBulkConnection.GetConnection().WaitSync()) {
-                    USBBulkConnection.GetConnection().disconnect();
-                }
                 LOGGER.log(Level.INFO, "FAILED to compile patch binary.\n");
                 status = false;
             }
@@ -1656,8 +1657,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private void jMenuItemRefreshFWIDActionPerformed(java.awt.event.ActionEvent evt) {
         updateLinkFirmwareID();
         if (USBBulkConnection.GetConnection().isConnected()) {
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdTransmitGetFWVersion());
-            QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdGetFWVersion());
         }
     }
 
@@ -1744,6 +1744,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             setCurrentLivePatch(null);
             try {
                 QCmdUploadPatch uploadMounterCmd = new QCmdUploadPatch(f);
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(uploadMounterCmd);
                 uploadMounterCmd.Do(USBBulkConnection.GetConnection());
                 if (!uploadMounterCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Mounter upload command timed out.");
@@ -1761,6 +1762,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             try {
                 QCmdStartMounter startMounterCmd = new QCmdStartMounter();
                 LOGGER.log(Level.INFO, startMounterCmd.GetStartMessage());
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(startMounterCmd);
                 startMounterCmd.Do(USBBulkConnection.GetConnection());
                 LOGGER.log(Level.WARNING, startMounterCmd.GetDoneMessage());
                 /* Do not waitForCompletion or check isSuccessful here 
@@ -1893,6 +1895,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             System.out.println(Instant.now() + " Unlocked previous live patch: " + this.currentLivePatch.getFileNamePath());
             try {
                 QCmdStop stopCmd = new QCmdStop();
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(stopCmd);
                 stopCmd.Do(USBBulkConnection.GetConnection());
                 if (!stopCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Patch stop command timed out.");
@@ -1918,6 +1921,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             /* Send QCmdStart to MCU before GUI-side Lock() */
             try {
                 QCmdStart startCmd = new QCmdStart(this.currentLivePatch);
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(startCmd);
                 startCmd.Do(USBBulkConnection.GetConnection());
                 if (!startCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Patch start command for " + this.currentLivePatch.getFileNamePath() + " timed out.");
