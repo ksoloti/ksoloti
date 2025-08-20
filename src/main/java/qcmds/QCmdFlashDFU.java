@@ -32,6 +32,8 @@ import java.util.logging.Logger;
  */
 public class QCmdFlashDFU extends QCmdShellTask {
 
+    private static final Logger LOGGER = Logger.getLogger(QCmdFlashDFU.class.getName());
+
     @Override
     public String GetStartMessage() {
         return "Flashing firmware with DFU...";
@@ -72,7 +74,7 @@ public class QCmdFlashDFU extends QCmdShellTask {
             bname += "_i2scodec";
         }
         bname += ".bin";
-        Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.INFO, "File path: " + System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build" + File.separator + bname);
+        LOGGER.log(Level.INFO, "File path: " + System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build" + File.separator + bname);
 
         if (OSDetect.getOS() == OSDetect.OS.WIN) {
             String str = FirmwareDir() + "\\upload_fw_dfu_win.bat " + bname;
@@ -83,7 +85,7 @@ public class QCmdFlashDFU extends QCmdShellTask {
             return str.split("\\s+");
         }
         else {
-            Logger.getLogger(QCmdFlashDFU.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");
+            LOGGER.log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");
             return null;
         }
     }
