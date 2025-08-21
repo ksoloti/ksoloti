@@ -245,8 +245,8 @@ public class FileMenu extends JMenu {
     private javax.swing.JMenuItem jMenuAutoTestDir;
 
     private void jMenuItemPreferencesActionPerformed(java.awt.event.ActionEvent evt) {
-        PreferencesFrame.GetPreferencesFrame().setState(java.awt.Frame.NORMAL);
-        PreferencesFrame.GetPreferencesFrame().setVisible(true);
+        PreferencesFrame.getInstance().setState(java.awt.Frame.NORMAL);
+        PreferencesFrame.getInstance().setVisible(true);
     }
 
     private void jMenuAutoTestDirActionPerformed(java.awt.event.ActionEvent evt) {

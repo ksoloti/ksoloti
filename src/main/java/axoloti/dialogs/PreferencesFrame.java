@@ -121,7 +121,7 @@ public class PreferencesFrame extends JFrame {
     private JTextField jTextFieldUserShortcut4;
     private ScrollPaneComponent jScrollPaneLibraryTable;
 
-    public static PreferencesFrame GetPreferencesFrame() {
+    public static PreferencesFrame getInstance() {
         if (singleton == null) {
             singleton = new PreferencesFrame();
         }

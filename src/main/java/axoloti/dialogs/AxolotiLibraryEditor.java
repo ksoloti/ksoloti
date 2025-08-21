@@ -762,7 +762,7 @@ public class AxolotiLibraryEditor extends JDialog {
 
         this.library = libraryToProcess;
         this.dirty = false; // Changes are now reflected in 'this.library'
-        PreferencesFrame.GetPreferencesFrame().setDirty(true);
+        PreferencesFrame.getInstance().setDirty(true);
     }
 
     private void attemptCloseEditor() {
