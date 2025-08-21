@@ -243,12 +243,12 @@ void PExTransmit(void) {
                 if (patchMeta.pPExch[i].signals & 0x01) {
                     int v = (patchMeta.pPExch)[i].value;
                     patchMeta.pPExch[i].signals &= ~0x01;
-                    PExMessage msg;
-                    msg.header = 0x506F7841; /*"AxoP" */
-                    msg.patchID = patchMeta.patchID;
-                    msg.index = i;
-                    msg.value = v;
-                    chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) &msg, sizeof(msg));
+                    PExMessage pex_msg;
+                    pex_msg.header = 0x506F7841; /*"AxoP" */
+                    pex_msg.patchID = patchMeta.patchID;
+                    pex_msg.index = i;
+                    pex_msg.value = v;
+                    chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) &pex_msg, sizeof(pex_msg));
                 }
             }
         }
