@@ -1729,7 +1729,7 @@ public class USBBulkConnection extends Connection {
                             else if (commandByte == 'w') {
                                 uploadCmd.setAppendMemWriteCompleted((byte)statusCode);
                             }
-                            else if (commandByte == 'c') {
+                            else if (commandByte == 'e') {
                                 uploadCmd.setCloseMemWriteCompleted((byte)statusCode);
                             }
                         }
@@ -1741,7 +1741,7 @@ public class USBBulkConnection extends Connection {
                             else if (commandByte == 'w') { // Acknowledgment for TransmitAppendMemWrite (Axow)
                                 uploadFwCmd.setAppendMemWriteCompleted((byte)statusCode);
                             }
-                            else if (commandByte == 'c') { // Acknowledgment for TransmitCloseMemWrite (AxoWc)
+                            else if (commandByte == 'e') { // Acknowledgment for TransmitCloseMemWrite (AxoWc)
                                 uploadFwCmd.setCloseMemWriteCompleted((byte)statusCode);
                             }
                         }
