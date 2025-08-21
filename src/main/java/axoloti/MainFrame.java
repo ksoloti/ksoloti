@@ -187,7 +187,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JMenuItem jMenuItemFlashUser;
     private javax.swing.JMenuItem jMenuItemMount;
     private javax.swing.JMenuItem jMenuItemPanic;
-    private javax.swing.JMenuItem jMenuItemPing;
     private javax.swing.JMenuItem jMenuItemRefreshFWID;
     private javax.swing.JMenuItem jMenuItemSelectCom;
     private javax.swing.JPanel jPanelHeader;
@@ -958,7 +957,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemSelectCom = new javax.swing.JMenuItem();
         jMenuItemFConnect = new javax.swing.JMenuItem();
         jMenuItemFDisconnect = new javax.swing.JMenuItem();
-        jMenuItemPing = new javax.swing.JMenuItem();
         jMenuItemPanic = new javax.swing.JMenuItem();
         jMenuItemMount = new javax.swing.JMenuItem();
         jMenuFirmware = new javax.swing.JMenu();
@@ -1133,15 +1131,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuBoard.add(jMenuItemMount);
         jMenuBoard.add(jSeparator2);
 
-        jMenuItemPing.setText("Ping");
-        jMenuItemPing.setEnabled(false);
-        jMenuItemPing.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemPingActionPerformed(evt);
-            }
-        });
-        jMenuBoard.add(jMenuItemPing);
-
         jMenuItemPanic.setText("Panic");
         jMenuItemPanic.setEnabled(false);
         jMenuItemPanic.addActionListener(new java.awt.event.ActionListener() {
@@ -1232,11 +1221,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void jMenuItemPanicActionPerformed(java.awt.event.ActionEvent evt) {
         QCmdProcessor.getInstance().Panic();
-    }
-
-    private void jMenuItemPingActionPerformed(java.awt.event.ActionEvent evt) {
-        QCmdProcessor.getInstance().AppendToQueue(new QCmdPing());
-        // QCmdProcessor.getInstance().AppendToQueue(new QCmdPing(true)); // no-disconnect ping for debug
     }
 
     private void jMenuItemFDisconnectActionPerformed(java.awt.event.ActionEvent evt) {

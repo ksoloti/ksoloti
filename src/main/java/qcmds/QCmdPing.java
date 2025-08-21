@@ -19,8 +19,6 @@
 package qcmds;
 
 import axoloti.Connection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -37,29 +35,13 @@ public class QCmdPing extends AbstractQCmdSerialTask {
     public String GetDoneMessage() {
         return null;//"Done ping";
     }
-    private boolean noCauseDisconnect;
 
     public QCmdPing() {
-        noCauseDisconnect = false;
-    }
-
-    public QCmdPing(boolean noCauseDisconnect) {
-        this.noCauseDisconnect = noCauseDisconnect;
     }
 
     @Override
     public QCmd Do(Connection connection) {
-        connection.ClearSync();
         connection.TransmitPing();
-        if (connection.WaitSync(5000) || (noCauseDisconnect)) {
-            return this;
-        } else {
-            if (connection.isConnected()) {
-                Logger.getLogger(QCmdPing.class.getName()).log(Level.SEVERE, "Ping: Sync timeout, disconnecting now");
-                return new QCmdDisconnect();
-            } else {
-                return null;
-            }
-        }
+        return this;
     }
 }
