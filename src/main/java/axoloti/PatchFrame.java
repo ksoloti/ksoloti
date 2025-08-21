@@ -474,7 +474,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
                                             QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(f, cal);
                                             QCmdProcessor.getInstance().AppendToQueue(createDirCmd);
-                                            createDirCmd.Do(USBBulkConnection.getInstance());
+                                            // createDirCmd.Do(USBBulkConnection.getInstance());
                                             if (!createDirCmd.waitForCompletion()) {
                                                 LOGGER.log(Level.SEVERE, "Create directory command timed out.");
                                                 return false;
@@ -487,7 +487,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
                                         QCmdChangeWorkingDirectory changeDirCmd = new QCmdChangeWorkingDirectory(f);
                                         QCmdProcessor.getInstance().AppendToQueue(changeDirCmd);
-                                        changeDirCmd.Do(USBBulkConnection.getInstance());
+                                        // changeDirCmd.Do(USBBulkConnection.getInstance());
                                         if (!changeDirCmd.waitForCompletion()) {
                                             LOGGER.log(Level.SEVERE, "Change working directory command timed out.");
                                             return false;
@@ -512,7 +512,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                 try {
                                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
                                     QCmdProcessor.getInstance().AppendToQueue(uploadCmd);
-                                    uploadCmd.Do(USBBulkConnection.getInstance());
+                                    // uploadCmd.Do(USBBulkConnection.getInstance());
                                     if (!uploadCmd.waitForCompletion()) {
                                         System.out.println(Instant.now() + " Patch upload timed out");
                                         return false;
@@ -1357,7 +1357,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     CommandManager.getInstance().startLongOperation();
                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
                     QCmdProcessor.getInstance().AppendToQueue(uploadCmd);
-                    uploadCmd.Do(USBBulkConnection.getInstance());
+                    // uploadCmd.Do(USBBulkConnection.getInstance());
                     if (!uploadCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Patch upload timed out.");
                     }
@@ -1579,7 +1579,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             try {
                                 QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
                                 QCmdProcessor.getInstance().AppendToQueue(uploadCmd);
-                                uploadCmd.Do(USBBulkConnection.getInstance());
+                                // uploadCmd.Do(USBBulkConnection.getInstance());
                                 if (!uploadCmd.waitForCompletion()) {
                                     LOGGER.log(Level.SEVERE, "Patch upload command timed out.");
                                     return false;
@@ -1592,7 +1592,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                 CommandManager.getInstance().startLongOperation();
                                 QCmdCopyPatchToFlash copyToFlashCmd = new QCmdCopyPatchToFlash();
                                 QCmdProcessor.getInstance().AppendToQueue(copyToFlashCmd);
-                                copyToFlashCmd.Do(USBBulkConnection.getInstance());
+                                // copyToFlashCmd.Do(USBBulkConnection.getInstance());
                                 CommandManager.getInstance().endLongOperation();
                                 if (!copyToFlashCmd.waitForCompletion()) {
                                     LOGGER.log(Level.SEVERE, "Copy patch to internal Flash command timed out.");

@@ -852,7 +852,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             try {
                 QCmdUploadFile uploadFileCmd = new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
                 QCmdProcessor.getInstance().AppendToQueue(uploadFileCmd);
-                uploadFileCmd.Do(USBBulkConnection.getInstance());
+                // uploadFileCmd.Do(USBBulkConnection.getInstance());
                 if (!uploadFileCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "File upload command for Patchbank index timed out.");
                 }
@@ -1024,7 +1024,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                     try {
                         QCmdUploadFile uploadFileCmd = new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
                         QCmdProcessor.getInstance().AppendToQueue(uploadFileCmd);
-                        uploadFileCmd.Do(USBBulkConnection.getInstance());
+                        // uploadFileCmd.Do(USBBulkConnection.getInstance());
                         if (!uploadFileCmd.waitForCompletion()) {
                             LOGGER.log(Level.SEVERE, "File upload command for Patchbank index timed out.");
                         }
