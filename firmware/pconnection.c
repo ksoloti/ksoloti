@@ -687,15 +687,9 @@ void ReplyFWVersion(void) {
 
     uint32_t fwid = GetFirmwareID();
     /* NOTE: Changed to send these two ints in LITTLE ENDIAN */
-    reply[8] = (uint8_t) (fwid);       // LSB
-    reply[9] = (uint8_t) (fwid>>8);
-    reply[10] = (uint8_t) (fwid>>16);
-    reply[11] = (uint8_t) (fwid>>24);  // MSB
+    uint32_to_le_bytes(fwid, &reply[8]);
+    uint32_to_le_bytes(PATCHMAINLOC, &reply[12]);
 
-    reply[12] = (uint8_t) (PATCHMAINLOC);       // LSB
-    reply[13] = (uint8_t) (PATCHMAINLOC>>8);
-    reply[14] = (uint8_t) (PATCHMAINLOC>>16);
-    reply[15] = (uint8_t) (PATCHMAINLOC>>24);  // MSB
     chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&reply[0]), 16);
 }
 
