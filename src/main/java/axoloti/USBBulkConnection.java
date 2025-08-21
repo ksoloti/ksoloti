@@ -2018,28 +2018,28 @@ public class USBBulkConnection extends Connection {
                         fwversion[3] = cc;
                         break;
                     case 4:
-                        temp_fwcrc = (cc & 0xFF) << 24;
+                        temp_fwcrc = (cc & 0xFF);
                         break;
                     case 5:
-                        temp_fwcrc += (cc & 0xFF) << 16;
-                        break;
-                    case 6:
                         temp_fwcrc += (cc & 0xFF) << 8;
                         break;
+                    case 6:
+                        temp_fwcrc += (cc & 0xFF) << 16;
+                        break;
                     case 7:
-                        temp_fwcrc += (cc & 0xFF);
+                        temp_fwcrc += (cc & 0xFF) << 24;
                         break;
                     case 8:
-                        patchentrypoint = (cc & 0xFF) << 24;
+                        patchentrypoint = (cc & 0xFF);
                         break;
                     case 9:
-                        patchentrypoint += (cc & 0xFF) << 16;
-                        break;
-                    case 10:
                         patchentrypoint += (cc & 0xFF) << 8;
                         break;
+                    case 10:
+                        patchentrypoint += (cc & 0xFF) << 16;
+                        break;
                     case 11:
-                        patchentrypoint += (cc & 0xFF);
+                        patchentrypoint += (cc & 0xFF) << 24;
                         if (fwcrc != temp_fwcrc) {
                             /* Set & report once, then only if CRC changes during this session (for firmware dev) */
                             fwcrc = temp_fwcrc;
