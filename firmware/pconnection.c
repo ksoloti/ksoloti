@@ -586,7 +586,7 @@ static void ManipulateFile(void) {
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
-        else if (FileName[1] == 'C') { /* change working directory (AxoCC) */
+        else if (FileName[1] == 'h') { /* change working directory (AxoCh) */
             // LogTextMessage("Executing 'CC' cmd");
 
             FRESULT op_result = f_chdir(&FileName[6]); /* Path from FileName[6]+ */
@@ -985,14 +985,14 @@ void PExReceiveByte(unsigned char c) {
                 FileName[0] = c; /* Should always be 0 */
                 state++;
                 break;
-            case 9: /* Expecting FileName[1] (sub-command: 'f', 'k', 'c', 'D', 'C', 'I') */
+            case 9: /* Expecting FileName[1] (sub-command: 'f', 'k', 'c', 'h', 'D', 'I') */
                 FileName[1] = c; /* Store the sub-command */
                 // LogTextMessage("PEXRB:FileName[1]=%c (0x%02x)", FileName[1], FileName[1]);
 
                 if (FileName[1] == 'c' || FileName[1] == 'f' || FileName[1] == 'k') {
                     /* These expect fdate/ftime next (FileName[2]...[5]) */
                     state = 10; /* Go to state to receive FileName[2] (fdate byte 0) */
-                } else if (FileName[1] == 'C' || FileName[1] == 'D' || FileName[1] == 'I') {
+                } else if (FileName[1] == 'h' || FileName[1] == 'D' || FileName[1] == 'I') {
                     /* These skip fdate/ftime and go straight to filename (FileName[6]+) */
                     current_filename_idx = 6; /* Start filename parsing from FileName[6] */
                     state = 14; /* Go to state to receive FileName[6] (filename byte 0) */
@@ -1016,7 +1016,7 @@ void PExReceiveByte(unsigned char c) {
                 break;
 
             /* States for parsing filename (variable length, null-terminated) into FileName[6] onwards --- */
-            /* Used by 'f', 'k', 'c', 'D', 'C', 'I' */
+            /* Used by 'f', 'k', 'c', 'h', 'D', 'I' */
             case 14: { /* Start/continue filename parsing (into FileName[6]+) */
                 if (current_filename_idx < sizeof(FileName)) {
                     FileName[current_filename_idx++] = c;
