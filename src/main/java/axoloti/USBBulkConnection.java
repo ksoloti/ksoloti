@@ -1959,6 +1959,9 @@ public class USBBulkConnection extends Connection {
                             readsync.notifyAll();
                         }
                         setIdleState();
+                    default:
+                        setIdleState();
+                        break;
                 }
                 dataIndex++;
                 break;
@@ -2008,6 +2011,9 @@ public class USBBulkConnection extends Connection {
                             LOGGER.log(Level.INFO, String.format("Core running Firmware version %d.%d.%d.%d | CRC %s\n", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
                             MainFrame.mainframe.setFirmwareID(sFwcrc);
                         }
+                        setIdleState();
+                        break;
+                    default:
                         setIdleState();
                         break;
                 }
