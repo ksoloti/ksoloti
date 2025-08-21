@@ -114,8 +114,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        super.Do(connection);
-
+        connection.setCurrentExecutingCommand(this);
         setMcuStatusCode((byte)0xFF);
 
         this.createFileStatus = (byte)0xFF;

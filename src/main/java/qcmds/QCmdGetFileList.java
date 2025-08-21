@@ -48,8 +48,7 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        super.Do(connection);
-
+        connection.setCurrentExecutingCommand(this);
         setMcuStatusCode((byte)0xFF);
 
         /* This method sends the Axol packet to the MCU. */

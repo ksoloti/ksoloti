@@ -53,8 +53,7 @@ public class QCmdDeleteFile extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        super.Do(connection); // Sets 'this' as currentExecutingCommand
-
+        connection.setCurrentExecutingCommand(this);
         setMcuStatusCode((byte)0xFF);
 
         LOGGER.log(Level.INFO, "Deleting file from SD card: " + filename);

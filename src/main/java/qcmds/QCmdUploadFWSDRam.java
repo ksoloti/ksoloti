@@ -102,8 +102,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        super.Do(connection); /* Sets 'this' as currentExecutingCommand */
-
+        connection.setCurrentExecutingCommand(this);
         setMcuStatusCode((byte)0xFF);
 
         this.startMemWriteStatus = (byte)0xFF;

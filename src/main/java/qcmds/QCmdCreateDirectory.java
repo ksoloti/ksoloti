@@ -55,9 +55,7 @@ public class QCmdCreateDirectory extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        super.Do(connection); // Sets 'this' as currentExecutingCommand
-
-        // Reset MCU status for this execution
+        connection.setCurrentExecutingCommand(this);
         setMcuStatusCode((byte)0xFF);
 
         int writeResult = connection.TransmitCreateDirectory(dirname, date);

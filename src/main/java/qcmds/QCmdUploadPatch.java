@@ -107,13 +107,7 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        super.Do(connection);
-
-        String startMsg = GetStartMessage();
-        if (startMsg != null) {
-            LOGGER.log(Level.INFO, startMsg);
-        }
-
+        connection.setCurrentExecutingCommand(this);
         setMcuStatusCode((byte)0xFF);
 
         this.startMemWriteStatus = (byte)0xFF;
