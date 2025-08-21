@@ -46,12 +46,7 @@ public class QCmdRecallPreset extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        connection.ClearSync();
         connection.TransmitRecallPreset(presetNo);
-        if (connection.WaitSync()) {
-            return this;
-        } else {
-            return new QCmdDisconnect();
-        }
+        return this;
     }
 }

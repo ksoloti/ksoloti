@@ -38,9 +38,7 @@ public class QCmdGetSpilinkSynced extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        connection.ClearSync();
         connection.TransmitGetSpilinkSynced();
-        connection.WaitSync();
         return this;
     }
 }
