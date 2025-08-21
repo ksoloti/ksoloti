@@ -80,7 +80,7 @@ connectionflags_t connectionFlags;
 
 static WORKING_AREA(waThreadUSBDMidi, 256);
 
-__attribute__((noreturn)) static msg_t ThreadUSBDMidi(void *arg) {
+__attribute__((noreturn)) static msg_t ThreadUSBDMidi(void* arg) {
     (void)arg;
 
 #if CH_CFG_USE_REGISTRY == TRUE
@@ -96,7 +96,7 @@ __attribute__((noreturn)) static msg_t ThreadUSBDMidi(void *arg) {
 }
 
 
-void uint32_to_le_bytes(uint32_t value, uint8_t* dest) {
+void uint32_to_le_bytes(uint32_t value, char* dest) {
     dest[0] = (uint8_t) ((value >>  0) & 0xFF);
     dest[1] = (uint8_t) ((value >>  8) & 0xFF);
     dest[2] = (uint8_t) ((value >> 16) & 0xFF);
@@ -259,7 +259,7 @@ void PExTransmit(void) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wrestrict"
 
-static FRESULT scan_files(char *path) {
+static FRESULT scan_files(char* path) {
     /* Recursive scan of all items in a directory */
 
     // LogTextMessage("Entered scan_files:%s", (char*) &fbuff[0]);
@@ -268,8 +268,8 @@ static FRESULT scan_files(char *path) {
     DIR dir;
 
     uint32_t current_path_len;
-    char *fname;
-    char *msg = &((char*) fbuff)[64];
+    char* fname;
+    char* msg = &((char*) fbuff)[64];
 
     fno.lfname = &FileName[0];
     fno.lfsize = sizeof(FileName);
@@ -402,7 +402,7 @@ static void send_AxoResult(char cmd_byte, uint8_t status) {
 
 void ReadDirectoryListing(void) {
     // LogTextMessage("Entered RDL");
-    FATFS *fsp;
+    FATFS* fsp;
     uint32_t clusters;
     FRESULT op_result;
 
@@ -604,7 +604,7 @@ static void ManipulateFile(void) {
 
             FRESULT op_result = f_stat(&FileName[6], &fno); /* Path from FileName[6]+ */
             if (op_result == FR_OK) {
-                char *msg = &((char*) fbuff)[0];
+                char* msg = &((char*) fbuff)[0];
                 msg[0] = 'A'; msg[1] = 'x'; msg[2] = 'o'; msg[3] = 'f';
                 uint32_to_le_bytes(fno.fsize, &msg[4]);
                 uint32_to_le_bytes(fno.fdate + (fno.ftime<<16), &msg[8]);
@@ -672,7 +672,7 @@ static uint8_t CopyPatchToFlash(void) {
 
 
 void ReplyFWVersion(void) {
-    uint8_t reply[16];
+    char reply[16];
     reply[0] = 'A';
     reply[1] = 'x';
     reply[2] = 'o';
@@ -693,7 +693,7 @@ void ReplyFWVersion(void) {
 
 
 void ReplySpilinkSynced(void) {
-    uint8_t reply[5];
+    char reply[5];
     reply[0] = 'A';
     reply[1] = 'x';
     reply[2] = 'o';
@@ -1110,7 +1110,7 @@ void PExReceiveByte(unsigned char c) {
             case 9:  value |= (int32_t)c <<  8; state++; break;
             case 10: value |= (int32_t)c << 16; state++; break;
             case 11: value |= (int32_t)c << 24;
-                uint8_t read_reply_header[12];
+                char read_reply_header[12];
                 read_reply_header[0] = 'A';
                 read_reply_header[1] = 'x';
                 read_reply_header[2] = 'o';
@@ -1132,7 +1132,7 @@ void PExReceiveByte(unsigned char c) {
             case 6: offset |= (uint32_t)c << 16; state++; break;
             case 7: offset |= (uint32_t)c << 24;
                 value = *((uint32_t*) offset);
-                uint8_t read_reply_header[12];
+                char read_reply_header[12];
                 read_reply_header[0] = 'A';
                 read_reply_header[1] = 'x';
                 read_reply_header[2] = 'o';

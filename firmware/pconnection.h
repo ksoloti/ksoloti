@@ -40,7 +40,7 @@ void InitPConnection(void);
 extern void BootLoaderInit(void);
 void LogTextMessage(const char* format, ...);
 int GetFirmwareID(void);
-void uint32_to_le_bytes(uint32_t value, uint8_t* dest);
+void uint32_to_le_bytes(uint32_t value, char* dest);
 uint32_t le_bytes_to_uint32(const uint8_t* src);
 
 #endif
