@@ -796,6 +796,14 @@ void PExReceiveByte(unsigned char c) {
                     case 'p': /* ping */
                         state = 0; header = 0; AckPending = 1; /* Ping explicitly triggers AxoA */
                         break;
+
+                    /* --- Commands that DO NOT set AckPending (AxoR**-based) --- */
+                    case 'a': /* append data to opened sdcard file (top-level Axoa) */
+                    case 's': /* start patch (includes midi cost and dsp limit) */
+                    case 'W': /* generic write start, close */
+                    case 'w': /* append to memory during 'W' generic write */
+                        state = 4; /* All the above pass on directly to state 4. */
+                        break;
                     case 'C': /* Unified File System Command (create, delete, mkdir, getinfo, close) */
                         current_filename_idx = 0; /* Reset for filename parsing */
                         state = 4; /* Next state will receive the 4-byte pFileSize/placeholder */
@@ -884,6 +892,7 @@ void PExReceiveByte(unsigned char c) {
                         break;
                 }
                 break;
+            }
             default:
                 send_AxoResult('W', FR_DISK_ERR);
                 state = 0; header = 0;
