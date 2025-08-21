@@ -158,9 +158,9 @@ public class USBBulkConnection extends Connection {
     private int dataIndex = 0;  /* in bytes */
     private int dataLength = 0; /* in bytes */
     private CharBuffer textRcvBuffer = CharBuffer.allocate(256);
-    private ByteBuffer sdinfoRcvBuffer = ByteBuffer.allocate(12);
-    private ByteBuffer fileinfoRcvBuffer = ByteBuffer.allocate(256);
-    private ByteBuffer memReadBuffer = ByteBuffer.allocate(16 * 4);
+    private ByteBuffer sdinfoRcvBuffer = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN);
+    private ByteBuffer fileinfoRcvBuffer = ByteBuffer.allocate(256).order(ByteOrder.LITTLE_ENDIAN);
+    private ByteBuffer memReadBuffer = ByteBuffer.allocate(16 * 4).order(ByteOrder.LITTLE_ENDIAN);
     private int memReadAddr;
     private int memReadLength;
     private int memRead1WordValue;
@@ -174,7 +174,7 @@ public class USBBulkConnection extends Connection {
     class Receiver implements Runnable {
         @Override
         public void run() {
-            ByteBuffer recvbuffer = ByteBuffer.allocateDirect(4096);
+            ByteBuffer recvbuffer = ByteBuffer.allocateDirect(4096).order(ByteOrder.LITTLE_ENDIAN);
             IntBuffer transfered = IntBuffer.allocate(1);
 
             // System.out.println(Instant.now() + " [DEBUG] Receiver thread started.");
@@ -744,7 +744,7 @@ public class USBBulkConnection extends Connection {
     @Override
     public int writeBytes(byte[] bytes) {
 
-        ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(bytes);
         buffer.rewind();
         IntBuffer transfered = IntBuffer.allocate(1);
@@ -1493,7 +1493,7 @@ public class USBBulkConnection extends Connection {
 
         if (i2 > 0) {
             dataLength = i2 * 4;
-            dispData = ByteBuffer.allocate(dataLength);
+            dispData = ByteBuffer.allocate(dataLength).order(ByteOrder.LITTLE_ENDIAN);
             dispData.order(ByteOrder.LITTLE_ENDIAN);
             setNextState(ReceiverState.DISPLAY_PCKT);
         }
@@ -1897,7 +1897,7 @@ public class USBBulkConnection extends Connection {
                         memReadLength += (cc & 0xFF) << 24;
                         break;
                     case 8:
-                        memReadBuffer = ByteBuffer.allocate(memReadLength);
+                        memReadBuffer = ByteBuffer.allocate(memReadLength).order(ByteOrder.LITTLE_ENDIAN);
                         memReadBuffer.rewind();
                     default:
                         memReadBuffer.put(cc);
