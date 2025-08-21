@@ -1547,6 +1547,8 @@ public class USBBulkConnection extends Connection {
     private void setIdleState() {
         this.headerstate = 0;
         this.state = ReceiverState.HEADER;
+        this.dataIndex = 0;
+        this.dataLength = 0;
     }
 
     private void setNextState(ReceiverState nextState) {
