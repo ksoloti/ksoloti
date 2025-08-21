@@ -162,7 +162,7 @@ void LogTextMessage(const char* format, ...) {
     if ((usbGetDriverStateI(BDU1.config->usbp) == USB_ACTIVE) && (connected)) {
         if(chMtxTryLock(&LogMutex)) {
             MemoryStream ms;
-            uint8_t      tmp[256-5]; // nead AXOT and null
+            uint8_t      tmp[256-5]; // nead AxoT and null
 
             msObjectInit(&ms, (uint8_t*) tmp, 256-5, 0); 
 
