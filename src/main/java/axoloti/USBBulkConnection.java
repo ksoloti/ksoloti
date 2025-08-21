@@ -163,7 +163,7 @@ public class USBBulkConnection extends Connection {
     private ByteBuffer memReadBuffer = ByteBuffer.allocate(16 * 4);
     private int memReadAddr;
     private int memReadLength;
-    private int memReadValue;
+    private int memRead1WordValue;
     private byte[] fwversion = new byte[4];
     private int patchentrypoint;
 
@@ -1459,8 +1459,8 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public int getMemRead1Word() {
-        return memReadValue;
+    public int getMemRead1WordValue() {
+        return memRead1WordValue;
     }
 
     void storeDataByte(int c) {
@@ -1943,17 +1943,17 @@ public class USBBulkConnection extends Connection {
                         memReadAddr += (cc & 0xFF) << 24;
                         break;
                     case 4:
-                        memReadValue = (cc & 0xFF);
+                        memRead1WordValue = (cc & 0xFF);
                         break;
                     case 5:
-                        memReadValue += (cc & 0xFF) << 8;
+                        memRead1WordValue += (cc & 0xFF) << 8;
                         break;
                     case 6:
-                        memReadValue += (cc & 0xFF) << 16;
+                        memRead1WordValue += (cc & 0xFF) << 16;
                         break;
                     case 7:
-                        memReadValue += (cc & 0xFF) << 24;
-                        // System.out.println(Instant.now() + " [DEBUG] " + String.format("addr %08X value %08X", memReadAddr, memReadValue));
+                        memRead1WordValue += (cc & 0xFF) << 24;
+                        System.out.println(Instant.now() + " [DEBUG] " + String.format("addr %08X value %08X", memReadAddr, memRead1WordValue));
                         synchronized (readsync) {
                             readsync.Acked = true;
                             readsync.notifyAll();

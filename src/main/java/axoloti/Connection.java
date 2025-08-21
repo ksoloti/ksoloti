@@ -89,7 +89,7 @@ public abstract class Connection {
     abstract public byte[] getFwVersion();
     abstract public String getFwVersionString();
     abstract public ByteBuffer getMemReadBuffer();
-    abstract public int getMemRead1Word();
+    abstract public int getMemRead1WordValue();
     abstract public boolean GetSDCardPresent();
     abstract public int GetConnectionFlags();
     abstract public void setCurrentExecutingCommand(qcmds.QCmdSerialTask command);
