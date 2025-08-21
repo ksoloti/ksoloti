@@ -636,7 +636,7 @@ static FRESULT AppendFile(uint32_t length) {
 }
 
 
-static int CopyPatchToFlash(void) {
+static uint8_t CopyPatchToFlash(void) {
     flash_unlock();
     flash_Erase_sector(11);
 
@@ -667,9 +667,9 @@ static int CopyPatchToFlash(void) {
     }
 
     if (err) {
-        return -1; /* Flash verify failed */
+        return FR_DISK_ERR; /* Flash verify failed */
     }
-    return 0;
+    return FR_OK;
 }
 
 
@@ -777,9 +777,11 @@ void PExReceiveByte(unsigned char c) {
                         break;
                     case 'F': { /* copy to flash */
                         state = 0; header = 0;
-                        StopPatch();
-                        int res = CopyPatchToFlash();
-                        send_AxoResult(c, (FRESULT)res);
+                        uint8_t res = StopPatch();
+                        if (res == FR_OK) {
+                            res = CopyPatchToFlash();
+                        }
+                        send_AxoResult(c, res);
                         break;
                     }
                     case 'l': /* read directory listing */
