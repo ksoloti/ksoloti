@@ -1588,59 +1588,48 @@ public class USBBulkConnection extends Connection {
                     case 3:
                         switch (c) {
                             case 'Q':
-                                setNextState(ReceiverState.PARAMCHANGE_PCKT);
                                 dataLength = 12;
-                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'Q'");
+                                setNextState(ReceiverState.PARAMCHANGE_PCKT);
                                 break;
                             case 'A':
-                                setNextState(ReceiverState.ACK_PCKT);
                                 dataLength = 24;
-                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'A'");
+                                setNextState(ReceiverState.ACK_PCKT);
                                 break;
                             case 'D':
-                                setNextState(ReceiverState.DISPLAY_PCKT_HDR);
                                 dataLength = 8;
-                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'D'");
+                                setNextState(ReceiverState.DISPLAY_PCKT_HDR);
                                 break;
                             case 'R': /* New case for 'R' header (AxoR packet from MCU) */
-                                setNextState(ReceiverState.COMMANDRESULT_PCKT);
                                 dataLength = 2; /* Expecting command_byte (1 byte) + status_byte (1 byte) */
-                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'R'");
+                                setNextState(ReceiverState.COMMANDRESULT_PCKT);
                                 break;
                             case 'T':
-                                setNextState(ReceiverState.TEXT_PCKT);
                                 textRcvBuffer.clear();
                                 dataLength = 255;
-                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'T'");
+                                setNextState(ReceiverState.TEXT_PCKT);
                                 break;
                             case 'l':
-                                setNextState(ReceiverState.SDINFO);
                                 sdinfoRcvBuffer.rewind();
                                 dataLength = 12;
-                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'l'");
+                                setNextState(ReceiverState.SDINFO);
                                 break;
                             case 'f':
-                                setNextState(ReceiverState.FILEINFO_FIXED_FIELDS);
                                 fileinfoRcvBuffer.clear();
                                 dataLength = 8;
-                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'f'");
+                                setNextState(ReceiverState.FILEINFO_FIXED_FIELDS);
                                 break;
                             case 'r':
-                                setNextState(ReceiverState.MEMREAD);
                                 memReadBuffer.clear();
-                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'r'");
+                                setNextState(ReceiverState.MEMREAD);
                                 break;
                             case 'y':
                                 setNextState(ReceiverState.MEMREAD_1WORD);
-                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'y'");
                                 break;
                             case 'V':
                                 setNextState(ReceiverState.FWVERSION);
-                                // System.out.println(Instant.now() + " [DEBUG] Completed headerstate after 'V'");
                                 break;
                             default:
                                 setIdleState();
-                                // System.err.println(Instant.now() + " [DEBUG] Error trying to complete headerstate after valid 'Axo'");
                                 break;
                         } /* End switch (c) */
                         break;

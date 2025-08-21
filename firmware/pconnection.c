@@ -405,7 +405,6 @@ void ReadDirectoryListing(void) {
     FATFS *fsp;
     uint32_t clusters;
     FRESULT op_result;
-    uint8_t command_byte_to_ack = 'l';
 
     op_result = f_getfree("/", &clusters, &fsp);
     if (op_result != FR_OK) {
@@ -450,7 +449,7 @@ void ReadDirectoryListing(void) {
 
     RDL_result_and_exit:
     /* Send the Result packet */
-    send_AxoResult(command_byte_to_ack, op_result);
+    send_AxoResult('l', op_result);
 }
 
 
@@ -734,10 +733,9 @@ void PExReceiveByte(unsigned char c) {
 
     AddPCDebug(c, state);
 
-    if (!header) {
+    if (header == 0) {
         switch (state) {
-
-            /* Confirm "Axo" sequence is correct first */
+            /* Confirm "Axo" sequence first */
             case 0:
                 if (c == 'A') state++; 
                 break;
@@ -814,8 +812,8 @@ void PExReceiveByte(unsigned char c) {
                     }
                     default:
                         state = 0; break; /* Unknown Axo* header */
-                }
-        }
+                } /* End switch (c) */
+        } /* End switch (state) */
     }
     else if (header == 'P') { /* param change */
         switch (state) {
@@ -836,7 +834,7 @@ void PExReceiveByte(unsigned char c) {
                 break;
             default:
                 state = 0; header = 0;
-        }
+        } /* End switch (state) */
     }
     else if (header == 's') { /* start patch (includes midi cost and dsp limit) */
         static uint16_t uUIMidiCost = 0; /* Local static */
@@ -855,7 +853,7 @@ void PExReceiveByte(unsigned char c) {
             }
             default:
                 state = 0; header = 0;
-        }
+        } /* End switch (state) */
     }
     else if (header == 'W') { /* 'AxoW' memory write commands */
         switch (state) {
@@ -868,7 +866,7 @@ void PExReceiveByte(unsigned char c) {
             case 10: value |= (int32_t)c << 16; state++; break;
             case 11: value |= (int32_t)c << 24; state++; break;
             case 12: { /* Sub-command can be 'W' (start) or 'e' (end) */
-                switch(c) {
+                switch (c) {
                     case 'W': { /* start Memory Write */
                         uint8_t res = StopPatch();
                         if (res == FR_OK) {
@@ -888,13 +886,13 @@ void PExReceiveByte(unsigned char c) {
                         send_AxoResult('W', FR_INVALID_PARAMETER);
                         state = 0; header = 0;
                         break;
-                }
+                } /* End switch (c) */
                 break;
             }
             default:
                 send_AxoResult('W', FR_DISK_ERR);
                 state = 0; header = 0;
-        }
+        } /* End switch (state) */
     }
     /* 'Axow' NOW USED FOR STREAMING CHUNKS BETWEEN 'AxoWW' start memory write AND 'AxoWe' close memory write */
     else if (header == 'w') { /* Handle 'Axow' streaming command */
@@ -941,7 +939,7 @@ void PExReceiveByte(unsigned char c) {
                 send_AxoResult(header, FR_DISK_ERR);
                 state = 0; header = 0;
                 break;
-        }
+        } /* End switch (state) */
     }
     else if (header == 'T') { /* apply preset */
         ApplyPreset(c); /* 'c' is the preset index */
@@ -958,7 +956,7 @@ void PExReceiveByte(unsigned char c) {
                 break;
             default:
                 state = 0; header = 0;
-        }
+        } /* End switch (state) */
     }
     else if (header == 'C') { /* create/edit/close/delete file, create/change directory on SD */ 
         // LogTextMessage("AxoC received,c=%x s=%u", c, state);
@@ -1038,7 +1036,7 @@ void PExReceiveByte(unsigned char c) {
                 // LogTextMessage("PEXRB:Unknown state %u", state);
                 header = 0; state = 0;
                 break;
-        }
+        } /* End switch (state) */
     }
     else if (header == 'a') { /* append data to open file on SD */
         // LogTextMessage("Axoa received c=%x state=%u", c, state); // Keep this for general debug
@@ -1076,7 +1074,7 @@ void PExReceiveByte(unsigned char c) {
             default: /* Error or unexpected state */
                 state = 0; header = 0;
                 break;
-        }
+        } /* End switch (state) */
     }
     else if (header == 'R') { /* preset change */
         switch (state) {
@@ -1100,7 +1098,7 @@ void PExReceiveByte(unsigned char c) {
                 else {
                     state = 0; header = 0;
                 }
-        }
+        } /* End switch (state) */
     }
     else if (header == 'r') { /* generic read */
         switch (state) {
@@ -1125,7 +1123,7 @@ void PExReceiveByte(unsigned char c) {
                 break;
             default:
                 state = 0; header = 0;
-        }
+        } /* End switch (state) */
     }
     else if (header == 'y') { /* generic read, 32-bit */
         switch (state) {
@@ -1145,7 +1143,7 @@ void PExReceiveByte(unsigned char c) {
                 break;
             default:
                 state = 0; header = 0;
-        }
+        } /* End switch (state) */
     }
     else { /* unknown command */
         // LogTextMessage("Unknown cmd received Axo%c c=%x", header, c);
