@@ -139,11 +139,6 @@ public class WindowMenu extends JMenu {
             a.setMnemonic('F');
             jMenuWindow.add(a);
         }
-        // if (false) {
-        //     WindowMenuItem a = new WindowMenuItem(MainFrame.mainframe.getRemote(), "Remote");
-        //     a.setMnemonic('R');
-        //     jMenuWindow.add(a);
-        // }
 
         jMenuWindow.add(new JSeparator());
         PopulateDocuments(jMenuWindow, "", DocumentWindowList.GetList());

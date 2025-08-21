@@ -391,10 +391,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         filemanager.setTitle("File Manager");
         filemanager.setVisible(false);
 
-        // remote = new AxolotiRemoteControl();
-        // remote.setTitle("Remote");
-        // remote.setVisible(false);
-
         if (!Preferences.getInstance().getExpertMode()) {
             jMenuItemRefreshFWID.setVisible(false);
         }
@@ -2243,10 +2239,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     public FileManagerFrame getFilemanager() {
         return filemanager;
     }
-
-    // public AxolotiRemoteControl getRemote() {
-    //     return remote;
-    // }
 
     public KeyboardFrame getKeyboard() {
         return keyboard;
