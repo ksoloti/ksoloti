@@ -18,6 +18,8 @@
  */
 package qcmds;
 
+import java.nio.ByteBuffer;
+
 import axoloti.Connection;
 
 /**
@@ -26,16 +28,15 @@ import axoloti.Connection;
  */
 public class QCmdSerialDialTX extends AbstractQCmdSerialTask {
 
-    final byte[] b;
+    final ByteBuffer data;
 
-    public QCmdSerialDialTX(byte[] b) {
-        this.b = b;
+    public QCmdSerialDialTX(ByteBuffer data) {
+        this.data = data;
     }
 
     @Override
     public QCmd Do(Connection connection) {
-        connection.ClearSync();
-        connection.writeBytes(b);
+        connection.writeBytes(data);
         return this;
     }
 

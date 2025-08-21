@@ -40,7 +40,7 @@ public class QCmdGuiDialTx implements QCmdGUITask {
                 for (ParameterInstance p : this.patch.getParameterInstances()) {
                     if (p.GetNeedsTransmit()) {
                         if (processor.hasQueueSpaceLeft()) {
-                            processor.AppendToQueue(new QCmdSerialDialTX(p.TXData()));
+                            processor.AppendToQueue(new QCmdSerialDialTX(p.TransmitParamData()));
                         } else {
                             break;
                         }

@@ -38,6 +38,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.swing.BoxLayout;
@@ -87,6 +89,8 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     private Boolean frozen;
 
     public final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
+
+    private final static byte[]  AxoP_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('P')};
 
     public ParameterInstance() {
     }
@@ -267,26 +271,18 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         ShowPreset(presetEditActive);
     }
 
-    public byte[] TXData() {
-        needsTransmit = false;
-        byte[] data = new byte[14];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'P';
+    public ByteBuffer TransmitParamData() {
         int pid = GetObjectInstance().getPatch().GetIID();
-        data[4] = (byte) pid;
-        data[5] = (byte) (pid >> 8);
-        data[6] = (byte) (pid >> 16);
-        data[7] = (byte) (pid >> 24);
         int tvalue = GetValueRaw();
-        data[8] = (byte) tvalue;
-        data[9] = (byte) (tvalue >> 8);
-        data[10] = (byte) (tvalue >> 16);
-        data[11] = (byte) (tvalue >> 24);
-        data[12] = (byte) (index);
-        data[13] = (byte) (index >> 8);
-        return data;
+        
+        ByteBuffer buffer = ByteBuffer.allocate(14).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(AxoP_pckt);
+        buffer.putInt(pid);
+        buffer.putInt(tvalue);
+        buffer.putShort((short) index);
+
+        needsTransmit = false;
+        return buffer;
     }
 
     public Preset GetPreset(int i) {

@@ -168,9 +168,9 @@ public class USBBulkConnection extends Connection {
     private int dataIndex = 0;  /* in bytes */
     private int dataLength = 0; /* in bytes */
     private CharBuffer textRcvBuffer = CharBuffer.allocate(256);
-    private ByteBuffer sdinfoRcvBuffer = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN);
-    private ByteBuffer fileinfoRcvBuffer = ByteBuffer.allocate(256).order(ByteOrder.LITTLE_ENDIAN);
-    private ByteBuffer memReadBuffer = ByteBuffer.allocate(16 * 4).order(ByteOrder.LITTLE_ENDIAN);
+    private ByteBuffer sdinfoRcvBuffer = ByteBuffer.allocateDirect(12).order(ByteOrder.LITTLE_ENDIAN);
+    private ByteBuffer fileinfoRcvBuffer = ByteBuffer.allocateDirect(256).order(ByteOrder.LITTLE_ENDIAN);
+    private ByteBuffer memReadBuffer = ByteBuffer.allocateDirect(16 * 4).order(ByteOrder.LITTLE_ENDIAN);
     private int memReadAddr;
     private int memReadLength;
     private int memRead1WordValue;
@@ -767,10 +767,9 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public int writeBytes(byte[] data) {
+    public int writeBytes(ByteBuffer data) {
 
-        ByteBuffer buffer = ByteBuffer.allocateDirect(data.length).order(ByteOrder.LITTLE_ENDIAN);
-        buffer.put(data);
+        ByteBuffer buffer = data.duplicate(); /* Deep copy for safety? */
         buffer.rewind();
         IntBuffer transfered = IntBuffer.allocate(1);
 
@@ -926,11 +925,11 @@ public class USBBulkConnection extends Connection {
         short uUIMidiCost = Preferences.getInstance().getUiMidiThreadCost();
         byte  uDspLimit200 = (byte)(Preferences.getInstance().getDspLimitPercent()*2);
         
-        ByteBuffer buffer = ByteBuffer.allocate(7).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(7).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(Axos_pckt);
         buffer.putShort(uUIMidiCost);
         buffer.put(uDspLimit200);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -938,9 +937,9 @@ public class USBBulkConnection extends Connection {
         /* Total size (bytes):
            "AxoS"           (4)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoS_pckt);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -949,10 +948,10 @@ public class USBBulkConnection extends Connection {
            "AxoT"           (4)
            presetNo         (1)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(5).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(5).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoT_pckt);
         buffer.put((byte) presetNo);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -960,9 +959,9 @@ public class USBBulkConnection extends Connection {
         /* Total size (bytes):
            "Axou"           (4)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(Axou_pckt);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -970,9 +969,9 @@ public class USBBulkConnection extends Connection {
         /* Total size (bytes):
            "AxoV"           (4)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoV_pckt);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -980,9 +979,9 @@ public class USBBulkConnection extends Connection {
         /* Total size (bytes):
            "AxoY"           (4)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoY_pckt);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -991,12 +990,12 @@ public class USBBulkConnection extends Connection {
            "AxoM"           (4)
            MIDI message     (3)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(7).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(7).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoM_pckt);
         buffer.put((byte) m0);
         buffer.put((byte) m1);
         buffer.put((byte) m2);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1006,11 +1005,11 @@ public class USBBulkConnection extends Connection {
            data length      (4)
            data bytes       (variable length)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(8 + data.length).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(8 + data.length).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoR_pckt);
         buffer.putInt(data.length);
         buffer.put(data);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1018,9 +1017,9 @@ public class USBBulkConnection extends Connection {
         /* Total size (bytes):
            "Axol"           (4)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(Axol_pckt);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1035,14 +1034,14 @@ public class USBBulkConnection extends Connection {
         */
         byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
         
-        ByteBuffer buffer = ByteBuffer.allocate(10 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(10 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoC_pckt);
         buffer.putInt(0);
         buffer.put((byte)0x00);
         buffer.put((byte)'I');
         buffer.put(filenameBytes);
         buffer.put((byte)0x00);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1050,9 +1049,9 @@ public class USBBulkConnection extends Connection {
         /* Total size (bytes):
            "AxoA"           (4)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoA_pckt);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1060,9 +1059,9 @@ public class USBBulkConnection extends Connection {
         /* Total size (bytes):
            "AxoF"           (4)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoF_pckt);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1073,12 +1072,12 @@ public class USBBulkConnection extends Connection {
            Total length     (4)
            sub-command      (1) <- 'W'
          */
-        ByteBuffer buffer = ByteBuffer.allocate(13).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(13).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoW_pckt);
         buffer.putInt(startAddr);
         buffer.putInt(totalLen);
         buffer.put((byte)'W');
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1088,10 +1087,10 @@ public class USBBulkConnection extends Connection {
            Length           (4)
            data             (variable length)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(8 + data.length).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(8 + data.length).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(Axow_pckt);
         buffer.putInt(data.length);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1102,12 +1101,12 @@ public class USBBulkConnection extends Connection {
            Total length     (4)
            sub-command      (1) <- 'e'
          */
-        ByteBuffer buffer = ByteBuffer.allocate(13).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(13).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoW_pckt);
         buffer.putInt(startAddr);
         buffer.putInt(totalLen);
         buffer.put((byte)'e');
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1123,7 +1122,7 @@ public class USBBulkConnection extends Connection {
            null terminator  (1)
          */
         byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
-        ByteBuffer buffer = ByteBuffer.allocate(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoC_pckt);
         buffer.putInt(size);
         buffer.put((byte)0x00);
@@ -1143,7 +1142,7 @@ public class USBBulkConnection extends Connection {
         buffer.putShort(fatFsTime);
         buffer.put(filenameBytes);
         buffer.put((byte)0x00);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1158,14 +1157,14 @@ public class USBBulkConnection extends Connection {
          */
         byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
 
-        ByteBuffer buffer = ByteBuffer.allocate(10 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(10 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoC_pckt);
         buffer.putInt(0);
         buffer.put((byte)0x00);
         buffer.put((byte)'D');
         buffer.put(filenameBytes);
         buffer.put((byte)0x00);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1180,14 +1179,14 @@ public class USBBulkConnection extends Connection {
          */
         byte[] pathBytes = path.getBytes(StandardCharsets.US_ASCII);
 
-        ByteBuffer buffer = ByteBuffer.allocate(10 + pathBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(10 + pathBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoC_pckt);
         buffer.putInt(0);
         buffer.put((byte)0x00);
         buffer.put((byte)'h');
         buffer.put(pathBytes);
         buffer.put((byte)0x00);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1204,7 +1203,7 @@ public class USBBulkConnection extends Connection {
          */
         byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
         
-        ByteBuffer buffer = ByteBuffer.allocate(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoC_pckt);
         buffer.putInt(0);
         buffer.put((byte)0x00);
@@ -1224,7 +1223,7 @@ public class USBBulkConnection extends Connection {
         buffer.putShort(fatFsTime);
         buffer.put(filenameBytes);
         buffer.put((byte)0x00);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1234,11 +1233,11 @@ public class USBBulkConnection extends Connection {
            Length           (4)
            data             (variable length)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(8 + data.length).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(8 + data.length).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(Axoa_pckt);
         buffer.putInt(data.length);
         buffer.put(data);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1255,7 +1254,7 @@ public class USBBulkConnection extends Connection {
          */
         byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
         
-        ByteBuffer buffer = ByteBuffer.allocate(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(14 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoC_pckt);
         buffer.putInt(0);
         buffer.put((byte)0x00);
@@ -1275,7 +1274,7 @@ public class USBBulkConnection extends Connection {
         buffer.putShort(fatFsTime);
         buffer.put(filenameBytes);
         buffer.put((byte)0x00);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1285,11 +1284,11 @@ public class USBBulkConnection extends Connection {
            address          (4)
            length           (4)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(12).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(Axor_pckt);
         buffer.putInt(addr);
         buffer.putInt(length);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     @Override
@@ -1298,10 +1297,10 @@ public class USBBulkConnection extends Connection {
            "Axoy"           (4)
            address          (4)
          */
-        ByteBuffer buffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(8).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(Axoy_pckt);
         buffer.putInt(addr);
-        return writeBytes(buffer.array());
+        return writeBytes(buffer);
     }
 
     public void SetSDCardPresent(boolean i) {
@@ -1443,8 +1442,7 @@ public class USBBulkConnection extends Connection {
 
         if (i2 > 0) {
             dataLength = i2 * 4;
-            dispData = ByteBuffer.allocate(dataLength).order(ByteOrder.LITTLE_ENDIAN);
-            dispData.order(ByteOrder.LITTLE_ENDIAN);
+            dispData = ByteBuffer.allocateDirect(dataLength).order(ByteOrder.LITTLE_ENDIAN);
             setNextState(ReceiverState.DISPLAY_PCKT);
         }
         else {
@@ -1849,7 +1847,7 @@ public class USBBulkConnection extends Connection {
                         memReadLength += (cc & 0xFF) << 24;
                         break;
                     case 8:
-                        memReadBuffer = ByteBuffer.allocate(memReadLength).order(ByteOrder.LITTLE_ENDIAN);
+                        memReadBuffer = ByteBuffer.allocateDirect(memReadLength).order(ByteOrder.LITTLE_ENDIAN);
                         memReadBuffer.rewind();
                     default:
                         memReadBuffer.put(cc);

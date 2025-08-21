@@ -225,6 +225,6 @@ public abstract class Connection {
         }
     }
 
-    abstract public int writeBytes(byte[] data);
+    abstract public int writeBytes(ByteBuffer data);
 
 }
