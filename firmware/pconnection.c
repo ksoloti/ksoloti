@@ -770,11 +770,14 @@ void PExReceiveByte(unsigned char c) {
                     case 'y': /* generic read, 32 bit */
                         state = 4; /* All the above pass on directly to state 4. */
                         break;
-                    case 'u': /* go to DFU mode */
+                    case 'u': { /* go to DFU mode */
                         state = 0; header = 0; AckPending = 1;
-                        StopPatch();
-                        exception_initiate_dfu();
+                        uint8_t res = StopPatch();
+                        if (res == FR_OK) {
+                            exception_initiate_dfu();
+                        }
                         break;
+                    }
                     case 'F': { /* copy to flash */
                         state = 0; header = 0;
                         uint8_t res = StopPatch();
@@ -864,16 +867,19 @@ void PExReceiveByte(unsigned char c) {
             case 9: value |= (int32_t)c <<  8; state++; break;
             case 10: value |= (int32_t)c << 16; state++; break;
             case 11: value |= (int32_t)c << 24; state++; break;
-            case 12: /* Sub-command can be 'W' or 'c' */
+            case 12: { /* Sub-command can be 'W' (start) or 'e' (end) */
                 switch(c) {
-                    case 'W': /* start Memory Write */
-                        StopPatch();
-                        write_position = offset; /* Initialize write_position here */
-                        total_write_length = (uint32_t)value;
-                        send_AxoResult(c, FR_OK);
+                    case 'W': { /* start Memory Write */
+                        uint8_t res = StopPatch();
+                        if (res == FR_OK) {
+                            write_position = offset; /* Initialize write_position here */
+                            total_write_length = (uint32_t)value;
+                        }
+                        send_AxoResult(c, res);
                         state = 0; header = 0;
                         break;
-                    case 'c': /* close Memory Write */
+                    }
+                    case 'e': /* end Memory Write */
                         // TODO: error checking based on total_write_length?
                         send_AxoResult(c, FR_OK);
                         state = 0; header = 0;
@@ -1007,15 +1013,17 @@ void PExReceiveByte(unsigned char c) {
                 state++; /* Move on to filename parsing state (case 14) */
                 break;
 
-            /* --- States for parsing filename (variable length, null-terminated) into FileName[6] onwards --- */
+            /* States for parsing filename (variable length, null-terminated) into FileName[6] onwards --- */
             /* Used by 'f', 'k', 'c', 'D', 'C', 'I' */
-            case 14: /* Start/continue filename parsing (into FileName[6]+) */
+            case 14: { /* Start/continue filename parsing (into FileName[6]+) */
                 if (current_filename_idx < sizeof(FileName)) {
                     FileName[current_filename_idx++] = c;
                     if (c == 0) { // Null terminator received
                         /* Filename complete, dispatch command */
-                        StopPatch();
-                        ManipulateFile(); /* ManipulateFile will now use FileName and pFileSize */
+                        uint8_t res = StopPatch();
+                        if (res == FR_OK) {
+                            ManipulateFile(); /* ManipulateFile will now use FileName and pFileSize */
+                        }
                         header = 0; state = 0; /* Reset state machine, no AckPending */
                     }
                 }
@@ -1023,6 +1031,7 @@ void PExReceiveByte(unsigned char c) {
                     header = 0; state = 0; /* Error: filename too long */
                 }
                 break;
+            }
 
             default: /* Unknown state: reset state machine */
                 // LogTextMessage("PEXRB:Unknown state %u", state);
