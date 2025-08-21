@@ -700,20 +700,35 @@ public class USBBulkConnection extends Connection {
 
             /* 6. Post-Connection Commands (CPU ID, Firmware Version) */
             try {
-                QCmdProcessor.getInstance().AppendToQueue(new QCmdGetFWVersion());
-                QCmdProcessor.getInstance().WaitQueueFinished();
+                QCmdGetFWVersion fwVersionCmd = new QCmdGetFWVersion();
+                QCmdProcessor.getInstance().AppendToQueue(fwVersionCmd);
+                if (!fwVersionCmd.waitForCompletion()) {
+                    LOGGER.log(Level.SEVERE, "Get FW version command timed out.");
+                }
+                else if (!fwVersionCmd.isSuccessful()) {
+                    LOGGER.log(Level.SEVERE, "Failed to get FW version.");
+                }
 
-                QCmdMemRead1Word q1 = new QCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
-                QCmdProcessor.getInstance().AppendToQueue(q1);
-                QCmdProcessor.getInstance().WaitQueueFinished();
-                targetProfile.setCPUIDCode(q1.getResult());
+                QCmdMemRead1Word cpuRevisionCmd = new QCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
+                QCmdProcessor.getInstance().AppendToQueue(cpuRevisionCmd);
+                if (!cpuRevisionCmd.waitForCompletion()) {
+                    LOGGER.log(Level.SEVERE, "Get CPU revision command timed out.");
+                }
+                else if (!cpuRevisionCmd.isSuccessful()) {
+                    LOGGER.log(Level.SEVERE, "Failed to get CPU revision.");
+                }
+                targetProfile.setCPUIDCode(cpuRevisionCmd.getValueRead());
 
-                QCmdMemRead q = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
-                QCmdProcessor.getInstance().AppendToQueue(q);
-                QCmdProcessor.getInstance().WaitQueueFinished();
-                targetProfile.setCPUSerial(q.getResult());
+                QCmdMemRead cpuSerialCmd = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
+                QCmdProcessor.getInstance().AppendToQueue(cpuSerialCmd);
+                if (!cpuSerialCmd.waitForCompletion()) {
+                    LOGGER.log(Level.SEVERE, "Get board ID command timed out.");
+                }
+                else if (!cpuSerialCmd.isSuccessful()) {
+                    LOGGER.log(Level.SEVERE, "Failed to get board ID.");
+                }
+                targetProfile.setCPUSerial(cpuSerialCmd.getValuesRead());
                 this.detectedCpuId = CpuIdToHexString(targetProfile.getCPUSerial());
-                // System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: detectedCpuId set to: " + this.detectedCpuId);
             }
             catch (Exception cmdEx) {
                 LOGGER.log(Level.SEVERE, "Error during post-connection QCmd processing. Connection might be unstable: " + cmdEx.getMessage());
