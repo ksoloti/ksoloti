@@ -143,7 +143,7 @@ public class USBBulkConnection extends Connection {
     protected volatile QCmdSerialTask currentExecutingCommand = null;
 
     enum ReceiverState {
-        HEADER,
+        IDLE,
         ACK_PCKT,               /* general acknowledge */
         PARAMCHANGE_PCKT,       /* parameter changed */
         DISPLAY_PCKT_HDR,       /* object display readbac */
@@ -162,7 +162,7 @@ public class USBBulkConnection extends Connection {
      * Protocol documentation:
      * "AxoP" + bb + vvvv -> parameter change index bb (16bit), value vvvv (32bit)
      */
-    private ReceiverState state = ReceiverState.HEADER;
+    private ReceiverState state = ReceiverState.IDLE;
     private int headerstate;
     private int[] packetData = new int[64];
     private int dataIndex = 0;  /* in bytes */
@@ -1484,7 +1484,7 @@ public class USBBulkConnection extends Connection {
 
     private void setIdleState() {
         this.headerstate = 0;
-        this.state = ReceiverState.HEADER;
+        this.state = ReceiverState.IDLE;
         this.dataIndex = 0;
         this.dataLength = 0;
     }
@@ -1509,7 +1509,7 @@ public class USBBulkConnection extends Connection {
 
         switch (state) {
 
-            case HEADER:
+            case IDLE:
                 switch (headerstate) {
                     case 0: /* This should always be 'A' or command will be ignored */
                         if (c == 'A') {
