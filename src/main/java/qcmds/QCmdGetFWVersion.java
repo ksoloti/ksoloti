@@ -38,9 +38,8 @@ public class QCmdGetFWVersion extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        connection.ClearSync();
+        connection.setCurrentExecutingCommand(this); 
         connection.TransmitGetFWVersion();
-        connection.WaitSync();
         return this;
     }
 }

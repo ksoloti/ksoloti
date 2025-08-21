@@ -2007,6 +2007,10 @@ public class USBBulkConnection extends Connection {
                             LOGGER.log(Level.INFO, String.format("Core running Firmware version %d.%d.%d.%d | CRC %s\n", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
                             MainFrame.mainframe.setFirmwareID(sFwcrc);
                         }
+                        if (currentExecutingCommand != null && currentExecutingCommand instanceof QCmdGetFWVersion) {
+                            currentExecutingCommand.setMcuStatusCode((byte)0x00);
+                            currentExecutingCommand.setCompletedWithStatus(true);
+                        }
                         setIdleState();
                         break;
                     default:
