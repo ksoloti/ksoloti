@@ -97,15 +97,15 @@ __attribute__((noreturn)) static msg_t ThreadUSBDMidi(void *arg) {
 
 
 void uint32_to_le_bytes(uint32_t value, uint8_t* dest) {
-    dest[0] = (value >> 0) & 0xFF;
-    dest[1] = (value >> 8) & 0xFF;
-    dest[2] = (value >> 16) & 0xFF;
-    dest[3] = (value >> 24) & 0xFF;
+    dest[0] = (uint8_t) ((value >>  0) & 0xFF);
+    dest[1] = (uint8_t) ((value >>  8) & 0xFF);
+    dest[2] = (uint8_t) ((value >> 16) & 0xFF);
+    dest[3] = (uint8_t) ((value >> 24) & 0xFF);
 }
 
 
 uint32_t le_bytes_to_uint32(const uint8_t* src) {
-    return src[0] | (src[1] << 8) | (src[2] << 16) | (src[3] << 24);
+    return (uint32_t) (src[0] | (src[1] << 8) | (src[2] << 16) | (src[3] << 24));
 }
 
 
@@ -310,8 +310,8 @@ static FRESULT scan_files(char *path) {
                 msg[1] = 'x';
                 msg[2] = 'o';
                 msg[3] = 'f';
-                *(int32_t*) (&msg[4]) = fno.fsize;
-                *(int32_t*) (&msg[8]) = fno.fdate + (fno.ftime<<16);
+                uint32_to_le_bytes(fno.fsize, &msg[4]);
+                uint32_to_le_bytes(fno.fdate + (fno.ftime<<16), &msg[8]);
 
                 strcpy(&msg[12], &path[1]);
                 int l = strlen(&msg[12]);
@@ -337,8 +337,8 @@ static FRESULT scan_files(char *path) {
                 msg[1] = 'x';
                 msg[2] = 'o';
                 msg[3] = 'f';
-                *(int32_t*) (&msg[4]) = fno.fsize;
-                *(int32_t*) (&msg[8]) = fno.fdate + (fno.ftime<<16);
+                uint32_to_le_bytes(fno.fsize, &msg[4]);
+                uint32_to_le_bytes(fno.fdate + (fno.ftime<<16), &msg[8]);
 
                 int current_subdir_path_len = strlen(&path[1]);
                 strcpy(&msg[12], &path[1]);
@@ -577,7 +577,7 @@ static void ManipulateFile(void) {
         else if (FileName[1] == 'D') { /* delete file (AxoCD) */
             // LogTextMessage("Executing 'CD' cmd");
 
-            f_chdir("/"); /* Change to root to avoid FR_DENIED for currently open directory */
+            // f_chdir("/"); /* Change to root to avoid FR_DENIED for currently open directory */
             FRESULT op_result = f_unlink(&FileName[6]); /* Path from FileName[6]+ */
             if (op_result != FR_OK) {
                 // LogTextMessage("ERROR:MNPFL f_unlink,op_result:%u path:%s", op_result, &FileName[6]);
@@ -606,8 +606,8 @@ static void ManipulateFile(void) {
             if (op_result == FR_OK) {
                 char *msg = &((char*) fbuff)[0];
                 msg[0] = 'A'; msg[1] = 'x'; msg[2] = 'o'; msg[3] = 'f';
-                *(int32_t*) (&msg[4]) = fno.fsize;
-                *(int32_t*) (&msg[8]) = fno.fdate + (fno.ftime<<16);
+                uint32_to_le_bytes(fno.fsize, &msg[4]);
+                uint32_to_le_bytes(fno.fdate + (fno.ftime<<16), &msg[8]);
                 strcpy(&msg[12], &FileName[6]); // Copy from FileName[6]
                 int l = strlen(&msg[12]);
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) msg, l+13);
@@ -1110,14 +1110,14 @@ void PExReceiveByte(unsigned char c) {
             case 9:  value |= (int32_t)c <<  8; state++; break;
             case 10: value |= (int32_t)c << 16; state++; break;
             case 11: value |= (int32_t)c << 24;
-                uint32_t read_reply_header[3];
-                ((char*) read_reply_header)[0] = 'A';
-                ((char*) read_reply_header)[1] = 'x';
-                ((char*) read_reply_header)[2] = 'o';
-                ((char*) read_reply_header)[3] = 'r';
-                read_reply_header[1] = (uint32_t)offset;
-                read_reply_header[2] = (uint32_t)value;
-                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12); /* 3*4 bytes */
+                uint8_t read_reply_header[12];
+                read_reply_header[0] = 'A';
+                read_reply_header[1] = 'x';
+                read_reply_header[2] = 'o';
+                read_reply_header[3] = 'r';
+                uint32_to_le_bytes(offset, &read_reply_header[4]);
+                uint32_to_le_bytes(value, &read_reply_header[8]);
+                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12);
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (offset), (uint32_t)value);
                 state = 0; header = 0;
                 break;
@@ -1131,14 +1131,15 @@ void PExReceiveByte(unsigned char c) {
             case 5: offset |= (uint32_t)c <<  8; state++; break;
             case 6: offset |= (uint32_t)c << 16; state++; break;
             case 7: offset |= (uint32_t)c << 24;
-                uint32_t read_reply_header[3];
-                ((char*) read_reply_header)[0] = 'A';
-                ((char*) read_reply_header)[1] = 'x';
-                ((char*) read_reply_header)[2] = 'o';
-                ((char*) read_reply_header)[3] = 'y';
-                read_reply_header[1] = (uint32_t)offset;
-                read_reply_header[2] = *((uint32_t*) offset);
-                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12); /* 3*4 bytes */
+                value = *((uint32_t*) offset);
+                uint8_t read_reply_header[12];
+                read_reply_header[0] = 'A';
+                read_reply_header[1] = 'x';
+                read_reply_header[2] = 'o';
+                read_reply_header[3] = 'y';
+                uint32_to_le_bytes(offset, &read_reply_header[4]);
+                uint32_to_le_bytes(value, &read_reply_header[8]);
+                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12);
                 state = 0; header = 0;
                 break;
             default:
