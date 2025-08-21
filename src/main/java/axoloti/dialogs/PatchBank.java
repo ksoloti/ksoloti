@@ -856,7 +856,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 if (!uploadFileCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "File upload command for Patchbank index timed out.");
                 }
-                if (!uploadFileCmd.isSuccessful()) {
+                else if (!uploadFileCmd.isSuccessful()) {
                     LOGGER.log(Level.SEVERE, "Failed to upload Patchbank index.");
                 }
             } catch (InterruptedException e) {
@@ -1028,7 +1028,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                         if (!uploadFileCmd.waitForCompletion()) {
                             LOGGER.log(Level.SEVERE, "File upload command for Patchbank index timed out.");
                         }
-                        if (!uploadFileCmd.isSuccessful()) {
+                        else if (!uploadFileCmd.isSuccessful()) {
                             LOGGER.log(Level.SEVERE, "Failed to upload Patchbank index.");
                         }
                     } catch (InterruptedException e) {

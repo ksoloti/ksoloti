@@ -214,7 +214,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                         LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
                                         continue; /* Skip to next file */
                                     }
-                                    if (!uploadFileCmd.isSuccessful()) {
+                                    else if (!uploadFileCmd.isSuccessful()) {
                                         LOGGER.log(Level.SEVERE, "Failed to upload file " + f.getName());
                                         continue; /* Skip to next file */
                                     }
@@ -614,7 +614,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     LOGGER.log(Level.SEVERE, "Delete file command timed out: " + sdCardPath);
                     return false;
                 }
-                if (!deleteDirCmd.isSuccessful()) {
+                else if (!deleteDirCmd.isSuccessful()) {
                     LOGGER.log(Level.SEVERE, "Failed to delete empty directory: " + sdCardPath);
                     return false;
                 }
@@ -642,7 +642,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     LOGGER.log(Level.SEVERE, "Delete file command timed out: " + sdCardPath);
                     return false;
                 }
-                if (!deleteFileCmd.isSuccessful()) {
+                else if (!deleteFileCmd.isSuccessful()) {
                     LOGGER.log(Level.SEVERE, "Failed to delete file: " + sdCardPath);
                     return false;
                 }
@@ -714,7 +714,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         LOGGER.log(Level.SEVERE, "Get file list command timed out.");
                         return null;
                     }
-                    if (!getFileListCmd.isSuccessful()) {
+                    else if (!getFileListCmd.isSuccessful()) {
                         LOGGER.log(Level.SEVERE, "Failed to get file list.");
                         return null;
                     }
@@ -824,7 +824,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                         failedCount++;
                                         continue; /* Skip to next file if failed */
                                     }
-                                    if (!uploadFileCmd.isSuccessful()) {
+                                    else if (!uploadFileCmd.isSuccessful()) {
                                         LOGGER.log(Level.SEVERE, "Failed to upload file " + file.getName());
                                         failedCount++;
                                         continue; /* Skip to next file if failed */
@@ -1021,7 +1021,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     LOGGER.log(Level.SEVERE, "Create directory command timed out.");
                     return;
                 }
-                if (!createDirCmd.isSuccessful()) {
+                else if (!createDirCmd.isSuccessful()) {
                     LOGGER.log(Level.SEVERE, "Failed to create directory.");
                     return;
                 }

@@ -280,7 +280,7 @@ public class Patch {
                 LOGGER.log(Level.SEVERE, "Get file list command timed out.");
                 return;
             }
-            if (!getFileListCmd.isSuccessful()) {
+            else if (!getFileListCmd.isSuccessful()) {
                 LOGGER.log(Level.SEVERE, "Failed to get file list.");
                 return;
             }
@@ -325,7 +325,7 @@ public class Patch {
                                 LOGGER.log(Level.SEVERE, "Create directory command timed out.");
                                 return;
                             }
-                            if (!createDirCmd.isSuccessful()) {
+                            else if (!createDirCmd.isSuccessful()) {
                                 LOGGER.log(Level.SEVERE, "Failed to create directory.");
                                 return;
                             }
@@ -380,7 +380,7 @@ public class Patch {
                         LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
                         continue;
                     }
-                    if (!uploadFileCmd.isSuccessful()) {
+                    else if (!uploadFileCmd.isSuccessful()) {
                         LOGGER.log(Level.SEVERE, "Failed to upload file " + f.getName());
                         continue;
                     }
@@ -3127,7 +3127,7 @@ public class Patch {
                         LOGGER.log(Level.SEVERE, "Create directory command timed out.");
                         return;
                     }
-                    if (!createDirCmd.isSuccessful()) {
+                    else if (!createDirCmd.isSuccessful()) {
                         LOGGER.log(Level.SEVERE, "Failed to create directory.");
                         return;
                     }
@@ -3161,7 +3161,7 @@ public class Patch {
                 if (!uploadFileCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
                 }
-                if (!uploadFileCmd.isSuccessful()) {
+                else if (!uploadFileCmd.isSuccessful()) {
                     LOGGER.log(Level.SEVERE, "Failed to upload file " + f.getName());
                 }
             } catch (InterruptedException e) {
@@ -3191,7 +3191,7 @@ public class Patch {
                         if (!uploadFileCmd.waitForCompletion()) {
                             LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
                         }
-                        if (!uploadFileCmd.isSuccessful()) {
+                        else if (!uploadFileCmd.isSuccessful()) {
                             LOGGER.log(Level.SEVERE, "Failed to upload file " + f.getName());
                         }
                     } catch (InterruptedException e) {

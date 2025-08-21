@@ -866,7 +866,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM command timed out.");
                         return false;
                     }
-                    if (!uploadFwCmd.isSuccessful()) {
+                    else if (!uploadFwCmd.isSuccessful()) {
                         LOGGER.log(Level.SEVERE, "Failed to upload firmware to SDRAM.");
                         return false;
                     }
@@ -879,7 +879,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         LOGGER.log(Level.SEVERE, "Flasher upload command timed out.");
                         return false;
                     }
-                    if (!uploadPatchCmd.isSuccessful()) {
+                    else if (!uploadPatchCmd.isSuccessful()) {
                         LOGGER.log(Level.SEVERE, "Failed to upload Flasher.");
                         return false;
                     }
@@ -1526,7 +1526,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         LOGGER.log(Level.SEVERE, "Test patch upload command timed out.");
                         return false; /* Abort test of this patch */
                     }
-                    if (!uploadCmd.isSuccessful()) {
+                    else if (!uploadCmd.isSuccessful()) {
                         LOGGER.log(Level.SEVERE, "Failed to upload test patch.");
                         return false; /* Abort test of this patch */
                     }
@@ -1730,7 +1730,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     LOGGER.log(Level.SEVERE, "Mounter upload command timed out.");
                     return;
                 }
-                if (!uploadMounterCmd.isSuccessful()) {
+                else if (!uploadMounterCmd.isSuccessful()) {
                     LOGGER.log(Level.SEVERE, "Failed to upload Mounter.");
                     return;
                 }
@@ -1881,7 +1881,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     LOGGER.log(Level.SEVERE, "Patch stop command timed out.");
                     return;
                 }
-                if (!stopCmd.isSuccessful()) {
+                else if (!stopCmd.isSuccessful()) {
                     LOGGER.log(Level.SEVERE, "Failed to stop patch.");
                     return;
                 } else {
@@ -1907,7 +1907,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     LOGGER.log(Level.SEVERE, "Patch start command for " + this.currentLivePatch.getFileNamePath() + " timed out.");
                     return;
                 }
-                if (!startCmd.isSuccessful()) {
+                else if (!startCmd.isSuccessful()) {
                     LOGGER.log(Level.SEVERE, "Failed to start patch: " + this.currentLivePatch.getFileNamePath());
                     return;
                 } else {

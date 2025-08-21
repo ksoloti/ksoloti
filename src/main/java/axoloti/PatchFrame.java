@@ -479,7 +479,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                                 LOGGER.log(Level.SEVERE, "Create directory command timed out.");
                                                 return false;
                                             }
-                                            if (!createDirCmd.isSuccessful()) {
+                                            else if (!createDirCmd.isSuccessful()) {
                                                 LOGGER.log(Level.SEVERE, "Failed to create directory.");
                                                 return false;
                                             }
@@ -492,7 +492,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                             LOGGER.log(Level.SEVERE, "Change working directory command timed out.");
                                             return false;
                                         }
-                                        if (!changeDirCmd.isSuccessful()) {
+                                        else if (!changeDirCmd.isSuccessful()) {
                                             LOGGER.log(Level.SEVERE, "Failed to change working directory.");
                                             return false;
                                         }
@@ -1584,7 +1584,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                     LOGGER.log(Level.SEVERE, "Patch upload command timed out.");
                                     return false;
                                 }
-                                if (!uploadCmd.isSuccessful()) {
+                                else if (!uploadCmd.isSuccessful()) {
                                     LOGGER.log(Level.SEVERE, "Failed to upload patch.");
                                     return false;
                                 }
@@ -1598,7 +1598,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                     LOGGER.log(Level.SEVERE, "Copy patch to internal Flash command timed out.");
                                     return false;
                                 }
-                                if (!copyToFlashCmd.isSuccessful()) {
+                                else if (!copyToFlashCmd.isSuccessful()) {
                                     LOGGER.log(Level.SEVERE, "Failed to copy patch to internal Flash.");
                                     return false;
                                 }
