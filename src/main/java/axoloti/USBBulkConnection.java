@@ -104,43 +104,43 @@ public class USBBulkConnection extends Connection {
     int fwcrc = -1;
     int temp_fwcrc = -1;
 
-    private final byte[] AxoA_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('A')};
-    private final byte[] AxoC_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('C')};
-    private final byte[] AxoF_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('F')};
-    private final byte[] AxoM_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('M')};
-    private final byte[] AxoR_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('R')};
-    private final byte[] AxoS_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('S')};
-    private final byte[] AxoT_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('T')};
-    private final byte[] AxoV_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('V')};
-    private final byte[] AxoW_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('W')};
-    private final byte[] AxoY_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('Y')};
-    private final byte[] Axoa_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('a')};
-    private final byte[] Axol_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('l')};
-    private final byte[] Axor_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('r')};
-    private final byte[] Axos_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('s')};
-    private final byte[] Axou_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('u')};
-    private final byte[] Axow_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('w')};
-    private final byte[] Axoy_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('y')};
+    private final static byte[] AxoA_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('A')};
+    private final static byte[] AxoC_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('C')};
+    private final static byte[] AxoF_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('F')};
+    private final static byte[] AxoM_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('M')};
+    private final static byte[] AxoR_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('R')};
+    private final static byte[] AxoS_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('S')};
+    private final static byte[] AxoT_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('T')};
+    private final static byte[] AxoV_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('V')};
+    private final static byte[] AxoW_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('W')};
+    private final static byte[] AxoY_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('Y')};
+    private final static byte[] Axoa_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('a')};
+    private final static byte[] Axol_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('l')};
+    private final static byte[] Axor_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('r')};
+    private final static byte[] Axos_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('s')};
+    private final static byte[] Axou_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('u')};
+    private final static byte[] Axow_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('w')};
+    private final static byte[] Axoy_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('y')};
 
-    private final short bulkVID = (short) 0x16C0;
-    private final short bulkPIDAxoloti = (short) 0x0442;
-    private final short bulkPIDAxolotiUsbAudio = (short) 0x0447;
-    private final short bulkPIDKsoloti = (short) 0x0444;
-    private final short bulkPIDKsolotiUsbAudio = (short) 0x0446;
-    private int useBulkInterfaceNumber = 2;
+    private final static short bulkVID = (short) 0x16C0;
+    private final static short bulkPIDAxoloti = (short) 0x0442;
+    private final static short bulkPIDAxolotiUsbAudio = (short) 0x0447;
+    private final static short bulkPIDKsoloti = (short) 0x0444;
+    private final static short bulkPIDKsolotiUsbAudio = (short) 0x0446;
+    private static int useBulkInterfaceNumber = 2;
 
-    static final byte OUT_ENDPOINT = (byte) 0x02;
-    static final byte IN_ENDPOINT = (byte) 0x82;
+    private final static Pattern sdFoundNoStartupPattern = Pattern.compile("File error:.*filename:\"/start.bin\"");
+
+    private final static byte OUT_ENDPOINT = (byte) 0x02;
+    private final static byte IN_ENDPOINT = (byte) 0x82;
 
     private int currentFileSize;
     private int currentFileTimestamp;
 
-    private final Object usbInLock = new Object();  /* For IN endpoint operations (reading) */
-    private final Object usbOutLock = new Object(); /* For OUT endpoint operations (writing) */
+    private volatile Object usbInLock = new Object();  /* For IN endpoint operations (reading) */
+    private volatile Object usbOutLock = new Object(); /* For OUT endpoint operations (writing) */
 
     protected volatile QCmdSerialTask currentExecutingCommand = null;
-
-    private final static Pattern sdFoundNoStartupPattern = Pattern.compile("File error:.*filename:\"/start.bin\"");
 
     enum ReceiverState {
         HEADER,
