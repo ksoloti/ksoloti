@@ -104,13 +104,23 @@ public class USBBulkConnection extends Connection {
     int fwcrc = -1;
     int temp_fwcrc = -1;
 
+    private final byte[] AxoA_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('A')};
     private final byte[] AxoC_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('C')};
     private final byte[] AxoF_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('F')};
+    private final byte[] AxoM_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('M')};
+    private final byte[] AxoR_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('R')};
     private final byte[] AxoS_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('S')};
+    private final byte[] AxoT_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('T')};
+    private final byte[] AxoV_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('V')};
     private final byte[] AxoW_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('W')};
+    private final byte[] AxoY_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('Y')};
+    private final byte[] Axoa_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('a')};
     private final byte[] Axol_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('l')};
-    private final byte[] AxoA_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('A')};
+    private final byte[] Axor_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('r')};
     private final byte[] Axos_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('s')};
+    private final byte[] Axou_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('u')};
+    private final byte[] Axow_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('w')};
+    private final byte[] Axoy_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('y')};
 
     private final short bulkVID = (short) 0x16C0;
     private final short bulkPIDAxoloti = (short) 0x0442;
@@ -939,13 +949,10 @@ public class USBBulkConnection extends Connection {
            "AxoT"           (4)
            presetNo         (1)
          */
-        byte[] data = new byte[5];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'T';
-        data[4] = (byte) presetNo;
-        return writeBytes(data);
+        ByteBuffer buffer = ByteBuffer.allocate(5).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(AxoT_pckt);
+        buffer.put((byte) presetNo);
+        return writeBytes(buffer.array());
     }
 
     @Override
@@ -953,12 +960,9 @@ public class USBBulkConnection extends Connection {
         /* Total size (bytes):
            "Axou"           (4)
          */
-        byte[] data = new byte[4];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'u';
-        return writeBytes(data);
+        ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(Axou_pckt);
+        return writeBytes(buffer.array());
     }
 
     @Override
@@ -966,12 +970,9 @@ public class USBBulkConnection extends Connection {
         /* Total size (bytes):
            "AxoV"           (4)
          */
-        byte[] data = new byte[4];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'V';
-        return writeBytes(data);
+        ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(AxoV_pckt);
+        return writeBytes(buffer.array());
     }
 
     @Override
@@ -979,12 +980,9 @@ public class USBBulkConnection extends Connection {
         /* Total size (bytes):
            "AxoY"           (4)
          */
-        byte[] data = new byte[4];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'Y';
-        return writeBytes(data);
+        ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(AxoY_pckt);
+        return writeBytes(buffer.array());
     }
 
     @Override
@@ -993,39 +991,26 @@ public class USBBulkConnection extends Connection {
            "AxoM"           (4)
            MIDI message     (3)
          */
-        byte[] data = new byte[7];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'M';
-        data[4] = (byte) m0;
-        data[5] = (byte) m1;
-        data[6] = (byte) m2;
-        return writeBytes(data);
+        ByteBuffer buffer = ByteBuffer.allocate(7).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(AxoM_pckt);
+        buffer.put((byte) m0);
+        buffer.put((byte) m1);
+        buffer.put((byte) m2);
+        return writeBytes(buffer.array());
     }
 
     @Override
-    public int TransmitUpdatedPreset(byte[] buffer) {
+    public int TransmitUpdatedPreset(byte[] data) {
         /* Total size (bytes):
            "AxoR"           (4)
            data length      (4)
            data bytes       (variable length)
          */
-        byte[] header = new byte[8];
-        header[0] = 'A';
-        header[1] = 'x';
-        header[2] = 'o';
-        header[3] = 'R';
-        int len = buffer.length;
-        header[4] = (byte) len;
-        header[5] = (byte) (len >> 8);
-        header[6] = (byte) (len >> 16);
-        header[7] = (byte) (len >> 24);
-        int writeResult = writeBytes(header);
-        if (writeResult != LibUsb.SUCCESS) {
-            return writeResult;
-        }
-        return writeBytes(buffer);
+        ByteBuffer buffer = ByteBuffer.allocate(8 + data.length).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(AxoR_pckt);
+        buffer.putInt(data.length);
+        buffer.put(data);
+        return writeBytes(buffer.array());
     }
 
     @Override
@@ -1044,13 +1029,13 @@ public class USBBulkConnection extends Connection {
            "AxoC"           (4)
            pFileSize        (4)
            FileName[0]      (1)
-           FileName[1]      (1)
+           FileName[1]      (1) <- sub-command: 'I'
            filename bytes   (variable length)
            null terminator  (1)
         */
         byte[] filenameBytes = filename.getBytes(StandardCharsets.US_ASCII);
+        
         ByteBuffer buffer = ByteBuffer.allocate(10 + filenameBytes.length + 1).order(ByteOrder.LITTLE_ENDIAN);
-
         buffer.put(AxoC_pckt);
         buffer.putInt(0);
         buffer.put((byte)0x00);
@@ -1063,7 +1048,7 @@ public class USBBulkConnection extends Connection {
     @Override
     public int TransmitPing() {
         /* Total size (bytes):
-           "Axop"           (4)
+           "AxoA"           (4)
          */
         ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoA_pckt);
@@ -1086,7 +1071,7 @@ public class USBBulkConnection extends Connection {
            "AxoW"           (4)
            start address    (4)
            Total length     (4)
-           sub-command      (1)
+           sub-command      (1) <- 'W'
          */
         ByteBuffer buffer = ByteBuffer.allocate(13).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoW_pckt);
@@ -1097,21 +1082,16 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public int TransmitAppendMemWrite(byte[] buffer) {
+    public int TransmitAppendMemWrite(byte[] data) {
         /* Total size (bytes):
            "Axow"           (4)
            Length           (4)
-           (data is streamed in successive writeBytes(buffer))
+           data             (variable length)
          */
-        int size = buffer.length;
-        ByteBuffer headerBuffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
-        headerBuffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'w');
-        headerBuffer.putInt(size);
-        int writeResult = writeBytes(headerBuffer.array());
-        if (writeResult != LibUsb.SUCCESS) {
-            return writeResult;
-        }
-        return writeBytes(buffer); /* Send the actual data payload */
+        ByteBuffer buffer = ByteBuffer.allocate(8 + data.length).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(Axow_pckt);
+        buffer.putInt(data.length);
+        return writeBytes(buffer.array());
     }
 
     @Override
@@ -1120,7 +1100,7 @@ public class USBBulkConnection extends Connection {
            "AxoW"           (4)
            start address    (4)
            Total length     (4)
-           sub-command      (1)
+           sub-command      (1) <- 'e'
          */
         ByteBuffer buffer = ByteBuffer.allocate(13).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoW_pckt);
@@ -1136,7 +1116,7 @@ public class USBBulkConnection extends Connection {
            "AxoC"           (4)
            pFileSize        (4)
            FileName[0]      (1)
-           FileName[1]      (1)
+           FileName[1]      (1) <- sub-command: 'f'
            fdate            (2)
            ftime            (2)
            filename bytes   (variable length)
@@ -1172,7 +1152,7 @@ public class USBBulkConnection extends Connection {
            "AxoC"           (4)
            pFileSize        (4)
            FileName[0]      (1)
-           FileName[1]      (1)
+           FileName[1]      (1) <- sub-command: 'D'
            filename bytes   (variable length)
            null terminator  (1)
          */
@@ -1194,8 +1174,8 @@ public class USBBulkConnection extends Connection {
            "AxoC"           (4)
            pFileSize        (4)
            FileName[0]      (1)
-           FileName[1]      (1)
-           filename bytes   (variable length)
+           FileName[1]      (1) <- sub-command: 'h'
+           path bytes       (variable length)
            null terminator  (1)
          */
         byte[] pathBytes = path.getBytes(StandardCharsets.US_ASCII);
@@ -1216,7 +1196,7 @@ public class USBBulkConnection extends Connection {
            "AxoC"           (4)
            pFileSize        (4)
            FileName[0]      (1)
-           FileName[1]      (1)
+           FileName[1]      (1) <- sub-command: 'k'
            fdate            (2)
            ftime            (2)
            filename bytes   (variable length)
@@ -1248,22 +1228,17 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public int TransmitAppendFile(byte[] buffer) {
+    public int TransmitAppendFile(byte[] data) {
         /* Total size (bytes):
            "Axoa"           (4)
            Length           (4)
-           (data is streamed in successive writeBytes(buffer))
+           data             (variable length)
          */
-        int size = buffer.length;
-
-        ByteBuffer headerBuffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
-        headerBuffer.put((byte)'A').put((byte)'x').put((byte)'o').put((byte)'a');
-        headerBuffer.putInt(size);
-        int writeResult = writeBytes(headerBuffer.array());
-        if (writeResult != LibUsb.SUCCESS) {
-            return writeResult;
-        }
-        return writeBytes(buffer); /* Send the actual data payload */
+        ByteBuffer buffer = ByteBuffer.allocate(8 + data.length).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(Axoa_pckt);
+        buffer.putInt(data.length);
+        buffer.put(data);
+        return writeBytes(buffer.array());
     }
 
     @Override
@@ -1272,7 +1247,7 @@ public class USBBulkConnection extends Connection {
            "AxoC"           (4)
            pFileSize        (4)
            FileName[0]      (1)
-           FileName[1]      (1)
+           FileName[1]      (1) <- sub-command: 'c'
            fdate            (2)
            ftime            (2)
            filename bytes   (variable length)
@@ -1305,34 +1280,28 @@ public class USBBulkConnection extends Connection {
 
     @Override
     public int TransmitMemoryRead(int addr, int length) {
-        byte[] data = new byte[12];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'r';
-        data[4] = (byte) addr;
-        data[5] = (byte) (addr >> 8);
-        data[6] = (byte) (addr >> 16);
-        data[7] = (byte) (addr >> 24);
-        data[8] = (byte) length;
-        data[9] = (byte) (length >> 8);
-        data[10] = (byte) (length >> 16);
-        data[11] = (byte) (length >> 24);
-        return writeBytes(data);
+        /* Total size (bytes):
+           "Axor"           (4)
+           address          (4)
+           length           (4)
+         */
+        ByteBuffer buffer = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(Axor_pckt);
+        buffer.putInt(addr);
+        buffer.putInt(length);
+        return writeBytes(buffer.array());
     }
 
     @Override
     public int TransmitMemoryRead1Word(int addr) {
-        byte[] data = new byte[8];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = 'y';
-        data[4] = (byte) addr;
-        data[5] = (byte) (addr >> 8);
-        data[6] = (byte) (addr >> 16);
-        data[7] = (byte) (addr >> 24);
-        return writeBytes(data);
+        /* Total size (bytes):
+           "Axoy"           (4)
+           address          (4)
+         */
+        ByteBuffer buffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(Axoy_pckt);
+        buffer.putInt(addr);
+        return writeBytes(buffer.array());
     }
 
     public void SetSDCardPresent(boolean i) {

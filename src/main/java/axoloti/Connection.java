@@ -58,7 +58,7 @@ public abstract class Connection {
     abstract public int TransmitPing();
     abstract public int TransmitRecallPreset(int presetNo);
     abstract public int TransmitStartMemWrite(int startAddr, int totalLen);
-    abstract public int TransmitAppendMemWrite(byte[] buffer);
+    abstract public int TransmitAppendMemWrite(byte[] data);
     abstract public int TransmitCloseMemWrite(int startAddr, int totalLen);
     abstract public int TransmitGetFileList();
     abstract public int TransmitGetFileInfo(String filename);
@@ -66,12 +66,12 @@ public abstract class Connection {
     abstract public int TransmitCreateDirectory(String filename, Calendar date);
     abstract public int TransmitDeleteFile(String filename);
     abstract public int TransmitChangeWorkingDirectory(String path);
-    abstract public int TransmitAppendFile(byte[] buffer);
+    abstract public int TransmitAppendFile(byte[] data);
     abstract public int TransmitCloseFile(String filename, Calendar date);
     abstract public int TransmitCopyToFlash();
     abstract public int TransmitMemoryRead(int addr, int length);
     abstract public int TransmitMemoryRead1Word(int addr);    
-    abstract public int TransmitUpdatedPreset(byte[] b);
+    abstract public int TransmitUpdatedPreset(byte[] data);
     abstract public int TransmitMidi(int m0, int m1, int m2);
     abstract public int TransmitGetFWVersion();
     abstract public int TransmitGetSpilinkSynced();
