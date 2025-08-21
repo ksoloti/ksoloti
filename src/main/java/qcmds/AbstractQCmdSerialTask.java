@@ -33,7 +33,7 @@ public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
     @Override
     public void setCompletedWithStatus(boolean success) {
         this.commandSuccess = success;
-        latch.countDown(); // Signal that the command completed (successfully or not)
+        latch.countDown();
     }
 
     @Override
@@ -43,8 +43,6 @@ public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
 
     @Override
     public boolean waitForCompletion(long timeoutMs) throws InterruptedException {
-        // This method returns 'true' if the latch counted down (command finished),
-        // and 'false' if the timeout occurred before the latch counted down.
         return latch.await(timeoutMs, TimeUnit.MILLISECONDS);
     }
 
@@ -56,12 +54,9 @@ public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
 
     @Override
     public boolean isSuccessful() {
-        // For AxoR-based commands, success means both commandSuccess (no Java-side comms error)
-        // AND mcuStatusCode is FR_OK (0x00).
         return commandSuccess && mcuStatusCode == 0x00;
     }
 
-    // New: Get the raw MCU status code
     public byte getMcuStatusCode() {
         return mcuStatusCode;
     }

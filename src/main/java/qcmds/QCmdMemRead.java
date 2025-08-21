@@ -29,13 +29,7 @@ public class QCmdMemRead extends AbstractQCmdSerialTask {
 
     final int addr;
     final int length;
-    ByteBuffer result = null;
-
-    class Sync {
-
-        boolean ready = false;
-    }
-    final Sync sync = new Sync();
+    ByteBuffer values = null;
 
     public QCmdMemRead(int addr, int length) {
         this.addr = addr;
@@ -44,33 +38,17 @@ public class QCmdMemRead extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        synchronized (sync) {
-            connection.ClearReadSync();
-            connection.TransmitMemoryRead(addr, length);
-            connection.WaitReadSync();
-            result = connection.getMemReadBuffer();
-            sync.ready = true;
-            sync.notifyAll();
-        }
+        connection.setCurrentExecutingCommand(this);
+        connection.TransmitMemoryRead(addr, length);
         return this;
     }
 
-    public ByteBuffer getResult() {
-        synchronized (sync) {
-            if (sync.ready) {
-                return result;
-            }
-            try {
-                sync.wait(1000);
-                return result;
-            } catch (InterruptedException ex) {
-            }
-        }
-        if (sync.ready) {
-            return result;
-        } else {
-            return null;
-        }
+    public ByteBuffer getValuesRead() {
+        return values;
+    }
+
+    public void setValuesRead(ByteBuffer values) {
+        this.values = values;
     }
 
     @Override

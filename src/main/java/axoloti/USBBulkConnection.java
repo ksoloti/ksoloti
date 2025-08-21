@@ -1898,24 +1898,24 @@ public class USBBulkConnection extends Connection {
                         memReadBuffer.put(cc);
                         if (dataIndex == memReadLength + 7) {
                             memReadBuffer.rewind();
-                            memReadBuffer.order(ByteOrder.LITTLE_ENDIAN);
-                            System.out.print(Instant.now() + " memread offset 0x" + Integer.toHexString(memReadAddr) + ": ");
+                            if (currentExecutingCommand != null && currentExecutingCommand instanceof QCmdMemRead) {
+                                QCmdMemRead memReadCmd = (QCmdMemRead) currentExecutingCommand;
+                                memReadCmd.setValuesRead(memReadBuffer);
+                                memReadCmd.setMcuStatusCode((byte) 0x00);
+                                memReadCmd.setCompletedWithStatus(true);
+                            }
+
+                            System.out.print(Instant.now() + " QCmdMemRead address 0x" + Integer.toHexString(memReadAddr).toUpperCase() + ", length " + memReadLength + ": ");
                             int i = 0;
+                            memReadBuffer.rewind();
                             while (memReadBuffer.hasRemaining()) {
                                 System.out.print(String.format("%02X", memReadBuffer.get()));
                                 i++;
                                 if ((i % 4) == 0) {
                                     System.out.print(" ");
                                 }
-                                if ((i % 32) == 0) {
-                                    System.out.println();
-                                }
                             }
                             System.out.println();
-                            synchronized (readsync) {
-                                readsync.Acked = true;
-                                readsync.notifyAll();
-                            }
                             memReadBuffer.clear();
                             setIdleState();
                         }
