@@ -48,7 +48,7 @@ public class QCmdMemRead extends AbstractQCmdSerialTask {
     }
 
     public void setValuesRead(ByteBuffer values) {
-        this.values = values;
+        this.values = values.duplicate();
     }
 
     @Override
