@@ -374,7 +374,7 @@ static FRESULT scan_files(char *path) {
 #pragma GCC diagnostic pop /* diagnostic ignored "-Wrestrict" */
 
 
-static void send_AxoResult(char cmd_byte, FRESULT status) {
+static void send_AxoResult(char cmd_byte, uint8_t status) {
     /* Send command response: AxoR<command_byte><status_byte> 
        Required by Patcher to mark operations as completed and see if they were successful.
        Currently the following commands require an AxoR<c><s> response:
@@ -395,7 +395,7 @@ static void send_AxoResult(char cmd_byte, FRESULT status) {
     char res_msg[6];
     res_msg[0] = 'A'; res_msg[1] = 'x'; res_msg[2] = 'o'; res_msg[3] = 'R';
     res_msg[4] = cmd_byte;
-    res_msg[5] = (char)status;
+    res_msg[5] = (char) status;
     // LogTextMessage("send_AxoResult called,cmd=%c (0x%02x) sta=%u", res_msg[4], res_msg[4], res_msg[5]);
     chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) res_msg, 6);
 }
@@ -804,7 +804,7 @@ void PExReceiveByte(unsigned char c) {
                     case 'S': { /* stop patch */
                         state = 0; header = 0;
                         uint8_t res = StopPatch();
-                        send_AxoResult('S', (FRESULT)res);
+                        send_AxoResult('S', res);
                         break;
                     }
                     default:
@@ -845,7 +845,7 @@ void PExReceiveByte(unsigned char c) {
                 SetPatchSafety(uUIMidiCost, uDspLimit200);
                 loadPatchIndex = LIVE;
                 uint8_t res = StartPatch();
-                send_AxoResult('s', (FRESULT)res);
+                send_AxoResult('s', res);
                 break;
             }
             default:
