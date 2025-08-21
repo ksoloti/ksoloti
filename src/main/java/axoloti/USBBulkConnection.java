@@ -1081,35 +1081,6 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public int TransmitUploadFragment(byte[] buffer, int offset) {
-        byte[] data = new byte[12];
-        data[0] = 'A';
-        data[1] = 'x';
-        data[2] = 'o';
-        data[3] = '%';
-        int tvalue = offset;
-        int nRead = buffer.length;
-        data[4] = (byte) tvalue;
-        data[5] = (byte) (tvalue >> 8);
-        data[6] = (byte) (tvalue >> 16);
-        data[7] = (byte) (tvalue >> 24);
-        data[8] = (byte) (nRead);
-        data[9] = (byte) (nRead >> 8);
-        data[10] = (byte) (nRead >> 16);
-        data[11] = (byte) (nRead >> 24);
-
-        int writeResult = writeBytes(data);
-        if (writeResult != LibUsb.SUCCESS) {
-            return writeResult;
-        }
-        writeResult = writeBytes(buffer);
-        if (writeResult == LibUsb.SUCCESS) {
-            LOGGER.log(Level.INFO, "Block uploaded @ 0x{0} length {1}", new Object[]{Integer.toHexString(offset).toUpperCase(), Integer.toString(buffer.length)});
-        }
-        return writeResult;
-    }
-
-    @Override
     public int TransmitStartMemWrite(int startAddr, int totalLen) {
         /* Total size (bytes):
            "AxoW"           (4)

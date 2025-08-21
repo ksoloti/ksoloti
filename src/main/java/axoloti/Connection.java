@@ -57,7 +57,6 @@ public abstract class Connection {
     abstract public int TransmitStop();
     abstract public int TransmitPing();
     abstract public int TransmitRecallPreset(int presetNo);
-    abstract public int TransmitUploadFragment(byte[] buffer, int offset);
     abstract public int TransmitStartMemWrite(int startAddr, int totalLen);
     abstract public int TransmitAppendMemWrite(byte[] buffer);
     abstract public int TransmitCloseMemWrite(int startAddr, int totalLen);
