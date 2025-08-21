@@ -32,7 +32,6 @@
 #include "flash.h"
 #include "exceptions.h"
 #include "crc32.h"
-#include "flash.h"
 #include "watchdog.h"
 #include "usbcfg.h"
 #include "bulk_usb.h"
