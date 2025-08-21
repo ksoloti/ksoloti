@@ -203,7 +203,7 @@ public class QCmdProcessor implements Runnable {
         dialTransmitterThread = new Thread(dialTransmitter);
     }
 
-    public static QCmdProcessor getQCmdProcessor() {
+    public static QCmdProcessor getInstance() {
         if (singleton == null)
             singleton = new QCmdProcessor();
         return singleton;

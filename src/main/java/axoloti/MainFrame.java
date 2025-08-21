@@ -456,7 +456,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     updateLinkFirmwareID();
 
-                    qcmdprocessorThread = new Thread(QCmdProcessor.getQCmdProcessor());
+                    qcmdprocessorThread = new Thread(QCmdProcessor.getInstance());
                     qcmdprocessorThread.setName("QCmdProcessor");
                     qcmdprocessorThread.start();
                     USBBulkConnection.GetConnection().addConnectionStatusListener(MainFrame.this);
@@ -865,7 +865,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 try {
                     QCmdUploadFWSDRam uploadFwCmd = new QCmdUploadFWSDRam(p);
                     LOGGER.log(Level.INFO, uploadFwCmd.GetStartMessage());
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(uploadFwCmd);
+                    QCmdProcessor.getInstance().AppendToQueue(uploadFwCmd);
                     uploadFwCmd.Do(USBBulkConnection.GetConnection());
                     if (!uploadFwCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM command timed out.");
@@ -878,7 +878,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     LOGGER.log(Level.INFO, uploadFwCmd.GetDoneMessage());
 
                     QCmdUploadPatch uploadPatchCmd = new QCmdUploadPatch(f);
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(uploadPatchCmd);
+                    QCmdProcessor.getInstance().AppendToQueue(uploadPatchCmd);
                     uploadPatchCmd.Do(USBBulkConnection.GetConnection());
                     if (!uploadPatchCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Flasher upload command timed out.");
@@ -907,7 +907,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (success) {
                         /* If code reaches here, the background process was successful */
                         QCmdStartFlasher startFlasherCmd = new QCmdStartFlasher();
-                        QCmdProcessor.getQCmdProcessor().AppendToQueue(startFlasherCmd);
+                        QCmdProcessor.getInstance().AppendToQueue(startFlasherCmd);
                         startFlasherCmd.Do(USBBulkConnection.GetConnection());
                         LOGGER.log(Level.SEVERE, startFlasherCmd.GetDoneMessage());
                         /* Do not waitForCompletion or check isSuccessful here 
@@ -1231,12 +1231,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void jMenuItemPanicActionPerformed(java.awt.event.ActionEvent evt) {
-        QCmdProcessor.getQCmdProcessor().Panic();
+        QCmdProcessor.getInstance().Panic();
     }
 
     private void jMenuItemPingActionPerformed(java.awt.event.ActionEvent evt) {
-        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdPing());
-        // QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdPing(true)); // no-disconnect ping for debug
+        QCmdProcessor.getInstance().AppendToQueue(new QCmdPing());
+        // QCmdProcessor.getInstance().AppendToQueue(new QCmdPing(true)); // no-disconnect ping for debug
     }
 
     private void jMenuItemFDisconnectActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1267,7 +1267,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private void jMenuItemFConnectActionPerformed(java.awt.event.ActionEvent evt) {
         jMenuItemFConnect.setEnabled(false);
         MainFrame.mainframe.SetProgressMessage("Connecting via menu...");
-        QCmdProcessor.getQCmdProcessor().Panic();
+        QCmdProcessor.getInstance().Panic();
 
         new SwingWorker<Boolean, String>() {
             @Override
@@ -1532,7 +1532,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
             CommandManager.getInstance().startLongOperation();
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1); // compile as own path/filename .bin
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(cp);
+            QCmdProcessor.getInstance().AppendToQueue(cp);
             CommandManager.getInstance().endLongOperation();
             if (patch1.waitForBinFile()) {
                 // LOGGER.log(Level.INFO, "Done compiling patch.\n");
@@ -1540,7 +1540,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 stop patch, upload test patch .bin to RAM, start patch, report status */
                 if (USBBulkConnection.GetConnection().isConnected()) {
                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch1.getBinFile());
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(uploadCmd);
+                    QCmdProcessor.getInstance().AppendToQueue(uploadCmd);
                     uploadCmd.Do(USBBulkConnection.GetConnection());
                     if (!uploadCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Test patch upload command timed out.");
@@ -1553,7 +1553,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     setCurrentLivePatch(patch1);
                     Thread.sleep(1000);
 
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdPing());
+                    QCmdProcessor.getInstance().AppendToQueue(new QCmdPing());
                     float pct = patch1.getDSPLoadPercent();
                     if (pct < 1.0f) {
                         LOGGER.log(Level.SEVERE, "No DSP load detected\n");
@@ -1566,7 +1566,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     }
                     Thread.sleep(1000);
 
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdGuiShowLog());
+                    QCmdProcessor.getInstance().AppendToQueue(new QCmdGuiShowLog());
                     Thread.sleep(100);
                     status = true;
                 }
@@ -1657,7 +1657,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private void jMenuItemRefreshFWIDActionPerformed(java.awt.event.ActionEvent evt) {
         updateLinkFirmwareID();
         if (USBBulkConnection.GetConnection().isConnected()) {
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdGetFWVersion());
+            QCmdProcessor.getInstance().AppendToQueue(new QCmdGetFWVersion());
         }
     }
 
@@ -1665,8 +1665,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (Usb.isDFUDeviceAvailable()) {
             updateLinkFirmwareID();
             setCurrentLivePatch(null);
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdDisconnect());
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdFlashDFU());
+            QCmdProcessor.getInstance().AppendToQueue(new qcmds.QCmdDisconnect());
+            QCmdProcessor.getInstance().AppendToQueue(new qcmds.QCmdFlashDFU());
         }
         else {
             LOGGER.log(Level.SEVERE, "No devices in Rescue Mode detected. To bring Ksoloti Core into Rescue Mode:\n1. Remove power.\n2. Hold down button S1 then connect the USB prog port to your computer.\nThe LEDs will stay off when in Rescue Mode.");
@@ -1698,12 +1698,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void jMenuItemFCompileActionPerformed(java.awt.event.ActionEvent evt) {
-        QCmdProcessor.getQCmdProcessor().AppendToQueue(new qcmds.QCmdCompileFirmware());
+        QCmdProcessor.getInstance().AppendToQueue(new qcmds.QCmdCompileFirmware());
     }
 
     private void jMenuItemEnterDFUActionPerformed(java.awt.event.ActionEvent evt) {
-        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdBringToDFUMode());
-        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
+        QCmdProcessor.getInstance().AppendToQueue(new QCmdBringToDFUMode());
+        QCmdProcessor.getInstance().AppendToQueue(new QCmdDisconnect());
     }
 
     private void jMenuItemFlashDefaultActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1744,7 +1744,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             setCurrentLivePatch(null);
             try {
                 QCmdUploadPatch uploadMounterCmd = new QCmdUploadPatch(f);
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(uploadMounterCmd);
+                QCmdProcessor.getInstance().AppendToQueue(uploadMounterCmd);
                 uploadMounterCmd.Do(USBBulkConnection.GetConnection());
                 if (!uploadMounterCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Mounter upload command timed out.");
@@ -1762,7 +1762,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             try {
                 QCmdStartMounter startMounterCmd = new QCmdStartMounter();
                 LOGGER.log(Level.INFO, startMounterCmd.GetStartMessage());
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(startMounterCmd);
+                QCmdProcessor.getInstance().AppendToQueue(startMounterCmd);
                 startMounterCmd.Do(USBBulkConnection.GetConnection());
                 LOGGER.log(Level.WARNING, startMounterCmd.GetDoneMessage());
                 /* Do not waitForCompletion or check isSuccessful here 
@@ -1773,7 +1773,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 e.printStackTrace(System.out);
                 return;
             } finally {
-                // QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
+                // QCmdProcessor.getInstance().AppendToQueue(new QCmdDisconnect());
                 ShowDisconnect();
             }
         }
@@ -1895,7 +1895,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             System.out.println(Instant.now() + " Unlocked previous live patch: " + this.currentLivePatch.getFileNamePath());
             try {
                 QCmdStop stopCmd = new QCmdStop();
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(stopCmd);
+                QCmdProcessor.getInstance().AppendToQueue(stopCmd);
                 stopCmd.Do(USBBulkConnection.GetConnection());
                 if (!stopCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Patch stop command timed out.");
@@ -1921,7 +1921,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             /* Send QCmdStart to MCU before GUI-side Lock() */
             try {
                 QCmdStart startCmd = new QCmdStart(this.currentLivePatch);
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(startCmd);
+                QCmdProcessor.getInstance().AppendToQueue(startCmd);
                 startCmd.Do(USBBulkConnection.GetConnection());
                 if (!startCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Patch start command for " + this.currentLivePatch.getFileNamePath() + " timed out.");
@@ -2083,7 +2083,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 + "- Restart the Patcher.\n"
             );
             WarnedAboutFWCRCMismatch = true;
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
+            QCmdProcessor.getInstance().AppendToQueue(new QCmdDisconnect());
             ShowDisconnect();
         }
         else if (!firmwareId.equals(this.LinkFirmwareID)) {
@@ -2158,7 +2158,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (fwversion[0] == 1 && fwversion[1] < 1) {
             /* Core is currently running 1.0.x.x old firmware. v1.1 Auto */
             LOGGER.log(Level.SEVERE, "The Core trying to connect is running v1.0.x firmware.\nTo use it with this Patcher, you must update the firmware via Rescue Mode.\nPress and hold Button S1 during power-up and select 'Board > Firmware > Flash (Rescue) to update the firmware.");
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdDisconnect());
+            QCmdProcessor.getInstance().AppendToQueue(new QCmdDisconnect());
             ShowDisconnect();
             return;
         }

@@ -266,7 +266,7 @@ public class USBBulkConnection extends Connection {
                     if (cmd != null) {
                         QCmd response = cmd.Do(USBBulkConnection.this);
                         if (response != null) {
-                            QCmdProcessor.getQCmdProcessor().getQueueResponse().put(response);
+                            QCmdProcessor.getInstance().getQueueResponse().put(response);
                         }
                     }
                 }
@@ -700,17 +700,17 @@ public class USBBulkConnection extends Connection {
 
             /* 6. Post-Connection Commands (CPU ID, Firmware Version) */
             try {
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdGetFWVersion());
-                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                QCmdProcessor.getInstance().AppendToQueue(new QCmdGetFWVersion());
+                QCmdProcessor.getInstance().WaitQueueFinished();
 
                 QCmdMemRead1Word q1 = new QCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(q1);
-                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                QCmdProcessor.getInstance().AppendToQueue(q1);
+                QCmdProcessor.getInstance().WaitQueueFinished();
                 targetProfile.setCPUIDCode(q1.getResult());
 
                 QCmdMemRead q = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(q);
-                QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
+                QCmdProcessor.getInstance().AppendToQueue(q);
+                QCmdProcessor.getInstance().WaitQueueFinished();
                 targetProfile.setCPUSerial(q.getResult());
                 this.detectedCpuId = CpuIdToHexString(targetProfile.getCPUSerial());
                 // System.out.println(Instant.now() + " [DEBUG] USBBulkConnection: detectedCpuId set to: " + this.detectedCpuId);
@@ -785,7 +785,7 @@ public class USBBulkConnection extends Connection {
                     default:  errstr = Integer.toString(result); break;
                 }
                 LOGGER.log(Level.SEVERE, "USB bulk write failed: " + errstr);
-                // QCmdProcessor.getQCmdProcessor().Abort();
+                // QCmdProcessor.getInstance().Abort();
             }
             return result;
         } /* end synchronize (usbOutLock) */
@@ -1796,12 +1796,12 @@ public class USBBulkConnection extends Connection {
                                 }
 
                                 try {
-                                    boolean offeredSuccessfully = QCmdProcessor.getQCmdProcessor().getQueueResponse().offer(currentExecutingCommand, 10, TimeUnit.MILLISECONDS);
+                                    boolean offeredSuccessfully = QCmdProcessor.getInstance().getQueueResponse().offer(currentExecutingCommand, 10, TimeUnit.MILLISECONDS);
                                     if (!offeredSuccessfully) {
                                         LOGGER.log(Level.WARNING, "Failed to offer completed QCmd (" + currentExecutingCommand.getClass().getSimpleName() + ") to QCmdProcessor queue within timeout. Queue might be full.");
                                     }
-                                    synchronized (QCmdProcessor.getQCmdProcessor().getQueueLock()) {
-                                        QCmdProcessor.getQCmdProcessor().getQueueLock().notifyAll();
+                                    synchronized (QCmdProcessor.getInstance().getQueueLock()) {
+                                        QCmdProcessor.getInstance().getQueueLock().notifyAll();
                                     }
                                 }
                                 catch (InterruptedException e) {

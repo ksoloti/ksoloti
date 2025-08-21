@@ -473,7 +473,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                             Calendar cal = Calendar.getInstance();
 
                                             QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(f, cal);
-                                            QCmdProcessor.getQCmdProcessor().AppendToQueue(createDirCmd);
+                                            QCmdProcessor.getInstance().AppendToQueue(createDirCmd);
                                             createDirCmd.Do(USBBulkConnection.GetConnection());
                                             if (!createDirCmd.waitForCompletion()) {
                                                 LOGGER.log(Level.SEVERE, "Create directory command timed out.");
@@ -486,7 +486,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                         }
 
                                         QCmdChangeWorkingDirectory changeDirCmd = new QCmdChangeWorkingDirectory(f);
-                                        QCmdProcessor.getQCmdProcessor().AppendToQueue(changeDirCmd);
+                                        QCmdProcessor.getInstance().AppendToQueue(changeDirCmd);
                                         changeDirCmd.Do(USBBulkConnection.GetConnection());
                                         if (!changeDirCmd.waitForCompletion()) {
                                             LOGGER.log(Level.SEVERE, "Change working directory command timed out.");
@@ -511,7 +511,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             if (USBBulkConnection.GetConnection().isConnected()) {
                                 try {
                                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
-                                    QCmdProcessor.getQCmdProcessor().AppendToQueue(uploadCmd);
+                                    QCmdProcessor.getInstance().AppendToQueue(uploadCmd);
                                     uploadCmd.Do(USBBulkConnection.GetConnection());
                                     if (!uploadCmd.waitForCompletion()) {
                                         System.out.println(Instant.now() + " Patch upload timed out");
@@ -1356,7 +1356,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 try {
                     CommandManager.getInstance().startLongOperation();
                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(uploadCmd);
+                    QCmdProcessor.getInstance().AppendToQueue(uploadCmd);
                     uploadCmd.Do(USBBulkConnection.GetConnection());
                     if (!uploadCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Patch upload timed out.");
@@ -1578,7 +1578,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             CommandManager.getInstance().startLongOperation();
                             try {
                                 QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
-                                QCmdProcessor.getQCmdProcessor().AppendToQueue(uploadCmd);
+                                QCmdProcessor.getInstance().AppendToQueue(uploadCmd);
                                 uploadCmd.Do(USBBulkConnection.GetConnection());
                                 if (!uploadCmd.waitForCompletion()) {
                                     LOGGER.log(Level.SEVERE, "Patch upload command timed out.");
@@ -1591,7 +1591,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
                                 CommandManager.getInstance().startLongOperation();
                                 QCmdCopyPatchToFlash copyToFlashCmd = new QCmdCopyPatchToFlash();
-                                QCmdProcessor.getQCmdProcessor().AppendToQueue(copyToFlashCmd);
+                                QCmdProcessor.getInstance().AppendToQueue(copyToFlashCmd);
                                 copyToFlashCmd.Do(USBBulkConnection.GetConnection());
                                 CommandManager.getInstance().endLongOperation();
                                 if (!copyToFlashCmd.waitForCompletion()) {

@@ -274,7 +274,7 @@ public class Patch {
         /* Get current latest file list from SD to compare to */
         try {
             QCmdGetFileList getFileListCmd = new QCmdGetFileList();
-            QCmdProcessor.getQCmdProcessor().AppendToQueue(getFileListCmd);
+            QCmdProcessor.getInstance().AppendToQueue(getFileListCmd);
             getFileListCmd.Do(USBBulkConnection.GetConnection());
             if (!getFileListCmd.waitForCompletion()) {
                 LOGGER.log(Level.SEVERE, "Get file list command timed out.");
@@ -319,7 +319,7 @@ public class Patch {
                         LOGGER.log(Level.INFO, "Creating directory: {0}", currentPath);
                         try {
                             QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(currentPath, Calendar.getInstance());
-                            QCmdProcessor.getQCmdProcessor().AppendToQueue(createDirCmd);
+                            QCmdProcessor.getInstance().AppendToQueue(createDirCmd);
                             createDirCmd.Do(USBBulkConnection.GetConnection());
                             if (!createDirCmd.waitForCompletion()) {
                                 LOGGER.log(Level.SEVERE, "Create directory command timed out.");
@@ -374,7 +374,7 @@ public class Patch {
                 LOGGER.log(Level.INFO, "Uploading file to SD card: " + targetfn);
                 try {
                     QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, targetfn);
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(uploadFileCmd);
+                    QCmdProcessor.getInstance().AppendToQueue(uploadFileCmd);
                     uploadFileCmd.Do(USBBulkConnection.GetConnection());
                     if (!uploadFileCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
@@ -2815,7 +2815,7 @@ public class Patch {
     }
 
     public void Compile() {
-        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdCompilePatch(this));
+        QCmdProcessor.getInstance().AppendToQueue(new QCmdCompilePatch(this));
     }
 
     public void ShowPreset(int i) {
@@ -2956,7 +2956,7 @@ public class Patch {
     }
 
     public void RecallPreset(int i) {
-        QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdRecallPreset(i));
+        QCmdProcessor.getInstance().AppendToQueue(new QCmdRecallPreset(i));
     }
 
     /**
@@ -3121,7 +3121,7 @@ public class Patch {
                 Calendar cal = Calendar.getInstance();
                 try {
                     QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(sdfilename.substring(0, i), cal);
-                    QCmdProcessor.getQCmdProcessor().AppendToQueue(createDirCmd);
+                    QCmdProcessor.getInstance().AppendToQueue(createDirCmd);
                     createDirCmd.Do(USBBulkConnection.GetConnection());
                     if (!createDirCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Create directory command timed out.");
@@ -3156,7 +3156,7 @@ public class Patch {
         if (getBinFile().exists()) {
             try {
                 QCmdUploadFile uploadFileCmd = new QCmdUploadFile(getBinFile(), sdfilename, cal);
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(uploadFileCmd);
+                QCmdProcessor.getInstance().AppendToQueue(uploadFileCmd);
                 uploadFileCmd.Do(USBBulkConnection.GetConnection());
                 if (!uploadFileCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
@@ -3186,7 +3186,7 @@ public class Patch {
 
                     try {
                         QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, backupFilePath, cal);
-                        QCmdProcessor.getQCmdProcessor().AppendToQueue(uploadFileCmd);
+                        QCmdProcessor.getInstance().AppendToQueue(uploadFileCmd);
                         uploadFileCmd.Do(USBBulkConnection.GetConnection());
                         if (!uploadFileCmd.waitForCompletion()) {
                             LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
