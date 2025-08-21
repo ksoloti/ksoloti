@@ -225,7 +225,6 @@ public abstract class Connection {
         }
     }
 
-    @Deprecated
     abstract public int writeBytes(byte[] data);
 
 }

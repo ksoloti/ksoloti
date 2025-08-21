@@ -767,10 +767,10 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public int writeBytes(byte[] bytes) {
+    public int writeBytes(byte[] data) {
 
-        ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length).order(ByteOrder.LITTLE_ENDIAN);
-        buffer.put(bytes);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(data.length).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(data);
         buffer.rewind();
         IntBuffer transfered = IntBuffer.allocate(1);
 
