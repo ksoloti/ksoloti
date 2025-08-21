@@ -1537,7 +1537,7 @@ public class USBBulkConnection extends Connection {
 
                     case 3:
                         switch (c) {
-                            case 'Q':
+                            case 'P':
                                 dataLength = 12;
                                 setNextState(ReceiverState.PARAMCHANGE_PCKT);
                                 break;
@@ -1549,8 +1549,8 @@ public class USBBulkConnection extends Connection {
                                 dataLength = 8;
                                 setNextState(ReceiverState.DISPLAY_PCKT_HDR);
                                 break;
-                            case 'R': /* New case for 'R' header (AxoR packet from MCU) */
-                                dataLength = 2; /* Expecting command_byte (1 byte) + status_byte (1 byte) */
+                            case 'R': /* ("AxoR" response packet from MCU) */
+                                dataLength = 2;
                                 setNextState(ReceiverState.COMMANDRESULT_PCKT);
                                 break;
                             case 'T':

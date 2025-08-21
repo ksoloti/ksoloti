@@ -244,7 +244,7 @@ void PExTransmit(void) {
                     int v = (patchMeta.pPExch)[i].value;
                     patchMeta.pPExch[i].signals &= ~0x01;
                     PExMessage msg;
-                    msg.header = 0x516F7841; /*"AxoQ" */
+                    msg.header = 0x506F7841; /*"AxoP" */
                     msg.patchID = patchMeta.patchID;
                     msg.index = i;
                     msg.value = v;
