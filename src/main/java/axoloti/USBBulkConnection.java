@@ -1458,11 +1458,6 @@ public class USBBulkConnection extends Connection {
         return memReadBuffer;
     }
 
-    @Override
-    public int getMemRead1WordValue() {
-        return memRead1WordValue;
-    }
-
     void storeDataByte(int c) {
         switch (dataIndex & 0x3) {
             case 0:
@@ -1953,10 +1948,11 @@ public class USBBulkConnection extends Connection {
                         break;
                     case 7:
                         memRead1WordValue += (cc & 0xFF) << 24;
-                        System.out.println(Instant.now() + " [DEBUG] " + String.format("addr %08X value %08X", memReadAddr, memRead1WordValue));
-                        synchronized (readsync) {
-                            readsync.Acked = true;
-                            readsync.notifyAll();
+                        if (currentExecutingCommand != null && currentExecutingCommand instanceof QCmdMemRead1Word) {
+                            QCmdMemRead1Word cmd = (QCmdMemRead1Word) currentExecutingCommand;
+                            cmd.setValueRead(memRead1WordValue);
+                            cmd.setMcuStatusCode((byte)0x00);
+                            cmd.setCompletedWithStatus(true);
                         }
                         setIdleState();
                     default:

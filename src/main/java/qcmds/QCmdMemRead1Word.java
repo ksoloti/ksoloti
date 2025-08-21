@@ -27,7 +27,7 @@ import axoloti.Connection;
 public class QCmdMemRead1Word extends AbstractQCmdSerialTask {
 
     final int addr;
-    int result = 0;
+    int value = 0;
 
     class Sync {
 
@@ -41,29 +41,17 @@ public class QCmdMemRead1Word extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        synchronized (sync) {
-            connection.ClearReadSync();
-            connection.TransmitMemoryRead1Word(addr);
-            connection.WaitReadSync();
-            result = connection.getMemRead1Word();
-            sync.ready = true;
-            sync.notifyAll();
-        }
+        connection.setCurrentExecutingCommand(this); 
+        connection.TransmitMemoryRead1Word(addr);
         return this;
     }
 
-    public int getResult() {
-        synchronized (sync) {
-            if (sync.ready) {
-                return result;
-            }
-            try {
-                sync.wait(5000);
-                return result;
-            } catch (InterruptedException ex) {
-            }
-        }
-        return 0;
+    public int getValueRead() {
+        return value;
+    }
+
+    public void setValueRead(int value) {
+        this.value = value;
     }
 
     @Override
