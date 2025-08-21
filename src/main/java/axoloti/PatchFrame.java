@@ -348,11 +348,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 KeyUtils.CONTROL_OR_CMD_MASK));
 
         createBufferStrategy(2);
-        USBBulkConnection.GetConnection().addConnectionStatusListener(this);
-        USBBulkConnection.GetConnection().addSDCardMountStatusListener(this);
-        USBBulkConnection.GetConnection().addBoardIDNameListener(this);
+        USBBulkConnection.getInstance().addConnectionStatusListener(this);
+        USBBulkConnection.getInstance().addSDCardMountStatusListener(this);
+        USBBulkConnection.getInstance().addBoardIDNameListener(this);
 
-        if (USBBulkConnection.GetConnection().isConnected()) {
+        if (USBBulkConnection.getInstance().isConnected()) {
             ShowConnect();
         }
     }
@@ -466,7 +466,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                         if (patch.waitForBinFile()) {
                             ArrayList<SDFileReference> files = patch.GetDependentSDFiles();
                             if (files.size() > 0) {
-                                if (USBBulkConnection.GetConnection().GetSDCardPresent()) {
+                                if (USBBulkConnection.getInstance().GetSDCardPresent()) {
                                     try {
                                         String f = "/" + patch.getSDCardPath();
                                         if (SDCardInfo.getInstance().find(f) == null) {
@@ -474,7 +474,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
                                             QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(f, cal);
                                             QCmdProcessor.getInstance().AppendToQueue(createDirCmd);
-                                            createDirCmd.Do(USBBulkConnection.GetConnection());
+                                            createDirCmd.Do(USBBulkConnection.getInstance());
                                             if (!createDirCmd.waitForCompletion()) {
                                                 LOGGER.log(Level.SEVERE, "Create directory command timed out.");
                                                 return false;
@@ -487,7 +487,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
                                         QCmdChangeWorkingDirectory changeDirCmd = new QCmdChangeWorkingDirectory(f);
                                         QCmdProcessor.getInstance().AppendToQueue(changeDirCmd);
-                                        changeDirCmd.Do(USBBulkConnection.GetConnection());
+                                        changeDirCmd.Do(USBBulkConnection.getInstance());
                                         if (!changeDirCmd.waitForCompletion()) {
                                             LOGGER.log(Level.SEVERE, "Change working directory command timed out.");
                                             return false;
@@ -508,11 +508,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             }
 
                             /* Upload and start the new patch */
-                            if (USBBulkConnection.GetConnection().isConnected()) {
+                            if (USBBulkConnection.getInstance().isConnected()) {
                                 try {
                                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
                                     QCmdProcessor.getInstance().AppendToQueue(uploadCmd);
-                                    uploadCmd.Do(USBBulkConnection.GetConnection());
+                                    uploadCmd.Do(USBBulkConnection.getInstance());
                                     if (!uploadCmd.waitForCompletion()) {
                                         System.out.println(Instant.now() + " Patch upload timed out");
                                         return false;
@@ -645,9 +645,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     public void Close() {
         DocumentWindowList.UnregisterWindow(this);
-        USBBulkConnection.GetConnection().removeConnectionStatusListener(this);
-        USBBulkConnection.GetConnection().removeSDCardMountStatusListener(this);
-        USBBulkConnection.GetConnection().removeBoardIDNameListener(this);
+        USBBulkConnection.getInstance().removeConnectionStatusListener(this);
+        USBBulkConnection.getInstance().removeSDCardMountStatusListener(this);
+        USBBulkConnection.getInstance().removeBoardIDNameListener(this);
         patch.Close();
         super.dispose();
     }
@@ -1350,14 +1350,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuUploadCodeActionPerformed(java.awt.event.ActionEvent evt) {
-        if (USBBulkConnection.GetConnection().isConnected()) {
+        if (USBBulkConnection.getInstance().isConnected()) {
             mainframe.setCurrentLivePatch(null);
             if (patch.getBinFile().exists()) {
                 try {
                     CommandManager.getInstance().startLongOperation();
                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
                     QCmdProcessor.getInstance().AppendToQueue(uploadCmd);
-                    uploadCmd.Do(USBBulkConnection.GetConnection());
+                    uploadCmd.Do(USBBulkConnection.getInstance());
                     if (!uploadCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Patch upload timed out.");
                     }
@@ -1574,12 +1574,12 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     mainframe.setCurrentLivePatch(null);
 
                     if (patch.getBinFile().exists()) {
-                        if (USBBulkConnection.GetConnection().isConnected()) {
+                        if (USBBulkConnection.getInstance().isConnected()) {
                             CommandManager.getInstance().startLongOperation();
                             try {
                                 QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
                                 QCmdProcessor.getInstance().AppendToQueue(uploadCmd);
-                                uploadCmd.Do(USBBulkConnection.GetConnection());
+                                uploadCmd.Do(USBBulkConnection.getInstance());
                                 if (!uploadCmd.waitForCompletion()) {
                                     LOGGER.log(Level.SEVERE, "Patch upload command timed out.");
                                     return false;
@@ -1592,7 +1592,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                 CommandManager.getInstance().startLongOperation();
                                 QCmdCopyPatchToFlash copyToFlashCmd = new QCmdCopyPatchToFlash();
                                 QCmdProcessor.getInstance().AppendToQueue(copyToFlashCmd);
-                                copyToFlashCmd.Do(USBBulkConnection.GetConnection());
+                                copyToFlashCmd.Do(USBBulkConnection.getInstance());
                                 CommandManager.getInstance().endLongOperation();
                                 if (!copyToFlashCmd.waitForCompletion()) {
                                     LOGGER.log(Level.SEVERE, "Copy patch to internal Flash command timed out.");
@@ -1804,7 +1804,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     @Override
     public void ShowBoardIDName(String unitId, String friendlyName) {
 
-        if (!USBBulkConnection.GetConnection().isConnected()) {
+        if (!USBBulkConnection.getInstance().isConnected()) {
             jLabelBoardIDName.setText(" ");
             jLabelBoardIDName.setToolTipText("");
             return;

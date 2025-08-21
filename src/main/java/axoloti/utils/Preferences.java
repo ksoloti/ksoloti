@@ -641,8 +641,8 @@ public class Preferences {
             restartRequired = true;
 
             /* Disconnect automatically. User will have to restart the Patcher anyway. */
-            if (USBBulkConnection.GetConnection().isConnected()) {
-                USBBulkConnection.GetConnection().disconnect();
+            if (USBBulkConnection.getInstance().isConnected()) {
+                USBBulkConnection.getInstance().disconnect();
             }
         }
         else {
@@ -651,7 +651,7 @@ public class Preferences {
             MainFrame.mainframe.populateMainframeTitle();
 
             /* If connected, offer automatic firmware update */
-            if (USBBulkConnection.GetConnection().isConnected()) {
+            if (USBBulkConnection.getInstance().isConnected()) {
                 MainFrame.mainframe.interactiveFirmwareUpdate();
             }
         }

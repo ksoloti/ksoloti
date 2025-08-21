@@ -806,7 +806,7 @@ public class USBBulkConnection extends Connection {
         }
     }
 
-    public static Connection GetConnection() {
+    public static Connection getInstance() {
         if (conn == null) {
             synchronized (USBBulkConnection.class) {
                 if (conn == null) {

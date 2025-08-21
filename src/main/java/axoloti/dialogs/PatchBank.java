@@ -108,7 +108,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         files = new ArrayList<File>();
 
         DocumentWindowList.RegisterWindow(this);
-        USBBulkConnection.GetConnection().addConnectionStatusListener(this);
+        USBBulkConnection.getInstance().addConnectionStatusListener(this);
 
         Icon icon = SvgIconLoader.load("/resources/appicons/ksoloti_icon_axb.svg", 32);
         if (icon != null && icon instanceof ImageIcon) {
@@ -556,8 +556,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
     public void Close() {
         DocumentWindowList.UnregisterWindow(this);
-        USBBulkConnection.GetConnection().removeConnectionStatusListener(this);
-        USBBulkConnection.GetConnection().removeSDCardMountStatusListener(this);
+        USBBulkConnection.getInstance().removeConnectionStatusListener(this);
+        USBBulkConnection.getInstance().removeSDCardMountStatusListener(this);
         dispose();
     }
 
@@ -848,11 +848,11 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
 
     private void jButtonUploadBankActionPerformed(java.awt.event.ActionEvent evt) {
         LOGGER.log(Level.INFO, "Uploading Patchbank index...");
-        if (USBBulkConnection.GetConnection().isConnected()) {
+        if (USBBulkConnection.getInstance().isConnected()) {
             try {
                 QCmdUploadFile uploadFileCmd = new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
                 QCmdProcessor.getInstance().AppendToQueue(uploadFileCmd);
-                uploadFileCmd.Do(USBBulkConnection.GetConnection());
+                uploadFileCmd.Do(USBBulkConnection.getInstance());
                 if (!uploadFileCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "File upload command for Patchbank index timed out.");
                 }
@@ -1019,12 +1019,12 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
     private void jUploadAllActionPerformed(java.awt.event.ActionEvent evt) {
         class Thd extends Thread {
             public void run() {
-                if (USBBulkConnection.GetConnection().isConnected()) {
+                if (USBBulkConnection.getInstance().isConnected()) {
                     LOGGER.log(Level.INFO, "Uploading Patchbank index...");
                     try {
                         QCmdUploadFile uploadFileCmd = new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
                         QCmdProcessor.getInstance().AppendToQueue(uploadFileCmd);
-                        uploadFileCmd.Do(USBBulkConnection.GetConnection());
+                        uploadFileCmd.Do(USBBulkConnection.getInstance());
                         if (!uploadFileCmd.waitForCompletion()) {
                             LOGGER.log(Level.SEVERE, "File upload command for Patchbank index timed out.");
                         }

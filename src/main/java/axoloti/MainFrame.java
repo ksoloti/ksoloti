@@ -459,16 +459,16 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     qcmdprocessorThread = new Thread(QCmdProcessor.getInstance());
                     qcmdprocessorThread.setName("QCmdProcessor");
                     qcmdprocessorThread.start();
-                    USBBulkConnection.GetConnection().addConnectionStatusListener(MainFrame.this);
-                    USBBulkConnection.GetConnection().addSDCardMountStatusListener(MainFrame.this);
-                    USBBulkConnection.GetConnection().addConnectionFlagsListener(MainFrame.this);
-                    USBBulkConnection.GetConnection().addBoardIDNameListener(MainFrame.this);
+                    USBBulkConnection.getInstance().addConnectionStatusListener(MainFrame.this);
+                    USBBulkConnection.getInstance().addSDCardMountStatusListener(MainFrame.this);
+                    USBBulkConnection.getInstance().addConnectionFlagsListener(MainFrame.this);
+                    USBBulkConnection.getInstance().addBoardIDNameListener(MainFrame.this);
 
                     ShowDisconnect();
                         new SwingWorker<Boolean, String>() {
                             @Override
                             protected Boolean doInBackground() throws Exception {
-                                return USBBulkConnection.GetConnection().connect();
+                                return USBBulkConnection.getInstance().connect();
                             }
 
                             @Override
@@ -866,7 +866,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     QCmdUploadFWSDRam uploadFwCmd = new QCmdUploadFWSDRam(p);
                     LOGGER.log(Level.INFO, uploadFwCmd.GetStartMessage());
                     QCmdProcessor.getInstance().AppendToQueue(uploadFwCmd);
-                    uploadFwCmd.Do(USBBulkConnection.GetConnection());
+                    uploadFwCmd.Do(USBBulkConnection.getInstance());
                     if (!uploadFwCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM command timed out.");
                         return false;
@@ -879,7 +879,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     QCmdUploadPatch uploadPatchCmd = new QCmdUploadPatch(f);
                     QCmdProcessor.getInstance().AppendToQueue(uploadPatchCmd);
-                    uploadPatchCmd.Do(USBBulkConnection.GetConnection());
+                    uploadPatchCmd.Do(USBBulkConnection.getInstance());
                     if (!uploadPatchCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Flasher upload command timed out.");
                         return false;
@@ -908,7 +908,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         /* If code reaches here, the background process was successful */
                         QCmdStartFlasher startFlasherCmd = new QCmdStartFlasher();
                         QCmdProcessor.getInstance().AppendToQueue(startFlasherCmd);
-                        startFlasherCmd.Do(USBBulkConnection.GetConnection());
+                        startFlasherCmd.Do(USBBulkConnection.getInstance());
                         LOGGER.log(Level.SEVERE, startFlasherCmd.GetDoneMessage());
                         /* Do not waitForCompletion or check isSuccessful here 
                            because MCU will have rebooted automatically by now,
@@ -1245,7 +1245,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                USBBulkConnection.GetConnection().disconnect();
+                USBBulkConnection.getInstance().disconnect();
                 return null;
             }
 
@@ -1272,7 +1272,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         new SwingWorker<Boolean, String>() {
             @Override
             protected Boolean doInBackground() throws Exception {
-                return USBBulkConnection.GetConnection().connect();
+                return USBBulkConnection.getInstance().connect();
             }
 
             @Override
@@ -1296,7 +1296,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void jMenuItemSelectComActionPerformed(java.awt.event.ActionEvent evt) {
-        USBBulkConnection.GetConnection().SelectPort();
+        USBBulkConnection.getInstance().SelectPort();
     }
 
     private void jToggleButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1304,7 +1304,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         if (jToggleButtonConnect.isSelected()) { /* Attempting to connect */
             /* Guard against rapid "Connect" clicks if a disconnect was previously initiated */
-            if (USBBulkConnection.GetConnection().isDisconnectRequested()) {
+            if (USBBulkConnection.getInstance().isDisconnectRequested()) {
                 // System.out.println(Instant.now() + " [DEBUG] Connection attempt ignored: A previous disconnection is still pending.");
                 /* Revert the button's selected state as connection did not succeed */
                 jToggleButtonConnect.setSelected(false);
@@ -1315,7 +1315,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             new SwingWorker<Boolean, Void>() {
                 @Override
                 protected Boolean doInBackground() throws Exception {
-                    return USBBulkConnection.GetConnection().connect();
+                    return USBBulkConnection.getInstance().connect();
                 }
 
                 @Override
@@ -1326,7 +1326,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     catch (Exception e) {
                         LOGGER.log(Level.SEVERE, "An error occurred during connection SwingWorker: " + e.getMessage());
                         e.printStackTrace(System.out);
-                        USBBulkConnection.GetConnection().ShowDisconnect();
+                        USBBulkConnection.getInstance().ShowDisconnect();
                     }
                     finally {
                         jToggleButtonConnect.setEnabled(true);
@@ -1337,12 +1337,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
         else { /* Attempting to disconnect */
             /* Set guard against rapid "Connect" clicks now that a disconnect was initiated */
-            USBBulkConnection.GetConnection().setDisconnectRequested(true);
+            USBBulkConnection.getInstance().setDisconnectRequested(true);
 
             new SwingWorker<Void, Void>() {
                 @Override
                 protected Void doInBackground() throws Exception {
-                    USBBulkConnection.GetConnection().disconnect();
+                    USBBulkConnection.getInstance().disconnect();
                     Thread.sleep(500); /* 500ms for disconnect to clear */
                     return null;
                 }
@@ -1356,17 +1356,17 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     catch (Exception e) {
                         LOGGER.log(Level.SEVERE, "An error occurred during disconnection SwingWorker: " + e.getMessage());
                         e.printStackTrace(System.out);
-                        if (USBBulkConnection.GetConnection().isConnected()) {
-                            USBBulkConnection.GetConnection().ShowConnect();
+                        if (USBBulkConnection.getInstance().isConnected()) {
+                            USBBulkConnection.getInstance().ShowConnect();
                             // System.out.println(Instant.now() + " [DEBUG] UI updated: Connected (disconnect failed, board still connected).");
                         }
                         else {
-                            USBBulkConnection.GetConnection().ShowDisconnect();
+                            USBBulkConnection.getInstance().ShowDisconnect();
                             // System.out.println(Instant.now() + " [DEBUG] UI updated: Disconnected (disconnect failed, but board is off).");
                         }
                     }
                     finally {
-                        USBBulkConnection.GetConnection().setDisconnectRequested(false);
+                        USBBulkConnection.getInstance().setDisconnectRequested(false);
                         jToggleButtonConnect.setEnabled(true);
                         // System.out.println(Instant.now() + " [DEBUG] Disconnect request flag cleared and connect button re-enabled.");
                     }
@@ -1538,10 +1538,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 // LOGGER.log(Level.INFO, "Done compiling patch.\n");
                 /* If a Core is connected and test patch .bin could be created:
                 stop patch, upload test patch .bin to RAM, start patch, report status */
-                if (USBBulkConnection.GetConnection().isConnected()) {
+                if (USBBulkConnection.getInstance().isConnected()) {
                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch1.getBinFile());
                     QCmdProcessor.getInstance().AppendToQueue(uploadCmd);
-                    uploadCmd.Do(USBBulkConnection.GetConnection());
+                    uploadCmd.Do(USBBulkConnection.getInstance());
                     if (!uploadCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Test patch upload command timed out.");
                         return false; /* Abort test of this patch */
@@ -1656,7 +1656,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void jMenuItemRefreshFWIDActionPerformed(java.awt.event.ActionEvent evt) {
         updateLinkFirmwareID();
-        if (USBBulkConnection.GetConnection().isConnected()) {
+        if (USBBulkConnection.getInstance().isConnected()) {
             QCmdProcessor.getInstance().AppendToQueue(new QCmdGetFWVersion());
         }
     }
@@ -1745,7 +1745,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             try {
                 QCmdUploadPatch uploadMounterCmd = new QCmdUploadPatch(f);
                 QCmdProcessor.getInstance().AppendToQueue(uploadMounterCmd);
-                uploadMounterCmd.Do(USBBulkConnection.GetConnection());
+                uploadMounterCmd.Do(USBBulkConnection.getInstance());
                 if (!uploadMounterCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Mounter upload command timed out.");
                     return;
@@ -1763,7 +1763,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 QCmdStartMounter startMounterCmd = new QCmdStartMounter();
                 LOGGER.log(Level.INFO, startMounterCmd.GetStartMessage());
                 QCmdProcessor.getInstance().AppendToQueue(startMounterCmd);
-                startMounterCmd.Do(USBBulkConnection.GetConnection());
+                startMounterCmd.Do(USBBulkConnection.getInstance());
                 LOGGER.log(Level.WARNING, startMounterCmd.GetDoneMessage());
                 /* Do not waitForCompletion or check isSuccessful here 
                    because MCU will have rebooted automatically by now,
@@ -1896,7 +1896,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             try {
                 QCmdStop stopCmd = new QCmdStop();
                 QCmdProcessor.getInstance().AppendToQueue(stopCmd);
-                stopCmd.Do(USBBulkConnection.GetConnection());
+                stopCmd.Do(USBBulkConnection.getInstance());
                 if (!stopCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Patch stop command timed out.");
                     return;
@@ -1922,7 +1922,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             try {
                 QCmdStart startCmd = new QCmdStart(this.currentLivePatch);
                 QCmdProcessor.getInstance().AppendToQueue(startCmd);
-                startCmd.Do(USBBulkConnection.GetConnection());
+                startCmd.Do(USBBulkConnection.getInstance());
                 if (!startCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Patch start command for " + this.currentLivePatch.getFileNamePath() + " timed out.");
                     return;
@@ -2011,7 +2011,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         if (connect) {
             jToggleButtonConnect.setText("Connected");
-            ShowConnectionFlags(USBBulkConnection.GetConnection().GetConnectionFlags());
+            ShowConnectionFlags(USBBulkConnection.getInstance().GetConnectionFlags());
         }
         else {
             jToggleButtonConnect.setText("Connect");
@@ -2034,8 +2034,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         jMenuItemEnterDFU.setEnabled(connect);
         jMenuItemMount.setEnabled(connect);
-        jMenuItemFlashDefault.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
-        jMenuItemFlashUser.setEnabled(connect && USBBulkConnection.GetConnection().getTargetProfile().hasSDRAM());
+        jMenuItemFlashDefault.setEnabled(connect && USBBulkConnection.getInstance().getTargetProfile().hasSDRAM());
+        jMenuItemFlashUser.setEnabled(connect && USBBulkConnection.getInstance().getTargetProfile().hasSDRAM());
         jMenuItemRefreshFWID.setEnabled(connect);
 
         if (Preferences.getInstance().getRestartRequired()) {
@@ -2154,7 +2154,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     public void interactiveFirmwareUpdate() {
-        byte[] fwversion = USBBulkConnection.GetConnection().getFwVersion();
+        byte[] fwversion = USBBulkConnection.getInstance().getFwVersion();
         if (fwversion[0] == 1 && fwversion[1] < 1) {
             /* Core is currently running 1.0.x.x old firmware. v1.1 Auto */
             LOGGER.log(Level.SEVERE, "The Core trying to connect is running v1.0.x firmware.\nTo use it with this Patcher, you must update the firmware via Rescue Mode.\nPress and hold Button S1 during power-up and select 'Board > Firmware > Flash (Rescue) to update the firmware.");
@@ -2280,7 +2280,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     @Override
     public void ShowSDCardUnmounted() {
-        if (USBBulkConnection.GetConnection().isConnected()) {
+        if (USBBulkConnection.getInstance().isConnected()) {
             jLabelSDCardPresent.setText("No SD Card");
         }
         jMenuItemMount.setEnabled(false);
@@ -2323,7 +2323,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     @Override
     public void ShowBoardIDName(String unitId, String friendlyName) {
-        if (!USBBulkConnection.GetConnection().isConnected() || unitId == null || unitId.trim().isEmpty()) {
+        if (!USBBulkConnection.getInstance().isConnected() || unitId == null || unitId.trim().isEmpty()) {
             jLabelCPUID.setText(" ");
             jLabelCPUID.setToolTipText(" ");
         }

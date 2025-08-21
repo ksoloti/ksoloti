@@ -108,8 +108,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         setPreferredSize(new Dimension(640,400));
         initComponents();
         fileMenu1.initComponents();
-        USBBulkConnection.GetConnection().addConnectionStatusListener(this);
-        USBBulkConnection.GetConnection().addSDCardMountStatusListener(this);
+        USBBulkConnection.getInstance().addConnectionStatusListener(this);
+        USBBulkConnection.getInstance().addSDCardMountStatusListener(this);
         setIconImage(Constants.APP_ICON.getImage());
         jLabelSDInfo.setText(" ");
 
@@ -167,7 +167,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     // @SuppressWarnings("unchecked")
                     List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
 
-                    if (!USBBulkConnection.GetConnection().isConnected()) {
+                    if (!USBBulkConnection.getInstance().isConnected()) {
                         LOGGER.log(Level.WARNING, "Cannot upload files: USB connection not active.");
                         return;
                     }
@@ -197,7 +197,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                 for (File f : droppedFiles) {
                                     System.out.println(Instant.now() + " Drag and drop uploading " + f.getName());
 
-                                    if (!USBBulkConnection.GetConnection().isConnected()) {
+                                    if (!USBBulkConnection.getInstance().isConnected()) {
                                         LOGGER.log(Level.SEVERE, "Upload aborted: USB connection lost during transfer.");
                                         break; /* Exit the loop for remaining files */
                                     }
@@ -209,7 +209,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
                                     QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, f.getName());
                                     QCmdProcessor.getInstance().AppendToQueue(uploadFileCmd);
-                                    uploadFileCmd.Do(USBBulkConnection.GetConnection());
+                                    uploadFileCmd.Do(USBBulkConnection.getInstance());
                                     if (!uploadFileCmd.waitForCompletion()) {
                                         LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
                                         continue; /* Skip to next file */
@@ -609,7 +609,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             try {
                 QCmdDeleteFile deleteDirCmd = new QCmdDeleteFile(pathForFatFsDelete);
                 QCmdProcessor.getInstance().AppendToQueue(deleteDirCmd);
-                deleteDirCmd.Do(USBBulkConnection.GetConnection());
+                deleteDirCmd.Do(USBBulkConnection.getInstance());
                 if (!deleteDirCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Delete file command timed out: " + sdCardPath);
                     return false;
@@ -637,7 +637,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             try {
                 QCmdDeleteFile deleteFileCmd = new QCmdDeleteFile(pathForFatFsDelete);
                 QCmdProcessor.getInstance().AppendToQueue(deleteFileCmd);
-                deleteFileCmd.Do(USBBulkConnection.GetConnection());
+                deleteFileCmd.Do(USBBulkConnection.getInstance());
                 if (!deleteFileCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Delete file command timed out: " + sdCardPath);
                     return false;
@@ -682,7 +682,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     }
 
     private void performActualRefreshAsync() {
-        if (!USBBulkConnection.GetConnection().isConnected() || !USBBulkConnection.GetConnection().GetSDCardPresent()) {
+        if (!USBBulkConnection.getInstance().isConnected() || !USBBulkConnection.getInstance().GetSDCardPresent()) {
             System.out.println(Instant.now() + " Skipping file list refresh request. Not connected or SD card not present.");
             fileListRefreshInProgress = false;
             return;
@@ -709,7 +709,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     System.out.println(Instant.now() + " Sending QCmdGetFileList()...");
                     QCmdGetFileList getFileListCmd = new QCmdGetFileList();
                     QCmdProcessor.getInstance().AppendToQueue(getFileListCmd);
-                    getFileListCmd.Do(USBBulkConnection.GetConnection());
+                    getFileListCmd.Do(USBBulkConnection.getInstance());
                     if (!getFileListCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Get file list command timed out.");
                         return null;
@@ -770,7 +770,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 dir = f.getFilename();
             }
         }
-        if (USBBulkConnection.GetConnection().isConnected()) {
+        if (USBBulkConnection.getInstance().isConnected()) {
             fc.resetChoosableFileFilters();
             fc.setCurrentDirectory(new File(Preferences.getInstance().getCurrentFileDirectory()));
             fc.restoreCurrentSize();
@@ -803,7 +803,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         LOGGER.log(Level.INFO, "Uploading " + selectedFiles.length + " file(s)...\n");
                         for (File file : selectedFiles) {
 
-                            if (!USBBulkConnection.GetConnection().isConnected()) {
+                            if (!USBBulkConnection.getInstance().isConnected()) {
                                 LOGGER.log(Level.SEVERE, "Batch upload aborted: USB connection lost.");
                                 break; /* Abort loop through files */
                             }
@@ -817,7 +817,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                 try {
                                     QCmdUploadFile uploadFileCmd = new QCmdUploadFile(file, targetDirectory + file.getName());
                                     QCmdProcessor.getInstance().AppendToQueue(uploadFileCmd);
-                                    uploadFileCmd.Do(USBBulkConnection.GetConnection());
+                                    uploadFileCmd.Do(USBBulkConnection.getInstance());
 
                                     if (!uploadFileCmd.waitForCompletion()) {
                                         LOGGER.log(Level.SEVERE, "File upload command for " + file.getName() + " timed out.");
@@ -892,8 +892,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     }
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {
-        USBBulkConnection.GetConnection().removeConnectionStatusListener(this);
-        USBBulkConnection.GetConnection().removeSDCardMountStatusListener(this);
+        USBBulkConnection.getInstance().removeConnectionStatusListener(this);
+        USBBulkConnection.getInstance().removeSDCardMountStatusListener(this);
     }
 
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1016,7 +1016,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             try {
                 QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(dir + fn, cal);
                 QCmdProcessor.getInstance().AppendToQueue(createDirCmd);
-                createDirCmd.Do(USBBulkConnection.GetConnection());
+                createDirCmd.Do(USBBulkConnection.getInstance());
                 if (!createDirCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Create directory command timed out.");
                     return;

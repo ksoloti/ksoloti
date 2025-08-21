@@ -196,7 +196,7 @@ public class QCmdProcessor implements Runnable {
     protected QCmdProcessor() {
         queue = new ArrayBlockingQueue<QCmd>(99);
         queueResponse = new ArrayBlockingQueue<QCmd>(99);
-        serialconnection = USBBulkConnection.GetConnection();
+        serialconnection = USBBulkConnection.getInstance();
         pinger = new PeriodicPinger();
         pingerThread = new Thread(pinger);
         dialTransmitter = new PeriodicDialTransmitter();

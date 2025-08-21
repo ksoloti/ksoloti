@@ -293,7 +293,7 @@ public class FileMenu extends JMenu {
                             formatter = new SimpleFormatter();
                             fh.setFormatter(formatter);
                             
-                            if (USBBulkConnection.GetConnection().isConnected()) {
+                            if (USBBulkConnection.getInstance().isConnected()) {
                                 LOGGER.log(Level.INFO, "Core is connected - Attempting test upload of patches and measuring DSP load.");
                             }
 

@@ -160,9 +160,9 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 String cpuid = (String) ((DefaultTableModel) jTableBoardsList.getModel()).getValueAt(row, 3);
                 Preferences.getInstance().setBoardName(cpuid, name);
                 Preferences.getInstance().SavePrefs();
-                String currentlyConnectedCpuId = USBBulkConnection.GetConnection().getDetectedCpuId();
+                String currentlyConnectedCpuId = USBBulkConnection.getInstance().getDetectedCpuId();
                 if (currentlyConnectedCpuId != null && cpuid.equals(currentlyConnectedCpuId)) {
-                    USBBulkConnection.GetConnection().ShowBoardIDName(cpuid, name);
+                    USBBulkConnection.getInstance().ShowBoardIDName(cpuid, name);
                 }
             }
         });
@@ -546,11 +546,11 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
             @Override
             protected Boolean doInBackground() throws Exception {
                 boolean disconnected = true;
-                if (USBBulkConnection.GetConnection().isConnected()) {
+                if (USBBulkConnection.getInstance().isConnected()) {
                     try {
                         /* Disconnect if a board is currently connected */
                         LOGGER.log(Level.INFO, "Disconnecting board: " + displayedName);
-                        USBBulkConnection.GetConnection().disconnect();
+                        USBBulkConnection.getInstance().disconnect();
                         Thread.sleep(500); /* Delay to ensure the disconnect completes before new connection attempt */
                     }
                     catch (Exception ex) {
@@ -562,7 +562,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
 
                 if (disconnected) {
                     LOGGER.log(Level.INFO, "Attempting to connect to board: " + displayedName);
-                    return USBBulkConnection.GetConnection().connect();
+                    return USBBulkConnection.getInstance().connect();
                 }
                 return false;
             }
@@ -575,7 +575,7 @@ public class USBPortSelectionDlg extends javax.swing.JDialog {
                 try {
                     boolean connected = get(); /* Get the result from doInBackground() */
                     if (connected) {
-                        USBBulkConnection.GetConnection().ShowBoardIDName(selectedCpuid, selectedBoardName);
+                        USBBulkConnection.getInstance().ShowBoardIDName(selectedCpuid, selectedBoardName);
                         setVisible(false); /* Close the dialog on successful connection */
                     }
                     else {
