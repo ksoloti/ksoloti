@@ -1642,14 +1642,14 @@ public class USBBulkConnection extends Connection {
                                 setIdleState();
                                 // System.err.println(Instant.now() + " [DEBUG] Error trying to complete headerstate after valid 'Axo'");
                                 break;
-                        }
+                        } /* End switch (c) */
                         break;
 
                     default:
                         // System.err.println(Instant.now() + " [DEBUG] processByte: invalid header");
                         setIdleState();
                         break;
-                }
+                } /* End switch (headerstate) */
                 break;
 
             case PARAMCHANGE_PCKT:
@@ -2029,7 +2029,7 @@ public class USBBulkConnection extends Connection {
                 setIdleState();
                 // System.out.println(Instant.now() + " [DEBUG] Unhandled byte c=" + String.format("%02x", c) + "(char=" + (char)c + ") in state=" + state);
                 break;
-        }
+        } /* End switch (state) */
     }
 
     @Override
