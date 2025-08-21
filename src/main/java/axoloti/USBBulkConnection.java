@@ -929,13 +929,15 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public void TransmitBringToDFU() {
+        /* Total size (bytes):
+           "Axou"           (4)
+         */
         byte[] data = new byte[4];
         data[0] = 'A';
         data[1] = 'x';
         data[2] = 'o';
-        data[3] = 'D';
-        writeBytes(data);
+        data[3] = 'u';
+        return writeBytes(data);
     }
 
     @Override

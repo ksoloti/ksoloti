@@ -770,7 +770,7 @@ void PExReceiveByte(unsigned char c) {
                     case 'y': /* generic read, 32 bit */
                         state = 4; /* All the above pass on directly to state 4. */
                         break;
-                    case 'D': /* go to DFU mode */
+                    case 'u': /* go to DFU mode */
                         state = 0; header = 0; AckPending = 1;
                         StopPatch();
                         exception_initiate_dfu();
@@ -975,7 +975,7 @@ void PExReceiveByte(unsigned char c) {
                 FileName[0] = c; /* Should always be 0 */
                 state++;
                 break;
-            case 9: /* Expecting FileName[1] (sub-command: 'f', 'k', 'c', 'D', 'C', 'I') */
+            case 9: /* Expecting FileName[1] (sub-command: 'c', 'f', 'k', 'C', 'D', 'I') */
                 FileName[1] = c; /* Store the sub-command */
                 // LogTextMessage("PEXRB:FileName[1]=%c (0x%02x)", FileName[1], FileName[1]);
 
@@ -992,7 +992,7 @@ void PExReceiveByte(unsigned char c) {
                 }
                 break;
             /* --- States for parsing fdate/ftime (2 bytes each) into FileName[2] to FileName[5] --- */
-            /* Used by 'f', 'k', 'c' */
+            /* Used by 'c', 'f', 'k' */
             case 10: /* Expecting FileName[2] (fdate byte 0) */
                 FileName[2] = c; state++; break;
             case 11: /* Expecting FileName[3] (fdate byte 1) */
@@ -1006,7 +1006,7 @@ void PExReceiveByte(unsigned char c) {
                 break;
 
             /* --- States for parsing filename (variable length, null-terminated) into FileName[6] onwards --- */
-            /* Used by 'f', 'k', 'c', 'D', 'C', 'I' */
+            /* Used by 'c', 'f', 'k', 'C', 'D', 'I' */
             case 14: /* Start/continue filename parsing (into FileName[6]+) */
                 if (current_filename_idx < sizeof(FileName)) {
                     FileName[current_filename_idx++] = c;
