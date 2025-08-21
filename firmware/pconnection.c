@@ -754,7 +754,6 @@ void PExReceiveByte(unsigned char c) {
                 header = c;
                 switch (c) {
 
-                    /* --- Commands that keep AckPending = 1; (AxoA-based or dual-ack) --- */
                     case 'P': /* param change */
                     case 'R': /* preset change */
                     case 'T': /* apply preset */
@@ -764,7 +763,7 @@ void PExReceiveByte(unsigned char c) {
                         state = 4; /* All the above pass on directly to state 4. */
                         break;
                     case 'u': { /* go to DFU mode */
-                        state = 0; header = 0; AckPending = 1;
+                        state = 0; header = 0;
                         uint8_t res = StopPatch();
                         if (res == FR_OK) {
                             exception_initiate_dfu();
@@ -792,11 +791,11 @@ void PExReceiveByte(unsigned char c) {
                         state = 0; header = 0;
                         ReplySpilinkSynced();
                         break;
-                    case 'p': /* ping */
-                        state = 0; header = 0; AckPending = 1; /* Ping explicitly triggers AxoA */
+                    case 'A': /* ping */
+                        AckPending = 1; /* Only ping explicitly triggers AxoA */
+                        state = 0; header = 0;
                         break;
 
-                    /* --- Commands that DO NOT set AckPending (AxoR**-based) --- */
                     case 'a': /* append data to opened sdcard file (top-level Axoa) */
                     case 's': /* start patch (includes midi cost and dsp limit) */
                     case 'W': /* generic write start, close */
@@ -946,7 +945,7 @@ void PExReceiveByte(unsigned char c) {
     }
     else if (header == 'T') { /* apply preset */
         ApplyPreset(c); /* 'c' is the preset index */
-        state = 0; header = 0; AckPending = 1;
+        state = 0; header = 0;
     }
     else if (header == 'M') { /* midi message */
         static uint8_t midi_r[3]; /* Local static */
@@ -955,10 +954,10 @@ void PExReceiveByte(unsigned char c) {
             case 5: midi_r[1] = c; state++; break;
             case 6: midi_r[2] = c;
                 MidiInMsgHandler(MIDI_DEVICE_INTERNAL, 1, midi_r[0], midi_r[1], midi_r[2]);
-                state = 0; header = 0; AckPending = 1;
+                state = 0; header = 0;
                 break;
             default:
-                state = 0; header = 0; AckPending = 1;
+                state = 0; header = 0;
         }
     }
     else if (header == 'C') { /* create/edit/close/delete file, create/change directory on SD */ 
@@ -998,7 +997,7 @@ void PExReceiveByte(unsigned char c) {
                     state = 14; /* Go to state to receive FileName[6] (filename byte 0) */
                 } else {
                     /* Unknown sub-command for AxoC */
-                    header = 0; state = 0; /* Reset state machine, no AckPending */
+                    header = 0; state = 0;
                 }
                 break;
             /* --- States for parsing fdate/ftime (2 bytes each) into FileName[2] to FileName[5] --- */
@@ -1026,7 +1025,7 @@ void PExReceiveByte(unsigned char c) {
                         if (res == FR_OK) {
                             ManipulateFile(); /* ManipulateFile will now use FileName and pFileSize */
                         }
-                        header = 0; state = 0; /* Reset state machine, no AckPending */
+                        header = 0; state = 0;
                     }
                 }
                 else {
@@ -1071,11 +1070,11 @@ void PExReceiveByte(unsigned char c) {
                     }
                 }
                 else { /* Should not happen, or error */
-                    state = 0; header = 0; /* Reset state machine, no AckPending */
+                    state = 0; header = 0;
                 }
                 break;
             default: /* Error or unexpected state */
-                state = 0; header = 0; /* Reset state machine, no AckPending */
+                state = 0; header = 0;
                 break;
         }
     }
@@ -1095,11 +1094,11 @@ void PExReceiveByte(unsigned char c) {
                         offset++;
                     }
                     if (value == 0) {
-                        state = 0; header = 0; AckPending = 1;
+                        state = 0; header = 0;
                     }
                 }
                 else {
-                    state = 0; header = 0; AckPending = 1;
+                    state = 0; header = 0;
                 }
         }
     }
@@ -1122,10 +1121,10 @@ void PExReceiveByte(unsigned char c) {
                 read_reply_header[2] = (uint32_t)value;
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12); /* 3*4 bytes */
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (offset), (uint32_t)value);
-                state = 0; header = 0; AckPending = 1;
+                state = 0; header = 0;
                 break;
             default:
-                state = 0; header = 0; AckPending = 1;
+                state = 0; header = 0;
         }
     }
     else if (header == 'y') { /* generic read, 32-bit */
@@ -1142,15 +1141,15 @@ void PExReceiveByte(unsigned char c) {
                 read_reply_header[1] = (uint32_t)offset;
                 read_reply_header[2] = *((uint32_t*) offset);
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12); /* 3*4 bytes */
-                state = 0; header = 0; AckPending = 1;
+                state = 0; header = 0;
                 break;
             default:
-                state = 0; header = 0; AckPending = 1;
+                state = 0; header = 0;
         }
     }
     else { /* unknown command */
         // LogTextMessage("Unknown cmd received Axo%c c=%x", header, c);
-        state = 0; header = 0; AckPending = 1;
+        state = 0; header = 0;
     }
 }
 

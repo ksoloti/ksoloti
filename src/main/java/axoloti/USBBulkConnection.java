@@ -109,7 +109,7 @@ public class USBBulkConnection extends Connection {
     private final byte[] AxoS_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('S')};
     private final byte[] AxoW_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('W')};
     private final byte[] Axol_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('l')};
-    private final byte[] Axop_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('p')};
+    private final byte[] AxoA_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('A')};
     private final byte[] Axos_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('s')};
 
     private final short bulkVID = (short) 0x16C0;
@@ -1051,7 +1051,7 @@ public class USBBulkConnection extends Connection {
            "Axop"           (4)
          */
         ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
-        buffer.put(Axop_pckt);
+        buffer.put(AxoA_pckt);
         return writeBytes(buffer.array());
     }
 
