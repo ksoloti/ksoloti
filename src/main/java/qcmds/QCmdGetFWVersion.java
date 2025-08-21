@@ -24,7 +24,7 @@ import axoloti.Connection;
  *
  * @author Johannes Taelman
  */
-public class QCmdTransmitGetFWVersion extends AbstractQCmdSerialTask {
+public class QCmdGetFWVersion extends AbstractQCmdSerialTask {
     
     @Override
     public String GetStartMessage() {

@@ -118,7 +118,7 @@ import qcmds.QCmdStart;
 import qcmds.QCmdStartFlasher;
 import qcmds.QCmdStartMounter;
 import qcmds.QCmdStop;
-import qcmds.QCmdTransmitGetFWVersion;
+import qcmds.QCmdGetFWVersion;
 import qcmds.QCmdUploadFWSDRam;
 import qcmds.QCmdUploadPatch;
 

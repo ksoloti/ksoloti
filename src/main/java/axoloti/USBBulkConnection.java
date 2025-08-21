@@ -61,7 +61,7 @@ import qcmds.QCmdProcessor;
 import qcmds.QCmdSerialTask;
 import qcmds.QCmdStart;
 import qcmds.QCmdStop;
-import qcmds.QCmdTransmitGetFWVersion;
+import qcmds.QCmdGetFWVersion;
 import qcmds.QCmdUploadFWSDRam;
 import qcmds.QCmdUploadFile;
 import qcmds.QCmdUploadPatch;
@@ -700,7 +700,7 @@ public class USBBulkConnection extends Connection {
 
             /* 6. Post-Connection Commands (CPU ID, Firmware Version) */
             try {
-                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdTransmitGetFWVersion());
+                QCmdProcessor.getQCmdProcessor().AppendToQueue(new QCmdGetFWVersion());
                 QCmdProcessor.getQCmdProcessor().WaitQueueFinished();
 
                 QCmdMemRead1Word q1 = new QCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());

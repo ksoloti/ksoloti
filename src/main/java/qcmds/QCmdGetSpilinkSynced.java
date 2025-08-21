@@ -24,7 +24,7 @@ import axoloti.Connection;
  *
  * @author Johannes Taelman
  */
-public class QCmdTransmitGetSpilinkSynced extends AbstractQCmdSerialTask {
+public class QCmdGetSpilinkSynced extends AbstractQCmdSerialTask {
     
     @Override
     public String GetStartMessage() {
