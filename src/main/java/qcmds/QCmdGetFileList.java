@@ -54,7 +54,6 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
         int writeResult = connection.TransmitGetFileList();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Get file list failed: USB write error.");
-            setMcuStatusCode((byte)0x01); // FR_DISK_ERR
             setCompletedWithStatus(false);
             return this;
         }
@@ -63,7 +62,6 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
             /* Wait for the final AxoRl response from the MCU */
             if (!waitForCompletion(10000)) { // 10-second timeout
                 LOGGER.log(Level.SEVERE, "Get file list failed: Core did not acknowledge full listing within timeout (AxoRl).");
-                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                 setCompletedWithStatus(false);
             } else {
                 System.out.println(Instant.now() + " Get file list completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
@@ -71,11 +69,9 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Get file list interrupted: {0}", e.getMessage());
-            setMcuStatusCode((byte)0x02); // FR_INT_ERR
             setCompletedWithStatus(false);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "An unexpected error occurred during file list retrieval: {0}", e.getMessage());
-            setMcuStatusCode((byte)0xFF); // Generic error
             setCompletedWithStatus(false);
         }
         return this;

@@ -46,19 +46,17 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
 
     private static final Logger LOGGER = Logger.getLogger(QCmdUploadFWSDRam.class.getName());
 
-    /* Internal latches for each distinct step's Acknowledge */
     private CountDownLatch startMemWriteLatch;
     private CountDownLatch appendMemWriteLatch;
     private CountDownLatch closeMemWriteLatch;
 
-    /* Internal status for each step, set by processByte() */
     private volatile byte startMemWriteStatus = (byte)0xFF;
     private volatile byte appendMemWriteStatus = (byte)0xFF;
     private volatile byte closeMemWriteStatus = (byte)0xFF;
 
     File f;
-    long originalFirmwareSize; /* Store original file size */
-    long totalBytesToTransfer; /* Total bytes including the 'flascopy' header */
+    long originalFirmwareSize;
+    long totalBytesToTransfer;
 
     public QCmdUploadFWSDRam(File f) {
         this.f = f;
@@ -78,7 +76,6 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
         return "Done sending firmware packets.";
     }
 
-    /* These methods are called by USBBulkConnection.processByte() */
     public void setStartMemWriteCompleted(byte statusCode) {
         this.startMemWriteStatus = statusCode;
         if (startMemWriteLatch != null) {
@@ -120,6 +117,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
                 else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
                     buildDir += File.separator + "axoloti";
                 }
+
                 if (Preferences.getInstance().getFirmwareMode().contains("SPILink")) {
                     buildDir += "_spilink";
                 }
@@ -135,12 +133,12 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
 
             if (!f.exists()) {
                 LOGGER.log(Level.SEVERE, "Firmware file does not exist: {0}", f.getAbsolutePath());
-                setMcuStatusCode((byte)0x04); // FR_NO_FILE
+                setCompletedWithStatus(false);
                 return this;
             }
             if (!f.canRead()) {
                 LOGGER.log(Level.SEVERE, "Cannot read firmware file: {0}", f.getAbsolutePath());
-                setMcuStatusCode((byte)0x07); // FR_DENIED
+                setCompletedWithStatus(false);
                 return this;
             }
 
@@ -153,7 +151,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
             int nReadFull = inputStream.read(fullFirmwareData, 0, (int) originalFirmwareSize);
             if (nReadFull != originalFirmwareSize) {
                 LOGGER.log(Level.SEVERE, "Failed to read entire firmware file for CRC calculation. Expected {0} bytes, read {1}.", new Object[]{originalFirmwareSize, nReadFull});
-                setMcuStatusCode((byte)0x01); // FR_DISK_ERR
+                setCompletedWithStatus(false);
                 return this;
             }
             inputStream.close(); /* Close after full read */
@@ -189,7 +187,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
             /* --- Step 1: Start Memory Write (AxoWW) --- */
             if (!connection.isConnected()) {
                 LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: USB connection lost before start memory write.");
-                setMcuStatusCode((byte)0x03); // FR_NOT_READY
+                setCompletedWithStatus(false);
                 return this;
             }
 
@@ -199,13 +197,13 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
 
             if (!startMemWriteLatch.await(5, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core did not acknowledge start memory write within timeout.");
-                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
+                setCompletedWithStatus(false);
                 return this;
             }
             if (startMemWriteStatus != 0x00) {
                 LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core reported error ({0}) during start memory write.",
                         SDCardInfo.getFatFsErrorString(startMemWriteStatus));
-                setMcuStatusCode(startMemWriteStatus);
+                setCompletedWithStatus(false);
                 return this;
             }
 
@@ -241,7 +239,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
 
             if (!connection.isConnected()) {
                 LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: USB connection lost during first chunk transfer.");
-                setMcuStatusCode((byte)0x03); // FR_NOT_READY
+                setCompletedWithStatus(false);
                 return this;
             }
 
@@ -250,12 +248,12 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
 
             if (!appendMemWriteLatch.await(5, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core did not acknowledge first chunk receipt within timeout.");
-                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
+                setCompletedWithStatus(false);
                 return this;
             }
             if (appendMemWriteStatus != 0x00) {
                 LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core reported error ({0}) during first chunk append.", SDCardInfo.getFatFsErrorString(appendMemWriteStatus));
-                setMcuStatusCode(appendMemWriteStatus);
+                setCompletedWithStatus(false);
                 return this;
             }
 
@@ -275,7 +273,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
 
                 if (nReadChunk == -1) { /* Unexpected end of stream */
                     LOGGER.log(Level.SEVERE, "Unexpected end of firmware file or read error during chunking. Read "+ nReadChunk +" bytes. Chunk number " + chunkNum);
-                    setMcuStatusCode((byte)0x01); // FR_DISK_ERR
+                    setCompletedWithStatus(false);
                     return this;
                 }
                 if (nReadChunk != bytesToRead) {
@@ -287,7 +285,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
 
                 if (!connection.isConnected()) {
                     LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: USB connection lost during data transfer. chunk number " + chunkNum);
-                    setMcuStatusCode((byte)0x03); // FR_NOT_READY
+                    setCompletedWithStatus(false);
                     return this;
                 }
 
@@ -296,12 +294,12 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
 
                 if (!appendMemWriteLatch.await(5, TimeUnit.SECONDS)) {
                     LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
-                    setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
+                    setCompletedWithStatus(false);
                     return this;
                 }
                 if (appendMemWriteStatus != 0x00) {
                     LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core reported error (" + SDCardInfo.getFatFsErrorString(appendMemWriteStatus) + ") during chunk append. Chunk number " + chunkNum);
-                    setMcuStatusCode(appendMemWriteStatus);
+                    setCompletedWithStatus(false);
                     return this;
                 }
 
@@ -352,7 +350,8 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
                             if (lastLineContent.trim().startsWith("Uploading\t[")) {
                                 /* If it matches, remove this last line and all trailing newlines */
                                 doc.remove(startOfLineToRemove, doc.getLength() - startOfLineToRemove);
-                            } else {
+                            }
+                            else {
                                 /* If the previous line was NOT a progress bar, append back a newline before inserting the new one */
                                 if (docLength > 0 && content.charAt(docLength - 1) != '\n') {
                                     doc.insertString(doc.getLength(), "\n", null);
@@ -373,7 +372,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
             /* --- Step 3: Close Memory Write (AxoWc) --- */
             if (!connection.isConnected()) {
                 LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: USB connection lost before close memory write.");
-                setMcuStatusCode((byte)0x03); // FR_NOT_READY
+                setCompletedWithStatus(false);
                 return this;
             }
 
@@ -382,40 +381,35 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
 
             if (!closeMemWriteLatch.await(5, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core did not acknowledge memory write close within timeout.");
-                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
+                setCompletedWithStatus(false);
                 return this;
             }
             if (closeMemWriteStatus != 0x00) {
                 LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core reported error (" + SDCardInfo.getFatFsErrorString(closeMemWriteStatus) +") during memory write close.");
-                setMcuStatusCode(closeMemWriteStatus);
+                setCompletedWithStatus(false);
                 return this;
             }
 
             /* Overall command success */
             LOGGER.log(Level.INFO, "Done uploading firmware to SDRAM.\n");
-            setMcuStatusCode((byte)0x00); // FR_OK for overall command
             setCompletedWithStatus(true); /* Signal overall success */
 
         }
         catch (FileNotFoundException ex) {
             LOGGER.log(Level.SEVERE, "Firmware file not found: {0}", ex.getMessage());
-            setMcuStatusCode((byte)0x04); // FR_NO_FILE
             setCompletedWithStatus(false);
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "File I/O error during firmware upload to SDRAM: {0}", ex.getMessage());
-            setMcuStatusCode((byte)0x01); // FR_DISK_ERR
             setCompletedWithStatus(false);
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM interrupted: {0}", ex.getMessage());
-            setMcuStatusCode((byte)0x02); // FR_INT_ERR
             setCompletedWithStatus(false);
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "An unexpected error occurred during firmware upload to SDRAM: {0}", ex.getMessage());
-            setMcuStatusCode((byte)0xFF); // Generic error
             setCompletedWithStatus(false);
         }
         finally {
@@ -423,7 +417,8 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
             if (inputStream != null) {
                 try {
                     inputStream.close();
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                     LOGGER.log(Level.WARNING, "Error closing input stream for firmware upload to SDRAM: {0}", e.getMessage());
                 }
             }

@@ -37,10 +37,4 @@ public class QCmdStartMounter extends QCmdStart {
     public String GetDoneMessage() {
         return "Unmount/eject the SD card in your OS file manager to re-enable Patcher connection.\n";
     }
-
-    // @Override
-    // public String GetTimeOutMessage() {
-    //     return "Unmount/eject the SD card volume in your file manager to enable Patcher connection.";
-    // }
-
 }

@@ -43,12 +43,10 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
     private static final Logger LOGGER = Logger.getLogger(QCmdUploadFile.class.getName());
 
-    // Internal latches for each distinct step's Acknowledge
     private CountDownLatch createFileLatch;
     private CountDownLatch appendFileLatch;
     private CountDownLatch closeFileLatch;
 
-    // Internal status for each step, set by processByte()
     private volatile byte createFileStatus = (byte)0xFF;
     private volatile byte appendFileStatus = (byte)0xFF;
     private volatile byte closeFileStatus = (byte)0xFF;
@@ -59,7 +57,6 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
     File file;
     long size;
 
-    // Constructors as before
     public QCmdUploadFile(InputStream inputStream, String filename) {
         this.inputStream = inputStream;
         this.filename = filename;
@@ -124,17 +121,17 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
             if (inputStream == null) {
                 if (!file.exists()) {
                     LOGGER.log(Level.WARNING, "File does not exist: " + filename + "\n");
-                    setMcuStatusCode((byte)0x04); // FR_NO_FILE
+                    setCompletedWithStatus(false);
                     return this;
                 }
                 if (file.isDirectory()) {
                     LOGGER.log(Level.WARNING, "Cannot upload directories: " + filename + "\n");
-                    setMcuStatusCode((byte)0x05); // FR_NO_PATH (or custom error for directory)
+                    setCompletedWithStatus(false);
                     return this;
                 }
                 if (!file.canRead()) {
                     LOGGER.log(Level.WARNING, "Cannot read file: " + filename + "\n");
-                    setMcuStatusCode((byte)0x07); // FR_DENIED (permission)
+                    setCompletedWithStatus(false);
                     return this;
                 }
                 inputStream = new FileInputStream(file);
@@ -154,30 +151,28 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
             int tlength = inputStream.available(); 
             LOGGER.log(Level.INFO, "Uploading file to SD card: " + filename + ", Size: " + tlength + " bytes");
-            size = tlength; // Store total size for SDCardInfo.AddFile and accurate progress
+            size = tlength;
 
-            // --- Step 1: Create the file on SD card (AxoCf) ---
             if (!connection.isConnected()) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost before file creation.");
-                setMcuStatusCode((byte)0x03); // FR_NOT_READY (connection lost)
+                setCompletedWithStatus(false);
                 return this;
             }
 
-            createFileLatch = new CountDownLatch(1); // New latch for this step
+            createFileLatch = new CountDownLatch(1);
             connection.TransmitCreateFile(filename, tlength, ts);
 
-            if (!createFileLatch.await(3, TimeUnit.SECONDS)) { // Wait for create file ACK
+            if (!createFileLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge file creation within timeout.");
-                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
+                setCompletedWithStatus(false);
                 return this;
             }
-            if (createFileStatus != 0x00) { // Check status from MCU (0x00 is FR_OK)
+            if (createFileStatus != 0x00) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(createFileStatus) + ") during file creation.");
-                setMcuStatusCode(createFileStatus);
+                setCompletedWithStatus(false);
                 return this;
             }
 
-            // --- Step 2: Append data in chunks (Axoa) ---
             int MaxBlockSize = 32768;
             long totalBytesSent = 0;
             int remLength = tlength;
@@ -187,50 +182,48 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
             do {
                 chunkNum++;
                 int bytesToRead = Math.min(remLength, MaxBlockSize);
-                if (bytesToRead <= 0) { // No more bytes to read
+                if (bytesToRead <= 0) {
                     break;
                 }
 
                 byte[] buffer = new byte[bytesToRead];
                 int nRead = inputStream.read(buffer, 0, bytesToRead);
 
-                if (nRead == -1) { // Unexpected end of stream
+                if (nRead == -1) {
                     LOGGER.log(Level.SEVERE, "Unexpected end of file or read error for " + filename + ". Read " + nRead + " bytes. Chunk number " + chunkNum);
-                    setMcuStatusCode((byte)0x01); // FR_DISK_ERR or custom I/O error
+                    setCompletedWithStatus(false);
                     return this;
                 }
                 if (nRead != bytesToRead) {
                     LOGGER.log(Level.WARNING, "Partial read for " + filename + ": Expected " + bytesToRead + " bytes, read " + nRead);
                     byte[] actualBuffer = new byte[nRead];
                     System.arraycopy(buffer, 0, actualBuffer, 0, nRead);
-                    buffer = actualBuffer; // Use the actually read bytes
+                    buffer = actualBuffer;
                 }
 
                 if (!connection.isConnected()) {
                     LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost during file transfer. Chunk number " + chunkNum);
-                    setMcuStatusCode((byte)0x03); // FR_NOT_READY
+                    setCompletedWithStatus(false);
                     return this;
                 }
 
-                appendFileLatch = new CountDownLatch(1); // New latch for this chunk
+                appendFileLatch = new CountDownLatch(1);
                 connection.TransmitAppendFile(buffer);
 
-                if (!appendFileLatch.await(3, TimeUnit.SECONDS)) { // Wait for append chunk ACK
+                if (!appendFileLatch.await(3, TimeUnit.SECONDS)) {
                     LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
-                    setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
+                    setCompletedWithStatus(false);
                     return this;
                 }
-                if (appendFileStatus != 0x00) { // Check status from MCU
+                if (appendFileStatus != 0x00) {
                     LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(appendFileStatus) + ") during chunk append. Chunk number " + chunkNum);
-                    setMcuStatusCode(appendFileStatus);
+                    setCompletedWithStatus(false);
                     return this;
                 }
-                // try {Thread.sleep(500);} catch (Exception e) {};
 
                 totalBytesSent += nRead;
                 remLength -= nRead;
 
-                // Progress bar update
                 long newpct = (100 * totalBytesSent) / tlength;
                 if (newpct != pct) {
                     StringBuilder progressbar = new StringBuilder("                         "); /* 25-chars long progress bar */
@@ -240,14 +233,11 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
                     final String progressMessage = "Uploading\t[" + progressbar + "] " + String.format("%3d", newpct) + "%";
                     SwingUtilities.invokeLater(() -> {
-
                         try {
                             Document doc = MainFrame.jTextPaneLog.getDocument();
                             String content = doc.getText(0, doc.getLength());
-                            content = content.replaceAll("\r\n", "\n"); // Normalize line endings
-
-                            int docLength = content.length(); // Use content.length() after normalization
-
+                            content = content.replaceAll("\r\n", "\n");
+                            int docLength = content.length();
                             int startOfLineToRemove = -1;
                             String lastLineContent = "";
 
@@ -296,45 +286,41 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
             if (!connection.isConnected()) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost before file close.");
-                setMcuStatusCode((byte)0x03); // FR_NOT_READY
+                setCompletedWithStatus(false);
                 return this;
             }
 
-            closeFileLatch = new CountDownLatch(1); // New latch for this step
+            closeFileLatch = new CountDownLatch(1);
             connection.TransmitCloseFile(filename, ts); 
 
-            if (!closeFileLatch.await(3, TimeUnit.SECONDS)) { // Wait for close file ACK
+            if (!closeFileLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge file close within timeout.");
-                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
+                setCompletedWithStatus(false);
                 return this;
             }
-            if (closeFileStatus != 0x00) { // Check status from MCU
+            if (closeFileStatus != 0x00) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(closeFileStatus) + ") during file close.");
-                setMcuStatusCode(closeFileStatus);
+                setCompletedWithStatus(false);
                 return this;
             }
 
             /* Overall command success */
             SDCardInfo.getInstance().AddFile(filename, (int) size, ts);
             LOGGER.log(Level.INFO, "Done uploading file.\n");
-            setMcuStatusCode((byte)0x00); // FR_OK for overall command
-            setCompletedWithStatus(true); // Signal overall success
+            setCompletedWithStatus(true);
 
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "File I/O error during upload for " + filename + ": {0}", ex.getMessage());
-            setMcuStatusCode((byte)0x01); // FR_DISK_ERR or custom I/O error
             setCompletedWithStatus(false);
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Upload interrupted for " + filename + ": {0}", ex.getMessage());
-            setMcuStatusCode((byte)0x02); // FR_INT_ERR or custom interrupted error
             setCompletedWithStatus(false);
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "An unexpected error occurred during upload for " + filename + ": {0}", ex.getMessage());
-            setMcuStatusCode((byte)0xFF); // Generic error
             setCompletedWithStatus(false);
         }
         finally {

@@ -37,10 +37,4 @@ public class QCmdStartFlasher extends QCmdStart {
     public String GetDoneMessage() {
         return "\n>>> FIRMWARE UPDATE IN PROGRESS. DO NOT UNPLUG THE BOARD! <<<\n>>>  You can connect again after the LEDs stop flashing.  <<<\n";
     }
-
-    @Override
-    public String GetTimeOutMessage() {
-        /* Should never get here */
-        return "\n>>> FIRMWARE UPDATE IN PROGRESS. DO NOT UNPLUG THE BOARD! <<<\n>>>  You can connect again after the LEDs stop flashing.  <<<\n";
-    }
 }

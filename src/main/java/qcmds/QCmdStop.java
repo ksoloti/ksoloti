@@ -54,7 +54,6 @@ public class QCmdStop extends AbstractQCmdSerialTask {
         int writeResult = connection.TransmitStop();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "QCmdStop: Failed to send TransmitStop: USB write error.");
-            setMcuStatusCode((byte)0x01); // FR_DISK_ERR
             setCompletedWithStatus(false);
             return this;
         }
@@ -62,19 +61,19 @@ public class QCmdStop extends AbstractQCmdSerialTask {
         try {
             if (!waitForCompletion()) {
                 LOGGER.log(Level.SEVERE, "QCmdStop: Core did not acknowledge within timeout.");
-                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                 setCompletedWithStatus(false);
-            } else {
+            }
+            else {
                 System.out.println(Instant.now() + " QCmdStop completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
             }
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "QCmdStop interrupted: {0}", e.getMessage());
-            setMcuStatusCode((byte)0x02); // FR_INT_ERR
             setCompletedWithStatus(false);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             LOGGER.log(Level.SEVERE, "An unexpected error occurred during QCmdStop: {0}", e.getMessage());
-            setMcuStatusCode((byte)0xFF); // Generic error
             setCompletedWithStatus(false);
         }
         return this;

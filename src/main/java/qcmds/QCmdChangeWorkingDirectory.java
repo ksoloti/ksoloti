@@ -56,7 +56,6 @@ public class QCmdChangeWorkingDirectory extends AbstractQCmdSerialTask {
         int writeResult = connection.TransmitChangeWorkingDirectory(path);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Change directory failed for " + path + ": USB write error.");
-            setMcuStatusCode((byte)0x01);
             setCompletedWithStatus(false);
             return this;
         }
@@ -64,7 +63,6 @@ public class QCmdChangeWorkingDirectory extends AbstractQCmdSerialTask {
         try {
             if (!waitForCompletion()) {
                 LOGGER.log(Level.SEVERE, "Change directory failed for " + path + ": Core did not acknowledge within timeout.");
-                setMcuStatusCode((byte)0x0F);
                 setCompletedWithStatus(false);
             }
             else {
@@ -74,12 +72,10 @@ public class QCmdChangeWorkingDirectory extends AbstractQCmdSerialTask {
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Change directory for " + path + " interrupted: {0}", e.getMessage());
-            setMcuStatusCode((byte)0x02);
             setCompletedWithStatus(false);
         }
         catch (Exception e) {
             LOGGER.log(Level.SEVERE, "An unexpected error occurred during change directory for " + path + ": {0}", e.getMessage());
-            setMcuStatusCode((byte)0xFF);
             setCompletedWithStatus(false);
         }
         return this;

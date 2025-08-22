@@ -27,7 +27,7 @@ public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
 
     private final CountDownLatch latch = new CountDownLatch(1);
     protected volatile boolean commandSuccess = false;
-    protected volatile byte mcuStatusCode = (byte) 0xFF; /* Stores the FatFs status code received from MCU */
+    protected volatile byte mcuStatusCode = (byte) 0xFF; /* Stores the (FatFs-type) status code received from MCU */
     protected char expectedAckCommandByte = 0; /* Default value, only used by - and will be set by - subclasses that use AxoR<expectedAckCommandByte><statusbyte> */
 
     @Override

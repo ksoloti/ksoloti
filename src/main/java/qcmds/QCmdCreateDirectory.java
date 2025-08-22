@@ -60,7 +60,6 @@ public class QCmdCreateDirectory extends AbstractQCmdSerialTask {
         int writeResult = connection.TransmitCreateDirectory(dirname, date);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Create directory failed for " + dirname + ": USB write error.");
-            setMcuStatusCode((byte)0x01); // FR_DISK_ERR or custom error for USB comms
             setCompletedWithStatus(false);
             return this;
         }
@@ -68,7 +67,6 @@ public class QCmdCreateDirectory extends AbstractQCmdSerialTask {
         try {
             if (!waitForCompletion()) { // 5-second timeout for MCU ACK
                 LOGGER.log(Level.SEVERE, "Create directory failed for " + dirname + ": Core did not acknowledge within timeout.");
-                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                 setCompletedWithStatus(false);
             }
             else {
@@ -79,12 +77,10 @@ public class QCmdCreateDirectory extends AbstractQCmdSerialTask {
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Create directory for " + dirname + " interrupted: {0}", e.getMessage());
-            setMcuStatusCode((byte)0x02); // FR_INT_ERR
             setCompletedWithStatus(false);
         }
         catch (Exception e) {
             LOGGER.log(Level.SEVERE, "An unexpected error occurred during directory creation for " + dirname + ": {0}", e.getMessage());
-            setMcuStatusCode((byte)0xFF); // Generic error
             setCompletedWithStatus(false);
         }
         return this;
@@ -92,8 +88,6 @@ public class QCmdCreateDirectory extends AbstractQCmdSerialTask {
 
     @Override
     public boolean isSuccessful() {
-        // For QCmdCreateDirectory, success means both commandSuccess (no Java-side comms error)
-        // AND mcuStatusCode is FR_OK (0x00) OR FR_EXIST (0x08).
         return commandSuccess && (mcuStatusCode == 0x00 || mcuStatusCode == 0x08);
     }
 }

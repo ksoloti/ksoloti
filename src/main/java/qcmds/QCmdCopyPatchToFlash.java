@@ -54,7 +54,6 @@ public class QCmdCopyPatchToFlash extends AbstractQCmdSerialTask {
         int writeResult = connection.TransmitCopyToFlash();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "QCmdCopyPatchToFlash: Failed to send TransmitCopyToFlash: USB write error.");
-            setMcuStatusCode((byte)0x01); // FR_DISK_ERR
             setCompletedWithStatus(false);
             return this;
         }
@@ -62,7 +61,6 @@ public class QCmdCopyPatchToFlash extends AbstractQCmdSerialTask {
         try {
             if (!waitForCompletion()) {
                 LOGGER.log(Level.SEVERE, "QCmdCopyPatchToFlash: Core did not acknowledge within timeout.");
-                setMcuStatusCode((byte)0x0F); // FR_TIMEOUT
                 setCompletedWithStatus(false);
             } else {
                 System.out.println(Instant.now() + " QCmdCopyPatchToFlash completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
@@ -70,11 +68,9 @@ public class QCmdCopyPatchToFlash extends AbstractQCmdSerialTask {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "QCmdCopyPatchToFlash interrupted: {0}", e.getMessage());
-            setMcuStatusCode((byte)0x02); // FR_INT_ERR
             setCompletedWithStatus(false);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "An unexpected error occurred during QCmdCopyPatchToFlash: {0}", e.getMessage());
-            setMcuStatusCode((byte)0xFF); // Generic error
             setCompletedWithStatus(false);
         }
         return this;

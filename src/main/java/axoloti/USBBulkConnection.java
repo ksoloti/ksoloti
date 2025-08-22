@@ -1608,7 +1608,7 @@ public class USBBulkConnection extends Connection {
                                 dataLength = 24;
                                 setNextState(ReceiverState.ACK_PCKT);
                                 break;
-                            case 'D':
+                            case 'D': /* Receiving display update (scope etc.) */
                                 dataLength = 8;
                                 setNextState(ReceiverState.DISPLAY_PCKT_HDR);
                                 break;
@@ -1616,7 +1616,7 @@ public class USBBulkConnection extends Connection {
                                 dataLength = 2;
                                 setNextState(ReceiverState.COMMANDRESULT_PCKT);
                                 break;
-                            case 'L': /* receiving LogTextMessage */
+                            case 'L': /* Receiving LogTextMessage */
                                 textRcvBuffer.clear();
                                 dataLength = 255;
                                 setNextState(ReceiverState.TEXT_PCKT);
