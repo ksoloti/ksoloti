@@ -49,7 +49,6 @@ public class QCmdProcessor implements Runnable {
     private final Thread pingerThread;
     private final PeriodicDialTransmitter dialTransmitter;
     private final Thread dialTransmitterThread;
-    private int progressValue = 0;
 
     private final Object queueLock = new Object();
 
@@ -258,34 +257,9 @@ public class QCmdProcessor implements Runnable {
                 if (QCmdGUITask.class.isInstance(cmd)) {
                     ((QCmdGUITask) cmd).DoGUI(QCmdProcessor.this);
                 }
-                String m = ((QCmd) cmd).GetDoneMessage();
-                if (m != null) {
-                    MainFrame.mainframe.SetProgressMessage(m);
-                }
             }
         });
     }
-
-    private void setProgress(final int i) {
-        if (i != progressValue) {
-            progressValue = i;
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    MainFrame.mainframe.SetProgressValue(i);
-                }
-            });
-        }
-    }
-
-    // private void publish(final String m) {
-    //     SwingUtilities.invokeLater(new Runnable() {
-    //         @Override
-    //         public void run() {
-    //             MainFrame.mainframe.SetProgressMessage(m);
-    //         }
-    //     });
-    // }
 
     public void WaitQueueFinished() {
         synchronized (queueLock) {
@@ -310,7 +284,6 @@ public class QCmdProcessor implements Runnable {
         dialTransmitterThread.setName("DialTransmitter");
         dialTransmitterThread.start();
         while (true) {
-            setProgress(0);
             try {
                 QCmd response = queueResponse.poll();
                 while (response != null) {

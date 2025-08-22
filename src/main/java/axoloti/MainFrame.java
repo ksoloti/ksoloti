@@ -157,7 +157,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     public static Style styleInfo;
 
     private axoloti.menus.FileMenu fileMenu;
-    private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler3;
     private axoloti.menus.HelpMenu helpMenu1;
     private javax.swing.JButton jButtonClear;
@@ -170,7 +169,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JLabel jLabelFlags;
     private javax.swing.JLabel jLabelIcon;
     private javax.swing.JLabel jLabelPatch;
-    private javax.swing.JLabel jLabelProgress;
     private javax.swing.JLabel jLabelSDCardPresent;
     private javax.swing.JLabel jLabelVoltages;
     private javax.swing.JMenuBar jMenuBar1;
@@ -193,8 +191,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JPanel jPanelIconColumn;
     private javax.swing.JPanel jPanelButtonsColumn;
     private javax.swing.JPanel jPanelInfoColumn;
-    private javax.swing.JPanel jPanelProgress;
-    private javax.swing.JProgressBar jProgressBar1;
     private ScrollPaneComponent jScrollPaneLog;
     public static javax.swing.JTextPane jTextPaneLog;
     private axoloti.menus.WindowMenu windowMenu1;
@@ -941,10 +937,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         jScrollPaneLog = new ScrollPaneComponent();
         jTextPaneLog = new javax.swing.JTextPane();
-        jPanelProgress = new javax.swing.JPanel();
-        jProgressBar1 = new javax.swing.JProgressBar();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 32767));
-        jLabelProgress = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new axoloti.menus.FileMenu();
         jMenuEdit = new javax.swing.JMenu();
@@ -1045,23 +1037,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jScrollPaneLog.setViewportView(jTextPaneLog);
 
         getContentPane().add(jScrollPaneLog);
-
-        jPanelProgress.setMaximumSize(new java.awt.Dimension(8000, 16));
-        jPanelProgress.setLayout(new javax.swing.BoxLayout(jPanelProgress, javax.swing.BoxLayout.LINE_AXIS));
-
-        jProgressBar1.setAlignmentX(LEFT_ALIGNMENT);
-        jProgressBar1.setMaximumSize(new java.awt.Dimension(100, 16));
-        jProgressBar1.setMinimumSize(new java.awt.Dimension(100, 16));
-        jProgressBar1.setPreferredSize(new java.awt.Dimension(100, 16));
-        jPanelProgress.add(jProgressBar1);
-        jPanelProgress.add(filler1);
-
-        jLabelProgress.setFocusable(false);
-        jLabelProgress.setMaximumSize(new java.awt.Dimension(500, 14));
-        jLabelProgress.setPreferredSize(new java.awt.Dimension(150, 14));
-        jPanelProgress.add(jLabelProgress);
-
-        getContentPane().add(jPanelProgress);
 
         fileMenu.setMnemonic('F');
         fileMenu.setText("File");
@@ -1246,7 +1221,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void jMenuItemFConnectActionPerformed(java.awt.event.ActionEvent evt) {
         jMenuItemFConnect.setEnabled(false);
-        MainFrame.mainframe.SetProgressMessage("Connecting via menu...");
         QCmdProcessor.getInstance().Panic();
 
         new SwingWorker<Boolean, String>() {
@@ -1967,14 +1941,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     public void NewBank() {
         PatchBank b = new PatchBank();
         b.setVisible(true);
-    }
-
-    public void SetProgressValue(int i) {
-        jProgressBar1.setValue(i);
-    }
-
-    public void SetProgressMessage(String s) {
-        jLabelProgress.setText(s);
     }
 
     @Override
