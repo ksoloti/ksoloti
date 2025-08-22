@@ -63,14 +63,6 @@ static char FileName[256];
 static FIL pFile;
 static int32_t pFileSize;
 
-/* now static global */
-static uint32_t param_index;
-static int32_t value;
-static uint32_t write_position;
-static uint32_t offset;
-static uint32_t length;
-static uint32_t patchid;
-static uint32_t total_write_length;
 
 MUTEX_DECL(LogMutex);
 char    LogBuffer[LOG_BUFFER_SIZE];
@@ -667,8 +659,15 @@ void ReplySpilinkSynced(void) {
 
 void PExReceiveByte(unsigned char c) {
     static volatile char header = 0;
-    static volatile int32_t state = 0;
+    static volatile uint32_t state = 0;
     static volatile uint32_t current_filename_idx; /* For parsing filename characters into FileName[6]+ */
+    static volatile uint32_t param_index;
+    static volatile int32_t value;
+    static volatile uint32_t write_position;
+    static volatile uint32_t offset;
+    static volatile uint32_t length;
+    static volatile uint32_t patchid;
+    static volatile uint32_t total_write_length;
 
     AddPCDebug(c, state);
 
