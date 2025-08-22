@@ -1908,6 +1908,7 @@ public class USBBulkConnection extends Connection {
                             cmd.setValueRead(memRead1WordValue);
                             cmd.setMcuStatusCode((byte)0x00);
                             cmd.setCompletedWithStatus(true);
+                            System.out.println(Instant.now() + " QCmdMemRead1Word address 0x" + Integer.toHexString(memReadAddr).toUpperCase() + ", value read: 0x" + Integer.toHexString(memRead1WordValue).toUpperCase());
                         }
                         setIdleState();
                     default:
