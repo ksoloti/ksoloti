@@ -1551,7 +1551,7 @@ public class USBBulkConnection extends Connection {
                                 dataLength = 2;
                                 setNextState(ReceiverState.COMMANDRESULT_PCKT);
                                 break;
-                            case 'T':
+                            case 'L': /* receiving LogTextMessage */
                                 textRcvBuffer.clear();
                                 dataLength = 255;
                                 setNextState(ReceiverState.TEXT_PCKT);

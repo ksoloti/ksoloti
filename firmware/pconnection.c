@@ -201,7 +201,7 @@ void LogTextMessage(const char* format, ...) {
                 LogBuffer[LogBufferUsed++] = 'A';
                 LogBuffer[LogBufferUsed++] = 'x';
                 LogBuffer[LogBufferUsed++] = 'o';
-                LogBuffer[LogBufferUsed++] = 'T';
+                LogBuffer[LogBufferUsed++] = 'L';
 
                 memcpy(&LogBuffer[LogBufferUsed], tmp, length+1);
                 LogBufferUsed += length+1;
