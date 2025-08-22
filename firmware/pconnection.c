@@ -676,14 +676,14 @@ void PExReceiveByte(unsigned char c) {
         switch (state) {
             /* Confirm "Axo" sequence first */
             case 0:
-                if (c == 'A') state++; 
+                if (c == 'A') state = 1; 
                 break;
             case 1: 
-                if (c == 'x') state++;
+                if (c == 'x') state = 2;
                 else state = 0;
                 break;
             case 2:
-                if (c == 'o') state++;
+                if (c == 'o') state = 3;
                 else state = 0;
                 break;
             case 3:
@@ -691,62 +691,59 @@ void PExReceiveByte(unsigned char c) {
                 header = c;
                 switch (c) {
 
+                    case 'M': /* midi command */
                     case 'P': /* param change */
                     case 'R': /* preset change */
                     case 'T': /* apply preset */
-                    case 'M': /* midi command */
+                    case 'W': /* generic write start, close */
+                    case 'a': /* append data to opened sdcard file (top-level Axoa) */
                     case 'r': /* generic read */
+                    case 's': /* start patch (includes midi cost and dsp limit) */
+                    case 'w': /* append to memory during 'W' generic write (top-level Axow) */
                     case 'y': /* generic read, 32 bit */
                         state = 4; /* All the above pass on directly to state 4. */
                         break;
                     case 'u': { /* go to DFU mode */
-                        state = 0; header = 0;
                         uint8_t res = StopPatch();
+                        state = 0;
                         if (res == FR_OK) {
                             exception_initiate_dfu();
                         }
                         break;
                     }
                     case 'F': { /* copy to flash */
-                        state = 0; header = 0;
                         uint8_t res = StopPatch();
                         if (res == FR_OK) {
                             res = CopyPatchToFlash();
                         }
                         send_AxoResult(c, res);
+                        state = 0;
                         break;
                     }
                     case 'l': /* read directory listing */
-                        state = 0; header = 0;
                         ReadDirectoryListing(); /* Will send AxoRl when done */
+                        state = 0;
                         break;
                     case 'V': /* FW version number */
-                        state = 0; header = 0;
                         ReplyFWVersion();
+                        state = 0;
                         break;
                     case 'Y': /* is this Core SPILINK synced */
-                        state = 0; header = 0;
                         ReplySpilinkSynced();
+                        state = 0;
                         break;
                     case 'A': /* ping */
                         AckPending = 1; /* Only ping explicitly triggers AxoA */
-                        state = 0; header = 0;
-                        break;
-
-                    case 'a': /* append data to opened sdcard file (top-level Axoa) */
-                    case 's': /* start patch (includes midi cost and dsp limit) */
-                    case 'W': /* generic write start, close */
-                    case 'w': /* append to memory during 'W' generic write */
-                        state = 4; /* All the above pass on directly to state 4. */
+                        state = 0;
                         break;
                     case 'C': /* Unified File System Command (create, delete, mkdir, getinfo, close) */
                         current_filename_idx = 0; /* Reset for filename parsing */
                         state = 4; /* Next state will receive the 4-byte pFileSize/placeholder */
                         break;
                     case 'S': { /* stop patch */
-                        state = 0; header = 0;
                         uint8_t res = StopPatch();
                         send_AxoResult('S', res);
+                        state = 0;
                         break;
                     }
                     default:
@@ -783,11 +780,11 @@ void PExReceiveByte(unsigned char c) {
             case 5:  uUIMidiCost |= (uint16_t)c << 8; state++; break;
             case 6: { 
                 uDspLimit200  = c;
-                state = 0; header = 0;
                 SetPatchSafety(uUIMidiCost, uDspLimit200);
                 loadPatchIndex = LIVE;
                 uint8_t res = StartPatch();
                 send_AxoResult('s', res);
+                state = 0; header = 0;
                 break;
             }
             default:
@@ -935,7 +932,7 @@ void PExReceiveByte(unsigned char c) {
                     header = 0; state = 0;
                 }
                 break;
-            /* --- States for parsing fdate/ftime (2 bytes each) into FileName[2] to FileName[5] --- */
+            /* States for parsing fdate/ftime (2 bytes each) into FileName[2] to FileName[5] --- */
             /* Used by 'f', 'k', 'c' */
             case 10: /* Expecting FileName[2] (fdate byte 0) */
                 FileName[2] = c; state++; break;
@@ -989,7 +986,6 @@ void PExReceiveByte(unsigned char c) {
                     value--;
                     *((unsigned char*) write_position) = c;
                     write_position++;
-
                     
                     /* Dummy loop required?? See (header == 'w') above */
                     for (volatile uint32_t dummy = 0; dummy < 256; dummy++);
@@ -1028,7 +1024,7 @@ void PExReceiveByte(unsigned char c) {
                         state = 0; header = 0;
                     }
                 }
-                else {
+                else { /* Should not happen, or error */
                     state = 0; header = 0;
                 }
         } /* End switch (state) */
