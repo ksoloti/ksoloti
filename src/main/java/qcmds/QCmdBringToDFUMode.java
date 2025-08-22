@@ -39,6 +39,7 @@ public class QCmdBringToDFUMode extends AbstractQCmdSerialTask {
     @Override
     public QCmd Do(Connection connection) {
         connection.TransmitBringToDFU();
+        /* Does not expect a response */
         return this;
     }
 }
