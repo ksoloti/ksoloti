@@ -81,8 +81,6 @@ public abstract class Connection {
     abstract public void ClearSync();
     abstract public boolean WaitSync(int msec);
     abstract public boolean WaitSync();
-    abstract public void ClearReadSync();
-    abstract public boolean WaitReadSync();
     abstract public void setPatch(Patch patch);
     abstract public ksoloti_core getTargetProfile();
     abstract public byte[] getFwVersion();

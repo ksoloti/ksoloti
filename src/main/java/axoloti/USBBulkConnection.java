@@ -93,7 +93,6 @@ public class USBBulkConnection extends Connection {
     ByteBuffer dispData;
 
     final Sync sync;
-    final Sync readsync;
 
     private Boolean isSDCardPresent = null;
     private int connectionFlags = 0;
@@ -314,7 +313,6 @@ public class USBBulkConnection extends Connection {
 
 	protected USBBulkConnection() {
         this.sync = new Sync();
-        this.readsync = new Sync();
         this.patch = null;
 
         disconnectRequested = false;
@@ -807,7 +805,6 @@ public class USBBulkConnection extends Connection {
                     default:  errstr = Integer.toString(result); break;
                 }
                 LOGGER.log(Level.SEVERE, "USB bulk write failed: " + errstr);
-                // QCmdProcessor.getInstance().Abort();
             }
             return result;
         } /* end synchronize (usbOutLock) */
@@ -884,34 +881,6 @@ public class USBBulkConnection extends Connection {
         return WaitSync(3000);
     }
 
-    @Override
-    public void ClearReadSync() {
-        synchronized (readsync) {
-            readsync.Acked = false;
-        }
-    }
-
-    @Override
-    public boolean WaitReadSync() {
-        synchronized (readsync) {
-            if (readsync.Acked) {
-                return readsync.Acked;
-            }
-            try {
-                if (disconnectRequested) {
-                    // System.out.println(Instant.now() + " [DEBUG] WaitReadSync: Disconnect requested, not waiting.");
-                    return false;
-                }
-                readsync.wait(3000);
-            }
-            catch (InterruptedException ex) {
-                // System.out.println(Instant.now() + " [DEBUG] ReadSync wait interrupted due to disconnect request.," + ex.getMessage());
-                Thread.currentThread().interrupt();
-                return false;
-            }
-            return readsync.Acked;
-        }
-    }
 
     @Override
     public int TransmitStart() {
