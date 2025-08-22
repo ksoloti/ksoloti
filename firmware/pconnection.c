@@ -716,7 +716,7 @@ void PExReceiveByte(unsigned char c) {
                         if (res == FR_OK) {
                             res = CopyPatchToFlash();
                         }
-                        send_AxoResult(c, res);
+                        send_AxoResult('F', res);
                         break;
                     }
                     case 'l': /* read directory listing */
@@ -809,13 +809,13 @@ void PExReceiveByte(unsigned char c) {
                             write_position = offset; /* Initialize write_position here */
                             total_write_length = (uint32_t)value;
                         }
-                        send_AxoResult(c, res);
+                        send_AxoResult('W', res);
                         break;
                     }
                     case 'e': /* end Memory Write */
                         // TODO: error checking based on total_write_length?
                         state = 0; header = 0;
-                        send_AxoResult(c, FR_OK);
+                        send_AxoResult('e', FR_OK);
                         break;
                     default:
                         state = 0; header = 0;
@@ -863,16 +863,16 @@ void PExReceiveByte(unsigned char c) {
 
                     if (value == 0) {
                         state = 0; header = 0;
-                        send_AxoResult(header, FR_OK);
+                        send_AxoResult('w', FR_OK);
                     }
                 } else {
                     state = 0; header = 0;
-                    send_AxoResult(header, FR_DISK_ERR);
+                    send_AxoResult('w', FR_INVALID_PARAMETER);
                 }
                 break;
             default:
                 state = 0; header = 0;
-                send_AxoResult(header, FR_DISK_ERR);
+                send_AxoResult('w', FR_DISK_ERR);
                 break;
         } /* End switch (state) */
     }
@@ -997,10 +997,12 @@ void PExReceiveByte(unsigned char c) {
                 }
                 else { /* Should not happen, or error */
                     state = 0; header = 0;
+                    send_AxoResult('a', FR_INVALID_PARAMETER);
                 }
                 break;
             default: /* Error or unexpected state */
                 state = 0; header = 0;
+                send_AxoResult('a', FR_DISK_ERR);
                 break;
         } /* End switch (state) */
     }
