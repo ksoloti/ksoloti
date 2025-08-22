@@ -50,7 +50,6 @@ public class QCmdCopyPatchToFlash extends AbstractQCmdSerialTask {
     @Override
     public QCmd Do(Connection connection) {
         connection.setCurrentExecutingCommand(this);
-        setMcuStatusCode((byte)0xFF);
 
         int writeResult = connection.TransmitCopyToFlash();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {

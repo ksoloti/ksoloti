@@ -56,7 +56,6 @@ public class QCmdCreateDirectory extends AbstractQCmdSerialTask {
     @Override
     public QCmd Do(Connection connection) {
         connection.setCurrentExecutingCommand(this);
-        setMcuStatusCode((byte)0xFF);
 
         int writeResult = connection.TransmitCreateDirectory(dirname, date);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {

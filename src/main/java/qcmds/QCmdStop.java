@@ -50,7 +50,6 @@ public class QCmdStop extends AbstractQCmdSerialTask {
     @Override
     public QCmd Do(Connection connection) {
         connection.setCurrentExecutingCommand(this);
-        setMcuStatusCode((byte)0xFF);
 
         int writeResult = connection.TransmitStop();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {

@@ -53,7 +53,6 @@ public class QCmdGetFileInfo extends AbstractQCmdSerialTask {
     @Override
     public QCmd Do(Connection connection) {
         connection.setCurrentExecutingCommand(this);
-        setMcuStatusCode((byte)0xFF);
 
         int writeResult = connection.TransmitGetFileInfo(filename);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {

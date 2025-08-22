@@ -59,7 +59,6 @@ public class QCmdStart extends AbstractQCmdSerialTask {
     @Override
     public QCmd Do(Connection connection) {
         connection.setCurrentExecutingCommand(this);
-        setMcuStatusCode((byte)0xFF);
 
         connection.setPatch(p);
 

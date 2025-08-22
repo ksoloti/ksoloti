@@ -54,7 +54,10 @@ public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
 
     @Override
     public boolean isSuccessful() {
-        return commandSuccess && mcuStatusCode == 0x00;
+        if (!commandSuccess) { /* Patcher-side failure */
+            return false;
+        }
+        return mcuStatusCode == 0x00; /* MCU status code 0 means success */
     }
 
     public byte getMcuStatusCode() {
