@@ -1503,7 +1503,7 @@ public class USBBulkConnection extends Connection {
         //     charDisplay = "'" + String.valueOf((char) c) + "'";
         // }
         // else {
-        //     charDisplay = String.format("%02x", c) + "h"; // Show hex for non-printable characters
+        //     charDisplay = String.format("%02X", c) + "h"; // Show hex for non-printable characters
         // }
         // System.out.println(Instant.now() + " [DEBUG] processByte c=" + charDisplay + " s=" + state.name());
 
