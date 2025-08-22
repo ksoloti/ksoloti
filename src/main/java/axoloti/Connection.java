@@ -30,6 +30,7 @@ import java.nio.ByteBuffer;
 // import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.swing.SwingUtilities;
 
@@ -51,7 +52,8 @@ public abstract class Connection {
     abstract public boolean isConnected();
     abstract public void disconnect();
     abstract public boolean connect();
-    abstract public void SelectPort();
+    abstract public void selectPort();
+    abstract public List<String[]> getDeviceList();
     
     abstract public int TransmitStart();
     abstract public int TransmitStop();

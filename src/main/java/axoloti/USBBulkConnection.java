@@ -19,8 +19,6 @@
 
 package axoloti;
 
-import static axoloti.dialogs.USBPortSelectionDlg.ErrorString;
-
 import axoloti.dialogs.USBPortSelectionDlg;
 import axoloti.displays.DisplayInstance;
 import axoloti.parameters.ParameterInstance;
@@ -28,6 +26,19 @@ import axoloti.sd.SDCardInfo;
 import axoloti.targetprofile.ksoloti_core;
 import axoloti.usb.Usb;
 import axoloti.utils.Preferences;
+
+import static axoloti.dialogs.USBPortSelectionDlg.ErrorString;
+import static axoloti.usb.Usb.DeviceToPath;
+import static axoloti.usb.Usb.PID_AXOLOTI;
+import static axoloti.usb.Usb.PID_AXOLOTI_SDCARD;
+import static axoloti.usb.Usb.PID_AXOLOTI_USBAUDIO;
+import static axoloti.usb.Usb.PID_KSOLOTI;
+import static axoloti.usb.Usb.PID_KSOLOTI_SDCARD;
+import static axoloti.usb.Usb.PID_KSOLOTI_USBAUDIO;
+
+import static axoloti.usb.Usb.PID_STM_DFU;
+import static axoloti.usb.Usb.VID_AXOLOTI;
+import static axoloti.usb.Usb.VID_STM;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
@@ -37,7 +48,9 @@ import java.nio.IntBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -58,6 +71,7 @@ import qcmds.QCmdGetFileInfo;
 import qcmds.QCmdGetFileList;
 import qcmds.QCmdMemRead;
 import qcmds.QCmdMemRead1Word;
+import qcmds.QCmdPing;
 import qcmds.QCmdProcessor;
 import qcmds.QCmdSerialTask;
 import qcmds.QCmdStart;
@@ -687,11 +701,34 @@ public class USBBulkConnection extends Connection {
         return null;
     }
 
+    private String getDeviceSerialNumber(Device device) {
+        DeviceHandle handle = new DeviceHandle();
+        int result = LibUsb.open(device, handle);
+        if (result != LibUsb.SUCCESS) {
+            return null;
+        }
+        try {
+            DeviceDescriptor descriptor = new DeviceDescriptor();
+            result = LibUsb.getDeviceDescriptor(device, descriptor);
+            if (result == LibUsb.SUCCESS && handle != null) {
+                String serial = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber());
+                return serial;
+            }
+            else {
+                return null;
+            }
+        }
+        finally {
+            if (handle != null) {
+                LibUsb.close(handle);
+            }
+        }
+    }
+
     private DeviceHandle tryOpenAndMatchDevice(Device d, boolean checkSerialNumber) {
         DeviceDescriptor descriptor = new DeviceDescriptor();
         int result = LibUsb.getDeviceDescriptor(d, descriptor);
         if (result != LibUsb.SUCCESS) {
-            // LOGGER.log(Level.WARNING, "Unable to read device descriptor: " + LibUsb.strError(result));
             return null;
         }
 
@@ -756,7 +793,7 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public void SelectPort() {
+    public void selectPort() {
         USBPortSelectionDlg spsDlg = new USBPortSelectionDlg(null, true, targetCpuId);
         spsDlg.setVisible(true);
         targetCpuId = spsDlg.getCPUID();
@@ -770,6 +807,84 @@ public class USBBulkConnection extends Connection {
         }
     }
 
+    public List<String[]> getDeviceList() {
+        List<String[]> rows = new ArrayList<>();
+        DeviceList list = new DeviceList();
+
+        Context sharedContext = Usb.getContext();
+        if (sharedContext == null) {
+            return rows;
+        }
+
+        int result = LibUsb.getDeviceList(sharedContext, list);
+        if (result < 0) {
+            return rows;
+        }
+
+        try {
+            for (Device device : list) {
+                DeviceDescriptor descriptor = new DeviceDescriptor();
+                result = LibUsb.getDeviceDescriptor(device, descriptor);
+                if (result == LibUsb.SUCCESS) {
+                    String serial = getDeviceSerialNumber(device);
+
+                    if (descriptor.idVendor() == VID_STM) {
+                        if (descriptor.idProduct() == PID_STM_DFU) {
+                            rows.add(new String[]{"", USBPortSelectionDlg.sDFUBootloader, DeviceToPath(device), (serial != null) ? "Driver OK" : "Inaccessible"});
+                        }
+                    }
+                    else if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core") &&
+                             descriptor.idVendor() == VID_AXOLOTI &&
+                             ((descriptor.idProduct() == PID_KSOLOTI) ||
+                              (descriptor.idProduct() == PID_KSOLOTI_USBAUDIO))) {
+                                  
+                        String sName = (descriptor.idProduct() == PID_KSOLOTI) ? USBPortSelectionDlg.sKsolotiCore : USBPortSelectionDlg.sKsolotiCoreUsbAudio;
+                        if (serial != null) {
+                            String name = Preferences.getInstance().getBoardName(serial);
+                            if (name == null) name = "";
+                            rows.add(new String[]{name, sName, DeviceToPath(device), serial});
+                        }
+                        else {
+                            rows.add(new String[]{"", sName, DeviceToPath(device), "Inaccessible: no serial"});
+                        }
+                    }
+                    else if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core") &&
+                             descriptor.idVendor() == VID_AXOLOTI &&
+                             descriptor.idProduct() == PID_KSOLOTI_SDCARD) {
+
+                        rows.add(new String[]{"", USBPortSelectionDlg.sKsolotiSDCard, DeviceToPath(device), "Eject/unmount disk to connect"});
+                    }
+                    else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core") &&
+                             descriptor.idVendor() == VID_AXOLOTI &&
+                             ((descriptor.idProduct() == PID_AXOLOTI) ||
+                             (descriptor.idProduct() == PID_AXOLOTI_USBAUDIO))) {
+                                 
+                        String sName = (descriptor.idProduct() == PID_AXOLOTI) ? USBPortSelectionDlg.sAxolotiCore : USBPortSelectionDlg.sAxolotiCoreUsbAudio;
+                        if (serial != null) {
+                            String name = Preferences.getInstance().getBoardName(serial);
+                            if (name == null) name = "";
+                            rows.add(new String[]{name, sName, DeviceToPath(device), serial});
+                        }
+                        else {
+                            rows.add(new String[]{"", sName, DeviceToPath(device), "Inaccessible: no serial"});
+                        }
+                    }
+                    else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core") &&
+                             descriptor.idVendor() == VID_AXOLOTI &&
+                             descriptor.idProduct() == PID_AXOLOTI_SDCARD) {
+
+                        rows.add(new String[]{"", USBPortSelectionDlg.sAxolotiSDCard, DeviceToPath(device), "Eject/unmount disk to connect"});
+                    }
+                }
+            }
+        }
+        finally {
+            LibUsb.freeDeviceList(list, true);
+        }
+
+        return rows;
+    }
+
     @Override
     public int writeBytes(ByteBuffer data) {
 
@@ -780,7 +895,6 @@ public class USBBulkConnection extends Connection {
         /* Acquire the OUT lock for writing */
         synchronized (usbOutLock) {
             if (handle == null) {
-                // System.err.println(Instant.now() + " [DEBUG] USB bulk write failed: handle is null. Disconnected?");
                 return LibUsb.ERROR_NO_DEVICE;
             }
 
@@ -792,7 +906,6 @@ public class USBBulkConnection extends Connection {
                     * Filter out error -99 ... seems to pop up every now and then but does not lead to connection loss  
                     * this "bug" will likely  be resolved after libusb update
                     */
-                    // LOGGER.log(Level.INFO, "USB connection not happy: " + result);
                     return result;
                 }
 

@@ -201,6 +201,10 @@ public class QCmdProcessor implements Runnable {
         dialTransmitterThread = new Thread(dialTransmitter);
     }
 
+    public void setConnection(Connection conn) {
+        this.serialconnection = conn;
+    }
+
     public static QCmdProcessor getInstance() {
         if (singleton == null)
             singleton = new QCmdProcessor();
