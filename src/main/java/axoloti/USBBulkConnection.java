@@ -47,6 +47,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.swing.SwingUtilities;
+
 import org.usb4java.*;
 import qcmds.QCmd;
 import qcmds.QCmdChangeWorkingDirectory;
@@ -374,56 +375,171 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public void disconnect() {
-        // System.out.println(Instant.now() + " [DEBUG] Disconnect called. Initiating cleanup.");
+    public boolean connect() {
+        /* Initial State Check: Prevent overlapping operations */
+        if (disconnectRequested || isConnecting) {
+            return false;
+        }
+        isConnecting = true;
+        this.connected = false; /* Update UI/internal state immediately */
 
+        /* Try to get Patcher's targetCpuId if not already set */
+        if (targetCpuId == null) {
+            targetCpuId = Preferences.getInstance().getComPortName();
+        }
+        targetProfile = new ksoloti_core();
+
+        try {
+            /* Open Device Handle */
+            handle = OpenDeviceHandle();
+            if (handle == null) {
+                System.err.println(Instant.now() + " [ERROR] Connect: Failed to open USB device handle.");
+                disconnect();
+                return false;
+            }
+
+            /* Claim Interface */
+            int result = LibUsb.claimInterface(handle, useBulkInterfaceNumber);
+            if (result != LibUsb.SUCCESS) {
+                System.err.println(Instant.now() + " [ERROR] Connect: Failed to claim interface " + useBulkInterfaceNumber + ": " + LibUsb.errorName(result) + " (Code: " + result + ")");
+                disconnect();
+                return false;
+            }
+
+            setIdleState();
+            QCmdProcessor.getInstance().setConnection(this);
+
+            /* Start Trinity of Threads */
+            receiverBlockingQueue.clear();
+            receiverThread = new Thread(new Receiver());
+            receiverThread.setName("Receiver");
+            receiverThread.start();
+
+            transmitterThread = new Thread(new Transmitter());
+            transmitterThread.setName("Transmitter");
+            transmitterThread.start();
+
+            byteProcessorThread = new Thread(new ByteProcessor());
+            byteProcessorThread.setName("ByteProcessor");
+            byteProcessorThread.start();
+
+            /* Initial Communication and Synchronization */
+            ClearSync();
+            QCmdProcessor.getInstance().AppendToQueue(new QCmdPing());
+            if (!WaitSync()) {
+                LOGGER.log(Level.SEVERE, "Core not responding - firmware may be stuck running a problematic patch?\nRestart the Core and try again.");
+                disconnect();
+                return false;
+            }
+
+            /* If we reach here, initial handshake is successful */
+            this.connected = true;
+            LOGGER.log(Level.WARNING, "Connected\n");
+
+            /* Post-Connection Commands (Firmware version, CPU revision, board ID) */
+            try {
+                QCmdGetFWVersion fwVersionCmd = new QCmdGetFWVersion();
+                QCmdProcessor.getInstance().AppendToQueue(fwVersionCmd);
+                if (!fwVersionCmd.waitForCompletion()) {
+                    LOGGER.log(Level.SEVERE, "Get FW version command timed out.");
+                }
+                else if (!fwVersionCmd.isSuccessful()) {
+                    LOGGER.log(Level.SEVERE, "Failed to get FW version.");
+                }
+
+                QCmdMemRead1Word cpuRevisionCmd = new QCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
+                QCmdProcessor.getInstance().AppendToQueue(cpuRevisionCmd);
+                if (!cpuRevisionCmd.waitForCompletion()) {
+                    LOGGER.log(Level.SEVERE, "Get CPU revision command timed out.");
+                }
+                else if (!cpuRevisionCmd.isSuccessful()) {
+                    LOGGER.log(Level.SEVERE, "Failed to get CPU revision.");
+                }
+                targetProfile.setCPUIDCode(cpuRevisionCmd.getValueRead());
+
+                QCmdMemRead boardIDCmd = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
+                QCmdProcessor.getInstance().AppendToQueue(boardIDCmd);
+                if (!boardIDCmd.waitForCompletion()) {
+                    LOGGER.log(Level.SEVERE, "Get board ID command timed out.");
+                }
+                else if (!boardIDCmd.isSuccessful()) {
+                    LOGGER.log(Level.SEVERE, "Failed to get board ID.");
+                }
+                targetProfile.setCPUSerial(boardIDCmd.getValuesRead());
+                this.detectedCpuId = CpuIdToHexString(targetProfile.getCPUSerial());
+            }
+            catch (Exception cmdEx) {
+                LOGGER.log(Level.SEVERE, "Error during post-connection QCmd processing. Connection might be unstable: " + cmdEx.getMessage());
+                cmdEx.printStackTrace(System.out);
+                return false;
+            }
+
+            ShowConnect(); /* Show connected in GUI */
+            isConnecting = false;
+            return true;
+        }
+        catch (LibUsbException e) {
+            System.err.println(Instant.now() + " [ERROR] LibUsb exception during connection: " + e.getMessage());
+            disconnect();
+            return false;
+        }
+        catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error during connection process: " + ex.getMessage());
+            ex.printStackTrace(System.out);
+            disconnect();
+            return false;
+        }
+        finally {
+            isConnecting = false;
+        }
+    }
+
+    
+    @Override
+    public void disconnect() {
         /* Guard against redundant calls */
         if (this.disconnectRequested && !connected) {
-            // System.out.println(Instant.now() + " [DEBUG] Disconnect already in progress/requested and not connected. Aborting redundant call.");
             return;
         }
+        this.disconnectRequested = true; /* Set flag to signal threads to stop */
 
-        /* 1. Set flag to signal threads to stop */
-        this.disconnectRequested = true;
-
-        /* 2. Clear the queue of tasks for the Transmitter thread */
+        /* Clear the queue of tasks for the Transmitter thread */
         if (queueSerialTask != null) {
             queueSerialTask.clear();
-            // System.out.println(Instant.now() + " [DEBUG] Disconnect: Cleared queueSerialTask.");
         }
 
         try {
-            /* 3. Interrupt the Receiver thread */
+
+            /* Interrupt Trinity of Threads */
             if (receiverThread != null && receiverThread.isAlive()) {
-                // System.out.println(Instant.now() + " [DEBUG] Disconnect: Interrupting Receiver thread.");
                 receiverThread.interrupt();
             }
 
-            /* 4. Interrupt the Transmitter thread */
             if (transmitterThread != null && transmitterThread.isAlive()) {
-                // System.out.println(Instant.now() + " [DEBUG] Disconnect: Interrupting Transmitter thread.");
                 transmitterThread.interrupt();
             }
+
+            if (byteProcessorThread != null && byteProcessorThread.isAlive()) {
+                byteProcessorThread.interrupt();
+            }
+
+            /* Clear any pending and/or queued commands */
+            this.currentExecutingCommand = null;
             if (QCmdProcessor.getInstance() != null) {
                 QCmdProcessor.getInstance().clearQueues();
             }
 
-            /* 5. Wait for threads to terminate */
+            /* Wait for threads to terminate */
             long threadJoinTimeoutMs = 5000;
 
             if (receiverThread != null && receiverThread.isAlive()) {
                 try {
-                    // System.out.println(Instant.now() + " [DEBUG] Disconnect: Waiting for Receiver thread to join (timeout: " + threadJoinTimeoutMs + "ms).");
                     receiverThread.join(threadJoinTimeoutMs);
                     if (receiverThread.isAlive()) {
                         System.err.println(Instant.now() + " [ERROR] Disconnect: Receiver thread did not terminate within timeout.");
                     }
-                    // else {
-                    //     System.out.println(Instant.now() + " [DEBUG] Disconnect: Receiver thread joined successfully.");
-                    // }
                 }
                 catch (InterruptedException e) {
-                    LOGGER.log(Level.SEVERE, "Error trying to close Receiver thread: " + e.getMessage());
                     e.printStackTrace(System.out);
                     Thread.currentThread().interrupt();
                 }
@@ -434,17 +550,12 @@ public class USBBulkConnection extends Connection {
 
             if (transmitterThread != null && transmitterThread.isAlive()) {
                 try {
-                    // System.out.println(Instant.now() + " [DEBUG] Disconnect: Waiting for Transmitter thread to join (timeout: " + threadJoinTimeoutMs + "ms).");
                     transmitterThread.join(threadJoinTimeoutMs);
                     if (transmitterThread.isAlive()) {
                         System.err.println(Instant.now() + " [ERROR] Disconnect: Transmitter thread did not terminate within timeout.");
                     }
-                    // else {
-                    //     System.out.println(Instant.now() + " [DEBUG] Disconnect: Transmitter thread joined successfully.");
-                    // }
                 }
                 catch (InterruptedException e) {
-                    LOGGER.log(Level.SEVERE, "Error trying to close Transmitter thread: " + e.getMessage());
                     e.printStackTrace(System.out);
                     Thread.currentThread().interrupt();
                 }
@@ -452,8 +563,24 @@ public class USBBulkConnection extends Connection {
                     transmitterThread = null;
                 }
             }
+            
+            if (byteProcessorThread != null && byteProcessorThread.isAlive()) {
+                try {
+                    byteProcessorThread.join(threadJoinTimeoutMs);
+                    if (byteProcessorThread.isAlive()) {
+                        System.err.println(Instant.now() + " [ERROR] Disconnect: ByteProcessor thread did not terminate within timeout.");
+                    }
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace(System.out);
+                    Thread.currentThread().interrupt();
+                }
+                finally {
+                    byteProcessorThread = null;
+                }
+            }
 
-            /* 6. Perform USB resource cleanup (only AFTER threads are confirmed stopped or timed out) */
+            /* Perform USB resource cleanup (only after threads are confirmed stopped or timed out) */
             if (handle != null) {
                 try {
                     // System.out.println(Instant.now() + " [DEBUG] Attempting to reset USB device using active handle.");
@@ -464,29 +591,21 @@ public class USBBulkConnection extends Connection {
                     if (resetResult != LibUsb.SUCCESS) {
                         System.err.println(Instant.now() + " [ERROR] Disconnect: Error resetting device: " + LibUsb.strError(resetResult) + " (Code: " + resetResult + ")");
                     }
-                    // else {
-                    //     System.out.println(Instant.now() + " [DEBUG] USB device reset successfully. Device may re-enumerate.");
-                    // }
-
                 }
                 catch (LibUsbException resetEx) {
                     System.err.println(Instant.now() + " [ERROR] Disconnect: LibUsbException during device reset: " + resetEx.getMessage());
                 }
 
                 try {
-                    // System.out.println(Instant.now() + " [DEBUG] Attempting to release USB interface " + useBulkInterfaceNumber);
                     LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
-                    // System.out.println(Instant.now() + " [DEBUG] USB interface released successfully.");
                 }
                 catch (LibUsbException releaseEx) {
                     System.err.println(Instant.now() + " [ERROR] Disconnect: Error releasing interface (may be normal after reset): " + releaseEx.getMessage());
                 }
 
                 try {
-                    // System.out.println(Instant.now() + " [DEBUG] Attempting to close USB device handle.");
                     LibUsb.close(handle);
                     handle = null; /* Null immediately to prevent race conditions */
-                    // System.out.println(Instant.now() + " [DEBUG] USB device handle closed successfully.");
                 }
                 catch (LibUsbException closeEx) {
                     System.err.println(Instant.now() + " [ERROR] Disconnect: Error closing handle (may be normal after reset): " + closeEx.getMessage());
@@ -495,9 +614,6 @@ public class USBBulkConnection extends Connection {
                     handle = null; /* Should already be null but just to be sure */
                 }
             }
-            else {
-                // System.out.println(Instant.now() + " [DEBUG] No USB device handle to close (it was null).");
-            }
         }
         catch (Exception mainEx) {
             LOGGER.log(Level.SEVERE, "Unexpected error during Disconnect cleanup: " + mainEx.getMessage());
@@ -505,7 +621,7 @@ public class USBBulkConnection extends Connection {
         }
         finally {
 
-            /* 7. Reset state variables - always reset these, regardless of cleanup success */
+            /* Reset state variables, regardless of cleanup success */
             connected = false;
             detectedCpuId = null;
             isSDCardPresent = null;
@@ -514,13 +630,12 @@ public class USBBulkConnection extends Connection {
             CpuId2 = 0;
             isConnecting = false;
 
-            /* 8. Notify UI - always notify UI after cleanup attempt */
+            /* Notify UI */
             ShowDisconnect();
             LOGGER.log(Level.WARNING, "Disconnected\n");
 
-            /* 9. Clear `disconnectRequested` flag LAST, after all cleanup and UI updates */
+            /* Clear `disconnectRequested` flag last, after all cleanup and UI updates */
             this.disconnectRequested = false;
-            // System.out.println(Instant.now() + " [DEBUG] Disconnect process completed. Disconnect request flag cleared.");
         }
     }
 
@@ -627,139 +742,6 @@ public class USBBulkConnection extends Connection {
             }
         }
         return null;
-    }
-
-    @Override
-    public boolean connect() {
-        /* 1. Initial State Check: Prevent overlapping operations */
-        if (disconnectRequested) {
-            // System.out.println(Instant.now() + " [DEBUG] Connection attempt aborted: A disconnection is still in progress.");
-            return false;
-        }
-
-        // disconnect(); // Trigger a full disconnect for cleanup first?
-        setIdleState();
-
-        /* Update UI/internal state immediately */
-        this.connected = false;
-
-        /* Internal 'isConnecting' flag to prevent multiple concurrent SwingWorkers */
-        if (isConnecting) {
-            return false;
-        }
-        isConnecting = true;
-
-        /* Try to get targetCpuId if not already set */
-        if (targetCpuId == null) {
-            targetCpuId = Preferences.getInstance().getComPortName();
-        }
-        targetProfile = new ksoloti_core();
-
-        try {
-            /* 2. Open Device Handle */
-            handle = OpenDeviceHandle();
-            if (handle == null) {
-                System.err.println(Instant.now() + " [ERROR] Connect: Failed to open USB device handle.");
-                disconnect();
-                return false;
-            }
-            // System.out.println(Instant.now() + " [DEBUG] Connect: USB device handle opened successfully.");
-
-            /* 3. Claim Interface */
-            // System.out.println(Instant.now() + " [DEBUG] Connect: Attempting to claim interface " + useBulkInterfaceNumber);
-            int result = LibUsb.claimInterface(handle, useBulkInterfaceNumber);
-            if (result != LibUsb.SUCCESS) {
-                System.err.println(Instant.now() + " [ERROR] Connect: Failed to claim interface " + useBulkInterfaceNumber + ": " + LibUsb.errorName(result) + " (Code: " + result + ")");
-                disconnect();
-                return false;
-            }
-            // System.out.println(Instant.now() + " [DEBUG] Connect: USB interface " + useBulkInterfaceNumber + " claimed successfully.");
-
-            setIdleState();
-
-            /* 4. Start Receiver and Transmitter Threads */
-            receiverThread = new Thread(new Receiver());
-            receiverThread.setName("Receiver");
-            receiverThread.start();
-
-            transmitterThread = new Thread(new Transmitter());
-            transmitterThread.setName("Transmitter");
-            transmitterThread.start();
-
-            byteProcessorThread = new Thread(new ByteProcessor());
-            byteProcessorThread.setName("ByteProcessor");
-            byteProcessorThread.start();
-
-            /* 5. Initial Communication and Synchronization */
-            ClearSync();
-            TransmitPing();
-
-            if (!WaitSync()) {
-                LOGGER.log(Level.SEVERE, "Core not responding - firmware may be stuck running a problematic patch?\nRestart the Core and try again.");
-                disconnect();
-                return false;
-            }
-
-            /* If we reach here, initial handshake is successful */
-            this.connected = true;
-            LOGGER.log(Level.WARNING, "Connected\n");
-
-            /* 6. Post-Connection Commands (CPU ID, Firmware Version) */
-            try {
-                QCmdGetFWVersion fwVersionCmd = new QCmdGetFWVersion();
-                QCmdProcessor.getInstance().AppendToQueue(fwVersionCmd);
-                if (!fwVersionCmd.waitForCompletion()) {
-                    LOGGER.log(Level.SEVERE, "Get FW version command timed out.");
-                }
-                else if (!fwVersionCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Failed to get FW version.");
-                }
-
-                QCmdMemRead1Word cpuRevisionCmd = new QCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
-                QCmdProcessor.getInstance().AppendToQueue(cpuRevisionCmd);
-                if (!cpuRevisionCmd.waitForCompletion()) {
-                    LOGGER.log(Level.SEVERE, "Get CPU revision command timed out.");
-                }
-                else if (!cpuRevisionCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Failed to get CPU revision.");
-                }
-                targetProfile.setCPUIDCode(cpuRevisionCmd.getValueRead());
-
-                QCmdMemRead cpuSerialCmd = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
-                QCmdProcessor.getInstance().AppendToQueue(cpuSerialCmd);
-                if (!cpuSerialCmd.waitForCompletion()) {
-                    LOGGER.log(Level.SEVERE, "Get board ID command timed out.");
-                }
-                else if (!cpuSerialCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Failed to get board ID.");
-                }
-                targetProfile.setCPUSerial(cpuSerialCmd.getValuesRead());
-                this.detectedCpuId = CpuIdToHexString(targetProfile.getCPUSerial());
-            }
-            catch (Exception cmdEx) {
-                LOGGER.log(Level.SEVERE, "Error during post-connection QCmd processing. Connection might be unstable: " + cmdEx.getMessage());
-                cmdEx.printStackTrace(System.out);
-                return false;
-            }
-
-            ShowConnect();
-            isConnecting = false;
-            return true;
-        }
-        catch (LibUsbException e) {
-            System.err.println(Instant.now() + " [ERROR] LibUsb exception during connection: " + e.getMessage());
-            disconnect();
-            return false;
-        }
-        catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error during connection process: " + ex.getMessage());
-            ex.printStackTrace(System.out);
-            disconnect();
-            return false;
-        }
-        finally {
-            isConnecting = false;
-        }
     }
 
     @Override
