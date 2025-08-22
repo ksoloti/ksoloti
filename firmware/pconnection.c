@@ -704,50 +704,50 @@ void PExReceiveByte(unsigned char c) {
                         state = 4; /* All the above pass on directly to state 4. */
                         break;
                     case 'u': { /* go to DFU mode */
+                        state = 0; header = 0;
                         uint8_t res = StopPatch();
-                        state = 0;
                         if (res == FR_OK) {
                             exception_initiate_dfu();
                         }
                         break;
                     }
                     case 'F': { /* copy to flash */
+                        state = 0; header = 0;
                         uint8_t res = StopPatch();
                         if (res == FR_OK) {
                             res = CopyPatchToFlash();
                         }
                         send_AxoResult(c, res);
-                        state = 0;
                         break;
                     }
                     case 'l': /* read directory listing */
+                        state = 0; header = 0;
                         ReadDirectoryListing(); /* Will send AxoRl when done */
-                        state = 0;
                         break;
                     case 'V': /* FW version number */
+                        state = 0; header = 0;
                         ReplyFWVersion();
-                        state = 0;
                         break;
                     case 'Y': /* is this Core SPILINK synced */
+                        state = 0; header = 0;
                         ReplySpilinkSynced();
-                        state = 0;
                         break;
                     case 'A': /* ping */
+                        state = 0; header = 0;
                         AckPending = 1; /* Only ping explicitly triggers AxoA */
-                        state = 0;
                         break;
                     case 'C': /* Unified File System Command (create, delete, mkdir, getinfo, close) */
-                        current_filename_idx = 0; /* Reset for filename parsing */
                         state = 4; /* Next state will receive the 4-byte pFileSize/placeholder */
+                        current_filename_idx = 0; /* Reset for filename parsing */
                         break;
                     case 'S': { /* stop patch */
+                        state = 0; header = 0;
                         uint8_t res = StopPatch();
                         send_AxoResult('S', res);
-                        state = 0;
                         break;
                     }
                     default:
-                        state = 0; break; /* Unknown Axo* header */
+                        state = 0; header = 0; break; /* Unknown Axo* header */
                 } /* End switch (c) */
         } /* End switch (state) */
     }
@@ -763,10 +763,10 @@ void PExReceiveByte(unsigned char c) {
             case 11:  value |= (int32_t)c << 24; state++; break;
             case 12:  param_index  = c; state++; break;
             case 13:  param_index |= (uint32_t)c << 8;
+                state = 0; header = 0;
                 if ((patchid == patchMeta.patchID) && (param_index < patchMeta.numPEx)) {
                     PExParameterChange(&(patchMeta.pPExch)[param_index], value, 0xFFFFFFEE);
                 }
-                state = 0; header = 0;
                 break;
             default:
                 state = 0; header = 0;
@@ -779,12 +779,12 @@ void PExReceiveByte(unsigned char c) {
             case 4:  uUIMidiCost  = c; state++; break;
             case 5:  uUIMidiCost |= (uint16_t)c << 8; state++; break;
             case 6: { 
+                state = 0; header = 0;
                 uDspLimit200  = c;
                 SetPatchSafety(uUIMidiCost, uDspLimit200);
                 loadPatchIndex = LIVE;
                 uint8_t res = StartPatch();
                 send_AxoResult('s', res);
-                state = 0; header = 0;
                 break;
             }
             default:
@@ -804,30 +804,30 @@ void PExReceiveByte(unsigned char c) {
             case 12: { /* Sub-command can be 'W' (start) or 'e' (end) */
                 switch (c) {
                     case 'W': { /* start Memory Write */
+                        state = 0; header = 0;
                         uint8_t res = StopPatch();
                         if (res == FR_OK) {
                             write_position = offset; /* Initialize write_position here */
                             total_write_length = (uint32_t)value;
                         }
                         send_AxoResult(c, res);
-                        state = 0; header = 0;
                         break;
                     }
                     case 'e': /* end Memory Write */
                         // TODO: error checking based on total_write_length?
-                        send_AxoResult(c, FR_OK);
                         state = 0; header = 0;
+                        send_AxoResult(c, FR_OK);
                         break;
                     default:
-                        send_AxoResult('W', FR_INVALID_PARAMETER);
                         state = 0; header = 0;
+                        send_AxoResult('W', FR_INVALID_PARAMETER);
                         break;
                 } /* End switch (c) */
                 break;
             }
             default:
-                send_AxoResult('W', FR_DISK_ERR);
                 state = 0; header = 0;
+                send_AxoResult('W', FR_DISK_ERR);
         } /* End switch (state) */
     }
     /* 'Axow' NOW USED FOR STREAMING CHUNKS BETWEEN 'AxoWW' start memory write AND 'AxoWe' close memory write */
@@ -863,23 +863,23 @@ void PExReceiveByte(unsigned char c) {
                     for (volatile uint32_t dummy = 0; dummy < 256; dummy++);
 
                     if (value == 0) {
-                        send_AxoResult(header, FR_OK);
                         state = 0; header = 0;
+                        send_AxoResult(header, FR_OK);
                     }
                 } else {
-                    send_AxoResult(header, FR_DISK_ERR);
                     state = 0; header = 0;
+                    send_AxoResult(header, FR_DISK_ERR);
                 }
                 break;
             default:
-                send_AxoResult(header, FR_DISK_ERR);
                 state = 0; header = 0;
+                send_AxoResult(header, FR_DISK_ERR);
                 break;
         } /* End switch (state) */
     }
     else if (header == 'T') { /* apply preset */
-        ApplyPreset(c); /* 'c' is the preset index */
         state = 0; header = 0;
+        ApplyPreset(c); /* 'c' is the preset index */
     }
     else if (header == 'M') { /* midi message */
         static uint8_t midi_r[3]; /* Local static */
@@ -887,8 +887,8 @@ void PExReceiveByte(unsigned char c) {
             case 4: midi_r[0] = c; state++; break;
             case 5: midi_r[1] = c; state++; break;
             case 6: midi_r[2] = c;
-                MidiInMsgHandler(MIDI_DEVICE_INTERNAL, 1, midi_r[0], midi_r[1], midi_r[2]);
                 state = 0; header = 0;
+                MidiInMsgHandler(MIDI_DEVICE_INTERNAL, 1, midi_r[0], midi_r[1], midi_r[2]);
                 break;
             default:
                 state = 0; header = 0;
@@ -953,21 +953,21 @@ void PExReceiveByte(unsigned char c) {
                     FileName[current_filename_idx++] = c;
                     if (c == 0) { // Null terminator received
                         /* Filename complete, dispatch command */
+                        state = 0; header = 0;
                         uint8_t res = StopPatch();
                         if (res == FR_OK) {
                             ManipulateFile(); /* ManipulateFile will now use FileName and pFileSize */
                         }
-                        header = 0; state = 0;
                     }
                 }
                 else {
-                    header = 0; state = 0; /* Error: filename too long */
+                    state = 0; header = 0; /* Error: filename too long */
                 }
                 break;
             }
 
             default: /* Unknown state: reset state machine */
-                header = 0; state = 0;
+                state = 0; header = 0;
                 break;
         } /* End switch (state) */
     }
@@ -1039,6 +1039,7 @@ void PExReceiveByte(unsigned char c) {
             case 9:  value |= (int32_t)c <<  8; state++; break;
             case 10: value |= (int32_t)c << 16; state++; break;
             case 11: value |= (int32_t)c << 24;
+                state = 0; header = 0;
                 char read_reply_header[12];
                 read_reply_header[0] = 'A';
                 read_reply_header[1] = 'x';
@@ -1048,7 +1049,6 @@ void PExReceiveByte(unsigned char c) {
                 uint32_to_le_bytes(value, &read_reply_header[8]);
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12);
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (offset), (uint32_t)value);
-                state = 0; header = 0;
                 break;
             default:
                 state = 0; header = 0;
@@ -1060,6 +1060,7 @@ void PExReceiveByte(unsigned char c) {
             case 5: offset |= (uint32_t)c <<  8; state++; break;
             case 6: offset |= (uint32_t)c << 16; state++; break;
             case 7: offset |= (uint32_t)c << 24;
+                state = 0; header = 0;
                 value = *((uint32_t*) offset);
                 char read_reply_header[12];
                 read_reply_header[0] = 'A';
@@ -1069,7 +1070,6 @@ void PExReceiveByte(unsigned char c) {
                 uint32_to_le_bytes(offset, &read_reply_header[4]);
                 uint32_to_le_bytes(value, &read_reply_header[8]);
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12);
-                state = 0; header = 0;
                 break;
             default:
                 state = 0; header = 0;
