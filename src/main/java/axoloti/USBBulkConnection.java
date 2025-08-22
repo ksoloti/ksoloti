@@ -324,6 +324,17 @@ public class USBBulkConnection extends Connection {
         this.context = Usb.getContext();
     }
 
+    public static Connection getInstance() {
+        if (conn == null) {
+            synchronized (USBBulkConnection.class) {
+                if (conn == null) {
+                    conn = new USBBulkConnection();
+                }
+            }
+        }
+        return conn;
+    }
+
     @Override
     public void setCurrentExecutingCommand(QCmdSerialTask command) {
         this.currentExecutingCommand = command;
@@ -745,6 +756,21 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
+    public void SelectPort() {
+        USBPortSelectionDlg spsDlg = new USBPortSelectionDlg(null, true, targetCpuId);
+        spsDlg.setVisible(true);
+        targetCpuId = spsDlg.getCPUID();
+        String name = Preferences.getInstance().getBoardName(targetCpuId);
+        if (targetCpuId == null) return;
+        if (name == null) {
+            LOGGER.log(Level.INFO, "Selecting CPU ID {0} for connection.", targetCpuId);
+        }
+        else {
+            LOGGER.log(Level.INFO, "Selecting \"{0}\" for connection.", new Object[]{name});
+        }
+    }
+
+    @Override
     public int writeBytes(ByteBuffer data) {
 
         ByteBuffer buffer = data.duplicate(); /* Deep copy for safety? */
@@ -790,32 +816,6 @@ public class USBBulkConnection extends Connection {
             }
             return result;
         } /* end synchronize (usbOutLock) */
-    }
-
-    @Override
-    public void SelectPort() {
-        USBPortSelectionDlg spsDlg = new USBPortSelectionDlg(null, true, targetCpuId);
-        spsDlg.setVisible(true);
-        targetCpuId = spsDlg.getCPUID();
-        String name = Preferences.getInstance().getBoardName(targetCpuId);
-        if (targetCpuId == null) return;
-        if (name == null) {
-            LOGGER.log(Level.INFO, "Selecting CPU ID {0} for connection.", targetCpuId);
-        }
-        else {
-            LOGGER.log(Level.INFO, "Selecting \"{0}\" for connection.", new Object[]{name});
-        }
-    }
-
-    public static Connection getInstance() {
-        if (conn == null) {
-            synchronized (USBBulkConnection.class) {
-                if (conn == null) {
-                    conn = new USBBulkConnection();
-                }
-            }
-        }
-        return conn;
     }
 
     @Override
