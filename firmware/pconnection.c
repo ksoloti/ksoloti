@@ -64,7 +64,7 @@ static FIL pFile;
 static int32_t pFileSize;
 
 /* now static global */
-static uint32_t preset_index;
+static uint32_t param_index;
 static int32_t value;
 static uint32_t write_position;
 static uint32_t offset;
@@ -79,6 +79,30 @@ uint8_t LogBufferUsed = 0;
 connectionflags_t connectionFlags;
 
 static WORKING_AREA(waThreadUSBDMidi, 256);
+
+
+#define PC_DBG_COUNT (0)
+#if PC_DBG_COUNT
+typedef struct _PCDebug {
+    uint8_t c;
+    int state;
+} PCDebug;
+
+PCDebug dbg_received[PC_DBG_COUNT] __attribute__((section (".sram3")));
+uint16_t uCount = 0;
+
+void AddPCDebug(uint8_t c, int state) {
+    dbg_received[uCount].c = c;
+    dbg_received[uCount].state = state;
+    uCount++;
+    if (uCount == PC_DBG_COUNT) {
+        uCount = 0;
+    }
+}
+#else
+#define AddPCDebug(a,b)
+#endif
+
 
 __attribute__((noreturn)) static msg_t ThreadUSBDMidi(void* arg) {
     (void)arg;
@@ -96,11 +120,11 @@ __attribute__((noreturn)) static msg_t ThreadUSBDMidi(void* arg) {
 }
 
 
-void uint32_to_le_bytes(uint32_t value, char* dest) {
-    dest[0] = (uint8_t) ((value >>  0) & 0xFF);
-    dest[1] = (uint8_t) ((value >>  8) & 0xFF);
-    dest[2] = (uint8_t) ((value >> 16) & 0xFF);
-    dest[3] = (uint8_t) ((value >> 24) & 0xFF);
+void uint32_to_le_bytes(uint32_t value32, char* dest) {
+    dest[0] = ((value32 >>  0) & 0xFF);
+    dest[1] = ((value32 >>  8) & 0xFF);
+    dest[2] = ((value32 >> 16) & 0xFF);
+    dest[3] = ((value32 >> 24) & 0xFF);
 }
 
 
@@ -187,11 +211,11 @@ void LogTextMessage(const char* format, ...) {
     }
 }
 
+
 void PExTransmit(void) {
     if (!chOQIsEmptyI(&BDU1.oqueue)) {
         chThdSleepMilliseconds(1);
         BDU1.oqueue.q_notify(&BDU1.oqueue);
-        // LogTextMessage("PExTx: leaving !chOQIsEmptyI");
     }
     else {
         if(chMtxTryLock(&LogMutex)) {
@@ -219,14 +243,7 @@ void PExTransmit(void) {
             ack[6] = fs_ready;
             chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) &ack[0], 7 * 4);
 
-
-            // LogTextMessage("Finished sending AxoA,AckPending:%u", AckPending);
-            /* clear overload flag */
-            connectionFlags.dspOverload = false;
-
-// #ifdef DEBUG_SERIAL
-//             chprintf((BaseSequentialStream*) &SD2, "ack!\r\n");
-// #endif
+            connectionFlags.dspOverload = false; /* clear overload flag */
 
             if (patchStatus == RUNNING) {
                 TransmitDisplayPckt();
@@ -244,7 +261,7 @@ void PExTransmit(void) {
                     int v = (patchMeta.pPExch)[i].value;
                     patchMeta.pPExch[i].signals &= ~0x01;
                     PExMessage pex_msg;
-                    pex_msg.header = 0x506F7841; /*"AxoP" */
+                    pex_msg.header = 0x506F7841; /* "AxoP" */
                     pex_msg.patchID = patchMeta.patchID;
                     pex_msg.index = i;
                     pex_msg.value = v;
@@ -255,14 +272,39 @@ void PExTransmit(void) {
     }
 }
 
+
+static void send_AxoResult(char cmd_byte, uint8_t status) {
+    /* Send command response: AxoR<command_byte><status_byte> 
+       Required by Patcher to mark operations as completed and see if they were successful.
+       Currently the following commands require an AxoR<c><s> response:
+       - Create directory    AxoR<k><status>
+       - Change directory    AxoR<h><status>
+       - Create file         AxoR<f><status>
+       - Append to file      AxoR<a><status>
+       - Close file          AxoR<c><status>
+       - Delete file         AxoR<D><status>
+       - Get file list       AxoR<l><status>
+       - Get file info       AxoR<I><status>
+       - Start memory write  AxoR<W><status>
+       - Append to memory    AxoR<w><status>
+       - End memory write    AxoR<e><status>
+       - Start patch         AxoR<s><status>
+       - Stop patch          AxoR<S><status>
+       - Copy patch to flash AxoR<F><status> */
+    char res_msg[6];
+    res_msg[0] = 'A'; res_msg[1] = 'x'; res_msg[2] = 'o'; res_msg[3] = 'R';
+    res_msg[4] = cmd_byte;
+    res_msg[5] = (char) status;
+    chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) res_msg, 6);
+}
+
+
 /* Do not warn about 'strcpy' accessing between 1 and 2147483646 bytes at offsets 76 and 1 may overlap up to 2147483571 bytes at offset [2147483646, 76] [-Wrestrict] */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wrestrict"
-
 static FRESULT scan_files(char* path) {
     /* Recursive scan of all items in a directory */
 
-    // LogTextMessage("Entered scan_files:%s", (char*) &fbuff[0]);
     FRESULT op_result;
     static FILINFO fno;
     DIR dir;
@@ -276,13 +318,9 @@ static FRESULT scan_files(char* path) {
 
     op_result = f_opendir(&dir, path);
     if (op_result == FR_OK) {
-
         for (;;) {
-            // LogTextMessage("scan_files:Entered for (;;), path:%s", path);
-
             op_result = f_readdir(&dir, &fno);
             if (op_result != FR_OK || fno.fname[0] == 0) {
-                // LogTextMessage("scan_files BREAKING LOOP,op_result:%u fname[0]:%02x current_dir:%s", op_result, fno.fname[0], path);
                 break;
             }
             if (fno.fname[0] == '.')
@@ -300,9 +338,7 @@ static FRESULT scan_files(char* path) {
                 continue;
 
             if (fno.fattrib & AM_DIR) { /* Is directory */
-
                 current_path_len = strlen(path);
-                // LogTextMessage("scan_files:AM_DIR, path:%s current_path_len:%u", path, current_path_len);
                 path[current_path_len] = '/';
                 strcpy(&path[current_path_len+1], fname);
 
@@ -317,22 +353,15 @@ static FRESULT scan_files(char* path) {
                 int l = strlen(&msg[12]);
                 msg[12+l] = '/';
                 msg[13+l] = 0;
-                // LogTextMessage("scan_files:sending Axof msg");
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) msg, l+14);
 
-                // LogTextMessage("scan_files:entering recursion");
                 op_result = scan_files(path);
                 if (op_result != FR_OK) {
-                    // LogTextMessage("scan_files recursion break,op_result:%u", op_result);
                     break;
                 }
-                // else {
-                //     LogTextMessage("scan_files recursion done,op_result:%u", op_result);
-                // }
                 path[current_path_len] = 0;
             }
             else { /* Is file */
-
                 msg[0] = 'A';
                 msg[1] = 'x';
                 msg[2] = 'o';
@@ -353,7 +382,6 @@ static FRESULT scan_files(char* path) {
                     strcpy(&msg[append_offset + 1], fname);
                     append_offset++; /* Adjust offset for the added slash */
                 }
-                // LogTextMessage("scan_files:!AM_DIR,path:%s current_subdir_path_len:%u append_offset:%u", path, current_subdir_path_len, append_offset);
 
                 int l = strlen(&msg[12]); /* Calculate total length of the constructed path (starting from msg[12]) */
                 chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) msg, 12 + l + 1);
@@ -362,53 +390,21 @@ static FRESULT scan_files(char* path) {
         f_closedir(&dir);
     }
     else {
-        // LogTextMessage("ERROR:scan_files f_opendir,op_result:%u path:%s", op_result, path);
         report_fatfs_error(op_result, path);
     }
 
-    // LogTextMessage("scan_files:Exiting path:%s final op_result:%u", path, op_result);
     return op_result;
 }
-
 #pragma GCC diagnostic pop /* diagnostic ignored "-Wrestrict" */
 
 
-static void send_AxoResult(char cmd_byte, uint8_t status) {
-    /* Send command response: AxoR<command_byte><status_byte> 
-       Required by Patcher to mark operations as completed and see if they were successful.
-       Currently the following commands require an AxoR<c><s> response:
-       - create directory    AxoR<k><status>
-       - change directory    AxoR<C><status>
-       - create file         AxoR<f><status>
-       - append to file      AxoR<a><status>
-       - close file          AxoR<c><status>
-       - delete file         AxoR<D><status>
-       - get file list       AxoR<l><status>
-       - get file info       AxoR<I><status>
-       - Start memory write  AxoR<W><status>
-       - append to memory    AxoR<w><status>
-       - close memory write  AxoR<c><status>
-       - start patch         AxoR<s><status>
-       - stop patch          AxoR<S><status>
-       - copy patch to flash AxoR<F><status> */
-    char res_msg[6];
-    res_msg[0] = 'A'; res_msg[1] = 'x'; res_msg[2] = 'o'; res_msg[3] = 'R';
-    res_msg[4] = cmd_byte;
-    res_msg[5] = (char) status;
-    // LogTextMessage("send_AxoResult called,cmd=%c (0x%02x) sta=%u", res_msg[4], res_msg[4], res_msg[5]);
-    chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) res_msg, 6);
-}
-
-
 void ReadDirectoryListing(void) {
-    // LogTextMessage("Entered RDL");
     FATFS* fsp;
     uint32_t clusters;
     FRESULT op_result;
 
     op_result = f_getfree("/", &clusters, &fsp);
     if (op_result != FR_OK) {
-        // LogTextMessage("ERROR:RDL f_getfree,op_result:%u", op_result);
         goto RDL_result_and_exit;
     }
 
@@ -420,17 +416,14 @@ void ReadDirectoryListing(void) {
     fbuff[2] = fsp->csize;
     fbuff[3] = MMCSD_BLOCK_SIZE;
     chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&fbuff[0]), 16);
-    // LogTextMessage("RDL finished sending Axol");
     chThdSleepMilliseconds(10); /* Give some time for the USB buffer to clear */
 
 
     ((char*) fbuff)[0] = '/';
-    ((char*) fbuff)[1] = 0;
+    ((char*) fbuff)[1] = '\0';
 
-    // LogTextMessage("RDL:entering scan_files");
-    op_result = scan_files((char*) &fbuff[0]);
+    op_result = scan_files((char*) &fbuff[0]); /* scan_files() sends "Axof" data for each file/folder */
     if (op_result != FR_OK) {
-        // LogTextMessage("ERROR:RDL scan_files,op_result:%u", op_result);
         goto RDL_result_and_exit;
     }
 
@@ -442,9 +435,8 @@ void ReadDirectoryListing(void) {
     fbuff[1] = 0;
     fbuff[2] = 0;
     ((char*) fbuff)[12] = '/';
-    ((char*) fbuff)[13] = 0;
+    ((char*) fbuff)[13] = '\0';
     chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&fbuff[0]), 14);
-    // LogTextMessage("RDL:finished sending Axof");
     chThdSleepMilliseconds(10); /* Give some time for the USB buffer to clear */
 
     RDL_result_and_exit:
@@ -453,50 +445,45 @@ void ReadDirectoryListing(void) {
 }
 
 
-/* input data decoder state machine
+/* Input data decoder state machine
  *
- * "AxoP" (int value, int16 preset_index) -> parameter set
- * "AxoR" (uint length, data) -> preset data set
- * "AxoW" (int startAddress, int totalLength) -> Start or close generic memory write
- * "Axow" (uint chunkLength) -> append chunk during generic memory write
- * "Axor" (int offset, uint length) -> generic memory read
- * "Axoy" (int offset) -> generic memory read, single 32bit aligned
- * "AxoY" returns true if Core SPILink jumper is set, i.e. Core is set up to be synced
- * "AxoS" -> start patch
- * "Axos" -> stop patch
- * "AxoT" (char number) -> apply preset
- * "AxoM" (char char char) -> 3 byte midi message
- * "AxoD" -> go to DFU mode
- * "AxoV" -> reply FW version number (4 bytes)
- * "AxoF" -> copy patch code to flash (assumes patch is stopped)
- * "Axol" -> read directory listing
- * "AxoC" (uint length) (char[] filename)" -> create, append to, close, delete file (directory) on SD card
+ * "AxoP" (int32 value, uint16 param_index) -> Parameter set
+ * "AxoR" (uint32 length, uint8[] data) -> Preset data set
+ * "AxoW" (uint32 startAddress, totalLength) -> Start or close generic memory write
+ * "Axow" (uint32 chunkLength) -> Append chunk during generic memory write
+ * "Axor" (uint32 offset, length) -> Generic memory read of 'length' bytes
+ * "Axoy" (uint32 offset) -> Generic memory read, single 32bit aligned
+ * "AxoY" -> Returns true if Core SPILink jumper is set, i.e. Core is set up to be synced
+ * "AxoS" -> Start patch
+ * "Axos" -> Stop patch
+ * "AxoT" (uint8 number) -> Apply preset
+ * "AxoM" (uint8 status, data1, data2) -> 3 byte midi message
+ * "Axou" -> Go to DFU mode
+ * "AxoV" -> Reply FW version number (sends 12 bytes (3 ints): fwversion, crc, patchmainloc)
+ * "AxoF" -> Copy patch code to flash (stops patch automatically)
+ * "Axol" -> Read directory listing (triggers "Axol" response with card info, a series of "Axof" file info packets, and a final "AxoRl<status>")
+ * "AxoC" (uint32 length, char[] filename) -> Create, append to, close, delete file (directory) on SD card, change directory
  */
 
 static void ManipulateFile(void) {
-    // LogTextMessage("Entered MNPFL");
     sdcard_attemptMountIfUnmounted();
 
     if (FileName[0] != 0) { /* backwards compatibility, don't change! */
-        // LogTextMessage("Executing backwards compatibility block");
 
         FRESULT op_result = f_open(&pFile, &FileName[0], FA_WRITE | FA_CREATE_ALWAYS);
         if (op_result != FR_OK) {
-            // LogTextMessage("ERROR:MNPFL f_open (backw),op_result:%u path:%s", op_result, &FileName[0]);
             report_fatfs_error(op_result, &FileName[0]);
             return;
         }
 
         op_result = f_lseek(&pFile, pFileSize);
         if (op_result != FR_OK) {
-            // LogTextMessage("ERROR:MNPFL f_lseek1 (backw),op_result:%u path:%s", op_result, &FileName[0]);
             report_fatfs_error(op_result, &FileName[0]);
             return;
         }
 
         op_result = f_lseek(&pFile, 0);
         if (op_result != FR_OK) {
-            // LogTextMessage("ERROR: MNPFL f_lseek2 (backw),op_result:%u path:%s", op_result, &FileName[0]);
             report_fatfs_error(op_result, &FileName[0]);
             return;
         }
@@ -512,53 +499,40 @@ static void ManipulateFile(void) {
          */
 
         if (FileName[1] == 'k') { /* create directory (AxoCk) */
-            // LogTextMessage("Executing Ck cmd");
-
             FRESULT op_result = f_mkdir(&FileName[6]); /* Path from FileName[6]+ */
-
             if (op_result == FR_OK) { /* Dir was newly created, so update timestamp */
                 FILINFO fno;
                 fno.fdate = FileName[2] + (FileName[3]<<8); /* Date from FileName[2/3] */
                 fno.ftime = FileName[4] + (FileName[5]<<8); /* Time from FileName[4/5] */
 
                 op_result = f_utime(&FileName[6], &fno); /* Path from FileName[6]+ */
-                if (op_result != FR_OK) {
-                    // LogTextMessage("ERROR:MNPFL f_utime,op_result:%u path:%s", op_result, &FileName[6]);
-                }
             }
 
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
-        else if (FileName[1] == 'f') { /* create file (AxoCf) */
-            // LogTextMessage("Executing 'Cf' cmd");
 
+        else if (FileName[1] == 'f') { /* create file (AxoCf) */
             FRESULT op_result = f_open(&pFile, &FileName[6], FA_WRITE | FA_CREATE_ALWAYS); /* Path from FileName[6]+ */
             if (op_result != FR_OK) {
-                // LogTextMessage("ERROR:MNPFL f_open,op_result:%u path:%s", op_result, &FileName[6]);
                 goto Cf_result_and_exit;
             }
 
             op_result = f_lseek(&pFile, pFileSize); /* pFileSize holds the size from received AxoCf command */
             if (op_result != FR_OK) {
-                // LogTextMessage("ERROR:MNPFL f_lseek1,op_result:%u path:%s", op_result, &FileName[6]);
                 goto Cf_result_and_exit;
             }
 
             op_result = f_lseek(&pFile, 0);
-            if (op_result != FR_OK) {
-                // LogTextMessage("ERROR:MNPFL f_lseek2,op_result:%u path:%s", op_result, &FileName[6]);
-            }
 
             Cf_result_and_exit:
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
+
         else if (FileName[1] == 'c') { /* close currently open file (AxoCc) */
-            // LogTextMessage("Executing 'Cc' cmd");
             FRESULT op_result = f_close(&pFile);
             if (op_result != FR_OK) {
-                // LogTextMessage("ERROR: f_close,op_result:%u path:%s", op_result, &FileName[6]);
                 goto Cc_result_and_exit;
             }
 
@@ -566,38 +540,31 @@ static void ManipulateFile(void) {
             fno.fdate = FileName[2] + (FileName[3]<<8); /* Date from FileName[2/3] */
             fno.ftime = FileName[4] + (FileName[5]<<8); /* Time from FileName[4/5] */
             op_result = f_utime(&FileName[6], &fno); /* Path from FileName[6]+ */
-            if (op_result != FR_OK) {
-                // LogTextMessage("ERROR:f_utime,Date/Time:%x %x path:%s", fno.fdate, fno.ftime, &FileName[6]);
-            }
 
             Cc_result_and_exit:
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
+
         else if (FileName[1] == 'D') { /* delete file (AxoCD) */
-            // LogTextMessage("Executing 'CD' cmd");
 
             // f_chdir("/"); /* Change to root to avoid FR_DENIED for currently open directory */
             FRESULT op_result = f_unlink(&FileName[6]); /* Path from FileName[6]+ */
-            if (op_result != FR_OK) {
-                // LogTextMessage("ERROR:MNPFL f_unlink,op_result:%u path:%s", op_result, &FileName[6]);
-            }
+
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
-        else if (FileName[1] == 'h') { /* change working directory (AxoCh) */
-            // LogTextMessage("Executing 'CC' cmd");
 
+        else if (FileName[1] == 'h') { /* change working directory (AxoCh) */
             FRESULT op_result = f_chdir(&FileName[6]); /* Path from FileName[6]+ */
             if (op_result != FR_OK) {
-                // LogTextMessage("ERROR:MNPFL f_chdir,op_result:%u path:%s", op_result, &FileName[6]);
             }
+
             send_AxoResult(FileName[1], op_result); /* FileName[1] contains sub-command char */
             return;
         }
-        else if (FileName[1] == 'I') { /* get file info (AxoCI) */
-            // LogTextMessage("Executing 'CI' cmd");
 
+        else if (FileName[1] == 'I') { /* get file info (AxoCI) */
             FILINFO fno;
             fno.lfname = &((char*) fbuff)[0]; // fbuff is a global buffer
             fno.lfsize = 256; // Max size for long file name
@@ -622,13 +589,10 @@ static void ManipulateFile(void) {
 
 
 static FRESULT AppendFile(uint32_t length) {
-
     UINT bytes_written;
+    
     FRESULT op_result = f_write(&pFile, (char*) PATCHMAINLOC, length, &bytes_written);
-    // LogTextMessage("APPNDF:f_write,op_result:%u path:%s length:%u b_written:%u", op_result, &FileName[6], length, bytes_written);
-
     if (op_result == FR_OK && bytes_written != length) {
-        // LogTextMessage("ERROR:APPNDF f_write,op_result:%u requested:%u written:%u path:%s", op_result, length, bytes_written, FileName[6]);
         op_result = FR_DISK_ERR;
     }
 }
@@ -642,11 +606,10 @@ static uint8_t CopyPatchToFlash(void) {
     int flash_addr = PATCHFLASHLOC;
 
     int c;
-    for (c = 0; c < PATCHFLASHSIZE;) {
+    for (c = 0; c < PATCHFLASHSIZE; c += 4) {
         flash_ProgramWord(flash_addr, *(int32_t*) src_addr);
         src_addr += 4;
         flash_addr += 4;
-        c += 4;
     }
 
     /* Verify */
@@ -654,14 +617,12 @@ static uint8_t CopyPatchToFlash(void) {
     flash_addr = PATCHFLASHLOC;
 
     int err = 0;
-    for (c = 0; c < PATCHFLASHSIZE;) {
+    for (c = 0; c < PATCHFLASHSIZE; c += 4) {
         if (*(int32_t*) flash_addr != *(int32_t*) src_addr) {
             err++;
         }
-
         src_addr += 4;
         flash_addr += 4;
-        c += 4;
     }
 
     if (err) {
@@ -703,32 +664,10 @@ void ReplySpilinkSynced(void) {
     chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&reply[0]), 5);
 }
 
-typedef struct _PCDebug {
-    uint8_t c;
-    int state;
-} PCDebug;
-
-#define PC_DBG_COUNT (0)
-#if PC_DBG_COUNT
-PCDebug dbg_received[PC_DBG_COUNT] __attribute__((section (".sram3")));
-uint16_t uCount = 0;
-
-void AddPCDebug(uint8_t c, int state) {
-    dbg_received[uCount].c = c;
-    dbg_received[uCount].state = state;
-    uCount++;
-    if(uCount == PC_DBG_COUNT)
-        uCount = 0;
-}
-#else
-#define AddPCDebug(a,b)
-#endif
-
 
 void PExReceiveByte(unsigned char c) {
     static volatile char header = 0;
     static volatile int32_t state = 0;
-
     static volatile uint32_t current_filename_idx; /* For parsing filename characters into FileName[6]+ */
 
     AddPCDebug(c, state);
@@ -825,10 +764,10 @@ void PExReceiveByte(unsigned char c) {
             case 9:   value |= (int32_t)c <<  8; state++; break;
             case 10:  value |= (int32_t)c << 16; state++; break;
             case 11:  value |= (int32_t)c << 24; state++; break;
-            case 12:  preset_index  = c; state++; break;
-            case 13:  preset_index |= (uint32_t)c << 8;
-                if ((patchid == patchMeta.patchID) && (preset_index < patchMeta.numPEx)) {
-                    PExParameterChange(&(patchMeta.pPExch)[preset_index], value, 0xFFFFFFEE);
+            case 12:  param_index  = c; state++; break;
+            case 13:  param_index |= (uint32_t)c << 8;
+                if ((patchid == patchMeta.patchID) && (param_index < patchMeta.numPEx)) {
+                    PExParameterChange(&(patchMeta.pPExch)[param_index], value, 0xFFFFFFEE);
                 }
                 state = 0; header = 0;
                 break;
@@ -959,7 +898,6 @@ void PExReceiveByte(unsigned char c) {
         } /* End switch (state) */
     }
     else if (header == 'C') { /* create/edit/close/delete file, create/change directory on SD */ 
-        // LogTextMessage("AxoC received,c=%x s=%u", c, state);
         switch (state) {
             case 4: /* Expecting pFileSize (byte 0) for 'f', or placeholder for others */
                 pFileSize = c; /* Store first byte of pFileSize/placeholder */
@@ -984,7 +922,6 @@ void PExReceiveByte(unsigned char c) {
                 break;
             case 9: /* Expecting FileName[1] (sub-command: 'f', 'k', 'c', 'h', 'D', 'I') */
                 FileName[1] = c; /* Store the sub-command */
-                // LogTextMessage("PEXRB:FileName[1]=%c (0x%02x)", FileName[1], FileName[1]);
 
                 if (FileName[1] == 'c' || FileName[1] == 'f' || FileName[1] == 'k') {
                     /* These expect fdate/ftime next (FileName[2]...[5]) */
@@ -1033,13 +970,11 @@ void PExReceiveByte(unsigned char c) {
             }
 
             default: /* Unknown state: reset state machine */
-                // LogTextMessage("PEXRB:Unknown state %u", state);
                 header = 0; state = 0;
                 break;
         } /* End switch (state) */
     }
     else if (header == 'a') { /* append data to open file on SD */
-        // LogTextMessage("Axoa received c=%x state=%u", c, state); // Keep this for general debug
         switch (state) {
             case 4: value  = c; state++; break;
             case 5: value |= (int32_t)c <<  8; state++; break;
@@ -1048,7 +983,6 @@ void PExReceiveByte(unsigned char c) {
                 length = (uint32_t)value; /* Store the length to be received */
                 write_position = PATCHMAINLOC; /* Set base address for data buffer */
                 state = 8; /* Move on to data streaming state */
-                // LogTextMessage("Axoa done c=%x lgth=%u pos=%x state=%u", c, length, write_position, state);
                 break;
             case 8: /* Data streaming state */
                 if (value > 0) { /* 'value' now tracks remaining bytes to receive */
@@ -1061,7 +995,6 @@ void PExReceiveByte(unsigned char c) {
                     for (volatile uint32_t dummy = 0; dummy < 256; dummy++);
 
                     if (value == 0) {
-                        // LogTextMessage("Axoa value=0, calling APPNDF length=%u", length);
                         FRESULT res = AppendFile(length); /* Call AppendFile with the total length */
                         send_AxoResult('a', res);
                         state = 0; header = 0;
@@ -1147,7 +1080,6 @@ void PExReceiveByte(unsigned char c) {
         } /* End switch (state) */
     }
     else { /* unknown command */
-        // LogTextMessage("Unknown cmd received Axo%c c=%x", header, c);
         state = 0; header = 0;
     }
 }
