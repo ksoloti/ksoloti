@@ -340,11 +340,6 @@ public class USBBulkConnection extends Connection {
         this.patch = patch;
     }
 
-    public void Panic() {
-        queueSerialTask.clear();
-        disconnect();
-    }
-
     @Override
     public void setDisconnectRequested(boolean requested) {
         this.disconnectRequested = requested;
@@ -410,6 +405,9 @@ public class USBBulkConnection extends Connection {
             if (transmitterThread != null && transmitterThread.isAlive()) {
                 // System.out.println(Instant.now() + " [DEBUG] Disconnect: Interrupting Transmitter thread.");
                 transmitterThread.interrupt();
+            }
+            if (QCmdProcessor.getInstance() != null) {
+                QCmdProcessor.getInstance().clearQueues();
             }
 
             /* 5. Wait for threads to terminate */

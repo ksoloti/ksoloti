@@ -164,7 +164,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JPopupMenu.Separator jDevSeparator;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
-    private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JLabel jLabelCPUID;
     private javax.swing.JLabel jLabelFlags;
     private javax.swing.JLabel jLabelIcon;
@@ -184,7 +183,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JMenuItem jMenuItemFlashDefault;
     private javax.swing.JMenuItem jMenuItemFlashUser;
     private javax.swing.JMenuItem jMenuItemMount;
-    private javax.swing.JMenuItem jMenuItemPanic;
     private javax.swing.JMenuItem jMenuItemRefreshFWID;
     private javax.swing.JMenuItem jMenuItemSelectCom;
     private javax.swing.JPanel jPanelHeader;
@@ -945,7 +943,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemSelectCom = new javax.swing.JMenuItem();
         jMenuItemFConnect = new javax.swing.JMenuItem();
         jMenuItemFDisconnect = new javax.swing.JMenuItem();
-        jMenuItemPanic = new javax.swing.JMenuItem();
         jMenuItemMount = new javax.swing.JMenuItem();
         jMenuFirmware = new javax.swing.JMenu();
         jMenuItemFlashDefault = new javax.swing.JMenuItem();
@@ -954,7 +951,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jDevSeparator = new javax.swing.JPopupMenu.Separator();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
-        jSeparator3 = new javax.swing.JPopupMenu.Separator();
         jMenuItemFCompile = new javax.swing.JMenuItem();
         jMenuItemEnterDFU = new javax.swing.JMenuItem();
         jMenuItemFlashUser = new javax.swing.JMenuItem();
@@ -1102,16 +1098,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuBoard.add(jMenuItemMount);
         jMenuBoard.add(jSeparator2);
 
-        jMenuItemPanic.setText("Panic");
-        jMenuItemPanic.setEnabled(false);
-        jMenuItemPanic.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemPanicActionPerformed(evt);
-            }
-        });
-        jMenuBoard.add(jMenuItemPanic);
-        jMenuBoard.add(jSeparator3);
-
         jMenuFirmware.setMnemonic('F');
         jMenuFirmware.setDelay(300);
         jMenuFirmware.setText("Firmware");
@@ -1190,10 +1176,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jTextPaneLog.setText("");
     }
 
-    private void jMenuItemPanicActionPerformed(java.awt.event.ActionEvent evt) {
-        QCmdProcessor.getInstance().Panic();
-    }
-
     private void jMenuItemFDisconnectActionPerformed(java.awt.event.ActionEvent evt) {
         jMenuItemFDisconnect.setEnabled(false);
 
@@ -1221,7 +1203,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void jMenuItemFConnectActionPerformed(java.awt.event.ActionEvent evt) {
         jMenuItemFConnect.setEnabled(false);
-        QCmdProcessor.getInstance().Panic();
 
         new SwingWorker<Boolean, String>() {
             @Override

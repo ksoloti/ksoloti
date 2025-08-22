@@ -42,7 +42,7 @@ public class QCmdDisconnect implements QCmdGUITask {
 
     @Override
     public void DoGUI(QCmdProcessor processor) {
-        processor.ClearQueue();
+        processor.clearQueues();
         processor.serialconnection.disconnect();
     }
 }

@@ -107,8 +107,4 @@ public class ShellProcessor extends SwingWorker<Integer, String> {
     protected void done() {
         LOGGER.log(Level.SEVERE, "ShellProcessor Terminated!");
     }
-
-    public void Panic() {
-        queueShellTasks.clear();
-    }
 }

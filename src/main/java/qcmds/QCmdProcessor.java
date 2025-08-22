@@ -239,17 +239,6 @@ public class QCmdProcessor implements Runnable {
         }
     }
 
-    public void Abort() {
-        queue.clear();
-        queueResponse.clear();
-    }
-
-    public void Panic() {
-        queue.clear();
-        // shellprocessor.Panic();
-        // serialconnection.Panic();
-    }
-
     private void publish(final QCmd cmd) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -330,8 +319,9 @@ public class QCmdProcessor implements Runnable {
         return queueResponse;
     }
 
-    public void ClearQueue() {
+    public void clearQueues() {
         queue.clear();
+        queueResponse.clear();
     }
 
     public boolean isQueueEmpty() {
