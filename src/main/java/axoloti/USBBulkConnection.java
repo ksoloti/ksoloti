@@ -1448,11 +1448,12 @@ public class USBBulkConnection extends Connection {
         int c = cc & 0xff;
 
         // String charDisplay;
+        // charDisplay = String.format("%02X", c) + "h "; // Show hex for non-printable characters
         // if (c >= 0x20 && c <= 0x7E) {
-        //     charDisplay = "'" + String.valueOf((char) c) + "'";
+        //     charDisplay += "'" + String.valueOf((char) c) + "'";
         // }
         // else {
-        //     charDisplay = String.format("%02X", c) + "h"; // Show hex for non-printable characters
+        //     charDisplay += "   ";
         // }
         // System.out.println(Instant.now() + " [DEBUG] processByte c=" + charDisplay + " s=" + state.name());
 
