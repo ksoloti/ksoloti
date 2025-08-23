@@ -66,40 +66,40 @@ public class QCmdCompilePatch extends QCmdShellTask {
     
     @Override
     String[] GetExec() {
-            String boarddef = "";
-            String fwoptiondef = "";
-            if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
-                boarddef = "BOARD_KSOLOTI_CORE";
-            }
-            else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
-                boarddef = "BOARD_AXOLOTI_CORE";
-            }
+        String boarddef = "";
+        String fwoptiondef = "";
+        if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
+            boarddef = "BOARD_KSOLOTI_CORE";
+        }
+        else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
+            boarddef = "BOARD_AXOLOTI_CORE";
+        }
 
-            if (Preferences.getInstance().getFirmwareMode().contains("SPILink")) {
-                fwoptiondef += " FW_SPILINK";
-            }
-            else if (Preferences.getInstance().getFirmwareMode().contains("USBAudio")) {
-                fwoptiondef += " FW_USBAUDIO";
-            }
-            else if (Preferences.getInstance().getFirmwareMode().contains("I2SCodec")) {
-                fwoptiondef += " FW_I2SCODEC";
-            }
-            else {
-                fwoptiondef += " FW_NORMAL";
-            }
+        if (Preferences.getInstance().getFirmwareMode().contains("SPILink")) {
+            fwoptiondef += " FW_SPILINK";
+        }
+        else if (Preferences.getInstance().getFirmwareMode().contains("USBAudio")) {
+            fwoptiondef += " FW_USBAUDIO";
+        }
+        else if (Preferences.getInstance().getFirmwareMode().contains("I2SCodec")) {
+            fwoptiondef += " FW_I2SCODEC";
+        }
+        else {
+            fwoptiondef += " FW_NORMAL";
+        }
 
-            String build_filename_stem = " " + p.generateBuildFilenameStem(true);
+        String build_filename_stem = " " + p.generateBuildFilenameStem(true);
 
-            if (OSDetect.getOS() == OSDetect.OS.WIN) {
-                String str = FirmwareDir() + "\\compile_patch_win.bat " + boarddef + fwoptiondef + build_filename_stem;
-                return str.split("\\s+");
-            } else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {
-                String str = FirmwareDir() + "/compile_patch.sh " + boarddef + fwoptiondef + build_filename_stem;
-                return str.split("\\s+");
-            } else {
-                Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");
-                return null;
-            }
+        if (OSDetect.getOS() == OSDetect.OS.WIN) {
+            String str = FirmwareDir() + "\\compile_patch_win.bat " + boarddef + fwoptiondef + build_filename_stem;
+            return str.split("\\s+");
+        } else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {
+            String str = FirmwareDir() + "/compile_patch.sh " + boarddef + fwoptiondef + build_filename_stem;
+            return str.split("\\s+");
+        } else {
+            Logger.getLogger(QCmdCompilePatch.class.getName()).log(Level.SEVERE, "UPLOAD: OS UNKNOWN!");
+            return null;
+        }
     }
 
     @Override

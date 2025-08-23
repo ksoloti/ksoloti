@@ -28,12 +28,12 @@ public class QCmdBringToDFUMode extends AbstractQCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "Enabling DFU...";
+        return "Enabling Rescue Mode...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Done enabling DFU. Serial connection will now break, but firmware can be flashed with DFU.\n";
+        return "Done enabling Rescue Mode. Serial connection will now break, but firmware can be flashed with DFU.\n";
     }
 
     @Override
