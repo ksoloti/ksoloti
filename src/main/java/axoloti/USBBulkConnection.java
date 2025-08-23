@@ -1704,24 +1704,8 @@ public class USBBulkConnection extends Connection {
                     // System.out.println(Instant.now() + " [DEBUG] AxoR received for '" + (char)commandByte + "': Status = " + SDCardInfo.getFatFsErrorString(statusCode));
 
                     if (currentExecutingCommand != null) {
-                        // Special handling for QCmdUploadFile's sub-commands
-                        if (currentExecutingCommand instanceof QCmdUploadFile) {
-                            QCmdUploadFile uploadCmd = (QCmdUploadFile) currentExecutingCommand;
-                            if (commandByte == 'f') {
-                                uploadCmd.setCreateFileCompleted((byte)statusCode);
-                            }
-                            else if (commandByte == 'a') {
-                                uploadCmd.setAppendFileCompleted((byte)statusCode);
-                            }
-                            else if (commandByte == 'c') {
-                                uploadCmd.setCloseFileCompleted((byte)statusCode);
-                            }
-                            else {
-                                // System.err.println(Instant.now() + " [DEBUG] Warning: QCmdUploadFile received unexpected AxoR for command: " + (char)commandByte);
-                            }
-                        }
-                        // Special handling for QCmdUploadPatch's sub-command
-                        else if (currentExecutingCommand instanceof QCmdUploadPatch) {
+                        // Special handling for QCmdUploadPatch's sub-commands
+                        if (currentExecutingCommand instanceof QCmdUploadPatch) {
                             QCmdUploadPatch uploadCmd = (QCmdUploadPatch) currentExecutingCommand;
                             if (commandByte == 'W') {
                                 uploadCmd.setStartMemWriteCompleted((byte)statusCode);
@@ -1731,31 +1715,38 @@ public class USBBulkConnection extends Connection {
                             }
                             else if (commandByte == 'e') {
                                 uploadCmd.setCloseMemWriteCompleted((byte)statusCode);
+                                uploadCmd.setMcuStatusCode((byte)statusCode); /* let last status code be overall status */
                             }
                         }
-                        else if (currentExecutingCommand instanceof QCmdUploadFWSDRam) {
-                            QCmdUploadFWSDRam uploadFwCmd = (QCmdUploadFWSDRam) currentExecutingCommand;
-                            if (commandByte == 'W') { // Acknowledgment for TransmitStartMemWrite (AxoWs)
-                                uploadFwCmd.setStartMemWriteCompleted((byte)statusCode);
+                        // Special handling for QCmdUploadFile's sub-commands
+                        else if (currentExecutingCommand instanceof QCmdUploadFile) {
+                            QCmdUploadFile uploadCmd = (QCmdUploadFile) currentExecutingCommand;
+                            if (commandByte == 'f') {
+                                uploadCmd.setCreateFileCompleted((byte)statusCode);
                             }
-                            else if (commandByte == 'w') { // Acknowledgment for TransmitAppendMemWrite (Axow)
-                                uploadFwCmd.setAppendMemWriteCompleted((byte)statusCode);
+                            else if (commandByte == 'a') {
+                                uploadCmd.setAppendFileCompleted((byte)statusCode);
                             }
-                            else if (commandByte == 'e') { // Acknowledgment for TransmitCloseMemWrite (AxoWc)
-                                uploadFwCmd.setCloseMemWriteCompleted((byte)statusCode);
+                            else if (commandByte == 'c') {
+                                uploadCmd.setCloseFileCompleted((byte)statusCode);
+                                uploadCmd.setMcuStatusCode((byte)statusCode); /* let last status code be overall status */
+                            }
+                            else {
+                                // System.err.println(Instant.now() + " [DEBUG] Warning: QCmdUploadFile received unexpected AxoR for command: " + (char)commandByte);
                             }
                         }
                         // Handling for other commands that expect an AxoR for their completion
                         else if (currentExecutingCommand instanceof QCmdStart ||
                                  currentExecutingCommand instanceof QCmdStop ||
-                                 currentExecutingCommand instanceof QCmdCopyPatchToFlash ||
-                                 currentExecutingCommand instanceof QCmdGetFileList ||
-                                 currentExecutingCommand instanceof QCmdCreateDirectory ||
                                  currentExecutingCommand instanceof QCmdChangeWorkingDirectory ||
+                                 currentExecutingCommand instanceof QCmdCreateDirectory ||
+                                 currentExecutingCommand instanceof QCmdGetFileList ||
+                                 currentExecutingCommand instanceof QCmdCopyPatchToFlash ||
                                  currentExecutingCommand instanceof QCmdDeleteFile ||
                                  currentExecutingCommand instanceof QCmdGetFileInfo) {
 
-                            if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) { // for example, ('l' == 'l') -> TRUE
+                            if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) {
+                                /* for example, ('l' == 'l') -> TRUE */
                                 currentExecutingCommand.setMcuStatusCode((byte)statusCode);
                                 if (currentExecutingCommand instanceof QCmdCreateDirectory) {
                                     /* CreateDirectory returns status FR_OK when the directory was created, and
@@ -1767,7 +1758,7 @@ public class USBBulkConnection extends Connection {
                                 }
 
                                 try {
-                                    boolean offeredSuccessfully = QCmdProcessor.getInstance().getQueueResponse().offer(currentExecutingCommand, 10, TimeUnit.MILLISECONDS);
+                                    boolean offeredSuccessfully = QCmdProcessor.getInstance().getQueueResponse().offer(currentExecutingCommand, 100, TimeUnit.MILLISECONDS);
                                     if (!offeredSuccessfully) {
                                         LOGGER.log(Level.WARNING, "Failed to offer completed QCmd (" + currentExecutingCommand.getClass().getSimpleName() + ") to QCmdProcessor queue within timeout. Queue might be full.");
                                     }
@@ -1784,6 +1775,20 @@ public class USBBulkConnection extends Connection {
                             // else {
                             //     System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received unexpected AxoR for command: " + (char)commandByte + ". Expected: " + currentExecutingCommand.getExpectedAckCommandByte() + ". Ignoring.");
                             // }
+                        }
+                        // Special handling for QCmdUploadFWSDRam's sub-commands (last because least frequent)
+                        else if (currentExecutingCommand instanceof QCmdUploadFWSDRam) {
+                            QCmdUploadFWSDRam uploadFwCmd = (QCmdUploadFWSDRam) currentExecutingCommand;
+                            if (commandByte == 'W') { // Acknowledgment for TransmitStartMemWrite (AxoWW)
+                                uploadFwCmd.setStartMemWriteCompleted((byte)statusCode);
+                            }
+                            else if (commandByte == 'w') { // Acknowledgment for TransmitAppendMemWrite (Axow)
+                                uploadFwCmd.setAppendMemWriteCompleted((byte)statusCode);
+                            }
+                            else if (commandByte == 'e') { // Acknowledgment for TransmitCloseMemWrite (AxoW)
+                                uploadFwCmd.setCloseMemWriteCompleted((byte)statusCode);
+                                uploadFwCmd.setMcuStatusCode((byte)statusCode); /* set last status code to overall status */
+                            }
                         }
                     }
                     setIdleState();
