@@ -18,6 +18,8 @@
  */
 package qcmds;
 
+import java.util.logging.Logger;
+
 import axoloti.Connection;
 
 /**
@@ -25,6 +27,7 @@ import axoloti.Connection;
  * @author Johannes Taelman
  */
 public interface QCmdSerialTask extends QCmd {
+    public static final Logger LOGGER = Logger.getLogger(QCmdSerialTask.class.getName());
 
     void setCompletedWithStatus(boolean success);
     boolean waitForCompletion(long timeoutMs) throws InterruptedException;

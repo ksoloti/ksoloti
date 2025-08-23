@@ -33,13 +33,16 @@ public class QCmdBringToDFUMode extends AbstractQCmdSerialTask {
 
     @Override
     public String GetDoneMessage() {
-        return "Done enabling Rescue Mode. Serial connection will now break, but firmware can be flashed with DFU.\n";
+        return "Done enabling Rescue Mode. Connection will now break and firmware can be flashed with DFU.\n";
     }
 
     @Override
     public QCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
         connection.TransmitBringToDFU();
         /* Does not expect a response */
+        setCompletedWithStatus(true);
+        LOGGER.info(GetDoneMessage());
         return this;
     }
 }
