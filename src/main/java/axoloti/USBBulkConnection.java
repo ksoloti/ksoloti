@@ -459,7 +459,8 @@ public class USBBulkConnection extends Connection {
             /* Post-Connection Commands (Firmware version, CPU revision, board ID) */
             try {
                 QCmdGetFWVersion fwVersionCmd = new QCmdGetFWVersion();
-                QCmdProcessor.getInstance().AppendToQueue(fwVersionCmd);
+                // QCmdProcessor.getInstance().AppendToQueue(fwVersionCmd);
+                fwVersionCmd.Do(this);
                 if (!fwVersionCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Get FW version command timed out.");
                 }
@@ -468,7 +469,8 @@ public class USBBulkConnection extends Connection {
                 }
 
                 QCmdMemRead1Word cpuRevisionCmd = new QCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
-                QCmdProcessor.getInstance().AppendToQueue(cpuRevisionCmd);
+                // QCmdProcessor.getInstance().AppendToQueue(cpuRevisionCmd);
+                cpuRevisionCmd.Do(this);
                 if (!cpuRevisionCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Get CPU revision command timed out.");
                 }
@@ -478,7 +480,8 @@ public class USBBulkConnection extends Connection {
                 targetProfile.setCPUIDCode(cpuRevisionCmd.getValueRead());
 
                 QCmdMemRead boardIDCmd = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
-                QCmdProcessor.getInstance().AppendToQueue(boardIDCmd);
+                // QCmdProcessor.getInstance().AppendToQueue(boardIDCmd);
+                boardIDCmd.Do(this);
                 if (!boardIDCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Get board ID command timed out.");
                 }
