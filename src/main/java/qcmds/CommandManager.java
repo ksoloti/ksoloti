@@ -55,18 +55,4 @@ public class CommandManager {
     public boolean isLongOperationActive() {
         return longOperationInProgress;
     }
-
-    /* Determines if a given QCmdSerialTask should be offered to the USB queue
-       based on the current busy state. */
-    public boolean shouldOfferCommand(QCmdSerialTask command) {
-
-        /* Suppress ALL commands if a long operation is currently active */
-        if (isLongOperationActive()) {
-            // System.out.println(Instant.now() + " [DEBUG] CommandManager: Suppressing command " + command.getClass().getSimpleName() + " because long operation is in progress.");
-            return false;
-        }
-
-        /* Otherwise, the command is allowed */
-        return true;
-    }
 }

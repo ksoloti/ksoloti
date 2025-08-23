@@ -216,17 +216,6 @@ public class QCmdProcessor implements Runnable {
     }
 
     public boolean AppendToQueue(QCmd cmd) {
-        /* check if it is a serial task that goes to the USBBulkConnection */
-        if (cmd instanceof QCmdSerialTask) {
-            QCmdSerialTask serialCmd = (QCmdSerialTask) cmd;
-
-            if (!CommandManager.getInstance().shouldOfferCommand(serialCmd)) {
-                // System.out.println(Instant.now() + " [DEBUG] QCmdProcessor: Command " + serialCmd.getClass().getSimpleName() + " suppressed.");
-                return false; /* Command was suppressed, so don't add to queue */
-            }
-            /* If not in a long operation, fall through to add to queue below */
-        }
-
         try {
             boolean added = queue.offer(cmd, 100, TimeUnit.MILLISECONDS);
             if (added) {
