@@ -421,6 +421,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 }
             }
 
+            CommandManager.getInstance().startLongOperation();
             new SwingWorker<Boolean, String>() {
                 PatchGUI previouslyLive = null;
                 boolean compilationTimeout = false;
@@ -458,7 +459,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                         }
 
                         /* Compile the patch. This is a long, host-side operation */
-                        CommandManager.getInstance().startLongOperation();
                         patch.WriteCode(true);
                         patch.Compile();
 
@@ -500,6 +500,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                         /* If code reaches here, all preparations were successful */
                                         patch.UploadDependentFiles("/" + patch.getSDCardPath());
                                     } catch (Exception e) {
+                                        CommandManager.getInstance().endLongOperation();
                                         LOGGER.log(Level.SEVERE, "Patch dependent files upload to SD failed with exception: ", e);
                                     }
                                 } else {
@@ -513,8 +514,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
                                     // QCmdProcessor.getInstance().AppendToQueue(uploadCmd);
                                     uploadCmd.Do(USBBulkConnection.getInstance());
-
-                                    // uploadCmd.Do(USBBulkConnection.getInstance());
                                     if (!uploadCmd.waitForCompletion()) {
                                         LOGGER.log(Level.SEVERE,"Patch upload timed out.");
                                         return false;
@@ -523,9 +522,11 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                         LOGGER.log(Level.SEVERE, "Failed to upload patch.");
                                         return false;
                                     }
+
                                     /* If code reaches here, success */
                                     return true;
                                 } catch (Exception e) {
+                                    CommandManager.getInstance().endLongOperation();
                                     LOGGER.log(Level.SEVERE, "Patch upload failed with exception: ", e);
                                     return false;
                                 }
@@ -538,6 +539,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             return false;
                         }
                     } catch (Exception e) {
+                        CommandManager.getInstance().endLongOperation();
                         return false;
                     }
                 }
@@ -1355,7 +1357,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             mainframe.setCurrentLivePatch(null);
             if (patch.getBinFile().exists()) {
                 try {
-                    CommandManager.getInstance().startLongOperation();
                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
                     // QCmdProcessor.getInstance().AppendToQueue(uploadCmd);
                     uploadCmd.Do(USBBulkConnection.getInstance());
@@ -1561,26 +1562,22 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jMenuItemUploadInternalFlash.setEnabled(false);
 
+        CommandManager.getInstance().startLongOperation();
         new SwingWorker<Boolean, String>() {
 
             @Override
             protected Boolean doInBackground() throws Exception {
                 try {
-                    CommandManager.getInstance().startLongOperation();
                     patch.WriteCode(true);
                     patch.Compile();
-                    CommandManager.getInstance().endLongOperation();
-
                     mainframe.setCurrentLivePatch(null);
 
                     if (patch.getBinFile().exists()) {
                         if (USBBulkConnection.getInstance().isConnected()) {
-                            CommandManager.getInstance().startLongOperation();
                             try {
                                 QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
                                 // QCmdProcessor.getInstance().AppendToQueue(uploadCmd);
                                 uploadCmd.Do(USBBulkConnection.getInstance());
-                                CommandManager.getInstance().endLongOperation();
                                 if (!uploadCmd.waitForCompletion()) {
                                     LOGGER.log(Level.SEVERE, "Patch upload command timed out.");
                                     return false;
@@ -1590,11 +1587,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                     return false;
                                 }
 
-                                CommandManager.getInstance().startLongOperation();
                                 QCmdCopyPatchToFlash copyToFlashCmd = new QCmdCopyPatchToFlash();
                                 // QCmdProcessor.getInstance().AppendToQueue(copyToFlashCmd);
                                 copyToFlashCmd.Do(USBBulkConnection.getInstance());
-                                CommandManager.getInstance().endLongOperation();
                                 if (!copyToFlashCmd.waitForCompletion()) {
                                     LOGGER.log(Level.SEVERE, "Copy patch to internal Flash command timed out.");
                                     return false;
@@ -1604,11 +1599,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                     return false;
                                 }
                             } catch (Exception e) {
+                                CommandManager.getInstance().endLongOperation();
                                 LOGGER.log(Level.SEVERE, "Patch upload to internal Flash failed with exception: ", e);
                                 return false;
-                            }
-                            finally {
-                                CommandManager.getInstance().endLongOperation();
                             }
 
                             /* If code reaches here, success */
@@ -1625,6 +1618,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     }
                 }
                 catch (Exception e) {
+                    CommandManager.getInstance().endLongOperation();
                     LOGGER.log(Level.SEVERE, "Patch upload to internal Flash failed:", e);
                     return false;
                 }
@@ -1632,6 +1626,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
             @Override
             protected void done() {
+                CommandManager.getInstance().endLongOperation();
                 try {
                     boolean success = get();
                     if (success) {

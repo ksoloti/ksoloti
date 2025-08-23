@@ -456,30 +456,31 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     USBBulkConnection.getInstance().addBoardIDNameListener(MainFrame.this);
 
                     ShowDisconnect();
-                        new SwingWorker<Boolean, String>() {
-                            @Override
-                            protected Boolean doInBackground() throws Exception {
-                                return USBBulkConnection.getInstance().connect();
-                            }
 
-                            @Override
-                            protected void done() {
-                                try {
-                                    boolean success = get();
-                                    if (success) {
-                                        ShowConnect();
-                                    }
-                                    else {
-                                        ShowDisconnect();
-                                    }
+                    new SwingWorker<Boolean, String>() {
+                        @Override
+                        protected Boolean doInBackground() throws Exception {
+                            return USBBulkConnection.getInstance().connect();
+                        }
+
+                        @Override
+                        protected void done() {
+                            try {
+                                boolean success = get();
+                                if (success) {
+                                    ShowConnect();
                                 }
-                                catch (Exception e) {
-                                    LOGGER.log(Level.SEVERE, "Initial connection worker crashed: " + e.getMessage());
-                                    e.printStackTrace(System.out);
+                                else {
                                     ShowDisconnect();
                                 }
                             }
-                        }.execute();
+                            catch (Exception e) {
+                                LOGGER.log(Level.SEVERE, "Initial connection worker crashed: " + e.getMessage());
+                                e.printStackTrace(System.out);
+                                ShowDisconnect();
+                            }
+                        }
+                    }.execute();
 
                     // Axoloti user library, ask user if they wish to upgrade, or do manual
                     // this allows them the opportunity to manually backup their files!
@@ -884,6 +885,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     return true;
 
                 } catch (Exception e) {
+                    CommandManager.getInstance().endLongOperation();
                     LOGGER.log(Level.SEVERE, "Exception during firmware/Flasher upload: " + e.getMessage());
                     e.printStackTrace(System.out);
                     return false;
@@ -1474,9 +1476,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 /* If a Core is connected and test patch .bin could be created:
                 stop patch, upload test patch .bin to RAM, start patch, report status */
                 if (USBBulkConnection.getInstance().isConnected()) {
+                    CommandManager.getInstance().startLongOperation();
                     QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch1.getBinFile());
                     // QCmdProcessor.getInstance().AppendToQueue(uploadCmd);
                     uploadCmd.Do(USBBulkConnection.getInstance());
+                    CommandManager.getInstance().endLongOperation();
                     if (!uploadCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Test patch upload command timed out.");
                         return false; /* Abort test of this patch */

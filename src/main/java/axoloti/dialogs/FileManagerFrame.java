@@ -220,6 +220,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                     }
                                 }
                             } catch (InterruptedException e) {
+                                CommandManager.getInstance().endLongOperation();
                                 LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file: " + e.getMessage());
                                 e.printStackTrace(System.out);
                                 Thread.currentThread().interrupt();
@@ -702,6 +703,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         System.out.println(Instant.now() + " Starting asynchronous UI refresh (via timer)...");
         fileListRefreshInProgress = true; // Set the flag immediately when starting a new refresh
 
+        CommandManager.getInstance().startLongOperation();
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -721,6 +723,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     System.out.println(Instant.now() + " File list refresh command completed. SwingWorker's background task finishing.");
                 }
                 catch (Exception e) {
+                    CommandManager.getInstance().endLongOperation();
                     LOGGER.log(Level.SEVERE, "Error during background refresh command execution: " + e.getMessage());
                     e.printStackTrace(System.out);
                     throw e; /* Re-throw to be caught by done() */
@@ -731,6 +734,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             @Override
             protected void done() {
                 try {
+                    CommandManager.getInstance().endLongOperation();
                     get(); /* Re-throws exceptions from doInBackground */
                     System.out.println(Instant.now() + " Asynchronous UI refresh complete. Updating JTable...");
                     setTableData();
@@ -863,6 +867,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
                     @Override
                     protected void done() {
+                        CommandManager.getInstance().endLongOperation();
                         String result = "Upload operation completed.\n";
                         try {
                             result = get();
@@ -873,12 +878,10 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                             e.printStackTrace(System.out);
                         }
                         finally {
-                            CommandManager.getInstance().endLongOperation();
                             triggerRefresh();
                         }
                     }
                 }.execute();
-
             }
 
             fc.setMultiSelectionEnabled(false);
@@ -943,7 +946,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 return;
             }
 
-            CommandManager.getInstance().startLongOperation();
             new SwingWorker<String, String>() {
                 private int deletedCount = 0;
                 private int failedCount = 0;
@@ -989,7 +991,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         message = "Batch delete failed unexpectedly: " + e.getMessage() + "\n";
                         e.printStackTrace(System.out);
                     } finally {
-                        CommandManager.getInstance().endLongOperation();
                         triggerRefresh();
                     }
                 }
