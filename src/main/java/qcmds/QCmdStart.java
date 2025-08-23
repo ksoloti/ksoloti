@@ -69,6 +69,7 @@ public class QCmdStart extends AbstractQCmdSerialTask {
                    as they force an immediate reboot into Flasher/Mounter mode.
                    Hard-coded success here. So alpha. */
                 setCompletedWithStatus(true);
+                setMcuStatusCode((byte)0x00);
                 return this;
             }
 
