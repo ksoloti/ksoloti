@@ -157,19 +157,19 @@ public class USBBulkConnection extends Connection {
     protected volatile QCmdSerialTask currentExecutingCommand = null;
 
     enum ReceiverState {
-        IDLE,
-        ACK_PCKT,               /* general acknowledge */
-        PARAMCHANGE_PCKT,       /* parameter changed */
-        DISPLAY_PCKT_HDR,       /* object display readbac */
-        DISPLAY_PCKT,           /* object display readback */
-        TEXT_PCKT,              /* text message to display in log */
-        SDINFO,                 /* sdcard info */
-        FILEINFO_FIXED_FIELDS,  /* file listing entry, size and timestamp (8 bytes of Axof packet) */
-        FILEINFO_FILENAME,      /* file listing entry, variable length filename */
-        MEMREAD,                /* one-time programmable bytes */
-        MEMREAD_1WORD,          /* one-time programmable bytes */
-        FWVERSION,              /* responds with own firmware version, 1.1.0.0 (though not used for anything?) */
-        COMMANDRESULT_PCKT      /* New Response Packet: ['A', 'x', 'o', 'R', command_byte, status_byte] */
+        IDLE,               /* awaiting new response */
+        ACK_PCKT,           /* general acknowledge */
+        PARAMCHANGE_PCKT,   /* parameter changed */
+        DISPLAY_PCKT_HDR,   /* object display readbac */
+        DISPLAY_PCKT,       /* object display readback */
+        TEXT_PCKT,          /* text message to display in log */
+        SDINFO,             /* sdcard info */
+        FILEINFO_HDR,       /* file listing entry, size and timestamp (8 bytes of Axof packet) */
+        FILEINFO_DATA,      /* file listing entry, variable length filename */
+        MEMREAD,            /* one-time programmable bytes */
+        MEMREAD_1WORD,      /* one-time programmable bytes */
+        FWVERSION,          /* responds with own firmware version, 1.1.0.0 (though not used for anything?) */
+        COMMANDRESULT_PCKT  /* New Response Packet: ['A', 'x', 'o', 'R', command_byte, status_byte] */
     };
 
     /*
@@ -278,12 +278,7 @@ public class USBBulkConnection extends Connection {
                 try {
                     cmd = queueSerialTask.poll(5, TimeUnit.SECONDS);
 
-                    if (Thread.currentThread().isInterrupted()) {
-                        // System.out.println(Instant.now() + " [DEBUG] Transmitter: Thread interrupted after taking task. Exiting loop.");
-                        break;
-                    }
-                    if (disconnectRequested) {
-                        // System.out.println(Instant.now() + " [DEBUG] Transmitter: Disconnect requested after taking task.");
+                    if (Thread.currentThread().isInterrupted()|| disconnectRequested) {
                         break;
                     }
 
@@ -1515,13 +1510,10 @@ public class USBBulkConnection extends Connection {
     void DistributeToDisplays(final ByteBuffer dispData) {
         // LOGGER.log(Level.INFO, "Distr1");
         try {
-            if (patch == null) {
+            if (patch == null || patch.DisplayInstances == null) {
                 return;
             }
             if (!patch.IsLocked()) {
-                return;
-            }
-            if (patch.DisplayInstances == null) {
                 return;
             }
             // LOGGER.log(Level.INFO, "Distr2");
@@ -1629,7 +1621,7 @@ public class USBBulkConnection extends Connection {
                             case 'f':
                                 fileinfoRcvBuffer.clear();
                                 dataLength = 8;
-                                setNextState(ReceiverState.FILEINFO_FIXED_FIELDS);
+                                setNextState(ReceiverState.FILEINFO_HDR);
                                 break;
                             case 'r':
                                 memReadBuffer.clear();
@@ -1831,7 +1823,7 @@ public class USBBulkConnection extends Connection {
                 }
                 break;
 
-            case FILEINFO_FIXED_FIELDS: /* State to collect the 8-byte size and timestamp */
+            case FILEINFO_HDR: /* State to collect the 8-byte size and timestamp */
                 fileinfoRcvBuffer.put(cc);
                 dataIndex++;
 
@@ -1849,11 +1841,11 @@ public class USBBulkConnection extends Connection {
 
                     /* Prepare to collect the variable-length filename */
                     fileinfoRcvBuffer.clear();
-                    setNextState(ReceiverState.FILEINFO_FILENAME); /* Transition to the next sub-state */
+                    setNextState(ReceiverState.FILEINFO_DATA); /* Transition to the next sub-state */
                 }
                 break;
 
-            case FILEINFO_FILENAME: /* State to collect filename bytes until null terminator */
+            case FILEINFO_DATA: /* State to collect filename bytes until null terminator */
                 if (cc == 0x00) {
                     // System.out.println(Instant.now() + " [DEBUG] processByte: Null terminator found for Axof filename. Processing.");
 
