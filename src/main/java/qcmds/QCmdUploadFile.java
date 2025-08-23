@@ -21,6 +21,7 @@ package qcmds;
 import axoloti.Connection;
 import axoloti.MainFrame;
 import axoloti.sd.SDCardInfo;
+import axoloti.sd.SDFileInfo;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -150,7 +151,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
             }
 
             int tlength = inputStream.available(); 
-            LOGGER.log(Level.INFO, "Uploading file to SD card: " + filename + ", Size: " + tlength + " bytes");
+            LOGGER.log(Level.INFO, "Uploading file to SD card: " + filename + ", size: " + SDFileInfo.getHumanReadableSize(tlength));
             size = tlength;
 
             if (!connection.isConnected()) {
