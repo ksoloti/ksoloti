@@ -275,7 +275,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         int pid = GetObjectInstance().getPatch().GetIID();
         int tvalue = GetValueRaw();
         
-        ByteBuffer buffer = ByteBuffer.allocate(14).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(14).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoP_pckt);
         buffer.putInt(pid);
         buffer.putInt(tvalue);
