@@ -109,8 +109,10 @@ import com.formdev.flatlaf.FlatClientProperties;
 
 import qcmds.CommandManager;
 import qcmds.QCmdBringToDFUMode;
+import qcmds.QCmdCompileFirmware;
 import qcmds.QCmdCompilePatch;
 import qcmds.QCmdDisconnect;
+import qcmds.QCmdFlashDFU;
 import qcmds.QCmdGuiShowLog;
 import qcmds.QCmdPing;
 import qcmds.QCmdProcessor;
@@ -1600,8 +1602,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (Usb.isDFUDeviceAvailable()) {
             updateLinkFirmwareID();
             setCurrentLivePatch(null);
-            QCmdProcessor.getInstance().AppendToQueue(new qcmds.QCmdDisconnect());
-            QCmdProcessor.getInstance().AppendToQueue(new qcmds.QCmdFlashDFU());
+            QCmdProcessor.getInstance().AppendToQueue(new QCmdDisconnect());
+            QCmdProcessor.getInstance().AppendToQueue(new QCmdFlashDFU());
         }
         else {
             LOGGER.log(Level.SEVERE, "No devices in Rescue Mode detected. To bring Ksoloti Core into Rescue Mode:\n1. Remove power.\n2. Hold down button S1 then connect the USB prog port to your computer.\nThe LEDs will stay off when in Rescue Mode.");
@@ -1633,7 +1635,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void jMenuItemFCompileActionPerformed(java.awt.event.ActionEvent evt) {
-        QCmdProcessor.getInstance().AppendToQueue(new qcmds.QCmdCompileFirmware());
+        QCmdProcessor.getInstance().AppendToQueue(new QCmdCompileFirmware());
     }
 
     private void jMenuItemEnterDFUActionPerformed(java.awt.event.ActionEvent evt) {
