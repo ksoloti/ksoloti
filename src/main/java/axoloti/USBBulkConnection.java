@@ -1150,6 +1150,7 @@ public class USBBulkConnection extends Connection {
         ByteBuffer buffer = ByteBuffer.allocateDirect(8 + data.length).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(Axow_pckt);
         buffer.putInt(data.length);
+        buffer.put(data);
         return writeBytes(buffer);
     }
 
