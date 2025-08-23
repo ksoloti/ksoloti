@@ -1556,15 +1556,17 @@ public class USBBulkConnection extends Connection {
 
         int c = cc & 0xff;
 
-        // String charDisplay;
-        // charDisplay = String.format("%02X", c) + "h "; // Show hex for non-printable characters
-        // if (c >= 0x20 && c <= 0x7E) {
-        //     charDisplay += "'" + String.valueOf((char) c) + "'";
+        // if (!state.name().equals("ACK_PCKT")) { /* Filter out ACK payloads */
+        //     String charDisplay;
+        //     charDisplay = String.format("%02X", c) + "h "; // Show hex for non-printable characters
+        //     if (c >= 0x20 && c <= 0x7E) {
+        //         charDisplay += "'" + String.valueOf((char) c) + "'";
+        //     }
+        //     else {
+        //         charDisplay += "   ";
+        //     }
+        //     System.out.println(Instant.now() + " [DEBUG] processByte c=" + charDisplay + " s=" + state.name());
         // }
-        // else {
-        //     charDisplay += "   ";
-        // }
-        // System.out.println(Instant.now() + " [DEBUG] processByte c=" + charDisplay + " s=" + state.name());
 
         switch (state) {
 
