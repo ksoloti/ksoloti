@@ -295,7 +295,7 @@ public class USBBulkConnection extends Connection {
                     break;
                 }
                 catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Erropr during Transmitter thread: " + e.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error during Transmitter thread: " + e.getMessage());
                     e.printStackTrace(System.out);
                     disconnect();
                     break;
