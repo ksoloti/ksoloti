@@ -18,13 +18,16 @@
  */
 package axoloti.sd;
 
+import java.text.DecimalFormatSymbols;
 import java.util.Calendar;
+import java.util.Locale;
 
 /**
  *
  * @author jtaelman
  */
 public class SDFileInfo {
+    private static char decimalSeparator = new DecimalFormatSymbols(Locale.getDefault(Locale.Category.FORMAT)).getDecimalSeparator();
 
     private final String filename;
     private final Calendar timestamp;
@@ -53,6 +56,26 @@ public class SDFileInfo {
 
     public int getSize() {
         return size;
+    }
+
+    public static String getHumanReadableSize(int size) {
+        long kilo = 1024;
+        long mega = 1024 * 1024;
+        if (size < kilo) {
+            return "" + size + " B";
+        }
+        else if (size < mega / 10) {
+            return "" + (size / kilo) + decimalSeparator + (size % kilo) / 103 + " kB";
+        }
+        else if (size < mega) {
+            return "" + (size / kilo) + " kB";
+        }
+        else if (size < mega * 100) {
+            return "" + (size / mega) + decimalSeparator + (size % mega) / (mega / 10) + " MB";
+        }
+        else {
+            return "" + (size / mega) + " MB";
+        }
     }
 
     public boolean isDirectory() {

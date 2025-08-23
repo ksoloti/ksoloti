@@ -75,24 +75,25 @@ public class AxoSDFileTableModel extends AbstractTableModel {
                     returnValue = "";
                 }
                 else {
-                    long kilo = 1024;
-                    long mega = 1024 * 1024;
-                    long size = f.getSize();
-                    if (size < kilo) {
-                        returnValue = "" + size + " B";
-                    }
-                    else if (size < mega / 10) {
-                        returnValue = "" + (size / kilo) + decimalSeparator + (size % kilo) / 103 + " kB";
-                    }
-                    else if (size < mega) {
-                        returnValue = "" + (size / kilo) + " kB";
-                    }
-                    else if (size < mega * 100) {
-                        returnValue = "" + (size / mega) + decimalSeparator + (size % mega) / (mega / 10) + " MB";
-                    }
-                    else {
-                        returnValue = "" + (size / mega) + " MB";
-                    }
+                    returnValue = SDFileInfo.getHumanReadableSize(f.getSize());
+                    // long kilo = 1024;
+                    // long mega = 1024 * 1024;
+                    // long size = f.getSize();
+                    // if (size < kilo) {
+                    //     returnValue = "" + size + " B";
+                    // }
+                    // else if (size < mega / 10) {
+                    //     returnValue = "" + (size / kilo) + decimalSeparator + (size % kilo) / 103 + " kB";
+                    // }
+                    // else if (size < mega) {
+                    //     returnValue = "" + (size / kilo) + " kB";
+                    // }
+                    // else if (size < mega * 100) {
+                    //     returnValue = "" + (size / mega) + decimalSeparator + (size % mega) / (mega / 10) + " MB";
+                    // }
+                    // else {
+                    //     returnValue = "" + (size / mega) + " MB";
+                    // }
                 }
                 break;
             }
