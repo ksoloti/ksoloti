@@ -69,6 +69,11 @@ public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
     }
 
     @Override
+    public QCmd Do() {
+        return this.Do(USBBulkConnection.getInstance());
+    }
+
+    @Override
     public abstract String GetStartMessage();
     
     @Override

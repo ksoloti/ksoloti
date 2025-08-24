@@ -36,4 +36,5 @@ public interface QCmdSerialTask extends QCmd {
     char getExpectedAckCommandByte();
 
     QCmd Do(Connection connection);
+    QCmd Do();
 }
