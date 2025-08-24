@@ -20,6 +20,7 @@ package qcmds;
 
 import axoloti.Connection;
 
+import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -89,17 +90,42 @@ public class QCmdDeleteFile extends AbstractQCmdSerialTask {
         return this;
     }
 
+    public QCmd Do(Connection connection, boolean silent) {
+        /* 'silent' argument is a dummy for the purpose of overloading this method.
+           Calling this will direct all log messages to the CLI only. */
+        System.out.println(Instant.now() + " " + GetStartMessage());
+        connection.setCurrentExecutingCommand(this);
+
+        System.out.println(Instant.now() + " Deleting file from SD card: " + filename);
+
+        if (!connection.isConnected()) {
+            System.out.println(Instant.now() + " Failed to delete file " + filename + ": USB connection lost.");
+            return this;
         }
 
         int writeResult = connection.TransmitDeleteFile(filename);
         if (writeResult != LibUsb.SUCCESS) {
             System.out.println(Instant.now() + " Failed to delete file " + filename + ": USB write error.");
+            setCompletedWithStatus(1);
+            return this;
+        }
+
+        try {
+            if (!waitForCompletion()) {
+                System.out.println(Instant.now() + " Delete file command for " + filename + " timed out.");
+                setCompletedWithStatus(1);
+                return this;
+            }
+            else if (!isSuccessful()) {
+                System.out.println(Instant.now() + " Failed to delete file " + filename + ".");
+                return this;
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.out.println(Instant.now() + " Delete file command interrupted for " + filename + ": " + e.getMessage());
             setCompletedWithStatus(1);
         } catch (Exception e) {
-            System.out.println(Instant.now() + " An unexpected error occurred during delete file command for " + filename + ": " + e.getMessage());
+            System.out.println(Instant.now() + " Error during delete file command for " + filename + ": " + e.getMessage());
             setCompletedWithStatus(1);
         }
         return this;
