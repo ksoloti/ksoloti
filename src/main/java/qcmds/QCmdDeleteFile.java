@@ -47,15 +47,13 @@ public class QCmdDeleteFile extends AbstractQCmdSerialTask {
 
     @Override
     public String GetDoneMessage() {
-        return "Delete file " + (isSuccessful() ? "successful" : "failed") + " for " + filename;
+        return null;
     }
 
     @Override
     public QCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
-
-        LOGGER.log(Level.INFO, "Deleting file from SD card: " + filename);
 
         if (!connection.isConnected()) {
             LOGGER.log(Level.SEVERE, "Failed to delete file " + filename + ": USB connection lost.");
@@ -95,8 +93,6 @@ public class QCmdDeleteFile extends AbstractQCmdSerialTask {
            Calling this will direct all log messages to the CLI only. */
         System.out.println(Instant.now() + " " + GetStartMessage());
         connection.setCurrentExecutingCommand(this);
-
-        System.out.println(Instant.now() + " Deleting file from SD card: " + filename);
 
         if (!connection.isConnected()) {
             System.out.println(Instant.now() + " Failed to delete file " + filename + ": USB connection lost.");

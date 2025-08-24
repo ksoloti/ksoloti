@@ -36,7 +36,7 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "Receiving SD card file list...";
+        return null;
     }
 
     @Override
@@ -47,7 +47,6 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
         /* This method sends the Axol packet to the MCU. */

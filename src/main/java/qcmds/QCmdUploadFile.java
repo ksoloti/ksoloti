@@ -80,12 +80,12 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
     @Override
     public String GetStartMessage() {
-        return "Uploading file to SD card: " + filename;
+        return null;
     }
 
     @Override
     public String GetDoneMessage() {
-        return "File upload " + (isSuccessful() ? "successful" : "failed") + " for " + filename;
+        return null;
     }
 
     /* These methods are called by USBBulkConnection.processByte() */
@@ -112,7 +112,6 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
         this.createFileStatus = 0xFF;
@@ -152,7 +151,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
             }
 
             int tlength = inputStream.available(); 
-            LOGGER.log(Level.INFO, "Uploading file to SD card: " + filename + ", size: " + SDFileInfo.getHumanReadableSize(tlength));
+            LOGGER.log(Level.INFO, "Uploading file to SD card... " + filename + ", size: " + SDFileInfo.getHumanReadableSize(tlength));
             size = tlength;
 
             if (!connection.isConnected()) {
@@ -309,7 +308,6 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
             /* Overall command success */
             SDCardInfo.getInstance().AddFile(filename, (int) size, ts);
             LOGGER.log(Level.INFO, "Done uploading file.\n");
-            setCompletedWithStatus(0);
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "File I/O error during upload for " + filename + ": " + ex.getMessage());
@@ -331,7 +329,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
                     inputStream.close();
                 }
                 catch (IOException e) {
-                    LOGGER.log(Level.WARNING, "Error closing input stream for " + filename + ": " + e.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error closing input stream for " + filename + ": " + e.getMessage());
                 }
             }
         }

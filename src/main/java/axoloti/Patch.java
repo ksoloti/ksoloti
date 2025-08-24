@@ -371,7 +371,6 @@ public class Patch {
                 //     continue;
                 // }
                 
-                LOGGER.log(Level.INFO, "Uploading file to SD card: " + targetfn);
                 try {
                     QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, targetfn);
                     // QCmdProcessor.getInstance().AppendToQueue(uploadFileCmd);
