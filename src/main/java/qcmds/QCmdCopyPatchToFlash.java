@@ -18,12 +18,10 @@
  */
 package qcmds;
 
-import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import axoloti.Connection;
-import axoloti.sd.SDCardInfo;
 
 /**
  *
@@ -49,30 +47,37 @@ public class QCmdCopyPatchToFlash extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
         int writeResult = connection.TransmitCopyToFlash();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "QCmdCopyPatchToFlash: Failed to send TransmitCopyToFlash: USB write error.");
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Failed to send TransmitCopyToFlash: USB write error.");
+            setCompletedWithStatus(1);
             return this;
         }
 
         try {
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "QCmdCopyPatchToFlash: Core did not acknowledge within timeout.");
-                setCompletedWithStatus(false);
-            } else {
-                System.out.println(Instant.now() + " QCmdCopyPatchToFlash completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
+                LOGGER.log(Level.SEVERE, "Copy patch to Flash command timed out.");
+                setCompletedWithStatus(1);
+                return this;
+            } else if (!isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Failed to copy patch to Flash.");
+                setCompletedWithStatus(1);
+                return this;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "QCmdCopyPatchToFlash interrupted: {0}", e.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Copy patch to Flash command interrupted: " + e.getMessage());
+            setCompletedWithStatus(1);
+            return this;
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An unexpected error occurred during QCmdCopyPatchToFlash: {0}", e.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Error during copy patch to Flash command: " + e.getMessage());
+            setCompletedWithStatus(1);
+            return this;
         }
+        LOGGER.info(GetDoneMessage());
         return this;
     }
 }

@@ -19,9 +19,7 @@
 package qcmds;
 
 import axoloti.Connection;
-import axoloti.sd.SDCardInfo;
 
-import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,36 +51,56 @@ public class QCmdDeleteFile extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
         LOGGER.log(Level.INFO, "Deleting file from SD card: " + filename);
 
         if (!connection.isConnected()) {
-            LOGGER.log(Level.SEVERE, "Failed to delete file " + filename + ": USB connection lost before file creation.");
+            LOGGER.log(Level.SEVERE, "Failed to delete file " + filename + ": USB connection lost.");
             return this;
         }
 
-        int writeResult = connection.TransmitDeleteFile(filename); // Pass 'this' as senderCommand
+        int writeResult = connection.TransmitDeleteFile(filename);
         if (writeResult != LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Failed to delete file " + filename + ": USB write error.");
-            setCompletedWithStatus(false);
+            setCompletedWithStatus(1);
             return this;
         }
 
         try {
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "Failed to delete file " + filename + ": Core did not acknowledge within timeout.");
-                setCompletedWithStatus(false);
-            } else {
-                System.out.println(Instant.now() + " Delete file " + filename + " completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
+                LOGGER.log(Level.SEVERE, "Delete file command for " + filename + " timed out.");
+                setCompletedWithStatus(1);
+                return this;
+            }
+            else if (!isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Failed to delete file " + filename + ".");
+                return this;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Delete interrupted for " + filename + ": {0}", e.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Delete file command interrupted for " + filename + ": " + e.getMessage());
+            setCompletedWithStatus(1);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An unexpected error occurred during file deletion for " + filename + ": {0}", e.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Error during delete file command for " + filename + ": " + e.getMessage());
+            setCompletedWithStatus(1);
+        }
+        return this;
+    }
+
+        }
+
+        int writeResult = connection.TransmitDeleteFile(filename);
+        if (writeResult != LibUsb.SUCCESS) {
+            System.out.println(Instant.now() + " Failed to delete file " + filename + ": USB write error.");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println(Instant.now() + " Delete file command interrupted for " + filename + ": " + e.getMessage());
+            setCompletedWithStatus(1);
+        } catch (Exception e) {
+            System.out.println(Instant.now() + " An unexpected error occurred during delete file command for " + filename + ": " + e.getMessage());
+            setCompletedWithStatus(1);
         }
         return this;
     }

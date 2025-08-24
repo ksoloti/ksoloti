@@ -18,12 +18,10 @@
  */
 package qcmds;
 
-import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import axoloti.Connection;
-import axoloti.sd.SDCardInfo;
 
 /**
  *
@@ -39,42 +37,45 @@ public class QCmdStop extends AbstractQCmdSerialTask {
     
     @Override
     public String GetStartMessage() {
-        return null;//Start stopping patch";
+        return "Stopping patch...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return null;//Done stopping patch";
+        return null;
     }
 
     @Override
     public QCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
         int writeResult = connection.TransmitStop();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "QCmdStop: Failed to send TransmitStop: USB write error.");
-            setCompletedWithStatus(false);
+            setCompletedWithStatus(1);
             return this;
         }
 
         try {
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "QCmdStop: Core did not acknowledge within timeout.");
-                setCompletedWithStatus(false);
+                LOGGER.log(Level.SEVERE, "Stop patch command timed out.");
+                setCompletedWithStatus(1);
+                return this;
             }
-            else {
-                System.out.println(Instant.now() + " QCmdStop completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
+            else if (!isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Failed to stop patch.");
+                return this;
             }
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "QCmdStop interrupted: {0}", e.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Stop patch command interrupted: {0}", e.getMessage());
+            setCompletedWithStatus(1);
         }
         catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An unexpected error occurred during QCmdStop: {0}", e.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Error during patch stop: {0}", e.getMessage());
+            setCompletedWithStatus(1);
         }
         return this;
     }

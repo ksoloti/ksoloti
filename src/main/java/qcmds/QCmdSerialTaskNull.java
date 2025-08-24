@@ -27,11 +27,6 @@ import axoloti.Connection;
 public class QCmdSerialTaskNull extends AbstractQCmdSerialTask {
 
     @Override
-    public QCmd Do(Connection connection) {
-        return this;
-    }
-
-    @Override
     public String GetStartMessage() {
         return "Starting QCmdSerialTaskNull...";
     }
@@ -39,5 +34,10 @@ public class QCmdSerialTaskNull extends AbstractQCmdSerialTask {
     @Override
     public String GetDoneMessage() {
         return "Done QCmdSerialTaskNull.\n";
+    }
+
+    @Override
+    public QCmd Do(Connection connection) {
+        return this;
     }
 }

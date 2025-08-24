@@ -48,9 +48,9 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
     private CountDownLatch appendFileLatch;
     private CountDownLatch closeFileLatch;
 
-    private volatile byte createFileStatus = (byte)0xFF;
-    private volatile byte appendFileStatus = (byte)0xFF;
-    private volatile byte closeFileStatus = (byte)0xFF;
+    private volatile int createFileStatus = 0xFF;
+    private volatile int appendFileStatus = 0xFF;
+    private volatile int closeFileStatus = 0xFF;
 
     InputStream inputStream;
     final String filename;
@@ -89,21 +89,21 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
     }
 
     /* These methods are called by USBBulkConnection.processByte() */
-    public void setCreateFileCompleted(byte statusCode) {
+    public void setCreateFileCompletedWithStatus(int statusCode) {
         this.createFileStatus = statusCode;
         if (createFileLatch != null) {
             createFileLatch.countDown();
         }
     }
 
-    public void setAppendFileCompleted(byte statusCode) {
+    public void setAppendFileCompletedWithStatus(int statusCode) {
         this.appendFileStatus = statusCode;
         if (appendFileLatch != null) {
             appendFileLatch.countDown();
         }
     }
 
-    public void setCloseFileCompleted(byte statusCode) {
+    public void setCloseFileCompletedWithStatus(int statusCode) {
         this.closeFileStatus = statusCode;
         if (closeFileLatch != null) {
             closeFileLatch.countDown();
@@ -112,27 +112,28 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
-        this.createFileStatus = (byte)0xFF;
-        this.appendFileStatus = (byte)0xFF;
-        this.closeFileStatus = (byte)0xFF;
+        this.createFileStatus = 0xFF;
+        this.appendFileStatus = 0xFF;
+        this.closeFileStatus = 0xFF;
 
         try {
             if (inputStream == null) {
                 if (!file.exists()) {
                     LOGGER.log(Level.WARNING, "File does not exist: " + filename + "\n");
-                    setCompletedWithStatus(false);
+                    setCompletedWithStatus(1);
                     return this;
                 }
                 if (file.isDirectory()) {
                     LOGGER.log(Level.WARNING, "Cannot upload directories: " + filename + "\n");
-                    setCompletedWithStatus(false);
+                    setCompletedWithStatus(1);
                     return this;
                 }
                 if (!file.canRead()) {
                     LOGGER.log(Level.WARNING, "Cannot read file: " + filename + "\n");
-                    setCompletedWithStatus(false);
+                    setCompletedWithStatus(1);
                     return this;
                 }
                 inputStream = new FileInputStream(file);
@@ -155,8 +156,8 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
             size = tlength;
 
             if (!connection.isConnected()) {
-                LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost before file creation.");
-                setCompletedWithStatus(false);
+                LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost.");
+                setCompletedWithStatus(1);
                 return this;
             }
 
@@ -165,12 +166,12 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
             if (!createFileLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge file creation within timeout.");
-                setCompletedWithStatus(false);
+                setCompletedWithStatus(1);
                 return this;
             }
             if (createFileStatus != 0x00) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(createFileStatus) + ") during file creation.");
-                setCompletedWithStatus(false);
+                setCompletedWithStatus(1);
                 return this;
             }
 
@@ -192,7 +193,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
                 if (nRead == -1) {
                     LOGGER.log(Level.SEVERE, "Unexpected end of file or read error for " + filename + ". Read " + nRead + " bytes. Chunk number " + chunkNum);
-                    setCompletedWithStatus(false);
+                    setCompletedWithStatus(1);
                     return this;
                 }
                 if (nRead != bytesToRead) {
@@ -203,8 +204,8 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
                 }
 
                 if (!connection.isConnected()) {
-                    LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost during file transfer. Chunk number " + chunkNum);
-                    setCompletedWithStatus(false);
+                    LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost.");
+                    setCompletedWithStatus(1);
                     return this;
                 }
 
@@ -213,12 +214,12 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
                 if (!appendFileLatch.await(3, TimeUnit.SECONDS)) {
                     LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
-                    setCompletedWithStatus(false);
+                    setCompletedWithStatus(1);
                     return this;
                 }
                 if (appendFileStatus != 0x00) {
                     LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(appendFileStatus) + ") during chunk append. Chunk number " + chunkNum);
-                    setCompletedWithStatus(false);
+                    setCompletedWithStatus(1);
                     return this;
                 }
 
@@ -286,8 +287,8 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
             inputStream.close();
 
             if (!connection.isConnected()) {
-                LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost before file close.");
-                setCompletedWithStatus(false);
+                LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost.");
+                setCompletedWithStatus(1);
                 return this;
             }
 
@@ -296,33 +297,32 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
             if (!closeFileLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge file close within timeout.");
-                setCompletedWithStatus(false);
+                setCompletedWithStatus(1);
                 return this;
             }
             if (closeFileStatus != 0x00) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(closeFileStatus) + ") during file close.");
-                setCompletedWithStatus(false);
+                setCompletedWithStatus(1);
                 return this;
             }
 
             /* Overall command success */
             SDCardInfo.getInstance().AddFile(filename, (int) size, ts);
             LOGGER.log(Level.INFO, "Done uploading file.\n");
-            setCompletedWithStatus(true);
-
+            setCompletedWithStatus(0);
         }
         catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "File I/O error during upload for " + filename + ": {0}", ex.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "File I/O error during upload for " + filename + ": " + ex.getMessage());
+            setCompletedWithStatus(1);
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Upload interrupted for " + filename + ": {0}", ex.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Upload interrupted for " + filename + ": " + ex.getMessage());
+            setCompletedWithStatus(1);
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "An unexpected error occurred during upload for " + filename + ": {0}", ex.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Error during upload for " + filename + ": " + ex.getMessage());
+            setCompletedWithStatus(1);
         }
         finally {
             connection.setCurrentExecutingCommand(null);
@@ -331,7 +331,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
                     inputStream.close();
                 }
                 catch (IOException e) {
-                    LOGGER.log(Level.WARNING, "Error closing input stream for " + filename + ": {0}", e.getMessage());
+                    LOGGER.log(Level.WARNING, "Error closing input stream for " + filename + ": " + e.getMessage());
                 }
             }
         }

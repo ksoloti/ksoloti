@@ -639,11 +639,10 @@ public class USBBulkConnection extends Connection {
             }
         }
         catch (Exception mainEx) {
-            LOGGER.log(Level.SEVERE, "Unexpected error during Disconnect cleanup: " + mainEx.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during Disconnect cleanup: " + mainEx.getMessage());
             mainEx.printStackTrace(System.out);
         }
         finally {
-
             /* Reset state variables, regardless of cleanup success */
             connected = false;
             detectedCpuId = null;
@@ -1697,65 +1696,68 @@ public class USBBulkConnection extends Connection {
                 if (dataIndex < dataLength) {
                     storeDataByte(c);
                 }
-                if (dataIndex == dataLength) { // Once both bytes are received
+                if (dataIndex == dataLength) {
                     int commandByte = packetData[0] & 0xFF;
                     int statusCode = (packetData[0] >> 8) & 0xFF;
 
-                    // System.out.println(Instant.now() + " [DEBUG] AxoR received for '" + (char)commandByte + "': Status = " + SDCardInfo.getFatFsErrorString(statusCode));
-
                     if (currentExecutingCommand != null) {
-                        // Special handling for QCmdUploadPatch's sub-commands
+                        /* Special handling for QCmdUploadPatch's sub-commands */
                         if (currentExecutingCommand instanceof QCmdUploadPatch) {
                             QCmdUploadPatch uploadCmd = (QCmdUploadPatch) currentExecutingCommand;
                             if (commandByte == 'W') {
-                                uploadCmd.setStartMemWriteCompleted((byte)statusCode);
+                                uploadCmd.setStartMemWriteCompletedWithStatus(statusCode);
                             }
                             else if (commandByte == 'w') {
-                                uploadCmd.setAppendMemWriteCompleted((byte)statusCode);
+                                uploadCmd.setAppendMemWriteCompletedWithStatus(statusCode);
                             }
                             else if (commandByte == 'e') {
-                                uploadCmd.setCloseMemWriteCompleted((byte)statusCode);
-                                uploadCmd.setMcuStatusCode((byte)statusCode); /* let last status code be overall status */
+                                uploadCmd.setCloseMemWriteCompletedWithStatus(statusCode);
+                                uploadCmd.setCompletedWithStatus(statusCode);
                             }
                         }
-                        // Special handling for QCmdUploadFile's sub-commands
+                        /* Special handling for QCmdUploadFile's sub-commands */
                         else if (currentExecutingCommand instanceof QCmdUploadFile) {
                             QCmdUploadFile uploadCmd = (QCmdUploadFile) currentExecutingCommand;
                             if (commandByte == 'f') {
-                                uploadCmd.setCreateFileCompleted((byte)statusCode);
+                                uploadCmd.setCreateFileCompletedWithStatus(statusCode);
                             }
                             else if (commandByte == 'a') {
-                                uploadCmd.setAppendFileCompleted((byte)statusCode);
+                                uploadCmd.setAppendFileCompletedWithStatus(statusCode);
                             }
                             else if (commandByte == 'c') {
-                                uploadCmd.setCloseFileCompleted((byte)statusCode);
-                                uploadCmd.setMcuStatusCode((byte)statusCode); /* let last status code be overall status */
-                            }
-                            else {
-                                // System.err.println(Instant.now() + " [DEBUG] Warning: QCmdUploadFile received unexpected AxoR for command: " + (char)commandByte);
+                                uploadCmd.setCloseFileCompletedWithStatus(statusCode);
+                                uploadCmd.setCompletedWithStatus(statusCode);
                             }
                         }
-                        // Handling for other commands that expect an AxoR for their completion
-                        else if (currentExecutingCommand instanceof QCmdStart ||
-                                 currentExecutingCommand instanceof QCmdStop ||
-                                 currentExecutingCommand instanceof QCmdChangeWorkingDirectory ||
-                                 currentExecutingCommand instanceof QCmdCreateDirectory ||
-                                 currentExecutingCommand instanceof QCmdGetFileList ||
-                                 currentExecutingCommand instanceof QCmdCopyPatchToFlash ||
-                                 currentExecutingCommand instanceof QCmdDeleteFile ||
-                                 currentExecutingCommand instanceof QCmdGetFileInfo) {
+                        /* Special handling for QCmdUploadFWSDRam's sub-commands */
+                        else if (currentExecutingCommand instanceof QCmdUploadFWSDRam) {
+                            QCmdUploadFWSDRam uploadFwCmd = (QCmdUploadFWSDRam) currentExecutingCommand;
+                            if (commandByte == 'W') {
+                                uploadFwCmd.setStartMemWriteCompletedWithStatus(statusCode);
+                            }
+                            else if (commandByte == 'w') {
+                                uploadFwCmd.setAppendMemWriteCompletedWithStatus(statusCode);
+                            }
+                            else if (commandByte == 'e') {
+                                uploadFwCmd.setCloseMemWriteCompletedWithStatus(statusCode);
+                                uploadFwCmd.setCompletedWithStatus(statusCode);
+                            }
+                        }
+                        /* Handling for other commands that expect an AxoR for their completion */
+                        else {
+                        // else if (currentExecutingCommand instanceof QCmdStart ||
+                        //          currentExecutingCommand instanceof QCmdStop ||
+                        //          currentExecutingCommand instanceof QCmdChangeWorkingDirectory ||
+                        //          currentExecutingCommand instanceof QCmdCreateDirectory ||
+                        //          currentExecutingCommand instanceof QCmdGetFileList ||
+                        //          currentExecutingCommand instanceof QCmdCopyPatchToFlash ||
+                        //          currentExecutingCommand instanceof QCmdDeleteFile ||
+                        //          currentExecutingCommand instanceof QCmdGetFileInfo) {
 
+                            /* Any commands with no explicitly set command byte ('\0') will fall through */
                             if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) {
                                 /* for example, ('l' == 'l') -> TRUE */
-                                currentExecutingCommand.setMcuStatusCode((byte)statusCode);
-                                if (currentExecutingCommand instanceof QCmdCreateDirectory) {
-                                    /* CreateDirectory returns status FR_OK when the directory was created, and
-                                        FR_EXIST, 0x08, when the directory already exists. Treat both as success. */
-                                    currentExecutingCommand.setCompletedWithStatus(statusCode == 0x00 || statusCode == 0x08);
-                                }
-                                else {
-                                    currentExecutingCommand.setCompletedWithStatus(statusCode == 0x00);
-                                }
+                                currentExecutingCommand.setCompletedWithStatus(statusCode);
 
                                 try {
                                     boolean offeredSuccessfully = QCmdProcessor.getInstance().getQueueResponse().offer(currentExecutingCommand, 100, TimeUnit.MILLISECONDS);
@@ -1771,23 +1773,6 @@ public class USBBulkConnection extends Connection {
                                     e.printStackTrace(System.out);
                                     Thread.currentThread().interrupt();
                                 }
-                            }
-                            // else {
-                            //     System.err.println(Instant.now() + " [DEBUG] Warning: currentExecutingCommand (" + currentExecutingCommand.getClass().getSimpleName() + ") received unexpected AxoR for command: " + (char)commandByte + ". Expected: " + currentExecutingCommand.getExpectedAckCommandByte() + ". Ignoring.");
-                            // }
-                        }
-                        // Special handling for QCmdUploadFWSDRam's sub-commands (last because least frequent)
-                        else if (currentExecutingCommand instanceof QCmdUploadFWSDRam) {
-                            QCmdUploadFWSDRam uploadFwCmd = (QCmdUploadFWSDRam) currentExecutingCommand;
-                            if (commandByte == 'W') { // Acknowledgment for TransmitStartMemWrite (AxoWW)
-                                uploadFwCmd.setStartMemWriteCompleted((byte)statusCode);
-                            }
-                            else if (commandByte == 'w') { // Acknowledgment for TransmitAppendMemWrite (Axow)
-                                uploadFwCmd.setAppendMemWriteCompleted((byte)statusCode);
-                            }
-                            else if (commandByte == 'e') { // Acknowledgment for TransmitCloseMemWrite (AxoW)
-                                uploadFwCmd.setCloseMemWriteCompleted((byte)statusCode);
-                                uploadFwCmd.setMcuStatusCode((byte)statusCode); /* set last status code to overall status */
                             }
                         }
                     }
@@ -1922,8 +1907,7 @@ public class USBBulkConnection extends Connection {
                             if (currentExecutingCommand != null && currentExecutingCommand instanceof QCmdMemRead) {
                                 QCmdMemRead memReadCmd = (QCmdMemRead) currentExecutingCommand;
                                 memReadCmd.setValuesRead(memReadBuffer);
-                                memReadCmd.setMcuStatusCode((byte) 0x00);
-                                memReadCmd.setCompletedWithStatus(true);
+                                memReadCmd.setCompletedWithStatus(0);
                             }
 
                             System.out.print(Instant.now() + " QCmdMemRead address 0x" + Integer.toHexString(memReadAddr).toUpperCase() + ", length " + memReadLength + ": ");
@@ -1972,8 +1956,7 @@ public class USBBulkConnection extends Connection {
                         if (currentExecutingCommand != null && currentExecutingCommand instanceof QCmdMemRead1Word) {
                             QCmdMemRead1Word cmd = (QCmdMemRead1Word) currentExecutingCommand;
                             cmd.setValueRead(memRead1WordValue);
-                            cmd.setMcuStatusCode((byte)0x00);
-                            cmd.setCompletedWithStatus(true);
+                            cmd.setCompletedWithStatus(0);
                             System.out.println(Instant.now() + " QCmdMemRead1Word address 0x" + Integer.toHexString(memReadAddr).toUpperCase() + ", value read: 0x" + Integer.toHexString(memRead1WordValue).toUpperCase());
                         }
                         setIdleState();
@@ -2030,8 +2013,7 @@ public class USBBulkConnection extends Connection {
                             MainFrame.mainframe.setFirmwareID(sFwcrc);
                         }
                         if (currentExecutingCommand != null && currentExecutingCommand instanceof QCmdGetFWVersion) {
-                            currentExecutingCommand.setMcuStatusCode((byte)0x00);
-                            currentExecutingCommand.setCompletedWithStatus(true);
+                            currentExecutingCommand.setCompletedWithStatus(0);
                         }
                         setIdleState();
                         break;

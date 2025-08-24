@@ -28,16 +28,17 @@ public class QCmdGetSpilinkSynced extends AbstractQCmdSerialTask {
     
     @Override
     public String GetStartMessage() {
-        return "hallo";
+        return "Checking device's SPILink configuration...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return "done hallo\n";
+        return null;
     }
 
     @Override
     public QCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
         connection.TransmitGetSpilinkSynced();
         return this;
     }

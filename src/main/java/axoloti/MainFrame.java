@@ -573,7 +573,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     // System.exit(1);
                 }
                 catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "An error occurred during MainFrame init task: " + e.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error during MainFrame init task: " + e.getMessage());
                     e.printStackTrace(System.out);
                 }
             }
@@ -614,7 +614,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                                     }
                                 }
                                 catch (Exception e) {
-                                    LOGGER.log(Level.SEVERE, "An error occurred during patch file opening task: " + e.getMessage());
+                                    LOGGER.log(Level.SEVERE, "Error during patch file opening task: " + e.getMessage());
                                     e.printStackTrace(System.out);
                                 }
                             }
@@ -645,7 +645,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         }
                     }
                     catch (Exception e) {
-                        LOGGER.log(Level.SEVERE, "An error occurred during .axo file opening task: " + e.getMessage());
+                        LOGGER.log(Level.SEVERE, "Error during .axo file opening task: " + e.getMessage());
                         e.printStackTrace(System.out);
                     }
                 }
@@ -754,7 +754,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     LOGGER.log(Level.WARNING, "Drag and drop: Unknown file format.");
                 }
                 catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, "An error occurred during drag and drop: " + ex.getMessage()); 
+                    LOGGER.log(Level.SEVERE, "Error during drag and drop action: " + ex.getMessage()); 
                     ex.printStackTrace(System.out);
                 }
             }
@@ -912,7 +912,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     e.printStackTrace(System.out);
                     Thread.currentThread().interrupt(); // Restore interrupt status
                 } catch (java.util.concurrent.ExecutionException e) {
-                    LOGGER.log(Level.SEVERE, "An unexpected error occurred in background task: " + e.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error during background task: " + e.getMessage());
                     e.printStackTrace(System.out);
                 }
             }
@@ -1260,7 +1260,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         get();
                     }
                     catch (Exception e) {
-                        LOGGER.log(Level.SEVERE, "An error occurred during connection SwingWorker: " + e.getMessage());
+                        LOGGER.log(Level.SEVERE, "Error during connection SwingWorker: " + e.getMessage());
                         e.printStackTrace(System.out);
                         USBBulkConnection.getInstance().ShowDisconnect();
                     }
@@ -1290,7 +1290,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         // System.out.println(Instant.now() + " [DEBUG] UI updated: Disconnected (successfully).");
                     }
                     catch (Exception e) {
-                        LOGGER.log(Level.SEVERE, "An error occurred during disconnection SwingWorker: " + e.getMessage());
+                        LOGGER.log(Level.SEVERE, "Error during disconnection SwingWorker: " + e.getMessage());
                         e.printStackTrace(System.out);
                         if (USBBulkConnection.getInstance().isConnected()) {
                             USBBulkConnection.getInstance().ShowConnect();
@@ -1327,7 +1327,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             }
         }
         catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An error occurred during runAllTests: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during runAllTests: " + e.getMessage());
             e.printStackTrace(System.out);
             return r1 && r2;
         }
@@ -1582,7 +1582,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             return status;
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "An error occurred during file upgrade: " + f.getPath() + ", " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during file upgrade: " + f.getPath() + ", " + ex.getMessage());
             ex.printStackTrace(System.out);
             return false;
         }

@@ -34,6 +34,16 @@ public class QCmdGuiDialTx implements QCmdGUITask {
     }
 
     @Override
+    public String GetStartMessage() {
+        return null;
+    }
+
+    @Override
+    public String GetDoneMessage() {
+        return null;
+    }
+
+    @Override
     public void DoGUI(QCmdProcessor processor) {
         if (processor.isQueueEmpty()) {
             if (this.patch != null) {
@@ -63,15 +73,5 @@ public class QCmdGuiDialTx implements QCmdGUITask {
                 }
             }
         }
-    }
-
-    @Override
-    public String GetStartMessage() {
-        return null;
-    }
-
-    @Override
-    public String GetDoneMessage() {
-        return null;
     }
 }

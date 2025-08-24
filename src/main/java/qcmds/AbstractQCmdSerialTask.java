@@ -19,6 +19,7 @@
 package qcmds;
 
 import axoloti.Connection;
+import axoloti.USBBulkConnection;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -27,18 +28,14 @@ public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
 
     private final CountDownLatch latch = new CountDownLatch(1);
     protected volatile boolean commandSuccess = false;
-    protected volatile byte mcuStatusCode = (byte) 0xFF; /* Stores the (FatFs-type) status code received from MCU */
-    protected char expectedAckCommandByte = 0; /* Default value, only used by - and will be set by - subclasses that use AxoR<expectedAckCommandByte><statusbyte> */
+    protected volatile int mcuStatusCode = 0xFF; /* Stores the (often FatFs-type) status code received from MCU */
+    protected char expectedAckCommandByte = '\0'; /* Default value, only used by - and will be set by - subclasses that use AxoR<expectedAckCommandByte><statusbyte> */
 
     @Override
-    public void setCompletedWithStatus(boolean success) {
-        this.commandSuccess = success;
+    public void setCompletedWithStatus(int mcuStatusCode) {
+        this.mcuStatusCode = mcuStatusCode;
+        this.commandSuccess = mcuStatusCode == 0;
         latch.countDown();
-    }
-
-    @Override
-    public void setMcuStatusCode(byte statusCode) {
-        this.mcuStatusCode = statusCode;
     }
 
     @Override
@@ -54,13 +51,10 @@ public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
 
     @Override
     public boolean isSuccessful() {
-        if (!commandSuccess) { /* Patcher-side failure */
-            return false;
-        }
-        return mcuStatusCode == 0x00; /* MCU status code 0 means success */
+        return commandSuccess;
     }
 
-    public byte getMcuStatusCode() {
+    public int getMcuStatusCode() {
         return mcuStatusCode;
     }
 

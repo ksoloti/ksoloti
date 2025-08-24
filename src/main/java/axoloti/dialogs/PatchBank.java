@@ -293,7 +293,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 } catch (UnsupportedFlavorException ex) {
                     LOGGER.log(Level.WARNING, "Drag and Drop: Unknown file format.");
                 } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, "Error during drag and drop: " + ex.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error during drag and drop action: " + ex.getMessage());
                     ex.printStackTrace(System.out);
                 }
             }

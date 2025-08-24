@@ -50,44 +50,50 @@ public class QCmdCreateDirectory extends AbstractQCmdSerialTask {
 
     @Override
     public String GetDoneMessage() {
-        return "Create directory " + (isSuccessful() ? "successful" : "failed") + " for " + dirname;
-    }
-
-    @Override
-    public QCmd Do(Connection connection) {
-        connection.setCurrentExecutingCommand(this);
-
-        int writeResult = connection.TransmitCreateDirectory(dirname, date);
-        if (writeResult != org.usb4java.LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "Create directory failed for " + dirname + ": USB write error.");
-            setCompletedWithStatus(false);
-            return this;
-        }
-
-        try {
-            if (!waitForCompletion()) { // 5-second timeout for MCU ACK
-                LOGGER.log(Level.SEVERE, "Create directory failed for " + dirname + ": Core did not acknowledge within timeout.");
-                setCompletedWithStatus(false);
-            }
-            else {
-                // Status code and completion flag are already set by processByte()
-                System.out.println(Instant.now() + " Create directory " + dirname + " completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
-            }
-        }
-        catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Create directory for " + dirname + " interrupted: {0}", e.getMessage());
-            setCompletedWithStatus(false);
-        }
-        catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An unexpected error occurred during directory creation for " + dirname + ": {0}", e.getMessage());
-            setCompletedWithStatus(false);
-        }
-        return this;
+        return "Done creating directory.";
     }
 
     @Override
     public boolean isSuccessful() {
         return commandSuccess && (mcuStatusCode == 0x00 || mcuStatusCode == 0x08);
+    }
+
+    @Override
+    public QCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
+        connection.setCurrentExecutingCommand(this);
+
+        int writeResult = connection.TransmitCreateDirectory(dirname, date);
+        if (writeResult != org.usb4java.LibUsb.SUCCESS) {
+            LOGGER.log(Level.SEVERE, "Create directory failed for " + dirname + ": USB write error.");
+            setCompletedWithStatus(1);
+            return this;
+        }
+
+        try {
+            if (!waitForCompletion()) {
+                LOGGER.log(Level.SEVERE, "Create directory command for " + dirname + " timed out.");
+                setCompletedWithStatus(1);
+                return this;
+            }
+            else if (!isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Failed to create directory " + dirname + ".");
+                setCompletedWithStatus(1);
+                return this;
+            }
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.log(Level.SEVERE, "Create directory command for " + dirname + " interrupted: " + e.getMessage());
+            setCompletedWithStatus(1);
+            return this;
+        }
+        catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error during create directory command for " + dirname + ": " + e.getMessage());
+            setCompletedWithStatus(1);
+            return this;
+        }
+        LOGGER.info(GetDoneMessage());
+        return this;
     }
 }

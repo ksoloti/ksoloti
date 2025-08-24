@@ -33,12 +33,6 @@ public class QCmdUpdatePreset extends AbstractQCmdSerialTask {
     }
 
     @Override
-    public QCmd Do(Connection connection) {
-        connection.TransmitUpdatedPreset(b);
-        return this;
-    }
-
-    @Override
     public String GetStartMessage() {
         return null;
     }
@@ -46,5 +40,12 @@ public class QCmdUpdatePreset extends AbstractQCmdSerialTask {
     @Override
     public String GetDoneMessage() {
         return null;
+    }
+
+    @Override
+    public QCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
+        connection.TransmitUpdatedPreset(b);
+        return this;
     }
 }

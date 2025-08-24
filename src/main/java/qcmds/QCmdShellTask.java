@@ -142,12 +142,8 @@ public abstract class QCmdShellTask implements QCmd {
     }
 
     public QCmd Do(QCmdProcessor shellProcessor) {
+        LOGGER.info(GetStartMessage());
         try {
-            String startMsg = GetStartMessage();
-            if (startMsg != null) {
-                LOGGER.log(Level.INFO, startMsg);
-            }
-
             Process p1;
             p1 = Runtime.getRuntime().exec(GetExec(), GetEnv(), GetWorkingDir());
 
@@ -160,38 +156,25 @@ public abstract class QCmdShellTask implements QCmd {
             thd_err.join();
             if (p1.exitValue() == 0) {
                 success = true;
-                String doneMsg = GetDoneMessage();
-                if (doneMsg != null) {
-                    LOGGER.log(Level.INFO, doneMsg);
-                }
+                LOGGER.info(GetDoneMessage());
                 return null;
             } else {
                 LOGGER.log(Level.SEVERE, "Shell task failed, exit value: {0}", p1.exitValue());
                 success = false;
-                String doneMsg = GetDoneMessage();
-                if (doneMsg != null) {
-                    LOGGER.log(Level.INFO, doneMsg);
-                }
+                LOGGER.info(GetDoneMessage());
                 return err();
             }
         } catch (InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "Shell task interrupted.", ex);
             success = false;
-            String doneMsg = GetDoneMessage();
-            if (doneMsg != null) {
-                LOGGER.log(Level.INFO, doneMsg);
-            }
+            LOGGER.info(GetDoneMessage());
             return err();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Shell task IO error.", ex);
             success = false;
-            String doneMsg = GetDoneMessage();
-            if (doneMsg != null) {
-                LOGGER.log(Level.INFO, doneMsg);
-            }
+            LOGGER.info(GetDoneMessage());
             return err();
         }
     }
-
     abstract QCmd err();
 }

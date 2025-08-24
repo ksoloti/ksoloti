@@ -18,12 +18,10 @@
  */
 package qcmds;
 
-import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import axoloti.Connection;
-import axoloti.sd.SDCardInfo;
 
 /**
  *
@@ -43,36 +41,42 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
 
     @Override
     public String GetDoneMessage() {
-        return "Receiving SD card file list " + (isSuccessful() ? "successful" : "failed");
+        return null;
+        // return "Receiving SD card file list " + (isSuccessful() ? "successful" : "failed");
     }
 
     @Override
     public QCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
         /* This method sends the Axol packet to the MCU. */
         int writeResult = connection.TransmitGetFileList();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Get file list failed: USB write error.");
-            setCompletedWithStatus(false);
+            setCompletedWithStatus(1);
             return this;
         }
 
         try {
             /* Wait for the final AxoRl response from the MCU */
-            if (!waitForCompletion(10000)) { // 10-second timeout
-                LOGGER.log(Level.SEVERE, "Get file list failed: Core did not acknowledge full listing within timeout (AxoRl).");
-                setCompletedWithStatus(false);
-            } else {
-                System.out.println(Instant.now() + " Get file list completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
+            if (!waitForCompletion()) {
+                LOGGER.log(Level.SEVERE, "Get file list command timed out.");
+                setCompletedWithStatus(1);
+                return this;
+            }
+            else if (!isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Failed to get file list.");
+                setCompletedWithStatus(1);
+                return this;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Get file list interrupted: {0}", e.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Get file list command interrupted: " + e.getMessage());
+            setCompletedWithStatus(1);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An unexpected error occurred during file list retrieval: {0}", e.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Error during get file list command: " + e.getMessage());
+            setCompletedWithStatus(1);
         }
         return this;
     }

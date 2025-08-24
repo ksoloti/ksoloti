@@ -1025,7 +1025,7 @@ public class PreferencesFrame extends JFrame {
                         LOGGER.log(Level.INFO, "Done resetting Libraries.\n");
                     });
                 } catch (Exception ex) {
-                    LOGGER.log(Level.SEVERE, "An error occurred during library reset: " + ex.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error during library reset: " + ex.getMessage());
                     ex.printStackTrace(System.out);
                 }
             }).start();

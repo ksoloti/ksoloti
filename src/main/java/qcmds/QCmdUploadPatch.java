@@ -46,9 +46,9 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
     private CountDownLatch appendMemWriteLatch;
     private CountDownLatch closeMemWriteLatch;
 
-    private volatile byte startMemWriteStatus = (byte)0xFF;
-    private volatile byte appendMemWriteStatus = (byte)0xFF;
-    private volatile byte closeMemWriteStatus = (byte)0xFF;
+    private volatile int startMemWriteStatus = 0xFF;
+    private volatile int appendMemWriteStatus = 0xFF;
+    private volatile int closeMemWriteStatus = 0xFF;
 
 
     File f;
@@ -80,21 +80,21 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
         return "Done uploading patch.\n";
     }
 
-    public void setStartMemWriteCompleted(byte statusCode) {
+    public void setStartMemWriteCompletedWithStatus(int statusCode) {
         this.startMemWriteStatus = statusCode;
         if (startMemWriteLatch != null) {
             startMemWriteLatch.countDown();
         }
     }
 
-    public void setAppendMemWriteCompleted(byte statusCode) {
+    public void setAppendMemWriteCompletedWithStatus(int statusCode) {
         this.appendMemWriteStatus = statusCode;
         if (appendMemWriteLatch != null) {
             appendMemWriteLatch.countDown();
         }
     }
 
-    public void setCloseMemWriteCompleted(byte statusCode) {
+    public void setCloseMemWriteCompletedWithStatus(int statusCode) {
         this.closeMemWriteStatus = statusCode;
         if (closeMemWriteLatch != null) {
             closeMemWriteLatch.countDown();
@@ -103,11 +103,12 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
-        this.startMemWriteStatus = (byte)0xFF;
-        this.appendMemWriteStatus = (byte)0xFF;
-        this.closeMemWriteStatus = (byte)0xFF;
+        this.startMemWriteStatus = 0xFF;
+        this.appendMemWriteStatus = 0xFF;
+        this.closeMemWriteStatus = 0xFF;
 
         try (FileInputStream inputStream = new FileInputStream(f)) {
             if (this.f == null) {
@@ -116,8 +117,8 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
             }
 
             if (!connection.isConnected()) {
-                LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": USB connection lost before transfer.");
-                setCompletedWithStatus(false);
+                LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": USB connection lost.");
+                setCompletedWithStatus(1);
                 return this;
             }
 
@@ -129,12 +130,12 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
 
             if (!startMemWriteLatch.await(5, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core did not acknowledge memory write within timeout.");
-                setCompletedWithStatus(false);
+                setCompletedWithStatus(1);
                 return this;
             }
             if (startMemWriteStatus != 0x00) {
                 LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": Core reported error (" + startMemWriteStatus + ") during file creation.");
-                setCompletedWithStatus(false);
+                setCompletedWithStatus(1);
                 return this;
             }
 
@@ -156,7 +157,7 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
 
                 if (nRead == -1) {
                     LOGGER.log(Level.SEVERE, "Unexpected end of file or read error for " + filename + ". Read " + nRead + " bytes. Chunk number " + chunkNum);
-                    setCompletedWithStatus(false);
+                    setCompletedWithStatus(1);
                     return this;
                 }
                 if (nRead != bytesToRead) {
@@ -167,8 +168,8 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
                 }
 
                 if (!connection.isConnected()) {
-                    LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": USB connection lost during file transfer. Chunk number " + chunkNum);
-                    setCompletedWithStatus(false);
+                    LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": USB connection lost.");
+                    setCompletedWithStatus(1);
                     return this;
                 }
 
@@ -177,12 +178,12 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
 
                 if (!appendMemWriteLatch.await(5, TimeUnit.SECONDS)) {
                     LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
-                    setCompletedWithStatus(false);
+                    setCompletedWithStatus(1);
                     return this;
                 }
                 if (appendMemWriteStatus != 0x00) {
                     LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(appendMemWriteStatus) + ") during chunk append. Chunk Number " + chunkNum);
-                    setCompletedWithStatus(false);
+                    setCompletedWithStatus(1);
                     return this;
                 }
 
@@ -251,8 +252,8 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
             } while (remLength > 0);
 
             if (!connection.isConnected()) {
-                LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": USB connection lost before write close.");
-                setCompletedWithStatus(false);
+                LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": USB connection lost.");
+                setCompletedWithStatus(1);
                 return this;
             }
 
@@ -261,32 +262,27 @@ public class QCmdUploadPatch extends AbstractQCmdSerialTask {
 
             if (!closeMemWriteLatch.await(5, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core did not acknowledge write close within timeout.");
-                setCompletedWithStatus(false);
+                setCompletedWithStatus(1);
                 return this;
             }
             if (closeMemWriteStatus != 0x00) {
                 LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core reported error (" + closeMemWriteStatus + ") during write close.");
-                setCompletedWithStatus(false);
+                setCompletedWithStatus(1);
                 return this;
             }
-
-            /* Overall command success */
-            LOGGER.log(Level.INFO, "Done uploading patch.\n");
-            setCompletedWithStatus(true);
-
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "File I/O error during upload for " + filename + ": {0}", ex.getMessage());
-            setCompletedWithStatus(false);
+            setCompletedWithStatus(1);
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Patch upload interrupted for " + filename + ": {0}", ex.getMessage());
-            setCompletedWithStatus(false);
+            setCompletedWithStatus(1);
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "An unexpected error occurred during patch upload for " + filename + ": {0}", ex.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Error during patch upload for " + filename + ": {0}", ex.getMessage());
+            setCompletedWithStatus(1);
         }
         finally {
             connection.setCurrentExecutingCommand(null);

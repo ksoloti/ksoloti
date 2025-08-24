@@ -40,8 +40,7 @@ public class QCmdBringToDFUMode extends AbstractQCmdSerialTask {
     public QCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
         connection.TransmitBringToDFU();
-        /* Does not expect a response */
-        setCompletedWithStatus(true);
+        setCompletedWithStatus(0); /* Does not expect a response */
         LOGGER.info(GetDoneMessage());
         return this;
     }

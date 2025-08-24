@@ -29,11 +29,10 @@ import axoloti.Connection;
 public interface QCmdSerialTask extends QCmd {
     public static final Logger LOGGER = Logger.getLogger(QCmdSerialTask.class.getName());
 
-    void setCompletedWithStatus(boolean success);
+    void setCompletedWithStatus(int statusCode);
     boolean waitForCompletion(long timeoutMs) throws InterruptedException;
     boolean waitForCompletion() throws InterruptedException;
     boolean isSuccessful();
-    void setMcuStatusCode(byte statusCode);
     char getExpectedAckCommandByte();
 
     QCmd Do(Connection connection);

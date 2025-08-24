@@ -36,9 +36,6 @@ public class QCmdPing extends AbstractQCmdSerialTask {
         return null;//"Done ping";
     }
 
-    public QCmdPing() {
-    }
-
     @Override
     public QCmd Do(Connection connection) {
         connection.TransmitPing();

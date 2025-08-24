@@ -102,7 +102,6 @@ public class QCmdProcessor implements Runnable {
                     }
                 }
                 catch (InterruptedException ex) {
-                    LOGGER.log(Level.SEVERE, "PeriodicPinger interrupted.", ex);
                     Thread.currentThread().interrupt();
                     break;
                 }
@@ -174,7 +173,6 @@ public class QCmdProcessor implements Runnable {
                     }
                 }
                 catch (InterruptedException ex) {
-                    LOGGER.log(Level.SEVERE, "PeriodicDialTransmitter interrupted.", ex);
                     Thread.currentThread().interrupt();
                     break;
                 }
@@ -227,7 +225,6 @@ public class QCmdProcessor implements Runnable {
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "QCmdProcessor.AppendToQueue interrupted.", e);
             return false;
         }
     }
@@ -252,7 +249,6 @@ public class QCmdProcessor implements Runnable {
                 }
                 catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
-                    LOGGER.log(Level.SEVERE, "WaitQueueFinished interrupted.", ex);
                     return;
                 }
             }
@@ -287,7 +283,7 @@ public class QCmdProcessor implements Runnable {
                     publish(cmd);
                 }
             } catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+                Thread.currentThread().interrupt();
             } finally {
                 synchronized (queueLock) {
                     queueLock.notifyAll();

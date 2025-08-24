@@ -37,7 +37,18 @@ public class QCmdMemRead extends AbstractQCmdSerialTask {
     }
 
     @Override
+    public String GetStartMessage() {
+        return null;
+    }
+
+    @Override
+    public String GetDoneMessage() {
+        return null;
+    }
+
+    @Override
     public QCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
         connection.TransmitMemoryRead(addr, length);
         return this;
@@ -49,15 +60,5 @@ public class QCmdMemRead extends AbstractQCmdSerialTask {
 
     public void setValuesRead(ByteBuffer values) {
         this.values = values.duplicate();
-    }
-
-    @Override
-    public String GetStartMessage() {
-        return null;
-    }
-
-    @Override
-    public String GetDoneMessage() {
-        return null;
     }
 }

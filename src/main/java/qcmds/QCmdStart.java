@@ -20,9 +20,7 @@ package qcmds;
 
 import axoloti.Connection;
 import axoloti.Patch;
-import axoloti.sd.SDCardInfo;
 
-import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,6 +50,7 @@ public class QCmdStart extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
         connection.setPatch(p);
@@ -59,7 +58,7 @@ public class QCmdStart extends AbstractQCmdSerialTask {
         int writeResult = connection.TransmitStart();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "QCmdStart: Failed to send TransmitStart: USB write error.");
-            setCompletedWithStatus(false);
+            setCompletedWithStatus(1);
             return this;
         }
 
@@ -68,27 +67,27 @@ public class QCmdStart extends AbstractQCmdSerialTask {
                 /* We won't get any "start patch" response from these commands
                    as they force an immediate reboot into Flasher/Mounter mode.
                    Hard-coded success here. So alpha. */
-                setCompletedWithStatus(true);
-                setMcuStatusCode((byte)0x00);
+                setCompletedWithStatus(0);
                 return this;
             }
-
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "QCmdStart: Core did not acknowledge within timeout.");
-                setCompletedWithStatus(false);
+                LOGGER.log(Level.SEVERE, "Start patch command for " + p.getPatchframe().getName() + " timed out.");
+                setCompletedWithStatus(1);
+                return this;
             }
-            else {
-                System.out.println(Instant.now() + " QCmdStart completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
+            else if (!isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Failed to start patch " + p.getPatchframe().getName() + ".");
+                return this;
             }
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "QCmdStart interrupted: {0}", e.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Patch start command interrupted: " + e.getMessage());
+            setCompletedWithStatus(1);
         }
         catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An unexpected error occurred during QCmdStart: {0}", e.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Error during patch start: " + e.getMessage());
+            setCompletedWithStatus(1);
         }
         return this;
     }

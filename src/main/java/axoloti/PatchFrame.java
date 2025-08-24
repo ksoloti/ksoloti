@@ -1436,7 +1436,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             LOGGER.log(Level.WARNING, "Paste: Unknown file format.");
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "An unexpected error occurred during the duplicate operation.", ex);
+            LOGGER.log(Level.SEVERE, "Error during duplicate action:" + ex.getMessage());
+            ex.printStackTrace(System.out);
         }
     }
 
@@ -1470,7 +1471,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             LOGGER.log(Level.WARNING, "Paste: Unknown file format.");
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "An unexpected error occurred during the duplicate operation.", ex);
+            LOGGER.log(Level.SEVERE, "Error during duplicate action: ", ex.getMessage());
+            ex.printStackTrace(System.out);
         }
     }
 

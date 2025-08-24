@@ -35,12 +35,6 @@ public class QCmdSerialDialTX extends AbstractQCmdSerialTask {
     }
 
     @Override
-    public QCmd Do(Connection connection) {
-        connection.writeBytes(data);
-        return this;
-    }
-
-    @Override
     public String GetStartMessage() {
         return null;
     }
@@ -48,5 +42,11 @@ public class QCmdSerialDialTX extends AbstractQCmdSerialTask {
     @Override
     public String GetDoneMessage() {
         return null;
+    }
+
+    @Override
+    public QCmd Do(Connection connection) {
+        connection.writeBytes(data);
+        return this;
     }
 }

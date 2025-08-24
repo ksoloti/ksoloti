@@ -19,9 +19,7 @@
 package qcmds;
 
 import axoloti.Connection;
-import axoloti.sd.SDCardInfo;
 
-import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,30 +50,34 @@ public class QCmdGetFileInfo extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
         int writeResult = connection.TransmitGetFileInfo(filename);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Get file info failed for " + filename + ": USB write error.");
-            setCompletedWithStatus(false);
+            setCompletedWithStatus(1);
             return this;
         }
 
         try {
-            // Wait for the AxoR response (after the Axof data has been sent)
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "Get file info failed for " + filename + ": Core did not acknowledge within timeout.");
-                setCompletedWithStatus(false);
-            } else {
-                System.out.println(Instant.now() + " Get file info for " + filename + " completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
+                LOGGER.log(Level.SEVERE, "Get file info command for " + filename + " timed out.");
+                setCompletedWithStatus(1);
+                return this;
+            }
+            else if (!isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Failed to get file info for " + filename + ".");
+                setCompletedWithStatus(1);
+                return this;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Get file info for " + filename + " interrupted: {0}", e.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Get file info command for " + filename + " interrupted: " + e.getMessage());
+            setCompletedWithStatus(1);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An unexpected error occurred during get file info for " + filename + ": {0}", e.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Error during get file info command for " + filename + ": " + e.getMessage());
+            setCompletedWithStatus(1);
         }
         return this;
     }

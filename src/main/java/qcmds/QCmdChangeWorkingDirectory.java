@@ -19,7 +19,6 @@
 package qcmds;
 
 import axoloti.Connection;
-import axoloti.sd.SDCardInfo;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,33 +50,37 @@ public class QCmdChangeWorkingDirectory extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
         int writeResult = connection.TransmitChangeWorkingDirectory(path);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Change directory failed for " + path + ": USB write error.");
-            setCompletedWithStatus(false);
+            setCompletedWithStatus(1);
             return this;
         }
 
         try {
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "Change directory failed for " + path + ": Core did not acknowledge within timeout.");
-                setCompletedWithStatus(false);
+                LOGGER.log(Level.SEVERE, "Change directory command for " + path + " timed out.");
+                setCompletedWithStatus(1);
+                return this;
             }
-            else {
-                LOGGER.log(Level.INFO, "Change directory " + path + " completed with status: " + SDCardInfo.getFatFsErrorString(getMcuStatusCode()));
+            else if (!isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Failed to change directory to " + path + ".");
+                return this;
             }
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Change directory for " + path + " interrupted: {0}", e.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Change directory command for " + path + " interrupted: " + e.getMessage());
+            setCompletedWithStatus(1);
         }
         catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An unexpected error occurred during change directory for " + path + ": {0}", e.getMessage());
-            setCompletedWithStatus(false);
+            LOGGER.log(Level.SEVERE, "Error during change directory command for " + path + ": " + e.getMessage());
+            setCompletedWithStatus(1);
         }
+        LOGGER.info(GetDoneMessage());
         return this;
     }
 }

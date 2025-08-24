@@ -227,7 +227,7 @@ public class PatchGUI extends Patch {
                     StringSelection s = new StringSelection(baos.toString());
                     clip.setContents(s, (ClipboardOwner) null);
                 } catch (Exception ex) {
-                    LOGGER.log(Level.SEVERE, "Error during export to clipboard: " + ex.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error during export to clipboard action: " + ex.getMessage());
                     ex.printStackTrace(System.out);
                 }
                 if (action == MOVE) {
@@ -252,7 +252,8 @@ public class PatchGUI extends Patch {
                 } catch (UnsupportedFlavorException ex) {
                     LOGGER.log(Level.WARNING, "Paste: Unknown file format.");
                 } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, "Error during paste: " + ex.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error during paste action: " + ex.getMessage());
+                    ex.printStackTrace(System.out);
                 }
                 return true;
             }
@@ -925,7 +926,7 @@ public class PatchGUI extends Patch {
             LOGGER.log(Level.INFO, "Paste: Clipboard does not contain valid content.");
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "An unexpected error occurred during the paste operation: " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during paste action: " + ex.getMessage());
             ex.printStackTrace(System.out);
         }
     }

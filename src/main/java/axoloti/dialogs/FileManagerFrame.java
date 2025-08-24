@@ -198,7 +198,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                     System.out.println(Instant.now() + " Drag and drop uploading " + f.getName());
 
                                     if (!USBBulkConnection.getInstance().isConnected()) {
-                                        LOGGER.log(Level.SEVERE, "Upload aborted: USB connection lost during transfer.");
+                                        LOGGER.log(Level.SEVERE, "Upload aborted: USB connection lost .");
                                         break; /* Exit the loop for remaining files */
                                     }
 
