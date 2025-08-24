@@ -1738,15 +1738,14 @@ public class USBBulkConnection extends Connection {
                             }
                         }
                         /* Handling for other commands that expect an AxoR for their completion */
-                        else {
-                        // else if (currentExecutingCommand instanceof QCmdStart ||
-                        //          currentExecutingCommand instanceof QCmdStop ||
-                        //          currentExecutingCommand instanceof QCmdChangeWorkingDirectory ||
-                        //          currentExecutingCommand instanceof QCmdCreateDirectory ||
-                        //          currentExecutingCommand instanceof QCmdGetFileList ||
-                        //          currentExecutingCommand instanceof QCmdCopyPatchToFlash ||
-                        //          currentExecutingCommand instanceof QCmdDeleteFile ||
-                        //          currentExecutingCommand instanceof QCmdGetFileInfo) {
+                        else if (currentExecutingCommand instanceof QCmdStart ||
+                                 currentExecutingCommand instanceof QCmdStop ||
+                                 currentExecutingCommand instanceof QCmdChangeWorkingDirectory ||
+                                 currentExecutingCommand instanceof QCmdCreateDirectory ||
+                                 currentExecutingCommand instanceof QCmdGetFileList ||
+                                 currentExecutingCommand instanceof QCmdCopyPatchToFlash ||
+                                 currentExecutingCommand instanceof QCmdDeleteFile ||
+                                 currentExecutingCommand instanceof QCmdGetFileInfo) {
 
                             /* Any commands with no explicitly set command byte ('\0') will fall through */
                             if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) {
