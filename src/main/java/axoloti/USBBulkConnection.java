@@ -604,37 +604,38 @@ public class USBBulkConnection extends Connection {
             }
 
             /* Perform USB resource cleanup (only after threads are confirmed stopped or timed out) */
-            if (handle != null) {
-                try {
-                    // System.out.println(Instant.now() + " [DEBUG] Attempting to reset USB device using active handle.");
+            synchronized (usbOutLock) {
+                if (handle != null) {
+                    try {
 
-                    /* Calling resetDevice is a bit "risky" but so far has been improving stability a lot
-                       especially during repeated disconnects and re-connects. */
-                    int resetResult = LibUsb.resetDevice(handle);
-                    if (resetResult != LibUsb.SUCCESS) {
-                        System.err.println(Instant.now() + " [ERROR] Disconnect: Error resetting device: " + LibUsb.strError(resetResult) + " (Code: " + resetResult + ")");
+                        /* Calling resetDevice is a bit "risky" but so far has been improving stability a lot
+                        especially during repeated disconnects and re-connects. */
+                        int resetResult = LibUsb.resetDevice(handle);
+                        if (resetResult != LibUsb.SUCCESS) {
+                            System.err.println(Instant.now() + " [ERROR] Disconnect: Error resetting device: " + LibUsb.strError(resetResult) + " (Code: " + resetResult + ")");
+                        }
                     }
-                }
-                catch (LibUsbException resetEx) {
-                    System.err.println(Instant.now() + " [ERROR] Disconnect: LibUsbException during device reset: " + resetEx.getMessage());
-                }
+                    catch (LibUsbException resetEx) {
+                        System.err.println(Instant.now() + " [ERROR] Disconnect: LibUsbException during device reset: " + resetEx.getMessage());
+                    }
 
-                try {
-                    LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
-                }
-                catch (LibUsbException releaseEx) {
-                    System.err.println(Instant.now() + " [ERROR] Disconnect: Error releasing interface (may be normal after reset): " + releaseEx.getMessage());
-                }
+                    try {
+                        LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
+                    }
+                    catch (LibUsbException releaseEx) {
+                        System.err.println(Instant.now() + " [ERROR] Disconnect: Error releasing interface (may be normal after reset): " + releaseEx.getMessage());
+                    }
 
-                try {
-                    LibUsb.close(handle);
-                    handle = null; /* Null immediately to prevent race conditions */
-                }
-                catch (LibUsbException closeEx) {
-                    System.err.println(Instant.now() + " [ERROR] Disconnect: Error closing handle (may be normal after reset): " + closeEx.getMessage());
-                }
-                finally {
-                    handle = null; /* Should already be null but just to be sure */
+                    try {
+                        LibUsb.close(handle);
+                        handle = null; /* Null immediately to prevent race conditions */
+                    }
+                    catch (LibUsbException closeEx) {
+                        System.err.println(Instant.now() + " [ERROR] Disconnect: Error closing handle (may be normal after reset): " + closeEx.getMessage());
+                    }
+                    finally {
+                        handle = null; /* Should already be null but just to be sure */
+                    }
                 }
             }
         }
