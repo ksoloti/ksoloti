@@ -45,7 +45,6 @@ public class QCmdMemRead1Word extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this); 
         connection.TransmitMemoryRead1Word(addr);
         return this;

@@ -80,7 +80,6 @@ public class QCmdChangeWorkingDirectory extends AbstractQCmdSerialTask {
             LOGGER.log(Level.SEVERE, "Error during change directory command for " + path + ": " + e.getMessage());
             setCompletedWithStatus(1);
         }
-        LOGGER.info(GetDoneMessage());
         return this;
     }
 }

@@ -50,9 +50,7 @@ public class QCmdStart extends AbstractQCmdSerialTask {
 
     @Override
     public QCmd Do(Connection connection) {
-        LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
-
         connection.setPatch(p);
 
         int writeResult = connection.TransmitStart();
