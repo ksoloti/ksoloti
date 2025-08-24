@@ -122,16 +122,19 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
             if (inputStream == null) {
                 if (!file.exists()) {
                     LOGGER.log(Level.WARNING, "File does not exist: " + filename + "\n");
+                    new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
                     return this;
                 }
                 if (file.isDirectory()) {
                     LOGGER.log(Level.WARNING, "Cannot upload directories: " + filename + "\n");
+                    new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
                     return this;
                 }
                 if (!file.canRead()) {
                     LOGGER.log(Level.WARNING, "Cannot read file: " + filename + "\n");
+                    new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
                     return this;
                 }
@@ -156,6 +159,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
             if (!connection.isConnected()) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost.");
+                new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 setCompletedWithStatus(1);
                 return this;
             }
@@ -165,11 +169,13 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
             if (!createFileLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge file creation within timeout.");
+                new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 setCompletedWithStatus(1);
                 return this;
             }
             if (createFileStatus != 0x00) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(createFileStatus) + ") during file creation.");
+                new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 setCompletedWithStatus(1);
                 return this;
             }
@@ -192,6 +198,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
                 if (nRead == -1) {
                     LOGGER.log(Level.SEVERE, "Unexpected end of file or read error for " + filename + ". Read " + nRead + " bytes. Chunk number " + chunkNum);
+                    new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
                     return this;
                 }
@@ -204,6 +211,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
                 if (!connection.isConnected()) {
                     LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost.");
+                    new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
                     return this;
                 }
@@ -213,11 +221,13 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
                 if (!appendFileLatch.await(3, TimeUnit.SECONDS)) {
                     LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
+                    new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
                     return this;
                 }
                 if (appendFileStatus != 0x00) {
                     LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(appendFileStatus) + ") during chunk append. Chunk number " + chunkNum);
+                    new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
                     return this;
                 }
@@ -287,6 +297,7 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
             if (!connection.isConnected()) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost.");
+                new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 setCompletedWithStatus(1);
                 return this;
             }
@@ -296,11 +307,13 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
 
             if (!closeFileLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge file close within timeout.");
+                new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 setCompletedWithStatus(1);
                 return this;
             }
             if (closeFileStatus != 0x00) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(closeFileStatus) + ") during file close.");
+                new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 setCompletedWithStatus(1);
                 return this;
             }
@@ -311,15 +324,18 @@ public class QCmdUploadFile extends AbstractQCmdSerialTask {
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "File I/O error during upload for " + filename + ": " + ex.getMessage());
+            new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
             setCompletedWithStatus(1);
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Upload interrupted for " + filename + ": " + ex.getMessage());
+            new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
             setCompletedWithStatus(1);
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error during upload for " + filename + ": " + ex.getMessage());
+            new QCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
             setCompletedWithStatus(1);
         }
         finally {
