@@ -856,7 +856,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             protected Boolean doInBackground() throws Exception {
                 try {
                     QCmdUploadFWSDRam uploadFwCmd = new QCmdUploadFWSDRam(p);
-                    LOGGER.log(Level.INFO, uploadFwCmd.GetStartMessage());
                     // QCmdProcessor.getInstance().AppendToQueue(uploadFwCmd);
                     uploadFwCmd.Do(USBBulkConnection.getInstance());
                     if (!uploadFwCmd.waitForCompletion()) {
@@ -867,7 +866,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         LOGGER.log(Level.SEVERE, "Failed to upload firmware to SDRAM.");
                         return false;
                     }
-                    LOGGER.log(Level.INFO, uploadFwCmd.GetDoneMessage());
 
                     QCmdUploadPatch uploadPatchCmd = new QCmdUploadPatch(f);
                     // QCmdProcessor.getInstance().AppendToQueue(uploadPatchCmd);
@@ -1699,10 +1697,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
             try {
                 QCmdStartMounter startMounterCmd = new QCmdStartMounter();
-                // LOGGER.log(Level.INFO, startMounterCmd.GetStartMessage());
                 // QCmdProcessor.getInstance().AppendToQueue(startMounterCmd);
                 startMounterCmd.Do(USBBulkConnection.getInstance());
-                // LOGGER.log(Level.WARNING, startMounterCmd.GetDoneMessage());
                 /* Do not waitForCompletion or check isSuccessful here 
                    because MCU will have rebooted automatically by now,
                    which counts as success */

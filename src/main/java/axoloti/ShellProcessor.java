@@ -43,7 +43,6 @@ public class ShellProcessor extends SwingWorker<Integer, String> {
     }
 
     public boolean AppendToQueue(QCmdShellTask cmd) {
-        // LOGGER.log(Level.INFO, "ShellProcessor queue: "+ cmd.GetStartMessage());
         try {
             boolean added = queueShellTasks.offer(cmd, 100, TimeUnit.MILLISECONDS);
             if (!added) {
@@ -68,7 +67,6 @@ public class ShellProcessor extends SwingWorker<Integer, String> {
                 qc = queueShellTasks.poll(5, TimeUnit.SECONDS);
                 if (qc != null) {
                     // TODO Not doing anything with the poll result here... why?
-                    // LOGGER.log(Level.INFO, "ShellProcessor: "+ qc.GetStartMessage());
                 }
             }
             catch (InterruptedException ex) {
