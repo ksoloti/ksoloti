@@ -208,8 +208,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                     }
 
                                     QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, f.getName());
-                                    // QCmdProcessor.getInstance().AppendToQueue(uploadFileCmd);
-                                    uploadFileCmd.Do(USBBulkConnection.getInstance());
+                                    uploadFileCmd.Do();
                                     if (!uploadFileCmd.waitForCompletion()) {
                                         LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
                                         continue; /* Skip to next file */
@@ -609,8 +608,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
             try {
                 QCmdDeleteFile deleteDirCmd = new QCmdDeleteFile(pathForFatFsDelete);
-                // QCmdProcessor.getInstance().AppendToQueue(deleteDirCmd);
-                deleteDirCmd.Do(USBBulkConnection.getInstance());
+                deleteDirCmd.Do();
                 if (!deleteDirCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Delete file command timed out: " + sdCardPath);
                     return false;
@@ -637,8 +635,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
             try {
                 QCmdDeleteFile deleteFileCmd = new QCmdDeleteFile(pathForFatFsDelete);
-                // QCmdProcessor.getInstance().AppendToQueue(deleteFileCmd);
-                deleteFileCmd.Do(USBBulkConnection.getInstance());
+                deleteFileCmd.Do();
                 if (!deleteFileCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Delete file command timed out: " + sdCardPath);
                     return false;
@@ -710,8 +707,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 try {
                     System.out.println(Instant.now() + " Sending QCmdGetFileList()...");
                     QCmdGetFileList getFileListCmd = new QCmdGetFileList();
-                    // QCmdProcessor.getInstance().AppendToQueue(getFileListCmd);
-                    getFileListCmd.Do(USBBulkConnection.getInstance());
+                    getFileListCmd.Do();
                     if (!getFileListCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Get file list command timed out.");
                         return null;
@@ -820,8 +816,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                 }
                                 try {
                                     QCmdUploadFile uploadFileCmd = new QCmdUploadFile(file, targetDirectory + file.getName());
-                                    // QCmdProcessor.getInstance().AppendToQueue(uploadFileCmd);
-                                    uploadFileCmd.Do(USBBulkConnection.getInstance());
+                                    uploadFileCmd.Do();
                                     if (!uploadFileCmd.waitForCompletion()) {
                                         LOGGER.log(Level.SEVERE, "File upload command for " + file.getName() + " timed out.");
                                         failedCount++;
@@ -1015,8 +1010,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             Calendar cal = Calendar.getInstance();
             try {
                 QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(dir + fn, cal);
-                // QCmdProcessor.getInstance().AppendToQueue(createDirCmd);
-                createDirCmd.Do(USBBulkConnection.getInstance());
+                createDirCmd.Do();
                 if (!createDirCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Create directory command timed out.");
                     return;
