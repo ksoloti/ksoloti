@@ -377,7 +377,7 @@ public class USBBulkConnection extends Connection {
     public boolean AppendToQueue(SCmd cmd) {
         try {
             boolean added = queueSerialTask.offer(cmd, 100, TimeUnit.MILLISECONDS);
-            if (!added) {
+            if (!added && !(cmd instanceof SCmdPing)) {
                 LOGGER.log(Level.WARNING, "USB command queue full. Command not sent: " + cmd.getClass().getSimpleName());
             }
             return added;
