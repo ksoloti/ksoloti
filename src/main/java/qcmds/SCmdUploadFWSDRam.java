@@ -133,17 +133,17 @@ public class SCmdUploadFWSDRam extends AbstractSCmd {
             }
 
             if (!f.exists()) {
-                LOGGER.log(Level.SEVERE, "Firmware file does not exist: {0}", f.getAbsolutePath());
+                LOGGER.log(Level.SEVERE, "Firmware file does not exist: " + f.getAbsolutePath());
                 setCompletedWithStatus(1);
                 return this;
             }
             if (!f.canRead()) {
-                LOGGER.log(Level.SEVERE, "Cannot read firmware file: {0}", f.getAbsolutePath());
+                LOGGER.log(Level.SEVERE, "Cannot read firmware file: " + f.getAbsolutePath());
                 setCompletedWithStatus(1);
                 return this;
             }
 
-            LOGGER.log(Level.INFO, "Firmware file path: {0}", f.getAbsolutePath());
+            LOGGER.log(Level.INFO, "Firmware file path: " + f.getAbsolutePath());
             originalFirmwareSize = f.length(); /* Store original file size */
             inputStream = new FileInputStream(f);
 
@@ -151,7 +151,7 @@ public class SCmdUploadFWSDRam extends AbstractSCmd {
             byte[] fullFirmwareData = new byte[(int) originalFirmwareSize];
             int nReadFull = inputStream.read(fullFirmwareData, 0, (int) originalFirmwareSize);
             if (nReadFull != originalFirmwareSize) {
-                LOGGER.log(Level.SEVERE, "Failed to read entire firmware file for CRC calculation. Expected {0} bytes, read {1}.", new Object[]{originalFirmwareSize, nReadFull});
+                LOGGER.log(Level.SEVERE, "Failed to read firmware file for CRC calculation. Expected {0} bytes, read {1}.", new Object[]{originalFirmwareSize, nReadFull});
                 setCompletedWithStatus(1);
                 return this;
             }
@@ -161,7 +161,7 @@ public class SCmdUploadFWSDRam extends AbstractSCmd {
             CRC32 zcrc = new CRC32();
             zcrc.update(fullFirmwareData);
             int zcrcv = (int) zcrc.getValue();
-            LOGGER.log(Level.INFO, "Firmware CRC: {0}", Integer.toHexString(zcrcv).toUpperCase());
+            LOGGER.log(Level.INFO, "Firmware CRC: " + Integer.toHexString(zcrcv).toUpperCase());
 
             /* --- Create the 'flascopy' header with length and CRC --- */
             byte[] flascopyHeader = new byte[16];
@@ -183,7 +183,7 @@ public class SCmdUploadFWSDRam extends AbstractSCmd {
             flascopyHeader[15] = (byte) (zcrcv >> 24);
 
             totalBytesToTransfer = originalFirmwareSize + flascopyHeader.length;
-            LOGGER.log(Level.INFO, "Total bytes to transfer (including header): {0}", totalBytesToTransfer);
+            LOGGER.log(Level.INFO, "Total bytes to transfer (including header): " + totalBytesToTransfer);
 
             /* --- Step 1: Start Memory Write (AxoWW) --- */
             if (!connection.isConnected()) {
@@ -362,7 +362,7 @@ public class SCmdUploadFWSDRam extends AbstractSCmd {
                             MainFrame.jTextPaneLog.setCaretPosition(doc.getLength());
                         }
                         catch (Exception ex) {
-                            LOGGER.log(Level.SEVERE, "Unexpected exception in progress update: {0}", ex.getMessage());
+                            LOGGER.log(Level.SEVERE, "Error during progress update: " + ex.getMessage());
                         }
                     });
                 }
@@ -391,7 +391,7 @@ public class SCmdUploadFWSDRam extends AbstractSCmd {
             }
         }
         catch (FileNotFoundException ex) {
-            LOGGER.log(Level.SEVERE, "Firmware file not found: {0}", ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Firmware file not found: " + ex.getMessage());
             setCompletedWithStatus(1);
         }
         catch (IOException ex) {

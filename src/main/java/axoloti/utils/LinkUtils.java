@@ -33,7 +33,7 @@ public final class LinkUtils {
                     if (browserCommand != null) {
                         rt.exec(new String[]{browserCommand, urlString});
                     } else {
-                        LOGGER.log(Level.WARNING, "Hyperlink: No suitable browser command found on Linux to open: {0}", urlString);
+                        LOGGER.log(Level.WARNING, "Hyperlink: No suitable browser command found on Linux to open: " + urlString);
                     }
                 }
             }
@@ -46,7 +46,7 @@ public final class LinkUtils {
                 rt.exec(new String[]{"cmd", "/c", "start", urlString.replace("&", "^&")}); /* & needs escaping on Windows? */
             }
             else {
-                LOGGER.log(Level.WARNING, "Hyperlink: Unsupported operating system for direct link opening: {0}", os);
+                LOGGER.log(Level.WARNING, "Hyperlink: Unsupported operating system for direct link opening: " + os);
             }
         }
         catch (IOException e) {

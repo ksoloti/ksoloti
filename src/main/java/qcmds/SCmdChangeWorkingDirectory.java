@@ -45,7 +45,6 @@ public class SCmdChangeWorkingDirectory extends AbstractSCmd {
     @Override
     public String GetDoneMessage() {
         return null;
-        // return "Change directory " + (isSuccessful() ? "successful" : "failed") + " for " + path;
     }
 
     @Override
@@ -55,7 +54,7 @@ public class SCmdChangeWorkingDirectory extends AbstractSCmd {
 
         int writeResult = connection.TransmitChangeWorkingDirectory(path);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "Change directory failed for " + path + ": USB write error.");
+            LOGGER.log(Level.SEVERE, "Failed to send change directory command for " + path + ": USB write error.");
             setCompletedWithStatus(1);
             return this;
         }

@@ -52,7 +52,7 @@ public class SCmdCopyPatchToFlash extends AbstractSCmd {
 
         int writeResult = connection.TransmitCopyToFlash();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "Failed to send TransmitCopyToFlash: USB write error.");
+            LOGGER.log(Level.SEVERE, "Failed to send copy to Flash command: USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
@@ -64,7 +64,6 @@ public class SCmdCopyPatchToFlash extends AbstractSCmd {
                 return this;
             } else if (!isSuccessful()) {
                 LOGGER.log(Level.SEVERE, "Failed to copy patch to Flash.");
-                setCompletedWithStatus(1);
                 return this;
             }
         } catch (InterruptedException e) {

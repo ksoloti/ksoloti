@@ -79,13 +79,13 @@ public class AxoObjects {
                 // try object file
                 ArrayList<AxoObjectAbstract> set = new ArrayList<AxoObjectAbstract>();
                 String fnameA = bfname + ".axo";
-                LOGGER.log(Level.FINE, "Attempt to create object from object file: {0}", fnameA);
+                LOGGER.log(Level.FINE, "Attempt to create object from object file: " + fnameA);
                 File f = new File(fnameA);
                 if (f.isFile()) {
                     boolean loadOK = false;
                     AxoObjectFile of = null;
                     try {
-                        LOGGER.log(Level.FINE, "Hit: {0}", fnameA);
+                        LOGGER.log(Level.FINE, "Hit: " + fnameA);
                         of = serializer.read(AxoObjectFile.class, f);
                         loadOK = true;
                     } catch (Exception ex) {
@@ -105,7 +105,7 @@ public class AxoObjects {
                             o.sObjFilePath = fnameA;
                             // to be completed : loading overloaded objects too
                             o.createdFromRelativePath = true;
-                            LOGGER.log(Level.INFO, "Loaded: {0}", fnameA);
+                            LOGGER.log(Level.INFO, "Loaded: " + fnameA);
                             set.add(o);
                             return set;
                         }
@@ -116,16 +116,16 @@ public class AxoObjects {
                 // try subpatch file
                 ArrayList<AxoObjectAbstract> set = new ArrayList<AxoObjectAbstract>();
                 String fnameP = bfname + ".axs";
-                LOGGER.log(Level.FINE, "Attempt to create object from subpatch file in patch directory: {0}", fnameP);
+                LOGGER.log(Level.FINE, "Attempt to create object from subpatch file in patch directory: " + fnameP);
                 File f = new File(fnameP);
                 if (f.isFile()) {
-                    LOGGER.log(Level.FINE, "Hit: {0}", fnameP);
+                    LOGGER.log(Level.FINE, "Hit: " + fnameP);
                     AxoObjectAbstract o = new AxoObjectFromPatch(f);
                     if (n.startsWith("./") || n.startsWith("../")) {
                         o.createdFromRelativePath = true;
                     }
                     o.sObjFilePath = f.getPath();
-                    LOGGER.log(Level.INFO, "Subpatch loaded: {0}", fnameP);
+                    LOGGER.log(Level.INFO, "Subpatch loaded: " + fnameP);
                     set.add(o);
                     return set;
                 }
@@ -142,12 +142,12 @@ public class AxoObjects {
             String spath[] = Preferences.getInstance().getObjectSearchPath();
             for (String s : spath) {
                 String fsname = s + "/" + n + ".axs";
-                LOGGER.log(Level.FINE, "Attempt to create object from subpatch file: {0}", fsname);
+                LOGGER.log(Level.FINE, "Attempt to create object from subpatch file: " + fsname);
                 File fs = new File(fsname);
                 if (fs.isFile()) {
                     AxoObjectAbstract o = new AxoObjectFromPatch(fs);
                     o.sObjFilePath = n + ".axs";
-                    LOGGER.log(Level.INFO, "Subpatch loaded: {0}", fsname);
+                    LOGGER.log(Level.INFO, "Subpatch loaded: " + fsname);
                     set.add(o);
                     return set;
                 }
@@ -359,7 +359,7 @@ public class AxoObjects {
                 String spath[] = Preferences.getInstance().getObjectSearchPath();
                 if (spath != null) {
                     for (String path : spath) {
-                        LOGGER.log(Level.INFO, "Object path: {0}", path);
+                        LOGGER.log(Level.INFO, "Object path: " + path);
                         LoadAxoObjects(path);
                     }
                 }

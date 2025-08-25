@@ -56,13 +56,13 @@ public class SCmdDeleteFile extends AbstractSCmd {
         connection.setCurrentExecutingCommand(this);
 
         if (!connection.isConnected()) {
-            LOGGER.log(Level.SEVERE, "Failed to delete file " + filename + ": USB connection lost.");
+            LOGGER.log(Level.SEVERE, "Failed to send delete file command for " + filename + ": USB connection lost.");
             return this;
         }
 
         int writeResult = connection.TransmitDeleteFile(filename);
         if (writeResult != LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "Failed to delete file " + filename + ": USB write error.");
+            LOGGER.log(Level.SEVERE, "Failed to send delete file command for " + filename + ": USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
@@ -95,13 +95,14 @@ public class SCmdDeleteFile extends AbstractSCmd {
         connection.setCurrentExecutingCommand(this);
 
         if (!connection.isConnected()) {
-            System.out.println(Instant.now() + " Failed to delete file " + filename + ": USB connection lost.");
+            System.out.println(Instant.now() + " Failed to send delete file command for " + filename + ": USB connection lost.");
+            setCompletedWithStatus(1);
             return this;
         }
 
         int writeResult = connection.TransmitDeleteFile(filename);
         if (writeResult != LibUsb.SUCCESS) {
-            System.out.println(Instant.now() + " Failed to delete file " + filename + ": USB write error.");
+            System.out.println(Instant.now() + " Failed to send delete file command for " + filename + ": USB write error.");
             setCompletedWithStatus(1);
             return this;
         }

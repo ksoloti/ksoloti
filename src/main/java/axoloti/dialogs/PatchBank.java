@@ -1002,7 +1002,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         class Thd extends Thread {
             public void run() {
                 for (File f : files) {
-                    LOGGER.log(Level.INFO, "Compiling and uploading: {0}", f.getName());
+                    LOGGER.log(Level.INFO, "Compiling and uploading: " + f.getName());
                     UploadOneFile(f);
                 }
                 LOGGER.log(Level.INFO, "Done uploading patches in patchbank.");
@@ -1036,7 +1036,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                     // LOGGER.log(Level.INFO, "Done uploading Patchbank index.");
 
                     for (File f : files) {
-                        LOGGER.log(Level.INFO, "Compiling and uploading: {0}", f.getName());
+                        LOGGER.log(Level.INFO, "Compiling and uploading: " + f.getName());
                         UploadOneFile(f);
                     }
                     LOGGER.log(Level.INFO, "Done uploading index and patches.");
