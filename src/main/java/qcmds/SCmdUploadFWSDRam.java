@@ -393,19 +393,23 @@ public class SCmdUploadFWSDRam extends AbstractSCmd {
         catch (FileNotFoundException ex) {
             LOGGER.log(Level.SEVERE, "Firmware file not found: " + ex.getMessage());
             setCompletedWithStatus(1);
+            return this;
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "File I/O error during firmware upload to SDRAM: " + ex.getMessage());
             setCompletedWithStatus(1);
+            return this;
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM interrupted: " + ex.getMessage());
             setCompletedWithStatus(1);
+            return this;
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error during firmware upload to SDRAM: " + ex.getMessage());
             setCompletedWithStatus(1);
+            return this;
         }
         finally {
             connection.setCurrentExecutingCommand(null);
@@ -418,6 +422,7 @@ public class SCmdUploadFWSDRam extends AbstractSCmd {
                 }
             }
         }
+        LOGGER.info(GetDoneMessage());
         return this;
     }
 }

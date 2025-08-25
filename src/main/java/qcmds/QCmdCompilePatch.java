@@ -55,7 +55,7 @@ public class QCmdCompilePatch extends QCmdShellTask {
         if (success) {
             return "Done compiling patch.\n";
         } else {
-            return "Patch compilation failed: " + p.getFileNamePath() + "\n";
+            return "Patch compilation failed for: " + p.getFileNamePath() + "\n";
         }
     }
     

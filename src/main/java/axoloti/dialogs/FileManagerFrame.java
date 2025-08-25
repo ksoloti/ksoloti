@@ -616,11 +616,9 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     LOGGER.log(Level.SEVERE, "Failed to delete empty directory: " + sdCardPath);
                     return false;
                 }
-                else {
-                    SDCardInfo.getInstance().Delete(sdCardPath);
-                    System.out.println(Instant.now() + " Successfully deleted directory: " + sdCardPath);
-                    return true;
-                }
+
+                SDCardInfo.getInstance().Delete(sdCardPath);
+                return true;
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Thread interrupted while deleting directory: " + e.getMessage());
                 e.printStackTrace(System.out);
@@ -643,11 +641,10 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     LOGGER.log(Level.SEVERE, "Failed to delete file: " + sdCardPath);
                     return false;
                 }
-                else {
-                    SDCardInfo.getInstance().Delete(sdCardPath);
-                    LOGGER.log(Level.INFO, "Done deleting file.\n");
-                    return true;
-                }
+
+                SDCardInfo.getInstance().Delete(sdCardPath);
+                LOGGER.log(Level.INFO, "Done deleting file.\n");
+                return true;
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Thread interrupted while deleting directory: " + e.getMessage());
                 e.printStackTrace(System.out);
@@ -715,7 +712,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         LOGGER.log(Level.SEVERE, "Failed to get file list.");
                         return null;
                     }
-                    System.out.println(Instant.now() + " File list refresh command completed. SwingWorker's background task finishing.");
                 }
                 catch (Exception e) {
                     CommandManager.getInstance().endLongOperation();

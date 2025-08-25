@@ -28,7 +28,7 @@ public class SCmdGetSpilinkSynced extends AbstractSCmd {
     
     @Override
     public String GetStartMessage() {
-        return "Checking device's SPILink configuration...";
+        return "Getting device's SPILink configuration...";
     }
 
     @Override

@@ -1692,7 +1692,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 SCmdStartMounter startMounterCmd = new SCmdStartMounter();
                 LOGGER.log(Level.INFO, startMounterCmd.GetStartMessage());
                 startMounterCmd.Do();
-                LOGGER.log(Level.INFO, startMounterCmd.GetDoneMessage());
+                LOGGER.log(Level.WARNING, startMounterCmd.GetDoneMessage());
                 /* Do not waitForCompletion or check isSuccessful here 
                    because MCU will have rebooted automatically by now,
                    which counts as success */
@@ -1829,8 +1829,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 else if (!stopCmd.isSuccessful()) {
                     LOGGER.log(Level.SEVERE, "Failed to stop patch.");
                     return;
-                } else {
-                    System.out.println(Instant.now() + " Patch stopped.");
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Failed to send stop command to Core for previous patch: " + this.currentLivePatch.getFileNamePath() + ", " + e.getMessage());
@@ -1854,8 +1852,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 else if (!startCmd.isSuccessful()) {
                     LOGGER.log(Level.SEVERE, "Failed to start patch: " + this.currentLivePatch.getFileNamePath());
                     return;
-                } else {
-                    System.out.println(Instant.now() + " Patch started: " + this.currentLivePatch.getFileNamePath());
                 }
 
                 this.currentLivePatch.Lock(); /* GUI-side lock */

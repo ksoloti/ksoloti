@@ -20,7 +20,6 @@ package qcmds;
 
 import axoloti.Axoloti;
 import axoloti.Connection;
-import axoloti.MainFrame;
 import axoloti.sd.SDCardInfo;
 
 import java.io.File;
@@ -31,8 +30,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.SwingUtilities;
-import javax.swing.text.Document;
 
 /**
  *
@@ -140,10 +137,10 @@ public class SCmdUploadPatch extends AbstractSCmd {
             }
 
             int MaxBlockSize = 32768;
-            long totalBytesSent = 0;
-            int remLength = tlength;
-            long pct = 0;
             int chunkNum = 0;
+            int remLength = tlength;
+            // long totalBytesSent = 0;
+            // long pct = 0;
 
             do {
                 chunkNum++;
@@ -187,7 +184,6 @@ public class SCmdUploadPatch extends AbstractSCmd {
                     return this;
                 }
 
-                totalBytesSent += nRead;
                 remLength -= nRead;
 
                 // long newpct = (100 * totalBytesSent) / tlength;
