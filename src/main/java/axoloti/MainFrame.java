@@ -1442,8 +1442,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             patch1.WriteCode(true); // generate code as own path/filename .cpp
             Thread.sleep(200); 
 
-            setCurrentLivePatch(null);
-
             File binFile = patch1.getBinFile();
             if (binFile.exists()) {
                 /* Delete previous .bin to ensure waitForBinFile() below won't trigger false positive */
@@ -1458,6 +1456,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 /* If a Core is connected and test patch .bin could be created:
                 stop patch, upload test patch .bin to RAM, start patch, report status */
                 if (USBBulkConnection.getInstance().isConnected()) {
+                    setCurrentLivePatch(null);
                     CommandManager.getInstance().startLongOperation();
                     SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch1.getBinFile());
                     uploadCmd.Do();
