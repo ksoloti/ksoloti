@@ -156,8 +156,13 @@ static const USBDescriptor vendorDescriptor = {
 
 /* Product descriptor */
 static const uint8_t productDescriptorData[] = {
-    USB_DESC_BYTE(22),
+    USB_DESC_BYTE(40),
     USB_DESC_BYTE(USB_DESCRIPTOR_STRING),
+#if defined(BOARD_KSOLOTI_CORE)
+    'K', 0, 's', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0, ' ', 0,
+#elif defined(BOARD_AXOLOTI_CORE)
+    'A', 0, 'x', 0, 'o', 0, 'l', 0, 'o', 0, 't', 0, 'i', 0, ' ', 0,
+#endif
     'C', 0, 'a', 0, 'r', 0, 'd', 0, 'r', 0, 'e', 0, 'a', 0, 'd', 0, 'e', 0, 'r', 0
 };
 
