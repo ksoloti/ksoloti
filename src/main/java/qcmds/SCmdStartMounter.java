@@ -18,14 +18,24 @@
  */
 package qcmds;
 
+import axoloti.Connection;
+
 /**
  *
  * @author Johannes Taelman
  */
 public class SCmdStartMounter extends SCmdStart {
 
+    private boolean useInbuiltMounter;
+
     public SCmdStartMounter() {
         super(null);
+        this.useInbuiltMounter = false;
+    }
+
+    public SCmdStartMounter(boolean useInbuiltMounter) {
+        super(null);
+        this.useInbuiltMounter = useInbuiltMounter;
     }
 
     @Override
@@ -37,4 +47,13 @@ public class SCmdStartMounter extends SCmdStart {
     public String GetDoneMessage() {
         return "Unmount/eject the SD card in your OS file manager to re-enable Patcher connection.\n";
     }
+
+    @Override
+    public SCmd Do(Connection connection) {
+        if(this.useInbuiltMounter) {
+            connection.TransmitStartMounter();
+        }
+        return this;
+    }
+
 }

@@ -1,3 +1,4 @@
+
 /**
  * Copyright (C) 2013 - 2016 Johannes Taelman
  * Edited 2023 - 2024 by Ksoloti
@@ -78,6 +79,7 @@ public abstract class Connection {
     abstract public int TransmitGetFWVersion();
     abstract public int TransmitGetSpilinkSynced();
     abstract public int TransmitBringToDFU();
+    abstract public int TransmitStartMounter();        
     
     abstract public boolean AppendToQueue(SCmd cmd);
     abstract public void ClearSync();

@@ -75,17 +75,6 @@
             "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
         },
         {
-            "name": "Testbed Mounter attach",
-            "cwd": "${workspaceRoot}",
-            "executable": "./firmware/mounter/mounter_build/ksoloti_mounter.elf",
-            "request": "attach",
-            "type": "cortex-debug",
-            "servertype": "stlink",
-            "device": "STM32F429ZG",
-            "interface": "swd",
-            "svdFile": "./debug/STM32F429.svd",
-        },
-        {
             "name": "Axoloti launch",
             "cwd": "${workspaceRoot}",
             "executable": "./firmware/build/axoloti.elf",

@@ -282,7 +282,10 @@ CSRC = ${FIRMWARE}/exceptions.c \
   ${FIRMWARE}/watchdog.c \
   ${FIRMWARE}/sysmon.c \
   ${FIRMWARE}/axoloti_memory.c \
-  ${FIRMWARE}/analyser.c
+  ${FIRMWARE}/analyser.c \
+  ${FIRMWARE}/boot_options.c \
+  ${FIRMWARE}/mounter.c \
+  ${FIRMWARE}/mass_storage/usb_msd.c 
 
 #optional modules
 ifneq (,$(findstring BRAIDS,$(AXO_OPT_MODULES)))
@@ -522,5 +525,3 @@ ULIBS = -lm
 # include $(RULESPATH)/rules.mk
 
 include ./rules.mk
-
-

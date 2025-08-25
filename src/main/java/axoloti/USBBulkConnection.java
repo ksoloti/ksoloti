@@ -134,6 +134,7 @@ public class USBBulkConnection extends Connection {
     private final static byte[] Axou_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('u')};
     private final static byte[] Axow_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('w')};
     private final static byte[] Axoy_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('y')};
+    private final static byte[] Axom_pckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('m')};
 
     private final static short bulkVID = (short) 0x16C0;
     private final static short bulkPIDAxoloti = (short) 0x0442;
@@ -1114,6 +1115,16 @@ public class USBBulkConnection extends Connection {
          */
         ByteBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoF_pckt);
+        return writeBytes(buffer);
+    }
+
+    @Override
+    public int TransmitStartMounter() {
+        /* Total size (bytes):
+           "Axom"           (4)
+         */
+        ByteBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(Axom_pckt);
         return writeBytes(buffer);
     }
 

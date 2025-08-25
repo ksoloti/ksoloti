@@ -53,8 +53,6 @@
 // If you want more concurrent messages you can set this larger.
 #define LOG_BUFFER_SIZE (256)
 
-void BootLoaderInit(void);
-
 static uint32_t fwid;
 static uint8_t AckPending = 0;
 static uint8_t connected = 0;
@@ -178,7 +176,7 @@ void LogTextMessage(const char* format, ...) {
     if ((usbGetDriverStateI(BDU1.config->usbp) == USB_ACTIVE) && (connected)) {
         if(chMtxTryLock(&LogMutex)) {
             MemoryStream ms;
-            uint8_t      tmp[256-5]; // nead AxoT and null
+            uint8_t      tmp[256-5]; /* nead AxoL and null */
 
             msObjectInit(&ms, (uint8_t*) tmp, 256-5, 0); 
 
@@ -743,6 +741,14 @@ void PExReceiveByte(unsigned char c) {
                         state = 0; header = 0;
                         uint8_t res = StopPatch();
                         send_AxoResult('S', res);
+                        break;
+                    }
+                    case 'm': { /* start internal Mounter */
+                        state = 0; header = 0;
+                        uint8_t res = StopPatch();
+                        if (res == FR_OK) {
+                            StartMounter();
+                        }
                         break;
                     }
                     default:

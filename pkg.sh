@@ -62,7 +62,6 @@ remove_temp_files()
     rm -rf ./firmware/.settings
     rm -rf ./firmware/build/*oloti
     rm -rf ./firmware/flasher/flasher_build/*oloti_flasher
-    rm -rf ./firmware/mounter/mounter_build/*oloti_mounter
 
     rm     ./firmware/build/*.dmp
     rm     ./firmware/build/*.hex

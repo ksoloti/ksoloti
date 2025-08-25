@@ -90,7 +90,6 @@ remove_temp_files() {
     rm -rf "${APP_ROOT_DIR}"/bin/firmware/.settings
     rm -rf "${APP_ROOT_DIR}"/bin/firmware/build/*oloti
     rm -rf "${APP_ROOT_DIR}"/bin/firmware/flasher/flasher_build/*oloti_flasher
-    rm -rf "${APP_ROOT_DIR}"/bin/firmware/mounter/mounter_build/*oloti_mounter
             
     rm     "${APP_ROOT_DIR}"/bin/firmware/build/*.dmp
     rm     "${APP_ROOT_DIR}"/bin/firmware/build/*.hex

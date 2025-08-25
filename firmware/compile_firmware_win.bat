@@ -15,15 +15,13 @@ if %argCount% leq 2 (
 	set BUILD_USBAUDIO=1 
 	set BUILD_SPILINK=1 
 	set BUILD_FLASHER=1 
-	set BUILD_MOUNTER=1
 	set BUILD_I2SCODEC=1
 ) else (
 	set BUILD_NORMAL=%2
 	set BUILD_USBAUDIO=%3 
 	set BUILD_SPILINK=%4 
 	set BUILD_FLASHER=%5 
-	set BUILD_MOUNTER=%6
-	set BUILD_I2SCODEC=%7
+	set BUILD_I2SCODEC=%6
 )
 
 cd %axoloti_firmware%
@@ -36,7 +34,6 @@ if %1==BOARD_KSOLOTI_CORE (
 )
 
 set FLASHER_PROJECT=%NAME%_flasher
-set MOUNTER_PROJECT=%NAME%_mounter
 
 if %BUILD_FLASHER%==1 (
     cd flasher
@@ -50,21 +47,6 @@ if %BUILD_FLASHER%==1 (
 		exit /b 1
 	)
     copy /y flasher_build\%FLASHER_PROJECT%\%FLASHER_PROJECT%.* flasher_build 1>NUL
-    cd ..
-)
-
-if %BUILD_MOUNTER%==1 (
-    cd mounter    
-    echo. & echo Compiling %MOUNTER_PROJECT%
-    set BUILDDIR=mounter_build\%MOUNTER_PROJECT%
-    if not exist mounter_build\%MOUNTER_PROJECT%\.dep mkdir mounter_build\%MOUNTER_PROJECT%\.dep
-    if not exist mounter_build\%MOUNTER_PROJECT%\lst  mkdir mounter_build\%MOUNTER_PROJECT%\lst
-    if not exist mounter_build\%MOUNTER_PROJECT%\obj  mkdir mounter_build\%MOUNTER_PROJECT%\obj
-	make -j8 BOARDDEF=%1
-	if %ERRORLEVEL% neq 0 (
-		exit /b 1
-	)
-    copy /y mounter_build\%MOUNTER_PROJECT%\%MOUNTER_PROJECT%.* mounter_build 1>NUL
     cd ..
 )
 

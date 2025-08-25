@@ -1,4 +1,23 @@
-#include "usb_msd.h"
+/*
+ * Copyright (C) 2013, 2014, 2015 Johannes Taelman
+ * Edited 2023 - 2024 by AndyCap, Ksoloti
+ *
+ * This file is part of Axoloti.
+ *
+ * Axoloti is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * Axoloti is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Axoloti. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "mass_storage/usb_msd.h"
 #include "ch.h"
 #include "hal.h"
 #include <stdio.h>
@@ -26,6 +45,8 @@
 
 /* endpoint index */
 #define USB_MS_DATA_EP 1
+
+extern void inttohex(uint32_t v, unsigned char *p);
 
 /* USB device descriptor */
 static const uint8_t deviceDescriptorData[] = {
@@ -146,16 +167,40 @@ static const USBDescriptor productDescriptor = {
 };
 
 /* Serial number descriptor */
-static const uint8_t serialNumberDescriptorData[] = {
-    USB_DESC_BYTE(26),
-    USB_DESC_BYTE(USB_DESCRIPTOR_STRING),
-    '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '1', 0
-};
+// static const uint8_t serialNumberDescriptorData[] = {
+//     USB_DESC_BYTE(26),
+//     USB_DESC_BYTE(USB_DESCRIPTOR_STRING),
+//     '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '1', 0
+// };
+
+static uint8_t serialNumberDescriptorData[] = {
+    USB_DESC_BYTE(52),                    /* bLength.                         */
+    USB_DESC_BYTE(USB_DESCRIPTOR_STRING), /* bDescriptorType.                 */
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+  #if defined(BOARD_KSOLOTI_CORE)
+    'K', 0, '0', 0, '0', 0, '0', 0,
+  #else
+    'A', 0, '0', 0, '0', 0, '0', 0,
+  #endif
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+    '0', 0, '0', 0, '0', 0, '0', 0,
+  };
+  
+  
 
 static const USBDescriptor serialNumberDescriptor = {
     sizeof(serialNumberDescriptorData),
     serialNumberDescriptorData
 };
+
 
 /* Handles GET_DESCRIPTOR requests from the USB host */
 static const USBDescriptor *getDescriptor(USBDriver *usbp, uint8_t type, uint8_t index, uint16_t lang) {
@@ -175,11 +220,14 @@ static const USBDescriptor *getDescriptor(USBDriver *usbp, uint8_t type, uint8_t
                     return &vendorDescriptor;
                 case 2:
                     return &productDescriptor;
-                case 3:
+                case 3: {
+                    inttohex(*((uint32_t*)0x1FFF7A10),&serialNumberDescriptorData[2]);
+                    inttohex(*((uint32_t*)0x1FFF7A14),&serialNumberDescriptorData[2+16]);
+                    inttohex(*((uint32_t*)0x1FFF7A18),&serialNumberDescriptorData[2+32]);
                     return &serialNumberDescriptor;
+                }
             }
     }
-
     return 0;
 }
 
@@ -241,14 +289,7 @@ static const USBMassStorageConfig msdConfig = {
     "0.1"
 };
 
-int main(void) {
-    /* system & hardware initialization */
-
-    // volatile bool hello = true;
-    // while (hello);
-
-    halInit();
-
+int mounter(void) {
     /* float usb inputs, hope the host notices detach... */
     palSetPadMode(GPIOA, 11, PAL_MODE_INPUT);
     palSetPadMode(GPIOA, 12, PAL_MODE_INPUT);
@@ -274,9 +315,7 @@ int main(void) {
 
     /* initialize the SD card */
     sdcStart(&SDCD1, NULL);
-    chThdSleepMilliseconds(10);
     sdcConnect(&SDCD1);
-    chThdSleepMilliseconds(50);
 
     FATFS SDC_FS;
     FRESULT err;
@@ -319,7 +358,6 @@ int main(void) {
 
     /* initialize the USB mass storage driver */
     msdInit(&UMSD1);
-    chThdSleepMilliseconds(10);
 
     /* turn off green LED, turn on red LED */
     palClearPad(LED1_PORT, LED1_PIN);

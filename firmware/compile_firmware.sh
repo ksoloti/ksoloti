@@ -50,15 +50,13 @@ if [ "$#" -eq 1 ]; then
   BUILD_USBAUDIO=1 
   BUILD_SPILINK=1 
   BUILD_FLASHER=1 
-  BUILD_MOUNTER=1
   BUILD_I2SCODEC=1
 else
   BUILD_NORMAL=$2
   BUILD_USBAUDIO=$3 
   BUILD_SPILINK=$4 
   BUILD_FLASHER=$5 
-  BUILD_MOUNTER=$6
-  BUILD_I2SCODEC=$7
+  BUILD_I2SCODEC=$6
 fi
 
 cd "${axoloti_firmware}"
@@ -72,7 +70,6 @@ fi
 fi
 
 FLASHER_PROJECT="$NAME"_flasher
-MOUNTER_PROJECT="$NAME"_mounter
 
 if [ $BUILD_FLASHER -eq 1 ]; then
     printf "\nCompiling $FLASHER_PROJECT\n"
@@ -85,20 +82,6 @@ if [ $BUILD_FLASHER -eq 1 ]; then
         exit 1
     fi
     cp $BUILDDIR/$FLASHER_PROJECT.* flasher_build/
-    cd ..
-fi
-
-if [ $BUILD_MOUNTER -eq 1 ]; then
-    printf "\nCompiling $MOUNTER_PROJECT\n"
-    cd mounter
-    export BUILDDIR=mounter_build/$MOUNTER_PROJECT
-    mkdir -p $BUILDDIR/.dep
-    mkdir -p $BUILDDIR/lst
-    mkdir -p $BUILDDIR/obj
-    if ! make -j8 BOARDDEF=$1; then
-        exit 1
-    fi
-    cp $BUILDDIR/$MOUNTER_PROJECT.* mounter_build/
     cd ..
 fi
 
