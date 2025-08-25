@@ -41,7 +41,7 @@ public class QCmdCompilePatch extends QCmdShellTask {
 
     @Override
     public String GetStartMessage() {
-        String pname = p.getFileNamePath();
+        String pname = p.getCppFile().getAbsolutePath();
         int i = pname.lastIndexOf(File.separatorChar);
         if (i < 0) {
             return "Compiling patch...";

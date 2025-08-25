@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013, 2014 Johannes Taelman
+ * Copyright (C) 2013 - 2016 Johannes Taelman
  * Edited 2023 - 2024 by Ksoloti
  *
  * This file is part of Axoloti.
@@ -18,65 +18,80 @@
  */
 package qcmds;
 
+import axoloti.Connection;
+
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import axoloti.Connection;
 
 /**
  *
  * @author Johannes Taelman
  */
-public class QCmdStop extends AbstractQCmdSerialTask {
+public class SCmdCreateDirectory extends AbstractSCmd {
 
-    private static final Logger LOGGER = Logger.getLogger(QCmdStop.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SCmdCreateDirectory.class.getName());
 
-    public QCmdStop() {
-        this.expectedAckCommandByte = 'S';
+    private String dirname;
+    private Calendar date;
+
+    public SCmdCreateDirectory(String dirname, Calendar date) {
+        this.dirname = dirname;
+        this.date = date;
+        this.expectedAckCommandByte = 'k'; // Expecting AxoRk
     }
-    
+
     @Override
     public String GetStartMessage() {
-        return "Stopping patch...";
+        return "Creating directory on SD card... " + dirname;
     }
 
     @Override
     public String GetDoneMessage() {
-        return null;
+        return "Done creating directory.\n";
     }
 
     @Override
-    public QCmd Do(Connection connection) {
+    public boolean isSuccessful() {
+        return mcuStatusCode == 0x00 || mcuStatusCode == 0x08;
+    }
+
+    @Override
+    public SCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
-        int writeResult = connection.TransmitStop();
+        int writeResult = connection.TransmitCreateDirectory(dirname, date);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "QCmdStop: Failed to send TransmitStop: USB write error.");
+            LOGGER.log(Level.SEVERE, "Create directory failed for " + dirname + ": USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
 
         try {
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "Stop patch command timed out.");
+                LOGGER.log(Level.SEVERE, "Create directory command for " + dirname + " timed out.");
                 setCompletedWithStatus(1);
                 return this;
             }
             else if (!isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "Failed to stop patch.");
+                LOGGER.log(Level.SEVERE, "Failed to create directory " + dirname + ".");
+                setCompletedWithStatus(1);
                 return this;
             }
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Stop patch command interrupted: {0}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Create directory command for " + dirname + " interrupted: " + e.getMessage());
             setCompletedWithStatus(1);
+            return this;
         }
         catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error during patch stop: {0}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during create directory command for " + dirname + ": " + e.getMessage());
             setCompletedWithStatus(1);
+            return this;
         }
+        LOGGER.info(GetDoneMessage());
         return this;
     }
 }

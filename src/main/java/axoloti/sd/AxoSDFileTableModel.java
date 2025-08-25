@@ -1,7 +1,6 @@
 package axoloti.sd;
 
 import java.text.DateFormat;
-import java.text.DecimalFormatSymbols;
 // import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,8 +10,6 @@ import java.util.Locale;
 import javax.swing.table.AbstractTableModel;
 
 public class AxoSDFileTableModel extends AbstractTableModel {
-
-    private static char decimalSeparator = new DecimalFormatSymbols(Locale.getDefault(Locale.Category.FORMAT)).getDecimalSeparator();
 
     private final String[] columnNames = {"Name", "Type", "Size", "Modified"};
     private List<DisplayTreeNode> data;

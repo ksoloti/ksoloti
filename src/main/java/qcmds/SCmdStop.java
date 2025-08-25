@@ -18,26 +18,23 @@
  */
 package qcmds;
 
-import axoloti.Connection;
-import axoloti.Patch;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import axoloti.Connection;
 
 /**
  *
  * @author Johannes Taelman
  */
-public class QCmdStart extends AbstractQCmdSerialTask {
-    
-    private static final Logger LOGGER = Logger.getLogger(QCmdStart.class.getName());
-    Patch p;
+public class SCmdStop extends AbstractSCmd {
 
-    public QCmdStart(Patch p) {
-        this.p = p;
-        this.expectedAckCommandByte = 's';
+    private static final Logger LOGGER = Logger.getLogger(SCmdStop.class.getName());
+
+    public SCmdStop() {
+        this.expectedAckCommandByte = 'S';
     }
-
+    
     @Override
     public String GetStartMessage() {
         return null;
@@ -49,42 +46,34 @@ public class QCmdStart extends AbstractQCmdSerialTask {
     }
 
     @Override
-    public QCmd Do(Connection connection) {
+    public SCmd Do(Connection connection) {
         connection.setCurrentExecutingCommand(this);
-        connection.setPatch(p);
 
-        int writeResult = connection.TransmitStart();
+        int writeResult = connection.TransmitStop();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "QCmdStart: Failed to send TransmitStart: USB write error.");
+            LOGGER.log(Level.SEVERE, "Failed to send stop patch command: USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
 
         try {
-            if (this instanceof QCmdStartFlasher || this instanceof QCmdStartMounter) {
-                /* We won't get any "start patch" response from these commands
-                   as they force an immediate reboot into Flasher/Mounter mode.
-                   Hard-coded success here. So alpha. */
-                setCompletedWithStatus(0);
-                return this;
-            }
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "Start patch command for " + p.getPatchframe().getName() + " timed out.");
+                LOGGER.log(Level.SEVERE, "Stop patch command timed out.");
                 setCompletedWithStatus(1);
                 return this;
             }
             else if (!isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "Failed to start patch " + p.getPatchframe().getName() + ".");
+                LOGGER.log(Level.SEVERE, "Failed to stop patch.");
                 return this;
             }
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Patch start command interrupted: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Stop patch command interrupted: " + e.getMessage());
             setCompletedWithStatus(1);
         }
         catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error during patch start: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during patch stop: " + e.getMessage());
             setCompletedWithStatus(1);
         }
         return this;

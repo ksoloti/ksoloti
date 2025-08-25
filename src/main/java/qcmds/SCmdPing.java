@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013 - 2016 Johannes Taelman
+ * Copyright (C) 2013, 2014, 2015 Johannes Taelman
  * Edited 2023 - 2024 by Ksoloti
  *
  * This file is part of Axoloti.
@@ -18,23 +18,28 @@
  */
 package qcmds;
 
+import axoloti.Connection;
+
 /**
  *
  * @author Johannes Taelman
  */
-public class QCmdStartMounter extends QCmdStart {
-
-    public QCmdStartMounter() {
-        super(null);
-    }
+public class SCmdPing extends AbstractSCmd {
 
     @Override
     public String GetStartMessage() {
-        return "Mounting SD card...";
+        return null;//"Start ping";
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Unmount/eject the SD card in your OS file manager to re-enable Patcher connection.\n";
+        return null;//"Done ping";
+    }
+
+    @Override
+    public SCmd Do(Connection connection) {
+        connection.ClearSync();
+        connection.TransmitPing();
+        return this;
     }
 }

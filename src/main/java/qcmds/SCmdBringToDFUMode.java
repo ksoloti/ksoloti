@@ -18,35 +18,30 @@
  */
 package qcmds;
 
-import java.nio.ByteBuffer;
-
 import axoloti.Connection;
 
 /**
  *
  * @author Johannes Taelman
  */
-public class QCmdSerialDialTX extends AbstractQCmdSerialTask {
-
-    final ByteBuffer data;
-
-    public QCmdSerialDialTX(ByteBuffer data) {
-        this.data = data;
-    }
+public class SCmdBringToDFUMode extends AbstractSCmd {
 
     @Override
     public String GetStartMessage() {
-        return null;
+        return "Enabling Rescue Mode...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return null;
+        return "Done enabling Rescue Mode. Connection will now break and firmware can be flashed with DFU.\n";
     }
 
     @Override
-    public QCmd Do(Connection connection) {
-        connection.writeBytes(data);
+    public SCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
+        connection.TransmitBringToDFU();
+        setCompletedWithStatus(0); /* Does not expect a response */
+        LOGGER.info(GetDoneMessage());
         return this;
     }
 }

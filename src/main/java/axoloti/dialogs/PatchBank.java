@@ -74,8 +74,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import qcmds.QCmdProcessor;
-import qcmds.QCmdUploadFile;
+import qcmds.SCmdUploadFile;
 
 /**
  *
@@ -850,7 +849,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         LOGGER.log(Level.INFO, "Uploading Patchbank index...");
         if (USBBulkConnection.getInstance().isConnected()) {
             try {
-                QCmdUploadFile uploadFileCmd = new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
+                SCmdUploadFile uploadFileCmd = new SCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
                 uploadFileCmd.Do();
                 if (!uploadFileCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "File upload command for Patchbank index timed out.");
@@ -1021,7 +1020,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 if (USBBulkConnection.getInstance().isConnected()) {
                     LOGGER.log(Level.INFO, "Uploading Patchbank index...");
                     try {
-                        QCmdUploadFile uploadFileCmd = new QCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
+                        SCmdUploadFile uploadFileCmd = new SCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
                         uploadFileCmd.Do();
                         if (!uploadFileCmd.waitForCompletion()) {
                             LOGGER.log(Level.SEVERE, "File upload command for Patchbank index timed out.");

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013, 2014, 2015 Johannes Taelman
+ * Copyright (C) 2013 - 2016 Johannes Taelman
  * Edited 2023 - 2024 by Ksoloti
  *
  * This file is part of Axoloti.
@@ -18,66 +18,68 @@
  */
 package qcmds;
 
+import axoloti.Connection;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import axoloti.Connection;
-
 /**
  *
- * @author jtaelman
+ * @author Johannes Taelman
  */
-public class QCmdCopyPatchToFlash extends AbstractQCmdSerialTask {
+public class SCmdChangeWorkingDirectory extends AbstractSCmd {
+    private static final Logger LOGGER = Logger.getLogger(SCmdChangeWorkingDirectory.class.getName());
 
-    private static final Logger LOGGER = Logger.getLogger(QCmdCopyPatchToFlash.class.getName());
+    private String path;
 
-    public QCmdCopyPatchToFlash() {
-        this.expectedAckCommandByte = 'F';
+    public SCmdChangeWorkingDirectory(String path) {
+        this.path = path;
+        this.expectedAckCommandByte = 'h';
     }
 
     @Override
     public String GetStartMessage() {
-        return "Writing patch to flash...";
+        return "Changing working directory to: " + path;
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Done writing patch to flash.\n";
+        return null;
+        // return "Change directory " + (isSuccessful() ? "successful" : "failed") + " for " + path;
     }
 
     @Override
-    public QCmd Do(Connection connection) {
+    public SCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
-        int writeResult = connection.TransmitCopyToFlash();
+        int writeResult = connection.TransmitChangeWorkingDirectory(path);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "Failed to send TransmitCopyToFlash: USB write error.");
+            LOGGER.log(Level.SEVERE, "Change directory failed for " + path + ": USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
 
         try {
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "Copy patch to Flash command timed out.");
-                setCompletedWithStatus(1);
-                return this;
-            } else if (!isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "Failed to copy patch to Flash.");
+                LOGGER.log(Level.SEVERE, "Change directory command for " + path + " timed out.");
                 setCompletedWithStatus(1);
                 return this;
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Copy patch to Flash command interrupted: " + e.getMessage());
-            setCompletedWithStatus(1);
-            return this;
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error during copy patch to Flash command: " + e.getMessage());
-            setCompletedWithStatus(1);
-            return this;
+            else if (!isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Failed to change directory to " + path + ".");
+                return this;
+            }
         }
-        LOGGER.info(GetDoneMessage());
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.log(Level.SEVERE, "Change directory command for " + path + " interrupted: " + e.getMessage());
+            setCompletedWithStatus(1);
+        }
+        catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error during change directory command for " + path + ": " + e.getMessage());
+            setCompletedWithStatus(1);
+        }
         return this;
     }
 }

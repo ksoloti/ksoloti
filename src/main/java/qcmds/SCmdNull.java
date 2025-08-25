@@ -24,29 +24,20 @@ import axoloti.Connection;
  *
  * @author Johannes Taelman
  */
-public class QCmdRecallPreset extends AbstractQCmdSerialTask {
-
-    int presetNo;
-
-    public QCmdRecallPreset(int presetNo) {
-        this.presetNo = presetNo;
-    }
+public class SCmdNull extends AbstractSCmd {
 
     @Override
     public String GetStartMessage() {
-        return null;
-        // return "Recalling preset " + presetNo + "...";
+        return "Starting QCmdSerialTaskNull...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return null;
-//        return "Done recalling preset";
+        return "Done QCmdSerialTaskNull.\n";
     }
 
     @Override
-    public QCmd Do(Connection connection) {
-        connection.TransmitRecallPreset(presetNo);
+    public SCmd Do(Connection connection) {
         return this;
     }
 }

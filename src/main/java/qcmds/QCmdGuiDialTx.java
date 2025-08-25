@@ -50,7 +50,7 @@ public class QCmdGuiDialTx implements QCmdGUITask {
                 for (ParameterInstance p : this.patch.getParameterInstances()) {
                     if (p.GetNeedsTransmit()) {
                         if (processor.hasQueueSpaceLeft()) {
-                            processor.AppendToQueue(new QCmdSerialDialTX(p.TransmitParamData()));
+                            processor.AppendToQueue(new SCmdSerialDialTX(p.TransmitParamData()));
                         } else {
                             break;
                         }
@@ -68,7 +68,7 @@ public class QCmdGuiDialTx implements QCmdGUITask {
                             pb[p++] = (byte) (pi[j] >> 24);
                         }
                     }
-                    processor.AppendToQueue(new QCmdUpdatePreset(pb));
+                    processor.AppendToQueue(new SCmdUpdatePreset(pb));
                     this.patch.presetUpdatePending = false;
                 }
             }

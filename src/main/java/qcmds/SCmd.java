@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013, 2014, 2015 Johannes Taelman
+ * Copyright (C) 2013, 2014 Johannes Taelman
  * Edited 2023 - 2024 by Ksoloti
  *
  * This file is part of Axoloti.
@@ -18,27 +18,23 @@
  */
 package qcmds;
 
+import java.util.logging.Logger;
+
 import axoloti.Connection;
 
 /**
  *
  * @author Johannes Taelman
  */
-public class QCmdPing extends AbstractQCmdSerialTask {
+public interface SCmd extends QCmd { /* Used to be QCmdSerialTask */
+    public static final Logger LOGGER = Logger.getLogger(SCmd.class.getName());
 
-    @Override
-    public String GetStartMessage() {
-        return null;//"Start ping";
-    }
+    void setCompletedWithStatus(int statusCode);
+    boolean waitForCompletion(long timeoutMs) throws InterruptedException;
+    boolean waitForCompletion() throws InterruptedException;
+    boolean isSuccessful();
+    char getExpectedAckCommandByte();
 
-    @Override
-    public String GetDoneMessage() {
-        return null;//"Done ping";
-    }
-
-    @Override
-    public QCmd Do(Connection connection) {
-        connection.TransmitPing();
-        return this;
-    }
+    SCmd Do(Connection connection);
+    SCmd Do();
 }

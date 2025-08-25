@@ -90,11 +90,11 @@ import org.simpleframework.xml.strategy.Strategy;
 import org.simpleframework.xml.stream.Format;
 
 import qcmds.QCmdCompilePatch;
-import qcmds.QCmdCreateDirectory;
-import qcmds.QCmdGetFileList;
+import qcmds.SCmdCreateDirectory;
+import qcmds.SCmdGetFileList;
 import qcmds.QCmdProcessor;
-import qcmds.QCmdRecallPreset;
-import qcmds.QCmdUploadFile;
+import qcmds.SCmdRecallPreset;
+import qcmds.SCmdUploadFile;
 
 /**
  *
@@ -273,7 +273,7 @@ public class Patch {
 
         /* Get current latest file list from SD to compare to */
         try {
-            QCmdGetFileList getFileListCmd = new QCmdGetFileList();
+            SCmdGetFileList getFileListCmd = new SCmdGetFileList();
             getFileListCmd.Do();
             if (!getFileListCmd.waitForCompletion()) {
                 LOGGER.log(Level.SEVERE, "Get file list command timed out.");
@@ -317,7 +317,7 @@ public class Patch {
                     if (SDCardInfo.getInstance().find(currentPath) == null) {
                         LOGGER.log(Level.INFO, "Creating directory: {0}", currentPath);
                         try {
-                            QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(currentPath, Calendar.getInstance());
+                            SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(currentPath, Calendar.getInstance());
                             createDirCmd.Do();
                             if (!createDirCmd.waitForCompletion()) {
                                 LOGGER.log(Level.SEVERE, "Create directory command timed out.");
@@ -370,7 +370,7 @@ public class Patch {
                 // }
                 
                 try {
-                    QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, targetfn);
+                    SCmdUploadFile uploadFileCmd = new SCmdUploadFile(f, targetfn);
                     uploadFileCmd.Do();
                     if (!uploadFileCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
@@ -2778,15 +2778,24 @@ public class Patch {
     }
 
     public void WriteCode(boolean use_buildfilenames) {
-        LOGGER.log(Level.INFO, "Generating code...");
+
+        String pname = getCppFile().getAbsolutePath();
+        int i = pname.lastIndexOf(File.separatorChar);
+        if (i < 0) {
+            LOGGER.log(Level.INFO, "Generating code...");
+        }
+        else {
+            pname = pname.substring(i+1, pname.length());
+            LOGGER.log(Level.INFO, "Generating code... " + pname);
+        }
 
         String c = GenerateCode3();
 
         File f = getCppFile();
         if (!f.getParentFile().exists()) {
             if (!f.getParentFile().mkdirs()) {
-                LOGGER.log(Level.SEVERE, "Batch test: Failed to create subfolder structure.");
-                return; // Exit if directory creation fails
+                LOGGER.log(Level.SEVERE, "Failed to create temporary patch folder structure.");
+                return;
             }
         }
 
@@ -2803,7 +2812,7 @@ public class Patch {
             LOGGER.log(Level.SEVERE, "File error: " + ex.getMessage());
             ex.printStackTrace(System.out);
         }
-        // LOGGER.log(Level.INFO, "Done generating code.\n");
+        LOGGER.log(Level.INFO, "Done generating code.\n");
     }
 
     public void WriteCode() {
@@ -2952,7 +2961,7 @@ public class Patch {
     }
 
     public void RecallPreset(int i) {
-        QCmdProcessor.getInstance().AppendToQueue(new QCmdRecallPreset(i));
+        QCmdProcessor.getInstance().AppendToQueue(new SCmdRecallPreset(i));
     }
 
     /**
@@ -3116,7 +3125,7 @@ public class Patch {
             if (sdfilename.charAt(i) == '/') {
                 Calendar cal = Calendar.getInstance();
                 try {
-                    QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(sdfilename.substring(0, i), cal);
+                    SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(sdfilename.substring(0, i), cal);
                     createDirCmd.Do();
                     if (!createDirCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Create directory command timed out.");
@@ -3150,7 +3159,7 @@ public class Patch {
 
         if (getBinFile().exists()) {
             try {
-                QCmdUploadFile uploadFileCmd = new QCmdUploadFile(getBinFile(), sdfilename, cal);
+                SCmdUploadFile uploadFileCmd = new SCmdUploadFile(getBinFile(), sdfilename, cal);
                 uploadFileCmd.Do();
                 if (!uploadFileCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
@@ -3179,7 +3188,7 @@ public class Patch {
                     String backupFilePath = dir + "/" + f.getName() + ".backup" + DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(ZonedDateTime.now()) + f.getName().substring(f.getName().lastIndexOf("."));
 
                     try {
-                        QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, backupFilePath, cal);
+                        SCmdUploadFile uploadFileCmd = new SCmdUploadFile(f, backupFilePath, cal);
                         uploadFileCmd.Do();
                         if (!uploadFileCmd.waitForCompletion()) {
                             LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");

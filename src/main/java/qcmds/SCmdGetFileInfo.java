@@ -19,10 +19,7 @@
 package qcmds;
 
 import axoloti.Connection;
-import axoloti.sd.SDCardInfo;
 
-import java.time.Instant;
-import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,70 +27,58 @@ import java.util.logging.Logger;
  *
  * @author Johannes Taelman
  */
-public class QCmdCreateDirectory extends AbstractQCmdSerialTask {
+public class SCmdGetFileInfo extends AbstractSCmd {
+    private static final Logger LOGGER = Logger.getLogger(SCmdGetFileInfo.class.getName());
 
-    private static final Logger LOGGER = Logger.getLogger(QCmdCreateDirectory.class.getName());
+    private String filename;
 
-    private String dirname;
-    private Calendar date;
-
-    public QCmdCreateDirectory(String dirname, Calendar date) {
-        this.dirname = dirname;
-        this.date = date;
-        this.expectedAckCommandByte = 'k'; // Expecting AxoRk
+    public SCmdGetFileInfo(String filename) {
+        this.filename = filename;
+        this.expectedAckCommandByte = 'I';
     }
 
     @Override
     public String GetStartMessage() {
-        return "Creating directory on SD card... " + dirname;
+        return "Getting file info for: " + filename;
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Done creating directory.";
+        return null;
+        // return "Get file info " + (isSuccessful() ? "successful" : "failed") + " for " + filename;
     }
 
     @Override
-    public boolean isSuccessful() {
-        return commandSuccess && (mcuStatusCode == 0x00 || mcuStatusCode == 0x08);
-    }
-
-    @Override
-    public QCmd Do(Connection connection) {
+    public SCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
-        int writeResult = connection.TransmitCreateDirectory(dirname, date);
+        int writeResult = connection.TransmitGetFileInfo(filename);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "Create directory failed for " + dirname + ": USB write error.");
+            LOGGER.log(Level.SEVERE, "Get file info failed for " + filename + ": USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
 
         try {
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "Create directory command for " + dirname + " timed out.");
+                LOGGER.log(Level.SEVERE, "Get file info command for " + filename + " timed out.");
                 setCompletedWithStatus(1);
                 return this;
             }
             else if (!isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "Failed to create directory " + dirname + ".");
+                LOGGER.log(Level.SEVERE, "Failed to get file info for " + filename + ".");
                 setCompletedWithStatus(1);
                 return this;
             }
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Create directory command for " + dirname + " interrupted: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Get file info command for " + filename + " interrupted: " + e.getMessage());
             setCompletedWithStatus(1);
-            return this;
-        }
-        catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error during create directory command for " + dirname + ": " + e.getMessage());
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error during get file info command for " + filename + ": " + e.getMessage());
             setCompletedWithStatus(1);
-            return this;
         }
-        LOGGER.info(GetDoneMessage());
         return this;
     }
 }

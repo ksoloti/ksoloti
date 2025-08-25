@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Johannes Taelman
+ * Copyright (C) 2013 - 2016 Johannes Taelman
  * Edited 2023 - 2024 by Ksoloti
  *
  * This file is part of Axoloti.
@@ -18,43 +18,23 @@
  */
 package qcmds;
 
-import axoloti.Connection;
-
 /**
  *
  * @author Johannes Taelman
  */
-public class QCmdMemRead1Word extends AbstractQCmdSerialTask {
+public class SCmdStartMounter extends SCmdStart {
 
-    final int addr;
-    int value = 0;
-
-    public QCmdMemRead1Word(int addr) {
-        this.addr = addr;
+    public SCmdStartMounter() {
+        super(null);
     }
 
     @Override
     public String GetStartMessage() {
-        return null;
+        return "Mounting SD card...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return null;
-    }
-
-    @Override
-    public QCmd Do(Connection connection) {
-        connection.setCurrentExecutingCommand(this); 
-        connection.TransmitMemoryRead1Word(addr);
-        return this;
-    }
-
-    public int getValueRead() {
-        return value;
-    }
-
-    public void setValueRead(int value) {
-        this.value = value;
+        return "Unmount/eject the SD card in your OS file manager to re-enable Patcher connection.\n";
     }
 }

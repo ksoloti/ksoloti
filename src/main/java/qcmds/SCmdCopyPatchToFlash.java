@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013 - 2016 Johannes Taelman
+ * Copyright (C) 2013, 2014, 2015 Johannes Taelman
  * Edited 2023 - 2024 by Ksoloti
  *
  * This file is part of Axoloti.
@@ -18,67 +18,66 @@
  */
 package qcmds;
 
-import axoloti.Connection;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import axoloti.Connection;
+
 /**
  *
- * @author Johannes Taelman
+ * @author jtaelman
  */
-public class QCmdGetFileInfo extends AbstractQCmdSerialTask {
-    private static final Logger LOGGER = Logger.getLogger(QCmdGetFileInfo.class.getName());
+public class SCmdCopyPatchToFlash extends AbstractSCmd {
 
-    private String filename;
+    private static final Logger LOGGER = Logger.getLogger(SCmdCopyPatchToFlash.class.getName());
 
-    public QCmdGetFileInfo(String filename) {
-        this.filename = filename;
-        this.expectedAckCommandByte = 'I';
+    public SCmdCopyPatchToFlash() {
+        this.expectedAckCommandByte = 'F';
     }
 
     @Override
     public String GetStartMessage() {
-        return "Getting file info for: " + filename;
+        return "Writing patch to flash...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return null;
-        // return "Get file info " + (isSuccessful() ? "successful" : "failed") + " for " + filename;
+        return "Done writing patch to flash.\n";
     }
 
     @Override
-    public QCmd Do(Connection connection) {
+    public SCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
-        int writeResult = connection.TransmitGetFileInfo(filename);
+        int writeResult = connection.TransmitCopyToFlash();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "Get file info failed for " + filename + ": USB write error.");
+            LOGGER.log(Level.SEVERE, "Failed to send TransmitCopyToFlash: USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
 
         try {
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "Get file info command for " + filename + " timed out.");
+                LOGGER.log(Level.SEVERE, "Copy patch to Flash command timed out.");
                 setCompletedWithStatus(1);
                 return this;
-            }
-            else if (!isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "Failed to get file info for " + filename + ".");
+            } else if (!isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Failed to copy patch to Flash.");
                 setCompletedWithStatus(1);
                 return this;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Get file info command for " + filename + " interrupted: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Copy patch to Flash command interrupted: " + e.getMessage());
             setCompletedWithStatus(1);
+            return this;
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error during get file info command for " + filename + ": " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during copy patch to Flash command: " + e.getMessage());
             setCompletedWithStatus(1);
+            return this;
         }
+        LOGGER.info(GetDoneMessage());
         return this;
     }
 }

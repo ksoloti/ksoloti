@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013 - 2016 Johannes Taelman
+ * Copyright (C) 2015 Johannes Taelman
  * Edited 2023 - 2024 by Ksoloti
  *
  * This file is part of Axoloti.
@@ -18,23 +18,28 @@
  */
 package qcmds;
 
+import axoloti.Connection;
+
 /**
  *
  * @author Johannes Taelman
  */
-public class QCmdStartFlasher extends QCmdStart {
-
-    public QCmdStartFlasher() {
-        super(null);
-    }
-
+public class SCmdGetSpilinkSynced extends AbstractSCmd {
+    
     @Override
     public String GetStartMessage() {
-        return "Sending firmware packets...";
+        return "Checking device's SPILink configuration...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return "\n>>> FIRMWARE UPDATE IN PROGRESS. DO NOT UNPLUG THE BOARD! <<<\n>>>  You can connect again after the LEDs stop flashing.  <<<\n";
+        return null;
+    }
+
+    @Override
+    public SCmd Do(Connection connection) {
+        LOGGER.info(GetStartMessage());
+        connection.TransmitGetSpilinkSynced();
+        return this;
     }
 }

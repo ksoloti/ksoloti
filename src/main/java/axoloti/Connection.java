@@ -34,7 +34,7 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import qcmds.QCmdSerialTask;
+import qcmds.SCmd;
 
 /**
  *
@@ -79,7 +79,7 @@ public abstract class Connection {
     abstract public int TransmitGetSpilinkSynced();
     abstract public int TransmitBringToDFU();
     
-    abstract public boolean AppendToQueue(QCmdSerialTask cmd);
+    abstract public boolean AppendToQueue(SCmd cmd);
     abstract public void ClearSync();
     abstract public boolean WaitSync(int msec);
     abstract public boolean WaitSync();
@@ -90,8 +90,8 @@ public abstract class Connection {
     abstract public ByteBuffer getMemReadBuffer();
     abstract public boolean GetSDCardPresent();
     abstract public int GetConnectionFlags();
-    abstract public void setCurrentExecutingCommand(qcmds.QCmdSerialTask command);
-    abstract public QCmdSerialTask getCurrentExecutingCommand();
+    abstract public void setCurrentExecutingCommand(SCmd command);
+    abstract public SCmd getCurrentExecutingCommand();
     abstract public String getTargetCpuId();
     abstract public String getDetectedCpuId();
 

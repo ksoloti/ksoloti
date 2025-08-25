@@ -84,11 +84,10 @@ import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.stream.Format;
 
 import qcmds.CommandManager;
-import qcmds.QCmdChangeWorkingDirectory;
-import qcmds.QCmdCopyPatchToFlash;
-import qcmds.QCmdCreateDirectory;
-import qcmds.QCmdProcessor;
-import qcmds.QCmdUploadPatch;
+import qcmds.SCmdChangeWorkingDirectory;
+import qcmds.SCmdCopyPatchToFlash;
+import qcmds.SCmdCreateDirectory;
+import qcmds.SCmdUploadPatch;
 
 /**
  *
@@ -472,7 +471,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                         if (SDCardInfo.getInstance().find(f) == null) {
                                             Calendar cal = Calendar.getInstance();
 
-                                            QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(f, cal);
+                                            SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(f, cal);
                                             createDirCmd.Do();
                                             if (!createDirCmd.waitForCompletion()) {
                                                 LOGGER.log(Level.SEVERE, "Create directory command timed out.");
@@ -484,7 +483,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                             }
                                         }
 
-                                        QCmdChangeWorkingDirectory changeDirCmd = new QCmdChangeWorkingDirectory(f);
+                                        SCmdChangeWorkingDirectory changeDirCmd = new SCmdChangeWorkingDirectory(f);
                                         changeDirCmd.Do();
                                         if (!changeDirCmd.waitForCompletion()) {
                                             LOGGER.log(Level.SEVERE, "Change working directory command timed out.");
@@ -509,7 +508,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             /* Upload and start the new patch */
                             if (USBBulkConnection.getInstance().isConnected()) {
                                 try {
-                                    QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
+                                    SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch.getBinFile());
                                     uploadCmd.Do();
                                     if (!uploadCmd.waitForCompletion()) {
                                         LOGGER.log(Level.SEVERE,"Patch upload timed out.");
@@ -1354,7 +1353,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             mainframe.setCurrentLivePatch(null);
             if (patch.getBinFile().exists()) {
                 try {
-                    QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
+                    SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch.getBinFile());
                     uploadCmd.Do();
                     if (!uploadCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Patch upload timed out.");
@@ -1467,7 +1466,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             LOGGER.log(Level.WARNING, "Paste: Unknown file format.");
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error during duplicate action: ", ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during duplicate action: " + ex.getMessage());
             ex.printStackTrace(System.out);
         }
     }
@@ -1573,7 +1572,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     if (patch.getBinFile().exists()) {
                         if (USBBulkConnection.getInstance().isConnected()) {
                             try {
-                                QCmdUploadPatch uploadCmd = new QCmdUploadPatch(patch.getBinFile());
+                                SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch.getBinFile());
                                 uploadCmd.Do();
                                 if (!uploadCmd.waitForCompletion()) {
                                     LOGGER.log(Level.SEVERE, "Patch upload command timed out.");
@@ -1584,7 +1583,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                     return false;
                                 }
 
-                                QCmdCopyPatchToFlash copyToFlashCmd = new QCmdCopyPatchToFlash();
+                                SCmdCopyPatchToFlash copyToFlashCmd = new SCmdCopyPatchToFlash();
                                 copyToFlashCmd.Do();
                                 if (!copyToFlashCmd.waitForCompletion()) {
                                     LOGGER.log(Level.SEVERE, "Copy patch to internal Flash command timed out.");

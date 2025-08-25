@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013 - 2016 Johannes Taelman
+ * Copyright (C) 2013, 2014 Johannes Taelman
  * Edited 2023 - 2024 by Ksoloti
  *
  * This file is part of Axoloti.
@@ -18,66 +18,63 @@
  */
 package qcmds;
 
-import axoloti.Connection;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import axoloti.Connection;
 
 /**
  *
  * @author Johannes Taelman
  */
-public class QCmdChangeWorkingDirectory extends AbstractQCmdSerialTask {
-    private static final Logger LOGGER = Logger.getLogger(QCmdChangeWorkingDirectory.class.getName());
+public class SCmdGetFileList extends AbstractSCmd {
+    private static final Logger LOGGER = Logger.getLogger(SCmdGetFileList.class.getName());
 
-    private String path;
-
-    public QCmdChangeWorkingDirectory(String path) {
-        this.path = path;
-        this.expectedAckCommandByte = 'h';
+    public SCmdGetFileList() {
+        this.expectedAckCommandByte = 'l'; // Expecting AxoRl
     }
 
     @Override
     public String GetStartMessage() {
-        return "Changing working directory to: " + path;
+        return null;
     }
 
     @Override
     public String GetDoneMessage() {
         return null;
-        // return "Change directory " + (isSuccessful() ? "successful" : "failed") + " for " + path;
+        // return "Receiving SD card file list " + (isSuccessful() ? "successful" : "failed");
     }
 
     @Override
-    public QCmd Do(Connection connection) {
-        LOGGER.info(GetStartMessage());
+    public SCmd Do(Connection connection) {
         connection.setCurrentExecutingCommand(this);
 
-        int writeResult = connection.TransmitChangeWorkingDirectory(path);
+        /* This method sends the Axol packet to the MCU. */
+        int writeResult = connection.TransmitGetFileList();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "Change directory failed for " + path + ": USB write error.");
+            LOGGER.log(Level.SEVERE, "Get file list failed: USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
 
         try {
+            /* Wait for the final AxoRl response from the MCU */
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "Change directory command for " + path + " timed out.");
+                LOGGER.log(Level.SEVERE, "Get file list command timed out.");
                 setCompletedWithStatus(1);
                 return this;
             }
             else if (!isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "Failed to change directory to " + path + ".");
+                LOGGER.log(Level.SEVERE, "Failed to get file list.");
+                setCompletedWithStatus(1);
                 return this;
             }
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Change directory command for " + path + " interrupted: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Get file list command interrupted: " + e.getMessage());
             setCompletedWithStatus(1);
-        }
-        catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error during change directory command for " + path + ": " + e.getMessage());
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error during get file list command: " + e.getMessage());
             setCompletedWithStatus(1);
         }
         return this;

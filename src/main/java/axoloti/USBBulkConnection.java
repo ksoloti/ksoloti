@@ -62,24 +62,23 @@ import java.util.regex.Pattern;
 import javax.swing.SwingUtilities;
 
 import org.usb4java.*;
-import qcmds.QCmd;
-import qcmds.QCmdChangeWorkingDirectory;
-import qcmds.QCmdCopyPatchToFlash;
-import qcmds.QCmdCreateDirectory;
-import qcmds.QCmdDeleteFile;
-import qcmds.QCmdGetFileInfo;
-import qcmds.QCmdGetFileList;
-import qcmds.QCmdMemRead;
-import qcmds.QCmdMemRead1Word;
-import qcmds.QCmdPing;
+import qcmds.SCmdChangeWorkingDirectory;
+import qcmds.SCmdCopyPatchToFlash;
+import qcmds.SCmdCreateDirectory;
+import qcmds.SCmdDeleteFile;
+import qcmds.SCmdGetFileInfo;
+import qcmds.SCmdGetFileList;
+import qcmds.SCmdMemRead;
+import qcmds.SCmdMemRead1Word;
+import qcmds.SCmdPing;
 import qcmds.QCmdProcessor;
-import qcmds.QCmdSerialTask;
-import qcmds.QCmdStart;
-import qcmds.QCmdStop;
-import qcmds.QCmdGetFWVersion;
-import qcmds.QCmdUploadFWSDRam;
-import qcmds.QCmdUploadFile;
-import qcmds.QCmdUploadPatch;
+import qcmds.SCmd;
+import qcmds.SCmdStart;
+import qcmds.SCmdStop;
+import qcmds.SCmdGetFWVersion;
+import qcmds.SCmdUploadFWSDRam;
+import qcmds.SCmdUploadFile;
+import qcmds.SCmdUploadPatch;
 
 /**
  *
@@ -96,7 +95,7 @@ public class USBBulkConnection extends Connection {
     private volatile Thread transmitterThread;
     private volatile Thread receiverThread;
     private volatile Thread byteProcessorThread;
-    private final BlockingQueue<QCmdSerialTask> queueSerialTask;
+    private final BlockingQueue<SCmd> queueSerialTask;
     private final BlockingQueue<Byte> receiverBlockingQueue;
     private String targetCpuId;
     private String detectedCpuId;
@@ -154,7 +153,7 @@ public class USBBulkConnection extends Connection {
     private volatile Object usbInLock = new Object();  /* For IN endpoint operations (reading) */
     private volatile Object usbOutLock = new Object(); /* For OUT endpoint operations (writing) */
 
-    protected volatile QCmdSerialTask currentExecutingCommand = null;
+    protected volatile SCmd currentExecutingCommand = null;
 
     enum ReceiverState {
         IDLE,               /* awaiting new response */
@@ -274,7 +273,7 @@ public class USBBulkConnection extends Connection {
         public void run() {
             // System.out.println(Instant.now() + " [DEBUG] Transmitter thread started.");
             while (!Thread.currentThread().isInterrupted() && !disconnectRequested) {
-                QCmdSerialTask cmd = null;
+                SCmd cmd = null;
                 try {
                     cmd = queueSerialTask.poll(5, TimeUnit.SECONDS);
 
@@ -283,7 +282,7 @@ public class USBBulkConnection extends Connection {
                     }
 
                     if (cmd != null) {
-                        QCmd response = cmd.Do(USBBulkConnection.this);
+                        SCmd response = cmd.Do();
                         if (response != null) {
                             QCmdProcessor.getInstance().getQueueResponse().put(response);
                         }
@@ -328,7 +327,7 @@ public class USBBulkConnection extends Connection {
         disconnectRequested = false;
         isConnecting = false;
         connected = false;
-        queueSerialTask = new ArrayBlockingQueue<QCmdSerialTask>(99);
+        queueSerialTask = new ArrayBlockingQueue<SCmd>(99);
         receiverBlockingQueue = new LinkedBlockingQueue<>();
         this.context = Usb.getContext();
     }
@@ -345,12 +344,12 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public void setCurrentExecutingCommand(QCmdSerialTask command) {
+    public void setCurrentExecutingCommand(SCmd command) {
         this.currentExecutingCommand = command;
     }
 
     @Override
-    public QCmdSerialTask getCurrentExecutingCommand() {
+    public SCmd getCurrentExecutingCommand() {
         return currentExecutingCommand;
     }
 
@@ -375,7 +374,7 @@ public class USBBulkConnection extends Connection {
     }
 
     @Override
-    public boolean AppendToQueue(QCmdSerialTask cmd) {
+    public boolean AppendToQueue(SCmd cmd) {
         try {
             boolean added = queueSerialTask.offer(cmd, 100, TimeUnit.MILLISECONDS);
             if (!added) {
@@ -441,7 +440,7 @@ public class USBBulkConnection extends Connection {
 
             /* Initial Communication and Synchronization */
             ClearSync();
-            QCmdProcessor.getInstance().AppendToQueue(new QCmdPing());
+            new SCmdPing().Do();
             if (!WaitSync()) {
                 LOGGER.log(Level.SEVERE, "Core not responding - firmware may be stuck running a problematic patch?\nRestart the Core and try again.");
                 disconnect();
@@ -454,7 +453,7 @@ public class USBBulkConnection extends Connection {
 
             /* Post-Connection Commands (Firmware version, CPU revision, board ID) */
             try {
-                QCmdGetFWVersion fwVersionCmd = new QCmdGetFWVersion();
+                SCmdGetFWVersion fwVersionCmd = new SCmdGetFWVersion();
                 fwVersionCmd.Do(this);
                 if (!fwVersionCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Get FW version command timed out.");
@@ -463,7 +462,7 @@ public class USBBulkConnection extends Connection {
                     LOGGER.log(Level.SEVERE, "Failed to get FW version.");
                 }
 
-                QCmdMemRead1Word cpuRevisionCmd = new QCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
+                SCmdMemRead1Word cpuRevisionCmd = new SCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
                 cpuRevisionCmd.Do(this);
                 if (!cpuRevisionCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Get CPU revision command timed out.");
@@ -473,7 +472,7 @@ public class USBBulkConnection extends Connection {
                 }
                 targetProfile.setCPUIDCode(cpuRevisionCmd.getValueRead());
 
-                QCmdMemRead boardIDCmd = new QCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
+                SCmdMemRead boardIDCmd = new SCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
                 boardIDCmd.Do(this);
                 if (!boardIDCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Get board ID command timed out.");
@@ -1695,9 +1694,9 @@ public class USBBulkConnection extends Connection {
                     int statusCode = (packetData[0] >> 8) & 0xFF;
 
                     if (currentExecutingCommand != null) {
-                        /* Special handling for QCmdUploadPatch's sub-commands */
-                        if (currentExecutingCommand instanceof QCmdUploadPatch) {
-                            QCmdUploadPatch uploadCmd = (QCmdUploadPatch) currentExecutingCommand;
+                        /* Special handling for SCmdUploadPatch's sub-commands */
+                        if (currentExecutingCommand instanceof SCmdUploadPatch) {
+                            SCmdUploadPatch uploadCmd = (SCmdUploadPatch) currentExecutingCommand;
                             if (commandByte == 'W') {
                                 uploadCmd.setStartMemWriteCompletedWithStatus(statusCode);
                             }
@@ -1709,9 +1708,9 @@ public class USBBulkConnection extends Connection {
                                 uploadCmd.setCompletedWithStatus(statusCode);
                             }
                         }
-                        /* Special handling for QCmdUploadFile's sub-commands */
-                        else if (currentExecutingCommand instanceof QCmdUploadFile) {
-                            QCmdUploadFile uploadCmd = (QCmdUploadFile) currentExecutingCommand;
+                        /* Special handling for SCmdUploadFile's sub-commands */
+                        else if (currentExecutingCommand instanceof SCmdUploadFile) {
+                            SCmdUploadFile uploadCmd = (SCmdUploadFile) currentExecutingCommand;
                             if (commandByte == 'f') {
                                 uploadCmd.setCreateFileCompletedWithStatus(statusCode);
                             }
@@ -1723,9 +1722,9 @@ public class USBBulkConnection extends Connection {
                                 uploadCmd.setCompletedWithStatus(statusCode);
                             }
                         }
-                        /* Special handling for QCmdUploadFWSDRam's sub-commands */
-                        else if (currentExecutingCommand instanceof QCmdUploadFWSDRam) {
-                            QCmdUploadFWSDRam uploadFwCmd = (QCmdUploadFWSDRam) currentExecutingCommand;
+                        /* Special handling for SCmdUploadFWSDRam's sub-commands */
+                        else if (currentExecutingCommand instanceof SCmdUploadFWSDRam) {
+                            SCmdUploadFWSDRam uploadFwCmd = (SCmdUploadFWSDRam) currentExecutingCommand;
                             if (commandByte == 'W') {
                                 uploadFwCmd.setStartMemWriteCompletedWithStatus(statusCode);
                             }
@@ -1737,15 +1736,15 @@ public class USBBulkConnection extends Connection {
                                 uploadFwCmd.setCompletedWithStatus(statusCode);
                             }
                         }
-                        /* Handling for other commands that expect an AxoR for their completion */
-                        else if (currentExecutingCommand instanceof QCmdStart ||
-                                 currentExecutingCommand instanceof QCmdStop ||
-                                 currentExecutingCommand instanceof QCmdChangeWorkingDirectory ||
-                                 currentExecutingCommand instanceof QCmdCreateDirectory ||
-                                 currentExecutingCommand instanceof QCmdGetFileList ||
-                                 currentExecutingCommand instanceof QCmdCopyPatchToFlash ||
-                                 currentExecutingCommand instanceof QCmdDeleteFile ||
-                                 currentExecutingCommand instanceof QCmdGetFileInfo) {
+                        /* Handling for other SCmd's that expect an AxoR for their completion */
+                        else if (currentExecutingCommand instanceof SCmdStart ||
+                                 currentExecutingCommand instanceof SCmdStop ||
+                                 currentExecutingCommand instanceof SCmdChangeWorkingDirectory ||
+                                 currentExecutingCommand instanceof SCmdCreateDirectory ||
+                                 currentExecutingCommand instanceof SCmdGetFileList ||
+                                 currentExecutingCommand instanceof SCmdCopyPatchToFlash ||
+                                 currentExecutingCommand instanceof SCmdDeleteFile ||
+                                 currentExecutingCommand instanceof SCmdGetFileInfo) {
 
                             /* Any commands with no explicitly set command byte ('\0') will fall through */
                             if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) {
@@ -1897,13 +1896,13 @@ public class USBBulkConnection extends Connection {
                         memReadBuffer.put(cc);
                         if (dataIndex == memReadLength + 7) {
                             memReadBuffer.rewind();
-                            if (currentExecutingCommand != null && currentExecutingCommand instanceof QCmdMemRead) {
-                                QCmdMemRead memReadCmd = (QCmdMemRead) currentExecutingCommand;
+                            if (currentExecutingCommand != null && currentExecutingCommand instanceof SCmdMemRead) {
+                                SCmdMemRead memReadCmd = (SCmdMemRead) currentExecutingCommand;
                                 memReadCmd.setValuesRead(memReadBuffer);
                                 memReadCmd.setCompletedWithStatus(0);
                             }
 
-                            System.out.print(Instant.now() + " QCmdMemRead address 0x" + Integer.toHexString(memReadAddr).toUpperCase() + ", length " + memReadLength + ": ");
+                            System.out.print(Instant.now() + " SCmdMemRead address 0x" + Integer.toHexString(memReadAddr).toUpperCase() + ", length " + memReadLength + ": ");
                             int i = 0;
                             memReadBuffer.rewind();
                             while (memReadBuffer.hasRemaining()) {
@@ -1946,11 +1945,11 @@ public class USBBulkConnection extends Connection {
                         break;
                     case 7:
                         memRead1WordValue += (cc & 0xFF) << 24;
-                        if (currentExecutingCommand != null && currentExecutingCommand instanceof QCmdMemRead1Word) {
-                            QCmdMemRead1Word cmd = (QCmdMemRead1Word) currentExecutingCommand;
+                        if (currentExecutingCommand != null && currentExecutingCommand instanceof SCmdMemRead1Word) {
+                            SCmdMemRead1Word cmd = (SCmdMemRead1Word) currentExecutingCommand;
                             cmd.setValueRead(memRead1WordValue);
                             cmd.setCompletedWithStatus(0);
-                            System.out.println(Instant.now() + " QCmdMemRead1Word address 0x" + Integer.toHexString(memReadAddr).toUpperCase() + ", value read: 0x" + Integer.toHexString(memRead1WordValue).toUpperCase());
+                            System.out.println(Instant.now() + " SCmdMemRead1Word address 0x" + Integer.toHexString(memReadAddr).toUpperCase() + ", value read: 0x" + Integer.toHexString(memRead1WordValue).toUpperCase());
                         }
                         setIdleState();
                     default:
@@ -2005,7 +2004,7 @@ public class USBBulkConnection extends Connection {
                             LOGGER.log(Level.INFO, String.format("Core running Firmware version %d.%d.%d.%d | CRC %s\n", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
                             MainFrame.mainframe.setFirmwareID(sFwcrc);
                         }
-                        if (currentExecutingCommand != null && currentExecutingCommand instanceof QCmdGetFWVersion) {
+                        if (currentExecutingCommand != null && currentExecutingCommand instanceof SCmdGetFWVersion) {
                             currentExecutingCommand.setCompletedWithStatus(0);
                         }
                         setIdleState();

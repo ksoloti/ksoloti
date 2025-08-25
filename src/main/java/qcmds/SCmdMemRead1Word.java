@@ -24,8 +24,15 @@ import axoloti.Connection;
  *
  * @author Johannes Taelman
  */
-public class QCmdGetFWVersion extends AbstractQCmdSerialTask {
-    
+public class SCmdMemRead1Word extends AbstractSCmd {
+
+    final int addr;
+    int value = 0;
+
+    public SCmdMemRead1Word(int addr) {
+        this.addr = addr;
+    }
+
     @Override
     public String GetStartMessage() {
         return null;
@@ -37,9 +44,17 @@ public class QCmdGetFWVersion extends AbstractQCmdSerialTask {
     }
 
     @Override
-    public QCmd Do(Connection connection) {
+    public SCmd Do(Connection connection) {
         connection.setCurrentExecutingCommand(this); 
-        connection.TransmitGetFWVersion();
+        connection.TransmitMemoryRead1Word(addr);
         return this;
+    }
+
+    public int getValueRead() {
+        return value;
+    }
+
+    public void setValueRead(int value) {
+        this.value = value;
     }
 }

@@ -30,12 +30,12 @@ import org.usb4java.LibUsb;
  *
  * @author Johannes Taelman
  */
-public class QCmdDeleteFile extends AbstractQCmdSerialTask {
-    private static final Logger LOGGER = Logger.getLogger(QCmdDeleteFile.class.getName());
+public class SCmdDeleteFile extends AbstractSCmd {
+    private static final Logger LOGGER = Logger.getLogger(SCmdDeleteFile.class.getName());
 
     private String filename;
 
-    public QCmdDeleteFile(String filename) {
+    public SCmdDeleteFile(String filename) {
         this.filename = filename;
         this.expectedAckCommandByte = 'D'; // Expecting AxoRD
     }
@@ -51,7 +51,7 @@ public class QCmdDeleteFile extends AbstractQCmdSerialTask {
     }
 
     @Override
-    public QCmd Do(Connection connection) {
+    public SCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 
@@ -88,7 +88,7 @@ public class QCmdDeleteFile extends AbstractQCmdSerialTask {
         return this;
     }
 
-    public QCmd Do(Connection connection, boolean silent) {
+    public SCmd Do(Connection connection, boolean silent) {
         /* 'silent' argument is a dummy for the purpose of overloading this method.
            Calling this will direct all log messages to the CLI only. */
         System.out.println(Instant.now() + " " + GetStartMessage());

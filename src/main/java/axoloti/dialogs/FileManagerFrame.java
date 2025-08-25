@@ -73,11 +73,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import qcmds.CommandManager;
-import qcmds.QCmdCreateDirectory;
-import qcmds.QCmdDeleteFile;
-import qcmds.QCmdGetFileList;
-import qcmds.QCmdProcessor;
-import qcmds.QCmdUploadFile;
+import qcmds.SCmdCreateDirectory;
+import qcmds.SCmdDeleteFile;
+import qcmds.SCmdGetFileList;
+import qcmds.SCmdUploadFile;
 
 /**
  *
@@ -207,7 +206,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                         continue; /* Skip to next file */
                                     }
 
-                                    QCmdUploadFile uploadFileCmd = new QCmdUploadFile(f, f.getName());
+                                    SCmdUploadFile uploadFileCmd = new SCmdUploadFile(f, f.getName());
                                     uploadFileCmd.Do();
                                     if (!uploadFileCmd.waitForCompletion()) {
                                         LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
@@ -607,7 +606,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             System.out.println(Instant.now() + " Attempting to delete empty directory: '" + sdCardPath + "' (normalized for FatFs: '" + pathForFatFsDelete + "')");
 
             try {
-                QCmdDeleteFile deleteDirCmd = new QCmdDeleteFile(pathForFatFsDelete);
+                SCmdDeleteFile deleteDirCmd = new SCmdDeleteFile(pathForFatFsDelete);
                 deleteDirCmd.Do();
                 if (!deleteDirCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Delete file command timed out: " + sdCardPath);
@@ -634,7 +633,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             System.out.println(Instant.now() + " Identified as file. Attempting to delete file: '" + sdCardPath + "' (normalized for FatFs: '" + pathForFatFsDelete + "')");
 
             try {
-                QCmdDeleteFile deleteFileCmd = new QCmdDeleteFile(pathForFatFsDelete);
+                SCmdDeleteFile deleteFileCmd = new SCmdDeleteFile(pathForFatFsDelete);
                 deleteFileCmd.Do();
                 if (!deleteFileCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Delete file command timed out: " + sdCardPath);
@@ -705,8 +704,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             @Override
             protected Void doInBackground() throws Exception {
                 try {
-                    System.out.println(Instant.now() + " Sending QCmdGetFileList()...");
-                    QCmdGetFileList getFileListCmd = new QCmdGetFileList();
+                    System.out.println(Instant.now() + " Sending SCmdGetFileList()...");
+                    SCmdGetFileList getFileListCmd = new SCmdGetFileList();
                     getFileListCmd.Do();
                     if (!getFileListCmd.waitForCompletion()) {
                         LOGGER.log(Level.SEVERE, "Get file list command timed out.");
@@ -815,7 +814,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                     continue; /* Skip to next file if failed */
                                 }
                                 try {
-                                    QCmdUploadFile uploadFileCmd = new QCmdUploadFile(file, targetDirectory + file.getName());
+                                    SCmdUploadFile uploadFileCmd = new SCmdUploadFile(file, targetDirectory + file.getName());
                                     uploadFileCmd.Do();
                                     if (!uploadFileCmd.waitForCompletion()) {
                                         LOGGER.log(Level.SEVERE, "File upload command for " + file.getName() + " timed out.");
@@ -1009,7 +1008,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         if (fn != null && !fn.isEmpty()) {
             Calendar cal = Calendar.getInstance();
             try {
-                QCmdCreateDirectory createDirCmd = new QCmdCreateDirectory(dir + fn, cal);
+                SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(dir + fn, cal);
                 createDirCmd.Do();
                 if (!createDirCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Create directory command timed out.");

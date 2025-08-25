@@ -42,9 +42,9 @@ import javax.swing.text.Document;
  *
  * @author Johannes Taelman
  */
-public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
+public class SCmdUploadFWSDRam extends AbstractSCmd {
 
-    private static final Logger LOGGER = Logger.getLogger(QCmdUploadFWSDRam.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SCmdUploadFWSDRam.class.getName());
 
     private CountDownLatch startMemWriteLatch;
     private CountDownLatch appendMemWriteLatch;
@@ -58,11 +58,11 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
     long originalFirmwareSize;
     long totalBytesToTransfer;
 
-    public QCmdUploadFWSDRam(File f) {
+    public SCmdUploadFWSDRam(File f) {
         this.f = f;
     }
 
-    public QCmdUploadFWSDRam() {
+    public SCmdUploadFWSDRam() {
         this(null);
     }
 
@@ -73,7 +73,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
 
     @Override
     public String GetDoneMessage() {
-        return "Done sending firmware packets.";
+        return "Done sending firmware packets.\n";
     }
 
     public void setStartMemWriteCompletedWithStatus(int statusCode) {
@@ -98,7 +98,7 @@ public class QCmdUploadFWSDRam extends AbstractQCmdSerialTask {
     }
 
     @Override
-    public QCmd Do(Connection connection) {
+    public SCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
         connection.setCurrentExecutingCommand(this);
 

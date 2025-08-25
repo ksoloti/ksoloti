@@ -80,7 +80,7 @@ public class QCmdProcessor implements Runnable {
                         /* Check if enough time has passed since the last attempt to send a command */
                         if (now - lastSendAttemptTime >= currentSendInterval) {
 
-                            boolean added = queue.offer(new QCmdPing(), 10, TimeUnit.MILLISECONDS);
+                            boolean added = queue.offer(new SCmdPing(), 10, TimeUnit.MILLISECONDS);
                             if (!added) {
                                 // System.out.println(Instant.now() + " [DEBUG] QCmd queue full, dropping ping command. Backing off outbound rate.");
                                 /* If the queue is full (command not added), back off
@@ -271,8 +271,8 @@ public class QCmdProcessor implements Runnable {
 
                 QCmd cmd = queue.take();
 
-                if (cmd instanceof QCmdSerialTask) {
-                    serialconnection.AppendToQueue((AbstractQCmdSerialTask) cmd);
+                if (cmd instanceof SCmd) {
+                    serialconnection.AppendToQueue((AbstractSCmd) cmd);
 
                 } else if (cmd instanceof QCmdShellTask) {
                     QCmd shellResponse = ((QCmdShellTask) cmd).Do(this);

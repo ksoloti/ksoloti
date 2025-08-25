@@ -24,7 +24,7 @@ import axoloti.USBBulkConnection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
+public abstract class AbstractSCmd implements SCmd {
 
     private final CountDownLatch latch = new CountDownLatch(1);
     protected volatile boolean commandSuccess = false;
@@ -64,12 +64,12 @@ public abstract class AbstractQCmdSerialTask implements QCmdSerialTask {
     }
 
     @Override
-    public QCmd Do(Connection connection) {
+    public SCmd Do(Connection connection) {
         return this;
     }
 
     @Override
-    public QCmd Do() {
+    public SCmd Do() {
         return this.Do(USBBulkConnection.getInstance());
     }
 

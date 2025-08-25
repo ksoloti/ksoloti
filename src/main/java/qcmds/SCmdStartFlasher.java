@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013, 2014 Johannes Taelman
+ * Copyright (C) 2013 - 2016 Johannes Taelman
  * Edited 2023 - 2024 by Ksoloti
  *
  * This file is part of Axoloti.
@@ -18,30 +18,23 @@
  */
 package qcmds;
 
-import axoloti.Connection;
-
 /**
  *
  * @author Johannes Taelman
  */
-public class QCmdBringToDFUMode extends AbstractQCmdSerialTask {
+public class SCmdStartFlasher extends SCmdStart {
+
+    public SCmdStartFlasher() {
+        super(null);
+    }
 
     @Override
     public String GetStartMessage() {
-        return "Enabling Rescue Mode...";
+        return "Sending firmware packets...";
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Done enabling Rescue Mode. Connection will now break and firmware can be flashed with DFU.\n";
-    }
-
-    @Override
-    public QCmd Do(Connection connection) {
-        LOGGER.info(GetStartMessage());
-        connection.TransmitBringToDFU();
-        setCompletedWithStatus(0); /* Does not expect a response */
-        LOGGER.info(GetDoneMessage());
-        return this;
+        return "\n>>> FIRMWARE UPDATE IN PROGRESS. DO NOT UNPLUG THE BOARD! <<<\n>>>  You can connect again after the LEDs stop flashing.  <<<\n";
     }
 }

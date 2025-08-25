@@ -18,23 +18,33 @@
  */
 package qcmds;
 
-import java.util.logging.Logger;
-
 import axoloti.Connection;
 
 /**
  *
- * @author Johannes Taelman
+ * @author jtaelman
  */
-public interface QCmdSerialTask extends QCmd {
-    public static final Logger LOGGER = Logger.getLogger(QCmdSerialTask.class.getName());
+public class SCmdUpdatePreset extends AbstractSCmd {
 
-    void setCompletedWithStatus(int statusCode);
-    boolean waitForCompletion(long timeoutMs) throws InterruptedException;
-    boolean waitForCompletion() throws InterruptedException;
-    boolean isSuccessful();
-    char getExpectedAckCommandByte();
+    final byte[] b;
 
-    QCmd Do(Connection connection);
-    QCmd Do();
+    public SCmdUpdatePreset(byte[] b) {
+        this.b = b;
+    }
+
+    @Override
+    public String GetStartMessage() {
+        return null;
+    }
+
+    @Override
+    public String GetDoneMessage() {
+        return null;
+    }
+
+    @Override
+    public SCmd Do(Connection connection) {
+        connection.TransmitUpdatedPreset(b);
+        return this;
+    }
 }

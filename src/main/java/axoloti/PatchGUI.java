@@ -34,7 +34,6 @@ import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import axoloti.utils.StringRef;
-import qcmds.QCmdProcessor;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -1395,12 +1394,12 @@ public class PatchGUI extends Patch {
                 LOGGER.log(Level.SEVERE, "Patch \"{0}\" was saved with a newer version of Ksoloti: {1}",
                         new Object[]{f.getAbsoluteFile(), pve.getMessage()});
             } else {
-                LOGGER.log(Level.SEVERE, "Error during patch open: " + ite.getMessage());
+                LOGGER.log(Level.SEVERE, "Error during open patch action: " + ite.getMessage());
                 ite.printStackTrace(System.out);
             }
             return null;
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error during patch open: " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during open patch action: " + ex.getMessage());
             return null;
         }
     }

@@ -25,13 +25,13 @@ import java.nio.ByteBuffer;
  *
  * @author Johannes Taelman
  */
-public class QCmdMemRead extends AbstractQCmdSerialTask {
+public class SCmdMemRead extends AbstractSCmd {
 
     final int addr;
     final int length;
     ByteBuffer values = null;
 
-    public QCmdMemRead(int addr, int length) {
+    public SCmdMemRead(int addr, int length) {
         this.addr = addr;
         this.length = length;
     }
@@ -47,8 +47,7 @@ public class QCmdMemRead extends AbstractQCmdSerialTask {
     }
 
     @Override
-    public QCmd Do(Connection connection) {
-        LOGGER.info(GetStartMessage());
+    public SCmd Do(Connection connection) {
         connection.setCurrentExecutingCommand(this);
         connection.TransmitMemoryRead(addr, length);
         return this;

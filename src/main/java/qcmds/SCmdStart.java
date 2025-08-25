@@ -18,20 +18,24 @@
  */
 package qcmds;
 
+import axoloti.Connection;
+import axoloti.Patch;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import axoloti.Connection;
 
 /**
  *
  * @author Johannes Taelman
  */
-public class QCmdGetFileList extends AbstractQCmdSerialTask {
-    private static final Logger LOGGER = Logger.getLogger(QCmdGetFileList.class.getName());
+public class SCmdStart extends AbstractSCmd {
+    
+    private static final Logger LOGGER = Logger.getLogger(SCmdStart.class.getName());
+    Patch p;
 
-    public QCmdGetFileList() {
-        this.expectedAckCommandByte = 'l'; // Expecting AxoRl
+    public SCmdStart(Patch p) {
+        this.p = p;
+        this.expectedAckCommandByte = 's';
     }
 
     @Override
@@ -42,39 +46,45 @@ public class QCmdGetFileList extends AbstractQCmdSerialTask {
     @Override
     public String GetDoneMessage() {
         return null;
-        // return "Receiving SD card file list " + (isSuccessful() ? "successful" : "failed");
     }
 
     @Override
-    public QCmd Do(Connection connection) {
+    public SCmd Do(Connection connection) {
         connection.setCurrentExecutingCommand(this);
+        connection.setPatch(p);
 
-        /* This method sends the Axol packet to the MCU. */
-        int writeResult = connection.TransmitGetFileList();
+        int writeResult = connection.TransmitStart();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "Get file list failed: USB write error.");
+            LOGGER.log(Level.SEVERE, "Failed to transmit start patch command: USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
 
         try {
-            /* Wait for the final AxoRl response from the MCU */
+            if (this instanceof SCmdStartFlasher || this instanceof SCmdStartMounter) {
+                /* We won't get any "start patch" response from these commands
+                   as they force an immediate reboot into Flasher/Mounter mode.
+                   Hard-coded success here. So alpha. */
+                setCompletedWithStatus(0);
+                return this;
+            }
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "Get file list command timed out.");
+                LOGGER.log(Level.SEVERE, "Start patch command for " + p.getPatchframe().getName() + " timed out.");
                 setCompletedWithStatus(1);
                 return this;
             }
             else if (!isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "Failed to get file list.");
-                setCompletedWithStatus(1);
+                LOGGER.log(Level.SEVERE, "Failed to start patch " + p.getPatchframe().getName() + ".");
                 return this;
             }
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Get file list command interrupted: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Patch start command interrupted: " + e.getMessage());
             setCompletedWithStatus(1);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error during get file list command: " + e.getMessage());
+        }
+        catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error during patch start: " + e.getMessage());
             setCompletedWithStatus(1);
         }
         return this;

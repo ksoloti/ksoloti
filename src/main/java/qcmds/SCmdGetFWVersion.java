@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013, 2014 Johannes Taelman
+ * Copyright (C) 2015 Johannes Taelman
  * Edited 2023 - 2024 by Ksoloti
  *
  * This file is part of Axoloti.
@@ -24,20 +24,22 @@ import axoloti.Connection;
  *
  * @author Johannes Taelman
  */
-public class QCmdSerialTaskNull extends AbstractQCmdSerialTask {
-
+public class SCmdGetFWVersion extends AbstractSCmd {
+    
     @Override
     public String GetStartMessage() {
-        return "Starting QCmdSerialTaskNull...";
+        return null;
     }
 
     @Override
     public String GetDoneMessage() {
-        return "Done QCmdSerialTaskNull.\n";
+        return null;
     }
 
     @Override
-    public QCmd Do(Connection connection) {
+    public SCmd Do(Connection connection) {
+        connection.setCurrentExecutingCommand(this); 
+        connection.TransmitGetFWVersion();
         return this;
     }
 }

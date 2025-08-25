@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Johannes Taelman
+ * Copyright (C) 2013, 2014 Johannes Taelman
  * Edited 2023 - 2024 by Ksoloti
  *
  * This file is part of Axoloti.
@@ -18,17 +18,25 @@
  */
 package qcmds;
 
+import java.nio.ByteBuffer;
+
 import axoloti.Connection;
 
 /**
  *
  * @author Johannes Taelman
  */
-public class QCmdGetSpilinkSynced extends AbstractQCmdSerialTask {
-    
+public class SCmdSerialDialTX extends AbstractSCmd {
+
+    final ByteBuffer data;
+
+    public SCmdSerialDialTX(ByteBuffer data) {
+        this.data = data;
+    }
+
     @Override
     public String GetStartMessage() {
-        return "Checking device's SPILink configuration...";
+        return null;
     }
 
     @Override
@@ -37,9 +45,8 @@ public class QCmdGetSpilinkSynced extends AbstractQCmdSerialTask {
     }
 
     @Override
-    public QCmd Do(Connection connection) {
-        LOGGER.info(GetStartMessage());
-        connection.TransmitGetSpilinkSynced();
+    public SCmd Do(Connection connection) {
+        connection.writeBytes(data);
         return this;
     }
 }
