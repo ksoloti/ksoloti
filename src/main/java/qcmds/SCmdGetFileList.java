@@ -42,7 +42,6 @@ public class SCmdGetFileList extends AbstractSCmd {
     @Override
     public String GetDoneMessage() {
         return null;
-        // return "Receiving SD card file list " + (isSuccessful() ? "successful" : "failed");
     }
 
     @Override
@@ -52,7 +51,7 @@ public class SCmdGetFileList extends AbstractSCmd {
         /* This method sends the Axol packet to the MCU. */
         int writeResult = connection.TransmitGetFileList();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "Get file list failed: USB write error.");
+            LOGGER.log(Level.SEVERE, "Failed to send get file list command: USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
@@ -66,7 +65,6 @@ public class SCmdGetFileList extends AbstractSCmd {
             }
             else if (!isSuccessful()) {
                 LOGGER.log(Level.SEVERE, "Failed to get file list.");
-                setCompletedWithStatus(1);
                 return this;
             }
         } catch (InterruptedException e) {

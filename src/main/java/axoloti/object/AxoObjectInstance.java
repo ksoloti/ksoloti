@@ -1185,7 +1185,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             return;
         }
         if (candidates.isEmpty()) {
-            LOGGER.log(Level.SEVERE, "Could not resolve any candidates {0}", id);
+            LOGGER.log(Level.SEVERE, "Could not resolve any candidates " + id);
         }
         if (candidates.size() == 1) {
             return;
@@ -1237,15 +1237,12 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         }
 
         if (selected == null) {
-            //LOGGER.log(Level.INFO,"No promotion to null" + this + " to " + selected);            
             return;
         }
         if (selected != getType()) {
             LOGGER.log(Level.FINE, "Promoting " + this + " to " + selected);
             patch.ChangeObjectInstanceType(this, selected);
             patch.cleanUpIntermediateChangeStates(4);
-        } else {
-//            LOGGER.log(Level.INFO, "No promotion for {0}", typeName);
         }
     }
 

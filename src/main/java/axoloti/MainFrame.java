@@ -1556,7 +1556,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private boolean runUpgradeFile(File f) {
-        LOGGER.log(Level.INFO, "Upgrading {0}", f.getPath());
+        LOGGER.log(Level.INFO, "Upgrading " + f.getPath());
 
         Strategy strategy = new AnnotationStrategy();
         Serializer serializer = new Persister(strategy, new Format(2));
@@ -1568,7 +1568,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             patch1.PostContructor();
             status = patch1.save(f);
             if (status == false) {
-                LOGGER.log(Level.SEVERE, "UPGRADE FAILED: {0}", f.getPath());
+                LOGGER.log(Level.SEVERE, "UPGRADE FAILED: " + f.getPath());
             }
             return status;
         }
@@ -1716,15 +1716,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             PatchGUI.OpenPatch(name, input);
         }
         catch (MalformedURLException ex) {
-            LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex.getMessage()});
+            LOGGER.log(Level.SEVERE, "Invalid URL " + uri + ": " + ex.getMessage());
             ex.printStackTrace(System.out);
         }
         catch (URISyntaxException ex) {
-            LOGGER.log(Level.SEVERE, "Invalid URL {0}\n{1}", new Object[]{uri, ex.getMessage()});
+            LOGGER.log(Level.SEVERE, "Invalid URL " + uri + ": " + ex.getMessage());
             ex.printStackTrace(System.out);
         }
         catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "Unable to open URL {0}\n{1}", new Object[]{uri, ex.getMessage()});
+            LOGGER.log(Level.SEVERE, "Failed to open URL " + uri + ":" + ex.getMessage());
             ex.printStackTrace(System.out);
         }
     }

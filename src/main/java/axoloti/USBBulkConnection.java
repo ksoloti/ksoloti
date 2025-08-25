@@ -1785,7 +1785,7 @@ public class USBBulkConnection extends Connection {
                         LOGGER.log(Level.INFO, "SD card connected, no startup patch found.");
                     }
                     else {
-                        LOGGER.log(Level.WARNING, "{0}", textRcvBuffer.toString());
+                        LOGGER.log(Level.WARNING, textRcvBuffer.toString());
                     }
                     // System.out.println(Instant.now() + " [DEBUG] FINAL MCU Text Message (AxoT): " + textRcvBuffer.toString());
                     setIdleState();

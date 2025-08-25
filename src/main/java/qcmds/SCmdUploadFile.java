@@ -286,7 +286,7 @@ public class SCmdUploadFile extends AbstractSCmd {
                             MainFrame.jTextPaneLog.setCaretPosition(doc.getLength());
                         }
                         catch (Exception ex) {
-                            LOGGER.log(Level.SEVERE, "Unexpected exception in progress update: {0}", ex.getMessage());
+                            LOGGER.log(Level.SEVERE, "Error during progress update: " + ex.getMessage());
                         }
                     });
                 }

@@ -63,7 +63,7 @@ public class SCmdCreateDirectory extends AbstractSCmd {
 
         int writeResult = connection.TransmitCreateDirectory(dirname, date);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "Create directory failed for " + dirname + ": USB write error.");
+            LOGGER.log(Level.SEVERE, "Failed to send create directory command for " + dirname + ": USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
@@ -76,7 +76,6 @@ public class SCmdCreateDirectory extends AbstractSCmd {
             }
             else if (!isSuccessful()) {
                 LOGGER.log(Level.SEVERE, "Failed to create directory " + dirname + ".");
-                setCompletedWithStatus(1);
                 return this;
             }
         }

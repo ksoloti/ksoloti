@@ -45,7 +45,6 @@ public class SCmdGetFileInfo extends AbstractSCmd {
     @Override
     public String GetDoneMessage() {
         return null;
-        // return "Get file info " + (isSuccessful() ? "successful" : "failed") + " for " + filename;
     }
 
     @Override
@@ -55,7 +54,7 @@ public class SCmdGetFileInfo extends AbstractSCmd {
 
         int writeResult = connection.TransmitGetFileInfo(filename);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "Get file info failed for " + filename + ": USB write error.");
+            LOGGER.log(Level.SEVERE, "Failed to send get file info command for " + filename + ": USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
@@ -68,7 +67,6 @@ public class SCmdGetFileInfo extends AbstractSCmd {
             }
             else if (!isSuccessful()) {
                 LOGGER.log(Level.SEVERE, "Failed to get file info for " + filename + ".");
-                setCompletedWithStatus(1);
                 return this;
             }
         } catch (InterruptedException e) {

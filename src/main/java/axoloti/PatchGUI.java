@@ -1391,8 +1391,7 @@ public class PatchGUI extends Patch {
         } catch (java.lang.reflect.InvocationTargetException ite) {
             if (ite.getTargetException() instanceof Patch.PatchVersionException) {
                 Patch.PatchVersionException pve = (Patch.PatchVersionException) ite.getTargetException();
-                LOGGER.log(Level.SEVERE, "Patch \"{0}\" was saved with a newer version of Ksoloti: {1}",
-                        new Object[]{f.getAbsoluteFile(), pve.getMessage()});
+                LOGGER.log(Level.SEVERE, "Patch \'" + f.getAbsoluteFile() + "\' was saved with a newer version of Ksoloti: " + pve.getMessage());
             } else {
                 LOGGER.log(Level.SEVERE, "Error during open patch action: " + ite.getMessage());
                 ite.printStackTrace(System.out);
@@ -1406,8 +1405,8 @@ public class PatchGUI extends Patch {
 
     public static PatchFrame OpenPatch(File f) {
         PatchFrame pf = OpenPatchInvisible(f);
-        pf.setVisible(true);
         pf.setState(java.awt.Frame.NORMAL);
+        pf.setVisible(true);
         pf.repositionIfOutsideScreen();
         pf.toFront();
         Preferences.getInstance().addRecentFile(f.getAbsolutePath());

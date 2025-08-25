@@ -244,7 +244,7 @@ public class SCmdUploadPatch extends AbstractSCmd {
                 //             MainFrame.jTextPaneLog.setCaretPosition(doc.getLength());
                 //         }
                 //         catch (Exception ex) {
-                //             LOGGER.log(Level.SEVERE, "Unexpected exception in progress update: {0}", ex.getMessage());
+                //             LOGGER.log(Level.SEVERE, "Unexpected exception in progress update: " + ex.getMessage());
                 //         }
                 //     });
                 // }
@@ -272,17 +272,17 @@ public class SCmdUploadPatch extends AbstractSCmd {
             }
         }
         catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "File I/O error during upload for " + filename + ": {0}", ex.getMessage());
+            LOGGER.log(Level.SEVERE, "File I/O error during upload for " + filename + ": " + ex.getMessage());
             setCompletedWithStatus(1);
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Patch upload interrupted for " + filename + ": {0}", ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Patch upload interrupted for " + filename + ": " + ex.getMessage());
             setCompletedWithStatus(1);
             return this;
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error during patch upload for " + filename + ": {0}", ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during patch upload for " + filename + ": " + ex.getMessage());
             setCompletedWithStatus(1);
             return this;
         }

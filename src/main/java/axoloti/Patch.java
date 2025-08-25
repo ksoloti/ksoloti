@@ -315,7 +315,7 @@ public class Patch {
                     currentPath += "/" + component;
                     /* Check if the directory already exists */
                     if (SDCardInfo.getInstance().find(currentPath) == null) {
-                        LOGGER.log(Level.INFO, "Creating directory: {0}", currentPath);
+                        LOGGER.log(Level.INFO, "Creating directory: " + currentPath);
                         try {
                             SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(currentPath, Calendar.getInstance());
                             createDirCmd.Do();
@@ -333,7 +333,7 @@ public class Patch {
                             continue;
                         }
                     } else {
-                        LOGGER.log(Level.INFO, "Directory already exists: {0}", currentPath);
+                        LOGGER.log(Level.INFO, "Directory already exists: " + currentPath);
                     }
                 }
             }
@@ -343,15 +343,15 @@ public class Patch {
         for (SDFileReference fref : files) {
             File f = fref.localfile;
             if (f == null) {
-                LOGGER.log(Level.SEVERE, "Couldn''t resolve file: {0}", fref.targetPath);
+                LOGGER.log(Level.SEVERE, "Cannot resolve file: " + fref.targetPath);
                 continue;
             }
             if (!f.exists()) {
-                LOGGER.log(Level.SEVERE, "File does not exist: {0}", f.getName());
+                LOGGER.log(Level.SEVERE, "File does not exist: " + f.getName());
                 continue;
             }
             if (!f.canRead()) {
-                LOGGER.log(Level.SEVERE, "Cannot read file {0}", f.getName());
+                LOGGER.log(Level.SEVERE, "Cannot read file " + f.getName());
                 continue;
             }
 
@@ -1112,7 +1112,7 @@ public class Patch {
 
     void DebugDump(ArrayList<AxoObjectInstanceAbstract> objects) {
         for( AxoObjectInstanceAbstract object : objects) {
-            LOGGER.log(Level.INFO, "{0}", object.getInstanceName());
+            LOGGER.log(Level.INFO, object.getInstanceName());
         }
     }
 
@@ -1689,7 +1689,7 @@ public class Patch {
             }
             else if (!n.isValidNet()) {
                 c += i.GetDataType().GenerateSetDefaultValueCode();
-                LOGGER.log(Level.SEVERE, "Patch contains invalid net! {0}", i.objname + ":" + i.getInletname());
+                LOGGER.log(Level.SEVERE, "Patch contains invalid net: " + i.objname + ":" + i.getInletname());
             }
             needsComma = true;
         }
@@ -2019,11 +2019,11 @@ public class Patch {
                 x = objs.get(0);
             }
             if (x != null) {
-                LOGGER.log(Level.WARNING, "Using controller object: {0}", cobjstr);
+                LOGGER.log(Level.WARNING, "Using controller object: " + cobjstr);
                 controllerInstance = x.CreateInstance(null, "ctrl0x123", new Point(0, 0));
             }
             else {
-                LOGGER.log(Level.SEVERE, "Unable to create controller object for: {0}", cobjstr);
+                LOGGER.log(Level.SEVERE, "Unable to create controller object: " + cobjstr);
             }
         }
 
@@ -2779,7 +2779,7 @@ public class Patch {
 
     public void WriteCode(boolean use_buildfilenames) {
 
-        String pname = getCppFile().getAbsolutePath();
+        String pname = getFileNamePath();
         int i = pname.lastIndexOf(File.separatorChar);
         if (i < 0) {
             LOGGER.log(Level.INFO, "Generating code...");
@@ -2990,7 +2990,7 @@ public class Patch {
         if (!(ProcessedInstances.size() == objectInstances.size())) {
             for (AxoObjectInstanceAbstract o : objectInstances) {
                 if (!ProcessedInstances.contains(o.getInstanceName())) {
-                    LOGGER.log(Level.SEVERE, "PromoteOverloading: fault in {0}", o.getInstanceName());
+                    LOGGER.log(Level.SEVERE, "PromoteOverloading: fault in " + o.getInstanceName());
                 }
             }
         }
@@ -3115,7 +3115,7 @@ public class Patch {
 
     public void UploadToSDCard(String sdfilename) {
         WriteCode(true);
-        LOGGER.log(Level.INFO, "SD card filename: {0}", sdfilename);
+        LOGGER.log(Level.INFO, "SD card filename: " + sdfilename);
 
         this.Compile();
         mainframe.setCurrentLivePatch(null);

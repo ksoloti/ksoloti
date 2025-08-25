@@ -58,41 +58,41 @@ public abstract class QCmdShellTask implements QCmd {
                 String line;
                 while ((line = br.readLine()) != null) {
                     if (line.contains("overflowed by")) {
-                        LOGGER.log(Level.SEVERE, "{0}\n\n>>> Patch is too complex to fit in internal RAM. <<<\n", line);
+                        LOGGER.log(Level.SEVERE, line + "\n\n>>> Patch is too complex to fit in internal RAM. <<<\n");
                     }
                     else if (line.contains("has no member named \'objectinstance__i\'")) {
-                        LOGGER.log(Level.SEVERE, "{0}\n\n>>> A required reference text field in the patch has been left empty. (table, delay read/write, filename, ...) <<<\n", line);
+                        LOGGER.log(Level.SEVERE, line + "\n\n>>> A required reference text field in the patch has been left empty. (table, delay read/write, filename, ...) <<<\n");
                     }
                     else if (line.contains("one or more PCH files were found, but they were invalid")) {
-                        LOGGER.log(Level.SEVERE, "{0}\n\n>>> Go to " + LibrariesDir() + File.separator + "build and manually delete all files inside it. <<<\n", line);
+                        LOGGER.log(Level.SEVERE, line + "\n\n>>> Go to " + LibrariesDir() + File.separator + "build and manually delete all files inside it. <<<\n");
                     }
                     else if (line.contains("error:") || line.contains("#error")) {
-                        LOGGER.log(Level.SEVERE, "{0}", line);
+                        LOGGER.log(Level.SEVERE, line);
                     }
                     else if (line.contains("warning:")) {
-                        LOGGER.log(Level.WARNING, "{0}", line);
+                        LOGGER.log(Level.WARNING, line);
                     }
                     else if (line.contains("          0 GB")) {
                         /* little modification for --print-memory-usage format */
-                        LOGGER.log(Level.INFO, "{0}", line.replaceAll("          0 GB", "           0 B"));
+                        LOGGER.log(Level.INFO, line.replaceAll("          0 GB", "           0 B"));
                     }
                     // else if (line.startsWith("Erase   \t[") || line.startsWith("Download\t[")) {
                     //     /* Avoid printing multple lines of progress bars (dfu-util) */
                     //     // BUGGY
                     //     mainframe.consoleRemoveLastLine();
-                    //     LOGGER.log(Level.INFO, "{0}", line);
+                    //     LOGGER.log(Level.INFO, line);
                     // }
                     else {
-                        LOGGER.log(Level.INFO, "{0}", line);
+                        LOGGER.log(Level.INFO, line);
                     }
                 }
             } catch (IOException ex) {
             } finally {
                 if (br != null) {
                     try {
-                        br.close(); // Ensure the reader is closed
+                        br.close();
                     } catch (IOException e) {
-                        LOGGER.log(Level.WARNING, "Error closing BufferedReader: {0}", e.getMessage());
+                        LOGGER.log(Level.WARNING, "Error closing BufferedReader: " + e.getMessage());
                     }
                 }
             }
@@ -159,20 +159,17 @@ public abstract class QCmdShellTask implements QCmd {
                 LOGGER.info(GetDoneMessage());
                 return null;
             } else {
-                LOGGER.log(Level.SEVERE, "Shell task failed, exit value: {0}", p1.exitValue());
+                LOGGER.log(Level.SEVERE, "Shell task failed, exit value: " + p1.exitValue());
                 success = false;
-                LOGGER.info(GetDoneMessage());
                 return err();
             }
         } catch (InterruptedException ex) {
-            LOGGER.log(Level.SEVERE, "Shell task interrupted.", ex);
+            LOGGER.log(Level.SEVERE, "Shell task interrupted: " + ex.getMessage());
             success = false;
-            LOGGER.info(GetDoneMessage());
             return err();
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "Shell task IO error.", ex);
+            LOGGER.log(Level.SEVERE, "Shell task IO error: " + ex.getMessage());
             success = false;
-            LOGGER.info(GetDoneMessage());
             return err();
         }
     }

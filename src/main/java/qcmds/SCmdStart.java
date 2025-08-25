@@ -55,7 +55,7 @@ public class SCmdStart extends AbstractSCmd {
 
         int writeResult = connection.TransmitStart();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "Failed to transmit start patch command: USB write error.");
+            LOGGER.log(Level.SEVERE, "Failed to send start patch command: USB write error.");
             setCompletedWithStatus(1);
             return this;
         }

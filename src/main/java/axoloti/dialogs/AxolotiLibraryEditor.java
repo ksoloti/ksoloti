@@ -150,9 +150,9 @@ public class AxolotiLibraryEditor extends JDialog {
         }
 
         if (reloadedLib != null) {
-            LOGGER.log(Level.INFO, "AxolotiLibraryEditor: Reloading editor for ID: {0}", this.library.getId());
-            LOGGER.log(Level.INFO, "  Old local dir (before reload): {0}", this.library.getLocalLocation());
-            LOGGER.log(Level.INFO, "  New local dir (from Preferences): {0}", reloadedLib.getLocalLocation());
+            LOGGER.log(Level.INFO, "AxolotiLibraryEditor: Reloading editor for ID: " + this.library.getId());
+            LOGGER.log(Level.INFO, "  Old local dir (before reload): " + this.library.getLocalLocation());
+            LOGGER.log(Level.INFO, "  New local dir (from Preferences): " + reloadedLib.getLocalLocation());
 
             this.library = reloadedLib;
 

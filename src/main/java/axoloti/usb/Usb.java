@@ -105,7 +105,7 @@ public class Usb {
                             DeviceHandle handle = new DeviceHandle();
                             result = LibUsb.open(device, handle);
                             if (result < 0) {
-                                LOGGER.log(Level.INFO, " but cannot access: {0}", LibUsb.strError(result));
+                                LOGGER.log(Level.INFO, " but cannot access: " + LibUsb.strError(result));
                             }
                             else {
                                 LOGGER.log(Level.INFO, " driver OK");
@@ -118,7 +118,7 @@ public class Usb {
                             hasOne = true;
                         }
                         else {
-                            LOGGER.log(Level.INFO, "* other STM device:\n{0}", descriptor.dump());
+                            LOGGER.log(Level.INFO, "* other STM device:\n" + descriptor.dump());
                             hasOne = true;
                         }
 
@@ -128,14 +128,14 @@ public class Usb {
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);
                         if (result < 0) {
-                            LOGGER.log(Level.INFO, "* Ksoloti USB device, but cannot access: {0}", LibUsb.strError(result));
+                            LOGGER.log(Level.INFO, "* Ksoloti USB device, but cannot access: " + LibUsb.strError(result));
                         }
                         else {
-                            LOGGER.log(Level.INFO, "* Ksoloti USB device, serial #{0}", LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
+                            LOGGER.log(Level.INFO, "* Ksoloti USB device, serial #" + LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
                             LibUsb.close(handle);
                             handle = null; /* Null immediately to prevent race conditions */
                         }
-                        LOGGER.log(Level.INFO, "  location: {0}", DeviceToPath(device));
+                        LOGGER.log(Level.INFO, "  location: " + DeviceToPath(device));
 
                     }
                     else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI) {
@@ -143,13 +143,13 @@ public class Usb {
                         DeviceHandle handle = new DeviceHandle();
                         result = LibUsb.open(device, handle);
                         if (result < 0) {
-                            LOGGER.log(Level.INFO, "* Axoloti USB device, but cannot access: {0}", LibUsb.strError(result));
+                            LOGGER.log(Level.INFO, "* Axoloti USB device, but cannot access: " + LibUsb.strError(result));
                         } else {
-                            LOGGER.log(Level.INFO, "* Axoloti USB device, serial #{0}", LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
+                            LOGGER.log(Level.INFO, "* Axoloti USB device, serial #" + LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
                             LibUsb.close(handle);
                             handle = null; /* Null immediately to prevent race conditions */
                         }
-                        LOGGER.log(Level.INFO, "  location: {0}", DeviceToPath(device));
+                        LOGGER.log(Level.INFO, "  location: " + DeviceToPath(device));
                     }
 
                 }
@@ -184,7 +184,7 @@ public class Usb {
                     DeviceHandle handle = new DeviceHandle();
                     result = LibUsb.open(device, handle);
                     if (result < 0) {
-                        LOGGER.log(Level.SEVERE, "DFU device found but cannot access: {0}", LibUsb.strError(result));
+                        LOGGER.log(Level.SEVERE, "DFU device found but cannot access: " + LibUsb.strError(result));
                         switch (axoloti.utils.OSDetect.getOS()) {
                             case WIN:
                                 LOGGER.log(Level.SEVERE, "Please install the WinUSB driver for the \"STM32 Bootloader\":");
