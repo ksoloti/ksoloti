@@ -473,24 +473,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
                                             SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(f, cal);
                                             createDirCmd.Do();
-                                            if (!createDirCmd.waitForCompletion()) {
-                                                LOGGER.log(Level.SEVERE, "Create directory command timed out.");
-                                                return false;
-                                            }
-                                            else if (!createDirCmd.isSuccessful()) {
-                                                LOGGER.log(Level.SEVERE, "Failed to create directory.");
+                                            if (!createDirCmd.waitForCompletion() || !createDirCmd.isSuccessful()) {
                                                 return false;
                                             }
                                         }
 
                                         SCmdChangeWorkingDirectory changeDirCmd = new SCmdChangeWorkingDirectory(f);
                                         changeDirCmd.Do();
-                                        if (!changeDirCmd.waitForCompletion()) {
-                                            LOGGER.log(Level.SEVERE, "Change working directory command timed out.");
-                                            return false;
-                                        }
-                                        else if (!changeDirCmd.isSuccessful()) {
-                                            LOGGER.log(Level.SEVERE, "Failed to change working directory.");
+                                        if (!changeDirCmd.waitForCompletion() || !changeDirCmd.isSuccessful()) {
                                             return false;
                                         }
 
@@ -510,12 +500,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                 try {
                                     SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch.getBinFile());
                                     uploadCmd.Do();
-                                    if (!uploadCmd.waitForCompletion()) {
-                                        LOGGER.log(Level.SEVERE,"Patch upload timed out.");
-                                        return false;
-                                    }
-                                    else if (!uploadCmd.isSuccessful()) {
-                                        LOGGER.log(Level.SEVERE, "Failed to upload patch.");
+                                    if (!uploadCmd.waitForCompletion() || !uploadCmd.isSuccessful()) {
                                         return false;
                                     }
 
@@ -1355,12 +1340,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 try {
                     SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch.getBinFile());
                     uploadCmd.Do();
-                    if (!uploadCmd.waitForCompletion()) {
-                        LOGGER.log(Level.SEVERE, "Patch upload timed out.");
-                        return;
-                    }
-                    else if (!uploadCmd.isSuccessful()) {
-                        LOGGER.log(Level.SEVERE, "Failed to upload patch.");
+                    if (!uploadCmd.waitForCompletion() || !uploadCmd.isSuccessful()) {
                         return;
                     }
 
@@ -1574,23 +1554,13 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             try {
                                 SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch.getBinFile());
                                 uploadCmd.Do();
-                                if (!uploadCmd.waitForCompletion()) {
-                                    LOGGER.log(Level.SEVERE, "Patch upload command timed out.");
-                                    return false;
-                                }
-                                else if (!uploadCmd.isSuccessful()) {
-                                    LOGGER.log(Level.SEVERE, "Failed to upload patch.");
+                                if (!uploadCmd.waitForCompletion() || !uploadCmd.isSuccessful()) {
                                     return false;
                                 }
 
                                 SCmdCopyPatchToFlash copyToFlashCmd = new SCmdCopyPatchToFlash();
                                 copyToFlashCmd.Do();
-                                if (!copyToFlashCmd.waitForCompletion()) {
-                                    LOGGER.log(Level.SEVERE, "Copy patch to internal Flash command timed out.");
-                                    return false;
-                                }
-                                else if (!copyToFlashCmd.isSuccessful()) {
-                                    LOGGER.log(Level.SEVERE, "Failed to copy patch to internal Flash.");
+                                if (!copyToFlashCmd.waitForCompletion() || !copyToFlashCmd.isSuccessful()) {
                                     return false;
                                 }
                             } catch (Exception e) {

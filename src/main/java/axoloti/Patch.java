@@ -275,12 +275,7 @@ public class Patch {
         try {
             SCmdGetFileList getFileListCmd = new SCmdGetFileList();
             getFileListCmd.Do();
-            if (!getFileListCmd.waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "Get file list command timed out.");
-                return;
-            }
-            else if (!getFileListCmd.isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "Failed to get file list.");
+            if (!getFileListCmd.waitForCompletion() || !getFileListCmd.isSuccessful()) {
                 return;
             }
         } catch (InterruptedException e) {
@@ -319,12 +314,7 @@ public class Patch {
                         try {
                             SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(currentPath, Calendar.getInstance());
                             createDirCmd.Do();
-                            if (!createDirCmd.waitForCompletion()) {
-                                LOGGER.log(Level.SEVERE, "Create directory command timed out.");
-                                return;
-                            }
-                            else if (!createDirCmd.isSuccessful()) {
-                                LOGGER.log(Level.SEVERE, "Failed to create directory.");
+                            if (!createDirCmd.waitForCompletion() || !createDirCmd.isSuccessful()) {
                                 return;
                             }
                         } catch (InterruptedException e) {
@@ -368,16 +358,11 @@ public class Patch {
                 //     LOGGER.log(Level.INFO, "File {0} is larger than 8MB, skipping upload.", f.getName());
                 //     continue;
                 // }
-                
+
                 try {
                     SCmdUploadFile uploadFileCmd = new SCmdUploadFile(f, targetfn);
                     uploadFileCmd.Do();
-                    if (!uploadFileCmd.waitForCompletion()) {
-                        LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
-                        continue;
-                    }
-                    else if (!uploadFileCmd.isSuccessful()) {
-                        LOGGER.log(Level.SEVERE, "Failed to upload file " + f.getName());
+                    if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
                         continue;
                     }
                 } catch (InterruptedException e) {
@@ -3127,12 +3112,7 @@ public class Patch {
                 try {
                     SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(sdfilename.substring(0, i), cal);
                     createDirCmd.Do();
-                    if (!createDirCmd.waitForCompletion()) {
-                        LOGGER.log(Level.SEVERE, "Create directory command timed out.");
-                        return;
-                    }
-                    else if (!createDirCmd.isSuccessful()) {
-                        LOGGER.log(Level.SEVERE, "Failed to create directory.");
+                    if (!createDirCmd.waitForCompletion() || !createDirCmd.isSuccessful()) {
                         return;
                     }
                 } catch (InterruptedException e) {
@@ -3161,11 +3141,8 @@ public class Patch {
             try {
                 SCmdUploadFile uploadFileCmd = new SCmdUploadFile(getBinFile(), sdfilename, cal);
                 uploadFileCmd.Do();
-                if (!uploadFileCmd.waitForCompletion()) {
-                    LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
-                }
-                else if (!uploadFileCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Failed to upload file " + f.getName());
+                if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
+                    return;
                 }
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file.", e);
@@ -3190,11 +3167,8 @@ public class Patch {
                     try {
                         SCmdUploadFile uploadFileCmd = new SCmdUploadFile(f, backupFilePath, cal);
                         uploadFileCmd.Do();
-                        if (!uploadFileCmd.waitForCompletion()) {
-                            LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
-                        }
-                        else if (!uploadFileCmd.isSuccessful()) {
-                            LOGGER.log(Level.SEVERE, "Failed to upload file " + f.getName());
+                        if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
+                            return;
                         }
                     } catch (InterruptedException e) {
                         LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file.", e);

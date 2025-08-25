@@ -851,11 +851,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             try {
                 SCmdUploadFile uploadFileCmd = new SCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
                 uploadFileCmd.Do();
-                if (!uploadFileCmd.waitForCompletion()) {
-                    LOGGER.log(Level.SEVERE, "File upload command for Patchbank index timed out.");
-                }
-                else if (!uploadFileCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Failed to upload Patchbank index.");
+                if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
+                    return;
                 }
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Thread interrupted while uploading Patchbank index: " + e.getMessage());
@@ -863,7 +860,6 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                 Thread.currentThread().interrupt();
             }
         }
-        // LOGGER.log(Level.INFO, "Done uploading Patchbank index.");
         refresh();
     }
 
@@ -1022,11 +1018,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                     try {
                         SCmdUploadFile uploadFileCmd = new SCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
                         uploadFileCmd.Do();
-                        if (!uploadFileCmd.waitForCompletion()) {
-                            LOGGER.log(Level.SEVERE, "File upload command for Patchbank index timed out.");
-                        }
-                        else if (!uploadFileCmd.isSuccessful()) {
-                            LOGGER.log(Level.SEVERE, "Failed to upload Patchbank index.");
+                        if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
+                            return;
                         }
                     } catch (InterruptedException e) {
                         LOGGER.log(Level.SEVERE, "Thread interrupted while uploading Patchbank index: " + e.getMessage());

@@ -856,23 +856,13 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 try {
                     SCmdUploadFWSDRam uploadFwCmd = new SCmdUploadFWSDRam(p);
                     uploadFwCmd.Do();
-                    if (!uploadFwCmd.waitForCompletion()) {
-                        LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM command timed out.");
-                        return false;
-                    }
-                    else if (!uploadFwCmd.isSuccessful()) {
-                        LOGGER.log(Level.SEVERE, "Failed to upload firmware to SDRAM.");
+                    if (!uploadFwCmd.waitForCompletion() || !uploadFwCmd.isSuccessful()) {
                         return false;
                     }
 
                     SCmdUploadPatch uploadPatchCmd = new SCmdUploadPatch(f);
                     uploadPatchCmd.Do();
-                    if (!uploadPatchCmd.waitForCompletion()) {
-                        LOGGER.log(Level.SEVERE, "Flasher upload command timed out.");
-                        return false;
-                    }
-                    else if (!uploadPatchCmd.isSuccessful()) {
-                        LOGGER.log(Level.SEVERE, "Failed to upload Flasher.");
+                    if (!uploadPatchCmd.waitForCompletion() || !uploadPatchCmd.isSuccessful()) {
                         return false;
                     }
 
@@ -897,7 +887,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         SCmdStartFlasher startFlasherCmd = new SCmdStartFlasher();
                         LOGGER.log(Level.INFO, startFlasherCmd.GetStartMessage());
                         startFlasherCmd.Do();
-                        LOGGER.log(Level.INFO, startFlasherCmd.GetDoneMessage());
+                        LOGGER.log(Level.SEVERE, startFlasherCmd.GetDoneMessage());
                         /* Do not waitForCompletion or check isSuccessful here 
                            because MCU will have rebooted automatically by now,
                            which counts as success */
@@ -1465,7 +1455,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             cp.Do(QCmdProcessor.getInstance());
             CommandManager.getInstance().endLongOperation();
             if (patch1.waitForBinFile()) {
-                // LOGGER.log(Level.INFO, "Done compiling patch.\n");
                 /* If a Core is connected and test patch .bin could be created:
                 stop patch, upload test patch .bin to RAM, start patch, report status */
                 if (USBBulkConnection.getInstance().isConnected()) {
@@ -1473,14 +1462,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch1.getBinFile());
                     uploadCmd.Do();
                     CommandManager.getInstance().endLongOperation();
-                    if (!uploadCmd.waitForCompletion()) {
-                        LOGGER.log(Level.SEVERE, "Test patch upload command timed out.");
+                    if (!uploadCmd.waitForCompletion() || !uploadCmd.isSuccessful()) {
                         return false; /* Abort test of this patch */
                     }
-                    else if (!uploadCmd.isSuccessful()) {
-                        LOGGER.log(Level.SEVERE, "Failed to upload test patch.");
-                        return false; /* Abort test of this patch */
-                    }
+
                     setCurrentLivePatch(patch1);
                     Thread.sleep(1000);
 
@@ -1675,12 +1660,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             try {
                 SCmdUploadPatch uploadMounterCmd = new SCmdUploadPatch(f);
                 uploadMounterCmd.Do();
-                if (!uploadMounterCmd.waitForCompletion()) {
-                    LOGGER.log(Level.SEVERE, "Mounter upload command timed out.");
-                    return;
-                }
-                else if (!uploadMounterCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Failed to upload Mounter.");
+                if (!uploadMounterCmd.waitForCompletion() || !uploadMounterCmd.isSuccessful()) {
                     return;
                 }
             } catch (Exception e) {
@@ -1822,12 +1802,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             try {
                 SCmdStop stopCmd = new SCmdStop();
                 stopCmd.Do();
-                if (!stopCmd.waitForCompletion()) {
-                    LOGGER.log(Level.SEVERE, "Patch stop command timed out.");
-                    return;
-                }
-                else if (!stopCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Failed to stop patch.");
+                if (!stopCmd.waitForCompletion() || !stopCmd.isSuccessful()) {
                     return;
                 }
             } catch (Exception e) {
@@ -1845,12 +1820,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             try {
                 SCmdStart startCmd = new SCmdStart(this.currentLivePatch);
                 startCmd.Do();
-                if (!startCmd.waitForCompletion()) {
-                    LOGGER.log(Level.SEVERE, "Patch start command for " + this.currentLivePatch.getFileNamePath() + " timed out.");
-                    return;
-                }
-                else if (!startCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Failed to start patch: " + this.currentLivePatch.getFileNamePath());
+                if (!startCmd.waitForCompletion() || !startCmd.isSuccessful()) {
                     return;
                 }
 

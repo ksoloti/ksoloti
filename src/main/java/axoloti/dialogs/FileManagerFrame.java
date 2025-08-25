@@ -208,12 +208,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
                                     SCmdUploadFile uploadFileCmd = new SCmdUploadFile(f, f.getName());
                                     uploadFileCmd.Do();
-                                    if (!uploadFileCmd.waitForCompletion()) {
-                                        LOGGER.log(Level.SEVERE, "File upload command for " + f.getName() + " timed out.");
-                                        continue; /* Skip to next file */
-                                    }
-                                    else if (!uploadFileCmd.isSuccessful()) {
-                                        LOGGER.log(Level.SEVERE, "Failed to upload file " + f.getName());
+                                    if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
                                         continue; /* Skip to next file */
                                     }
                                 }
@@ -608,12 +603,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             try {
                 SCmdDeleteFile deleteDirCmd = new SCmdDeleteFile(pathForFatFsDelete);
                 deleteDirCmd.Do();
-                if (!deleteDirCmd.waitForCompletion()) {
-                    LOGGER.log(Level.SEVERE, "Delete file command timed out: " + sdCardPath);
-                    return false;
-                }
-                else if (!deleteDirCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Failed to delete empty directory: " + sdCardPath);
+                if (!deleteDirCmd.waitForCompletion() || !deleteDirCmd.isSuccessful()) {
                     return false;
                 }
 
@@ -633,17 +623,11 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             try {
                 SCmdDeleteFile deleteFileCmd = new SCmdDeleteFile(pathForFatFsDelete);
                 deleteFileCmd.Do();
-                if (!deleteFileCmd.waitForCompletion()) {
-                    LOGGER.log(Level.SEVERE, "Delete file command timed out: " + sdCardPath);
-                    return false;
-                }
-                else if (!deleteFileCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Failed to delete file: " + sdCardPath);
+                if (!deleteFileCmd.waitForCompletion() || !deleteFileCmd.isSuccessful()) {
                     return false;
                 }
 
                 SDCardInfo.getInstance().Delete(sdCardPath);
-                LOGGER.log(Level.INFO, "Done deleting file.\n");
                 return true;
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Thread interrupted while deleting directory: " + e.getMessage());
@@ -704,12 +688,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     System.out.println(Instant.now() + " Sending SCmdGetFileList()...");
                     SCmdGetFileList getFileListCmd = new SCmdGetFileList();
                     getFileListCmd.Do();
-                    if (!getFileListCmd.waitForCompletion()) {
-                        LOGGER.log(Level.SEVERE, "Get file list command timed out.");
-                        return null;
-                    }
-                    else if (!getFileListCmd.isSuccessful()) {
-                        LOGGER.log(Level.SEVERE, "Failed to get file list.");
+                    if (!getFileListCmd.waitForCompletion() || !getFileListCmd.isSuccessful()) {
                         return null;
                     }
                 }
@@ -812,13 +791,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                 try {
                                     SCmdUploadFile uploadFileCmd = new SCmdUploadFile(file, targetDirectory + file.getName());
                                     uploadFileCmd.Do();
-                                    if (!uploadFileCmd.waitForCompletion()) {
-                                        LOGGER.log(Level.SEVERE, "File upload command for " + file.getName() + " timed out.");
-                                        failedCount++;
-                                        continue; /* Skip to next file if failed */
-                                    }
-                                    else if (!uploadFileCmd.isSuccessful()) {
-                                        LOGGER.log(Level.SEVERE, "Failed to upload file " + file.getName());
+                                    if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
                                         failedCount++;
                                         continue; /* Skip to next file if failed */
                                     }
@@ -1006,12 +979,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             try {
                 SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(dir + fn, cal);
                 createDirCmd.Do();
-                if (!createDirCmd.waitForCompletion()) {
-                    LOGGER.log(Level.SEVERE, "Create directory command timed out.");
-                    return;
-                }
-                else if (!createDirCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Failed to create directory.");
+                if (!createDirCmd.waitForCompletion() || createDirCmd.waitForCompletion()) {
                     return;
                 }
             } catch (InterruptedException e) {

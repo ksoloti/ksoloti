@@ -456,10 +456,10 @@ public class USBBulkConnection extends Connection {
                 SCmdGetFWVersion fwVersionCmd = new SCmdGetFWVersion();
                 fwVersionCmd.Do(this);
                 if (!fwVersionCmd.waitForCompletion()) {
-                    LOGGER.log(Level.SEVERE, "Get FW version command timed out.");
+                    LOGGER.log(Level.SEVERE, "Get firmware version command timed out.");
                 }
                 else if (!fwVersionCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Failed to get FW version.");
+                    LOGGER.log(Level.SEVERE, "Failed to get firmware version.");
                 }
 
                 SCmdMemRead1Word cpuRevisionCmd = new SCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
@@ -484,7 +484,7 @@ public class USBBulkConnection extends Connection {
                 this.detectedCpuId = CpuIdToHexString(targetProfile.getCPUSerial());
             }
             catch (Exception cmdEx) {
-                LOGGER.log(Level.SEVERE, "Error during post-connection QCmd processing. Connection might be unstable: " + cmdEx.getMessage());
+                LOGGER.log(Level.SEVERE, "Error during post-connection SCmd processing: " + cmdEx.getMessage());
                 cmdEx.printStackTrace(System.out);
                 return false;
             }
@@ -512,7 +512,7 @@ public class USBBulkConnection extends Connection {
     
     @Override
     public void disconnect() {
-        /* Guard against redundant calls */
+        /* Guard against repeated calls */
         if (this.disconnectRequested && !connected) {
             return;
         }
@@ -596,7 +596,7 @@ public class USBBulkConnection extends Connection {
             }
 
             /* Perform USB resource cleanup (only after threads are confirmed stopped or timed out) */
-            synchronized (usbOutLock) {
+            // synchronized (usbOutLock) {
                 if (handle != null) {
                     try {
 
@@ -629,7 +629,7 @@ public class USBBulkConnection extends Connection {
                         handle = null; /* Should already be null but just to be sure */
                     }
                 }
-            }
+            // }
         }
         catch (Exception mainEx) {
             LOGGER.log(Level.SEVERE, "Error during Disconnect cleanup: " + mainEx.getMessage());
@@ -916,6 +916,7 @@ public class USBBulkConnection extends Connection {
                     default:  errstr = Integer.toString(result); break;
                 }
                 LOGGER.log(Level.SEVERE, "USB bulk write failed: " + errstr);
+                disconnect();
             }
             return result;
         } /* end synchronize (usbOutLock) */
