@@ -60,14 +60,14 @@
  * @brief   Write timeout in milliseconds.
  */
 #if !defined(STM32_SDC_SDMMC_WRITE_TIMEOUT) || defined(__DOXYGEN__)
-#define STM32_SDC_SDMMC_WRITE_TIMEOUT       250
+#define STM32_SDC_SDMMC_WRITE_TIMEOUT       1000
 #endif
 
 /**
  * @brief   Read timeout in milliseconds.
  */
 #if !defined(STM32_SDC_SDMMC_READ_TIMEOUT) || defined(__DOXYGEN__)
-#define STM32_SDC_SDMMC_READ_TIMEOUT        25
+#define STM32_SDC_SDMMC_READ_TIMEOUT        1000
 #endif
 
 /**
