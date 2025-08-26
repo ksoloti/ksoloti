@@ -1456,7 +1456,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 /* If a Core is connected and test patch .bin could be created:
                 stop patch, upload test patch .bin to RAM, start patch, report status */
                 if (USBBulkConnection.getInstance().isConnected()) {
-                    setCurrentLivePatch(null);
+
                     CommandManager.getInstance().startLongOperation();
                     SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch1.getBinFile());
                     uploadCmd.Do();
