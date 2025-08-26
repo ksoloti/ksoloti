@@ -3,6 +3,8 @@ Mass Storage Device
 
 This driver implements a USB mass storage device. It requires a Chibios block device (e.g mmc_spi or SDC)
 
+(Mods by Ksoloti in 2025)
+
 Example usage:
 --------------
 ```c

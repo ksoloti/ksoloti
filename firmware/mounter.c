@@ -23,8 +23,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "ff.h"
-#include "ffconf.h"
+// #include "ff.h"
+// #include "ffconf.h"
 // #include "axoloti_board.h"
 
 #if defined(BOARD_AXOLOTI_CORE) || defined(BOARD_KSOLOTI_CORE)
@@ -259,6 +259,11 @@ static void usbEvent(USBDriver *usbp, usbevent_t event) {
     }
 }
 
+static const SDCConfig sdcConfig = {
+  NULL,
+  SDC_MODE_4BIT
+};
+
 /* Configuration of the USB driver */
 static const USBConfig usbConfig = {
     usbEvent,
@@ -286,11 +291,11 @@ static const USBMassStorageConfig msdConfig = {
 
 #if defined(BOARD_KSOLOTI_CORE)
     "Ksoloti",
+    "Ksoloti Cardreader",
 #elif defined(BOARD_AXOLOTI_CORE)
     "Axoloti",
+    "Axoloti Cardreader",
 #endif
-
-    "Cardreader",
     "0.1"
 };
 
@@ -305,8 +310,6 @@ int mounter(void) {
     palClearPad(LED1_PORT, LED1_PIN);
     palClearPad(LED2_PORT, LED2_PIN);
 
-    chSysInit();
-
     palSetPadMode(GPIOA, 11, PAL_MODE_ALTERNATE(10));
     palSetPadMode(GPIOA, 12, PAL_MODE_ALTERNATE(10));
 
@@ -319,47 +322,9 @@ int mounter(void) {
     chThdSleepMilliseconds(1);
 
     /* initialize the SD card */
-    sdcStart(&SDCD1, NULL);
+    sdcObjectInit(&SDCD1);
+    sdcStart(&SDCD1, &sdcConfig);
     sdcConnect(&SDCD1);
-
-    FATFS SDC_FS;
-    FRESULT err;
-    /* mount the FS in FatFS... */
-    err = f_mount(&SDC_FS, "", 0);
-    chThdSleepMilliseconds(10);
-    /* Then unmount it again. (0 or NULL as first argument)
-       This should clear the dirty bit or whatever else it is the Mounter dislikes. */
-    err |= f_mount(NULL, "", 0);
-    if (err != FR_OK) {
-        /* If card couldn't be mounted/unmounted even by FatFS,
-           either there is no card connected, or the card is faulty.
-           Do a slow alternate blink pattern and reboot. */
-        palClearPad(LED1_PORT, LED1_PIN);
-        palSetPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
-        palSetPad(LED1_PORT, LED1_PIN);
-        palClearPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
-        palClearPad(LED1_PORT, LED1_PIN);
-        palSetPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
-        palSetPad(LED1_PORT, LED1_PIN);
-        palClearPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
-        palClearPad(LED1_PORT, LED1_PIN);
-        palSetPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
-        palSetPad(LED1_PORT, LED1_PIN);
-        palClearPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
-        palClearPad(LED1_PORT, LED1_PIN);
-        palSetPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
-        palSetPad(LED1_PORT, LED1_PIN);
-        palClearPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
-        NVIC_SystemReset();
-    }
 
     /* initialize the USB mass storage driver */
     msdInit(&UMSD1);
@@ -373,7 +338,31 @@ int mounter(void) {
     if (ret != 0) {
         /* no media found : bye bye! */
         usbDisconnectBus(&USBD1);
-        chThdSleepMilliseconds(1000);
+        /* Do a slow alternate blink pattern and reboot. */
+        palClearPad(LED1_PORT, LED1_PIN);
+        palSetPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
+        palSetPad(LED1_PORT, LED1_PIN);
+        palClearPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
+        palClearPad(LED1_PORT, LED1_PIN);
+        palSetPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
+        palSetPad(LED1_PORT, LED1_PIN);
+        palClearPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
+        palClearPad(LED1_PORT, LED1_PIN);
+        palSetPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
+        palSetPad(LED1_PORT, LED1_PIN);
+        palClearPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
+        palClearPad(LED1_PORT, LED1_PIN);
+        palSetPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
+        palSetPad(LED1_PORT, LED1_PIN);
+        palClearPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
         NVIC_SystemReset();
     }
 
