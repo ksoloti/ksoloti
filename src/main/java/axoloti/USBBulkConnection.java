@@ -620,8 +620,10 @@ public class USBBulkConnection extends Connection {
                     }
 
                     try {
-                        LibUsb.close(handle);
-                        handle = null; /* Null immediately to prevent race conditions */
+                        if (handle != null) {
+                            LibUsb.close(handle);
+                            handle = null; /* Null immediately to prevent race conditions */
+                        }
                     }
                     catch (LibUsbException closeEx) {
                         System.err.println(Instant.now() + " [ERROR] Disconnect: Error closing handle (may be normal after reset): " + closeEx.getMessage());
@@ -712,6 +714,7 @@ public class USBBulkConnection extends Connection {
         finally {
             if (handle != null) {
                 LibUsb.close(handle);
+                handle = null; /* Null immediately to prevent race conditions */
             }
         }
     }
@@ -771,8 +774,10 @@ public class USBBulkConnection extends Connection {
                     if (targetCpuId != null && serial != null && serial.equals(targetCpuId)) {
                         return h; /* Found the specific device */
                     }
-                    LibUsb.close(h);
-                    h = null; /* Null immediately to prevent race conditions */
+                    if (h != null) {
+                        LibUsb.close(h);
+                        h = null; /* Null immediately to prevent race conditions */
+                    }
                     return null;
                 }
                 else {

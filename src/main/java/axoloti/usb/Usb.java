@@ -109,8 +109,10 @@ public class Usb {
                             }
                             else {
                                 LOGGER.log(Level.INFO, " driver OK");
-                                LibUsb.close(handle);
-                                handle = null; /* Null immediately to prevent race conditions */
+                                if (handle != null) {
+                                    LibUsb.close(handle);
+                                    handle = null; /* Null immediately to prevent race conditions */
+                                }
                             }
                         }
                         else if (descriptor.idProduct() == PID_STM_STLINK) {
@@ -132,8 +134,10 @@ public class Usb {
                         }
                         else {
                             LOGGER.log(Level.INFO, "* Ksoloti USB device, serial #" + LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
-                            LibUsb.close(handle);
-                            handle = null; /* Null immediately to prevent race conditions */
+                            if (handle != null) {
+                                LibUsb.close(handle);
+                                handle = null; /* Null immediately to prevent race conditions */
+                            }
                         }
                         LOGGER.log(Level.INFO, "  location: " + DeviceToPath(device));
 
@@ -146,8 +150,10 @@ public class Usb {
                             LOGGER.log(Level.INFO, "* Axoloti USB device, but cannot access: " + LibUsb.strError(result));
                         } else {
                             LOGGER.log(Level.INFO, "* Axoloti USB device, serial #" + LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
-                            LibUsb.close(handle);
-                            handle = null; /* Null immediately to prevent race conditions */
+                            if (handle != null) {
+                                LibUsb.close(handle);
+                                handle = null; /* Null immediately to prevent race conditions */
+                            }
                         }
                         LOGGER.log(Level.INFO, "  location: " + DeviceToPath(device));
                     }
@@ -198,8 +204,10 @@ public class Usb {
                         return false;
                     }
                     else {
-                        LibUsb.close(handle);
-                        handle = null; /* Null immediately to prevent race conditions */
+                        if (handle != null) {
+                            LibUsb.close(handle);
+                            handle = null; /* Null immediately to prevent race conditions */
+                        }
                         return true;
                     }
                 }
