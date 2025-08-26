@@ -69,12 +69,12 @@ public class SCmdStart extends AbstractSCmd {
                 return this;
             }
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "Start patch command for " + p.getPatchframe().getName() + " timed out.");
+                LOGGER.log(Level.SEVERE, "Start patch command for " + p.getPatchframe().getFile().getAbsolutePath() + " timed out.");
                 setCompletedWithStatus(1);
                 return this;
             }
             else if (!isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "Failed to start patch " + p.getPatchframe().getName() + ".");
+                LOGGER.log(Level.SEVERE, "Failed to start patch " + p.getPatchframe().getFile().getAbsolutePath() + ".");
                 return this;
             }
         }
