@@ -485,7 +485,7 @@ public class USBBulkConnection extends Connection {
                 this.detectedCpuId = CpuIdToHexString(targetProfile.getCPUSerial());
             }
             catch (Exception cmdEx) {
-                LOGGER.log(Level.SEVERE, "Error during post-connection SCmd processing: " + cmdEx.getMessage());
+                // LOGGER.log(Level.SEVERE, "Error during post-connection SCmd processing: " + cmdEx.getMessage());
                 cmdEx.printStackTrace(System.out);
                 return false;
             }
@@ -633,7 +633,7 @@ public class USBBulkConnection extends Connection {
             // }
         }
         catch (Exception mainEx) {
-            LOGGER.log(Level.SEVERE, "Error during Disconnect cleanup: " + mainEx.getMessage());
+            // LOGGER.log(Level.SEVERE, "Error during Disconnect cleanup: " + mainEx.getMessage());
             mainEx.printStackTrace(System.out);
         }
         finally {
