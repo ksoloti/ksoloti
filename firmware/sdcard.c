@@ -158,7 +158,7 @@ void sdcard_init(void) {
   palSetPadMode(GPIOD, 2, PAL_MODE_ALTERNATE(12) | PAL_STM32_OSPEED_MID2);
   chThdSleepMicroseconds(1);
   sdcStart(&SDCD1, NULL);
-  chThdSleepMilliseconds(50);
+  // chThdSleepMilliseconds(50);
 
   // InsertHandler(0);
 
