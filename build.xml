@@ -64,6 +64,12 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/batik-1.19/lib/xml-apis-ext-1.3.04.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/jfilechooser-bookmarks-0.1.11.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/jclipboardhelper-0.1.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/test/byte-buddy-1.15.11.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/test/byte-buddy-agent-1.15.11.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/test/hamcrest-core-1.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/test/junit-4.13.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/test/mockito-core-5.12.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/test/mockito-inline-5.2.0.jar"/>
 
             <!-- Include source in the .jar for debugging -->
             <fileset dir="src">
@@ -199,6 +205,12 @@
                 <include name="xmlgraphics-commons-*.jar"/>
                 <include name="jfilechooser-bookmarks-*.jar"/>
                 <include name="jclipboardhelper-*.jar"/>
+                <include name="test/byte-buddy-*.jar"/>
+                <include name="test/byte-buddy-agent-*.jar"/>
+                <include name="test/hamcrest-core-*.jar"/>
+                <include name="test/junit-*.jar"/>
+                <include name="test/mockito-core-*.jar"/>
+                <include name="test/mockito-inline-*.jar"/>
             </fileset>
             <fileset dir=".">
                 <include name="doc/*"/>
