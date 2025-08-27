@@ -1505,7 +1505,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             }
 
             try {
-                Thread.sleep(200);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

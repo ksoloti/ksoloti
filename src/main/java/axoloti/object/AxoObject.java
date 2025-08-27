@@ -755,7 +755,8 @@ public class AxoObject extends AxoObjectAbstract {
         AxoObject clonedObject = (AxoObject) super.clone();
         deepCopyFields(this, clonedObject);
 
-        clonedObject.id = GenerateUUID();
+        clonedObject.id = this.id;
+        clonedObject.uuid = GenerateUUID();
         clonedObject.sObjFilePath = null;
         clonedObject.shortId = null;
 
