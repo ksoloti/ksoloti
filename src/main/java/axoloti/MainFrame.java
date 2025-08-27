@@ -1437,7 +1437,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             pf.createBufferStrategy(1);
             patch1.setFileNamePath(f.getPath());
             patch1.PostContructor();
-            patch1.WriteCode(true); // generate code as own path/filename .cpp
+            patch1.WriteCode();
             Thread.sleep(200); 
 
             File binFile = patch1.getBinFile();

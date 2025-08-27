@@ -2801,7 +2801,7 @@ public class Patch {
     }
 
     public void WriteCode() {
-        WriteCode(false);
+        WriteCode(true); /* Default to subfolder generation for build files */
     }
 
     public void Compile() {
@@ -3099,7 +3099,7 @@ public class Patch {
     }
 
     public void UploadToSDCard(String sdfilename) {
-        WriteCode(true);
+        WriteCode();
         LOGGER.log(Level.INFO, "SD card filename: " + sdfilename);
 
         this.Compile();
