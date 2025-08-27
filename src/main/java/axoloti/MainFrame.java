@@ -209,8 +209,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     public MainFrame(String args[]) {
         this.args = args;
 
-        Usb.initialize();
-
         initComponents();
         fileMenu.initComponents();
         setIconImage(Constants.APP_ICON.getImage());
@@ -1576,7 +1574,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void jMenuItemFlashDFUActionPerformed(java.awt.event.ActionEvent evt) {
-        if (Usb.isDFUDeviceAvailable()) {
+        if (USBBulkConnection.isDFUDeviceAvailable()) {
             updateLinkFirmwareID();
             setCurrentLivePatch(null);
             QCmdProcessor.getInstance().AppendToQueue(new QCmdDisconnect());

@@ -2008,7 +2008,7 @@ public class Patch {
                 controllerInstance = x.CreateInstance(null, "ctrl0x123", new Point(0, 0));
             }
             else {
-                LOGGER.log(Level.SEVERE, "Unable to create controller object: " + cobjstr);
+                LOGGER.log(Level.SEVERE, "Failed to create controller object: " + cobjstr);
             }
         }
 

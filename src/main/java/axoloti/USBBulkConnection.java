@@ -24,21 +24,27 @@ import axoloti.displays.DisplayInstance;
 import axoloti.parameters.ParameterInstance;
 import axoloti.sd.SDCardInfo;
 import axoloti.targetprofile.ksoloti_core;
-import axoloti.usb.Usb;
 import axoloti.utils.Preferences;
 
 import static axoloti.dialogs.USBPortSelectionDlg.ErrorString;
 import static axoloti.usb.Usb.DeviceToPath;
+
 import static axoloti.usb.Usb.PID_AXOLOTI;
 import static axoloti.usb.Usb.PID_AXOLOTI_SDCARD;
 import static axoloti.usb.Usb.PID_AXOLOTI_USBAUDIO;
 import static axoloti.usb.Usb.PID_KSOLOTI;
 import static axoloti.usb.Usb.PID_KSOLOTI_SDCARD;
 import static axoloti.usb.Usb.PID_KSOLOTI_USBAUDIO;
-
+import static axoloti.usb.Usb.PID_STM_CDC;
 import static axoloti.usb.Usb.PID_STM_DFU;
+import static axoloti.usb.Usb.PID_STM_STLINK;
 import static axoloti.usb.Usb.VID_AXOLOTI;
 import static axoloti.usb.Usb.VID_STM;
+import static axoloti.usb.Usb.bulkPIDAxoloti;
+import static axoloti.usb.Usb.bulkPIDAxolotiUsbAudio;
+import static axoloti.usb.Usb.bulkPIDKsoloti;
+import static axoloti.usb.Usb.bulkPIDKsolotiUsbAudio;
+import static axoloti.usb.Usb.bulkVID;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
@@ -100,8 +106,8 @@ public class USBBulkConnection extends Connection {
     private String targetCpuId;
     private String detectedCpuId;
     private ksoloti_core targetProfile;
-    private final Context context;
-    private volatile DeviceHandle handle;
+    private static volatile Context context; /* One context for all libusb operations */
+    private static volatile DeviceHandle handle;
     static private volatile USBBulkConnection conn = null;
 
     ByteBuffer dispData;
@@ -136,24 +142,18 @@ public class USBBulkConnection extends Connection {
     private final static byte[] Axoy_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('y')};
     private final static byte[] Axom_pckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('m')};
 
-    private final static short bulkVID = (short) 0x16C0;
-    private final static short bulkPIDAxoloti = (short) 0x0442;
-    private final static short bulkPIDAxolotiUsbAudio = (short) 0x0447;
-    private final static short bulkPIDKsoloti = (short) 0x0444;
-    private final static short bulkPIDKsolotiUsbAudio = (short) 0x0446;
     private static int useBulkInterfaceNumber = 2;
-
-    private final static Pattern sdFoundNoStartupPattern = Pattern.compile("File error:.*filename:\"/start.bin\"");
 
     private final static byte OUT_ENDPOINT = (byte) 0x02;
     private final static byte IN_ENDPOINT = (byte) 0x82;
 
     private int currentFileSize;
     private int currentFileTimestamp;
+    private final static Pattern sdFoundNoStartupPattern = Pattern.compile("File error:.*filename:\"/start.bin\"");
 
     private volatile Object usbInLock = new Object();  /* For IN endpoint operations (reading) */
     private volatile Object usbOutLock = new Object(); /* For OUT endpoint operations (writing) */
-    private volatile Object handleLock = new Object(); /* Single lock for all critical sections that access the USB handle */
+    private static volatile Object handleLock = new Object(); /* Single lock for all critical sections that access the USB handle */
 
     protected volatile SCmd currentExecutingCommand = null;
 
@@ -173,10 +173,6 @@ public class USBBulkConnection extends Connection {
         COMMANDRESULT_PCKT  /* New Response Packet: ['A', 'x', 'o', 'R', command_byte, status_byte] */
     };
 
-    /*
-     * Protocol documentation:
-     * "AxoP" + bb + vvvv -> parameter change index bb (16bit), value vvvv (32bit)
-     */
     private ReceiverState state = ReceiverState.IDLE;
     private int headerstate;
     private int[] packetData = new int[64];
@@ -247,7 +243,8 @@ public class USBBulkConnection extends Connection {
                         for (int i = 0; i < sz; i++) {
                             try {
                                 receiverBlockingQueue.put(receivedData[i]); 
-                            } catch (InterruptedException e) {
+                            }
+                            catch (InterruptedException e) {
                                 Thread.currentThread().interrupt();
                                 break;
                             }
@@ -315,7 +312,8 @@ public class USBBulkConnection extends Connection {
                     Byte b = receiverBlockingQueue.take();
                     processByte(b);
                 }
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e) {
                 // Thread was interrupted, exit gracefully
                 Thread.currentThread().interrupt();
             }
@@ -323,6 +321,7 @@ public class USBBulkConnection extends Connection {
     }
 
 	protected USBBulkConnection() {
+        initialize();
         this.sync = new Sync();
         this.patch = null;
 
@@ -331,7 +330,6 @@ public class USBBulkConnection extends Connection {
         connected = false;
         queueSerialTask = new ArrayBlockingQueue<SCmd>(99);
         receiverBlockingQueue = new LinkedBlockingQueue<>();
-        this.context = Usb.getContext();
     }
 
     public static Connection getInstance() {
@@ -343,6 +341,202 @@ public class USBBulkConnection extends Connection {
             }
         }
         return conn;
+    }
+
+    public static Context getContext() {
+        return context;
+    }
+
+    public static void initialize() {
+        synchronized (handleLock) {
+            if (context == null) {
+                context = new Context();
+                int result = LibUsb.init(context);
+                if (result != LibUsb.SUCCESS) {
+                    throw new LibUsbException("Failed to initialize libusb: ", result);
+                }
+            }
+        }
+    }
+
+    public static void shutdown() {
+        synchronized (handleLock) {
+            if (context != null) {
+                LibUsb.exit(context);
+            }
+        }
+    }
+
+    public static void listDevices() {
+        synchronized (handleLock) {
+            DeviceList list = new DeviceList();
+            int result = LibUsb.getDeviceList(context, list);
+            if (result < 0) {
+                throw new LibUsbException("Failed to get device list", result);
+            }
+            try {
+                LOGGER.log(Level.INFO, "Relevant USB Devices currently attached:");
+                boolean hasOne = false;
+                for (Device device : list) {
+                    DeviceDescriptor descriptor = new DeviceDescriptor();
+                    result = LibUsb.getDeviceDescriptor(device, descriptor);
+                    if (result == LibUsb.SUCCESS) {
+                        if (descriptor.idVendor() == VID_STM) {
+                            if (descriptor.idProduct() == PID_STM_CDC) {
+                                hasOne = true;
+                                LOGGER.log(Level.INFO, "* USB Serial port device");
+                            }
+                            else if (descriptor.idProduct() == PID_STM_DFU) {
+                                hasOne = true;
+                                LOGGER.log(Level.INFO, "* DFU device");
+                                DeviceHandle handle = new DeviceHandle();
+                                result = LibUsb.open(device, handle);
+                                if (result < 0) {
+                                    LOGGER.log(Level.INFO, " but cannot access: " + LibUsb.strError(result));
+                                }
+                                else {
+                                    LOGGER.log(Level.INFO, " driver OK");
+                                    if (handle != null) {
+                                        LibUsb.close(handle);
+                                        handle = null; /* Null immediately to prevent race conditions */
+                                    }
+                                }
+                            }
+                            else if (descriptor.idProduct() == PID_STM_STLINK) {
+                                LOGGER.log(Level.INFO, "* STM STLink");
+                                hasOne = true;
+                            }
+                            else {
+                                LOGGER.log(Level.INFO, "* other STM device:\n" + descriptor.dump());
+                                hasOne = true;
+                            }
+
+                        }
+                        else if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_KSOLOTI) {
+                            hasOne = true;
+                            DeviceHandle handle = new DeviceHandle();
+                            result = LibUsb.open(device, handle);
+                            if (result < 0) {
+                                LOGGER.log(Level.INFO, "* Ksoloti USB device, but cannot access: " + LibUsb.strError(result));
+                            }
+                            else {
+                                LOGGER.log(Level.INFO, "* Ksoloti USB device, serial #" + LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
+                                if (handle != null) {
+                                    LibUsb.close(handle);
+                                    handle = null; /* Null immediately to prevent race conditions */
+                                }
+                            }
+                            LOGGER.log(Level.INFO, "  location: " + DeviceToPath(device));
+
+                        }
+                        else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core") && descriptor.idVendor() == VID_AXOLOTI && descriptor.idProduct() == PID_AXOLOTI) {
+                            hasOne = true;
+                            DeviceHandle handle = new DeviceHandle();
+                            result = LibUsb.open(device, handle);
+                            if (result < 0) {
+                                LOGGER.log(Level.INFO, "* Axoloti USB device, but cannot access: " + LibUsb.strError(result));
+                            }
+                            else {
+                                LOGGER.log(Level.INFO, "* Axoloti USB device, serial #" + LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()));
+                                if (handle != null) {
+                                    LibUsb.close(handle);
+                                    handle = null; /* Null immediately to prevent race conditions */
+                                }
+                            }
+                            LOGGER.log(Level.INFO, "  location: " + DeviceToPath(device));
+                        }
+
+                    }
+                    else {
+                        throw new LibUsbException("Failed to read device descriptor", result);
+                    }
+                }
+                if (!hasOne) {
+                    LOGGER.log(Level.INFO, "None found...");
+                }
+            }
+            finally {
+                LibUsb.freeDeviceList(list, true);
+            }
+        } /* End synchronized (handleLock) */
+    }
+
+    public static boolean isDFUDeviceAvailable() {
+        synchronized (handleLock) {
+            DeviceList list = new DeviceList();
+            int result = LibUsb.getDeviceList(context, list);
+            if (result < 0) {
+                LOGGER.log(Level.SEVERE, "Failed to get device list");
+                return false;
+            }
+
+            try {
+                for (Device device : list) {
+                    DeviceDescriptor descriptor = new DeviceDescriptor();
+                    result = LibUsb.getDeviceDescriptor(device, descriptor);
+                    if (result != LibUsb.SUCCESS) {
+                        throw new LibUsbException("Failed to read device descriptor", result);
+                    }
+                    if (descriptor.idVendor() == VID_STM && descriptor.idProduct() == PID_STM_DFU) {
+                        DeviceHandle handle = new DeviceHandle();
+                        result = LibUsb.open(device, handle);
+                        if (result < 0) {
+                            LOGGER.log(Level.SEVERE, "DFU device found but cannot access: " + LibUsb.strError(result));
+                            switch (axoloti.utils.OSDetect.getOS()) {
+                                case WIN:
+                                    LOGGER.log(Level.SEVERE, "Please install the WinUSB driver for the \"STM32 Bootloader\":");
+                                    LOGGER.log(Level.SEVERE, "Launch Zadig (http://zadig.akeo.ie/) , " +
+                                        "select \"Options->List all devices\", select \"STM32 BOOTLOADER\", and \"replace\" the STTub30 driver with the WinUSB driver");                                break;
+                                case LINUX:
+                                    LOGGER.log(Level.SEVERE, "Probably need to add a udev rule.");
+                                    break;
+                                default:
+                            }
+                            return false;
+                        }
+                        else {
+                            if (handle != null) {
+                                LibUsb.close(handle);
+                                handle = null; /* Null immediately to prevent race conditions */
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
+            finally {
+                LibUsb.freeDeviceList(list, true);
+            }
+            return false;
+        } /* End synchronized (handleLock) */
+    }
+
+    public static Device findDevice(short vendorId, short productId) {
+        synchronized (handleLock) {
+            DeviceList list = new DeviceList();
+            int result = LibUsb.getDeviceList(context, list);
+            if (result < 0) {
+                throw new LibUsbException("Failed to get device list", result);
+            }
+
+            try {
+                for (Device device : list) {
+                    DeviceDescriptor descriptor = new DeviceDescriptor();
+                    result = LibUsb.getDeviceDescriptor(device, descriptor);
+                    if (result != LibUsb.SUCCESS) {
+                        throw new LibUsbException("Failed to read device descriptor", result);
+                    }
+                    if (descriptor.idVendor() == vendorId && descriptor.idProduct() == productId) {
+                        return device;
+                    }
+                }
+            }
+            finally {
+                LibUsb.freeDeviceList(list, true);
+            }
+
+            return null;
+        } /* End synchronized (handleLock) */
     }
 
     @Override
@@ -411,7 +605,7 @@ public class USBBulkConnection extends Connection {
                 /* Open Device Handle */
                 handle = OpenDeviceHandle();
                 if (handle == null) {
-                    System.err.println(Instant.now() + " [ERROR] Connect: Failed to open USB device handle.");
+                    LOGGER.log(Level.WARNING, "Connect: Failed to open USB device handle.");
                     disconnect();
                     return false;
                 }
@@ -419,6 +613,7 @@ public class USBBulkConnection extends Connection {
                 /* Claim Interface */
                 int result = LibUsb.claimInterface(handle, useBulkInterfaceNumber);
                 if (result != LibUsb.SUCCESS) {
+                    LOGGER.log(Level.WARNING, "Connect: Failed to claim USB device.");
                     System.err.println(Instant.now() + " [ERROR] Connect: Failed to claim interface " + useBulkInterfaceNumber + ": " + LibUsb.errorName(result) + " (Code: " + result + ")");
                     disconnect();
                     return false;
@@ -444,7 +639,7 @@ public class USBBulkConnection extends Connection {
                 ClearSync();
                 new SCmdPing().Do();
                 if (!WaitSync()) {
-                    LOGGER.log(Level.SEVERE, "Core not responding - firmware may be stuck running a problematic patch?\nRestart the Core and try again.");
+                    LOGGER.log(Level.SEVERE, "Core not responding - it may be stuck running a problematic patch?\nRestart the Core and try again.");
                     disconnect();
                     return false;
                 }
@@ -502,9 +697,8 @@ public class USBBulkConnection extends Connection {
             finally {
                 isConnecting = false;
             }
-        }
+        } /* End synchronized (handleLock) */
     }
-
     
     @Override
     public void disconnect() {
@@ -584,17 +778,16 @@ public class USBBulkConnection extends Connection {
                 ShowDisconnect(); /* Notify UI */
                 LOGGER.log(Level.WARNING, "Disconnected\n");
             }
-        }
+        } /* End synchronized (handleLock) */
     }
 
     public DeviceHandle OpenDeviceHandle() {
-
         /* Read the USB device list */
         DeviceList list = new DeviceList();
 
         int result = LibUsb.getDeviceList(context, list);
         if (result < 0) {
-            throw new LibUsbException("Unable to get device list", result);
+            throw new LibUsbException("Failed to get device list", result);
         }
 
         try {
@@ -737,12 +930,11 @@ public class USBBulkConnection extends Connection {
         List<String[]> rows = new ArrayList<>();
         DeviceList list = new DeviceList();
 
-        Context sharedContext = Usb.getContext();
-        if (sharedContext == null) {
+        if (context == null) {
             return rows;
         }
 
-        int result = LibUsb.getDeviceList(sharedContext, list);
+        int result = LibUsb.getDeviceList(context, list);
         if (result < 0) {
             return rows;
         }
@@ -807,13 +999,11 @@ public class USBBulkConnection extends Connection {
         finally {
             LibUsb.freeDeviceList(list, true);
         }
-
         return rows;
     }
 
     @Override
     public int writeBytes(ByteBuffer data) {
-
         ByteBuffer buffer = data.duplicate(); /* Deep copy for safety? */
         buffer.rewind();
         IntBuffer transfered = IntBuffer.allocate(1);
@@ -855,7 +1045,7 @@ public class USBBulkConnection extends Connection {
                 disconnect();
             }
             return result;
-        } /* end synchronize (usbOutLock) */
+        } /* end synchronized (usbOutLock) */
     }
 
     @Override
@@ -902,7 +1092,6 @@ public class USBBulkConnection extends Connection {
     public boolean WaitSync() {
         return WaitSync(3000);
     }
-
 
     @Override
     public int TransmitStart() {
@@ -1333,7 +1522,6 @@ public class USBBulkConnection extends Connection {
     }
 
     void Acknowledge(final int ConnectionFlags, final int DSPLoad, final int PatchID, final int Voltages, final int patchIndex, final int sdcardPresent) {
-
         synchronized (sync) {
             sync.Acked = true;
             sync.notifyAll();
@@ -1372,16 +1560,14 @@ public class USBBulkConnection extends Connection {
                     return;
                 }
                 if (index >= patch.ParameterInstances.size()) {
-                    LOGGER.log(Level.INFO, "Rx paramchange index out of range{0} {1}",
-                               new Object[]{index, value});
+                    LOGGER.log(Level.INFO, "Rx paramchange index out of range{0} {1}", new Object[]{index, value});
 
                     return;
                 }
                 ParameterInstance pi = patch.ParameterInstances.get(index);
 
                 if (pi == null) {
-                    LOGGER.log(Level.INFO, "Rx paramchange parameterInstance null{0} {1}",
-                               new Object[]{index, value});
+                    LOGGER.log(Level.INFO, "Rx paramchange parameterInstance null{0} {1}", new Object[]{index, value});
                     return;
                 }
 
@@ -1391,7 +1577,6 @@ public class USBBulkConnection extends Connection {
                 // System.out.println(Instant.now() + " [DEBUG] rcv ppc objname:" + pi.GetObjectInstance().getInstanceName() + " pname:"+ pi.getName());
             }
         });
-
     }
 
     public static String CpuIdToHexString(ByteBuffer buffer) {
@@ -1432,9 +1617,7 @@ public class USBBulkConnection extends Connection {
 
     void DisplayPackHeader(int i1, int i2) {
         if (i2 > 1024) {
-            LOGGER.log(Level.FINE, "Lots of data coming! {0} / {1}",
-                       new Object[]{Integer.toHexString(i1),
-                       Integer.toHexString(i2)});
+            LOGGER.log(Level.FINE, "Lots of data coming! {0} / {1}", new Object[]{Integer.toHexString(i1), Integer.toHexString(i2)});
         }
         // else {
         //     LOGGER.log(Level.INFO, "OK! " + Integer.toHexString(i1) + " / " + Integer.toHexString(i2));
@@ -1460,7 +1643,7 @@ public class USBBulkConnection extends Connection {
                 return;
             }
             // LOGGER.log(Level.INFO, "Distr2");
-            SwingUtilities.invokeAndWait(new Runnable() {
+            SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
                     dispData.rewind();
@@ -1470,13 +1653,13 @@ public class USBBulkConnection extends Connection {
                 }
             });
         }
-        catch (InterruptedException ex) {
+        catch (Exception ex) {
             // System.out.println(Instant.now() + " [DEBUG] ReadSync wait interrupted due to disconnect request.," + ex.getMessage());
-            Thread.currentThread().interrupt();
+            // Thread.currentThread().interrupt();
         }
-        catch (InvocationTargetException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
+        // catch (InvocationTargetException ex) {
+        //     LOGGER.log(Level.SEVERE, null, ex);
+        // }
     }
 
     private void setIdleState() {
@@ -1492,7 +1675,6 @@ public class USBBulkConnection extends Connection {
     }
 
     void processByte(byte cc) {
-
         int c = cc & 0xff;
 
         // if (!state.name().equals("ACK_PCKT")) { /* Filter out ACK payloads */
