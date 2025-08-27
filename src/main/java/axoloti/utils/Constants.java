@@ -67,16 +67,31 @@ public class Constants {
     public static ImageIcon APP_ICON;
 
     Constants() {
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        createFontMenu();
-        createFontMono();
-        createFontPatchGUI();
-        createAppIcon();
-        FONT_BOLD = FONT.deriveFont(Font.BOLD);
-        ge.registerFont(FONT_MONO);
-        ge.registerFont(FONT);
-        ge.registerFont(FONT_BOLD);
-        ge.registerFont(FONT_MENU);
+        try {
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            createFontMenu();
+            createFontMono();
+            createFontPatchGUI();
+            createAppIcon();
+            if (FONT != null) {
+                FONT_BOLD = FONT.deriveFont(Font.BOLD);
+            }
+            
+            if (ge != null) {
+                if (FONT_MONO != null) ge.registerFont(FONT_MONO);
+                if (FONT != null) ge.registerFont(FONT);
+                if (FONT_BOLD != null) ge.registerFont(FONT_BOLD);
+                if (FONT_MENU != null) ge.registerFont(FONT_MENU);
+            }
+
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error initializing graphics environment. Running in headless mode or missing font files: " + e.getMessage());
+            e.printStackTrace(System.out);
+            FONT_MONO = new Font(Font.MONOSPACED, Font.PLAIN, 12);
+            FONT = new Font("SansSerif", Font.PLAIN, 12);
+            FONT_BOLD = new Font("SansSerif", Font.BOLD, 12);
+            FONT_MENU = new Font("SansSerif", Font.PLAIN, 12);
+        }
     }
 
     public static void createFontPatchGUI() {
