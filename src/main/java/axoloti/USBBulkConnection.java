@@ -455,7 +455,7 @@ public class USBBulkConnection extends Connection {
             /* Post-Connection Commands (Firmware version, CPU revision, board ID) */
             try {
                 SCmdGetFWVersion fwVersionCmd = new SCmdGetFWVersion();
-                fwVersionCmd.Do(this);
+                fwVersionCmd.Do();
                 if (!fwVersionCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Get firmware version command timed out.");
                 }
@@ -464,7 +464,7 @@ public class USBBulkConnection extends Connection {
                 }
 
                 SCmdMemRead1Word cpuRevisionCmd = new SCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
-                cpuRevisionCmd.Do(this);
+                cpuRevisionCmd.Do();
                 if (!cpuRevisionCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Get CPU revision command timed out.");
                 }
@@ -474,7 +474,7 @@ public class USBBulkConnection extends Connection {
                 targetProfile.setCPUIDCode(cpuRevisionCmd.getValueRead());
 
                 SCmdMemRead boardIDCmd = new SCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
-                boardIDCmd.Do(this);
+                boardIDCmd.Do();
                 if (!boardIDCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Get board ID command timed out.");
                 }
