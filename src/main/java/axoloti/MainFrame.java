@@ -1424,15 +1424,16 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private boolean runTestCompile(File f) {
         SetGrabFocusOnSevereErrors(false);
         
-        Strategy strategy = new AnnotationStrategy();
-        Serializer serializer = new Persister(strategy, new Format(2));
-        boolean status = false;
+        PatchGUI patch1 = null;
+        PatchFrame pf = null;
         
         try {
+            Strategy strategy = new AnnotationStrategy();
+            Serializer serializer = new Persister(strategy, new Format(2));
             LOGGER.log(Level.INFO, "---------- Testing {0} ----------", f.getPath());
 
-            PatchGUI patch1 = serializer.read(PatchGUI.class, f);
-            PatchFrame pf = new PatchFrame(patch1);
+            patch1 = serializer.read(PatchGUI.class, f);
+            pf = new PatchFrame(patch1);
             pf.createBufferStrategy(1);
             patch1.setFileNamePath(f.getPath());
             patch1.PostContructor();
@@ -1479,26 +1480,37 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     QCmdProcessor.getInstance().AppendToQueue(new QCmdGuiShowLog());
                     Thread.sleep(100);
-                    status = true;
+                    return true;
                 }
             }
             else {
                 LOGGER.log(Level.INFO, "FAILED to compile patch binary.\n");
-                status = false;
+                return false;
             }
-            patch1.Close();
-            pf.Close();
-            Thread.sleep(200);
-
-            SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
-            return status;
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error during patch test: " + f.getPath() + ", " + ex.getMessage());
             ex.printStackTrace(System.out);
-            SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
             return false;
         }
+        finally {
+            SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
+            CommandManager.getInstance().endLongOperation();
+            
+            if (patch1 != null) {
+                patch1.Close();
+            }
+            if (pf != null) {
+                pf.Close();
+            }
+
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        return false;
     }
 
     public boolean runFileUpgrade(String patchName) {
