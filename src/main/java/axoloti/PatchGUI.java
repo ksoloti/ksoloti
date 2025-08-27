@@ -1399,12 +1399,17 @@ public class PatchGUI extends Patch {
             return null;
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error during open patch action: " + ex.getMessage());
+            ex.printStackTrace(System.out);
             return null;
         }
     }
 
     public static PatchFrame OpenPatch(File f) {
         PatchFrame pf = OpenPatchInvisible(f);
+        if (pf == null) {
+            LOGGER.log(Level.SEVERE, "Failed to open patch: " + f.getName());
+            return null;
+        }
         pf.setState(java.awt.Frame.NORMAL);
         pf.setVisible(true);
         pf.repositionIfOutsideScreen();
