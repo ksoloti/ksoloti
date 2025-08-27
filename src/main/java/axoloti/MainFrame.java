@@ -36,7 +36,6 @@ import axoloti.object.AxoObjectInstance;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjects;
 import axoloti.ui.Theme;
-import axoloti.usb.Usb;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
 import axoloti.utils.FirmwareID;
@@ -1404,7 +1403,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         return false;
                     }
                     String extension = name.substring(name.length() - 4);
-                    boolean b = (extension.equals(".axh") || extension.equals(".axp"));
+                    boolean b = (extension.equals(".axp") || extension.equals(".axs") || extension.equals(".axh"));
                     return b;
                 }
             });
