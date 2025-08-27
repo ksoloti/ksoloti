@@ -604,7 +604,7 @@ public class USBBulkConnection extends Connection {
                 /* Open Device Handle */
                 handle = OpenDeviceHandle();
                 if (handle == null) {
-                    LOGGER.log(Level.WARNING, "Connect: Failed to open USB device handle.");
+                    System.out.println(Instant.now() + " Connect: Failed to open USB device handle.");
                     disconnect();
                     return false;
                 }
