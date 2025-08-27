@@ -283,7 +283,7 @@ public class SCmdUploadFile extends AbstractSCmd {
                             }
 
                             doc.insertString(doc.getLength(), progressMessage + "\n", MainFrame.styleInfo);
-                            MainFrame.jTextPaneLog.setCaretPosition(doc.getLength());
+                            // MainFrame.jTextPaneLog.setCaretPosition(doc.getLength());
                         }
                         catch (Exception ex) {
                             LOGGER.log(Level.SEVERE, "Error during progress update: " + ex.getMessage());

@@ -23,8 +23,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-// #include "ff.h"
-// #include "ffconf.h"
+#include "ff.h"
+#include "ffconf.h"
 // #include "axoloti_board.h"
 
 #if defined(BOARD_AXOLOTI_CORE) || defined(BOARD_KSOLOTI_CORE)
@@ -326,6 +326,41 @@ int mounter(void) {
     sdcStart(&SDCD1, &sdcConfig);
     sdcConnect(&SDCD1);
 
+    FATFS SDC_FS;
+    FRESULT err = f_mount(&SDC_FS, "", 0); /* Test-mount the FATFS. */
+    err |= f_mount(NULL, "", 0); /* Then unmount it again. */
+    if (err != FR_OK) {
+        /* If card couldn't be mounted/unmounted even by FatFS,
+         * either there is no card connected, or the card is faulty.
+         * Do a slow alternate blink pattern and reboot.
+         */
+        palClearPad(LED1_PORT, LED1_PIN);
+        palSetPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
+        palSetPad(LED1_PORT, LED1_PIN);
+        palClearPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
+        palClearPad(LED1_PORT, LED1_PIN);
+        palSetPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
+        palSetPad(LED1_PORT, LED1_PIN);
+        palClearPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
+        palClearPad(LED1_PORT, LED1_PIN);
+        palSetPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
+        palSetPad(LED1_PORT, LED1_PIN);
+        palClearPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
+        palClearPad(LED1_PORT, LED1_PIN);
+        palSetPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
+        palSetPad(LED1_PORT, LED1_PIN);
+        palClearPad(LED2_PORT, LED2_PIN);
+        chThdSleepMilliseconds(200);
+        NVIC_SystemReset();
+    }
+
     /* initialize the USB mass storage driver */
     msdInit(&UMSD1);
 
@@ -338,31 +373,7 @@ int mounter(void) {
     if (ret != 0) {
         /* no media found : bye bye! */
         usbDisconnectBus(&USBD1);
-        /* Do a slow alternate blink pattern and reboot. */
-        palClearPad(LED1_PORT, LED1_PIN);
-        palSetPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
-        palSetPad(LED1_PORT, LED1_PIN);
-        palClearPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
-        palClearPad(LED1_PORT, LED1_PIN);
-        palSetPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
-        palSetPad(LED1_PORT, LED1_PIN);
-        palClearPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
-        palClearPad(LED1_PORT, LED1_PIN);
-        palSetPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
-        palSetPad(LED1_PORT, LED1_PIN);
-        palClearPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
-        palClearPad(LED1_PORT, LED1_PIN);
-        palSetPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
-        palSetPad(LED1_PORT, LED1_PIN);
-        palClearPad(LED2_PORT, LED2_PIN);
-        chThdSleepMilliseconds(200);
+        chThdSleepMilliseconds(1000);
         NVIC_SystemReset();
     }
 
