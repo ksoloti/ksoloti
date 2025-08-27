@@ -263,7 +263,11 @@ public class FileMenu extends JMenu {
 
             currentTestPath = path; /* Store for this session */
             File f = new File(currentTestPath);
-            if (f.exists() && f.canRead()) {
+            if (!f.exists()) {
+                LOGGER.log(Level.WARNING, "Path not found: " + currentTestPath);
+                return;
+            }
+            if (f.canRead()) {
                 
                 class Thd extends Thread {
                     public void run() {
