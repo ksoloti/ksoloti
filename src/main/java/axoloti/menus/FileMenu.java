@@ -40,10 +40,18 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -250,79 +258,137 @@ public class FileMenu extends JMenu {
     }
 
     private void jMenuAutoTestDirActionPerformed(java.awt.event.ActionEvent evt) {
-
-        String path = JOptionPane.showInputDialog(
+        String inputPath = JOptionPane.showInputDialog(
             mainframe,
-            "Enter directory to test:\n" + 
-            "(Default: Test all stock libraries)\n\n" + 
+            "Enter directory to test.\n" + 
+            "(Default: Test all stock libraries)\n" + 
+            "Wildcards:\n" + 
+            "  '*' matches zero or more characters\n" + 
+            "  '?' matches exactly one character\n\n" + 
             "WARNING: Running these tests may take a long time and/or freeze the UI.",
             currentTestPath
         );
 
-        if (path != null && !path.isEmpty()) {
+        if (inputPath != null && !inputPath.isEmpty()) {
+            currentTestPath = inputPath;
 
-            currentTestPath = path; /* Store for this session */
-            File f = new File(currentTestPath);
-            if (!f.exists()) {
-                LOGGER.log(Level.WARNING, "Path not found: " + currentTestPath);
-                return;
-            }
-            if (f.canRead()) {
-                
-                class Thd extends Thread {
-                    public void run() {
-                        try {
-                            String logpath = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log";
-                            /* If previous log exists, delete it */
-                            File logf = new File(logpath);
-                            if (logf.exists()) {
-                                logf.delete();
-                            }
-                            /* If previous lock exists, delete it (happens if test was interrupted) */
-                            File lockf = new File(logpath + ".lck");
-                            if (lockf.exists()) {
-                                lockf.delete();
-                            }
+            final List<File> directoriesToTest;
+            boolean hasWildcard = inputPath.contains("*") || inputPath.contains("?");
 
-                            FileHandler fh = new FileHandler(logpath, true);
-                            SimpleFormatter formatter = new SimpleFormatter();
-                            fh.setFormatter(formatter);
-                            Logger.getLogger("").addHandler(fh);
+            if (hasWildcard) {
+                try {
+                    String[] pathSegments = inputPath.split("[/\\\\]");
+                    StringBuilder rootPathBuilder = new StringBuilder();
+                    int lastConcreteIndex = -1;
 
-                            LOGGER.log(Level.WARNING, "Running tests, please wait...");
-                            LOGGER.log(Level.INFO, "Creating log file at " + logpath);
-
-                            /* From now on, Leave out timecode from logging format (easier diff) */
-                            System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s%n");
-                            formatter = new SimpleFormatter();
-                            fh.setFormatter(formatter);
-                            
-                            if (USBBulkConnection.getInstance().isConnected()) {
-                                LOGGER.log(Level.INFO, "Core is connected - Attempting test upload of patches and measuring DSP load.");
-                            }
-
-                            mainframe.runTestDir(f);
-                            
-                            LOGGER.log(Level.WARNING, "Done running tests.\n");
-
-                            Logger.getLogger("").removeHandler(fh);
-                            fh.close();
-
+                    for (int i = 0; i < pathSegments.length; i++) {
+                        if (pathSegments[i].contains("*") || pathSegments[i].contains("?")) {
+                            break;
                         }
-                        catch (Exception ex) {
-                            LOGGER.log(Level.SEVERE, "Error during batch test process: " + ex.getMessage());
-                            ex.printStackTrace(System.out);
-                        }
-                        finally {
-                            /* Revert logging format */
-                            System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tFT%1$tT.%1$tN  %4$s: %5$s%n");
-                        }
+                        rootPathBuilder.append(pathSegments[i]).append(File.separator);
+                        lastConcreteIndex = i;
                     }
+
+                    Path rootPath;
+                    if (lastConcreteIndex >= 0) {
+                        rootPath = Paths.get(rootPathBuilder.toString());
+                    } else {
+                        rootPath = Paths.get("/");
+                    }
+
+                    PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + inputPath);
+
+                    try (Stream<Path> paths = Files.walk(rootPath)) {
+                        directoriesToTest = paths
+                            .filter(Files::isDirectory)
+                            .filter(matcher::matches)
+                            .map(Path::toFile)
+                            .collect(Collectors.toList());
+                    }
+
+                    if (directoriesToTest.isEmpty()) {
+                        LOGGER.log(Level.WARNING, "No directories found matching pattern: " + inputPath);
+                        return;
+                    }
+
+                }
+                catch (Exception ex) {
+                    LOGGER.log(Level.SEVERE, "Error during wildcard search: " + ex.getMessage());
+                    ex.printStackTrace(System.out);
+                    return;
+                }
+            } else {
+                File f = new File(currentTestPath);
+                if (!f.exists()) {
+                    LOGGER.log(Level.WARNING, "Path not found: " + currentTestPath);
+                    return;
+                }
+                if (!f.canRead()) {
+                    LOGGER.log(Level.WARNING, "Failed to read path: " + currentTestPath);
+                    return;
                 }
 
-                Thd thread = new Thd();
-                thread.start();
+                directoriesToTest = List.of(f);
             }
+
+            class Thd extends Thread {
+                public void run() {
+                    try {
+                        String logpath = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + File.separator + "batch_test.log";
+                        /* If previous log exists, delete it */
+                        File logf = new File(logpath);
+                        if (logf.exists()) {
+                            logf.delete();
+                        }
+                        /* If previous lock exists, delete it (happens if test was interrupted) */
+                        File lockf = new File(logpath + ".lck");
+                        if (lockf.exists()) {
+                            lockf.delete();
+                        }
+
+                        FileHandler fh = new FileHandler(logpath, true);
+                        SimpleFormatter formatter = new SimpleFormatter();
+                        fh.setFormatter(formatter);
+                        Logger.getLogger("").addHandler(fh);
+
+                        LOGGER.log(Level.WARNING, "Running tests, please wait...");
+                        LOGGER.log(Level.INFO, "Creating log file at " + logpath);
+
+                        /* From now on, Leave out timecode from logging format (easier diff) */
+                        System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s%n");
+                        formatter = new SimpleFormatter();
+                        fh.setFormatter(formatter);
+
+                        if (USBBulkConnection.getInstance().isConnected()) {
+                            LOGGER.log(Level.INFO, "Core is connected - Attempting test upload of patches and measuring DSP load.");
+                        }
+
+                        LOGGER.log(Level.INFO, "Testing directories:");
+                        for (File dir : directoriesToTest) {
+                            LOGGER.log(Level.INFO, dir.getAbsolutePath());
+                        }
+                        LOGGER.log(Level.INFO, "");
+                        for (File dir : directoriesToTest) {
+                            mainframe.runTestDir(dir);
+                        }
+
+                        LOGGER.log(Level.WARNING, "Done running tests.\n");
+
+                        Logger.getLogger("").removeHandler(fh);
+                        fh.close();
+
+                    } catch (Exception ex) {
+                        LOGGER.log(Level.SEVERE, "Error during batch test process: " + ex.getMessage());
+                        ex.printStackTrace(System.out);
+                    } finally {
+                        /* Revert logging format */
+                        System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tFT%1$tT.%1$tN  %4$s: %5$s%n");
+                    }
+                }
+            }
+
+            Thd thread = new Thd();
+            thread.start();
         }
     }
 
