@@ -46,7 +46,6 @@ import static axoloti.usb.Usb.bulkPIDKsoloti;
 import static axoloti.usb.Usb.bulkPIDKsolotiUsbAudio;
 import static axoloti.usb.Usb.bulkVID;
 
-import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.CharBuffer;
