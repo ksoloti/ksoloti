@@ -36,14 +36,18 @@ public class AttributeInstanceComboBox extends AttributeInstanceString<AxoAttrib
     private static final Logger LOGGER = Logger.getLogger(AttributeInstanceComboBox.class.getName());
 
     @Attribute(name = "selection", required = false)
-    String selection;
-    DropDownComponent comboBox;
+    private String selection;
+    private DropDownComponent comboBox;
 
     public AttributeInstanceComboBox() {
     }
 
     public AttributeInstanceComboBox(AxoAttributeComboBox param, AxoObjectInstance axoObj1) {
         super(param, axoObj1);
+    }
+
+    public DropDownComponent getComboBox() {
+        return comboBox;
     }
 
     @Override

@@ -19,9 +19,6 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AttributeInstanceTest {
-    static {
-        System.setProperty("java.awt.headless", "true");
-    }
 
     private static class ConcreteAttributeInstance extends AttributeInstance<AxoAttribute> {
         public ConcreteAttributeInstance(AxoAttribute attr, AxoObjectInstance axoObj1) {
