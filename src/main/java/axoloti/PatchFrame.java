@@ -462,7 +462,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                         patch.Compile();
 
                         /* Handle SD card and dependent files */
-                        if (patch.waitForBinFile()) {
+                        if (patch.getBinFile().exists()) {
                             ArrayList<SDFileReference> files = patch.GetDependentSDFiles();
                             if (files.size() > 0) {
                                 if (USBBulkConnection.getInstance().GetSDCardPresent()) {

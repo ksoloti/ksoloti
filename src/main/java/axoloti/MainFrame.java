@@ -1442,7 +1442,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
             File binFile = patch1.getBinFile();
             if (binFile.exists()) {
-                /* Delete previous .bin to ensure waitForBinFile() below won't trigger false positive */
+                /* Delete previous .bin to ensure getBinFile() below won't trigger false positive */
                 binFile.delete();
             }
 
@@ -1450,7 +1450,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1); // compile as own path/filename .bin
             cp.Do(QCmdProcessor.getInstance());
             CommandManager.getInstance().endLongOperation();
-            if (patch1.waitForBinFile()) {
+            if (patch1.getBinFile().exists()) {
                 /* If a Core is connected and test patch .bin could be created:
                 stop patch, upload test patch .bin to RAM, start patch, report status */
                 if (USBBulkConnection.getInstance().isConnected()) {
