@@ -29,7 +29,6 @@ public class ConnectionTest {
     public void setup() {
         connection = new ConnectionTestImpl();
 
-        // Mock SwingUtilities.invokeLater to execute runnable instantly for testing
         try (MockedStatic<SwingUtilities> swingUtilMock = mockStatic(SwingUtilities.class)) {
             swingUtilMock.when(() -> SwingUtilities.invokeLater(any(Runnable.class)))
                 .thenAnswer(invocation -> {
@@ -40,7 +39,6 @@ public class ConnectionTest {
         }
     }
 
-    // --- Test for addConnectionStatusListener ---
     @Test
     public void testAddConnectionStatusListener_Connected() {
         try (MockedStatic<SwingUtilities> swingUtilMock = mockStatic(SwingUtilities.class)) {
@@ -53,17 +51,14 @@ public class ConnectionTest {
 
             // Arrange
             ConnectionStatusListener mockListener = mock(ConnectionStatusListener.class);
-            connection.isConnected = true; // Use the public field for test setup
+            connection.isConnected = true;
 
             // Act
             connection.addConnectionStatusListener(mockListener);
 
-            // Assert: Verify that the listener was added and its ShowConnect method was called
+            // Assert
             verify(mockListener, times(1)).ShowConnect();
 
-            // You can also assert the listener is in the internal list (using reflection)
-            // This is generally not recommended, but can be done for a quick check.
-            // It's better to test the behavior.
             try {
                 Field field = Connection.class.getDeclaredField("csls");
                 field.setAccessible(true);
@@ -97,7 +92,6 @@ public class ConnectionTest {
         }
     }
 
-    // --- Test for removeConnectionStatusListener ---
     @Test
     public void testRemoveConnectionStatusListener() {
         try (MockedStatic<SwingUtilities> swingUtilMock = mockStatic(SwingUtilities.class)) {
@@ -110,19 +104,18 @@ public class ConnectionTest {
 
             // Arrange
             ConnectionStatusListener mockListener = mock(ConnectionStatusListener.class);
-            connection.addConnectionStatusListener(mockListener); // Add listener first
-            reset(mockListener); // Clear previous interactions
+            connection.addConnectionStatusListener(mockListener);
+            reset(mockListener);
 
             // Act
             connection.removeConnectionStatusListener(mockListener);
-            connection.ShowConnect(); // Try to notify, but the listener should be gone
+            connection.ShowConnect();
 
             // Assert
             verify(mockListener, never()).ShowConnect();
         }
     }
 
-    // --- Test for ShowDisconnect ---
     @Test
     public void testShowDisconnect() {
         try (MockedStatic<SwingUtilities> swingUtilMock = mockStatic(SwingUtilities.class)) {
@@ -143,13 +136,12 @@ public class ConnectionTest {
             // Act
             connection.ShowDisconnect();
 
-            // Assert: Both listeners should be notified
+            // Assert
             verify(mockListener1, times(1)).ShowDisconnect();
             verify(mockListener2, times(1)).ShowDisconnect();
         }
     }
 
-    // --- Test for addBoardIDNameListener with Preferences ---
     @Test
     public void testAddBoardIDNameListener_withPreferences() {
         try (MockedStatic<SwingUtilities> swingUtilMock = mockStatic(SwingUtilities.class);
@@ -177,7 +169,6 @@ public class ConnectionTest {
         }
     }
 
-    // A dummy implementation for testing purposes
     private static class ConnectionTestImpl extends Connection {
         private boolean isConnected = false;
         private boolean isSDCardPresent = false;
@@ -202,7 +193,6 @@ public class ConnectionTest {
             return "test-target-cpu-id";
         }
 
-        // ... All other abstract methods as before ...
         @Override public void setDisconnectRequested(boolean requested) {}
         @Override public boolean isDisconnectRequested() { return false; }
         @Override public void disconnect() {}
