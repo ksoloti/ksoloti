@@ -61,7 +61,7 @@ public class AttributeInstanceTextEditor extends AttributeInstanceString<AxoAttr
 
     String valueBeforeAdjustment = "";
 
-    void showEditor() {
+    public void showEditor() {
         if (editor == null) {
             editor = new TextEditor(sRef, GetObjectInstance().getPatch().getPatchframe());
             editor.setTitle(GetObjectInstance().getInstanceName() + "/" + attr.getName());

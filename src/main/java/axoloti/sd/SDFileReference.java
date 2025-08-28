@@ -40,7 +40,7 @@ public class SDFileReference {
     public SDFileReference() {
     }
 
-public SDFileReference(File localfile, String targetDirOnSDCard) {
+    public SDFileReference(File localfile, String targetDirOnSDCard) {
         this.localfile = localfile;
         this.localFilename = (localfile != null) ? localfile.getName() : "";
         this.targetPath = targetDirOnSDCard;
@@ -58,6 +58,14 @@ public SDFileReference(File localfile, String targetDirOnSDCard) {
     @Persist
     public void Persist() {
         /* nop */
+    }
+
+    public String getLocalFilename() {
+        return this.localFilename;
+    }
+
+    public File getLocalFile() {
+        return this.localfile;
     }
 
     public void Resolve(Path basePath) {

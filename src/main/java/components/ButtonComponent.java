@@ -110,6 +110,10 @@ public class ButtonComponent extends JComponent implements MouseInputListener, K
         });
     }
 
+    public String getLabel() {
+        return this.label;
+    }
+
     @Override
     public void keyPressed(KeyEvent ke) {
         if (ke.getKeyCode() == KeyEvent.VK_SPACE) {
