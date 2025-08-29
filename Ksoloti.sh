@@ -27,7 +27,7 @@ export axoloti_firmware=${axoloti_firmware:="$axoloti_home/firmware"}
 which java >/dev/null || printf "\nJava not found in path\n"
 
 heap_jvmargs='-Xms256m -Xmx2g'
-marlin_jvmargs='-Xbootclasspath/a:lib/marlin-0.9.4.8-Unsafe-OpenJDK17.jar -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine -Dsun.java2d.d3d=false'
+marlin_jvmargs='-Xbootclasspath/a:lib/marlin-0.9.4.8-Unsafe-OpenJDK17.jar -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine'
 
 if [ -f $rootdir/dist/Ksoloti.jar ]
 then

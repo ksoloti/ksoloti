@@ -234,7 +234,6 @@ JPACKAGE_ARGS=(
     --java-options "-Xmx2g"
     --java-options "-Xbootclasspath/a:lib/marlin-0.9.4.8-Unsafe-OpenJDK17.jar"
     --java-options "-Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine"
-    --java-options "-Dsun.java2d.d3d=false"
     # --jlink-options "--strip-native-commands --strip-debug --no-man-pages --no-header-files --compress=2"
     --runtime-image "$TARGET_JDK_PATH" # Specifies the JDK for the target platform
 )

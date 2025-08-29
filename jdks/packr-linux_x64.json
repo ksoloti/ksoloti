@@ -14,8 +14,7 @@
         "Xmx2g",
         "Xdock:name=Ksoloti",
         "Xbootclasspath/a:lib/marlin-0.9.4.8-Unsafe-OpenJDK17.jar",
-        "Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine",
-        "Dsun.java2d.d3d=false"
+        "Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine"
     ],
     "resources": [
         "chibios",
