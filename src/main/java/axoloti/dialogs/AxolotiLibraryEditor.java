@@ -641,7 +641,7 @@ public class AxolotiLibraryEditor extends JDialog {
         this.library = library;
     }
 
-    private void populateLib(AxolotiLibrary lib) {
+    public void populateLib(AxolotiLibrary lib) {
         lib.setId(jTextFieldId.getText().trim());
         lib.setLocalLocation(jTextFieldLocalDir.getText().trim());
         lib.setRemoteLocation(jTextFieldRemotePath.getText().trim());
@@ -702,7 +702,7 @@ public class AxolotiLibraryEditor extends JDialog {
         return this.dirty;
     }
 
-    private boolean isLibraryValid() {
+    public boolean isLibraryValid() {
         if (jTextFieldId.getText().trim().isEmpty()) {
             KeyboardNavigableOptionPane.showMessageDialog(this,
                     "ID is required and must be unique.",
@@ -736,36 +736,36 @@ public class AxolotiLibraryEditor extends JDialog {
         return this.library;
     }
 
-    private void saveLibrary() {
+    public void saveLibrary() {
 
         if (!isLibraryValid()) { return; }
 
         String currentSelectedType = (String) jComboBoxType.getSelectedItem();
-        AxolotiLibrary libraryToProcess = this.library; // Start with the current 'this.library'
+        AxolotiLibrary libraryToProcess = this.library;
 
         if (libraryToProcess == null || libraryToProcess.getId() == null || !currentSelectedType.equals(libraryToProcess.getType())) {
-            AxolotiLibrary newTypedInstance; // This will hold the new instance of the correct type
+            AxolotiLibrary newTypedInstance;
 
             if (currentSelectedType.equals(AxoGitLibrary.TYPE)) {
                 newTypedInstance = new AxoGitLibrary();
-            } else { // Default or AxoFileLibrary.TYPE
+            } else {
                 newTypedInstance = new AxoFileLibrary();
             }
 
             if (libraryToProcess != null && libraryToProcess.getId() != null) {
                 newTypedInstance.setId(libraryToProcess.getId());
             }
-            libraryToProcess = newTypedInstance; // Now, 'libraryToProcess' points to the new, correctly typed instance
+            libraryToProcess = newTypedInstance;
         }
 
         populateLib(libraryToProcess);
 
         this.library = libraryToProcess;
-        this.dirty = false; // Changes are now reflected in 'this.library'
+        this.dirty = false;
         PreferencesFrame.getInstance().setDirty(true);
     }
 
-    private void attemptCloseEditor() {
+    public void attemptCloseEditor() {
         if (dirty) {
             saveLibrary();
         }
@@ -773,7 +773,6 @@ public class AxolotiLibraryEditor extends JDialog {
     }
 
     private void setupWindowClosingListener() {
-        // this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
@@ -788,7 +787,7 @@ public class AxolotiLibraryEditor extends JDialog {
         });
     }
 
-    private void setupKeyboardShortcuts() {
+    public void setupKeyboardShortcuts() {
         AbstractAction closeAction = new AbstractAction() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
