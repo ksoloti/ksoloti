@@ -47,7 +47,6 @@ public class AttributeInstanceTest {
 
     @Before
     public void setUp() {
-        System.setProperty("java.awt.headless", "true");
         when(mockAxoAttribute.getName()).thenReturn("mockAttribute");
         when(mockAxoAttribute.getDescription()).thenReturn("A mock attribute description");
         when(mockAxoObjectInstance.getPatch()).thenReturn(mockAxoPatch);
