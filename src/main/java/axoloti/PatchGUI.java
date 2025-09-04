@@ -467,7 +467,6 @@ public class PatchGUI extends Patch {
 
             @Override
             public synchronized void drop(DropTargetDropEvent dtde) {
-                            // TODO: select all dropped
                 Transferable t = dtde.getTransferable();
                 if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                     try {
