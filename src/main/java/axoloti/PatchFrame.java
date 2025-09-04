@@ -335,7 +335,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             jMenuItemUnlock.setVisible(false);
         }
         jMenuPreset.setVisible(false);
-        jMenuItemAdjScroll.setVisible(true);
         patch.Layers.requestFocus();
 
         this.undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, 
