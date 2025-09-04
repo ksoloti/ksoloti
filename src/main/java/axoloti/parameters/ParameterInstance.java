@@ -221,6 +221,10 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         return needsTransmit;
     }
     
+    public void SetNeedsTransmit(boolean needs) {
+        this.needsTransmit = needs;
+    }
+    
     public void ClearNeedsTransmit() {
         needsTransmit = false;
     }
