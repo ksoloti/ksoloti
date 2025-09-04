@@ -184,7 +184,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         this.dwl = new ArrayList<DocumentWindow>();
 
         initComponents();
-        jScrollPane1.setVisible(false);
         fileMenuP.initComponents();
         this.patch = patch;
         this.patch.patchframe = this;
@@ -1624,7 +1623,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 /* When patch is first opened, scroll to top-left scroll position */
                 jScrollPane1.getViewport().setViewPosition(new Point(0,0));
             }
-            jScrollPane1.setVisible(true);
             firstShow = false;
         }
     }
