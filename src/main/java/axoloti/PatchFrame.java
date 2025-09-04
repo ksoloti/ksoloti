@@ -451,7 +451,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             mainframe.setCurrentLivePatch(null);
                         }
 
-                        /* Ensure there is no .bin file to avoid false positive at waitForBinFile() */
+                        /* Ensure there is no .bin file to avoid false positive at getBinFile().exists() below */
                         File binFile = patch.getBinFile();
                         if (binFile.exists()) {
                             binFile.delete();

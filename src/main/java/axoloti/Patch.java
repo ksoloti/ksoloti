@@ -2805,7 +2805,8 @@ public class Patch {
     }
 
     public void Compile() {
-        QCmdProcessor.getInstance().AppendToQueue(new QCmdCompilePatch(this));
+        QCmdCompilePatch cp = new QCmdCompilePatch(this);
+        cp.Do(QCmdProcessor.getInstance());
     }
 
     public void ShowPreset(int i) {

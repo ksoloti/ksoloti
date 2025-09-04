@@ -1446,10 +1446,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 binFile.delete();
             }
 
-            CommandManager.getInstance().startLongOperation();
             QCmdCompilePatch cp = new QCmdCompilePatch(patch1); // compile as own path/filename .bin
             cp.Do(QCmdProcessor.getInstance());
-            CommandManager.getInstance().endLongOperation();
             if (patch1.getBinFile().exists()) {
                 /* If a Core is connected and test patch .bin could be created:
                 stop patch, upload test patch .bin to RAM, start patch, report status */
