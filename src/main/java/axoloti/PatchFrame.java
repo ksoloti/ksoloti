@@ -26,6 +26,7 @@ import axoloti.listener.SDCardMountStatusListener;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
 import axoloti.parameters.ParameterInstance;
+import axoloti.patch.PatchRandomizer;
 import axoloti.sd.SDCardInfo;
 import axoloti.sd.SDFileReference;
 import axoloti.ui.SvgIconLoader;
@@ -126,6 +127,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JMenuItem jMenuGenerateCode;
     private javax.swing.JMenuItem jMenuItemAddObj;
     private javax.swing.JMenuItem jMenuItemAdjScroll;
+    private javax.swing.JMenuItem jMenuItemRandomize10pct;
+    private javax.swing.JMenuItem jMenuItemRandomize25pct;
+    private javax.swing.JMenuItem jMenuItemRandomize50pct;
     private javax.swing.JMenuItem jMenuItemClearPreset;
     private javax.swing.JMenuItem jMenuItemDuplicate;
     private javax.swing.JMenuItem jMenuItemDuplicateWithWires;
@@ -148,7 +152,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JMenuItem jMenuSaveClip;
     private javax.swing.JMenuItem jMenuSaveCopy;
     private javax.swing.JMenuItem jMenuUploadCode;
-    private javax.swing.JMenu jMenuView;
+    private javax.swing.JMenu jMenuTools;
     private javax.swing.JProgressBar jProgressBarDSPLoad;
     private javax.swing.JLabel jLabelBoardIDName;
     private ScrollPaneComponent jScrollPane1;
@@ -333,6 +337,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             jMenuUploadCode.setVisible(false);
             jMenuItemLock.setVisible(false);
             jMenuItemUnlock.setVisible(false);
+            jMenuItemRandomize10pct.setVisible(false);
+            jMenuItemRandomize25pct.setVisible(false);
+            jMenuItemRandomize50pct.setVisible(false);
         }
         jMenuPreset.setVisible(false);
         patch.Layers.requestFocus();
@@ -705,12 +712,15 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuItemDelete = new javax.swing.JMenuItem();
         jMenuItemSelectAll = new javax.swing.JMenuItem();
         jMenuItemAddObj = new javax.swing.JMenuItem();
-        jMenuView = new javax.swing.JMenu();
+        jMenuTools = new javax.swing.JMenu();
         jMenuItemNotes = new javax.swing.JMenuItem();
         jMenuItemSettings = new javax.swing.JMenuItem();
         jMenuItemOpenFileLocation = new javax.swing.JMenuItem();
         jCheckBoxMenuItemCordsInBackground = new javax.swing.JCheckBoxMenuItem();
         jMenuItemAdjScroll = new javax.swing.JMenuItem();
+        jMenuItemRandomize10pct = new javax.swing.JMenuItem();
+        jMenuItemRandomize25pct = new javax.swing.JMenuItem();
+        jMenuItemRandomize50pct = new javax.swing.JMenuItem();
         jMenuPatch = new javax.swing.JMenu();
         jCheckBoxMenuItemLive = new javax.swing.JCheckBoxMenuItem();
         jMenuItemUploadSD = new javax.swing.JMenuItem();
@@ -943,9 +953,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jMenuBar1.add(jMenuEdit);
 
-        jMenuView.setMnemonic('V');
-        jMenuView.setDelay(300);
-        jMenuView.setText("View");
+        jMenuTools.setMnemonic('T');
+        jMenuTools.setDelay(300);
+        jMenuTools.setText("Tools");
 
         jMenuItemNotes.setMnemonic('T');
         jMenuItemNotes.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyUtils.CONTROL_OR_CMD_MASK));
@@ -955,7 +965,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 jMenuItemNotesActionPerformed(evt);
             }
         });
-        jMenuView.add(jMenuItemNotes);
+        jMenuTools.add(jMenuItemNotes);
 
         jMenuItemSettings.setMnemonic('I');
         jMenuItemSettings.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyUtils.CONTROL_OR_CMD_MASK));
@@ -965,8 +975,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 jMenuItemSettingsActionPerformed(evt);
             }
         });
-        jMenuView.add(jMenuItemSettings);
-        jMenuView.add(jSeparator2);
+        jMenuTools.add(jMenuItemSettings);
+        jMenuTools.add(jSeparator2);
 
         jMenuItemOpenFileLocation.setMnemonic('F');
         jMenuItemOpenFileLocation.setText("Open File Location");
@@ -975,8 +985,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 jMenuItemOpenFileLocationActionPerformed(evt);
             }
         });
-        jMenuView.add(jMenuItemOpenFileLocation);
-        jMenuView.add(jSeparator3);
+        jMenuTools.add(jMenuItemOpenFileLocation);
+        jMenuTools.add(jSeparator3);
 
         jCheckBoxMenuItemCordsInBackground.setMnemonic('B');
         jCheckBoxMenuItemCordsInBackground.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyUtils.CONTROL_OR_CMD_MASK));
@@ -986,7 +996,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 jCheckBoxMenuItemCordsInBackgroundActionPerformed(evt);
             }
         });
-        jMenuView.add(jCheckBoxMenuItemCordsInBackground);
+        jMenuTools.add(jCheckBoxMenuItemCordsInBackground);
 
         jMenuItemAdjScroll.setMnemonic('R');
         jMenuItemAdjScroll.setText("Refresh Scrollbars");
@@ -995,9 +1005,36 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 jMenuItemAdjScrollActionPerformed(evt);
             }
         });
-        jMenuView.add(jMenuItemAdjScroll);
+        jMenuTools.add(jMenuItemAdjScroll);
 
-        jMenuBar1.add(jMenuView);
+        jMenuItemRandomize10pct.setMnemonic('1');
+        jMenuItemRandomize10pct.setText("Randomize all Parameters by 10%");
+        jMenuItemRandomize10pct.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RandomizeActionPerformed(evt, 0.1f);
+            }
+        });
+        jMenuTools.add(jMenuItemRandomize10pct);
+
+        jMenuItemRandomize25pct.setMnemonic('2');
+        jMenuItemRandomize25pct.setText("Randomize all Parameters by 25%");
+        jMenuItemRandomize25pct.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RandomizeActionPerformed(evt, 0.25f);
+            }
+        });
+        jMenuTools.add(jMenuItemRandomize25pct);
+
+        jMenuItemRandomize50pct.setMnemonic('5');
+        jMenuItemRandomize50pct.setText("Randomize all Parameters by 50%");
+        jMenuItemRandomize50pct.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RandomizeActionPerformed(evt, 0.5f);
+            }
+        });
+        jMenuTools.add(jMenuItemRandomize50pct);
+
+        jMenuBar1.add(jMenuTools);
 
         jMenuPatch.setMnemonic('P');
         jMenuPatch.setDelay(300);
@@ -1321,6 +1358,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private void jCheckBoxMenuItemCordsInBackgroundActionPerformed(java.awt.event.ActionEvent evt) {
         patch.SetCordsInBackground(jCheckBoxMenuItemCordsInBackground.isSelected());
+    }
+
+    private void RandomizeActionPerformed(java.awt.event.ActionEvent evt, float percent) {
+        PatchRandomizer.randomizeAllParameters(getPatchGUI(), percent);
     }
 
     private void jMenuGenerateCodeActionPerformed(java.awt.event.ActionEvent evt) {
