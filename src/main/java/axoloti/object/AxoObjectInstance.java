@@ -1313,17 +1313,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         String iname = getInstanceName();
         AxoObjectInstancePatcher oi = (AxoObjectInstancePatcher) getPatch().ChangeObjectInstanceType1(this, o);
         AxoObjectFromPatch ao = (AxoObjectFromPatch) getType();
-        PatchFrame pf = PatchGUI.OpenPatchInvisible(ao.f); /* Do not automatically open subpatches after conversion.
-                                                               However... this will lead to a bug where the patch is 
-                                                               shown empty the FIRST time you click "Open".
-                                                               Hence the Brutal Band-Aid below. */
+        PatchFrame pf = PatchGUI.OpenPatchInvisible(ao.f); /* Do not automatically open subpatch after conversion */
         oi.pf = pf;
         oi.pg = pf.getPatchGUI();
-        pf.Close(); /* Bit brutal to destroy the whole patch frame immediately, but this
-                        puts a Band-Aid on a bug where the patch GUI components are not visible 
-                        the first time "Open" is clicked. Acceptable as the patchframe GUI is
-                        not required in memory unless we open it for editing - and it will be
-                        properly regenerated once the "Open" button on it is clicked (?) */
         oi.setInstanceName(iname);
         oi.updateObj();
         getPatch().delete(this);
