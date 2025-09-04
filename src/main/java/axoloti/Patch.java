@@ -1674,7 +1674,7 @@ public class Patch {
             }
             else if (!n.isValidNet()) {
                 c += i.GetDataType().GenerateSetDefaultValueCode();
-                LOGGER.log(Level.SEVERE, "Patch contains invalid net: " + i.objname + ":" + i.getInletname());
+                LOGGER.log(Level.SEVERE, "Patch " + this.getPatchframe().getTitle() + " contains invalid net: " + i.objname + ":" + i.getInletname());
             }
             needsComma = true;
         }
@@ -2247,7 +2247,7 @@ public class Patch {
             serializer.write(aof, f1);
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error trying to export object: " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Error trying to export object " + ao.id + ": " + ex.getMessage());
             ex.printStackTrace(System.out);
             return;
         }
