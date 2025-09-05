@@ -32,6 +32,7 @@ import axoloti.listener.SDCardMountStatusListener;
 import axoloti.sd.SDCardInfo;
 import axoloti.sd.SDFileInfo;
 import axoloti.ui.SvgIconLoader;
+import axoloti.utils.FileUtils;
 import axoloti.utils.Preferences;
 import components.ScrollPaneComponent;
 
@@ -69,7 +70,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -444,23 +444,8 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setDialogTitle("Save As...");
         fc.setAcceptAllFileFilterUsed(false);
-        FileFilter axb = new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                if (file.getName().endsWith("axb")) {
-                    return true;
-                } else if (file.isDirectory()) {
-                    return true;
-                }
-                return false;
-            }
+        fc.addChoosableFileFilter(FileUtils.axbFileFilter);
 
-            @Override
-            public String getDescription() {
-                return "Axoloti Patchbank";
-            }
-        };
-        fc.addChoosableFileFilter(axb);
         String fn = FilenamePath;
         if (fn == null) {
             fn = "untitled patchbank";
@@ -474,13 +459,13 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             ext = fn.substring(dot);
         }
         if (ext.equalsIgnoreCase(fileExtension)) {
-            fc.setFileFilter(axb);
+            fc.setFileFilter(FileUtils.axbFileFilter);
         }
 
         int returnVal = fc.showSaveDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             String filterext = fileExtension;
-            if (fc.getFileFilter() == axb) {
+            if (fc.getFileFilter() == FileUtils.axbFileFilter) {
                 filterext = fileExtension;
             }
 
@@ -824,7 +809,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         });
         fileMenu1.add(jMenuItemSave);
 
-        jMenuItemSaveAs.setText("Save as...");
+        jMenuItemSaveAs.setText("Save As...");
         jMenuItemSaveAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemSaveAsActionPerformed(evt);
