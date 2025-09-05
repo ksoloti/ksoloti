@@ -55,6 +55,7 @@ import axoloti.utils.OSDetect.OS;
 import axoloti.utils.Preferences;
 
 import static axoloti.MainFrame.mainframe;
+import static axoloti.utils.Constants.I;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -137,8 +138,6 @@ public class Patch {
     public int presetNo = 0;
     boolean locked = false;
     private boolean dirty = false;
-
-    private final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
 
     /*
      *  0 = A_STEREO

@@ -1,5 +1,6 @@
 package test.java.axoloti.datatypes;
 
+import static axoloti.utils.Constants.I;
 import axoloti.datatypes.Bool32;
 import axoloti.datatypes.CharPtr32;
 import axoloti.datatypes.DataType;
@@ -19,8 +20,6 @@ import static org.mockito.Mockito.mock;
 public class Frac32bufferTest {
 
     private Frac32buffer frac32bufferInstance;
-
-    private static final String I = "\t";
 
     @Before
     public void setUp() {

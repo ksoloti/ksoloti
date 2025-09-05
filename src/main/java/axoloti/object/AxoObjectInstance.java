@@ -38,6 +38,7 @@ import axoloti.parameters.*;
 import axoloti.sd.SDFileReference;
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
+import static axoloti.utils.Constants.I;
 import components.LabelComponent;
 import components.PopupIcon;
 import java.awt.Point;
@@ -107,7 +108,6 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public ArrayList<DisplayInstance> displayInstances;
 
     LabelComponent IndexLabel;
-    private final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
     boolean deferredObjTypeUpdate = false;
 
     public final JPanel p_params = new JPanel();

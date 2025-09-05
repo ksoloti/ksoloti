@@ -26,7 +26,6 @@ import java.awt.Color;
  */
 public interface DataType {
     
-    final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
     abstract boolean IsConvertableToType(DataType dest);
     abstract boolean HasDefaultValue();
     abstract String GenerateSetDefaultValueCode();

@@ -88,8 +88,6 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     @Attribute(required = false)
     private Boolean frozen;
 
-    public final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
-
     private final static byte[]  AxoP_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('P')};
 
     public ParameterInstance() {

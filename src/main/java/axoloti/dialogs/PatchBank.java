@@ -500,8 +500,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             }
 
             if (fileToBeSaved.exists()) {
-                Object[] options = {"Overwrite",
-                    "Cancel"};
+                Object[] options = {"Overwrite", "Cancel"};
                 int n = KeyboardNavigableOptionPane.showOptionDialog(this,
                         "File exists! Overwrite?",
                         "File Exists",

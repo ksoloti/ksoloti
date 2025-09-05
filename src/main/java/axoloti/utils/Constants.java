@@ -66,6 +66,8 @@ public class Constants {
 
     public static ImageIcon APP_ICON;
 
+    public static final String I = "\t"; /* Convenient for (I)ndentation of auto-generated code */
+
     Constants() {
         try {
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();

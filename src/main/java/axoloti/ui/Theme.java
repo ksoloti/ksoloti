@@ -287,8 +287,7 @@ public class Theme {
             }
 
             if (fileToBeSaved.exists()) {
-                Object[] options = {"Overwrite",
-                    "Cancel"};
+                Object[] options = {"Overwrite", "Cancel"};
                 int n = KeyboardNavigableOptionPane.showOptionDialog(frame,
                         "File exists! Overwrite?",
                         "File Exists",
