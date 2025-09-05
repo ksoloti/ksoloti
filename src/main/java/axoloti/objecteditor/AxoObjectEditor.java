@@ -300,19 +300,6 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         customIcons.put(10, SvgIconLoader.load("/resources/icons/midi-player-svgrepo-com.svg", 18, axoloti.ui.Theme.Button_Accent_Background));
         customIcons.put(11, SvgIconLoader.load("/resources/icons/trash-svgrepo-com.svg", 18, axoloti.ui.Theme.Button_Accent_Background));
         customIcons.put(12, SvgIconLoader.load("/resources/icons/code-svgrepo-com.svg", 18, axoloti.ui.Theme.Button_Accent_Background));
-        // customIcons.put(0, SvgIconLoader.load("/resources/icons/message-square-info-svgrepo-com.svg", 18, MaterialColors.DEEP_PURPLE_500));
-        // customIcons.put(1, SvgIconLoader.load("/resources/icons/tags-svgrepo-com.svg", 18, MaterialColors.PURPLE_500));
-        // customIcons.put(2, SvgIconLoader.load("/resources/icons/coins-alt-svgrepo-com.svg", 18, MaterialColors.ORANGE_500));
-        // customIcons.put(3, SvgIconLoader.load("/resources/icons/monitor-heart-rate-svgrepo-com.svg", 18, MaterialColors.LIGHT_BLUE_500));
-        // customIcons.put(4, SvgIconLoader.load("/resources/icons/gem-svgrepo-com.svg", 18, MaterialColors.CYAN_500));
-        // customIcons.put(5, SvgIconLoader.load("/resources/icons/arrow-narrow-right-alignment-svgrepo-com.svg", 18, MaterialColors.LIGHT_GREEN_500));
-        // customIcons.put(6, SvgIconLoader.load("/resources/icons/arrow-narrow-right-move-svgrepo-com.svg", 18, MaterialColors.YELLOW_500));
-        // customIcons.put(7, SvgIconLoader.load("/resources/icons/sliders-up-svgrepo-com.svg", 18, MaterialColors.RED_500));
-        // customIcons.put(8, SvgIconLoader.load("/resources/icons/shuffle-svgrepo-com.svg", 18, MaterialColors.BLUE_500));
-        // customIcons.put(9, SvgIconLoader.load("/resources/icons/wave-pulse-svgrepo-com.svg", 18, MaterialColors.PINK_500));
-        // customIcons.put(10, SvgIconLoader.load("/resources/icons/midi-player-svgrepo-com.svg", 18, MaterialColors.INDIGO_500));
-        // customIcons.put(11, SvgIconLoader.load("/resources/icons/trash-svgrepo-com.svg", 18, MaterialColors.TEAL_500));
-        // customIcons.put(12, SvgIconLoader.load("/resources/icons/code-svgrepo-com.svg", 18, MaterialColors.GREY_500));
 
         CustomImageTabbedPaneUI customTabUI = new CustomImageTabbedPaneUI(customIcons);
         jTabbedPane1.setUI(customTabUI);
