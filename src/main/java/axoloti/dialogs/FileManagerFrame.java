@@ -762,7 +762,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 }
 
                 if (selectedFiles[0] != null) {
-                    Preferences.getInstance().setCurrentFileDirectory(selectedFiles[0].getParentFile().toString());
+                    Preferences.getInstance().setCurrentFileDirectory(selectedFiles[0].getParentFile().getPath());
                 }
 
                 final String targetDirectory = dir;

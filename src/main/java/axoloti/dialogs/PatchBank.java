@@ -921,7 +921,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File[] fs = fc.getSelectedFiles();
             if (fs[0] != null) {
-                Preferences.getInstance().setCurrentFileDirectory(fs[0].getParentFile().toString());
+                Preferences.getInstance().setCurrentFileDirectory(fs[0].getParentFile().getPath());
             }
             for (File f : fs) {
                 if (f != null && f.exists()) {
