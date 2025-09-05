@@ -43,7 +43,7 @@ import org.simpleframework.xml.core.Persist;
 public abstract class AxoObjectAbstract implements Comparable, Cloneable {
 
     @Attribute
-    public String id = "uninitialized_object";
+    public String id = "";
 
     @Attribute(required = false)
     String uuid;
