@@ -20,6 +20,7 @@ package qcmds;
 
 import axoloti.Connection;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  *
@@ -29,11 +30,12 @@ public class SCmdMemRead extends AbstractSCmd {
 
     final int addr;
     final int length;
-    ByteBuffer values = null;
+    ByteBuffer values;
 
     public SCmdMemRead(int addr, int length) {
         this.addr = addr;
         this.length = length;
+        this.values = ByteBuffer.allocateDirect(length).order(ByteOrder.LITTLE_ENDIAN);
     }
 
     @Override

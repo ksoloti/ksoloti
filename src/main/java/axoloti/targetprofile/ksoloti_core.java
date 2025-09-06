@@ -22,6 +22,7 @@ import static axoloti.MainFrame.mainframe;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +36,11 @@ import axoloti.utils.Preferences;
 public class ksoloti_core {
 
     private static final Logger LOGGER = Logger.getLogger(ksoloti_core.class.getName());
+
+    ByteBuffer OTP0Data;
+    ByteBuffer OTP1Data;
+    ByteBuffer CPUIDData;
+    ByteBuffer BKPSRAMData;
 
     enum cputype_e {
         STM32F40xxx,
@@ -177,11 +183,6 @@ public class ksoloti_core {
         return 0x1000;
     }
 
-    ByteBuffer OTP0Data;
-    ByteBuffer OTP1Data;
-    ByteBuffer CPUIDData;
-    ByteBuffer BKPSRAMData;
-
     public void setOTP0Data(ByteBuffer b) {
         OTP0Data = b;
     }
@@ -192,7 +193,7 @@ public class ksoloti_core {
 
     public void setCPUSerial(ByteBuffer b) {
         if (b != null) {
-            CPUIDData = b;
+            CPUIDData = b.order(ByteOrder.LITTLE_ENDIAN);
             String s = "";
             b.rewind();
             while (b.remaining() > 0) {
@@ -207,7 +208,7 @@ public class ksoloti_core {
     }
 
     public ByteBuffer getCPUSerial() {
-        return CPUIDData;
+        return CPUIDData.order(ByteOrder.LITTLE_ENDIAN);
     }
 
     public ByteBuffer getBKPSRAMData() {
