@@ -291,10 +291,10 @@ static const USBMassStorageConfig msdConfig = {
 
 #if defined(BOARD_KSOLOTI_CORE)
     "Ksoloti",
-    "Ksoloti Cardreader",
+    "Cardreader",
 #elif defined(BOARD_AXOLOTI_CORE)
     "Axoloti",
-    "Axoloti Cardreader",
+    "Cardreader",
 #endif
     "0.1"
 };
