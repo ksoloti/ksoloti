@@ -1673,7 +1673,7 @@ public class Patch {
             }
             else if (!n.isValidNet()) {
                 c += i.GetDataType().GenerateSetDefaultValueCode();
-                LOGGER.log(Level.SEVERE, "Patch " + this.getPatchframe().getTitle() + " contains invalid net: " + i.objname + ":" + i.getInletname());
+                LOGGER.log(Level.SEVERE, "Patch " + this.getFileNamePath() + " contains invalid net: " + i.objname + ":" + i.getInletname());
             }
             needsComma = true;
         }
