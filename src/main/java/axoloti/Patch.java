@@ -2930,6 +2930,10 @@ public class Patch {
         AxoObjectInstanceAbstract obj1 = ChangeObjectInstanceType1(obj, objType);
         if (obj1 != obj) {
             obj1.PostConstructor();
+            if (obj instanceof AxoObjectInstanceZombie) {
+                String n = obj.getInstanceName();
+                obj1.setInstanceName(n.split("__temp")[0]);
+            }
             delete(obj);
             SetDirty();
         }
