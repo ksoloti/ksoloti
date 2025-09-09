@@ -148,8 +148,10 @@ public abstract class QCmdShellTask implements QCmd {
             p1 = Runtime.getRuntime().exec(GetExec(), GetEnv(), GetWorkingDir());
 
             Thread thd_out = new Thread(new StreamHandlerThread(shellProcessor, p1.getInputStream()));
+            thd_out.setName("QCmdShellTask_thd_out");
             thd_out.start();
             Thread thd_err = new Thread(new StreamHandlerThread(shellProcessor, p1.getErrorStream()));
+            thd_err.setName("QCmdShellTask_thd_err");
             thd_err.start();
             p1.waitFor();
             thd_out.join();

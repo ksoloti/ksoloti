@@ -370,6 +370,7 @@ public class AxoObjects {
             }
         };
         LoaderThread = new Thread(objloader);
+        LoaderThread.setName("LoaderThread");
         LoaderThread.start();
     }
 

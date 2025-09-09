@@ -989,6 +989,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             }
         }
         Thd thread = new Thd();
+        thread.setName("jUploadPatchesActionPerformedThread");
         thread.start();
 
         refresh();
@@ -1021,6 +1022,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
             }
         }
         Thd thread = new Thd();
+        thread.setName("jUploadAllActionPerformedThread");
         thread.start();
 
         refresh();

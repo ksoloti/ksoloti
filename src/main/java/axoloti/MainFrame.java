@@ -690,6 +690,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             });
 
             singleInstanceListenerThread.setDaemon(true);
+            singleInstanceListenerThread.setName("singleInstanceListenerThread");
             singleInstanceListenerThread.start();
         }
     }

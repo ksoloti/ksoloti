@@ -388,6 +388,7 @@ public class FileMenu extends JMenu {
             }
 
             Thd thread = new Thd();
+            thread.setName("jMenuAutoTestDirActionPerformedThread");
             thread.start();
         }
     }
@@ -443,6 +444,7 @@ public class FileMenu extends JMenu {
             }
         }
         Thd thread = new Thd();
+        thread.setName("jMenuSyncActionPerformedThread");
         thread.start();
     }
 
