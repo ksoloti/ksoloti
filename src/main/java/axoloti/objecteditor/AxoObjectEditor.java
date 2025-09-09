@@ -18,6 +18,8 @@
  */
 package axoloti.objecteditor;
 
+import static axoloti.MainFrame.fc;
+
 import axoloti.DocumentWindow;
 import axoloti.DocumentWindowList;
 import axoloti.MainFrame;
@@ -36,6 +38,7 @@ import axoloti.ui.CustomImageTabbedPaneUI;
 import axoloti.ui.SvgIconLoader;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
+import axoloti.utils.FileUtils;
 import axoloti.utils.OSDetect;
 import axoloti.utils.OSDetect.OS;
 import axoloti.utils.Preferences;
@@ -47,8 +50,12 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,6 +66,7 @@ import javax.swing.GroupLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -94,6 +102,8 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private final RSyntaxTextArea jTextAreaDisposeCode;
     private final RSyntaxTextArea jTextAreaMidiCode;
 
+    final String fileExtension = ".axo";
+
     private boolean readonly = false;
     private AxoCompletionProvider acProvider;
 
@@ -102,6 +112,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private axoloti.menus.FileMenu fileMenu1;
     private axoloti.menus.HelpMenu helpMenu1;
     private axoloti.objecteditor.InletDefinitionsEditorPanel inletDefinitionsEditor1;
+
     private javax.swing.JInternalFrame jInternalFrame1;
     private javax.swing.JLabel jLabelTitleLibrary;
     private javax.swing.JLabel jLabelDescription;
@@ -123,6 +134,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private javax.swing.JMenuItem jMenuItemCopyToLibrary;
     private javax.swing.JMenuItem jMenuItemRevert;
     private javax.swing.JMenuItem jMenuItemSave;
+    private javax.swing.JMenuItem jMenuItemSaveAs;
     private javax.swing.JPanel jPanelTabs;
     private javax.swing.JPanel jPanelBasicInfo;
     private javax.swing.JPanel jPanelDetails;
@@ -264,6 +276,101 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         }
 
         origXML = origOS.toString();
+    }
+
+    void SaveAsDialog() {
+        fc.resetChoosableFileFilters();
+        fc.setCurrentDirectory(new File(Preferences.getInstance().getCurrentFileDirectory()));
+        fc.restoreCurrentSize();
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.setDialogTitle("Save As...");
+        fc.setAcceptAllFileFilterUsed(false);
+        fc.addChoosableFileFilter(FileUtils.axoFileFilter);
+
+        String fn = editObj.sObjFilePath != null ? editObj.sObjFilePath : "untitled object";
+        File f = new File(fn);
+        fc.setSelectedFile(f);
+
+        int returnVal = fc.showSaveDialog(this);
+        if (returnVal != JFileChooser.APPROVE_OPTION) {
+            fc.updateCurrentSize();
+            return;
+        }
+
+        File fileToBeSaved = fc.getSelectedFile();
+        String filterExt = fileExtension;
+
+        String fname = fileToBeSaved.getAbsolutePath();
+        if (!fname.toLowerCase().endsWith(filterExt.toLowerCase())) {
+            fileToBeSaved = new File(fname + filterExt);
+        }
+        
+        if (fileToBeSaved.exists()) {
+            Object[] options = {"Overwrite", "Cancel"};
+            int n = KeyboardNavigableOptionPane.showOptionDialog(this,
+                    "File exists! Overwrite?",
+                    "File Exists",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[1]);
+            if (n != JOptionPane.YES_OPTION) {
+                fc.updateCurrentSize();
+                return;
+            }
+        }
+
+        String filenamePath = fileToBeSaved.getPath();
+        Preferences.getInstance().setCurrentFileDirectory(fileToBeSaved.getParentFile().getPath());
+
+        if (isCompositeObject()) {
+            JOptionPane.showMessageDialog(null, "The original object file " + filenamePath + " contains multiple objects, the object editor does not support this.\n"
+                    + "Your changes are NOT saved!");
+            fc.updateCurrentSize();
+            return;
+        }
+
+        try {
+            AxoObject saveObj = editObj.clone();
+            String newId = fileToBeSaved.getName().replace(fileExtension, "");
+            saveObj.id = newId;
+            saveObj.shortId = newId;
+
+            HashSet<String> tempIncludes = new HashSet<>();
+            for (String str : editObj.includes) {
+                if (str.startsWith("chibios")) {
+                    continue; /* skip "firmware-internal" chibios includes */
+                }
+                else {
+                    tempIncludes.add(str);
+                }
+            }
+            HashSet<String> includes = editObj.GetIncludes(editObj.sObjFilePath, tempIncludes);
+            if (includes != null && !includes.isEmpty()) {
+                File destinationDir = fileToBeSaved.getParentFile();
+                for (String sourcePath : includes) {
+                    File incf = new File(sourcePath);
+                    if (incf.exists() && incf.canRead()) {
+                        File destFile = new File(destinationDir, incf.getName());
+                        LOGGER.log(Level.INFO, "Copying include file: " + incf.getAbsolutePath() + " to " + destFile.getAbsolutePath());
+                        Files.copy(incf.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    } else {
+                        LOGGER.log(Level.SEVERE, "Could not copy include file: " + sourcePath + " - File does not exist or is not readable.");
+                    }
+                }
+            }
+            
+            MainFrame.axoObjects.WriteAxoObject(filenamePath, saveObj);
+            updateReferenceXML();
+            MainFrame.axoObjects.LoadAxoObjects();
+
+        } catch (CloneNotSupportedException ex) {
+            LOGGER.log(Level.SEVERE, "Error trying to clone object: " + ex.getMessage(), ex);
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, "I/O Error trying to save or copy files: " + ex.getMessage(), ex);
+        }
+        fc.updateCurrentSize();
     }
 
     void Revert() {
@@ -741,6 +848,7 @@ private void initComponents() {
         fileMenu1 = new axoloti.menus.FileMenu();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         jMenuItemSave = new javax.swing.JMenuItem();
+        jMenuItemSaveAs = new javax.swing.JMenuItem();
         jMenuItemRevert = new javax.swing.JMenuItem();
         jMenuItemCopyToLibrary = new javax.swing.JMenuItem();
         windowMenu1 = new axoloti.menus.WindowMenu();
@@ -1084,6 +1192,14 @@ private void initComponents() {
         });
         fileMenu1.add(jMenuItemSave);
 
+        jMenuItemSaveAs.setText("Save As...");
+        jMenuItemSaveAs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemSaveAsActionPerformed(evt);
+            }
+        });
+        fileMenu1.add(jMenuItemSaveAs);
+
         jMenuItemRevert.setText("Revert");
         jMenuItemRevert.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1126,6 +1242,11 @@ private void initComponents() {
             JOptionPane.showMessageDialog(null, "The original object file " + editObj.sObjFilePath + " contains multiple objects, the object editor does not support this.\n"
                     + "Your changes are NOT saved!");
         }
+    }
+
+    private void jMenuItemSaveAsActionPerformed(java.awt.event.ActionEvent evt) {
+        editObj.FireObjectModified(this);
+        SaveAsDialog();
     }
 
     private void jMenuItemCopyToLibraryActionPerformed(java.awt.event.ActionEvent evt) {

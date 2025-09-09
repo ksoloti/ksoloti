@@ -159,6 +159,16 @@ public abstract class AxoObjectAbstract implements Comparable, Cloneable {
         return null;
     }
 
+    public HashSet<String> GetIncludes(String patchFilePath, HashSet<String> includes) {
+        /* Optional String argument makes is possible to
+         * search includes relative to containing patch file.
+         * Can be passed null.
+         * Optional HashSet<String> argument makes is possible
+         * to pass a custom includes list to be resolved.
+         */
+        return null;
+    }
+
     public void SetIncludes(HashSet<String> includes) {
     }
 

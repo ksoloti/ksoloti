@@ -593,6 +593,37 @@ public class AxoObject extends AxoObjectAbstract {
     }
 
     @Override
+    public HashSet<String> GetIncludes(String patchFilePath, HashSet<String> includes) {
+        if (includes == null || includes.isEmpty()) {
+            return null;
+        }
+
+        HashSet<String> resolvedPaths = new HashSet<>();
+        Path objectPath = (sObjFilePath != null) ? Paths.get(sObjFilePath) : null;
+        Path patchPath = (patchFilePath != null) ? Paths.get(patchFilePath) : null;
+
+        /* Use the object's path or the patch's path as the local context */
+        Path basePath = objectPath != null ? objectPath : patchPath;
+        
+        ArrayList<Path> searchPaths = getSearchPaths(basePath);
+
+        for (String includeName : includes) {
+            Path resolvedFile = findIncludeFile(includeName, searchPaths);
+            if (resolvedFile != null) {
+                resolvedPaths.add(resolvedFile.toString());
+            }
+        }
+
+        if (!resolvedPaths.isEmpty()) {
+            return resolvedPaths;
+        } else if (includes.isEmpty()) {
+            return null;
+        } else {
+            return includes; /* Fallback: return the original includes if none could be resolved */
+        }
+    }
+
+    @Override
     public void SetIncludes(HashSet<String> includes) {
         this.includes = includes;
     }
