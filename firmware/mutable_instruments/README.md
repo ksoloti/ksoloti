@@ -22,7 +22,7 @@ before initial commit:
 * define M_PI in stmlib/dsp/filter.h
 * changed "#define xxx y" to "const int xxx=y;" in */resources.h 
 * sample_data in elements/resources.h made non-const to allow dynamic loading
-* sample_data initialised with new call loadElementsData in axoloti_mi.h/cpp
+* sample_data initialised with new call loadElementsData in axoloti_mi.h/cpp - (KSOLOTI EDIT: loadElementsData is now included locally via loadElementsData.h in the lmnts.axo folder. axoloti_mi.* no longer present in the firmware folder.)
 
 * clouds, change reverb to 16bit (brighter, less noisy) , allow sample rate to be set, default to 48k (fx/reverb.sh, granular_processor.h/cpp)
 

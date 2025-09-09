@@ -310,7 +310,6 @@ endif
 ifneq (,$(findstring ELEMENTS,$(AXO_OPT_MODULES)))
 #$(info including ELEMENTS)
 ELEMENTS_SRC = \
-  ${FIRMWARE}/axoloti_mi.cpp \
   ${MUTABLE_INSTRUMENTS}/elements/elements_resources.cpp \
   ${MUTABLE_INSTRUMENTS}/elements/dsp/multistage_envelope.cpp \
   ${MUTABLE_INSTRUMENTS}/elements/dsp/ominous_voice.cpp \
