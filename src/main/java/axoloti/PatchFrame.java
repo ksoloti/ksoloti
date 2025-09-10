@@ -26,6 +26,7 @@ import axoloti.listener.SDCardMountStatusListener;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
 import axoloti.parameters.ParameterInstance;
+import axoloti.patch.MutatorFrame;
 import axoloti.patch.PatchRandomizer;
 import axoloti.sd.SDCardInfo;
 import axoloti.sd.SDFileReference;
@@ -127,9 +128,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JMenuItem jMenuGenerateCode;
     private javax.swing.JMenuItem jMenuItemAddObj;
     private javax.swing.JMenuItem jMenuItemAdjScroll;
-    private javax.swing.JMenuItem jMenuItemRandomize10pct;
-    private javax.swing.JMenuItem jMenuItemRandomize25pct;
-    private javax.swing.JMenuItem jMenuItemRandomize50pct;
+    private javax.swing.JMenuItem jMenuItemShowPatchMutator;
     private javax.swing.JMenuItem jMenuItemClearPreset;
     private javax.swing.JMenuItem jMenuItemDuplicate;
     private javax.swing.JMenuItem jMenuItemDuplicateWithWires;
@@ -337,9 +336,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             jMenuUploadCode.setVisible(false);
             jMenuItemLock.setVisible(false);
             jMenuItemUnlock.setVisible(false);
-            jMenuItemRandomize10pct.setVisible(false);
-            jMenuItemRandomize25pct.setVisible(false);
-            jMenuItemRandomize50pct.setVisible(false);
+            jMenuItemShowPatchMutator.setVisible(false);
         }
         jMenuPreset.setVisible(false);
         patch.Layers.requestFocus();
@@ -718,9 +715,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuItemOpenFileLocation = new javax.swing.JMenuItem();
         jCheckBoxMenuItemCordsInBackground = new javax.swing.JCheckBoxMenuItem();
         jMenuItemAdjScroll = new javax.swing.JMenuItem();
-        jMenuItemRandomize10pct = new javax.swing.JMenuItem();
-        jMenuItemRandomize25pct = new javax.swing.JMenuItem();
-        jMenuItemRandomize50pct = new javax.swing.JMenuItem();
+        jMenuItemShowPatchMutator = new javax.swing.JMenuItem();
         jMenuPatch = new javax.swing.JMenu();
         jCheckBoxMenuItemLive = new javax.swing.JCheckBoxMenuItem();
         jMenuItemUploadSD = new javax.swing.JMenuItem();
@@ -1007,32 +1002,15 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuTools.add(jMenuItemAdjScroll);
 
-        jMenuItemRandomize10pct.setMnemonic('1');
-        jMenuItemRandomize10pct.setText("Randomize all Parameters by 10%");
-        jMenuItemRandomize10pct.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItemShowPatchMutator.setMnemonic('M');
+        jMenuItemShowPatchMutator.setText("Show Patch Mutator");
+        jMenuItemShowPatchMutator.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RandomizeActionPerformed(evt, 0.1f);
+                MutatorFrame mutatorFrame = new MutatorFrame(patch);
+                mutatorFrame.setVisible(true);
             }
         });
-        jMenuTools.add(jMenuItemRandomize10pct);
-
-        jMenuItemRandomize25pct.setMnemonic('2');
-        jMenuItemRandomize25pct.setText("Randomize all Parameters by 25%");
-        jMenuItemRandomize25pct.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RandomizeActionPerformed(evt, 0.25f);
-            }
-        });
-        jMenuTools.add(jMenuItemRandomize25pct);
-
-        jMenuItemRandomize50pct.setMnemonic('5');
-        jMenuItemRandomize50pct.setText("Randomize all Parameters by 50%");
-        jMenuItemRandomize50pct.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RandomizeActionPerformed(evt, 0.5f);
-            }
-        });
-        jMenuTools.add(jMenuItemRandomize50pct);
+        jMenuTools.add(jMenuItemShowPatchMutator);
 
         jMenuBar1.add(jMenuTools);
 
