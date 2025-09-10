@@ -106,6 +106,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private PresetPanel presetPanel;
     private VisibleCablePanel visibleCablePanel;
     ArrayList<DocumentWindow> dwl;
+    private MutatorFrame mutatorFrame = null;
 
     private boolean previousOverload;
     private boolean firstShow = true;
@@ -970,7 +971,21 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 jMenuItemSettingsActionPerformed(evt);
             }
         });
+
         jMenuTools.add(jMenuItemSettings);
+        jMenuItemShowPatchMutator.setMnemonic('M');
+        jMenuItemShowPatchMutator.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyUtils.CONTROL_OR_CMD_MASK));
+        jMenuItemShowPatchMutator.setText("Patch Mutator");
+        jMenuItemShowPatchMutator.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                if (mutatorFrame == null) {
+                    mutatorFrame = new MutatorFrame(patch);
+                }
+                mutatorFrame.setVisible(true);
+            }
+        });
+        jMenuTools.add(jMenuItemShowPatchMutator);
+
         jMenuTools.add(jSeparator2);
 
         jMenuItemOpenFileLocation.setMnemonic('F');
@@ -1001,16 +1016,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
         });
         jMenuTools.add(jMenuItemAdjScroll);
-
-        jMenuItemShowPatchMutator.setMnemonic('M');
-        jMenuItemShowPatchMutator.setText("Show Patch Mutator");
-        jMenuItemShowPatchMutator.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                MutatorFrame mutatorFrame = new MutatorFrame(patch);
-                mutatorFrame.setVisible(true);
-            }
-        });
-        jMenuTools.add(jMenuItemShowPatchMutator);
 
         jMenuBar1.add(jMenuTools);
 

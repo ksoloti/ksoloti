@@ -25,8 +25,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,14 +39,20 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import axoloti.Patch;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.parameters.ParameterInstance;
 
 /**
- * A GUI frame for the Ksoloti Patch Randomizer.
- * Provides buttons and a parameter list to apply randomization to patch parameters.
+ * A GUI frame for the Ksoloti Patch Mutator.
+ * Provides buttons and a parameter list to apply randomization to patch parameters,
+ * as well as functionality for saving and loading variations.
  * @author Ksoloti
  */
 public class MutatorFrame extends JFrame {
@@ -56,6 +61,50 @@ public class MutatorFrame extends JFrame {
 
     private Patch patch;
     private JList<ParameterInstance> parameterList;
+    private DefaultListModel<PatchVariation> variationListModel;
+    private JList<PatchVariation> variationList;
+    private int variationCounter = 0;
+
+    private static class PatchVariation {
+        private String name;
+        private List<ParameterState> states;
+
+        public PatchVariation(String name) {
+            this.name = name;
+            this.states = new ArrayList<>();
+        }
+
+        public void addState(ParameterState state) {
+            states.add(state);
+        }
+
+        public List<ParameterState> getStates() {
+            return states;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    private static class ParameterState {
+        private ParameterInstance parameter;
+        private int value;
+
+        public ParameterState(ParameterInstance parameter, int value) {
+            this.parameter = parameter;
+            this.value = value;
+        }
+
+        public ParameterInstance getParameter() {
+            return parameter;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
 
     /**
      * Constructs a new MutatorFrame.
@@ -65,40 +114,68 @@ public class MutatorFrame extends JFrame {
         super("Ksoloti Patch Mutator");
         this.patch = patch;
         
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setMinimumSize(new Dimension(350, 450));
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                setVisible(false);
+            }
+        });
+        setMinimumSize(new Dimension(500, 500));
         
         JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(5, 5, 5, 5);
 
-        JLabel titleLabel = new JLabel("Randomize selected parameters:");
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 3;
-        gbc.anchor = GridBagConstraints.CENTER;
-        mainPanel.add(titleLabel, gbc);
-
-        JLabel listLabel = new JLabel("Parameters:");
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 3;
         gbc.anchor = GridBagConstraints.WEST;
-        mainPanel.add(listLabel, gbc);
-        listLabel.setVisible(false);
-        
-        DefaultListModel<ParameterInstance> listModel = new DefaultListModel<>();
+        mainPanel.add(new JLabel("Randomize selected parameters:"), gbc);
+
+        gbc.gridy++;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        DefaultListModel<ParameterInstance> parameterListModel = new DefaultListModel<>();
         if (patch.objectInstances.size() > 0) {
             for (AxoObjectInstanceAbstract obj : patch.objectInstances) {
                 for (ParameterInstance param : obj.getParameterInstances()) {
-                    listModel.addElement(param);
+                    parameterListModel.addElement(param);
                 }
             }
         }
         
-        parameterList = new JList<>(listModel);
+        parameterList = new JList<>(parameterListModel);
         parameterList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         
+        parameterList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (!e.isShiftDown() && !e.isControlDown()) {
+                    parameterList.clearSelection();
+                }
+                int index = parameterList.locationToIndex(e.getPoint());
+                if (index != -1) {
+                    parameterList.addSelectionInterval(index, index);
+                }
+            }
+        });
+
+        parameterList.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                int index = parameterList.locationToIndex(e.getPoint());
+                if (index != -1) {
+                    int anchorIndex = parameterList.getAnchorSelectionIndex();
+                    if (anchorIndex != -1) {
+                        parameterList.setSelectionInterval(anchorIndex, index);
+                    }
+                }
+            }
+        });
+
         parameterList.setCellRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index,
@@ -117,50 +194,75 @@ public class MutatorFrame extends JFrame {
         
         JScrollPane scrollPane = new JScrollPane(parameterList);
         scrollPane.setPreferredSize(new Dimension(300, 200));
+        mainPanel.add(scrollPane, gbc);
+
+        gbc.gridy++;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 0.33;
+        gbc.gridwidth = 1;
+        
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        JButton button10 = new JButton("10%");
+        button10.addActionListener(e -> randomizeSelected(0.10f));
+        mainPanel.add(button10, gbc);
+
+        gbc.gridx = 1;
+        JButton button25 = new JButton("25%");
+        button25.addActionListener(e -> randomizeSelected(0.25f));
+        mainPanel.add(button25, gbc);
+
+        gbc.gridx = 2;
+        JButton button50 = new JButton("50%");
+        button50.addActionListener(e -> randomizeSelected(0.50f));
+        mainPanel.add(button50, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
         gbc.gridwidth = 3;
+        gbc.anchor = GridBagConstraints.WEST;
+        mainPanel.add(new JLabel("Saved Variations:"), gbc);
+
+        gbc.gridy++;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        mainPanel.add(scrollPane, gbc);
-
-        JButton button10 = new JButton("10%");
-        button10.addActionListener(new ActionListener() {
+        variationListModel = new DefaultListModel<>();
+        variationList = new JList<>(variationListModel);
+        variationList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        variationList.addMouseListener(new MouseAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                randomizeSelected(0.10f);
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    loadVariation();
+                }
             }
         });
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 1;
+
+        JScrollPane variationScrollPane = new JScrollPane(variationList);
+        variationScrollPane.setPreferredSize(new Dimension(300, 200));
+        mainPanel.add(variationScrollPane, gbc);
+
+        gbc.gridy++;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 0.33;
         gbc.weighty = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        mainPanel.add(button10, gbc);
+        gbc.gridwidth = 1;
 
-        JButton button25 = new JButton("25%");
-        button25.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                randomizeSelected(0.25f);
-            }
-        });
+        gbc.gridx = 0;
+        JButton storeButton = new JButton("Store");
+        storeButton.addActionListener(e -> storeVariation());
+        mainPanel.add(storeButton, gbc);
+
         gbc.gridx = 1;
-        gbc.gridy = 3;
-        mainPanel.add(button25, gbc);
+        JButton loadButton = new JButton("Load");
+        loadButton.addActionListener(e -> loadVariation());
+        mainPanel.add(loadButton, gbc);
 
-        JButton button50 = new JButton("50%");
-        button50.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                randomizeSelected(0.50f);
-            }
-        });
         gbc.gridx = 2;
-        gbc.gridy = 3;
-        mainPanel.add(button50, gbc);
+        JButton deleteButton = new JButton("Delete");
+        deleteButton.addActionListener(e -> deleteVariation());
+        mainPanel.add(deleteButton, gbc);
         
         add(mainPanel);
         
@@ -177,8 +279,59 @@ public class MutatorFrame extends JFrame {
         if (selectedParameters.isEmpty()) {
             LOGGER.log(Level.WARNING, "No parameters selected. Please select one or more parameters to randomize.");
         } else {
-            LOGGER.log(Level.INFO, "Randomizing " + selectedParameters.size() + " selected parameters by " + (percent * 100) + "%");
+            LOGGER.log(Level.INFO, "Randomizing " + selectedParameters.size() + " selected parameter(s) by " + (int)(percent * 100) + "%");
             PatchRandomizer.randomizeParameters(selectedParameters, percent);
+            if (this.patch != null) {
+                this.patch.SetDirty(true);
+            }
+        }
+    }
+
+    /**
+     * Stores the current patch's parameter states as a new variation.
+     */
+    private void storeVariation() {
+        if (this.patch != null) {
+            PatchVariation newVariation = new PatchVariation("Variation " + (++variationCounter));
+            for (AxoObjectInstanceAbstract obj : patch.objectInstances) {
+                for (ParameterInstance param : obj.getParameterInstances()) {
+                    newVariation.addState(new ParameterState(param, param.GetValueRaw()));
+                }
+            }
+            variationListModel.addElement(newVariation);
+            LOGGER.log(Level.INFO, "Variation '" + newVariation.name + "' stored.");
+        } else {
+            LOGGER.log(Level.WARNING, "No active patch to store as a variation.");
+        }
+    }
+
+    /**
+     * Loads the selected variation, replacing the current patch's parameter states.
+     */
+    private void loadVariation() {
+        PatchVariation selectedVariation = variationList.getSelectedValue();
+        if (selectedVariation != null && this.patch != null) {
+            for (ParameterState state : selectedVariation.getStates()) {
+                state.getParameter().SetValueRaw(state.getValue());
+                state.getParameter().SetNeedsTransmit(true);
+            }
+            LOGGER.log(Level.INFO, "Variation '" + selectedVariation.name + "' loaded.");
+            this.patch.SetDirty(true);
+        } else {
+            LOGGER.log(Level.WARNING, "No variation selected to load.");
+        }
+    }
+
+    /**
+     * Deletes the selected variation.
+     */
+    private void deleteVariation() {
+        int selectedIndex = variationList.getSelectedIndex();
+        if (selectedIndex != -1) {
+            variationListModel.remove(selectedIndex);
+            LOGGER.log(Level.INFO, "Selected variation deleted.");
+        } else {
+            LOGGER.log(Level.WARNING, "No variation selected to delete.");
         }
     }
 }
