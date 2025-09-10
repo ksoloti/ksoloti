@@ -45,10 +45,17 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.KeyEvent;
+import javax.swing.KeyStroke;
+import javax.swing.InputMap;
+import javax.swing.ActionMap;
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 
 import axoloti.Patch;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.parameters.ParameterInstance;
+import axoloti.utils.KeyUtils;
 
 /**
  * A GUI frame for the Ksoloti Patch Mutator.
@@ -276,6 +283,8 @@ public class MutatorFrame extends JFrame {
         
         add(mainPanel);
         
+        setupKeyBindings();
+
         pack();
         setLocationRelativeTo(null);
     }
@@ -362,5 +371,21 @@ public class MutatorFrame extends JFrame {
             LOGGER.log(Level.WARNING, "No variation selected to rename.");
         }
     }
-}
 
+    /**
+     * Sets up keyboard shortcuts for the frame.
+     */
+    private void setupKeyBindings() {
+        InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = getRootPane().getActionMap();
+
+        KeyStroke closeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyUtils.CONTROL_OR_CMD_MASK);
+        inputMap.put(closeKeyStroke, "closeWindow");
+        actionMap.put("closeWindow", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                setVisible(false);
+            }
+        });
+    }
+}
