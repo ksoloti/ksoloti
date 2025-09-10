@@ -56,6 +56,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
@@ -71,12 +72,18 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
+import javax.swing.InputMap;
+import javax.swing.ActionMap;
+import javax.swing.AbstractAction;
 
 import qcmds.CommandManager;
 import qcmds.SCmdCreateDirectory;
 import qcmds.SCmdDeleteFile;
 import qcmds.SCmdGetFileList;
 import qcmds.SCmdUploadFile;
+import axoloti.utils.KeyUtils;
 
 /**
  *
@@ -277,6 +284,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
         });
         refreshTimer.setRepeats(false); /* Ensure it's a single-shot timer */
+        
+        setupKeyBindings();
     }
     
     void UpdateButtons() {
@@ -732,11 +741,9 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     }
 
     private void jButtonUploadActionPerformed(java.awt.event.ActionEvent evt) {
-
         String dir = "/";
         int rowIndex = jFileTable.getSelectedRow();
         if (rowIndex >= 0) {
-
             AxoSDFileTableModel model = (AxoSDFileTableModel) jFileTable.getModel();
             DisplayTreeNode displayNode = model.getDisplayTreeNode(rowIndex);
             SDFileInfo f = displayNode.fileInfo;
@@ -1042,5 +1049,22 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
     public void ShowSDCardUnmounted() {
         ShowConnect(false);
         SDCardInfo.getInstance().SetInfo(0, 0, 0);        
+    }
+
+    /**
+     * Sets up keyboard shortcuts for the frame.
+     */
+    private void setupKeyBindings() {
+        InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = getRootPane().getActionMap();
+
+        KeyStroke closeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyUtils.CONTROL_OR_CMD_MASK);
+        inputMap.put(closeKeyStroke, "closeWindow");
+        actionMap.put("closeWindow", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                dispose();
+            }
+        });
     }
 }
