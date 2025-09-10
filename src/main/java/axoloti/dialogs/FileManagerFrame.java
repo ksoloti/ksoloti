@@ -979,7 +979,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             try {
                 SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(dir + fn, cal);
                 createDirCmd.Do();
-                if (!createDirCmd.waitForCompletion() || createDirCmd.waitForCompletion()) {
+                if (!createDirCmd.waitForCompletion() || !createDirCmd.isSuccessful()) {
                     return;
                 }
             } catch (InterruptedException e) {
