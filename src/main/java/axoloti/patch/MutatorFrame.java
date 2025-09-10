@@ -265,14 +265,14 @@ public class MutatorFrame extends JFrame {
         mainPanel.add(loadButton, gbc);
 
         gbc.gridx = 2;
-        JButton deleteButton = new JButton("Delete");
-        deleteButton.addActionListener(e -> deleteVariation());
-        mainPanel.add(deleteButton, gbc);
-        
-        gbc.gridx = 3;
         JButton renameButton = new JButton("Rename");
         renameButton.addActionListener(e -> renameVariation());
         mainPanel.add(renameButton, gbc);
+        
+        gbc.gridx = 3;
+        JButton deleteButton = new JButton("Delete");
+        deleteButton.addActionListener(e -> deleteVariation());
+        mainPanel.add(deleteButton, gbc);
         
         add(mainPanel);
         
