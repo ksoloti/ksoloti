@@ -298,7 +298,7 @@ public class MutatorFrame extends JFrame {
                     newVariation.addState(new ParameterState(param, param.GetValueRaw()));
                 }
             }
-            variationListModel.addElement(newVariation);
+            variationListModel.add(0, newVariation);
             LOGGER.log(Level.INFO, "Variation '" + newVariation.name + "' stored.");
         } else {
             LOGGER.log(Level.WARNING, "No active patch to store as a variation.");
