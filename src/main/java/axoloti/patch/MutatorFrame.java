@@ -38,6 +38,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.MouseAdapter;
@@ -80,6 +81,10 @@ public class MutatorFrame extends JFrame {
 
         public List<ParameterState> getStates() {
             return states;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
 
         @Override
@@ -130,7 +135,7 @@ public class MutatorFrame extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 3;
+        gbc.gridwidth = 4;
         gbc.anchor = GridBagConstraints.WEST;
         mainPanel.add(new JLabel("Randomize selected parameters:"), gbc);
 
@@ -218,7 +223,7 @@ public class MutatorFrame extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.gridwidth = 3;
+        gbc.gridwidth = 4;
         gbc.anchor = GridBagConstraints.WEST;
         mainPanel.add(new JLabel("Saved Variations:"), gbc);
 
@@ -245,7 +250,7 @@ public class MutatorFrame extends JFrame {
 
         gbc.gridy++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 0.33;
+        gbc.weightx = 0.25;
         gbc.weighty = 0;
         gbc.gridwidth = 1;
 
@@ -263,6 +268,11 @@ public class MutatorFrame extends JFrame {
         JButton deleteButton = new JButton("Delete");
         deleteButton.addActionListener(e -> deleteVariation());
         mainPanel.add(deleteButton, gbc);
+        
+        gbc.gridx = 3;
+        JButton renameButton = new JButton("Rename");
+        renameButton.addActionListener(e -> renameVariation());
+        mainPanel.add(renameButton, gbc);
         
         add(mainPanel);
         
@@ -334,4 +344,23 @@ public class MutatorFrame extends JFrame {
             LOGGER.log(Level.WARNING, "No variation selected to delete.");
         }
     }
+
+    /**
+     * Renames the selected variation.
+     */
+    private void renameVariation() {
+        int selectedIndex = variationList.getSelectedIndex();
+        if (selectedIndex != -1) {
+            PatchVariation selectedVariation = variationListModel.getElementAt(selectedIndex);
+            String newName = JOptionPane.showInputDialog(this, "Enter a new name for the variation:", selectedVariation.toString());
+            if (newName != null && !newName.trim().isEmpty()) {
+                selectedVariation.setName(newName.trim());
+                variationListModel.set(selectedIndex, selectedVariation);
+                LOGGER.log(Level.INFO, "Variation renamed to '" + newName + "'.");
+            }
+        } else {
+            LOGGER.log(Level.WARNING, "No variation selected to rename.");
+        }
+    }
 }
+
