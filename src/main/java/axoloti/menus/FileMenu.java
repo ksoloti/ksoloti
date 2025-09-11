@@ -381,6 +381,7 @@ public class FileMenu extends JMenu {
                         }
 
                         LOGGER.log(Level.WARNING, "Done running tests.\n");
+                        mainframe.setCurrentLivePatch(null);
 
                         Logger.getLogger("").removeHandler(fh);
                         fh.close();
