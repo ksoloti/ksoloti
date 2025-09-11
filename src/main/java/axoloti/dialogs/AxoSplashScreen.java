@@ -64,7 +64,7 @@ public class AxoSplashScreen extends JWindow {
                 label = new JLabel((ImageIcon) splashSvg);
             } else {
                 System.err.println("Failed to load SVG icon. Falling back to PNG.");
-                setIconImage(new ImageIcon(getClass().getResource("/resources/ksoloti_splash.png")).getImage());
+                setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_splash.png")).getImage());
             }
 
             label.setOpaque(false);
