@@ -1404,7 +1404,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         return false;
                     }
                     String extension = name.substring(name.length() - 4);
-                    boolean b = (extension.equals(".axp") || extension.equals(".axs") || extension.equals(".axh"));
+                    boolean b = (extension.equals(".axp") || extension.equals(".axh"));
                     return b;
                 }
             });
