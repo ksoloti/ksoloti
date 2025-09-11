@@ -27,7 +27,6 @@ import axoloti.utils.Preferences;
 import axoloti.utils.OSDetect.ARCH;
 import axoloti.utils.OSDetect.OS;
 
-
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
@@ -318,7 +317,7 @@ public class Axoloti {
         File[] bfiles = builddir.listFiles();
         if (bfiles != null) {
             for (File f : bfiles) {
-                /* Flush previous temp build files...  */
+                /* Flush previous temp build files... */
                 if (f.isDirectory()) {
                     FileUtils.deleteDirectory(f);
                 }

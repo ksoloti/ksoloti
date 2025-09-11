@@ -676,7 +676,7 @@ public class PatchGUI extends Patch {
                     for (AxoObjectInstanceAbstract o : objectInstances) {
                         if (!o.IsLocked()) {
                             if (ev.isShiftDown()) {
-                                /* Add unlocked objects within rectangle to current selection  */
+                                /* Add unlocked objects within rectangle to current selection */
                                 if (o.getBounds().intersects(r) && !o.isSelected()) {
                                     o.SetSelected(true);
                                 }

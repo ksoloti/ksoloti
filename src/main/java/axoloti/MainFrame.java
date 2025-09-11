@@ -21,6 +21,8 @@ package axoloti;
 
 import static axoloti.Axoloti.FIRMWARE_DIR;
 import static axoloti.Axoloti.HOME_DIR;
+import static axoloti.utils.FileUtils.toUnixPath;
+
 import axoloti.dialogs.AxoJFileChooser;
 import axoloti.dialogs.FileManagerFrame;
 import axoloti.dialogs.KeyboardFrame;
@@ -1616,7 +1618,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             pname += "_i2scodec";
         }
         pname += ".bin";
-        flashUsingSDRam(fname, pname);
+        flashUsingSDRam(toUnixPath(fname), toUnixPath(pname));
     }
 
     private void jMenuItemFCompileActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1650,7 +1652,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             pname += "_i2scodec";
         }
         pname += ".bin";
-        flashUsingSDRam(fname, pname);
+        flashUsingSDRam(toUnixPath(fname), toUnixPath(pname));
     }
 
     private void jMenuItemMountActionPerformed(java.awt.event.ActionEvent evt) {
@@ -2087,7 +2089,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 pname += "_i2scodec";
             }
             pname += ".bin";
-            flashUsingSDRam(fname, pname);
+            flashUsingSDRam(toUnixPath(fname), toUnixPath(pname));
         }
     }
 

@@ -22,6 +22,8 @@ import axoloti.MainFrame;
 import axoloti.utils.OSDetect;
 import axoloti.utils.Preferences;
 
+import static axoloti.utils.FileUtils.toUnixPath;
+
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,11 +62,11 @@ public class QCmdCompileFirmware extends QCmdShellTask {
         }
 
         if (OSDetect.getOS() == OSDetect.OS.WIN) {
-            String str = FirmwareDir() + "\\compile_firmware_win.bat " + boarddef;
+            String str = toUnixPath(FirmwareDir() + File.separator + "compile_firmware_win.bat " + boarddef);
             return str.split("\\s+");
         }
         else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {
-            String str = FirmwareDir() + "/compile_firmware.sh " + boarddef;
+            String str = toUnixPath(FirmwareDir() + File.separator + "compile_firmware.sh " + boarddef);
             return str.split("\\s+");
         }
         else {

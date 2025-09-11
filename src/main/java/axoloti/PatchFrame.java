@@ -42,6 +42,7 @@ import components.VisibleCablePanel;
 
 import static axoloti.MainFrame.fc;
 import static axoloti.MainFrame.mainframe;
+import static axoloti.utils.FileUtils.toUnixPath;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -546,7 +547,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             /* If it failed, show a message and clear the live state. */
                             if (compilationTimeout) {
                                 String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
-                                LOGGER.log(Level.INFO, "Timeout: " + path.replace('\\', '/') + ".bin could not be created.");
+                                LOGGER.log(Level.INFO, "Timeout: " + path + ".bin could not be created.");
                             }
                             mainframe.setCurrentLivePatch(null);
                         }
@@ -1377,7 +1378,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
             else {
                 String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
-                LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
+                LOGGER.log(Level.INFO, path + ".bin not found.");
             }
         } else {
             LOGGER.log(Level.SEVERE, "USB connection lost, patch upload aborted.");
@@ -1603,7 +1604,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     }
                     else {
                         String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + patch.generateBuildFilenameStem(true);
-                        LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
+                        LOGGER.log(Level.INFO, path + ".bin not found.");
                         return false;
                     }
                 }

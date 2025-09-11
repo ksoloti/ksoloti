@@ -22,6 +22,8 @@ import axoloti.Axoloti;
 import axoloti.utils.OSDetect;
 import axoloti.utils.Preferences;
 
+import static axoloti.utils.FileUtils.toUnixPath;
+
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,11 +79,11 @@ public class QCmdFlashDFU extends QCmdShellTask {
         LOGGER.log(Level.INFO, "File path: " + System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build" + File.separator + bname);
 
         if (OSDetect.getOS() == OSDetect.OS.WIN) {
-            String str = FirmwareDir() + "\\upload_fw_dfu_win.bat " + bname;
+            String str = toUnixPath(FirmwareDir() + File.separator + "upload_fw_dfu_win.bat " + bname);
             return str.split("\\s+");
         }
         else if (OSDetect.getOS() == OSDetect.OS.MAC || OSDetect.getOS() == OSDetect.OS.LINUX) {
-            String str = FirmwareDir() + "/upload_fw_dfu.sh " + bname;
+            String str = toUnixPath(FirmwareDir() + File.separator + "upload_fw_dfu.sh " + bname);
             return str.split("\\s+");
         }
         else {
