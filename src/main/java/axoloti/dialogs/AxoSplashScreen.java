@@ -87,7 +87,7 @@ public class AxoSplashScreen extends JWindow {
         fadeTimer = new Timer(20, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                opacity += 0.05f; /* Increase opacity in small steps */
+                opacity += 0.1f; /* Increase opacity in small steps */
                 if (opacity >= 1.0f) {
                     setOpacity(1.0f); /* Ensure it reaches full opacity */
                     fadeTimer.stop();
