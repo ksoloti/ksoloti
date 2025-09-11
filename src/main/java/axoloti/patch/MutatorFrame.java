@@ -123,7 +123,7 @@ public class MutatorFrame extends JFrame {
      * @param patch The patch to be randomized.
      */
     public MutatorFrame(Patch patch) {
-        super("Ksoloti Patch Mutator");
+        super("Patch Mutator");
         this.patch = patch;
         
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
