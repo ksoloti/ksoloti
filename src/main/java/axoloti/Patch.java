@@ -3189,7 +3189,7 @@ public class Patch {
             }
         }
         else {
-            String path = toUnixPath(System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + this.generateBuildFilenameStem(true));
+            String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + this.generateBuildFilenameStem(true);
             LOGGER.log(Level.INFO, path + ".bin not found.");
         }
     }
