@@ -1877,7 +1877,6 @@ public class USBBulkConnection extends Connection {
                             /* Any commands with no explicitly set command byte ('\0') will fall through */
                             if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) {
                                 /* for example, ('l' == 'l') -> TRUE */
-                                currentExecutingCommand.setCompletedWithStatus(statusCode);
 
                                 try {
                                     boolean offeredSuccessfully = QCmdProcessor.getInstance().getQueueResponse().offer(currentExecutingCommand, 100, TimeUnit.MILLISECONDS);
@@ -1892,6 +1891,9 @@ public class USBBulkConnection extends Connection {
                                     LOGGER.log(Level.SEVERE, "Interrupted while offering response to QCmdProcessor queue: " + e.getMessage());
                                     e.printStackTrace(System.out);
                                     Thread.currentThread().interrupt();
+                                }
+                                finally {
+                                    currentExecutingCommand.setCompletedWithStatus(statusCode);
                                 }
                             }
                         }
