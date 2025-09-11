@@ -22,6 +22,7 @@ import axoloti.Axoloti;
 
 import static axoloti.MainFrame.axoObjects;
 import static axoloti.MainFrame.mainframe;
+import static axoloti.utils.FileUtils.toUnixPath;
 
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
@@ -301,7 +302,7 @@ public class FileMenu extends JMenu {
                         rootPathString = inputPath;
                     }
             
-                    globPattern = "glob:" + inputPath.replace('\\', '/');
+                    globPattern = "glob:" + toUnixPath(inputPath);
                     
                     Path rootPath = Paths.get(rootPathString).toAbsolutePath();
                     PathMatcher matcher = FileSystems.getDefault().getPathMatcher(globPattern);

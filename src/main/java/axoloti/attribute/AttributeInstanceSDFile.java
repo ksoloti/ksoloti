@@ -25,6 +25,7 @@ import axoloti.utils.Constants;
 import components.ButtonComponent;
 
 import static axoloti.MainFrame.fc;
+import static axoloti.utils.FileUtils.toUnixPath;
 
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
@@ -139,9 +140,9 @@ public class AttributeInstanceSDFile extends AttributeInstanceString<AxoAttribut
     public String CValue() {
         File f = getFile();
         if ((f != null) && f.exists()) {
-            return f.getName().replaceAll("\\\\", "\\/");
+            return toUnixPath(f.getName());
         } else {
-            return fileName.replaceAll("\\\\", "\\/");
+            return toUnixPath(fileName);
         }
     }
 

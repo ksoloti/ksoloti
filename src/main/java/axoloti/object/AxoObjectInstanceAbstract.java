@@ -32,6 +32,8 @@ import axoloti.sd.SDFileReference;
 import axoloti.ui.Theme;
 
 import static axoloti.utils.CharEscape.charEscape;
+import static axoloti.utils.FileUtils.toUnixPath;
+
 import axoloti.utils.Constants;
 import components.LabelComponent;
 import components.TextFieldComponent;
@@ -112,8 +114,8 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
             if (oPath.endsWith(".axp") || oPath.endsWith(".axo") || oPath.endsWith(".axs")) {
                 oPath = oPath.substring(0, oPath.length() - 4);
             }
-            pPath = pPath.replaceAll("\\\\", "/");
-            oPath = oPath.replaceAll("\\\\", "/");
+            pPath = toUnixPath(pPath);
+            oPath = toUnixPath(oPath);
             String[] pPathA = pPath.split("/");
             String[] oPathA = oPath.split("/");
             int i = 0;

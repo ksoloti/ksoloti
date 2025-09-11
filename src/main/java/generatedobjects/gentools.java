@@ -35,6 +35,9 @@ import axoloti.parameters.Parameter;
 import axoloti.parameters.ParameterFrac32UMap;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Preferences;
+
+import static axoloti.utils.FileUtils.toUnixPath;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -323,10 +326,10 @@ public class gentools {
                 path = path + "." + fn.substring(0, i);
                 fn = fn.substring(i);
             }
-            path = path.replace('\\', '/');
-            fn = fn.replace('\\', '/');
+            path = toUnixPath(path);
+            fn = toUnixPath(fn);
 
-            o.id = o.id.replace('\\', '/');
+            o.id = toUnixPath(o.id);
             i = o.id.lastIndexOf('/');
             if (i > 0) {
                 o.id = o.id.substring(i + 1);
@@ -354,13 +357,13 @@ public class gentools {
                 }
             }
             if (objPath != null) {
-                fn = fn.replace('\\', '/');
+                fn = toUnixPath(fn);
                 int ii = fn.lastIndexOf('/');
                 if (ii < 0) {
                     ii = 0;
                 }
                 fn = fn.substring(ii, fn.length() - 4);
-                objPath = objPath.replace('\\', '/');
+                objPath = toUnixPath(objPath);
                 //System.out.printf("1 path %s objPath %s\n", path, objPath);
                 path = objPath.substring(0, objPath.lastIndexOf('/'));
                 //fn = objPath.substring(0,fn.length()-4);                
@@ -446,8 +449,8 @@ public class gentools {
             path = path + "." + fn.substring(0, i);
             fn = fn.substring(i);
         }
-        path = path.replace('\\', '/');
-        fn = fn.replace('\\', '/');
+        path = toUnixPath(path);
+        fn = toUnixPath(fn);
 
         File fd = new File(getObjDir() + path);
         if (!fd.isDirectory()) {
@@ -457,7 +460,7 @@ public class gentools {
         AxoObjectFile a = new AxoObjectFile();
         a.objs = o;
         for (AxoObjectAbstract oa : a.objs) {
-            oa.id = oa.id.replace('\\', '/');
+            oa.id = toUnixPath(oa.id);
             i = oa.id.lastIndexOf('/');
             if (i > 0) {
                 oa.id = oa.id.substring(i + 1);

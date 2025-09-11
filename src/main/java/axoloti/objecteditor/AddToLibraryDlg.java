@@ -21,6 +21,8 @@ package axoloti.objecteditor;
 
 import axoloti.MainFrame;
 import static axoloti.MainFrame.axoObjects;
+import static axoloti.utils.FileUtils.toUnixPath;
+
 import axoloti.object.AxoObject;
 import axoloti.object.AxoObjects;
 import axoloti.utils.AxolotiLibrary;
@@ -101,7 +103,7 @@ public class AddToLibraryDlg extends javax.swing.JDialog {
             public void insertString(DocumentFilter.FilterBypass fb, int offset,
                     String string, AttributeSet attr)
                     throws BadLocationException {
-                string = string.replaceAll("\\\\", "/");
+                string = toUnixPath(string);
                 if (offset == 0) {
                     while (string.length() > 0) {
                         if (string.charAt(0) <= 0x20) {

@@ -1262,7 +1262,7 @@ public class Patch {
                 inc += "#include \"" + s + "\"\n";
             }
         }
-        return inc.replace('\\', '/') + "\n";
+        return toUnixPath(inc) + "\n";
     }
 
     /* the c++ code generator */
