@@ -277,27 +277,35 @@ public class FileMenu extends JMenu {
 
             if (hasWildcard) {
                 try {
-                    String[] pathSegments = inputPath.split("[/\\\\]");
-                    StringBuilder rootPathBuilder = new StringBuilder();
-                    int lastConcreteIndex = -1;
-
-                    for (int i = 0; i < pathSegments.length; i++) {
-                        if (pathSegments[i].contains("*") || pathSegments[i].contains("?")) {
+                    int firstWildcardIndex = -1;
+                    for (int i = 0; i < inputPath.length(); i++) {
+                        char c = inputPath.charAt(i);
+                        if (c == '*' || c == '?' || c == '[' || c == ']') {
+                            firstWildcardIndex = i;
                             break;
                         }
-                        rootPathBuilder.append(pathSegments[i]).append(File.separator);
-                        lastConcreteIndex = i;
                     }
-
-                    Path rootPath;
-                    if (lastConcreteIndex >= 0) {
-                        rootPath = Paths.get(rootPathBuilder.toString());
+            
+                    String rootPathString;
+                    String globPattern;
+            
+                    if (firstWildcardIndex > 0) {
+                        int lastSeparatorIndex = inputPath.lastIndexOf(File.separatorChar, firstWildcardIndex - 1);
+            
+                        if (lastSeparatorIndex != -1) {
+                            rootPathString = inputPath.substring(0, lastSeparatorIndex);
+                        } else {
+                            rootPathString = ".";
+                        }
                     } else {
-                        rootPath = Paths.get("/");
+                        rootPathString = inputPath;
                     }
-
-                    PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + inputPath);
-
+            
+                    globPattern = "glob:" + inputPath.replace('\\', '/');
+                    
+                    Path rootPath = Paths.get(rootPathString).toAbsolutePath();
+                    PathMatcher matcher = FileSystems.getDefault().getPathMatcher(globPattern);
+            
                     try (Stream<Path> paths = Files.walk(rootPath)) {
                         directoriesToTest = paths
                             .filter(Files::isDirectory)
@@ -305,12 +313,11 @@ public class FileMenu extends JMenu {
                             .map(Path::toFile)
                             .collect(Collectors.toList());
                     }
-
+            
                     if (directoriesToTest.isEmpty()) {
                         LOGGER.log(Level.WARNING, "No directories found matching pattern: " + inputPath);
                         return;
                     }
-
                 }
                 catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "Error during wildcard search: " + ex.getMessage());
