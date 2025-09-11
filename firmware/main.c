@@ -238,8 +238,3 @@ int main(void) {
 void HAL_Delay(unsigned int n) {
     chThdSleepMilliseconds(n);
 }
-
-
-void _sbrk(void) {
-    while (1);
-}

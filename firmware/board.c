@@ -114,3 +114,11 @@ void _exit(int i)
     (void)i;
     while (1);
 }
+
+void _sbrk(void) {
+    while (1);
+}
+
+void _fini(void)
+{
+}
