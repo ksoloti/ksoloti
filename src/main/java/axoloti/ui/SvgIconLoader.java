@@ -21,13 +21,17 @@ package axoloti.ui;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.GVTBuilder;
@@ -121,6 +125,23 @@ public class SvgIconLoader {
         }
     }
 
+    public static Image toBufferedImage(Icon icon) {
+        if (icon == null) {
+            return null;
+        }
+        if (icon instanceof ImageIcon) {
+            return ((ImageIcon) icon).getImage();
+        }
+        BufferedImage bufferedImage = new BufferedImage(
+                icon.getIconWidth(),
+                icon.getIconHeight(),
+                BufferedImage.TYPE_INT_ARGB);
+        Graphics g = bufferedImage.getGraphics();
+        icon.paintIcon(new Component() {}, g, 0, 0);
+        g.dispose();
+        return bufferedImage;
+    }
+
     private static class SvgImageIcon implements Icon {
         private final SVGDocument document;
         private final int size;
@@ -159,7 +180,6 @@ public class SvgIconLoader {
                     svgHeight = Float.parseFloat(heightAttr.replaceAll("[^\\d.]", ""));
                 }
             } catch (NumberFormatException e) {
-                // Fallback if parsing fails
                 System.err.println("Could not parse SVG dimensions. Using default viewbox.");
             }
 
@@ -168,7 +188,6 @@ public class SvgIconLoader {
                     svgWidth = (float) graphicsNode.getPrimitiveBounds().getWidth();
                     svgHeight = (float) graphicsNode.getPrimitiveBounds().getHeight();
                 } else {
-                    // Final fallback if no dimensions can be found
                     svgWidth = size;
                     svgHeight = size;
                 }
