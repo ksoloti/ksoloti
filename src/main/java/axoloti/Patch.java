@@ -56,6 +56,7 @@ import axoloti.utils.Preferences;
 
 import static axoloti.MainFrame.mainframe;
 import static axoloti.utils.Constants.I;
+import static axoloti.utils.FileUtils.toUnixPath;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -1288,18 +1289,19 @@ public class Patch {
     String GenerateObjectCode(String classname) {
         String c = "";
         
+        c += "\n" + I + "/* <modsource declarations> */\n";
         if (Modulators.size() > 0) {
             int k = 0;
-            c += "\n" + I + "/* Modsource defines */\n";
             for (Modulator m : Modulators) {
                 c += I + "static const int32_t " + m.getCName() + " = " + k + ";\n";
                 k++;
             }
         }
+        c += I + "/* </modsource declarations> */\n";
 
+        c += "\n" + I + "/* <parameter instance indices> */\n";
         if (ParameterInstances.size() > 0) {
             int k = 0;
-            c += "\n" + I + "/* Parameter instance indices */\n";
             for (ParameterInstance p : ParameterInstances) {
                 if (!p.isFrozen()) {
                     c += I + "static const uint16_t PARAM_INDEX_" + p.GetObjectInstance().getLegalName() + "_" + p.getLegalName() + " = " + k + ";\n";
@@ -1307,35 +1309,39 @@ public class Patch {
                 }
             }
         }
+        c += I + "/* </parameter instance indices> */\n";
 
+        c += "\n" + I + "/* <controller object class> */\n";
         if (controllerInstance != null) {
-            c += "\n" + I + "/* Controller class */\n";
             c += controllerInstance.GenerateClass(classname);
         }
+        c += I + "/* </controller object class> */\n";
 
-        c += "\n" + I + "/* Object classes */\n";
-
-        for (AxoObjectInstanceAbstract o : objectInstances) {
-            c += o.GenerateClass(classname);
-        }
-
+        c += "\n" + I + "/* <controller object instance> */\n";
         if (controllerInstance != null) {
-            c += "\n" + I + "/* Controller instance */\n";
             String s = controllerInstance.getCInstanceName();
             if (!s.isEmpty()) {
                 c += I + s + " " + s + "_i;\n";
             }
         }
+        c += I + "/* </controller object instance> */\n";
 
-        c += "\n" + I + "/* Object instances */\n";
+        c += "\n" + I + "/* <object classes> */\n";
+        for (AxoObjectInstanceAbstract o : objectInstances) {
+            c += o.GenerateClass(classname);
+        }
+        c += I + "/* </object classes> */\n";
+
+        c += "\n" + I + "/* <object instances> */\n";
         for (AxoObjectInstanceAbstract o : objectInstances) {
             String s = o.getCInstanceName();
             if (!s.isEmpty()) {
                 c += I + s + " " + s + "_i;\n";
             }
         }
+        c += I + "/* </object instances> */\n";
 
-        c += "\n" + I + "/* Net latches */\n";
+        c += "\n" + I + "/* <net latches> */\n";
         for (Net n : nets) {
             /* check if net has multiple sources */
             if ((n.CType() != null) && n.NeedsLatch()) {
@@ -1347,6 +1353,7 @@ public class Patch {
                 }
             }
         }
+        c += I + "/* </net latches> */\n";
 
         return c + "\n";
     }
@@ -1606,9 +1613,9 @@ public class Patch {
         c += I+I + "/* </zero> */\n\n";
 
         if (controllerInstance != null) {
-            c += I+I + "/* <controller calls> */\n";
+            c += I+I + "/* <controller object calls> */\n";
             c += GenerateDSPCodePlusPlusSubObj(controllerInstance, ClassName);
-            c += I+I + "/* </controller calls> */\n\n";
+            c += I+I + "/* </controller object calls> */\n\n";
         }
 
         c += I+I + "/* <object calls> */\n";
@@ -2337,8 +2344,8 @@ public class Patch {
 
         ao.sLocalData = GenerateParamInitCode3("");
         ao.sLocalData += GeneratePexchAndDisplayCode();
-        ao.sLocalData += "\n" + I + "/* Parameter instance indices */\n";
-
+        
+        ao.sLocalData += "\n" + I + "/* <parameter instance indices> */\n";
         int k = 0;
         for (ParameterInstance p : ParameterInstances) {
             if (!p.isFrozen()) {
@@ -2346,6 +2353,7 @@ public class Patch {
                 k++;
             }
         }
+        ao.sLocalData += I + "/* </parameter instance indices> */\n";
 
         ao.sLocalData += "\n";
 
@@ -3071,35 +3079,34 @@ public class Patch {
                 if (os != null) {
                     switch (os) {
                         case WIN:
-                            build_filename += fnp.substring(2).replace(' ', '_');
+                            if (fnp.contains(":\\")) { /* If path contains drive letter, remove it */
+                                fnp = fnp.substring(2);
+                            }
                             break;
-                        case MAC:
-                        case LINUX:
                         default:
-                            build_filename += fnp.replace(' ', '_');
-                            break;
+                        break;
                     }
                 }
+                build_filename += fnp.replace(' ', '_');
             }
         }
         else {
             build_filename += File.separator + "xpatch";
         }
-        build_filename = build_filename.replace('\\', '/');
-        if (!build_filename.startsWith("/")) { /* Subpatches and untitled patch */
-            build_filename = "/" + build_filename;
+        if (!build_filename.startsWith(File.separator)) { /* Subpatches and untitled patch */
+            build_filename = File.separator + build_filename;
         }
         return build_filename;
     }
 
     public File getBinFile() {
         String bfPath = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + generateBuildFilenameStem(true) + ".bin";
-        return new File(bfPath.replace('\\', '/'));
+        return new File(bfPath);
     }
 
     public File getCppFile() {
         String cfPath = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + generateBuildFilenameStem(true) + ".cpp";
-        return new File(cfPath.replace('\\', '/'));
+        return new File(cfPath);
     }
 
     public void UploadToSDCard(String sdfilename) {
@@ -3182,8 +3189,8 @@ public class Patch {
             }
         }
         else {
-            String path = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + this.generateBuildFilenameStem(true);
-            LOGGER.log(Level.INFO, path.replace('\\', '/') + ".bin not found.");
+            String path = toUnixPath(System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + this.generateBuildFilenameStem(true));
+            LOGGER.log(Level.INFO, path + ".bin not found.");
         }
     }
 
