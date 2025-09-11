@@ -179,8 +179,12 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         setMinimumSize(new Dimension(200,120));
         Icon icon = SvgIconLoader.load("/resources/appicons/ksoloti_icon_axp.svg", 32);
-        if (icon != null && icon instanceof ImageIcon) {
-            setIconImage(((ImageIcon) icon).getImage());
+        if (icon != null) {
+            if (icon instanceof ImageIcon) {
+                setIconImage(((ImageIcon) icon).getImage());
+            } else {
+                setIconImage(SvgIconLoader.toBufferedImage(icon));
+            }
         } else {
             System.err.println("Failed to load SVG icon. Falling back to PNG.");
             setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_icon_axp.png")).getImage());

@@ -70,8 +70,12 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         setupKeyNoteMap();
 
         Icon icon = SvgIconLoader.load("/resources/appicons/ksoloti_keyboard_icon.svg", 32);
-        if (icon != null && icon instanceof ImageIcon) {
-            setIconImage(((ImageIcon) icon).getImage());
+        if (icon != null) {
+            if (icon instanceof ImageIcon) {
+                setIconImage(((ImageIcon) icon).getImage());
+            } else {
+                setIconImage(SvgIconLoader.toBufferedImage(icon));
+            }
         } else {
             System.err.println("Failed to load SVG icon. Falling back to PNG.");
             setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_keyboard_icon.png")).getImage());

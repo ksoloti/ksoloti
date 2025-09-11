@@ -124,8 +124,12 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
             pg.setFileNamePath(getInstanceName());
 
             Icon icon = SvgIconLoader.load("/resources/appicons/ksoloti_icon_axs.svg", 32);
-            if (icon != null && icon instanceof ImageIcon) {
-                pf.setIconImage(((ImageIcon) icon).getImage());
+            if (icon != null) {
+                if (icon instanceof ImageIcon) {
+                    pf.setIconImage(((ImageIcon) icon).getImage());
+                } else {
+                    pf.setIconImage(SvgIconLoader.toBufferedImage(icon));
+                }
             } else {
                 System.err.println("Failed to load SVG icon. Falling back to PNG.");
                 pf.setIconImage(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_icon_axs.png")).getImage());

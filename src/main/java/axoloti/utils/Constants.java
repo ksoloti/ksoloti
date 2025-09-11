@@ -134,21 +134,21 @@ public class Constants {
 
         if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
             svgIcon = SvgIconLoader.load("/resources/appicons/ksoloti_icon.svg", 64);
-            if (svgIcon instanceof ImageIcon) {
-                APP_ICON = (ImageIcon) svgIcon;
-            } else {
-                System.err.println("Failed to load SVG icon. Falling back to PNG.");
-                APP_ICON = new ImageIcon(Constants.class.getResource("/resources/appicons/ksoloti_icon.png"));
-            }
+            if (svgIcon != null) {
+            APP_ICON = new ImageIcon(SvgIconLoader.toBufferedImage(svgIcon));
+        } else {
+            System.err.println("Failed to load SVG icon. Falling back to PNG.");
+            APP_ICON = new ImageIcon(Constants.class.getResource("/resources/appicons/ksoloti_icon.png"));
+        }
         }
         else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
             svgIcon = SvgIconLoader.load("/resources/appicons/axoloti_icon.svg", 64);
-            if (svgIcon instanceof ImageIcon) {
-                APP_ICON = (ImageIcon) svgIcon;
-            } else {
-                System.err.println("Failed to load SVG icon. Falling back to PNG.");
-                APP_ICON = new ImageIcon(Constants.class.getResource("/resources/appicons/axoloti_icon.png"));
-            }
+            if (svgIcon != null) {
+            APP_ICON = new ImageIcon(SvgIconLoader.toBufferedImage(svgIcon));
+        } else {
+            System.err.println("Failed to load SVG icon. Falling back to PNG.");
+            APP_ICON = new ImageIcon(Constants.class.getResource("/resources/appicons/axoloti_icon.png"));
+        }
         }
     }
 }
