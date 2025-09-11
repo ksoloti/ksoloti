@@ -99,7 +99,6 @@ public class Axoloti {
         try {
             initProperties();
 
-            System.setProperty("sun.java2d.dpiaware", "true");
             Preferences.LoadPreferences();
             Preferences.getInstance().applyTheme();
 
