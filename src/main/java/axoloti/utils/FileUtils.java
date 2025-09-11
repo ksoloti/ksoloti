@@ -199,4 +199,11 @@ public class FileUtils {
         }
         return directoryToBeDeleted.delete();
     }
+
+    public static String toUnixPath(String path) {
+        if (path == null) {
+            return null;
+        }
+        return path.replace(File.separatorChar, '/');
+    }
 }
