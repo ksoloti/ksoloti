@@ -16,23 +16,24 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package axoloti.ui;
 
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Color;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.ImageTranscoder;
+import org.apache.batik.bridge.BridgeContext;
+import org.apache.batik.bridge.GVTBuilder;
+import org.apache.batik.bridge.UserAgent;
+import org.apache.batik.bridge.UserAgentAdapter;
+import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -47,16 +48,29 @@ import org.w3c.dom.svg.SVGDocument;
  * @author Ksoloti
  */
 public class SvgIconLoader {
-
     private static final Logger LOGGER = Logger.getLogger(SvgIconLoader.class.getName());
 
-    /**
-     * Loads an SVG file from the classpath and returns it as an Icon, preserving its original colors.
-     *
-     * @param path The path to the SVG file, e.g., "/resources/icons/my-icon.svg".
-     * @param size The desired size (width and height) of the icon in pixels.
-     * @return A Swing Icon object, or null if loading fails.
-     */
+    public static Icon load(String path, int size, Color color) {
+        try (InputStream inputStream = SvgIconLoader.class.getResourceAsStream(path)) {
+            if (inputStream == null) {
+                LOGGER.log(Level.SEVERE, "Error: SVG resource not found at " + path);
+                return null;
+            }
+
+            String parser = XMLResourceDescriptor.getXMLParserClassName();
+            SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(parser);
+            SVGDocument svgDocument = factory.createSVGDocument(path, inputStream);
+
+            applyColorToSvg(svgDocument.getDocumentElement(), color);
+
+            return new SvgImageIcon(svgDocument, size);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error loading SVG: " + e.getMessage());
+            e.printStackTrace(System.out);
+            return null;
+        }
+    }
+    
     public static Icon load(String path, int size) {
         try (InputStream inputStream = SvgIconLoader.class.getResourceAsStream(path)) {
             if (inputStream == null) {
@@ -67,109 +81,30 @@ public class SvgIconLoader {
             String parser = XMLResourceDescriptor.getXMLParserClassName();
             SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(parser);
             SVGDocument svgDocument = factory.createSVGDocument(path, inputStream);
-
-            CustomImageTranscoder transcoder = new CustomImageTranscoder();
-            transcoder.addTranscodingHint(ImageTranscoder.KEY_WIDTH, (float) size);
-            transcoder.addTranscodingHint(ImageTranscoder.KEY_HEIGHT, (float) size);
-
-            TranscoderInput input = new TranscoderInput(svgDocument);
-            transcoder.transcode(input, null);
             
-            BufferedImage image = transcoder.getBufferedImage();
-            return new ImageIcon(image);
-
+            return new SvgImageIcon(svgDocument, size);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error loading or transcoding SVG: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error loading SVG: " + e.getMessage());
             e.printStackTrace(System.out);
             return null;
         }
     }
 
-    /**
-     * Loads an SVG file from the classpath, transcodes it to an Icon, and dynamically
-     * applies a color to all of its visible elements.
-     *
-     * @param path The path to the SVG file, e.g., "/resources/icons/my-icon.svg".
-     * @param size The desired size (width and height) of the icon in pixels.
-     * @param color The color to apply to the icon's 'fill' and 'stroke' properties.
-     * @return A Swing Icon object, or null if loading fails.
-     */
-    public static Icon load(String path, int size, Color color) {
-        try (InputStream inputStream = SvgIconLoader.class.getResourceAsStream(path)) {
-            // Check if the resource stream is available
-            if (inputStream == null) {
-                LOGGER.log(Level.SEVERE, "Error: SVG resource not found at " + path);
-                return null;
-            }
-
-            String parser = XMLResourceDescriptor.getXMLParserClassName();
-            SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(parser);
-            SVGDocument svgDocument = factory.createSVGDocument(path, inputStream);
-
-            // Get the root element of the SVG document
-            Element rootElement = svgDocument.getDocumentElement();
-
-            // Recursively apply the new color to all relevant SVG elements
-            applyColorToSvg(rootElement, color);
-
-            // Create a custom transcoder to convert the SVG to a BufferedImage
-            CustomImageTranscoder transcoder = new CustomImageTranscoder();
-            
-            // Set the desired size for the transcoded image
-            transcoder.addTranscodingHint(ImageTranscoder.KEY_WIDTH, (float) size);
-            transcoder.addTranscodingHint(ImageTranscoder.KEY_HEIGHT, (float) size);
-
-            // Transcode the SVG document
-            TranscoderInput input = new TranscoderInput(svgDocument);
-            transcoder.transcode(input, null);
-            
-            // Get the transcoded image and return it as an Icon
-            BufferedImage image = transcoder.getBufferedImage();
-            return new ImageIcon(image);
-
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error loading or transcoding SVG: " + e.getMessage());
-            e.printStackTrace(System.out);
-            return null;
-        }
-    }
-
-    public Image loadIcon(String svgPath, String pngPath, int size, Color color) {
-        Icon svgIcon = SvgIconLoader.load(svgPath, size, color);
-        if (svgIcon instanceof ImageIcon) {
-            return ((ImageIcon) svgIcon).getImage();
-        }
-        return new ImageIcon(getClass().getResource(pngPath)).getImage();
-    }
-
-    /**
-     * Helper method to recursively traverse the SVG DOM and change the color of elements.
-     * This method looks for a 'fill' or 'stroke' attribute and sets it to the specified color,
-     * but only if the existing attribute is not set to "none".
-     *
-     * @param node The current node in the DOM tree.
-     * @param color The color to apply.
-     */
     private static void applyColorToSvg(Node node, Color color) {
         if (node.getNodeType() == Node.ELEMENT_NODE) {
             Element element = (Element) node;
 
-            // Convert the color to a hex string format, e.g., "#FF0000"
             String colorHex = "#" + Integer.toHexString(color.getRGB()).substring(2);
 
-            // Apply color to the fill property ONLY IF it's not set to "none"
             if (element.hasAttribute("fill") && !element.getAttribute("fill").equalsIgnoreCase("none")) {
                 element.setAttribute("fill", colorHex);
             }
-            // Apply color to the stroke property ONLY IF it's not set to "none"
             if (element.hasAttribute("stroke") && !element.getAttribute("stroke").equalsIgnoreCase("none")) {
                 element.setAttribute("stroke", colorHex);
             }
             
-            // Also handle the 'style' attribute carefully
             if (element.hasAttribute("style")) {
                 String style = element.getAttribute("style");
-                // Check if the style contains a fill that is not 'none' before replacing
                 if (!style.contains("fill:none")) {
                     style = style.replaceAll("fill:#[a-fA-F0-9]{6}|fill:rgb\\(.*\\)", "fill:" + colorHex);
                 }
@@ -180,33 +115,84 @@ public class SvgIconLoader {
             }
         }
 
-        // Recursively call for all child nodes
         NodeList children = node.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             applyColorToSvg(children.item(i), color);
         }
     }
 
-    /**
-     * A simple, named class to extend the abstract ImageTranscoder and allow us
-     * to capture the transcoded BufferedImage.
-     */
-    private static class CustomImageTranscoder extends ImageTranscoder {
-        private BufferedImage image;
+    private static class SvgImageIcon implements Icon {
+        private final SVGDocument document;
+        private final int size;
+        private final GraphicsNode graphicsNode;
 
-        @Override
-        public BufferedImage createImage(int w, int h) {
-            this.image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-            return this.image;
+        public SvgImageIcon(SVGDocument doc, int size) {
+            this.document = doc;
+            this.size = size;
+
+            UserAgent userAgent = new UserAgentAdapter();
+            BridgeContext bridgeContext = new BridgeContext(userAgent);
+            GVTBuilder builder = new GVTBuilder();
+            this.graphicsNode = builder.build(bridgeContext, doc);
         }
 
         @Override
-        public void writeImage(BufferedImage img, TranscoderOutput output) {
-            // Do nothing, we will use the internal image buffer
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+            if (graphicsNode == null) return;
+
+            Graphics2D g2d = (Graphics2D) g.create();
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+            String widthAttr = document.getDocumentElement().getAttribute("width");
+            String heightAttr = document.getDocumentElement().getAttribute("height");
+
+            float svgWidth = 0;
+            float svgHeight = 0;
+
+            try {
+                // Correctly parse the width and height attributes, handling units
+                if (widthAttr != null && !widthAttr.isEmpty()) {
+                    svgWidth = Float.parseFloat(widthAttr.replaceAll("[^\\d.]", ""));
+                }
+                if (heightAttr != null && !heightAttr.isEmpty()) {
+                    svgHeight = Float.parseFloat(heightAttr.replaceAll("[^\\d.]", ""));
+                }
+            } catch (NumberFormatException e) {
+                // Fallback if parsing fails
+                System.err.println("Could not parse SVG dimensions. Using default viewbox.");
+            }
+
+            if (svgWidth <= 0 || svgHeight <= 0) {
+                if (graphicsNode.getPrimitiveBounds() != null) {
+                    svgWidth = (float) graphicsNode.getPrimitiveBounds().getWidth();
+                    svgHeight = (float) graphicsNode.getPrimitiveBounds().getHeight();
+                } else {
+                    // Final fallback if no dimensions can be found
+                    svgWidth = size;
+                    svgHeight = size;
+                }
+            }
+
+            double scaleX = (double) size / svgWidth;
+            double scaleY = (double) size / svgHeight;
+            double scale = Math.min(scaleX, scaleY);
+            
+            g2d.translate(x, y);
+            g2d.scale(scale, scale);
+
+            graphicsNode.paint(g2d);
+            g2d.dispose();
         }
 
-        public BufferedImage getBufferedImage() {
-            return image;
+        @Override
+        public int getIconWidth() {
+            return size;
+        }
+
+        @Override
+        public int getIconHeight() {
+            return size;
         }
     }
 }
