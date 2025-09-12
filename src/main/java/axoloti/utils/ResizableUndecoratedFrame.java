@@ -72,13 +72,13 @@ public class ResizableUndecoratedFrame extends javax.swing.JFrame implements Mou
 
         if (direction == 0) {
             //  Mouse is no longer over a resizable border
-            getContentPane().setCursor(null);
+            getRootPane().setCursor(null);
         }
         else {
             // use the appropriate resizable cursor
             int cursorType = cursors.get(direction);
             Cursor cursor = Cursor.getPredefinedCursor(cursorType);
-            getContentPane().setCursor(cursor);
+            getRootPane().setCursor(cursor);
         }
     }
 
@@ -89,7 +89,7 @@ public class ResizableUndecoratedFrame extends javax.swing.JFrame implements Mou
     @Override
     public void mouseExited(MouseEvent e) {
         if (!resizing) {
-            getContentPane().setCursor(null);
+            getRootPane().setCursor(null);
         }
     }
 
