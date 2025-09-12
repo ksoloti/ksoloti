@@ -151,7 +151,6 @@
         <delete dir="build/runtime/tmp_win/axoloti_runtime/platform_win_x64/src" if="is.windows"/>
         <delete dir="build/runtime/tmp_win/axoloti_runtime/platform_win_x64/man" if="is.windows"/>
         <delete file="build/runtime/tmp_win/axoloti_runtime/platform_win_x64/mrproper.bat" if="is.windows"/>
-        <delete dir="build/runtime/tmp_win/axoloti_runtime/platform_win_x64/apache-ant-1.10.14" if="is.windows"/>
         <delete if="is.windows">
             <fileset dir="build/runtime/tmp_win/axoloti_runtime/platform_win_x64">
                 <include name="include"/>
