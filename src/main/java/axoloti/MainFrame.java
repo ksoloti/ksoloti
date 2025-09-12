@@ -485,7 +485,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     AxolotiLibrary ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.AXOLOTI_CONTRIB_ID);
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
-                        if (!cb.equalsIgnoreCase(ulib.getBranch())) {
+                        if (cb != null && !cb.equalsIgnoreCase(ulib.getBranch())) {
                             LOGGER.log(Level.INFO, "Current axoloti-contrib library does not match specified version: {0} <-> {1}", new Object[]{cb, ulib.getBranch()});
                             int s = KeyboardNavigableOptionPane.showConfirmDialog(MainFrame.this,
                                     "Axoloti community library version mismatch detected. Upgrade now?\n"
@@ -504,7 +504,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     AxolotiLibrary kso_ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_ID);
                     if (kso_ulib != null) {
                         String cb = kso_ulib.getCurrentBranch();
-                        if (!cb.equalsIgnoreCase(kso_ulib.getBranch())) {
+                        if (cb != null && !cb.equalsIgnoreCase(kso_ulib.getBranch())) {
                             LOGGER.log(Level.INFO, "Current ksoloti-contrib library does not match specified version: {0} <-> {1}", new Object[]{cb, kso_ulib.getBranch()});
                             int s = KeyboardNavigableOptionPane.showConfirmDialog(MainFrame.this,
                                     "Ksoloti community library version mismatch detected. Upgrade now?\n"
@@ -523,7 +523,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.AXOLOTI_FACTORY_ID);
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
-                        if (!cb.equalsIgnoreCase(ulib.getBranch())) {
+                        if (cb != null && !cb.equalsIgnoreCase(ulib.getBranch())) {
                             LOGGER.log(Level.INFO, "Current axoloti-factory library does not match specified version, upgrading... ({0} -> {1})", new Object[]{cb, ulib.getBranch()});
                             ulib.upgrade();
                         }
@@ -534,7 +534,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     ulib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_OBJECTS_ID);
                     if (ulib != null) {
                         String cb = ulib.getCurrentBranch();
-                        if (!cb.equalsIgnoreCase(ulib.getBranch())) {
+                        if (cb != null && !cb.equalsIgnoreCase(ulib.getBranch())) {
                             LOGGER.log(Level.INFO, "Current ksoloti-objects library does not match specified version, upgrading... ({0} -> {1})", new Object[]{cb, ulib.getBranch()});
                             ulib.upgrade();
                         }
