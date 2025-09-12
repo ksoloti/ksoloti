@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Map;
+import java.lang.Math;
 
 import axoloti.Patch;
 import axoloti.datatypes.Value;
@@ -96,6 +98,59 @@ public class PatchRandomizer {
                 } else {
                     LOGGER.log(Level.INFO, "Skipping frozen parameter: " + param.GetObjectInstance().getInstanceName() + ":" + param.getName());
                 }
+            }
+        }
+    }
+    
+    /**
+     * Randomizes a list of selected parameters with a mutation constrained by a min/max value.
+     * @param selectedParameters The list of parameters to randomize.
+     * @param constraints A map from ParameterInstance to an int[] with [min, max] values.
+     * @param percent The percentage of the constrained range to use for mutation.
+     */
+    public static void randomizeParametersWithConstraint(List<ParameterInstance> selectedParameters, Map<ParameterInstance, int[]> constraints, float percent) {
+        if (selectedParameters == null || selectedParameters.isEmpty()) {
+            return;
+        }
+
+        Random random = new Random();
+
+        for (ParameterInstance param : selectedParameters) {
+            if (!param.isFrozen() && constraints.containsKey(param)) {
+                int[] minMax = constraints.get(param);
+                int minConstraint = minMax[0];
+                int maxConstraint = minMax[1];
+                int currentValue = param.GetValueRaw();
+                
+                int fullRange = maxConstraint - minConstraint;
+                
+                int mutationAmount = (int)(fullRange * percent);
+                int mutationHalf = mutationAmount / 2;
+                
+                int tempMin = currentValue - mutationHalf;
+                int tempMax = currentValue + mutationHalf;
+
+                int constrainedMin = Math.max(minConstraint, tempMin);
+                int constrainedMax = Math.min(maxConstraint, tempMax);
+
+                int mutatedValue = random.nextInt(constrainedMax - constrainedMin + 1) + constrainedMin;
+
+                param.SetValueRaw(mutatedValue);
+                param.SetNeedsTransmit(true);
+    
+                String paramVal = "";
+                Value vl = param.getValue();
+                if (vl instanceof ValueFrac32) {
+                    paramVal += String.format("%.2f", vl.getDouble());
+                }
+                else if (vl instanceof ValueInt32) {
+                    paramVal += vl.getInt();
+                }
+                LOGGER.log(Level.INFO, "Constrained Randomize " + param.GetObjectInstance().getInstanceName() + ":" + param.getName() + " " + paramVal);
+            } else if (param.isFrozen()) {
+                 LOGGER.log(Level.INFO, "Skipping frozen parameter: " + param.GetObjectInstance().getInstanceName() + ":" + param.getName());
+            } else {
+                 LOGGER.log(Level.INFO, "Skipping parameter with no constraint data: " + param.GetObjectInstance().getInstanceName() + ":" + param.getName());
             }
         }
     }
