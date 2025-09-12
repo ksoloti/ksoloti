@@ -44,6 +44,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,6 +53,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.Icon;
+import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -76,10 +78,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     AxoObjectAbstract previewObj;
     private int patchLocX;
     private int patchLocY;
-    
-    private boolean accepted = false;
 
-    public static final DataFlavor axoObjectFlavor = new DataFlavor(AxoObjectAbstract.class, "Axo Object");
+    private boolean accepted = false;
+    private int dragStartIndex = -1;
 
     /* Shortcut strings */
     public static final String shortcutList[] = {
@@ -270,6 +271,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 }
             }
         });
+
         jObjectTree.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -297,7 +299,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             public void keyReleased(KeyEvent e) {
             }
         });
-        
+
         jObjectTree.setDragEnabled(false);
         jObjectTree.setTransferHandler(null);
         jObjectTree.addMouseListener(new MouseListener() {
@@ -325,16 +327,16 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (draggedObject != null) {
-                    
                     Point screenLoc = e.getLocationOnScreen();
                     Point patchFrameOnScreen = p.getPatchframe().getLocationOnScreen();
                     int newX = screenLoc.x - patchFrameOnScreen.x;
                     int newY = screenLoc.y - patchFrameOnScreen.y - 80;
-                    
+
                     p.AddObjectInstance(draggedObject, snapToGrid(new Point(newX, newY)));
                     getRootPane().setCursor(Cursor.getDefaultCursor());
                     jTextFieldObjName.setText("");
                     accepted = false;
+                    draggedObject = null;
                 }
             }
 
@@ -365,6 +367,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 }
             }
         });
+
         jResultList.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -416,6 +419,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         });
 
         jResultList.addMouseListener(new MouseListener() {
+            private AxoObjectAbstract draggedObject = null;
 
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -425,10 +429,33 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
 
             @Override
-            public void mousePressed(MouseEvent e) { }
+            public void mousePressed(MouseEvent e) {
+                dragStartIndex = jResultList.locationToIndex(e.getPoint());
+                if (dragStartIndex != -1) {
+                     getRootPane().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                }
+                Object selectedObject = jResultList.getSelectedValue();
+                if (selectedObject instanceof AxoObjectAbstract) {
+                    draggedObject = (AxoObjectAbstract) selectedObject;
+                }
+            }
 
             @Override
-            public void mouseReleased(MouseEvent e) { }
+            public void mouseReleased(MouseEvent e) {
+                if (draggedObject != null) {
+                    Point screenLoc = e.getLocationOnScreen();
+                    Point patchFrameOnScreen = p.getPatchframe().getLocationOnScreen();
+                    int newX = screenLoc.x - patchFrameOnScreen.x;
+                    int newY = screenLoc.y - patchFrameOnScreen.y - 80;
+
+                    p.AddObjectInstance(draggedObject, snapToGrid(new Point(newX, newY)));
+                    getRootPane().setCursor(Cursor.getDefaultCursor());
+                    jTextFieldObjName.setText("");
+                    accepted = false;
+                    draggedObject = null;
+                    dragStartIndex = -1;
+                }
+            }
 
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -436,6 +463,21 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
             @Override
             public void mouseExited(MouseEvent e) {
+            }
+        });
+
+        jResultList.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                /* Prevent unwanted scrolling while dragging */
+                if (dragStartIndex != -1) {
+                    jResultList.setSelectedIndex(dragStartIndex);
+                }
+                e.consume();
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
             }
         });
 
@@ -660,7 +702,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             jResultList.setListData(listData.toArray());
         }
         else {
-            
+
             boolean caseSensitiveSearch = containsUpperCase(s);
 
             for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
@@ -699,12 +741,12 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                         e.printStackTrace(System.out);
                     }
                 }
-    
+
                 if (matches && !listData.contains(o)) {
                     listData.add(o);
                 }
             }
-    
+
             Collections.sort(listData, new AxoObjectIdComparator(s, caseSensitiveSearch));
             jResultList.setListData(listData.toArray());
         }
@@ -759,7 +801,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         accepted = false;
     }
 
-
     private void initComponents() {
 
         jSplitPaneMain = new javax.swing.JSplitPane(javax.swing.JSplitPane.HORIZONTAL_SPLIT, true);
@@ -774,7 +815,16 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jTextFieldObjName = new javax.swing.JTextField();
         jButtonAccept = new javax.swing.JButton();
         jButtonCancel = new javax.swing.JButton();
-        jResultList = new javax.swing.JList<AxoObjectAbstract>();
+        jResultList = new JList<AxoObjectAbstract>() {
+            /*
+             * Overrides scrollRectToVisible to do nothing. This prevents the
+             * JScrollPane from automatically scrolling when the user is
+             * dragging an item in the list
+             */
+            @Override
+            public void scrollRectToVisible(Rectangle rect) {
+            }
+        };
 
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 32767));
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 32767));
@@ -865,6 +915,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jScrollPaneObjectSearch.setPreferredSize(new java.awt.Dimension(180, 160));
 
         jResultList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jResultList.setAutoscrolls(false);
+        jResultList.setDragEnabled(false);
+        jResultList.setTransferHandler(null);
         jResultList.setAlignmentX(LEFT_ALIGNMENT);
         jResultList.setMinimumSize(new java.awt.Dimension(100, 50));
         jResultList.setVisibleRowCount(6);
@@ -875,7 +928,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jScrollPaneObjectTree.setPreferredSize(new java.awt.Dimension(180, 160));
 
         jObjectTree.setAlignmentX(LEFT_ALIGNMENT);
-        jObjectTree.setDragEnabled(true);
+        // jObjectTree.setDragEnabled(true);
         jObjectTree.setMinimumSize(new java.awt.Dimension(100, 50));
         jObjectTree.setRootVisible(false);
         jObjectTree.setShowsRootHandles(true);
@@ -942,7 +995,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     }
 
     private void jTextFieldObjNameActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
     }
 
     private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {
