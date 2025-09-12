@@ -1328,28 +1328,28 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             SetGrabFocusOnSevereErrors(true);
             return false;
         }
-        result = runTestDir(new File(fLib.getLocalLocation() + "patches"));
+        result = runTestDir(new File(fLib.getLocalLocation() + File.separator + "patches"));
 
         fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.AXOLOTI_CONTRIB_ID);
         if (fLib == null) {
             SetGrabFocusOnSevereErrors(true);
             return false;
         }
-        result &= runTestDir(new File(fLib.getLocalLocation() + "patches"));
+        result &= runTestDir(new File(fLib.getLocalLocation() + File.separator + "patches"));
 
         fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_OBJECTS_ID);
         if (fLib == null) {
             SetGrabFocusOnSevereErrors(true);
             return false;
         }
-        result &= runTestDir(new File(fLib.getLocalLocation() + "patches"));
+        result &= runTestDir(new File(fLib.getLocalLocation() + File.separator + "patches"));
 
         fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_ID);
         if (fLib == null) {
             SetGrabFocusOnSevereErrors(true);
             return false;
         }
-        result &= runTestDir(new File(fLib.getLocalLocation() + "patches"));
+        result &= runTestDir(new File(fLib.getLocalLocation() + File.separator + "patches"));
 
         SetGrabFocusOnSevereErrors(true);
         return result;
@@ -1362,25 +1362,25 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (fLib == null) {
             return false;
         }
-        result = runTestDir(new File(fLib.getLocalLocation() + "objects"));
+        result = runTestDir(new File(fLib.getLocalLocation() + File.separator + "objects"));
 
         fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.AXOLOTI_CONTRIB_ID);
         if (fLib == null) {
             return false;
         }
-        result &= runTestDir(new File(fLib.getLocalLocation() + "objects"));
+        result &= runTestDir(new File(fLib.getLocalLocation() + File.separator + "objects"));
 
         fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_OBJECTS_ID);
         if (fLib == null) {
             return false;
         }
-        result &= runTestDir(new File(fLib.getLocalLocation() + "objects"));
+        result &= runTestDir(new File(fLib.getLocalLocation() + File.separator + "objects"));
 
         fLib = Preferences.getInstance().getLibrary(AxolotiLibrary.KSOLOTI_CONTRIB_ID);
         if (fLib == null) {
             return false;
         }
-        result &= runTestDir(new File(fLib.getLocalLocation() + "objects"));
+        result &= runTestDir(new File(fLib.getLocalLocation() + File.separator + "objects"));
 
         return result;
     }

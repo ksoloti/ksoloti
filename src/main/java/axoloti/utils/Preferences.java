@@ -778,8 +778,7 @@ public class Preferences {
         AxoGitLibrary axo_fact = new AxoGitLibrary(
                 AxolotiLibrary.AXOLOTI_FACTORY_ID,
                 "git",
-                System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator
-                    + "axoloti-factory" + File.separator,
+                System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + AxolotiLibrary.AXOLOTI_FACTORY_ID,
                 true,
                 "https://github.com/ksoloti/axoloti-factory.git", /* Notice we're now pointing to the forked&fixed /KSOLOTI/axoloti-factory! */
                 false
@@ -788,28 +787,25 @@ public class Preferences {
         AxoGitLibrary axo_comm = new AxoGitLibrary(
                 AxolotiLibrary.AXOLOTI_CONTRIB_ID,
                 "git",
-                System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator
-                    + "axoloti-contrib" + File.separator,
+                System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + AxolotiLibrary.AXOLOTI_CONTRIB_ID,
                 true,
-                "https://github.com/ksoloti/axoloti-contrib.git", /* Will point to /KSOLOTI/axoloti-contrib in the future */
+                "https://github.com/ksoloti/axoloti-contrib.git", /* Notice we're now pointing to the forked&fixed /KSOLOTI/axoloti-contrib! */
                 false
         );
 
         AxoGitLibrary kso_fact = new AxoGitLibrary(
                 AxolotiLibrary.KSOLOTI_OBJECTS_ID,
                 "git",
-                System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator
-                    + "ksoloti-objects" + File.separator,
+                System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + AxolotiLibrary.KSOLOTI_OBJECTS_ID,
                 true,
-                "https://github.com/ksoloti/ksoloti-objects.git", /* Should be merged into ksoloti-contrib? */
+                "https://github.com/ksoloti/ksoloti-objects.git",
                 false
         );
 
         AxoGitLibrary kso_comm = new AxoGitLibrary(
                 AxolotiLibrary.KSOLOTI_CONTRIB_ID,
                 "git",
-                System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator
-                    + "ksoloti-contrib" + File.separator,
+                System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + AxolotiLibrary.KSOLOTI_CONTRIB_ID,
                 true,
                 "https://github.com/ksoloti/ksoloti-contrib.git",
                 false
@@ -867,7 +863,7 @@ public class Preferences {
         if (libraries != null) {
             for (AxolotiLibrary lib : libraries) {
                 if (lib.getEnabled()) {
-                    String lpath = lib.getLocalLocation() + "objects";
+                    String lpath = lib.getLocalLocation() + File.separator + "objects";
 
                     /* Might be two libs pointing to same place */
                     if (!objPath.contains(lpath)) {

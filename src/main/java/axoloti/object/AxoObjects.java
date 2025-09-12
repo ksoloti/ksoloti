@@ -164,7 +164,7 @@ public class AxoObjects {
         // is this objects in a library, if so use the library name
         if (prefix.length() == 0 && folder.getName().equals("objects")) {
             try {
-                String libpath = folder.getParentFile().getCanonicalPath() + File.separator;
+                String libpath = folder.getParentFile().getCanonicalPath();
                 for (AxolotiLibrary lib : Preferences.getInstance().getLibraries()) {
                     if (lib.getLocalLocation().equals(libpath)) {
                         id = lib.getId();

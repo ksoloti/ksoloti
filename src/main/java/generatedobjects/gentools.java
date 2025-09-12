@@ -725,7 +725,7 @@ public class gentools {
         AxolotiLibrary lib = Preferences.getInstance().getLibrary(AxolotiLibrary.AXOLOTI_FACTORY_ID);
         String objdir = "objects/";
         if (lib != null) {
-            objdir = lib.getLocalLocation() + objdir;
+            objdir = lib.getLocalLocation() + File.separator + objdir;
         }
         return objdir;
     }
