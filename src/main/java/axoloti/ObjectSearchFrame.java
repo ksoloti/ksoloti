@@ -251,7 +251,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                     AxoObjectTreeNode anode = (AxoObjectTreeNode) node.getUserObject();
                     jPanelObjectPreview.removeAll();
                     jPanelObjectPreview.repaint();
-                    jTextPaneObjectInfo.setText(anode.description.replace("\n", "<br/>"));
+                    if (anode.description != null) {
+                        jTextPaneObjectInfo.setText(anode.description.replace("\n", "<br/>"));
+                    }
                     jTextPaneObjectInfo.setCaretPosition(0);
                     previewObj = null;
                 }
