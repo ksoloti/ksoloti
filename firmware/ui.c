@@ -204,10 +204,3 @@ void ui_init(void) {
 
     chThdCreateStatic(waThreadUI, sizeof(waThreadUI), UI_USB_PRIO, (void*) ThreadUI, NULL);
 }
-
-// #define LCD_COL_INDENT 5
-// #define LCD_COL_EQ 91
-// #define LCD_COL_VAL 97
-// #define LCD_COL_ENTER 97
-// #define STATUSROW 7
-
