@@ -39,6 +39,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -77,6 +78,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     private int patchLocY;
     
     private boolean accepted = false;
+
+    public static final DataFlavor axoObjectFlavor = new DataFlavor(AxoObjectAbstract.class, "Axo Object");
 
     /* Shortcut strings */
     public static final String shortcutList[] = {
@@ -236,8 +239,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         this.p = p;
         DefaultMutableTreeNode root1 = new DefaultMutableTreeNode();
-        this.objectTree = MainFrame.axoObjects.ObjectTree;
-        this.root = PopulateJTree(MainFrame.axoObjects.ObjectTree, root1);
+        this.objectTree = MainFrame.axoObjects.getObjectTree();
+        this.root = PopulateJTree(MainFrame.axoObjects.getObjectTree(), root1);
         tm = new DefaultTreeModel(this.root);
         jObjectTree.setModel(tm);
         jObjectTree.addTreeSelectionListener(new TreeSelectionListener() {
@@ -294,7 +297,11 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             public void keyReleased(KeyEvent e) {
             }
         });
+        
+        jObjectTree.setDragEnabled(false);
+        jObjectTree.setTransferHandler(null);
         jObjectTree.addMouseListener(new MouseListener() {
+            private AxoObjectAbstract draggedObject = null;
 
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -305,10 +312,30 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
+                TreePath path = jObjectTree.getPathForLocation(e.getX(), e.getY());
+                if (path != null) {
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+                    if (node != null && node.getUserObject() instanceof AxoObjectAbstract) {
+                        draggedObject = (AxoObjectAbstract) node.getUserObject();
+                        getRootPane().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    }
+                }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
+                if (draggedObject != null) {
+                    
+                    Point screenLoc = e.getLocationOnScreen();
+                    Point patchFrameOnScreen = p.getPatchframe().getLocationOnScreen();
+                    int newX = screenLoc.x - patchFrameOnScreen.x;
+                    int newY = screenLoc.y - patchFrameOnScreen.y - 80;
+                    
+                    p.AddObjectInstance(draggedObject, snapToGrid(new Point(newX, newY)));
+                    getRootPane().setCursor(Cursor.getDefaultCursor());
+                    jTextFieldObjName.setText("");
+                    accepted = false;
+                }
             }
 
             @Override
@@ -483,10 +510,10 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     }
 
     void Launch(Point patchLoc, AxoObjectInstanceAbstract o, String searchString, boolean selectSearchString) {
-        if (this.objectTree != MainFrame.axoObjects.ObjectTree) {
+        if (this.objectTree != MainFrame.axoObjects.getObjectTree()) {
             DefaultMutableTreeNode root1 = new DefaultMutableTreeNode();
-            this.objectTree = MainFrame.axoObjects.ObjectTree;
-            this.root = PopulateJTree(MainFrame.axoObjects.ObjectTree, root1);
+            this.objectTree = MainFrame.axoObjects.getObjectTree();
+            this.root = PopulateJTree(MainFrame.axoObjects.getObjectTree(), root1);
             tm = new DefaultTreeModel(this.root);
             jObjectTree.setModel(tm);
         }

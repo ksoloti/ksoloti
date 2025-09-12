@@ -62,6 +62,13 @@ public class AxoObjects {
         ObjectUUIDMap = new HashMap<String, AxoObjectAbstract>();
     }
 
+    public AxoObjectTreeNode getObjectTree() {
+        if (ObjectTree == null) {
+            ObjectTree = new AxoObjectTreeNode("/");
+        }
+        return ObjectTree;
+    }
+
     public AxoObjectAbstract GetAxoObjectFromUUID(String n) {
         return ObjectUUIDMap.get(n);
     }
