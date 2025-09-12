@@ -36,6 +36,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -121,6 +122,7 @@ public class AxolotiLibraryEditor extends JDialog {
         setupWindowClosingListener();
         setupKeyboardShortcuts();
         openEditors.add(this);
+        System.out.println(Instant.now() + " AxolotiLibraryEditor " + AxolotiLibraryEditor.this.library.getId() + " added to openEditors list. List size: " + openEditors.size());
         setVisible(true);
     }
 
@@ -136,6 +138,7 @@ public class AxolotiLibraryEditor extends JDialog {
         setupWindowClosingListener();
         setupKeyboardShortcuts();
         openEditors.add(this);
+        System.out.println(Instant.now() + " AxolotiLibraryEditor " + AxolotiLibraryEditor.this.library.getId() + " added to openEditors list. List size: " + openEditors.size());
         setVisible(true);
     }
 
@@ -781,8 +784,7 @@ public class AxolotiLibraryEditor extends JDialog {
             @Override
             public void windowClosed(WindowEvent e) {
                 openEditors.remove(AxolotiLibraryEditor.this);
-                LOGGER.log(Level.INFO, "AxolotiLibraryEditor {0} removed from openEditors list. List size: {1}",
-                           new Object[]{AxolotiLibraryEditor.this.library.getId(), openEditors.size()});
+                System.out.println(Instant.now() + " AxolotiLibraryEditor " + AxolotiLibraryEditor.this.library.getId() + " removed from openEditors list. List size: " + openEditors.size());
             }
         });
     }
