@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
@@ -41,6 +43,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -72,6 +77,7 @@ public class MutatorFrame extends JFrame {
     private DefaultListModel<PatchVariation> variationListModel;
     private JList<PatchVariation> variationList;
     private int variationCounter = 0;
+    private final List<PatchVariation> selectedVariationsHistory = new ArrayList<>();
 
     private static class PatchVariation {
         private String name;
@@ -210,7 +216,8 @@ public class MutatorFrame extends JFrame {
 
         gbc.gridy++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 0.33;
+        gbc.weightx = 0.25;
+        gbc.weighty = 0;
         gbc.gridwidth = 1;
         
         gbc.gridx = 0;
@@ -227,12 +234,20 @@ public class MutatorFrame extends JFrame {
         JButton button50 = new JButton("50%");
         button50.addActionListener(e -> randomizeSelected(0.50f));
         mainPanel.add(button50, gbc);
+        
+        gbc.gridx = 3;
+        JButton button100 = new JButton("100%");
+        button50.addActionListener(e -> randomizeSelected(1.00f));
+        mainPanel.add(button100, gbc);
 
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 4;
         gbc.anchor = GridBagConstraints.WEST;
         mainPanel.add(new JLabel("Saved Variations:"), gbc);
+        gbc.gridy++;
+        JLabel variationsInfoLabel = new JLabel("<html>Select any two stored Variations to constrain the randomization <br>to the range between their values for each parameter.");
+        mainPanel.add(variationsInfoLabel, gbc);
 
         gbc.gridy++;
         gbc.fill = GridBagConstraints.BOTH;
@@ -240,7 +255,34 @@ public class MutatorFrame extends JFrame {
         gbc.weighty = 1.0;
         variationListModel = new DefaultListModel<>();
         variationList = new JList<>(variationListModel);
-        variationList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        variationList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        variationList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting()) {
+                    return;
+                }
+                
+                List<PatchVariation> currentSelection = variationList.getSelectedValuesList();
+
+                selectedVariationsHistory.retainAll(currentSelection);
+
+                for (PatchVariation v : currentSelection) {
+                    if (!selectedVariationsHistory.contains(v)) {
+                        selectedVariationsHistory.add(v);
+                    }
+                }
+                
+                /* If more than 2 items are selected, unselect the oldest one */
+                if (selectedVariationsHistory.size() > 2) {
+                    PatchVariation oldest = selectedVariationsHistory.remove(0);
+                    int oldestIndex = variationListModel.indexOf(oldest);
+                    if (oldestIndex != -1) {
+                        variationList.removeSelectionInterval(oldestIndex, oldestIndex);
+                    }
+                }
+            }
+        });
         
         variationList.addMouseListener(new MouseAdapter() {
             @Override
@@ -291,18 +333,63 @@ public class MutatorFrame extends JFrame {
     
     /**
      * Helper method to get selected parameters and call the randomizer.
+     * Updated to support constrained randomization.
      * @param percent The randomization percentage.
      */
     private void randomizeSelected(float percent) {
         List<ParameterInstance> selectedParameters = parameterList.getSelectedValuesList();
+        List<PatchVariation> selectedVariations = variationList.getSelectedValuesList();
+
         if (selectedParameters.isEmpty()) {
             LOGGER.log(Level.WARNING, "No parameters selected. Please select one or more parameters to randomize.");
+            return;
+        }
+
+        if (selectedVariations.size() == 2) {
+            LOGGER.log(Level.INFO, "Randomizing with constraint from two variations.");
+            PatchVariation v1 = selectedVariations.get(0);
+            PatchVariation v2 = selectedVariations.get(1);
+
+            Map<ParameterInstance, int[]> constraints = new HashMap<>();
+
+            // Find the min/max values for each parameter based on the two variations
+            for (ParameterInstance param : selectedParameters) {
+                int val1 = -1;
+                int val2 = -1;
+                
+                // Find the values for the current parameter in both variations
+                for (ParameterState state : v1.getStates()) {
+                    if (state.getParameter().equals(param)) {
+                        val1 = state.getValue();
+                        break;
+                    }
+                }
+                for (ParameterState state : v2.getStates()) {
+                    if (state.getParameter().equals(param)) {
+                        val2 = state.getValue();
+                        break;
+                    }
+                }
+                
+                if (val1 != -1 && val2 != -1) {
+                    int min = Math.min(val1, val2);
+                    int max = Math.max(val1, val2);
+                    constraints.put(param, new int[]{min, max});
+                }
+            }
+            
+            PatchRandomizer.randomizeParametersWithConstraint(selectedParameters, constraints, percent);
+            
+        } else if (selectedVariations.size() > 2) {
+             LOGGER.log(Level.WARNING, "Please select exactly two variations for constrained randomization.");
         } else {
+            // Default behavior if not two variations are selected
             LOGGER.log(Level.INFO, "Randomizing " + selectedParameters.size() + " selected parameter(s) by " + (int)(percent * 100) + "%");
             PatchRandomizer.randomizeParameters(selectedParameters, percent);
-            if (this.patch != null) {
-                this.patch.SetDirty(true);
-            }
+        }
+        
+        if (this.patch != null) {
+            this.patch.SetDirty(true);
         }
     }
 
@@ -328,7 +415,15 @@ public class MutatorFrame extends JFrame {
      * Loads the selected variation, replacing the current patch's parameter states.
      */
     private void loadVariation() {
-        PatchVariation selectedVariation = variationList.getSelectedValue();
+        List<PatchVariation> selectedVariations = variationList.getSelectedValuesList();
+
+        if (selectedVariations.size() != 1) {
+            LOGGER.log(Level.WARNING, "Please select exactly one variation to load.");
+            return;
+        }
+
+        PatchVariation selectedVariation = selectedVariations.get(0);
+        
         if (selectedVariation != null && this.patch != null) {
             for (ParameterState state : selectedVariation.getStates()) {
                 state.getParameter().SetValueRaw(state.getValue());
