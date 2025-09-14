@@ -183,7 +183,7 @@ public class SCmdUploadFile extends AbstractSCmd {
             int MaxBlockSize = 32768;
             long totalBytesSent = 0;
             int remLength = tlength;
-            long pct = 0;
+            long pct = -1;
             int chunkNum = 0;
 
             do {
