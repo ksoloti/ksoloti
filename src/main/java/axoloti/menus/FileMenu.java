@@ -301,7 +301,9 @@ public class FileMenu extends JMenu {
                 currentTestPath = inputPath;
 
                 final List<File> directoriesToTest;
-                boolean hasWildcard = inputPath.contains("*") || inputPath.contains("?");
+                boolean hasWildcard = inputPath.contains("*") ||
+                                      inputPath.contains("?") ||
+                                     (inputPath.contains("[") && inputPath.contains("]"));
 
                 if (hasWildcard) {
                     try {
