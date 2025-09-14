@@ -34,6 +34,7 @@ import axoloti.listener.ConnectionStatusListener;
 import axoloti.listener.SDCardMountStatusListener;
 import axoloti.object.AxoObject;
 import axoloti.object.AxoObjectAbstract;
+import axoloti.object.AxoObjectFromPatch;
 import axoloti.object.AxoObjectInstance;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjects;
@@ -1390,6 +1391,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     public boolean runTestDir(File f) {
+        /* Default to only testing patches, not individual objects/subpatches */
+        return runTestDir(f, false); 
+    }
+
+    public boolean runTestDir(File f, final boolean testObjects) {
         if (!f.exists()) {
             return true;
         }
@@ -1406,15 +1412,21 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         return false;
                     }
                     String extension = name.substring(name.length() - 4);
-                    boolean b = (extension.equals(".axp") || extension.equals(".axh"));
-                    return b;
+                    boolean isPatch = extension.equals(".axp") || extension.equals(".axh");
+
+                    if (testObjects) {
+                        boolean isObject = extension.equals(".axo") || extension.equals(".axs");
+                        return isPatch || isObject;
+                    }
+                    
+                    return isPatch;
                 }
             });
             /* Simple sorting method for easier diff-ability of logs */
             Arrays.sort(files, (f1, f2) -> f1.getAbsolutePath().compareToIgnoreCase(f2.getAbsolutePath()));
 
             for (File s : files) {
-                if (!runTestDir(s) && stopOnFirstFail) {
+                if (!runTestDir(s, testObjects) && stopOnFirstFail) { 
                     return false;
                 }
             }
@@ -1426,18 +1438,99 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private boolean runTestCompile(File f) {
         SetGrabFocusOnSevereErrors(false);
-        
+
         PatchGUI patch1 = null;
         PatchFrame pf = null;
-        
+
         try {
-            Strategy strategy = new AnnotationStrategy();
-            Serializer serializer = new Persister(strategy, new Format(2));
             LOGGER.log(Level.INFO, "---------- Testing {0} ----------", f.getPath());
 
-            patch1 = serializer.read(PatchGUI.class, f);
-            pf = new PatchFrame(patch1);
-            pf.createBufferStrategy(1);
+            String fileName = f.getName();
+            if (fileName.endsWith(".axo")) {
+                /* File is object */
+                patch1 = new PatchGUI();
+                pf = new PatchFrame(patch1);
+                patch1.PostContructor();
+                pf.createBufferStrategy(1);
+
+                AxoObject loadedObject = AxoObject.loadAxoObjectFromFile(f.toPath());
+                AxoObjectInstanceAbstract abstractInstance = null;
+                if (loadedObject != null) {
+                    AxoObjectAbstract libraryObject = MainFrame.axoObjects.GetAxoObjectFromUUID(loadedObject.getUUID());
+                    if (libraryObject == null && loadedObject.id != null) {
+                        ArrayList<AxoObjectAbstract> foundObjects = MainFrame.axoObjects.GetAxoObjectFromName(loadedObject.id, null);
+                        if (foundObjects != null && !foundObjects.isEmpty()) {
+                            libraryObject = foundObjects.get(0);
+                        }
+                    }
+
+                    Point instanceLocation = new Point(80, 80);
+                    if (libraryObject != null) {
+                        /* The object is a library object */
+                        abstractInstance = patch1.AddObjectInstance(libraryObject, instanceLocation);
+                        if (abstractInstance != null) {
+                            LOGGER.info("Placed reference to library object " + libraryObject.id + ", labeled \"" + abstractInstance.getInstanceName() + "\"");
+                        }
+                    } else {
+                        /* The object is a local, unlisted object */
+                        abstractInstance = patch1.AddObjectInstance(loadedObject, instanceLocation);
+                        if (abstractInstance != null) {
+                            AxoObjectInstance concreteInstance = (AxoObjectInstance) abstractInstance;
+                            String uniqueName = patch1.getSimpleUniqueName(loadedObject.id);
+                            concreteInstance.setInstanceName(uniqueName);
+                            concreteInstance.ConvertToEmbeddedObj();
+                            LOGGER.info("Placed new embedded object labeled \"" + uniqueName + "\" from file " + f.getName());
+                        }
+                    }
+                }
+            } else if (fileName.endsWith(".axs")) {
+                /* File is subpatch */
+                patch1 = new PatchGUI();
+                pf = new PatchFrame(patch1);
+                patch1.PostContructor();
+                pf.createBufferStrategy(1);
+
+                AxoObjectInstanceAbstract abstractInstance = null;
+                String canonicalId = MainFrame.axoObjects.getCanonicalObjectIdFromPath(f);
+                Point instanceLocation = new Point(80, 80);
+                if (canonicalId != null) {
+                    /* The subpatch is a library subpatch */
+                    ArrayList<AxoObjectAbstract> objs = MainFrame.axoObjects.GetAxoObjectFromName(canonicalId, patch1.GetCurrentWorkingDirectory());
+                    if (objs != null && !objs.isEmpty()) {
+                        abstractInstance = patch1.AddObjectInstance(objs.get(0), instanceLocation);
+                        if (abstractInstance != null) {
+                            LOGGER.info("Placed reference to library subpatch " + canonicalId + ", labeled \"" + abstractInstance.getInstanceName() + "\"");
+                        }
+                    }
+                } else {
+                    /* The subpatch is a local subpatch (not found in any library). */
+                    AxoObjectFromPatch loadedObject = new AxoObjectFromPatch(f);
+                    String absolutePath = f.getAbsolutePath();
+                    String currentDirectory = patch1.GetCurrentWorkingDirectory();
+                    if (currentDirectory != null && absolutePath.startsWith(currentDirectory)) {
+                        loadedObject.createdFromRelativePath = true;
+                        String relativePath = absolutePath.substring(currentDirectory.length() + File.separator.length());
+                        loadedObject.id = relativePath.substring(0, relativePath.lastIndexOf('.'));
+                    } else {
+                        loadedObject.id = absolutePath.substring(0, absolutePath.lastIndexOf('.'));
+                    }
+                    abstractInstance = patch1.AddObjectInstance(loadedObject, instanceLocation);
+                    if (abstractInstance != null) {
+                        /* Embed the newly created subpatch to avoid zombiism */
+                        AxoObjectInstance concreteInstance = (AxoObjectInstance) abstractInstance;
+                        concreteInstance.ConvertToPatchPatcher(); 
+                        LOGGER.info("Placed new embedded subpatch labeled \"" + concreteInstance.getInstanceName() + "\" from file " + f.getName());
+                    }
+                }
+            } else {
+                /* File is patch or help patch */
+                Strategy strategy = new AnnotationStrategy();
+                Serializer serializer = new Persister(strategy, new Format(2));
+                patch1 = serializer.read(PatchGUI.class, f);
+                pf = new PatchFrame(patch1);
+                pf.createBufferStrategy(1);
+            }
+
             patch1.setFileNamePath(f.getPath());
             patch1.PostContructor();
             patch1.WriteCode();
@@ -1497,7 +1590,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         finally {
             SetGrabFocusOnSevereErrors(bGrabFocusOnSevereErrors);
             CommandManager.getInstance().endLongOperation();
-            
+
             if (patch1 != null) {
                 patch1.Close();
             }
