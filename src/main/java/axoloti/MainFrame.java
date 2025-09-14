@@ -1554,6 +1554,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     uploadCmd.Do();
                     CommandManager.getInstance().endLongOperation();
                     if (!uploadCmd.waitForCompletion() || !uploadCmd.isSuccessful()) {
+                        USBBulkConnection.getInstance().disconnect();
                         return false; /* Abort test of this patch */
                     }
 
