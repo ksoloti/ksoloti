@@ -1833,7 +1833,7 @@ public class USBBulkConnection extends Connection {
                             }
                             else if (commandByte == 'e') {
                                 uploadCmd.setCloseMemWriteCompletedWithStatus(statusCode);
-                                uploadCmd.setCompletedWithStatus(statusCode);
+                                currentExecutingCommand.setCompletedWithStatus(statusCode);
                             }
                         }
                         /* Special handling for SCmdUploadFile's sub-commands */
@@ -1847,7 +1847,7 @@ public class USBBulkConnection extends Connection {
                             }
                             else if (commandByte == 'c') {
                                 uploadCmd.setCloseFileCompletedWithStatus(statusCode);
-                                uploadCmd.setCompletedWithStatus(statusCode);
+                                currentExecutingCommand.setCompletedWithStatus(statusCode);
                             }
                         }
                         /* Special handling for SCmdUploadFWSDRam's sub-commands */
@@ -1861,7 +1861,7 @@ public class USBBulkConnection extends Connection {
                             }
                             else if (commandByte == 'e') {
                                 uploadFwCmd.setCloseMemWriteCompletedWithStatus(statusCode);
-                                uploadFwCmd.setCompletedWithStatus(statusCode);
+                                currentExecutingCommand.setCompletedWithStatus(statusCode);
                             }
                         }
                         /* Handling for other SCmd's that expect an AxoR for their completion */
@@ -2029,7 +2029,7 @@ public class USBBulkConnection extends Connection {
                             if (currentExecutingCommand != null && currentExecutingCommand instanceof SCmdMemRead) {
                                 SCmdMemRead memReadCmd = (SCmdMemRead) currentExecutingCommand;
                                 memReadCmd.setValuesRead(memReadBuffer);
-                                memReadCmd.setCompletedWithStatus(0);
+                                currentExecutingCommand.setCompletedWithStatus(0);
                             }
 
                             System.out.print(Instant.now() + " SCmdMemRead address 0x" + Integer.toHexString(memReadAddr).toUpperCase() + ", length " + memReadLength + ": ");
@@ -2078,7 +2078,7 @@ public class USBBulkConnection extends Connection {
                         if (currentExecutingCommand != null && currentExecutingCommand instanceof SCmdMemRead1Word) {
                             SCmdMemRead1Word cmd = (SCmdMemRead1Word) currentExecutingCommand;
                             cmd.setValueRead(memRead1WordValue);
-                            cmd.setCompletedWithStatus(0);
+                            currentExecutingCommand.setCompletedWithStatus(0);
                             System.out.println(Instant.now() + " SCmdMemRead1Word address 0x" + Integer.toHexString(memReadAddr).toUpperCase() + ", value read: 0x" + Integer.toHexString(memRead1WordValue).toUpperCase());
                         }
                         setIdleState();
