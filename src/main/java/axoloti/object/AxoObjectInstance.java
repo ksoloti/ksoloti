@@ -680,11 +680,12 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public String GenerateInstanceDataDeclaration2() {
         String c = "\n";
         if (getType().sLocalData != null && !getType().sLocalData.isEmpty()) {
-            c += I+I + "/* Object Local Code Tab */\n";
+            c += I+I + "/* <object local data tab> */\n";
             String s = getType().sLocalData;
             s = I+I + s.replace("\n", "\n\t\t");
             s = s.replaceAll("attr_parent", getCInstanceName());
             c += s + "\n";
+            c += I+I + "/* </object local data tab> */\n";
         }
         return c;
     }
@@ -907,7 +908,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         }
 
         if (getType().sInitCode != null && !getType().sInitCode.isEmpty()) {
-            c += "\n" + I+I+I + "/* Object Init Code Tab */\n";
+            c += "\n" + I+I+I + "/* <object init code tab> */\n";
             String s = getType().sInitCode;
             for (AttributeInstance a : attributeInstances) {
                 s = s.replace(a.GetCName(), a.CValue());
@@ -951,6 +952,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             }
 
             c += s;
+            c += "\n" + I+I+I + "/* </object init code tab> */\n";
         }
 
         String d = I+I + "public: void Init(" + classname + " *_parent";
@@ -977,12 +979,13 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public String GenerateDisposeCodePlusPlus(String classname) {
         String c = I+I + "public: void Dispose() {\n";
         if (getType().sDisposeCode != null && !getType().sDisposeCode.isEmpty()) {
-            c += "\n" + I+I+I + "/* Object Dispose Code Tab */\n";
+            c += "\n" + I+I+I + "/* <object dispose code tab> */\n";
             String s = getType().sDisposeCode;
             s = I+I+I + s.replace("\n", "\n\t\t\t");
             for (AttributeInstance a : attributeInstances) {
                 s = I+I + s.replaceAll(a.GetCName(), a.CValue());
             }
+            c += "\n" + I+I+I + "/* </object dispose code tab> */\n";
             c += s + "\n\n";
         }
         c += I+I + "}\n\n";
@@ -1001,8 +1004,10 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             s = s.replace("CGENATTR_instancename", getCInstanceName());
             s = s.replace("CGENATTR_legalname", getLegalName());
 
-            String h = "\n" + I+I+I + "/* Object K-Rate Code Tab */\n";
-            return h + s + "\n";
+            String h = "\n" + I+I+I + "/* <object k-rate code tab> */\n";
+            h += s;
+            h += "\n" + I+I+I + "/* </object k-rate code tab> */\n";
+            return h;
         }
         return "";
     }
@@ -1011,8 +1016,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         if (getType().sSRateCode != null && !getType().sSRateCode.isEmpty()) {
             String s = "\n" + I+I+I + "uint32_t buffer_index;\n"
                             + I+I+I + "for (buffer_index = 0; buffer_index < BUFSIZE; buffer_index++) {\n"
-                     + "\n" + I+I+I+I + "/* Object S-Rate Code Tab */\n"
+                     + "\n" + I+I+I+I + "/* <object s-rate code tab> */\n"
                             + I+I+I+I + getType().sSRateCode.replace("\n", "\n\t\t\t\t")
+                     + "\n" + I+I+I+I + "/* </object s-rate code tab> */\n"
                      + "\n" + I+I+I + "}\n";
 
             for (AttributeInstance a : attributeInstances) {
@@ -1117,8 +1123,9 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     public String GenerateCodeMidiHandler(String vprefix) {
         String s = "";
         if (getType().sMidiCode != null && !getType().sMidiCode.isEmpty()) {
-            s += I+I+I + "/* Object Midi Handler */\n";
+            s += I+I+I + "/* <object midi code tab> */\n";
             s += I+I+I + getType().sMidiCode.replace("\n", "\n\t\t\t");
+            s += "\n" + I+I+I + "/* </object midi code tab> */\n";
         }
         for (ParameterInstance i : parameterInstances) {
             if (!i.isFrozen()) {
