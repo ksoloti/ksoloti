@@ -27,7 +27,6 @@ import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
 import axoloti.parameters.ParameterInstance;
 import axoloti.patch.MutatorFrame;
-import axoloti.patch.PatchRandomizer;
 import axoloti.sd.SDCardInfo;
 import axoloti.sd.SDFileReference;
 import axoloti.ui.SvgIconLoader;
@@ -42,7 +41,6 @@ import components.VisibleCablePanel;
 
 import static axoloti.MainFrame.fc;
 import static axoloti.MainFrame.mainframe;
-import static axoloti.utils.FileUtils.toUnixPath;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -1345,10 +1343,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
     private void jCheckBoxMenuItemCordsInBackgroundActionPerformed(java.awt.event.ActionEvent evt) {
         patch.SetCordsInBackground(jCheckBoxMenuItemCordsInBackground.isSelected());
-    }
-
-    private void RandomizeActionPerformed(java.awt.event.ActionEvent evt, float percent) {
-        PatchRandomizer.randomizeAllParameters(getPatchGUI(), percent);
     }
 
     private void jMenuGenerateCodeActionPerformed(java.awt.event.ActionEvent evt) {
