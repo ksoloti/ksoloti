@@ -18,6 +18,8 @@
  */
 package qcmds;
 
+import java.util.logging.Level;
+
 import axoloti.Connection;
 
 /**
@@ -47,6 +49,25 @@ public class SCmdMemRead1Word extends AbstractSCmd {
     public SCmd Do(Connection connection) {
         connection.setCurrentExecutingCommand(this); 
         connection.TransmitMemoryRead1Word(addr);
+
+        try {
+            if (!waitForCompletion()) {
+                LOGGER.log(Level.SEVERE, "MemRead1Word command timed out.");
+                setCompletedWithStatus(1);
+                return this;
+            }
+            else if (!isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "MemRead1Word command failed.");
+                return this;
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.log(Level.SEVERE, "MemRead1Word command interrupted: " + e.getMessage());
+            setCompletedWithStatus(1);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error during MemRead1Word command: " + e.getMessage());
+            setCompletedWithStatus(1);
+        }
         return this;
     }
 

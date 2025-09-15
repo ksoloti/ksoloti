@@ -21,6 +21,7 @@ package qcmds;
 import axoloti.Connection;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.logging.Level;
 
 /**
  *
@@ -52,6 +53,25 @@ public class SCmdMemRead extends AbstractSCmd {
     public SCmd Do(Connection connection) {
         connection.setCurrentExecutingCommand(this);
         connection.TransmitMemoryRead(addr, length);
+
+        try {
+            if (!waitForCompletion()) {
+                LOGGER.log(Level.SEVERE, "MemRead command timed out.");
+                setCompletedWithStatus(1);
+                return this;
+            }
+            else if (!isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "MemRead command failed.");
+                return this;
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.log(Level.SEVERE, "MemRead command interrupted: " +  e.getMessage());
+            setCompletedWithStatus(1);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error during MemRead command: " + e.getMessage());
+            setCompletedWithStatus(1);
+        }
         return this;
     }
 

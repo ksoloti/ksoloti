@@ -18,6 +18,8 @@
  */
 package qcmds;
 
+import java.util.logging.Level;
+
 import axoloti.Connection;
 
 /**
@@ -40,6 +42,25 @@ public class SCmdGetFWVersion extends AbstractSCmd {
     public SCmd Do(Connection connection) {
         connection.setCurrentExecutingCommand(this); 
         connection.TransmitGetFWVersion();
+
+        try {
+            if (!waitForCompletion()) {
+                LOGGER.log(Level.SEVERE, "Get firmware version command timed out.");
+                setCompletedWithStatus(1);
+                return this;
+            }
+            else if (!isSuccessful()) {
+                LOGGER.log(Level.SEVERE, "Failed to get firmware version.");
+                return this;
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.log(Level.SEVERE, "Get firmware version command interrupted: " +  e.getMessage());
+            setCompletedWithStatus(1);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error during get firmware version command: " + e.getMessage());
+            setCompletedWithStatus(1);
+        }
         return this;
     }
 }

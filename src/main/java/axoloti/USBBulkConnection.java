@@ -650,12 +650,6 @@ public class USBBulkConnection extends Connection {
                 /* Post-Connection Commands (Firmware version, CPU revision, board ID) */
                 SCmdGetFWVersion fwVersionCmd = new SCmdGetFWVersion();
                 fwVersionCmd.Do();
-                if (!fwVersionCmd.waitForCompletion()) {
-                    LOGGER.log(Level.SEVERE, "Get firmware version command timed out.");
-                }
-                else if (!fwVersionCmd.isSuccessful()) {
-                    LOGGER.log(Level.SEVERE, "Failed to get firmware version.");
-                }
 
                 SCmdMemRead1Word cpuRevisionCmd = new SCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
                 cpuRevisionCmd.Do();
