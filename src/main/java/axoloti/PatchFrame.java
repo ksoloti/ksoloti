@@ -342,7 +342,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             jMenuUploadCode.setVisible(false);
             jMenuItemLock.setVisible(false);
             jMenuItemUnlock.setVisible(false);
-            jMenuItemShowPatchMutator.setVisible(false);
+            // jMenuItemShowPatchMutator.setVisible(false);
         }
         jMenuPreset.setVisible(false);
         patch.Layers.requestFocus();
