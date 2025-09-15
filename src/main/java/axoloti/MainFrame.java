@@ -21,6 +21,7 @@ package axoloti;
 
 import static axoloti.Axoloti.FIRMWARE_DIR;
 import static axoloti.Axoloti.HOME_DIR;
+import static axoloti.Axoloti.isDeveloper;
 import static axoloti.utils.FileUtils.toUnixPath;
 
 import axoloti.dialogs.AxoJFileChooser;
@@ -652,7 +653,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             EventQueue.invokeLater(r);
         }
 
-        if (!argMessage.isEmpty()) {
+        if (!argMessage.isEmpty() && (Preferences.getInstance().getExpertMode() || isDeveloper())) {
             LOGGER.log(Level.WARNING, argMessage);
         }
 
