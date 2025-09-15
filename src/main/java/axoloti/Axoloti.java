@@ -100,7 +100,7 @@ public class Axoloti {
 
         AxoSplashScreen splashScreen = null;
         try {
-            splashScreen = new AxoSplashScreen(true);
+            splashScreen = new AxoSplashScreen(false);
             splashScreen.showSplashScreen();
         } catch (Exception e) {
             System.out.println(Instant.now() + " [DEBUG] Splash screen could not be created: " + e.getMessage());
