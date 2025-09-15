@@ -32,6 +32,7 @@ case "$unamestr" in
                 exit
             ;;
         esac
+        export DYLD_LIBRARY_PATH=${platformdir}/bin
     ;;
     MINGW*)
         firmwaredir="$(cd $(dirname $0); pwd -P)"
