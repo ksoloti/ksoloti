@@ -1824,43 +1824,40 @@ public class USBBulkConnection extends Connection {
                     if (currentExecutingCommand != null) {
                         /* Special handling for SCmdUploadPatch's sub-commands */
                         if (currentExecutingCommand instanceof SCmdUploadPatch) {
-                            SCmdUploadPatch uploadCmd = (SCmdUploadPatch) currentExecutingCommand;
                             if (commandByte == 'W') {
-                                uploadCmd.setStartMemWriteCompletedWithStatus(statusCode);
+                                ((SCmdUploadPatch) currentExecutingCommand).setStartMemWriteCompletedWithStatus(statusCode);
                             }
                             else if (commandByte == 'w') {
-                                uploadCmd.setAppendMemWriteCompletedWithStatus(statusCode);
+                                ((SCmdUploadPatch) currentExecutingCommand).setAppendMemWriteCompletedWithStatus(statusCode);
                             }
                             else if (commandByte == 'e') {
-                                uploadCmd.setCloseMemWriteCompletedWithStatus(statusCode);
+                                ((SCmdUploadPatch) currentExecutingCommand).setCloseMemWriteCompletedWithStatus(statusCode);
                                 currentExecutingCommand.setCompletedWithStatus(statusCode);
                             }
                         }
                         /* Special handling for SCmdUploadFile's sub-commands */
                         else if (currentExecutingCommand instanceof SCmdUploadFile) {
-                            SCmdUploadFile uploadCmd = (SCmdUploadFile) currentExecutingCommand;
                             if (commandByte == 'f') {
-                                uploadCmd.setCreateFileCompletedWithStatus(statusCode);
+                                ((SCmdUploadFile) currentExecutingCommand).setCreateFileCompletedWithStatus(statusCode);
                             }
                             else if (commandByte == 'a') {
-                                uploadCmd.setAppendFileCompletedWithStatus(statusCode);
+                                ((SCmdUploadFile) currentExecutingCommand).setAppendFileCompletedWithStatus(statusCode);
                             }
                             else if (commandByte == 'c') {
-                                uploadCmd.setCloseFileCompletedWithStatus(statusCode);
+                                ((SCmdUploadFile) currentExecutingCommand).setCloseFileCompletedWithStatus(statusCode);
                                 currentExecutingCommand.setCompletedWithStatus(statusCode);
                             }
                         }
                         /* Special handling for SCmdUploadFWSDRam's sub-commands */
                         else if (currentExecutingCommand instanceof SCmdUploadFWSDRam) {
-                            SCmdUploadFWSDRam uploadFwCmd = (SCmdUploadFWSDRam) currentExecutingCommand;
                             if (commandByte == 'W') {
-                                uploadFwCmd.setStartMemWriteCompletedWithStatus(statusCode);
+                                ((SCmdUploadFWSDRam) currentExecutingCommand).setStartMemWriteCompletedWithStatus(statusCode);
                             }
                             else if (commandByte == 'w') {
-                                uploadFwCmd.setAppendMemWriteCompletedWithStatus(statusCode);
+                                ((SCmdUploadFWSDRam) currentExecutingCommand).setAppendMemWriteCompletedWithStatus(statusCode);
                             }
                             else if (commandByte == 'e') {
-                                uploadFwCmd.setCloseMemWriteCompletedWithStatus(statusCode);
+                                ((SCmdUploadFWSDRam) currentExecutingCommand).setCloseMemWriteCompletedWithStatus(statusCode);
                                 currentExecutingCommand.setCompletedWithStatus(statusCode);
                             }
                         }
@@ -2027,9 +2024,8 @@ public class USBBulkConnection extends Connection {
                         if (dataIndex == memReadLength + 7) {
                             memReadBuffer.rewind();
                             if (currentExecutingCommand != null && currentExecutingCommand instanceof SCmdMemRead) {
-                                SCmdMemRead memReadCmd = (SCmdMemRead) currentExecutingCommand;
-                                memReadCmd.setValuesRead(memReadBuffer);
-                                currentExecutingCommand.setCompletedWithStatus(0);
+                                ((SCmdMemRead) currentExecutingCommand).setValuesRead(memReadBuffer);
+                                ((SCmdMemRead) currentExecutingCommand).setCompletedWithStatus(0);
                             }
 
                             System.out.print(Instant.now() + " SCmdMemRead address 0x" + Integer.toHexString(memReadAddr).toUpperCase() + ", length " + memReadLength + ": ");
@@ -2076,8 +2072,7 @@ public class USBBulkConnection extends Connection {
                     case 7:
                         memRead1WordValue += (cc & 0xFF) << 24;
                         if (currentExecutingCommand != null && currentExecutingCommand instanceof SCmdMemRead1Word) {
-                            SCmdMemRead1Word cmd = (SCmdMemRead1Word) currentExecutingCommand;
-                            cmd.setValueRead(memRead1WordValue);
+                            ((SCmdMemRead1Word) currentExecutingCommand).setValueRead(memRead1WordValue);
                             currentExecutingCommand.setCompletedWithStatus(0);
                             System.out.println(Instant.now() + " SCmdMemRead1Word address 0x" + Integer.toHexString(memReadAddr).toUpperCase() + ", value read: 0x" + Integer.toHexString(memRead1WordValue).toUpperCase());
                         }
