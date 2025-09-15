@@ -28,9 +28,12 @@ import axoloti.utils.OSDetect.ARCH;
 import axoloti.utils.OSDetect.OS;
 
 import java.awt.EventQueue;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -40,6 +43,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 
@@ -50,7 +54,8 @@ import javax.swing.UIManager;
 public class Axoloti {
     private final static Logger LOGGER = Logger.getLogger(Axoloti.class.getName());
 
-    public final static int SINGLE_INSTANCE_PORT = 55555; /* For checking if another Patcher instance is running */
+    public final static int SINGLE_INSTANCE_PORT = 55576; /* For checking if another Patcher instance is running */
+    private static Thread singleInstanceListenerThread;
 
     public final static String HOME_DIR       = "axoloti_home";
     public final static String LIBRARIES_DIR  = "axoloti_libraries";
@@ -59,7 +64,7 @@ public class Axoloti {
 
     private static String cacheFWDir = null;
     private static boolean cacheDeveloper = false;
-    
+
     /**
      * @param args the command line arguments
      */
@@ -74,17 +79,23 @@ public class Axoloti {
             }
         }
 
-        if (filePath != null) {
-            try (Socket socket = new Socket("localhost", SINGLE_INSTANCE_PORT)) {
-                /* Another instance is running, send the file path and exit */
-                PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-                writer.println(filePath);
-                System.out.println("File '" + filePath + "' sent to existing instance.");
-                System.exit(0);
-            } catch (IOException e) {
-                /* No other instance is running, proceed to start as the primary */
-                System.out.println("No existing instance found. Starting new instance.");
+        try {
+            ServerSocket serverSocket = new ServerSocket(SINGLE_INSTANCE_PORT);
+            System.out.println(Instant.now() + " No existing Patcher instance found. Starting new instance.");
+            startSingleInstanceListener(serverSocket);
+        } catch (IOException e) {
+            System.out.println(Instant.now() + " Existing Patcher instance found. Handing over file and exiting.");
+
+            if (filePath != null) {
+                try (Socket socket = new Socket("localhost", SINGLE_INSTANCE_PORT);
+                    PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
+                    writer.println(filePath);
+                    System.out.println(Instant.now() + " File '" + filePath + "' handed over to existing instance.");
+                } catch (IOException ex) {
+                    System.out.println(Instant.now() + " Failed to connect to existing instance: " + ex.getMessage());
+                }
             }
+            System.exit(0);
         }
 
         AxoSplashScreen splashScreen = null;
@@ -144,6 +155,36 @@ public class Axoloti {
         handleCommandLine(args, splashScreen);
     }
 
+    private static void startSingleInstanceListener(ServerSocket serverSocket) {
+        if (singleInstanceListenerThread == null || !singleInstanceListenerThread.isAlive()) {
+            singleInstanceListenerThread = new Thread(() -> {
+                try (ServerSocket server = serverSocket) {
+                    System.out.println(Instant.now() + " Main instance listening for new files...");
+                    while (true) {
+                        try (Socket clientSocket = server.accept();
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
+                            String filePath = reader.readLine();
+                            if (filePath != null) {
+                                SwingUtilities.invokeLater(() -> {
+                                    File f = new File(filePath);
+                                    if (f.exists()) {
+                                        System.out.println(Instant.now() + " Main instance received new file: " + filePath);
+                                        MainFrame.openFileFromListener(f);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    System.out.println(Instant.now() + " Single-instance listener thread failed: " + e.getMessage());
+                }
+            });
+            singleInstanceListenerThread.setDaemon(true);
+            singleInstanceListenerThread.setName("singleInstanceListenerThread");
+            singleInstanceListenerThread.start();
+        }
+    }
+
     static void BuildEnv(String var, String def) {
         String ev = System.getProperty(var);
         if (ev == null) {
@@ -179,7 +220,7 @@ public class Axoloti {
     }
 
     public static boolean isDeveloper() {
-        
+
         String fwEnv = System.getProperty(FIRMWARE_DIR);
         if (cacheFWDir != null && fwEnv.equals(cacheFWDir)) {
             return cacheDeveloper;
@@ -389,7 +430,7 @@ public class Axoloti {
         }
 
         String[] finalGuiArgs = guiArgs.toArray(new String[0]);
-        
+
         if (cmdLineOnly) {
             try {
                 MainFrame frame = new MainFrame(args);

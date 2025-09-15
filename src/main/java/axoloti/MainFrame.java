@@ -65,18 +65,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -147,7 +143,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     static public Cursor transparentCursor;
 
     private final String[] args;
-    private static Thread singleInstanceListenerThread;
 
     JMenu favouriteMenu;
     boolean bGrabFocusOnSevereErrors = true;
@@ -581,7 +576,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         EventQueue.invokeLater(initr);
         initializeAfterFrameIsReady(args);
-        startSingleInstanceListener();
     }
 
     private void initializeAfterFrameIsReady(String args[]) {
@@ -657,46 +651,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             LOGGER.log(Level.WARNING, argMessage);
         }
 
-    }
-
-    private static void startSingleInstanceListener() {
-        if (singleInstanceListenerThread == null || !singleInstanceListenerThread.isAlive()) {
-            singleInstanceListenerThread = new Thread(() -> {
-                try (ServerSocket serverSocket = new ServerSocket(Axoloti.SINGLE_INSTANCE_PORT)) {
-                    System.out.println(Instant.now() +" Main instance listening for new files...");
-                    
-                    while (true) {
-                        try (Socket clientSocket = serverSocket.accept();
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
-                            String filePath = reader.readLine();
-
-                            if (filePath != null) {
-                                SwingUtilities.invokeLater(() -> {
-                                    File f = new File(filePath);
-                                    if (f.exists()) {
-                                        System.out.println(Instant.now() + " Main instance received new file: " + filePath);
-                                        if (mainframe != null && MainFrame.axoObjects != null) {
-                                            PatchGUI.OpenPatch(f);
-                                        }
-                                        else {
-                                            System.err.println(Instant.now() + " Mainframe is not yet initialized to open file: " + filePath);
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    }
-                }
-                catch (IOException e) {
-                    /* Harmless exception, simply means another Ksoloti instance is already running */
-                    System.out.println(Instant.now() + " Single-instance listener not started, likely another instance is running.");
-                }
-            });
-
-            singleInstanceListenerThread.setDaemon(true);
-            singleInstanceListenerThread.setName("singleInstanceListenerThread");
-            singleInstanceListenerThread.start();
-        }
     }
 
     private void setupDragAndDrop() {
@@ -1790,6 +1744,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         // else {
         //     LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first!\n(File: {0})", fname);
         // }
+    }
+
+    public static void openFileFromListener(File f) {
+        if (mainframe != null && axoObjects != null) {
+            PatchGUI.OpenPatch(f);
+        } else {
+            System.err.println(Instant.now() + " Mainframe is not yet initialized to open file: " + f.getAbsolutePath());
+        }
     }
 
     public void OpenURL() {
