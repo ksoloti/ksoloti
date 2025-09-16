@@ -27,7 +27,10 @@ import axoloti.utils.Preferences;
 import axoloti.utils.OSDetect.ARCH;
 import axoloti.utils.OSDetect.OS;
 
+import java.awt.Desktop;
 import java.awt.EventQueue;
+import java.awt.desktop.OpenFilesEvent;
+import java.awt.desktop.OpenFilesHandler;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -65,10 +68,21 @@ public class Axoloti {
     private static String cacheFWDir = null;
     private static boolean cacheDeveloper = false;
 
+    private static class OpenFilesHandlerImpl implements OpenFilesHandler {
+        @Override
+        public void openFiles(OpenFilesEvent e) {
+            MainFrame.openFilesFromListener(new ArrayList<>(e.getFiles()));
+        }
+    }
+
     /**
      * @param args the command line arguments
      */
     public static void main(final String[] args) {
+
+        if (OSDetect.getOS() == OS.MAC && Desktop.isDesktopSupported()) {
+            Desktop.getDesktop().setOpenFileHandler(new OpenFilesHandlerImpl());
+        }
 
         /* Collect all file paths from the command-line arguments */
         ArrayList<String> filePaths = new ArrayList<>();
@@ -121,7 +135,7 @@ public class Axoloti {
 
             if (OSDetect.getOS() == OSDetect.OS.MAC) {
                 // System.setProperty("apple.laf.useScreenMenuBar", "true"); /* This option breaks menu functions */
-                System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS");
+                System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS"); // deprecated? non-functional??
                 System.setProperty("apple.awt.application.name", "Ksoloti");
                 System.setProperty("apple.awt.application.appearance", "system");
                 System.setProperty("apple.awt.transparentTitleBar", "true");
