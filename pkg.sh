@@ -186,22 +186,22 @@ tar -czf ../ksoloti_patcher-mac_x64-${CUSTOMLABEL}${VERSION_LONG}.tar.gz *
 cd ../..
 rm -rf ./packagetemp/mac_x64
 
-# ----- MacOS aarch64 (arm64)
-java -jar ./jdks/packr-all-4.0.0.jar --verbose --output ./packagetemp/mac_aarch64/Ksoloti-${VERSION}.app -- ./jdks/packr-mac_aarch64.json
+# # ----- MacOS aarch64 (arm64)
+# java -jar ./jdks/packr-all-4.0.0.jar --verbose --output ./packagetemp/mac_aarch64/Ksoloti-${VERSION}.app -- ./jdks/packr-mac_aarch64.json
 
-cd ./packagetemp/mac_aarch64/Ksoloti-${VERSION}.app/Contents/Resources
-remove_temp_files
+# cd ./packagetemp/mac_aarch64/Ksoloti-${VERSION}.app/Contents/Resources
+# remove_temp_files
 
-chmod 755 ./jre/lib/jspawnhelper
-chmod 755 ./firmware/*.mk
-chmod -R 755 ./platform_mac_aarch64/bin/*
-chmod -R 755 ./platform_mac_aarch64/*/bin/*
-cd ../../..
+# chmod 755 ./jre/lib/jspawnhelper
+# chmod 755 ./firmware/*.mk
+# chmod -R 755 ./platform_mac_aarch64/bin/*
+# chmod -R 755 ./platform_mac_aarch64/*/bin/*
+# cd ../../..
 
-tar -czf ../ksoloti_patcher-mac_aarch64-${CUSTOMLABEL}${VERSION_LONG}.tar.gz *
+# tar -czf ../ksoloti_patcher-mac_aarch64-${CUSTOMLABEL}${VERSION_LONG}.tar.gz *
 
-cd ../..
-rm -rf ./packagetemp/mac_aarch64
+# cd ../..
+# rm -rf ./packagetemp/mac_aarch64
 
 # ----- Windows x64
 java -jar ./jdks/packr-all-4.0.0.jar --verbose --output ./packagetemp/win_x64/ksoloti-${VERSION} -- ./jdks/packr-win_x64.json
