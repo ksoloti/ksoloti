@@ -244,10 +244,7 @@ public class MutatorFrame extends JFrame {
         gbc.gridy++;
         gbc.gridwidth = 4;
         gbc.anchor = GridBagConstraints.WEST;
-        mainPanel.add(new JLabel("Saved Variations:"), gbc);
-        gbc.gridy++;
-        JLabel variationsInfoLabel = new JLabel("<html>Select any two stored Variations to constrain the randomization <br>to the range between their values for each parameter.");
-        mainPanel.add(variationsInfoLabel, gbc);
+        mainPanel.add(new JLabel("Stored Variations:"), gbc);
 
         gbc.gridy++;
         gbc.fill = GridBagConstraints.BOTH;
@@ -296,6 +293,10 @@ public class MutatorFrame extends JFrame {
         JScrollPane variationScrollPane = new JScrollPane(variationList);
         variationScrollPane.setPreferredSize(new Dimension(300, 200));
         mainPanel.add(variationScrollPane, gbc);
+
+        gbc.gridy++;
+        JLabel variationsInfoLabel = new JLabel("<html>Select any two stored Variations to constrain the randomization<br>to the range between their parameter values.");
+        mainPanel.add(variationsInfoLabel, gbc);
 
         gbc.gridy++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
