@@ -70,12 +70,11 @@ public class Axoloti {
      */
     public static void main(final String[] args) {
 
-        /* Single-instance check based on command-line args */
-        String filePath = null;
+        /* Collect all file paths from the command-line arguments */
+        ArrayList<String> filePaths = new ArrayList<>();
         for (String arg : args) {
             if (arg != null && !arg.startsWith("-")) {
-                filePath = arg;
-                break; /* Stop after finding the first file path */
+                filePaths.add(arg);
             }
         }
 
@@ -86,11 +85,14 @@ public class Axoloti {
         } catch (IOException e) {
             System.out.println(Instant.now() + " Existing Patcher instance found. Handing over file and exiting.");
 
-            if (filePath != null) {
+            if (!filePaths.isEmpty()) {
                 try (Socket socket = new Socket("localhost", SINGLE_INSTANCE_PORT);
-                    PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
-                    writer.println(filePath);
-                    System.out.println(Instant.now() + " File '" + filePath + "' handed over to existing instance.");
+                     PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
+                    /* Send all file paths to the existing instance, one per line */
+                    for (String path : filePaths) {
+                        writer.println(path);
+                    }
+                    System.out.println(Instant.now() + " File(s) handed over to existing instance: " + filePaths);
                 } catch (IOException ex) {
                     System.out.println(Instant.now() + " Failed to connect to existing instance: " + ex.getMessage());
                 }
@@ -162,17 +164,21 @@ public class Axoloti {
                     System.out.println(Instant.now() + " Main instance listening for new files...");
                     while (true) {
                         try (Socket clientSocket = server.accept();
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
-                            String filePath = reader.readLine();
-                            if (filePath != null) {
-                                SwingUtilities.invokeLater(() -> {
-                                    File f = new File(filePath);
-                                    if (f.exists()) {
-                                        System.out.println(Instant.now() + " Main instance received new file: " + filePath);
-                                        MainFrame.openFileFromListener(f);
-                                    }
-                                });
+                             BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
+                            
+                            ArrayList<File> receivedFiles = new ArrayList<>();
+                            String filePath;
+                            while ((filePath = reader.readLine()) != null) {
+                                File f = new File(filePath);
+                                if (f.exists()) {
+                                    System.out.println(Instant.now() + " Main instance received new file: " + filePath);
+                                    receivedFiles.add(f);
+                                }
                             }
+                            if (!receivedFiles.isEmpty()) {
+                                SwingUtilities.invokeLater(() -> MainFrame.openFilesFromListener(receivedFiles));
+                            }
+
                         }
                     }
                 } catch (IOException e) {

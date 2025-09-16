@@ -1746,11 +1746,14 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         // }
     }
 
-    public static void openFileFromListener(File f) {
+    public static void openFilesFromListener(ArrayList<File> files) {
         if (mainframe != null && axoObjects != null) {
-            PatchGUI.OpenPatch(f);
+            for (File f : files) {
+                System.out.println(Instant.now() + " Main instance opening file from listener: " + f.getAbsolutePath());
+                PatchGUI.OpenPatch(f);
+            }
         } else {
-            System.err.println(Instant.now() + " Mainframe is not yet initialized to open file: " + f.getAbsolutePath());
+            System.err.println(Instant.now() + " Mainframe is not yet initialized to open file(s) from listener.");
         }
     }
 
