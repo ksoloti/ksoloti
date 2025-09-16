@@ -83,21 +83,25 @@ public class Axoloti {
             System.out.println(Instant.now() + " No existing Patcher instance found. Starting new instance.");
             startSingleInstanceListener(serverSocket);
         } catch (IOException e) {
-            System.out.println(Instant.now() + " Existing Patcher instance found. Handing over file and exiting.");
-
+            /* An existing instance is running */
             if (!filePaths.isEmpty()) {
+                /* Files were provided. Hand them over and exit */
+                System.out.println(Instant.now() + " Existing Patcher instance found. Handing over file(s) and exiting.");
                 try (Socket socket = new Socket("localhost", SINGLE_INSTANCE_PORT);
                      PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
-                    /* Send all file paths to the existing instance, one per line */
                     for (String path : filePaths) {
                         writer.println(path);
                     }
                     System.out.println(Instant.now() + " File(s) handed over to existing instance: " + filePaths);
                 } catch (IOException ex) {
                     System.out.println(Instant.now() + " Failed to connect to existing instance: " + ex.getMessage());
+                    ex.printStackTrace(System.out);
                 }
+                System.exit(0);
+            } else {
+                /* No files were provided. Launch a new instance. */
+                System.out.println(Instant.now() + " Another instance is running, but no file args were provided. Starting a new instance.");
             }
-            System.exit(0);
         }
 
         AxoSplashScreen splashScreen = null;
