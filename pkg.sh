@@ -73,17 +73,42 @@ remove_temp_files()
     rm     ./firmware/*/*_build/*.list
     rm     ./firmware/*/*_build/*.map
 
-
+    rm -rf ./platform_*/build.sh
+    rm -rf ./platform_*/notes.txt
+    rm -rf ./platform_win*/build*.bat
+    rm -rf ./platform_win*/make_dist.bat
     rm -rf ./platform_*/share
     rm -rf ./platform_*/src
-    rm -rf ./platform_*/arm-none-eabi/lib/armv6-m
-    rm -rf ./platform_*/arm-none-eabi/lib/armv7-ar
-    rm -rf ./platform_*/arm-none-eabi/lib/armv7-m
-    rm -rf ./platform_*/arm-none-eabi/lib/cortex-m7
-    rm -rf ./platform_*/lib/gcc/arm-none-eabi/4.9.3/armv6-m
-    rm -rf ./platform_*/lib/gcc/arm-none-eabi/4.9.3/armv7-ar
-    rm -rf ./platform_*/lib/gcc/arm-none-eabi/4.9.3/armv7-m
-    rm -rf ./platform_*/lib/gcc/arm-none-eabi/4.9.3/cortex-m7
+
+    rm -rf ./platform_*/arm-none-eabi/lib/thumb/nofp
+    rm -rf ./platform_*/arm-none-eabi/lib/thumb/v6*
+    rm -rf ./platform_*/arm-none-eabi/lib/thumb/v7
+    rm -rf ./platform_*/arm-none-eabi/lib/thumb/v7-*
+    rm -rf ./platform_*/arm-none-eabi/lib/thumb/v7+*
+    rm -rf ./platform_*/arm-none-eabi/lib/thumb/v7e-m
+    rm -rf ./platform_*/arm-none-eabi/lib/thumb/v7e-m+dp
+    rm -rf ./platform_*/arm-none-eabi/lib/thumb/v7ve*
+    rm -rf ./platform_*/arm-none-eabi/lib/thumb/v8*
+
+    rm -rf ./platform_*/arm-none-eabi/include/c++/*/arm-none-eabi/thumb/nofp
+    rm -rf ./platform_*/arm-none-eabi/include/c++/*/arm-none-eabi/thumb/v6*
+    rm -rf ./platform_*/arm-none-eabi/include/c++/*/arm-none-eabi/thumb/v7
+    rm -rf ./platform_*/arm-none-eabi/include/c++/*/arm-none-eabi/thumb/v7-*
+    rm -rf ./platform_*/arm-none-eabi/include/c++/*/arm-none-eabi/thumb/v7+*
+    rm -rf ./platform_*/arm-none-eabi/include/c++/*/arm-none-eabi/thumb/v7e-m
+    rm -rf ./platform_*/arm-none-eabi/include/c++/*/arm-none-eabi/thumb/v7e-m+dp
+    rm -rf ./platform_*/arm-none-eabi/include/c++/*/arm-none-eabi/thumb/v7ve*
+    rm -rf ./platform_*/arm-none-eabi/include/c++/*/arm-none-eabi/thumb/v8*
+
+    rm -rf ./platform_*/lib/gcc/arm-none-eabi/*/thumb/nofp
+    rm -rf ./platform_*/lib/gcc/arm-none-eabi/*/thumb/v6*
+    rm -rf ./platform_*/lib/gcc/arm-none-eabi/*/thumb/v7
+    rm -rf ./platform_*/lib/gcc/arm-none-eabi/*/thumb/v7-*
+    rm -rf ./platform_*/lib/gcc/arm-none-eabi/*/thumb/v7+*
+    rm -rf ./platform_*/lib/gcc/arm-none-eabi/*/thumb/v7e-m
+    rm -rf ./platform_*/lib/gcc/arm-none-eabi/*/thumb/v7e-m+dp
+    rm -rf ./platform_*/lib/gcc/arm-none-eabi/*/thumb/v7ve*
+    rm -rf ./platform_*/lib/gcc/arm-none-eabi/*/thumb/v8*
 
     rm -rf ./jre/jmods
     rm -rf ./jre/demo
