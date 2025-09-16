@@ -367,8 +367,10 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         } catch (CloneNotSupportedException ex) {
             LOGGER.log(Level.SEVERE, "Error trying to clone object: " + ex.getMessage(), ex);
+            ex.printStackTrace(System.out);
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "I/O Error trying to save or copy files: " + ex.getMessage(), ex);
+            ex.printStackTrace(System.out);
         }
         fc.updateCurrentSize();
     }

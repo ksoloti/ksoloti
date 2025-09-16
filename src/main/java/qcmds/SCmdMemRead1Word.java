@@ -63,9 +63,11 @@ public class SCmdMemRead1Word extends AbstractSCmd {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "MemRead1Word command interrupted: " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error during MemRead1Word command: " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         }
         return this;

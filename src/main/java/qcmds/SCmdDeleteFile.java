@@ -80,9 +80,11 @@ public class SCmdDeleteFile extends AbstractSCmd {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Delete file command interrupted for " + filename + ": " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error during delete file command for " + filename + ": " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         }
         return this;
@@ -120,9 +122,11 @@ public class SCmdDeleteFile extends AbstractSCmd {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.out.println(Instant.now() + " Delete file command interrupted for " + filename + ": " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         } catch (Exception e) {
             System.out.println(Instant.now() + " Error during delete file command for " + filename + ": " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         }
         return this;

@@ -72,9 +72,11 @@ public class SCmdGetFileInfo extends AbstractSCmd {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Get file info command for " + filename + " interrupted: " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error during get file info command for " + filename + ": " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         }
         return this;

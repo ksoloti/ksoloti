@@ -93,6 +93,7 @@ public abstract class QCmdShellTask implements QCmd {
                         br.close();
                     } catch (IOException e) {
                         LOGGER.log(Level.WARNING, "Error closing BufferedReader: " + e.getMessage());
+                        e.printStackTrace(System.out);
                     }
                 }
             }
@@ -165,10 +166,12 @@ public abstract class QCmdShellTask implements QCmd {
             }
         } catch (InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "Shell task interrupted: " + ex.getMessage());
+            ex.printStackTrace(System.out);
             success = false;
             return err();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Shell task IO error: " + ex.getMessage());
+            ex.printStackTrace(System.out);
             success = false;
             return err();
         }

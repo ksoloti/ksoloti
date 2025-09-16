@@ -241,6 +241,7 @@ public class SCmdUploadPatch extends AbstractSCmd {
                 //         }
                 //         catch (Exception ex) {
                 //             LOGGER.log(Level.SEVERE, "Unexpected exception in progress update: " + ex.getMessage());
+                //             ex.printStackTrace(System.out);
                 //         }
                 //     });
                 // }
@@ -269,16 +270,19 @@ public class SCmdUploadPatch extends AbstractSCmd {
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "File I/O error during upload for " + filename + ": " + ex.getMessage());
+            ex.printStackTrace(System.out);
             setCompletedWithStatus(1);
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Patch upload interrupted for " + filename + ": " + ex.getMessage());
+            ex.printStackTrace(System.out);
             setCompletedWithStatus(1);
             return this;
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error during patch upload for " + filename + ": " + ex.getMessage());
+            ex.printStackTrace(System.out);
             setCompletedWithStatus(1);
             return this;
         }

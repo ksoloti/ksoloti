@@ -66,7 +66,7 @@ public class ConnectionTest {
                 assertEquals(1, listeners.size());
                 assertEquals(mockListener, listeners.get(0));
             } catch (Exception e) {
-                e.printStackTrace();
+                e.printStackTrace(System.out);
             }
         }
     }

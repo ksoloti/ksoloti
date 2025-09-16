@@ -88,7 +88,7 @@ public class Axoloti {
                 /* Files were provided. Hand them over and exit */
                 System.out.println(Instant.now() + " Existing Patcher instance found. Handing over file(s) and exiting.");
                 try (Socket socket = new Socket("localhost", SINGLE_INSTANCE_PORT);
-                     PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
+                    PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
                     for (String path : filePaths) {
                         writer.println(path);
                     }
@@ -110,6 +110,7 @@ public class Axoloti {
             splashScreen.showSplashScreen();
         } catch (Exception e) {
             System.out.println(Instant.now() + " [DEBUG] Splash screen could not be created: " + e.getMessage());
+            e.printStackTrace(System.out);
         }
 
         try {
@@ -187,6 +188,7 @@ public class Axoloti {
                     }
                 } catch (IOException e) {
                     System.out.println(Instant.now() + " Single-instance listener thread failed: " + e.getMessage());
+                    e.printStackTrace(System.out);
                 }
             });
             singleInstanceListenerThread.setDaemon(true);

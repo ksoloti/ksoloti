@@ -70,10 +70,12 @@ public class SCmdStop extends AbstractSCmd {
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Stop patch command interrupted: " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         }
         catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error during patch stop: " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         }
         return this;

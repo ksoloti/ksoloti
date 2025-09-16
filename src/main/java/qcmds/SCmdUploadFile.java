@@ -287,6 +287,7 @@ public class SCmdUploadFile extends AbstractSCmd {
                         }
                         catch (Exception ex) {
                             LOGGER.log(Level.SEVERE, "Error during progress update: " + ex.getMessage());
+                            ex.printStackTrace(System.out);
                         }
                     });
                 }
@@ -324,17 +325,20 @@ public class SCmdUploadFile extends AbstractSCmd {
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "File I/O error during upload for " + filename + ": " + ex.getMessage());
+            ex.printStackTrace(System.out);
             new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
             setCompletedWithStatus(1);
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Upload interrupted for " + filename + ": " + ex.getMessage());
+            ex.printStackTrace(System.out);
             new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
             setCompletedWithStatus(1);
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error during upload for " + filename + ": " + ex.getMessage());
+            ex.printStackTrace(System.out);
             new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
             setCompletedWithStatus(1);
         }
@@ -346,6 +350,7 @@ public class SCmdUploadFile extends AbstractSCmd {
                 }
                 catch (IOException e) {
                     LOGGER.log(Level.SEVERE, "Error closing input stream for " + filename + ": " + e.getMessage());
+                    e.printStackTrace(System.out);
                 }
             }
         }

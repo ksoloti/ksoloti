@@ -70,9 +70,11 @@ public class SCmdGetFileList extends AbstractSCmd {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Get file list command interrupted: " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error during get file list command: " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         }
         return this;

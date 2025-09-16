@@ -81,10 +81,12 @@ public class SCmdStart extends AbstractSCmd {
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Patch start command interrupted: " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         }
         catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error during patch start: " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         }
         return this;

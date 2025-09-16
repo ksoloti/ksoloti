@@ -252,6 +252,7 @@ public class USBBulkConnection extends Connection {
                 }
                 catch (LibUsbException e) {
                     // System.err.println(Instant.now() + " [DEBUG] Receiver: LibUsbException: " + e.getMessage());
+                    // e.printStackTrace(System.out);
                     disconnect();
                     break;
                 }
@@ -678,6 +679,7 @@ public class USBBulkConnection extends Connection {
             }
             catch (LibUsbException e) {
                 System.err.println(Instant.now() + " [ERROR] LibUsb exception during connection: " + e.getMessage());
+                e.printStackTrace(System.out);
                 disconnect();
                 return false;
             }
@@ -1074,6 +1076,7 @@ public class USBBulkConnection extends Connection {
             }
             catch (InterruptedException ex) {
                 // System.out.println(Instant.now() + " [DEBUG] Sync wait interrupted due to disconnect request.," + ex.getMessage());
+                // ex.printStackTrace(System.out);
                 Thread.currentThread().interrupt();
                 return false;
             }
@@ -1648,6 +1651,7 @@ public class USBBulkConnection extends Connection {
         }
         catch (Exception ex) {
             // System.out.println(Instant.now() + " [DEBUG] ReadSync wait interrupted due to disconnect request.," + ex.getMessage());
+            // ex.printStackTrace(System.out);
             // Thread.currentThread().interrupt();
         }
         // catch (InvocationTargetException ex) {

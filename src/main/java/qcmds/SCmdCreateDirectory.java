@@ -82,11 +82,13 @@ public class SCmdCreateDirectory extends AbstractSCmd {
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Create directory command for " + dirname + " interrupted: " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
             return this;
         }
         catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error during create directory command for " + dirname + ": " + e.getMessage());
+            e.printStackTrace(System.out);
             setCompletedWithStatus(1);
             return this;
         }
