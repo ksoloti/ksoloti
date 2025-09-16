@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleGetInfoString</key>
+    <string>Ksoloti 1.1</string>
+    <key>CFBundleExecutable</key>
+    <string>Ksoloti</string>
+    <key>CFBundleIdentifier</key>
+    <string>org.axoloti.ksoloti</string>
+    <key>CFBundleName</key>
+    <string>Ksoloti</string>
+    <key>CFBundleIconFile</key>
+    <string>icons.icns</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.1</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>IFMajorVersion</key>
+    <integer>1</integer>
+    <key>IFMinorVersion</key>
+    <integer>1</integer>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>NSSupportsAutomaticGraphicsSwitching</key>
+    <true/>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.music</string>
+
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeExtensions</key>
+            <array>
+                <string>axp</string>
+                <string>axs</string>
+                <string>axh</string>
+                <string>axo</string>
+                <string>axb</string>
+            </array>
+            <key>CFBundleTypeName</key>
+            <string>Axoloti Patch File</string>
+            <key>CFBundleTypeRole</key>
+            <string>Viewer</string>
+            <key>LSHandlerRank</key>
+            <string>Owner</string>
+        </dict>
+    </array>
+    
+</dict>
+</plist>

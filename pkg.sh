@@ -172,6 +172,7 @@ rm -rf ./packagetemp/linux_aarch64
 # ----- MacOS x64
 java -jar ./jdks/packr-all-4.0.0.jar --verbose --output ./packagetemp/mac_x64/Ksoloti-${VERSION}.app -- ./jdks/packr-mac_x64.json
 
+cp ./jdks/template_Info.plist ./packagetemp/mac_x64/Ksoloti-${VERSION}.app/Contents/Info.plist
 cd ./packagetemp/mac_x64/Ksoloti-${VERSION}.app/Contents/Resources
 remove_temp_files
 
@@ -189,6 +190,7 @@ rm -rf ./packagetemp/mac_x64
 # # ----- MacOS aarch64 (arm64)
 # java -jar ./jdks/packr-all-4.0.0.jar --verbose --output ./packagetemp/mac_aarch64/Ksoloti-${VERSION}.app -- ./jdks/packr-mac_aarch64.json
 
+# cp ./jdks/template_Info.plist ./packagetemp/mac_aarch64/Ksoloti-${VERSION}.app/Contents/Info.plist
 # cd ./packagetemp/mac_aarch64/Ksoloti-${VERSION}.app/Contents/Resources
 # remove_temp_files
 
