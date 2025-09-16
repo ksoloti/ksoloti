@@ -441,7 +441,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                 ((AxoObjectInstancePatcher) aoi).refreshObjectCode();
                             }
                         }
-                        
+
                         /* Clear needsTransmit flags on all non-frozen parameters */
                         for (AxoObjectInstanceAbstract o : patch.objectInstances) {
                             for (ParameterInstance pi : o.getParameterInstances()) {
@@ -569,7 +569,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     mainframe.setCurrentLivePatch(null); /* Signal mainframe that currently no patch is live */
                     return null;
                 }
-                
 
                 @Override
                 protected void done() {
@@ -645,9 +644,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     @Override
     public boolean AskClose() {
         if (patch.isDirty() && patch.getContainer() == null) {
-            Object[] options = {"Save",
-                "Discard",
-                "Cancel"};
+            Object[] options = {"Save", "Discard", "Cancel"};
             int n = KeyboardNavigableOptionPane.showOptionDialog(
                     this,
                     "Save changes to \"" + patch.getFileNamePath() + "\"?",
@@ -1415,7 +1412,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         p.PreSerialize();
         Serializer serializer = new Persister(new Format(2));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        
+
         try {
             serializer.write(p, baos);
             String s = new String(baos.toString());
@@ -1448,7 +1445,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         p.PreSerialize();
         Serializer serializer = new Persister(new Format(2));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        
+
         try {
             serializer.write(p, baos);
             String s = new String(baos.toString());
