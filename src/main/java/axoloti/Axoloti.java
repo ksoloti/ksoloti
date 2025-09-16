@@ -29,8 +29,12 @@ import axoloti.utils.OSDetect.OS;
 
 import java.awt.Desktop;
 import java.awt.EventQueue;
+import java.awt.Window;
 import java.awt.desktop.OpenFilesEvent;
 import java.awt.desktop.OpenFilesHandler;
+import java.awt.desktop.QuitEvent;
+import java.awt.desktop.QuitHandler;
+import java.awt.desktop.QuitResponse;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -139,7 +143,36 @@ public class Axoloti {
                 System.setProperty("apple.awt.application.name", "Ksoloti");
                 System.setProperty("apple.awt.application.appearance", "system");
                 System.setProperty("apple.awt.transparentTitleBar", "true");
+
+                if (Desktop.isDesktopSupported()) {
+                    Desktop desktop = Desktop.getDesktop();
+                    if (desktop.isSupported(Desktop.Action.APP_QUIT_HANDLER)) {
+                        desktop.setQuitHandler(new QuitHandler() {
+                            @Override
+                            public void handleQuitRequestWith(QuitEvent e, QuitResponse response) {
+                                boolean canQuit = true;
+
+                                for (Window window : Window.getWindows()) {
+                                    if (window instanceof DocumentWindow) {
+                                        DocumentWindow docWindow = (DocumentWindow) window;
+                                        if (docWindow.AskClose()) {
+                                            canQuit = false;
+                                            break; 
+                                        }
+                                    }
+                                }
+
+                                if (canQuit) {
+                                    response.performQuit();
+                                } else {
+                                    response.cancelQuit();
+                                }
+                            }
+                        });
+                    }
+                }
             }
+
 
             System.setProperty("awt.useSystemAAFontSettings", "gasp");
             System.setProperty("swing.aatext", "true");
