@@ -28,6 +28,7 @@ public class ParameterTypes {
       new ParameterFrac32SMap(),
       new Parameter4LevelX16(),
       new ParameterBin1(),
+      new ParameterBin8(),
       new ParameterBin12(),
       new ParameterBin16(),
       new ParameterBin1Momentary(),
