@@ -99,13 +99,6 @@ public class Axoloti {
         final String[] filePaths = filePathsList.toArray(new String[0]);
 
         AxoSplashScreen splashScreen = null;
-        try {
-            splashScreen = new AxoSplashScreen(false);
-            splashScreen.showSplashScreen();
-        } catch (Exception e) {
-            System.out.println(Instant.now() + " [DEBUG] Splash screen could not be created: " + e.getMessage());
-            e.printStackTrace(System.out);
-        }
         
         try {
             initProperties();
@@ -170,6 +163,8 @@ public class Axoloti {
             ServerSocket serverSocket = new ServerSocket(SINGLE_INSTANCE_PORT);
             System.out.println(Instant.now() + " No existing Patcher instance found. Starting new instance.");
             startSingleInstanceListener(serverSocket);
+            splashScreen = new AxoSplashScreen(false);
+            splashScreen.showSplashScreen();
             handleCommandLine(filePaths, splashScreen);
 
         } catch (IOException | URISyntaxException e) {
