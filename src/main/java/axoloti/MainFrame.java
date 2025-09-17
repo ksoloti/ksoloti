@@ -1747,16 +1747,23 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     public static void openFilesFromListener(ArrayList<File> files) {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            System.err.println(Instant.now() + " Error: openFilesFromListener called from a non-EDT thread!");
+            return;
+        }
+
         if (mainframe != null && axoObjects != null) {
             /* If the loader thread is still running, wait for it to finish. */
             if (axoObjects.LoaderThread.isAlive()) {
                 System.out.println(Instant.now() + " Main instance received file(s), but libraries are still loading. Retrying in 1 second...");
-                try {
-                    Thread.sleep(1000); 
-                } catch (InterruptedException ex) {
-                    System.err.println(Instant.now() + " Interrupted while waiting for loader thread.");
-                }
-                SwingUtilities.invokeLater(() -> openFilesFromListener(files));
+                SwingUtilities.invokeLater(() -> {
+                    try {
+                        Thread.sleep(1000); 
+                        openFilesFromListener(files);
+                    } catch (InterruptedException ex) {
+                        System.err.println(Instant.now() + " Interrupted while waiting for loader thread.");
+                    }
+                });
             } else {
                 for (File f : files) {
                     System.out.println(Instant.now() + " Main instance opening file from listener: " + f.getAbsolutePath());
