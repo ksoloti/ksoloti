@@ -20,7 +20,7 @@ package axoloti.dialogs;
 
 import axoloti.USBBulkConnection;
 import axoloti.listener.ConnectionStatusListener;
-import axoloti.ui.SvgIconLoader;
+// import axoloti.ui.SvgIconLoader;
 import axoloti.utils.KeyUtils;
 import components.PianoComponent;
 import components.control.ACtrlEvent;
@@ -36,7 +36,7 @@ import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.Icon;
+// import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SpinnerNumberModel;
