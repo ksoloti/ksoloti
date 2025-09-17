@@ -184,6 +184,7 @@ public class Axoloti {
                 System.exit(0);
             } else {
                 System.out.println(Instant.now() + " Another instance is running, but no file args were provided. Starting a new instance.");
+                handleCommandLine(filePaths, splashScreen);
             }
         }
     }
