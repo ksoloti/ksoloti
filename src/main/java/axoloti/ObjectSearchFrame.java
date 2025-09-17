@@ -53,6 +53,8 @@ import java.util.regex.PatternSyntaxException;
 
 import javax.swing.Icon;
 import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -301,8 +303,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         });
 
-        jObjectTree.setDragEnabled(false);
-        jObjectTree.setTransferHandler(null);
         jObjectTree.addMouseListener(new MouseListener() {
             private AxoObjectAbstract draggedObject = null;
 
@@ -323,7 +323,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                     DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
                     if (node != null && node.getUserObject() instanceof AxoObjectAbstract) {
                         draggedObject = (AxoObjectAbstract) node.getUserObject();
-                        // getRootPane().setCursor(new Cursor(Cursor.HAND_CURSOR));
                     }
                 }
             }
@@ -333,11 +332,11 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 if (dragStarted) {
                     if (draggedObject != null) {
                         Point screenLoc = e.getLocationOnScreen();
-                        Point patchFrameOnScreen = p.getPatchframe().getLocationOnScreen();
-                        int newX = screenLoc.x - patchFrameOnScreen.x;
-                        int newY = screenLoc.y - patchFrameOnScreen.y - 80;
+                        Point finalPoint = new Point(screenLoc);
+                        JPanel targetPanel = p.objectLayerPanel;
+                        SwingUtilities.convertPointFromScreen(finalPoint, targetPanel);
 
-                        p.AddObjectInstance(draggedObject, snapToGrid(new Point(newX, newY)));
+                        p.AddObjectInstance(draggedObject, snapToGrid(finalPoint));
                         getRootPane().setCursor(Cursor.getDefaultCursor());
                         jTextFieldObjName.setText("");
                         accepted = false;
@@ -462,9 +461,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 dragStarted = false;
 
                 dragStartIndex = jResultList.locationToIndex(e.getPoint());
-                // if (dragStartIndex != -1) {
-                //      getRootPane().setCursor(new Cursor(Cursor.HAND_CURSOR));
-                // }
                 Object selectedObject = jResultList.getSelectedValue();
                 if (selectedObject instanceof AxoObjectAbstract) {
                     draggedObject = (AxoObjectAbstract) selectedObject;
@@ -476,11 +472,11 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 if (dragStarted) {
                     if (draggedObject != null) {
                         Point screenLoc = e.getLocationOnScreen();
-                        Point patchFrameOnScreen = p.getPatchframe().getLocationOnScreen();
-                        int newX = screenLoc.x - patchFrameOnScreen.x;
-                        int newY = screenLoc.y - patchFrameOnScreen.y - 80;
-
-                        p.AddObjectInstance(draggedObject, snapToGrid(new Point(newX, newY)));
+                        Point finalPoint = new Point(screenLoc);
+                        JPanel targetPanel = p.objectLayerPanel;
+                        SwingUtilities.convertPointFromScreen(finalPoint, targetPanel);
+                        
+                        p.AddObjectInstance(draggedObject, snapToGrid(finalPoint));
                         getRootPane().setCursor(Cursor.getDefaultCursor());
                         jTextFieldObjName.setText("");
                         accepted = false;
@@ -976,7 +972,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jScrollPaneObjectTree.setPreferredSize(new java.awt.Dimension(180, 160));
 
         jObjectTree.setAlignmentX(LEFT_ALIGNMENT);
-        // jObjectTree.setDragEnabled(true);
+        jObjectTree.setAutoscrolls(false);
+        jObjectTree.setDragEnabled(false);
+        jObjectTree.setTransferHandler(null);
         jObjectTree.setMinimumSize(new java.awt.Dimension(100, 50));
         jObjectTree.setRootVisible(false);
         jObjectTree.setShowsRootHandles(true);
