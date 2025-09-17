@@ -45,7 +45,6 @@ import java.net.Socket;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -90,22 +89,54 @@ public class Axoloti {
         }
 
         /* Collect all file paths from the command-line arguments */
-        ArrayList<String> filePathsList = new ArrayList<>();
+        ArrayList<String> filePaths = new ArrayList<>();
         for (String arg : args) {
             if (arg != null && !arg.startsWith("-")) {
-                filePathsList.add(arg);
+                filePaths.add(arg);
             }
         }
-        final String[] filePaths = filePathsList.toArray(new String[0]);
+
+        try {
+            ServerSocket serverSocket = new ServerSocket(SINGLE_INSTANCE_PORT);
+            System.out.println(Instant.now() + " No existing Patcher instance found. Starting new instance.");
+            startSingleInstanceListener(serverSocket);
+        } catch (IOException e) {
+            /* An existing instance is running */
+            if (!filePaths.isEmpty()) {
+                /* Files were provided. Hand them over and exit */
+                System.out.println(Instant.now() + " Existing Patcher instance found. Handing over file(s) and exiting.");
+                try (Socket socket = new Socket("localhost", SINGLE_INSTANCE_PORT);
+                    PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
+                    for (String path : filePaths) {
+                        writer.println(path);
+                    }
+                    System.out.println(Instant.now() + " File(s) handed over to existing instance: " + filePaths);
+                } catch (IOException ex) {
+                    System.out.println(Instant.now() + " Failed to connect to existing instance: " + ex.getMessage());
+                    ex.printStackTrace(System.out);
+                }
+                System.exit(0);
+            } else {
+                /* No files were provided. Launch a new instance. */
+                System.out.println(Instant.now() + " Another instance is running, but no file args were provided. Starting a new instance.");
+            }
+        }
 
         AxoSplashScreen splashScreen = null;
-        
+        try {
+            splashScreen = new AxoSplashScreen(false);
+            splashScreen.showSplashScreen();
+        } catch (Exception e) {
+            System.out.println(Instant.now() + " [DEBUG] Splash screen could not be created: " + e.getMessage());
+            e.printStackTrace(System.out);
+        }
+
         try {
             initProperties();
             Preferences.LoadPreferences();
             Preferences.getInstance().applyTheme();
             Synonyms.instance(); // prime it
-            
+
             if (OSDetect.getOS() == OSDetect.OS.MAC) {
                 // System.setProperty("apple.laf.useScreenMenuBar", "true"); /* This option breaks menu functions */
                 System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS"); /* deprecated? non-functional? */
@@ -139,7 +170,7 @@ public class Axoloti {
                     }
                 }
             }
-            
+
             System.setProperty("awt.useSystemAAFontSettings", "gasp");
             System.setProperty("swing.aatext", "true");
             System.setProperty("line.separator", "\n");
@@ -160,33 +191,15 @@ public class Axoloti {
             UIManager.put("ToggleButton.selectedBackground", Theme.Button_Accent_Background);
             UIManager.put("Objects.Grey", UIManager.getColor("Panel.foreground"));
 
-            ServerSocket serverSocket = new ServerSocket(SINGLE_INSTANCE_PORT);
-            System.out.println(Instant.now() + " No existing Patcher instance found. Starting new instance.");
-            startSingleInstanceListener(serverSocket);
-            splashScreen = new AxoSplashScreen(false);
-            splashScreen.showSplashScreen();
-            handleCommandLine(filePaths, splashScreen);
-
-        } catch (IOException | URISyntaxException e) {
-            /* An existing instance is running */
-            if (filePaths.length > 0) {
-                System.out.println(Instant.now() + " Existing Patcher instance found. Handing over file(s) and exiting.");
-                try (Socket socket = new Socket("localhost", SINGLE_INSTANCE_PORT);
-                    PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
-                    for (String path : filePaths) {
-                        writer.println(path);
-                    }
-                    System.out.println(Instant.now() + " File(s) handed over to existing instance: " + Arrays.toString(filePaths));
-                } catch (IOException ex) {
-                    System.out.println(Instant.now() + " Failed to connect to existing instance: " + ex.getMessage());
-                    ex.printStackTrace(System.out);
-                }
-                System.exit(0);
-            } else {
-                System.out.println(Instant.now() + " Another instance is running, but no file args were provided. Starting a new instance.");
-                handleCommandLine(filePaths, splashScreen);
-            }
         }
+        catch (URISyntaxException e) {
+            throw new IllegalStateException("Failed to initialize due to URI syntax error", e);
+        }
+        catch (IOException e) {
+            throw new IllegalStateException("Failed to initialize due to I/O error", e);
+        }
+
+        handleCommandLine(args, splashScreen);
     }
 
     private static void startSingleInstanceListener(ServerSocket serverSocket) {
