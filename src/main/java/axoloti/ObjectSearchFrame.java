@@ -79,6 +79,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     private int patchLocY;
 
     private boolean accepted = false;
+    private boolean dragStarted = false;
+    private Point dragStartPoint = null;
     private int dragStartIndex = -1;
 
     /* Shortcut strings */
@@ -313,30 +315,37 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
+                dragStartPoint = e.getPoint();
+                dragStarted = false;
+
                 TreePath path = jObjectTree.getPathForLocation(e.getX(), e.getY());
                 if (path != null) {
                     DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
                     if (node != null && node.getUserObject() instanceof AxoObjectAbstract) {
                         draggedObject = (AxoObjectAbstract) node.getUserObject();
-                        getRootPane().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                        // getRootPane().setCursor(new Cursor(Cursor.HAND_CURSOR));
                     }
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (draggedObject != null) {
-                    Point screenLoc = e.getLocationOnScreen();
-                    Point patchFrameOnScreen = p.getPatchframe().getLocationOnScreen();
-                    int newX = screenLoc.x - patchFrameOnScreen.x;
-                    int newY = screenLoc.y - patchFrameOnScreen.y - 80;
+                if (dragStarted) {
+                    if (draggedObject != null) {
+                        Point screenLoc = e.getLocationOnScreen();
+                        Point patchFrameOnScreen = p.getPatchframe().getLocationOnScreen();
+                        int newX = screenLoc.x - patchFrameOnScreen.x;
+                        int newY = screenLoc.y - patchFrameOnScreen.y - 80;
 
-                    p.AddObjectInstance(draggedObject, snapToGrid(new Point(newX, newY)));
-                    getRootPane().setCursor(Cursor.getDefaultCursor());
-                    jTextFieldObjName.setText("");
-                    accepted = false;
-                    draggedObject = null;
+                        p.AddObjectInstance(draggedObject, snapToGrid(new Point(newX, newY)));
+                        getRootPane().setCursor(Cursor.getDefaultCursor());
+                        jTextFieldObjName.setText("");
+                        accepted = false;
+                        draggedObject = null;
+                    }
                 }
+                dragStartPoint = null;
+                dragStarted = false;
             }
 
             @Override
@@ -345,6 +354,26 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
             @Override
             public void mouseExited(MouseEvent e) {
+            }
+        });
+
+        jObjectTree.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (dragStartPoint != null) {
+                    int dx = Math.abs(e.getX() - dragStartPoint.x);
+                    int dy = Math.abs(e.getY() - dragStartPoint.y);
+                    int dragThreshold = 10;
+
+                    if (dx > dragThreshold || dy > dragThreshold) {
+                        dragStarted = true;
+                        getRootPane().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    }
+                }
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
             }
         });
 
@@ -429,10 +458,13 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
+                dragStartPoint = e.getPoint();
+                dragStarted = false;
+
                 dragStartIndex = jResultList.locationToIndex(e.getPoint());
-                if (dragStartIndex != -1) {
-                     getRootPane().setCursor(new Cursor(Cursor.HAND_CURSOR));
-                }
+                // if (dragStartIndex != -1) {
+                //      getRootPane().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                // }
                 Object selectedObject = jResultList.getSelectedValue();
                 if (selectedObject instanceof AxoObjectAbstract) {
                     draggedObject = (AxoObjectAbstract) selectedObject;
@@ -441,19 +473,23 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (draggedObject != null) {
-                    Point screenLoc = e.getLocationOnScreen();
-                    Point patchFrameOnScreen = p.getPatchframe().getLocationOnScreen();
-                    int newX = screenLoc.x - patchFrameOnScreen.x;
-                    int newY = screenLoc.y - patchFrameOnScreen.y - 80;
+                if (dragStarted) {
+                    if (draggedObject != null) {
+                        Point screenLoc = e.getLocationOnScreen();
+                        Point patchFrameOnScreen = p.getPatchframe().getLocationOnScreen();
+                        int newX = screenLoc.x - patchFrameOnScreen.x;
+                        int newY = screenLoc.y - patchFrameOnScreen.y - 80;
 
-                    p.AddObjectInstance(draggedObject, snapToGrid(new Point(newX, newY)));
-                    getRootPane().setCursor(Cursor.getDefaultCursor());
-                    jTextFieldObjName.setText("");
-                    accepted = false;
-                    draggedObject = null;
-                    dragStartIndex = -1;
+                        p.AddObjectInstance(draggedObject, snapToGrid(new Point(newX, newY)));
+                        getRootPane().setCursor(Cursor.getDefaultCursor());
+                        jTextFieldObjName.setText("");
+                        accepted = false;
+                        draggedObject = null;
+                    }
                 }
+                dragStartPoint = null;
+                dragStarted = false;
+                dragStartIndex = -1;
             }
 
             @Override
@@ -468,11 +504,24 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jResultList.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                /* Prevent unwanted scrolling while dragging */
-                if (dragStartIndex != -1) {
-                    jResultList.setSelectedIndex(dragStartIndex);
+                if (dragStartPoint != null) {
+                    int dx = Math.abs(e.getX() - dragStartPoint.x);
+                    int dy = Math.abs(e.getY() - dragStartPoint.y);
+                    int dragThreshold = 10;
+
+                    if (dx > dragThreshold || dy > dragThreshold) {
+                        dragStarted = true;
+                        getRootPane().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    }
                 }
-                e.consume();
+
+                /* Prevent unwanted scrolling while dragging */
+                if (dragStarted) {
+                    if (dragStartIndex != -1) {
+                        jResultList.setSelectedIndex(dragStartIndex);
+                    }
+                    e.consume();
+                }
             }
 
             @Override
