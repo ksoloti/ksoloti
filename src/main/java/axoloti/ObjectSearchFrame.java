@@ -308,7 +308,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if ((e.getClickCount() == 2) && (e.getButton() == MouseEvent.BUTTON1)) {
+                if ((e.getClickCount() == 3) && (e.getButton() == MouseEvent.BUTTON1)) {
                     Accept();
                 }
             }
