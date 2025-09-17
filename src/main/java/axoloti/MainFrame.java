@@ -312,17 +312,17 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         else {
                             txt = lr.getMessage();
                         }
-            
+
                         if (excTxt.length() > 0) {
                             txt = txt + "," + excTxt;
                         }
                     }
-            
+
                     String formattedMessage = txt + "\n";
-            
+
                     /* Get the document length just before insertion to ensure it's current. */
                     int currentLength = jTextPaneLog.getDocument().getLength();
-            
+
                     if (lr.getLevel() == Level.SEVERE) {
                         jTextPaneLog.getDocument().insertString(currentLength, formattedMessage, styleSevere);
                         if (bGrabFocusOnSevereErrors) {
@@ -767,7 +767,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (tsuffix.length() > 0) {
             tstring += " (" + tsuffix + ")";
         }
-        
+
         MainFrame.this.setTitle(tstring);
 
     }
@@ -804,7 +804,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         }
 
         setCurrentLivePatch(null);
-        
+
         CommandManager.getInstance().startLongOperation();
         new SwingWorker<Boolean, String>() {
             @Override
@@ -1028,7 +1028,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuBoard.add(jMenuItemFDisconnect);
         jMenuBoard.add(jSeparator1);
 
-        
+
         jMenuItemMount.setText("Enter Card Reader Mode (Disconnects Patcher)");
         jMenuItemMount.setMnemonic('R');
         jMenuItemMount.setDisplayedMnemonicIndex(11);
@@ -1256,7 +1256,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         boolean r1 = false;
         boolean r2 = false;
-        
+
         try {
             r1 = runObjectTests();
             if (!r1 && stopOnFirstFail) {
@@ -1373,7 +1373,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         boolean isObject = extension.equals(".axo") || extension.equals(".axs");
                         return isPatch || isObject;
                     }
-                    
+
                     return isPatch;
                 }
             });
@@ -1756,14 +1756,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             /* If the loader thread is still running, wait for it to finish. */
             if (axoObjects.LoaderThread.isAlive()) {
                 System.out.println(Instant.now() + " Main instance received file(s), but libraries are still loading. Retrying in 1 second...");
-                SwingUtilities.invokeLater(() -> {
+
+                new Thread(() -> {
                     try {
                         Thread.sleep(1000); 
-                        openFilesFromListener(files);
+                        SwingUtilities.invokeLater(() -> openFilesFromListener(files));
                     } catch (InterruptedException ex) {
                         System.err.println(Instant.now() + " Interrupted while waiting for loader thread.");
                     }
-                });
+                }).start();
             } else {
                 for (File f : files) {
                     System.out.println(Instant.now() + " Main instance opening file from listener: " + f.getAbsolutePath());
@@ -1822,7 +1823,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     /* Check if this UUID exists in any library */
                     AxoObjectAbstract libraryObject = MainFrame.axoObjects.GetAxoObjectFromUUID(loadedObject.getUUID());
-                    
+
                     /* If not, check if this ID (typeName?) exists in any library */
                     if (libraryObject == null && loadedObject.id != null) {
                         ArrayList<AxoObjectAbstract> foundObjects = MainFrame.axoObjects.GetAxoObjectFromName(loadedObject.id, null);
@@ -1846,7 +1847,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         newInstance.ConvertToEmbeddedObj();
                         LOGGER.info("Placed new embedded object labeled \"" + uniqueName + "\" from file \"" + f.getName());
                     }
-                    
+
                     newPatch.SetDirty();
                     xPosition += abstractInstance.getWidth() + Constants.X_GRID * 2;
                 } else {
@@ -2178,7 +2179,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemFConnect.setEnabled(false);
         jMenuItemFDisconnect.setEnabled(false);
     }
-    
+
     public void refreshAppIcon() {
         Constants.createAppIcon();
         setIconImage(Constants.APP_ICON.getImage());
