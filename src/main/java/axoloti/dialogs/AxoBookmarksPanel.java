@@ -74,7 +74,7 @@ protected void initGUI() {
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(150, super.getPreferredSize().height);
+        return new Dimension(141, super.getPreferredSize().height);
     }
 
     private ImageIcon loadImageIcon(String path) {
