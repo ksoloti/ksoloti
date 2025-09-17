@@ -22,7 +22,6 @@ import java.awt.Dimension;
 import javax.swing.JFileChooser;
 
 import axoloti.ui.SvgFileView;
-import com.googlecode.jfilechooserbookmarks.DefaultBookmarksPanel;
 
 /**
  *
@@ -31,14 +30,14 @@ import com.googlecode.jfilechooserbookmarks.DefaultBookmarksPanel;
 public class AxoJFileChooser extends JFileChooser {
 
     private Dimension currentSize;
-    private static final Dimension DEFAULT_SIZE = new Dimension(640, 480);
+    private static final Dimension DEFAULT_SIZE = new Dimension(720, 480);
 
     public AxoJFileChooser(String path) {
         super(path);
         currentSize = DEFAULT_SIZE;
         setPreferredSize(currentSize);
         this.setFileView(new SvgFileView());
-        DefaultBookmarksPanel panel = new DefaultBookmarksPanel();
+        AxoBookmarksPanel panel = new AxoBookmarksPanel();
         panel.setOwner(this);
         this.setAccessory(panel);
     }
